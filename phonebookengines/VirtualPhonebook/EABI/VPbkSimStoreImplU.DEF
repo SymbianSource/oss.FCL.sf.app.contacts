@@ -1,0 +1,53 @@
+EXPORTS
+	_ZN15CVPbkSimContact11DeleteFieldEi @ 1 NONAME
+	_ZN15CVPbkSimContact15DeleteAllFieldsEv @ 2 NONAME
+	_ZN15CVPbkSimContact4NewLER16MVPbkSimCntStore @ 3 NONAME
+	_ZN15CVPbkSimContact4NewLERK6TDesC8R16MVPbkSimCntStore @ 4 NONAME
+	_ZN15CVPbkSimContact5NewLCER16MVPbkSimCntStore @ 5 NONAME
+	_ZN15CVPbkSimContact5NewLCERK6TDesC8R16MVPbkSimCntStore @ 6 NONAME
+	_ZN15CVPbkSimContact5SaveLER23MVPbkSimContactObserver @ 7 NONAME
+	_ZN15CVPbkSimContact9AddFieldLEP16CVPbkSimCntField @ 8 NONAME
+	_ZN16CVPbkSimCntField13MaxDataLengthEv @ 9 NONAME
+	_ZN16CVPbkSimCntField8SetDataLERK7TDesC16 @ 10 NONAME
+	_ZN18CVPbkSimContactBuf4NewLER16MVPbkSimCntStore @ 11 NONAME
+	_ZN18CVPbkSimContactBuf4NewLERK6TDesC8R16MVPbkSimCntStore @ 12 NONAME
+	_ZN18CVPbkSimContactBuf5NewLCER16MVPbkSimCntStore @ 13 NONAME
+	_ZN18CVPbkSimContactBuf5NewLCERK6TDesC8R16MVPbkSimCntStore @ 14 NONAME
+	_ZN20CVPbkSimCommandStore13CancelCommandER15MVPbkSimCommand @ 15 NONAME
+	_ZN20CVPbkSimCommandStore21AddAndExecuteCommandLEP15MVPbkSimCommand @ 16 NONAME
+	_ZN20CVPbkSimCommandStore4NewLEi @ 17 NONAME
+	_ZN20CVPbkSimCommandStore9CancelAllEv @ 18 NONAME
+	_ZN20CVPbkSimStoreManager4NewLEv @ 19 NONAME
+	_ZN20CVPbkSimStoreManager5PhoneEv @ 20 NONAME
+	_ZN20CVPbkSimStoreManager6StoreLE23TVPbkSimStoreIdentifier @ 21 NONAME
+	_ZN21CVPbkETelCntConverter4NewLEv @ 22 NONAME
+	_ZN21CVPbkETelCntConverter5NewLCEv @ 23 NONAME
+	_ZNK15CVPbkSimContact13CreateFieldLCE20TVPbkSimCntFieldType @ 24 NONAME
+	_ZTI15CVPbkSimContact @ 25 NONAME ; #<TI>#
+	_ZTI16CVPbkSimCntField @ 26 NONAME ; #<TI>#
+	_ZTI18CVPbkSimContactBuf @ 27 NONAME ; #<TI>#
+	_ZTI19CVPbkSimContactBase @ 28 NONAME ; #<TI>#
+	_ZTI20CVPbkSimCommandStore @ 29 NONAME ; #<TI>#
+	_ZTI20CVPbkSimStoreManager @ 30 NONAME ; #<TI>#
+	_ZTI21CVPbkETelCntConverter @ 31 NONAME ; #<TI>#
+	_ZTIN12VPbkEngUtils17CPhoneNumberIndexI15MVPbkSimContactEE @ 32 NONAME ; #<TI>#
+	_ZTV15CVPbkSimContact @ 33 NONAME ; #<VT>#
+	_ZTV16CVPbkSimCntField @ 34 NONAME ; #<VT>#
+	_ZTV18CVPbkSimContactBuf @ 35 NONAME ; #<VT>#
+	_ZTV19CVPbkSimContactBase @ 36 NONAME ; #<VT>#
+	_ZTV20CVPbkSimCommandStore @ 37 NONAME ; #<VT>#
+	_ZTV20CVPbkSimStoreManager @ 38 NONAME ; #<VT>#
+	_ZTV21CVPbkETelCntConverter @ 39 NONAME ; #<VT>#
+	_ZTVN12VPbkEngUtils17CPhoneNumberIndexI15MVPbkSimContactEE @ 40 NONAME ; #<VT>#
+	_ZN19CVPbkSimContactView5NewLCERK22RVPbkSimFieldTypeArray30TVPbkSimViewConstructionPolicyR16MVPbkSimCntStoreRK7TDesC16P23CVPbkSimFieldTypeFilter @ 41 NONAME
+	_ZTI19CVPbkSimContactView @ 42 NONAME ; #<TI>#
+	_ZTIN12VPbkEngUtils18CVPbkAsyncCallbackI19CVPbkSimContactView20MVPbkSimViewObserverEE @ 43 NONAME ; #<TI>#
+	_ZTIN12VPbkEngUtils18CVPbkAsyncCallbackIN16VPbkSimStoreImpl10CStoreBaseE21MVPbkSimStoreObserverEE @ 44 NONAME ; #<TI>#
+	_ZTV19CVPbkSimContactView @ 45 NONAME ; #<VT>#
+	_ZTVN12VPbkEngUtils18CVPbkAsyncCallbackI19CVPbkSimContactView20MVPbkSimViewObserverEE @ 46 NONAME ; #<VT>#
+	_ZTVN12VPbkEngUtils18CVPbkAsyncCallbackIN16VPbkSimStoreImpl10CStoreBaseE21MVPbkSimStoreObserverEE @ 47 NONAME ; #<VT>#
+	_ZTIN12VPbkEngUtils18CVPbkAsyncCallbackIN16VPbkSimStoreImpl6CPhoneE21MVPbkSimPhoneObserverEE @ 48 NONAME ; #<TI>#
+	_ZTIN12VPbkEngUtils26CVPbkAsyncCallbackOneParamIN16VPbkSimStoreImpl6CPhoneEN21MVPbkSimPhoneObserver16TErrorIdentifierES3_EE @ 49 NONAME ; #<TI>#
+	_ZTVN12VPbkEngUtils18CVPbkAsyncCallbackIN16VPbkSimStoreImpl6CPhoneE21MVPbkSimPhoneObserverEE @ 50 NONAME ; #<VT>#
+	_ZTVN12VPbkEngUtils26CVPbkAsyncCallbackOneParamIN16VPbkSimStoreImpl6CPhoneEN21MVPbkSimPhoneObserver16TErrorIdentifierES3_EE @ 51 NONAME ; #<VT>#
+

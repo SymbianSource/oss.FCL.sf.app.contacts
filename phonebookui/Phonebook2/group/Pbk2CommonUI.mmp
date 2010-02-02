@@ -1,0 +1,122 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Common UI project specification file.
+*
+*/
+
+
+#include <platform/app/Pbk2UID.h>
+#include "Pbk2Config.mmp"
+#include "../inc/Pbk2InternalUID.h"
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+// Target information
+TARGET          Pbk2CommonUI.dll
+TARGETTYPE      dll
+UID             KEPOCStaticDllUID2 KPbk2DllUID3
+CAPABILITY      CAP_GENERAL_DLL
+
+// Source path
+SOURCEPATH      ../CommonUI/src
+
+// Base classes and containers
+SOURCE          CPbk2AppUiBase.cpp
+SOURCE          CPbk2DocumentBase.cpp
+SOURCE          CPbk2AppViewBase.cpp
+SOURCE          CPbk2ControlContainer.cpp
+SOURCE          CPbk2ApplicationServices.cpp
+
+// Icon support
+SOURCE          CPbk2IconArray.cpp
+SOURCE          CPbk2IconInfo.cpp
+SOURCE          CPbk2IconInfoContainer.cpp
+SOURCE          CPbk2IconFactory.cpp
+SOURCE          CPbk2PresenceIconInfo.cpp
+
+// Navigation
+SOURCE          Pbk2NavigatorFactory.cpp
+SOURCE          CPbk2NavigationBase.cpp
+SOURCE          CPbk2ContactNavigation.cpp
+SOURCE          CPbk2VoidNavigation.cpp
+
+// Utilities
+SOURCE          CPbk2ViewState.cpp
+SOURCE          CPbk2ViewStateTransformer.cpp
+SOURCE          CPbk2ViewGraph.cpp
+SOURCE          CPbk2StoreManager.cpp
+SOURCE          CPbk2MemoryEntryContactLoader.cpp
+SOURCE          CPbk2ContactRelocator.cpp
+SOURCE          CPbk2DrmManager.cpp
+SOURCE          CPbk2FieldFocusHelper.cpp
+SOURCE          CPbk2TabGroupContainer.cpp
+SOURCE          CPbk2ContactViewSupplier.cpp
+SOURCE          DummyExports.cpp
+
+// Compression support
+SOURCE          CPbk2CompressPolicyManager.cpp
+SOURCE          CPbk2CompressPolicyTimer.cpp
+SOURCE          CPbk2CompressPolicyDiskSpace.cpp
+
+SOURCE          CPbk2NonTopContactSelector.cpp
+SOURCE          CPbk2RingingToneFetch.cpp
+
+// Resources
+LANGUAGE_IDS
+START RESOURCE  ../rss/Pbk2UIExtCommon.rss
+HEADER
+TARGET          Pbk2UIExtCommon
+TARGETPATH      RESOURCE_FILES_DIR
+END
+
+START RESOURCE ../rss/Pbk2CommonUi.rss
+HEADER
+TARGET          Pbk2CommonUi
+TARGETPATH      RESOURCE_FILES_DIR
+END
+
+// Include paths
+USERINCLUDE     ../CommonUI/inc
+SYSTEMINCLUDE   ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib bafl.lib apparc.lib
+LIBRARY cone.lib eikcore.lib eikcoctl.lib egul.lib
+LIBRARY efsrv.lib CentralRepository.lib
+LIBRARY estor.lib ecom.lib
+LIBRARY fbscli.lib
+
+// Dependencies to S60 platform components
+LIBRARY avkon.lib AknSkins.lib CommonEngine.lib
+LIBRARY aknicon.lib AknLayout2Scalable.lib CdlEngine.lib
+LIBRARY apgrfx.lib apmime.lib
+LIBRARY FeatMgr.lib
+LIBRARY DrmHelper.lib DrmRights.lib DrmCommon.lib
+LIBRARY mediafilelist.lib
+
+// Dependencies to Phonebook
+LIBRARY VPbkEng.lib
+LIBRARY Pbk2Presentation.lib
+
+#ifdef PBK2_ENABLE_PROFILE
+// Depencency to Phonebook profiling library
+LIBRARY Pbk2Profile.lib
+#endif // PBK2_ENABLE_PROFILE
+
+#ifdef RD_DRM_COMMON_INTERFACE_FOR_OMA_AND_WMDRM
+LIBRARY drmutility.lib
+#endif
+
+// End of File

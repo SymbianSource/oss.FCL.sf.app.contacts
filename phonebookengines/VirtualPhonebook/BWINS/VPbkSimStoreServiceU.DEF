@@ -1,0 +1,34 @@
+EXPORTS
+	??0RVPbkSimCntView@@QAE@XZ @ 1 NONAME ; RVPbkSimCntView::RVPbkSimCntView(void)
+	??0RVPbkSimStore@@QAE@XZ @ 2 NONAME ; RVPbkSimStore::RVPbkSimStore(void)
+	?CancelAsyncRequest@RVPbkSimCntView@@QAEXH@Z @ 3 NONAME ; void RVPbkSimCntView::CancelAsyncRequest(int)
+	?CancelAsyncRequest@RVPbkSimStore@@QAEXH@Z @ 4 NONAME ; void RVPbkSimStore::CancelAsyncRequest(int)
+	?ChangeSortOrderL@RVPbkSimCntView@@QAEXABVRVPbkSimFieldTypeArray@@@Z @ 5 NONAME ; void RVPbkSimCntView::ChangeSortOrderL(class RVPbkSimFieldTypeArray const &)
+	?Close@RVPbkSimCntView@@QAEXXZ @ 6 NONAME ; void RVPbkSimCntView::Close(void)
+	?Close@RVPbkSimStore@@QAEXXZ @ 7 NONAME ; void RVPbkSimStore::Close(void)
+	?ClosePhone@RVPbkSimStore@@QAEXXZ @ 8 NONAME ; void RVPbkSimStore::ClosePhone(void)
+	?ConnectToServerL@RVPbkSimStore@@QAEXXZ @ 9 NONAME ; void RVPbkSimStore::ConnectToServerL(void)
+	?ContactAtL@RVPbkSimCntView@@QAE?AVTPtr8@@H@Z @ 10 NONAME ; class TPtr8 RVPbkSimCntView::ContactAtL(int)
+	?CountL@RVPbkSimCntView@@QBEHXZ @ 11 NONAME ; int RVPbkSimCntView::CountL(void) const
+	?CreatePhoneL@VPbkSimStoreFactory@@SAPAVMVPbkSimPhone@@XZ @ 12 NONAME ; class MVPbkSimPhone * VPbkSimStoreFactory::CreatePhoneL(void)
+	?DeleteL@RVPbkSimStore@@QAEXAAVTRequestStatus@@AAVRVPbkStreamedIntArray@@@Z @ 13 NONAME ; void RVPbkSimStore::DeleteL(class TRequestStatus &, class RVPbkStreamedIntArray &)
+	?Find@RVPbkSimStore@@QAEXAAVTRequestStatus@@ABVTDesC16@@ABVTDesC8@@AAVTDes8@@@Z @ 14 NONAME ; void RVPbkSimStore::Find(class TRequestStatus &, class TDesC16 const &, class TDesC8 const &, class TDes8 &)
+	?FindViewIndexL@RVPbkSimCntView@@QAEHH@Z @ 15 NONAME ; int RVPbkSimCntView::FindViewIndexL(int)
+	?FixedDialingStatus@RVPbkSimStore@@QBE?AW4TFDNStatus@MVPbkSimPhone@@XZ @ 16 NONAME ; enum MVPbkSimPhone::TFDNStatus RVPbkSimStore::FixedDialingStatus(void) const
+	?GetGsmStoreProperties@RVPbkSimStore@@QBEHAAUTVPbkGsmStoreProperty@@@Z @ 17 NONAME ; int RVPbkSimStore::GetGsmStoreProperties(struct TVPbkGsmStoreProperty &) const
+	?GetSimStateInformationL@VPbkSimStoreFactory@@SAPAVMVPbkSimStateInformation@@XZ @ 18 NONAME ; class MVPbkSimStateInformation * VPbkSimStoreFactory::GetSimStateInformationL(void)
+	?GetUSimStoreProperties@RVPbkSimStore@@QBEHAAUTVPbkUSimStoreProperty@@@Z @ 19 NONAME ; int RVPbkSimStore::GetUSimStoreProperties(struct TVPbkUSimStoreProperty &) const
+	?ListenToStoreEvents@RVPbkSimStore@@QAEXAAVTRequestStatus@@AAUTVPbkSimContactEventData@@@Z @ 20 NONAME ; void RVPbkSimStore::ListenToStoreEvents(class TRequestStatus &, struct TVPbkSimContactEventData &)
+	?ListenToViewEvents@RVPbkSimCntView@@QAEXAAVTRequestStatus@@AAUTVPbkSimContactEventData@@@Z @ 21 NONAME ; void RVPbkSimCntView::ListenToViewEvents(class TRequestStatus &, struct TVPbkSimContactEventData &)
+	?MatchPhoneNumber@RVPbkSimStore@@QAEXAAVTRequestStatus@@ABVTDesC16@@HAAVTDes8@@@Z @ 22 NONAME ; void RVPbkSimStore::MatchPhoneNumber(class TRequestStatus &, class TDesC16 const &, int, class TDes8 &)
+	?OpenL@RVPbkSimCntView@@QAEXAAVRVPbkSimStore@@ABVRVPbkSimFieldTypeArray@@W4TVPbkSimViewConstructionPolicy@@ABVTDesC16@@PAVCVPbkSimFieldTypeFilter@@@Z @ 23 NONAME ; void RVPbkSimCntView::OpenL(class RVPbkSimStore &, class RVPbkSimFieldTypeArray const &, enum TVPbkSimViewConstructionPolicy, class TDesC16 const &, class CVPbkSimFieldTypeFilter *)
+	?OpenL@RVPbkSimStore@@QAEXABVTSecurityInfo@@W4TVPbkSimStoreIdentifier@@@Z @ 24 NONAME ; void RVPbkSimStore::OpenL(class TSecurityInfo const &, enum TVPbkSimStoreIdentifier)
+	?OpenPhoneL@RVPbkSimStore@@QAEXXZ @ 25 NONAME ; void RVPbkSimStore::OpenPhoneL(void)
+	?ReadLC@RVPbkSimStore@@QAEPAVHBufC8@@H@Z @ 26 NONAME ; class HBufC8 * RVPbkSimStore::ReadLC(int)
+	?SaveL@RVPbkSimStore@@QAEXAAVTRequestStatus@@ABVTDesC8@@AAH@Z @ 27 NONAME ; void RVPbkSimStore::SaveL(class TRequestStatus &, class TDesC8 const &, int &)
+	?ServiceTable@RVPbkSimStore@@QBEKXZ @ 28 NONAME ; unsigned long RVPbkSimStore::ServiceTable(void) const
+	?USimAccessSupported@RVPbkSimStore@@QBEHXZ @ 29 NONAME ; int RVPbkSimStore::USimAccessSupported(void) const
+	?ContactMatchingPrefixL@RVPbkSimCntView@@QAEXABVMDesC16Array@@AAHAAVTRequestStatus@@@Z @ 30 NONAME ; void RVPbkSimCntView::ContactMatchingPrefixL(class MDesC16Array const &, int &, class TRequestStatus &)
+	?ContactMatchingResultL@RVPbkSimCntView@@QAEXAAVTPtr8@@@Z @ 31 NONAME ; void RVPbkSimCntView::ContactMatchingResultL(class TPtr8 &)
+	?SortOrderL@RVPbkSimCntView@@QBEPAVHBufC8@@XZ @ 32 NONAME ; class HBufC8 * RVPbkSimCntView::SortOrderL(void) const
+

@@ -1,0 +1,116 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*	 This file provides the information required for building the
+*    whole of a Phonebook.
+*
+*/
+
+//#include "../inc/pbkconfig.hrh"
+#include <platform_paths.hrh>
+
+//
+// Platforms
+//
+PRJ_PLATFORMS
+DEFAULT
+
+
+//
+// Phonebook exports
+//
+PRJ_EXPORTS
+../loc/phonebook.loc	APP_LAYER_LOC_EXPORT_PATH(phonebook.loc)
+../loc/bcardeng.loc	APP_LAYER_LOC_EXPORT_PATH(bcardeng.loc)
+
+../rom/Phonebook.iby CORE_APP_LAYER_IBY_EXPORT_PATH(Phonebook.iby)
+../rom/PhonebookResources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(PhonebookResources.iby)
+
+
+
+// Backup
+#if !defined(RD_PHONEBOOK2)
+../Group/backup_registration.xml                    /epoc32/data/Z/private/101f4cce/backup_registration.xml
+#else
+../group/backup_registration.xml                    /epoc32/data/Z/private/101f87b1/backup_registration.xml
+#endif // RD_PHONEBOOK2
+
+// Help file
+../Help/phob.hlp.hrh                                /epoc32/include/cshelp/phob.hlp.hrh
+
+//
+// Phonebook components
+//
+PRJ_MMPFILES
+
+PbkEng.mmp              // Engine DLL, SDK API's
+PbkExt.mmp	        	// Extension manager, View has static dependency
+PbkView.mmp             // View DLL, SDK API's
+
+#if !defined(RD_PHONEBOOK2)
+PbkUI.mmp               // Common UI framework
+#endif
+
+BCardEng.mmp            // Business Card Engine DLL, SDK API's
+
+// remove phonebook 1 from platform
+#if !defined(RD_PHONEBOOK2)
+Phonebook.mmp           // Application
+#endif
+
+PbkEngine_FM.mmp        // Engine Field Modification plugin, Part of engine
+#if !defined(RD_PHONEBOOK2)
+PbkAiwProviders.mmp     // Phonebook AIW providers
+#endif
+
+#if defined(__SIND) && !defined(RD_SIND_VIA_AIW)
+PbkSINDHandler.mmp	// Phonebook SIND Handler, Part of engine
+#endif
+
+
+PRJ_EXTENSIONS
+// Handles only scalable icons with security on but not bitmaps
+START EXTENSION s60/mifconv
+OPTION TARGETFILE phonebook.mif
+OPTION HEADERFILE phonebook.mbg
+  OPTION SOURCES -c8,1 qgn_prop_nrtyp_date \
+		-c8,1 qgn_prop_nrtyp_tone \
+		-c8,1 qgn_prop_nrtyp_video \
+		-c8,1 qgn_indi_qdial_add \
+		-c8,1 qgn_indi_voice_add \
+		-c8,8 qgn_prop_note_list_alpha_tab2 \
+		-c8,1 qgn_prop_group_tab2 \
+		-c8,1 qgn_prop_group_open_tab1 \
+		-c8,8 qgn_prop_pb_contacts_tab1 \
+		-c8,1 qgn_prop_pb_contacts_tab3 \
+		-c8,1 qgn_prop_pb_personal_tab4 \
+		-c8,1 qgn_prop_pb_photo_tab3 \
+		-c8,1 qgn_graf_pb_status_backg \
+		-c8,1 qgn_menu_empty_cxt \
+		-c8,8 qgn_menu_phob \
+		-c8,1 qgn_prop_empty \
+		-c8,8 qgn_graf_bg_phob_thumbnail \
+		-c8,8 qgn_prop_nrtyp_poc \
+		-c8,8 qgn_prop_nrtyp_swis \
+		-c8,8 qgn_prop_nrtyp_sip \
+		-c8,8 qgn_prop_nrtyp_assistant \
+		-c8,8 qgn_prop_nrtyp_car
+END
+
+START EXTENSION s60/mifconv
+OPTION TARGETFILE phonebook_aif.mif
+OPTION SOURCES -c8,8 qgn_menu_phob
+END
+
+// End of File

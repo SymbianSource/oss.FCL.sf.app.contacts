@@ -1,0 +1,43 @@
+/*
+* Copyright (c) 2006-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 MMC UI extension command enumerations.
+*
+*/
+
+
+#ifndef PMUCOMMANDS_HRH
+#define PMUCOMMANDS_HRH
+
+#include <Pbk2Commands.hrh>
+
+// --------------------------------------------------------------------------
+// Phonebook 2 MMC UI extension command enumerations
+// --------------------------------------------------------------------------
+//
+enum TPmuCommandId
+    {
+    /// First MMC command is EMmcUiExtensionFirstCommand
+    /// Cascade menu command
+    EPmuCmdCascadingBackup  = EMmcUiExtensionFirstCommand,
+    /// Submenu command for export
+    EPmuCmdExportToMemoryCard,
+    /// Submenu command for import
+    EPmuCmdImportFromMemoryCard,
+    /// Command to enable adding subcommands to backup cascade
+    EPmuCmdFirstBackupCascadeId
+    };
+
+#endif // PMUCOMMANDS_HRH
+
+// End of File

@@ -1,0 +1,727 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  
+*
+*/
+
+
+// INCLUDES
+#include <virtualphonebook.loc>
+
+#include <cntdef.hrh>
+#include <cntmodel.rh>
+#include <VPbkPrivateUid.h>
+
+// RESOURCES
+
+/**
+ * Prefix and suffix field model definition.
+ */
+RESOURCE ARRAY r_cntui_add_prefix_suffix_field_defns
+    {
+    items=
+        {
+        FIELD   // Prefix Name
+            {
+            fieldStorageType    = KStorageTypeText;
+            contactFieldType    = KUidContactFieldPrefixNameValue;
+            vCardMapping        = KIntContactFieldVCardMapUnusedN;
+            category            = EContactCategoryHome;
+            fieldName           = qtn_phob_lbl_prefix;
+            flags               = EContactFieldFlagDisabled;
+            },
+        FIELD   // Suffix Name
+            {
+            fieldStorageType    = KStorageTypeText;
+            contactFieldType    = KUidContactFieldSuffixNameValue;
+            vCardMapping        = KIntContactFieldVCardMapUnusedN;
+            category            = EContactCategoryHome;
+            fieldName           = qtn_phob_lbl_suffix;
+            flags               = EContactFieldFlagDisabled;
+            }
+        };
+    }
+
+/**
+ * Nick name field cnt model definition.
+ */
+RESOURCE ARRAY r_cntui_add_nick_name_field_defns
+    {
+    items=
+        {
+        FIELD   // Nick Name
+            {
+            fieldStorageType    = KStorageTypeText;
+            contactFieldType    = KUidContactFieldSecondNameValue;
+            vCardMapping        = KIntContactFieldVCardMapSECONDNAME;
+            category            = EContactCategoryHome;
+            fieldName           = qtn_simp_lbl_nick;
+            // NOTE: Nick Name is not imported or exported with PC Sync
+            flags               = EContactFieldFlagDisabled;
+            }
+        };
+    }
+
+/**
+ * Video telephony fields cnt model definition.
+ */
+RESOURCE ARRAY r_cntui_add_video_telephony_field_defns
+    {
+    items=
+        {
+        FIELD   // Phone Number Mobile  (Home)
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldPhoneNumberValue;
+            vCardMapping = KIntContactFieldVCardMapTEL;
+            extraMapping=
+                {
+                // NOTE: Ordering differs from contact model default template
+                MAPPING { mapping=KIntContactFieldVCardMapVIDEO; },
+                MAPPING { mapping=KIntContactFieldVCardMapHOME; }
+                };
+            category = EContactCategoryHome;
+            fieldName = qtn_phob_lbl_video_home;
+            },
+        FIELD   // Phone Number Mobile  (Work)
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldPhoneNumberValue;
+            vCardMapping = KIntContactFieldVCardMapTEL;
+            extraMapping=
+                {
+                // NOTE: Contact model default template has mapping: WORK,VOICE,CELL
+                MAPPING { mapping=KIntContactFieldVCardMapVIDEO; },
+                MAPPING { mapping=KIntContactFieldVCardMapWORK; }
+                };
+            category = EContactCategoryWork;
+            fieldName = qtn_phob_lbl_video_work;
+            },
+        FIELD   // Phone Number Mobile (general)
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldPhoneNumberValue;
+            vCardMapping = KIntContactFieldVCardMapTEL;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapVIDEO; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_video;
+            }
+        };
+    }
+
+/**
+ * Japanese reading fields cnt model definition.
+ */
+RESOURCE ARRAY r_cntui_add_japanese_reading_field_defns
+    {
+    items=
+        {
+        FIELD   // Last Name Reading
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldFamilyNamePronunciationValue;
+            vCardMapping = KIntContactFieldVCardMapUnusedN;
+            category = EContactCategoryHome;
+            fieldName = qtn_phob_lbl_last_reading;
+            },
+        FIELD   // First Name Reading
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldGivenNamePronunciationValue;
+            vCardMapping = KIntContactFieldVCardMapUnusedN;
+            category = EContactCategoryHome;
+            fieldName = qtn_phob_lbl_first_reading;
+            }
+        };
+    }
+
+/**
+ * VOIP fields cnt model definition.
+ */
+RESOURCE ARRAY r_cntui_add_voip_field_defns
+    {
+    items=
+        {
+        FIELD   // VoIP (Home)
+            {
+            fieldStorageType = KStorageTypeText;
+			contactFieldType = KUidContactFieldSIPIDValue;
+			vCardMapping = KIntContactFieldVCardMapSIPID;
+			extraMapping=
+			    {
+				MAPPING { mapping = KIntContactFieldVCardMapVOIP; },
+				MAPPING { mapping = KIntContactFieldVCardMapHOME; }
+			    };
+			category=EContactCategoryHome;
+			fieldName = qtn_phob_lbl_voip_home;
+            },
+        FIELD   // VoIP  (Work)
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapSIPID;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapVOIP; },
+                MAPPING { mapping=KIntContactFieldVCardMapWORK; }
+                };
+            category = EContactCategoryWork;
+            fieldName = qtn_phob_lbl_voip_work;
+            },
+        FIELD   // VoIP (general)
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapSIPID;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapVOIP; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_voip;
+            }
+        };
+    }
+
+/**
+ * OLD VOIP fields cnt model definition.
+ *
+ * These are the original defintion that were not correct.
+ * Because they are in official S60 2.8 release we will keep
+ * them for compatibility reasons.It should be possible to read
+ * these types but not add them.
+ */
+RESOURCE ARRAY r_cntui_add_old_voip_field_defns
+    {
+    items=
+        {
+        FIELD   // VoIP (Home),old: this is for compatibility from s60 2.8
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapVOIP;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapVOIP; },
+                MAPPING { mapping=KIntContactFieldVCardMapHOME; }
+                };
+            category = EContactCategoryHome;
+            fieldName = qtn_phob_lbl_voip_home;
+            },
+        FIELD   // VoIP  (Work),old: this is for compatibility from s60 2.8
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapVOIP;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapVOIP; },
+                MAPPING { mapping=KIntContactFieldVCardMapWORK; }
+                };
+            category = EContactCategoryWork;
+            fieldName = qtn_phob_lbl_voip_work;
+            },
+        FIELD   // VoIP (general),old: this is for compatibility from s60 2.8
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapVOIP;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapVOIP; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_voip;
+            }
+        };
+    }
+
+/**
+ * PTT/POC field Contacts Model definition
+ */
+RESOURCE ARRAY r_cntui_add_poc_field_def
+    {
+    items=
+        {
+        FIELD   // Push-to-talk
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapSIPID;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapPOC; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_poc;
+            }
+        };
+    }
+
+/**
+ * OLD PTT/POC field Contacts Model definition
+ *
+ * This is the original defintion that was not correct.
+ * Because this is in official S60 2.8 release we will keep
+ * it for compatibility reasons.It should be possible to read
+ * this type but not add it. 
+ */
+RESOURCE ARRAY r_cntui_add_old_poc_field_def
+    {
+    items=
+        {
+        FIELD   // Push-to-talk,old: this is for compatibility from s60 2.8
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapPOC;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapPOC; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_poc;
+            }
+        };
+    }
+
+/**
+ * Share View (SWIS) field Contacts Model definition.
+ */
+RESOURCE ARRAY r_cntui_add_share_view_field_def
+    {
+    items=
+        {
+        FIELD   // Share view
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapSIPID;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapSWIS; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_swis;
+            }
+        };
+    }
+
+/**
+ * OLD Share View (SWIS) field Contacts Model definition.
+ *
+ * This is the original defintion that was not correct.
+ * Because this is in official S60 2.8 release we will keep
+ * it for compatibility reasons. It should be possible to read
+ * this type but not add it. 
+ */
+RESOURCE ARRAY r_cntui_add_old_share_view_field_def
+    {
+    items=
+        {
+        FIELD   // Share view,old: this is for compatibility from s60 2.8
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapSWIS;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapSWIS; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_swis;
+            }
+        };
+    }
+
+/**
+ * SIP field Contacts Model definition.
+ */
+RESOURCE ARRAY r_cntui_add_sip_field_def
+    {
+    items=
+        {
+        FIELD   // SIP, for generic unspecified usage
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapSIPID;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapSIPID; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_sip;
+            }
+        };
+    }
+  
+/**
+ * SIP fields cnt model definition.
+ */
+RESOURCE ARRAY r_cntui_add_sip_field_defns
+    {
+    items=
+        {
+        FIELD   // VoIP (Home)
+            {
+            fieldStorageType = KStorageTypeText;
+			contactFieldType = KUidContactFieldSIPIDValue;
+			vCardMapping = KIntContactFieldVCardMapSIPID;
+			extraMapping=
+			    {
+				MAPPING { mapping = KIntContactFieldVCardMapVOIP; },
+				MAPPING { mapping = KIntContactFieldVCardMapHOME; }
+			    };
+			category=EContactCategoryHome;
+			fieldName = qtn_phob_lbl_voip_home;
+            },
+        FIELD   // VoIP  (Work)
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapSIPID;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapVOIP; },
+                MAPPING { mapping=KIntContactFieldVCardMapWORK; }
+                };
+            category = EContactCategoryWork;
+            fieldName = qtn_phob_lbl_voip_work;
+            },
+        FIELD   // VoIP (general)
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapSIPID;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapVOIP; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_voip;
+            },
+        FIELD   // Push-to-talk
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapSIPID;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapPOC; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_poc;
+            },
+        FIELD   // Share view
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapSIPID;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapSWIS; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_swis;
+            },
+        FIELD   // VoIP (Home),old: this is for compatibility from s60 2.8
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapVOIP;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapVOIP; },
+                MAPPING { mapping=KIntContactFieldVCardMapHOME; }
+                };
+            category = EContactCategoryHome;
+            fieldName = qtn_phob_lbl_voip_home;
+            },
+        FIELD   // VoIP  (Work),old: this is for compatibility from s60 2.8
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapVOIP;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapVOIP; },
+                MAPPING { mapping=KIntContactFieldVCardMapWORK; }
+                };
+            category = EContactCategoryWork;
+            fieldName = qtn_phob_lbl_voip_work;
+            },
+        FIELD   // VoIP (general),old: this is for compatibility from s60 2.8
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapVOIP;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapVOIP; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_voip;
+            },
+        FIELD   // Push-to-talk,old: this is for compatibility from s60 2.8
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapPOC;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapPOC; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_poc;
+            },
+        FIELD   // Share view,old: this is for compatibility from s60 2.8
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapSWIS;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapSWIS; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_swis;
+            },
+        FIELD   // SIP, for generic unspecified usage
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapSIPID;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapSIPID; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_sip;
+            }
+        };
+    }
+
+/**
+ * Object for call field cnt model definition.
+ */
+RESOURCE ARRAY r_cntui_add_cod_field_defns
+    {
+    items=
+        {
+        FIELD   // Text
+            {
+            fieldStorageType    = KStorageTypeText;
+            contactFieldType    = KUidContactFieldCodTextValue;
+            vCardMapping        = KIntContactFieldVCardMapUnknown;
+            category            = EContactCategoryOther;
+            fieldName           = qtn_phob_lbl_text;
+            flags               = EContactFieldFlagDisabled;
+            },
+        FIELD   // Image
+            {
+            fieldStorageType    = KStorageTypeText;
+            contactFieldType    = KUidContactFieldCodImageValue;
+            vCardMapping        = KIntContactFieldVCardMapUnknown;
+            category            = EContactCategoryOther;
+            fieldName           = qtn_phob_lbl_image;
+            flags               = EContactFieldFlagDisabled;
+            }
+        };
+    }
+
+/**
+ * MegaOperator fields cnt model definition.
+ */
+RESOURCE ARRAY r_cntui_add_megaop_field_defns
+    {
+    items =
+        {
+        FIELD   // Middle name
+            {
+            fieldStorageType=KStorageTypeText;
+            contactFieldType=KUidContactFieldAdditionalNameValue;
+            vCardMapping=KIntContactFieldVCardMapUnusedN;
+            category=EContactCategoryHome;
+            fieldName=qtn_phob_lbl_middle_name;
+            },
+        FIELD   // Department
+            {
+            fieldStorageType=KStorageTypeText;
+            contactFieldType=KUidContactFieldDepartmentNameValue;
+            vCardMapping=KIntContactFieldVCardMapDepartment;
+            category=EContactCategoryWork;
+            fieldName=qtn_phob_lbl_dept_name;
+            },
+        FIELD   // Assistant
+            {
+            fieldStorageType=KStorageTypeText;
+            contactFieldType=KUidContactFieldAssistantValue;
+            vCardMapping=KIntContactFieldVCardMapAssistant;
+            category=EContactCategoryWork;
+            fieldName=qtn_phob_lbl_assistant_name;
+            },
+        FIELD   // Assistant Tel
+            {
+            fieldStorageType=KStorageTypeText;
+            contactFieldType=KUidContactFieldPhoneNumberValue;
+            vCardMapping=KIntContactFieldVCardMapAssistantTel;
+            category=EContactCategoryWork;
+            fieldName=qtn_phob_lbl_number_assistant;
+            },
+        FIELD   // Car Phone
+            {
+            fieldStorageType=KStorageTypeText;
+            contactFieldType=KUidContactFieldPhoneNumberValue;
+            vCardMapping=KIntContactFieldVCardMapTEL;
+            extraMapping=
+                {
+                // NOTE: Contact model default template has mapping: HOME,VOICE,CAR
+                MAPPING { mapping=KIntContactFieldVCardMapVOICE; },
+                MAPPING { mapping=KIntContactFieldVCardMapCAR; }
+                };
+            category=EContactCategoryNone;
+            fieldName=qtn_phob_lbl_car_tel;
+            },
+        FIELD   // Spouse
+            {
+            fieldStorageType=KStorageTypeText;
+            contactFieldType=KUidContactFieldSpouseValue;
+            vCardMapping=KIntContactFieldVCardMapSpouse;
+            category=EContactCategoryHome;
+            fieldName=qtn_phob_lbl_spouse;
+            },
+        FIELD   // Children
+            {
+            fieldStorageType=KStorageTypeText;
+            contactFieldType=KUidContactFieldChildrenValue;
+            vCardMapping=KIntContactFieldVCardMapChildren;
+            category=EContactCategoryHome;
+            fieldName=qtn_phob_lbl_children;
+            },
+        FIELD   // Syncronization
+            {
+            fieldStorageType=KStorageTypeText;
+            contactFieldType=KUidContactFieldClassValue;
+            vCardMapping=KIntContactFieldVCardMapClass;
+            category=EContactCategoryOther;
+            fieldName=qtn_phob_lbl_synchronization;
+            },
+        FIELD   // Anniversary
+            {
+            fieldStorageType=KStorageTypeDateTime;
+            contactFieldType=KUidContactFieldAnniversaryValue;
+            vCardMapping=KIntContactFieldVCardMapAnniversary;
+            category=EContactCategoryOther;
+            fieldName=qtn_phob_lbl_anniversary;
+            }
+        };
+    }
+
+/**
+ * cnt model field definition for the fields that can not be
+ * created from the field factory
+ */
+RESOURCE ARRAY r_cntui_non_creatable_field_defns
+    {
+    items=
+        {
+        FIELD   // VoIP (Home),old: this is for compatibility from s60 2.8
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapVOIP;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapVOIP; },
+                MAPPING { mapping=KIntContactFieldVCardMapHOME; }
+                };
+            category = EContactCategoryHome;
+            fieldName = qtn_phob_lbl_voip_home;
+            },
+        FIELD   // VoIP  (Work),old: this is for compatibility from s60 2.8
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapVOIP;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapVOIP; },
+                MAPPING { mapping=KIntContactFieldVCardMapWORK; }
+                };
+            category = EContactCategoryWork;
+            fieldName = qtn_phob_lbl_voip_work;
+            },
+        FIELD   // VoIP (general),old: this is for compatibility from s60 2.8
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapVOIP;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapVOIP; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_voip;
+            },
+        FIELD   // Push-to-talk,old: this is for compatibility from s60 2.8
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapPOC;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapPOC; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_poc;
+            },
+        FIELD   // Share view,old: this is for compatibility from s60 2.8
+            {
+            fieldStorageType = KStorageTypeText;
+            contactFieldType = KUidContactFieldSIPIDValue;
+            vCardMapping = KIntContactFieldVCardMapSWIS;
+            extraMapping=
+                {
+                MAPPING { mapping=KIntContactFieldVCardMapSWIS; }
+                };
+            category = EContactCategoryNone;
+            fieldName = qtn_phob_lbl_swis;
+            }
+        };
+    }
+
+/**
+ * cnt model field definition for the fields that are not in the system template.
+ */
+RESOURCE ARRAY r_cntui_non_system_template_field_defns
+    {
+    items=
+        {
+        FIELD
+			{
+			fieldStorageType = KStorageTypeText;
+			contactFieldType = KUidContactFieldTemplateLabelValue;
+			vCardMapping = KIntContactFieldVCardMapUnusedN;
+			category = EContactCategoryNone;
+			fieldName = "";
+			flags = EContactFieldFlagHidden;
+			}
+        };
+    }
+
+// End of File

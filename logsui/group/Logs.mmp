@@ -1,0 +1,145 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*
+*/
+
+
+//  INCLUDES
+#include        "../group/LogsUID.h"   // common Logs UID definitions
+#include        <data_caging_paths.hrh>    
+#include <platform_paths.hrh>   // for APP_LAYER_SYSTEMINCLUDE macro
+
+//Activate these macros to get traces
+//MACRO           TRACE_ENTRY_EXIT_POINT
+//MACRO           TRACE_MODULE_LOGSUI
+
+// Target information
+// TARGETPATH need not be defined, it is automatically handled by the build tools
+TARGET          Logs.exe
+TARGETTYPE      exe
+EPOCSTACKSIZE   0x2710  //10000dec (default is 8000dec). In new architecture we need some more stack to 
+                        //facilitate succesfull launching of editors (e.g. prepend number and send sms editors)
+UID             0x100039CE KLogsAppUID3
+VENDORID        VID_DEFAULT
+
+//1. Logs resources
+START RESOURCE ../group/Logs.rss       //This file includes all other .rss files
+HEADER 
+TARGETPATH      APP_RESOURCE_DIR  
+LANGUAGE_IDS
+END             // RESOURCE
+
+//2. AIF-resources
+START RESOURCE  ../group/Logs_reg.rss   
+DEPENDS logs.rsg
+TARGETPATH      /private/10003a3f/apps   
+END             // RESOURCE
+
+
+//We use default capabilities (from defaultcaps.hrh) + NetworkControl in order to make phonecalls
+CAPABILITY CAP_APPLICATION NetworkControl
+
+SOURCEPATH      ../AppSrc               // Project location /Logs/AppSrc
+
+// Core classes
+SOURCE          CLogsApplication.cpp 
+SOURCE          CLogsDocument.cpp 
+SOURCE          CLogsAppUi.cpp
+SOURCE          CLogsBaseView.cpp
+SOURCE          CLogsBaseControlContainer.cpp
+SOURCE          CLogsAppListView.cpp
+SOURCE          CLogsAppListControlContainer.cpp
+SOURCE          CLogsSubAppListView.cpp
+SOURCE          CLogsSubAppListControlContainer.cpp
+SOURCE          CLogsEventListView.cpp
+SOURCE          CLogsEventListControlContainer.cpp
+SOURCE          CLogsEventListAdapter.cpp
+SOURCE          CLogsRecentListView.cpp
+SOURCE          CLogsRecentListControlContainer.cpp
+SOURCE          CLogsRecentListAdapter.cpp
+SOURCE          CLogsDetailView.cpp
+SOURCE          CLogsDetailControlContainer.cpp
+SOURCE          CLogsDetailAdapter.cpp
+SOURCE          CGprsCtView.cpp
+SOURCE          CGprsCtControlContainer.cpp
+SOURCE          CLogsGprsCtAdapter.cpp
+SOURCE          CCtView.cpp
+SOURCE          CCtControlContainer.cpp
+SOURCE          CLogsCtAdapter.cpp
+SOURCE          CPhoneNumberFormat.cpp
+SOURCE          CLogsPrependQuery.cpp
+SOURCE          CLogsTimer.cpp
+SOURCE          CLogsNaviDecoratorWrapper.cpp
+
+//extension enabling classes
+SOURCE          CLogsViewGlobals.cpp
+SOURCE          CLogsExtensionLoader.cpp
+SOURCE          TLogsDummyExtensionFactory.cpp
+SOURCE          TLogsDummyViewExtension.cpp
+SOURCE          TLogsDummyUiControlExtension.cpp
+
+// Include paths
+USERINCLUDE     ../AppSrc ../EngineInc  ../group  ../AocCtViewInc ../LogsExt
+
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to other Logs components
+LIBRARY         LogsEng.lib
+LIBRARY         AocCtView.lib
+
+// Dependencies to system components
+LIBRARY         apparc.lib
+LIBRARY         avkon.lib
+LIBRARY         commonengine.lib                // StringLoader
+LIBRARY         cone.lib
+LIBRARY         eikcoctl.lib
+LIBRARY         eikctl.lib
+LIBRARY         eikcore.lib
+LIBRARY         euser.lib
+LIBRARY         fbscli.lib                      // Listbox graphic
+LIBRARY         egul.lib
+LIBRARY         bafl.lib                        // MDesCArray, CCLipBoard
+LIBRARY         logcli.lib                      // CLogClient
+LIBRARY         etext.lib                       // CPlainText
+LIBRARY         sendui.lib                      // sendui
+LIBRARY         AknSkins.lib 
+LIBRARY         hlplch.lib                      // Help application
+LIBRARY         FeatMgr.lib                     // Feature Manager API
+LIBRARY         ws32.lib
+LIBRARY         apgrfx.lib
+LIBRARY         numbergrouping.lib              //Formatting North American phone numbers
+LIBRARY         ServiceHandler.lib              //Application InterWorking
+LIBRARY         CdlEngine.lib                   //Dynamic ui stuff  
+LIBRARY         eikdlg.lib
+LIBRARY         gdi.lib                         
+LIBRARY         efsrv.lib
+LIBRARY         GSEcomPlugin.lib
+LIBRARY         ecom.lib
+LIBRARY         PhoneClient.lib                 //For Emergency call API
+LIBRARY         aiwdialdata.lib
+LIBRARY         centralrepository.lib
+
+//spsettings
+LIBRARY					serviceprovidersettings.lib
+
+#ifdef __OMA_POC
+LIBRARY         PoCUiIntegrationServices.lib    // CPoCUiIntegrationServices
+#endif
+
+//+ __GFXTRANS__
+LIBRARY		gfxtrans.lib
+//-- __GFXTRANS__
+
+DEBUGLIBRARY    flogger.lib

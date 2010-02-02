@@ -1,0 +1,69 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This is a project specification file for Logs plugin for Missed calls 
+ *                Universal indicator tap support.
+ *
+*/
+
+
+#include        <data_caging_paths.hrh>
+#include        <platform_paths.hrh>   // for APP_LAYER_SYSTEMINCLUDE macro
+
+//Activate these macros to get traces
+//MACRO           TRACE_ENTRY_EXIT_POINT
+//MACRO           TRACE_MODULE_LOGSINDICATORPLUGIN
+
+CAPABILITY      CAP_ECOM_PLUGIN
+TARGET          LogsIndicatorPlugin.dll
+TARGETTYPE      PLUGIN 
+UID             0x10009D8D  0x102824AD    //ECom Dll recognition and Logs Indicator Plugin dll UID  
+VENDORID        VID_DEFAULT
+
+SOURCEPATH      ../LogsIndicatorPlugin
+SOURCE          CLogsIndicatorPlugin.cpp
+SOURCE          CLogsIndicatorPluginTable.cpp
+
+
+// ECOM resource definition. TARGET name must be same as DLL name
+SOURCEPATH      ../LogsIndicatorPlugin
+START RESOURCE  102824AD.rss          //Plugin registration data
+TARGET          LogsIndicatorPlugin.rsc
+END
+
+
+// Userincludes
+USERINCLUDE     ../LogsIndicatorPlugin 
+USERINCLUDE     ../group
+USERINCLUDE     ../EngineInc
+
+SYSTEMINCLUDE   /epoc32/include/ecom
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to system components
+
+LIBRARY         cone.lib
+LIBRARY         euser.lib 
+LIBRARY         eikcore.lib
+LIBRARY         apparc.lib
+LIBRARY         apgrfx.lib
+LIBRARY         ecom.lib    
+LIBRARY         avkon.lib 
+LIBRARY         commonengine.lib                // StringLoader
+LIBRARY         bafl.lib 
+LIBRARY         efsrv.lib 
+LIBRARY         centralrepository.lib
+LIBRARY         PlatformEnv.lib
+LIBRARY         cenrepnotifhandler.lib
+DEBUGLIBRARY    flogger.lib
+// End of File

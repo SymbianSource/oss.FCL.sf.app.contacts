@@ -1,0 +1,43 @@
+/*
+* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:        ?Description
+*
+*/
+
+
+
+PRJ_MMPFILES
+#include "../MTPbkContactEngine/group/bld.inf"
+#include "../MTPbkContactItemField/group/bld.inf"
+#include "../MTPbkContactIter/group/bld.inf"
+#include "../MTPbkFieldData/group/bld.inf"
+#include "../MTPbkFields/group/bld.inf"
+#include "../MTPbkFieldsInfo/group/bld.inf"
+#include "../MTPbkIconId/group/bld.inf"
+#include "../MTPbkIconInfo/group/bld.inf"
+#include "../MTPbkIdleFinder/group/bld.inf"
+#include "../MTRPbkViewResourceFile/group/bld.inf"
+#include "../MTPbkContactItem/group/bld.inf"
+#include "../MTPbkContactChangeNotifier/group/bld.inf"
+
+
+PRJ_EXPORTS
+PBKDMngt_c.bat							/epoc32/winscw/c/PBKDMngt_c.bat
+PBKDMngt_z.bat							/epoc32/winscw/c/PBKDMngt_z.bat
+testframework.ini						/epoc32/winscw/c/testframework/TestFramework_PBKDMngt.ini
+tcBCTestPbkDataMngt.cfg			/epoc32/winscw/c/testframework/tcBCTestPbkDataMngt.cfg
+
+
+
+//  End of File

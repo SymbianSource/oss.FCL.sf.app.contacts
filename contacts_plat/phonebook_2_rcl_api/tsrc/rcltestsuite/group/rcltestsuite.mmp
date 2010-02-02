@@ -1,0 +1,57 @@
+/*TYPE TESTCLASS*//*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  ?Description
+*
+*/
+
+#include <platform_paths.hrh>
+
+#if defined(__S60_)
+        // To get the OS_LAYER_SYSTEMINCLUDE-definition
+        #include <platform_paths.hrh>
+#endif
+
+TARGET          rclutilstestsuite.dll
+TARGETTYPE      dll
+
+//UID3 has been requested specifically for this test case
+UID             0x1000008D 0x20029F8C
+
+CAPABILITY      ALL -TCB
+
+DEFFILE         rclutilstestsuite.def
+
+SOURCEPATH      ../src
+SOURCE          rclutilstestsuite.cpp
+SOURCE          rclutilstestsuiteblocks.cpp
+SOURCE			testsuiteinputdata.cpp
+
+USERINCLUDE     ../inc 
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY         euser.lib
+LIBRARY         stiftestinterface.lib
+LIBRARY         stiftestengine.lib
+
+LIBRARY         eCom.lib
+LIBRARY         flogger.lib
+LIBRARY         estor.lib
+LIBRARY 		pbk2rclengine.lib
+LIBRARY         centralrepository.lib
+
+LANG            SC
+
+
+
+// End of File

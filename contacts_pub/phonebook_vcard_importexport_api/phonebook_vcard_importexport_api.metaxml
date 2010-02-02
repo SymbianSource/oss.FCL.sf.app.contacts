@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<api id="e01c813488ee9de68d741d2a66521791" dataversion="2.0">
+  <name>Phonebook vCard Import/Export API</name>
+  <description>vCard import/export to/from Phonebook</description>
+  <type>c++</type>
+  <collection>phonebookui</collection>
+  <libs>
+    <lib name="BCardEng.lib" />
+  </libs>
+  <release category="public" sinceversion="0" deprecatedsince="0"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>no</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>

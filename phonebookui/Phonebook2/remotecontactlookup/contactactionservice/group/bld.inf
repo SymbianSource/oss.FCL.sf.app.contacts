@@ -1,0 +1,44 @@
+/*
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Build information file for project Contact Action Service
+*
+*/
+
+
+
+PRJ_PLATFORMS
+ARMV5 WINSCW
+
+#include <platform_paths.hrh>
+
+#include "../callplugin/group/bld.inf"
+#include "../saveascontactplugin/group/bld.inf"
+#include "../pocplugin/group/bld.inf"
+#include "../sendplugin/group/bld.inf"
+#include "../sendbusinesscard/group/bld.inf" 
+
+PRJ_EXPORTS
+
+PRJ_EXPORTS
+
+../rom/pbk2rclcontactactionservice.iby CORE_APP_LAYER_IBY_EXPORT_PATH(pbk2rclcontactactionservice.iby)
+../rom/pbk2rclcontactactionserviceresources.iby CORE_APP_LAYER_IBY_EXPORT_PATH(pbk2rclcontactactionserviceresources.iby)
+
+../conf/pbk2rclactionpriorities.confml             APP_LAYER_CONFML(pbk2rclactionpriorities.confml)
+../conf/pbk2rclactionpriorities_20029F45.crml      APP_LAYER_CRML(pbk2rclactionpriorities_20029F45.crml)
+
+PRJ_MMPFILES
+pbk2rclcontactactionservice.mmp
+
+PRJ_EXPORTS

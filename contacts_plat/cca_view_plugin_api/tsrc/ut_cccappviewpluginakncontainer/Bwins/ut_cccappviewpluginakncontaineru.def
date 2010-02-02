@@ -1,0 +1,7 @@
+EXPORTS
+	?LibEntryL@@YAPAVCScriptBase@@AAVCTestModuleIf@@@Z @ 1 NONAME ; class CScriptBase * LibEntryL(class CTestModuleIf &)
+	??1CCCAppViewPluginAknContainer@@UAE@XZ @ 2 NONAME ; CCCAppViewPluginAknContainer::~CCCAppViewPluginAknContainer(void)
+	?HandleResourceChange@CCCAppViewPluginAknContainer@@MAEXH@Z @ 3 NONAME ; void CCCAppViewPluginAknContainer::HandleResourceChange(int)
+	??0CCCAppViewPluginAknContainer@@QAE@XZ @ 4 NONAME ; CCCAppViewPluginAknContainer::CCCAppViewPluginAknContainer(void)
+	?OfferKeyEventL@CCCAppViewPluginAknContainer@@MAE?AW4TKeyResponse@@ABUTKeyEvent@@W4TEventCode@@@Z @ 5 NONAME ; enum TKeyResponse CCCAppViewPluginAknContainer::OfferKeyEventL(struct TKeyEvent const &, enum TEventCode)
+

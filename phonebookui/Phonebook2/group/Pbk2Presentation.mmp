@@ -1,0 +1,150 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Presentation project specification file.
+*
+*/
+
+
+#include <platform/app/Pbk2UID.h>
+#include "Pbk2Config.mmp"
+#include "../inc/Pbk2InternalUID.h"
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+// Target information
+TARGET          Pbk2Presentation.dll
+TARGETTYPE      dll
+UID             KEPOCStaticDllUID2 KPbk2DllUID3
+CAPABILITY      CAP_GENERAL_DLL
+
+// Source path
+SOURCEPATH      ../Presentation/src
+
+// Sort order manager
+SOURCE          CPbk2SortOrderManager.cpp
+SOURCE          CPbk2SortOrderManagerImpl.cpp
+SOURCE          TPbk2SortOrderFieldMapper.cpp
+
+// Name formatter
+SOURCE          Pbk2ContactNameFormatterFactory.cpp
+SOURCE          CPbk2ContactNameFormatterBase.cpp
+SOURCE          CPbk2ContactNameFormatter.cpp
+SOURCE          CPbk2JapaneseContactNameFormatter.cpp
+SOURCE          CPbk2ChineseContactNameFormatter.cpp
+
+// Presentation contact
+SOURCE          CPbk2PresentationContact.cpp
+SOURCE          CPbk2PresentationContactField.cpp
+SOURCE          CPbk2PresentationContactFieldCollection.cpp
+
+// Presentation contact field data
+SOURCE          CPbk2PresentationContactFieldTextData.cpp
+
+// Field property
+SOURCE          Pbk2FieldPropertiesFactory.cpp
+SOURCE          CPbk2FieldPropertyArray.cpp
+SOURCE          CPbk2StoreSpecificFieldPropertyArray.cpp
+SOURCE          CPbk2FieldProperty.cpp
+SOURCE          CPbk2FieldGroupPropertyArray.cpp
+SOURCE          CPbk2FieldPropertyGroup.cpp
+SOURCE          CPbk2ServiceManager.cpp
+
+// Store property
+SOURCE          CPbk2StoreProperty.cpp
+SOURCE          CPbk2StorePropertyArray.cpp
+SOURCE          CPbk2storePropertyContentStoreName.cpp
+
+// Image manager
+SOURCE          CPbk2ImageManager.cpp
+SOURCE          CPbk2ImageManagerImpl.cpp
+SOURCE          CPbk2EmbeddedImage.cpp
+SOURCE          CPbk2ImageWriterBase.cpp
+SOURCE          CPbk2ImageReaderBase.cpp
+SOURCE          CPbk2ImageReader.cpp
+SOURCE          CPbk2ImageData.cpp
+SOURCE          TPbk2ImageManagerParams.cpp
+
+// Store configuration
+SOURCE          CPbk2StoreConfiguration.cpp
+SOURCE          CPbk2StoreConfigurationImpl.cpp
+SOURCE          CPbk2StoreConfigurationMonitor.cpp
+SOURCE          CPbk2DefaultSavingStoreMonitor.cpp
+
+// Contact views
+SOURCE          CPbk2ContactViewBuilder.cpp
+SOURCE          CPbk2StoreViewDefinition.cpp
+
+// Utils
+SOURCE          RPbk2LocalizedResourceFile.cpp
+SOURCE          Pbk2PresentationUtils.cpp
+SOURCE          CPbk2AttachmentFile.cpp
+SOURCE          TPbk2StoreContactAnalyzer.cpp
+SOURCE          TPbk2IconId.cpp
+SOURCE          CPbk2ContactMerge.cpp
+SOURCE          CPbk2DuplicateContactFinder.cpp
+SOURCE          CPbk2LocalizedText.cpp
+SOURCE          CPbk2Content.cpp
+SOURCE          Pbk2ContactFieldCopy.cpp
+SOURCE          CPbk2StoreInfoItem.cpp
+SOURCE          CPbk2StoreInfoItemArray.cpp
+SOURCE          CPbk2FieldOrderingManager.cpp
+SOURCE          DummyExports.cpp
+
+// Resources
+START RESOURCE  ../rss/Pbk2PresentationChinese.rss
+DEPENDS vpbkeng.rsg
+HEADER
+TARGET      Pbk2PresentationChinese
+TARGETPATH  RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END
+
+START RESOURCE  ../rss/Pbk2PresentationJapanese.rss
+DEPENDS vpbkeng.rsg
+HEADER
+TARGET      Pbk2PresentationJapanese
+TARGETPATH  RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END
+
+START RESOURCE  ../rss/Pbk2Presentation.rss
+HEADER
+DEPENDS vpbkeng.rsg
+TARGET      Pbk2Presentation
+TARGETPATH  RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END
+
+
+// Include paths
+USERINCLUDE     ../Presentation/inc ../Presentation/rss
+SYSTEMINCLUDE   ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib efsrv.lib bafl.lib CentralRepository.lib
+LIBRARY cone.lib fbscli.lib imageconversion.lib bitmaptransforms.lib
+
+// Dependencies to S60 components
+LIBRARY FeatMgr.lib
+
+// Dependencies to Phonebook
+LIBRARY VPbkEng.lib
+
+// Predictive search
+LIBRARY PsServerClientAPI.lib
+
+LIBRARY bsclient.lib serviceprovidersettings.lib
+
+// End of File

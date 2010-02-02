@@ -1,0 +1,268 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Group UI Extension resources.
+*
+*/
+
+
+#include "Pbk2GroupUIUID.h"
+
+// --------------------------------------------------------------------------
+// Extension information
+// --------------------------------------------------------------------------
+//
+RESOURCE PHONEBOOK2_EXTENSION_INFORMATION
+        r_phonebook2_group_ui_extension_information
+    {
+    version = 0;
+
+    implementationUid = KPbk2GroupExtensionImplementationUID;
+
+    menuCommandRange = PHONEBOOK2_EXTENSION_RANGE
+        {
+        firstId = EGroupUiExtensionFirstCommand;
+        lastId = EGroupUiExtensionLastCommand;
+        };
+    overwrittenCommands = {};
+
+    extensionMenus = {};
+
+    viewIds =
+        {
+        PHONEBOOK2_EXTENSION_VIEW_ID
+            {
+            version = 0;
+            viewId = EPbk2GroupsListViewId;
+            viewResource = r_phonebook2_groupslist_appview;
+            },
+        PHONEBOOK2_EXTENSION_VIEW_ID
+            {
+            version = 0;
+            viewId = EPbk2GroupMembersListViewId;
+            viewResource = r_phonebook2_groupmembers_appview;
+            }
+        };
+
+    viewGraphModification = r_phonebook2_group_ui_extension_viewgraph;
+    }
+
+// --------------------------------------------------------------------------
+// Groups list view tabs
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_VIEW_NODE_TAB_ARRAY r_pbk2_groups_list_view_tabs
+    {
+    items =
+        {
+        PBK2_VIEW_NODE_TAB
+            {
+            version = 0;
+            tabsInGroup = 2;
+            tab = r_pbk2_groups_list_view_tab2;
+            iconId = r_pbk2_groups_list_view_tab2_icon;
+            },
+        PBK2_VIEW_NODE_TAB
+            {
+            version = 0;
+            tabsInGroup = 3;
+            tab = r_pbk2_groups_list_view_tab3;
+            iconId = r_pbk2_groups_list_view_tab3_icon;
+            },
+        PBK2_VIEW_NODE_TAB
+            {
+            version = 0;
+            tabsInGroup = 4;
+            tab = r_pbk2_groups_list_view_tab3;
+            iconId = r_pbk2_groups_list_view_tab3_icon;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Groups list view tab icon
+// --------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_pbk2_groups_list_view_tab2_icon
+    {
+    items =
+        {
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2GroupsListViewId;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_prop_group_tab2;
+            maskId = qgn_prop_group_tab2_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropGroupTab2;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Groups list view tab
+// --------------------------------------------------------------------------
+//
+RESOURCE TAB r_pbk2_groups_list_view_tab2
+    {
+    id = EPbk2GroupsListViewId;
+    bmpfile = phonebook2_mbm_file_location;
+    bmpid = qgn_prop_group_tab2;
+    bmpmask = qgn_prop_group_tab2_mask;
+    }
+
+// --------------------------------------------------------------------------
+// Groups list view tab icon
+// --------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_pbk2_groups_list_view_tab3_icon
+    {
+    items =
+        {
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2GroupsListViewId;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_prop_group_tab3;
+            maskId = qgn_prop_group_tab3_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropGroupTab3;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Groups list view tab
+// --------------------------------------------------------------------------
+//
+RESOURCE TAB r_pbk2_groups_list_view_tab3
+    {
+    id = EPbk2GroupsListViewId;
+    bmpfile = phonebook2_mbm_file_location;
+    bmpid = qgn_prop_group_tab3;
+    bmpmask = qgn_prop_group_tab3_mask;
+    }
+
+// --------------------------------------------------------------------------
+// Group members view tabs
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_VIEW_NODE_TAB_ARRAY r_pbk2_group_members_view_tabs
+    {
+    items =
+        {
+        PBK2_VIEW_NODE_TAB
+            {
+            version = 0;
+            tabsInGroup = 1;
+            tab = r_pbk2_group_members_view_tab1;
+            iconId = r_pbk2_group_members_view_tab1_icon;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Group members view tab icon
+// --------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_pbk2_group_members_view_tab1_icon
+    {
+    items =
+        {
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2GroupMembersListViewId;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_prop_group_open_tab1;
+            maskId = qgn_prop_group_open_tab1_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropGroupOpenTab1;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Group members view tab
+// --------------------------------------------------------------------------
+//
+RESOURCE TAB r_pbk2_group_members_view_tab1
+    {
+    id = EPbk2GroupMembersListViewId;
+    bmpfile = phonebook2_mbm_file_location;
+    bmpid = qgn_prop_group_open_tab1;
+    bmpmask = qgn_prop_group_open_tab1_mask;
+    }
+
+// --------------------------------------------------------------------------
+// View graph
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_VIEW_GRAPH r_phonebook2_group_ui_extension_viewgraph
+    {
+    nodes =
+        {
+        /// Groups list view
+        PBK2_VIEW_NODE
+            {
+            version = 0;
+            viewId = EPbk2GroupsListViewId;
+            defaultPrevViewId = EPbk2ExitViewId;
+            transitions =
+                {
+                PBK2_VIEW_TRANSITION
+                    {
+                    event = EPbk2ViewTransitionBack;
+                    targetViewId = EPbk2NullViewId;
+                    }
+                };
+            tabGroupId = EPbk2MainTabGroup;
+            tabGroupOrdering = EPbk2GroupsListViewTabOrdering;
+            tabs = r_pbk2_groups_list_view_tabs;
+            },
+        /// Group members view
+        PBK2_VIEW_NODE
+            {
+            version = 0;
+            viewId = EPbk2GroupMembersListViewId;
+            defaultPrevViewId = EPbk2GroupsListViewId;
+            transitions =
+                {
+                PBK2_VIEW_TRANSITION
+                    {
+                    version = 0;
+                    event = EPbk2ViewTransitionBack;
+                    targetViewId = EPbk2GroupsListViewId;
+                    }
+                };
+            tabGroupId = EPbk2GroupMembersTabGroup;
+            tabs = r_pbk2_group_members_view_tabs;
+            }
+        };
+    }
+
+// End of file

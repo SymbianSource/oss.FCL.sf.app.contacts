@@ -1,0 +1,77 @@
+/*
+* Copyright (c) 2006-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  
+*
+*/
+
+
+#include "../inc/VPbkPrivateUid.h"
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+TARGET          VPbkVCardEng.dll
+TARGETTYPE      dll
+UID             0x1000008d KVPbkVCardEndUID3
+
+CAPABILITY      CAP_GENERAL_DLL
+
+// Test sources
+SOURCEPATH      ../VPbkVCardEng/src
+
+// VCard Engine
+SOURCE		CVPbkVCardEng.cpp
+SOURCE      CVPbkVCardData.cpp
+SOURCE      CVPbkVCardFieldTypeProperty.cpp
+SOURCE      CVPbkVCardParserParamArray.cpp
+SOURCE      CVPbkVCardIdNameMapping.cpp
+SOURCE      CVPbkVCardFieldTypeList.cpp
+SOURCE      CVPbkVCardOperationFactory.cpp
+SOURCE      CVPbkVCardActiveIncremental.cpp
+SOURCE      CVPbkVCardAttributeHandler.cpp
+SOURCE      TVPbkVCardFieldTypeMapping.cpp
+SOURCE      CVPbkVCardParser.cpp
+
+// Exporting
+SOURCE      CVPbkVCardPropertyExporter.cpp
+
+// Importing
+SOURCE      CVPbkVCardImporter.cpp
+SOURCE      CVPbkVCardCompactBCardImporter.cpp
+SOURCE      CVPbkImportToStoreOperation.cpp
+SOURCE      CVPbkImportToContactsOperation.cpp
+SOURCE      CVPbkVCardPropertyParser.cpp
+SOURCE      CVPbkVCardContactFieldIterator.cpp
+SOURCE      TVPbkVCardDataConverter.cpp
+SOURCE      CVPbkVCardContactFieldData.cpp
+SOURCE 		CVPbkOwnCardHandler.cpp
+SOURCE 		CVPbkGroupCardHandler.cpp
+SOURCE    CVPbkImportToContactsMergeOperation.cpp
+
+START RESOURCE ../rss/Vpbkvcardeng.rss
+HEADER
+TARGET      VPbkVCardEng
+TARGETPATH  RESOURCE_FILES_DIR
+END
+
+USERINCLUDE     ../VPbkVCardEng/inc
+
+SYSTEMINCLUDE   ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY         euser.lib efsrv.lib bafl.lib ecom.lib estor.lib 
+LIBRARY         vcard.lib versit.lib featmgr.lib
+LIBRARY		    VPbkEngUtils.lib VPbkEng.lib 
+LIBRARY		centralrepository.lib
+
+// End of file

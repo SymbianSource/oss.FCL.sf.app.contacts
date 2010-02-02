@@ -1,0 +1,41 @@
+EXPORTS
+	_Z24ImplementationGroupProxyRi @ 1 NONAME
+	_ZN12CxSPBaseView11DoActivateLERK10TVwsViewId4TUidRK6TDesC8 @ 2 NONAME
+	_ZN12CxSPBaseView18ViewBaseConstructLEmi @ 3 NONAME
+	_ZN12CxSPBaseViewC2ER14MxSPViewMapperR18MxSPContactManagerR20CPbk2UIExtensionView @ 4 NONAME
+	_ZTI10CxSPLoader @ 5 NONAME ; #<TI>#
+	_ZTI11CxSPCommand @ 6 NONAME ; #<TI>#
+	_ZTI11CxSPScanner @ 7 NONAME ; #<TI>#
+	_ZTI12CxSPBaseView @ 8 NONAME ; #<TI>#
+	_ZTI12CxSPSortView @ 9 NONAME ; #<TI>#
+	_ZTI12CxSPViewInfo @ 10 NONAME ; #<TI>#
+	_ZTI15CxSPCommandInfo @ 11 NONAME ; #<TI>#
+	_ZTI15CxSPViewManager @ 12 NONAME ; #<TI>#
+	_ZTI16CxSPAppUiManager @ 13 NONAME ; #<TI>#
+	_ZTI17CxSPPbkContactMap @ 14 NONAME ; #<TI>#
+	_ZTI17CxSPViewActivator @ 15 NONAME ; #<TI>#
+	_ZTI17CxSPViewIdChanger @ 16 NONAME ; #<TI>#
+	_ZTI18CxSPContactManager @ 17 NONAME ; #<TI>#
+	_ZTI19CxSPSortViewControl @ 18 NONAME ; #<TI>#
+	_ZTI24CExtensionManagerFactory @ 19 NONAME ; #<TI>#
+	_ZTI24CxSPViewActivatorSession @ 20 NONAME ; #<TI>#
+	_ZTI30CxSPSortNamesListViewExtension @ 21 NONAME ; #<TI>#
+	_ZTV10CxSPLoader @ 22 NONAME ; #<VT>#
+	_ZTV11CxSPCommand @ 23 NONAME ; #<VT>#
+	_ZTV11CxSPScanner @ 24 NONAME ; #<VT>#
+	_ZTV12CxSPBaseView @ 25 NONAME ; #<VT>#
+	_ZTV12CxSPSortView @ 26 NONAME ; #<VT>#
+	_ZTV12CxSPViewInfo @ 27 NONAME ; #<VT>#
+	_ZTV15CxSPCommandInfo @ 28 NONAME ; #<VT>#
+	_ZTV15CxSPViewManager @ 29 NONAME ; #<VT>#
+	_ZTV16CxSPAppUiManager @ 30 NONAME ; #<VT>#
+	_ZTV17CxSPPbkContactMap @ 31 NONAME ; #<VT>#
+	_ZTV17CxSPViewActivator @ 32 NONAME ; #<VT>#
+	_ZTV17CxSPViewIdChanger @ 33 NONAME ; #<VT>#
+	_ZTV18CxSPContactManager @ 34 NONAME ; #<VT>#
+	_ZTV19CxSPSortViewControl @ 35 NONAME ; #<VT>#
+	_ZTV24CExtensionManagerFactory @ 36 NONAME ; #<VT>#
+	_ZTV24CxSPViewActivatorSession @ 37 NONAME ; #<VT>#
+	_ZTV30CxSPSortNamesListViewExtension @ 38 NONAME ; #<VT>#
+	_ZThn4_N12CxSPBaseView11DoActivateLERK10TVwsViewId4TUidRK6TDesC8 @ 39 NONAME ; #<thunk>#
+

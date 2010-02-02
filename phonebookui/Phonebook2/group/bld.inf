@@ -1,0 +1,146 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  The information required for building Phonebook 2.
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+//
+// Platforms
+//
+PRJ_PLATFORMS
+DEFAULT
+
+// Project only when flag is set
+#if defined(RD_PHONEBOOK2)
+
+#include "../ccapplication/group/bld.inf"
+#include "../remotecontactlookup/group/bld.inf"
+#endif // RD_PHONEBOOK2
+//
+// Phonebook 2 exports
+//
+//  Help exports
+#include "../help/group/bld.inf"
+
+//newContactLauncher
+#include "../NewContactLauncher/group/bld.inf"
+
+PRJ_EXPORTS
+
+// Generic configuration interface for component cenrep settings  
+// .crml files contain implementation specifics for cenrep data
+../conf/phonebook2.confml                   APP_LAYER_CONFML(phonebook2.confml)
+../conf/phonebook2_101f8794.crml 	        APP_LAYER_CRML(phonebook2_101f8794.crml)
+../conf/phonebook2_101f884a.crml        	APP_LAYER_CRML(phonebook2_101f884a.crml)
+../conf/phonebook2_1020727f.crml        	APP_LAYER_CRML(phonebook2_1020727f.crml)
+
+ ../MMCExtension/inc/PmuCommands.hrh	|../UIControls/inc/PmuCommands.hrh
+ 
+// ROM SIS stubs
+../NamesListExtension/sis/pbk2_stub.sis		/epoc32/data/z/system/install/pbk2_stub.sis
+
+//IBY exports
+
+../rom/Phonebook2.iby CORE_APP_LAYER_IBY_EXPORT_PATH(Phonebook2.iby)
+../rom/Phonebook2Resources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(Phonebook2Resources.iby)
+
+../loc/phonebook2.loc APP_LAYER_LOC_EXPORT_PATH(phonebook2.loc)
+../loc/extensionmanager.loc APP_LAYER_LOC_EXPORT_PATH(extensionmanager.loc)
+../loc/phonebook2ece.loc APP_LAYER_LOC_EXPORT_PATH(phonebook2ece.loc)
+
+
+// Project only when flag is set
+#if defined(RD_PHONEBOOK2)
+
+
+// Backup & restore
+../group/backup_registration.xml                /epoc32/data/Z/private/101f4cce/backup_registration.xml
+
+
+PRJ_EXTENSIONS
+// Handles only *icons_scalable.mk but not bitmaps
+START EXTENSION s60/mifconv
+OPTION TARGETFILE phonebook2.mif
+OPTION HEADERFILE phonebook2.mbg
+OPTION SOURCEFILE iconlist.txt
+END
+
+PRJ_EXTENSIONS
+START EXTENSION s60/mifconv
+OPTION TARGETFILE phonebook2ece.mif
+OPTION HEADERFILE phonebook2ece.mbg
+OPTION SOURCEFILE iconlistece.txt
+END
+
+START EXTENSION s60/mifconv
+OPTION TARGETFILE phonebook2_aif.mif
+OPTION SOURCES -c8,8 qgn_menu_phob
+END
+
+START EXTENSION s60/mifconv
+OPTION TARGETFILE psu2.mif
+OPTION HEADERFILE psu2.mbg
+OPTION SOURCES -c8,1 qgn_prop_nrtyp_sdn -c8,8 qgn_prop_nrtyp_sim_contact \
+              -c8,8 qgn_menu_simin -c8,8 qgn_menu_simfdn
+END
+
+
+
+//
+// Phonebook 2 components
+//
+PRJ_MMPFILES
+
+// Core Phonebook 2
+Pbk2Presentation.mmp            // Presentation
+Pbk2CommonUI.mmp                // Common UI
+Pbk2UIExtensionManager.mmp      // UI Extension Manager
+Pbk2UIControls.mmp              // UI Controls
+Pbk2Commands.mmp                // Commands
+Pbk2CommonUtility.mmp           // Common Utilities
+Pbk2UIServices.mmp              // UI Services
+Phonebook2.mmp                  // Application
+Pbk2UIPolicy.mmp                // UI Policy implementations
+pbk2spbcontentprovider.mmp      // Social phonebook content provider
+
+// Phonebook 2 server application
+Pbk2ServerApp.mmp               // Server Application
+
+// Phonebook 2 extensions
+Pbk2CommandsExtension.mmp       // Command extension
+Pbk2NamesListExtension.mmp	// NamesList UI Extention
+Pbk2GroupExtension.mmp          // Group UI Extension
+Pbk2MMCExtension.mmp            // MMC UI Extension
+Pbk2USimExtension.mmp           // USIM UI Extension
+Pbk2USimThinExtension.mmp       // USIM Thin UI Extension
+#if !defined(RD_SIND_VIA_AIW)
+Pbk2VoiceTagExtension.mmp       // Voice Tag UI Extension
+Pbk2VoiceTagThinExtension.mmp   // Voice Tag Thin UI Extension
+#endif // RD_SIND_VIA_AIW
+Pbk2MigrationSupport.mmp        // Phonebook Migration Support
+xSPViewServices.mmp             // API for external launch of xSP view
+xSPExtensionManager.mmp         // xSP Extension Manager
+
+Pbk2MapExtension.mmp            // Map Framework Extension
+
+/// PBK2_ENABLE_PROFILE - Phonebook profiling component
+//Pbk2Profile.mmp
+/// PBK2_ENABLE_PROFILE
+#endif // RD_PHONEBOOK2
+
+// End of File
+

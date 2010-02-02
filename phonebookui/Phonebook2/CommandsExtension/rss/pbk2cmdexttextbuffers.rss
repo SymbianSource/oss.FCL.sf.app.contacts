@@ -1,0 +1,98 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file contains resources for Phonebook 2
+*
+*/
+
+
+// --------------------------------------------------------------------------
+// r_qtn_album_err_format_unknown
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_album_err_format_unknown
+    { 
+    buf = qtn_album_err_format_unknown; 
+    }
+
+// --------------------------------------------------------------------------
+// r_qtn_phob_query_create_new_to_store
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_query_create_new_to_store
+    {
+    buf = qtn_phob_query_create_new_to_store;
+    } 
+
+// --------------------------------------------------------------------------
+// r_qtn_cca_info_note_address_copied_to_clipboard
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cca_info_note_address_copied_to_clipboard
+    {
+    buf = qtn_cca_info_note_address_copied_to_clipboard;
+    }
+
+// --------------------------------------------------------------------------
+// r_qtn_cca_info_note_number_copied_to_clipboard
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cca_info_note_number_copied_to_clipboard
+    {
+    buf = qtn_cca_info_note_number_copied_to_clipboard;
+    }
+
+// --------------------------------------------------------------------------
+// r_qtn_cca_info_note_copied_to_clipboard
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cca_info_note_copied_to_clipboard
+    {
+    buf = qtn_cca_info_note_copied_to_clipboard;
+    }
+
+// --------------------------------------------------------------------------
+// r_qtn_phob_title_merge_contacts
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_title_merge_contacts
+    {
+    buf = qtn_phob_title_merge_contacts;
+    }
+
+// --------------------------------------------------------------------------
+// r_qtn_phob_note_select_2_to_merge
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_select_2_to_merge
+    {
+    buf = qtn_phob_note_select_2_to_merge;
+    }
+
+// --------------------------------------------------------------------------
+// r_qtn_phob_note_contacts_were_merged
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_contacts_were_merged
+    {
+    buf = qtn_phob_note_contacts_were_merged;
+    }
+    
+// --------------------------------------------------------------------------
+// r_qtn_phob_note_unnamed_contacts_were_merged
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_unnamed_contacts_were_merged
+    {
+    buf = qtn_phob_note_unnamed_contacts_were_merged;
+    }

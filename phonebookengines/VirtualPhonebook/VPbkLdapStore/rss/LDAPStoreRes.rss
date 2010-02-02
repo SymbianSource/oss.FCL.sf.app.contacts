@@ -1,0 +1,1004 @@
+/*
+* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  LDAP Store field type mapping resource.
+*
+*/
+
+
+// INCLUDES
+#include <badef.rh>
+#include <cntdef.hrh>
+#include <vpbkfieldtype.rh>
+#include "fieldtypemapping.rh"
+
+// RESOURCES
+RESOURCE BA_RSS_SIGNATURE { }
+
+// ----------------------------------------------------------------------------
+// Include LDAP directory attribute to contact model mapping
+// ----------------------------------------------------------------------------
+#include "ldapfieldtypes.rss"
+
+// ----------------------------------------------------------------------------
+// LDAP Store uses contact model to map LDAP directory attibutes to phonebook
+// fields, this resource definition maps contact model to versit properties.
+// ----------------------------------------------------------------------------
+//
+RESOURCE FIELDTYPE_MAPPINGS r_versit_field_type_mappings
+    {
+    items =
+        {
+        // Name field types
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldFamilyNameValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameN;
+                subField = EVPbkVersitSubFieldFamilyName;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldGivenNameValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameN;
+                subField = EVPbkVersitSubFieldGivenName;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapUnusedN;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameN;
+                subField = EVPbkVersitSubFieldFamilyName;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapUnusedFN;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameFN;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldAdditionalNameValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameN;
+                subField = EVPbkVersitSubFieldAdditionalName;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldFamilyNamePronunciationValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameSOUND;
+                subField = EVPbkVersitSubFieldFamilyNamePronunciation;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldGivenNamePronunciationValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameSOUND;
+                subField = EVPbkVersitSubFieldGivenNamePronunciation;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldPrefixNameValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameN;
+                subField = EVPbkVersitSubFieldNamePrefix;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldSuffixNameValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameN;
+                subField = EVPbkVersitSubFieldNameSuffix;
+                };
+            },
+
+        // Telephony field types
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            // Generic phone number
+            cntModelId = KUidContactFieldPhoneNumberValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTEL;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            // Generic fax number
+            cntModelId = KUidContactFieldFaxValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTEL;
+                parameters = { EVPbkVersitParamFAX };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            // Home phone number, using vCard mapping
+            cntModelId = KIntContactFieldVCardMapTEL;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTEL;
+                parameters = { EVPbkVersitParamHOME };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            // Work phone number, using vCard mapping
+            cntModelId = KIntContactFieldVCardMapVOICE;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTEL;
+                parameters = { EVPbkVersitParamVOICE };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            // Mobile phone number, using vCard mapping
+            cntModelId = KIntContactFieldVCardMapCELL;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTEL;
+                parameters = { EVPbkVersitParamCELL };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapFAX;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTEL;
+                parameters = { EVPbkVersitParamFAX };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapMSG;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTEL;
+                parameters = { EVPbkVersitParamMSG };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapPAGER;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTEL;
+                parameters = { EVPbkVersitParamPAGER };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapBBS;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTEL;
+                parameters = { EVPbkVersitParamBBS };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapMODEM;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTEL;
+                parameters = { EVPbkVersitParamMODEM };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapCAR;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTEL;
+                parameters = { EVPbkVersitParamCAR };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapISDN;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTEL;
+                parameters = { EVPbkVersitParamISDN };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapVIDEO;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTEL;
+                parameters = { EVPbkVersitParamVIDEO };
+                };
+            },
+            
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldSIPIDValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name       = EVPbkVersitNameX;
+                extensionName = "X-SIP";
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapVOIP;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameX;
+                parameters = { EVPbkVersitParamVOIP };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapPOC;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameX;
+                parameters = { EVPbkVersitParamPOC };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapSWIS;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameX;
+                parameters = { EVPbkVersitParamSWIS };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapSIPID;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameX;
+                parameters = { EVPbkVersitParamSIP };
+                };
+            },                                                
+
+        // Internet addressing field types
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldEMailValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameEMAIL;
+                parameters = { EVPbkVersitParamINTERNET };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldUrlValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameURL;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapURL;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameURL;
+                };
+            },
+
+        // Regular mail types
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapLABEL;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameLABEL;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldPostOfficeValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameADR;
+                subField = EVPbkVersitSubFieldPostOfficeAddress;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapPOSTOFFICE;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameADR;
+                subField = EVPbkVersitSubFieldPostOfficeAddress;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldExtendedAddressValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameADR;
+                subField = EVPbkVersitSubFieldExtendedAddress;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapEXTENDEDADR;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameADR;
+                subField = EVPbkVersitSubFieldExtendedAddress;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldAddressValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameADR;
+                subField = EVPbkVersitSubFieldStreet;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapADR;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameADR;
+                subField = EVPbkVersitSubFieldStreet;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldPostCodeValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameADR;
+                subField = EVPbkVersitSubFieldPostalCode;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapPOSTCODE;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameADR;
+                subField = EVPbkVersitSubFieldPostalCode;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldLocalityValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameADR;
+                subField = EVPbkVersitSubFieldLocality;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapLOCALITY;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameADR;
+                subField = EVPbkVersitSubFieldLocality;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldRegionValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameADR;
+                subField = EVPbkVersitSubFieldRegion;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapREGION;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameADR;
+                subField = EVPbkVersitSubFieldRegion;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldCountryValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameADR;
+                subField = EVPbkVersitSubFieldCountry;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapCOUNTRY;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameADR;
+                subField = EVPbkVersitSubFieldCountry;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapDOM;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters =  { EVPbkVersitParamDOM };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapINTL;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters =  { EVPbkVersitParamINTL };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapPOSTAL;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters =  { EVPbkVersitParamPOSTAL };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapPARCEL;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters =  { EVPbkVersitParamPARCEL };
+                };
+            },
+
+        // Work related field types
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldCompanyNameValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameORG;
+                subField = EVPbkVersitSubFieldOrgName;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldDepartmentNameValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameORG;
+                subField = EVPbkVersitSubFieldOrgUnit;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapDepartment;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameORG;
+                subField = EVPbkVersitSubFieldOrgUnit;
+                };
+            },
+
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldCompanyNamePronunciationValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameSOUND;
+                subField = EVPbkVersitSubFieldCompanyNamePronunciation;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapORG;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameORG;
+                subField = EVPbkVersitSubFieldOrgName;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldJobTitleValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTITLE;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapTITLE;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTITLE;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapROLE;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameROLE;
+                };
+            },
+     
+        // Wv(IM) field types
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldIMAddressValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameX;
+                extensionName = "X-WV-ID";
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapWV;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameX;
+                extensionName = "X-WV-ID";
+                };
+            },
+     
+        // Miscellaneous field types
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldBirthdayValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameBDAY;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapBDAY;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameBDAY;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldNoteValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameNOTE;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapNOTE;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameNOTE;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldAssistantValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name       = EVPbkVersitNameX;
+                extensionName = "X-ASSISTANT";
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapAssistant;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name       = EVPbkVersitNameX;
+                extensionName = "X-ASSISTANT";
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapAssistantTel;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name       = EVPbkVersitNameX;
+                extensionName = "X-ASSISTANT-TEL";
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldAnniversaryValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name       = EVPbkVersitNameX;
+                extensionName = "X-ANNIVERSARY";
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapAnniversary;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name       = EVPbkVersitNameX;
+                extensionName = "X-ANNIVERSARY";
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldSpouseValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name       = EVPbkVersitNameX;
+                extensionName = "X-SPOUSE";
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapSpouse;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name       = EVPbkVersitNameX;
+                extensionName = "X-SPOUSE";
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldChildrenValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name       = EVPbkVersitNameX;
+                extensionName = "X-CHILDREN";
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapChildren;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name       = EVPbkVersitNameX;
+                extensionName = "X-CHILDREN";
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldClassValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name       = EVPbkVersitNameX;
+                extensionName = "X-CLASS";
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapClass;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name       = EVPbkVersitNameX;
+                extensionName = "X-CLASS";
+                };
+            },
+            
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldNoteValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameBDAY;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapNOTE;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameBDAY;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapPHOTO;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNamePHOTO;
+                };
+            },
+        /*
+        // TODO: Uncomment this fieldtype when this is needed
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldPictureValue;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNamePHOTO;
+                subField = EVPbkVersitSubFieldPicture;
+                };
+            },
+        */
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapLOGO;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameLOGO;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapGEO;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameGEO;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapMAILER;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameMAILER;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapSOUND;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameSOUND;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapUID;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameUID;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapKEY;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameKEY;
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapTZ;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTZ;
+                };
+            },
+
+        // Miscellaneous field type parameters
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapGIF;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamGIF };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapCGM;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamCGM };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapWMF;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamWMF };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapBMP;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamBMP };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapMET;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamMET };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapPMB;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamPMB };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapDIB;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamDIB };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapPICT;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamPICT };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapTIFF;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamTIFF };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapPDF;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamPDF };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapPS;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamPS };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapJPEG;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamJPEG };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapMPEG;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamMPEG };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapMPEG2;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamMPEG2 };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapAVI;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamAVI };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapQTIME;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamQTIME };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapX509;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamX509 };
+                };
+            },
+        VERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapPGP;
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                parameters = { EVPbkVersitParamPGP };
+                };
+            }            
+        };
+    }
+
+// ----------------------------------------------------------------------------
+// Non versit type mappings
+//
+RESOURCE FIELDTYPE_MAPPINGS r_nonversit_field_type_mappings
+    {
+    items = 
+        {
+        // Name field types
+        NONVERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldSecondNameValue;
+            nonVersitType = EVPbkNonVersitTypeSecondName;
+            },
+        NONVERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KIntContactFieldVCardMapSECONDNAME;
+            nonVersitType = EVPbkNonVersitTypeSecondName;
+            },
+
+        // Telephony field types
+        NONVERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldDTMFValue;
+            nonVersitType = EVPbkNonVersitTypeDTMF;
+            },
+
+        // Ringing tone field type
+        NONVERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldRingToneValue;
+            nonVersitType = EVPbkNonVersitTypeRingTone;
+            },
+           
+        // Label field
+        NONVERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KUidContactFieldTemplateLabelValue;
+            nonVersitType = EVPbkNonVersitTypeGenericLabel;
+            } /* ,
+        // Location privacy setting
+        NONVERSIT_FIELDTYPE_MAPPING
+            {
+            cntModelId = KVPbkUidContactFieldLocationPrivValue;
+            nonVersitType = EVPbkNonVersitTypeLocationPrivacy;
+            } */
+        };
+    }
+
+// ----------------------------------------------------------------------------
+// End of File
+// ----------------------------------------------------------------------------

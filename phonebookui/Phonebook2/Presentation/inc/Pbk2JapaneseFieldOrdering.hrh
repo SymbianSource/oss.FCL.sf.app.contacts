@@ -1,0 +1,259 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Japanese field ordering.
+*
+*/
+
+
+/**
+ * Phonebook 2 field type ordering items.
+ */
+enum TPbk2OrderingItem
+    {
+    // Names    
+    EPbk2OrderingItemPrefix = 1,
+    EPbk2OrderingItemSecondaryName,
+    EPbk2OrderingItemLastNameReading,
+    EPbk2OrderingItemMiddleName,
+    EPbk2OrderingItemPrimaryName,
+    EPbk2OrderingItemFirstNameReading,
+    EPbk2OrderingItemSuffix,
+    EPbk2OrderingItemSecondName,
+    
+    // Phone numbers
+    EPbk2OrderingItemPhoneNumberMobile,
+    EPbk2OrderingItemPhoneNumberMobileHome,
+    EPbk2OrderingItemPhoneNumberMobileWork,
+    EPbk2OrderingItemPhoneNumberGeneral,
+    EPbk2OrderingItemPhoneNumberHome,
+    EPbk2OrderingItemPhoneNumberWork,
+
+    // Internet addresses
+    EPbk2OrderingItemEmailAddress,
+    EPbk2OrderingItemEmailAddressHome,
+    EPbk2OrderingItemEmailAddressWork,
+    
+    // Addresses
+    EPbk2OrderingItemAddress,
+    EPbk2OrderingItemAddressHome,
+    EPbk2OrderingItemAddressWork,
+
+    // General
+    EPbk2OrderingItemPostalAddressPostalCode,
+    EPbk2OrderingItemPostalAddressState,
+    EPbk2OrderingItemPostalAddressCity,
+    EPbk2OrderingItemPostalAddressStreet,
+    EPbk2OrderingItemPostalAddressExtension,
+    EPbk2OrderingItemPostalAddressPOBox,
+    EPbk2OrderingItemPostalAddressCountry,
+
+    // Home
+    EPbk2OrderingItemHomeAddressPostalCode,
+    EPbk2OrderingItemHomeAddressState,
+    EPbk2OrderingItemHomeAddressCity,
+    EPbk2OrderingItemHomeAddressStreet,
+    EPbk2OrderingItemHomeAddressExtension,
+    EPbk2OrderingItemHomeAddressPOBox,
+    EPbk2OrderingItemHomeAddressCountry,
+
+    // Work
+    EPbk2OrderingItemCompanyAddressPostalCode,
+    EPbk2OrderingItemCompanyAddressState,
+    EPbk2OrderingItemCompanyAddressCity,
+    EPbk2OrderingItemCompanyAddressStreet,
+    EPbk2OrderingItemCompanyAddressExtension,
+    EPbk2OrderingItemCompanyAddressPOBox,
+    EPbk2OrderingItemCompanyAddressCountry,
+
+    //IMPP
+    EPbk2OrderingItemIMPP,
+    // Objects for call / indicators
+    EPbk2OrderingItemCODImage,    
+    EPbk2OrderingItemRingingTone,
+
+    // Phone numbers
+    EPbk2OrderingItemCarPhone,
+    EPbk2OrderingItemPhoneNumberVideo,
+    EPbk2OrderingItemPhoneNumberVideoHome,
+    EPbk2OrderingItemPhoneNumberVideoWork,
+    EPbk2OrderingItemFaxNumber,
+    EPbk2OrderingItemFaxNumberHome,
+    EPbk2OrderingItemFaxNumberWork,
+    EPbk2OrderingItemPagerNumber,
+    EPbk2OrderingItemDTMFString,
+
+    EPbk2OrderingItemPhoneNumberVOIP,
+    EPbk2OrderingItemPhoneNumberVOIPHome,
+    EPbk2OrderingItemPhoneNumberVOIPWork,
+    EPbk2OrderingItemPhoneNumberPushToTalk,
+    EPbk2OrderingItemPhoneNumberShareView,
+    EPbk2OrderingItemPhoneNumberSIPID,
+
+    EPbk2OrderingItemCompanyName,
+    EPbk2OrderingItemDepartment,
+    EPbk2OrderingItemJobTitle,
+    EPbk2OrderingItemAssistantName,
+    EPbk2OrderingItemAssistantPhone,
+    EPbk2OrderingItemSpouse,
+    EPbk2OrderingItemChildren,
+
+    // Internet addresses
+    EPbk2OrderingItemWVAddress,
+    EPbk2OrderingItemURL,
+    EPbk2OrderingItemURLHome,
+    EPbk2OrderingItemURLWork,
+
+    // Dates
+    EPbk2OrderingItemDate,
+    EPbk2OrderingItemAnniversary,
+
+    // Notes
+    EPbk2OrderingItemNote,
+
+
+    // Images
+    EPbk2OrderingItemPicture,
+
+    
+    EPbk2OrderingItemSynchronization,
+
+    // Indicators
+    EPbk2OrderingItemLocationPrivacy,
+
+    // Invisible fields; keep these in specified order, below
+    // the visible items
+    EPbk2OrderingItemThumbnailImage,
+    EPbk2OrderingItemTopContactField,
+    EPbk2OrderingItemPostalAddressGeo,
+    EPbk2OrderingItemHomeAddressGeo,
+    EPbk2OrderingItemCompanyAddressGeo
+    };
+
+/**
+ * Phonebook 2 Add Item field ordering.
+ */
+enum TPbk2AddItemOrdering
+    {
+    // A value that is used for field types that can not be
+    // directly selected by the user.
+    EPbk2AddItemOrderUndefined = -1,
+    
+    // Contact name    
+    EPbk2AddItemOrderPrefix = 1,
+    EPbk2AddItemOrderLastName,
+    EPbk2AddItemOrderLastNameReading,
+    EPbk2AddItemOrderMiddleName,
+    EPbk2AddItemOrderFirstName,
+    EPbk2AddItemOrderFirstNameReading,
+    EPbk2AddItemOrderSuffix,
+    EPbk2AddItemOrderSecondName,
+
+    // Phone numbers
+    EPbk2AddItemOrderPhoneNumberMobile,
+    EPbk2AddItemOrderPhoneNumberMobileHome,
+    EPbk2AddItemOrderPhoneNumberMobileWork,
+    EPbk2AddItemOrderPhoneNumberGeneral,
+    EPbk2AddItemOrderPhoneNumberHome,
+    EPbk2AddItemOrderPhoneNumberWork,
+
+    // Internet fields
+    EPbk2AddItemOrderEmail,
+    EPbk2AddItemOrderEmailHome,
+    EPbk2AddItemOrderEmailWork,
+    
+    // General address
+    EPbk2AddItemOrderPostalAddress,      // group for general address
+    EPbk2AddItemOrderPostalCode,
+    EPbk2AddItemOrderState,
+    EPbk2AddItemOrderCity,
+    EPbk2AddItemOrderStreet,
+    EPbk2AddItemOrderExtensionAddress,
+    EPbk2AddItemOrderPOBox,
+    EPbk2AddItemOrderCountry,
+
+    // Home address
+    EPbk2AddItemOrderHomeAddress,         // group for home address
+    EPbk2AddItemOrderPostalCodeHome,
+    EPbk2AddItemOrderStateHome,
+    EPbk2AddItemOrderCityHome,
+    EPbk2AddItemOrderStreetHome,
+    EPbk2AddItemOrderExtensionAddressHome,
+    EPbk2AddItemOrderPOBoxHome,
+    EPbk2AddItemOrderCountryHome,
+
+    // Work address
+    EPbk2AddItemOrderCompanyAddress,     // group for work address
+    EPbk2AddItemOrderPostalCodeWork,
+    EPbk2AddItemOrderStateWork,
+    EPbk2AddItemOrderCityWork,
+    EPbk2AddItemOrderStreetWork,
+    EPbk2AddItemOrderExtensionAddressWork,
+    EPbk2AddItemOrderPOBoxWork,
+    EPbk2AddItemOrderCountryWork,
+
+    // Objects for call / indicators    
+    EPbk2AddItemOrderCODImage,
+    EPbk2AddItemOrderRingingTone,
+
+    // IMPP
+    EPbk2AddItemOrderIMPP,
+
+    // Phone numbers
+    EPbk2AddItemOrderCarPhone,
+    EPbk2AddItemOrderPhoneNumberVideo,
+    EPbk2AddItemOrderPhoneNumberVideoHome,
+    EPbk2AddItemOrderPhoneNumberVideoWork,
+    EPbk2AddItemOrderPhoneNumberFax,
+    EPbk2AddItemOrderPhoneNumberFaxHome,
+    EPbk2AddItemOrderPhoneNumberFaxWork,
+    EPbk2AddItemOrderPhoneNumberPager,
+
+    // Additional items
+    EPbk2AddItemOrderDTMF,
+
+    // Internet fields
+    EPbk2AddItemOrderPhoneNumberVOIP,
+    EPbk2AddItemOrderPhoneNumberVOIPHome,
+    EPbk2AddItemOrderPhoneNumberVOIPWork,
+    EPbk2AddItemOrderPhoneNumberPushToTalk,
+    EPbk2AddItemOrderPhoneNumberShareView,
+    EPbk2AddItemOrderPhoneNumberSIPID,
+
+     // Company info
+    EPbk2AddItemOrderCompanyName,
+    EPbk2AddItemOrderDepartment,
+    EPbk2AddItemOrderJobTitle,
+    EPbk2AddItemOrderAssistantName,
+    EPbk2AddItemOrderAssistantPhone,
+    EPbk2AddItemOrderSpouse,
+    EPbk2AddItemOrderChildren,
+
+    // Internet fields
+    EPbk2AddItemOrderWVAddress,
+    EPbk2AddItemOrderURL,
+    EPbk2AddItemOrderURLHome,
+    EPbk2AddItemOrderURLWork,
+
+    // Additional items
+    EPbk2AddItemOrderDate,
+    EPbk2AddItemOrderAnniversary,
+    EPbk2AddItemOrderNote,
+    EPbk2AddItemOrderNone,
+    EPbk2AddItemOrderSynchronization,
+    EPbk2AddItemOrderGeo,
+    EPbk2AddItemOrderGeoHome,
+    EPbk2AddItemOrderGeoWork
+    };
+
+// End of File

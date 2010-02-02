@@ -1,0 +1,49 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     Resource file for the .
+*
+*/
+
+
+//  RESOURCE IDENTIFIER
+
+//NAME    CLOG
+
+
+//RESOURCE RSS_SIGNATURE { }
+
+
+RESOURCE TBUF r_qtn_logs_stylus_popup_logs
+    {
+    buf = qtn_logs_stylus_popup_logs;
+    }
+
+RESOURCE TBUF r_qtn_logs_stylus_popup_missed1
+    {
+    buf = qtn_logs_stylus_popup_missed1;
+    }
+    
+RESOURCE TBUF r_qtn_logs_stylus_popup_missed
+    {
+    buf = qtn_logs_stylus_popup_missed;
+    }
+    
+RESOURCE TBUF r_qtn_logs_stylus_popup_show
+    {
+    buf = qtn_logs_stylus_popup_show;
+    }
+    
+
+// End of File

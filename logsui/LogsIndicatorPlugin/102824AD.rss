@@ -1,0 +1,47 @@
+/*
+* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  
+*
+*/
+
+
+#include <ecom/registryinfo.rh>
+//#include <AknIndicatorPlugin.h>
+//#include <AknIndicatorPluginImplUIDs.hrh>
+
+
+RESOURCE REGISTRY_INFO theInfo
+{
+dll_uid = 0x102824AD;   //Logs Indicator Plugin dll UID3 (security UID)  
+interfaces = 
+    {
+    INTERFACE_INFO
+        {
+            // Interface UID for Indicator Plugin interface
+        interface_uid               = 0x10275092;//KAknIndicatorPluginIfUid;  
+        implementations = 
+            {
+            IMPLEMENTATION_INFO
+                {
+                    // UID for the call related indicators plugin
+                implementation_uid  = 0x10275095; //KImplUIDCallRelatedIndicatorsPlugin;  // 0x10275095
+                version_no          = 1;
+                display_name        = "";
+                default_data        = "Default"; // 
+                opaque_data         = ""; //    
+                }
+            };
+        }
+    };
+}

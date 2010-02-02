@@ -1,0 +1,6 @@
+EXPORTS
+	?LibEntryL@@YAPAVCScriptBase@@AAVCTestModuleIf@@@Z @ 1 NONAME ; class CScriptBase * __cdecl LibEntryL(class CTestModuleIf &)
+	?QuerySoftkeysResource@CPhoneNumberSelectBase@@EBEHXZ @ 2 NONAME ; int CPhoneNumberSelectBase::QuerySoftkeysResource(void) const
+	?PbkControlKeyEventL@CPhoneNumberSelectBase@@EAE?AW4TKeyResponse@@ABUTKeyEvent@@W4TEventCode@@@Z @ 3 NONAME ; enum TKeyResponse CPhoneNumberSelectBase::PbkControlKeyEventL(struct TKeyEvent const &, enum TEventCode)
+	?QueryTitleL@CPhoneNumberSelectBase@@EAEABVTDesC16@@XZ @ 4 NONAME ; class TDesC16 const & CPhoneNumberSelectBase::QueryTitleL(void)
+

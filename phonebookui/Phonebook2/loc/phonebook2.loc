@@ -1,0 +1,2328 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 localisation file.
+*
+*/
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Localisation strings from Phonebook UI specification.
+/////////////////////////////////////////////////////////////////////////////
+
+//d:Label text for "last name" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_last_name                  "last name"
+
+//d:Label text for "first name" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_first_name                 "first name"
+
+//d:Label text for "Phone Number (Standard)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_number_standard            "general"
+
+//d:Label text for "Phone Number (Home)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_number_home                "home"
+
+//d:Label text for "Phone Number (Work)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_number_work                "work"
+
+//d:Label text for "Phone Number (Mobile)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_number_mobile              "mobile"
+
+//d:Label text for "Fax Number" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_fax                        "fax"
+
+//d:Label text for "Pager Number" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_pager                      "pager"
+
+//d:Label text for "Email Address" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_email                      "email"
+
+//d:Label text for "Postal Address" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_address                    "address"
+
+//d:Label text for "URL" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_url                        "URL"
+
+//d:Label text for "Job Title" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_job_title                  "job"
+
+//d:Label text for "Company Name" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_company_name               "company"
+
+//d:Label text for "Company Address" memory entry item
+//l:list_double_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_company_address            "c.addr"
+
+//d:Label text for "DTMF String" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_dtmf                       "DTMF"
+
+//d:Label text for "Date" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_date                       "date"
+
+//d:Label text for "Note" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_note                       "note"
+
+//d:Label text for "Personal Ringing Tone Indication" memory entry item
+//l:list_double_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_tone                       "tone"
+
+//d:Presentation text for unnamed Memory entry
+//l:title_pane_t2/opt9
+//
+#define qtn_phob_unnamed                        "Unnamed"
+
+//d:Names List empty text
+//l:main_pane_empty_t1/opt2
+//
+#define qtn_phob_no_entries_long                "No contacts"
+
+//d:Informative (secondary) text for empty names list
+//l: main_list_empty_pane/opt2
+//r:3.2
+//
+#define qtn_phob_no_entries_longer              "(Select new contact from Options to add contacts)"
+
+//d:Informative (secondary) text for empty names list, when stores are not available
+//l: main_list_empty_pane/opt2
+//r:3.2
+//
+#define qtn_phob_stores_na                      "Contacts from selected memories are not available"
+
+//d:Groups List empty text
+//l:main_pane_empty_t1/opt2
+//
+#define qtn_phob_no_groups                      "No groups"
+
+//d:Groups Members List empty text
+//l:main_list_empty_pane
+//
+#define qtn_phob_no_entries_in_grp              "Empty group"
+
+//d:Prompt text for checking Group belongings header
+//l:heading_pane_t1
+//
+#define qtn_phob_qtl_entry_is_in_grp            "Entry is in groups"
+
+//d:Group belongings view empty
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_entry_is_in_no_grp             "(not in groups)"
+
+//d:Contact Info View empty text
+//l:main_list_empty_pane
+//
+#define qtn_phob_no_items                       "No contact details"
+
+//d:Business card viewer empty text
+//l:main_list_empty_pane
+//
+#define qtn_bcard_empty                         "(Empty)"
+
+//d:Photo View empty text
+//l:main_list_empty_pane
+//
+#define qtn_phob_no_photo                       "No picture"
+
+//d:Photo View loading text
+//l:main_list_empty_pane
+//
+#define qtn_phob_loading_photo                  "Loading photo..."
+
+//d:Single entry fetch navi pane text
+//l:navi_text_pane_t1
+//
+#define qtn_phob_navi_select_one_entry          "Select entry"
+
+//d:Options list text for function Memory entry defaults setting
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_default_settings           "Defaults"
+
+//d:Prompt text popup list for function Memory entry defaults setting
+//l:heading_pane_t1
+//
+#define qtn_phob_title_default_settings         "Defaults"
+
+//d:Prompt text popup list for default field fetch 
+//l:heading_pane_t1
+//
+#define qtn_phob_title_select_default           "Select field"
+
+//d:Prompt for default call number
+//l:list_double_pane_t1_cp2
+//
+#define qtn_phob_seti_call_default              "Default call number"
+
+//d:Prompt for default MMS number.
+//l:list_double_pane_t1_cp2
+//
+#define qtn_phob_seti_mms_default               "Default MMS number"
+
+//d:Prompt for default SMS number.
+//l:list_double_pane_t1_cp2
+//
+#define qtn_phob_seti_sms_default               "Default SMS number"
+
+//d:Prompt for default email address.
+//l:list_double_pane_t1_cp2
+//
+#define qtn_phob_seti_email_default             "Default e-mail address"
+
+//d:Prompt for default video telephony number.
+//l:list_double_pane_t1_cp2
+//
+#define qtn_phob_seti_video_default             "Default video number"
+
+//d:Prompt for default internet call address.
+//l:list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_phob_seti_voip_default             "Default internet call address"
+
+//d:Prompt for default PTT call address.
+//l:list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_phob_seti_poc_default             "Default PTT call address"
+
+//d:Prompt for default does not have a set value.
+//l:list_single_graphic_heading_pane_t1_cp2
+//
+#define qtn_phob_seti_no_default                "(no default)"
+
+//d:Softkey value for left softkey in default popup list.
+//l:control_pane_t1/opt7
+//
+#define qtn_phob_sk_assign_folder               "Assign"
+
+//d:Prompt text for calling to a number with name.
+//d:%U presentation name for memory entry to be called (qtn_phob_entry_name)
+//l:heading_pane_t1
+//
+#define qtn_phob_qtl_call_to_name               "Call: %U"
+
+//d:Prompt text for talking to a address with name.
+//d:%U presentation name for memory entry to be talked (qtn_phob_entry_name)
+//l:heading_pane_t1
+//w:
+//r:3.0
+//
+#define qtn_phob_qtl_talk_to_name               "Talk: %U"
+
+//d:Note text when calling to an entry with no phone numbers and name
+//d:%U presentation name for memory entry to be called (qtn_phob_entry_name)
+//l:popup_note_window
+//
+#define qtn_phob_note_no_number_to_name         "No phone numbers to %U"
+
+//d:Note text when calling to an entry with no phone numbers and no name
+//l:popup_note_window
+//
+#define qtn_phob_note_no_number                 "No phone number"
+
+//d:Note text when sending a MMS message to a entry with no phone number, e-mail addresses
+//d:%U presentation name for memory entry to send MMS (qtn_phob_entry_name)
+//l:popup_note_window
+//
+#define qtn_phob_note_no_mms_to_name            "No valid MMS address for %U"
+
+//d:Note text when calling to an entry with no poc numbers and name
+//d:%U presentation name for memory entry to be called (qtn_phob_entry_name)
+//l:popup_note_window
+//w:
+//r:3.0
+//
+#define qtn_phob_note_no_poc_to_name            "No phone number or PTT address for %U"
+
+//d:Note text when calling to an entry with no voip numbers and name
+//d:%U presentation name for memory entry to be called (qtn_phob_entry_name)
+//l:popup_note_window
+//w:
+//r:3.0
+//
+#define qtn_phob_note_no_voip_to_name            "No valid VOIP address for %U"
+
+//d:Note text when sending a MMS message to a entry with no phone number, e-mail addresses or name
+//l:popup_note_window
+//
+#define qtn_phob_note_no_mms                    "No valid MMS address"
+
+//d:Note text when calling to an entry with no poc numbers.
+//l:popup_note_window
+//w:
+//r:3.0
+//
+#define qtn_phob_note_no_poc                    "No phone number or PTT address"
+
+//d:Note text when calling to an entry with no voip numbers.
+//l:popup_note_window
+//w:
+//r:3.0
+//
+#define qtn_phob_note_no_voip                    "No valid VOIP address"
+
+//d:Note text when sending a Email message to a entry with no e-mail addresses
+//d:%U presentation name for memory entry to send Email (qtn_phob_entry_name)
+//l:popup_note_window
+//
+#define qtn_phob_note_no_email_to_name          "No e-mail address for %U"
+
+//d:Note text when sending an Email message to a entry with no e-mail addresses and no name
+//l:popup_note_window
+//
+#define qtn_phob_note_no_email                  "No e-mail address"
+
+//d:Options list text for adding an item to a memory entry
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_item_add                   "Add field"
+
+//d:Options list text for deleting an item from a memory entry
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_item_delete                "Delete field"
+
+//d:Options list text for editing an item label from a memory entry
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_item_edit_label            "Edit Label"
+
+//d:Options list text for fetching a thumbnail for a memory entry
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_thumbnail_get              "Get thumbnail"
+
+//d:Options list text for removing a thumbnail from a memory entry
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_thumbnail_remove           "Remove thumbnail"
+
+//d:Options list text for fetching a picture for a memory entry
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_photo_get                  "Get picture"
+
+//d:Options list text for removing a picture from a memory entry
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_photo_remove               "Remove picture"
+
+//d:Confirmation note text for remoting an item of contact
+//d:%U name of the item
+//l:popup_note_window
+//
+#define qtn_phob_query_delete_item              "Delete\ndetail %U?"
+
+//d:Title pane text for new memory entry
+//l:title_pane_t2/opt9
+//
+#define qtn_phob_title_new_entry                "New entry"
+
+//d:Softkey label for Assign to group list query
+//l:control_pane_t1/opt7
+//
+#define qtn_phob_sk_assign_to_folder            "Assign"
+
+//d:Prompt text for Assign to group list query
+//l:heading_pane_t1
+//
+#define qtn_phob_qtl_add_to_grp                 "Add to group"
+
+//d:Title pane text for phonebook application
+//l:title_pane_t2/opt9
+//
+#define qtn_phob_title                          "Contacts"
+
+//d:Caption string for AIF file (short)
+//l:cell_app_pane_t1
+//
+#define qtn_apps_phonebook_grid                 "Phonebook 2"
+
+//d:Caption string for AIF file (long)
+//l:list_single_large_graphic_pane_t1
+//
+#define qtn_apps_phonebook_list                 "Phonebook 2"
+
+//d:Options list text for deleting a memory entry.
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_entry_delete               "Delete"
+
+//d:Options list text for editing a memory entry
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_entry_edit                 "Edit"
+
+//d:Options list text for duplicating a memory entry
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_entry_duplicate            "Duplicate"
+
+//d:Options list text for setting a speed dial
+//l:list_single_popup_submenu_pane_t1
+//
+#define qtn_phob_opt_speed_dial_add             "Assign speed dial"
+
+//d:Options list text for removing a speed dial
+//l:list_single_popup_submenu_pane_t1
+//
+#define qtn_phob_opt_speed_dial_remove          "Remove speed dial"
+
+//d:Options list text for sending business card of a memory entry
+//l:list_single_pane_t1_cp2/opt3
+//
+#define qtn_bcard_opt_send_entry_via            "Send contact"
+
+//d:Options list text for displaying information about phonebook memory
+//l:list_single_pane_t1_cp2/opt3
+//
+#define qtn_phob_opt_pb_info                    "Contacts info"
+
+//d:Options list text for displaying information about phonebook memory
+//d:This menu command will replace the qtn_phob_opt_pb_info option
+//d:in case of Speaker-Independent Name Dialling is on
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_pb_info2                    "Memory info"
+
+//d:Options list submenu text for displaying phonebook memory information
+//l:list_single_popup_submenu_pane_t1
+//
+#define qtn_phob_opt_pb_info_memory             "Memory"
+
+//d:Options list text for opening a memory entry into contact info view
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_entry_open_views           "Open"
+
+//d:Options list text for creating a memory entry
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_entry_create               "Create New"
+
+//d:Options list text for adding a memory entry to a group
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_entry_add_to_grp           "Add to group"
+
+//d:Options list text for checking group belongings for a memory entry
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_entry_is_in_grp            "Belong to groups"
+
+//d:Delete confirmation query (2nd part) text for deleting multiple entries
+//d:%N number of marked entries
+//l:popup_note_window
+//
+#define qtn_phob_query_delete_n_entries         "Delete?\n%N marked entries"
+
+//d:Options list text for setting a group members ringing tones
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_group_rtone                "Ringing tone"
+
+//d:Options list text for removing members from a group
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_entry_rem_from_grp         "Remove from group"
+
+//d:Options list text for fetching new members into a group
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_fetch_members              "Fetch members"
+
+//d:Navi pane text when fetching new members into a group
+//l:navi_text_pane_t1
+//
+#define qtn_phob_navi_select_members            "Select members"
+
+//d:Confirmation query text for group members fetch
+//d:%U group name
+//l:popup_note_window
+//
+#define qtn_phob_query_add_to_grp               "Add selected entries to group %U"
+
+//d:Options list text for adding/removing a ringing tone
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_entry_rtone                "Ringing tone"
+
+//d:Contact info view ringing tone set to default tone from the ringing tone popup sel.list
+//l:list_single_pane_t1_cp2
+//
+#define qtn_tc_no_personal_tone                 "No personal tone"
+
+//d:Confirmation note for setting group members ringing tones
+//d:%U ringing tone name or qtn_phob_seli_default_rtone
+//l:popup_note_window
+//
+#define qtn_phob_note_rtone_set_to_grp          "%U set to group members ringing tone"
+
+//d:Title text for Phonebook memory info popup
+//l:heading_pane_t1
+//
+#define qtn_phob_qtl_pb_info                    "Contacts info:"
+
+//d:Phonebook info popup's contact count text, when only 1 name
+//l:list_single_heading_pane_t1_cp2
+//
+#define qtn_phob_pb_info_one_name               "contact"
+
+//d:Phonebook info popup's contact count text
+//l:list_single_heading_pane_t1_cp2
+//
+#define qtn_phob_pb_info_names                  "contacts"
+
+//d:Phonebook info popup's used memory text
+//l:list_single_heading_pane_t1_cp2
+//
+#define qtn_phob_pb_info_reserved               "used"
+
+//d:Phonebook info popup's free memory text
+//l:list_single_heading_pane_t1_cp2
+//
+#define qtn_phob_pb_info_free                   "free"
+
+//d:Wait note text for deleting phonebook entries
+//l:popup_note_wait_window
+//
+#define qtn_phob_note_clearing_pb               "Deleting entries"
+
+//d:Confirmation note text for deleting a speed dial
+//l:popup_note_window
+//
+#define qtn_phob_note_speed_dial_del            "Speed dial deleted"
+
+//d:Prompt text for single item fetch list query heading for field selection
+//l:heading_pane_t1
+//
+#define qtn_phob_qtl_select_one_item            "Select field"
+
+//d:Popup list prompt text for Create New Entry function
+//l:heading_pane_t1
+//
+#define qtn_phob_qtl_entry_create               "Create new"
+
+//d:Popup list prompt text for Add to Existing Entry function
+//l:heading_pane_t1
+//
+#define qtn_phob_qtl_entry_add_to               "Update detail:"
+
+//d:Menu option for saving data to Phonebook
+//l:list_single_pane_t1_cp2/opt3
+//
+#define qtn_options_contacts                    "Add to Contacts"
+
+//d:Submenu option for saving data to Phonebook in a new entry
+//l:list_single_popup_submenu_pane_t1
+//
+#define qtn_options_contacts_new                "Create new"
+
+//d:Submenu option for saving data to Phonebook in an existing entry
+//l:list_single_popup_submenu_pane_t1
+//
+#define qtn_options_contacts_update             "Update existing"
+
+//d:Wait note text displayed when Phonebook compresses its database
+//l:popup_note_wait_window
+//
+#define qtn_phob_note_compressing               "Compressing Contacts database"
+
+//d:Label text of Address group general for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_header_address                 "Address"
+
+//d:Label text of P.O.Box for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_pobox                     "P.O.Box"
+
+//d:Label text of Extension address general for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_extension                 "Extension"
+
+//d:Label text of Street address general for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_street                    "Street"
+
+//d:Label text of Postal code general for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_postal_code               "Postal code/ZIP code"
+
+//d:Label text of Street address general for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_city                      "City"
+
+//d:Label text of State general for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_state                     "State/Province"
+
+//d:Label text of Country general for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_country                   "Country/Region"
+
+//d:Label text of Address group home for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_header_address_home            "Address (home)"
+
+//d:Label text of P.O.Box home for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_pobox_home                "P.O.Box (home)"
+
+//d:Label text of Extension address home for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_extension_home            "Extension (home)"
+
+//d:Label text of Street address home for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_street_home               "Street (home)"
+
+//d:Label text of Postal code home for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_postal_code_home          "Postal code/ZIP code (home)"
+
+//d:Label text of City home for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_city_home                 "City (home)"
+
+//d:Label text of State home for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_state_home                "State/Province (home)"
+
+//d:Label text of Country home for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_country_home              "Country/Region (home)"
+
+//d:Label text of Address group work for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_header_address_work            "Address (work)"
+
+//d:Label text of P.O.Box work for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_pobox_work                "P.O.Box (work)"
+
+//d:Label text of Extension address work for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_extension_work            "Extension (work)"
+
+//d:Label text of Street address work for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_street_work               "Street (work)"
+
+//d:Label text of Postal code work for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_postal_code_work          "Postal code/ZIP code (work)"
+
+//d:Label text of City work for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_city_work                 "City (work)"
+
+//d:Label text of State work for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_state_work                "State/Province (work)"
+
+//d:Label text of Country work for add item queries
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl2_country_work              "Country/Region (work)"
+
+//d:Label text for "Mobile (home)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_number_mobile_home         "mobile (home)"
+
+//d:Label text for "Mobile (work)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_number_mobile_work         "mobile (work)"
+
+//d:Label text for "Fax (home)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_fax_home                    "fax (home)"
+
+//d:Label text for "Fax (work)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_fax_work                    "fax (work)"
+
+//d:Label text for "Email (home)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_email_home                  "email (home)"
+
+//d:Label text for "Email (work)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_email_work                  "email (work)"
+
+//d:Label text for "URL (home)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_url_home                   "URL (home)"
+
+//d:Label text for "URL (work)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_url_work                   "URL (work)"
+
+//d:Label text for "Address (home)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_address_home               "address (home)"
+
+//d:Label text for "Address (work)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_address_work               "address (work)"
+
+//d:Label text for "P.O.Box" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_pobox                      "P.O.Box"
+
+//d:Label text for "Extencion" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_extencion                  "extension"
+
+//d:Label text for "Street" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_street                     "street"
+
+//d:Label text for "Postal code" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_postal_code                "postal code"
+
+//d:Label text for "City" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_city                       "city"
+
+//d:Label text for "State" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_state                      "state"
+
+//d:Label text for "Country" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_country                    "country"
+
+//d:Label text for "P.O.Box (home)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_pobox_home                 "P.O.Box (home)"
+
+//d:Label text for "Extencion (home)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_extencion_home             "extension (home)"
+
+//d:Label text for "Street (home)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_street_home                "street (home)"
+
+//d:Label text for "Postal code (home)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_postal_code_home           "postal code (home)"
+
+//d:Label text for "City (home)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_city_home                  "city (home)"
+
+//d:Label text for "State (home)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_state_home                 "state (home)"
+
+//d:Label text for "Country (home)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_country_home               "country (home)"
+
+//d:Label text for "P.O.Box (work)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_pobox_work                 "P.O.Box (work)"
+
+//d:Label text for "Extencion (work)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_extencion_work             "extension (work)"
+
+//d:Label text for "Street (work)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_street_work                "street (work)"
+
+//d:Label text for "Postal code (work)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_postal_code_work           "postal code (work)"
+
+//d:Label text for "City (work)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_city_work                  "city (work)"
+
+//d:Label text for "State (work)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_state_work                 "state (work)"
+
+//d:Label text for "Country (work)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_country_work               "country (work)"
+
+//d:Group Members list navi pane text
+//d:%0N the order number of the current group
+//d:%1N the total number of groups
+//l:navi_navi_icon_text_pane_t1
+//
+#define qtn_phob_navi_pos_indicator             "%0N/%1N"
+
+//d:Options list text for launching Settings dialog
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_settings               "Settings"
+
+//d:Title text for Phonebook Settings dialog
+//l:title_pane_t2/opt9
+//
+#define qtn_phob_set_title                  "Settings"
+
+//d:Popup setting list pane's title for name ordering setting
+//l:list_setting_pane_t1
+//
+#define qtn_phob_set_disp_names             "Display Names"
+
+//d:Popup setting list pane's choice item for "Last name First name" ordering
+//l:list_set_graphic_pane_t1
+//
+#define qtn_phob_set_names_last_space_first "Last name First name"
+
+//d:Popup setting list pane's choice item for "First name Last name" ordering
+//l:list_set_graphic_pane_t1
+//
+#define qtn_phob_set_names_first_space_last "First name Last name"
+
+//d:Options list text for launching browser application
+//l:list_single_pane_t1_cp2
+//
+#define qtn_find_go_to_url                  "Go to URL address"
+
+//d:Softkey text for selecting URL address and launching browser to that address
+//l:control_pane_t1/opt7
+//
+#define qtn_wml_softk_go                    "Go to"
+
+//d:Error note text when launching Browser to invalid URL address by using Go To URL functionality
+//l:popup_note_window
+//
+#define qtn_err_wtai_invalid_url            "Page not available. Check URL address."
+
+//d:Options list text for cascading copy menu
+//l:list_single_pane_t1_cp2/opt3
+//
+#define qtn_phob_opt_copy                   "Copy"
+
+//d: Label text for "Nick Name" memory entry item.
+//l: list_single_graphic_pane_t1_cp2
+//
+#define qtn_simp_lbl_nick                   "nick name"
+
+//d: Label text for prefix memory entry item.
+//l: list_single_graphic_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_phob_lbl_prefix                 "prefix"
+
+//d: Label text for suffix memory entry item.
+//l: list_single_graphic_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_phob_lbl_suffix                 "suffix"
+
+//d:Label text for "video no." memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_video                  "video no."
+
+//d:Label text for "video no. (home)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_video_home             "video no. (home)"
+
+//d:Label text for "video no. (work)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_video_work             "video no. (work)"
+
+//d:Label text for "first name reading" memory entry item,
+//  used in japanese Phonebook only (not visible in other languages)
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_first_reading          "first name reading"
+
+//d:Label text for "last name reading" memory entry item,
+//  used in japanese Phonebook only (not visible in other languages)
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_last_reading           "last name reading"
+
+//d:Label text for "VOIP call" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_voip                  "tel. Internet"
+
+//d:Label text for "VOIP call (home)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_voip_home             "tel. Internet (home)"
+
+//d:Label text for "VOIP call (work)" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_voip_work             "tel. Internet (work)"
+
+//d:Label text for "push to talk" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_poc                    "PTT"
+
+//d:Label text for "share view" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_swis                   "share view"
+
+//d:Label text for "SIP" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//
+#define qtn_phob_lbl_sip                    "SIP"
+
+//d:Options list text for launching Speed dial application 
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_entry_open1touch       "Open speed dial"
+
+//d:Information note for saving a duplicate entry into Phonebook 
+//d:%U name of the contact
+//l:popup_note_window
+//
+#define qtn_phob_add_duplicate              "Contact exists. Save duplicate? %U"
+
+//d:Information note for no email or address in unnamed SMS over Email 
+//l:popup_note_window
+//
+#define qtn_phob_note_no_sms_with_email     "No phone number or address"
+
+//d:Information note for no email or address in with name SMS over Email 
+//d:%U name of the contact
+//l:popup_note_window
+//
+#define qtn_phob_note_no_sms_with_email_to_name     "No phone number or address for %U"
+
+//d:Options list text for prepend cascade menu 
+//l:list_single_pane_t1_cp2/opt3
+//
+#define qtn_stm_om_use_no                   "Use number"
+
+//d:Options list submenu text for prepend 
+//l:list_single_popup_submenu_pane_t1
+//
+#define  qtn_logs_opt_use_prepend           "Prepend"
+
+//d:Options list submenu text for copying number to clipboard 
+//l:list_single_popup_submenu_pane_t1
+//
+#define  qtn_logs_opt_use_copy              "Copy"
+
+//d:Prompt text for Prepend number popup query window 
+//l:popup_query_data_window
+//
+#define text_stm_use_number_popup_text      "Number:"
+
+//d:Information note for indicating clipboard copy success 
+//l:popup_note_window
+//
+#define qtn_logs_note_copy_done             "Number copied to clipboard"
+
+//d:Submenu option for assigning a thumbnail image to contact(s)
+//l:list_single_popup_submenu_pane_t1
+//
+#define  qtn_options_contact_thumb_image "Assign for Contact"
+
+//d:Confirmation query for replacing contacts thumbnail image with another
+//d:%U presentation name for memory entry in question
+//l:popup_note_window
+//
+#define qtn_phob_fetch_img_replace "There is already saved an image for %U. Replace?"
+
+//d:Succesfull adding of thumbnail to a contact note
+//d:%U presentation name for memory entry the thumbnail was added
+//l:popup_note_window
+//
+#define qtn_phob_fetch_note_img_add_one "Image added for %U"
+
+//d:Succesfull adding of thumbnail to several contacts note
+//d:%N number of contacts for which the thumbnail was added
+//l:popup_note_window
+//
+#define qtn_phob_fetch_note_img_add_sev "Image added for %N contacts"
+
+//d:Error notification displayed when the image can not be opened
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_album_err_format_unknown "Unable to open image"
+
+//d:Submenu option for assigning to contact (thumbnail, ring tone..)
+//l:list_single_popup_submenu_pane_t1
+//
+#define qtn_mg_options_assign_to_contact "Assign to Contact"
+
+//d:Confirmation query for replacing contacts ringing tone image with another
+//d:%U presentation name for memory entry in question
+//l:popup_note_window
+//
+#define qtn_mg_contact_ringingtone_replace "There is already a ringing tone for %U. Replace?"
+
+//d:Succesfull adding of ringing tone to a contact note
+//d:%U presentation name for memory entry the ringing tone was added
+//l:popup_note_window
+//
+#define qtn_mg_contact_ringingtone_add_one "Ringing tone added for %U."
+
+//d:Succesfull adding of ringing tone to several contacts note
+//d:%N number of contacts for which the ringing tone was added
+//l:popup_note_window
+//
+#define qtn_mg_contact_ringingtone_add_several "Ringing tone added for %N contacts."
+
+//d: Definition for visibility of first name/last name settings item  in options menu. 
+//d: Value "1" is for visible qtn_phob_opt_settings options list item, and "0" for hidden.
+//l: None
+//w:
+//r:3.2
+//
+#define qtn_phob_name_ordering_settings_visibility   "1"
+
+//d:Phonebook contact name presentation order configuration.
+//d:%N contact name ordering setting. Value 0 is first name last name and value 1 is last name first name.
+//d:Value 0 means that qtn_phob_set_names_first_space_last is default display names setting item.
+//d:Value 1 means that either qtn_phob_set_names_last_space_first or qtn_phob_set_names_last_comma_first
+//d:is default display names setting item.
+//l:None
+//w:
+//r:3.2
+//
+#define qtn_phob_name_order "1"
+
+//d:Phonebook contact name separator use configuration.
+//d:%N contact name separator use setting. Value 0 means that no separator is 
+//d:used between last name and first name and value 1 means that separator is used.
+//d:Value 0 means that either qtn_phob_set_names_first_space_last or 
+//d:qtn_phob_set_names_last_space_first is default names setting item.
+//d:Values 1 means that qtn_phob_set_names_last_separator_first is default names setting item.
+//l:None
+//w:
+//r:3.2
+//
+#define qtn_phob_name_separator_used "0"
+
+//d:Phonebook contact name separator character configuration.
+//d:%U contact name separator character.
+//l:None
+//w:
+//r:3.2
+//
+#define qtn_phob_name_separator_char ","
+
+//d:Popup setting list pane's choice item e.g. for "Last name, First name" ordering.
+//d:%U is used default separator char (qtn_phob_name_separator_char)
+//l:list_set_graphic_pane_t1
+//
+#define qtn_phob_set_names_last_separator_first "Last name%U First name"
+
+//d:Information note text when user starts send message but focused entry
+//d:does not contain a phone number or email address nor a name.
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_phob_note_no_msg "No message number or address"
+
+//d:Information note text when user starts send message but focused entry
+//d:does not contain a phone number or email address but contains a name.
+//d:%U is the name of the memory entry.
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_phob_note_no_msg_to_name "No message number or address for %U"
+
+//d:Note text when there is no address in contact when location service is launched.
+//l:popup_note_window
+//w:
+//r:5.0
+//
+#define qtn_phob_note_no_postal_address "Contact does not have any address"
+
+//d:Location for location specific commands.
+//l:list_single_pane_t1_cp2/opt3
+//w:
+//r:5.0
+//
+#define qtn_phob_opt_location                   "Location"
+
+//d: Select address for show on map and navigate to options query.
+//l:heading_pane_t1
+//w:
+//r:5.0
+//
+#define qtn_phob_prtx_select_address            "Select address:"
+
+//d:Information note text, shown when there are no URL address saved for unnamed memory entry
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_phob_note_no_url_defined                "No URL address defined"
+
+/////////////////////////////////////////////////////////////////////////////
+// Localisation strings from Folders UI specification.
+/////////////////////////////////////////////////////////////////////////////
+
+//d:Confirmation query text for removing group/groups, common part.
+//d:%U name of the group
+//l:popup_note_window
+//
+#define qtn_query_common_conf                   "Delete?\n%U"
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Localisation strings from Business cards UI specification.
+/////////////////////////////////////////////////////////////////////////////
+
+//d:Sending only the current view data text for list query item
+//l:list_single_pane_t1_cp2
+//
+#define qtn_bcard_choice_send_bc_view           "Current view"
+
+//d:Sending all data text for list query item
+//l:list_single_pane_t1_cp2
+//
+#define qtn_bcard_choice_send_all_data          "All contact data"
+
+//d:Sending only one item text for list query item
+//l:list_single_pane_t1_cp2
+//
+#define qtn_bcard_choice_send_item_data         "Selected item only"
+
+//d:Heading for the popup query
+//l:heading_pane_t1
+//
+#define qtn_bcard_qtl_send_data                 "Send business card:"
+
+//d:Heading for the popup query when sending multiple contact cards
+//l:heading_pane_t1
+#define qtn_bcard_qtl_send_data_several         "Send business cards:"
+
+//d:Popup item for sending sms without picture (thumbnail)
+//l:list_single_pane_t1_cp2
+//
+#define qtn_bcard_send_sms_no_image             "Without picture"
+
+//d:Popup item for sending sms with picture (thumbnail)
+//l:list_single_pane_t1_cp2
+//
+#define qtn_bcard_send_sms_image                "With picture"
+
+//d:Popup item for sending contact card without picture (thumbnail)
+//l:list_single_pane_t1_cp2
+//
+#define qtn_bcard_send_detail_without_p         "All data without picture"
+
+//d:Popup item for sending contact card with picture (thumbnail)
+//l:list_single_pane_t1_cp2
+//
+#define qtn_bcard_send_detail_with_pict         "All data with picture"
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Localisation strings from Forms UI specification.
+/////////////////////////////////////////////////////////////////////////////
+
+//d:Query prompt for editing a form label
+//l:popup_query_data_window
+//
+#define qtn_form_prmpt_field_label              "Label:"
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Localisation strings from Tone control UI specification.
+/////////////////////////////////////////////////////////////////////////////
+
+//d:Heading text for ringing tone selection list query
+//l:heading_pane_t1
+//
+#define qtn_tc_popup_heading                     "Select tone"
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Localisation strings from Smart messaging UI specification.
+/////////////////////////////////////////////////////////////////////////////
+
+//d:Heading text for converting to business card wait note
+//l:popup_note_wait_window
+//
+#define qtn_sm_wait_business_card                "Converting business card for sending"
+
+//d:Confirmation query text
+//l:popup_note_window
+//
+#define qtn_phob_query_copy_mmc_all     "Would you like to remove all existing contacts on memory card Contacts folder?"
+
+//d:Confirmation query text for removing old voice tag before assigning tag to other number
+//l:popup_note_window
+//
+#define qtn_phob_note_voice_tag_exist           "There is another voice tag for this person. Remove it?"
+
+//d:Options list menu text for playing contact's voicetag command
+//l:list_single_pane_t1_cp2
+//
+#define qtn_phob_opt_play                       "Play command"
+
+//d:Confirmation note text
+//l:popup_note_window
+//
+#define qtn_phob_note_voice_tag_del             "Voice tag deleted"
+
+
+/////////////////////////////////////////////////////////////////////////////
+// New localisation strings from Phonebook UI specification for release 3.2.
+/////////////////////////////////////////////////////////////////////////////
+
+//d:Label text for "thumbnail" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_lbl_thumbnail              "Thumbnail"
+
+//d:Menu option for saving data to Phonebook2
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_opt_assign                 "Assign for contact"
+
+//d:Information note text when new contact has created successfully
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_note_contact_created       "New contact created"
+
+//d:Information note text when the detail is added to the selected contact(s).
+//d:%U is the name of the memory entry.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_note_replace_detail        "%U already contains the detail, replace?"
+
+//d:Information note text when the contact can contain more than one instance
+//d:of the selected detail but the amount is limited, and that limit is reached.
+//d:%U is the name of the memory entry.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_note_cannot_add_detail     "%U already contains maximum amount of selected detail"
+
+//d:Information note text when the detail has added to contact.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_note_detail_added          "Detail added"
+
+//d:Information note text when the detail has added to multiple contacts.
+//d:%N is the amount of contacts.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_note_detail_added_to_n     "Detail added to %N contacts"
+
+//d:Information note text when the contact has updated by single entry fetch.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_note_contact_updated       "Contact updated"
+
+//d:"Sim memory" sub menu item text for viewing My numbers list of the SIM card.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_opt_sub_my_numbers         "My numbers"
+
+//d:Title pane text for My numbers list
+//l:title_pane_t2/opt9
+//w:
+//r:3.1
+//
+#define qtn_phob_title_my_numbers           "My numbers"
+
+//d:Memory entry item label "Middle name"
+//l:list_single_graphic_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_lbl_middle_name            "Middle name"
+
+//d:Memory entry item label "Department"
+//l:list_single_graphic_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_lbl_dept_name              "Department"
+
+//d:Memory entry item label "Assistant name"
+//l:list_single_graphic_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_lbl_assistant_name         "Assistant name"
+
+//d:Memory entry item label "Spouse"
+//l:list_single_graphic_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_lbl_spouse                 "Spouse"
+
+//d:Memory entry item label "Children"
+//l:list_single_graphic_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_lbl_children               "Children"
+
+//d:Memory entry item label "Car phone"
+//l:list_single_graphic_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_lbl_car_tel                "Car phone"
+
+//d:Memory entry item label "Assistant phone"
+//l:list_single_graphic_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_lbl_number_assistant       "Assistant phone"
+
+//d:Memory entry item label "Anniversary"
+//l:list_single_graphic_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_lbl_anniversary            "Anniversary"
+
+//d:Memory entry item label "Synchronization"
+//l:list_single_graphic_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_lbl_synchronization        "Synchronization"
+
+//d:Synchronization popup list option "Private"
+//l:list_form_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_cale_confident_private          "Private"
+
+//d:Synchronization popup list option "Public"
+//l:list_form_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_cale_confident_public           "Public"
+
+//d:Synchronization popup list option "None"
+//l:list_form_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_cale_confident_none             "None"
+
+//d:Wait note text, showed during the Phonebook2 is opening
+//l:popup_note_wait_window
+//w:
+//r:3.1
+//
+#define qtn_fdn_reading_memory              "Checking contacts"
+
+//d:Information note text, showed when contacts from selected memory
+//d:are not available.
+//d:%U is the name of the memory
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_store_not_available        "Unable to access contacts in memory: %U"
+
+//d:Memory entry label for text "Name"
+//l:list_double_graphic_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_simp_lbl_name                   "Name"
+
+
+//d:Options list menu item for "SIM memory"
+//l:list_single_pane_t1_cp2/opt3
+//w:
+//r:3.1
+//
+#define qtn_phob_opt_sim_memory             "SIM memory"
+
+//d:Options list menu sub item for "Service Dialling Numbers"
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_opt_sub_sdn                "Service Dialling Numbers"
+
+//d:Options list menu sub item for "Fixed Dialling Numbers"
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_opt_sub_fdn                "Fixed dialling numbers"
+
+//d:Information note text, showed when there are no URL address saved for memory entry
+//d:%U is the focused memory entry.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_note_no_url                "No URL address defined for %U"
+
+//d:Informative text, showed when one of the selected memories support groups
+//d:but there are no groups.
+//l: main_list_empty_pane/opt2
+//w:
+//r:3.1
+//
+#define qtn_phob_no_groups_longer           "(Select new group from Options to add groups)"
+
+//d:Informative text, showed when one memory is selected and that memory does
+//d:not support groups.
+//d:%U is the name of the selected memory.
+//l: main_list_empty_pane/opt2
+//w:
+//r:3.1
+//
+#define qtn_phob_no_groups_store            "%U does not support groups"
+
+//d:Informative text, showed when more than one memories are selected and none of them
+//d:support groups.
+//l: main_list_empty_pane/opt2
+//w:
+//r:3.1
+//
+#define qtn_phob_no_groups_stores            "Selected memories do not support groups"
+
+//d:Setting item text for "Contacts shown from"
+//l:list_setting_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_set_contacts_shown         "Contacts shown from"
+
+//d:Setting item text for "Default saving memory"
+//l:list_setting_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_set_default_storage        "Default saving memory"
+
+//d:Setting item text for "Phone"
+//l:list_set_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_set_memory_phone           "Phone"
+
+//d:Setting item text for "SIM"
+//l:list_set_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_set_memory_sim             "SIM"
+
+//d:Setting item text for "Service numbers"
+//l:list_set_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_set_memory_sdn             "Service numbers"
+
+//d:Setting item values text for "Service numbers"
+//l:list_set_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_set_several_mem            "Several memories"
+
+//d:Information note text, for changing contacts from settings.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_default_saving_mem         "Default saving memory setting changed"
+
+//d:Select default saving memory query prompt text
+//l:heading_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_prtx_select_sav_mem        "Select default saving memory"
+
+//d:Information note text, showed when the SIM personal directory is already full.
+//d:%U is SIM
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_note_store_full            "Memory full: %U"
+
+//d:Information note text, showed when there are not enough space and
+//d:SIM is the only selected memory.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_note_some_info_not_added   "Some information could not be added"
+
+//d:Information note text, showed when the user tries to store to SIM memory a
+//d:number that is rejected by the SIM card because it is not correct.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_err_sms_invalid_numb            "Invalid phone number. Check the number and try again."
+
+//d:Information note text, showed when the maximum number of digits is not
+//d:received from the SIM for some reason,
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_pbsav_err_number_too_long       "Number too long"
+
+//d:Information note text, showed when the user tries to store to SIM memory a
+//d:name that is rejected by the SIM card because it is too long.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_pbsav_unicode_name_too_long     "Name too long"
+
+//d:Information note text, showed when the user tries to store to SIM memory
+//d:an email address that is rejected by the SIM card because it is too long.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_simp_note_email_too_long2       "Email address too long."
+
+//d:SIM entry: Choice items in Add detail-list query "No."
+//l:list_single_graphic_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_simp_lbl_number                 "No."
+
+
+//d:Prompt text for list query for memory selecting
+//l:heading_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_query_title_select_mem     "Select memory"
+
+//d:List query item for viewing all memories
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_query_select_mem_all       "All memories"
+
+//d:Prompt text for memory query pop-up
+//l:heading_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_qtl_pb_info_all            "Phonebook names"
+
+//d:List query pop-up item
+//l:list_single_heading_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_pb_info_all                "All"
+
+//d:List query pop-up item one "group"
+//l:list_single_heading_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_pb_info_one_group          "group"
+
+//d:List query pop-up item many "groups"
+//l:list_single_heading_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_pb_info_groups             "groups"
+
+//d:Prompt text for memory query pop-up when copying one contact
+//l:heading_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_query_title_copy           "Copy contact to"
+
+//d:Prompt text for memory query pop-up when copying many contacts
+//l:heading_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_query_title_copy_many      "Copy contacts to"
+
+//d:Information note text, entered LOC.NR is within the SIM location range,
+//d:but the corresponding location is empty.
+//d:%N is entered LOC.NR
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_simp_note_empty_location        "No number saved to SIM location %N"
+
+//d:Confirmation note text, the default saving memory does not support the
+//d:selected detail.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_query_create_new_to_store  "Create new entry to phone memory?"
+
+//d:Information note text, showed when created new entry to memory which not
+//d:checked in Contact shown from setting.
+//d:%U is the memrory name.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_note_contact_hidden        "Contact created to memory: %U"
+
+//d:Information note text, showed when the user accepted copying/moving the
+//d:contacts to different memory and that memory is not checked in Contact
+//d:shown from setting.
+//d:%U is the memrory name.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_note_contacts_hidden       "Contacts created to memory: %U"
+
+//d:Prompt text for copying the context of the SIM to Phonebook.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_simp_note_new_sim_copy          "New SIM inserted. Copy SIM numbers to Phonebook?"
+
+//d:Prompt for default Message number.
+//l:list_double_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_seti_message_default       "Default message number"
+
+//d:Label text for "Image" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_lbl_image "Image"
+
+//d:Options list text for adding image
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_opt_add_image "Add image"
+
+//d:Options list text for image related functions
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_opt_image "Image"
+
+//d:Options list text for viewing the image for call
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_opt_image_view "View"
+
+//d:Options list text for changing the image for call
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_opt_image_change "Change"
+
+//d:Options list text for removing the image
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_opt_image_remove "Remove"
+
+//d:Confirmation note text for removing the image of a contact
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_note_remove_image "Remove contact image?"
+
+//d:Label text for "Text for call" memory entry item
+//l:list_single_graphic_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_lbl_text "Text for call"
+
+//d:Options list text for adding text for call
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_opt_add_text "Add text for call"
+
+//d:Options list text for text for call related functions
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_phob_opt_text "Text for call"
+
+//d:Options list text for editing the text for call
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_opt_text_edit "Edit"
+
+//d:Options list text for removing the text for call
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_opt_text_remove "Remove"
+
+//d:Query prompt for editing text for call field
+//l:popup_query_data_window
+//w:
+//r:3.1
+//
+#define qtn_phob_prtx_text_for_call "Text for call:"
+
+//d:Title text for Phonebook2 memory info popup
+//l:heading_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_phob_qtl_pb_info_selected       "Memory info:"
+
+//d:Information note text in assign case detail not added
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_note_detail_not_added "No detail added"
+
+//d:Phonebook info pop-up item "Phone"
+//l:list_single_heading_pane_t1_cp2/opt1
+//w:
+//r:3.2
+//
+#define qtn_phob_pb_info_memory_phone          "Phone"
+
+//d:Phonebook info pop-up item "SIM"
+//l:list_single_heading_pane_t1_cp2
+//w:
+//r:3.2
+//
+#define qtn_phob_pb_info_memory_sim          "SIM"
+
+/////////////////////////////////////////////////////////////////////////////
+// Localisation strings from Service dialling numbers
+// and fixed dialling numbers UI specifications.
+/////////////////////////////////////////////////////////////////////////////
+
+// SimPD Main View Menu Commands
+
+//d:Command in options list in SIM names list.
+//d:Open Sim number view of focused memory entry.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_simp_opt_entry_view             "Open"
+
+//d:Command in options list in SIM names list.
+//d:Create new SIM memory entry.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_simp_opt_entry_create           "Create new"
+
+
+//d:Command in options list in SIM names list.
+//d:Copies focused or marked phone number(s) to phonebook.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_simp_opt_copy_to_pb             "Copy to Contacts"
+
+// Sim PD Number View
+
+//d:Copy to pbook fail note
+//d:One entry copying fails
+//d: %U is replaced with entry name item.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_pbcop_note_entry_not_copied     "%U not copied"
+
+//d:Text in confirmation note.
+//d:Multible entries are copied from sim to phonebook.
+//d:%N is replaced with number of copied entries.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_pbcop_note_n_entry_copy_pb      "%N contacts copied"
+
+
+//// SimPD add/edit view
+
+// d: Number too long information note, with known length.
+// l: popup_note_window
+//w:
+//r:3.1
+#define text_scm_number_too_long            "Number too long, max. %N"
+
+
+//d:(Memory Copy) Prompt text for one succesful and one non succesful copy to phonebook.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_pbcop_info_one_ok_one_not       "1 contact copied, 1 contact not copied"
+
+//d:(Memory Copy) Prompt text for one succesful and several non succesful copies to phonebook.
+//d:%N number of non succesful copied contacts
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_pbcop_info_one_ok_n_not         "1 contact copied, %N contacts not copied"
+
+//d:(Memory Copy) Prompt text for several succesful and one not succesful copied contacts to phonebook.
+//d:%N number of contacts copied
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_pbcop_info_n_ok_one_not         "%N contacts copied, 1 contact not copied"
+
+//d:(Memory Copy) Prompt text for several succesful and several non succesful copied contacts to phonebook.
+//d:%0N number of contacts copied
+//d:%1N number of not copied contacts
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_pbcop_info_n_ok_n_not           "%0N contacts copied, %1N contacts not copied"
+
+
+//d:SIM PD info popup: one free contact text
+//l:list_single_heading_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_simp_info_one_free              "Free"
+
+//d:SDN application name, appears in title pane when SDN view is activated
+//l:title_pane_t2/opt9
+//w:
+//r:3.1
+#define qtn_sdn_title                       "Service Numbers"
+
+//d:Label text for nick name field in japanese variant
+//l:list_double_graphic_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_simp_lbl_reading                "Reading"
+
+//d: FDN title in the list view
+//l: title_pane_t2/opt9
+//w:
+//r:3.1
+//
+#define  text_fdn_list                      "Fixed numbers"
+
+//d: Title pane text when fetching a contact from the Phonebook
+//l: title_pane_t2/opt9
+//w:
+//r:3.1
+//
+#define qtn_fdn_pb_fetch_title              "Contacts"
+
+//d: The information note text in the case FDN is not active on application launch
+//l: popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_fdn_note_not_active             "Fixed numbers are not active"
+
+//d: The information note if FDN is full before creating a new contact.
+//l: popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_fdn_list_full                   "Fixed dialling list is full"
+
+//d: The Menu item text for the fetch from phonebook.
+//l: list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define  qtn_fdn_opt_copy_from_pb           "Fetch from phonebook"
+
+//d:Prompt for number when dialling.
+//l:popup_query_data_window
+//w:
+//r:3.1
+//
+#define qtn_fdn_enter_number_to_call        "Enter phone number:"
+
+//d: The navi pane text if FDN is active
+//l: navi_text_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fdn_active                      "FDN Active"
+
+//d: The navi pane text if FDN is not active
+//l: navi_text_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fdn_deactive                    "FDN Deactive"
+
+//d: The menu item text for activating FDN
+//l: list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_fdn_activate_fdn                "Activate FDN"
+
+//d: The menu item text for deactivating FDN
+//l: list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_fdn_deactivate_fdn              "Deactivate FDN"
+
+//d:Text in information note
+//d:A note when user tries to save a fixed dialling contact without number.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_fdn_no_allowed_save             "Not allowed to save without number"
+
+//d:Prompt for name too long query
+//l:popup_query_data_window
+//w:
+//r:3.1
+//
+#define qtn_pbcop_note_name_max_length      "Maximum name length on SIM card is %N"
+
+//d:Prompt for number too long query
+//l:popup_query_data_window
+//w:
+//r:3.1
+//
+#define qtn_pbcop_note_number_max_length    "Maximum number length on SIM card is %N"
+
+/////////////////////////////////////////////////////////////////////////////
+// New localisation strings from Memory copy UI specification to release 3.2.
+/////////////////////////////////////////////////////////////////////////////
+
+//d:Confirmation note text
+//d:%N is the number of selected entries to be copied.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_pbcop_note_contacts_copied      "%N copied to SIM memory"
+
+//d:Information note text
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_phob_note_no_copy_to_phone      "Selected contacts already locate in phone memory"
+
+//d:Information note text in case no stores are available
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_pbcop_info_no_stores            "No stores available"
+
+//d:Information note text in case unsuccessful contact copy
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_pbcop_note_entry_copied_partly  "Contact copied. Some details couldn?t be copied"
+
+//d:Information note text in case some contact(s) were not fully copied in multiple copy to SIM
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_pbcop_note_entries_copied_partly    "Some details couldn?t be copied"
+
+//d:List query item Phone for copy list query
+//l:list_single_heading_pane_t1_cp2
+//w:
+//r:3.2
+//
+#define qtn_pbcop_copy_query_list_item_phone    "Phone"
+
+//d:List query item SIM for copy list query
+//l:list_single_heading_pane_t1_cp2
+//w:
+//r:3.2
+//
+#define qtn_pbcop_copy_query_list_item_sim      "SIM"
+
+/////////////////////////////////////////////////////////////////////////////
+// Localisation strings from Memory copy UI specification.
+/////////////////////////////////////////////////////////////////////////////
+
+//d:Prompt for copy contact query
+//d:%U is the name of the contact.
+//l:heading_pane_t1
+//r:3.1
+//
+#define qtn_pbcop_prtx_copy_numb1           "Copy number for %U:"
+
+//d:Prompt for copy contacts query
+//l:heading_pane_t1
+//r:3.1
+//
+#define qtn_pbcop_prtx_copy_numb_sev        "Copy numbers:"
+
+//d:List query item for copy contacts query
+//l:list_single_pane_t1_cp2
+//r:3.1
+//
+#define qtn_pbcop_copy_numb_ch_all          "All"
+
+//d:Error note text
+//l:popup_note_window
+//r:3.1
+//
+#define qtn_pbcop_note_copy_not_work        "Unable to copy"
+
+//d:Information note text shown after the successful copy is done to any memory.
+//d:%U is name of the copied memory entry.
+//l:popup_note_window
+//r:3.2
+//
+#define qtn_pbcop_note_contact_copied_pb2   "%U copied"
+
+//d:Options list text for accessing memory card functionality
+//l:list_single_pane_t1_cp2/opt3
+//w:
+//r:3.2
+//
+#define qtn_phob_opt_backup                 "Backup"
+
+//d:"Backup" sub menu item text for copying/backuping contacts to MMC.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_phob_opt_backup_to_mmc          "To memory card"
+
+//d:"Backup" sub menu item text for copying/restoring contacts from MMC.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_phob_opt_backup_from_mmc        "From memory card"
+
+//d:Options list text for copying contact card to or from external or 
+//d:internal memory for example Memory card or internal hard drive.
+//l:list_single_pane_t1_cp2/opt3
+//r:3.2
+//
+#define qtn_phob_opt_copy_card               "Copy as contact card"
+
+//d:Options list submenu text for exporting contact card to external or internal memory
+//l:list_single_popup_submenu_pane_t1
+//r:3.2
+//
+#define  qtn_phob_opt_copy_export           "Export"
+
+//d:Options list submenu text for importing contact card from external or internal memory
+//l:list_single_popup_submenu_pane_t1
+//r:3.2
+//
+#define  qtn_phob_opt_copy_import           "Import"
+
+//d:Confirmation query text
+//l:popup_note_window
+//r:3.2
+//
+#define qtn_phob_query_remove_all_contacts     "Remove existing contacts from the selected memory?"
+
+/////////////////////////////////////////////////////////////////////////////
+// Localisation strings from Voice commands UI specification.
+/////////////////////////////////////////////////////////////////////////////
+
+//d:Options list submenu text for voice tag playback
+//l:list_single_pane_t1_cp2
+//r:3.1
+//
+#define text_voice_replay                       "Playback"
+
+//d:Prompt text for deleting voice tags
+//l:popup_note_window
+//r:3.1
+//
+#define qtn_votag_delete_one_tag                "Delete an existing voice tag?"
+
+//d:Note text for no more available voice tag locations.
+//l:popup_note_window
+//r:3.1
+//
+#define text_voice_no_more_tags                 "No more voice tags"
+
+
+//d:Information note for no voice tag in play command functionality
+//l:popup_note_window
+//
+#define qtn_phob_play_no_tag              "No voice tag defined for this contact"
+
+/////////////////////////////////////////////////////////////////////////////
+// Localisation strings from Profiles UI specification.
+/////////////////////////////////////////////////////////////////////////////
+
+// d:Error note shown when ringing tone can't be set
+// d:because tone maximum file size is exceeded.
+// l:popup_note_window
+// r:3.1
+//
+#define qtn_profiles_tone_maxsize_error "Files larger than %N kB cannot be set as ringing tone"
+
+//d:Copy from SIM to phonebook, name field mapping configuration.
+//d:%N SIM name field mapping to phonebook value. 
+//d:Value 0 SIM name field is copied to phonebook last name field, default value
+//d:Value 1 SIM name field is copied to phonebook first name field
+//l:None
+//w:
+//r:3.1
+//
+#define qtn_phob_sim_name_copy_to_first_name "0"
+
+
+//d:Text for tooltip in Toolbar for Call
+//r:5.0
+//l:popup_preview_text_window_t1
+//
+#define qtn_phob_tb_call		"Call"
+
+//d:Text for tooltip in Toolbar for Create message
+//r:5.0
+//l:popup_preview_text_window_t1
+//
+#define qtn_phob_tb_create_msg		"Create message"
+
+//d:Text for tooltip in Toolbar for New Contact
+//r:5.0
+//l:popup_preview_text_window_t1
+//
+#define qtn_phob_tb_new_contact		"New contact"
+
+//d:Shown in error note when user tries to assign protected music-file as a contact's ringing tone
+//l: popup_note_window
+//w:
+//r:5.0
+//
+#define qtn_phob_protected_tone "Protected file. Cannot be selected as ringing tone"
+
+//d:Shown in long tap menu of names list 
+//l: list_single_touch_menu_pane_t1 
+//w: 
+//r:5.0 
+#define qtn_phob_longtap_copy	"Copy"
+
+//d:Shown in long tap menu of names list 
+//l: list_single_touch_menu_pane_t1 
+//w: 
+//r:5.0 
+#define qtn_phob_longtap_send "Send business card" 
+
+//d:Shown in long tap menu of names list 
+//l: list_single_touch_menu_pane_t1 
+//w: 
+//r:5.0 
+#define qtn_phob_longtap_delete "Delete" 
+
+//d:Shown in long tap menu of groups list 
+//l: list_single_touch_menu_pane_t1 
+//w: 
+//r:5.0 
+#define qtn_phob_longtap_message "Create message" 
+
+//d:Shown in long tap menu of groups list 
+//l: list_single_touch_menu_pane_t1 
+//w: 
+//r:5.0 
+#define qtn_phob_longtap_rename "Rename" 
+
+//d:Shown in long tap menu of groups list 
+//l: list_single_touch_menu_pane_t1 
+//w: 
+//r:5.0 
+#define qtn_phob_longtap_tone "Ringing tone" 
+
+//d:Shown in long tap menu of group members list 
+//l: list_single_touch_menu_pane_t1 
+//w: 
+//r:5.0 
+#define qtn_phob_longtap_rem_from_grp "Remove from group" 
+
+//d:Shown in long tap menu of group memebers list 
+//l: list_single_touch_menu_pane_t1 
+//w: 
+//r:5.0 
+#define qtn_phob_longtap_is_in_grp "Belongs to groups" 
+
+//d:Data value "According to profile" shown when no contact specific ringing tone is selected
+//l:list_form_graphic_pane_t1
+//w:
+//r:5.01
+#define qtn_phob_field_no_personal_tone "According to profile"
+// End of File

@@ -1,0 +1,42 @@
+/*
+* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This is a localisation file for ExtensionManager.
+*     A .loc file is the one and only place where the logical strings
+*     to be localised are defined. 
+*
+*/
+
+
+
+//d:Options list text for sorting (reorganizing) installed services
+//l:list_single_pane_t1_cp2
+//
+#define qtn_extension_manager_opt_sort "Sort services"
+
+//d:Command text associated to a softkey in the control pane.
+//d:Selects an item in list for moving it to another position in list.
+//l:control_pane_t1/opt7
+//
+#define qtn_extension_manager_softkey_move "Move"
+
+
+//d:Information telling that application will shut down for the
+//d:changed settings to take effect.
+//l:popup_note_window
+//
+#define qtn_extension_manager_shutdown_note  "Contacts will now shut down for the changes to take effect"
+
+
+// End of File

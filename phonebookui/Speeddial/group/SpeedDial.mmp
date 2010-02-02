@@ -1,0 +1,109 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:    Project specification file of Speeddial Library Api.
+*
+*/
+
+
+
+
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+EPOCSTACKSIZE 0X6200
+// Build target
+	TARGET 			SpeedDial.exe
+	TARGETTYPE 		exe
+UID             0x100039CE 0x1000590A
+
+VENDORID	VID_DEFAULT
+CAPABILITY 	CAP_APPLICATION NetworkControl
+
+
+APP_LAYER_SYSTEMINCLUDE 
+// Resources
+START RESOURCE ../datasrc/SpeedDial.rss
+HEADER
+	TARGETPATH APP_RESOURCE_DIR
+LANGUAGE_IDS
+END 
+
+
+// Source files location
+SOURCEPATH      ../src
+
+// Application classes
+SOURCE          SpdiaApplication.cpp 
+SOURCE          SpdiaAppUi.cpp
+SOURCE          SpdiaDocument.cpp
+SOURCE          SpdiaContainer.cpp
+SOURCE          SpdiaView.cpp
+SOURCE          SpdiaNote.cpp
+SOURCE          SpdiaBaseView.cpp
+SOURCE          SpdiaCallingVmbxView.cpp
+SOURCE          SpdiaCallingVmbxContainer.cpp
+
+// Include paths
+USERINCLUDE     ../inc ../ControlInc ../datasrc ../VPbkControlInc
+
+// Dependencies to other SpeedDial components
+LIBRARY         spdctrl.lib
+
+// Dependencies to system components
+LIBRARY         euser.lib apparc.lib ws32.lib bafl.lib
+LIBRARY         cone.lib eikcoctl.lib Avkon.lib fbscli.lib egul.lib
+LIBRARY         eikcore.lib commonengine.lib 
+LIBRARY         eikdlg.lib
+LIBRARY         numbergrouping.lib
+LIBRARY         ServiceHandler.lib              //Application InterWorking
+LIBRARY			efsrv.lib
+LIBRARY         apgrfx.lib
+LIBRARY	        bitgdi.lib 
+
+LIBRARY         VPbkEng.lib
+LIBRARY  		Pbk2Presentation.lib
+LIBRARY 		Pbk2CommonUI.lib
+LIBRARY         CentralRepository.lib
+LIBRARY         cenrepnotifhandler.lib  // Cenrep notifier
+// external dependencies
+/// phone engine support
+LIBRARY         PbkEng.lib
+/// context sensitive help support
+LIBRARY         hlplch.lib // for "Help" options menu
+LIBRARY         FeatMgr.lib
+
+library         AknLayout.lib
+LIBRARY         AknLayout2.lib       
+LIBRARY         AknLayout2Scalable.lib 
+LIBRARY         UikLaf.lib 
+LIBRARY         AknIcon.lib
+library         vmbx.lib
+library 		aknnotify.lib
+library         SSSettings.lib
+
+LIBRARY         sendui.lib
+LIBRARY		etext.lib
+
+
+
+LIBRARY			aiwdialdata.lib
+
+	SOURCEPATH      ../group
+	START RESOURCE  ./Speeddial_reg.rss
+DEPENDS speeddial.rsg
+	// Do not change the UID below.
+	TARGETPATH /private/10003a3f/apps
+	END
+
+// End of File

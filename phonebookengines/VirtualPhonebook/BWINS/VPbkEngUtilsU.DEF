@@ -1,0 +1,41 @@
+EXPORTS
+	??0CPhoneNumberIndexBase@VPbkEngUtils@@IAE@XZ @ 1 NONAME ; VPbkEngUtils::CPhoneNumberIndexBase::CPhoneNumberIndexBase(void)
+	??0CVPbkAsyncOperation@VPbkEngUtils@@QAE@XZ @ 2 NONAME ; VPbkEngUtils::CVPbkAsyncOperation::CVPbkAsyncOperation(void)
+	??0RPhoneNumberLookupBase@VPbkEngUtils@@IAE@H@Z @ 3 NONAME ; VPbkEngUtils::RPhoneNumberLookupBase::RPhoneNumberLookupBase(int)
+	??1CPhoneNumberIndexBase@VPbkEngUtils@@MAE@XZ @ 4 NONAME ; VPbkEngUtils::CPhoneNumberIndexBase::~CPhoneNumberIndexBase(void)
+	??1CVPbkAsyncOperation@VPbkEngUtils@@UAE@XZ @ 5 NONAME ; VPbkEngUtils::CVPbkAsyncOperation::~CVPbkAsyncOperation(void)
+	?AddL@CPhoneNumberIndexBase@VPbkEngUtils@@IAEXABVTDesC16@@PAX@Z @ 6 NONAME ; void VPbkEngUtils::CPhoneNumberIndexBase::AddL(class TDesC16 const &, void *)
+	?CallbackL@CVPbkAsyncOperation@VPbkEngUtils@@QAEXPAVMAsyncCallback@2@@Z @ 7 NONAME ; void VPbkEngUtils::CVPbkAsyncOperation::CallbackL(class VPbkEngUtils::MAsyncCallback *)
+	?Close@RPhoneNumberLookupBase@VPbkEngUtils@@QAEXXZ @ 8 NONAME ; void VPbkEngUtils::RPhoneNumberLookupBase::Close(void)
+	?InitLookupL@CPhoneNumberIndexBase@VPbkEngUtils@@IBEXAAVRPhoneNumberLookupBase@2@ABVTDesC16@@@Z @ 9 NONAME ; void VPbkEngUtils::CPhoneNumberIndexBase::InitLookupL(class VPbkEngUtils::RPhoneNumberLookupBase &, class TDesC16 const &) const
+	?LookupNext@CPhoneNumberIndexBase@VPbkEngUtils@@QBEXAAVRPhoneNumberLookupBase@2@@Z @ 10 NONAME ; void VPbkEngUtils::CPhoneNumberIndexBase::LookupNext(class VPbkEngUtils::RPhoneNumberLookupBase &) const
+	?OpenL@RLocalizedResourceFile@VPbkEngUtils@@QAEXAAVRFs@@ABVTDesC16@@11@Z @ 11 NONAME ; void VPbkEngUtils::RLocalizedResourceFile::OpenL(class RFs &, class TDesC16 const &, class TDesC16 const &, class TDesC16 const &)
+	?OpenLC@RLocalizedResourceFile@VPbkEngUtils@@QAEXAAVRFs@@ABVTDesC16@@11@Z @ 12 NONAME ; void VPbkEngUtils::RLocalizedResourceFile::OpenLC(class RFs &, class TDesC16 const &, class TDesC16 const &, class TDesC16 const &)
+	?Purge@CVPbkAsyncOperation@VPbkEngUtils@@QAEXXZ @ 13 NONAME ; void VPbkEngUtils::CVPbkAsyncOperation::Purge(void)
+	?RemoveAll@CPhoneNumberIndexBase@VPbkEngUtils@@IAEXPAX@Z @ 14 NONAME ; void VPbkEngUtils::CPhoneNumberIndexBase::RemoveAll(void *)
+	?Reset@CPhoneNumberIndexBase@VPbkEngUtils@@QAEXXZ @ 15 NONAME ; void VPbkEngUtils::CPhoneNumberIndexBase::Reset(void)
+	??0CTextStore@VPbkEngUtils@@QAE@XZ @ 16 NONAME ; VPbkEngUtils::CTextStore::CTextStore(void)
+	?AddL@CTextStore@VPbkEngUtils@@QAE?AVTPtrC8@@ABVTDesC8@@@Z @ 17 NONAME ; class TPtrC8 VPbkEngUtils::CTextStore::AddL(class TDesC8 const &)
+	??1CVPbkDiskSpaceCheck@VPbkEngUtils@@UAE@XZ @ 18 NONAME ; VPbkEngUtils::CVPbkDiskSpaceCheck::~CVPbkDiskSpaceCheck(void)
+	?DiskSpaceCheckL@CVPbkDiskSpaceCheck@VPbkEngUtils@@QAEXH@Z @ 19 NONAME ; void VPbkEngUtils::CVPbkDiskSpaceCheck::DiskSpaceCheckL(int)
+	?NewL@CVPbkDiskSpaceCheck@VPbkEngUtils@@SAPAV12@AAVRFs@@H@Z @ 20 NONAME ; class VPbkEngUtils::CVPbkDiskSpaceCheck * VPbkEngUtils::CVPbkDiskSpaceCheck::NewL(class RFs &, int)
+	?CountPackageSize@VPbkIPCPackage@VPbkEngUtils@@SAHPBVTDesC16@@@Z @ 21 NONAME ; int VPbkEngUtils::VPbkIPCPackage::CountPackageSize(class TDesC16 const *)
+	?CountPackageSize@VPbkIPCPackage@VPbkEngUtils@@SAHPBVTDesC8@@@Z @ 22 NONAME ; int VPbkEngUtils::VPbkIPCPackage::CountPackageSize(class TDesC8 const *)
+	?ExternalizeL@VPbkIPCPackage@VPbkEngUtils@@SAXPBVTDesC16@@AAVRDesWriteStream@@@Z @ 23 NONAME ; void VPbkEngUtils::VPbkIPCPackage::ExternalizeL(class TDesC16 const *, class RDesWriteStream &)
+	?ExternalizeL@VPbkIPCPackage@VPbkEngUtils@@SAXPBVTDesC8@@AAVRDesWriteStream@@@Z @ 24 NONAME ; void VPbkEngUtils::VPbkIPCPackage::ExternalizeL(class TDesC8 const *, class RDesWriteStream &)
+	?InternalizeL@VPbkIPCPackage@VPbkEngUtils@@SAXAAPAVHBufC16@@AAVRDesReadStream@@@Z @ 25 NONAME ; void VPbkEngUtils::VPbkIPCPackage::InternalizeL(class HBufC16 * &, class RDesReadStream &)
+	?InternalizeL@VPbkIPCPackage@VPbkEngUtils@@SAXAAPAVHBufC16@@AAVRDesReadStream@@H@Z @ 26 NONAME ; void VPbkEngUtils::VPbkIPCPackage::InternalizeL(class HBufC16 * &, class RDesReadStream &, int)
+	?InternalizeL@VPbkIPCPackage@VPbkEngUtils@@SAXAAPAVHBufC8@@AAVRDesReadStream@@@Z @ 27 NONAME ; void VPbkEngUtils::VPbkIPCPackage::InternalizeL(class HBufC8 * &, class RDesReadStream &)
+	?InternalizeL@VPbkIPCPackage@VPbkEngUtils@@SAXAAPAVHBufC8@@AAVRDesReadStream@@H@Z @ 28 NONAME ; void VPbkEngUtils::VPbkIPCPackage::InternalizeL(class HBufC8 * &, class RDesReadStream &, int)
+	??0CVPbkAsyncOperation@VPbkEngUtils@@QAE@W4TPriority@CActive@@@Z @ 29 NONAME ; VPbkEngUtils::CVPbkAsyncOperation::CVPbkAsyncOperation(enum CActive::TPriority)
+	?CallbackAt@CVPbkAsyncOperation@VPbkEngUtils@@QBEABVMAsyncCallback@2@H@Z @ 30 NONAME ; class VPbkEngUtils::MAsyncCallback const & VPbkEngUtils::CVPbkAsyncOperation::CallbackAt(int) const
+	?CallbackCount@CVPbkAsyncOperation@VPbkEngUtils@@QBEHXZ @ 31 NONAME ; int VPbkEngUtils::CVPbkAsyncOperation::CallbackCount(void) const
+	?CancelCallback@CVPbkAsyncOperation@VPbkEngUtils@@QAEXABVMAsyncCallback@2@@Z @ 32 NONAME ; void VPbkEngUtils::CVPbkAsyncOperation::CancelCallback(class VPbkEngUtils::MAsyncCallback const &)
+	??0CVPbkEComImplementationsListBase@@IAE@XZ @ 33 NONAME ; CVPbkEComImplementationsListBase::CVPbkEComImplementationsListBase(void)
+	??1CVPbkEComImplementationsListBase@@UAE@XZ @ 34 NONAME ; CVPbkEComImplementationsListBase::~CVPbkEComImplementationsListBase(void)
+	?At@CVPbkEComImplementationsListBase@@QBEAAVCBase@@H@Z @ 35 NONAME ; class CBase & CVPbkEComImplementationsListBase::At(int) const
+	?Count@CVPbkEComImplementationsListBase@@QBEHXZ @ 36 NONAME ; int CVPbkEComImplementationsListBase::Count(void) const
+	?FindInfo@CVPbkEComImplementationsListBase@@QBEPBVCImplementationInformation@@AAVCBase@@@Z @ 37 NONAME ; class CImplementationInformation const * CVPbkEComImplementationsListBase::FindInfo(class CBase &) const
+	?LoadImplementationsL@CVPbkEComImplementationsListBase@@QAEXVTUid@@ABVTEComResolverParams@@PAX@Z @ 38 NONAME ; void CVPbkEComImplementationsListBase::LoadImplementationsL(class TUid, class TEComResolverParams const &, void *)
+	?LoadImplementationsL@CVPbkEComImplementationsListBase@@QAEXVTUid@@PAX@Z @ 39 NONAME ; void CVPbkEComImplementationsListBase::LoadImplementationsL(class TUid, void *)
+

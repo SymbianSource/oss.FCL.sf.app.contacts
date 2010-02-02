@@ -1,0 +1,132 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of the License "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*
+*/
+
+// ==============================
+// Constants for drawing.
+// ==============================
+
+//d:Application window descendants
+//d:application_window
+//l:main_pane
+//
+#define qdial_main_pane_l      0
+#define qdial_main_pane_t      0
+#define qdial_main_pane_w    176
+#define qdial_main_pane_h    188
+
+//d:Grid pane descendants
+//d:
+//l:cell_qdial_pane_2
+//
+#define cell_spdia_item_l       0
+#define cell_spdia_item_t       0
+#define cell_spdia_item_r       -1
+#define cell_spdia_item_b       -1
+#define cell_spdia_item_w       58
+#define cell_spdia_item_h       60
+
+//d:Grid pane descendants
+//d:
+//l:cell_qdial_pane_2
+//
+#define spdia_main_pane_grid_c  0
+#define spdia_main_pane_grid_l  1
+#define spdia_main_pane_grid_t  1
+#define spdia_main_pane_grid_b  -1
+#define spdia_main_pane_grid_r  -1
+#define spdia_main_pane_grid_w  174
+#define spdia_main_pane_grid_h  180
+
+//d:Cell pane elements(qdial)
+//d:shadow for 36*44 image
+//l:cell_qdial_pane_1
+//
+#define sdm_tn_shadow_cif90_c   222
+#define sdm_tn_shadow_cif90_l   13
+#define sdm_tn_shadow_cif90_t   8
+#define sdm_tn_shadow_cif90_r   -1
+#define sdm_tn_shadow_cif90_b   -1
+#define sdm_tn_shadow_cif90_w   36
+#define sdm_tn_shadow_cif90_h   44
+
+//d:Cell pane elements(qdial)
+//d:shadow for 44*36 image
+//l:cell_qdial_pane_4
+//
+#define sdm_tn_shadow_cif_c     222
+#define sdm_tn_shadow_cif_l     9 + 1           // different laf!!
+#define sdm_tn_shadow_cif_t     8 + 1           // different laf!!
+#define sdm_tn_shadow_cif_r     -1
+#define sdm_tn_shadow_cif_b     -1
+#define sdm_tn_shadow_cif_w     44
+#define sdm_tn_shadow_cif_h     36
+
+//d:Cell pane elements(qdial)
+//d:shadow for 30*40 image
+//l:cell_qdial_pane_7
+//
+#define sdm_tn_shadow_vga90_c   222
+#define sdm_tn_shadow_vga90_l   16
+#define sdm_tn_shadow_vga90_t   8
+#define sdm_tn_shadow_vga90_r   -1
+#define sdm_tn_shadow_vga90_b   -1
+#define sdm_tn_shadow_vga90_w   30
+#define sdm_tn_shadow_vga90_h   40
+
+//d:Cell pane elements(qdial)
+//d:shadow for 40*30 image
+//l:cell_qdial_pane_10
+//
+#define sdm_tn_shadow_vga_c     222
+#define sdm_tn_shadow_vga_l     11
+#define sdm_tn_shadow_vga_t     8
+#define sdm_tn_shadow_vga_r     -1
+#define sdm_tn_shadow_vga_b     -1
+#define sdm_tn_shadow_vga_w     40
+#define sdm_tn_shadow_vga_h     30
+
+//d:Cell pane elements(qdial)
+//d:shadow for 40*48 image
+//l:cell_qdial_pane_13
+//
+#define sdm_tn_shadow_com_c     222
+#define sdm_tn_shadow_com_l     11
+#define sdm_tn_shadow_com_t     8
+#define sdm_tn_shadow_com_r     -1
+#define sdm_tn_shadow_com_b     -1
+#define sdm_tn_shadow_com_w     40
+#define sdm_tn_shadow_com_h     48
+
+#include <avkon.hrh>
+// See AVKON LAF page table 6.46 in section 
+// 6.6.3 Note with an image pop-up window
+#define SDM_VIEW_NUMBER_TEXT_MAXWIDTH 155
+#define SDM_ADDITIONAL_MARGIN_FOR_NUMBER_TYPE_ICON 15
+#define SDM_MARGIN_BETWEEN_TEXT_AND_IMAGE 5
+#define SDM_VIEW_NUMBER_LINE_NUMBER_FOR_PHONE_NUMBER 2
+
+#define SDM_TN_SHADOW_COROL      222
+#define SDM_TN_VGA_WIDTH         40
+#define SDM_TN_VGA_HEIGHT        30
+#define SDM_TN_CIF_WIDTH         44
+#define SDM_TN_CIF_HEIGHT        36
+
+#define SDM_TN_CIF_TURNED        5
+#define SDM_TN_CIF               7
+#define SDM_TN_VGA_TURNED 	     9
+#define SDM_TN_VGA               11
+#define SDM_TN_OTHER             13

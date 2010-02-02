@@ -1,0 +1,203 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains all the resources for the module.
+*
+*/
+
+
+
+/**
+ * Groups Members List View's menu pane, part 1
+ */
+RESOURCE MENU_PANE r_pbk_groupmembers_menu
+    {
+    items =
+        {
+        MENU_ITEM { command = EPbkCmdWrite;         txt = qtn_phob_opt_send; },
+		MENU_ITEM { command = EPbkCmdRemoveFromFolder;	txt = qtn_phob_opt_entry_rem_from_grp; },
+		MENU_ITEM { command = EPbkCmdBelongsToGroups;	txt = qtn_phob_opt_entry_is_in_grp; },
+		MENU_ITEM { command = EPbkCmdFetchMembers;		txt = qtn_phob_opt_fetch_members; }
+        };
+    }
+
+/**
+ * Groups Members List View's menu pane, part 2
+ */
+RESOURCE MENU_PANE r_pbk_groupmembers_sendcontactmenu
+    {
+    items =
+        {
+        MENU_ITEM { command = EPbkCmdSendUICommand;   txt = qtn_bcard_opt_send_entry_via; }  
+        };
+    }
+
+/**
+ * Groups Members List View's menu bar with all items in menu
+ */
+RESOURCE MENU_BAR r_pbk_groupmembers_menubar
+    {
+    titles = 
+        {
+        // System menu pane
+        MENU_TITLE { menu_pane = r_phonebook_system_menu;               },
+        // group members List View's menu pane with all items
+        MENU_TITLE { menu_pane = r_pbk_groupmembers_sendcontactmenu;    },
+	    MENU_TITLE { menu_pane = R_AVKON_MENUPANE_MARKABLE_LIST;        },
+        MENU_TITLE { menu_pane = r_pbk_groupmembers_menu;               },
+	MENU_TITLE { menu_pane = r_phonebook_poc_menu;		            },
+        MENU_TITLE { menu_pane = r_phonebook_call_menu;		            },
+        MENU_TITLE { menu_pane = r_phonebook_open_me_menu;		        }
+        };
+    }
+
+/**
+ * Groups Members List View's context sensitive menu pane
+ */
+RESOURCE MENU_PANE r_pbk_groupmembers_contextmenu
+    {
+    items =
+        {
+		MENU_ITEM { command = EPbkCmdFetchMembers;		txt = qtn_phob_opt_fetch_members; }
+        };
+    }
+
+/**
+ * Groups Members List View's context sensitive menu pane
+ */
+RESOURCE MENU_PANE r_pbk_groupmembers_contextmenu_items_marked
+    {
+    items =
+        {
+		MENU_ITEM { command = EPbkCmdRemoveFromFolder;	txt = qtn_phob_opt_entry_rem_from_grp; }
+        };
+    }
+
+/**
+ * Groups Members List View's Context sensitive menu bar
+ */
+RESOURCE MENU_BAR r_pbk_groupmembers_context_menubar
+    {
+    titles = 
+        {
+        // group members List View's menu pane with all items
+        MENU_TITLE { menu_pane = r_pbk_groupmembers_contextmenu; }
+        };
+    }
+
+/**
+ * Groups Members List View's Context sensitive menu bar when items are marked
+ */
+RESOURCE MENU_BAR r_pbk_groupmembers_context_menubar_marked_items
+    {
+    titles = 
+        {
+        // group members List View's menu pane with all items
+	    MENU_TITLE { menu_pane = R_AVKON_MENUPANE_MARKABLE_LIST;                },
+        MENU_TITLE { menu_pane = r_pbk_groupmembers_contextmenu_items_marked;   }
+        };
+    }
+
+/**
+ * Groups Members List View's main resource.
+ */
+RESOURCE AVKON_VIEW r_phonebook_groupmemberslist_appview
+	{
+	menubar = r_pbk_groupmembers_menubar;
+	cba=R_AVKON_SOFTKEYS_OPTIONS_BACK;
+	}
+
+/**
+ * Groups Members List View's tag group resource.
+ */
+RESOURCE TAB_GROUP r_pbk_group_members_tab_group
+    {
+    tab_width=EAknTabWidthWithOneTab;
+    active=0;
+    tabs=
+        {
+        TAB { 
+            id = EPbkGroupMembersListViewId;
+            }
+        };
+    }
+
+
+// ---------------------------------------------------------
+// Assign to group wait note
+// ---------------------------------------------------------
+// 
+RESOURCE DIALOG r_qtn_phob_wnote_add_to_group
+	{
+	flags = EAknProgressNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_EMPTY;
+    items =
+		{
+		DLG_LINE
+			{
+			type = EAknCtNote;
+			id = EPbkNoteContactsAddToGroup;
+			control = AVKON_NOTE 
+				{ 
+				layout = EProgressLayout;
+				singular_label = qtn_gen_note_adding;
+				};
+			}
+		};
+	}
+
+
+// ---------------------------------------------------------
+// removing members from group wait note
+// ---------------------------------------------------------
+// 
+RESOURCE DIALOG r_qtn_phob_wnote_rem_from_group
+	{
+	flags = EAknProgressNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_EMPTY;
+    items =
+		{
+		DLG_LINE
+			{
+			type = EAknCtNote;
+			id = EPbkNoteContactsRemoveFromGroup;
+			control = AVKON_NOTE 
+				{ 
+				layout = EProgressLayout;
+				singular_label = qtn_gen_note_removing;
+                imagefile = AVKON_ICON_FILE;
+                imageid = EMbmAvkonQgn_note_erased;
+                imagemask = EMbmAvkonQgn_note_erased_mask;
+				};
+			}
+		};
+	}
+
+/**
+ * Text: Navi pane text format for Group Members List
+ */
+RESOURCE TBUF r_qtn_phob_navi_pos_indicator    { buf = qtn_phob_navi_pos_indicator; }
+
+///
+// Localized strings.
+
+/// Text: removing a member from group members 
+RESOURCE TBUF r_qtn_phob_query_entry_remove_grp     { buf = qtn_phob_query_entry_remove_grp; }
+
+/// Text: removing members from group members 
+RESOURCE TBUF r_qtn_phob_query_n_ent_remove_grp     { buf = qtn_phob_query_n_ent_remove_grp; }
+
+
+// End of File
+

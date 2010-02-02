@@ -1,0 +1,114 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 field property definitions.
+*
+*/
+
+
+/**
+ * Phonebook 2 field property resource structure.
+ */
+STRUCT PHONEBOOK2_FIELD_PROPERTY
+    {
+    /// Version number
+    BYTE version = 0;
+
+    /// Field type mapping link for the field type this property maps to.
+    /// @see VPBK_FIELD_TYPE
+    LLINK fieldTypeLink;
+
+    /// Maximum number of fields per contact.
+    /// @see TPbk2FieldMultiplicity
+    BYTE multiplicity;
+
+    /// Maximum length of the field (in characters).
+    WORD maxLength;
+
+    /// Editing mode of the field.
+    /// @see TPbk2FieldEditMode
+    BYTE editMode;
+
+    /// Default case of the field.
+    /// @see TPbk2FieldDefaultCase
+    BYTE defaultCase;
+
+    /// Specifies the icon for the field.
+    /// @see PHONEBOOK2_ICON_ID
+    STRUCT iconId;
+
+    /// Edit dialog control type for the field.
+    /// @see TPbk2FieldCtrlType
+    BYTE ctrlType;
+
+    /// Assorted flags for this field type.
+    /// @see Pbk2FieldProperty.hrh
+    LONG flags;
+
+    /// Label text for add item dialogs.
+    LTEXT addItemText;
+
+    /// The location of the field data.
+    /// @see TPbk2FieldLocation
+    BYTE location;
+
+    /// Group id of this field.
+    /// @see TPbk2FieldGroupId
+    BYTE groupId = EPbk2FieldGroupIdNone;
+
+    /// Default label for the field.
+    LTEXT defaultLabel = "";
+    }
+
+/**
+ * Array of field property items.
+ * @see PHONEBOOK2_FIELD_PROPERTY
+ */
+STRUCT PHONEBOOK2_FIELD_PROPERTY_ARRAY
+    {
+    /// Array of PHONEBOOK2_FIELD_PROPERTYs.
+    STRUCT items[];
+    }
+
+/**
+ * Phonebook 2 field property group.
+ */
+STRUCT PHONEBOOK2_FIELD_GROUP
+    {
+    /// Version number
+    BYTE version = 0;
+
+    /// Id of this group.
+    BYTE id;
+
+    /// Label of this group.
+    LTEXT label;
+
+    /// Specifies the icon for the group.
+    /// @see PHONEBOOK2_ICON_ID
+    STRUCT iconId;
+
+    /// Add item ordering of this group.
+    BYTE addItemOrdering;
+    }
+
+/**
+ * All Phonebook 2 field groups.
+ */
+STRUCT PHONEBOOK2_FIELD_GROUP_ARRAY
+    {
+    /// Array of PHONEBOOK2_FIELD_GROUPs.
+    STRUCT items[];
+    }
+
+// End of File

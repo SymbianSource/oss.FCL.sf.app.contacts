@@ -1,0 +1,41 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:    File that exports the files required for
+*									this Testclass
+*
+*/
+
+
+
+
+
+PRJ_PLATFORMS
+// specify the platforms your component needs to be built for here
+// defaults to WINS MARM so you can ignore this if you just build these
+DEFAULT
+
+PRJ_EXPORTS
+pbkaddedit_z.bat		/epoc32/winscw/c/pbkaddedit_z.bat
+pbkaddedit_c.bat		/epoc32/winscw/c/pbkaddedit_c.bat
+testframework.ini		/epoc32/winscw/c/testframework/TestFramework_PbkDataAddEdit.ini
+tcBCTestPbkDataAddEdit.cfg	/epoc32/winscw/c/testframework/tcBCTestPbkDataAddEdit.cfg
+UI_BCTestPbkDataAddEdit.cfg	/epoc32/winscw/c/testframework/UI_BCTestPbkDataAddEdit.cfg
+
+
+
+PRJ_MMPFILES
+BCTestPbkDataAddEdit.mmp
+
+
+//  End of File

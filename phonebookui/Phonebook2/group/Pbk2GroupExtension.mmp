@@ -1,0 +1,92 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Group UI Extension project specification file.
+*
+*/
+
+
+#include <platform/app/Pbk2UID.h>
+#include "Pbk2Config.mmp"
+#include "../inc/Pbk2InternalUID.h"
+#include "../GroupExtension/inc/Pbk2GroupUIUID.h"
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+// Target information
+TARGET          Pbk2GroupUI.dll
+TARGETTYPE      PLUGIN
+UID             KEComRecognitionUID2 KPbk2GroupExtensionImplementationUID
+CAPABILITY      CAP_ECOM_PLUGIN
+VENDORID        VID_DEFAULT
+
+// Source path
+SOURCEPATH      ../GroupExtension/src
+
+// Source files
+SOURCE          DllMain.cpp
+SOURCE          CPguUIExtensionPlugin.cpp
+SOURCE          CPguSortOrder.cpp
+SOURCE          CpguSortOrderProvider.cpp
+
+// Views
+SOURCE          CPguGroupView.cpp
+SOURCE          CPguGroupMembersView.cpp
+
+// Commands
+SOURCE          CPguCreateNewGroupCmd.cpp
+SOURCE          CPguRenameGroupCmd.cpp
+SOURCE          CPguBelongsToGroupsCmd.cpp
+SOURCE          CPguAddMembersCmd.cpp
+SOURCE          CPguRemoveFromGroupCmd.cpp
+SOURCE          CPguDeleteGroupCmd.cpp
+SOURCE          CPguSendMessageGroupCmd.cpp
+SOURCE          CPguSetToneCmd.cpp
+
+// Dialogs
+SOURCE          CPguGroupNameQueryDlg.cpp
+SOURCE          CPguGroupPopup.cpp
+
+// Resources
+START RESOURCE  ../rss/Pbk2GroupUiRes.rss
+DEPENDS pbk2uicontrols.rsg
+DEPENDS pbk2commands.rsg
+HEADER
+TARGET          Pbk2GroupUIRes
+TARGETPATH      RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END
+
+START RESOURCE  ../rss/Pbk2GroupUi.rss
+TARGET          Pbk2GroupUI
+TARGETPATH      ECOM_RESOURCE_DIR
+END
+
+// Include paths
+USERINCLUDE     ../GroupExtension/inc
+SYSTEMINCLUDE   ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib commonengine.lib
+LIBRARY cone.lib eikcoctl.lib bafl.lib eikctl.lib eikdlg.lib eikcore.lib
+LIBRARY efsrv.lib ecom.lib
+
+// Dependencies to S60 components
+LIBRARY Avkon.lib FeatMgr.lib sendui.lib touchfeedback.lib
+
+// Dependencies to Phonebook
+LIBRARY Pbk2CommonUi.lib Pbk2UiControls.lib Pbk2Commands.lib
+LIBRARY Pbk2Presentation.lib VPbkEng.lib
+
+// End of File

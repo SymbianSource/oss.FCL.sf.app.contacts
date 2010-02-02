@@ -1,0 +1,99 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This is project specification file for the Virtual Phonebook SIM store.
+*
+*/
+
+
+#include "../inc/VPbkPrivateUid.h"
+#include "VPbkConfig.mmp"
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+TARGET          VPbkSimStore.dll
+TARGETTYPE      PLUGIN
+UID             0x10009D8D KVPbkSimStoreDomainImplementationUID
+
+CAPABILITY      CAP_ECOM_PLUGIN
+VENDORID        VID_DEFAULT
+
+SOURCEPATH      ../VPbkSimStore/src
+
+// Virtual Phonebook store components
+SOURCE          VPbkSimStoreEntryPoint.cpp
+SOURCE          CContactStoreDomain.cpp
+SOURCE          CContactStore.cpp
+SOURCE          CContactView.cpp
+SOURCE          CContact.cpp
+SOURCE          TStoreContactFieldCollection.cpp
+SOURCE          TStoreContactField.cpp
+SOURCE          TContactFieldData.cpp
+SOURCE          CViewContact.cpp
+SOURCE          CContactLink.cpp
+SOURCE          CContactStoreInfo.cpp
+
+// Virtual Phonebook operations
+SOURCE          CCommitContactsOperation.cpp
+SOURCE          CContactRetriever.cpp
+SOURCE          CDeleteContactsOperation.cpp
+SOURCE          CMatchPhoneNumberOperation.cpp
+SOURCE          CFindOperation.cpp
+SOURCE          CFindWithParserOperation.cpp
+
+// SIM store components
+SOURCE          CRemoteStore.cpp
+SOURCE          CRemoteView.cpp
+SOURCE          CFindViewBase.cpp
+SOURCE          CRefineView.cpp
+SOURCE          CFindView.cpp
+
+// Utilities
+SOURCE          CFieldTypeMappings.cpp
+SOURCE          CSupportedFieldTypes.cpp
+SOURCE          CContactOperationCallback.cpp
+SOURCE          RemoteViewPreferences.cpp
+
+START RESOURCE  ../rss/VPbkSimStoreRes.rss
+HEADER
+TARGET          VPbkSimStoreRes
+TARGETPATH      RESOURCE_FILES_DIR
+END
+
+START RESOURCE  ../rss/VPbkSimStore.rss
+TARGET          VPbkSimStore
+TARGETPATH      ECOM_RESOURCE_DIR
+END
+
+USERINCLUDE     ../VPbkSimStore/inc
+SYSTEMINCLUDE   ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to Symbian OS components
+LIBRARY         euser.lib efsrv.lib  bafl.lib ecom.lib estor.lib
+
+// Dependencies to Series60 platform components
+LIBRARY         featmgr.lib
+
+// Dependencies to other Phonebook components
+LIBRARY         VPbkEng.lib  VPbkEngUtils.lib 
+LIBRARY         VPbkSimStoreService.lib VPbkSimStoreCommon.lib 
+LIBRARY         VPbkSimStoreImpl.lib
+
+#ifdef VPBK_ENABLE_PROFILE
+// Depencency to VirtualPhonebook profiling library
+LIBRARY VPbkProfile.lib
+#endif // VPBK_ENABLE_PROFILE
+
+// End of File

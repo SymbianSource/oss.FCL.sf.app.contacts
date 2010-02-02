@@ -1,0 +1,193 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 icon definitions.
+*
+*/
+
+
+#ifndef PBK2ICONS_HRH
+#define PBK2ICONS_HRH
+
+// INCLUDE
+#include <phonebook2.mbg>
+#include <avkon.mbg>
+
+/// Checkboxes and markings
+#define qgn_indi_marked_add              EMbmAvkonQgn_indi_marked_add
+#define qgn_indi_marked_add_mask         EMbmAvkonQgn_indi_marked_add_mask
+#define qgn_prop_checkbox_off            EMbmAvkonQgn_prop_checkbox_off
+#define qgn_prop_checkbox_off_mask       EMbmAvkonQgn_prop_checkbox_off_mask
+#define qgn_prop_checkbox_on             EMbmAvkonQgn_prop_checkbox_on
+#define qgn_prop_checkbox_on_mask        EMbmAvkonQgn_prop_checkbox_on_mask
+
+/// Number type icons
+#define qgn_prop_nrtyp_phone             EMbmAvkonQgn_prop_nrtyp_phone
+#define qgn_prop_nrtyp_phone_mask        EMbmAvkonQgn_prop_nrtyp_phone_mask
+#define qgn_prop_nrtyp_home              EMbmAvkonQgn_prop_nrtyp_home
+#define qgn_prop_nrtyp_home_mask         EMbmAvkonQgn_prop_nrtyp_home_mask
+#define qgn_prop_nrtyp_work              EMbmAvkonQgn_prop_nrtyp_work
+#define qgn_prop_nrtyp_work_mask         EMbmAvkonQgn_prop_nrtyp_work_mask
+#define qgn_prop_nrtyp_mobile            EMbmAvkonQgn_prop_nrtyp_mobile
+#define qgn_prop_nrtyp_mobile_mask       EMbmAvkonQgn_prop_nrtyp_mobile_mask
+#define qgn_prop_nrtyp_fax               EMbmAvkonQgn_prop_nrtyp_fax
+#define qgn_prop_nrtyp_fax_mask          EMbmAvkonQgn_prop_nrtyp_fax_mask
+#define qgn_prop_nrtyp_pager             EMbmAvkonQgn_prop_nrtyp_pager
+#define qgn_prop_nrtyp_pager_mask        EMbmAvkonQgn_prop_nrtyp_pager_mask
+#define qgn_prop_nrtyp_email             EMbmAvkonQgn_prop_nrtyp_email
+#define qgn_prop_nrtyp_email_mask        EMbmAvkonQgn_prop_nrtyp_email_mask
+#define qgn_prop_nrtyp_address           EMbmAvkonQgn_prop_nrtyp_address
+#define qgn_prop_nrtyp_address_mask      EMbmAvkonQgn_prop_nrtyp_address_mask
+#define qgn_prop_nrtyp_url               EMbmAvkonQgn_prop_nrtyp_url
+#define qgn_prop_nrtyp_url_mask          EMbmAvkonQgn_prop_nrtyp_url_mask
+#define qgn_prop_nrtyp_date              EMbmPhonebook2Qgn_prop_nrtyp_date
+#define qgn_prop_nrtyp_date_mask         EMbmPhonebook2Qgn_prop_nrtyp_date_mask
+#define qgn_prop_nrtyp_note              EMbmAvkonQgn_prop_nrtyp_note
+#define qgn_prop_nrtyp_note_mask         EMbmAvkonQgn_prop_nrtyp_note_mask
+#define qgn_prop_nrtyp_tone              EMbmPhonebook2Qgn_prop_nrtyp_tone
+#define qgn_prop_nrtyp_tone_mask         EMbmPhonebook2Qgn_prop_nrtyp_tone_mask
+#define qgn_prop_nrtyp_video             EMbmAvkonQgn_prop_nrtyp_video
+#define qgn_prop_nrtyp_video_mask        EMbmAvkonQgn_prop_nrtyp_video_mask
+#define qgn_prop_nrtyp_poc               EMbmPhonebook2Qgn_prop_nrtyp_poc
+#define qgn_prop_nrtyp_poc_mask          EMbmPhonebook2Qgn_prop_nrtyp_poc_mask
+#define qgn_prop_nrtyp_swis              EMbmPhonebook2Qgn_prop_nrtyp_swis
+#define qgn_prop_nrtyp_swis_mask         EMbmPhonebook2Qgn_prop_nrtyp_swis_mask
+#define qgn_prop_nrtyp_sip               EMbmPhonebook2Qgn_prop_nrtyp_sip
+#define qgn_prop_nrtyp_sip_mask          EMbmPhonebook2Qgn_prop_nrtyp_sip_mask
+#define qgn_prop_nrtyp_assistant         EMbmAvkonQgn_prop_nrtyp_assistant
+#define qgn_prop_nrtyp_assistant_mask    EMbmAvkonQgn_prop_nrtyp_assistant_mask
+#define qgn_prop_nrtyp_car               EMbmAvkonQgn_prop_nrtyp_car
+#define qgn_prop_nrtyp_car_mask          EMbmAvkonQgn_prop_nrtyp_car_mask
+#define qgn_prop_nrtyp_voip              EMbmAvkonQgn_prop_nrtyp_voip
+#define qgn_prop_nrtyp_voip_mask         EMbmAvkonQgn_prop_nrtyp_voip_mask
+#define qgn_prop_nrtyp_empty             EMbmPhonebook2Qgn_prop_empty
+#define qgn_prop_nrtyp_empty_mask        EMbmPhonebook2Qgn_prop_empty_mask
+
+#define qgn_prop_pb_comm_call	         EMbmPhonebook2Qgn_prop_pb_comm_call
+#define qgn_prop_pb_comm_voip	         EMbmPhonebook2Qgn_prop_pb_comm_voip
+#define qgn_prop_pb_comm_message	         EMbmPhonebook2Qgn_prop_pb_comm_message
+#define qgn_prop_pb_comm_email	         EMbmPhonebook2Qgn_prop_pb_comm_email
+#define qgn_prop_pb_comm_chat	         EMbmPhonebook2Qgn_prop_pb_comm_chat
+#define qgn_prop_pb_comm_url	         EMbmPhonebook2Qgn_prop_pb_comm_url
+#define qgn_prop_pb_comm_vcall	         EMbmPhonebook2Qgn_prop_pb_comm_vcall
+#define qgn_prop_pb_comm_valid_lm        EMbmPhonebook2Qgn_prop_pb_comm_valid_lm
+#define qgn_prop_pb_comm_no_valid_lm     EMbmPhonebook2Qgn_prop_pb_comm_no_valid_lm
+#define qgn_prop_pb_comm_call_mask       EMbmPhonebook2Qgn_prop_pb_comm_call_mask 
+#define qgn_prop_pb_comm_voip_mask	         EMbmPhonebook2Qgn_prop_pb_comm_voip_mask
+#define qgn_prop_pb_comm_message_mask         EMbmPhonebook2Qgn_prop_pb_comm_message_mask
+#define qgn_prop_pb_comm_email_mask	         EMbmPhonebook2Qgn_prop_pb_comm_email_mask 
+#define qgn_prop_pb_comm_chat_mask	         EMbmPhonebook2Qgn_prop_pb_comm_chat_mask
+#define qgn_prop_pb_comm_url_mask         EMbmPhonebook2Qgn_prop_pb_comm_url_mask
+#define qgn_prop_pb_comm_vcall_mask	         EMbmPhonebook2Qgn_prop_pb_comm_vcall_mask
+#define qgn_prop_pb_comm_valid_lm_mask        EMbmPhonebook2Qgn_prop_pb_comm_valid_lm_mask
+#define qgn_prop_pb_comm_no_valid_lm_mask     EMbmPhonebook2Qgn_prop_pb_comm_no_valid_lm_mask
+
+#define qgn_prop_pb_comm_call_large      EMbmPhonebook2Qgn_prop_pb_comm_call_large
+#define qgn_prop_pb_comm_voip_large      EMbmPhonebook2Qgn_prop_pb_comm_voip_large
+#define qgn_prop_pb_comm_message_large   EMbmPhonebook2Qgn_prop_pb_comm_message_large
+#define qgn_prop_pb_comm_email_large     EMbmPhonebook2Qgn_prop_pb_comm_email_large
+#define qgn_prop_pb_comm_chat_large      EMbmPhonebook2Qgn_prop_pb_comm_chat_large
+#define qgn_prop_pb_comm_url_large       EMbmPhonebook2Qgn_prop_pb_comm_url_large
+#define qgn_prop_pb_comm_vcall_large     EMbmPhonebook2Qgn_prop_pb_comm_vcall_large
+#define qgn_prop_pb_comm_valid_lm_large  EMbmPhonebook2Qgn_prop_pb_comm_valid_lm_large
+#define qgn_prop_pb_comm_call_large_mask      EMbmPhonebook2Qgn_prop_pb_comm_call_large_mask
+#define qgn_prop_pb_comm_voip_large_mask      EMbmPhonebook2Qgn_prop_pb_comm_voip_large_mask
+#define qgn_prop_pb_comm_message_large_mask   EMbmPhonebook2Qgn_prop_pb_comm_message_large_mask
+#define qgn_prop_pb_comm_email_large_mask     EMbmPhonebook2Qgn_prop_pb_comm_email_large_mask
+#define qgn_prop_pb_comm_chat_large_mask      EMbmPhonebook2Qgn_prop_pb_comm_chat_large_mask
+#define qgn_prop_pb_comm_url_large_mask       EMbmPhonebook2Qgn_prop_pb_comm_url_large_mask
+#define qgn_prop_pb_comm_vcall_large_mask     EMbmPhonebook2Qgn_prop_pb_comm_vcall_large_mask
+#define qgn_prop_pb_comm_valid_lm_large_mask  EMbmPhonebook2Qgn_prop_pb_comm_valid_lm_large_mask
+#define qgn_prop_locev_map                    EMbmPhonebook2Qgn_prop_locev_map
+#define qgn_prop_locev_map_mask               EMbmPhonebook2Qgn_prop_locev_map_mask
+#define qgn_prop_pb_no_valid_lm               EMbmPhonebook2Qgn_prop_pb_no_valid_lm
+#define qgn_prop_pb_no_valid_lm_mask          EMbmPhonebook2Qgn_prop_pb_no_valid_lm_mask
+#define qgn_prop_blid_waypoint                EMbmPhonebook2Qgn_prop_blid_waypoint
+#define qgn_prop_blid_waypoint_mask           EMbmPhonebook2Qgn_prop_blid_waypoint_mask
+
+/// Tab icons
+#define qgn_prop_pb_all_tab2             EMbmPhonebook2Qgn_prop_note_list_alpha_tab2
+#define qgn_prop_pb_all_tab2_mask        EMbmPhonebook2Qgn_prop_note_list_alpha_tab2_mask
+#define qgn_prop_pb_all_tab3             EMbmPhonebook2Qgn_prop_list_tab3
+#define qgn_prop_pb_all_tab3_mask        EMbmPhonebook2Qgn_prop_list_tab3_mask
+#define qgn_prop_group_tab2              EMbmPhonebook2Qgn_prop_group_tab2
+#define qgn_prop_group_tab2_mask         EMbmPhonebook2Qgn_prop_group_tab2_mask
+#define qgn_prop_group_tab3              EMbmPhonebook2Qgn_prop_group_tab3
+#define qgn_prop_group_tab3_mask         EMbmPhonebook2Qgn_prop_group_tab3_mask
+#define qgn_prop_group_open_tab1         EMbmPhonebook2Qgn_prop_group_open_tab1
+#define qgn_prop_group_open_tab1_mask    EMbmPhonebook2Qgn_prop_group_open_tab1_mask
+#define qgn_prop_pb_contacts_tab1        EMbmPhonebook2Qgn_prop_pb_contacts_tab1
+#define qgn_prop_pb_contacts_tab1_mask   EMbmPhonebook2Qgn_prop_pb_contacts_tab1_mask
+#define qgn_prop_pb_contacts_tab3        EMbmPhonebook2Qgn_prop_pb_contacts_tab3
+#define qgn_prop_pb_contacts_tab3_mask   EMbmPhonebook2Qgn_prop_pb_contacts_tab3_mask
+#define qgn_prop_pb_personal_tab3        EMbmPhonebook2Qgn_prop_pb_personal_tab4
+#define qgn_prop_pb_personal_tab3_mask   EMbmPhonebook2Qgn_prop_pb_personal_tab4_mask
+#define qgn_prop_pb_photo_tab3           EMbmPhonebook2Qgn_prop_pb_photo_tab3
+#define qgn_prop_pb_photo_tab3_mask      EMbmPhonebook2Qgn_prop_pb_photo_tab3_mask
+
+/// Group icons
+#define qgn_prop_group_small             EMbmAvkonQgn_prop_group_small
+#define qgn_prop_group_small_mask        EMbmAvkonQgn_prop_group_small_mask
+
+/// Backgrounds
+#define qgn_graf_pb_status_backg         EMbmPhonebook2Qgn_graf_pb_status_backg
+#define qgn_graf_pb_status_backg_mask    EMbmPhonebook2Qgn_graf_pb_status_backg_mask
+
+/// Phonebook 2 context icon
+#define qgn_menu_phob_cxt                EMbmPhonebook2Qgn_menu_phob_cxt
+#define qgn_menu_phob_cxt_mask           EMbmPhonebook2Qgn_menu_phob_cxt_mask
+
+/// Empty context icon
+#define qgn_menu_empty_cxt               EMbmPhonebook2Qgn_menu_empty_cxt
+#define qgn_menu_empty_cxt_mask          EMbmPhonebook2Qgn_menu_empty_cxt_mask
+
+/// Deletion confirmation icon
+#define qgn_note_erased                  EMbmAvkonQgn_note_erased
+#define qgn_note_erased_mask             EMbmAvkonQgn_note_erased_mask
+
+/// Voice tag icons
+#define qgn_indi_voice_add               EMbmPhonebook2Qgn_indi_voice_add
+#define qgn_indi_voice_add_mask          EMbmPhonebook2Qgn_indi_voice_add_mask
+
+/// Speed dial icons
+#define qgn_indi_qdial_add               EMbmPhonebook2Qgn_indi_qdial_add
+#define qgn_indi_qdial_add_mask          EMbmPhonebook2Qgn_indi_qdial_add_mask
+
+/// Thumbnail icons
+#define qgn_graf_bg_phob_thumbnail       EMbmPhonebook2Qgn_graf_bg_phob_thumbnail
+#define qgn_graf_bg_phob_thumbnail_mask  EMbmPhonebook2Qgn_graf_bg_phob_thumbnail_mask
+
+/// Names list toolbar icons
+#define qgn_indi_tb_call                 EMbmPhonebook2Qgn_indi_tb_call
+#define qgn_indi_tb_call_mask            EMbmPhonebook2Qgn_indi_tb_call_mask
+#define qgn_indi_tb_mce                  EMbmPhonebook2Qgn_indi_tb_mce
+#define qgn_indi_tb_mce_mask             EMbmPhonebook2Qgn_indi_tb_mce_mask
+#define qgn_indi_tb_avail_contacts       EMbmPhonebook2Qgn_indi_dialer_add_contacts
+#define qgn_indi_tb_avail_contacts_mask  EMbmPhonebook2Qgn_indi_dialer_add_contacts_mask
+
+/// Top contact icon
+#define qgn_prop_pb_topc                EMbmPhonebook2Qgn_prop_pb_topc
+#define qgn_prop_pb_topc_mask           EMbmPhonebook2Qgn_prop_pb_topc_mask
+
+/// Merging contact conflict resolution
+#define qgn_prop_radiobutt_on               EMbmAvkonQgn_prop_radiobutt_on
+#define qgn_prop_radiobutt_on_mask          EMbmAvkonQgn_prop_radiobutt_on_mask
+#define qgn_prop_radiobutt_off              EMbmAvkonQgn_prop_radiobutt_off
+#define qgn_prop_radiobutt_off_mask         EMbmAvkonQgn_prop_radiobutt_off_mask
+
+//// Phonebook2 bitmap file location and name
+#define phonebook2_mbm_file_location     "z:\\resource\\apps\\Phonebook2.mif"
+
+#endif // PBK2ICONS_HRH
+
+// End of File

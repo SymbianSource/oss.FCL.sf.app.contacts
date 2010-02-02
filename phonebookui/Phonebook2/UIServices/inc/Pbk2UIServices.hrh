@@ -1,0 +1,56 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 UI Services definitions.
+*
+*/
+
+
+#ifndef PBK2UISERVICES_HRH
+#define PBK2UISERVICES_HRH
+
+#include <AiwCommon.hrh>
+
+// --------------------------------------------------------------------------
+// Phonebook 2 UI Services command codes
+// --------------------------------------------------------------------------
+//
+enum TPbk2AiwCommandId
+    {
+    /// First Phonebook 2 AIW command (keep this item first)
+    EPbk2AiwCmdFirst,
+
+    // Data Save
+    EPbk2AiwCmdAssignBase = KAiwCmdAssign,
+    EPbk2AiwCmdAssign,
+    EPbk2AiwCmdDataSaveCreateNew,
+    EPbk2AiwCmdDataSaveAddToExisting,
+
+    /// Last Phonebook AIW 2 command (keep this item last)
+    EPbk2AiwCmdLast
+    };
+
+// --------------------------------------------------------------------------
+// Phonebook 2 UI Services exit command parameters
+// --------------------------------------------------------------------------
+//
+enum TPbk2ExitCommandParams
+    {
+    /// Changing of these values will break all the clients
+    EPbk2ExitServiceApplication = 0,    // exit server application
+    EPbk2ExitApplication                // exit application (client process)
+    };
+
+#endif // PBK2UISERVICES_HRH
+
+// End of File

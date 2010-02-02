@@ -1,0 +1,33 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  File that exports the files belonging to 
+:                XIMP Presence Cache API
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+PRJ_PLATFORMS
+DEFAULT
+
+PRJ_EXPORTS
+
+../inc/presencecacheids.hrh          APP_LAYER_PLATFORM_EXPORT_PATH(presencecacheids.hrh )
+../inc/mpresencebuddyinfo2.h         APP_LAYER_PLATFORM_EXPORT_PATH(mpresencebuddyinfo2.h)
+../inc/presencecachereadhandler2.h   APP_LAYER_PLATFORM_EXPORT_PATH(presencecachereadhandler2.h)
+../inc/presencecachewritehandler2.h  APP_LAYER_PLATFORM_EXPORT_PATH(presencecachewritehandler2.h)
+../inc/presencecachereader2.h        APP_LAYER_PLATFORM_EXPORT_PATH(presencecachereader2.h)
+../inc/presencecachewriter2.h        APP_LAYER_PLATFORM_EXPORT_PATH(presencecachewriter2.h)
+../inc/presencecachebuddyidcreator.h APP_LAYER_PLATFORM_EXPORT_PATH(presencecachebuddyidcreator.h)

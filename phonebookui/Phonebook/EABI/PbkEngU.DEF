@@ -1,0 +1,426 @@
+EXPORTS
+	_ZN25CPbkContactChangeNotifier4NewLER17CPbkContactEngineP21MPbkContactDbObserver @ 1 NONAME
+	_ZN17CPbkContactEngine4NewLEP3RFs @ 2 NONAME
+	_ZN17CPbkContactEngine8ReplaceLEP3RFs @ 3 NONAME
+	_ZN17CPbkContactEngine6StaticEv @ 4 NONAME
+	_ZN17CPbkContactEngine8DatabaseEv @ 5 NONAME
+	_ZN17CPbkContactEngine10FieldsInfoEv @ 6 NONAME
+	_ZNK17CPbkContactEngine9FsSessionEv @ 7 NONAME
+	_ZN17CPbkContactEngine19CreateEmptyContactLEv @ 8 NONAME
+	_ZN17CPbkContactEngine14AddNewContactLER15CPbkContactItemi @ 9 NONAME
+	_ZN17CPbkContactEngine17DuplicateContactLEli @ 10 NONAME
+	_ZN17CPbkContactEngine12ReadContactLElPK16CPbkFieldIdArray @ 11 NONAME
+	_ZN17CPbkContactEngine13ReadContactLCElPK16CPbkFieldIdArray @ 12 NONAME
+	_ZN17CPbkContactEngine20ReadMinimalContactLCEl @ 13 NONAME
+	_ZN17CPbkContactEngine23CreateContactIteratorLCEi @ 14 NONAME
+	_ZN17CPbkContactEngine12OpenContactLEl @ 15 NONAME
+	_ZN17CPbkContactEngine14OpenContactLCXEl @ 16 NONAME
+	_ZN17CPbkContactEngine14CommitContactLER15CPbkContactItemi @ 17 NONAME
+	_ZN17CPbkContactEngine13CloseContactLEl @ 18 NONAME
+	_ZN17CPbkContactEngine14DeleteContactLEli @ 19 NONAME
+	_ZN17CPbkContactEngine15DeleteContactsLERK15CContactIdArrayi @ 20 NONAME
+	_ZN17CPbkContactEngine27DeleteContactsOnBackgroundLERK15CContactIdArray @ 21 NONAME
+	_ZN17CPbkContactEngine19CreateContactGroupLERK7TDesC16i @ 22 NONAME
+	_ZN17CPbkContactEngine18AddContactToGroupLEll @ 23 NONAME
+	_ZN17CPbkContactEngine23RemoveContactFromGroupLEll @ 24 NONAME
+	_ZN17CPbkContactEngine17ReadContactGroupLEl @ 25 NONAME
+	_ZN17CPbkContactEngine17OpenContactGroupLEl @ 26 NONAME
+	_ZN17CPbkContactEngine19OpenContactGroupLCXEl @ 27 NONAME
+	_ZN17CPbkContactEngine19CommitContactGroupLER13CContactGroupi @ 28 NONAME
+	_ZN17CPbkContactEngine19DeleteContactGroupLEli @ 29 NONAME
+	_ZN17CPbkContactEngine20SetFieldAsSpeedDialLER15CPbkContactItemii @ 30 NONAME
+	_ZNK17CPbkContactEngine18GetSpeedDialFieldLEiR6TDes16 @ 31 NONAME
+	_ZN17CPbkContactEngine21RemoveSpeedDialFieldLEli @ 32 NONAME
+	_ZNK17CPbkContactEngine19IsSpeedDialAssignedERK15CPbkContactItemi @ 33 NONAME
+	_ZN17CPbkContactEngine15AllContactsViewEv @ 34 NONAME
+	_ZN17CPbkContactEngine14AllGroupsViewLEv @ 35 NONAME
+	_ZN17CPbkContactEngine21FilteredContactsViewLEi @ 36 NONAME
+	_ZN17CPbkContactEngine28CreateContactChangeNotifierLEP21MPbkContactDbObserver @ 37 NONAME
+	_ZNK17CPbkContactEngine16GetContactTitleLERK15CPbkContactItem @ 38 NONAME
+	_ZN17CPbkContactEngine22GetContactTitleOrNullLERK18MPbkFieldDataArray @ 39 NONAME
+	_ZNK17CPbkContactEngine12IsTitleFieldEi @ 40 NONAME
+	_ZNK17CPbkContactEngine12UnnamedTitleEv @ 41 NONAME
+	_ZN17CPbkContactEngine17MatchPhoneNumberLERK7TDesC16i @ 42 NONAME
+	_ZN17CPbkContactEngine6FindLCERK7TDesC16PK16CPbkFieldIdArray @ 43 NONAME
+	_ZN17CPbkContactEngine10FindAsyncLERK7TDesC16PK16CPbkFieldIdArrayP17MIdleFindObserver @ 44 NONAME
+	_ZN15CPbkContactItem4NewLEP12CContactItemRK14CPbkFieldsInfoR21MPbkContactNameFormat @ 45 NONAME
+	_ZNK15CPbkContactItem2IdEv @ 46 NONAME
+	_ZNK15CPbkContactItem4TypeEv @ 47 NONAME
+	_ZNK15CPbkContactItem14GroupsJoinedLCEv @ 48 NONAME
+	_ZN15CPbkContactItem11ContactItemEv @ 49 NONAME
+	_ZNK15CPbkContactItem11ContactItemEv @ 50 NONAME
+	_ZNK15CPbkContactItem10CardFieldsEv @ 51 NONAME
+	_ZN15CPbkContactItem9AddFieldLER13CPbkFieldInfo @ 52 NONAME
+	_ZNK15CPbkContactItem19CanAcceptDataOfTypeER13CPbkFieldInfo @ 53 NONAME
+	_ZN15CPbkContactItem23AddOrReturnUnusedFieldLER13CPbkFieldInfo @ 54 NONAME
+	_ZN15CPbkContactItem11RemoveFieldEi @ 55 NONAME
+	_ZN15CPbkContactItem15UpdateFieldSetLERK14CPbkFieldsInfo @ 56 NONAME
+	_ZNK15CPbkContactItem9FindFieldERK13CPbkFieldInfo @ 57 NONAME
+	_ZNK15CPbkContactItem9FindFieldERK13CPbkFieldInfoRi @ 58 NONAME
+	_ZNK15CPbkContactItem9FindFieldEi @ 59 NONAME
+	_ZNK15CPbkContactItem9FindFieldEiRi @ 60 NONAME
+	_ZNK15CPbkContactItem14FindFieldIndexERK20TPbkContactItemField @ 61 NONAME
+	_ZNK15CPbkContactItem25FindContactItemFieldIndexERK17CContactItemField @ 62 NONAME
+	_ZNK15CPbkContactItem28FindNextFieldWithPhoneNumberERK7TDesC16iRi @ 63 NONAME
+	_ZNK15CPbkContactItem21FindNextFieldWithTextERK7TDesC16Ri @ 64 NONAME
+	_ZNK15CPbkContactItem13FindSameFieldERK20TPbkContactItemField @ 65 NONAME
+	_ZNK15CPbkContactItem16GetContactTitleLEv @ 66 NONAME
+	_ZNK15CPbkContactItem22GetContactTitleOrNullLEv @ 67 NONAME
+	_ZNK15CPbkContactItem14ContactIconIdLEv @ 68 NONAME
+	_ZN15CPbkContactItem27SetDefaultPhoneNumberFieldLEP20TPbkContactItemField @ 69 NONAME
+	_ZN15CPbkContactItem27SetDefaultVideoNumberFieldLEP20TPbkContactItemField @ 70 NONAME
+	_ZN15CPbkContactItem28SetDefaultEmailOverSmsFieldLEP20TPbkContactItemField @ 71 NONAME
+	_ZNK15CPbkContactItem15DefaultMmsFieldEv @ 72 NONAME
+	_ZNK15CPbkContactItem15DefaultSmsFieldEv @ 73 NONAME
+	_ZNK15CPbkContactItem17DefaultEmailFieldEv @ 74 NONAME
+	_ZNK15CPbkContactItem23DefaultPhoneNumberFieldEv @ 75 NONAME
+	_ZNK15CPbkContactItem23DefaultVideoNumberFieldEv @ 76 NONAME
+	_ZNK15CPbkContactItem24DefaultEmailOverSmsFieldEv @ 77 NONAME
+	_ZN15CPbkContactItem19SetDefaultMmsFieldLEP20TPbkContactItemField @ 78 NONAME
+	_ZN15CPbkContactItem21SetDefaultEmailFieldLEP20TPbkContactItemField @ 79 NONAME
+	_ZN15CPbkContactItem19SetDefaultSmsFieldLEP20TPbkContactItemField @ 80 NONAME
+	_ZN15CPbkContactItem17SetVoiceTagFieldLEP20TPbkContactItemField @ 81 NONAME
+	_ZNK15CPbkContactItem13VoiceTagFieldEv @ 82 NONAME
+	_ZN15CPbkContactItem19RemoveVoiceTagFieldEv @ 83 NONAME
+	_ZN15CPbkContactItem21RemoveDefaultMmsFieldEv @ 84 NONAME
+	_ZN15CPbkContactItem21RemoveDefaultSmsFieldEv @ 85 NONAME
+	_ZN15CPbkContactItem23RemoveDefaultEmailFieldEv @ 86 NONAME
+	_ZN15CPbkContactItem29RemoveDefaultPhoneNumberFieldEv @ 87 NONAME
+	_ZN15CPbkContactItem29RemoveDefaultVideoNumberFieldEv @ 88 NONAME
+	_ZN15CPbkContactItem30RemoveDefaultEmailOverSmsFieldEv @ 89 NONAME
+	_ZN15CPbkContactIter4NewLER17CPbkContactEnginei @ 90 NONAME
+	_ZN15CPbkContactIter5NewLCER17CPbkContactEnginei @ 91 NONAME
+	_ZN15CPbkContactIter5NextLEv @ 92 NONAME
+	_ZN15CPbkContactIter5ResetEv @ 93 NONAME
+	_ZN15CPbkContactIter6FirstLEv @ 94 NONAME
+	_ZNK15CPbkContactIter11GetCurrentLEv @ 95 NONAME
+	_ZNK15CPbkContactIter8CurrentLEv @ 96 NONAME
+	_ZNK13CPbkFieldInfo7FieldIdEv @ 97 NONAME
+	_ZNK13CPbkFieldInfo16FieldStorageTypeEv @ 98 NONAME
+	_ZNK13CPbkFieldInfo11ContentTypeEv @ 99 NONAME
+	_ZNK13CPbkFieldInfo8CategoryEv @ 100 NONAME
+	_ZNK13CPbkFieldInfo9FieldNameEv @ 101 NONAME
+	_ZNK13CPbkFieldInfo5FlagsEv @ 102 NONAME
+	_ZNK13CPbkFieldInfo12MultiplicityEv @ 103 NONAME
+	_ZNK13CPbkFieldInfo9MaxLengthEv @ 104 NONAME
+	_ZNK13CPbkFieldInfo8EditModeEv @ 105 NONAME
+	_ZNK13CPbkFieldInfo11DefaultCaseEv @ 106 NONAME
+	_ZNK13CPbkFieldInfo6IconIdEv @ 107 NONAME
+	_ZNK13CPbkFieldInfo8CtrlTypeEv @ 108 NONAME
+	_ZNK13CPbkFieldInfo8AddFlagsEv @ 109 NONAME
+	_ZNK13CPbkFieldInfo8IsHiddenEv @ 110 NONAME
+	_ZNK13CPbkFieldInfo10IsReadOnlyEv @ 111 NONAME
+	_ZNK13CPbkFieldInfo13DoSynchronizeEv @ 112 NONAME
+	_ZNK13CPbkFieldInfo10IsDisabledEv @ 113 NONAME
+	_ZNK13CPbkFieldInfo9NameFieldEv @ 114 NONAME
+	_ZNK13CPbkFieldInfo13TemplateFieldEv @ 115 NONAME
+	_ZNK13CPbkFieldInfo15UserCanAddFieldEv @ 116 NONAME
+	_ZNK13CPbkFieldInfo10IsEditableEv @ 117 NONAME
+	_ZNK13CPbkFieldInfo12NumericFieldEv @ 118 NONAME
+	_ZNK13CPbkFieldInfo18IsPhoneNumberFieldEv @ 119 NONAME
+	_ZNK13CPbkFieldInfo19IsEmailOverSmsFieldEv @ 120 NONAME
+	_ZNK13CPbkFieldInfo12IsEmailFieldEv @ 121 NONAME
+	_ZNK13CPbkFieldInfo10IsMmsFieldEv @ 122 NONAME
+	_ZNK13CPbkFieldInfo12IsImageFieldEv @ 123 NONAME
+	_ZNK13CPbkFieldInfo6IsSameERKS_ @ 124 NONAME
+	_ZNK13CPbkFieldInfo5MatchEi @ 125 NONAME
+	_ZNK13CPbkFieldInfo12CreateFieldLEv @ 126 NONAME
+	_ZNK13CPbkFieldInfo9IsEqualToERK17CContactItemField @ 127 NONAME
+	_ZNK13CPbkFieldInfo15CompareOrderingERKS_ @ 128 NONAME
+	_ZNK13CPbkFieldInfo5GroupEv @ 129 NONAME
+	_ZNK13CPbkFieldInfo8LocationEv @ 130 NONAME
+	_ZNK13CPbkFieldInfo17VersitStorageTypeEv @ 131 NONAME
+	_ZNK13CPbkFieldInfo13AddToViewDefLER19CContactItemViewDef @ 132 NONAME
+	_ZNK13CPbkFieldInfo14AddToFieldDefLER20CContactItemFieldDef @ 133 NONAME
+	_ZNK13CPbkFieldInfo11AddItemTextEv @ 134 NONAME
+	_ZNK13CPbkFieldInfo14IsReadingFieldEv @ 135 NONAME
+	_ZNK14CPbkFieldsInfo4FindERK17CContactItemField @ 136 NONAME
+	_ZNK14CPbkFieldsInfo4FindEi @ 137 NONAME
+	_ZNK14CPbkFieldsInfo4FindEi17TPbkFieldLocation @ 138 NONAME
+	_ZNK14CPbkFieldsInfo19CreateMatchPriorityEv @ 139 NONAME
+	_ZNK14CPbkFieldsInfo5CountEv @ 140 NONAME
+	_ZNK14CPbkFieldsInfo10GroupCountEv @ 141 NONAME
+	_ZNK14CPbkFieldsInfo7GroupAtEi @ 142 NONAME
+	_ZNK14CPbkFieldsInfo26CreateContactItemViewDefLCERK16CPbkFieldIdArray @ 143 NONAME
+	_ZNK14CPbkFieldsInfo27CreateContactItemFieldDefLCEPK16CPbkFieldIdArray @ 144 NONAME
+	_ZNK14CPbkFieldsInfoixEi @ 145 NONAME
+	_ZNK14CPbkIdleFinder10IsCompleteEv @ 146 NONAME
+	_ZN14CPbkIdleFinder14TakeContactIdsEv @ 147 NONAME
+	_ZNK14CPbkIdleFinder5ErrorEv @ 148 NONAME
+	_ZNK14CPbkIdleFinder10IdleFinderEv @ 149 NONAME
+	_ZNK14CPbkIdleFinder8FieldDefEv @ 150 NONAME
+	_ZN20TPbkContactItemField3SetEP17CContactItemFieldP13CPbkFieldInfo @ 151 NONAME
+	_ZN20TPbkContactItemFieldC1Ev @ 152 NONAME
+	_ZN20TPbkContactItemFieldC2Ev @ 153 NONAME
+	_ZN20TPbkContactItemFieldC1EP17CContactItemFieldP13CPbkFieldInfo @ 154 NONAME
+	_ZN20TPbkContactItemFieldC2EP17CContactItemFieldP13CPbkFieldInfo @ 155 NONAME
+	_ZNK20TPbkContactItemField6IconIdEv @ 156 NONAME
+	_ZNK20TPbkContactItemField9FieldInfoEv @ 157 NONAME
+	_ZNK20TPbkContactItemField4TextEv @ 158 NONAME
+	_ZNK20TPbkContactItemField4TimeEv @ 159 NONAME
+	_ZNK20TPbkContactItemField8GetTextLER6TDes16 @ 160 NONAME
+	_ZNK20TPbkContactItemField11StorageTypeEv @ 161 NONAME
+	_ZNK20TPbkContactItemField9ItemFieldEv @ 162 NONAME
+	_ZNK20TPbkContactItemField11TextStorageEv @ 163 NONAME
+	_ZNK20TPbkContactItemField5LabelEv @ 164 NONAME
+	_ZN20TPbkContactItemField9SetLabelLERK7TDesC16 @ 165 NONAME
+	_ZN20TPbkContactItemField9SetHiddenEi @ 166 NONAME
+	_ZNK20TPbkContactItemField8IsHiddenEv @ 167 NONAME
+	_ZNK20TPbkContactItemField15DateTimeStorageEv @ 168 NONAME
+	_ZNK20TPbkContactItemField6IsSameERKS_ @ 169 NONAME
+	_ZN20TPbkContactItemField16ContactItemFieldEv @ 170 NONAME
+	_ZNK20TPbkContactItemField16ContactItemFieldEv @ 171 NONAME
+	_ZNK20TPbkContactItemField7CompareERKS_ @ 172 NONAME
+	_ZNK20TPbkContactItemField19UniqueFieldIdentityEv @ 173 NONAME
+	_ZNK20TPbkContactItemField7IsEmptyEv @ 174 NONAME
+	_ZNK20TPbkContactItemField18IsEmptyOrAllSpacesEv @ 175 NONAME
+	_ZNK20TPbkContactItemField23DefaultPhoneNumberFieldEv @ 176 NONAME
+	_ZNK20TPbkContactItemField23DefaultVideoNumberFieldEv @ 177 NONAME
+	_ZNK20TPbkContactItemField24DefaultEmailOverSmsFieldEv @ 178 NONAME
+	_ZNK20TPbkContactItemField15DefaultMmsFieldEv @ 179 NONAME
+	_ZNK20TPbkContactItemField15DefaultSmsFieldEv @ 180 NONAME
+	_ZNK20TPbkContactItemField17DefaultEmailFieldEv @ 181 NONAME
+	_ZNK20TPbkContactItemField17SpeedDialIndexesLEv @ 182 NONAME
+	_ZNK20TPbkContactItemField10PbkFieldIdEv @ 183 NONAME
+	_ZNK20TPbkContactItemField12PbkFieldTextEv @ 184 NONAME
+	_ZNK20TPbkContactItemField12PbkFieldTimeEv @ 185 NONAME
+	_ZNK20TPbkContactItemField12PbkFieldTypeEv @ 186 NONAME
+	_ZNK15CPbkContactItem15DefaultPocFieldEv @ 187 NONAME
+	_ZN15CPbkContactItem19SetDefaultPocFieldLEP20TPbkContactItemField @ 188 NONAME
+	_ZN15CPbkContactItem21RemoveDefaultPocFieldEv @ 189 NONAME
+	_ZNK13CPbkFieldInfo10IsPocFieldEv @ 190 NONAME
+	_ZNK20TPbkContactItemField15DefaultPocFieldEv @ 191 NONAME
+	_ZN12CPbkCodField4NewLER17CPbkContactEngine @ 192 NONAME
+	_ZNK12CPbkCodField10CodFieldIdER15CPbkContactItem @ 193 NONAME
+	_ZNK12CPbkCodField11CodFieldIdLEl @ 194 NONAME
+	_ZNK12CPbkCodField8GetTextLEl @ 195 NONAME
+	_ZeqRK15CPbkContactItemS1_ @ 196 NONAME
+	_ZeqRK20TPbkContactItemFieldS1_ @ 197 NONAME
+	_ZTI25CPbkContactChangeNotifier @ 198 NONAME ; #<TI>#
+	_ZTV25CPbkContactChangeNotifier @ 199 NONAME ; #<VT>#
+	_ZTI17CPbkContactEngine @ 200 NONAME ; #<TI>#
+	_ZTV17CPbkContactEngine @ 201 NONAME ; #<VT>#
+	_ZTI15CPbkContactItem @ 202 NONAME ; #<TI>#
+	_ZTV15CPbkContactItem @ 203 NONAME ; #<VT>#
+	_ZTI15CPbkContactIter @ 204 NONAME ; #<TI>#
+	_ZTV15CPbkContactIter @ 205 NONAME ; #<VT>#
+	_ZTI13CPbkFieldInfo @ 206 NONAME ; #<TI>#
+	_ZTV13CPbkFieldInfo @ 207 NONAME ; #<VT>#
+	_ZTI14CPbkFieldsInfo @ 208 NONAME ; #<TI>#
+	_ZTV14CPbkFieldsInfo @ 209 NONAME ; #<VT>#
+	_ZTI14CPbkIdleFinder @ 210 NONAME ; #<TI>#
+	_ZTV14CPbkIdleFinder @ 211 NONAME ; #<VT>#
+	_ZTI20TPbkContactItemField @ 212 NONAME ; #<TI>#
+	_ZTV20TPbkContactItemField @ 213 NONAME ; #<VT>#
+	_ZTI12CPbkCodField @ 214 NONAME ; #<TI>#
+	_ZTV12CPbkCodField @ 215 NONAME ; #<VT>#
+	_ZN11PbkEngUtils11CountSpacesERK7TDesC16 @ 216 NONAME
+	_ZN11PbkEngUtils13TrimAllAppendERK7TDesC16R6TDes16 @ 217 NONAME
+	_ZN11PbkEngUtils13TrimAllLengthERK7TDesC16 @ 218 NONAME
+	_ZN11PbkEngUtils14BreakInWordsLCERK7TDesC16PFi5TCharE @ 219 NONAME
+	_ZN11PbkEngUtils15TrimRightAppendERK7TDesC16R6TDes16 @ 220 NONAME
+	_ZN11PbkEngUtils15TrimRightLengthERK7TDesC16 @ 221 NONAME
+	_ZN11PbkEngUtils17ContainSameDigitsERK7TDesC16S2_i @ 222 NONAME
+	_ZN11PbkEngUtils17CopyDigitsFromEndERK7TDesC16iR6TDes16 @ 223 NONAME
+	_ZN11PbkEngUtils21AppendAndReplaceCharsER6TDes16RK7TDesC16S4_S4_ @ 224 NONAME
+	_ZN11PbkEngUtils23AppendGraphicCharactersER6TDes16RK7TDesC16t @ 225 NONAME
+	_ZN11PbkEngUtils25FindAndOpenResourceFileLCER3RFsRK7TDesC16S4_S4_R13RResourceFile @ 226 NONAME
+	_ZN11PbkEngUtils27ReplaceNonGraphicCharactersER6TDes16t @ 227 NONAME
+	_ZN11PbkEngUtils5CopyLEP7HBufC16RK7TDesC16i @ 228 NONAME
+	_ZN11PbkEngUtils6AllocLEP7HBufC16i @ 229 NONAME
+	_ZN12CDigViewNodeD0Ev @ 230 NONAME
+	_ZN12CDigViewNodeD1Ev @ 231 NONAME
+	_ZN12CDigViewNodeD2Ev @ 232 NONAME
+	_ZN13CDigViewGraph16ModifyViewGraphLER15TResourceReader @ 233 NONAME
+	_ZN13CDigViewGraph4NewLER15TResourceReader @ 234 NONAME
+	_ZN13CDigViewGraphD0Ev @ 235 NONAME
+	_ZN13CDigViewGraphD1Ev @ 236 NONAME
+	_ZN13CDigViewGraphD2Ev @ 237 NONAME
+	_ZN13CPbkConstants16FormEditorLengthEv @ 238 NONAME
+	_ZN13CPbkConstants16GroupLabelLengthEv @ 239 NONAME
+	_ZN13CPbkConstants17FieldEditorLengthEv @ 240 NONAME
+	_ZN13CPbkConstants17SearchFieldLengthEv @ 241 NONAME
+	_ZN13CPbkConstants19ThumbnailPopupDelayEv @ 242 NONAME
+	_ZN13CPbkConstants23RingingTonePreviewDelayEv @ 243 NONAME
+	_ZN13CPbkConstants29LocallyVariatedFeatureEnabledE21TPbkLocalVariantFlags @ 244 NONAME
+	_ZN13CPbkConstants32CompressionInactivityTimerLengthEv @ 245 NONAME
+	_ZN13CPbkConstants4NewLER13RResourceFile @ 246 NONAME
+	_ZN13CPbkFieldData12InternalizeLER11RReadStream @ 247 NONAME
+	_ZN13CPbkFieldData4NewLER11RReadStream @ 248 NONAME
+	_ZN13CPbkFieldData4NewLEiRK5TTime @ 249 NONAME
+	_ZN13CPbkFieldData4NewLEiRK7TDesC16 @ 250 NONAME
+	_ZN14CPbkDbRecovery15SetErrorHandlerEP24MPbkRecoveryErrorHandler @ 251 NONAME
+	_ZN14CPbkDbRecovery4NewLER16CContactDatabase @ 252 NONAME
+	_ZN14CPbkEntryCache4NewLER17CPbkContactEnginei @ 253 NONAME
+	_ZN14CPbkEntryCache5FlushEv @ 254 NONAME
+	_ZN14CPbkEntryCache6UnloadEl @ 255 NONAME
+	_ZN14CPbkEntryCache8PreloadLEl @ 256 NONAME
+	_ZN14CPbkEntryCache9GetEntryLEl @ 257 NONAME
+	_ZN15CPbkEntryCopier15AddToPhonebookLER15CPbkContactItem @ 258 NONAME
+	_ZN15CPbkEntryCopier4NewLER17CPbkContactEngineR21MPbkEntryCopyObserver @ 259 NONAME
+	_ZN16CPbkContactIdSet4AddLERK15CContactIdArray @ 260 NONAME
+	_ZN16CPbkContactIdSet4AddLERKS_ @ 261 NONAME
+	_ZN16CPbkContactIdSet4AddLEl @ 262 NONAME
+	_ZN16CPbkContactIdSet4NewLERK15CContactIdArray @ 263 NONAME
+	_ZN16CPbkContactIdSet4NewLERKS_ @ 264 NONAME
+	_ZN16CPbkContactIdSet4NewLEv @ 265 NONAME
+	_ZN16CPbkContactIdSet5NewLCERK15CContactIdArray @ 266 NONAME
+	_ZN16CPbkContactIdSet5NewLCERKS_ @ 267 NONAME
+	_ZN16CPbkContactIdSet5NewLCEv @ 268 NONAME
+	_ZN16CPbkContactIdSet6RemoveERK15CContactIdArray @ 269 NONAME
+	_ZN16CPbkContactIdSet6RemoveERKS_ @ 270 NONAME
+	_ZN16CPbkContactIdSet6RemoveEl @ 271 NONAME
+	_ZN16TPbkContactEntry8ReserveLEP7HBufC16i @ 272 NONAME
+	_ZN17CPbkAssignToGroup5NewLCER17CPbkContactEngineRK15CContactIdArrayl @ 273 NONAME
+	_ZN17CPbkContactEngine13CheckCompressEv @ 274 NONAME
+	_ZN17CPbkContactEngine13SetCompressUiEP14MPbkCompressUi @ 275 NONAME
+	_ZN17CPbkContactEngine14CancelCompressEv @ 276 NONAME
+	_ZN17CPbkContactEngine17NameDisplayOrderLEv @ 277 NONAME
+	_ZN17CPbkContactEngine20SetNameDisplayOrderLENS_13TPbkNameOrderE @ 278 NONAME
+	_ZN17CPbkContactEngine32CheckFileSystemSpaceAndCompressLEv @ 279 NONAME
+	_ZN17CPbkContactEngine4NewLERK7TDesC16iP3RFs @ 280 NONAME
+	_ZN17CPbkContactEngine9CompressLEv @ 281 NONAME
+	_ZN17CPbkContactEngine9ConstantsEv @ 282 NONAME
+	_ZN18CPbkAttachmentFile12SwitchDriveLEv @ 283 NONAME
+	_ZN18CPbkAttachmentFile4FileEv @ 284 NONAME
+	_ZN18CPbkAttachmentFile4NewLERK7TDesC16R3RFsj @ 285 NONAME
+	_ZN18CPbkAttachmentFile5NewLCERK7TDesC16R3RFsj @ 286 NONAME
+	_ZN18CPbkAttachmentFile7ReleaseEv @ 287 NONAME
+	_ZN18CPbkContactSubView11AddContactLEl @ 288 NONAME
+	_ZN18CPbkContactSubView13RemoveContactEl @ 289 NONAME
+	_ZN18CPbkContactSubView18SetContactSelectorER19MPbkContactSelector @ 290 NONAME
+	_ZN18CPbkContactSubView27AddBaseViewPreEventHandlerLER20MContactViewObserver @ 291 NONAME
+	_ZN18CPbkContactSubView29RemoveBaseViewPreEventHandlerER20MContactViewObserver @ 292 NONAME
+	_ZN18CPbkContactSubView4NewLER20MContactViewObserverRK16CContactDatabaseR16CContactViewBaseR19MPbkContactSelector @ 293 NONAME
+	_ZN18CPbkContactSubView7RefreshEv @ 294 NONAME
+	_ZN18CPbkDeleteContacts5NewLCER17CPbkContactEngineRK15CContactIdArray @ 295 NONAME
+	_ZN18CPbkFieldDataArray12InternalizeLER11RReadStream @ 296 NONAME
+	_ZN18CPbkFieldDataArray20ResetAndDestroyPushLEv @ 297 NONAME
+	_ZN18CPbkFieldDataArray4NewLER11RReadStream @ 298 NONAME
+	_ZN18CPbkFieldDataArray4NewLEv @ 299 NONAME
+	_ZN19CPbkContactFindView12SetFindTextLERK7TDesC16PK15CContactIdArray @ 300 NONAME
+	_ZN19CPbkContactFindView4NewLER17CPbkContactEngineR16CContactViewBaseR20MContactViewObserverR18MPbkFindPrimitives @ 301 NONAME
+	_ZN19CPbkContactFindView9ResetFindEv @ 302 NONAME
+	_ZN19CPbkRemoveFromGroup5NewLCER17CPbkContactEngineRK15CContactIdArrayl @ 303 NONAME
+	_ZN23CPbkAttachmentFileArrayC1Ei @ 304 NONAME
+	_ZN23CPbkAttachmentFileArrayC2Ei @ 305 NONAME
+	_ZN23CPbkAttachmentFileArrayD0Ev @ 306 NONAME
+	_ZN23CPbkAttachmentFileArrayD1Ev @ 307 NONAME
+	_ZN23CPbkAttachmentFileArrayD2Ev @ 308 NONAME
+	_ZN23PbkGlobalSettingFactory23CreateTransientSettingLEi @ 309 NONAME
+	_ZN23PbkGlobalSettingFactory24CreatePersistentSettingLEv @ 310 NONAME
+	_ZN23TPbkContactViewIterator5NextLEv @ 311 NONAME
+	_ZN28CPbkViewContactNameFormatter4NewLER21MPbkContactNameFormat @ 312 NONAME
+	_ZN29TPbkViewContactFieldDataArrayC1ERK12CViewContactRK21RContactViewSortOrder @ 313 NONAME
+	_ZN29TPbkViewContactFieldDataArrayC2ERK12CViewContactRK21RContactViewSortOrder @ 314 NONAME
+	_ZN29TPbkViewContactFieldDataArrayD0Ev @ 315 NONAME
+	_ZN29TPbkViewContactFieldDataArrayD1Ev @ 316 NONAME
+	_ZN29TPbkViewContactFieldDataArrayD2Ev @ 317 NONAME
+	_ZN30TPbkFieldInfoExportTypeAdapterC1ERK13CPbkFieldInfo @ 318 NONAME
+	_ZN30TPbkFieldInfoExportTypeAdapterC2ERK13CPbkFieldInfo @ 319 NONAME
+	_ZN30TPbkFieldInfoExportTypeAdapterD0Ev @ 320 NONAME
+	_ZN30TPbkFieldInfoExportTypeAdapterD1Ev @ 321 NONAME
+	_ZN30TPbkFieldInfoExportTypeAdapterD2Ev @ 322 NONAME
+	_ZNK12CDigViewNode14FindTransitionERK18TDigViewTransition @ 323 NONAME
+	_ZNK13CDigViewGraph18FindNodeWithViewIdE4TUid @ 324 NONAME
+	_ZNK13CPbkConstants12UnnamedTitleEv @ 325 NONAME
+	_ZNK13CPbkFieldData10PbkFieldIdEv @ 326 NONAME
+	_ZNK13CPbkFieldData12ExternalizeLER12RWriteStream @ 327 NONAME
+	_ZNK13CPbkFieldData12PbkFieldTextEv @ 328 NONAME
+	_ZNK13CPbkFieldData12PbkFieldTimeEv @ 329 NONAME
+	_ZNK13CPbkFieldData12PbkFieldTypeEv @ 330 NONAME
+	_ZNK13CPbkFieldData4TextEv @ 331 NONAME
+	_ZNK13CPbkFieldData4TimeEv @ 332 NONAME
+	_ZNK13CPbkFieldInfo15AddItemOrderingEv @ 333 NONAME
+	_ZNK13CPbkFieldInfo5MatchERK17CContactItemField @ 334 NONAME
+	_ZNK14CPbkEntryCache8CapacityEv @ 335 NONAME
+	_ZNK14CPbkFieldsInfo5MatchERK17MPbkVcardPropertyRK22TPbkMatchPriorityLevel @ 336 NONAME
+	_ZNK15CPbkContactItem18__DbgTestInvariantEv @ 337 NONAME
+	_ZNK15CPbkContactIter18__DbgTestInvariantEv @ 338 NONAME
+	_ZNK16CPbkContactIdSet18GetContactIdArrayLEv @ 339 NONAME
+	_ZNK16CPbkContactIdSet18__DbgTestInvariantEv @ 340 NONAME
+	_ZNK16CPbkContactIdSet4FindEl @ 341 NONAME
+	_ZNK17CPbkContactEngine17ContactNameFormatEv @ 342 NONAME
+	_ZNK18CPbkAttachmentFile8FileNameEv @ 343 NONAME
+	_ZNK18CPbkContactSubView15ContactSelectorEv @ 344 NONAME
+	_ZNK18CPbkFieldDataArray12ExternalizeLER12RWriteStream @ 345 NONAME
+	_ZNK18CPbkFieldInfoGroup15AddItemOrderingEv @ 346 NONAME
+	_ZNK18CPbkFieldInfoGroup2AtEi @ 347 NONAME
+	_ZNK18CPbkFieldInfoGroup2IdEv @ 348 NONAME
+	_ZNK18CPbkFieldInfoGroup5CountEv @ 349 NONAME
+	_ZNK18CPbkFieldInfoGroup5LabelEv @ 350 NONAME
+	_ZNK18CPbkFieldInfoGroup6IconIdEv @ 351 NONAME
+	_ZNK19CPbkContactFindView22IndexOfFirstFindMatchLEv @ 352 NONAME
+	_ZNK19CPbkContactFindView8FindTextEv @ 353 NONAME
+	_ZNK23CPbkAttachmentFileArray9MdcaCountEv @ 354 NONAME
+	_ZNK23CPbkAttachmentFileArray9MdcaPointEi @ 355 NONAME
+	_ZNK28CPbkViewContactNameFormatter13ContactTitleLERK12CViewContactRK21RContactViewSortOrder @ 356 NONAME
+	_ZNK30TPbkFieldInfoExportTypeAdapter12PropertyNameEv @ 357 NONAME
+	_ZNK30TPbkFieldInfoExportTypeAdapter18PropertyParametersEv @ 358 NONAME
+	_ZTI12CDigViewNode @ 359 NONAME ; #<TI>#
+	_ZTI13CDigViewGraph @ 360 NONAME ; #<TI>#
+	_ZTI13CPbkConstants @ 361 NONAME ; #<TI>#
+	_ZTI13CPbkFieldData @ 362 NONAME ; #<TI>#
+	_ZTI14CPbkDbRecovery @ 363 NONAME ; #<TI>#
+	_ZTI14CPbkEntryCache @ 364 NONAME ; #<TI>#
+	_ZTI15CPbkEntryCopier @ 365 NONAME ; #<TI>#
+	_ZTI16CPbkContactIdSet @ 366 NONAME ; #<TI>#
+	_ZTI17CPbkAssignToGroup @ 367 NONAME ; #<TI>#
+	_ZTI18CPbkAttachmentFile @ 368 NONAME ; #<TI>#
+	_ZTI18CPbkContactSubView @ 369 NONAME ; #<TI>#
+	_ZTI18CPbkDeleteContacts @ 370 NONAME ; #<TI>#
+	_ZTI18CPbkFieldDataArray @ 371 NONAME ; #<TI>#
+	_ZTI18CPbkFieldInfoGroup @ 372 NONAME ; #<TI>#
+	_ZTI19CPbkContactFindView @ 373 NONAME ; #<TI>#
+	_ZTI19CPbkRemoveFromGroup @ 374 NONAME ; #<TI>#
+	_ZTI20TPbkTitleFieldFilterILi2EE @ 375 NONAME ; #<TI>#
+	_ZTI20TPbkTitleFieldFilterILi4EE @ 376 NONAME ; #<TI>#
+	_ZTI23CPbkAttachmentFileArray @ 377 NONAME ; #<TI>#
+	_ZTI28CPbkViewContactNameFormatter @ 378 NONAME ; #<TI>#
+	_ZTI29TPbkViewContactFieldDataArray @ 379 NONAME ; #<TI>#
+	_ZTI30TPbkFieldInfoExportTypeAdapter @ 380 NONAME ; #<TI>#
+	_ZTIN21CPbkIdleProcessRunner7CRunnerE @ 381 NONAME ; #<TI>#
+	_ZTIN29TPbkViewContactFieldDataArray10TFieldDataE @ 382 NONAME ; #<TI>#
+	_ZTV12CDigViewNode @ 383 NONAME ; #<VT>#
+	_ZTV13CDigViewGraph @ 384 NONAME ; #<VT>#
+	_ZTV13CPbkConstants @ 385 NONAME ; #<VT>#
+	_ZTV13CPbkFieldData @ 386 NONAME ; #<VT>#
+	_ZTV14CPbkDbRecovery @ 387 NONAME ; #<VT>#
+	_ZTV14CPbkEntryCache @ 388 NONAME ; #<VT>#
+	_ZTV15CPbkEntryCopier @ 389 NONAME ; #<VT>#
+	_ZTV16CPbkContactIdSet @ 390 NONAME ; #<VT>#
+	_ZTV17CPbkAssignToGroup @ 391 NONAME ; #<VT>#
+	_ZTV18CPbkAttachmentFile @ 392 NONAME ; #<VT>#
+	_ZTV18CPbkContactSubView @ 393 NONAME ; #<VT>#
+	_ZTV18CPbkDeleteContacts @ 394 NONAME ; #<VT>#
+	_ZTV18CPbkFieldDataArray @ 395 NONAME ; #<VT>#
+	_ZTV18CPbkFieldInfoGroup @ 396 NONAME ; #<VT>#
+	_ZTV19CPbkContactFindView @ 397 NONAME ; #<VT>#
+	_ZTV19CPbkRemoveFromGroup @ 398 NONAME ; #<VT>#
+	_ZTV20TPbkTitleFieldFilterILi2EE @ 399 NONAME ; #<VT>#
+	_ZTV20TPbkTitleFieldFilterILi4EE @ 400 NONAME ; #<VT>#
+	_ZTV23CPbkAttachmentFileArray @ 401 NONAME ; #<VT>#
+	_ZTV28CPbkViewContactNameFormatter @ 402 NONAME ; #<VT>#
+	_ZTV29TPbkViewContactFieldDataArray @ 403 NONAME ; #<VT>#
+	_ZTV30TPbkFieldInfoExportTypeAdapter @ 404 NONAME ; #<VT>#
+	_ZTVN21CPbkIdleProcessRunner7CRunnerE @ 405 NONAME ; #<VT>#
+	_ZTVN29TPbkViewContactFieldDataArray10TFieldDataE @ 406 NONAME ; #<VT>#
+	_ZThn24_N23CPbkAttachmentFileArrayD0Ev @ 407 NONAME ; #<thunk>#
+	_ZThn24_N23CPbkAttachmentFileArrayD1Ev @ 408 NONAME ; #<thunk>#
+	_ZThn24_NK23CPbkAttachmentFileArray9MdcaCountEv @ 409 NONAME ; #<thunk>#
+	_ZThn24_NK23CPbkAttachmentFileArray9MdcaPointEi @ 410 NONAME ; #<thunk>#
+	_ZThn4_N30TPbkFieldInfoExportTypeAdapterD0Ev @ 411 NONAME ; #<thunk>#
+	_ZThn4_N30TPbkFieldInfoExportTypeAdapterD1Ev @ 412 NONAME ; #<thunk>#
+	_ZThn4_NK13CPbkFieldData10PbkFieldIdEv @ 413 NONAME ; #<thunk>#
+	_ZThn4_NK13CPbkFieldData12PbkFieldTextEv @ 414 NONAME ; #<thunk>#
+	_ZThn4_NK13CPbkFieldData12PbkFieldTimeEv @ 415 NONAME ; #<thunk>#
+	_ZThn4_NK13CPbkFieldData12PbkFieldTypeEv @ 416 NONAME ; #<thunk>#
+	_ZN15CPbkContactItem20SetDefaultVoipFieldLEP20TPbkContactItemField @ 417 NONAME
+	_ZN15CPbkContactItem22RemoveDefaultVoipFieldEv @ 418 NONAME
+	_ZNK13CPbkFieldInfo11IsVoipFieldEv @ 419 NONAME
+	_ZNK15CPbkContactItem16DefaultVoipFieldEv @ 420 NONAME
+	_ZNK20TPbkContactItemField16DefaultVoipFieldEv @ 421 NONAME
+	_ZN17CPbkContactEngine17SetNameSeparatorLE5TChar @ 422 NONAME
+	_ZNK17CPbkContactEngine13NameSeparatorEv @ 423 NONAME
+	_ZN11PbkEngUtils32FindAndOpenDefaultResourceFileLCER3RFsR13RResourceFile @ 424 NONAME
+

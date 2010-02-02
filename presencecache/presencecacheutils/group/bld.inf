@@ -1,0 +1,48 @@
+/*
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+PRJ_PLATFORMS
+DEFAULT
+
+
+//--------------------
+PRJ_MMPFILES
+//--------------------
+
+presencecacheutils.mmp
+
+//--------------------
+PRJ_TESTMMPFILES
+//--------------------
+//NOT NEEDED ANYMORE: http://presenceprojects/trac/ticket/581
+//../tsrc/private/basic/branding_server_mock/t_mock_bsrv.mmp
+//../tsrc/private/basic/mt_cpresencebrandedicon/mt_cpresencebrandedicon.mmp
+//../tsrc/private/basic/ut_cpresencebrandedicon/ut_cpresencebrandedicon.mmp
+
+//../tsrc/private/basic/cmsclient_moc/t_cmsclient_moc.mmp
+//../tsrc/private/basic/contactpresencetester/group/t_contactpresence.mmp
+//../tsrc/private/basic/contactpresencetester/group/t_contactpresencetester.mmp
+
+//--------------------
+PRJ_TESTEXPORTS
+//--------------------
+//../tsrc/private/basic/branding_server_mock/cnt_pres_ut.bmp   /epoc32/winscw/c/TestFramework/cmstester/cnt_pres_ut.bmp
+//../tsrc/private/basic/contactpresencetester/data/cp_api_test.cfg   /epoc32/winscw/c/TestFramework/contactpresence/cp_api_test.cfg 
+//../tsrc/private/basic/contactpresencetester/data/testframework.ini   /epoc32/winscw/c/TestFramework/testframework.ini

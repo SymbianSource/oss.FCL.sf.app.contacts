@@ -1,0 +1,78 @@
+/*
+* Copyright (c) 2006-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Map UI Extension project specification file.
+*
+*/
+
+#include <platform/app/Pbk2UID.h>
+#include "../inc/Pbk2InternalUID.h"
+#include "../MapExtension/inc/pbk2mapuiuid.h"
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+// Target information
+TARGET          Pbk2MapUI.dll
+TARGETTYPE      PLUGIN
+UID             KEComRecognitionUID2 KPbk2MapExtensionImplementationUID
+CAPABILITY      CAP_ECOM_PLUGIN
+VENDORID        VID_DEFAULT
+
+// Source path
+SOURCEPATH      ../MapExtension/src
+
+// Source files
+SOURCE          dllmain.cpp
+SOURCE          cpmapuiextensionplugin.cpp
+SOURCE          cpmapcmd.cpp
+SOURCE          cpmapcontacteditorextension.cpp
+SOURCE          CPbk2ContactEditorUIAFMField.cpp
+
+// Resources
+START RESOURCE  ../rss/pbk2mapuires.rss
+DEPENDS pbk2uicontrols.rsg
+DEPENDS pbk2commands.rsg
+HEADER
+TARGET          Pbk2MapUIRes
+TARGETPATH      RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END
+
+START RESOURCE  ../rss/pbk2mapui.rss
+TARGET          Pbk2MapUI
+TARGETPATH      ECOM_RESOURCE_DIR
+END
+
+// Include paths
+USERINCLUDE     ../MapExtension/inc
+SYSTEMINCLUDE   ../MapExtension/inc
+SYSTEMINCLUDE   ../inc
+SYSTEMINCLUDE   ../UIExtensionManager/inc
+SYSTEMINCLUDE   ../UIControls/inc
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib commonengine.lib cone.lib
+LIBRARY efsrv.lib estor.lib ecom.lib bafl.lib
+
+// Dependencies to Symbian OS components
+LIBRARY eikcoctl.lib eikcore.lib  eikctl.lib
+
+// Dependencies to S60 components
+LIBRARY lbs.lib servicehandler.lib eposlandmarks.lib Avkon.lib
+LIBRARY mnservicelib.lib mnclientlib.lib
+
+// Dependencies to Phonebook
+LIBRARY Pbk2CommonUi.lib VPbkEng.lib Pbk2Commands.lib Pbk2UIControls.lib
+
+// End of File

@@ -1,0 +1,81 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*	This is project specification file for the PbkEngine_FM.
+*
+*/
+
+
+// INCLUDES
+#include <platform/app/PbkUID.h> // Phonebook UIDs
+#include "PbkConfig.mmp"    // Phonebook MMP configuration file
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+// Build target
+TARGET          PbkEngine_FM.dll
+TARGETTYPE      PLUGIN
+UID             KEComRecognitionUID2 KPbkEngineFMPluginUID
+CAPABILITY      CAP_ECOM_PLUGIN
+VENDORID        VID_DEFAULT
+
+// Source files location
+SOURCEPATH      ../PbkEngine_FM/src
+
+// Source files
+SOURCE          Dllmain.cpp
+SOURCE          Cfmpbkengineextension.cpp
+
+START RESOURCE  ../rss/101f859c.rss
+TARGET          PbkEngine_FM
+TARGETPATH      resource/plugins
+END
+
+START RESOURCE  ../rss/PbkEngine_FMChineseRes.rss
+HEADER
+TARGET          PbkEngine_FMChineseRes
+TARGETPATH      resource
+LANGUAGE_IDS
+END
+
+START RESOURCE  ../rss/PbkEngine_FMJapaneseRes.rss
+HEADER
+TARGET          PbkEngine_FMJapaneseRes
+TARGETPATH      resource
+LANGUAGE_IDS
+END
+
+START RESOURCE  ../rss/PbkEngine_FMRes.rss
+HEADER
+TARGET          PbkEngine_FMRes
+TARGETPATH      resource
+LANGUAGE_IDS
+END
+
+// Include paths
+USERINCLUDE     ../group ../PbkEngine_FM/inc ../inc
+APP_LAYER_SYSTEMINCLUDE // macro that defines the platform system includes
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib
+LIBRARY efsrv.lib
+LIBRARY ecom.lib
+LIBRARY bafl.lib
+
+LIBRARY FeatMgr.lib
+
+LIBRARY PbkEng.lib
+
+
+// End of File

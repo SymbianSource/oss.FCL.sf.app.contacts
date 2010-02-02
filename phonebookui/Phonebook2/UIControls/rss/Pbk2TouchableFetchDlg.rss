@@ -1,0 +1,262 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 fetch resources.
+*
+*/
+
+
+#include <Pbk2Icons.hrh>
+
+// --------------------------------------------------------------------------
+// Navi pane label for single entry fetch
+// --------------------------------------------------------------------------
+//
+RESOURCE NAVI_DECORATOR r_pbk2_single_entry_fetch_navilabel
+    {
+    type = ENaviDecoratorLabel;
+    control = NAVI_LABEL
+        {
+        txt = qtn_phob_navi_select_one_entry;
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Single entry fetch resource
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_FETCH_DIALOG r_pbk2_single_entry_fetch_dlg
+    {
+    dialog = r_pbk2_single_entry_fetch_control_dlg;
+    cba = r_pbk2_softkeys_select_back_select;
+    emptyCba = r_pbk2_softkeys_empty_back_empty;
+    navi_pane = r_pbk2_single_entry_fetch_navilabel;
+    }
+
+// --------------------------------------------------------------------------
+// Multiple entry fetch resource with groups tab
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_FETCH_DIALOG r_pbk2_multiple_entry_fetch_dlg
+    {
+    dialog = r_pbk2_multiple_entry_fetch_control_dlg;
+    cba = r_pbk2_softkeys_ok_back_mark;
+    emptyCba = r_pbk2_softkeys_empty_back_empty;
+    }
+
+// --------------------------------------------------------------------------
+// Multiple entry fetch resource without groups tab
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_FETCH_DIALOG r_pbk2_multiple_entry_fetch_no_groups_dlg
+    {
+    dialog = r_pbk2_multiple_entry_fetch_no_groups_control_dlg;
+    cba = r_pbk2_softkeys_ok_back_mark;
+    emptyCba = r_pbk2_softkeys_empty_back_empty;
+    }
+
+// --------------------------------------------------------------------------
+// Call item fetch resource
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_FETCH_DIALOG r_pbk2_call_item_fetch_dlg
+    {
+    dialog = r_pbk2_single_entry_fetch_control_dlg;
+    cba = r_pbk2_softkeys_call_back_call;
+    emptyCba = r_pbk2_softkeys_empty_back_empty;
+    navi_pane = r_pbk2_single_entry_fetch_navilabel;
+    }
+
+// --------------------------------------------------------------------------
+// Single entry fetch dialog
+// --------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_pbk2_single_entry_fetch_control_dlg
+    {
+    flags = PBK2_FETCHDIALOG_FLAGS;
+    pages = 0;  // Single page
+    buttons = r_pbk2_softkeys_empty_back_empty;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EPbk2CtNamesContactViewList;
+            id = ECtrlFetchNamesList;
+            itemflags = EEikDlgItemTakesEnterKey |
+                        EEikDlgItemOfferAllHotKeys;
+            control = PBK2_CONTACT_CONTROL
+                {
+                flags = KPbk2ContactViewListControlUpdateContextPane |
+                        KPbk2ContactViewListControlFindBox;
+                listbox = LISTBOX
+                    {
+                    flags = EAknListBoxLoopScrolling;
+                    };
+                iconArray = r_pbk2_contact_list_icons;
+                emptyIconId = PHONEBOOK2_ICON_ID
+                    {
+                    ownerUid = KPbk2UID3;
+                    id = EPbk2qgn_prop_nrtyp_empty;
+                    };
+                defaultIconId = PHONEBOOK2_ICON_ID {};
+                };
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Multiple entry fetch with groups dialog
+// --------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_pbk2_multiple_entry_fetch_control_dlg
+    {
+    flags = PBK2_FETCHDIALOG_FLAGS;
+    pages = r_pbk2_multiple_entry_fetch_dlg_pages;
+    buttons = r_pbk2_softkeys_empty_back_empty;
+    }
+
+// --------------------------------------------------------------------------
+// Multiple entry fetch without groups dialog
+// --------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_pbk2_multiple_entry_fetch_no_groups_control_dlg
+    {
+    flags = PBK2_FETCHDIALOG_FLAGS;
+    pages = r_pbk2_multiple_entry_fetch_no_groups_dlg_pages;
+    buttons = r_pbk2_softkeys_empty_back_empty;
+    }
+
+// --------------------------------------------------------------------------
+// Multiple entry fetch with groups dialog pages
+// --------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_pbk2_multiple_entry_fetch_dlg_pages
+    {
+    items =
+        {
+        PAGE
+            {
+            id = ECtrlFetchNamesList;
+            bmpfile = phonebook2_mbm_file_location;
+            bmpid = qgn_prop_pb_all_tab2;
+            bmpmask = qgn_prop_pb_all_tab2_mask;
+            lines = r_pbk2_multiple_entry_fetch_contactview;
+            },
+        PAGE
+            {
+            id = ECtrlFetchGroupsList;
+            bmpfile = phonebook2_mbm_file_location;
+            bmpid = qgn_prop_group_tab2;
+            bmpmask = qgn_prop_group_tab2_mask;
+            lines = r_pbk2_multiple_entry_fetch_groupsview;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Multiple entry fetch without groups dialog pages
+// --------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_pbk2_multiple_entry_fetch_no_groups_dlg_pages
+    {
+    items =
+        {
+        PAGE
+            {
+            id = ECtrlFetchNamesList;
+            bmpfile = phonebook2_mbm_file_location;
+            bmpid = qgn_prop_pb_all_tab2;
+            bmpmask = qgn_prop_pb_all_tab2_mask;
+            lines = r_pbk2_multiple_entry_fetch_contactview;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Multiple entry fetch dialog page lines - contacts list
+// --------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_pbk2_multiple_entry_fetch_contactview
+    {
+    items =
+        {
+        DLG_LINE
+            {
+            type = EPbk2CtNamesContactViewList;
+            id = ECtrlFetchNamesList;
+            itemflags = EEikDlgItemTakesEnterKey |
+                        EEikDlgItemOfferAllHotKeys;
+            control = PBK2_CONTACT_CONTROL
+                {
+                flags = KPbk2ContactViewListControlUpdateContextPane |
+                        KPbk2ContactViewListControlFindBox;
+                listbox = LISTBOX
+                    {
+                    flags = EAknListBoxStylusMultiselectionList |
+                            EAknListBoxLoopScrolling;
+                    };
+                iconArray = r_pbk2_checkbox_icons;
+                emptyIconId = PHONEBOOK2_ICON_ID
+                    {
+                    ownerUid = KPbk2UID3;
+                    id = EPbk2qgn_prop_checkbox_off;
+                    };
+                defaultIconId = PHONEBOOK2_ICON_ID
+                    {
+                    ownerUid = KPbk2UID3;
+                    id = EPbk2qgn_prop_checkbox_off;
+                    };
+                };
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Multiple entry fetch dialog page lines - groups list
+// --------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_pbk2_multiple_entry_fetch_groupsview
+    {
+    items =
+        {
+        DLG_LINE
+            {
+            type = EPbk2CtGroupsContactViewList;
+            id = ECtrlFetchGroupsList;
+            itemflags = EEikDlgItemTakesEnterKey |
+                        EEikDlgItemOfferAllHotKeys;
+            control = PBK2_CONTACT_CONTROL
+                {
+                flags = KPbk2ContactViewListControlUpdateContextPane;
+                listbox = LISTBOX
+                    {
+                    flags = EAknListBoxStylusMultiselectionList |
+                            EAknListBoxLoopScrolling;
+                    };
+                iconArray = r_pbk2_checkbox_icons;
+                emptyIconId = PHONEBOOK2_ICON_ID
+                    {
+                    ownerUid = KPbk2UID3;
+                    id = EPbk2qgn_prop_checkbox_off;
+                    };
+                defaultIconId = PHONEBOOK2_ICON_ID
+                    {
+                    ownerUid = KPbk2UID3;
+                    id = EPbk2qgn_prop_checkbox_off;
+                    };
+                };
+            }
+        };
+    }
+
+// End of File

@@ -1,0 +1,204 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Commands resources.
+*
+*/
+
+
+NAME PB2C    // Phonebook 2 Commands
+
+// INCLUDES
+#include "Pbk2Commands.hrh"
+#include <eikon.rh>
+#include <eikon.rsg>
+#include <avkon.rsg>
+#include <avkon.rh>
+#include <avkon.mbg>        // Icon in save query
+#include <avkon.loc>
+#include <VPbkContactView.rh>
+#include <VPbkFieldType.rh>
+#include <AvkonIcons.hrh>
+#include <Pbk2Icons.hrh>
+#include <phonebook2.loc>
+#include <phonebook2ece.loc>
+
+// --------------------------------------------------------------------------
+// RSS_SIGNATURE
+// Standard resource signature
+// --------------------------------------------------------------------------
+//
+RESOURCE RSS_SIGNATURE { }
+
+// --------------------------------------------------------------------------
+// DIALOG
+// General wait note 'processing'
+// --------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_qtn_gen_note_processing
+    {
+    flags = EAknWaitNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_EMPTY;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EPbk2NoteProcessing;
+            control = AVKON_NOTE
+                {
+                layout = EWaitLayout;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                singular_label = qtn_gen_note_processing;
+                };
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// DIALOG
+// General copy progress note
+// --------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_general_copy_progress_note
+    {
+    flags = EAknProgressNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EGeneralQuery;
+            control = AVKON_NOTE
+                {
+                layout = EProgressLayout;
+                singular_label = qtn_gen_note_copying;
+                imagefile = AVKON_ICON_FILE;
+                imageid = EMbmAvkonQgn_note_copy;
+                imagemask = EMbmAvkonQgn_note_copy_mask;
+                };
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// DIALOG
+// Deletion wait note
+// --------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_qtn_phob_note_clearing_pb
+    {
+    flags = EAknProgressNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_EMPTY;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EPbk2NoteMemoryDeleteInProgress;
+            control = AVKON_NOTE
+                {
+                layout = EProgressLayout;
+                singular_label = qtn_phob_note_clearing_pb;
+                imagefile = AVKON_ICON_FILE;
+                imageid   = qgn_note_erased;
+                imagemask = qgn_note_erased_mask;
+                };
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// DIALOG
+// Deletion wait note with cancel button
+// --------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_qtn_phob_note_clearing_pb_with_cancel
+    {
+    flags = EAknProgressNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EPbk2NoteMemoryDeleteInProgress;
+            control = AVKON_NOTE
+                {
+                layout = EProgressLayout;
+                singular_label = qtn_phob_note_clearing_pb;
+                imagefile = AVKON_ICON_FILE;
+                imageid   = qgn_note_erased;
+                imagemask = qgn_note_erased_mask;
+                };
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_query_title_select_mem
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_query_title_select_mem
+    {
+    buf = qtn_phob_query_title_select_mem;
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_query_select_mem_all
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_query_select_mem_all
+    {
+    buf = qtn_phob_query_select_mem_all;
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_qtl_call_to_name
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_qtl_call_to_name
+    {
+    buf = qtn_phob_qtl_call_to_name;
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_pbk2_postcard_write_attachment_tag
+// Postcard contact link attachment file name
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_pbk2_postcard_write_attachment_tag
+    {
+    buf = "X-Nokia-PhonebookId_temp";
+    }
+
+// Additional resource files
+#include "ThumbnailCmds.rss"
+#include "ImageCmds.rss"
+#include "SetToneCmd.rss"
+#include "CopyContactsStarterCmd.rss"
+#include "CopyContactsCmd.rss"
+#include "SystemMenu.rss"
+#include "NamesListView.rss"
+#include "SettingsView.rss"
+#include "Pbk2AiwInterest.rss"
+#include "Pbk2ToolbarResources.rss"
+#include "CopyToClipboardCmd.rss"
+#include "ContactInfoView.rss"
+
+// End of File

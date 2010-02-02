@@ -1,0 +1,254 @@
+/*
+* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  LDAP Directory attribute to contact model mapping.
+*
+*/
+
+
+// INCLUDES
+// #include <uikon.rh>
+// #include <badef.rh>
+// #include <cntdef.hrh>
+// For standalone resource build uncomment above includes
+#include "ldapfieldtypemap.rh"
+
+// Define the resource file signature
+// RESOURCE RSS_SIGNATURE { }
+// For standalone resource build uncomment above signature
+
+// ----------------------------------------------------------------------------
+// LDAP Directory attribute to contact model mapping, this part is customizable
+// through external resource file
+//
+RESOURCE LDAP_FIELD_MAPPING_LIST r_ldap_field_mapping_list
+    {
+    items =
+        {
+        // Name characteristics
+        LDAP_FIELDTYPE_MAP
+            {
+            // Common name, LDAP spesific
+            name = "cn";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Distinguished name, LDAP spesific
+            name = "dn";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // First name
+            CntFieldId = KUidContactFieldGivenNameValue;
+            name = "givenName";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Last name
+            CntFieldId = KUidContactFieldFamilyNameValue;
+            name = "sn";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Virtual phonebook maps this to nick name
+            // CntFieldId = KUidContactFieldSecondNameValue;
+            // Middle initial or second name
+            // CntFieldId = KIntContactFieldVCardMapSECONDNAME;
+            // Better mapping to virtual phonebook
+            CntFieldId = KUidContactFieldAdditionalNameValue;
+            name = "initials";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Display name, using vCard mapping type
+            CntFieldId = KIntContactFieldVCardMapUnusedFN;
+            name = "displayName";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Description to note
+            CntFieldId = KUidContactFieldNoteValue;
+            name = "description";
+            },
+            
+        /* Picture, inetOrgPerson non-standard photo
+        LDAP_FIELDTYPE_MAP
+            {
+            // Photo
+            CntFieldId = KUidContactFieldPictureValue;
+            name = "jpegPhoto";
+            },
+        */
+
+        // Company characteristics
+        LDAP_FIELDTYPE_MAP
+            {
+            // Title
+            CntFieldId = KUidContactFieldJobTitleValue;
+            name = "title";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Organization
+            CntFieldId = KUidContactFieldCompanyNameValue;
+            name = "o";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Organization - company
+            CntFieldId = KUidContactFieldCompanyNameValue;
+            name = "company";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Organization - company
+            CntFieldId = KUidContactFieldCompanyNameValue;
+            name = "nokiaInternalCompanyName";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Organizational unit, for search only
+            CntFieldId = KUidContactFieldDepartmentNameValue;
+            name = "ou";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Organizational unit, for search only
+            CntFieldId = KUidContactFieldDepartmentNameValue;
+            name = "department";
+            },
+
+        // Email
+        LDAP_FIELDTYPE_MAP
+            {
+            // Email address
+            CntFieldId = KUidContactFieldEMailValue;
+            name = "mail";
+            },
+            
+        // Instant messaging
+        // KUidContactFieldIMAddress
+            
+        // Url
+        LDAP_FIELDTYPE_MAP
+            {
+            // Home page
+            CntFieldId = KUidContactFieldUrlValue;
+            name = "url";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Home page - Active Directory
+            CntFieldId = KUidContactFieldUrlValue;
+            name = "wWWHomePage";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Home page - Nestcape, IBM, etc
+            CntFieldId = KUidContactFieldUrlValue;
+            name = "wWWURL";
+            },
+
+        // Phone numbers            
+        LDAP_FIELDTYPE_MAP
+            {
+            // Main phone number
+            CntFieldId = KUidContactFieldPhoneNumberValue;
+            name = "telephoneNumber";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Fax number
+            CntFieldId = KUidContactFieldFaxValue;
+            name = "facsimileTelephoneNumber";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Mobile phone number, using vCard mapping
+            CntFieldId = KIntContactFieldVCardMapCELL;
+            name = "mobile";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Home phone number, using vCard mapping
+            CntFieldId = KIntContactFieldVCardMapTEL;
+            name = "homePhone";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // IP phone number, using vCard mapping
+            CntFieldId = KIntContactFieldVCardMapVOIP;
+            name = "IPPhone";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Pager number, using vCard mapping
+            CntFieldId = KIntContactFieldVCardMapPAGER;
+            name = "pager";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Extension, where to map
+            CntFieldId = 0;
+            name = "nokiaExtensionNumber";
+            },
+
+        // Address fields            
+        LDAP_FIELDTYPE_MAP
+            {
+            // Postal address
+            CntFieldId = KUidContactFieldAddressValue;
+            name = "postalAddress";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Street address, visiting address
+            CntFieldId = KUidContactFieldAddressValue;
+            name = "streetAddress";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Zip code
+            CntFieldId = KUidContactFieldPostCodeValue;
+            name = "postalCode";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Locality
+            CntFieldId = KUidContactFieldLocalityValue;
+            name = "l";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // State, region
+            CntFieldId = KUidContactFieldRegionValue;
+            name = "st";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Country, actually country code
+            CntFieldId = KUidContactFieldCountryValue;
+            name = "c";
+            },
+        LDAP_FIELDTYPE_MAP
+            {
+            // Country
+            CntFieldId = KUidContactFieldCountryValue;
+            name = "co";
+            }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+// End of File
+// -----------------------------------------------------------------------------

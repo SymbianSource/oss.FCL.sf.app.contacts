@@ -1,0 +1,50 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Build time configuration file for Virtual Phonebook.
+*
+*/
+
+
+#ifndef VPBKDATACAGING_HRH
+#define VPBKDATACAGING_HRH
+
+#include <bldvariant.hrh>
+
+/**
+ * The literals are defined here. They can also be found from
+ * data_caging_path_literals.hrh, but in that file the literals
+ * include a backslash.
+ */
+
+/// Contacts model resources
+_LIT(KDC_CONTACTS_RESOURCE_DIR,"\\resource\\cntmodel");
+
+/// Plugins
+_LIT(KDC_PLUGINS_1_DIR,"\\sys\\bin");
+
+/// Other resource files
+_LIT(KDC_RESOURCE_FILES_DIR,"\\resource");
+
+/// ROM drive letter
+_LIT(KVPbkRomFileDrive, "z:");
+
+/// Virtual Phonebook engine default resource file
+_LIT(KVPbkDefResFileName, "VPbkEng.rsc");
+
+/// Virtual Phonebook engine field type selectors resource file
+_LIT(KVPbkFieldTypeSelectorsResFileName, "VPbkFieldTypeSelectors.rsc");
+
+#endif // VPBKDATACAGING_HRH
+
+// End of File

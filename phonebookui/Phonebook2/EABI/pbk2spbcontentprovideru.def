@@ -1,0 +1,7 @@
+EXPORTS
+	_ZN19CSpbContentProvider11GetContentLER16MVPbkContactLinkRP7HBufC16R11TPbk2IconIdRNS_15TSpbContentTypeE @ 1 NONAME
+	_ZN19CSpbContentProvider12AddObserverLER27MSpbContentProviderObserver @ 2 NONAME
+	_ZN19CSpbContentProvider14RemoveObserverER27MSpbContentProviderObserver @ 3 NONAME
+	_ZN19CSpbContentProvider19CreateServiceIconLCERK11TPbk2IconId @ 4 NONAME
+	_ZN19CSpbContentProvider4NewLER19CVPbkContactManagerR17CPbk2StoreManagerl @ 5 NONAME
+

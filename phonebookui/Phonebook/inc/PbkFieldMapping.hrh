@@ -1,0 +1,51 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains declarations for resources of PbkEng.dll
+*     The file can be included in C++ or resource file.
+*     
+*
+*/
+
+
+#ifndef PbkFieldMapping_HRH
+#define PbkFieldMapping_HRH
+
+// Phonebook vCard property parameter bits
+// (class EPbkFieldIdvCardParams)
+#define KPbkContactFieldVCardMapHOMEBit				0x00000001
+#define KPbkContactFieldVCardMapWORKBit				0x00000002
+#define KPbkContactFieldVCardMapVOICEBit			0x00000004
+#define KPbkContactFieldVCardMapCELLBit				0x00000008
+#define KPbkContactFieldVCardMapFAXBit				0x00000010
+#define KPbkContactFieldVCardMapPAGERBit			0x00000020
+#define KPbkContactFieldVCardMapMSGBit              0x00000040
+#define KPbkContactFieldVCardMapBBSBit              0x00000080
+#define KPbkContactFieldVCardMapMODEMBit            0x00000100
+#define KPbkContactFieldVCardMapCARBit              0x00000200
+#define KPbkContactFieldVCardMapISDNBit             0x00000400
+#define KPbkContactFieldVCardMapVIDEOBit            0x00000800
+#define KPbkContactFieldVCardMapDOMBit              0x00001000
+#define KPbkContactFieldVCardMapINTLBit             0x00002000
+#define KPbkContactFieldVCardMapPOSTALBit           0x00002000
+#define KPbkContactFieldVCardMapPARCELBit           0x00004000
+#define KPbkContactFieldVCardMapINTERNETBit         0x00008000
+#define KPbkContactFieldVCardMapPREFBit             0x00010000
+#define KPbkContactFieldVCardMapX509Bit             0x00020000
+#define KPbkContactFieldVCardMapPGPBit              0x00040000
+#define KPbkContactFieldVCardMapSMIMEBit            0x00080000
+
+#endif
+
+// End of File

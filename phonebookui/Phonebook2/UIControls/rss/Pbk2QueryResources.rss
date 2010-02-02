@@ -1,0 +1,64 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 UI Controls query resources.
+*
+*/
+
+
+#include <avkon.loc>
+#include <phonebook2.loc>
+
+// --------------------------------------------------------------------------
+// Phonebook 2 general confirmation query
+// --------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_pbk2_general_confirmation_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_YES_NO__YES;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control = AVKON_CONFIRMATION_QUERY
+                {
+                layout = EConfirmationQueryLayout;
+                };
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// A query for selecting a store
+// --------------------------------------------------------------------------
+//
+RESOURCE AVKON_LIST_QUERY r_pbk2_store_list_query
+    {
+    items =
+        {
+        AVKON_LIST_QUERY_DLG_LINE
+            {
+            control = AVKON_LIST_QUERY_CONTROL
+                {
+                listtype = EAknCtSinglePopupMenuListBox;
+                listbox = AVKON_LIST_QUERY_LIST {};
+                heading = " ";
+                };
+            }
+        };
+    }
+
+// End of File

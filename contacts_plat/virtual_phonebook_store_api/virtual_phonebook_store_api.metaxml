@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<api id="5942e8c27c1467a8830039200ce0be62" dataversion="2.0">
+  <name>Virtual Phonebook Store API</name>
+  <description>ECom plugin API for Virtual Phonebook store implementation.</description>
+  <type>c++</type>
+  <collection>phonebookengines</collection>
+  <libs>
+    <lib name="VPbkEng.lib" />
+  </libs>
+  <release category="platform"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>no</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>

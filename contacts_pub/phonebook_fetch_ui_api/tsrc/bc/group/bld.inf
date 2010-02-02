@@ -1,0 +1,43 @@
+/*
+* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:        ?Description
+*
+*/
+
+PRJ_MMPFILES
+#include "../MTPbkAddressSelect/group/bld.inf"
+#include "../MTPbkEmailAddressSelect/group/bld.inf"
+#include "../MTPbkEmailOverSms/group/bld.inf"
+#include "../MTPbkMemoryEntryAddItemDlg/group/bld.inf"
+#include "../MTPbkMmsAddressSelect/group/bld.inf"
+#include "../MTPbkMultipleEntryFetchDlg/group/bld.inf"
+#include "../MTPbkPhoneNumberSelect/group/bld.inf"
+#include "../MTPbkSelectFieldDlg/group/bld.inf"
+#include "../MTPbkSingleEntryFetchDlg/group/bld.inf"
+#include "../MTPbkSingleItemFetchDlg/group/bld.inf"
+#include "../MTPbkFetchCallbacks/group/bld.inf"
+#include "../MTPbkSmsAddressSelect/group/bld.inf"
+#include "../MTPbkFetchDlgSelection/group/bld.inf"
+#include "../MTPbkPocAddressSelect/group/bld.inf"
+#include "../MTPbkPhoneNumberSelectBase/group/bld.inf"
+
+PRJ_EXPORTS
+PBKFetch_c.bat							/epoc32/winscw/c/PBKFetch_c.bat
+PBKFetch_z.bat							/epoc32/winscw/c/PBKFetch_z.bat
+testframework.ini						/epoc32/winscw/c/testframework/TestFramework_PBKFetch.ini
+tcBCTestPbkfetch.cfg				/epoc32/winscw/c/testframework/tcBCTestPbkfetch.cfg
+
+
+
+//  End of File

@@ -1,0 +1,89 @@
+// Copyright (c) 1999-2009 Nokia Corporation and/or its subsidiary(-ies).
+// All rights reserved.
+// This component and the accompanying materials are made available
+// under the terms of "Eclipse Public License v1.0"
+// which accompanies this distribution, and is available
+// at the URL "http://www.eclipse.org/legal/epl-v10.html".
+//
+// Initial Contributors:
+// Nokia Corporation - initial contribution.
+//
+// Contributors:
+//
+// Description:
+// Contacts application engine // dbms version
+// 
+//
+
+#include "./COMMON.INF"
+
+PRJ_MMPFILES
+./CNTMODEL.MMP
+
+
+PRJ_TESTMMPFILES
+../tsrc/CNTTUTIL.MMP		support
+../tsrc/T_RecoverView.mmp
+../tsrc/T_NOMACH.MMP
+../tsrc/T_Sec_AsyncOpen.mmp
+../tsrc/t_cnt_backup.mmp
+../tsrc/t_bench.mmp			manual
+../tsrc/cntmodel2/T_PlTransactionManager.mmp
+../tsrc/T_ViewSortPlugin.mmp
+../tsrc/T_DBASE2.MMP	
+../tsrc/t_lowdiskspace.mmp
+../tsrc/t_platsec.mmp
+../tsrc/T_viewcontactid.mmp
+../tsrc/performance/T_Performance.mmp
+../tsrc/t_HintExtension.mmp
+../tsrc/T_datacompatibility.mmp
+
+// Platform Security
+../tsrc/T_SEC_CNTDBASE.MMP
+
+// Persistence Layer / Contacts Model Performance Tests
+../tsrc/T_PlPerformance.mmp
+
+//Persistence Layer Tests
+../tsrc/T_PersistenceLayer.mmp
+
+// Contact Packager Tests
+../tsrc/cntmodel2/T_Packager.mmp
+../tsrc/cntmodel2/T_CProgressNotification.mmp
+../tsrc/T_PlPerformanceAPI.mmp
+../tsrc/PackagerClientServer/Server/group/T_PackagerTestServer.mmp support
+../tsrc/PackagerClientServer/Client/group/T_PackagerTestClient.mmp support
+../tsrc/PackagerClientServer/Test/group/T_PackagerTestHarness.mmp
+
+
+#include "../tsrc/Integration/CntPerfTest/group/BLD.INF"
+
+#include "../tsrc/Integration/PerfFuncSuite/group/bld.inf"
+
+#include "../tsrc/Integration/TCntPolice/group/BLD.INF"
+
+#include "../tsrc/Integration/TestImpExvCard/group/bld.inf"
+
+
+PRJ_TESTEXPORTS
+
+//Data compatibility v4
+../tsrc/databases/FormatV4.cdb	z:/core-apps/app-engines/cntmodel/databases/formatv4.cdb
+
+//Data compatibility v5 
+../tsrc/databases/FormatV5.cdb	z:/core-apps/app-engines/cntmodel/databases/formatv5.cdb
+
+//Data compatibility v6 with 10 contacts 
+../tsrc/databases/FormatV6-10.cdb	z:/core-apps/app-engines/cntmodel/databases/formatv6-10.cdb
+
+//Data compatibility v7 with 25 contacts 
+../tsrc/databases/FormatV7-25.cdb	z:/core-apps/app-engines/cntmodel/databases/formatv7-25.cdb
+
+//Data compatibility v8 with 100 contacts
+../tsrc/databases/DBS_100065FF_performance_100_4.cdb	z:/core-apps/app-engines/cntmodel/databases/dbs_100065ff_performance_100_4.cdb
+
+//Data compatibility v4 with 4 contacts 
+../tsrc/databases/FormatV4-4.cdb	z:/core-apps/app-engines/cntmodel/databases/formatv4-4.cdb
+
+// Contacts Platsec
+../tsrc/databases/contacts58920.cdb  z:/core-apps/app-engines/cntmodel/databases/contacts58920.cdb

@@ -1,0 +1,285 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains the enumerations that define ordering for different
+*     items in contact.
+*
+*/
+
+
+#ifndef __PbkJapaneseFieldOrdering_HRH__
+#define __PbkJapaneseFieldOrdering_HRH__
+
+/**
+ * Phonebook field type ordering groups.
+ */
+enum TPbkOrderingGroup
+    {
+    EPbkOrderingGroupNames = 1,
+    EPbkOrderingGroupPhoneNumbers,
+    EPbk2OrderingGroupSIPAddresses,
+    EPbkOrderingGroupAddresses,
+    EPbkOrderingGroupDates,
+    EPbkOrderingGroupNotes,
+    EPbkOrderingGroupImages,
+    EPbkOrderingGroupObjectForCall,
+    EPbkOrderingGroupIndicators,
+    EPbkOrderingGroupChoiceItems
+    };
+
+/**
+ * Phonebook field type ordering items.
+ */
+enum TPbkOrderingItem
+    {
+    // Names
+    EPbkOrderingItemPrefix = 1,
+    EPbkOrderingItemPrimaryName,        // lastname
+    EPbkOrderingItemLastNameReading,    // lastname reading
+    EPbkOrderingItemMiddleName,         // middlename
+    EPbkOrderingItemSecondaryName,      // firstname
+    EPbkOrderingItemFirstNameReading,   // firstname reading
+    EPbkOrderingItemSuffix,    
+    EPbkOrderingItemSecondName,         // nick name field
+
+    // Phone numbers    
+    EPbkOrderingItemPhoneNumberMobile,
+    EPbkOrderingItemPhoneNumberMobileHome,
+    EPbkOrderingItemPhoneNumberMobileWork,
+    EPbkOrderingItemPhoneNumberGeneral,
+    EPbkOrderingItemPhoneNumberHome,
+    EPbkOrderingItemPhoneNumberWork,
+        
+    // Internet addresses
+    EPbkOrderingItemEmailAddress,
+    EPbkOrderingItemEmailAddressHome,
+    EPbkOrderingItemEmailAddressWork,
+    
+    // Phone numbers
+    EPbkOrderingItemCarPhoneNumber,        
+    EPbkOrderingItemPhoneNumberVideo,
+    EPbkOrderingItemPhoneNumberVideoHome,
+    EPbkOrderingItemPhoneNumberVideoWork,    
+    EPbkOrderingItemFaxNumber,
+    EPbkOrderingItemFaxNumberHome,
+    EPbkOrderingItemFaxNumberWork,
+    EPbkOrderingItemPagerNumber,
+    EPbkOrderingItemDTMFString,
+
+    EPbkOrderingItemPhoneNumberVOIP,
+    EPbkOrderingItemPhoneNumberVOIP2,
+    EPbkOrderingItemPhoneNumberVOIPHome,
+    EPbkOrderingItemPhoneNumberVOIPHome2,
+    EPbkOrderingItemPhoneNumberVOIPWork,
+    EPbkOrderingItemPhoneNumberVOIPWork2,
+    EPbkOrderingItemPhoneNumberPushToTalk,
+    EPbkOrderingItemPhoneNumberPushToTalk2,
+    EPbkOrderingItemPhoneNumberShareView,
+    EPbkOrderingItemPhoneNumberShareView2,
+    EPbkOrderingItemPhoneNumberSIPID,
+    
+    // Company
+    EPbkOrderingItemCompanyName,    
+    EPbkOrderingItemDepartment,
+    EPbkOrderingItemJobTitle,
+    EPbkOrderingItemAssistantName,
+    EPbkOrderingItemAssistantPhoneNumber,
+    EPbkOrderingItemSpouse,
+    EPbkOrderingItemChildren,
+        
+    // Addresses    
+    EPbkOrderingItemWVAddress,
+    EPbkOrderingItemURL,
+    EPbkOrderingItemURLHome,
+    EPbkOrderingItemURLWork,
+    
+    EPbkOrderingItemAddress,
+    EPbkOrderingItemAddressHome,
+    EPbkOrderingItemAddressWork,
+    // General
+    EPbkOrderingItemPostalAddressPostalCode,
+    EPbkOrderingItemPostalAddressState,    
+    EPbkOrderingItemPostalAddressCity,
+    EPbkOrderingItemPostalAddressStreet,
+    EPbkOrderingItemPostalAddressExtension,     
+    EPbkOrderingItemPostalAddressPOBox,           
+    EPbkOrderingItemPostalAddressCountry,
+    // Home
+    EPbkOrderingItemHomeAddressPostalCode,
+    EPbkOrderingItemHomeAddressState,
+    EPbkOrderingItemHomeAddressCity,
+    EPbkOrderingItemHomeAddressStreet,
+    EPbkOrderingItemHomeAddressExtension,
+    EPbkOrderingItemHomeAddressPOBox,                
+    EPbkOrderingItemHomeAddressCountry,
+    // Work
+    EPbkOrderingItemCompanyAddressPostalCode,
+    EPbkOrderingItemCompanyAddressState,
+    EPbkOrderingItemCompanyAddressCity,
+    EPbkOrderingItemCompanyAddressStreet,
+    EPbkOrderingItemCompanyAddressExtension,
+    EPbkOrderingItemCompanyAddressPOBox,                
+    EPbkOrderingItemCompanyAddressCountry,
+        
+    // Dates
+    EPbkOrderingItemDate,
+    EPbkOrderingItemAnniversary,
+
+    // Notes
+    EPbkOrderingItemNote,
+
+    // Personal ringing tone
+    EPbkOrderingItemRingingTone,
+
+    // Images
+    EPbkOrderingItemPicture,    
+
+    // Objects for call
+    EPbkOrderingItemCODImage,
+    EPbkOrderingItemCODText,
+
+    EPbkOrderingItemSyncronization,
+
+    // Indicators
+    EPbkOrderingItemLocationPrivacy,
+    EPbkOrderingItemTopContact,
+    EPbkOrderingItemXsp,
+    
+    // Invisible fields; keep these in specified order, below
+    // the visible items  
+    EPbkOrderingItemThumbnailImage,      
+    EPbkOrderingItemPostalAddressGeo,
+    EPbkOrderingItemHomeAddressGeo,
+    EPbkOrderingItemCompanyAddressGeo
+    };
+
+/**
+ * Defines European name field ordering. Apac version changes the ordering 
+ * run-time.
+ */
+enum TPbkAdditionalOrderingItem
+    {
+    EPbkOrderingItemLastName = EPbkOrderingItemPrimaryName,
+    EPbkOrderingItemFirstName = EPbkOrderingItemSecondaryName
+    };
+
+/**
+ * Phonebook Add Item field ordering.
+ */
+enum TPbkAddItemOrdering
+    {	
+    EPbkAddItemOrderPrefix = 1,    
+    EPbkAddItemOrderLastName,
+    EPbkAddItemOrderLastNameReading,	
+    EPbkAddItemOrderMiddleName,    
+    EPbkAddItemOrderFirstName,
+    EPbkAddItemOrderFirstNameReading,       
+	EPbkAddItemOrderSuffix,    
+    EPbkAddItemOrderSecondName, // nickname
+    
+    // Phone numbers            	
+    EPbkAddItemOrderPhoneNumberMobile,
+    EPbkAddItemOrderPhoneNumberMobileHome,
+    EPbkAddItemOrderPhoneNumberMobileWork,
+    EPbkAddItemOrderPhoneNumberGeneral,
+    EPbkAddItemOrderPhoneNumberHome,
+    EPbkAddItemOrderPhoneNumberWork,
+    
+    // Internet fields    
+    EPbkAddItemOrderEmail,      
+    EPbkAddItemOrderEmailHome,  
+    EPbkAddItemOrderEmailWork,
+    
+    // Phone numbers
+    EPbkAddItemOrderCarPhone,
+    EPbkAddItemOrderPhoneNumberVideo,
+    EPbkAddItemOrderPhoneNumberVideoHome,
+    EPbkAddItemOrderPhoneNumberVideoWork,        
+    EPbkAddItemOrderPhoneNumberFax,
+    EPbkAddItemOrderPhoneNumberFaxHome,
+    EPbkAddItemOrderPhoneNumberFaxWork,
+    EPbkAddItemOrderPhoneNumberPager,
+    
+    // Additional items
+    EPbkAddItemOrderDTMF,
+    
+    // Internet fields 
+    EPbkAddItemOrderPhoneNumberVOIP,
+    EPbkAddItemOrderPhoneNumberVOIPHome,
+    EPbkAddItemOrderPhoneNumberVOIPWork,
+    EPbkAddItemOrderPhoneNumberPushToTalk,
+    EPbkAddItemOrderPhoneNumberShareView,
+    EPbkAddItemOrderPhoneNumberSIPID,
+    
+    // Company info
+    EPbkAddItemOrderCompanyName,
+    EPbkAddItemOrderDepartment,
+    EPbkAddItemOrderJobTitle,   
+    EPbkAddItemOrderAssistantName,
+    EPbkAddItemOrderAssistantPhone,    
+    EPbkAddItemOrderSpouse,
+    EPbkAddItemOrderChildren,                
+    
+    // Internet fields
+    EPbkAddItemOrderWVAddress,
+    EPbkAddItemOrderURL,
+    EPbkAddItemOrderURLHome,
+    EPbkAddItemOrderURLWork,
+        
+    // General address
+    EPbkAddItemOrderPostalAddress,      // group for general address    
+    EPbkAddItemOrderPostalCode,
+    EPbkAddItemOrderState,
+    EPbkAddItemOrderCity,
+    EPbkAddItemOrderStreet,
+    EPbkAddItemOrderExtensionAddress,
+    EPbkAddItemOrderPOBox,             
+    EPbkAddItemOrderCountry,
+    
+    // Home address
+    EPbkAddItemOrderHomeAddress,         // group for home address
+    EPbkAddItemOrderPostalCodeHome,
+    EPbkAddItemOrderStateHome,
+    EPbkAddItemOrderCityHome,
+    EPbkAddItemOrderStreetHome,
+    EPbkAddItemOrderExtensionAddressHome,        
+    EPbkAddItemOrderPOBoxHome,
+    EPbkAddItemOrderCountryHome,
+    
+    // Work address
+    EPbkAddItemOrderCompanyAddress,     // group for work address
+    EPbkAddItemOrderPostalCodeWork,
+    EPbkAddItemOrderStateWork,
+    EPbkAddItemOrderCityWork,    
+    EPbkAddItemOrderStreetWork,
+    EPbkAddItemOrderExtensionAddressWork,    
+    EPbkAddItemOrderPOBoxWork,
+    EPbkAddItemOrderCountryWork,        
+
+    // Additional items    
+    EPbkAddItemOrderDate,
+    EPbkAddItemOrderAnniversary,
+    EPbkAddItemOrderNote,
+    EPbkAddItemOrderCODImage,
+    EPbkAddItemOrderCODText,
+    EPbkAddItemOrderNone,
+    EPbkAddItemOrderSyncronization,
+    EPbkAddItemOrderGeo,
+    EPbkAddItemOrderGeoHome,
+    EPbkAddItemOrderGeoWork
+    };
+
+#endif // __PbkJapaneseFieldOrdering_HRH__
+
+// End of File

@@ -1,0 +1,13 @@
+EXPORTS
+	?CountPackageSize@Pbk2IPCPackage@@SAHPAVHBufC16@@@Z @ 1 NONAME ; int Pbk2IPCPackage::CountPackageSize(class HBufC16 *)
+	?CountPackageSize@Pbk2IPCPackage@@SAHPAVHBufC8@@@Z @ 2 NONAME ; int Pbk2IPCPackage::CountPackageSize(class HBufC8 *)
+	?ExternalizeL@Pbk2IPCPackage@@SAXAAPAVHBufC16@@AAVRDesWriteStream@@@Z @ 3 NONAME ; void Pbk2IPCPackage::ExternalizeL(class HBufC16 * &, class RDesWriteStream &)
+	?ExternalizeL@Pbk2IPCPackage@@SAXAAPAVHBufC8@@AAVRDesWriteStream@@@Z @ 4 NONAME ; void Pbk2IPCPackage::ExternalizeL(class HBufC8 * &, class RDesWriteStream &)
+	?InternalizeL@Pbk2IPCPackage@@SAXAAPAVHBufC16@@AAVRDesReadStream@@@Z @ 5 NONAME ; void Pbk2IPCPackage::InternalizeL(class HBufC16 * &, class RDesReadStream &)
+	?InternalizeL@Pbk2IPCPackage@@SAXAAPAVHBufC8@@AAVRDesReadStream@@@Z @ 6 NONAME ; void Pbk2IPCPackage::InternalizeL(class HBufC8 * &, class RDesReadStream &)
+	?InternalizeL@Pbk2IPCPackage@@SAXAAPAVHBufC16@@AAVRDesReadStream@@H@Z @ 7 NONAME ; void Pbk2IPCPackage::InternalizeL(class HBufC16 * &, class RDesReadStream &, int)
+	?InternalizeL@Pbk2IPCPackage@@SAXAAPAVHBufC8@@AAVRDesReadStream@@H@Z @ 8 NONAME ; void Pbk2IPCPackage::InternalizeL(class HBufC8 * &, class RDesReadStream &, int)
+	?MapMimeTypeL@Pbk2MimeTypeHandler@@SAHABVTDesC16@@@Z @ 9 NONAME ; int Pbk2MimeTypeHandler::MapMimeTypeL(class TDesC16 const &)
+	?MapMimeTypeL@Pbk2MimeTypeHandler@@SAHABVTDesC8@@@Z @ 10 NONAME ; int Pbk2MimeTypeHandler::MapMimeTypeL(class TDesC8 const &)
+	?LaunchNewContactL@Pbk2LaunchNewContact@@SAXXZ @ 11 NONAME ; void Pbk2LaunchNewContact::LaunchNewContactL(void)
+

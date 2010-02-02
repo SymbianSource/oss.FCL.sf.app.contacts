@@ -1,0 +1,52 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  A project file for SIM store common implementation.
+*
+*/
+
+
+#include "../inc/VPbkPrivateUid.h"
+#include "VPbkConfig.mmp"
+#include <platform_paths.hrh>
+
+TARGET          VPbkSimStoreCommon.dll
+TARGETTYPE      dll
+UID             0x1000008d KVPbkEngUID3
+
+CAPABILITY      CAP_GENERAL_DLL
+
+SOURCEPATH  ../VPbkSimStoreCommon/src 
+
+// Public API
+SOURCE      RVPbkStreamedIntArray.cpp
+SOURCE      CVPbkSimFieldTypeFilter.cpp
+SOURCE      VPbkSimStoreCommonUtil.cpp
+
+#ifdef VPBK_DONT_CHECK_SIM_STATE
+SOURCE      CVPbkSimStateInformationStub.cpp
+#else
+SOURCE      CVPbkSimStateInformation.cpp
+#endif // VPBK_DONT_CHECK_SIM_STATE
+
+USERINCLUDE     .
+USERINCLUDE     ../VPbkSimStoreCommon/inc
+
+SYSTEMINCLUDE   ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to Symbian OS components
+LIBRARY         euser.lib estor.lib ecom.lib centralrepository.lib
+LIBRARY         featmgr.lib
+
+// End of File

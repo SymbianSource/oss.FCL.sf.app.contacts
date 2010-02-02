@@ -1,0 +1,174 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file contains resources for Phonebook 2
+*
+*/
+
+
+/**
+ * 'Select fields to send' listbox for contact list views.
+ */
+RESOURCE LISTBOX r_phonebook2_send_options
+	{
+	array_id = r_phonebook2_send_options_texts;
+    flags = EAknListBoxMenuList;
+	}
+
+
+/**
+ * 'Select fields to send' listbox texts for contact list views.
+ */
+RESOURCE ARRAY r_phonebook2_send_options_texts
+    {
+    items = 
+        {
+        LBUF { txt=qtn_bcard_send_sms_no_image; },
+        LBUF { txt=qtn_bcard_send_sms_image; }
+        };
+    }
+
+/**
+ * 'Select fields to send' listbox for contact info view.
+ */
+RESOURCE LISTBOX r_pbk2_contactinfo_send_options
+	{
+	array_id = r_pbk2_contactinfo_send_options_texts; 
+    flags = EAknListBoxMenuList;
+	}
+
+
+/**
+ * 'Select fields to send' listbox for contact info view.
+ */
+RESOURCE LISTBOX r_pbk2_contactinfo_send_options_sms_thumbnail
+	{
+	array_id = r_pbk2_contactinfo_send_options_texts_sms_thumbnail; 
+    flags = EAknListBoxMenuList;
+	}
+
+
+/**
+ * 'Select fields to send' listbox for contact info view.
+ */
+RESOURCE LISTBOX r_pbk2_contactinfo_send_options_sms_thumbnail_no_field
+	{
+	array_id = r_pbk2_contactinfo_send_options_texts_sms_thumbnail_no_field;
+    flags = EAknListBoxMenuList;
+	}
+
+
+/**
+ * 'Select fields to send' listbox texts for contact info view.
+ */
+RESOURCE ARRAY r_pbk2_contactinfo_send_options_texts
+    {
+    items = 
+        {
+        LBUF { txt=qtn_bcard_choice_send_item_data; },
+        LBUF { txt=qtn_bcard_choice_send_all_data; }
+        };
+    }
+
+/**
+ * 'Select fields to send' listbox texts for contact info view.
+ */
+RESOURCE ARRAY r_pbk2_contactinfo_send_options_texts_sms_thumbnail
+    {
+    items = 
+        {
+        LBUF { txt=qtn_bcard_choice_send_item_data; },
+		LBUF { txt=qtn_bcard_send_detail_without_p; },	
+		LBUF { txt=qtn_bcard_send_detail_with_pict; }
+        };
+    }
+
+
+/**
+ * 'Select fields to send' listbox texts for contact info view.
+ */
+RESOURCE ARRAY r_pbk2_contactinfo_send_options_texts_sms_thumbnail_no_field
+    {
+    items = 
+        {
+		LBUF { txt=qtn_bcard_send_detail_without_p; },
+		LBUF { txt=qtn_bcard_send_detail_with_pict; }
+        };
+    }
+    
+RESOURCE TBUF r_pbk2_businesscard_send_heading
+    { 
+    buf = qtn_bcard_qtl_send_data; 
+    }
+    
+RESOURCE TBUF r_pbk2_businesscard_send_heading_several
+    { 
+    buf = qtn_bcard_qtl_send_data_several; 
+    }
+
+// Field type for lastname name
+RESOURCE VPBK_FIELD_TYPE_MAPPING_LIST r_lname_field_type
+    {            
+    items =
+        {
+        VPBK_FIELD_TYPE_MAPPING
+            {
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameN;
+                subField = EVPbkVersitSubFieldFamilyName;
+                };
+            } 
+        };
+    }
+    
+// Field type for first name
+RESOURCE VPBK_FIELD_TYPE_MAPPING_LIST r_fname_field_type
+    {            
+    items =
+        {
+        VPBK_FIELD_TYPE_MAPPING
+            {
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameN;
+                subField = EVPbkVersitSubFieldGivenName;
+                };
+            } 
+        };
+    }    
+    
+
+/**
+ * Converting to business card for sending wait note.
+ */
+RESOURCE DIALOG r_qtn_sm_wait_business_card
+    {
+    flags = EAknWaitNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items =
+        {	    
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EPbk2NoteConvertingToBusinessCard;
+            control = AVKON_NOTE 
+                { 
+                layout = EWaitLayout;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                singular_label = qtn_sm_wait_business_card;
+                };
+            }
+        };
+    }    
+// End of file    

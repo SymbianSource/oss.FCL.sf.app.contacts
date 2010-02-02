@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<api id="ee826b6323ef3c5ffe8a2125a637220a" dataversion="2.0">
+  <name>Phonebook Extension API</name>
+  <description>Internal interface for the Phonebook extensions. The Core Phonebook uses this interface to connect to its UI extensions. The extensions implement this interface.</description>
+  <type>c++</type>
+  <collection>phonebookui</collection>
+  <libs>
+  </libs>
+  <release category="platform" deprecatedsince="0"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>no</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>

@@ -1,0 +1,203 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This is project specification file for the PbkView.
+*
+*/
+
+
+// INCLUDES
+#include <platform/app/PbkUID.h> // Phonebook UIDs
+#include "PbkConfig.mmp"    // Phonebook MMP configuration file
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+// Build target
+TARGET      PbkView.dll
+TARGETTYPE  dll
+UID         KEPOCStaticDllUID2 KPbkDllUID3
+CAPABILITY  CAP_GENERAL_DLL
+VENDORID    VID_DEFAULT
+
+// Source files location
+SOURCEPATH      ../View/src
+
+// Controls
+SOURCE          CPbkContactListControlBase.cpp
+SOURCE          CPbkContactViewListControl.cpp 
+SOURCE          CPbkContactViewListModelBase.cpp 
+SOURCE          CPbkContactViewListModelCommon.cpp
+SOURCE          CPbkContactViewListCacheModel.cpp 
+SOURCE          CPbkContactViewListFixedIconModel.cpp
+SOURCE          CPbkContactGroupListModel.cpp 
+SOURCE          CPbkContactDetailsBaseControl.cpp
+SOURCE          CPbkContactInfoControl.cpp
+SOURCE          CPbkThumbnailPopupControl.cpp
+SOURCE          CPbkThumbnailPopupControlSlim.cpp
+SOURCE          CPbkThumbnailScaler.cpp
+SOURCE          PbkContactViewListModelFactory.cpp
+
+// Dialogs
+SOURCE          CPbkContactEditorDlg.cpp
+SOURCE          CPbkFetchDlg.cpp
+SOURCE          CPbkSingleEntryFetchDlg.cpp
+SOURCE          CPbkMultipleEntryFetchDlg.cpp
+SOURCE          CPbkSingleItemFetchDlg.cpp
+SOURCE          CPbkGroupMembersFetchDlg.cpp
+SOURCE          PbkFetchDlgPageFactory.cpp
+SOURCE          CPbkFetchDlgPages.cpp
+SOURCE          CPbkNamesListFetchDlgPage.cpp
+SOURCE          CPbkGroupsListFetchDlgPage.cpp
+SOURCE          CPbkSelectFieldDlg.cpp 
+SOURCE          CPbkFieldListBoxModel.cpp
+SOURCE          CPbkAddressSelect.cpp
+SOURCE          CPbkPhoneNumberSelectBase.cpp
+SOURCE          CPbkPhoneNumberSelect.cpp
+SOURCE          CPbkSmsAddressSelect.cpp
+SOURCE          CPbkMmsAddressSelect.cpp
+SOURCE          CPbkPocAddressSelect.cpp
+SOURCE          CPbkVoipAddressSelect.cpp
+SOURCE          CPbkVideoNumberSelect.cpp
+SOURCE          CPbkEmailOverSmsAddressSelect.cpp
+SOURCE          CPbkEmailAddressSelect.cpp
+SOURCE          CPbkURLAddressSelect.cpp
+SOURCE          CPbkSendKeyAddressSelect.cpp
+SOURCE          CPbkMemoryEntryDefaultsDlg.cpp
+SOURCE          CPbkMemoryEntryAddItemDlg.cpp
+SOURCE          CPbkGroupPopup.cpp
+SOURCE          CPbkGroupBelongings.cpp
+SOURCE          CPbkAddToGroup.cpp
+SOURCE          CPbkGroupNameQueryDlg.cpp
+SOURCE          CPbkCompressUiImpl.cpp
+SOURCE          CPbkDeleteContactQuery.cpp
+SOURCE          CPbkMemoryEntrySelectAddItemDlg.cpp
+SOURCE          CPbkPhonebookInfoDlg.cpp
+SOURCE          CPbkSettingsList.cpp
+SOURCE          CPbkSettingsDlg.cpp
+SOURCE          Cpbknameordersettingitem.cpp
+SOURCE          CPbkPrependDlg.cpp
+
+// Utility
+SOURCE          RPbkViewResourceFile.cpp
+SOURCE          CPbkViewState.cpp
+SOURCE          CPbkThumbnailPopup.cpp 
+SOURCE          CPbkIconArray.cpp
+SOURCE          CPbkRingingToneFetch.cpp
+SOURCE          CPbkDataSaveAppUi.cpp
+SOURCE          CPbkContextPaneIcon.cpp
+SOURCE 			CPbkSwapContextPaneIcon.cpp
+SOURCE          PbkIconInfo.cpp
+SOURCE          CPbkWaitNoteWrapperBase.cpp
+SOURCE          CPbkWaitNoteWrapper.cpp
+SOURCE          CPbkProgressNoteWrapper.cpp
+SOURCE          CPbkFFSCheck.cpp
+SOURCE          CPbkInputAbsorber.cpp
+SOURCE          CPbkImageReader.cpp
+SOURCE          TPbkImageLoadParameters.cpp
+SOURCE          PbkImageData.cpp
+SOURCE          CPbkThumbnailManagerImpl.cpp
+SOURCE          CPbkThumbnailReaderBase.cpp
+SOURCE          CPbkThumbnailWriterBase.cpp
+SOURCE          CPbkEmbeddedThumbnail.cpp
+SOURCE          CPbkThumbnailManager.cpp
+SOURCE          TPbkAddItemWrapper.cpp
+SOURCE          TPbkAddItemManager.cpp
+SOURCE          CPbkSetToneToGroup.cpp
+SOURCE          CPbkThumbnailCmd.cpp
+SOURCE          CPbkContactEditorFieldArray.cpp
+SOURCE          CPbkContactEditorFieldBase.cpp
+SOURCE          CPbkContactEditorTextField.cpp
+SOURCE          CPbkContactEditorNumberField.cpp
+SOURCE          CPbkContactEditorDateField.cpp
+SOURCE          CPbkContactEditorPhoneNumberField.cpp
+SOURCE          CPbkContactEditorReadingField.cpp
+SOURCE          CPbkContactEditorUrlField.cpp
+SOURCE          CPbkContactEditorEmailAddressField.cpp
+SOURCE          CPbkContactEditorPostalCodeField.cpp
+SOURCE          CPbkContactEditorSyncField.cpp
+SOURCE          PbkContactEditorFieldFactory.cpp
+SOURCE          CPbkFieldFormatter.cpp
+SOURCE          PbkContactEditorStrategyFactory.cpp
+SOURCE          CPbkContactEditorNewContact.cpp
+SOURCE          CPbkContactEditorEditContact.cpp
+SOURCE          CPbkDrmManager.cpp
+SOURCE          PbkFindPrimitivesFactory.cpp
+SOURCE          CPbkFindPrimitives.cpp
+SOURCE          CPbkChineseFindPrimitives.cpp
+SOURCE          CPbkJapaneseFindPrimitives.cpp
+SOURCE          PbkFieldFormatterFactory.cpp
+SOURCE          CPbkNumberGroupingFormatter.cpp
+SOURCE          CPbkPhoneNumberDefaultFormatter.cpp
+SOURCE          CPbkReadingEditorBinderVisitor.cpp
+SOURCE          CPbkImageManager.cpp
+SOURCE          CPbkObserverAdapter.cpp
+SOURCE          PbkViewUtils.cpp
+SOURCE          CPbkFieldAnalyzer.cpp
+
+// BC maintenance
+#ifndef ARMCC
+SOURCE BC_PhotoCardControl.cpp
+SOURCE DummyExports.cpp
+#endif // ARMCC
+
+// Resources
+START RESOURCE ../rss/PbkView.rss
+HEADER
+TARGETPATH RESOURCE_FILES_DIR
+END // RESOURCE
+
+LANGUAGE_IDS
+// Include paths
+USERINCLUDE     ../View/inc ../View/rss ../group
+SYSTEMINCLUDE   ../inc ../PbkExt/inc
+APP_LAYER_SYSTEMINCLUDE // macro that defines the platform system includes
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib estor.lib efsrv.lib bafl.lib bitgdi.lib
+LIBRARY fbscli.lib cone.lib egul.lib eikcore.lib
+LIBRARY cntmodel.lib cntview.lib apgrfx.lib
+LIBRARY ImageConversion.lib BitmapTransforms.lib
+
+// Dependencies to AVKON
+LIBRARY avkon.lib aknlayout.lib eikctl.lib eikcoctl.lib eikdlg.lib aknicon.lib
+LIBRARY aknlayout2.lib
+LIBRARY CdlEngine.lib
+LIBRARY AknLayout2Scalable.lib
+
+// Dependencies to Series60 platform components
+LIBRARY commonengine.lib sysutil.lib
+LIBRARY AknSkins.lib AknJapaneseReading.lib
+LIBRARY FeatMgr.lib FindUtil.lib numbergrouping.lib
+LIBRARY DrmHelper.lib apmime.lib centralrepository.lib
+LIBRARY diskspacereserver.lib
+LIBRARY hlplch.lib
+
+// Dependencies to other Phonebook components
+LIBRARY PbkEng.lib  // Phonebook Engine
+LIBRARY PbkExt.lib  // Phonebook Extension manager
+
+// Dependencies to other Series60 applications
+LIBRARY MGFetch.lib
+LIBRARY FileList.lib
+
+// DRM dependencies
+LIBRARY DrmParsers.lib DrmDcf.lib DrmRights.lib 
+LIBRARY DrmServerInterfaces.lib DRMCommon.lib
+
+
+////////////////////////////////////////////////////////////
+// Debug variants
+
+
+// End of File

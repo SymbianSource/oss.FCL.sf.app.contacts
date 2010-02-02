@@ -1,0 +1,150 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 USim localized texts.
+*
+*/
+
+
+// --------------------------------------------------------------------------
+// Text buffers
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_err_sms_invalid_numb
+    {
+    buf = qtn_err_sms_invalid_numb;
+    }
+
+RESOURCE TBUF r_text_fdn_card_error
+    {
+    buf = text_fdn_card_error;
+    }
+
+RESOURCE TBUF r_qtn_pbsav_unicode_name_too_long
+    {
+    buf = qtn_pbsav_unicode_name_too_long;
+    }
+
+RESOURCE TBUF r_qtn_simp_note_email_too_long2
+    {
+    buf = qtn_simp_note_email_too_long2;
+    }
+
+RESOURCE TBUF r_text_scm_number_too_long
+    {
+    buf = text_scm_number_too_long;
+    }
+
+RESOURCE TBUF r_qtn_pbsav_err_number_too_long
+    {
+    buf = qtn_pbsav_err_number_too_long;
+    }
+
+RESOURCE TBUF r_qtn_phob_note_some_info_not_added
+    {
+    buf = qtn_phob_note_some_info_not_added;
+    }
+
+RESOURCE TBUF r_qtn_fdn_no_allowed_save
+    {
+    buf = qtn_fdn_no_allowed_save;
+    }
+
+RESOURCE TBUF r_text_fdn_list
+    {
+    buf = text_fdn_list;
+    }
+
+RESOURCE TBUF r_qtn_fdn_active
+    {
+    buf = qtn_fdn_active;
+    }
+
+RESOURCE TBUF r_qtn_fdn_deactive
+    {
+    buf = qtn_fdn_deactive;
+    }
+
+RESOURCE TBUF r_qtn_fdn_note_not_active
+    {
+    buf = qtn_fdn_note_not_active;
+    }
+
+RESOURCE TBUF r_qtn_fdn_list_full
+    {
+    buf = qtn_fdn_list_full;
+    }
+
+RESOURCE TBUF r_text_own_number_list
+    {
+    buf = qtn_phob_title_my_numbers;
+    }
+
+RESOURCE TBUF r_qtn_sdn_title
+    {
+    buf = qtn_sdn_title;
+    }
+
+RESOURCE TBUF r_qtn_pbcop_copy_numb_ch_all
+    {
+    buf = qtn_pbcop_copy_numb_ch_all;
+    }
+
+RESOURCE TBUF r_qtn_pbcop_prtx_copy_numb1
+    {
+    buf = qtn_pbcop_prtx_copy_numb1;
+    }
+
+RESOURCE TBUF r_qtn_pbcop_prtx_copy_numb_sev
+    {
+    buf = qtn_pbcop_prtx_copy_numb_sev;
+    }
+
+RESOURCE TBUF r_qtn_pbcop_note_contacts_copied
+    {
+    buf = qtn_pbcop_note_contacts_copied;
+    }
+
+RESOURCE TBUF r_qtn_pbcop_note_simpd_is_full
+    {
+    buf = qtn_pbcop_note_simpd_is_full;
+    }
+
+RESOURCE TBUF r_qtn_pbcop_note_name_max_length
+    {
+    buf = qtn_pbcop_note_name_max_length;
+    }
+
+RESOURCE TBUF r_qtn_pbcop_note_number_max_length
+    {
+    buf = qtn_pbcop_note_number_max_length;
+    }
+
+RESOURCE TBUF r_qtn_selec_empty_list
+    {
+    buf = qtn_selec_empty_list;
+    }
+    
+RESOURCE TBUF r_qtn_fdn_pb_fetch_title
+    {
+    buf = qtn_fdn_pb_fetch_title;
+    }
+
+/// LBUF used because this is not loaded by StringLoader
+/// but directly with TResourceReader.
+RESOURCE LBUF r_psu2_standard_number_character_map
+    {
+    txt = "1234567890*+pw#";
+    }    
+
+// End of File

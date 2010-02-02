@@ -1,0 +1,1296 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  
+*
+*/
+
+
+// INCLUDES
+#include <badef.rh>
+#include "VCardFieldTypeMapping.rh"
+#include <VPbkFieldType.rh>
+#include "VPbkVCard.hrh"
+
+// RESOURCES
+
+RESOURCE BA_RSS_SIGNATURE { }
+
+RESOURCE VCARD_ID_NAME_MAPPINGS r_vpbk_vcard_vname_id_name_mappings
+    {
+    items =
+        {
+        // Virtual Phonebook field type names. Based on the Versit 2.1 & 3.0 
+        // standards.
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameFN;       name="FN";          },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameN;        name="N";           },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNamePHOTO;    name="PHOTO";       },        
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameBDAY;     name="BDAY";        },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameADR;      name="ADR";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameLABEL;    name="LABEL";       },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameTEL;      name="TEL";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameEMAIL;    name="EMAIL";       },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameMAILER;   name="MAILER";      },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameTZ;       name="TZ";          },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameGEO;      name="GEO";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameTITLE;    name="TITLE";       },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameROLE;     name="ROLE";        },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameLOGO;     name="LOGO";        },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameAGENT;    name="AGENT";       },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameORG;      name="ORG";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameCATEGORIES;name="CATEGORIES"; }, // Versit 3.0
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameNOTE;     name="NOTE";        },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNamePRODID;   name="PRODID";      }, // Versit 3.0
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameREV;      name="REV";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameSORTSTRING;name="SORTSTRING"; }, // Versit 3.0
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameSOUND;    name="SOUND";       },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameURL;      name="URL";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameUID;      name="UID";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameVERSION;  name="VERSION";     },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameCLASS;    name="CLASS";       }, // Versit 3.0
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameKEY;      name="KEY";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameX;        name="X-NICKNAME";  },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameX;        name="X-ASSISTANT"; },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameX;        name="X-SPOUSE";    },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameX;        name="X-CHILDREN";  },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameX;        name="X-ASSISTANT-TEL"; },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameX;        name="X-ANNIVERSARY";   },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameX;        name="X-CLASS";     },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameX;        name="X-SIP";       },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameX;        name="X-WV-ID";     },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameIMPP;     name="X-IMPP";      },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitNameTopContact;  name="X-FAVORITE"; }  
+        };
+    }
+
+RESOURCE VCARD_ID_NAME_MAPPINGS r_vpbk_vcard_param_id_name_mappings
+    {
+    items = 
+        {
+        // Telephone parameters
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamVOICE;       name="VOICE";       },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamFAX;         name="FAX";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamMSG;         name="MSG";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamCELL;        name="CELL";        },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamPAGER;       name="PAGER";       },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamBBS;         name="BBS";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamMODEM;       name="MODEM";       },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamCAR;         name="CAR";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamISDN;        name="ISDN";        },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamVIDEO;       name="VIDEO";       },
+        // SIP parameters
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamVOIP;        name="VOIP";        },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamPOC;         name="POC";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamSWIS;        name="SWIS";        },        
+        // Email parameters
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamAOL;         name="AOL";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamAppleLink;   name="AppleLink";   },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamATTMail;     name="ATTMail";     },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamCIS;         name="CIS";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParameWorld;      name="World";       },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamINTERNET;    name="INTERNET";    },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamIBMMail;     name="IBMMail";     },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamMCIMail;     name="MCIMail";     },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamPOWERSHARE;  name="POWERSHARE";  },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamPRODIGY;     name="PRODIGY";     },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamTLX;         name="TLX";         },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamX400;        name="X400";        },
+        // General parameters
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamHOME;        name="HOME";        },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamWORK;        name="WORK";        },
+        VCARD_ID_NAME_MAPPING { id=EVPbkVersitParamPREF;        name="PREF";        }
+        };
+    }
+
+RESOURCE VCARD_FIELD_TYPE_PROPERTY_LIST r_vpbk_type_mappings
+    {
+    items = 
+        {
+        // First name, last name, middle name, prefix, suffix
+        VCARD_FIELDTYPE_PROPERTY 
+            {
+            name = "N";
+            versitStorageType = EVPbkVersitPropertyCDesCArray;
+            indexedProperties =
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 0;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameN;
+                        subField = EVPbkVersitSubFieldFamilyName;
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY 
+                    {
+                    index = 1;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameN;
+                        subField = EVPbkVersitSubFieldGivenName;
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY 
+                    {
+                    index = 2;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameN;
+                        subField = EVPbkVersitSubFieldAdditionalName;
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY 
+                    {
+                    index = 3;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameN;
+                        subField = EVPbkVersitSubFieldNamePrefix;
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY 
+                    {
+                    index = 4;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameN;
+                        subField = EVPbkVersitSubFieldNameSuffix;
+                        };
+                    }   
+                };
+
+            },
+
+        // First name Reading, last name Reading, 5 (first property index)
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "SOUND";
+            versitStorageType = EVPbkVersitPropertyCDesCArray;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameSOUND;
+                        subField = EVPbkVersitSubFieldFamilyNamePronunciation;
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 1;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameSOUND;
+                        subField = EVPbkVersitSubFieldGivenNamePronunciation;
+                        };
+                    }                
+                };
+            },
+            
+        // Company name, department, 7
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "ORG";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameORG;
+                        subField = EVPbkVersitSubFieldOrgName;
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 1;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameORG;
+                        subField = EVPbkVersitSubFieldOrgUnit;
+                        };
+                    }                    
+                };
+            },
+            
+        // Title, 9
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "TITLE";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTITLE;
+                        };
+                    }
+                };
+            },         
+            
+        // Nick name
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-NICKNAME";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY 
+                        {
+                        name = EVPbkVersitNameX;
+                        extensionName = "X-NICKNAME";
+                        };
+                    }
+                };
+            },                           
+
+        // Assistant name
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-ASSISTANT";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY 
+                        {
+                        name       = EVPbkVersitNameX;
+                        extensionName = "X-ASSISTANT";                        
+                        };                    
+                    }
+                };
+            },    
+            
+        // Spouse
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-SPOUSE";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY 
+                        {
+                        name       = EVPbkVersitNameX;
+                        extensionName = "X-SPOUSE";                        
+                        };                    
+                    }
+                };
+            },                                       
+
+        // Children
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-CHILDREN";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY 
+                        {
+                        name       = EVPbkVersitNameX;
+                        extensionName = "X-CHILDREN";                        
+                        };                    
+                    }
+                };
+            },                                       
+
+        // Mobile general
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "TEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamCELL };
+                        };
+                    }
+                };
+            },
+            
+        // Mobile home
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "TEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamCELL, EVPbkVersitParamHOME };
+                        };
+                    }
+                };
+            },
+
+        // Mobile work
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "TEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamCELL, EVPbkVersitParamWORK };
+                        };
+                    }
+                };
+            },
+
+        // Phone general, 17
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "TEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        };
+                    }
+                };
+            },
+        
+        // Phone home
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "TEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamHOME };
+                        };
+                    }
+                };
+            },
+
+        // Phone work
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "TEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamWORK };
+                        };
+                    }
+                };
+            },
+        
+        // Video general
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "TEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamVIDEO };
+                        };
+                    }
+                };
+            },
+
+        // Video home
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "TEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamVIDEO, EVPbkVersitParamHOME };
+                        };
+                    }
+                };
+            },
+
+        // Video work
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "TEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY 
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamVIDEO, EVPbkVersitParamWORK };
+                        };
+                    }
+                };
+            },
+            
+        // Car phone, 23
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "TEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY 
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamCAR };
+                        };
+                    }
+                };
+            },                                
+
+        // Assistant phone
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-ASSISTANT-TEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY 
+                        {
+                        name       = EVPbkVersitNameX;
+                        extensionName = "X-ASSISTANT-TEL";
+                        };
+                    }
+                };
+            },                                
+        
+        // VOIP general
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-SIP";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameX;
+                        parameters = { EVPbkVersitParamVOIP };
+                        extensionName = "X-SIP";
+                        };
+                    }
+                };
+            },
+            
+        // VOIP home
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-SIP";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameX;
+                        parameters = { EVPbkVersitParamVOIP, EVPbkVersitParamHOME };
+                        extensionName = "X-SIP";
+                        };
+                    }
+                };
+            },
+
+        // VOIP work
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-SIP";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameX;
+                        parameters = { EVPbkVersitParamVOIP, EVPbkVersitParamWORK };
+                        extensionName = "X-SIP";
+                        };
+                    }
+                };
+            },            
+        
+        // PTT (POC)
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-SIP";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameX;
+                        parameters = { EVPbkVersitParamPOC };
+                        extensionName = "X-SIP";
+                        };
+                    }
+                };
+            },
+            
+        // SWIS
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-SIP";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameX;
+                        parameters = { EVPbkVersitParamSWIS };
+                        extensionName = "X-SIP";
+                        };
+                    }
+                };
+            },
+            
+        // SIP
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-SIP";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameX;
+                        extensionName = "X-SIP";
+                        };
+                    }
+                };
+            },
+
+        // Fax general, 29
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "TEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamFAX };
+                        };
+                    }
+                };
+            },
+
+        // Fax home
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "TEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamFAX, EVPbkVersitParamHOME };
+                        };
+                    }
+                };
+            },
+            
+        // Fax work
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "TEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamFAX, EVPbkVersitParamWORK };
+                        };
+                    }
+                };
+            },
+
+        // Pager
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "TEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamPAGER };
+                        };
+                    }
+                };
+            },
+
+        // Email general, 33
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "EMAIL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameEMAIL;
+                        parameters = { EVPbkVersitParamINTERNET };
+                        };
+                    }
+                };
+            },
+
+        // Email home
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "EMAIL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameEMAIL;
+                        parameters = { EVPbkVersitParamINTERNET, EVPbkVersitParamHOME };
+                        };
+                    }
+                };
+            },
+
+        // Email work
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "EMAIL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameEMAIL;
+                        parameters = { EVPbkVersitParamINTERNET, EVPbkVersitParamWORK };
+                        };
+                    }
+                };
+            },
+
+        // GEO general, 
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "GEO";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameGEO;
+                        };
+                    }
+                };
+            },
+
+        // GEO home
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "GEO";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameGEO;
+                        parameters = { EVPbkVersitParamHOME };
+                        };
+                    }
+                };
+            },
+
+        // GEO work
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "GEO";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameGEO;
+                        parameters = { EVPbkVersitParamWORK };
+                        };
+                    }
+                };
+            },
+            
+        // Wv(IM) address
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-WV-ID";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name       = EVPbkVersitNameX;
+                        extensionName = "X-WV-ID";
+                        };
+                    }
+                };
+            },        
+
+        // Url general
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "URL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameURL;
+                        };
+                    }
+                };
+            },
+            
+        // Url home          
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "URL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameURL;
+                        parameters = { EVPbkVersitParamHOME };
+                        };
+                    }
+                };
+            },
+
+        // Url work
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "URL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameURL;
+                        parameters = { EVPbkVersitParamWORK };
+                        };
+                    }
+                };
+            },
+
+        // Label general, 40
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "LABEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameLABEL;
+                        };
+                    }
+                };
+            },
+
+        // Label home
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "LABEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameLABEL;
+                        parameters = { EVPbkVersitParamHOME };
+                        };
+                    }
+                };
+            },
+
+        // Label work
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "LABEL";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameLABEL;
+                        parameters = { EVPbkVersitParamWORK };
+                        };
+                    }
+                };
+            },
+
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "ADR";
+            versitStorageType = EVPbkVersitPropertyCDesCArray;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 0;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name        = EVPbkVersitNameADR;
+                        subField    = EVPbkVersitSubFieldPostOfficeAddress;
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 1;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name        = EVPbkVersitNameADR;
+                        subField    = EVPbkVersitSubFieldExtendedAddress;
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 2;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name        = EVPbkVersitNameADR;
+                        subField    = EVPbkVersitSubFieldStreet;
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 5;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldPostalCode;
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 3;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldLocality;
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 4;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldRegion;
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 6;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldCountry;
+                        };
+                    }
+                };
+            },
+
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "ADR";
+            versitStorageType = EVPbkVersitPropertyCDesCArray;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 0;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldPostOfficeAddress;
+                            parameters = { EVPbkVersitParamHOME };
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 1;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldExtendedAddress;
+                            parameters = { EVPbkVersitParamHOME };
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 2;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldStreet;
+                            parameters = { EVPbkVersitParamHOME };
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 5;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldPostalCode;
+                            parameters = { EVPbkVersitParamHOME };
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 3;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldLocality;
+                            parameters = { EVPbkVersitParamHOME };
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 4;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldRegion;
+                            parameters = { EVPbkVersitParamHOME };
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 6;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        { 
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldCountry;
+                            parameters = { EVPbkVersitParamHOME };
+                        };
+                    }
+                };
+            },
+
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "ADR";
+            versitStorageType = EVPbkVersitPropertyCDesCArray;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 0;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldPostOfficeAddress;
+                            parameters = { EVPbkVersitParamWORK };
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 1;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldExtendedAddress;
+                            parameters = { EVPbkVersitParamWORK };
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 2;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldStreet;
+                            parameters = { EVPbkVersitParamWORK };
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 5;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        { 
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldPostalCode;
+                            parameters = { EVPbkVersitParamWORK };
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 3;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldLocality;
+                            parameters = { EVPbkVersitParamWORK };
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 4;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldRegion;
+                            parameters = { EVPbkVersitParamWORK };
+                        };
+                    },
+                VCARD_INDEXED_PROPERTY
+                    {
+                    index = 6;
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name        = EVPbkVersitNameADR;
+                            subField    = EVPbkVersitSubFieldCountry;
+                            parameters = { EVPbkVersitParamWORK };
+                        };
+                    }
+                };
+            },
+
+        // Date
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "BDAY";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameBDAY;
+                        };
+                    }
+                };
+            },
+
+        // Anniversary
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-ANNIVERSARY";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name       = EVPbkVersitNameX;
+                        extensionName = "X-ANNIVERSARY";
+                        };
+                    }
+                };
+            },
+
+        // Note
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "NOTE";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name = EVPbkVersitNameNOTE;
+                        };
+                    }
+                };
+            },
+
+        // Thumbnail image
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "PHOTO";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                            name = EVPbkVersitNamePHOTO;
+                        };
+                    }
+                };
+            },
+            
+        // Synchronization
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-CLASS";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name       = EVPbkVersitNameX;
+                        extensionName = "X-CLASS";
+                        };
+                    }
+                };
+            },     
+            
+        // Impp 
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-IMPP";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY 
+                        {
+                        name = EVPbkVersitNameIMPP;
+                        };
+                    }
+                };
+            },
+
+
+        // Favorite 
+        VCARD_FIELDTYPE_PROPERTY
+            {
+            name = "X-FAVORITE";
+            versitStorageType = EVPbkVersitPropertyHBufC;
+            indexedProperties = 
+                {
+                VCARD_INDEXED_PROPERTY
+                    {
+                    versitProperty = VBK_FIELD_VERSIT_PROPERTY 
+                        {
+                        name = EVPbkVersitNameTopContact;
+                        };
+                    }
+                };
+            }
+	};
+    }
+
+
+RESOURCE VCARD_MASKED_FIELDS_LIST r_vpbk_vcard_masked_fields
+{
+MASKED_FIELDS = 
+        {
+	"X-SELF",
+	"X-FAVORITE",
+        "X-CATEGORIES"
+        };
+}
+
+// End of File

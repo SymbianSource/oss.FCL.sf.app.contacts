@@ -1,0 +1,4 @@
+EXPORTS
+	?FactoryL@CPbkExtGlobals@@QAEAAVMPbkExtensionFactory@@XZ @ 1 NONAME ; public: class MPbkExtensionFactory & __thiscall CPbkExtGlobals::FactoryL(void)
+	?InstanceL@CPbkExtGlobals@@SAPAV1@XZ @ 2 NONAME ; public: static class CPbkExtGlobals * __cdecl CPbkExtGlobals::InstanceL(void)
+

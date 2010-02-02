@@ -1,0 +1,62 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  The project file for the virtual phonebook SIM server.
+*
+*/
+
+
+#include "VPbkConfig.mmp"
+
+#include <platform_paths.hrh>
+
+TARGET          VPbkSimServer.exe
+TARGETTYPE      exe
+
+UID             0x0 0x1028309E
+VENDORID        VID_DEFAULT
+CAPABILITY      ReadUserData WriteUserData ReadDeviceData LocalServices
+
+SOURCEPATH      ../VPbkSimServer/src
+
+SOURCE          VPbkServerEntryPoint.cpp
+SOURCE          CVPbkSimServer.cpp
+#if (defined (WINS) || defined (WINSCW)) && !defined (VPBK_USE_ETEL_TESTSERVER)
+SOURCE          CVPbkStoreSessionStub.cpp
+#else
+SOURCE          CVPbkStoreSession.cpp
+SOURCE          CVPbkViewSubSession.cpp
+#endif
+SOURCE          CSaveCommand.cpp
+SOURCE          CDeleteCommand.cpp
+SOURCE          CFindManager.cpp
+SOURCE          SimServerInternal.cpp
+SOURCE          CVPbkSimServerEventQueue.cpp
+SOURCE          SimServerDebug.cpp
+
+USERINCLUDE     .
+USERINCLUDE     ../VPbkSimServer/inc
+
+SYSTEMINCLUDE   ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY         euser.lib
+LIBRARY         estor.lib
+LIBRARY         featmgr.lib // Feature manager
+LIBRARY         bafl.lib
+LIBRARY         ecom.lib
+LIBRARY         VPbkSimStoreImpl.lib
+LIBRARY         VPbkSimStoreCommon.lib
+LIBRARY         VPbkEngUtils.lib
+
+// End of File

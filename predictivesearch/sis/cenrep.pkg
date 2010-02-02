@@ -1,0 +1,37 @@
+;
+; Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+; All rights reserved.
+; This component and the accompanying materials are made available
+; under the terms of "Eclipse Public License v1.0"
+; which accompanies this distribution, and is available
+; at the URL "http://www.eclipse.org/legal/epl-v10.html".
+;
+; Initial Contributors:
+; Nokia Corporation - initial contribution.
+;
+; Contributors:
+;
+; Description: Package file for project Predictive Search
+;
+
+; -------- general --------
+
+;Languages
+&EN
+
+; Package header
+#{"Central Repository for Predictive Search"},(0x10202BE9),1,0,0,TYPE=PU
+
+;Localised Vendor name
+%{"Nokia"}
+
+;Unique Vendor name
+:"Nokia"
+
+; Dependency for S60 3.0
+[0x101F7961], 0, 0, 0, {"Series60ProductID"}
+
+; -------- files --------
+
+"\epoc32\data\Z\private\10202BE9\2000B5C6.txt" 			-"!:\Private\10202BE9\2000B5C6.txt"
+"\epoc32\data\Z\private\10202BE9\2000B5C5.txt" 			-"!:\Private\10202BE9\2000B5C5.txt"

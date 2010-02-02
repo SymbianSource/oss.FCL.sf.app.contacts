@@ -1,0 +1,8 @@
+EXPORTS
+    ?LibEntryL@@YAPAVCScriptBase@@AAVCTestModuleIf@@@Z @ 1 NONAME ; class CScriptBase * LibEntryL(class CTestModuleIf &)
+	??1CCCAppViewPluginAknView@@UAE@XZ @ 2 NONAME ; CCCAppViewPluginAknView::~CCCAppViewPluginAknView(void)
+	?DoActivateL@CCCAppViewPluginAknView@@MAEXABVTVwsViewId@@VTUid@@ABVTDesC8@@@Z @ 3 NONAME ; void CCCAppViewPluginAknView::DoActivateL(class TVwsViewId const &, class TUid, class TDesC8 const &)
+	?DoDeactivate@CCCAppViewPluginAknView@@MAEXXZ @ 4 NONAME ; void CCCAppViewPluginAknView::DoDeactivate(void)
+	?HandleCommandL@CCCAppViewPluginAknView@@MAEXH@Z @ 5 NONAME ; void CCCAppViewPluginAknView::HandleCommandL(int)
+    ??0CCCAppViewPluginAknView@@QAE@XZ @ 6 NONAME ; CCCAppViewPluginAknView::CCCAppViewPluginAknView(void)
+

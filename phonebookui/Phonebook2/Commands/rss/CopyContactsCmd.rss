@@ -1,0 +1,104 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file contains resources for Phonebook 2 copy functionality.
+*
+*/
+
+
+// ---------------------------------------------------------
+// A general copy progress note
+// ---------------------------------------------------------
+//
+RESOURCE DIALOG r_pbk2_general_copy_progress_note
+	{
+	flags = EAknProgressNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items =
+		{
+		DLG_LINE
+			{
+			type = EAknCtNote;
+			id = EGeneralQuery;
+			control = AVKON_NOTE 
+				{ 
+				layout = EProgressLayout;
+				singular_label = qtn_gen_note_copying;
+                imagefile = AVKON_ICON_FILE;
+                imageid = EMbmAvkonQgn_note_copy;
+                imagemask = EMbmAvkonQgn_note_copy_mask;
+				};
+			}
+		};
+	}
+
+// ---------------------------------------------------------
+// Text buffers
+// ---------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_copy_to_phone
+    {
+    buf = qtn_phob_note_no_copy_to_phone;
+    }
+
+RESOURCE TBUF r_qtn_pbcop_note_copy_not_work
+    {
+    buf = qtn_pbcop_note_copy_not_work;
+    }
+
+RESOURCE TBUF r_qtn_pbcop_info_n_ok_n_not
+    {
+    buf = qtn_pbcop_info_n_ok_n_not;
+    }
+
+RESOURCE TBUF r_qtn_pbcop_info_n_ok_one_not
+    {
+    buf = qtn_pbcop_info_n_ok_one_not;
+    }
+    
+RESOURCE TBUF r_qtn_pbcop_info_one_ok_n_not
+    {
+    buf = qtn_pbcop_info_one_ok_n_not;
+    }
+    
+RESOURCE TBUF r_qtn_pbcop_info_one_ok_one_not
+    {
+    buf = qtn_pbcop_info_one_ok_one_not;
+    }
+    
+RESOURCE TBUF r_qtn_pbcop_note_contact_copied_pb2
+    {
+    buf = qtn_pbcop_note_contact_copied_pb2;
+    }
+    
+RESOURCE TBUF r_qtn_pbcop_note_n_entry_copy_pb
+    {
+    buf = qtn_pbcop_note_n_entry_copy_pb;
+    }
+    
+RESOURCE TBUF r_qtn_pbcop_note_entry_not_copied 
+    {
+    buf = qtn_pbcop_note_entry_not_copied;
+    }
+    
+RESOURCE TBUF r_qtn_pbcop_note_entries_copied_partly
+    {
+    buf = qtn_pbcop_note_entries_copied_partly;
+    }
+    
+RESOURCE TBUF r_qtn_pbcop_note_entry_copied_partly
+    {
+    buf = qtn_pbcop_note_entry_copied_partly;
+    }
+
+// End of File

@@ -1,0 +1,168 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains resources for Pbk2VoiceTagUI module.
+*
+*/
+
+
+//  RESOURCE IDENTIFIER
+NAME    CPVT  // From Pbk2VoiceTagUI
+
+// INCLUDES
+
+// Phonebook 2
+#include "pvtvoicetagui.hrh"
+#include "pvtvoicetaguiuid.h"
+#include <pbk2viewinfo.hrh>
+#include <pbk2commands.hrh>
+#include <phonebook2.loc>
+#include <pbk2uicontrols.rsg>
+#include <pbk2commands.rsg>
+#include <pbk2uiextension.rh>
+#include <pbk2extensionuid.h>
+#include <pbk2viewid.hrh>
+
+// System includes
+#include <avkon.loc>
+#include <uikon.rh>
+#include <eikon.rh>
+#include <avkon.rh>
+#include <avkon.rsg>
+#include <avkon.mbg>
+
+
+//  RESOURCE DEFINITIONS
+
+// --------------------------------------------------------------------------
+// Standard resource signature
+// --------------------------------------------------------------------------
+//
+RESOURCE RSS_SIGNATURE { }
+
+// --------------------------------------------------------------------------
+// Extension information
+// --------------------------------------------------------------------------
+//
+RESOURCE PHONEBOOK2_EXTENSION_INFORMATION
+        r_phonebook2_voicetag_ui_extension_information
+    {
+    version = 0;
+
+    implementationUid = KPbk2VoiceTagExtensionImplementationUID;
+
+    menuCommandRange = PHONEBOOK2_EXTENSION_RANGE
+        {
+        firstId = EVoiceTagUiExtensionFirstCommand;
+        lastId = EVoiceTagUiExtensionLastCommand;
+        };
+
+    overwrittenCommands = 
+        {
+        // Added here because we want that this extension is loaded when 
+        // entered to contact info view, so that we can make menu filtering.
+        EPbk2CmdOpenMeViews
+        };
+
+    extensionMenus =
+        {
+        // Contact info view options menu
+        PHONEBOOK2_EXTENSION_MENU_RESOURCE
+            {
+            version = 0;
+            viewId = EPbk2ContactInfoViewId;
+            menuFilteringFlags = 0;
+            parentMenu = R_PHONEBOOK2_CONTACTINFO_EDIT_MENU;
+            prevCommand = EPbk2CmdDefaultSettings;
+            menuPane = r_pvt_contactinfo_sind_voicetag_menu;
+            }
+        };
+    viewIds = {};
+    }
+
+// --------------------------------------------------------------------------
+// Phonebook speaker independent voice tag menu
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_pvt_contactinfo_sind_voicetag_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPvtCmdPlaybackVoiceTag;
+            txt = qtn_phob_opt_play;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Phonebook speaker independent info menu pane
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_pvt_info_menu_sind
+    {
+    items =
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdPhonebook2Info;
+            txt = qtn_phob_opt_pb_info2;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// No more voice tags note
+// --------------------------------------------------------------------------
+//
+RESOURCE AKN_NOTE_WRAPPER r_pvt_text_voice_no_more_tags
+    {
+    resId = R_AKN_INFORMATION_NOTE_DIALOG_WAIT;
+    timeout = EAknInformationNoteTimeout;
+    tone = EAknNoteDialogConfirmationTone;
+    text = text_voice_no_more_tags;
+    }
+
+// --------------------------------------------------------------------------
+// r_qtn_votag_delete_one_tag
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_votag_delete_one_tag
+    {
+    buf = qtn_votag_delete_one_tag;
+    }
+
+// --------------------------------------------------------------------------
+// r_qtn_phob_note_voice_tag_exist
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_voice_tag_exist
+    {
+    buf = qtn_phob_note_voice_tag_exist;
+    }
+
+// --------------------------------------------------------------------------
+// r_qtn_phob_play_no_tag
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_play_no_tag
+    {
+    buf = qtn_phob_play_no_tag;
+    }
+
+
+// External resources
+
+// End of File

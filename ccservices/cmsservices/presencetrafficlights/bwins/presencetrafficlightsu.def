@@ -1,0 +1,3 @@
+EXPORTS
+	?NewL@MPresenceTrafficLights@@SAPAV1@XZ @ 1 NONAME ; class MPresenceTrafficLights * MPresenceTrafficLights::NewL(void)
+

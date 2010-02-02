@@ -1,0 +1,36 @@
+/*
+* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:        ?Description
+*
+*/
+
+
+
+
+PRJ_PLATFORMS
+// specify the platforms your component needs to be built for here
+// defaults to WINS MARM so you can ignore this if you just build these
+DEFAULT
+
+PRJ_EXPORTS
+PbkIcon_c.bat						/epoc32/winscw/c/PbkIcon_c.bat
+PbkIcon_z.bat						/epoc32/winscw/c/PbkIcon_z.bat
+testframework.ini						/epoc32/winscw/c/testframework/TestFramework_PbkIcon.ini
+tcBCTestPbkIcon.cfg			/epoc32/winscw/c/testframework/tcBCTestPbkIcon.cfg
+UI_BCTestPbkIcon.cfg	/epoc32/winscw/c/testframework/UI_BCTestPbkIcon.cfg
+
+PRJ_MMPFILES
+MTPbkIconId.mmp
+
+//  End of File

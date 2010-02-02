@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api id="24a4c601cb146e59530780fb739089b3" dataversion="2.0">
+  <name>CCA Launch API</name>
+  <description>CCA (Contact Centric Application) can be launched using this API. CCA supports both Contact Card view (CCA Launcher view) and MyCard view. The views can be launched either embedded into the calling application, or into the context of phonebook application.</description>
+  <type>c++</type>
+  <collection>Contacts</collection>
+  <libs>
+    <lib name="ccaclient.lib"/>
+  </libs>
+  <release category="platform" sinceversion="5.2"/>
+  <attributes>
+    <htmldocprovided>yes</htmldocprovided>
+    <adaptation>no</adaptation>
+  </attributes>
+</api>

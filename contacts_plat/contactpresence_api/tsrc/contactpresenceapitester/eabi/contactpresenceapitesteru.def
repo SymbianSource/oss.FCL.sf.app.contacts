@@ -1,0 +1,9 @@
+EXPORTS
+	_Z9LibEntryLR13CTestModuleIf @ 1 NONAME
+	_ZTI25CContactPresencePbHandler @ 2 NONAME ; #<TI>#
+	_ZTI26CContactPresenceApiHandler @ 3 NONAME ; #<TI>#
+	_ZTI8CMyTimer @ 4 NONAME ; #<TI>#
+	_ZTV25CContactPresencePbHandler @ 5 NONAME ; #<VT>#
+	_ZTV26CContactPresenceApiHandler @ 6 NONAME ; #<VT>#
+	_ZTV8CMyTimer @ 7 NONAME ; #<VT>#
+

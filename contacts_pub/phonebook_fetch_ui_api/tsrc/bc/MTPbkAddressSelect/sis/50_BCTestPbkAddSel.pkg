@@ -1,0 +1,37 @@
+;
+; Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+; All rights reserved.
+; This component and the accompanying materials are made available
+; under the terms of "Eclipse Public License v1.0"
+; which accompanies this distribution, and is available
+; at the URL "http://www.eclipse.org/legal/epl-v10.html".
+;
+; Initial Contributors:
+; Nokia Corporation - initial contribution.
+;
+; Contributors:
+;
+; Description:      
+;
+&EN
+
+; Installation header
+; Only one component name as we only support English
+; UID is the main app's UID
+
+#{"MTPbkAddressSelect"},(0x20015A1D),1,0,0,TYPE=SA
+[0x101F7961],3,*,*,{"Series60ProductID"}
+
+; Non-localised vendor name
+:"Nokia Corporation"
+
+; Localised vendor names
+%{"Nokia Corporation"}
+
+; Files to install and to where
+"\Epoc32\Release\armv5\urel\MTPbkAddressSelect.dll"-"!:\sys\bin\MTPbkAddressSelect.dll"
+"\Epoc32\winscw\c\testframework\TestFramework_PbkAddSel.ini"-"!:\TestFramework\TestFramework_PbkAddSel.ini"
+"\Epoc32\winscw\c\testframework\tcBCTestPbkAddSel.cfg"-"!:\TestFramework\tcBCTestPbkAddSel.cfg"
+"\Epoc32\winscw\c\testframework\UI_BCTestPbkAddSel.cfg"-"!:\TestFramework\UI_BCTestPbkAddSel.cfg"
+"\epoc32\winscw\c\PbkAddSel_c.bat"-"!:\PbkAddSel_c.bat"
+"\epoc32\data\z\resource\PbkAddressSelect.rsc"-"!:\resource\PbkAddressSelect.rsc"

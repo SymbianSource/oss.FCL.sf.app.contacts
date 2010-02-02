@@ -1,0 +1,73 @@
+// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+// All rights reserved.
+// This component and the accompanying materials are made available
+// under the terms of "Eclipse Public License v1.0"
+// which accompanies this distribution, and is available
+// at the URL "http://www.eclipse.org/legal/epl-v10.html".
+//
+// Initial Contributors:
+// Nokia Corporation - initial contribution.
+//
+// Contributors:
+//
+// Description:
+// cntplsql.dll
+// cntplsql.dll Contacts engine persistence layer (no client interface)
+// 
+//
+
+#include "cntmodel.mmh"
+
+target          cntplsql.dll
+targettype      DLL
+CAPABILITY		All -TCB
+UID				0x1027976B
+VENDORID 		0x70000001
+
+//MACRO __PROFILE_DEBUG__
+
+
+userinclude ../src //for cntstd.h 
+userinclude ../cntsrv/inc //for persistencelayer.h 
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
+
+userinclude 	../cntplsql/inc 
+userinclude 	../inc			//for ccontactprivate.h
+
+SOURCEPATH	../cntplsql/src
+source		cntsqlprovider.cpp 
+source		cntpersistenceutility.cpp
+
+source		cpplcontacttable.cpp
+source		cpplgroupstable.cpp
+source		cpplcommaddrtable.cpp
+
+source 		pplcontactitemmanager.cpp
+source		rpplicccontactstore.cpp
+source		pplpreferencespersistor.cpp
+source		clplcontactproperties.cpp
+source		cplcollectioniterator.cpp
+source		cplplugins.cpp
+
+source		cntfilesearch.cpp
+source		cplcontactsfile.cpp
+source		cplpersistencebroker.cpp
+
+source 		clplanalyserproxy.cpp
+source		clplgenericproxy.cpp
+
+source      cntpplviewmanager.cpp
+source      cntpplviewsession.cpp
+
+
+library         euser.lib 
+library         efsrv.lib 
+library         estor.lib 
+library         ecom.lib 
+library         bafl.lib
+library         cntmodel.lib
+library			sqldb.lib
+
+SMPSAFE
+
+

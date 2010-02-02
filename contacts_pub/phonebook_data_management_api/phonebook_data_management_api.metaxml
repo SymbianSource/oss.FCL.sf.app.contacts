@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<api id="fed6b4a55aedf99a1e82e9370b05d62a" dataversion="2.0">
+  <name>Phonebook Data Management API</name>
+  <description>API for S60 specific contact data management. Wraps Symbian's Contact Model API.</description>
+  <type>c++</type>
+  <collection>phonebookui</collection>
+  <libs>
+    <lib name="PbkEng.lib" />
+  </libs>
+  <release category="public" sinceversion="0" deprecatedsince="0"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>no</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>

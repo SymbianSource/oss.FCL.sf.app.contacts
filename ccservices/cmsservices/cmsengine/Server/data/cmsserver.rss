@@ -1,0 +1,108 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  resources for the module
+*
+*/
+
+
+//  RESOURCE IDENTIFIER
+NAME JWLD
+
+#include <eikon.rh>
+#include <VPbkFieldType.rh>
+#include <VPbkFieldType.hrh>
+#include <VPbkContactView.rh>
+#include "cmsserver.rh"
+
+#define KDB "cntdb://c:contacts.cdb"
+
+
+//  RESOURCE DEFINITIONS
+//----------------------------------------------------------------------------
+//
+//    RSS_SIGNATURE
+//
+//
+//----------------------------------------------------------------------------
+//
+RESOURCE RSS_SIGNATURE
+    {
+    }
+    
+//----------------------------------------------------------------------------
+//
+//    main_contact_view_structure
+//    VPBK_CONTACT_VIEW
+//
+//----------------------------------------------------------------------------
+// 
+RESOURCE VPBK_CONTACT_VIEW r_cms_contact_view_structure
+    {
+    uri = KDB;
+    }
+
+//----------------------------------------------------------------------------
+//
+//    main_contact_view_structure
+//    VPBK_CONTACT_VIEW
+//
+//----------------------------------------------------------------------------
+// 
+RESOURCE DATA r_cms_example
+	{
+	wrd=0;
+	lng=2; 
+	txt="This is LTEXT type (max length set)";
+	ltxt="This is LTEXT type (leading byte count)";
+	byt=255;
+	dbl=99.9;
+	}
+	    
+//----------------------------------------------------------------------------
+//
+//    r_vpbkcontmanagerex_sortorder_lastname_firstname
+//    Field Type Sort Order
+//
+//----------------------------------------------------------------------------
+// 
+RESOURCE ARRAY r_cms_sortorder_lastname_firstname
+    {
+    items =
+        {
+        VPBK_FIELD_TYPE_MAPPING
+            {
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameN;
+                subField = EVPbkVersitSubFieldFamilyName;
+                };
+            },
+        VPBK_FIELD_TYPE_MAPPING
+            {
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameN;
+                subField = EVPbkVersitSubFieldGivenName;
+                };
+            },
+        VPBK_FIELD_TYPE_MAPPING
+            {    
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTEL;
+                };
+            }
+        };
+    }   
+    

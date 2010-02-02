@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<api id="6e451522e44fa90ccbdd4fc950f0e241" dataversion="2.0">
+  <name>Phonebook 2 Icon API</name>
+  <description>Provides Phonebook 2 icons for the Phonebook clients.</description>
+  <type>c++</type>
+  <collection>phonebookui</collection>
+  <libs>
+    <lib name="Pbk2CommonUI.lib" />
+  </libs>
+  <release category="platform"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>no</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>

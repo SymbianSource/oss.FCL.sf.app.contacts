@@ -1,0 +1,19 @@
+EXPORTS
+	?ExternalizeArrayLC@@YAPAVHBufC8@@ABVRVPbkStreamedIntArray@@@Z @ 1 NONAME ; class HBufC8 * ExternalizeArrayLC(class RVPbkStreamedIntArray const &)
+	?ExternalizeL@RVPbkStreamedIntArray@@QBEXAAVRWriteStream@@@Z @ 2 NONAME ; void RVPbkStreamedIntArray::ExternalizeL(class RWriteStream &) const
+	?ExternalizedSize@RVPbkStreamedIntArray@@QBEHXZ @ 3 NONAME ; int RVPbkStreamedIntArray::ExternalizedSize(void) const
+	?InternalizeL@RVPbkStreamedIntArray@@QAEXAAVRReadStream@@@Z @ 4 NONAME ; void RVPbkStreamedIntArray::InternalizeL(class RReadStream &)
+	?RemoveAll@RVPbkStreamedIntArray@@QAEXXZ @ 5 NONAME ; void RVPbkStreamedIntArray::RemoveAll(void)
+	??0CVPbkSimFieldTypeFilter@@QAE@XZ @ 6 NONAME ; CVPbkSimFieldTypeFilter::CVPbkSimFieldTypeFilter(void)
+	?AppendFilteringFlag@CVPbkSimFieldTypeFilter@@QAEXG@Z @ 7 NONAME ; void CVPbkSimFieldTypeFilter::AppendFilteringFlag(unsigned short)
+	?ExternalizeLC@CVPbkSimFieldTypeFilter@@QBEPAVHBufC8@@XZ @ 8 NONAME ; class HBufC8 * CVPbkSimFieldTypeFilter::ExternalizeLC(void) const
+	?FilteringCriteria@CVPbkSimFieldTypeFilter@@QBEGXZ @ 9 NONAME ; unsigned short CVPbkSimFieldTypeFilter::FilteringCriteria(void) const
+	?FilteringFlagForSimFieldType@CVPbkSimFieldTypeFilter@@QBEGW4TVPbkSimCntFieldType@@@Z @ 10 NONAME ; unsigned short CVPbkSimFieldTypeFilter::FilteringFlagForSimFieldType(enum TVPbkSimCntFieldType) const
+	?InternalizeL@CVPbkSimFieldTypeFilter@@QAEXABVTDesC8@@@Z @ 11 NONAME ; void CVPbkSimFieldTypeFilter::InternalizeL(class TDesC8 const &)
+	?ActiveFdnBlocksAdnStoreL@CVPbkSimStateInformation@@QAEHAAVMVPbkSimPhone@@@Z @ 12 NONAME ; int CVPbkSimStateInformation::ActiveFdnBlocksAdnStoreL(class MVPbkSimPhone &)
+	?BTSapEnabledL@CVPbkSimStateInformation@@QAEHXZ @ 13 NONAME ; int CVPbkSimStateInformation::BTSapEnabledL(void)
+	?NewL@CVPbkSimStateInformation@@SAPAV1@XZ @ 14 NONAME ; class CVPbkSimStateInformation * CVPbkSimStateInformation::NewL(void)
+	?NewSimCardL@CVPbkSimStateInformation@@QAEHXZ @ 15 NONAME ; int CVPbkSimStateInformation::NewSimCardL(void)
+	?SimInsertedL@CVPbkSimStateInformation@@QAEHXZ @ 16 NONAME ; int CVPbkSimStateInformation::SimInsertedL(void)
+	?SystemMaxPhoneNumberLengthL@VPbkSimStoreCommonUtil@@SAHXZ @ 17 NONAME ; int VPbkSimStoreCommonUtil::SystemMaxPhoneNumberLengthL(void)
+

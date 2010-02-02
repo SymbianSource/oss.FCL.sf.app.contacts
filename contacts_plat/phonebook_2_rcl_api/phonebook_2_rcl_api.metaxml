@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api id="3ac019ae02887a6787f9d198be2d99b9" dataversion="2.0">
+  <name>Phonebook 2 RCL API</name>
+  <description>Phonebook 2 Remote Contact Lookup API</description>
+  <type>c++</type>
+  <collection>Contacts</collection>
+  <libs>
+    <lib name="pbk2rclengine.lib"/>
+  </libs>
+  <release category="platform" sinceversion="5.2"/>
+  <attributes>
+    <htmldocprovided>no</htmldocprovided>
+    <adaptation>no</adaptation>
+  </attributes>
+</api>

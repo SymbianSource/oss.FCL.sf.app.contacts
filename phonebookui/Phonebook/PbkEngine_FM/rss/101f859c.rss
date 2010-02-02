@@ -1,0 +1,50 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file contains ECom resources for pbk engine extension. 
+*
+*
+*/
+
+
+#include "PbkUID.h"
+#include <ecom/registryinfo.rh>
+
+RESOURCE REGISTRY_INFO theInfo
+	{
+	dll_uid = KPbkEngineFMPluginUID;
+	interfaces = 
+		{
+		INTERFACE_INFO
+	        {
+			interface_uid = KPbkEngineInterfaceUID;
+			implementations = 
+	            {
+				IMPLEMENTATION_INFO
+	                {
+		            implementation_uid = KPbkEngineFMPluginUID;
+					version_no = 1;
+					display_name = "";
+					// First field is used to get match when
+					// ListImplementationsL is used.
+					// Second field is used to get right implementation
+					// with CreateImplementationL.
+					default_data = "*||101f859c";
+					opaque_data = "";
+					}
+				};
+			}
+		};
+	}
+
+// End of file

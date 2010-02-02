@@ -1,0 +1,540 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 icon info resources.
+*
+*/
+
+
+#include <Pbk2IconInfo.rh>
+#include <Pbk2Icons.hrh>
+#include <Pbk2IconId.hrh>
+#include <Pbk2IconId.rh>
+#include <Pbk2UID.h>
+#include <AvkonIcons.hrh>
+
+// --------------------------------------------------------------------------
+// Phonebook 2 icon info array
+// --------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_pbk2_icon_info_array
+    {
+    items =
+        {
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_indi_marked_add;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_indi_marked_add;
+            maskId = qgn_indi_marked_add_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiMarkedAdd;
+            colorIdMajor = EAknsMajorSkin;
+            colorIdMinor = EAknsMinorQsnIconColors;
+            colorIndex = 12; // EAknsCIQsnIconColorsCG13
+            defaultColorIndex = 215;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_checkbox_off;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_checkbox_off;
+            maskId = qgn_prop_checkbox_off_mask;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnPropCheckboxOff;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_checkbox_on;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_checkbox_on;
+            maskId = qgn_prop_checkbox_on_mask;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnPropCheckboxOn;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_phone;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_nrtyp_phone;
+            maskId = qgn_prop_nrtyp_phone_mask;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnPropNrtypPhone;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_home;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_nrtyp_home;
+            maskId = qgn_prop_nrtyp_home_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropNrtypHome;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_work;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_nrtyp_work;
+            maskId = qgn_prop_nrtyp_work_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropNrtypWork;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_mobile;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_nrtyp_mobile;
+            maskId = qgn_prop_nrtyp_mobile_mask;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnPropNrtypMobile;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_fax;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_nrtyp_fax;
+            maskId = qgn_prop_nrtyp_fax_mask;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnPropNrtypFax;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_pager;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_nrtyp_pager;
+            maskId = qgn_prop_nrtyp_pager_mask;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnPropNrtypPager;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_email;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_nrtyp_email;
+            maskId = qgn_prop_nrtyp_email_mask;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnPropNrtypEmail;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_address;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_nrtyp_address;
+            maskId = qgn_prop_nrtyp_address_mask;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnPropNrtypAddress;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_url;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_nrtyp_url;
+            maskId = qgn_prop_nrtyp_url_mask;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnPropNrtypUrl;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_date;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_prop_nrtyp_date;
+            maskId = qgn_prop_nrtyp_date_mask;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnPropNrtypDate;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_note;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_nrtyp_note;
+            maskId = qgn_prop_nrtyp_note_mask;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnPropNrtypNote;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_tone;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_prop_nrtyp_tone;
+            maskId = qgn_prop_nrtyp_tone_mask;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnPropNrtypTone;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_group_open_tab1;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_prop_group_open_tab1;
+            maskId = qgn_prop_group_open_tab1_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropGroupOpenTab1;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_group_small;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_group_small;
+            maskId = qgn_prop_group_small_mask;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnPropGroupSmall;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_graf_pb_status_backg;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_graf_pb_status_backg;
+            maskId = qgn_graf_pb_status_backg;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnGrafPbStatusBackg;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_empty;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_prop_nrtyp_empty;
+            maskId = qgn_prop_nrtyp_empty_mask;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_indi_voice_add;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_indi_voice_add;
+            maskId = qgn_indi_voice_add_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiVoiceAdd;
+            colorIdMajor = EAknsMajorSkin;
+            colorIdMinor = EAknsMinorQsnIconColors;
+            colorIndex = 12; // EAknsCIQsnIconColorsCG13
+            defaultColorIndex = 215;
+            },           
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_indi_qdial_add;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_indi_qdial_add;
+            maskId = qgn_indi_qdial_add_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiQdialAdd;
+            colorIdMajor = EAknsMajorSkin;
+            colorIdMinor = EAknsMinorQsnIconColors;
+            colorIndex = 12; // EAknsCIQsnIconColorsCG13
+            defaultColorIndex = 215;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_video;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_nrtyp_video;
+            maskId = qgn_prop_nrtyp_video_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropNrtypVideo;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_voip;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_nrtyp_voip;
+            maskId = qgn_prop_nrtyp_voip_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropNrtypVoip;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_poc;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_prop_nrtyp_poc;
+            maskId = qgn_prop_nrtyp_poc_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropNrtypPoc;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_swis;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_prop_nrtyp_swis;
+            maskId = qgn_prop_nrtyp_swis_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropNrtypSwis;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_sip;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_prop_nrtyp_sip;
+            maskId = qgn_prop_nrtyp_sip_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropNrtypSip;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_assistant;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_nrtyp_assistant;
+            maskId = qgn_prop_nrtyp_assistant_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropNrtypAssistant;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_nrtyp_car;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_nrtyp_car;
+            maskId = qgn_prop_nrtyp_car_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropNrtypCar;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_pb_topc;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_prop_pb_topc;
+            maskId = qgn_prop_pb_topc_mask;
+            },            
+    PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_locev_map;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_prop_locev_map;
+            maskId = qgn_prop_locev_map_mask;
+            },
+    PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_pb_no_valid_lm;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_prop_pb_no_valid_lm;
+            maskId = qgn_prop_pb_no_valid_lm_mask;
+            },
+    PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_blid_waypoint;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_prop_blid_waypoint;
+            maskId = qgn_prop_blid_waypoint_mask;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_radiobutt_off;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_radiobutt_off;
+            maskId = qgn_prop_radiobutt_off_mask;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnPropRadiobuttOff;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_prop_radiobutt_on;
+                };
+            mbmFileName = AVKON_ICON_FILE;
+            iconId = qgn_prop_radiobutt_on;
+            maskId = qgn_prop_radiobutt_on_mask;
+            skinIdMajor = EAknsMajorAvkon;
+            skinIdMinor = EAknsMinorQgnPropRadiobuttOn;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Phonebook 2 empty icon info array
+// --------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_pbk2_empty_icon_info_array
+    {
+    items =
+        {
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_menu_empty_cxt;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_menu_empty_cxt;
+            maskId = qgn_menu_empty_cxt_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnMenuEmpty;
+            }
+        };
+    }
+
+// End of File

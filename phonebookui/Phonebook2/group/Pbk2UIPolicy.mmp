@@ -1,0 +1,88 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 UI Policy project specification file.
+*
+*/
+
+
+#include <platform/app/Pbk2UID.h>
+#include "Pbk2Config.mmp"
+#include "../inc/Pbk2InternalUID.h"
+#include "../inc/Pbk2Config.hrh"
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+// Target information
+TARGET          Pbk2UIPolicy.dll
+TARGETTYPE      PLUGIN
+UID             KEComRecognitionUID2 KPbk2UIPolicyUID3
+CAPABILITY      CAP_ECOM_PLUGIN
+
+// Source path
+SOURCEPATH      ../UIPolicy/src
+
+// Sources
+SOURCE          DllMain.cpp
+
+// Sort policy
+SOURCE          CPbk2ContactViewSortPolicy.cpp
+SOURCE          CPbk2SortKeyArray.cpp
+SOURCE          CPbk2SortOrderProvider.cpp
+
+// Copy policy
+SOURCE          CPbk2ContactCopyPolicy.cpp
+
+// Find policy
+SOURCE          CPbk2ContactFindPolicy.cpp
+
+// Duplicate contact policy
+SOURCE          CPbk2ContactDuplicatePolicy.cpp
+
+// Name construction policy
+SOURCE          CPbk2ContactNameConstructionPolicy.cpp
+
+// Resources
+START RESOURCE ../rss/Pbk2UIPolicyRes.rss
+HEADER
+TARGET      Pbk2UIPolicyRes
+TARGETPATH  RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END
+
+START RESOURCE  ../rss/Pbk2UIPolicy.rss
+TARGET          Pbk2UiPolicy
+TARGETPATH      ECOM_RESOURCE_DIR
+END
+
+// Include paths
+USERINCLUDE     ../UIPolicy/inc
+SYSTEMINCLUDE   ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib ecom.lib bafl.lib
+
+// Dependencies to S60 platform components
+LIBRARY SortUtil.lib FindUtil.lib
+LIBRARY FeatMgr.lib
+
+// Dependencies to Phonebook
+LIBRARY VPbkEng.lib Pbk2Presentation.lib
+
+#ifdef PBK2_ENABLE_PROFILE
+// Depencency to Phonebook profiling library
+LIBRARY Pbk2Profile.lib
+#endif // PBK2_ENABLE_PROFILE
+
+// End of File

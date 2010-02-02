@@ -1,0 +1,113 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Commands Extension project specification file.
+*
+*/
+
+
+#include <platform/app/Pbk2UID.h>
+#include "Pbk2Config.mmp"
+#include "../inc/Pbk2InternalUID.h"
+#include "../CommandsExtension/inc/Pbk2CmdExtUid.h"
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+// Target information
+TARGET          Pbk2CmdExt.dll
+TARGETTYPE      PLUGIN
+UID             KEComRecognitionUID2 KPbk2CmdExtensionImplementationUID
+CAPABILITY      CAP_ECOM_PLUGIN
+VENDORID        VID_DEFAULT
+
+// Source path
+SOURCEPATH      ../CommandsExtension/src
+
+// Source files
+SOURCE          DllMain.cpp
+SOURCE          CPbk2CmdExtensionPlugin.cpp
+SOURCE          CPbk2CommandFactory.cpp
+
+// Commands
+SOURCE          CPbk2SendContactCmd.cpp
+SOURCE          CPbk2SendMessageCmd.cpp
+SOURCE          CPbk2CopyContactsCmd.cpp
+SOURCE          CPbk2DeleteContactsCmd.cpp
+SOURCE          CPbk2GoToURLCmd.cpp
+SOURCE          CPbk2AssignDefaultsCmd.cpp
+SOURCE          CPbk2AssignSpeedDialCmd.cpp
+SOURCE          CPbk2ThumbnailCmdBase.cpp
+SOURCE          CPbk2CreateNewContactCmd.cpp
+SOURCE          CPbk2EditContactCmd.cpp
+SOURCE          CPbk2RemoveSpeedDialCmd.cpp
+SOURCE          CPbk2InfoDialogCmd.cpp
+SOURCE          CPbk2SetThumbnailCmd.cpp
+SOURCE          CPbk2CopyContactsStarterCmd.cpp
+SOURCE          CPbk2RemoveThumbnailCmd.cpp
+SOURCE          CPbk2CopyNumberToClipboardCmd.cpp
+SOURCE          CPbk2ImageCmdBase.cpp
+SOURCE          CPbk2SetImageCmd.cpp
+SOURCE          CPbk2RemoveImageCmd.cpp
+SOURCE          CPbk2ViewImageCmd.cpp
+SOURCE          CPbk2MergeContactsCmd.cpp
+
+SOURCE          CPbk2CopyDetailToClipboardCmd.cpp 
+SOURCE          CPbk2CopyAddressToClipboardCmd.cpp 
+
+SOURCE			CPbkRclCmd.cpp //RCL_ADD
+
+// Utilities
+SOURCE          CPbk2vCardConverter.cpp
+SOURCE          Pbk2SendCmdUtils.cpp
+SOURCE          TPbk2CopyContactsUtil.cpp
+SOURCE          CPbk2MergeResolver.cpp
+SOURCE          CPbk2MergeConflict.cpp
+
+// Resources
+START RESOURCE  ../rss/Pbk2CmdExtRes.rss
+HEADER
+TARGET          Pbk2CmdExtRes
+TARGETPATH      RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END
+
+START RESOURCE  ../rss/Pbk2CmdExt.rss
+TARGET          Pbk2CmdExt
+TARGETPATH      ECOM_RESOURCE_DIR
+END
+
+// Include paths
+USERINCLUDE     ../CommandsExtension/inc
+SYSTEMINCLUDE   ../inc
+SYSTEMINCLUDE     /epoc32/include/ecom  //RCL_ADD
+
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib eikcoctl.lib cone.lib
+LIBRARY apparc.lib bafl.lib ecom.lib eikcore.lib efsrv.lib
+LIBRARY estor.lib etext.lib apmime.lib 
+LIBRARY imageconversion.lib fbscli.lib
+
+// Dependencies to S60 components
+LIBRARY Avkon.lib CommonEngine.lib BrowserLauncher.lib SendUI.lib FeatMgr.lib
+LIBRARY MGFetch.lib SpdCtrl.lib
+LIBRARY CommonUI.lib
+
+// Dependencies to Phonebook
+LIBRARY VPbkEng.lib VPbkVCardEng.lib Pbk2Commands.lib
+LIBRARY Pbk2UIControls.lib Pbk2Presentation.lib
+LIBRARY Pbk2CommonUI.lib Pbk2UIExt.lib
+LIBRARY pbk2rclengine.lib
+
+// End of File

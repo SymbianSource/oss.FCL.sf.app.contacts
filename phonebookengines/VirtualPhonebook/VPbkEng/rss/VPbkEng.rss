@@ -1,0 +1,124 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Main Virtual Phonebook resource file.
+*
+*/
+
+
+#include <badef.rh>
+#include <VPbkFieldType.rh>
+#include <VPbkFieldTypeDef.rh>
+
+RESOURCE BA_RSS_SIGNATURE { }
+
+RESOURCE VPBK_FIELD_TYPE_LIST r_vpbk_global_field_types
+    {
+    items = 
+        {
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_lastname; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_lastnamereading; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_firstname; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_firstnamereading; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_prefix; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_suffix; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_secondname; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_landphonehome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_mobilephonehome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_videonumberhome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_faxnumberhome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_voiphome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_emailhome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_urlhome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrlabelhome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrpohome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrexthome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrstreethome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrlocalhome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrregionhome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrpostcodehome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrcountryhome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_jobtitle; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_companyname; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_landphonework; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_mobilephonework; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_videonumberwork; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_faxnumberwork; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_voipwork; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_emailwork; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_urlwork; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrlabelwork; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrpowork; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrextwork; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrstreetwork; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrlocalwork; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrregionwork; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrpostcodework; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrcountrywork; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_landphonegen; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_mobilephonegen; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_videonumbergen; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_faxnumbergen; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_voipgen; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_poc; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_swis; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_sip; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_emailgen; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_urlgen; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrlabelgen; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrpogen; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrextgen; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrstreetgen; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrlocalgen; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrregiongen; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrpostcodegen; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_addrcountrygen; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_pagernumber; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_dtmfstring; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_wvaddress; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_date; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_note; },
+//        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_picture; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_thumbnailpic; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_ringtone; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_callerobjimg; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_callerobjtext; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_middlename; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_department; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_asstname; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_spouse; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_children; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_asstphone; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_carphone; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_anniversary; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_syncclass; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_locprivacy; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_genlabel; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_topcontact; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_impp; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_geohome; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_geowork; },
+        VPBK_FIELD_TYPE_LINK { fieldType = r_vpbk_field_type_geogen; }
+        };
+    }
+
+RESOURCE VBK_FIELD_VERSIT_PROPERTY r_vpbk_syncronization_field_property
+    {
+    name       = EVPbkVersitNameX;
+    extensionName = "X-CLASS";
+    }
+   
+// Include additional resource files
+#include "VPbkEngFieldTypes.rss"
+
+// End of File

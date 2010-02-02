@@ -1,0 +1,106 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Commands project specification file.
+*
+*/
+
+
+#include <platform/app/Pbk2UID.h>
+#include "Pbk2Config.mmp"
+#include "../inc/Pbk2InternalUID.h"
+#include "../inc/Pbk2Config.hrh"
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+// Target information
+TARGET          Pbk2Commands.dll
+TARGETTYPE      dll
+UID             KEPOCStaticDllUID2 KPbk2DllUID3
+CAPABILITY      CAP_GENERAL_DLL
+
+// Source path
+SOURCEPATH      ../Commands/src
+
+// Source files
+SOURCE          CPbk2CommandStore.cpp
+SOURCE          CPbk2CommandHandler.cpp
+SOURCE          CPbk2CommandFactory.cpp
+
+// Command objects
+SOURCE          CPbk2PrependCmd.cpp
+SOURCE          CPbk2CallCmd.cpp
+SOURCE          CPbk2PocCmd.cpp
+SOURCE          CPbk2SyncMlCmd.cpp
+SOURCE          CPbk2SetToneBase.cpp
+SOURCE          CPbk2SetToneCmd.cpp
+SOURCE          cpbk2activatecntinfoviewcmd.cpp
+SOURCE          CPbk2SindInfoViewCmd.cpp
+SOURCE          CPbk2OviSyncCmd.cpp
+
+// AIW related classes
+SOURCE          CPbk2AiwInterestArray.cpp
+SOURCE          CPbk2AiwInterestItemFactory.cpp
+SOURCE          CPbk2AiwInterestItemBase.cpp
+SOURCE          CPbk2AiwInterestItemCall.cpp
+SOURCE          CPbk2AiwInterestItemPoc.cpp
+SOURCE          CPbk2AiwInterestItemSyncMl.cpp
+SOURCE          CPbk2AiwInterestItemSindInfoView.cpp
+SOURCE          CPbk2AiwInterestItemOviSync.cpp
+
+// Utility
+SOURCE          Pbk2ProcessDecoratorFactory.cpp
+SOURCE          CPbk2ProgressDialogDecorator.cpp
+SOURCE          CPbk2WaitNoteDecorator.cpp
+SOURCE          CPbk2CallTypeSelector.cpp
+SOURCE          TPbk2CopyContactsResults.cpp
+SOURCE          CPbk2DriveSpaceCheck.cpp
+SOURCE          cpbk2commandactivator.cpp
+SOURCE          cpbk2storestatechecker.cpp
+
+// Resources
+LANGUAGE_IDS
+START RESOURCE  ../rss/Pbk2Commands.rss
+HEADER
+TARGET          Pbk2Commands
+TARGETPATH      RESOURCE_FILES_DIR
+END
+
+// Include paths
+USERINCLUDE     ../Commands/inc ../Commands/rss
+SYSTEMINCLUDE   ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib eikctl.lib eikcoctl.lib cone.lib ws32.lib
+LIBRARY bafl.lib hlplch.lib eikcore.lib
+
+// Dependencies to S60 platform components
+LIBRARY Avkon.lib CommonEngine.lib FeatMgr.lib
+LIBRARY ServiceHandler.lib FileList.lib
+LIBRARY centralrepository.lib
+LIBRARY sysutil.lib efsrv.lib
+LIBRARY aiwdialdata.lib
+LIBRARY serviceprovidersettings.lib
+
+// Dependencies to Phonebook
+LIBRARY VPbkEng.lib
+LIBRARY Pbk2UIControls.lib Pbk2Presentation.lib
+LIBRARY Pbk2CommonUI.lib Pbk2UIExt.lib
+
+// Depencency to Phonebook profiling library
+#ifdef PBK2_ENABLE_PROFILE
+LIBRARY Pbk2Profile.lib
+#endif // PBK2_ENABLE_PROFILE
+
+// End of File

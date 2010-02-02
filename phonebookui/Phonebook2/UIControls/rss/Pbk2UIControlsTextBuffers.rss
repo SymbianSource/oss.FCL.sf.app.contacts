@@ -1,0 +1,799 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 UI Controls localized texts.
+*
+*/
+
+
+#include <avkon.loc>
+#include <phonebook2.loc>
+
+// --------------------------------------------------------------------------
+// Text: The primary empty text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_no_entries_long
+    {
+    buf = qtn_phob_no_entries_long;
+    }
+
+// --------------------------------------------------------------------------
+// Text: The secondary empty text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_no_entries_longer
+    {
+    buf = qtn_phob_no_entries_longer;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Delete many contacts confirmation query
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_query_delete_n_entries
+    {
+    buf = qtn_phob_query_delete_n_entries;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Common delete confirmation query text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_query_common_conf_delete
+    {
+    buf = qtn_query_common_conf_delete;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Default popup list title text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_title_default_settings
+    {
+    buf = qtn_phob_title_default_settings;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Prompt text popup list for default field fetch
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_title_select_default
+    {
+    buf = qtn_cca_title_select_detail;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Call default text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_seti_call_default
+    {
+    buf = qtn_cca_defaults_popup_call;
+    }
+
+// --------------------------------------------------------------------------
+// Text: MMS default text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_seti_mms_default
+    {
+    buf = qtn_phob_seti_mms_default;
+    }
+
+// --------------------------------------------------------------------------
+// Text: SMS default text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_seti_sms_default
+    {
+    buf = qtn_phob_seti_sms_default;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Message default text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_seti_message_default
+    {
+    buf = qtn_cca_defaults_popup_message;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Email default text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_seti_email_default
+    {
+    buf = qtn_cca_defaults_popup_email;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Video number default text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_seti_video_default
+    {
+    buf = qtn_cca_defaults_popup_video_call;
+    }
+
+// --------------------------------------------------------------------------
+// Text: VoIP default text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_seti_voip_default
+    {
+    buf = qtn_cca_defaults_popup_voip_call;
+    }
+
+// --------------------------------------------------------------------------
+// Text: POC default text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_seti_poc_default
+    {
+    buf = qtn_cca_list_query_push_to_talk;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Chat default text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_seti_chat_default
+    {
+    buf = qtn_cca_defaults_popup_chat;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Open link default text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_seti_openlink_default
+    {
+    buf = qtn_cca_defaults_popup_url;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No default text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_seti_no_default
+    {
+    buf = qtn_phob_seti_no_default;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Synchronization private value
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cale_confident_private
+    {
+    buf = qtn_cale_confident_private;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Synchronization public value
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cale_confident_public
+    {
+    buf = qtn_cale_confident_public;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Synchronization none value
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cale_confident_none
+    {
+    buf = qtn_cale_confident_none;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Store not available
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_store_not_available
+    {
+    buf = qtn_phob_store_not_available;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Default saving memory
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_phonebook2_settings_information_note
+    {
+    buf = qtn_phob_default_saving_mem;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Settings title
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_phob_set_title
+    {
+    buf = qtn_phob_set_title;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Select saving memory
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_phonebook2_select_sav_mem_popup_title
+    {
+    buf = qtn_phob_prtx_select_sav_mem;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Last name First name
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_set_names_last_space_first
+    {
+    buf = qtn_phob_set_names_last_space_first;
+    }
+
+// --------------------------------------------------------------------------
+// Text: First name Last Name
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_set_names_first_space_last
+    {
+    buf = qtn_phob_set_names_first_space_last;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Last name, First name
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_set_names_last_separator_first
+    {
+    buf = qtn_phob_set_names_last_separator_first;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Visibility (1)
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_name_ordering_settings_visibility
+    {
+    buf = qtn_phob_name_ordering_settings_visibility;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Several memories
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_phonebook2_settings_several_memories
+    {
+    buf = qtn_phob_set_several_mem;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Phonebook info dialog title
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF R_QTN_PHOB_QTL_PB_INFO_ALL
+    {
+    buf = qtn_phob_qtl_pb_info_all;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Phonebook info dialog title
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF R_QTN_PHOB_QTL_PB_INFO_SELECTED
+    {
+    buf = qtn_phob_qtl_pb_info_selected;
+    }
+
+// --------------------------------------------------------------------------
+// Text: New entry text to title pane
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_title_new_entry
+    {
+    buf = qtn_phob_title_new_entry;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Delete entry item query
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_query_delete_item
+    {
+    buf = qtn_phob_query_delete_item;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Edit label query prompt
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_form_prmpt_field_label
+    {
+    buf = qtn_form_prmpt_field_label;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Voice tag deleted
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_voice_tag_del
+    {
+    buf = qtn_phob_note_voice_tag_del;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Speed dial deleted
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_speed_dial_del
+    {
+    buf = qtn_phob_note_speed_dial_del;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No phone number for name
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_number_to_name
+    {
+    buf = qtn_phob_note_no_number_to_name;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No phone number
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_number
+    {
+    buf = qtn_phob_note_no_number;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No MMS address for name
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_mms_to_name
+    {
+    buf = qtn_phob_note_no_mms_to_name;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No MMS address
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_mms
+    {
+    buf = qtn_phob_note_no_mms;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No email address for name
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_email_to_name
+    {
+    buf = qtn_phob_note_no_email_to_name;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No email address
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_email
+    {
+    buf = qtn_phob_note_no_email;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No email over SMS address for name
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_sms_with_email_to_name
+    {
+    buf = qtn_phob_note_no_sms_with_email_to_name;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No email over SMS address
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_sms_with_email
+    {
+    buf = qtn_phob_note_no_sms_with_email;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No POC address for name
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_poc_to_name
+    {
+    buf = qtn_phob_note_no_poc_to_name;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No POC address
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_poc
+    {
+    buf = qtn_phob_note_no_poc;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No VoIP address for name
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_voip_to_name
+    {
+    buf = qtn_phob_note_no_voip_to_name;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No VoIP address
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_voip
+    {
+    buf = qtn_phob_note_no_voip;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No message address for name
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_msg_to_name
+    {
+    buf = qtn_phob_note_no_msg_to_name;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No message address
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_msg
+    {
+    buf = qtn_phob_note_no_msg;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No URL address for name
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_url
+    {
+    buf = qtn_phob_note_no_url;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No URL address
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_no_url_defined
+    {
+    buf = qtn_phob_note_no_url_defined;
+    }
+
+// --------------------------------------------------------------------------
+// Empty text buffer
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_empty_text_buffer
+    {
+    buf = "";
+    }
+
+// --------------------------------------------------------------------------
+// Empty text buffer
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_empty_text_buffer_u
+    {
+    buf = "%U";
+    }
+
+// --------------------------------------------------------------------------
+// Text: No stores ready
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_stores_na
+    {
+    buf = qtn_phob_stores_na;
+    }
+
+// --------------------------------------------------------------------------
+// Text: The empty info list text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_no_items
+    {
+    buf = qtn_phob_no_items;
+    }
+
+// --------------------------------------------------------------------------
+// Text: List empty text for exhausted search
+// Note: this is defied as LBUF with id 'r_avkon_find_no_matches'
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_pbk2_find_no_matches
+    {
+    buf = qtn_find_no_matches;
+    }
+
+// --------------------------------------------------------------------------
+// Text: No groups
+// Redeclared here since no dependency to Group UI Extension is allowed.
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_no_groups_in_fetch
+    {
+    buf = qtn_phob_no_groups;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Default ringing tone value
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_field_default_tone
+    {
+    buf = qtn_phob_field_no_personal_tone;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Add image text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_field_add_image
+    {
+    buf = qtn_phob_field_add_image;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Thumbnail
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_field_thumbnail
+    {
+    buf = qtn_phob_field_thumbnail;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Call:
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_title_popup_call
+    {
+    buf = qtn_cca_popup_call;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Message:
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_title_popup_message
+    {
+    buf = qtn_cca_popup_message;
+    }
+
+// --------------------------------------------------------------------------
+// Text: E-mail:
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_title_popup_email
+    {
+    buf = qtn_cca_popup_email;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Voip:
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_title_popup_voip_call
+    {
+    buf = qtn_cca_popup_voip_call;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Chat:
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_title_popup_chat
+    {
+    buf = qtn_cca_popup_chat;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Open link:
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_title_popup_url
+    {
+    buf = qtn_cca_popup_url;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Video call:
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_title_popup_video_call
+    {
+    buf = qtn_cca_popup_video_call;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Find on map:
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cca_popup_find_on_map
+    {
+    buf = qtn_cca_popup_find_on_map;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Show on map:
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cca_popup_show_on_map
+    {
+    buf = qtn_cca_popup_show_on_map;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Assign from map:
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cca_popup_assign_from_map
+    {
+    buf = qtn_cca_popup_assign_from_map;
+    }
+
+// --------------------------------------------------------------------------
+// Text: Push to talk:
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_title_popup_push_to_talk
+    {
+    buf = qtn_cca_popup_push_to_talk;
+    }
+
+// --------------------------------------------------------------------------
+// Text: %U call:
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_title_popup_voip_call_single_service
+    {
+    buf = qtn_cca_popup_voip_call_single_service;
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_lbl_address
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_header_address
+    {
+    buf = qtn_phob_header_address;
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_header_address_home
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_header_address_home
+    {
+    buf = qtn_phob_header_address_home;
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_header_address_work
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_header_address_work
+    {
+    buf = qtn_phob_header_address_work;
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_address_preview
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_address_preview     
+    { 
+    buf = qtn_phob_address_preview; 
+    } 
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_lbl_address
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_lbl_address
+    {
+    buf = qtn_phob_lbl_address;
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_lbl_address_home
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_lbl_address_home
+    {
+    buf = qtn_phob_lbl_address_home;
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_lbl_address_work
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_lbl_address_work
+    {
+    buf = qtn_phob_lbl_address_work;
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_contact_editor_define
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_contact_editor_define     
+    { 
+    buf = qtn_phob_contact_editor_define; 
+    } 
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_commlauncher_onelinepreview
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_commlauncher_onelinepreview     
+    { 
+    buf = qtn_phob_commlauncher_onelinepreview; 
+    } 
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_popup_incomplete_address
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_popup_incomplete_address     
+    { 
+    buf = qtn_phob_popup_incomplete_address; 
+    } 
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_confirm_keep_coordinates
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_confirm_keep_coordinates     
+    { 
+    buf = qtn_phob_confirm_keep_coordinates; 
+    } 
+// --------------------------------------------------------------------------
+// Text: VOIPOnlySingleServiceConfigured to Phone:
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_voip_call_single_service
+    {
+    buf = qtn_cca_voip_call_single_service;
+    }
+
+// End of File

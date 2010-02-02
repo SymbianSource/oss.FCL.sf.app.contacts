@@ -1,0 +1,715 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:    
+*     This file contains all the resources for the module.
+*
+*/
+
+
+
+
+
+
+//  RESOURCE IDENTIFIER
+NAME    SPDI // 4 letter ID
+
+//  INCLUDES
+
+#include <AiwCommon.rh>
+
+#include <eikon.rh>
+#include <eikon.rsg>
+#include <avkon.rsg>
+#include <avkon.rh>
+#include <avkon.mbg>
+#include <avkon.loc>
+#include <avkon.hrh>
+#include <EIKCTL.rsg>
+
+#include <bldvariant.hrh>
+
+#include "speeddial.hrh"
+#include <speeddial.loc>
+#include <mce.loc>
+#include "Speeddial.laf"
+#include <appinfo.rh>
+
+//  CONSTANTS  
+//#define ?constant   ?value
+
+
+//  MACROS  
+//#define ?macro
+
+
+//  RESOURCE DEFINITIONS 
+
+RESOURCE RSS_SIGNATURE { }
+
+//RESOURCE TBUF16
+RESOURCE TBUF
+    {
+    buf = "Speeddial";
+    }
+
+RESOURCE EIK_APP_INFO
+    {
+    status_pane = r_spdia_status_pane;
+    }
+// ---------------------------------------------------------
+//   
+//  r_spdia_status_pane
+//  Define status pane of speeddial
+//
+// ---------------------------------------------------------
+//
+RESOURCE TITLE_PANE r_speeddial_title_pane
+    {
+    txt = qtn_set_title_settings_speeddial;
+    }
+    
+RESOURCE STATUS_PANE_APP_MODEL r_spdia_status_pane
+    {
+    //layout= R_AVKON_STATUS_PANE_LAYOUT_EMPTY;
+    panes =
+        {
+        SPANE_PANE
+            {
+            id = EEikStatusPaneUidTitle;
+            type = EAknCtTitlePane;
+            resource = r_speeddial_title_pane;
+            }
+      
+        };
+
+    }
+
+//----------------------------------------------------
+//   
+//    r_spdia_view
+//    LeftSoftkey RightSoftkey MiddleSoftkey
+//
+//----------------------------------------------------
+RESOURCE CBA r_spdia_softkeys_option_exit_option
+	{
+	buttons =
+		{
+		CBA_BUTTON {id=EAknSoftkeyOptions; txt = text_softkey_option;},
+		CBA_BUTTON {id=EAknSoftkeyExit; txt = text_softkey_exit;},
+		CBA_BUTTON {id=EAknSoftkeyContextOptions; txt = text_softkey_option;}
+		};
+	}
+
+RESOURCE CBA r_spdia_softkeys_option_back_option
+	{
+	buttons =
+		{
+		CBA_BUTTON {id=EAknSoftkeyOptions; txt = text_softkey_option;},
+		CBA_BUTTON {id=EAknSoftkeyExit; txt = text_softkey_back;},
+		CBA_BUTTON {id=EAknSoftkeyContextOptions; txt = text_softkey_option;}
+		
+		};
+	}
+	
+	
+//
+RESOURCE AVKON_VIEW r_spdia_view
+    {
+//  hotkeys = r_spdia_hotkeys;
+    menubar = r_spdia_menubar_view_voice;  
+//  confirmation dialog needed on EIK_APP_INFO
+    cba = r_spdia_softkeys_option_back_option;
+//  statuspane comes here later...
+    }
+
+//----------------------------------------------------
+//   
+//    r_spdia_menubar_view
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_spdia_menubar_view
+{
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_spdia_view_menu;
+            }
+        };
+}
+
+//----------------------------------------------------
+//   
+//    r_spdia_menubar_view_voice
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_spdia_menubar_view_voice
+{
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_spdia_view_menu_voice;
+            }
+        };
+}
+
+//----------------------------------------------------
+//   
+//    r_spdia_menubar_view_assign
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_spdia_menubar_view_assign
+{
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_spdia_view_menu_assign;
+            }
+        };
+}
+
+//----------------------------------------------------
+//   
+//    r_spdia_menubar_view_ok_assign
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_spdia_menubar_view_ok_assign
+{
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_spdia_view_menu_ok_assign;
+            }
+        };
+}
+
+//----------------------------------------------------
+//   
+//    r_spdia_menubar_view_ok_call
+//    Menu bar for the case of select key 
+//    without submenu for voice/video call
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_spdia_menubar_view_ok_call
+{
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_spdia_view_menu_ok_call;
+            }
+        };
+}
+
+
+//----------------------------------------------------
+//   
+//    r_spdia_menubar_view_ok_call_video
+//    Menu bar for the case of select key 
+//    with submenu for voice/video call
+//
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_spdia_menubar_view_ok_call_video
+{
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_spdia_view_menu_ok_call_video;
+            }
+        };
+}
+
+//----------------------------------------------------
+//   
+//    r_spdia_view_menu
+//    Menu that appears when there is speed dial and 
+//    options key is pressed.
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_spdia_view_menu
+{
+    items =
+        {
+        MENU_ITEM
+            {
+            command = KSpeedDialAppAiwId;       //Same ID as in interest. 
+            txt = "";                           //AIW plugin will set the text.
+            cascade=AIW_INTELLIGENT_CASCADE_ID; //No submenu if only one item in it
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = ESpdiaCmdChange;
+            txt = text_speed_dial_option_change;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = ESpdiaCmdClear;
+            txt = text_speed_dial_option_clear;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = ESpdiaCmdView;
+            txt = text_speed_dial_option_view;
+            flags = EEikMenuItemSpecific;
+            },
+
+        MENU_ITEM
+            {
+            command = ESpdiaCmdMessage;
+            txt = qtn_mce_write;
+            flags = EEikMenuItemSpecific;
+            },
+
+        MENU_ITEM 
+            { 
+            command = EAknCmdHelp;
+            txt = qtn_options_help; 
+            },
+        MENU_ITEM 
+            { 
+            command = EAknCmdExit; 
+            txt = qtn_options_exit; 
+            }
+        };
+}
+
+//----------------------------------------------------
+//   
+//    r_spdia_view_menu_voice
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_spdia_view_menu_voice
+{
+    items =
+        {
+        MENU_ITEM
+            {
+            command = ESpdiaCmdNumberCall;
+            txt = text_number_call;
+            flags = EEikMenuItemAction;
+            },
+        MENU_ITEM 
+            { 
+            command = EAknCmdHelp;
+            txt = qtn_options_help; 
+            },
+        MENU_ITEM 
+            { 
+            command = EAknCmdExit; 
+            txt = qtn_options_exit; 
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_spdia_view_menu_assign
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_spdia_view_menu_assign
+{
+    items =
+        {
+        MENU_ITEM
+            {
+            command = ESpdiaCmdAssign;
+            txt = text_softkey_assign;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM 
+            { 
+            command = EAknCmdHelp;
+            txt = qtn_options_help; 
+            },
+        MENU_ITEM 
+            { 
+            command = EAknCmdExit; 
+            txt = qtn_options_exit; 
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_spdia_view_menu_ok_assign
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_spdia_view_menu_ok_assign
+{
+    items =
+        {
+        MENU_ITEM
+            {
+            command = ESpdiaCmdAssign;
+            txt = text_softkey_assign;
+            flags = EEikMenuItemAction;
+            }
+        };
+    }
+
+
+//----------------------------------------------------
+//   
+//    r_spdia_view_menu_ok_call
+//    Menu pane for the case when video/voice submenu	
+//    shouldnt be shown.
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_spdia_view_menu_ok_call
+{
+    items =
+        {
+        MENU_ITEM
+            {
+            command = ESpdiaCmdNumberCall;
+            txt = text_number_call;
+            flags = EEikMenuItemAction;
+            }
+        };
+    }
+
+
+
+//----------------------------------------------------
+//   
+//    r_spdia_view_menu_ok_call_video
+//    Menu pane for the case when video/voice submenu	
+//    should be shown.
+//
+//----------------------------------------------------
+//
+
+RESOURCE MENU_PANE r_spdia_view_menu_ok_call_video
+{
+    items =
+        {
+        MENU_ITEM
+            {
+            command = KSpeedDialAppAiwId;       //Same ID as in interest. 
+            txt = "";                           //AIW plugin will set the text.
+            cascade=AIW_INTELLIGENT_CASCADE_ID; //No submenu if only one item in it
+            flags = EEikMenuItemSpecific;
+            }
+            
+              
+        ,
+        MENU_ITEM
+            {
+            command = ESpdiaCmdMessage;       //Same ID as in interest.
+            txt = qtn_mce_write;
+            cascade=0; //No submenu if only one item in it
+            flags = EEikMenuItemSpecificListQuery;
+            }
+         
+        };
+    }
+
+
+
+
+//----------------------------------------------------
+//   
+//    r_spdia_note_viewnumber
+//    main_pane viewnumber note dialog
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_spdia_note_viewnumber
+    {
+    flags = EAknSoftNotificationNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_BACK;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = ESpdNoteItem;
+            control= AVKON_NOTE 
+                {
+                flags = EAknNoteNoTextWrapping;
+                layout = ENoteWithImageLayout;
+                //singular_label = "Key %S";
+                };
+            }
+        };
+    }
+// ---------------------------------------------------------
+//   
+//    r_spdia_text_viewnum
+//    Define text of note dialog ( View number )
+//
+// ---------------------------------------------------------
+//
+//RESOURCE TBUF256 r_spdia_text_viewnum
+RESOURCE TBUF r_spdia_text_viewnum
+    {
+    buf = text_speed_dial_viewnumber;
+    }
+
+// ---------------------------------------------------------
+//   
+//    r_spdia_text_prompt
+//    Define text of note dialog ( View number )
+//
+// ---------------------------------------------------------
+//
+//RESOURCE TBUF64 r_spdia_text_prompt
+RESOURCE TBUF r_spdia_text_prompt
+    {
+    buf = "\n%0U\n%1U";
+    }
+
+
+// ---------------------------------------------------------
+//   
+//    For AIW: r_spdial_app_interest
+//
+// ---------------------------------------------------------
+//
+RESOURCE AIW_INTEREST r_spdial_app_interest
+    {
+    items=
+        {
+        // This application is interested in calling from menu.
+        AIW_CRITERIA_ITEM      
+            {
+            id              = KSpeedDialAppAiwId; 
+            serviceCmd      = KAiwCmdCall;
+            serviceClass    = KAiwClassMenu;
+            contentType     = "*";
+            defaultProvider = 0x101F868E;
+            maxProviders    = 1;
+            }
+        };
+    }
+
+// CALLING VMBX VIEW
+
+// ---------------------------------------------------------
+//
+//    r_qtn_spdia_title_calling_vmbx
+//    Calling vmbx view's title.
+//
+// ---------------------------------------------------------
+//
+RESOURCE TITLE_PANE r_qtn_spdia_title_calling_vmbx
+    {
+    txt = qtn_spdia_title_calling_vmbx;
+    }
+
+// ---------------------------------------------------------
+//
+//    r_spdia_view2
+//    Activated by softnotifier: call voicemailbox
+//
+// ---------------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_spdia_calling_vmbx_view
+    {
+    cba = R_AVKON_SOFTKEYS_EMPTY;
+    }
+    
+// -----------------------------------------------------------------------------
+//
+//    r_phone_confirmation_note
+//    It defines note template for confirmation notes. Text
+//    must be replaced to correct in code. 
+//
+// ----------------------------------------------------------------------------- 
+
+#ifdef __BT_SAP    
+// -----------------------------------------------------------------------------
+//
+//    r_phone_error_note
+//    It defines note template for error notes. Text
+//    must be replaced to correct in code. 
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_offline_not_possible_sap { buf = qtn_offline_not_possible_sap; }
+#endif
+
+RESOURCE AKN_NOTE_WRAPPER r_pbk_note_database_corrupted
+    {
+    resId   = R_AKN_INFORMATION_NOTE_DIALOG_WAIT;
+    timeout = EAknInformationNoteTimeout;
+   tone    = EAknNoteDialogConfirmationTone;
+    text    = qtn_memlo_database_corrupted;
+	}
+RESOURCE LOCALISABLE_APP_INFO r_speeddial_localisable_app_info
+    {
+    short_caption = qtn_apps_sd_grid;
+    caption_and_icon = 
+    CAPTION_AND_ICON_INFO
+        {
+        caption = qtn_apps_sd_list;
+#ifdef __SCALABLE_ICONS
+        number_of_icons = 1;
+        
+        icon_file = "\\Resource\\Apps\\Speeddial_aif.mif";
+        
+    #else
+        number_of_icons = 2;
+        icon_file = "\\Resource\\Apps\\Speeddial_aif.mbm";
+#endif
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+//    r_spdia_als_confirmation_query
+//    It defines  the confirmaiton query dialogue when the system
+//    is about to toggle primary phone line and alternative phone
+//    phone line.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_spdia_als_confirmation_query
+    {
+    flags=EGeneralQueryFlags;
+    buttons=R_AVKON_SOFTKEYS_YES_NO__YES;
+    items=
+        {
+        DLG_LINE
+            {
+            type=EAknCtQuery;
+            id=EGeneralQuery;
+            control= AVKON_CONFIRMATION_QUERY 
+                { 
+                layout = EConfirmationLayout;
+                label = text_als_line_change_query;
+                animation = R_QGN_NOTE_QUERY_ANIM;
+                };
+            }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+//    r_spdia_als_line_blocking_error
+//    If user try to change als line while link blocking is on,
+//    this error note will be shown.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_spdia_line_blocking_note_text
+    {
+    buf = qtn_als_line_error_no_line_change; 
+    }
+
+// -----------------------------------------------------------------------------
+//
+//    r_spdia_error_note
+//    It defines note template for error notes. Text
+//    must be replaced to correct in code. 
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_spdia_error_note
+    {
+    flags = EEikDialogFlagNoDrag | EEikDialogFlagNoTitleBar |
+            EEikDialogFlagCbaButtons;
+    buttons = R_AVKON_SOFTKEYS_EMPTY;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EPhoneGeneralNote;
+            control = AVKON_NOTE 
+                { 
+                layout = EGeneralLayout;
+                singular_label = "not impl";
+                plural_label = "";
+                animation = R_QGN_NOTE_ERROR_ANIM;
+                };
+            }
+        };
+    }  
+
+  RESOURCE CBA r_spdia_view_options_exit_assign
+	{
+		flags = 0;
+		buttons =
+		        {
+		        CBA_BUTTON {id=EAknSoftkeyOptions ; txt = text_softkey_option;},
+		        CBA_BUTTON {id=EAknSoftkeyExit ; txt = qtn_options_exit; },
+		        CBA_BUTTON {id=ESpdiaCmdAssign ; txt = text_softkey_assign;}
+		        };
+	}    
+
+     RESOURCE CBA r_spdia_view_options_back_assign
+	{
+		flags = 0;
+		buttons =
+		        {
+		        CBA_BUTTON {id=EAknSoftkeyOptions ; txt = text_softkey_option;},
+		        CBA_BUTTON {id=EAknSoftkeyExit ; txt = text_softkey_back; },
+		        CBA_BUTTON {id=ESpdiaCmdAssign ; txt = text_softkey_assign;}
+		        };
+	}    
+		
+ RESOURCE CBA r_spdia_view_options_exit
+	{
+		flags = 0;
+		buttons =
+		        {
+		        CBA_BUTTON {id=EAknSoftkeyOptions ; txt = text_softkey_option;},
+		        CBA_BUTTON {id=EAknSoftkeyExit ; txt = qtn_options_exit; }
+		        
+		        };
+	}       
+
+ RESOURCE CBA r_spdia_view_options_back
+	{
+		flags = 0;
+		buttons =
+		        {
+		        CBA_BUTTON {id=EAknSoftkeyOptions ; txt = text_softkey_option;},
+		        CBA_BUTTON {id=EAknSoftkeyExit ; txt = text_softkey_back; }
+		        
+		        };
+	}  
+RESOURCE TBUF r_qtn_spdia_note_no_email_to_name
+  {
+    buf = qtn_sd_note_no_email_to_name;
+  }
+
+// End of File

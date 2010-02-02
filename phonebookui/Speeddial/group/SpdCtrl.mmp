@@ -1,0 +1,104 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:     This is project specification file for the SpdCtrl.
+*
+*/
+
+
+
+
+
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+// Build target
+TARGET          SpdCtrl.dll
+TARGETTYPE      dll
+UID             0x1000008d 0x10005986
+
+VENDORID	VID_DEFAULT
+
+CAPABILITY      CAP_GENERAL_DLL
+
+
+APP_LAYER_SYSTEMINCLUDE 
+// Resources
+START RESOURCE ../datasrc/SpdCtrl.rss
+HEADER
+	TARGETPATH RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END 
+
+//LANG    sc
+
+// Source files location
+SOURCEPATH      ../ControlSrc 
+
+// Controls
+SOURCE          SpdiaControl_platsec.cpp
+
+// Dialogs
+SOURCE          SpdiaGridDlg.cpp
+SOURCE          SpdiaGrid.cpp
+SOURCE          SpdiaIndexData.cpp
+SOURCE          SpdiaPanic.cpp
+
+SOURCEPATH			../VPbkControlSrc
+
+SOURCE          SpdiaGridDlgVPbk.cpp
+SOURCE          SpdiaGridVPbk.cpp
+
+// Utility
+SOURCE          SpdiaIndexDataVPbk.cpp
+SOURCE          spdiadialogs.cpp
+SOURCE          speeddialprivate.cpp
+
+
+
+// Include paths
+USERINCLUDE     ../inc ../ControlInc ../VPbkControlInc
+
+// Dependencies to other Phonebook components
+LIBRARY         PbkEng.lib PbkView.lib
+
+// Dependencies to other components
+//LIBRARY         PalbView.lib  //PalbEng.lib
+
+/// Voice mail support
+LIBRARY         vmbx.LIB
+
+// Dependencies to system components
+LIBRARY         euser.lib bafl.lib cntmodel.lib 
+LIBRARY         cone.lib eikcoctl.lib eikdlg.lib Avkon.lib fbscli.lib egul.lib
+LIBRARY         eikcore.lib commonengine.lib centralrepository.lib
+LIBRARY         sysutil.lib commonui.lib cdlengine.lib
+// phone client support
+LIBRARY         PhoneClient.LIB
+// skins support
+LIBRARY         AknSkins.LIB
+LIBRARY         AknIcon.lib
+LIBRARY			efsrv.lib
+LIBRARY	        bitgdi.lib 
+LIBRARY         AknLayout2.lib       
+LIBRARY         AknLayout2Scalable.lib 
+LIBRARY         UikLaf.lib 
+LIBRARY         FeatMgr.lib
+LIBRARY         avkon.lib
+LIBRARY         aknicon.lib
+
+LIBRARY 		ServiceHandler.lib
+LIBRARY         VPbkEng.lib
+LIBRARY  		Pbk2Presentation.lib
+LIBRARY 		Pbk2CommonUI.lib
+
+// End of File

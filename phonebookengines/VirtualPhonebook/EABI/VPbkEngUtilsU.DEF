@@ -1,0 +1,61 @@
+EXPORTS
+	_ZN12VPbkEngUtils19CVPbkAsyncOperation5PurgeEv @ 1 NONAME
+	_ZN12VPbkEngUtils19CVPbkAsyncOperation9CallbackLEPNS_14MAsyncCallbackE @ 2 NONAME
+	_ZN12VPbkEngUtils19CVPbkAsyncOperationC1Ev @ 3 NONAME
+	_ZN12VPbkEngUtils19CVPbkAsyncOperationC2Ev @ 4 NONAME
+	_ZN12VPbkEngUtils19CVPbkAsyncOperationD0Ev @ 5 NONAME
+	_ZN12VPbkEngUtils19CVPbkAsyncOperationD1Ev @ 6 NONAME
+	_ZN12VPbkEngUtils19CVPbkAsyncOperationD2Ev @ 7 NONAME
+	_ZN12VPbkEngUtils21CPhoneNumberIndexBase4AddLERK7TDesC16Pv @ 8 NONAME
+	_ZN12VPbkEngUtils21CPhoneNumberIndexBase5ResetEv @ 9 NONAME
+	_ZN12VPbkEngUtils21CPhoneNumberIndexBase9RemoveAllEPv @ 10 NONAME
+	_ZN12VPbkEngUtils21CPhoneNumberIndexBaseC1Ev @ 11 NONAME
+	_ZN12VPbkEngUtils21CPhoneNumberIndexBaseC2Ev @ 12 NONAME
+	_ZN12VPbkEngUtils21CPhoneNumberIndexBaseD0Ev @ 13 NONAME
+	_ZN12VPbkEngUtils21CPhoneNumberIndexBaseD1Ev @ 14 NONAME
+	_ZN12VPbkEngUtils21CPhoneNumberIndexBaseD2Ev @ 15 NONAME
+	_ZN12VPbkEngUtils22RLocalizedResourceFile5OpenLER3RFsRK7TDesC16S5_S5_ @ 16 NONAME
+	_ZN12VPbkEngUtils22RLocalizedResourceFile6OpenLCER3RFsRK7TDesC16S5_S5_ @ 17 NONAME
+	_ZN12VPbkEngUtils22RPhoneNumberLookupBase5CloseEv @ 18 NONAME
+	_ZN12VPbkEngUtils22RPhoneNumberLookupBaseC1Ei @ 19 NONAME
+	_ZN12VPbkEngUtils22RPhoneNumberLookupBaseC2Ei @ 20 NONAME
+	_ZNK12VPbkEngUtils21CPhoneNumberIndexBase10LookupNextERNS_22RPhoneNumberLookupBaseE @ 21 NONAME
+	_ZNK12VPbkEngUtils21CPhoneNumberIndexBase11InitLookupLERNS_22RPhoneNumberLookupBaseERK7TDesC16 @ 22 NONAME
+	_ZTIN12VPbkEngUtils19CVPbkAsyncOperationE @ 23 NONAME ; #<TI>#
+	_ZTIN12VPbkEngUtils21CPhoneNumberIndexBaseE @ 24 NONAME ; #<TI>#
+	_ZTVN12VPbkEngUtils19CVPbkAsyncOperationE @ 25 NONAME ; #<VT>#
+	_ZTVN12VPbkEngUtils21CPhoneNumberIndexBaseE @ 26 NONAME ; #<VT>#
+	_ZN12VPbkEngUtils10CTextStore4AddLERK6TDesC8 @ 27 NONAME
+	_ZN12VPbkEngUtils10CTextStoreC1Ev @ 28 NONAME
+	_ZN12VPbkEngUtils10CTextStoreC2Ev @ 29 NONAME
+	_ZN12VPbkEngUtils19CVPbkDiskSpaceCheck15DiskSpaceCheckLEi @ 30 NONAME
+	_ZN12VPbkEngUtils19CVPbkDiskSpaceCheck4NewLER3RFsi @ 31 NONAME
+	_ZTIN12VPbkEngUtils19CVPbkDiskSpaceCheckE @ 32 NONAME ; #<TI>#
+	_ZTVN12VPbkEngUtils19CVPbkDiskSpaceCheckE @ 33 NONAME ; #<VT>#
+	_ZN12VPbkEngUtils14VPbkIPCPackage12ExternalizeLEPK6TDesC8R15RDesWriteStream @ 34 NONAME
+	_ZN12VPbkEngUtils14VPbkIPCPackage12ExternalizeLEPK7TDesC16R15RDesWriteStream @ 35 NONAME
+	_ZN12VPbkEngUtils14VPbkIPCPackage12InternalizeLERP6HBufC8R14RDesReadStream @ 36 NONAME
+	_ZN12VPbkEngUtils14VPbkIPCPackage12InternalizeLERP6HBufC8R14RDesReadStreami @ 37 NONAME
+	_ZN12VPbkEngUtils14VPbkIPCPackage12InternalizeLERP7HBufC16R14RDesReadStream @ 38 NONAME
+	_ZN12VPbkEngUtils14VPbkIPCPackage12InternalizeLERP7HBufC16R14RDesReadStreami @ 39 NONAME
+	_ZN12VPbkEngUtils14VPbkIPCPackage16CountPackageSizeEPK6TDesC8 @ 40 NONAME
+	_ZN12VPbkEngUtils14VPbkIPCPackage16CountPackageSizeEPK7TDesC16 @ 41 NONAME
+	_ZN12VPbkEngUtils19CVPbkAsyncOperationC1EN7CActive9TPriorityE @ 42 NONAME
+	_ZN12VPbkEngUtils19CVPbkAsyncOperationC2EN7CActive9TPriorityE @ 43 NONAME
+	_ZN12VPbkEngUtils19CVPbkAsyncOperation14CancelCallbackERKNS_14MAsyncCallbackE @ 44 NONAME
+	_ZNK12VPbkEngUtils19CVPbkAsyncOperation10CallbackAtEi @ 45 NONAME
+	_ZNK12VPbkEngUtils19CVPbkAsyncOperation13CallbackCountEv @ 46 NONAME
+	_ZN32CVPbkEComImplementationsListBase20LoadImplementationsLE4TUidPv @ 47 NONAME
+	_ZN32CVPbkEComImplementationsListBase20LoadImplementationsLE4TUidRK19TEComResolverParamsPv @ 48 NONAME
+	_ZN32CVPbkEComImplementationsListBaseC2Ev @ 49 NONAME
+	_ZN32CVPbkEComImplementationsListBaseD0Ev @ 50 NONAME
+	_ZN32CVPbkEComImplementationsListBaseD1Ev @ 51 NONAME
+	_ZN32CVPbkEComImplementationsListBaseD2Ev @ 52 NONAME
+	_ZNK32CVPbkEComImplementationsListBase2AtEi @ 53 NONAME
+	_ZNK32CVPbkEComImplementationsListBase5CountEv @ 54 NONAME
+	_ZNK32CVPbkEComImplementationsListBase8FindInfoER5CBase @ 55 NONAME
+	_ZTI32CVPbkEComImplementationsListBase @ 56 NONAME ; #<TI>#
+	_ZTIN32CVPbkEComImplementationsListBase9CEComImplE @ 57 NONAME ; #<TI>#
+	_ZTV32CVPbkEComImplementationsListBase @ 58 NONAME ; #<VT>#
+	_ZTVN32CVPbkEComImplementationsListBase9CEComImplE @ 59 NONAME ; #<VT>#
+

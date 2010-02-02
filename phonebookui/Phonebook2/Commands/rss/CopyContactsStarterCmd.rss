@@ -1,0 +1,56 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file contains resources for Phonebook 2
+*
+*/
+
+
+// ---------------------------------------------------------
+// A query for selecting a store or import/export mmc
+// ---------------------------------------------------------
+//
+RESOURCE AVKON_LIST_QUERY r_pbk2_copy_contacts_list_query
+    {
+    items = 
+        {
+        AVKON_LIST_QUERY_DLG_LINE
+            {
+            control = AVKON_LIST_QUERY_CONTROL
+                {
+                listtype = EAknCtSinglePopupMenuListBox;
+                listbox = AVKON_LIST_QUERY_LIST {};
+                heading = " ";
+                };
+            }
+        };
+    }
+
+/// Text: title for the copy query
+RESOURCE TBUF r_qtn_phob_query_title_copy
+    {
+    buf = qtn_phob_query_title_copy;
+    }
+    
+RESOURCE TBUF r_qtn_phob_query_title_copy_many
+    {
+    buf = qtn_phob_query_title_copy_many;
+    }
+
+/// Text: information note when no stores are available
+RESOURCE TBUF r_qtn_pbcop_info_no_stores
+    {
+    buf = qtn_pbcop_info_no_stores;
+    }
+
+

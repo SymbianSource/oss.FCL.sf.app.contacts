@@ -1,0 +1,52 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 store property definitions.
+*
+*/
+
+
+#ifndef PBK2STOREPROPERTY_HRH
+#define PBK2STOREPROPERTY_HRH
+
+// --------------------------------------------------------------------------
+// Phonebook 2 store property flags
+// --------------------------------------------------------------------------
+//
+/// If defined, the store is shown in the Phonebook 2 settings view's
+/// memory selection list
+#define KPbk2ShownInMemorySelectionList             0x00000001
+
+/// If defined, the store can be selected as a default saving store
+/// in the Phonebook 2 settings view
+#define KPbk2DefaultSavingStorageItem               0x00000002
+
+// --------------------------------------------------------------------------
+// Phonebook 2 store info item types. These types define which function
+// from MVPbkContactStoreInfo is called to get the item data.
+// --------------------------------------------------------------------------
+//
+/// NumberOfContactsL
+#define KPbk2StoreInfoNumberOfContacts              0x00000001
+/// MaxNumberOfContactsL - NumberOfContactsL
+#define KPbk2StoreInfoFreeLocations                 0x00000002
+/// NumberOfGroupsL
+#define KPbk2StoreInfoNumberOfGroups                0x00000004
+/// ReservedMemoryL
+#define KPbk2StoreInfoReservedMemory                0x00000008
+/// FreeMemoryL
+#define KPbk2StoreInfoFreeMemory                    0x00000010
+
+#endif // PBK2STOREPROPERTY_HRH
+
+// End of File

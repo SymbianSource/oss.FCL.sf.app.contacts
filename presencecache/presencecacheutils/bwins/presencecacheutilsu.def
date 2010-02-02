@@ -1,0 +1,14 @@
+EXPORTS
+	??0TPresenceBlockTraceHandler@@QAE@PBG@Z @ 1 NONAME ; TPresenceBlockTraceHandler::TPresenceBlockTraceHandler(unsigned short const *)
+	??1TPresenceBlockTraceHandler@@QAE@XZ @ 2 NONAME ; TPresenceBlockTraceHandler::~TPresenceBlockTraceHandler(void)
+	?NewL@MPresenceBuddyInfo2@@SAPAV1@XZ @ 3 NONAME ; class MPresenceBuddyInfo2 * MPresenceBuddyInfo2::NewL(void)
+	?NormalExit@TPresenceBlockTraceHandler@@QAEXXZ @ 4 NONAME ; void TPresenceBlockTraceHandler::NormalExit(void)
+	?Trace@PresenceTrace@@SAXV?$TRefByValue@$$CBVTDesC16@@@@ZZ @ 5 NONAME ; void PresenceTrace::Trace(class TRefByValue<class TDesC16 const >, ...)
+	?NewLC@MPresenceBuddyInfo2@@SAPAV1@XZ @ 6 NONAME ; class MPresenceBuddyInfo2 * MPresenceBuddyInfo2::NewLC(void)
+	?PackArrayL@TPresenceArrayPacker@@SAPAVHBufC8@@ABV?$RPointerArray@VMPresenceBuddyInfo2@@@@@Z @ 7 NONAME ; class HBufC8 * TPresenceArrayPacker::PackArrayL(class RPointerArray<class MPresenceBuddyInfo2> const &)
+	?UnPackArrayL@TPresenceArrayPacker@@SAXAAV?$RPointerArray@VMPresenceBuddyInfo2@@@@ABVTDesC8@@@Z @ 8 NONAME ; void TPresenceArrayPacker::UnPackArrayL(class RPointerArray<class MPresenceBuddyInfo2> &, class TDesC8 const &)
+	?CreateBuddyIdLC@CPresenceCacheBuddyIdCreator@@QAEPAVHBufC16@@ABVTDesC8@@@Z @ 9 NONAME ; class HBufC16 * CPresenceCacheBuddyIdCreator::CreateBuddyIdLC(class TDesC8 const &)
+	?NewL@CPresenceCacheBuddyIdCreator@@SAPAV1@PAVCVPbkContactManager@@@Z @ 10 NONAME ; class CPresenceCacheBuddyIdCreator * CPresenceCacheBuddyIdCreator::NewL(class CVPbkContactManager *)
+	?ResetBuddyInfoTimeStamp@PresenceCacheBuddyUtils@@SAXAAVMPresenceBuddyInfo2@@@Z @ 11 NONAME ; void PresenceCacheBuddyUtils::ResetBuddyInfoTimeStamp(class MPresenceBuddyInfo2 &)
+	?IsBuddyInfoExpired@PresenceCacheBuddyUtils@@SAHABVMPresenceBuddyInfo2@@@Z @ 12 NONAME ; int PresenceCacheBuddyUtils::IsBuddyInfoExpired(class MPresenceBuddyInfo2 const &)
+

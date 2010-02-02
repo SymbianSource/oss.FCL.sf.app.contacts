@@ -1,0 +1,45 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*
+*/
+#ifndef __Phonebook_IBY__
+#define __Phonebook_IBY__
+
+// Phonebook Engine DLL
+file=ABI_DIR\BUILD_DIR\PbkEng.dll	System\Libs\PbkEng.dll
+//data=MULTI_LINGUIFY(RSC ABI_DIR\BUILD_DIR\PbkEng System\Data\PbkEng)
+
+// Phonebook extension manager
+file=ABI_DIR\BUILD_DIR\PbkExt.dll                               System\Libs\PbkExt.dll
+
+// Phonebook View DLL
+file=ABI_DIR\BUILD_DIR\PbkView.dll	System\Libs\PbkView.dll
+//data=MULTI_LINGUIFY(RSC ABI_DIR\BUILD_DIR\PbkView System\Data\PbkView)
+
+// Phonebook Business Cards Engine DLL
+file=ABI_DIR\BUILD_DIR\BCardEng.dll	System\Libs\BCardEng.dll
+//data=MULTI_LINGUIFY(RSC ABI_DIR\BUILD_DIR\BCardEng System\Data\BCardEng)
+
+// Phonebook common UI DLL
+file=ABI_DIR\BUILD_DIR\PbkUI.dll	System\Libs\PbkUI.dll
+
+// Phonebook App
+file=ABI_DIR\BUILD_DIR\Phonebook.app	System\Apps\Phonebook\Phonebook.app
+//data=MULTI_LINGUIFY(RSC ABI_DIR\BUILD_DIR\Phonebook System\Apps\Phonebook\Phonebook)
+data=ZSYSTEM\Apps\Phonebook\Phonebook.aif System\Apps\Phonebook\Phonebook.aif
+data=ZSYSTEM\data\Phonebook.mbm		System\data\Phonebook.mbm
+
+#endif
+

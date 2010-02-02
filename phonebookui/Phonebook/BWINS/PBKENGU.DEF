@@ -1,0 +1,348 @@
+EXPORTS
+	??0CPbkAttachmentFileArray@@QAE@H@Z @ 1 NONAME ; public: __thiscall CPbkAttachmentFileArray::CPbkAttachmentFileArray(int)
+	??0TPbkContactItemField@@QAE@PAVCContactItemField@@PAVCPbkFieldInfo@@@Z @ 2 NONAME ; public: __thiscall TPbkContactItemField::TPbkContactItemField(class CContactItemField *,class CPbkFieldInfo *)
+	??0TPbkContactItemField@@QAE@XZ @ 3 NONAME ; public: __thiscall TPbkContactItemField::TPbkContactItemField(void)
+	??0TPbkFieldInfoExportTypeAdapter@@QAE@ABVCPbkFieldInfo@@@Z @ 4 NONAME ; public: __thiscall TPbkFieldInfoExportTypeAdapter::TPbkFieldInfoExportTypeAdapter(class CPbkFieldInfo const &)
+	?__PbkEngine_DummyExport3@@YAXXZ @ 5 NONAME ; void __cdecl __PbkEngine_DummyExport3(void)	
+	??1CDigViewGraph@@UAE@XZ @ 6 NONAME ; public: virtual __thiscall CDigViewGraph::~CDigViewGraph(void)
+	??1CDigViewNode@@UAE@XZ @ 7 NONAME ; public: virtual __thiscall CDigViewNode::~CDigViewNode(void)
+	??1CPbkAttachmentFileArray@@UAE@XZ @ 8 NONAME ; public: virtual __thiscall CPbkAttachmentFileArray::~CPbkAttachmentFileArray(void)
+	??1TPbkFieldInfoExportTypeAdapter@@UAE@XZ @ 9 NONAME ; public: virtual __thiscall TPbkFieldInfoExportTypeAdapter::~TPbkFieldInfoExportTypeAdapter(void)
+	??8@YAHABVCPbkContactItem@@0@Z @ 10 NONAME ; int __cdecl operator==(class CPbkContactItem const &,class CPbkContactItem const &)
+	??8@YAHABVTPbkContactItemField@@0@Z @ 11 NONAME ; int __cdecl operator==(class TPbkContactItemField const &,class TPbkContactItemField const &)
+	??ACPbkFieldsInfo@@QBEPAVCPbkFieldInfo@@H@Z @ 12 NONAME ; public: class CPbkFieldInfo * __thiscall CPbkFieldsInfo::operator[](int)const 
+	?AddBaseViewPreEventHandlerL@CPbkContactSubView@@QAEXAAVMContactViewObserver@@@Z @ 13 NONAME ; public: void __thiscall CPbkContactSubView::AddBaseViewPreEventHandlerL(class MContactViewObserver &)
+	?AddContactToGroupL@CPbkContactEngine@@QAEXJJ@Z @ 14 NONAME ; public: void __thiscall CPbkContactEngine::AddContactToGroupL(long,long)
+	?AddFieldL@CPbkContactItem@@QAEAAVTPbkContactItemField@@AAVCPbkFieldInfo@@@Z @ 15 NONAME ; public: class TPbkContactItemField & __thiscall CPbkContactItem::AddFieldL(class CPbkFieldInfo &)
+	?AddFlags@CPbkFieldInfo@@QBEIXZ @ 16 NONAME ; public: unsigned int __thiscall CPbkFieldInfo::AddFlags(void)const 
+	?AddItemOrdering@CPbkFieldInfo@@QBEHXZ @ 17 NONAME ; public: int __thiscall CPbkFieldInfo::AddItemOrdering(void)const 
+	?AddL@CPbkContactIdSet@@QAEXJ@Z @ 18 NONAME ; public: void __thiscall CPbkContactIdSet::AddL(long)
+	?AddL@CPbkContactIdSet@@QAEXABV1@@Z @ 19 NONAME ; public: void __thiscall CPbkContactIdSet::AddL(class CPbkContactIdSet const &)
+	?AddL@CPbkContactIdSet@@QAEXABVCContactIdArray@@@Z @ 20 NONAME ; public: void __thiscall CPbkContactIdSet::AddL(class CContactIdArray const &)
+	?AddNewContactL@CPbkContactEngine@@QAEJAAVCPbkContactItem@@H@Z @ 21 NONAME ; public: long __thiscall CPbkContactEngine::AddNewContactL(class CPbkContactItem &,int)
+	?AddOrReturnUnusedFieldL@CPbkContactItem@@QAEPAVTPbkContactItemField@@AAVCPbkFieldInfo@@@Z @ 22 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::AddOrReturnUnusedFieldL(class CPbkFieldInfo &)
+	?AllContactsView@CPbkContactEngine@@QAEAAVCContactViewBase@@XZ @ 23 NONAME ; public: class CContactViewBase & __thiscall CPbkContactEngine::AllContactsView(void)
+	?AllGroupsViewL@CPbkContactEngine@@QAEAAVCContactViewBase@@XZ @ 24 NONAME ; public: class CContactViewBase & __thiscall CPbkContactEngine::AllGroupsViewL(void)
+	?AppendAndReplaceChars@PbkEngUtils@@SAHAAVTDes16@@ABVTDesC16@@11@Z @ 25 NONAME ; public: static int __cdecl PbkEngUtils::AppendAndReplaceChars(class TDes16 &,class TDesC16 const &,class TDesC16 const &,class TDesC16 const &)
+	?At@CPbkFieldInfoGroup@@QBEABVCPbkFieldInfo@@H@Z @ 26 NONAME ; public: class CPbkFieldInfo const & __thiscall CPbkFieldInfoGroup::At(int)const 
+	?CanAcceptDataOfType@CPbkContactItem@@QBEHAAVCPbkFieldInfo@@@Z @ 27 NONAME ; public: int __thiscall CPbkContactItem::CanAcceptDataOfType(class CPbkFieldInfo &)const 
+	?CancelCompress@CPbkContactEngine@@QAEXXZ @ 28 NONAME ; public: void __thiscall CPbkContactEngine::CancelCompress(void)
+	?Capacity@CPbkEntryCache@@QBEHXZ @ 29 NONAME ; public: int __thiscall CPbkEntryCache::Capacity(void)const 
+	?CardFields@CPbkContactItem@@QBEAAVCPbkFieldArray@@XZ @ 30 NONAME ; public: class CPbkFieldArray & __thiscall CPbkContactItem::CardFields(void)const 
+	?Category@CPbkFieldInfo@@QBEHXZ @ 31 NONAME ; public: int __thiscall CPbkFieldInfo::Category(void)const 
+	?CheckCompress@CPbkContactEngine@@QAEHXZ @ 32 NONAME ; public: int __thiscall CPbkContactEngine::CheckCompress(void)
+	?CloseContactL@CPbkContactEngine@@QAEXJ@Z @ 33 NONAME ; public: void __thiscall CPbkContactEngine::CloseContactL(long)
+	?CommitContactGroupL@CPbkContactEngine@@QAEXAAVCContactGroup@@H@Z @ 34 NONAME ; public: void __thiscall CPbkContactEngine::CommitContactGroupL(class CContactGroup &,int)
+	?CommitContactL@CPbkContactEngine@@QAEXAAVCPbkContactItem@@H@Z @ 35 NONAME ; public: void __thiscall CPbkContactEngine::CommitContactL(class CPbkContactItem &,int)
+	?Compare@TPbkContactItemField@@QBEHABV1@@Z @ 36 NONAME ; public: int __thiscall TPbkContactItemField::Compare(class TPbkContactItemField const &)const 
+	?CompareOrdering@CPbkFieldInfo@@QBEHABV1@@Z @ 37 NONAME ; public: int __thiscall CPbkFieldInfo::CompareOrdering(class CPbkFieldInfo const &)const 
+	?CompressL@CPbkContactEngine@@QAEXXZ @ 38 NONAME ; public: void __thiscall CPbkContactEngine::CompressL(void)
+	?CompressionInactivityTimerLength@CPbkConstants@@SAHXZ @ 39 NONAME ; public: static int __cdecl CPbkConstants::CompressionInactivityTimerLength(void)
+	?__PbkEngine_DummyExport1@@YAXXZ @ 40 NONAME ; void __cdecl __PbkEngine_DummyExport1(void)
+	?ContactIconIdL@CPbkContactItem@@QBE?AW4TPbkIconId@@XZ @ 41 NONAME ; public: enum TPbkIconId  __thiscall CPbkContactItem::ContactIconIdL(void)const 
+	?ContactItem@CPbkContactItem@@QAEAAVCContactItem@@XZ @ 42 NONAME ; public: class CContactItem & __thiscall CPbkContactItem::ContactItem(void)
+	?ContactItem@CPbkContactItem@@QBEABVCContactItem@@XZ @ 43 NONAME ; public: class CContactItem const & __thiscall CPbkContactItem::ContactItem(void)const 
+	?ContactItemField@TPbkContactItemField@@QAEAAVCContactItemField@@XZ @ 44 NONAME ; public: class CContactItemField & __thiscall TPbkContactItemField::ContactItemField(void)
+	?ContactItemField@TPbkContactItemField@@QBEABVCContactItemField@@XZ @ 45 NONAME ; public: class CContactItemField const & __thiscall TPbkContactItemField::ContactItemField(void)const 
+	?ContactNameFormat@CPbkContactEngine@@QBEAAVMPbkContactNameFormat@@XZ @ 46 NONAME ; public: class MPbkContactNameFormat & __thiscall CPbkContactEngine::ContactNameFormat(void)const 
+	?ContactSelector@CPbkContactSubView@@QBEAAVMPbkContactSelector@@XZ @ 47 NONAME ; public: class MPbkContactSelector & __thiscall CPbkContactSubView::ContactSelector(void)const 
+	?ContainSameDigits@PbkEngUtils@@SAHABVTDesC16@@0H@Z @ 48 NONAME ; public: static int __cdecl PbkEngUtils::ContainSameDigits(class TDesC16 const &,class TDesC16 const &,int)
+	?ContentType@CPbkFieldInfo@@QBEABVCContentType@@XZ @ 49 NONAME ; public: class CContentType const & __thiscall CPbkFieldInfo::ContentType(void)const 
+	?CopyDigitsFromEnd@PbkEngUtils@@SAHABVTDesC16@@HAAVTDes16@@@Z @ 50 NONAME ; public: static int __cdecl PbkEngUtils::CopyDigitsFromEnd(class TDesC16 const &,int,class TDes16 &)
+	?Count@CPbkFieldInfoGroup@@QBEHXZ @ 51 NONAME ; public: int __thiscall CPbkFieldInfoGroup::Count(void)const 
+	?Count@CPbkFieldsInfo@@QBEHXZ @ 52 NONAME ; public: int __thiscall CPbkFieldsInfo::Count(void)const 
+	?CreateContactChangeNotifierL@CPbkContactEngine@@QAEPAVCPbkContactChangeNotifier@@PAVMPbkContactDbObserver@@@Z @ 53 NONAME ; public: class CPbkContactChangeNotifier * __thiscall CPbkContactEngine::CreateContactChangeNotifierL(class MPbkContactDbObserver *)
+	?CreateContactGroupL@CPbkContactEngine@@QAEPAVCContactGroup@@ABVTDesC16@@H@Z @ 54 NONAME ; public: class CContactGroup * __thiscall CPbkContactEngine::CreateContactGroupL(class TDesC16 const &,int)
+	?CreateContactIteratorLC@CPbkContactEngine@@QAEPAVCPbkContactIter@@H@Z @ 55 NONAME ; public: class CPbkContactIter * __thiscall CPbkContactEngine::CreateContactIteratorLC(int)
+	?CreateEmptyContactL@CPbkContactEngine@@QAEPAVCPbkContactItem@@XZ @ 56 NONAME ; public: class CPbkContactItem * __thiscall CPbkContactEngine::CreateEmptyContactL(void)
+	?CreateFieldL@CPbkFieldInfo@@QBEPAVCContactItemField@@XZ @ 57 NONAME ; public: class CContactItemField * __thiscall CPbkFieldInfo::CreateFieldL(void)const 
+	?CreateMatchPriority@CPbkFieldsInfo@@QBE?AVTPbkMatchPriorityLevel@@XZ @ 58 NONAME ; public: class TPbkMatchPriorityLevel  __thiscall CPbkFieldsInfo::CreateMatchPriority(void)const 
+	?CtrlType@CPbkFieldInfo@@QBE?AW4TPbkFieldCtrlType@@XZ @ 59 NONAME ; public: enum TPbkFieldCtrlType  __thiscall CPbkFieldInfo::CtrlType(void)const 
+	?CurrentL@CPbkContactIter@@QBEPAVCPbkContactItem@@XZ @ 60 NONAME ; public: class CPbkContactItem * __thiscall CPbkContactIter::CurrentL(void)const 
+	?Database@CPbkContactEngine@@QAEAAVCContactDatabase@@XZ @ 61 NONAME ; public: class CContactDatabase & __thiscall CPbkContactEngine::Database(void)
+	?DateTimeStorage@TPbkContactItemField@@QBEPAVCContactDateField@@XZ @ 62 NONAME ; public: class CContactDateField * __thiscall TPbkContactItemField::DateTimeStorage(void)const 
+	?DefaultCase@CPbkFieldInfo@@QBE?AW4TPbkFieldDefaultCase@@XZ @ 63 NONAME ; public: enum TPbkFieldDefaultCase  __thiscall CPbkFieldInfo::DefaultCase(void)const 
+	?DefaultEmailField@CPbkContactItem@@QBEPAVTPbkContactItemField@@XZ @ 64 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::DefaultEmailField(void)const 
+	?DefaultEmailField@TPbkContactItemField@@QBEHXZ @ 65 NONAME ; public: int __thiscall TPbkContactItemField::DefaultEmailField(void)const 
+	?DefaultMmsField@CPbkContactItem@@QBEPAVTPbkContactItemField@@XZ @ 66 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::DefaultMmsField(void)const 
+	?DefaultMmsField@TPbkContactItemField@@QBEHXZ @ 67 NONAME ; public: int __thiscall TPbkContactItemField::DefaultMmsField(void)const 
+	?DefaultPhoneNumberField@CPbkContactItem@@QBEPAVTPbkContactItemField@@XZ @ 68 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::DefaultPhoneNumberField(void)const 
+	?DefaultPhoneNumberField@TPbkContactItemField@@QBEHXZ @ 69 NONAME ; public: int __thiscall TPbkContactItemField::DefaultPhoneNumberField(void)const 
+	?DefaultSmsField@CPbkContactItem@@QBEPAVTPbkContactItemField@@XZ @ 70 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::DefaultSmsField(void)const 
+	?DefaultSmsField@TPbkContactItemField@@QBEHXZ @ 71 NONAME ; public: int __thiscall TPbkContactItemField::DefaultSmsField(void)const 
+	?DeleteContactGroupL@CPbkContactEngine@@QAEXJH@Z @ 72 NONAME ; public: void __thiscall CPbkContactEngine::DeleteContactGroupL(long,int)
+	?DeleteContactL@CPbkContactEngine@@QAEXJH@Z @ 73 NONAME ; public: void __thiscall CPbkContactEngine::DeleteContactL(long,int)
+	?DeleteContactsL@CPbkContactEngine@@QAEXABVCContactIdArray@@H@Z @ 74 NONAME ; public: void __thiscall CPbkContactEngine::DeleteContactsL(class CContactIdArray const &,int)
+	?DeleteContactsOnBackgroundL@CPbkContactEngine@@QAEXABVCContactIdArray@@@Z @ 75 NONAME ; public: void __thiscall CPbkContactEngine::DeleteContactsOnBackgroundL(class CContactIdArray const &)
+	?DoSynchronize@CPbkFieldInfo@@QBEHXZ @ 76 NONAME ; public: int __thiscall CPbkFieldInfo::DoSynchronize(void)const 
+	?DuplicateContactL@CPbkContactEngine@@QAEJJH@Z @ 77 NONAME ; public: long __thiscall CPbkContactEngine::DuplicateContactL(long,int)
+	?EditMode@CPbkFieldInfo@@QBE?AW4TPbkFieldEditMode@@XZ @ 78 NONAME ; public: enum TPbkFieldEditMode  __thiscall CPbkFieldInfo::EditMode(void)const 
+	?Error@CPbkIdleFinder@@QBEHXZ @ 79 NONAME ; public: int __thiscall CPbkIdleFinder::Error(void)const 
+	?ExternalizeL@CPbkFieldData@@QBEXAAVRWriteStream@@@Z @ 80 NONAME ; public: void __thiscall CPbkFieldData::ExternalizeL(class RWriteStream &)const 
+	?ExternalizeL@CPbkFieldDataArray@@QBEXAAVRWriteStream@@@Z @ 81 NONAME ; public: void __thiscall CPbkFieldDataArray::ExternalizeL(class RWriteStream &)const 
+	?FieldDef@CPbkIdleFinder@@QBEPAVCContactItemFieldDef@@XZ @ 82 NONAME ; public: class CContactItemFieldDef * __thiscall CPbkIdleFinder::FieldDef(void)const 
+	?FieldEditorLength@CPbkConstants@@SAHXZ @ 83 NONAME ; public: static int __cdecl CPbkConstants::FieldEditorLength(void)
+	?FieldId@CPbkFieldInfo@@QBEHXZ @ 84 NONAME ; public: int __thiscall CPbkFieldInfo::FieldId(void)const 
+	?FieldInfo@TPbkContactItemField@@QBEAAVCPbkFieldInfo@@XZ @ 85 NONAME ; public: class CPbkFieldInfo & __thiscall TPbkContactItemField::FieldInfo(void)const 
+	?FieldName@CPbkFieldInfo@@QBEABVTDesC16@@XZ @ 86 NONAME ; public: class TDesC16 const & __thiscall CPbkFieldInfo::FieldName(void)const 
+	?FieldStorageType@CPbkFieldInfo@@QBEIXZ @ 87 NONAME ; public: unsigned int __thiscall CPbkFieldInfo::FieldStorageType(void)const 
+	?FieldsInfo@CPbkContactEngine@@QAEABVCPbkFieldsInfo@@XZ @ 88 NONAME ; public: class CPbkFieldsInfo const & __thiscall CPbkContactEngine::FieldsInfo(void)
+	?File@CPbkAttachmentFile@@QAEAAVRFile@@XZ @ 89 NONAME ; public: class RFile & __thiscall CPbkAttachmentFile::File(void)
+	?FileName@CPbkAttachmentFile@@QBEABVTDesC16@@XZ @ 90 NONAME ; public: class TDesC16 const & __thiscall CPbkAttachmentFile::FileName(void)const 
+	?FilteredContactsViewL@CPbkContactEngine@@QAEAAVCContactViewBase@@H@Z @ 91 NONAME ; public: class CContactViewBase & __thiscall CPbkContactEngine::FilteredContactsViewL(int)
+	?Find@CPbkContactIdSet@@QBEHJ@Z @ 92 NONAME ; public: int __thiscall CPbkContactIdSet::Find(long)const 
+	?Find@CPbkFieldsInfo@@QBEPAVCPbkFieldInfo@@ABVCContactItemField@@@Z @ 93 NONAME ; public: class CPbkFieldInfo * __thiscall CPbkFieldsInfo::Find(class CContactItemField const &)const 
+	?Find@CPbkFieldsInfo@@QBEPAVCPbkFieldInfo@@H@Z @ 94 NONAME ; public: class CPbkFieldInfo * __thiscall CPbkFieldsInfo::Find(int)const 
+	?Find@CPbkFieldsInfo@@QBEPAVCPbkFieldInfo@@HW4TPbkFieldLocation@@@Z @ 95 NONAME ; public: class CPbkFieldInfo * __thiscall CPbkFieldsInfo::Find(int,enum TPbkFieldLocation)const 
+	?FindAndOpenResourceFileLC@PbkEngUtils@@SAXAAVRFs@@ABVTDesC16@@11AAVRResourceFile@@@Z @ 96 NONAME ; public: static void __cdecl PbkEngUtils::FindAndOpenResourceFileLC(class RFs &,class TDesC16 const &,class TDesC16 const &,class TDesC16 const &,class RResourceFile &)
+	?FindAsyncL@CPbkContactEngine@@QAEPAVCPbkIdleFinder@@ABVTDesC16@@PBVCPbkFieldIdArray@@PAVMIdleFindObserver@@@Z @ 97 NONAME ; public: class CPbkIdleFinder * __thiscall CPbkContactEngine::FindAsyncL(class TDesC16 const &,class CPbkFieldIdArray const *,class MIdleFindObserver *)
+	?FindContactItemFieldIndex@CPbkContactItem@@QBEHABVCContactItemField@@@Z @ 98 NONAME ; public: int __thiscall CPbkContactItem::FindContactItemFieldIndex(class CContactItemField const &)const 
+	?FindField@CPbkContactItem@@QBEPAVTPbkContactItemField@@ABVCPbkFieldInfo@@@Z @ 99 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::FindField(class CPbkFieldInfo const &)const 
+	?FindField@CPbkContactItem@@QBEPAVTPbkContactItemField@@ABVCPbkFieldInfo@@AAH@Z @ 100 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::FindField(class CPbkFieldInfo const &,int &)const 
+	?FindField@CPbkContactItem@@QBEPAVTPbkContactItemField@@H@Z @ 101 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::FindField(int)const 
+	?FindField@CPbkContactItem@@QBEPAVTPbkContactItemField@@HAAH@Z @ 102 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::FindField(int,int &)const 
+	?__PbkEngine_DummyExport10@@YAXXZ @ 103 NONAME ; void __cdecl __PbkEngine_DummyExport10(void)
+	?FindFieldIndex@CPbkContactItem@@QBEHABVTPbkContactItemField@@@Z @ 104 NONAME ; public: int __thiscall CPbkContactItem::FindFieldIndex(class TPbkContactItemField const &)const 
+	?FindLC@CPbkContactEngine@@QAEPAVCContactIdArray@@ABVTDesC16@@PBVCPbkFieldIdArray@@@Z @ 105 NONAME ; public: class CContactIdArray * __thiscall CPbkContactEngine::FindLC(class TDesC16 const &,class CPbkFieldIdArray const *)
+	?FindNextFieldWithPhoneNumber@CPbkContactItem@@QBEPAVTPbkContactItemField@@ABVTDesC16@@HAAH@Z @ 106 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::FindNextFieldWithPhoneNumber(class TDesC16 const &,int,int &)const 
+	?FindNextFieldWithText@CPbkContactItem@@QBEPAVTPbkContactItemField@@ABVTDesC16@@AAH@Z @ 107 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::FindNextFieldWithText(class TDesC16 const &,int &)const 
+	?FindNodeWithViewId@CDigViewGraph@@QBEPAVCDigViewNode@@VTUid@@@Z @ 108 NONAME ; public: class CDigViewNode * __thiscall CDigViewGraph::FindNodeWithViewId(class TUid)const 
+	?__PbkEngine_DummyExport4@@YAXXZ @ 109 NONAME ; void __cdecl __PbkEngine_DummyExport4(void)
+	?FindSameField@CPbkContactItem@@QBEPAVTPbkContactItemField@@ABV2@@Z @ 110 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::FindSameField(class TPbkContactItemField const &)const 
+	?FindText@CPbkContactFindView@@QBEABVTDesC16@@XZ @ 111 NONAME ; public: class TDesC16 const & __thiscall CPbkContactFindView::FindText(void)const 
+	?FindTransition@CDigViewNode@@QBEHABVTDigViewTransition@@@Z @ 112 NONAME ; public: int __thiscall CDigViewNode::FindTransition(class TDigViewTransition const &)const 
+	?FirstL@CPbkContactIter@@QAEJXZ @ 113 NONAME ; public: long __thiscall CPbkContactIter::FirstL(void)
+	?Flags@CPbkFieldInfo@@QBEIXZ @ 114 NONAME ; public: unsigned int __thiscall CPbkFieldInfo::Flags(void)const 
+	?Flush@CPbkEntryCache@@QAEXXZ @ 115 NONAME ; public: void __thiscall CPbkEntryCache::Flush(void)
+	?FormEditorLength@CPbkConstants@@SAHXZ @ 116 NONAME ; public: static int __cdecl CPbkConstants::FormEditorLength(void)
+	?GetContactIdArrayL@CPbkContactIdSet@@QBEPAVCContactIdArray@@XZ @ 117 NONAME ; public: class CContactIdArray * __thiscall CPbkContactIdSet::GetContactIdArrayL(void)const 
+	?GetContactTitleL@CPbkContactEngine@@QBEPAVHBufC16@@ABVCPbkContactItem@@@Z @ 118 NONAME ; public: class HBufC16 * __thiscall CPbkContactEngine::GetContactTitleL(class CPbkContactItem const &)const 
+	?GetContactTitleL@CPbkContactItem@@QBEPAVHBufC16@@XZ @ 119 NONAME ; public: class HBufC16 * __thiscall CPbkContactItem::GetContactTitleL(void)const 
+	?GetContactTitleOrNullL@CPbkContactEngine@@QAEPAVHBufC16@@ABVMPbkFieldDataArray@@@Z @ 120 NONAME ; public: class HBufC16 * __thiscall CPbkContactEngine::GetContactTitleOrNullL(class MPbkFieldDataArray const &)
+	?GetContactTitleOrNullL@CPbkContactItem@@QBEPAVHBufC16@@XZ @ 121 NONAME ; public: class HBufC16 * __thiscall CPbkContactItem::GetContactTitleOrNullL(void)const 
+	?GetCurrentL@CPbkContactIter@@QBEPAVCPbkContactItem@@XZ @ 122 NONAME ; public: class CPbkContactItem * __thiscall CPbkContactIter::GetCurrentL(void)const 
+	?GetEntryL@CPbkEntryCache@@QAEABVTPbkContactEntry@@J@Z @ 123 NONAME ; public: class TPbkContactEntry const & __thiscall CPbkEntryCache::GetEntryL(long)
+	?GetSpeedDialFieldL@CPbkContactEngine@@QBEJHAAVTDes16@@@Z @ 124 NONAME ; public: long __thiscall CPbkContactEngine::GetSpeedDialFieldL(int,class TDes16 &)const 
+	?GetTextL@TPbkContactItemField@@QBEXAAVTDes16@@@Z @ 125 NONAME ; public: void __thiscall TPbkContactItemField::GetTextL(class TDes16 &)const 
+	?Group@CPbkFieldInfo@@QBEPBVCPbkFieldInfoGroup@@XZ @ 126 NONAME ; public: class CPbkFieldInfoGroup const * __thiscall CPbkFieldInfo::Group(void)const 
+	?GroupAt@CPbkFieldsInfo@@QBEABVCPbkFieldInfoGroup@@H@Z @ 127 NONAME ; public: class CPbkFieldInfoGroup const & __thiscall CPbkFieldsInfo::GroupAt(int)const 
+	?GroupCount@CPbkFieldsInfo@@QBEHXZ @ 128 NONAME ; public: int __thiscall CPbkFieldsInfo::GroupCount(void)const 
+	?GroupLabelLength@CPbkConstants@@SAHXZ @ 129 NONAME ; public: static int __cdecl CPbkConstants::GroupLabelLength(void)
+	?GroupsJoinedLC@CPbkContactItem@@QBEPAVCContactIdArray@@XZ @ 130 NONAME ; public: class CContactIdArray * __thiscall CPbkContactItem::GroupsJoinedLC(void)const 
+	?IconId@CPbkFieldInfo@@QBE?AW4TPbkIconId@@XZ @ 131 NONAME ; public: enum TPbkIconId  __thiscall CPbkFieldInfo::IconId(void)const 
+	?IconId@CPbkFieldInfoGroup@@QBE?AW4TPbkIconId@@XZ @ 132 NONAME ; public: enum TPbkIconId  __thiscall CPbkFieldInfoGroup::IconId(void)const 
+	?IconId@TPbkContactItemField@@QBE?AW4TPbkIconId@@XZ @ 133 NONAME ; public: enum TPbkIconId  __thiscall TPbkContactItemField::IconId(void)const 
+	?Id@CPbkContactItem@@QBEJXZ @ 134 NONAME ; public: long __thiscall CPbkContactItem::Id(void)const 
+	?Id@CPbkFieldInfoGroup@@QBEHXZ @ 135 NONAME ; public: int __thiscall CPbkFieldInfoGroup::Id(void)const 
+	?IdleFinder@CPbkIdleFinder@@QBEPAVCIdleFinder@@XZ @ 136 NONAME ; public: class CIdleFinder * __thiscall CPbkIdleFinder::IdleFinder(void)const 
+	?IndexOfFirstFindMatchL@CPbkContactFindView@@QBEHXZ @ 137 NONAME ; public: int __thiscall CPbkContactFindView::IndexOfFirstFindMatchL(void)const 
+	?InternalizeL@CPbkFieldData@@QAEXAAVRReadStream@@@Z @ 138 NONAME ; public: void __thiscall CPbkFieldData::InternalizeL(class RReadStream &)
+	?InternalizeL@CPbkFieldDataArray@@QAEXAAVRReadStream@@@Z @ 139 NONAME ; public: void __thiscall CPbkFieldDataArray::InternalizeL(class RReadStream &)
+	?IsComplete@CPbkIdleFinder@@QBEHXZ @ 140 NONAME ; public: int __thiscall CPbkIdleFinder::IsComplete(void)const 
+	?IsDisabled@CPbkFieldInfo@@QBEHXZ @ 141 NONAME ; public: int __thiscall CPbkFieldInfo::IsDisabled(void)const 
+	?IsEditable@CPbkFieldInfo@@QBEHXZ @ 142 NONAME ; public: int __thiscall CPbkFieldInfo::IsEditable(void)const 
+	?IsEmpty@TPbkContactItemField@@QBEHXZ @ 143 NONAME ; public: int __thiscall TPbkContactItemField::IsEmpty(void)const 
+	?IsEmptyOrAllSpaces@TPbkContactItemField@@QBEHXZ @ 144 NONAME ; public: int __thiscall TPbkContactItemField::IsEmptyOrAllSpaces(void)const 
+	?IsHidden@CPbkFieldInfo@@QBEHXZ @ 145 NONAME ; public: int __thiscall CPbkFieldInfo::IsHidden(void)const 
+	?IsHidden@TPbkContactItemField@@QBEHXZ @ 146 NONAME ; public: int __thiscall TPbkContactItemField::IsHidden(void)const 
+	?IsImageField@CPbkFieldInfo@@QBEHXZ @ 147 NONAME ; public: int __thiscall CPbkFieldInfo::IsImageField(void)const 
+	?IsMmsField@CPbkFieldInfo@@QBEHXZ @ 148 NONAME ; public: int __thiscall CPbkFieldInfo::IsMmsField(void)const 
+	?IsPhoneNumberField@CPbkFieldInfo@@QBEHXZ @ 149 NONAME ; public: int __thiscall CPbkFieldInfo::IsPhoneNumberField(void)const 
+	?IsReadOnly@CPbkFieldInfo@@QBEHXZ @ 150 NONAME ; public: int __thiscall CPbkFieldInfo::IsReadOnly(void)const 
+	?IsSame@CPbkFieldInfo@@QBEHABV1@@Z @ 151 NONAME ; public: int __thiscall CPbkFieldInfo::IsSame(class CPbkFieldInfo const &)const 
+	?IsSame@TPbkContactItemField@@QBEHABV1@@Z @ 152 NONAME ; public: int __thiscall TPbkContactItemField::IsSame(class TPbkContactItemField const &)const 
+	?IsSpeedDialAssigned@CPbkContactEngine@@QBEHABVCPbkContactItem@@H@Z @ 153 NONAME ; public: int __thiscall CPbkContactEngine::IsSpeedDialAssigned(class CPbkContactItem const &,int)const 
+	?IsTitleField@CPbkContactEngine@@QBEHH@Z @ 154 NONAME ; public: int __thiscall CPbkContactEngine::IsTitleField(int)const 
+	?ItemField@TPbkContactItemField@@QBEAAVCContactItemField@@XZ @ 155 NONAME ; public: class CContactItemField & __thiscall TPbkContactItemField::ItemField(void)const 
+	?Label@CPbkFieldInfoGroup@@QBEABVTDesC16@@XZ @ 156 NONAME ; public: class TDesC16 const & __thiscall CPbkFieldInfoGroup::Label(void)const 
+	?Label@TPbkContactItemField@@QBE?AVTPtrC16@@XZ @ 157 NONAME ; public: class TPtrC16  __thiscall TPbkContactItemField::Label(void)const 
+	?Location@CPbkFieldInfo@@QBE?AW4TPbkFieldLocation@@XZ @ 158 NONAME ; public: enum TPbkFieldLocation  __thiscall CPbkFieldInfo::Location(void)const 
+	?Match@CPbkFieldInfo@@QBEHABVCContactItemField@@@Z @ 159 NONAME ; public: int __thiscall CPbkFieldInfo::Match(class CContactItemField const &)const 
+	?Match@CPbkFieldInfo@@QBEHH@Z @ 160 NONAME ; public: int __thiscall CPbkFieldInfo::Match(int)const 
+	?Match@CPbkFieldsInfo@@QBEPAVCPbkFieldInfo@@ABVMPbkVcardProperty@@ABVTPbkMatchPriorityLevel@@@Z @ 161 NONAME ; public: class CPbkFieldInfo * __thiscall CPbkFieldsInfo::Match(class MPbkVcardProperty const &,class TPbkMatchPriorityLevel const &)const 
+	?MatchPhoneNumberL@CPbkContactEngine@@QAEPAVCContactIdArray@@ABVTDesC16@@H@Z @ 162 NONAME ; public: class CContactIdArray * __thiscall CPbkContactEngine::MatchPhoneNumberL(class TDesC16 const &,int)
+	?MaxLength@CPbkFieldInfo@@QBEHXZ @ 163 NONAME ; public: int __thiscall CPbkFieldInfo::MaxLength(void)const 
+	?MdcaCount@CPbkAttachmentFileArray@@UBEHXZ @ 164 NONAME ; public: virtual int __thiscall CPbkAttachmentFileArray::MdcaCount(void)const 
+	?MdcaPoint@CPbkAttachmentFileArray@@UBE?AVTPtrC16@@H@Z @ 165 NONAME ; public: virtual class TPtrC16  __thiscall CPbkAttachmentFileArray::MdcaPoint(int)const 
+	?Multiplicity@CPbkFieldInfo@@QBE?AW4TPbkFieldMultiplicity@@XZ @ 166 NONAME ; public: enum TPbkFieldMultiplicity  __thiscall CPbkFieldInfo::Multiplicity(void)const 
+	?NameField@CPbkFieldInfo@@QBEHXZ @ 167 NONAME ; public: int __thiscall CPbkFieldInfo::NameField(void)const 
+	?NewL@CDigViewGraph@@SAPAV1@AAVTResourceReader@@@Z @ 168 NONAME ; public: static class CDigViewGraph * __cdecl CDigViewGraph::NewL(class TResourceReader &)
+	?NewL@CPbkAttachmentFile@@SAPAV1@ABVTDesC16@@AAVRFs@@I@Z @ 169 NONAME ; public: static class CPbkAttachmentFile * __cdecl CPbkAttachmentFile::NewL(class TDesC16 const &,class RFs &,unsigned int)
+	?NewL@CPbkConstants@@SAPAV1@AAVRResourceFile@@@Z @ 170 NONAME ; public: static class CPbkConstants * __cdecl CPbkConstants::NewL(class RResourceFile &)
+	?NewL@CPbkContactChangeNotifier@@SAPAV1@AAVCPbkContactEngine@@PAVMPbkContactDbObserver@@@Z @ 171 NONAME ; public: static class CPbkContactChangeNotifier * __cdecl CPbkContactChangeNotifier::NewL(class CPbkContactEngine &,class MPbkContactDbObserver *)
+	?NewL@CPbkContactEngine@@SAPAV1@ABVTDesC16@@HPAVRFs@@@Z @ 172 NONAME ; public: static class CPbkContactEngine * __cdecl CPbkContactEngine::NewL(class TDesC16 const &,int,class RFs *)
+	?NewL@CPbkContactEngine@@SAPAV1@PAVRFs@@@Z @ 173 NONAME ; public: static class CPbkContactEngine * __cdecl CPbkContactEngine::NewL(class RFs *)
+	?NewL@CPbkContactFindView@@SAPAV1@AAVCPbkContactEngine@@AAVCContactViewBase@@AAVMContactViewObserver@@AAVMPbkFindPrimitives@@@Z @ 174 NONAME ; public: static class CPbkContactFindView * __cdecl CPbkContactFindView::NewL(class CPbkContactEngine &,class CContactViewBase &,class MContactViewObserver &,class MPbkFindPrimitives &)
+	?NewL@CPbkContactIdSet@@SAPAV1@ABV1@@Z @ 175 NONAME ; public: static class CPbkContactIdSet * __cdecl CPbkContactIdSet::NewL(class CPbkContactIdSet const &)
+	?NewL@CPbkContactIdSet@@SAPAV1@ABVCContactIdArray@@@Z @ 176 NONAME ; public: static class CPbkContactIdSet * __cdecl CPbkContactIdSet::NewL(class CContactIdArray const &)
+	?NewL@CPbkContactIdSet@@SAPAV1@XZ @ 177 NONAME ; public: static class CPbkContactIdSet * __cdecl CPbkContactIdSet::NewL(void)
+	?NewL@CPbkContactItem@@SAPAV1@PAVCContactItem@@ABVCPbkFieldsInfo@@AAVMPbkContactNameFormat@@@Z @ 178 NONAME ; public: static class CPbkContactItem * __cdecl CPbkContactItem::NewL(class CContactItem *,class CPbkFieldsInfo const &,class MPbkContactNameFormat &)
+	?NewL@CPbkContactIter@@SAPAV1@AAVCPbkContactEngine@@H@Z @ 179 NONAME ; public: static class CPbkContactIter * __cdecl CPbkContactIter::NewL(class CPbkContactEngine &,int)
+	?NewL@CPbkContactSubView@@SAPAV1@AAVMContactViewObserver@@ABVCContactDatabase@@AAVCContactViewBase@@AAVMPbkContactSelector@@@Z @ 180 NONAME ; public: static class CPbkContactSubView * __cdecl CPbkContactSubView::NewL(class MContactViewObserver &,class CContactDatabase const &,class CContactViewBase &,class MPbkContactSelector &)
+	?NewL@CPbkEntryCache@@SAPAV1@AAVCPbkContactEngine@@H@Z @ 181 NONAME ; public: static class CPbkEntryCache * __cdecl CPbkEntryCache::NewL(class CPbkContactEngine &,int)
+	?NewL@CPbkFieldData@@SAPAV1@AAVRReadStream@@@Z @ 182 NONAME ; public: static class CPbkFieldData * __cdecl CPbkFieldData::NewL(class RReadStream &)
+	?NewL@CPbkFieldData@@SAPAV1@HABVTDesC16@@@Z @ 183 NONAME ; public: static class CPbkFieldData * __cdecl CPbkFieldData::NewL(int,class TDesC16 const &)
+	?NewL@CPbkFieldData@@SAPAV1@HABVTTime@@@Z @ 184 NONAME ; public: static class CPbkFieldData * __cdecl CPbkFieldData::NewL(int,class TTime const &)
+	?NewL@CPbkFieldDataArray@@SAPAV1@AAVRReadStream@@@Z @ 185 NONAME ; public: static class CPbkFieldDataArray * __cdecl CPbkFieldDataArray::NewL(class RReadStream &)
+	?NewLC@CPbkAttachmentFile@@SAPAV1@ABVTDesC16@@AAVRFs@@I@Z @ 186 NONAME ; public: static class CPbkAttachmentFile * __cdecl CPbkAttachmentFile::NewLC(class TDesC16 const &,class RFs &,unsigned int)
+	?NewLC@CPbkContactIdSet@@SAPAV1@ABV1@@Z @ 187 NONAME ; public: static class CPbkContactIdSet * __cdecl CPbkContactIdSet::NewLC(class CPbkContactIdSet const &)
+	?NewLC@CPbkContactIdSet@@SAPAV1@ABVCContactIdArray@@@Z @ 188 NONAME ; public: static class CPbkContactIdSet * __cdecl CPbkContactIdSet::NewLC(class CContactIdArray const &)
+	?NewLC@CPbkContactIdSet@@SAPAV1@XZ @ 189 NONAME ; public: static class CPbkContactIdSet * __cdecl CPbkContactIdSet::NewLC(void)
+	?__PbkEngine_DummyExport11@@YAXXZ @ 190 NONAME ; void __cdecl __PbkEngine_DummyExport11(void)
+	?NewLC@CPbkContactIter@@SAPAV1@AAVCPbkContactEngine@@H@Z @ 191 NONAME ; public: static class CPbkContactIter * __cdecl CPbkContactIter::NewLC(class CPbkContactEngine &,int)
+	?NextL@CPbkContactIter@@QAEJXZ @ 192 NONAME ; public: long __thiscall CPbkContactIter::NextL(void)
+	?NextL@TPbkContactViewIterator@@QAEJXZ @ 193 NONAME ; public: long __thiscall TPbkContactViewIterator::NextL(void)
+	?NumericField@CPbkFieldInfo@@QBEHXZ @ 194 NONAME ; public: int __thiscall CPbkFieldInfo::NumericField(void)const 
+	?OpenContactGroupL@CPbkContactEngine@@QAEPAVCContactGroup@@J@Z @ 195 NONAME ; public: class CContactGroup * __thiscall CPbkContactEngine::OpenContactGroupL(long)
+	?OpenContactGroupLCX@CPbkContactEngine@@QAEPAVCContactGroup@@J@Z @ 196 NONAME ; public: class CContactGroup * __thiscall CPbkContactEngine::OpenContactGroupLCX(long)
+	?OpenContactL@CPbkContactEngine@@QAEPAVCPbkContactItem@@J@Z @ 197 NONAME ; public: class CPbkContactItem * __thiscall CPbkContactEngine::OpenContactL(long)
+	?OpenContactLCX@CPbkContactEngine@@QAEPAVCPbkContactItem@@J@Z @ 198 NONAME ; public: class CPbkContactItem * __thiscall CPbkContactEngine::OpenContactLCX(long)
+	?__PbkEngine_DummyExport7@@YAXXZ @ 199 NONAME ; void __cdecl __PbkEngine_DummyExport7(void)
+	?__PbkEngine_DummyExport8@@YAXXZ @ 200 NONAME ; void __cdecl __PbkEngine_DummyExport8(void) 
+	?__PbkEngine_DummyExport6@@YAXXZ @ 201 NONAME ; void __cdecl __PbkEngine_DummyExport6(void)
+	?CreatePersistentSettingL@PbkGlobalSettingFactory@@SAPAVMPbkGlobalSetting@@XZ @ 202 NONAME ; public: static class MPbkGlobalSetting * __cdecl PbkGlobalSettingFactory::CreatePersistentSettingL(void)
+	?CreateTransientSettingL@PbkGlobalSettingFactory@@SAPAVMPbkGlobalSetting@@H@Z @ 203 NONAME ; public: static class MPbkGlobalSetting * __cdecl PbkGlobalSettingFactory::CreateTransientSettingL(int)
+	?__PbkEngine_DummyExport9@@YAXXZ @ 204 NONAME ; void __cdecl __PbkEngine_DummyExport9(void) 
+	?PbkFieldId@CPbkFieldData@@UBEHXZ @ 205 NONAME ; public: virtual int __thiscall CPbkFieldData::PbkFieldId(void)const 
+	?PbkFieldId@TPbkContactItemField@@UBEHXZ @ 206 NONAME ; public: virtual int __thiscall TPbkContactItemField::PbkFieldId(void)const 
+	?PbkFieldText@CPbkFieldData@@UBE?AVTPtrC16@@XZ @ 207 NONAME ; public: virtual class TPtrC16  __thiscall CPbkFieldData::PbkFieldText(void)const 
+	?PbkFieldText@TPbkContactItemField@@UBE?AVTPtrC16@@XZ @ 208 NONAME ; public: virtual class TPtrC16  __thiscall TPbkContactItemField::PbkFieldText(void)const 
+	?PbkFieldTime@CPbkFieldData@@UBE?AVTTime@@XZ @ 209 NONAME ; public: virtual class TTime  __thiscall CPbkFieldData::PbkFieldTime(void)const 
+	?PbkFieldTime@TPbkContactItemField@@UBE?AVTTime@@XZ @ 210 NONAME ; public: virtual class TTime  __thiscall TPbkContactItemField::PbkFieldTime(void)const 
+	?PbkFieldType@CPbkFieldData@@UBEIXZ @ 211 NONAME ; public: virtual unsigned int __thiscall CPbkFieldData::PbkFieldType(void)const 
+	?PbkFieldType@TPbkContactItemField@@UBEIXZ @ 212 NONAME ; public: virtual unsigned int __thiscall TPbkContactItemField::PbkFieldType(void)const 
+	?PreloadL@CPbkEntryCache@@QAEXJ@Z @ 213 NONAME ; public: void __thiscall CPbkEntryCache::PreloadL(long)
+	?NewL@CPbkFieldDataArray@@SAPAV1@XZ @ 214 NONAME ; public: static class CPbkFieldDataArray * __cdecl CPbkFieldDataArray::NewL(void)
+	?IsEmailField@CPbkFieldInfo@@QBEHXZ @ 215 NONAME ; public: int __thiscall CPbkFieldInfo::IsEmailField(void)const
+	?PropertyName@TPbkFieldInfoExportTypeAdapter@@UBE?AVTUid@@XZ @ 216 NONAME ; public: virtual class TUid  __thiscall TPbkFieldInfoExportTypeAdapter::PropertyName(void)const 
+	?PropertyParameters@TPbkFieldInfoExportTypeAdapter@@UBEABVMPbkVcardParameters@@XZ @ 217 NONAME ; public: virtual class MPbkVcardParameters const & __thiscall TPbkFieldInfoExportTypeAdapter::PropertyParameters(void)const 
+	?ReadContactGroupL@CPbkContactEngine@@QAEPAVCContactGroup@@J@Z @ 218 NONAME ; public: class CContactGroup * __thiscall CPbkContactEngine::ReadContactGroupL(long)
+	?ReadContactL@CPbkContactEngine@@QAEPAVCPbkContactItem@@JPBVCPbkFieldIdArray@@@Z @ 219 NONAME ; public: class CPbkContactItem * __thiscall CPbkContactEngine::ReadContactL(long,class CPbkFieldIdArray const *)
+	?ReadContactLC@CPbkContactEngine@@QAEPAVCPbkContactItem@@JPBVCPbkFieldIdArray@@@Z @ 220 NONAME ; public: class CPbkContactItem * __thiscall CPbkContactEngine::ReadContactLC(long,class CPbkFieldIdArray const *)
+	?ReadMinimalContactLC@CPbkContactEngine@@QAEPAVCPbkContactItem@@J@Z @ 221 NONAME ; public: class CPbkContactItem * __thiscall CPbkContactEngine::ReadMinimalContactLC(long)
+	?Refresh@CPbkContactSubView@@QAEXXZ @ 222 NONAME ; public: void __thiscall CPbkContactSubView::Refresh(void)
+	?Release@CPbkAttachmentFile@@QAEXXZ @ 223 NONAME ; public: void __thiscall CPbkAttachmentFile::Release(void)
+	?Remove@CPbkContactIdSet@@QAEXJ@Z @ 224 NONAME ; public: void __thiscall CPbkContactIdSet::Remove(long)
+	?Remove@CPbkContactIdSet@@QAEXABV1@@Z @ 225 NONAME ; public: void __thiscall CPbkContactIdSet::Remove(class CPbkContactIdSet const &)
+	?Remove@CPbkContactIdSet@@QAEXABVCContactIdArray@@@Z @ 226 NONAME ; public: void __thiscall CPbkContactIdSet::Remove(class CContactIdArray const &)
+	?RemoveBaseViewPreEventHandler@CPbkContactSubView@@QAEXAAVMContactViewObserver@@@Z @ 227 NONAME ; public: void __thiscall CPbkContactSubView::RemoveBaseViewPreEventHandler(class MContactViewObserver &)
+	?RemoveContactFromGroupL@CPbkContactEngine@@QAEXJJ@Z @ 228 NONAME ; public: void __thiscall CPbkContactEngine::RemoveContactFromGroupL(long,long)
+	?__PbkEngine_DummyExport2@@YAXXZ @ 229 NONAME ; public: static class CPbkSimEntryCopierBase * __cdecl PbkSimEntryCopyFactory::CreateLC(class CPbkSimEntry &,class CPbkContactEngine &)
+	?RemoveDefaultEmailField@CPbkContactItem@@QAEXXZ @ 230 NONAME ; public: void __thiscall CPbkContactItem::RemoveDefaultEmailField(void)
+	?RemoveDefaultMmsField@CPbkContactItem@@QAEXXZ @ 231 NONAME ; public: void __thiscall CPbkContactItem::RemoveDefaultMmsField(void)
+	?RemoveDefaultPhoneNumberField@CPbkContactItem@@QAEXXZ @ 232 NONAME ; public: void __thiscall CPbkContactItem::RemoveDefaultPhoneNumberField(void)
+	?RemoveDefaultSmsField@CPbkContactItem@@QAEXXZ @ 233 NONAME ; public: void __thiscall CPbkContactItem::RemoveDefaultSmsField(void)
+	?RemoveField@CPbkContactItem@@QAEXH@Z @ 234 NONAME ; public: void __thiscall CPbkContactItem::RemoveField(int)
+	?RemoveSpeedDialFieldL@CPbkContactEngine@@QAEXJH@Z @ 235 NONAME ; public: void __thiscall CPbkContactEngine::RemoveSpeedDialFieldL(long,int)
+	?RemoveVoiceTagField@CPbkContactItem@@QAEXXZ @ 236 NONAME ; public: void __thiscall CPbkContactItem::RemoveVoiceTagField(void)
+	?ReplaceL@CPbkContactEngine@@SAPAV1@PAVRFs@@@Z @ 237 NONAME ; public: static class CPbkContactEngine * __cdecl CPbkContactEngine::ReplaceL(class RFs *)
+	?ReserveL@TPbkContactEntry@@CAPAVHBufC16@@PAV2@H@Z @ 238 NONAME ; private: static class HBufC16 * __cdecl TPbkContactEntry::ReserveL(class HBufC16 *,int)
+	?Reset@CPbkContactIter@@QAEXXZ @ 239 NONAME ; public: void __thiscall CPbkContactIter::Reset(void)
+	?__PbkEngine_DummyExport5@@YAXXZ @ 240 NONAME ; void __cdecl __PbkEngine_DummyExport5(void)
+	?ResetAndDestroyPushL@CPbkFieldDataArray@@QAEXXZ @ 241 NONAME ; public: void __thiscall CPbkFieldDataArray::ResetAndDestroyPushL(void)
+	?ResetFind@CPbkContactFindView@@QAEHXZ @ 242 NONAME ; public: int __thiscall CPbkContactFindView::ResetFind(void)
+	?RingingTonePreviewDelay@CPbkConstants@@SAHXZ @ 243 NONAME ; public: static int __cdecl CPbkConstants::RingingTonePreviewDelay(void)
+	?SearchFieldLength@CPbkConstants@@SAHXZ @ 244 NONAME ; public: static int __cdecl CPbkConstants::SearchFieldLength(void)
+	?Set@TPbkContactItemField@@QAEXPAVCContactItemField@@PAVCPbkFieldInfo@@@Z @ 245 NONAME ; public: void __thiscall TPbkContactItemField::Set(class CContactItemField *,class CPbkFieldInfo *)
+	?SetCompressUi@CPbkContactEngine@@QAEXPAVMPbkCompressUi@@@Z @ 246 NONAME ; public: void __thiscall CPbkContactEngine::SetCompressUi(class MPbkCompressUi *)
+	?SetContactSelector@CPbkContactSubView@@QAEXAAVMPbkContactSelector@@@Z @ 247 NONAME ; public: void __thiscall CPbkContactSubView::SetContactSelector(class MPbkContactSelector &)
+	?SetDefaultEmailFieldL@CPbkContactItem@@QAEXPAVTPbkContactItemField@@@Z @ 248 NONAME ; public: void __thiscall CPbkContactItem::SetDefaultEmailFieldL(class TPbkContactItemField *)
+	?SetDefaultMmsFieldL@CPbkContactItem@@QAEXPAVTPbkContactItemField@@@Z @ 249 NONAME ; public: void __thiscall CPbkContactItem::SetDefaultMmsFieldL(class TPbkContactItemField *)
+	?SetDefaultPhoneNumberFieldL@CPbkContactItem@@QAEXPAVTPbkContactItemField@@@Z @ 250 NONAME ; public: void __thiscall CPbkContactItem::SetDefaultPhoneNumberFieldL(class TPbkContactItemField *)
+	?SetDefaultSmsFieldL@CPbkContactItem@@QAEXPAVTPbkContactItemField@@@Z @ 251 NONAME ; public: void __thiscall CPbkContactItem::SetDefaultSmsFieldL(class TPbkContactItemField *)
+	?SetFieldAsSpeedDialL@CPbkContactEngine@@QAEXAAVCPbkContactItem@@HH@Z @ 252 NONAME ; public: void __thiscall CPbkContactEngine::SetFieldAsSpeedDialL(class CPbkContactItem &,int,int)
+	?BreakInWordsLC@PbkEngUtils@@SAPAVMDesC16Array@@ABVTDesC16@@P6AHVTChar@@@Z@Z @ 253 NONAME ; public: static class MDesC16Array * __cdecl PbkEngUtils::BreakInWordsLC(class TDesC16 const &,int (__cdecl*)(class TChar))
+	?SetFindTextL@CPbkContactFindView@@QAEHABVTDesC16@@PBVCContactIdArray@@@Z @ 254 NONAME ; public: int __thiscall CPbkContactFindView::SetFindTextL(class TDesC16 const &,class CContactIdArray const *)
+	?SetHidden@TPbkContactItemField@@QAEXH@Z @ 255 NONAME ; public: void __thiscall TPbkContactItemField::SetHidden(int)
+	?SetLabelL@TPbkContactItemField@@QAEXABVTDesC16@@@Z @ 256 NONAME ; public: void __thiscall TPbkContactItemField::SetLabelL(class TDesC16 const &)
+	?SetVoiceTagFieldL@CPbkContactItem@@QAEXPAVTPbkContactItemField@@@Z @ 257 NONAME ; public: void __thiscall CPbkContactItem::SetVoiceTagFieldL(class TPbkContactItemField *)
+	?SpeedDialIndexesL@TPbkContactItemField@@QBEPAV?$CArrayFix@H@@XZ @ 258 NONAME ; public: class CArrayFix<int> * __thiscall TPbkContactItemField::SpeedDialIndexesL(void)const 
+	?Static@CPbkContactEngine@@SAPAV1@XZ @ 259 NONAME ; public: static class CPbkContactEngine * __cdecl CPbkContactEngine::Static(void)
+	?StorageType@TPbkContactItemField@@QBEIXZ @ 260 NONAME ; public: unsigned int __thiscall TPbkContactItemField::StorageType(void)const 
+	?SwitchDriveL@CPbkAttachmentFile@@QAEXXZ @ 261 NONAME ; public: void __thiscall CPbkAttachmentFile::SwitchDriveL(void)
+	?TakeContactIds@CPbkIdleFinder@@QAEPAVCContactIdArray@@XZ @ 262 NONAME ; public: class CContactIdArray * __thiscall CPbkIdleFinder::TakeContactIds(void)
+	?TemplateField@CPbkFieldInfo@@QBEHXZ @ 263 NONAME ; public: int __thiscall CPbkFieldInfo::TemplateField(void)const 
+	?Text@CPbkFieldData@@QBEABVTDesC16@@XZ @ 264 NONAME ; public: class TDesC16 const & __thiscall CPbkFieldData::Text(void)const 
+	?Text@TPbkContactItemField@@QBE?AVTPtrC16@@XZ @ 265 NONAME ; public: class TPtrC16  __thiscall TPbkContactItemField::Text(void)const 
+	?TextStorage@TPbkContactItemField@@QBEPAVCContactTextField@@XZ @ 266 NONAME ; public: class CContactTextField * __thiscall TPbkContactItemField::TextStorage(void)const 
+	?ThumbnailPopupDelay@CPbkConstants@@SAHXZ @ 267 NONAME ; public: static int __cdecl CPbkConstants::ThumbnailPopupDelay(void)
+	?Time@CPbkFieldData@@QBEABVTTime@@XZ @ 268 NONAME ; public: class TTime const & __thiscall CPbkFieldData::Time(void)const 
+	?Time@TPbkContactItemField@@QBE?AVTTime@@XZ @ 269 NONAME ; public: class TTime  __thiscall TPbkContactItemField::Time(void)const 
+	?Type@CPbkContactItem@@QBE?AVTUid@@XZ @ 270 NONAME ; public: class TUid  __thiscall CPbkContactItem::Type(void)const 
+	?UniqueFieldIdentity@TPbkContactItemField@@QBEHXZ @ 271 NONAME ; public: int __thiscall TPbkContactItemField::UniqueFieldIdentity(void)const 
+	?Unload@CPbkEntryCache@@QAEXJ@Z @ 272 NONAME ; public: void __thiscall CPbkEntryCache::Unload(long)
+	?UnnamedTitle@CPbkConstants@@QBEABVTDesC16@@XZ @ 273 NONAME ; public: class TDesC16 const & __thiscall CPbkConstants::UnnamedTitle(void)const 
+	?UnnamedTitle@CPbkContactEngine@@QBEABVTDesC16@@XZ @ 274 NONAME ; public: class TDesC16 const & __thiscall CPbkContactEngine::UnnamedTitle(void)const 
+	?UpdateFieldSetL@CPbkContactItem@@QAEXABVCPbkFieldsInfo@@@Z @ 275 NONAME ; public: void __thiscall CPbkContactItem::UpdateFieldSetL(class CPbkFieldsInfo const &)
+	?UserCanAddField@CPbkFieldInfo@@QBEHXZ @ 276 NONAME ; public: int __thiscall CPbkFieldInfo::UserCanAddField(void)const 
+	?VersitStorageType@CPbkFieldInfo@@QBE?AW4TPbkVersitStorageType@@XZ @ 277 NONAME ; public: enum TPbkVersitStorageType  __thiscall CPbkFieldInfo::VersitStorageType(void)const 
+	?VoiceTagField@CPbkContactItem@@QBEPAVTPbkContactItemField@@XZ @ 278 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::VoiceTagField(void)const 
+	?__DbgTestInvariant@CPbkContactIdSet@@QBEXXZ @ 279 NONAME ; public: void __thiscall CPbkContactIdSet::__DbgTestInvariant(void)const 
+	?__DbgTestInvariant@CPbkContactItem@@QBEXXZ @ 280 NONAME ; public: void __thiscall CPbkContactItem::__DbgTestInvariant(void)const 
+	?__DbgTestInvariant@CPbkContactIter@@QBEXXZ @ 281 NONAME ; public: void __thiscall CPbkContactIter::__DbgTestInvariant(void)const 
+	?IsReadingField@CPbkFieldInfo@@QBEHXZ @ 282 NONAME ; public: int __thiscall CPbkFieldInfo::IsReadingField(void)const 
+	?__DebugPrint@@YAXABVCContactItemField@@@Z @ 283 NONAME ; void __cdecl __DebugPrint(class CContactItemField const &)
+	?__DebugPrint@@YAXABVCPbkFieldInfo@@@Z @ 284 NONAME ; void __cdecl __DebugPrint(class CPbkFieldInfo const &)
+	?AddItemOrdering@CPbkFieldInfoGroup@@QBEHXZ @ 285 NONAME ; public: int __thiscall CPbkFieldInfoGroup::AddItemOrdering(void)const 
+	?CountSpaces@PbkEngUtils@@SAHABVTDesC16@@@Z @ 286 NONAME ; public: static int __cdecl PbkEngUtils::CountSpaces(class TDesC16 const &)
+	?AddToFieldDefL@CPbkFieldInfo@@QBEXAAVCContactItemFieldDef@@@Z @ 287 NONAME ; public: void __thiscall CPbkFieldInfo::AddToFieldDefL(class CContactItemFieldDef &)const 
+	?AddToViewDefL@CPbkFieldInfo@@QBEXAAVCContactItemViewDef@@@Z @ 288 NONAME ; public: void __thiscall CPbkFieldInfo::AddToViewDefL(class CContactItemViewDef &)const 
+	?CreateContactItemFieldDefLC@CPbkFieldsInfo@@QBEPAVCContactItemFieldDef@@PBVCPbkFieldIdArray@@@Z @ 289 NONAME ; public: class CContactItemFieldDef * __thiscall CPbkFieldsInfo::CreateContactItemFieldDefLC(class CPbkFieldIdArray const *)const 
+	?CreateContactItemViewDefLC@CPbkFieldsInfo@@QBEPAVCContactItemViewDef@@ABVCPbkFieldIdArray@@@Z @ 290 NONAME ; public: class CContactItemViewDef * __thiscall CPbkFieldsInfo::CreateContactItemViewDefLC(class CPbkFieldIdArray const &)const 
+	?AddItemText@CPbkFieldInfo@@QBEABVTDesC16@@XZ @ 291 NONAME ; public: class TDesC16 const & __thiscall CPbkFieldInfo::AddItemText(void)const 
+	?TrimRightAppend@PbkEngUtils@@SAHABVTDesC16@@AAVTDes16@@@Z @ 292 NONAME ; public: static int __cdecl PbkEngUtils::TrimRightAppend(class TDesC16 const &,class TDes16 &)
+	?TrimRightLength@PbkEngUtils@@SAHABVTDesC16@@@Z @ 293 NONAME ; public: static int __cdecl PbkEngUtils::TrimRightLength(class TDesC16 const &)
+	?DefaultEmailOverSmsField@CPbkContactItem@@QBEPAVTPbkContactItemField@@XZ @ 294 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::DefaultEmailOverSmsField(void)const 
+	?DefaultEmailOverSmsField@TPbkContactItemField@@QBEHXZ @ 295 NONAME ; public: int __thiscall TPbkContactItemField::DefaultEmailOverSmsField(void)const 
+	?IsEmailOverSmsField@CPbkFieldInfo@@QBEHXZ @ 296 NONAME ; public: int __thiscall CPbkFieldInfo::IsEmailOverSmsField(void)const 
+	?RemoveDefaultEmailOverSmsField@CPbkContactItem@@QAEXXZ @ 297 NONAME ; public: void __thiscall CPbkContactItem::RemoveDefaultEmailOverSmsField(void)
+	?SetDefaultEmailOverSmsFieldL@CPbkContactItem@@QAEXPAVTPbkContactItemField@@@Z @ 298 NONAME ; public: void __thiscall CPbkContactItem::SetDefaultEmailOverSmsFieldL(class TPbkContactItemField *)
+	?DefaultVideoNumberField@CPbkContactItem@@QBEPAVTPbkContactItemField@@XZ @ 299 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::DefaultVideoNumberField(void)const 
+	?DefaultVideoNumberField@TPbkContactItemField@@QBEHXZ @ 300 NONAME ; public: int __thiscall TPbkContactItemField::DefaultVideoNumberField(void)const 
+	?RemoveDefaultVideoNumberField@CPbkContactItem@@QAEXXZ @ 301 NONAME ; public: void __thiscall CPbkContactItem::RemoveDefaultVideoNumberField(void)
+	?SetDefaultVideoNumberFieldL@CPbkContactItem@@QAEXPAVTPbkContactItemField@@@Z @ 302 NONAME ; public: void __thiscall CPbkContactItem::SetDefaultVideoNumberFieldL(class TPbkContactItemField *)
+	?AddToPhonebookL@CPbkEntryCopier@@QAEXAAVCPbkContactItem@@@Z @ 303 NONAME ; public: void __thiscall CPbkEntryCopier::AddToPhonebookL(class CPbkContactItem &)
+	?NewL@CPbkEntryCopier@@SAPAV1@AAVCPbkContactEngine@@AAVMPbkEntryCopyObserver@@@Z @ 304 NONAME ; public: static class CPbkEntryCopier * __cdecl CPbkEntryCopier::NewL(class CPbkContactEngine &,class MPbkEntryCopyObserver &)
+	??1TPbkViewContactFieldDataArray@@UAE@XZ @ 305 NONAME ; public: virtual __thiscall TPbkViewContactFieldDataArray::~TPbkViewContactFieldDataArray(void)
+	?AddContactL@CPbkContactSubView@@QAEXJ@Z @ 306 NONAME ; public: void __thiscall CPbkContactSubView::AddContactL(long)
+	?RemoveContact@CPbkContactSubView@@QAEXJ@Z @ 307 NONAME ; public: void __thiscall CPbkContactSubView::RemoveContact(long)
+	?NewLC@CPbkDeleteContacts@@SAPAV1@AAVCPbkContactEngine@@ABVCContactIdArray@@@Z @ 308 NONAME ; public: static class CPbkDeleteContacts * __cdecl CPbkDeleteContacts::NewLC(class CPbkContactEngine &,class CContactIdArray const &)
+	?CheckFileSystemSpaceAndCompressL@CPbkContactEngine@@QAEXXZ @ 309 NONAME ; public: void __thiscall CPbkContactEngine::CheckFileSystemSpaceAndCompressL(void)
+	?NewLC@CPbkAssignToGroup@@SAPAV1@AAVCPbkContactEngine@@ABVCContactIdArray@@J@Z @ 310 NONAME ; public: static class CPbkAssignToGroup * __cdecl CPbkAssignToGroup::NewLC(class CPbkContactEngine &,class CContactIdArray const &,long)
+	?NewLC@CPbkRemoveFromGroup@@SAPAV1@AAVCPbkContactEngine@@ABVCContactIdArray@@J@Z @ 311 NONAME ; public: static class CPbkRemoveFromGroup * __cdecl CPbkRemoveFromGroup::NewLC(class CPbkContactEngine &,class CContactIdArray const &,long)
+	?IsEqualTo@CPbkFieldInfo@@QBEHABVCContactItemField@@@Z @ 312 NONAME ; public: int __thiscall CPbkFieldInfo::IsEqualTo(class CContactItemField const &)const 
+	?ContactTitleL@CPbkViewContactNameFormatter@@QBEABVTDesC16@@ABVCViewContact@@ABVRContactViewSortOrder@@@Z @ 313 NONAME ; public: class TDesC16 const & __thiscall CPbkViewContactNameFormatter::ContactTitleL(class CViewContact const &,class RContactViewSortOrder const &)const 
+	?NewL@CPbkViewContactNameFormatter@@SAPAV1@AAVMPbkContactNameFormat@@@Z @ 314 NONAME ; public: static class CPbkViewContactNameFormatter * __cdecl CPbkViewContactNameFormatter::NewL(class MPbkContactNameFormat &)
+	?FsSession@CPbkContactEngine@@QBEAAVRFs@@XZ @ 315 NONAME ; public: class RFs & __thiscall CPbkContactEngine::FsSession(void)const 
+	?ReplaceNonGraphicCharacters@PbkEngUtils@@SAXAAVTDes16@@G@Z @ 316 NONAME ; public: static void __cdecl PbkEngUtils::ReplaceNonGraphicCharacters(class TDes16 &,unsigned short)
+	?AppendGraphicCharacters@PbkEngUtils@@SAXAAVTDes16@@ABVTDesC16@@G@Z @ 317 NONAME ; public: static void __cdecl PbkEngUtils::AppendGraphicCharacters(class TDes16 &,class TDesC16 const &,unsigned short)
+	?NewL@CPbkDbRecovery@@SAPAV1@AAVCContactDatabase@@@Z @ 318 NONAME ; public: static class CPbkDbRecovery * __cdecl CPbkDbRecovery::NewL(class CContactDatabase &)
+	?SetErrorHandler@CPbkDbRecovery@@QAEXPAVMPbkRecoveryErrorHandler@@@Z @ 319 NONAME ; public: void __thiscall CPbkDbRecovery::SetErrorHandler(class MPbkRecoveryErrorHandler *)
+	??0TPbkViewContactFieldDataArray@@QAE@ABVCViewContact@@ABVRContactViewSortOrder@@@Z @ 320 NONAME ; public: __thiscall TPbkViewContactFieldDataArray::TPbkViewContactFieldDataArray(class CViewContact const &,class RContactViewSortOrder const &)
+	?AllocL@PbkEngUtils@@SAPAVHBufC16@@PAV2@H@Z @ 321 NONAME ; public: static class HBufC16 * __cdecl PbkEngUtils::AllocL(class HBufC16 *,int)
+	?CopyL@PbkEngUtils@@SAPAVHBufC16@@PAV2@ABVTDesC16@@H@Z @ 322 NONAME ; public: static class HBufC16 * __cdecl PbkEngUtils::CopyL(class HBufC16 *,class TDesC16 const &,int)
+	?TrimAllAppend@PbkEngUtils@@SAHABVTDesC16@@AAVTDes16@@@Z @ 323 NONAME ; public: static int __cdecl PbkEngUtils::TrimAllAppend(class TDesC16 const &,class TDes16 &)
+	?TrimAllLength@PbkEngUtils@@SAHABVTDesC16@@@Z @ 324 NONAME ; public: static int __cdecl PbkEngUtils::TrimAllLength(class TDesC16 const &)		
+	?ModifyViewGraphL@CDigViewGraph@@QAEXAAVTResourceReader@@@Z @ 325 NONAME ; public: void __thiscall CDigViewGraph::ModifyViewGraphL(class TResourceReader &)
+	?SetNameDisplayOrderL@CPbkContactEngine@@QAEXW4TPbkNameOrder@1@@Z @ 326 NONAME ; public: void __thiscall CPbkContactEngine::SetNameDisplayOrderL(enum CPbkContactEngine::TPbkNameOrder)
+	?NameDisplayOrderL@CPbkContactEngine@@QAE?AW4TPbkNameOrder@1@XZ @ 327 NONAME ; public: enum CPbkContactEngine::TPbkNameOrder  __thiscall CPbkContactEngine::NameDisplayOrderL(void)
+	?Constants@CPbkContactEngine@@QAEPAVCPbkConstants@@XZ @ 328 NONAME ; public: class CPbkConstants * __thiscall CPbkContactEngine::Constants(void)
+	?LocallyVariatedFeatureEnabled@CPbkConstants@@QAEHW4TPbkLocalVariantFlags@@@Z @ 329 NONAME ; public: int __thiscall CPbkConstants::LocallyVariatedFeatureEnabled(enum TPbkLocalVariantFlags)
+	?IsPocField@CPbkFieldInfo@@QBEHXZ @ 330 NONAME ; public: int __thiscall CPbkFieldInfo::IsPocField(void)const 
+	?DefaultPocField@TPbkContactItemField@@QBEHXZ @ 331 NONAME ; public: int __thiscall TPbkContactItemField::DefaultPocField(void)const 
+	?DefaultPocField@CPbkContactItem@@QBEPAVTPbkContactItemField@@XZ @ 332 NONAME ; public: class TPbkContactItemField * __thiscall CPbkContactItem::DefaultPocField(void)const 
+	?RemoveDefaultPocField@CPbkContactItem@@QAEXXZ @ 333 NONAME ; public: void __thiscall CPbkContactItem::RemoveDefaultPocField(void)
+	?SetDefaultPocFieldL@CPbkContactItem@@QAEXPAVTPbkContactItemField@@@Z @ 334 NONAME ; public: void __thiscall CPbkContactItem::SetDefaultPocFieldL(class TPbkContactItemField *)
+	?CodFieldId@CPbkCodField@@QBEHAAVCPbkContactItem@@@Z @ 335 NONAME ; public: int __thiscall CPbkCodField::CodFieldId(class CPbkContactItem &)const 
+	?CodFieldIdL@CPbkCodField@@QBEHJ@Z @ 336 NONAME ; public: int __thiscall CPbkCodField::CodFieldIdL(long)const 
+	?GetTextL@CPbkCodField@@QBEPAVHBufC16@@J@Z @ 337 NONAME ; public: class HBufC16 * __thiscall CPbkCodField::GetTextL(long)const 
+	?NewL@CPbkCodField@@SAPAV1@AAVCPbkContactEngine@@@Z @ 338 NONAME ; public: static class CPbkCodField * __cdecl CPbkCodField::NewL(class CPbkContactEngine &)	
+	?DefaultVoipField@CPbkContactItem@@QBEPAVTPbkContactItemField@@XZ @ 339 NONAME ; class TPbkContactItemField * CPbkContactItem::DefaultVoipField(void) const
+	?DefaultVoipField@TPbkContactItemField@@QBEHXZ @ 340 NONAME ; int TPbkContactItemField::DefaultVoipField(void) const
+	?IsVoipField@CPbkFieldInfo@@QBEHXZ @ 341 NONAME ; int CPbkFieldInfo::IsVoipField(void) const
+	?RemoveDefaultVoipField@CPbkContactItem@@QAEXXZ @ 342 NONAME ; void CPbkContactItem::RemoveDefaultVoipField(void)
+	?SetDefaultVoipFieldL@CPbkContactItem@@QAEXPAVTPbkContactItemField@@@Z @ 343 NONAME ; void CPbkContactItem::SetDefaultVoipFieldL(class TPbkContactItemField *)
+	?NameSeparator@CPbkContactEngine@@QBE?AVTChar@@XZ @ 344 NONAME ; class TChar CPbkContactEngine::NameSeparator(void) const
+	?SetNameSeparatorL@CPbkContactEngine@@QAEXVTChar@@@Z @ 345 NONAME ; void CPbkContactEngine::SetNameSeparatorL(class TChar)
+	?FindAndOpenDefaultResourceFileLC@PbkEngUtils@@SAXAAVRFs@@AAVRResourceFile@@@Z @ 346 NONAME ; void PbkEngUtils::FindAndOpenDefaultResourceFileLC(class RFs &, class RResourceFile &)
+

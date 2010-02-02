@@ -1,0 +1,340 @@
+EXPORTS
+	__vc__C14CPbkFieldsInfoi @ 1 NONAME ; CPbkFieldsInfo::operator[](int) const
+	AddContactToGroupL__17CPbkContactEnginell @ 2 NONAME ; CPbkContactEngine::AddContactToGroupL(long, long)
+	AddFieldL__15CPbkContactItemR13CPbkFieldInfo @ 3 NONAME ; CPbkContactItem::AddFieldL(CPbkFieldInfo &)
+	AddFlags__C13CPbkFieldInfo @ 4 NONAME ; CPbkFieldInfo::AddFlags(void) const
+	AddItemOrdering__C13CPbkFieldInfo @ 5 NONAME ; CPbkFieldInfo::AddItemOrdering(void) const
+	AddL__16CPbkContactIdSetRC15CContactIdArray @ 6 NONAME R3UNUSED ; CPbkContactIdSet::AddL(CContactIdArray const &)
+	AddL__16CPbkContactIdSetRC16CPbkContactIdSet @ 7 NONAME R3UNUSED ; CPbkContactIdSet::AddL(CPbkContactIdSet const &)
+	AddL__16CPbkContactIdSetl @ 8 NONAME ; CPbkContactIdSet::AddL(long)
+	AddNewContactL__17CPbkContactEngineR15CPbkContactItemi @ 9 NONAME ; CPbkContactEngine::AddNewContactL(CPbkContactItem &, int)
+	AddOrReturnUnusedFieldL__15CPbkContactItemR13CPbkFieldInfo @ 10 NONAME ; CPbkContactItem::AddOrReturnUnusedFieldL(CPbkFieldInfo &)
+	AllContactsView__17CPbkContactEngine @ 11 NONAME ; CPbkContactEngine::AllContactsView(void)
+	AllGroupsViewL__17CPbkContactEngine @ 12 NONAME ; CPbkContactEngine::AllGroupsViewL(void)
+	AppendAndReplaceChars__11PbkEngUtilsR6TDes16RC7TDesC16N22 @ 13 NONAME ; PbkEngUtils::AppendAndReplaceChars(TDes16 &, TDesC16 const &, TDesC16 const &, TDesC16 const &)
+	At__C18CPbkFieldInfoGroupi @ 14 NONAME ; CPbkFieldInfoGroup::At(int) const
+	CanAcceptDataOfType__C15CPbkContactItemR13CPbkFieldInfo @ 15 NONAME ; CPbkContactItem::CanAcceptDataOfType(CPbkFieldInfo &) const
+	CancelCompress__17CPbkContactEngine @ 16 NONAME ; CPbkContactEngine::CancelCompress(void)
+	Capacity__C14CPbkEntryCache @ 17 NONAME ; CPbkEntryCache::Capacity(void) const
+	CardFields__C15CPbkContactItem @ 18 NONAME ; CPbkContactItem::CardFields(void) const
+	Category__C13CPbkFieldInfo @ 19 NONAME ; CPbkFieldInfo::Category(void) const
+	CheckCompress__17CPbkContactEngine @ 20 NONAME ; CPbkContactEngine::CheckCompress(void)
+	CloseContactL__17CPbkContactEnginel @ 21 NONAME ; CPbkContactEngine::CloseContactL(long)
+	CommitContactGroupL__17CPbkContactEngineR13CContactGroupi @ 22 NONAME ; CPbkContactEngine::CommitContactGroupL(CContactGroup &, int)
+	CommitContactL__17CPbkContactEngineR15CPbkContactItemi @ 23 NONAME ; CPbkContactEngine::CommitContactL(CPbkContactItem &, int)
+	CompareOrdering__C13CPbkFieldInfoRC13CPbkFieldInfo @ 24 NONAME ; CPbkFieldInfo::CompareOrdering(CPbkFieldInfo const &) const
+	Compare__C20TPbkContactItemFieldRC20TPbkContactItemField @ 25 NONAME ; TPbkContactItemField::Compare(TPbkContactItemField const &) const
+	CompressL__17CPbkContactEngine @ 26 NONAME ; CPbkContactEngine::CompressL(void)
+	CompressionInactivityTimerLength__13CPbkConstants @ 27 NONAME ; CPbkConstants::CompressionInactivityTimerLength(void)
+	__PbkEngine_DummyExport1__Fv @ 28 NONAME R3UNUSED ; __PbkEngine_DummyExport1(void)
+	ContactIconIdL__C15CPbkContactItem @ 29 NONAME ; CPbkContactItem::ContactIconIdL(void) const
+	ContactItemField__20TPbkContactItemField @ 30 NONAME ; TPbkContactItemField::ContactItemField(void)
+	ContactItemField__C20TPbkContactItemField @ 31 NONAME ; TPbkContactItemField::ContactItemField(void) const
+	ContactItem__15CPbkContactItem @ 32 NONAME ; CPbkContactItem::ContactItem(void)
+	ContactItem__C15CPbkContactItem @ 33 NONAME ; CPbkContactItem::ContactItem(void) const
+	ContactNameFormat__C17CPbkContactEngine @ 34 NONAME ; CPbkContactEngine::ContactNameFormat(void) const
+	ContactSelector__C18CPbkContactSubView @ 35 NONAME ; CPbkContactSubView::ContactSelector(void) const
+	ContainSameDigits__11PbkEngUtilsRC7TDesC16T1i @ 36 NONAME ; PbkEngUtils::ContainSameDigits(TDesC16 const &, TDesC16 const &, int)
+	ContentType__C13CPbkFieldInfo @ 37 NONAME ; CPbkFieldInfo::ContentType(void) const
+	CopyDigitsFromEnd__11PbkEngUtilsRC7TDesC16iR6TDes16 @ 38 NONAME ; PbkEngUtils::CopyDigitsFromEnd(TDesC16 const &, int, TDes16 &)
+	Count__C14CPbkFieldsInfo @ 39 NONAME ; CPbkFieldsInfo::Count(void) const
+	Count__C18CPbkFieldInfoGroup @ 40 NONAME ; CPbkFieldInfoGroup::Count(void) const
+	CreateContactChangeNotifierL__17CPbkContactEngineP21MPbkContactDbObserver @ 41 NONAME ; CPbkContactEngine::CreateContactChangeNotifierL(MPbkContactDbObserver *)
+	CreateContactGroupL__17CPbkContactEngineRC7TDesC16i @ 42 NONAME ; CPbkContactEngine::CreateContactGroupL(TDesC16 const &, int)
+	CreateContactIteratorLC__17CPbkContactEnginei @ 43 NONAME ; CPbkContactEngine::CreateContactIteratorLC(int)
+	CreateEmptyContactL__17CPbkContactEngine @ 44 NONAME ; CPbkContactEngine::CreateEmptyContactL(void)
+	CreateFieldL__C13CPbkFieldInfo @ 45 NONAME ; CPbkFieldInfo::CreateFieldL(void) const
+	CreateMatchPriority__C14CPbkFieldsInfo @ 46 NONAME ; CPbkFieldsInfo::CreateMatchPriority(void) const
+	CtrlType__C13CPbkFieldInfo @ 47 NONAME ; CPbkFieldInfo::CtrlType(void) const
+	CurrentL__C15CPbkContactIter @ 48 NONAME ; CPbkContactIter::CurrentL(void) const
+	Database__17CPbkContactEngine @ 49 NONAME ; CPbkContactEngine::Database(void)
+	DateTimeStorage__C20TPbkContactItemField @ 50 NONAME ; TPbkContactItemField::DateTimeStorage(void) const
+	DefaultCase__C13CPbkFieldInfo @ 51 NONAME ; CPbkFieldInfo::DefaultCase(void) const
+	DefaultEmailField__C15CPbkContactItem @ 52 NONAME ; CPbkContactItem::DefaultEmailField(void) const
+	DefaultEmailField__C20TPbkContactItemField @ 53 NONAME ; TPbkContactItemField::DefaultEmailField(void) const
+	DefaultMmsField__C15CPbkContactItem @ 54 NONAME ; CPbkContactItem::DefaultMmsField(void) const
+	DefaultMmsField__C20TPbkContactItemField @ 55 NONAME ; TPbkContactItemField::DefaultMmsField(void) const
+	DefaultPhoneNumberField__C15CPbkContactItem @ 56 NONAME ; CPbkContactItem::DefaultPhoneNumberField(void) const
+	DefaultPhoneNumberField__C20TPbkContactItemField @ 57 NONAME ; TPbkContactItemField::DefaultPhoneNumberField(void) const
+	DefaultSmsField__C15CPbkContactItem @ 58 NONAME ; CPbkContactItem::DefaultSmsField(void) const
+	DefaultSmsField__C20TPbkContactItemField @ 59 NONAME ; TPbkContactItemField::DefaultSmsField(void) const
+	DeleteContactGroupL__17CPbkContactEngineli @ 60 NONAME ; CPbkContactEngine::DeleteContactGroupL(long, int)
+	DeleteContactL__17CPbkContactEngineli @ 61 NONAME ; CPbkContactEngine::DeleteContactL(long, int)
+	DeleteContactsL__17CPbkContactEngineRC15CContactIdArrayi @ 62 NONAME ; CPbkContactEngine::DeleteContactsL(CContactIdArray const &, int)
+	DeleteContactsOnBackgroundL__17CPbkContactEngineRC15CContactIdArray @ 63 NONAME ; CPbkContactEngine::DeleteContactsOnBackgroundL(CContactIdArray const &)
+	DoSynchronize__C13CPbkFieldInfo @ 64 NONAME ; CPbkFieldInfo::DoSynchronize(void) const
+	DuplicateContactL__17CPbkContactEngineli @ 65 NONAME ; CPbkContactEngine::DuplicateContactL(long, int)
+	EditMode__C13CPbkFieldInfo @ 66 NONAME ; CPbkFieldInfo::EditMode(void) const
+	Error__C14CPbkIdleFinder @ 67 NONAME ; CPbkIdleFinder::Error(void) const
+	ExternalizeL__C13CPbkFieldDataR12RWriteStream @ 68 NONAME ; CPbkFieldData::ExternalizeL(RWriteStream &) const
+	ExternalizeL__C18CPbkFieldDataArrayR12RWriteStream @ 69 NONAME ; CPbkFieldDataArray::ExternalizeL(RWriteStream &) const
+	FieldDef__C14CPbkIdleFinder @ 70 NONAME ; CPbkIdleFinder::FieldDef(void) const
+	FieldEditorLength__13CPbkConstants @ 71 NONAME ; CPbkConstants::FieldEditorLength(void)
+	FieldId__C13CPbkFieldInfo @ 72 NONAME ; CPbkFieldInfo::FieldId(void) const
+	FieldInfo__C20TPbkContactItemField @ 73 NONAME ; TPbkContactItemField::FieldInfo(void) const
+	FieldName__C13CPbkFieldInfo @ 74 NONAME ; CPbkFieldInfo::FieldName(void) const
+	FieldStorageType__C13CPbkFieldInfo @ 75 NONAME ; CPbkFieldInfo::FieldStorageType(void) const
+	FieldsInfo__17CPbkContactEngine @ 76 NONAME ; CPbkContactEngine::FieldsInfo(void)
+	FileName__C18CPbkAttachmentFile @ 77 NONAME ; CPbkAttachmentFile::FileName(void) const
+	File__18CPbkAttachmentFile @ 78 NONAME ; CPbkAttachmentFile::File(void)
+	FilteredContactsViewL__17CPbkContactEnginei @ 79 NONAME ; CPbkContactEngine::FilteredContactsViewL(int)
+	FindAndOpenResourceFileLC__11PbkEngUtilsR3RFsRC7TDesC16N22R13RResourceFile @ 80 NONAME ; PbkEngUtils::FindAndOpenResourceFileLC(RFs &, TDesC16 const &, TDesC16 const &, TDesC16 const &, RResourceFile &)
+	FindAsyncL__17CPbkContactEngineRC7TDesC16PC16CPbkFieldIdArrayP17MIdleFindObserver @ 81 NONAME ; CPbkContactEngine::FindAsyncL(TDesC16 const &, CPbkFieldIdArray const *, MIdleFindObserver *)
+	FindContactItemFieldIndex__C15CPbkContactItemRC17CContactItemField @ 82 NONAME ; CPbkContactItem::FindContactItemFieldIndex(CContactItemField const &) const
+	FindFieldIndex__C15CPbkContactItemRC20TPbkContactItemField @ 83 NONAME ; CPbkContactItem::FindFieldIndex(TPbkContactItemField const &) const
+	FindField__C14CPbkFieldsInfoRC12CContactItemi @ 84 NONAME ; CPbkFieldsInfo::FindField(CContactItem const &, int) const
+	FindField__C15CPbkContactItemRC13CPbkFieldInfo @ 85 NONAME ; CPbkContactItem::FindField(CPbkFieldInfo const &) const
+	FindField__C15CPbkContactItemRC13CPbkFieldInfoRi @ 86 NONAME ; CPbkContactItem::FindField(CPbkFieldInfo const &, int &) const
+	FindField__C15CPbkContactItemi @ 87 NONAME ; CPbkContactItem::FindField(int) const
+	FindField__C15CPbkContactItemiRi @ 88 NONAME ; CPbkContactItem::FindField(int, int &) const
+	FindLC__17CPbkContactEngineRC7TDesC16PC16CPbkFieldIdArray @ 89 NONAME ; CPbkContactEngine::FindLC(TDesC16 const &, CPbkFieldIdArray const *)
+	FindNextFieldWithPhoneNumber__C15CPbkContactItemRC7TDesC16iRi @ 90 NONAME ; CPbkContactItem::FindNextFieldWithPhoneNumber(TDesC16 const &, int, int &) const
+	FindNextFieldWithText__C15CPbkContactItemRC7TDesC16Ri @ 91 NONAME ; CPbkContactItem::FindNextFieldWithText(TDesC16 const &, int &) const
+	FindNodeWithViewId__C13CDigViewGraphG4TUid @ 92 NONAME ; CDigViewGraph::FindNodeWithViewId(TUid) const
+	__PbkEngine_DummyExport4__Fv @ 93 NONAME R3UNUSED ; __PbkEngine_DummyExport4(void)
+	FindSameField__C15CPbkContactItemRC20TPbkContactItemField @ 94 NONAME ; CPbkContactItem::FindSameField(TPbkContactItemField const &) const
+	FindText__C19CPbkContactFindView @ 95 NONAME ; CPbkContactFindView::FindText(void) const
+	FindTransition__C12CDigViewNodeRC18TDigViewTransition @ 96 NONAME ; CDigViewNode::FindTransition(TDigViewTransition const &) const
+	Find__C14CPbkFieldsInfoRC17CContactItemField @ 97 NONAME ; CPbkFieldsInfo::Find(CContactItemField const &) const
+	Find__C14CPbkFieldsInfoi @ 98 NONAME ; CPbkFieldsInfo::Find(int) const
+	Find__C14CPbkFieldsInfoi17TPbkFieldLocation @ 99 NONAME ; CPbkFieldsInfo::Find(int, TPbkFieldLocation) const
+	Find__C16CPbkContactIdSetl @ 100 NONAME ; CPbkContactIdSet::Find(long) const
+	FirstL__15CPbkContactIter @ 101 NONAME ; CPbkContactIter::FirstL(void)
+	Flags__C13CPbkFieldInfo @ 102 NONAME ; CPbkFieldInfo::Flags(void) const
+	Flush__14CPbkEntryCache @ 103 NONAME ; CPbkEntryCache::Flush(void)
+	FormEditorLength__13CPbkConstants @ 104 NONAME ; CPbkConstants::FormEditorLength(void)
+	GetContactIdArrayL__C16CPbkContactIdSet @ 105 NONAME ; CPbkContactIdSet::GetContactIdArrayL(void) const
+	GetContactTitleL__C15CPbkContactItem @ 106 NONAME ; CPbkContactItem::GetContactTitleL(void) const
+	GetContactTitleL__C17CPbkContactEngineRC15CPbkContactItem @ 107 NONAME ; CPbkContactEngine::GetContactTitleL(CPbkContactItem const &) const
+	GetContactTitleOrNullL__17CPbkContactEngineRC18MPbkFieldDataArray @ 108 NONAME ; CPbkContactEngine::GetContactTitleOrNullL(MPbkFieldDataArray const &)
+	GetContactTitleOrNullL__C15CPbkContactItem @ 109 NONAME ; CPbkContactItem::GetContactTitleOrNullL(void) const
+	GetCurrentL__C15CPbkContactIter @ 110 NONAME ; CPbkContactIter::GetCurrentL(void) const
+	GetEntryL__14CPbkEntryCachel @ 111 NONAME ; CPbkEntryCache::GetEntryL(long)
+	GetSpeedDialFieldL__C17CPbkContactEngineiR6TDes16 @ 112 NONAME ; CPbkContactEngine::GetSpeedDialFieldL(int, TDes16 &) const
+	GetTextL__C20TPbkContactItemFieldR6TDes16 @ 113 NONAME ; TPbkContactItemField::GetTextL(TDes16 &) const
+	GroupAt__C14CPbkFieldsInfoi @ 114 NONAME ; CPbkFieldsInfo::GroupAt(int) const
+	GroupCount__C14CPbkFieldsInfo @ 115 NONAME ; CPbkFieldsInfo::GroupCount(void) const
+	GroupLabelLength__13CPbkConstants @ 116 NONAME ; CPbkConstants::GroupLabelLength(void)
+	Group__C13CPbkFieldInfo @ 117 NONAME ; CPbkFieldInfo::Group(void) const
+	GroupsJoinedLC__C15CPbkContactItem @ 118 NONAME ; CPbkContactItem::GroupsJoinedLC(void) const
+	IconId__C13CPbkFieldInfo @ 119 NONAME ; CPbkFieldInfo::IconId(void) const
+	IconId__C18CPbkFieldInfoGroup @ 120 NONAME ; CPbkFieldInfoGroup::IconId(void) const
+	IconId__C20TPbkContactItemField @ 121 NONAME ; TPbkContactItemField::IconId(void) const
+	Id__C15CPbkContactItem @ 122 NONAME ; CPbkContactItem::Id(void) const
+	Id__C18CPbkFieldInfoGroup @ 123 NONAME ; CPbkFieldInfoGroup::Id(void) const
+	IdleFinder__C14CPbkIdleFinder @ 124 NONAME ; CPbkIdleFinder::IdleFinder(void) const
+	IndexOfFirstFindMatchL__C19CPbkContactFindView @ 125 NONAME R3UNUSED ; CPbkContactFindView::IndexOfFirstFindMatchL(void) const
+	InternalizeL__13CPbkFieldDataR11RReadStream @ 126 NONAME ; CPbkFieldData::InternalizeL(RReadStream &)
+	InternalizeL__18CPbkFieldDataArrayR11RReadStream @ 127 NONAME ; CPbkFieldDataArray::InternalizeL(RReadStream &)
+	IsComplete__C14CPbkIdleFinder @ 128 NONAME ; CPbkIdleFinder::IsComplete(void) const
+	IsDisabled__C13CPbkFieldInfo @ 129 NONAME ; CPbkFieldInfo::IsDisabled(void) const
+	IsEditable__C13CPbkFieldInfo @ 130 NONAME ; CPbkFieldInfo::IsEditable(void) const
+	IsEmptyOrAllSpaces__C20TPbkContactItemField @ 131 NONAME ; TPbkContactItemField::IsEmptyOrAllSpaces(void) const
+	IsEmpty__C20TPbkContactItemField @ 132 NONAME ; TPbkContactItemField::IsEmpty(void) const
+	IsHidden__C13CPbkFieldInfo @ 133 NONAME ; CPbkFieldInfo::IsHidden(void) const
+	IsHidden__C20TPbkContactItemField @ 134 NONAME ; TPbkContactItemField::IsHidden(void) const
+	IsImageField__C13CPbkFieldInfo @ 135 NONAME ; CPbkFieldInfo::IsImageField(void) const
+	IsMmsField__C13CPbkFieldInfo @ 136 NONAME ; CPbkFieldInfo::IsMmsField(void) const
+	IsPhoneNumberField__C13CPbkFieldInfo @ 137 NONAME ; CPbkFieldInfo::IsPhoneNumberField(void) const
+	IsReadOnly__C13CPbkFieldInfo @ 138 NONAME ; CPbkFieldInfo::IsReadOnly(void) const
+	IsSame__C13CPbkFieldInfoRC13CPbkFieldInfo @ 139 NONAME ; CPbkFieldInfo::IsSame(CPbkFieldInfo const &) const
+	IsSame__C20TPbkContactItemFieldRC20TPbkContactItemField @ 140 NONAME ; TPbkContactItemField::IsSame(TPbkContactItemField const &) const
+	IsSpeedDialAssigned__C17CPbkContactEngineRC15CPbkContactItemi @ 141 NONAME ; CPbkContactEngine::IsSpeedDialAssigned(CPbkContactItem const &, int) const
+	IsTitleField__C17CPbkContactEnginei @ 142 NONAME ; CPbkContactEngine::IsTitleField(int) const
+	ItemField__C20TPbkContactItemField @ 143 NONAME ; TPbkContactItemField::ItemField(void) const
+	Label__C18CPbkFieldInfoGroup @ 144 NONAME ; CPbkFieldInfoGroup::Label(void) const
+	Label__C20TPbkContactItemField @ 145 NONAME ; TPbkContactItemField::Label(void) const
+	Location__C13CPbkFieldInfo @ 146 NONAME ; CPbkFieldInfo::Location(void) const
+	MatchPhoneNumberL__17CPbkContactEngineRC7TDesC16i @ 147 NONAME ; CPbkContactEngine::MatchPhoneNumberL(TDesC16 const &, int)
+	Match__C13CPbkFieldInfoRC17CContactItemField @ 148 NONAME ; CPbkFieldInfo::Match(CContactItemField const &) const
+	Match__C13CPbkFieldInfoi @ 149 NONAME ; CPbkFieldInfo::Match(int) const
+	Match__C14CPbkFieldsInfoRC17MPbkVcardPropertyRC22TPbkMatchPriorityLevel @ 150 NONAME ; CPbkFieldsInfo::Match(MPbkVcardProperty const &, TPbkMatchPriorityLevel const &) const
+	MaxLength__C13CPbkFieldInfo @ 151 NONAME ; CPbkFieldInfo::MaxLength(void) const
+	MdcaCount__C23CPbkAttachmentFileArray @ 152 NONAME ; CPbkAttachmentFileArray::MdcaCount(void) const
+	MdcaPoint__C23CPbkAttachmentFileArrayi @ 153 NONAME ; CPbkAttachmentFileArray::MdcaPoint(int) const
+	Multiplicity__C13CPbkFieldInfo @ 154 NONAME ; CPbkFieldInfo::Multiplicity(void) const
+	NameField__C13CPbkFieldInfo @ 155 NONAME ; CPbkFieldInfo::NameField(void) const
+	NewLC__15CPbkContactItemP12CContactItemRC14CPbkFieldsInfoR21MPbkContactNameFormat @ 156 NONAME ; CPbkContactItem::NewLC(CContactItem *, CPbkFieldsInfo const &, MPbkContactNameFormat &)
+	NewLC__15CPbkContactIterR17CPbkContactEnginei @ 157 NONAME ; CPbkContactIter::NewLC(CPbkContactEngine &, int)
+	NewLC__16CPbkContactIdSet @ 158 NONAME ; CPbkContactIdSet::NewLC(void)
+	NewLC__16CPbkContactIdSetRC15CContactIdArray @ 159 NONAME R3UNUSED ; CPbkContactIdSet::NewLC(CContactIdArray const &)
+	NewLC__16CPbkContactIdSetRC16CPbkContactIdSet @ 160 NONAME R3UNUSED ; CPbkContactIdSet::NewLC(CPbkContactIdSet const &)
+	NewLC__18CPbkAttachmentFileRC7TDesC16R3RFsUi @ 161 NONAME ; CPbkAttachmentFile::NewLC(TDesC16 const &, RFs &, unsigned int)
+	NewL__13CDigViewGraphR15TResourceReader @ 162 NONAME R3UNUSED ; CDigViewGraph::NewL(TResourceReader &)
+	NewL__13CPbkConstantsR13RResourceFile @ 163 NONAME ; CPbkConstants::NewL(RResourceFile &)
+	NewL__13CPbkFieldDataR11RReadStream @ 164 NONAME ; CPbkFieldData::NewL(RReadStream &)
+	NewL__13CPbkFieldDataiRC5TTime @ 165 NONAME ; CPbkFieldData::NewL(int, TTime const &)
+	NewL__13CPbkFieldDataiRC7TDesC16 @ 166 NONAME ; CPbkFieldData::NewL(int, TDesC16 const &)
+	NewL__14CPbkEntryCacheR17CPbkContactEnginei @ 167 NONAME ; CPbkEntryCache::NewL(CPbkContactEngine &, int)
+	NewL__15CPbkContactItemP12CContactItemRC14CPbkFieldsInfoR21MPbkContactNameFormat @ 168 NONAME ; CPbkContactItem::NewL(CContactItem *, CPbkFieldsInfo const &, MPbkContactNameFormat &)
+	NewL__15CPbkContactIterR17CPbkContactEnginei @ 169 NONAME ; CPbkContactIter::NewL(CPbkContactEngine &, int)
+	NewL__16CPbkContactIdSet @ 170 NONAME ; CPbkContactIdSet::NewL(void)
+	NewL__16CPbkContactIdSetRC15CContactIdArray @ 171 NONAME R3UNUSED ; CPbkContactIdSet::NewL(CContactIdArray const &)
+	NewL__16CPbkContactIdSetRC16CPbkContactIdSet @ 172 NONAME R3UNUSED ; CPbkContactIdSet::NewL(CPbkContactIdSet const &)
+	NewL__17CPbkContactEngineP3RFs @ 173 NONAME ; CPbkContactEngine::NewL(RFs *)
+	NewL__17CPbkContactEngineRC7TDesC16iP3RFs @ 174 NONAME ; CPbkContactEngine::NewL(TDesC16 const &, int, RFs *)
+	NewL__18CPbkAttachmentFileRC7TDesC16R3RFsUi @ 175 NONAME ; CPbkAttachmentFile::NewL(TDesC16 const &, RFs &, unsigned int)
+	NewL__18CPbkContactSubViewR20MContactViewObserverRC16CContactDatabaseR16CContactViewBaseR19MPbkContactSelector @ 176 NONAME ; CPbkContactSubView::NewL(MContactViewObserver &, CContactDatabase const &, CContactViewBase &, MPbkContactSelector &)
+	NewL__18CPbkFieldDataArrayR11RReadStream @ 177 NONAME ; CPbkFieldDataArray::NewL(RReadStream &)
+	NewL__19CPbkContactFindViewR17CPbkContactEngineR16CContactViewBaseR20MContactViewObserverR18MPbkFindPrimitives @ 178 NONAME ; CPbkContactFindView::NewL(CPbkContactEngine &, CContactViewBase &, MContactViewObserver &, MPbkFindPrimitives &)
+	NewL__25CPbkContactChangeNotifierR17CPbkContactEngineP21MPbkContactDbObserver @ 179 NONAME ; CPbkContactChangeNotifier::NewL(CPbkContactEngine &, MPbkContactDbObserver *)
+	NextL__15CPbkContactIter @ 180 NONAME ; CPbkContactIter::NextL(void)
+	NextL__23TPbkContactViewIterator @ 181 NONAME ; TPbkContactViewIterator::NextL(void)
+	NumericField__C13CPbkFieldInfo @ 182 NONAME ; CPbkFieldInfo::NumericField(void) const
+	OpenContactGroupLCX__17CPbkContactEnginel @ 183 NONAME ; CPbkContactEngine::OpenContactGroupLCX(long)
+	OpenContactGroupL__17CPbkContactEnginel @ 184 NONAME ; CPbkContactEngine::OpenContactGroupL(long)
+	OpenContactLCX__17CPbkContactEnginel @ 185 NONAME ; CPbkContactEngine::OpenContactLCX(long)
+	OpenContactL__17CPbkContactEnginel @ 186 NONAME ; CPbkContactEngine::OpenContactL(long)
+	OrderingGroup__C13CPbkFieldInfo @ 187 NONAME ; CPbkFieldInfo::OrderingGroup(void) const
+	OrderingItem__C13CPbkFieldInfo @ 188 NONAME ; CPbkFieldInfo::OrderingItem(void) const
+	__PbkEngine_DummyExport6__Fv @ 189 NONAME R3UNUSED ; __PbkEngine_DummyExport6(void)
+	CreatePersistentSettingL__23PbkGlobalSettingFactory @ 190 NONAME R3UNUSED ; PbkGlobalSettingFactory::CreatePersistentSettingL(void)
+	CreateTransientSettingL__23PbkGlobalSettingFactoryi @ 191 NONAME R3UNUSED ; PbkGlobalSettingFactory::CreateTransientSettingL(int)
+	PbkFieldDisplayTextL__C13MPbkFieldDataR6TDes16RC7TDesC16 @ 192 NONAME ; MPbkFieldData::PbkFieldDisplayTextL(TDes16 &, TDesC16 const &) const
+	PbkFieldId__C13CPbkFieldData @ 193 NONAME ; CPbkFieldData::PbkFieldId(void) const
+	PbkFieldId__C20TPbkContactItemField @ 194 NONAME ; TPbkContactItemField::PbkFieldId(void) const
+	PbkFieldText__C13CPbkFieldData @ 195 NONAME ; CPbkFieldData::PbkFieldText(void) const
+	PbkFieldText__C20TPbkContactItemField @ 196 NONAME ; TPbkContactItemField::PbkFieldText(void) const
+	PbkFieldTime__C13CPbkFieldData @ 197 NONAME ; CPbkFieldData::PbkFieldTime(void) const
+	PbkFieldTime__C20TPbkContactItemField @ 198 NONAME ; TPbkContactItemField::PbkFieldTime(void) const
+	PbkFieldType__C13CPbkFieldData @ 199 NONAME ; CPbkFieldData::PbkFieldType(void) const
+	PbkFieldType__C20TPbkContactItemField @ 200 NONAME ; TPbkContactItemField::PbkFieldType(void) const
+	PreloadL__14CPbkEntryCachel @ 201 NONAME ; CPbkEntryCache::PreloadL(long)
+	NewL__18CPbkFieldDataArray @ 202 NONAME R3UNUSED ; CPbkFieldDataArray::NewL(void)
+	IsEmailField__C13CPbkFieldInfo @ 203 NONAME ;  CPbkFieldInfo::IsEmailField(void) const
+	PropertyName__C30TPbkFieldInfoExportTypeAdapter @ 204 NONAME ; TPbkFieldInfoExportTypeAdapter::PropertyName(void) const
+	PropertyParameters__C30TPbkFieldInfoExportTypeAdapter @ 205 NONAME ; TPbkFieldInfoExportTypeAdapter::PropertyParameters(void) const
+	ReadContactGroupL__17CPbkContactEnginel @ 206 NONAME ; CPbkContactEngine::ReadContactGroupL(long)
+	ReadContactLC__17CPbkContactEnginelPC16CPbkFieldIdArray @ 207 NONAME ; CPbkContactEngine::ReadContactLC(long, CPbkFieldIdArray const *)
+	ReadContactL__17CPbkContactEnginelPC16CPbkFieldIdArray @ 208 NONAME ; CPbkContactEngine::ReadContactL(long, CPbkFieldIdArray const *)
+	ReadMinimalContactLC__17CPbkContactEnginel @ 209 NONAME ; CPbkContactEngine::ReadMinimalContactLC(long)
+	Refresh__18CPbkContactSubView @ 210 NONAME ; CPbkContactSubView::Refresh(void)
+	Release__18CPbkAttachmentFile @ 211 NONAME ; CPbkAttachmentFile::Release(void)
+	RemoveBaseViewPreEventHandler__18CPbkContactSubViewR20MContactViewObserver @ 212 NONAME ; CPbkContactSubView::RemoveBaseViewPreEventHandler(MContactViewObserver &)
+	RemoveContactFromGroupL__17CPbkContactEnginell @ 213 NONAME ; CPbkContactEngine::RemoveContactFromGroupL(long, long)
+	__PbkEngine_DummyExport2__Fv @ 214 NONAME ; PbkSimEntryCopyFactory::CreateLC(CPbkSimEntry &, CPbkContactEngine &)
+	RemoveDefaultEmailField__15CPbkContactItem @ 215 NONAME ; CPbkContactItem::RemoveDefaultEmailField(void)
+	RemoveDefaultMmsField__15CPbkContactItem @ 216 NONAME ; CPbkContactItem::RemoveDefaultMmsField(void)
+	RemoveDefaultPhoneNumberField__15CPbkContactItem @ 217 NONAME ; CPbkContactItem::RemoveDefaultPhoneNumberField(void)
+	RemoveDefaultSmsField__15CPbkContactItem @ 218 NONAME ; CPbkContactItem::RemoveDefaultSmsField(void)
+	RemoveField__15CPbkContactItemi @ 219 NONAME ; CPbkContactItem::RemoveField(int)
+	RemoveSpeedDialFieldL__17CPbkContactEngineli @ 220 NONAME ; CPbkContactEngine::RemoveSpeedDialFieldL(long, int)
+	RemoveVoiceTagField__15CPbkContactItem @ 221 NONAME ; CPbkContactItem::RemoveVoiceTagField(void)
+	Remove__16CPbkContactIdSetRC15CContactIdArray @ 222 NONAME R3UNUSED ; CPbkContactIdSet::Remove(CContactIdArray const &)
+	Remove__16CPbkContactIdSetRC16CPbkContactIdSet @ 223 NONAME R3UNUSED ; CPbkContactIdSet::Remove(CPbkContactIdSet const &)
+	Remove__16CPbkContactIdSetl @ 224 NONAME ; CPbkContactIdSet::Remove(long)
+	ReplaceL__17CPbkContactEngineP3RFs @ 225 NONAME ; CPbkContactEngine::ReplaceL(RFs *)
+	ReserveL__16TPbkContactEntryP7HBufC16i @ 226 NONAME ; TPbkContactEntry::ReserveL(HBufC16 *, int)
+	ResetAndDestroyPushL__18CPbkFieldDataArray @ 227 NONAME ; CPbkFieldDataArray::ResetAndDestroyPushL(void)
+	__PbkEngine_DummyExport5__Fv @ 228 NONAME R3UNUSED ; __PbkEngine_DummyExport5(void)
+	ResetFind__19CPbkContactFindView @ 229 NONAME ; CPbkContactFindView::ResetFind(void)
+	Reset__15CPbkContactIter @ 230 NONAME ; CPbkContactIter::Reset(void)
+	RingingTonePreviewDelay__13CPbkConstants @ 231 NONAME ; CPbkConstants::RingingTonePreviewDelay(void)
+	SearchFieldLength__13CPbkConstants @ 232 NONAME ; CPbkConstants::SearchFieldLength(void)
+	SetCompressUi__17CPbkContactEngineP14MPbkCompressUi @ 233 NONAME ; CPbkContactEngine::SetCompressUi(MPbkCompressUi *)
+	SetContactSelector__18CPbkContactSubViewR19MPbkContactSelector @ 234 NONAME ; CPbkContactSubView::SetContactSelector(MPbkContactSelector &)
+	SetDefaultEmailFieldL__15CPbkContactItemP20TPbkContactItemField @ 235 NONAME ; CPbkContactItem::SetDefaultEmailFieldL(TPbkContactItemField *)
+	SetDefaultMmsFieldL__15CPbkContactItemP20TPbkContactItemField @ 236 NONAME ; CPbkContactItem::SetDefaultMmsFieldL(TPbkContactItemField *)
+	SetDefaultPhoneNumberFieldL__15CPbkContactItemP20TPbkContactItemField @ 237 NONAME ; CPbkContactItem::SetDefaultPhoneNumberFieldL(TPbkContactItemField *)
+	SetDefaultSmsFieldL__15CPbkContactItemP20TPbkContactItemField @ 238 NONAME ; CPbkContactItem::SetDefaultSmsFieldL(TPbkContactItemField *)
+	SetFieldAsSpeedDialL__17CPbkContactEngineR15CPbkContactItemii @ 239 NONAME ; CPbkContactEngine::SetFieldAsSpeedDialL(CPbkContactItem &, int, int)
+	BreakInWordsLC__11PbkEngUtilsRC7TDesC16PFG5TChar_i @ 240 NONAME R3UNUSED ; PbkEngUtils::BreakInWordsLC(TDesC16 const &, int (*)(TChar))
+	SetFindTextL__19CPbkContactFindViewRC7TDesC16PC15CContactIdArray @ 241 NONAME ; CPbkContactFindView::SetFindTextL(TDesC16 const &, CContactIdArray const *)
+	SetHidden__20TPbkContactItemFieldi @ 242 NONAME ; TPbkContactItemField::SetHidden(int)
+	SetLabelL__20TPbkContactItemFieldRC7TDesC16 @ 243 NONAME ; TPbkContactItemField::SetLabelL(TDesC16 const &)
+	SetVoiceTagFieldL__15CPbkContactItemP20TPbkContactItemField @ 244 NONAME ; CPbkContactItem::SetVoiceTagFieldL(TPbkContactItemField *)
+	Set__20TPbkContactItemFieldP17CContactItemFieldP13CPbkFieldInfo @ 245 NONAME ; TPbkContactItemField::Set(CContactItemField *, CPbkFieldInfo *)
+	SpeedDialIndexesL__C20TPbkContactItemField @ 246 NONAME ; TPbkContactItemField::SpeedDialIndexesL(void) const
+	Static__17CPbkContactEngine @ 247 NONAME ; CPbkContactEngine::Static(void)
+	StorageType__C20TPbkContactItemField @ 248 NONAME ; TPbkContactItemField::StorageType(void) const
+	SwitchDriveL__18CPbkAttachmentFile @ 249 NONAME ; CPbkAttachmentFile::SwitchDriveL(void)
+	TakeContactIds__14CPbkIdleFinder @ 250 NONAME ; CPbkIdleFinder::TakeContactIds(void)
+	TemplateField__C13CPbkFieldInfo @ 251 NONAME ; CPbkFieldInfo::TemplateField(void) const
+	TextStorage__C20TPbkContactItemField @ 252 NONAME ; TPbkContactItemField::TextStorage(void) const
+	Text__C13CPbkFieldData @ 253 NONAME ; CPbkFieldData::Text(void) const
+	Text__C20TPbkContactItemField @ 254 NONAME ; TPbkContactItemField::Text(void) const
+	ThumbnailPopupDelay__13CPbkConstants @ 255 NONAME ; CPbkConstants::ThumbnailPopupDelay(void)
+	Time__C13CPbkFieldData @ 256 NONAME ; CPbkFieldData::Time(void) const
+	Time__C20TPbkContactItemField @ 257 NONAME ; TPbkContactItemField::Time(void) const
+	Type__C15CPbkContactItem @ 258 NONAME ; CPbkContactItem::Type(void) const
+	UniqueFieldIdentity__C20TPbkContactItemField @ 259 NONAME ; TPbkContactItemField::UniqueFieldIdentity(void) const
+	Unload__14CPbkEntryCachel @ 260 NONAME ; CPbkEntryCache::Unload(long)
+	UnnamedTitle__C13CPbkConstants @ 261 NONAME ; CPbkConstants::UnnamedTitle(void) const
+	UnnamedTitle__C17CPbkContactEngine @ 262 NONAME ; CPbkContactEngine::UnnamedTitle(void) const
+	UpdateFieldSetL__15CPbkContactItemRC14CPbkFieldsInfo @ 263 NONAME ; CPbkContactItem::UpdateFieldSetL(CPbkFieldsInfo const &)
+	UserCanAddField__C13CPbkFieldInfo @ 264 NONAME ; CPbkFieldInfo::UserCanAddField(void) const
+	VersitStorageType__C13CPbkFieldInfo @ 265 NONAME ; CPbkFieldInfo::VersitStorageType(void) const
+	VoiceTagField__C15CPbkContactItem @ 266 NONAME ; CPbkContactItem::VoiceTagField(void) const
+	"_._12CDigViewNode" @ 267 NONAME ; CDigViewNode::~CDigViewNode(void)
+	"_._13CDigViewGraph" @ 268 NONAME ; CDigViewGraph::~CDigViewGraph(void)
+	"_._23CPbkAttachmentFileArray" @ 269 NONAME ; CPbkAttachmentFileArray::~CPbkAttachmentFileArray(void)
+	__PbkEngine_DummyExport3__Fv @ 270 NONAME R3UNUSED ; __PbkEngine_DummyExport3(void)
+	"_._30TPbkFieldInfoExportTypeAdapter" @ 271 NONAME ; TPbkFieldInfoExportTypeAdapter::~TPbkFieldInfoExportTypeAdapter(void)
+	__20TPbkContactItemField @ 272 NONAME ; TPbkContactItemField::TPbkContactItemField(void)
+	__20TPbkContactItemFieldP17CContactItemFieldP13CPbkFieldInfo @ 273 NONAME ; TPbkContactItemField::TPbkContactItemField(CContactItemField *, CPbkFieldInfo *)
+	__23CPbkAttachmentFileArrayi @ 274 NONAME ; CPbkAttachmentFileArray::CPbkAttachmentFileArray(int)
+	__30TPbkFieldInfoExportTypeAdapterRC13CPbkFieldInfo @ 275 NONAME ; TPbkFieldInfoExportTypeAdapter::TPbkFieldInfoExportTypeAdapter(CPbkFieldInfo const &)
+	__DbgTestInvariant__C15CPbkContactItem @ 276 NONAME ; CPbkContactItem::__DbgTestInvariant(void) const
+	__DbgTestInvariant__C15CPbkContactIter @ 277 NONAME ; CPbkContactIter::__DbgTestInvariant(void) const
+	__DbgTestInvariant__C16CPbkContactIdSet @ 278 NONAME ; CPbkContactIdSet::__DbgTestInvariant(void) const
+	IsReadingField__C13CPbkFieldInfo @ 279 NONAME R3UNUSED ; CPbkFieldInfo::IsReadingField(void) const
+	__DebugPrint__FRC13CPbkFieldInfo @ 280 NONAME ; __DebugPrint(CPbkFieldInfo const &)
+	__DebugPrint__FRC17CContactItemField @ 281 NONAME ; __DebugPrint(CContactItemField const &)
+	__eq__FRC15CPbkContactItemT0 @ 282 NONAME ; operator==(CPbkContactItem const &, CPbkContactItem const &)
+	__eq__FRC20TPbkContactItemFieldT0 @ 283 NONAME ; operator==(TPbkContactItemField const &, TPbkContactItemField const &)
+	AddBaseViewPreEventHandlerL__18CPbkContactSubViewR20MContactViewObserver @ 284 NONAME ; CPbkContactSubView::AddBaseViewPreEventHandlerL(MContactViewObserver &)
+	AddItemOrdering__C18CPbkFieldInfoGroup @ 285 NONAME ; CPbkFieldInfoGroup::AddItemOrdering(void) const
+	CountSpaces__11PbkEngUtilsRC7TDesC16 @ 286 NONAME ; PbkEngUtils::CountSpaces(TDesC16 const &)
+	AddToFieldDefL__C13CPbkFieldInfoR20CContactItemFieldDef @ 287 NONAME ; CPbkFieldInfo::AddToFieldDefL(CContactItemFieldDef &) const
+	AddToViewDefL__C13CPbkFieldInfoR19CContactItemViewDef @ 288 NONAME ; CPbkFieldInfo::AddToViewDefL(CContactItemViewDef &) const
+	CreateContactItemFieldDefLC__C14CPbkFieldsInfoPC16CPbkFieldIdArray @ 289 NONAME ; CPbkFieldsInfo::CreateContactItemFieldDefLC(CPbkFieldIdArray const *) const
+	CreateContactItemViewDefLC__C14CPbkFieldsInfoRC16CPbkFieldIdArray @ 290 NONAME ; CPbkFieldsInfo::CreateContactItemViewDefLC(CPbkFieldIdArray const &) const
+	AddItemText__C13CPbkFieldInfo @ 291 NONAME ; CPbkFieldInfo::AddItemText(void) const
+	TrimRightAppend__11PbkEngUtilsRC7TDesC16R6TDes16 @ 292 NONAME R3UNUSED ; PbkEngUtils::TrimRightAppend(TDesC16 const &, TDes16 &)
+	TrimRightLength__11PbkEngUtilsRC7TDesC16 @ 293 NONAME R3UNUSED ; PbkEngUtils::TrimRightLength(TDesC16 const &)
+	DefaultEmailOverSmsField__C15CPbkContactItem @ 294 NONAME R3UNUSED ; CPbkContactItem::DefaultEmailOverSmsField(void) const
+	DefaultEmailOverSmsField__C20TPbkContactItemField @ 295 NONAME R3UNUSED ; TPbkContactItemField::DefaultEmailOverSmsField(void) const
+	IsEmailOverSmsField__C13CPbkFieldInfo @ 296 NONAME R3UNUSED ; CPbkFieldInfo::IsEmailOverSmsField(void) const
+	RemoveDefaultEmailOverSmsField__15CPbkContactItem @ 297 NONAME R3UNUSED ; CPbkContactItem::RemoveDefaultEmailOverSmsField(void)
+	SetDefaultEmailOverSmsFieldL__15CPbkContactItemP20TPbkContactItemField @ 298 NONAME R3UNUSED ; CPbkContactItem::SetDefaultEmailOverSmsFieldL(TPbkContactItemField *)
+	DefaultVideoNumberField__C15CPbkContactItem @ 299 NONAME R3UNUSED ; CPbkContactItem::DefaultVideoNumberField(void) const
+	DefaultVideoNumberField__C20TPbkContactItemField @ 300 NONAME R3UNUSED ; TPbkContactItemField::DefaultVideoNumberField(void) const
+	RemoveDefaultVideoNumberField__15CPbkContactItem @ 301 NONAME R3UNUSED ; CPbkContactItem::RemoveDefaultVideoNumberField(void)
+	SetDefaultVideoNumberFieldL__15CPbkContactItemP20TPbkContactItemField @ 302 NONAME R3UNUSED ; CPbkContactItem::SetDefaultVideoNumberFieldL(TPbkContactItemField *)
+	AddToPhonebookL__15CPbkEntryCopierR15CPbkContactItem @ 303 NONAME R3UNUSED ; CPbkEntryCopier::AddToPhonebookL(CPbkContactItem &)
+	NewL__15CPbkEntryCopierR17CPbkContactEngineR21MPbkEntryCopyObserver @ 304 NONAME R3UNUSED ; CPbkEntryCopier::NewL(CPbkContactEngine &, MPbkEntryCopyObserver &)
+	"_._29TPbkViewContactFieldDataArray" @ 305 NONAME R3UNUSED ; TPbkViewContactFieldDataArray::~TPbkViewContactFieldDataArray(void)
+	AddContactL__18CPbkContactSubViewl @ 306 NONAME R3UNUSED ; CPbkContactSubView::AddContactL(long)
+	RemoveContact__18CPbkContactSubViewl @ 307 NONAME R3UNUSED ; CPbkContactSubView::RemoveContact(long)
+	NewLC__18CPbkDeleteContactsR17CPbkContactEngineRC15CContactIdArray @ 308 NONAME ; CPbkDeleteContacts::NewLC(CPbkContactEngine &, CContactIdArray const &)
+	CheckFileSystemSpaceAndCompressL__17CPbkContactEngine @ 309 NONAME ; CPbkContactEngine::CheckFileSystemSpaceAndCompressL(void)
+	NewLC__17CPbkAssignToGroupR17CPbkContactEngineRC15CContactIdArrayl @ 310 NONAME R3UNUSED ; CPbkAssignToGroup::NewLC(CPbkContactEngine &, CContactIdArray const &, long)
+	NewLC__19CPbkRemoveFromGroupR17CPbkContactEngineRC15CContactIdArrayl @ 311 NONAME R3UNUSED ; CPbkRemoveFromGroup::NewLC(CPbkContactEngine &, CContactIdArray const &, long)
+	IsEqualTo__C13CPbkFieldInfoRC17CContactItemField @ 312 NONAME R3UNUSED ; CPbkFieldInfo::IsEqualTo(CContactItemField const &) const
+	FsSession__C17CPbkContactEngine @ 313 NONAME R3UNUSED ; CPbkContactEngine::FsSession(void) const
+	ContactTitleL__C28CPbkViewContactNameFormatterRC12CViewContactRC21RContactViewSortOrder @ 314 NONAME R3UNUSED ; CPbkViewContactNameFormatter::ContactTitleL(CViewContact const &, RContactViewSortOrder const &) const
+	NewL__28CPbkViewContactNameFormatterR21MPbkContactNameFormat @ 315 NONAME R3UNUSED ; CPbkViewContactNameFormatter::NewL(MPbkContactNameFormat &)
+	ReplaceNonGraphicCharacters__11PbkEngUtilsR6TDes16Us @ 316 NONAME R3UNUSED ; PbkEngUtils::ReplaceNonGraphicCharacters(TDes16 &, unsigned short)
+	AppendGraphicCharacters__11PbkEngUtilsR6TDes16RC7TDesC16Us @ 317 NONAME R3UNUSED ; PbkEngUtils::AppendGraphicCharacters(TDes16 &, TDesC16 const &, unsigned short)
+	NewL__14CPbkDbRecoveryR16CContactDatabase @ 318 NONAME R3UNUSED ; CPbkDbRecovery::NewL(CContactDatabase &)
+	SetErrorHandler__14CPbkDbRecoveryP24MPbkRecoveryErrorHandler @ 319 NONAME R3UNUSED ; CPbkDbRecovery::SetErrorHandler(MPbkRecoveryErrorHandler *)
+	__29TPbkViewContactFieldDataArrayRC12CViewContactRC21RContactViewSortOrder @ 320 NONAME R3UNUSED ; TPbkViewContactFieldDataArray::TPbkViewContactFieldDataArray(CViewContact const &, RContactViewSortOrder const &)
+	AllocL__11PbkEngUtilsP7HBufC16i @ 321 NONAME R3UNUSED ; PbkEngUtils::AllocL(HBufC16 *, int)
+	CopyL__11PbkEngUtilsP7HBufC16RC7TDesC16i @ 322 NONAME R3UNUSED ; PbkEngUtils::CopyL(HBufC16 *, TDesC16 const &, int)
+	TrimAllAppend__11PbkEngUtilsRC7TDesC16R6TDes16 @ 323 NONAME R3UNUSED ; PbkEngUtils::TrimAllAppend(TDesC16 const &, TDes16 &)
+	TrimAllLength__11PbkEngUtilsRC7TDesC16 @ 324 NONAME R3UNUSED ; PbkEngUtils::TrimAllLength(TDesC16 const &)
+	ModifyViewGraphL__13CDigViewGraphR15TResourceReader @ 325 NONAME R3UNUSED ; CDigViewGraph::ModifyViewGraphL(TResourceReader &)
+	SetNameDisplayOrderL__17CPbkContactEngineQ217CPbkContactEngine13TPbkNameOrder @ 326 NONAME R3UNUSED ; CPbkContactEngine::SetNameDisplayOrderL(CPbkContactEngine::TPbkNameOrder)
+	NameDisplayOrderL__17CPbkContactEngine @ 327 NONAME R3UNUSED ; CPbkContactEngine::NameDisplayOrderL(void)
+	Constants__17CPbkContactEngine @ 328 NONAME R3UNUSED ; CPbkContactEngine::Constants(void)
+	LocallyVariatedFeatureEnabled__13CPbkConstants21TPbkLocalVariantFlags @ 329 NONAME R3UNUSED ; CPbkConstants::LocallyVariatedFeatureEnabled(TPbkLocalVariantFlags)
+	IsPocField__C13CPbkFieldInfo @ 330 NONAME R3UNUSED ; CPbkFieldInfo::IsPocField(void) const
+	DefaultPocField__C20TPbkContactItemField @ 331 NONAME R3UNUSED ; TPbkContactItemField::DefaultPocField(void) const
+	DefaultPocField__C15CPbkContactItem @ 332 NONAME R3UNUSED ; CPbkContactItem::DefaultPocField(void) const
+	RemoveDefaultPocField__15CPbkContactItem @ 333 NONAME R3UNUSED ; CPbkContactItem::RemoveDefaultPocField(void)
+	SetDefaultPocFieldL__15CPbkContactItemP20TPbkContactItemField @ 334 NONAME R3UNUSED ; CPbkContactItem::SetDefaultPocFieldL(TPbkContactItemField *)
+	CodFieldIdL__C12CPbkCodFieldl @ 335 NONAME R3UNUSED ; CPbkCodField::CodFieldIdL(long) const
+	CodFieldId__C12CPbkCodFieldR15CPbkContactItem @ 336 NONAME R3UNUSED ; CPbkCodField::CodFieldId(CPbkContactItem &) const
+	GetTextL__C12CPbkCodFieldl @ 337 NONAME R3UNUSED ; CPbkCodField::GetTextL(long) const
+	NewL__12CPbkCodFieldR17CPbkContactEngine @ 338 NONAME R3UNUSED ; CPbkCodField::NewL(CPbkContactEngine &)
+

@@ -1,0 +1,39 @@
+/*
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Build information file for Remote Contact Lookup Service
+*
+*/
+
+
+PRJ_PLATFORMS
+WINSCW ARMV5
+
+#include <platform_paths.hrh>
+#include "../engine/group/bld.inf"
+#include "../settingplugin/group/bld.inf"
+#include "../contactactionservice/group/bld.inf" 
+#include "../contactactionmenu/group/bld.inf"    
+
+PRJ_EXPORTS
+../loc/phonebook2rcl.loc APP_LAYER_LOC_EXPORT_PATH(phonebook2rcl.loc)
+../rom/pbk2remotecontactlookup.iby          CORE_APP_LAYER_IBY_EXPORT_PATH(pbk2remotecontactlookup.iby)
+../rom/pbk2remotecontactlookupresources.iby CORE_APP_LAYER_IBY_EXPORT_PATH(pbk2remotecontactlookupresources.iby)
+
+// Generic configuration interface for component cenrep settings  
+// component_1000292B implementation specifics for cenrep data
+../conf/fscremotecontactlookup.confml       	APP_LAYER_CONFML(fscremotecontactlookup.confml)
+../conf/fscremotecontactlookup_2001F3FE.crml 	APP_LAYER_CRML(fscremotecontactlookup_2001F3FE.crml)
+
+PRJ_MMPFILES
+

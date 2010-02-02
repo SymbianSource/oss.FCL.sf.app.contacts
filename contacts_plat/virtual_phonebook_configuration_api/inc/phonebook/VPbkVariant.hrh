@@ -1,0 +1,140 @@
+/*
+* Copyright (c) 2004-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Local variation flags for Virtual Phonebook
+*
+*/
+
+
+#ifndef VPBKVARIANT_HRH
+#define VPBKVARIANT_HRH
+
+
+// DATA TYPES
+
+/**
+ * Local variation flags for Virtual Phonebook.
+ */
+enum TVPbkLocalVariantFlags
+    {
+    /**
+ 	 * Multiple vCard sending over Bluetooth and Infrared.
+     */
+    EVPbkLVMultipleVCardOverBTAndIR = 0x00000001,
+
+    /**
+	 * Contact info view sideways navigation.
+     */
+	EVPbkLVContactInfoViewNavigation = 0x00000002,
+
+    /**
+	 * Send selected contact fields in vCard.
+     */
+	EVPbkLVSendSelectedContactFields = 0x00000004,
+
+    /**
+	 * Add Nick Name field to Phonebook fields.
+     */
+	EVPbkLVAddNickNameField = 0x00000008,
+
+    /**
+	 * Add Video Telephony fields to Phonebook fields.
+     */
+	EVPbkLVAddVideoTelephonyFields = 0x00000010,
+
+    /**
+     * Enable Phonebook to be sent to the background up on exit.
+     */
+	EVPbkLVAlwaysOnPhonebook = 0x00000020,
+
+    /**
+     * Enable launch of Speed Dial application from names list.
+     */
+	EVPbkLVAllowOpen1Touch = 0x00000040,
+
+    /**
+     * Enable check for duplicate entry when saving edited contact.
+     */
+	EVPbkLVCheckDuplicateEntry = 0x00000080,
+
+    /**
+     * Add support for generic SIP field
+     */
+	EVPbkLVAddSIPFields = 0x00000100,
+
+    /**
+     * Add MDO(prefix&suffix) fields to Phonebook fields.
+     */
+	EVPbkLVAddMDOFields = 0x00000200,
+
+    /**
+     * Enable Adn when FDN is on.
+     */
+	EVPbkLVEnableAdnWhenFdnOn = 0x00000400,
+
+     /**
+      * Group management, send option available in group list
+      */
+	EVPbkLVGroupManagementSend = 0x00000800,
+
+     /**
+      * Support for POC/PTT (Push To Talk Over Cellular) fields
+      */
+	EVPbkLVPOC = 0x00001000,
+
+	/**
+     * Use UTF-8 charset instead of Shift-JIS in Japanese
+     */
+	EVPbkLVUseJapaneseUTF8 = 0x00002000,
+
+    /**
+     * Add MegaOperator fields to Phonebook fields.
+     */
+    EVPbkLVMegaOperatorFields = 0x00004000,
+
+    /**
+     * Make postal code editor alphanumeric by default.
+     */
+    EVPbkLVPostalFieldAlphaDefault = 0x00008000,
+
+    /**
+     * Add Pager field to the entry template.
+     */
+    EVPbkLVPagerInTemplate = 0x00010000,
+
+    /**
+     * Enable Middle softkey (MSK) in Phonebook.
+     */
+    EVPbkLVEnableMiddleSoftKey = 0x00020000,
+
+    /**
+     * Support for Share View/SWIS(See What I See) fields
+     */
+    EVPbkLVShareView = 0x00040000,
+
+    /**
+     * Support for VOIP (Voice Over Internet Protocol) fields
+     * Remeber that there is also a platform wide flag KFeatureIdCommonVoip.
+     */
+    EVPbkLVVOIP = 0x00080000,
+
+    /**
+     * Show email addresses in Send Message address selection.
+     */
+    EVPbkLVShowEmailInSendMsg = 0x00100000
+	};
+
+
+#endif // VPBKVARIANT_HRH
+
+// End of File

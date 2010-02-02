@@ -1,0 +1,79 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*       
+*
+*/
+
+#include <platform_paths.hrh>
+
+TARGET                          cmsserver.exe
+TARGETTYPE                      exe
+UID                             0 0x2000B164
+CAPABILITY                      ALL -TCB -NetworkServices -NetworkControl -AllFiles -Drm
+VENDORID                        VID_DEFAULT
+
+START RESOURCE                  ../data/cmsserver.rss
+HEADER
+TARGETPATH                      resource/cms
+END 
+
+SOURCEPATH                      ../src
+SOURCE                          cmsserver.cpp
+SOURCE                          cmsservermain.cpp
+SOURCE                          cmsserverutils.cpp
+SOURCE                          cmsnotifyevent.cpp
+SOURCE                          cmsserversession.cpp
+SOURCE                          cmsservercontact.cpp
+SOURCE                          cmsphonebookproxy.cpp
+SOURCE                          cmsserverasynccontact.cpp
+SOURCE                          cmsserverxspcontacthandler.cpp 
+SOURCE							cmsfindlinkedcontact.cpp 
+
+USERINCLUDE                     ../inc
+USERINCLUDE                     ../../inc
+USERINCLUDE                     ../../../inc
+USERINCLUDE                     ../../../bpas/inc
+USERINCLUDE                     ../../../presencetrafficlights/inc
+
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY                         bpas.lib
+LIBRARY                         ecom.lib
+LIBRARY                         bafl.lib
+LIBRARY                         estor.lib
+LIBRARY                         efsrv.lib
+LIBRARY             	        euser.lib
+LIBRARY                         fbscli.lib
+LIBRARY                         FeatMgr.lib
+LIBRARY							vpbkeng.lib
+LIBRARY							CommonEngine.lib
+LIBRARY                         presencecacheutils.lib
+LIBRARY                         presencecacheclient2.lib
+LIBRARY                         Pbk2Presentation.lib // nameformatter
+LIBRARY					        serviceprovidersettings.lib
+LIBRARY                         presencetrafficlights.lib
+LIBRARY                         imcm.lib 
+
+LIBRARY	 rcse.lib
+
+// For debug libraries
+DEBUGLIBRARY                    flogger.lib
+
+// XspId support in Phonebook
+MACRO _IMPP_SUPPORTED
+
+EPOCSTACKSIZE                   0xFA00
+
+

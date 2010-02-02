@@ -1,0 +1,44 @@
+;
+; Copyright (c) 2002 - 2007 Nokia Corporation and/or its subsidiary(-ies).
+; All rights reserved.
+; This component and the accompanying materials are made available
+; under the terms of "Eclipse Public License v1.0"
+; which accompanies this distribution, and is available
+; at the URL "http://www.eclipse.org/legal/epl-v10.html".
+;
+; Initial Contributors:
+; Nokia Corporation - initial contribution.
+;
+; Contributors:
+;
+; Description:  STIF test module for testing VirtualPhonebook Policy API
+;
+
+
+; Supported languages
+&en
+
+; Package header (one name for each supported language)
+#{"T_VPbkPolicyApi"},(0x101FB6F3),0,10,0
+
+; Language-specific vendors
+%{"Nokia"}
+
+; Global vendor
+:"Nokia"
+
+; Package signature
+
+; Options line not supported currently
+
+; Conditions blocks not supported currently
+
+; Language independent files that are always installed
+"\epoc32\release\armv5\urel\T_VPbkPolicyApi.dll"-"!:\sys\bin\T_VPbkPolicyApi.dll"
+
+; Language dependent files
+
+; PRJ_TESTEXPORTS
+ 
+"..\conf\T_VPbkPolicyApi.cfg"-"!:\TestFramework\T_VPbkPolicyApi.cfg"
+"..\init\T_VPbkPolicyApi.ini"-"!:\TestFramework\T_VPbkPolicyApi.ini"

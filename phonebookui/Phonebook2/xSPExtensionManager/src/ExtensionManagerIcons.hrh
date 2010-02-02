@@ -1,0 +1,32 @@
+/*
+* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Extension Manager icon definitions
+*
+*/
+
+
+#ifndef __EXTENSIONMANAGERICONS_HRH__
+#define __EXTENSIONMANAGERICONS_HRH__
+
+// INCLUDE
+#include <ExtensionManager.mbg>
+
+//  MACROS
+
+#define qgn_empty_tab	             	EMbmExtensionmanagerEmpty_tab
+#define qgn_empty_tab_mask	     	EMbmExtensionmanagerEmpty_tab_mask
+
+#endif // __EXTENSIONMANAGERICONS_HRH__
+
+// End of File

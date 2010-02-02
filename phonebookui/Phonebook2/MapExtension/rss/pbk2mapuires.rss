@@ -1,0 +1,152 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Map extension resources.
+*
+*/
+
+// Phonebook 2
+#include "pbk2mapuiuid.h"
+#include "pbk2mapcommands.hrh"
+#include <Pbk2Commands.hrh>
+#include <Pbk2Commands.rsg>
+#include <Pbk2UIExtension.rh>
+#include <Pbk2ViewId.hrh>
+#include <phonebook2.loc>
+#include "Pbk2UIControls.hrh"
+#include <Pbk2UIControls.rsg>
+#include "Pbk2EditorLineIds.hrh" 
+#include "Pbk2FieldProperty.hrh" 
+#include "Pbk2UIFieldProperty.hrh"
+#include "Pbk2UIFieldProperty.rh"
+#include <Pbk2IconId.rh>
+#include <phonebook2ece.loc>
+#include <Pbk2UID.h>
+
+// AIW
+#include <AiwCommon.rh>
+
+// System includes
+#include <avkon.loc>
+#include <uikon.rh>
+#include <eikon.rh>
+#include <avkon.rh>
+#include <avkon.rsg>
+#include <avkon.mbg>
+#include <AvkonIcons.hrh>
+
+// --------------------------------------------------------------------------
+// Resource identifier
+// --------------------------------------------------------------------------
+//
+NAME P2MA  // From Phonebook 2 Map UI
+
+// --------------------------------------------------------------------------
+// Standard resource signature
+// --------------------------------------------------------------------------
+//
+RESOURCE RSS_SIGNATURE { }
+
+// --------------------------------------------------------------------------
+// Extension information
+// --------------------------------------------------------------------------
+//
+RESOURCE PHONEBOOK2_EXTENSION_INFORMATION 
+        r_phonebook2_map_ui_extension_information
+    {
+    version = 0;
+
+    implementationUid = KPbk2MapExtensionImplementationUID;
+
+    loadingPolicy = KPbk2LoadInStartup;
+    
+    menuCommandRange = PHONEBOOK2_EXTENSION_RANGE
+        {
+        firstId = EMapExtensionFirstCommand;
+        lastId = EMapExtensionLastCommand;
+        };
+    overwrittenCommands = {};
+    extensionMenus = {};
+    viewIds = {};
+    iconArrays = {};
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// Resource for assign from map field in address editor
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_address_editor_assign_from_map
+    { 
+    buf = qtn_phob_address_editor_assign_from_map; 
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_note_address_updated
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_address_updated
+    {
+    buf = qtn_phob_note_address_updated;
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_confirm_change_address
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_confirm_change_address
+    {
+    buf = qtn_phob_confirm_change_address;
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// r_qtn_phob_no_address_define_new
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_no_address_define_new
+    {
+    buf = qtn_phob_no_address_define_new;
+    }
+
+// --------------------------------------------------------------------------
+// Assign from maps line
+// --------------------------------------------------------------------------
+//
+RESOURCE DLG_LINE r_pbk2_assign_from_maps_line  
+    {
+    type = EPbk2FieldCtrlTypeExtAssignFromMapsEditor; 
+    prompt = qtn_phob_nokia_maps;
+    id = EPbk2EditorLineAssignFromMaps; 
+    itemflags = EEikDlgItemTakesEnterKey |
+                EEikDlgItemOfferAllHotKeys;
+    control = EDWIN
+        {
+        flags = EEikEdwinNoAutoSelection |
+                EEikEdwinNoWrap |
+                EEikEdwinNoHorizScrolling |
+                EEikEdwinReadOnly |
+                EEikEdwinAvkonNotEditable |
+                EEikEdwinAvkonDisableCursor;
+        maxlength = 50; 
+        lines = 1;
+        max_view_height_in_lines = 1;
+        avkon_flags = EAknEditorFlagDefault |
+                      EAknEditorFlagNoEditIndicators |
+                      EAknEditorFlagNoLRNavigation;
+        };
+    }
+
+// End of File
