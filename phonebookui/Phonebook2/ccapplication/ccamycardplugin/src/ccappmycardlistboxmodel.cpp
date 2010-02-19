@@ -405,9 +405,15 @@ void CCCAppMyCardListBoxModel::HandleDateTimeTypeFieldL(
 // CCCAppMyCardListBoxModel::HandleUriTypeFieldL
 // ---------------------------------------------------------------------------
 //
-void CCCAppMyCardListBoxModel::HandleUriTypeFieldL(TInt /*aIndex*/,
+void CCCAppMyCardListBoxModel::HandleUriTypeFieldL(TInt aIndex,
         const MVPbkContactFieldData& aFieldData, CCCAppMyCardListBoxRow* aRow)
     {
+    TBool isXspField = IsFieldTypeL( aIndex, R_MYCARD_CLIP_FIELD_SELECTOR );
+    if ( isXspField )
+        {
+        aRow->SetClipRequired( ETrue );
+        }
+    
     const MVPbkContactFieldUriData& uri = 
         MVPbkContactFieldUriData::Cast( aFieldData );
 

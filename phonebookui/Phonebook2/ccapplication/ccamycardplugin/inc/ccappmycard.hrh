@@ -28,7 +28,8 @@ enum TCCAppMyCardCmdIds
     ECCAppMyCardCmdStylusChangeImageCmd,
     ECCAppMyCardCmdStylusRemoveImageCmd,
     ECCAppMyCardCmdStylusAddImageCmd,
-    ECCappMyCardCmdDelete
+    ECCappMyCardCmdDelete,
+    ECCAppMyCardCmdStylusCopyDetailCmd
 };
 
 /// Panic codes for CCA MyCard plugin

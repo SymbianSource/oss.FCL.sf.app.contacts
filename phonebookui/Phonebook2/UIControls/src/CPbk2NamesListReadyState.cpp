@@ -1387,10 +1387,11 @@ void CPbk2NamesListReadyState::SetSelectedContactL(
         const MVPbkContactBookmark& aContactBookmark,
         TBool aSelected )
     {
+    TInt cmdItemCount = CommandItemCount();
     TInt index = iViewStack.IndexOfBookmarkL( aContactBookmark );
     if ( index != KErrNotFound )
         {
-        SetSelectedContactL( index, aSelected );
+        SetSelectedContactL( cmdItemCount+index, aSelected );
         }
     }
 
@@ -1402,10 +1403,11 @@ void CPbk2NamesListReadyState::SetSelectedContactL(
         const MVPbkContactLink& aContactLink,
         TBool aSelected )
     {
+    TInt cmdItemCount = CommandItemCount();
     TInt index = iViewStack.IndexOfLinkL( aContactLink );
     if ( index != KErrNotFound )
         {
-        SetSelectedContactL( index, aSelected );
+        SetSelectedContactL( index+cmdItemCount, aSelected );
         }
     }
 
@@ -2216,11 +2218,6 @@ void CPbk2NamesListReadyState::UpdateFindBoxL()
             	iFindBox->SetFocus( ETrue, EDrawNow );
             	}
             }
-        else
-            {
-            iFindBox->SetNonFocusing();
-            iFindBox->SetFocus( EFalse, EDrawNow );
-            }
         }
     }
 
@@ -2323,10 +2320,6 @@ void CPbk2NamesListReadyState::SetCurrentItemIndexAndDrawL()
             {
             iListBox.SetCurrentItemIndexAndDraw(0);
             }
-        }
-    else
-        {
-        iListBox.SetCurrentItemIndexAndDraw(0);
         }
     }
 

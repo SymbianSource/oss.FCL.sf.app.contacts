@@ -48,7 +48,10 @@ inline CCCaFactoryExtensionNotifier::CCCaFactoryExtensionNotifier()
 CCCaFactoryExtensionNotifier::~CCCaFactoryExtensionNotifier()
     {
     Cancel();
-    iEComSession->Close();
+    if( iEComSession )
+        {
+        iEComSession->Close();
+        }
       
     delete iExtensionFactory;
     }
@@ -126,7 +129,8 @@ EXPORT_C CCCAExtensionFactory* CCCaFactoryExtensionNotifier::ExtensionFactory()
 // CCCaFactoryExtensionNotifier::ObserveExtensionFactory( TCallBack& aCallBack )
 // ----------------------------------------------------------------------------
 //
-EXPORT_C void CCCaFactoryExtensionNotifier::ObserveExtensionFactory( TCallBack& aCallBack )
+EXPORT_C void CCCaFactoryExtensionNotifier::ObserveExtensionFactoryL( 
+        TCallBack& aCallBack )
     {
     iCallBack = aCallBack;
     CreateExtensionFactoryL();

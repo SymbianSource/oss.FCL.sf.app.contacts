@@ -24,7 +24,7 @@
 #include <MVPbkSingleContactOperationObserver.h>
 #include <MPbk2ExitCallback.h>
 #include "MPbk2ServicePhase.h"
-#include <mvpbkcontactobserver.h>
+#include <MVPbkContactObserver.h>
 
 // FORWARD DECLARATIONS
 class CVPbkContactLinkArray;

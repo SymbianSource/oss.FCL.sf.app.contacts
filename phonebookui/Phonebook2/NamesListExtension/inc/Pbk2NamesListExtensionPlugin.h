@@ -23,6 +23,7 @@
 
 #include <Pbk2Commands.hrh>
 #include <MVPbkBaseContact.h>
+#include <MVPbkContactStoreObserver.h>
 
 #ifndef NAMESLISTUIEXTENTIONPLUGIN_H
 #define NAMESLISTUIEXTENTIONPLUGIN_H
@@ -34,7 +35,9 @@ class MPbk2ContactUiControl;
 class CPbk2PresentationContact;
 class MPbk2ContactEditorControl;
 class CAiwServiceHandler;
-class CPbk2NamesListExView; 
+class CPbk2NamesListExView;
+class CPbk2ApplicationServices;
+
 // CCA
 class MCCAConnection;
 class MCCAParameter;
@@ -46,7 +49,8 @@ class CSpbContentProvider;
  * Creates instances of the extension classes.
  */
 class CNamesListUIExtensionPlugin : public CPbk2UIExtensionPlugin,
-                                    public MPbk2PluginCommandListerner
+                                    public MPbk2PluginCommandListerner,
+                                    private MVPbkContactStoreObserver
     {
     public: // Construction and destruction
 
@@ -129,7 +133,20 @@ class CNamesListUIExtensionPlugin : public CPbk2UIExtensionPlugin,
     MPbk2AiwInterestItem* CreatePbk2AiwInterestForIdL(
                     TInt aInterestId,
                     CAiwServiceHandler& aServiceHandler );
-    
+
+    private: // From MVPbkContactStoreObserver
+        
+        void StoreReady(
+                MVPbkContactStore& aContactStore );
+        
+        void StoreUnavailable(
+                MVPbkContactStore& aContactStore,
+                TInt aReason );
+        
+        void HandleStoreEventL(
+                MVPbkContactStore& aContactStore,
+                TVPbkContactStoreEvent aStoreEvent );
+        
     private: // Implementation
     CNamesListUIExtensionPlugin();
     void ConstructL();
@@ -137,12 +154,19 @@ class CNamesListUIExtensionPlugin : public CPbk2UIExtensionPlugin,
     void DimItem( CEikMenuPane* aMenuPane, TInt aCmd );
     TBool IsTopContact( const MVPbkBaseContact* aContact );
     MVPbkContactLink* MyCardLink() const;
+    void InitLocalStoreObserverL();
 
     private: // Data
     MCCAConnection* iCCAConnection;  // own
     CPbk2NamesListExView* iNamesListExViewRef; //ref  
     //OWN:
     CSpbContentProvider*	iContentProvider;
+    // number of contacts in local store
+    TInt iLocalStoreContactsCount;
+    // Not own:
+    MVPbkContactStore* iLocalStore;
+    // Own
+    CPbk2ApplicationServices*  iAppServices;
     };
 
 #endif // NAMESLISTUIEXTENTIONPLUGIN_H

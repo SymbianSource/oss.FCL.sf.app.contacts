@@ -20,8 +20,8 @@
 #include <cbsfactory.h>
 #include <mbsaccess.h>
 #include <gulicon.h>
-#include <tpbk2iconid.h>
-#include <akniconutils.h>
+#include <TPbk2IconId.h>
+#include <AknIconUtils.h>
 #include <fbs.h>
 
 // CONSTS

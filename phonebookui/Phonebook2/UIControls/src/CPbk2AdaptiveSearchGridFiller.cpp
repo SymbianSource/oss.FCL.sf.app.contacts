@@ -27,7 +27,7 @@
 
 const TInt KMaxAdaptiveGridCacheCount = 10;
 const TInt KAdaptiveSearchKeyMapGranularity = 100;
-const TInt KAdaptiveSearchRefineStep = 200;
+const TInt KAdaptiveSearchRefineStep = 10;
 const TInt KContactFormattingFlags = MPbk2ContactNameFormatter::EPreserveLeadingSpaces | MPbk2ContactNameFormatter::EReplaceNonGraphicChars;
 
 
@@ -75,7 +75,7 @@ NONSHARABLE_CLASS(CPbk2AdaptiveGrid) : public CBase
 // --------------------------------------------------------------------------
 //
 CPbk2AdaptiveSearchGridFiller::CPbk2AdaptiveSearchGridFiller( CAknSearchField& aField, MPbk2ContactNameFormatter& aNameFormatter )
-	: CActive( CActive::EPriorityStandard ), iSearchField( aField ), iNameFormatter( aNameFormatter ),
+	: CActive( CActive::EPriorityIdle ), iSearchField( aField ), iNameFormatter( aNameFormatter ),
 	iInvalidateAdaptiveSearchGrid( EFalse ),iSetFocusToSearchGrid( ETrue )
     {
 	CActiveScheduler::Add( this );

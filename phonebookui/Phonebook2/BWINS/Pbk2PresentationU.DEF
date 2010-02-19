@@ -166,4 +166,6 @@ EXPORTS
 	?NewL@CPbk2ServiceManager@@SAPAV1@AAVRFs@@@Z @ 165 NONAME ; class CPbk2ServiceManager * CPbk2ServiceManager::NewL(class RFs &)
 	?Services@CPbk2ServiceManager@@QAEABV?$RArray@UTService@CPbk2ServiceManager@@@@XZ @ 166 NONAME ; class RArray<struct CPbk2ServiceManager::TService> const & CPbk2ServiceManager::Services(void)
 	?RefreshDataL@CPbk2ServiceManager@@QAEXXZ @ 167 NONAME ; void CPbk2ServiceManager::RefreshDataL(void)
+	?CreateContactViewForStoresLC@CPbk2ContactViewBuilder@@QBEPAVMVPbkContactViewBase@@ABVCVPbkContactStoreUriArray@@AAVMVPbkContactViewObserver@@ABVMVPbkFieldTypeList@@PAVCVPbkFieldTypeSelector@@KPAVMVPbkContactSelector@@@Z @ 168 NONAME ; class MVPbkContactViewBase * CPbk2ContactViewBuilder::CreateContactViewForStoresLC(class CVPbkContactStoreUriArray const &, class MVPbkContactViewObserver &, class MVPbkFieldTypeList const &, class CVPbkFieldTypeSelector *, unsigned long, class MVPbkContactSelector *) const
+	?CropImageL@Pbk2PresentationImageUtils@@SAXAAVCFbsBitmap@@W4TCroppingMode@1@ABVTSize@@@Z @ 169 NONAME ; void Pbk2PresentationImageUtils::CropImageL(class CFbsBitmap &, enum Pbk2PresentationImageUtils::TCroppingMode, class TSize const &)
 

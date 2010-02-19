@@ -180,6 +180,7 @@ RESOURCE MENU_PANE r_common_show_my_address_menu            //Select key popup m
             {
             command = ELogsCmdShowMyAddress;                 //Show user's voip address
             txt = qtn_voip_show_my_address;
+            flags = EEikMenuItemSpecific;
             }
         };
     }

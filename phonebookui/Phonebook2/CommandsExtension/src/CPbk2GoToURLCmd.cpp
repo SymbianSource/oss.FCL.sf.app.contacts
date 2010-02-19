@@ -38,7 +38,7 @@
 #include <MVPbkContactFieldTextData.h>
 
 // System includes
-#include <BrowserLauncher.h>
+#include <browserlauncher.h>
 #include <coemain.h>
 #include <barsread.h>
 #include <StringLoader.h>

@@ -167,7 +167,23 @@ inline void CPbk2ContactEditorPhoneNumberField::ConstructL()
         {
         iControl->SetAknEditorNumericKeymap(EAknEditorStandardNumberModeKeymap);
         iControl->SetAknEditorInputMode(EAknEditorNumericInputMode);
-        iControl->SetAknEditorAllowedInputModes(EAknEditorNumericInputMode);
+
+        TInt inputLang = User::Language();
+        switch (inputLang)
+        {
+        case ELangArabic:
+        case ELangFarsi:
+        case ELangHindi:
+        case ELangUrdu:
+            iControl->SetAknEditorAllowedInputModes(
+                        EAknEditorNumericInputMode | EAknEditorHalfWidthTextInputMode );
+            break;
+
+        default:
+            iControl->SetAknEditorAllowedInputModes(EAknEditorNumericInputMode);
+            break;
+        }
+        
         iControl->SetAknEditorSpecialCharacterTable(0);
         }
 

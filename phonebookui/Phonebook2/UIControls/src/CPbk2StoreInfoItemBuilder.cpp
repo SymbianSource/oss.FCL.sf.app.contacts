@@ -466,7 +466,7 @@ HBufC* CPbk2StoreInfoItemBuilder::CreateHeadingL
     if ( aItem.TextType() == EPbk2StoreInfoStoreName && aProperty )
         {
         CPbk2Content* content = aProperty->RetrieveContentLC
-            ( EPbk2MemInfoPhone );
+            ( EPbk2MemInfoContacts );
 
         CPbk2StorePropertyContentStoreName* propContent =
             dynamic_cast<CPbk2StorePropertyContentStoreName*>( content );
@@ -486,10 +486,6 @@ HBufC* CPbk2StoreInfoItemBuilder::CreateHeadingL
         retVal = storeName;
         }
 
-    else if (aValue == singleValue)
-        {
-        retVal = aItem.ItemTextSingular().AllocL();
-        }
     else
         {
         retVal = aItem.ItemTextPlural().AllocL();

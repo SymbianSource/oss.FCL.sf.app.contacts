@@ -81,6 +81,27 @@ class CPbk2ContactViewBuilder : public CBase
                 TUint32 aFlags ) const;
 
         /**
+         * Creates a contact view for the stores specified in the
+         * given array.
+         *
+         * @param aUriArray         Array of URIs of stores to include
+         *                          in the view.
+         * @param aObserver         Observer for the view.
+         * @param aSortOrder        Sort order for the view.
+         * @param aFilter           Field type selector used to filter the view.
+         * @param aFlags            TVPbkContactViewFlag flags for view modifying
+         * @param aContactSelector  Filter for contacts
+         * @return  The contact view.
+         */
+        IMPORT_C MVPbkContactViewBase* CreateContactViewForStoresLC(
+                const CVPbkContactStoreUriArray& aUriArray,
+                MVPbkContactViewObserver& aObserver,
+                const MVPbkFieldTypeList& aSortOrder,
+                CVPbkFieldTypeSelector* aFilter,
+                TUint32 aFlags,
+                MVPbkContactSelector* aContactSelector ) const;        
+        
+        /**
          * Creates a TOP-NON-TOP contact view for the stores specified in the
          * given array.
          *
@@ -98,7 +119,7 @@ class CPbk2ContactViewBuilder : public CBase
                 const MVPbkFieldTypeList& aSortOrder,
                 CVPbkFieldTypeSelector* aFilter,
                 TUint32 aFlags,
-                MVPbkContactSelector& aContactSelector ) const;
+                MVPbkContactSelector& aContactSelector ) const;        
 
         /**
          * Creates a group view for the stores specified in the
@@ -109,7 +130,7 @@ class CPbk2ContactViewBuilder : public CBase
          * @param aObserver     Observer for the view.
          * @param aSortOrder    Sort order for the view.
          * @param aFilter       Field type selector used to filter the view.
-         * @param aFlags		TVPbkContactViewFlag flags for view modifying
+         * @param aFlags        TVPbkContactViewFlag flags for view modifying
          * @return  The contact view.
          */
         IMPORT_C MVPbkContactViewBase* CreateGroupViewForStoresLC(
@@ -118,7 +139,7 @@ class CPbk2ContactViewBuilder : public CBase
                 const MVPbkFieldTypeList& aSortOrder,
                 CVPbkFieldTypeSelector* aFilter,
                 TUint32 aFlags ) const;
-
+        
     private: // Implementation
         CPbk2ContactViewBuilder(
                 CVPbkContactManager& aContactManager,
@@ -133,7 +154,8 @@ class CPbk2ContactViewBuilder : public CBase
                 const MVPbkFieldTypeList& aSortOrder,
                 CVPbkFieldTypeSelector* aFilter,
                 TUint32 aFlags,
-                TBool aTopContacts = EFalse  ) const;
+                TBool aTopContacts = EFalse,
+                MVPbkContactSelector* aContactSelector = NULL) const;
         static TBool IncludeThisViewInTopContactMode(
                 TPbk2ContactViewType aViewType );
         void SetTopRelatedFilteringL(

@@ -95,7 +95,6 @@
 #include "ccappcommlauncher.hrh"
 #include "CCCAppCommLauncherPbkCmd.h"
 #include "ccappcommlaunchermenuhandler.h"
-#include "ccappcommlauncherimagedecoding.h"
 #include "ccappcommlauncherprivatecrkeys.h"
 
 #endif // __CCAPPCOMMLAUNCHERHEADERS_H__

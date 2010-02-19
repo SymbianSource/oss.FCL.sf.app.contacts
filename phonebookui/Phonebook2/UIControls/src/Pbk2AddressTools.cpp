@@ -367,43 +367,50 @@ EXPORT_C void Pbk2AddressTools::GetAddressFieldsLC(
             {
             continue;
             }
-    	TArray<TVPbkFieldVersitProperty> arrProp = field.BestMatchingFieldType()->VersitProperties();
-		for( TInt idx2 = 0; idx2 < arrProp.Count(); idx2++)
-			{
-			if( arrProp[idx2].Name() != EVPbkVersitNameADR )
-				{
-				continue;
-				}
+    	const MVPbkFieldType* fieldType = field.BestMatchingFieldType();
+        if ( fieldType )
+            {
+            TArray<TVPbkFieldVersitProperty> arrProp =
+                fieldType->VersitProperties();
+            for (TInt idx2 = 0; idx2 < arrProp.Count(); idx2++ )
+                {
+                if ( arrProp[idx2].Name() != EVPbkVersitNameADR )
+                    {
+                    continue;
+                    }
 
-			if( !arrProp[idx2].Parameters().Contains( MapAddressToVersitParam( aAddressGroup ) ) &&
-				aAddressGroup != EPbk2FieldGroupIdPostalAddress	)
-				{
-				continue;
-				}
+                if ( !arrProp[idx2].Parameters().Contains(
+                    MapAddressToVersitParam( aAddressGroup ) )
+                    && aAddressGroup != EPbk2FieldGroupIdPostalAddress )
+                    {
+                    continue;
+                    }
 
-			if( ( arrProp[idx2].Parameters().Contains( MapAddressToVersitParam( EPbk2FieldGroupIdCompanyAddress ) ) ||
-				  arrProp[idx2].Parameters().Contains( MapAddressToVersitParam( EPbk2FieldGroupIdHomeAddress ) ) ) &&
-				  aAddressGroup == EPbk2FieldGroupIdPostalAddress )
-				{
-				continue;
-				}
+                if ( (arrProp[idx2].Parameters().Contains(
+                    MapAddressToVersitParam( EPbk2FieldGroupIdCompanyAddress ) )
+                    || arrProp[idx2].Parameters().Contains(
+                        MapAddressToVersitParam( EPbk2FieldGroupIdHomeAddress ) ))
+                    && aAddressGroup == EPbk2FieldGroupIdPostalAddress )
+                    {
+                    continue;
+                    }
 
-			MVPbkContactFieldData& fieldData = field.FieldData();
-			if( fieldData.DataType() != EVPbkFieldStorageTypeText )
-				{
-				continue;
-				}
+                MVPbkContactFieldData& fieldData = field.FieldData();
+                if ( fieldData.DataType() != EVPbkFieldStorageTypeText )
+                    {
+                    continue;
+                    }
 
-			MVPbkContactFieldTextData& data =
-			   MVPbkContactFieldTextData::Cast( fieldData );
-			if( data.Text().Length() )
-				{
-				aFieldsMap.InsertL( arrProp[idx2].SubField(), data.Text() );
-				}
-			}
+                MVPbkContactFieldTextData& data =
+                    MVPbkContactFieldTextData::Cast( fieldData );
+                if ( data.Text().Length() )
+                    {
+                    aFieldsMap.InsertL( arrProp[idx2].SubField(), data.Text() );
+                    }
+                }
+            }
      	}
     }
-
 
 
 

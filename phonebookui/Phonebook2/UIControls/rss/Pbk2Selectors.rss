@@ -1023,4 +1023,18 @@ RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_voip_call_out_selector
     excludedParameters = {EVPbkVersitParamPAGER,EVPbkVersitParamFAX,EVPbkVersitParamVIDEO};
     }
 
+// --------------------------------------------------------------------------
+//  Selector for Xsp fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_impp_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameIMPP;
+            }
+       };
+    }
 // End of File

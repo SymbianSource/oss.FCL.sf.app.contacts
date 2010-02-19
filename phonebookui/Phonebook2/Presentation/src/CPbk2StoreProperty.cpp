@@ -298,9 +298,9 @@ EXPORT_C CPbk2Content* CPbk2StoreProperty::RetrieveContentLC
     {
     CPbk2Content* content = NULL;
 
-    if ( aContext == EPbk2MemInfoPhone || aContext == EPbk2CopyQueryItem )
+    if ( aContext == EPbk2MemInfoPhone || aContext == EPbk2CopyQueryItem || aContext == EPbk2MemInfoContacts )
         {        
-        // Both EPbk2MemInfoPhone and EPbk2CopyQueryItem use same kind of 
+        // Both EPbk2MemInfoPhone EPbk2CopyQueryItem and EPbk2MemInfoContacts use same kind of 
         // content
         content =  new ( ELeave ) CPbk2StorePropertyContentStoreName
             (  iLocalizedTexts.Array(), aContext );
@@ -338,6 +338,21 @@ void CPbk2StoreProperty::CreateLocalizedTextsL(
     // Copy EPbk2CopyQueryItem
     content = 
         aProperty.RetrieveContentLC( EPbk2CopyQueryItem );
+    propContent = 
+        dynamic_cast<CPbk2StorePropertyContentStoreName*>( content );
+    if ( propContent )
+        {
+        TInt uid = propContent->Uid();
+        HBufC* text = propContent->StoreName().AllocLC();
+        iLocalizedTexts.AppendL( CPbk2LocalizedText::NewL( uid, text ) );
+        CleanupStack::Pop( text ); 
+        // CPbk2LocalizedText::NewL has taken the ownership of text
+        }
+    CleanupStack::PopAndDestroy( content );
+    	
+   	// Copy EPbk2MemInfoContacts
+    content = 
+        aProperty.RetrieveContentLC( EPbk2MemInfoContacts );
     propContent = 
         dynamic_cast<CPbk2StorePropertyContentStoreName*>( content );
     if ( propContent )

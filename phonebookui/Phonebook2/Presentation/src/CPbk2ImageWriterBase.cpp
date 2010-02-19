@@ -25,6 +25,7 @@
 #include "CPbk2ImageReader.h"
 #include "MPbk2ImageOperationObservers.h"
 #include "CPbk2ImageData.h"
+#include "Pbk2PresentationUtils.h"
 
 // From System
 #include <imageconversion.h>
@@ -317,6 +318,12 @@ void CPbk2ImageWriterBase::ScaleBitmapL()
     {
     __ASSERT_DEBUG(iBitmap, Panic(EPanicPreCond_ScaleBitmapL));
     iState = EStateScaleBitmap;
+    
+    Pbk2PresentationImageUtils::CropImageL( 
+            *iBitmap, 
+            Pbk2PresentationImageUtils::ELandscapeOptimizedCropping, 
+            ImageSize() );
+    
     if (iBitmap->SizeInPixels() <= ImageSize())
         {
         // Bitmap size is <= personal image size -> skip scaling

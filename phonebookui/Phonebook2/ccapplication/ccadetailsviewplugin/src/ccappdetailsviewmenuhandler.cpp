@@ -12,7 +12,7 @@
 * Contributors:
 *
 * Description:  Implementation of ccappdetailsview menuhandler
-*  Version     : %version: he1s60#31.1.13 %
+*  Version     : %version: he1s60#31.1.15 %
 *
 */
 
@@ -532,7 +532,7 @@ void CCCAppDetailsViewMenuHandler::HandleCommandL(TInt aCommand)
     case EAknSoftkeyEdit:
     case KAiwCmdAssign: // AIW service cmd for Editing
     case ECCAppDetailsViewEditItemCmd:
-        DoEditCmdL();
+        DoEditCmdL( aCommand );
         break;
 
     case ECCAppDetailsViewImageCmd:
@@ -598,7 +598,7 @@ void CCCAppDetailsViewMenuHandler::HandleCommandL(TInt aCommand)
 // CCCAppDetailsViewMenuHandler::DoEditCmdL
 // ---------------------------------------------------------------------------
 //
-void CCCAppDetailsViewMenuHandler::DoEditCmdL()
+void CCCAppDetailsViewMenuHandler::DoEditCmdL(  TInt aCommand )
 {
     const CCCAppDetailsViewContainer& container =
         static_cast<const CCCAppDetailsViewContainer&>(iPlugin.GetContainer());
@@ -617,8 +617,37 @@ void CCCAppDetailsViewMenuHandler::DoEditCmdL()
 
     inParamList.AppendL(TAiwGenericParam(EGenericParamContactLinkArray,
         TAiwVariant( *packedLinks)));
-
+    
     TInt focusIndex = container.ListBoxModel().FocusedFieldIndex();
+    
+    TBool itemFocused = iPlugin.MenuBar()->ItemSpecificCommandsEnabled();
+    TBool isAddressField = EFalse;
+    MVPbkBaseContactField* focusedField = container.ListBoxModel().FocusedFieldLC();
+    if ( focusedField )
+        {
+        const MVPbkFieldType* type = focusedField->BestMatchingFieldType();
+        const TArray<TVPbkFieldVersitProperty> propArr = type->VersitProperties();
+        if(propArr.Count())
+            {
+            const TVPbkFieldVersitProperty prop = propArr[0];
+            if(prop.Name() == EVPbkVersitNameADR)
+                {
+                isAddressField = ETrue;
+                }
+            }
+        }
+    CleanupStack::PopAndDestroy( focusedField );
+    
+    // this is only for the case, if there is only address field( address field is in first 
+    // item in details view), when select "Edit" from options menu, if the item is not focused,
+    // contact eidtor view should be opened instead of address editor view.
+    // if the address field is focused or or select the list item directly, address editor view
+    // should be opened insdead of contact eidtor view.
+    // set focusIndex to KErrNotFound in order to open contact editor view.
+    if ( isAddressField && !itemFocused && aCommand != ECCAppDetailsViewEditItemCmd )
+        {
+        focusIndex = KErrNotFound;
+        }
 
     CCA_DP(KDetailsViewLogFile, CCA_L("CCCAppDetailsViewMenuHandler::DoEditCmdL() focusIndex = %d"), focusIndex);
 
@@ -813,18 +842,21 @@ TBool CCCAppDetailsViewMenuHandler::HasAddressFieldL()
     {
         const MVPbkStoreContactField& field =
             container.FocusedStoreContact()->Fields().FieldAt( i );
-        TInt countProps =
-            field.BestMatchingFieldType()->VersitProperties().Count();
-        TArray<TVPbkFieldVersitProperty> props =
-            field.BestMatchingFieldType()->VersitProperties();
-        for ( TInt ii = 0; ii < countProps; ii++ )
-        {
-            if ( props[ ii ].Name() == EVPbkVersitNameADR )
+        const MVPbkFieldType* fieldType = field.BestMatchingFieldType();
+        if ( fieldType )
             {
-                addressField = ETrue;
-                break;
+            TInt countProps = fieldType->VersitProperties().Count();
+            TArray<TVPbkFieldVersitProperty> props =
+                fieldType->VersitProperties();
+            for (TInt ii = 0; ii < countProps; ii++ )
+                {
+                if ( props[ii].Name() == EVPbkVersitNameADR )
+                    {
+                    addressField = ETrue;
+                    break;
+                    }
+                }
             }
-        }
     }
     return addressField;
 }

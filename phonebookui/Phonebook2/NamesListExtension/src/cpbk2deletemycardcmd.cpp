@@ -18,6 +18,9 @@
 
 // INCLUDE FILES
 #include "cpbk2deletemycardcmd.h"
+#include <StringLoader.h>
+#include <AknQueryDialog.h>
+#include <Pbk2ExNamesListRes.rsg>
 
 // Phonebook2
 #include <CPbk2ApplicationServices.h>
@@ -89,9 +92,7 @@ CPbk2DeleteMyCardCmd::~CPbk2DeleteMyCardCmd()
         }
 
     delete iContactsArray;
-    delete iRetrieveOperation;
     delete iDeleteOperation;
-    delete iStoreContact;
     Release( iAppServices );
     }
 
@@ -136,7 +137,7 @@ void CPbk2DeleteMyCardCmd::ExecuteLD()
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
         ("CPbk2DeleteMyCardCmd::ExecuteLD(0x%x)"), this);
 
-    IssueRequest( ERetrieving );
+    IssueRequest( EConfirming );
     }
 
 // --------------------------------------------------------------------------
@@ -180,13 +181,6 @@ void CPbk2DeleteMyCardCmd::RunL()
 
     switch ( iState )
         {
-        case ERetrieving:
-            {
-            __ASSERT_DEBUG( iContactsArray->Count() == 1, 
-                Panic(EPanicInvalidArray ));
-            RetrieveContactL( iContactsArray->At(0) );
-            break;
-            }
         case EConfirming:
             {
             ConfirmDeletionL();
@@ -225,43 +219,6 @@ TInt CPbk2DeleteMyCardCmd::RunError( TInt aError )
     {
     ProcessDismissed( aError );
     return aError;
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2DeleteMyCardCmd::VPbkSingleContactOperationComplete
-// --------------------------------------------------------------------------
-//
-void CPbk2DeleteMyCardCmd::VPbkSingleContactOperationComplete(
-    MVPbkContactOperationBase& aOperation,
-    MVPbkStoreContact* aContact )
-    {
-    if ( &aOperation == iRetrieveOperation )
-        {
-        delete iRetrieveOperation;
-        iRetrieveOperation = NULL;
-
-        // We now have a store contact and we can issue a confirmation
-        iStoreContact = aContact;
-        IssueRequest( EConfirming );
-        }
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2DeleteMyCardCmd::VPbkSingleContactOperationFailed
-// --------------------------------------------------------------------------
-//
-void CPbk2DeleteMyCardCmd::VPbkSingleContactOperationFailed(
-    MVPbkContactOperationBase& aOperation,
-    TInt aError )
-    {
-    if ( &aOperation == iRetrieveOperation )
-        {
-        delete iRetrieveOperation;
-        iRetrieveOperation = NULL;
-
-        // We cannot get the contact, so we have to fail
-        ProcessDismissed( aError );
-        }
     }
 
 // --------------------------------------------------------------------------
@@ -330,18 +287,6 @@ void CPbk2DeleteMyCardCmd::ProcessDismissed( TInt aCancelCode )
     }
 
 // --------------------------------------------------------------------------
-// CPbk2DeleteMyCardCmd::RetrieveContactL
-// --------------------------------------------------------------------------
-//
-void CPbk2DeleteMyCardCmd::RetrieveContactL(
-        const MVPbkContactLink& aContactLink )
-    {
-    // Retrieve the actual store contact from the given link
-    iRetrieveOperation = iAppServices->
-        ContactManager().RetrieveContactL( aContactLink, *this );
-    }
-
-// --------------------------------------------------------------------------
 // CPbk2DeleteMyCardCmd::DeleteContactL
 // --------------------------------------------------------------------------
 //
@@ -378,11 +323,10 @@ inline void CPbk2DeleteMyCardCmd::IssueRequest( TProcessState aState )
 //
 void CPbk2DeleteMyCardCmd::ConfirmDeletionL()
     {
-    CPbk2GeneralConfirmationQuery* query =
-            CPbk2GeneralConfirmationQuery::NewL();
-    
-    if( query->ExecuteLD( *iStoreContact, R_QTN_QUERY_COMMON_CONF_DELETE, 
-            MPbk2ContactNameFormatter::EPreserveAllOriginalSpaces ) )
+    HBufC* prompt = 
+        StringLoader::LoadLC( R_QTN_PHOB_MY_CARD_CLEAR_CONFIRM );
+    CAknQueryDialog* dlg = CAknQueryDialog::NewL();
+    if( dlg->ExecuteLD( R_PBK2_GENERAL_CONFIRMATION_QUERY, *prompt ) )
         {
         // Continue with starting the deletion
         IssueRequest( EStarting );
@@ -391,6 +335,7 @@ void CPbk2DeleteMyCardCmd::ConfirmDeletionL()
         {
         IssueRequest( ECanceling );
         }
+    CleanupStack::PopAndDestroy( prompt );
     }
 
 //  End of File

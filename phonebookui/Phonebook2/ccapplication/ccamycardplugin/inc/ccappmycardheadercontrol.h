@@ -94,6 +94,7 @@ public: // New implementation
     void SetLabel2TextL( const TDesC& aTxt );
     
     inline CCCAppStatusControl* StatusControl();
+    inline const TSize& ThumbnailSize();
     
 public: // Functions from base classes 
 
@@ -206,5 +207,11 @@ inline CCCAppStatusControl* CCCAppMyCardHeaderControl::StatusControl()
     {
     return iStatusControl;
     }
+
+inline const TSize& CCCAppMyCardHeaderControl::ThumbnailSize()
+    {
+    return iPortraitImageSize;
+    }
+
 
 #endif // CCCAPPMYCARDHEADERCONTROL_H

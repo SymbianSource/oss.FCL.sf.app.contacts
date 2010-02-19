@@ -2329,6 +2329,7 @@ void CLogsBaseView::CmdAiwSrvCmdL(
 
                 //For long press or single tap prefer video call but not for emergency calls
                 if( (aCommandId == ELogsCmdLongSendKeyCall ||
+                    aEvent->LogsEventData()->VT() &&
                     aCommandId == ELogsCmdSingleTapCall ) &&
                     aEvent->EventType() != ETypeEmerg )
                     {

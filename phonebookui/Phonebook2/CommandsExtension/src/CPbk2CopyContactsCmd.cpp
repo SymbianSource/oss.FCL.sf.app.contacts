@@ -562,6 +562,7 @@ void CPbk2CopyContactsCmd::HandleError(TInt aError)
 
         iDecorator->ProcessStopped();
         }
+    iCommandObserver->CommandFinished(*this);
     }
 
 //  End of File

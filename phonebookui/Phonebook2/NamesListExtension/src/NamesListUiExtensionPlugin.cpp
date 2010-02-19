@@ -40,6 +40,7 @@
 #include <MPbk2ApplicationServices2.h>
 #include <CPbk2StoreConfiguration.h>
 #include <TVPbkContactStoreUriPtr.h>
+#include <CPbk2ApplicationServices.h>
 
 #include <MPbk2ContactUiControl.h>
 #include <MPbk2ViewExplorer.h>
@@ -60,6 +61,7 @@
 #include <MVPbkContactStore.h>
 #include <MVPbkContactStoreList.h>
 #include <MVPbkContactStoreInfo.h>
+#include <MVPbkContactStoreProperties.h>
 
 // Debugging headers
 
@@ -102,6 +104,11 @@ CNamesListUIExtensionPlugin::~CNamesListUIExtensionPlugin()
         iCCAConnection->Close();
         }
     delete iContentProvider;
+    if ( iLocalStore )
+        {
+        iLocalStore->Close( *this );
+        }
+    Release( iAppServices );
     }
 
     
@@ -126,6 +133,8 @@ CNamesListUIExtensionPlugin* CNamesListUIExtensionPlugin::NewL()
 //
 void CNamesListUIExtensionPlugin::ConstructL()
     {
+    iLocalStoreContactsCount = 0;	
+    iAppServices = CPbk2ApplicationServices::InstanceL();
     }
 
 // --------------------------------------------------------------------------
@@ -136,8 +145,7 @@ inline CSpbContentProvider& CNamesListUIExtensionPlugin::ContentProviderL()
 	{
     if( !iContentProvider )
         {
-        MPbk2ApplicationServices& apps = Phonebook2::Pbk2AppUi()->ApplicationServices();
-        TAny* ext = apps.MPbk2ApplicationServicesExtension( 
+        TAny* ext = iAppServices->MPbk2ApplicationServicesExtension( 
             KMPbk2ApplicationServicesExtension2Uid );
         if( !ext )
             {
@@ -145,7 +153,7 @@ inline CSpbContentProvider& CNamesListUIExtensionPlugin::ContentProviderL()
             }
         CPbk2StoreManager& storeManager = 
             static_cast<MPbk2ApplicationServices2*>(ext)->StoreManager();
-        iContentProvider = CSpbContentProvider::NewL( apps.ContactManager(), storeManager,  
+        iContentProvider = CSpbContentProvider::NewL( iAppServices->ContactManager(), storeManager,  
             CSpbContentProvider::EStatusMessage | CSpbContentProvider::EPhoneNumber );
         }
 	return *iContentProvider;
@@ -288,17 +296,6 @@ void CNamesListUIExtensionPlugin::DynInitMenuPaneL(TInt aResourceId,
                 }
             break;
             }
-/* Patrik 23.10.2008 Removed as agreed by ECE program management.
-        case R_PHONEBOOK2_MOVE_TOPCONTACTS:
-            {
-            if( !Pbk2NlxMenuFiltering::TopRearrangingReadyL( aControl ) || 
-                aControl.ContactsMarked() ) 
-                {
-                DimItem( aMenuPane, EPbk2CmdMoveInTopContactsList);
-                }
-            break;
-            }
-*/
         case R_PHONEBOOK2_NAMELIST_CALL_CONTACT_MENU:
             {
             if ( Pbk2NlxMenuFiltering::AddToFavoritesCmdSelected( aControl ) )
@@ -424,16 +421,10 @@ void CNamesListUIExtensionPlugin::DynInitMenuPaneL(TInt aResourceId,
             }
         case R_PHONEBOOK2_MERGE_CONTACTS:
             {
-            MVPbkContactStoreList& storeList = 
-                Phonebook2::Pbk2AppUi()->ApplicationServices().ContactManager().ContactStoresL();
-            // only phone memory contacts can be merged
-            MVPbkContactStore* store = storeList.Find( VPbkContactStoreUris::DefaultCntDbUri() );
             TInt numberOfContacts = 0;
-            if( store )
-                {
-                MVPbkContactLink* mylink = MyCardLink();
-                numberOfContacts = store->StoreInfo().NumberOfContactsL() - ( mylink ? 1 : 0 );
-                }
+            MVPbkContactLink* mylink = MyCardLink();
+            numberOfContacts = iLocalStoreContactsCount - ( mylink ? 1 : 0 );
+            
             // there must be two contacts to do merge
             if ( numberOfContacts  < KMinNumOfContactsToMerge )
                 {
@@ -534,7 +525,8 @@ MPbk2ContactUiControlExtension*
 		{
 		mycard = iNamesListExViewRef->MyCard();
 		}
-	
+    InitLocalStoreObserverL();
+    
     MPbk2ContactUiControlExtension* extension = 
         CPbk2NameslistUiControlExtension::NewL( aContactManager, ContentProviderL(), mycard );
     return extension;
@@ -734,5 +726,85 @@ void CNamesListUIExtensionPlugin::HandlePbk2Command( TInt aCommand )
             break;
         }
     }            
-	
+// --------------------------------------------------------------------------
+// CNamesListUIExtensionPlugin::StoreReady
+// --------------------------------------------------------------------------
+//
+void CNamesListUIExtensionPlugin::StoreReady( MVPbkContactStore& aContactStore )
+    {
+    if ( aContactStore.StoreProperties().Name().UriDes().Compare
+            ( VPbkContactStoreUris::DefaultCntDbUri() ) )
+        {
+        iLocalStoreContactsCount = iLocalStore->StoreInfo().NumberOfContactsL();
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CNamesListUIExtensionPlugin::StoreUnavailable
+// --------------------------------------------------------------------------
+//
+void CNamesListUIExtensionPlugin::StoreUnavailable
+        ( MVPbkContactStore& aContactStore, TInt /*aReason*/ )
+    {
+    if ( aContactStore.StoreProperties().Name().UriDes().Compare
+            ( VPbkContactStoreUris::DefaultCntDbUri() ) && iLocalStore )
+        {
+        iLocalStore->Close( *this );
+        iLocalStore = NULL;
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CNamesListUIExtensionPlugin::HandleStoreEventL
+// --------------------------------------------------------------------------
+//
+void CNamesListUIExtensionPlugin::HandleStoreEventL(
+        MVPbkContactStore& aContactStore,
+        TVPbkContactStoreEvent aStoreEvent )
+    {
+    if ( aContactStore.StoreProperties().Name().UriDes().Compare
+            ( VPbkContactStoreUris::DefaultCntDbUri() ) )
+        {
+        switch ( aStoreEvent.iEventType )
+           {
+           case TVPbkContactStoreEvent::EContactAdded:
+               {
+               iLocalStoreContactsCount++;
+               break;
+               }
+    
+           case TVPbkContactStoreEvent::EContactDeleted:
+               {
+               iLocalStoreContactsCount--;
+               break;
+               }
+               
+           case TVPbkContactStoreEvent::EStoreBackupRestoreCompleted:
+           case TVPbkContactStoreEvent::EUnknownChanges:
+               {
+               iLocalStoreContactsCount = iLocalStore->StoreInfo().NumberOfContactsL();
+               break;
+               }
+               
+           default:
+               break;
+           }
+        }
+    }
+// --------------------------------------------------------------------------
+// CNamesListUIExtensionPlugin::InitLocalStoreObserverL
+// --------------------------------------------------------------------------
+//
+void CNamesListUIExtensionPlugin::InitLocalStoreObserverL()
+    {
+    if ( !iLocalStore )
+        {
+        MVPbkContactStoreList& storeList = iAppServices->ContactManager().ContactStoresL();
+        iLocalStore = storeList.Find( VPbkContactStoreUris::DefaultCntDbUri() );
+        if ( iLocalStore )
+            {
+            iLocalStore->OpenL( *this );
+            }
+        }
+    }
 //  End of File

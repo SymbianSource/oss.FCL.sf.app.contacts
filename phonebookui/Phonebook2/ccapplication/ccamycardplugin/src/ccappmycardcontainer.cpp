@@ -30,9 +30,9 @@
 #include <MVPbkStoreContact.h>
 #include <CPbk2IconArray.h>
 #include <Pbk2UIControls.rsg>
-#include <mpbk2command.h>
-#include <pbk2menufilteringflags.hrh>
-#include <mvpbkcontactlink.h>
+#include <MPbk2Command.h>
+#include <Pbk2MenuFilteringFlags.hrh>
+#include <MVPbkContactLink.h>
 
 #include "ccappmycard.hrh"
 #include "ccappmycard.h"
@@ -65,6 +65,12 @@
 #include <pbk2nameordercenrep.h>
 #include <centralrepository.h>
 #include <Phonebook2PrivateCRKeys.h>
+
+#include <CPbk2ApplicationServices.h>
+#include <CPbk2ServiceManager.h>
+#include <TPbk2IconId.h>
+#include <CPbk2IconInfo.h>
+
 
 // unnamed namespace
 namespace
@@ -105,6 +111,8 @@ CCCAppMyCardContainer::~CCCAppMyCardContainer()
     delete iFactoryExtensionNotifier;
     delete iViewLauncher;
     delete iImageSelectionPopup;
+    delete iLongTapDetector; 
+    delete iDetailsPopup;
     }
 
 // ----------------------------------------------------------------------------
@@ -140,6 +148,46 @@ void CCCAppMyCardContainer::ConstructL()
     TResourceReader reader;
     iCoeEnv->CreateResourceReaderLC( reader, R_PBK2_FIELDTYPE_ICONS );
     CPbk2IconArray* iconArray = CPbk2IconArray::NewL( reader );
+  
+    // Calculate preferred size for xsp service icons.
+    TRect mainPane;
+    AknLayoutUtils::LayoutMetricsRect( AknLayoutUtils::EMainPane, mainPane );
+    TAknLayoutRect listLayoutRect;
+    listLayoutRect.LayoutRect(
+        mainPane,
+        AknLayoutScalable_Avkon::list_single_graphic_pane_g1(0).LayoutLine() );
+    TSize size( listLayoutRect.Rect().Size() );
+        
+    // Add xsp service icons
+    CPbk2ApplicationServices* appServices = CPbk2ApplicationServices::InstanceL();
+    CPbk2ServiceManager& servMan = appServices->ServiceManager();
+    
+    const CPbk2ServiceManager::RServicesArray& services = servMan.Services();
+    TUid uid;
+    uid.iUid = KPbk2ServManId;
+    
+    for( TInt i = 0; i < services.Count(); i++ )
+        {
+        const CPbk2ServiceManager::TService& service = services[i];
+        
+        if ( service.iBitmapId && service.iBitmap )
+            {
+            AknIconUtils::SetSize(
+                      service.iBitmap,
+                      size );
+            AknIconUtils::SetSize(
+                      service.iMask,
+                      size );
+            TPbk2IconId id = TPbk2IconId( uid, service.iBitmapId );
+            CPbk2IconInfo* info = CPbk2IconInfo::NewLC(
+               id, service.iBitmap, service.iMask, size );
+            iconArray->AppendIconL( info );
+            CleanupStack::Pop( info );
+            }        
+        }
+    
+    Release( appServices );
+        
     iListBox->ItemDrawer()->ColumnData()->SetIconArray( iconArray );
     CleanupStack::PopAndDestroy(); // reader
 
@@ -156,7 +204,6 @@ void CCCAppMyCardContainer::ConstructL()
     iListBox->SetListBoxObserver( this );
     iPlugin.MyCard().AddObserverL( this );
 
-
     if( iPlugin.MyCard().IsContactLinkReady() )
     	{
         CCCAppStatusControl* statusControl = iHeaderCtrl->StatusControl();
@@ -169,10 +216,11 @@ void CCCAppMyCardContainer::ConstructL()
     iFactoryExtensionNotifier = CCCaFactoryExtensionNotifier::NewL();
 
     TCallBack callBack( CCCAppMyCardContainer::CheckExtensionFactoryL, this );
-    iFactoryExtensionNotifier->ObserveExtensionFactory( callBack );
+    iFactoryExtensionNotifier->ObserveExtensionFactoryL( callBack );
+    
+    iLongTapDetector = CAknLongTapDetector::NewL( this );
     CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCardContainer::ConstructL()"));
     }
-
 
 /**
  * Gets a digit from a descriptor.
@@ -193,9 +241,9 @@ inline TInt GetDigitFromDescriptorL( TResourceReader& aReaderToBuf )
         }
 
     CleanupStack::PopAndDestroy( orderBuf );
+    
     return result;
     }
-
 
 // ----------------------------------------------------------------------------
 // CCCAppMyCardContainer::ResolveNameOrderL()
@@ -322,6 +370,14 @@ void CCCAppMyCardContainer::SizeChanged()
 	delete iImageSelectionPopup;
 	iImageSelectionPopup = NULL;
 	
+	delete iDetailsPopup;
+	iDetailsPopup = NULL;
+	
+	if( iImageLoader )
+	    {
+        TRAP_IGNORE( iImageLoader->ResizeImageL(iHeaderCtrl->ThumbnailSize()));
+	    }
+	
     DrawDeferred();
     }
 
@@ -444,10 +500,10 @@ void CCCAppMyCardContainer::MyCardEventL( MMyCardObserver::TEvent aEvent )
         if( !iImageLoader )
             {
             // lazy initialization
-            iImageLoader = CCCAppMyCardImageLoader::NewL(
-                mycard.ContactManager(), *this );
+            iImageLoader = CCCAppMyCardImageLoader::NewL( *this );
             }
-        iImageLoader->LoadContactImageL( mycard.StoreContact() );
+        iImageLoader->LoadContactImageL( mycard.StoreContact(), 
+                iHeaderCtrl->ThumbnailSize() );
         }
 
     if( iPlugin.MyCard().IsContactLinkReady() && !iControlLink )
@@ -513,6 +569,13 @@ void CCCAppMyCardContainer::HandleListBoxEventL(
         case EEventItemDoubleClicked:
         case EEventItemSingleClicked:
             {
+            // Don't open the editor if stylusMenu opened using longTap 
+            if( iLongTapHandled ) 
+                {
+                iLongTapHandled = EFalse;
+                return;
+                }
+            
             // start the editor and pass tapped field index
             iPlugin.EditL( FocusedFieldIndex() );
             break;
@@ -545,8 +608,6 @@ MPbk2ContactUiControl* CCCAppMyCardContainer::ParentControl() const
     // Contact info control has no parent control
     return NULL;
 	}
-
-
 
 // --------------------------------------------------------------------------
 // CCCAppMyCardContainer::NumberOfContacts
@@ -594,7 +655,6 @@ void CCCAppMyCardContainer::SetFocusedContactL(
 	{
     // do nothing
 	}
-
 
 // --------------------------------------------------------------------------
 // CCCAppMyCardContainer::SetFocusedContactL
@@ -700,8 +760,6 @@ MVPbkContactLinkArray* CCCAppMyCardContainer::SelectedContactsL() const
     return NULL;
 	}
 
-
-
 // --------------------------------------------------------------------------
 // CCCAppMyCardContainer::SelectedContactsOrFocusedContactL
 // --------------------------------------------------------------------------
@@ -787,8 +845,6 @@ void CCCAppMyCardContainer::SetSelectedContactL(
     // Not supported
 	}
 
-
-
 // --------------------------------------------------------------------------
 // CCCAppMyCardContainer::DynInitMenuPaneL
 // --------------------------------------------------------------------------
@@ -805,9 +861,9 @@ void CCCAppMyCardContainer::DynInitMenuPaneL(
 // --------------------------------------------------------------------------
 //
 void CCCAppMyCardContainer::ProcessCommandL(TInt /*aCommandId*/) const
-	{
+        {
     // Nothing to do
-	}
+        }
 
 // --------------------------------------------------------------------------
 // CCCAppMyCardContainer::UpdateAfterCommandExecution
@@ -871,8 +927,6 @@ const TDesC& CCCAppMyCardContainer::FindTextL()
     return KNullDesC;
 	}
 
-
-
 // --------------------------------------------------------------------------
 // CCCAppMyCardContainer::ResetFindL
 // --------------------------------------------------------------------------
@@ -900,7 +954,6 @@ void CCCAppMyCardContainer::HideThumbnail()
     // Do nothing
 	}
 
-
 // --------------------------------------------------------------------------
 // CCCAppMyCardContainer::SetBlank
 // --------------------------------------------------------------------------
@@ -910,7 +963,6 @@ void CCCAppMyCardContainer::SetBlank( TBool /*aBlank*/ )
     // This control does not support blanking
 	}
 
-
 // --------------------------------------------------------------------------
 // CCCAppMyCardContainer::RegisterCommand
 // --------------------------------------------------------------------------
@@ -919,7 +971,6 @@ void CCCAppMyCardContainer::RegisterCommand( MPbk2Command* aCommand )
 	{
     iCommand = aCommand;
 	}
-
 
 // --------------------------------------------------------------------------
 // CCCAppMyCardContainer::SetTextL
@@ -1002,8 +1053,7 @@ void CCCAppMyCardContainer::SetNameForHeaderControlL()
             iHeaderCtrl->SetLabel1TextL( lastName );
             break;
             }
-        }
-    
+        }    
 	}
 
 //------------------------------------------------------------------------------
@@ -1044,9 +1094,61 @@ void CCCAppMyCardContainer::MyCardHeaderControlClickL( TPoint aPos )
     iImageSelectionPopup->SetPosition( aPos );
     iImageSelectionPopup->ShowMenu();   
 }
+ 
+// ----------------------------------------------------------------------------
+// CCCAppMyCardContainer::HandleLongTapEventL()
+// ----------------------------------------------------------------------------
+//
+void CCCAppMyCardContainer::HandleLongTapEventL( const TPoint& /*aPenEventLocation*/, 
+                                    const TPoint& /*aPenEventScreenLocation*/ )
+    {       
+    if( iDetailsPopup )
+        {
+        iLongTapHandled = ETrue;
+        iDetailsPopup->ShowMenu();
+        }
+    }
+ 
+// ----------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::HandlePointerEventL()
+// ----------------------------------------------------------------------------
+//
+void CCCAppMyCardContainer::HandlePointerEventL(
+    const TPointerEvent& aPointerEvent )
+    {               
+    TInt index;
+    TPoint pos = aPointerEvent.iPosition;
+    
+    if ( iListBox->View()->XYPosToItemIndex( aPointerEvent.iPosition, index ) )
+       {
+       iLongTapDetector->PointerEventL( aPointerEvent );
+         
+       if ( aPointerEvent.iType == TPointerEvent::EButton1Down )
+           {
+           // Pressed Down Effect
+           iListBox->View()->ItemDrawer()->SetFlags(
+                   CListItemDrawer::EPressedDownState );
+           }
+       }
+
+   if ( !iDetailsPopup )
+      {
+      iDetailsPopup = CAknStylusPopUpMenu::NewL( &iPlugin, aPointerEvent.iPosition ); 
+      TInt resourceReaderId = R_MYCARD_CONTACT_COPY_DETAIL_STYLUS_MENU; 
+      TResourceReader reader;
+      iCoeEnv->CreateResourceReaderLC( reader , resourceReaderId );
+      iDetailsPopup->ConstructFromResourceL( reader );
+      CleanupStack::PopAndDestroy(); // reader
+      }
+      
+    PosToScreenCoordinates( this, pos );    
+    iDetailsPopup->SetPosition( pos );      
+   
+    CCoeControl::HandlePointerEventL( aPointerEvent );              
+    }
 
 // ---------------------------------------------------------------------------
-// PosToScreenCoordinates
+// CCCAppCommLauncherContainer::PosToScreenCoordinates
 // ---------------------------------------------------------------------------
 //
 void CCCAppMyCardContainer::PosToScreenCoordinates( 

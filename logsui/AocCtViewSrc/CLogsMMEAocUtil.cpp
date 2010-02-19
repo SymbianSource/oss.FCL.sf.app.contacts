@@ -21,7 +21,7 @@
 #include <e32svr.h>
 
 #include <secui.h>
-#include <SecUiSecurityHandler.h>
+#include <secuisecurityhandler.h>
 #include <SecUi.rsg>
 
 #include <exterror.h>

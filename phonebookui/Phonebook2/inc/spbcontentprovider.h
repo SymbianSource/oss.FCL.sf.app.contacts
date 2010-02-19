@@ -104,7 +104,11 @@ public: // Data types
         ETypeSocialStatus,
         
         /// Content is contact's phone number (text)
-        ETypePhoneNumber
+        ETypePhoneNumber,
+        
+        /// Content is contact's phone number count (text [only number])
+        /// This type is used when contact has multiple numbers and no default number
+        ETypePhoneNumberMultiple
         };
     
 public: // Construction & destruction

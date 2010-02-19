@@ -29,7 +29,7 @@
 #include <sendui.h> 
 #include <SendUiConsts.h>
 #include <TSendingCapabilities.h>
-#include <sendnorm.rsg>
+#include <Sendnorm.rsg>
 #include <Logs.rsg>
 #include <AiwCommon.hrh>                //KAiwCmdCall
 #include <AiwPoCParameters.h>           //TAiwPocParameterData

@@ -109,23 +109,6 @@ RESOURCE MENU_PANE r_phonebook2_remove_from_topcontacts
     }
 
 // ---------------------------------------------------------
-// Names List View's move top contacts
-// ---------------------------------------------------------
-//
-/* Patrik 23.10.2008 Removed as agreed by ECE program management.
-RESOURCE MENU_PANE r_phonebook2_move_topcontacts
-    {
-    items=
-        {
-        MENU_ITEM
-            {
-            command = EPbk2CmdMoveInTopContactsList;
-            txt = qtn_phob_opt_move;
-            }
-        };
-    }*/
-
-// ---------------------------------------------------------
 // Names List View's merge contacts
 // ---------------------------------------------------------
 //

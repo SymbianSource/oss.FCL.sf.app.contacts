@@ -11,22 +11,19 @@
 *
 * Contributors:
 *
-* Description: 
+* Description: CCA customized control. Code has been modified to
+*       suit CCA requirements. See CFormattedCellListBoxItemDrawer
+*       in eikfrlb.cpp
+*       Ensure that this piece of code is in sync with Avkon eikfrlb.cpp(CFormattedCellListBoxItemDrawer) 
 *
 */
-/*
- * ccappcommlaunchercustomlistboxitemdrawer.cpp
- *
- *  Created on: 2009-10-30
- *      Author: dev
- */
 
 #include <eikfrlb.h>
 #include <barsread.h>
 #include <gulicon.h>
 #include <AknUtils.h>
-#include <aknscontrolcontext.h>
-#include <aknbiditextutils.h>
+#include <AknsControlContext.h>
+#include <AknBidiTextUtils.h>
 #include <aknlists.h>
 #include <aknlayoutscalable_avkon.cdl.h>
 #include <AknFontId.h>
@@ -84,6 +81,7 @@ void CCCAppCommLauncherCustomListBoxItemDrawer::DrawEmptyItem( TInt /*aItemIndex
    TRect r( aItemRectPos, iItemCellSize );
    CCoeControl* control = FormattedCellData()->Control();
    
+    const MCoeControlBackground* backgroundDrawer = control->FindBackground();
    if ( control )
        {
        MAknsControlContext *cc = AknsDrawUtils::ControlContext( control );
@@ -92,7 +90,11 @@ void CCCAppCommLauncherCustomListBoxItemDrawer::DrawEmptyItem( TInt /*aItemIndex
            {
            cc = FormattedCellData()->SkinBackgroundContext();
            }
-       if ( CAknEnv::Static()->TransparencyEnabled() )
+        if ( backgroundDrawer )
+            {
+            backgroundDrawer->Draw( *iGc, *control, r );
+            }
+        else if ( CAknEnv::Static()->TransparencyEnabled() )
            {
            AknsDrawUtils::Background( AknsUtils::SkinInstance(), cc, control, *iGc, r,
                                   KAknsDrawParamNoClearUnderImage );
@@ -156,6 +158,12 @@ void CCCAppCommLauncherCustomListBoxItemDrawer::DrawItemText( TInt aItemIndex,
    
    DrawBackgroundAndSeparatorLines( aItemTextRect );
 
+   // Draw separator line except last item 
+   if ( aItemIndex < iModel->NumberOfItems() - 1 )
+	   {
+	   DrawSeparator( *iGc, aItemTextRect, iTextColor);
+	   }
+   
    TBool highlightShown = ETrue;
    
    if (FormattedCellData()->RespectFocus() && !aViewIsEmphasized)
@@ -328,6 +336,15 @@ void CCCAppCommLauncherCustomListBoxItemDrawer::SetTopItemIndex(TInt aTop)
    iTopItemIndex = aTop;
    }
 
+void CCCAppCommLauncherCustomListBoxItemDrawer::DrawCurrentItemRect(const TRect& aRect) const
+   {
+   iGc->SetClippingRect(iViewRect);
+   iGc->SetBrushStyle(CGraphicsContext::ENullBrush);
+   iGc->SetPenColor(iHighlightedBackColor);
+   iGc->DrawRect(aRect);
+   iGc->CancelClippingRect();
+   }
+
 void CCCAppCommLauncherCustomListBoxItemDrawer::ClearAllPropertiesL()
     {
     delete iPropertyArray;
@@ -369,14 +386,8 @@ TListItemProperties CCCAppCommLauncherCustomListBoxItemDrawer::Properties(TInt a
     return iPropertyArray->At(index).iProperties;
     }
 
-void CCCAppCommLauncherCustomListBoxItemDrawer::DrawCurrentItemRect(const TRect& aRect) const
-   {
-   iGc->SetClippingRect(iViewRect);
-   iGc->SetBrushStyle(CGraphicsContext::ENullBrush);
-   iGc->SetPenColor(iHighlightedBackColor);
-   iGc->DrawRect(aRect);
-   iGc->CancelClippingRect();
-   }
+
+
 void CCCAppCommLauncherCustomListBoxItemDrawer::CCCAppCommLauncherCustomListBoxItemDrawer_Reserved()
     {
     }
@@ -419,7 +430,14 @@ void CCCAppCommLauncherCustomListBoxItemDrawer::DrawBackgroundAndSeparatorLines(
         TBool bgDrawn( EFalse );
         if ( control )
             {
-	        if ( CAknEnv::Static()->TransparencyEnabled() )
+            const MCoeControlBackground* backgroundDrawer =
+                control->FindBackground();
+            if ( backgroundDrawer )
+                {
+                backgroundDrawer->Draw( *iGc, *control, aItemTextRect );
+                bgDrawn = ETrue;
+                }
+            else if ( CAknEnv::Static()->TransparencyEnabled() )
                 {
                 bgDrawn = AknsDrawUtils::Background(
                     skin, cc, control, *iGc, aItemTextRect,
@@ -445,3 +463,22 @@ void CCCAppCommLauncherCustomListBoxItemDrawer::DrawBackgroundAndSeparatorLines(
 #endif // RD_UI_TRANSITION_EFFECTS_LIST
         }
     }
+
+void CCCAppCommLauncherCustomListBoxItemDrawer::DrawSeparator( CGraphicsContext& aGc, const TRect& aRect, const TRgb& aColor ) const
+	{
+	aGc.SetBrushStyle( CGraphicsContext::ENullBrush );
+	aGc.SetPenStyle( CGraphicsContext::ESolidPen );
+	
+	TRgb color( aColor );
+	color.SetAlpha( 32 );
+	aGc.SetPenColor( color );
+	
+	TRect lineRect( aRect );
+	TInt gap = AknLayoutScalable_Avkon::listscroll_gen_pane( 0 ).LayoutLine().it; 
+	lineRect.Shrink( gap, 0 );
+	lineRect.Move( 0, -1 );
+	
+	aGc.DrawLine( TPoint( lineRect.iTl.iX, lineRect.iBr.iY ), 
+	TPoint( lineRect.iBr.iX, lineRect.iBr.iY ) );
+	}
+// End of File

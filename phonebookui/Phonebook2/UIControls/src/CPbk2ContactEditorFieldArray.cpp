@@ -34,7 +34,7 @@
 #include "TPbk2ContactEditorParams.h"
 #include <MPbk2ApplicationServices.h>
 #include "CPbk2IconInfo.h"
-#include <aknsutils.h>
+#include <AknsUtils.h>
 #include <aknlayoutscalable_avkon.cdl.h>
 #include "CPbk2UIFieldArray.h"
 #include "CPbk2UIField.h"

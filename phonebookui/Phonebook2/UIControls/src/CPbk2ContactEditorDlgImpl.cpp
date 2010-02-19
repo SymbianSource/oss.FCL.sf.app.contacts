@@ -79,7 +79,6 @@
 #include <MVPbkContactFieldData.h>
 #include <MVPbkFieldType.h>
 #include <TVPbkFieldVersitProperty.h>
-#include <ccappmycardpluginrsc.rsg>
 
 #include <VPbkEng.rsg> 
 #include <VPbkFieldType.hrh>
@@ -95,9 +94,6 @@
 #include <hlplch.h>
 #include <aknnavide.h>
 #include <akninputblock.h>
-#include <coemain.h>
-
-_LIT( KCCAppMyCardPluginResFileName, "\\resource\\ccappmycardpluginrsc.rsc");
 
 /// Unnamed namespace for local definitions
 namespace {
@@ -175,8 +171,7 @@ CPbk2ContactEditorDlgImpl::CPbk2ContactEditorDlgImpl
         iEndKeyWasPressed( EFalse ),
         iAddressViewStandalone( EFalse ),
         iAppServices( aAppServices ),
-        iTitleText( aTitleText ),
-        iPbk2UiResource( *CCoeEnv::Static() )        
+        iTitleText( aTitleText )
     {
     // Exit is approved by default
     iExitRecord.Set( EExitApproved );
@@ -219,8 +214,7 @@ CPbk2ContactEditorDlgImpl::~CPbk2ContactEditorDlgImpl()
     // Restore the titlepane text
     if (iTitlePane && iStoredTitlePaneText)
         {
-        // iTitlePane takes ownership of iStoredTitlePaneText
-        iTitlePane->SetText(iStoredTitlePaneText);
+        iTitlePane->SetTextL(*iStoredTitlePaneText);
         }
 
     // Reset title pane picture
@@ -241,37 +235,10 @@ CPbk2ContactEditorDlgImpl::~CPbk2ContactEditorDlgImpl()
     delete iEditorExtension;
     delete iUiFieldArray;
     Release(iExtensionManager);
-        
-    if( iCommandId == EEikCmdExit || iCommandId == EAknCmdExit )
-		{	
-		CAknAppUi* appUi = static_cast<CAknAppUi*>( CCoeEnv::Static()->AppUi() );      		
-			
-		if( appUi )
-			{
-			TFileName file;
-			file.Copy( KCCAppMyCardPluginResFileName );
-			iPbk2UiResource.OpenL( file );
-		
-			HBufC* title = StringLoader::LoadLC( R_QTN_MYCARD_EDITOR_TITLE );	
-			
-			iPbk2UiResource.Close();			
-			TBool okToExit = EFalse;
-			
-			if( iTitleText && iTitleText->CompareC( title->Des() ) == 0 )
-				{
-				okToExit = ETrue;
-				}
-			
-			CleanupStack::PopAndDestroy(); // title
-								
-			if ( okToExit )
-				{
-				appUi->ProcessCommandL( EAknCmdExit );
-				}								
-			}
-		}    
-    
 	delete iTitleText;    
+    iTitleText = NULL;
+    delete iStoredTitlePaneText;
+    iStoredTitlePaneText = NULL;
     }
 
 // --------------------------------------------------------------------------
@@ -905,8 +872,6 @@ void CPbk2ContactEditorDlgImpl::ProcessCommandL(TInt aCommandId)
         !CheckFieldSpecificCommandL(aCommandId) &&
         iExitRecord.IsClear( EExitOrdered ) )
         {
-		iCommandId = aCommandId;
-    
         switch (aCommandId)
             {
             case EPbk2CmdAddItem:
@@ -1515,15 +1480,24 @@ void CPbk2ContactEditorDlgImpl::DynInitSyncL(
     {
     TInt id = aCurrentField.FieldProperty().FieldType().FieldTypeResId();  
     
-    if(id != R_VPBK_FIELD_TYPE_SYNCCLASS) 
+    // If the selection popup is open, hide menu option "Change" 
+    if( id == R_VPBK_FIELD_TYPE_SYNCCLASS ) 
         {
+        CEikCaptionedControl* line=CurrentLine();  
+        if ( line && (line->iControlType == EAknCtPopupField || line->iControlType == EAknCtPopupFieldText ) )
+            {
+            CAknPopupField* ctrl = static_cast<CAknPopupField*>( line->iControl );
+            if ( ctrl && ctrl->NumLines() > 1 ) 
+                {
+                DimItem( aMenuPane, EPbk2CmdEditorChangeSync);
+                }
+            }
+        }
+    else  // id != R_VPBK_FIELD_TYPE_SYNCCLASS
+        { 
         DimItem( aMenuPane,  EPbk2CmdEditorChangeSync);
         }
-    else 
-        {
-        //Label editing not anymore supported (is dimmed in DynInitMenuPaneL)
-        //DimItem( aMenuPane,  EPbk2CmdEditItemLabel);
-        }
+    
     }
 // CPbk2ContactEditorDlgImpl::DynInitAddressL
 // --------------------------------------------------------------------------
@@ -1633,11 +1607,6 @@ TBool CPbk2ContactEditorDlgImpl::OkToExitL(TInt aKeycode)
                  iNaviContainer->Pop();
                  iNaviContainer = NULL;
                  }
-            if ( iStoredTitlePaneText )
-                {
-                delete iStoredTitlePaneText;
-                iStoredTitlePaneText = NULL;
-                }
             MakeVisible( EFalse );
             MPbk2ContactEditorEventObserver::TParams params;
             params.iFlags = EPbk2EditorKeyCode;

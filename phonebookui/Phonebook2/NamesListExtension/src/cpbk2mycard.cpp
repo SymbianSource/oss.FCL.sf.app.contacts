@@ -174,7 +174,7 @@ MVPbkContactLink* CPbk2MyCard::MyCardLink() const
 // CPbk2MyCard::MyCardBitmap
 // --------------------------------------------------------------------------
 //
-CFbsBitmap* CPbk2MyCard::MyCardBitmap() const
+CFbsBitmap* CPbk2MyCard::MyCardBitmapL() const
 	{
 	// if fetched
 	if( iThumbBitmap )
@@ -184,7 +184,7 @@ CFbsBitmap* CPbk2MyCard::MyCardBitmap() const
 		CleanupStack::PushL( dstbitmap );
 	
 		//Get the handle to source bitmap
-		TInt srchandle = iThumbBitmap->Handle();
+		const TInt srchandle = iThumbBitmap->Handle();
 		
 		//Duplicate the bitmap handle. Increases the RefCount of bitmap 
 		//managed but Fbs Server
@@ -235,7 +235,8 @@ void CPbk2MyCard::VPbkSingleContactLinkOperationComplete(
     NotifyObservers( MPbk2MyCardObserver::EStateStatusResolved );
     
     // fetch store contact
-    iRetrieveOperation = iContactManager->RetrieveContactL( *iMyCardLink, *this );
+    TRAP_IGNORE( iRetrieveOperation = 
+            iContactManager->RetrieveContactL( *iMyCardLink, *this ) );
     }
 
 // --------------------------------------------------------------------------
@@ -271,7 +272,14 @@ void CPbk2MyCard::VPbkSingleContactOperationComplete(
     iMyCardStoreContact = aContact;
     
     // load thumbnail
-    LoadThumbnailL( *iMyCardStoreContact );
+    TRAPD( error, LoadThumbnailL( *iMyCardStoreContact ) );
+    if( error )
+        {
+        delete iThumbBitmap;
+        iThumbBitmap = NULL;
+        // inform observers
+        NotifyObservers( MPbk2MyCardObserver::EStateThumbnailNotFound );
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -341,12 +349,12 @@ void CPbk2MyCard::LoadThumbnailL( MVPbkBaseContact& aContact )
 		
 			// Define parameters for thumbnail
 			TPbk2ImageManagerParams params;
-			TInt useCropping = 0x0008;
 			// set params
 			params.iSize = size;
-			params.iFlags = TPbk2ImageManagerParams::EScaleImage |
-							TPbk2ImageManagerParams::EKeepAspectRatio |
-							useCropping;	//CROP IMAGE	
+            params.iFlags = TPbk2ImageManagerParams::EScaleImage |
+			                TPbk2ImageManagerParams::EUseSpeedOptimizedScaling |
+							TPbk2ImageManagerParams::ECropImage ;
+            params.iDisplayMode = EColor16MU;	
 			// contact has image. load it.
 			iImageOperation = iImageManager->GetImageAsyncL( 
 				&params, aContact, *thumbType, *this );
@@ -377,11 +385,7 @@ void CPbk2MyCard::StoreReady( MVPbkContactStore& aContactStore )
                 KMVPbkContactStoreExtension2Uid));
     if ( phoneStoreExtension )
 		{
-		TRAPD( err, iOperation = phoneStoreExtension->OwnContactLinkL(*this) );
-		if( err )
-			{
-			// TODO: How is this handled?
-			}
+		TRAP_IGNORE( iOperation = phoneStoreExtension->OwnContactLinkL(*this) );
 		}
     }
 

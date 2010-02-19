@@ -50,8 +50,8 @@
 #include <CPbk2SortOrderManager.h>
 #include <Pbk2ContactNameFormatterFactory.h>
 #include <MPbk2ContactNameFormatter.h>
-#include <cpbk2applicationservices.h>	
-#include <cpbk2storemanager.h>	
+#include <CPbk2ApplicationServices.h>	
+#include <CPbk2StoreManager.h>
 #include <CPbk2StoreConfiguration.h>	
 #include <CPbk2ContactEditorDlg.h>
 #include <MVPbkBaseContactField.h>
@@ -105,6 +105,7 @@ CCCAppMyCard::~CCCAppMyCard()
     
 	delete iCloseCallBack;
     delete iCreateCallBack;
+    delete iDlgCloseCallBack;
 
 	CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCard::~CCCAppMyCard()"));
     }
@@ -138,6 +139,8 @@ inline void CCCAppMyCard::ConstructL( RFs* /*aFs*/ )
         TCallBack( CloseCcaL, this ), CActive::EPriorityIdle );	
     iCreateCallBack = new(ELeave) CAsyncCallBack( 
         TCallBack( CreateMyCardContact, this ), CActive::EPriorityHigh );  
+    iDlgCloseCallBack = new(ELeave) CAsyncCallBack( 
+        TCallBack( ExitDlgL, this ), CActive::EPriorityHigh );
 	}
 
 // ---------------------------------------------------------------------------
@@ -285,17 +288,18 @@ void CCCAppMyCard::LoadContact()
     {
     CCA_DP(KMyCardLogFile, CCA_L("->CCCAppMyCard::LoadContact()"));    
 
-    delete iFetchOperation;
-    iFetchOperation = NULL;
-    TRAPD( err, iFetchOperation = 
-        iVPbkContactManager->RetrieveContactL( *iMyCard, *this ) );
-    if( err )
+    if( !iFetchOperation && iMyCard )
         {
-        // Cannot load own contact from VPbk  
-        CCA_DP(KMyCardLogFile, 
-            CCA_L("  CCCAppMyCard::LoadContact load error = %d"), err ); 
-
-        // TODO: How is this handled. show error on UI?
+        TRAPD( err, iFetchOperation = 
+            iVPbkContactManager->RetrieveContactL( *iMyCard, *this ) );
+        if( err )
+            {
+            // Cannot load own contact from VPbk  
+            CCA_DP(KMyCardLogFile, 
+                CCA_L("  CCCAppMyCard::LoadContact load error = %d"), err ); 
+    
+            // TODO: How is this handled. show error on UI?
+            }
         }
     
     CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCard::LoadContact()"));    
@@ -459,16 +463,21 @@ void CCCAppMyCard::LaunchContactEditorL( TUint32 aFlags )
 		iMyCardContact = NULL;
 		}
 	// params for the editor
-	TPbk2ContactEditorParams params( aFlags, field, NULL, NULL );
+	TPbk2ContactEditorParams params( aFlags, field, NULL, this );
 	
 	// pass custom title text
-	HBufC* title = CCoeEnv::Static()->AllocReadResourceLC( R_QTN_MYCARD_TITLE );
-	// ownership of the title is passed
-	CPbk2ContactEditorDlg* dlg =
-		CPbk2ContactEditorDlg::NewL( params, contact, *this, iAppServices, title,  
-        R_SOCIAL_PHONEBOOK_FIELD_PROPERTIES );
-	CleanupStack::Pop( title );
-	dlg->ExecuteLD();
+    if ( contact )
+        {
+        HBufC* title = CCoeEnv::Static()->AllocReadResourceLC( 
+            R_QTN_CCA_MC_TITLE_EDIT_MY_CARD );
+        // ownership of the title is passed
+        CPbk2ContactEditorDlg* dlg = CPbk2ContactEditorDlg::NewL( params, contact, 
+            *this, iAppServices, title, R_SOCIAL_PHONEBOOK_FIELD_PROPERTIES );
+        CleanupStack::Pop( title );
+        iEditorEliminator = dlg;
+        dlg->ResetWhenDestroyed( &iEditorEliminator );
+        dlg->ExecuteLD();
+        }
 	
 	// if field was created, destroy it
 	if( field )
@@ -498,24 +507,21 @@ void CCCAppMyCard::EditContactL( TInt aFocusedFieldIndex )
 //
 void CCCAppMyCard::ContactEditingComplete( MVPbkStoreContact* aEditedContact )
 	{
-    // My Card modifications are handled in HandleStoreEventL. Editor complete
-    // event is only interesting if we don't yet have mycard at all. Meaning
-    // it was just created.
+    // create link of mycard
+    MVPbkContactLink* link = NULL;
+    TRAPD( err, 
+        link = aEditedContact->CreateLinkLC();   
+        CleanupStack::Pop(); ); //link
     
-    if( !iMyCard )
+    if( !err )
         {
-        TRAPD( err, iMyCard = aEditedContact->CreateLinkLC();   
-            CleanupStack::Pop(); ); //link
-        if( err )
-            {
-            // TODO handle error 
-            }
-        else
-            {
-            // reload contact to get rid of the template(empty) fields. 
-            LoadContact();
-            }
+        delete iMyCard;
+        iMyCard = link;
+        
+        // reload mycard to get rid of the empty template fields
+        LoadContact();
         }
+    
     delete aEditedContact; // ignore given contact
 	}
 
@@ -541,6 +547,19 @@ void CCCAppMyCard::ContactEditingAborted()
 	}
 
 // ---------------------------------------------------------------------------
+// CCCAppMyCard::OkToExitL
+// ---------------------------------------------------------------------------
+//
+TBool CCCAppMyCard::OkToExitL( TInt /*aCommandId*/ )
+    {
+    // Handle exit via callback. Calls CCCAppMyCard::ExitDlg.
+    // Dialog's exit is handled this way to make the address selector's 
+    // exit work as it should.
+    iDlgCloseCallBack->Call();
+    return EFalse;
+    }
+
+// ---------------------------------------------------------------------------
 // CCCAppMyCard::CloseCcaL
 // ---------------------------------------------------------------------------
 //
@@ -552,6 +571,20 @@ TInt CCCAppMyCard::CloseCcaL( TAny* aPtr )
 	self->DoCloseCCaL();
 	return KErrNone;
 	}
+
+// ---------------------------------------------------------------------------
+// CCCAppMyCard::CloseCcaL
+// ---------------------------------------------------------------------------
+//
+TInt CCCAppMyCard::ExitDlgL( TAny* aPtr )
+    {
+    CCCAppMyCard* self = static_cast<CCCAppMyCard*>( aPtr );
+    if( self->iEditorEliminator )
+        {
+        self->iEditorEliminator->RequestExitL( EAknCmdExit );
+        }
+    return KErrNone;
+    }
 
 // ---------------------------------------------------------------------------
 // CCCAppMyCard::DoCloseCCaL
@@ -642,6 +675,9 @@ void CCCAppMyCard::VPbkSingleContactOperationFailed(
         CCA_L("->CCCAppMyCard::VPbkSingleContactOperationFailed error = %d"),
         aError );    
     
+    delete iFetchOperation;
+    iFetchOperation = NULL;
+
     delete iOperation;
     iOperation = NULL;
     

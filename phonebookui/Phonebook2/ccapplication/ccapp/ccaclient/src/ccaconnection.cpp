@@ -243,6 +243,8 @@ void CCCAConnection::HandleServerAppExit( TInt aReason )
         iObserver = NULL;
         }
 
+    iClosePending = EFalse; 
+    
     //Kill us if not soft exit requested
     if(!(flags & MCCAParameter::ESoftExit))    
         {
@@ -251,7 +253,7 @@ void CCCAConnection::HandleServerAppExit( TInt aReason )
         MAknServerAppExitObserver::HandleServerAppExit( aReason );
         }
 
-   iClosePending = EFalse; 
+   
    CCA_DP(KCCAClientLoggerFile, CCA_L( "<-CCCAConnection::HandleServerAppExit"));
     }
 

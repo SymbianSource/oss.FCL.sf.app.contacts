@@ -17,9 +17,9 @@
 *
 */
 
-#include "cpbkfieldanalyzer.h"
-#include <cpbkcontactengine.h>
-#include <cpbkcontactitem.h>
+#include "CPbkFieldAnalyzer.h"
+#include <CPbkContactEngine.h>
+#include <CPbkContactItem.h>
 #include <featmgr.h>
 
 

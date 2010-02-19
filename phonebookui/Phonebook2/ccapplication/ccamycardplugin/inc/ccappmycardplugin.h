@@ -179,6 +179,11 @@ private:
     void ViewImageCmdL(); 
     
     /*
+    * Copy detail to clipboard
+    */
+    void CopyDetailL();
+    
+    /*
      * Creates command handler if not created, and returns pointer to it.
      */
     CPbk2CommandHandler* CommandHandlerL();

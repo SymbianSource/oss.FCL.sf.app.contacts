@@ -48,8 +48,6 @@ NAME    MYCD
 #include <Pbk2IconId.rh>
 
 
-// Todo: This will be read from loc file after localization
-#define qtn_mycard_default_status "My Profile in Ovi"
 //  RESOURCE DEFINITIONS 
 
 // ---------------------------------------------------------------------------
@@ -91,7 +89,7 @@ RESOURCE MENU_PANE r_ccamycard_menupane
         MENU_ITEM 
             { 
             command = ECCAppMyCardCmdEdit;
-            txt = "Edit";
+            txt = qtn_phob_opt_entry_edit;
             },         
         MENU_ITEM 
             { 
@@ -101,7 +99,7 @@ RESOURCE MENU_PANE r_ccamycard_menupane
         MENU_ITEM 
             { 
             command = ECCappMyCardCmdDelete;
-            txt = qtn_phob_opt_entry_delete;	
+            txt = qtn_phob_my_card_clear;
             }, 	        	        	
         MENU_ITEM 
             { 
@@ -175,31 +173,48 @@ RESOURCE VPBK_FIELD_TYPE_SELECTOR r_mycard_clip_field_selector
 }
 
 // --------------------------------------------------------------------------
-// r_qtn_mycard_title
+// r_qtn_cca_title_my_card
 // --------------------------------------------------------------------------
 //
-RESOURCE TBUF r_qtn_mycard_title
-{
-    // TODO: localization
-    buf = "MyCard";
+RESOURCE TBUF r_qtn_cca_title_my_card
+{    
+    buf = qtn_cca_title_my_card;
 }
 // --------------------------------------------------------------------------
-// r_qtn_mycard_editor_title
+// r_qtn_cca_mc_title_edit_my_card
 // --------------------------------------------------------------------------
 //
-RESOURCE TBUF r_qtn_mycard_editor_title
+RESOURCE TBUF r_qtn_cca_mc_title_edit_my_card
 {    
     buf = qtn_cca_mc_title_edit_my_card;
 }
 
 // ---------------------------------------------------------------------------
-// r_qtn_mycard_default_status
+// r_qtn_cca_mc_my_card_in_ovi
 // ---------------------------------------------------------------------------
 // 
-RESOURCE TBUF r_qtn_mycard_default_status 			   
-	{ 
-	buf = qtn_mycard_default_status; 
-	}
+RESOURCE TBUF r_qtn_cca_mc_my_card_in_ovi 			   
+    {  
+    buf = qtn_cca_mc_my_card_in_ovi; 
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_phob_my_card_clear_confirm
+// ---------------------------------------------------------------------------
+// 
+RESOURCE TBUF r_qtn_phob_my_card_clear_confirm              
+    { 
+    buf = qtn_phob_my_card_clear_confirm; 
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_cca_info_note_copied_to_clipboard
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cca_info_note_copied_to_clipboard
+    {
+    buf = qtn_cca_info_note_copied_to_clipboard; 
+    }
 
 // --------------------------------------------------------------------------
 // Social Phonebook field properties for the contact editor
@@ -1678,6 +1693,7 @@ RESOURCE PHONEBOOK2_FIELD_PROPERTY_ARRAY r_social_phonebook_field_properties
             }
         };
     }
+
 // ---------------------------------------------------------------------------
 // r_ccacommlauncher_contact_image_stylus_menu
 // ---------------------------------------------------------------------------
@@ -1694,6 +1710,19 @@ RESOURCE STYLUS_POPUP_MENU r_mycard_contact_image_stylus_menu
                              command = ECCAppMyCardCmdStylusRemoveImageCmd; },
         STYLUS_POPUP_MENU_ITEM { txt = qtn_cca_stylus_popup_add_image; 
                              command = ECCAppMyCardCmdStylusAddImageCmd; }
+        };
+    }
+
+// ---------------------------------------------------------------------------
+// r_mycard_contact_copy_detail_stylus_menu
+// ---------------------------------------------------------------------------
+//
+RESOURCE STYLUS_POPUP_MENU r_mycard_contact_copy_detail_stylus_menu
+    {
+    items =
+        {
+        STYLUS_POPUP_MENU_ITEM { txt = qtn_cca_options_copy_detail; 
+                             command = ECCAppMyCardCmdStylusCopyDetailCmd; }        
         };
     }
 

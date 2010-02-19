@@ -41,9 +41,6 @@ NAME    COML // 4 letter ID
 #include <phonebook2ece.loc>
 #include "ccappcommlauncher.hrh"
 
-// Todo: This will be read from loc file after localization
-#define qtn_cca_default_status "Open Nokia OVI Services"
-
 //  RESOURCE DEFINITIONS 
 
 // ---------------------------------------------------------------------------
@@ -267,5 +264,5 @@ RESOURCE TBUF r_qtn_phob_comlauncher_show_on_map          { buf = qtn_phob_comla
 RESOURCE TBUF r_qtn_phob_popup_incomplete_address         { buf = qtn_phob_popup_incomplete_address; }
 RESOURCE TBUF r_qtn_phob_commlauncher_onelinepreview      { buf = qtn_phob_commlauncher_onelinepreview; }
 RESOURCE TBUF r_qtn_cca_voip_call_with_servicename { buf = qtn_cca_voip_call_single_service; }
-RESOURCE TBUF r_qtn_cca_default_status             { buf = qtn_cca_default_status; }
+RESOURCE TBUF r_qtn_cca_ftu_discover               { buf = qtn_cca_ftu_discover; }
 //End of File

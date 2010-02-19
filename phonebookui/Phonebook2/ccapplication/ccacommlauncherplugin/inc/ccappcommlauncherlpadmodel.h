@@ -24,7 +24,7 @@
 #include <e32hashtab.h>
 #include <spdefinitions.h>
 #include <mspnotifychangeobserver.h>
-#include <vpbkfieldtype.hrh>
+#include <VPbkFieldType.hrh>
 
 
 _LIT( KPbk2ECEIconFileName, "\\resource\\apps\\phonebook2ece.mif");

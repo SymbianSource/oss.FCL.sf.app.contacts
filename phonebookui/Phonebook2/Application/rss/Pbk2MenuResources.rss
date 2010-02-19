@@ -110,6 +110,10 @@ RESOURCE MENU_BAR r_phonebook2_nameslist_menubar
             },            
         MENU_TITLE
             {
+            menu_pane = R_PHONEBOOK2_MERGE_CONTACTS;
+            },
+        MENU_TITLE
+            {
             menu_pane = R_PHONEBOOK2_NAMESLIST_COPY_MENU;
             },
         MENU_TITLE
@@ -136,16 +140,6 @@ RESOURCE MENU_BAR r_phonebook2_nameslist_menubar
             {
             menu_pane = R_PHONEBOOK2_NAMELIST_CALL_CONTACT_MENU;
             },
-        MENU_TITLE
-            {
-            menu_pane = R_PHONEBOOK2_MERGE_CONTACTS;
-            },
-/* Patrik 23.10.2008 Removed as agreed by ECE program management.
-        MENU_TITLE
-            {
-            menu_pane = R_PHONEBOOK2_MOVE_TOPCONTACTS;
-            },
-*/            
         MENU_TITLE
             {
             menu_pane = R_PHONEBOOK2_NAMESLIST_CREATE_MENU;

@@ -21,6 +21,8 @@
 
 #include <e32std.h>
 
+class CFbsBitmap;
+
 /**
  * Util class with static text formatting functions
  */
@@ -118,6 +120,30 @@ class Pbk2PresentationUtils
     private: // Disabled functions
         Pbk2PresentationUtils();
     };
+
+class Pbk2PresentationImageUtils
+    {
+public:
+    enum TCroppingMode
+        {
+        /// Landscape image is cropped to square, target size is not used
+        ELandscapeCropping                  = 0x0,
+        /**
+         * Landscape image is cropped to square and optimized to target size.
+         * Cropped bitmap minimum width is aTargetSize width. 
+         */
+        ELandscapeOptimizedCropping
+        };
+    
+    IMPORT_C static void CropImageL( 
+            CFbsBitmap& aBitmap, 
+            TCroppingMode aCroppingMode, 
+            const TSize& aTargetSize );
+    
+private: // Disabled functions
+    Pbk2PresentationImageUtils();
+    };
+
 
 #endif // PBK2PRESENTATIONUTILS_H
 
