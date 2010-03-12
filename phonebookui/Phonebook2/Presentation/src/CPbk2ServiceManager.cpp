@@ -26,6 +26,7 @@
 #include "Pbk2PresentationUtils.h"
 #include <spsettings.h>
 #include <spproperty.h>
+#include <spentry.h>
 #include <cbsfactory.h>
 #include <mbsaccess.h>
 #include <fbs.h>
@@ -189,11 +190,26 @@ void CPbk2ServiceManager::AppendInstalledServicesL()
         else
             {
             //Append new if ok to add 
-            TBool okToAppend(EFalse);
-
+            TBool okToAppend(ETrue);
+            
+            // Check whether the service is VCC.
+            // If so, when the VoIP service is becoming available, 
+            // the VCC item should be in a same field for UI displaying.
+            CSPEntry *entry = CSPEntry::NewLC();
+            TInt ret = iSettings->FindEntryL( idArray[ni], *entry );
+            if( ret == KErrNone )
+                {
+                const CSPProperty* prop = NULL;
+                ret = entry->GetProperty( prop, ESubPropertyVccVDI);
+                if( ret == KErrNone )
+                    {
+                    okToAppend = EFalse;
+                    }
+                }
+            CleanupStack::PopAndDestroy(); //entry
             // Check whether service supports cs voice call. If so, discard it.            
             CSPProperty* servAttrMask = CSPProperty::NewLC();        
-            TInt ret = iSettings->FindPropertyL( 
+            ret = iSettings->FindPropertyL( 
                 idArray[ni], EPropertyServiceAttributeMask, *servAttrMask );
             
             if( ret == KErrNone )

@@ -182,6 +182,11 @@ public: // implementation
      */
     CCCAppDetailsViewListBoxModel& ListBoxModel() const;
 
+    /*
+    * Launch Call 
+    */
+    void HandleLaunchCallRequestL();
+
 private:
 
     // Called by ccapplication framework
@@ -198,11 +203,6 @@ private:
      * @param aCommandId Command id 
      */
     void DoShowMapCmdL( TPbk2CommandId aCommandId );
-    
-    /*
-    * Launch Call 
-    */
-    void HandleLaunchCallRequestL();
     
 
 private: // data

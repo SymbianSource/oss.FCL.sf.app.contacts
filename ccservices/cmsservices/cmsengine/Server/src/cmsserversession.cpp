@@ -802,6 +802,18 @@ void CCmsServerSession::DoServiceL( const RMessage2& aMessage )
             CreateContactL( aMessage );
             break;
             }
+        case ECmsIsTopContact:
+            {
+            PRINT( _L( " CCmsServerSession::ServiceL():Is Top Contact" ) );
+            IsTopContactL( aMessage );
+            break;
+            }
+		case ECmsSetVoiceCallDefault:
+        	{
+        	iCmsServer->PhonebookProxyHandle().SetVoiceCallDefaultL();
+        	aMessage.Complete( KErrNone );
+        	break;
+        	}
         default:
             {
             PRINT( _L( " CCmsServerSession::ServiceL(): not supported request" ) );
@@ -811,5 +823,29 @@ void CCmsServerSession::DoServiceL( const RMessage2& aMessage )
         }
     PRINT( _L( "End CCmsServerSession::DoServiceL()" ) );  
     }
+
+
+// ----------------------------------------------------------
+// CCmsServerSession::IsTopContactL
+// 
+// ----------------------------------------------------------
+//
+void CCmsServerSession::IsTopContactL( const RMessage2& aMessage )
+    {
+    PRINT( _L( "Start CCmsServerSession::IsTopContactL()" ) );            
+    if( iServerContact && !iServerContact->IsDeleted() )
+        {   
+        //Currently only contactlink array is supported.
+        iServerContact->IsTopContactL( aMessage );
+        }
+    else
+        {
+        PRINT( _L( "CCmsServerSession::IsTopContactL'(): Contact has been deleted => complete with KErrNotFound" ) );        
+        aMessage.Complete( KErrNotFound );
+        }
+    
+    PRINT( _L( "End CCmsServerSession::IsTopContactL()" ) );            
+    }
+
 
 // End of file

@@ -226,7 +226,7 @@ void CPbk2IconFactory::ConstructL()
     TAknLayoutRect listLayoutRect;
     listLayoutRect.LayoutRect(
         mainPane,
-        AknLayoutScalable_Avkon::list_single_graphic_pane_g2(0).LayoutLine() );
+        AknLayoutScalable_Avkon::list_single_graphic_pane_g1(0).LayoutLine() );
     TSize size(listLayoutRect.Rect().Size());
 
     // Add xsp service icons2

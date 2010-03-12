@@ -154,6 +154,12 @@ RESOURCE MENU_PANE r_ccappdetailsview_menupane
             command = KAiwCmdAssign;
             txt = qtn_phob_opt_entry_edit;
         },
+        MENU_ITEM
+        {
+            command = ECCAppDetailsViewCallCmd;
+            txt = qtn_phob_opt_call;
+            flags = EEikMenuItemSpecific;            
+        },    
         /*
         MENU_ITEM
         {
@@ -340,6 +346,48 @@ RESOURCE VPBK_FIELD_TYPE_SELECTOR r_detailsview_phonenumber_selector
             name = EVPbkVersitNameX;
             extensionName = "X-ASSISTANT-TEL";
         }
+    };
+}
+
+// --------------------------------------------------------------------------
+//  Selector for call fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_detailsview_call_selector
+{
+    versitProperties =
+    {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-ASSISTANT-TEL";
+            }
+    };
+    excludedParameters = {EVPbkVersitParamFAX,EVPbkVersitParamMSG,EVPbkVersitParamBBS,EVPbkVersitParamMODEM,EVPbkVersitParamISDN};
+}
+
+// --------------------------------------------------------------------------
+//  Selector for voip fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_detailsview_voip_selector
+{
+    versitProperties =
+    {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            parameters = { EVPbkVersitParamVOIP };
+            extensionName = "X-SIP";
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameIMPP;
+            }        
     };
 }
 
@@ -626,6 +674,12 @@ RESOURCE ARRAY r_detailsview_icon_info_array
             mbmFileName = detailsview_mbm_file_location;
             iconId = EMbmCcappdetailsviewpluginQgn_indi_qdial_one_add;
             maskId = EMbmCcappdetailsviewpluginQgn_indi_qdial_one_add_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiQdialOneAdd;
+            colorIdMajor = EAknsMajorSkin; 
+            colorIdMinor = EAknsMinorQsnIconColors;  
+            colorIndex = 12; // EAknsCIQsnIconColorsCG13
+            defaultColorIndex = 215;
         },
         PBK2_ICON_INFO
         {
@@ -638,6 +692,12 @@ RESOURCE ARRAY r_detailsview_icon_info_array
             mbmFileName = detailsview_mbm_file_location;
             iconId = EMbmCcappdetailsviewpluginQgn_indi_qdial_two_add;
             maskId = EMbmCcappdetailsviewpluginQgn_indi_qdial_two_add_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiQdialTwoAdd;
+            colorIdMajor = EAknsMajorSkin; 
+            colorIdMinor = EAknsMinorQsnIconColors;  
+            colorIndex = 12; // EAknsCIQsnIconColorsCG13
+            defaultColorIndex = 215;
         },
         PBK2_ICON_INFO
         {
@@ -650,6 +710,12 @@ RESOURCE ARRAY r_detailsview_icon_info_array
             mbmFileName = detailsview_mbm_file_location;
             iconId = EMbmCcappdetailsviewpluginQgn_indi_qdial_three_add;
             maskId = EMbmCcappdetailsviewpluginQgn_indi_qdial_three_add_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiQdialThreeAdd;
+            colorIdMajor = EAknsMajorSkin; 
+            colorIdMinor = EAknsMinorQsnIconColors;  
+            colorIndex = 12; // EAknsCIQsnIconColorsCG13
+            defaultColorIndex = 215;
         },
         PBK2_ICON_INFO
         {
@@ -662,6 +728,12 @@ RESOURCE ARRAY r_detailsview_icon_info_array
             mbmFileName = detailsview_mbm_file_location;
             iconId = EMbmCcappdetailsviewpluginQgn_indi_qdial_four_add;
             maskId = EMbmCcappdetailsviewpluginQgn_indi_qdial_four_add_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiQdialFourAdd;
+            colorIdMajor = EAknsMajorSkin; 
+            colorIdMinor = EAknsMinorQsnIconColors;  
+            colorIndex = 12; // EAknsCIQsnIconColorsCG13
+            defaultColorIndex = 215;
         },
         PBK2_ICON_INFO
         {
@@ -674,6 +746,12 @@ RESOURCE ARRAY r_detailsview_icon_info_array
             mbmFileName = detailsview_mbm_file_location;
             iconId = EMbmCcappdetailsviewpluginQgn_indi_qdial_five_add;
             maskId = EMbmCcappdetailsviewpluginQgn_indi_qdial_five_add_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiQdialFiveAdd;
+            colorIdMajor = EAknsMajorSkin; 
+            colorIdMinor = EAknsMinorQsnIconColors;  
+            colorIndex = 12; // EAknsCIQsnIconColorsCG13
+            defaultColorIndex = 215;
         },
         PBK2_ICON_INFO
         {
@@ -686,6 +764,12 @@ RESOURCE ARRAY r_detailsview_icon_info_array
             mbmFileName = detailsview_mbm_file_location;
             iconId = EMbmCcappdetailsviewpluginQgn_indi_qdial_six_add;
             maskId = EMbmCcappdetailsviewpluginQgn_indi_qdial_six_add_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiQdialSixAdd;
+            colorIdMajor = EAknsMajorSkin; 
+            colorIdMinor = EAknsMinorQsnIconColors;  
+            colorIndex = 12; // EAknsCIQsnIconColorsCG13
+            defaultColorIndex = 215;
         },
         PBK2_ICON_INFO
         {
@@ -698,6 +782,12 @@ RESOURCE ARRAY r_detailsview_icon_info_array
             mbmFileName = detailsview_mbm_file_location;
             iconId = EMbmCcappdetailsviewpluginQgn_indi_qdial_seven_add;
             maskId = EMbmCcappdetailsviewpluginQgn_indi_qdial_seven_add_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiQdialSevenAdd;
+            colorIdMajor = EAknsMajorSkin; 
+            colorIdMinor = EAknsMinorQsnIconColors;  
+            colorIndex = 12; // EAknsCIQsnIconColorsCG13
+            defaultColorIndex = 215;
         },
         PBK2_ICON_INFO
         {
@@ -710,6 +800,12 @@ RESOURCE ARRAY r_detailsview_icon_info_array
             mbmFileName = detailsview_mbm_file_location;
             iconId = EMbmCcappdetailsviewpluginQgn_indi_qdial_eight_add;
             maskId = EMbmCcappdetailsviewpluginQgn_indi_qdial_eight_add_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiQdialEightAdd;
+            colorIdMajor = EAknsMajorSkin; 
+            colorIdMinor = EAknsMinorQsnIconColors;  
+            colorIndex = 12; // EAknsCIQsnIconColorsCG13
+            defaultColorIndex = 215;
         },
         PBK2_ICON_INFO
         {
@@ -722,6 +818,12 @@ RESOURCE ARRAY r_detailsview_icon_info_array
             mbmFileName = detailsview_mbm_file_location;
             iconId = EMbmCcappdetailsviewpluginQgn_indi_qdial_nine_add;
             maskId = EMbmCcappdetailsviewpluginQgn_indi_qdial_nine_add_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiQdialNineAdd;
+            colorIdMajor = EAknsMajorSkin; 
+            colorIdMinor = EAknsMinorQsnIconColors;  
+            colorIndex = 12; // EAknsCIQsnIconColorsCG13
+            defaultColorIndex = 215;
         },
         PBK2_ICON_INFO
         {
@@ -734,6 +836,12 @@ RESOURCE ARRAY r_detailsview_icon_info_array
             mbmFileName = detailsview_mbm_file_location;
             iconId = EMbmCcappdetailsviewpluginQgn_indi_default_conn_add;
             maskId = EMbmCcappdetailsviewpluginQgn_indi_default_conn_add_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiDefaultConnAdd;
+            colorIdMajor = EAknsMajorSkin; 
+            colorIdMinor = EAknsMinorQsnIconColors;  
+            colorIndex = 12; // EAknsCIQsnIconColorsCG13
+            defaultColorIndex = 215;
         }
     };
 }

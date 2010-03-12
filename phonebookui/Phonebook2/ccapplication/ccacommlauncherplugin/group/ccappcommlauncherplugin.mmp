@@ -39,7 +39,6 @@ SOURCE          CCCAppCommLauncherPbkCmd.cpp
 SOURCE          ccappcommlaunchercustomlistboxdata.cpp 
 SOURCE          ccappcommlaunchercustomlistbox.cpp
 SOURCE          ccappcommlaunchercustomlistboxitemdrawer.cpp
-SOURCE          ccappcommlaunchersetdefault.cpp
 
 // resources
 START RESOURCE      ../data/ccappcommlauncherpluginrsc.rss 

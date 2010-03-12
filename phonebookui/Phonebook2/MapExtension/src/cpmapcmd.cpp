@@ -570,33 +570,220 @@ void CPmapCmd::FinishProcess()
 // CPmapCmd::EditorShowMapL
 // --------------------------------------------------------------------------
 //
-void CPmapCmd::EditorShowOnMapsL(TVPbkFieldTypeParameter aAddressType)
-	{
+void CPmapCmd::EditorShowOnMapsL( TVPbkFieldTypeParameter aAddressType )
+    {
     CMnMapView* mapview = CMnMapView::NewL( *iMapViewProvider );
-	CleanupStack::PushL( mapview );
-	        	        
-	RPointerArray<CPosLandmark> landmarks;
-	CleanupClosePushL( landmarks );
-	
-	CPosLandmark* landmark = CPosLandmark::NewL();
-	CleanupStack::PushL( landmark );
-	
-	if ( !FillGeoLandmarkL( *landmark, aAddressType ) )
-		{
-		FillLandmarkL( *landmark, aAddressType );
-		}
-	TLocality locality;
-	if( landmark->NumOfAvailablePositionFields() > 0 || landmark->GetPosition( locality ) == KErrNone )
-		{
-		landmarks.AppendL( landmark );
-		mapview->AddLandmarksToShowL( landmarks );
-		}
-	mapview->ShowMapL();
+    CleanupStack::PushL( mapview );
 
-	CleanupStack::PopAndDestroy( landmark );
-	CleanupStack::PopAndDestroy( &landmarks );
-	CleanupStack::PopAndDestroy( mapview );
-	}
+    RPointerArray<CPosLandmark> landmarks;
+    CleanupClosePushL( landmarks );
+
+    CPosLandmark* landmark = CPosLandmark::NewL();
+    CleanupStack::PushL( landmark );
+
+    if ( !FillGeoLandmarkL( *landmark, aAddressType ) )
+        {
+        FillLandmarkL( *landmark, aAddressType );
+        }
+    TLocality locality;
+    if ( landmark->NumOfAvailablePositionFields() > 0
+        || landmark->GetPosition( locality ) == KErrNone )
+        {
+        landmarks.AppendL( landmark );
+        mapview->AddLandmarksToShowL( landmarks );
+        }
+
+    if ( landmark->GetPosition( locality ) == KErrNone )
+        {
+        mapview->ShowMapL();
+        CleanupStack::PopAndDestroy( landmark );
+        CleanupStack::PopAndDestroy( &landmarks );
+        CleanupStack::PopAndDestroy( mapview );
+        }
+    else
+        {
+        TRequestStatus status;
+        mapview->SelectFromMapL( status );
+        User::WaitForRequest( status );
+        TBool update = EFalse;
+        TBool geocoordsExist = EFalse;
+
+        CPosLandmark* result = NULL;
+        if ( status.Int() == KErrNone )
+            {
+            result = mapview->RetrieveSelectionResultL();
+            if ( result->GetPosition( locality ) == KErrNone )
+                {
+                geocoordsExist = ETrue;
+                }
+            if ( result->IsPositionFieldAvailable( EPositionFieldStreet )
+                || result->IsPositionFieldAvailable( EPositionFieldCity )
+                || result->IsPositionFieldAvailable( EPositionFieldCountry ) )
+                {
+                update = ETrue;
+                }
+
+            }
+        CleanupStack::PopAndDestroy( landmark );
+        CleanupStack::PopAndDestroy( &landmarks );
+        CleanupStack::PopAndDestroy( mapview );
+        if ( result )
+            {
+            CleanupStack::PushL( result );
+            }
+
+        if ( update )
+            {
+
+            const TInt KGranularity = 4;
+            CDesCArrayFlat* arrFields = new (ELeave) CDesCArrayFlat(
+                KGranularity );
+            CleanupStack::PushL( arrFields );
+            HBufC* addrLebel = NULL;
+
+            switch ( aAddressType )
+                {
+                case EVPbkVersitParamPREF:
+                    addrLebel = StringLoader::LoadLC(
+                        R_QTN_PHOB_HEADER_ADDRESS );
+                    break;
+                case EVPbkVersitParamHOME:
+                    addrLebel = StringLoader::LoadLC(
+                        R_QTN_PHOB_HEADER_ADDRESS_HOME );
+                    break;
+                case EVPbkVersitParamWORK:
+                    addrLebel = StringLoader::LoadLC(
+                        R_QTN_PHOB_HEADER_ADDRESS_WORK );
+                    break;
+                default:
+                    User::Leave( KErrArgument );
+                }
+            arrFields->AppendL( addrLebel->Des() );
+            _LIT(KComma, ",");
+            _LIT(KSpace, " ");
+            TInt lenght = 0;
+            TPtrC street;
+            if ( result->IsPositionFieldAvailable( EPositionFieldStreet ) )
+                {
+                result->GetPositionField( EPositionFieldStreet, street );
+                lenght += street.Length();
+                }
+
+            TPtrC city;
+            if ( result->IsPositionFieldAvailable( EPositionFieldCity ) )
+                {
+                result->GetPositionField( EPositionFieldCity, city );
+                if ( lenght )
+                    {
+                    lenght += KComma().Length() + KSpace().Length();
+                    }
+                lenght += city.Length();
+                }
+
+            TPtrC country;
+            if ( result->IsPositionFieldAvailable( EPositionFieldCountry ) )
+                {
+                result->GetPositionField( EPositionFieldCountry, country );
+                if ( lenght )
+                    {
+                    lenght += KComma().Length() + KSpace().Length();
+                    }
+                lenght += country.Length();
+                }
+
+            RBuf newAddr;
+            newAddr.CreateL( lenght );
+            CleanupClosePushL( newAddr );
+
+            if ( street.Length() )
+                {
+                newAddr += street;
+                }
+
+            if ( city.Length() )
+                {
+                if ( newAddr.Length() > 0 )
+                    {
+                    newAddr += KComma();
+                    newAddr += KSpace();
+                    }
+                newAddr += city;
+                }
+
+            if ( country.Length() )
+                {
+                if ( newAddr.Length() > 0 )
+                    {
+                    newAddr += KComma();
+                    newAddr += KSpace();
+                    }
+                newAddr += country;
+                }
+
+            arrFields->AppendL( newAddr );
+            HBufC* prompt = StringLoader::LoadLC(
+                R_QTN_PHOB_CONFIRM_CHANGE_ADDRESS, *arrFields );
+            CAknQueryDialog* dlg = CAknQueryDialog::NewL();
+            if ( !dlg->ExecuteLD( R_PBK2_GENERAL_CONFIRMATION_QUERY, *prompt ) )
+                {
+                update = EFalse;
+                }
+            CleanupStack::PopAndDestroy( prompt );
+            CleanupStack::PopAndDestroy( &newAddr );
+            CleanupStack::PopAndDestroy( addrLebel );
+            CleanupStack::PopAndDestroy( arrFields );
+
+            }
+        if ( update )
+            {
+            if ( !iEditorControl )
+                {
+                iContact->LockL( *this );
+                CActiveScheduler::Start();
+                }
+            UpdateFieldL( *result, EPositionFieldCountry,
+                EVPbkVersitSubFieldCountry, aAddressType );
+            UpdateFieldL( *result, EPositionFieldCity,
+                EVPbkVersitSubFieldLocality, aAddressType );
+            UpdateFieldL( *result, EPositionFieldStreet,
+                EVPbkVersitSubFieldStreet, aAddressType );
+            UpdateFieldL( *result, EPositionFieldPostalCode,
+                EVPbkVersitSubFieldPostalCode, aAddressType );
+            UpdateFieldL( *result, EPositionFieldLocality,
+                EVPbkVersitSubFieldRegion, aAddressType );
+            UpdateFieldL( *result, EPositionFieldNone,
+                EVPbkVersitSubFieldPostOfficeAddress, aAddressType );
+            UpdateFieldL( *result, EPositionFieldNone,
+                EVPbkVersitSubFieldExtendedAddress, aAddressType );
+
+            if ( geocoordsExist )
+                {
+                UpdateCoordsL( locality, aAddressType );
+                }
+            if ( !iEditorControl )
+                {
+                iContact->CommitL( *this );
+                CActiveScheduler::Start();
+                }
+            if ( ControlExtension() )
+                {
+                ControlExtension()->UpdateControlsL();
+                }
+
+            HBufC* text = StringLoader::LoadLC(
+                R_QTN_PHOB_NOTE_ADDRESS_UPDATED );
+            CAknInformationNote* note = new (ELeave) CAknInformationNote(
+                ETrue );
+            note->ExecuteLD( *text );
+            CleanupStack::PopAndDestroy( text );
+            }
+
+        if ( result )
+            {
+            CleanupStack::PopAndDestroy( result );
+            }
+        }
+    }
 
 // --------------------------------------------------------------------------
 // CPmapCmd::FillLandmarkL

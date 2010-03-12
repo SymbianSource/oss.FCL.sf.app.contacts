@@ -176,6 +176,7 @@ END
 
 // Include paths
 USERINCLUDE     ../UIControls/inc ../UIControls/rss
+USERINCLUDE     ../Application/inc
 SYSTEMINCLUDE   ../inc
 APP_LAYER_SYSTEMINCLUDE
 

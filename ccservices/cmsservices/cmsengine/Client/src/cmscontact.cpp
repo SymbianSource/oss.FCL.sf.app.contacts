@@ -282,6 +282,16 @@ EXPORT_C TInt RCmsContact::GetContactActionFieldCount(
     }
 
 // ----------------------------------------------------
+// RCmsContact::SetVoiceCallDefault
+// 
+// ----------------------------------------------------
+//
+EXPORT_C void RCmsContact::SetVoiceCallDefault( TRequestStatus& aStatus ) const
+	{
+	SendReceive( ECmsSetVoiceCallDefault, TIpcArgs(), aStatus  );
+	}
+
+// ----------------------------------------------------
 // RCmsContact::SendMessage
 // 
 // ----------------------------------------------------
@@ -431,6 +441,23 @@ void RCmsContact::DeleteNotifier(
             delete current;
             }
         }
+    }
+
+// ----------------------------------------------------
+// RCmsContact::IsTopContact
+// 
+// ----------------------------------------------------
+//
+EXPORT_C TBool RCmsContact::IsTopContact()
+    {
+    #ifdef _DEBUG
+        RCmsSession::WriteToLog( _L8( "RCmsContact::IsTopContact()" ) );
+    #endif
+    TInt isTop( EFalse );   
+    TPckg<TInt> pack( isTop );
+    SendReceive(ECmsIsTopContact, TIpcArgs(&pack));
+           
+    return isTop;
     }
 
 

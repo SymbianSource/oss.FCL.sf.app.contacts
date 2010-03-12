@@ -110,10 +110,12 @@ inline void CPbk2ContactEditorImppField::ConstructL()
         | EAknEditorCharactersLowerCase, EAknEditorAlignLeft,
         ETrue, ETrue, EFalse);
 
+    // T9 should be deactivated in all contact editors always
+    DeactivateT9(iContactField.FieldProperty().EditMode());
+
     if (iContactField.FieldProperty().EditMode() == 
             EPbk2FieldEditModeLatinOnly)
         {
-        iControl->SetAknEditorFlags(EAknEditorFlagLatinInputModesOnly);
         iControl->SetAknEditorSpecialCharacterTable(
                 R_AVKON_EMAIL_ADDR_SPECIAL_CHARACTER_TABLE_DIALOG );
         }

@@ -673,7 +673,15 @@ void CPbk2NlxAddToTopContactsCmd::ContactRelocationFailed(
     TInt /* aReason */,
     MVPbkStoreContact* /* aContact */ )
 	{
-    __ASSERT_DEBUG( EFalse, Panic(ENlxUnexpectedFailurePath) );
+    if ( iDecorator )
+        {
+        // wait for callback from the wait note and finish then
+        iDecorator->ProcessStopped();
+        }
+    else
+        {
+        StartNext( EFinish );
+        }
 	}
 
 // ---------------------------------------------------------------------------

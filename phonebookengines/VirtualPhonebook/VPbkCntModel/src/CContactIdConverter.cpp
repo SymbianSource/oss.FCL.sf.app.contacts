@@ -66,7 +66,7 @@ CContactIdConverter::~CContactIdConverter()
 TInt32 CContactIdConverter::LinkToIdentifier( const MVPbkContactLink& aLink ) const
     {
     TInt32 result = KNullContactId;
-    if ( &aLink.ContactStore() == &iContactStore )
+    if ( &aLink && &aLink.ContactStore() == &iContactStore )
         {
         const CContactLink& link = static_cast<const CContactLink&>( aLink );
         result = link.ContactId();

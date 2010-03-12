@@ -29,3 +29,4 @@ EXPORTS
 	?NewL@CCCAppImageDecoding@@SAPAV1@AAVMCCAppImageDecodingObserver@@AAVRFs@@PAVHBufC8@@PAVHBufC16@@@Z @ 28 NONAME ; class CCCAppImageDecoding * CCCAppImageDecoding::NewL(class MCCAppImageDecodingObserver &, class RFs &, class HBufC8 *, class HBufC16 *)
 	?SetDefaultStatusTextL@CCCAppStatusControl@@QAEXPAVHBufC16@@@Z @ 29 NONAME ; void CCCAppStatusControl::SetDefaultStatusTextL(class HBufC16 *)
 	?SetDefaultStatusIconL@CCCAppStatusControl@@QAEXPAVCGulIcon@@@Z @ 30 NONAME ; void CCCAppStatusControl::SetDefaultStatusIcon(class CGulIcon *)
+	?IsTopContact@CCCAppCmsContactFetcherWrapper@@QAEHXZ @ 31 NONAME ; int CCCAppCmsContactFetcherWrapper::IsTopContact(void)

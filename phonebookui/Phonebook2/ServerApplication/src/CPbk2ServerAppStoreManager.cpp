@@ -140,6 +140,7 @@ CPbk2ServerAppStoreManager::~CPbk2ServerAppStoreManager()
     delete iSortOrderAcquirer;
     delete iMonitor;
     delete iFetchView;
+    delete iMyCardFilter;
     }
 
 // --------------------------------------------------------------------------

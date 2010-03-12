@@ -90,6 +90,9 @@ LIBRARY         ccapputil.lib
 LIBRARY         CdlEngine.lib
 LIBRARY         AknLayout2.lib
 LIBRARY         ws32.lib 
+LIBRARY         Pbk2CommonUI.lib
+LIBRARY         VPbkEng.lib
+LIBRARY         Pbk2Presentation.lib
 
 LIBRARY         flogger.lib
 

@@ -307,6 +307,19 @@ void CCCAppStatusControl::SetVariableLayouts( TInt aOption )
             rect, 
             AknLayoutScalable_Apps::phob2_cc_button_pane_t1( aOption ) ); 
 
+	TRgb color;
+    AknsUtils::GetCachedColor( 
+            AknsUtils::SkinInstance(), 
+            color, 
+            KAknsIIDQsnTextColors, 
+            EAknsCIQsnTextColorsCG6 );
+    
+    TRAP_IGNORE(
+        {
+        iStatusLabel1->OverrideColorL( EColorLabelText, color );        
+        iStatusLabel2->OverrideColorL( EColorLabelText, color );
+        } );
+			
     // resize images for new resolution
     ReSizeIcon( iStatusIcon, iStatusIconSize );
     ReSizeIcon( iDefaultIcon, iStatusIconSize );

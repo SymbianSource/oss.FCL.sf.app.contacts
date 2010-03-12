@@ -112,7 +112,7 @@ void CCCAppCmsContactFetcherWrapper::ConstructL()
     {
     CCA_DP(KCCAppUtilLogFile, CCA_L("->CCCAppCmsContactFetcherWrapper::ConstructL()"));
 
-    TRAPD( err, StartFetcherL());
+    TRAPD( err, StartFetcherL( ETrue));
     // problem can either be with connecting to CMS or with opening the contact
     iErrorsOccured = err;
 
@@ -149,13 +149,21 @@ EXPORT_C CCCAppCmsContactFetcherWrapper* CCCAppCmsContactFetcherWrapper::Instanc
 // CCCAppCmsContactFetcherWrapper::StartFetcherL
 // --------------------------------------------------------------------------
 //
-void CCCAppCmsContactFetcherWrapper::StartFetcherL()
+void CCCAppCmsContactFetcherWrapper::StartFetcherL( TBool aSetDefault )
     {
     CCA_DP(KCCAppUtilLogFile, CCA_L("->CCCAppCmsContactFetcherWrapper::StartFetcherL()"));
     User::LeaveIfError( iCmsSession.Connect() );
+    
     OpenContactL();
     
-    StartAsyncFetchingL();
+    if ( aSetDefault )
+    	{
+    	SetDefaultForVoiceCallL();
+    	}
+    else
+    	{
+    	StartAsyncFetchingL();
+    	}
     
     CCA_DP(KCCAppUtilLogFile, CCA_L("<-CCCAppCmsContactFetcherWrapper::StartFetcherL()"));
     }
@@ -303,6 +311,13 @@ void CCCAppCmsContactFetcherWrapper::RunL()
            
     switch( iHandlerState )
         {
+        case ESettingVoiceCallDefault:
+        	{
+            CCA_DP(KCCAppUtilLogFile, CCA_L("::RunL() iHandlerState == ESettingVoiceCallDefault"));
+            StartAsyncFetchingL();
+            CCA_DP(KCCAppUtilLogFile, CCA_L("::RunL() ESettingVoiceCallDefault completed"));
+        	}
+        	break;
         case EFindingFromOtherStores:
             {
             CCA_DP(KCCAppUtilLogFile, CCA_L("::RunL() iHandlerState == EFindingFromOtherStores"));
@@ -365,7 +380,22 @@ void CCCAppCmsContactFetcherWrapper::NotifyErrorL()
 
     CCA_DP(KCCAppUtilLogFile, CCA_L("<-CCCAppCmsContactFetcherWrapper::NotifyErrorL()"));
     }
-
+// --------------------------------------------------------------------------
+// CCCAppCmsContactFetcherWrapper::SetDefaultForVoiceCallL
+// --------------------------------------------------------------------------
+//
+void CCCAppCmsContactFetcherWrapper::SetDefaultForVoiceCallL()
+	{
+	CCA_DP(KCCAppUtilLogFile, CCA_L("->CCCAppCmsContactFetcherWrapper::SetDefaultForVoiceCallL()"));
+	
+	iHandlerState = ESettingVoiceCallDefault;	
+    iStatus = KRequestPending;
+  
+    iCmsContactDataFetcher.SetVoiceCallDefault( iStatus );
+    SetActive();
+    
+    CCA_DP(KCCAppUtilLogFile, CCA_L("<-CCCAppCmsContactFetcherWrapper::SetDefaultForVoiceCallL()"));
+	}
 // --------------------------------------------------------------------------
 // CCCAppCmsContactFetcherWrapper::DoCancel
 // --------------------------------------------------------------------------
@@ -674,6 +704,15 @@ void CCCAppCmsContactFetcherWrapper::RefetchContactL()
     iWrapperParam = EFindContactFromOtherStores;
         
     StartFetcherL();
+    }
+
+// ---------------------------------------------------------------------------
+// CCCAppCmsContactFetcherWrapper::IsTopContact
+// ---------------------------------------------------------------------------
+//
+EXPORT_C TBool CCCAppCmsContactFetcherWrapper::IsTopContact()
+    {
+    return iCmsContactDataFetcher.IsTopContact();        
     }
 
 // End of file

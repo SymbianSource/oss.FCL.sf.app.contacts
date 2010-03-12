@@ -37,7 +37,7 @@ class MCmsContactInterface
     EContactDeleted        
     };*/
         
-        virtual TBool OfferContactEventL( TCmsPhonebookEvent aEventType,
+        virtual void OfferContactEventL( TCmsPhonebookEvent aEventType,
                                           const MVPbkContactLink* aContactLink ) = 0;
 
         virtual void ContactReadyL( TInt error, MVPbkStoreContact* aContact ) = 0;
@@ -51,6 +51,8 @@ class MCmsContactInterface
         virtual TBool HandleEnabledFields( HBufC* aFieldData ) = 0;
         
         virtual void HandleError( TInt aError ) = 0;
+        
+        virtual void FetchContactL ( MVPbkContactLink* aContactLinkToFetch ) = 0;
         
     };
 

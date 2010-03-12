@@ -44,6 +44,7 @@
 #include <CPbk2ThumbnailManager.h>
 #include <Pbk2CommonUi.rsg>
 #include <Pbk2UIControls.rsg>
+#include "CPbk2AppUi.h"
 
 // Virtual Phonebook
 #include <MVPbkContactViewBase.h>
@@ -2160,7 +2161,10 @@ void CPbk2NamesListControl::DoHandleContactAdditionL( TInt aIndex )
 	//Prevent messing with focus with always-on when Phonebook hidden in 
 	//reseted state. Otherwise background-added contacts will change focus. 
 	//This would cause Phonebook not to look like freshly started when opened again.
-    if(iCurrentState->NamesListState() != CPbk2NamesListControl::EStateHidden)
+	//And also make sure foreground-added contact will show the new contact 
+	//even though the focus is not seen.
+    if( (static_cast<CPbk2AppUi*>(
+            CEikonEnv::Static()->AppUi()))->IsForeground() )
         {
         SelectAndChangeReadyStateL(); 
         }        

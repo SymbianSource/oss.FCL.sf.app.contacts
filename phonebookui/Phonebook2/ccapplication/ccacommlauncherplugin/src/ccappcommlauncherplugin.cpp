@@ -18,7 +18,6 @@
 
 #include "ccappcommlauncherheaders.h"
 #include <phonebook2ece.mbg>
-#include "ccappcommlaunchersetdefault.h"
 
 
 #include <mccappengine.h>
@@ -75,14 +74,8 @@ CCCAppCommLauncherPlugin::~CCCAppCommLauncherPlugin()
     delete iMenuHandler;
 
     delete iContactHandler;
-    delete iSetDefault;
     delete iContactorService;
     
-    if ( iWaitFinish && iWaitFinish->IsStarted() )
-       {
-       iWaitFinish->AsyncStop();
-       }
-    delete iWaitFinish;
     
     delete iAiwRequestTimer;
 
@@ -107,8 +100,6 @@ void CCCAppCommLauncherPlugin::ConstructL()
     {
     CCA_DP(KCommLauncherLogFile, CCA_L("ConstructL()"));
     // ConstructL should be as light as possible.
-    iWaitFinish = new (ELeave) CActiveSchedulerWait();
-    iSetDefault = CCCAppCommLauncherLSetDefault::NewL(*this);
     }
 
 // ---------------------------------------------------------------------------
@@ -134,11 +125,7 @@ void CCCAppCommLauncherPlugin::PreparePluginViewL(
     InitialisePreferredCommMethods();
 
     BaseConstructL( R_COMMLAUNCHER_VIEW );
-    
-    // Set default for Voice call and Message
-    // Not auto setting default for now
-    // iSetDefault->ExecuteAssignDefaultL();
-    // iWaitFinish->Start();
+   
 
     CCA_DP(KCommLauncherLogFile, CCA_L("<-CCCAppCommLauncherPlugin::PreparePluginViewL()"));
     }
@@ -398,18 +385,6 @@ CCAContactorService* CCCAppCommLauncherPlugin::ContactorService()
     }
 
 // ---------------------------------------------------------------------------
-// CCCAppCommLauncherPlugin::DefaultSettingComplete
-// ---------------------------------------------------------------------------
-//
-void CCCAppCommLauncherPlugin::DefaultSettingComplete()
-	{
-	if ( iWaitFinish && iWaitFinish->IsStarted() )
-	   {
-	   iWaitFinish->AsyncStop();
-	   }
-	}
-
-// ---------------------------------------------------------------------------
 // CCCAppCommLauncherPlugin::StartTimerL
 // ---------------------------------------------------------------------------
 //
@@ -449,7 +424,7 @@ void CCCAppCommLauncherPlugin::CancelTimer()
 //
 TBool CCCAppCommLauncherPlugin::IsTopContactL()
     {
-    return EFalse;//todo
+    return iContactHandler->IsTopContact();
     }
 
 // ---------------------------------------------------------------------------

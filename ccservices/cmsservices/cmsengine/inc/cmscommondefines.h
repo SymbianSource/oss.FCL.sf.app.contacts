@@ -67,7 +67,9 @@ enum TCmsServerRequest
     ECmsFindParentStore,
     ECmsFindExternalContact,
     ECmsFetchServiceAvailability,
-    ECmsGetContactActionFieldCount
+    ECmsGetContactActionFieldCount,
+    ECmsIsTopContact,
+	ECmsSetVoiceCallDefault
 	};	
 
 //Presence data stream delimiters

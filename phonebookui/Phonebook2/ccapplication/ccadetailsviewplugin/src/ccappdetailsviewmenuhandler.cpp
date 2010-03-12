@@ -12,7 +12,7 @@
 * Contributors:
 *
 * Description:  Implementation of ccappdetailsview menuhandler
-*  Version     : %version: he1s60#31.1.15 %
+*  Version     : %version: he1s60#31.1.16 %
 *
 */
 
@@ -146,6 +146,8 @@ void CCCAppDetailsViewMenuHandler::DynInitMenuPaneL(TInt aResourceId,
                 static_cast<const CCCAppDetailsViewContainer&>(iPlugin.GetContainer());
 
             TBool isNumberField  = IsFocusedFieldTypeL(R_DETAILSVIEW_PHONENUMBER_SELECTOR);
+            TBool isOkForVoiceCall = IsFocusedFieldTypeL(R_DETAILSVIEW_CALL_SELECTOR);
+            TBool isOkForVoipCall = EFalse;  //voip calls not provided 
             TBool isAddressField =
                 IsFocusedFieldTypeL(R_DETAILSVIEW_EL_ADDRESS_SELECTOR) ||
                 IsFocusedFieldTypeL(R_DETAILSVIEW_URL_SELECTOR);
@@ -210,6 +212,11 @@ void CCCAppDetailsViewMenuHandler::DynInitMenuPaneL(TInt aResourceId,
             {
                 aMenuPane->SetItemDimmed(ECCAppDetailsViewPrependCmd, !isNumberField);
             }
+
+            if (aMenuPane->MenuItemExists(ECCAppDetailsViewCallCmd, pos))
+            {
+                aMenuPane->SetItemDimmed(ECCAppDetailsViewCallCmd, !(isOkForVoiceCall || isOkForVoipCall));
+            }            
 
             if ( aMenuPane->MenuItemExists(
                 ECCAppDetailsViewFindOnMapCmd, pos )
@@ -529,6 +536,14 @@ void CCCAppDetailsViewMenuHandler::HandleCommandL(TInt aCommand)
     // Then check if command is normal application command
     switch (aCommand)
     {
+    case ECCAppDetailsViewCallCmd:
+        {
+        CCCAppDetailsViewContainer& container =
+                static_cast<CCCAppDetailsViewContainer&>(iPlugin.GetContainer());        
+        container.HandleLaunchCallRequestL();        
+        }		
+        break;
+
     case EAknSoftkeyEdit:
     case KAiwCmdAssign: // AIW service cmd for Editing
     case ECCAppDetailsViewEditItemCmd:

@@ -40,4 +40,6 @@ EXPORTS
 	?UserIdentity@CCmsPresenceData@@QBE?AVTPtrC8@@XZ @ 39 NONAME ; class TPtrC8 CCmsPresenceData::UserIdentity(void) const
 	?Version@RCmsSession@@QBE?AVTVersion@@XZ @ 40 NONAME ; class TVersion RCmsSession::Version(void) const
 	?Info@CCmsContactFieldItem@@QBE?AVTPtrC16@@XZ @ 41 NONAME ; class TPtrC16 CCmsContactFieldItem::Info(void) const
+	?IsTopContact@RCmsContact@@QAEHXZ @ 42 NONAME ; int RCmsContact::IsTopContact(void)
+	?SetVoiceCallDefault@RCmsContact@@QBEXAAVTRequestStatus@@@Z @ 43 NONAME ; void RCmsContact::SetVoiceCallDefault(class TRequestStatus &) const
 

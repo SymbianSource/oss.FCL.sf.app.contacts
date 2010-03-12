@@ -40,6 +40,7 @@
 #include <TPbk2ContactEditorParams.h>
 #include <CPbk2GeneralConfirmationQuery.h>
 #include <CPbk2PresentationContact.h>
+#include <CPbk2PresentationContactFieldCollection.h>
 #include <StringLoader.h>
 #include <AknQueryDialog.h>
 
@@ -257,7 +258,8 @@ void CCCAppMyCardPlugin::HandleCommandL( TInt aCommand )
         case ECCAppMyCardCmdEdit:
             {
             // when editor is called via options menu, focus first field always 
-            EditL( 0 );
+            EditL( iMyCard->PresentationContactL().
+                PresentationFields().StoreIndexOfField( 0 ) );
             break;
             }
         case ECCappMyCardCmdSendVCard:

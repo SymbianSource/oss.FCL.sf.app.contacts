@@ -96,10 +96,12 @@ void CPbk2ContactEditorTextField::ConstructL()
     text.Zero();
     Pbk2PresentationUtils::AppendWithNewlineTranslationL(text, dataPtr);
     
+    // T9 should be deactivated in all contact editors always
+    DeactivateT9(iContactField.FieldProperty().EditMode());
+
     if (iContactField.FieldProperty().EditMode() == 
         EPbk2FieldEditModeLatinOnly)
         {
-        iControl->SetAknEditorFlags(EAknEditorFlagLatinInputModesOnly);
         iControl->SetAknEditorSpecialCharacterTable(
             R_AVKON_SPECIAL_CHARACTER_TABLE_DIALOG );
         }
@@ -147,6 +149,26 @@ void CPbk2ContactEditorTextField::ConstructL()
     iControl->CreateTextViewL();
     iCaptionedCtrl = iUiBuilder.LineControl(ControlId());
     iCaptionedCtrl->SetTakesEnterKey(EFalse);
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ContactEditorTextField::DeactivateT9
+// --------------------------------------------------------------------------
+//
+void CPbk2ContactEditorTextField::DeactivateT9(TInt8 aEditMode)
+    {
+    if (iControl)
+        {
+        if (aEditMode == EPbk2FieldEditModeLatinOnly)
+            {
+            iControl->SetAknEditorFlags(
+                EAknEditorFlagLatinInputModesOnly | EAknEditorFlagNoT9);
+            }
+        else
+            {
+            iControl->SetAknEditorFlags(EAknEditorFlagNoT9);
+            }
+        }
     }
 
 // --------------------------------------------------------------------------

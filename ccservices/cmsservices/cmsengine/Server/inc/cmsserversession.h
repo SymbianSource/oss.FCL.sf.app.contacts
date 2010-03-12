@@ -191,6 +191,13 @@ NONSHARABLE_CLASS( CCmsServerSession ) : public CSession2
         * @param aMessage Kernel message with client's data
         */
         void DoServiceL( const RMessage2& aMessage );
+        
+        /**
+     	* Checks whether the Current contact is top contact.
+        *
+        * @param aMessage Kernel message with client's data
+        */
+        void IsTopContactL( const RMessage2& aMessage );
 
     private: //Data
         

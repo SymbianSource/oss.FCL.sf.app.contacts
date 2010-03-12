@@ -282,6 +282,7 @@ class CPbk2ContactRelocator : public CActive,
                 CVPbkContactLinkArray* aContacts,
                 Pbk2ContactRelocator::TPbk2ContactRelocationQueryPolicy
                 aQueryPolicy );
+        void IssueRequest();
 
     private: // Data
         /// Own: Relocation policy

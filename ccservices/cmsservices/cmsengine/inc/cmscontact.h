@@ -207,6 +207,20 @@ class RCmsContact : public RSubSessionBase
         IMPORT_C TInt GetContactActionFieldCount(
             VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aContactAction);
         
+		/**
+     	 * Checks whether the Current contact is top contact.
+     	 *
+     	 * @return ETrue if Contact is a top contact, otherwise EFalse 
+     	 */
+        IMPORT_C TBool IsTopContact();
+		
+		/**
+         * Set default attribute for voice call  
+         * 
+         * @param aStatus TRequestStatus& aStatus
+         */
+        IMPORT_C void SetVoiceCallDefault( TRequestStatus& aStatus ) const;
+        
     public:
         
         /**

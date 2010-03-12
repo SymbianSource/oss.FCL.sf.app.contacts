@@ -41,6 +41,7 @@ enum TCCAppDetailsViewCmdIds
     ECCAppDetailsViewPrependCmd,
     ECCAppDetailsViewFindOnMapCmd,
     ECCAppDetailsViewShowOnMapCmd,
+    ECCAppDetailsViewCallCmd,
 
     // KAiwCmdAssign AIW service cmd used as Edit Options-menu item
     // set AIW commands at last

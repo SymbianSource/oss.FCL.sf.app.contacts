@@ -60,7 +60,12 @@ void CCCAppCommLauncherHeaderControl::ConstructL()
     iImage = new (ELeave) CEikImage();
     iImage->SetPictureOwnedExternally(ETrue);
     iImage->SetBrushStyle( CGraphicsContext::ENullBrush ); // transparent
-    iImage->SetAlignment(EHCenterVCenter);
+    iImage->SetAlignment(EHCenterVCenter);    
+    
+    //Favorite Icon    
+    iFavContactIcon = new (ELeave) CEikImage();            
+    iFavContactIcon->SetBrushStyle( CGraphicsContext::ENullBrush ); // transparent
+    iFavContactIcon->SetAlignment(EHCenterVCenter);
     
     // Create the header labels
     for (TInt i=0; i < KLabelLineCount; i++)
@@ -84,8 +89,14 @@ void CCCAppCommLauncherHeaderControl::ConstructL()
 //
 CCCAppCommLauncherHeaderControl::~CCCAppCommLauncherHeaderControl()
     {
+    delete iFavContactIcon;
     delete iContactImageFullName;
     delete iContactThumbnailData;
+    if ( iStoreContactImageFullName )
+    	{
+    	delete iStoreContactImageFullName;
+    	iStoreContactImageFullName = NULL;
+    	}
     
     iCmsContactFields.Close(); 
     iLabels.ResetAndDestroy();
@@ -128,7 +139,7 @@ CCCAppCommLauncherHeaderControl::~CCCAppCommLauncherHeaderControl()
 //
 TInt CCCAppCommLauncherHeaderControl::CountComponentControls() const
     {
-    return 1 + iLabels.Count();
+    return 2 + iLabels.Count(); // iImage, iFavContactIcon
     }
 
 // ---------------------------------------------------------------------------
@@ -137,13 +148,19 @@ TInt CCCAppCommLauncherHeaderControl::CountComponentControls() const
 //
 CCoeControl* CCCAppCommLauncherHeaderControl::ComponentControl(TInt aIndex)  const
     {
+    TInt imageControl = 2; // iImage, iFavContactIcon    
+    
     if (aIndex == 0)
         {
         return iImage;
         }
-    else if (aIndex - 1 < iLabels.Count())
+    else if (aIndex == 1)
         {
-        return iLabels[aIndex-1];
+        return iFavContactIcon;
+        }
+    else if (aIndex - imageControl < iLabels.Count())
+        {
+        return iLabels[aIndex-imageControl];
         }
     else
         {
@@ -156,7 +173,7 @@ CCoeControl* CCCAppCommLauncherHeaderControl::ComponentControl(TInt aIndex)  con
 // ---------------------------------------------------------------------------
 //
 void CCCAppCommLauncherHeaderControl::SizeChanged()
-    {
+    {    
     const TInt isLandscape = Layout_Meta_Data::IsLandscapeOrientation() ? 1 : 0;
     const TRect rect(Rect());
     
@@ -180,7 +197,9 @@ void CCCAppCommLauncherHeaderControl::SizeChanged()
             {
             option = 0;
             }
-        }
+        }    
+   
+    FavoriteIconSizeChanged();
     
     AknLayoutUtils::LayoutImage(
             iImage, rect, AknLayoutScalable_Apps::phob2_cc_data_pane_g1(option));
@@ -235,6 +254,8 @@ void CCCAppCommLauncherHeaderControl::SetContainerWindowL(const CCoeControl& aCo
     {
     CCoeControl::SetContainerWindowL(aContainer);
     iImage->SetContainerWindowL(aContainer);
+    iFavContactIcon->SetContainerWindowL(aContainer);    
+    
     for (TInt i=0; i < iLabels.Count(); i++)
         {
         iLabels[i]->SetContainerWindowL(aContainer);
@@ -270,6 +291,13 @@ void CCCAppCommLauncherHeaderControl::ContactFieldFetchedNotifyL(
         	delete iContactImageFullName;
         	iContactImageFullName = NULL;
         	iContactImageFullName = data.AllocL();
+        	
+        	if ( iStoreContactImageFullName )
+        		{
+        		delete iStoreContactImageFullName;
+        		iStoreContactImageFullName = NULL;
+        		}
+        	iStoreContactImageFullName = data.AllocL();
         	}
     	}
     else if ( aContactField.Type() == CCmsContactFieldItem::ECmsThumbnailPic )
@@ -316,12 +344,35 @@ void CCCAppCommLauncherHeaderControl::ContactFieldFetchingCompletedL()
         {
         iLabels[i]->SetTextL(iTextOrder->GetTextForRow(i));
         }
+    
+	//Find whether the Contact is a Favorite Contact    
+    if ( iPlugin.IsTopContactL() )            
+        {
+		//Create the Favorite Icon
+        CFbsBitmap* bmp = NULL;
+        CFbsBitmap* mask = NULL;
+        
+        AknIconUtils::CreateIconLC(
+            bmp, mask, KPbk2ECEIconFileName, 
+            EMbmPhonebook2eceQgn_prop_pb_topc, EMbmPhonebook2eceQgn_prop_pb_topc_mask );            
+        
+        //Create the header image
+        iFavContactIcon->SetPicture( bmp, mask );    
+        CleanupStack::Pop( 2 ); // bmp, mask
+        
+        FavoriteIconSizeChanged();
+        }
+    else
+        {
+        iFavContactIcon->SetPicture(NULL, NULL);
+        }
+
     DrawDeferred();
     }
 
 void CCCAppCommLauncherHeaderControl::BitmapReadyL( CFbsBitmap* aBitmap )
     {
-    SetBitmap(aBitmap);
+    SetBitmap(aBitmap);    
     }
 
 // ---------------------------------------------------------------------------
@@ -342,7 +393,7 @@ void CCCAppCommLauncherHeaderControl::SetBitmap(CFbsBitmap* aBmp)
         }
     iBitmap = aBmp;
     iImage->SetPicture(aBmp, NULL);
-    iImage->DrawDeferred();
+    iImage->DrawDeferred();    
     }
 
 // ---------------------------------------------------------------------------
@@ -496,10 +547,15 @@ void CCCAppCommLauncherHeaderControl::LaunchStylusPopupL( const TPointerEvent& a
      
      if( iHasContactImage )
          {
-         iImageSelectionPopup->SetItemDimmed(ECCAppCommLauncherStylusViewImageCmd, EFalse);
          iImageSelectionPopup->SetItemDimmed(ECCAppCommLauncherStylusChangeImageCmd, EFalse);
          iImageSelectionPopup->SetItemDimmed(ECCAppCommLauncherStylusRemoveImageCmd, EFalse);
          iImageSelectionPopup->SetItemDimmed(ECCAppCommLauncherStylusAddImageCmd, ETrue);
+         
+         // If the image has been deleted in the memory, "view image" should be hidden.
+         RFs& fs( iCoeEnv->FsSession() );
+         TEntry entry;
+         iImageSelectionPopup->SetItemDimmed( ECCAppCommLauncherStylusViewImageCmd, 
+        		                            ( fs.Entry( *iStoreContactImageFullName , entry ) == KErrNone ) ? EFalse : ETrue );
          }
      else
          {
@@ -592,6 +648,10 @@ void CCCAppCommLauncherHeaderControl::DoChangeImageCmdL()
      return ret;
      }
  
+ // --------------------------------------------------------------------------
+ // CCCAppCommLauncherHeaderControl::OfferKeyEventL
+ // --------------------------------------------------------------------------
+ //
  TKeyResponse CCCAppCommLauncherHeaderControl::OfferKeyEventL(
          const TKeyEvent& aKeyEvent, TEventCode /*aType*/)
      {
@@ -610,6 +670,10 @@ void CCCAppCommLauncherHeaderControl::DoChangeImageCmdL()
      return ret;
      }
  
+ // --------------------------------------------------------------------------
+ // CCCAppCommLauncherHeaderControl::ProcessContactImageDisplayL
+ // --------------------------------------------------------------------------
+ //
  void CCCAppCommLauncherHeaderControl::ProcessContactImageDisplayL()
 	 {
 	 iHasContactImage = EFalse;
@@ -636,3 +700,36 @@ void CCCAppCommLauncherHeaderControl::DoChangeImageCmdL()
      delete iContactThumbnailData;
      iContactThumbnailData = NULL;   
 	 }
+ 
+ // --------------------------------------------------------------------------
+ // CCCAppCommLauncherHeaderControl::FavoriteIconSizeChanged
+ // --------------------------------------------------------------------------
+ //
+ void CCCAppCommLauncherHeaderControl::FavoriteIconSizeChanged()
+     {
+     //Set the size for the Favorite Icon
+     //This code must be in Sync with SizeChanged() code
+     const TInt isLandscape = Layout_Meta_Data::IsLandscapeOrientation() ? 1 : 0;
+     const TRect rect(Rect());
+     
+     // (w/o button)
+     TInt option( isLandscape ? 2 : 1 );
+     if( iStatusButtonVisibility )
+         {
+         // (w button)
+         if( isLandscape )
+             {
+             option = 0;
+             }
+         else
+             {
+             option = 0;
+             }
+         }    
+    
+     AknLayoutUtils::LayoutImage(
+             iFavContactIcon, rect, AknLayoutScalable_Apps::phob2_cc_data_pane_g2(option));
+             
+     }
+ 
+//End of File

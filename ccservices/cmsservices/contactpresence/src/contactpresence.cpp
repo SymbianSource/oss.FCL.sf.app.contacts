@@ -163,8 +163,6 @@ TInt CContactPresence::GetPresenceInfoL( const TDesC8& aPackedLink )
 #endif 
     iOpId++; 
     
-    CPresenceBrandedIcon* icon = CPresenceBrandedIcon::NewL(iBrandingFactory, iObs );
-    iIconReqList.AddLast( *icon );
     iListener->GetPresenceInfoL( aPackedLink, iOpId );
     
     return iOpId;    

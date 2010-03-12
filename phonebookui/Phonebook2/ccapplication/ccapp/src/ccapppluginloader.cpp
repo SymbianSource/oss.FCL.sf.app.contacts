@@ -22,12 +22,22 @@
 #include <mccaparentcleaner.h>
 #include <mccapluginfactory.h>
 
+#include <cpbk2applicationservices.h>
+#include <cvpbkcontactmanager.h>
+#include <MVPbkContactStoreProperties.h>
+#include <VPbkContactStoreUris.h>
+#include <TVPbkContactStoreUriPtr.h>
+#include <MVPbkContactStore.h>
 #include "Phonebook2PrivateCRKeys.h"
 #include "ccappheaders.h"
 #include "tccapluginsorderinfo.h"
 #include "ccapluginfactoryowner.h"
 #include "../../ccadetailsviewplugin/inc/ccappdetailsviewpluginuids.hrh"
 #include "../../ccacommlauncherplugin/inc/ccappcommlauncherpluginuids.hrh"
+#include "../inc/ccappmycardpluginuids.hrh"
+
+#include <Pbk2DataCaging.hrh>
+
 
 // ======== CONSTANTS ==============
 const TInt KMaxPlugins = 255;
@@ -35,6 +45,10 @@ const TInt KMaxPlugins = 255;
 _LIT8( KCcaOpaqueNameDelimiter,     "\t" ); //Name=value pairs separated by tabs
 _LIT8( KCcaOpaqueValueDelimiter,    "=" );  //Names and values separated by =
 _LIT8( KCcaOpaqueTABP,              "TABP" );  //Tab position
+
+_LIT(KPbk2CommandsDllResFileName,   "Pbk2Commands.rsc");
+_LIT(KPbk2UiControlsDllResFileName, "Pbk2UiControls.rsc");
+_LIT(KPbk2CommonUiDllResFileName,   "Pbk2CommonUi.rsc"  );
 
 // ======== LOCAL FUNCTIONS ========
 
@@ -87,7 +101,11 @@ void CleanupResetAndDestroy(TAny* aObj)
 // CCCAppPluginLoader::CCCAppPluginLoader
 // ---------------------------------------------------------------------------
 //
-CCCAppPluginLoader::CCCAppPluginLoader(MCCAppEngine* aAppEngine) : iAppEngine(aAppEngine)
+CCCAppPluginLoader::CCCAppPluginLoader(MCCAppEngine* aAppEngine) : 
+	iAppEngine(aAppEngine),
+    iCommandsResourceFile( *CCoeEnv::Static() ),
+    iUiControlsResourceFile( *CCoeEnv::Static() ),
+    iCommonUiResourceFile( *CCoeEnv::Static() )
     {
     CCA_DP( KCCAppLogFile, CCA_L("CCCAppPluginData::CCCAppPluginLoader"));
     }
@@ -112,6 +130,12 @@ CCCAppPluginLoader::~CCCAppPluginLoader()
     iPluginDataArray.ResetAndDestroy();
     delete iFactoryTempPtr;
     CCA_DP( KCCAppLogFile, CCA_L("<-CCCAppPluginData::~CCCAppPluginLoader"));
+    
+    Release( iAppServices );
+
+    iCommandsResourceFile.Close();
+    iUiControlsResourceFile.Close();
+    iCommonUiResourceFile.Close();
     }
 
 // ---------------------------------------------------------------------------
@@ -147,6 +171,8 @@ void CCCAppPluginLoader::ConstructL(
     //PERFORMANCE LOGGING: 3. Loading plugins
     WriteToPerfLog();
 
+    PreparePbk2ApplicationServicesL();
+    
     RPointerArray<CImplementationInformation> oldImplInfoArray;
     CleanupStack::PushL(TCleanupItem(CleanupResetAndDestroy, &oldImplInfoArray));
     RPointerArray<CImplementationInformation> newImplInfoArray;
@@ -261,6 +287,93 @@ void CCCAppPluginLoader::LoadOneMultiViewPluginL(
    }
 
 // ---------------------------------------------------------------------------
+// CCCAppPluginLoader::IsSimStoreUri
+// Determine whether a Contact Store URI is SIM Card storage.
+// ---------------------------------------------------------------------------
+//
+TBool CCCAppPluginLoader::IsSimStoreUri( const TVPbkContactStoreUriPtr& aUri ) const
+    {
+    TBool isSimUri(EFalse);
+
+    isSimUri = !aUri.Compare(VPbkContactStoreUris::SimGlobalAdnUri(),
+                    TVPbkContactStoreUriPtr::EContactStoreUriAllComponents) ||
+               !aUri.Compare(VPbkContactStoreUris::SimGlobalFdnUri(),
+                    TVPbkContactStoreUriPtr::EContactStoreUriAllComponents) ||
+               !aUri.Compare(VPbkContactStoreUris::SimGlobalSdnUri(),
+                    TVPbkContactStoreUriPtr::EContactStoreUriAllComponents) ||
+               !aUri.Compare(VPbkContactStoreUris::SimGlobalOwnNumberUri(),
+                    TVPbkContactStoreUriPtr::EContactStoreUriAllComponents);
+    return isSimUri;
+    }
+
+// ---------------------------------------------------------------------------
+// CCCAppPluginLoader::IsCurrentContactStoreSupportL
+// Determine whether an implementation plug-in is supported by Current Contact Store. 
+// ---------------------------------------------------------------------------
+//
+TBool CCCAppPluginLoader::IsCurrentContactStoreSupportL( const TInt& aImplmentationUid ) const
+    {
+    TBool isCurrentContactStoreSupport(ETrue);
+
+    if( ( KCCADetailsViewPluginImplmentationUid != aImplmentationUid )
+            && ( KCCACommLauncherPluginImplmentationUid != aImplmentationUid )
+            && ( KCCAMyCardPluginImplmentationUid != aImplmentationUid ) )
+        {
+        MVPbkContactLink* link = NULL;
+        MVPbkContactLinkArray* contactArray = NULL;
+        HBufC& contactData = iAppEngine->Parameter().ContactDataL();
+        HBufC8* contactData8 = HBufC8::NewLC(contactData.Size());
+        TPtr8 contactData8Ptr(contactData8->Des());
+        contactData8Ptr.Copy(contactData.Des());
+          
+        contactArray = iAppServices->ContactManager().CreateLinksLC(contactData8Ptr);
+
+        if (contactArray->Count() > 0)
+            {
+            link = contactArray->At(0).CloneLC();
+            }
+
+        if (link)
+            {
+            const MVPbkContactStoreProperties& storeProperties =
+                    link->ContactStore().StoreProperties();
+            TVPbkContactStoreUriPtr uri = storeProperties.Uri();
+            isCurrentContactStoreSupport = !IsSimStoreUri( uri );
+            }
+            
+
+        if( link )
+            {
+            CleanupStack::PopAndDestroy(); //link
+            }
+        if( contactArray )
+            {
+            CleanupStack::PopAndDestroy(); //contactArray
+            }
+
+        CleanupStack::PopAndDestroy(); //contactData8
+        }
+
+    return isCurrentContactStoreSupport;
+    }
+
+// ---------------------------------------------------------------------------
+// CCCAppPluginLoader::PreparePbk2ApplicationServicesL
+// ---------------------------------------------------------------------------
+//
+void CCCAppPluginLoader::PreparePbk2ApplicationServicesL()
+    {   
+    iCommandsResourceFile.OpenL(
+        KPbk2RomFileDrive, KDC_RESOURCE_FILES_DIR, KPbk2CommandsDllResFileName );
+    iUiControlsResourceFile.OpenL(
+        KPbk2RomFileDrive, KDC_RESOURCE_FILES_DIR, KPbk2UiControlsDllResFileName );
+    iCommonUiResourceFile.OpenL(
+        KPbk2RomFileDrive, KDC_RESOURCE_FILES_DIR, KPbk2CommonUiDllResFileName );
+
+    iAppServices = CPbk2ApplicationServices::InstanceL();
+    }
+
+// ---------------------------------------------------------------------------
 // CCCAppPluginLoader::LoadAllPlugins
 // ---------------------------------------------------------------------------
 //
@@ -273,6 +386,16 @@ void CCCAppPluginLoader::LoadAllPlugins(
     CCA_DP( KCCAppLogFile, CCA_L("::LoadAllPlugins - plugin count: %d"), count );
     for ( TInt i = 0; i < count; ++i )
         {
+        TInt tempImplmentationUid = aPluginOrderInfoArray[i].iPluginInfor->ImplementationUid().iUid;
+        TBool isCurrentContactStoreSupport = EFalse;
+        TRAPD( err, isCurrentContactStoreSupport = IsCurrentContactStoreSupportL( tempImplmentationUid ) );
+        if( err != KErrNone || !isCurrentContactStoreSupport )
+            {
+            /* If problems with Contact Link related operations or the Contact Link is in SIM Store,
+             * don't load current plugin. Just continuing
+             * to load the next one. */
+            continue;
+            }
         /* If problems with plugin loading, that plugin is
          * not included to the plugin array. Just continuing
          * and trying to load the next one. */

@@ -134,6 +134,9 @@ void CSpbPhoneNumberParser::SolvePhoneNumberL( MVPbkStoreContact& aContact )
 	// was the default number found?
 	if( number.Length() == 0 )
 		{
+        CDesC16Array* phoneNumberArray = new (ELeave) CDesC16ArraySeg(8);
+        CleanupStack::PushL( phoneNumberArray );
+        
 		// get contact fields
 		MVPbkStoreContactFieldCollection& fields = aContact.Fields();
 		const TInt fieldCount = fields.FieldCount();
@@ -147,39 +150,46 @@ void CSpbPhoneNumberParser::SolvePhoneNumberL( MVPbkStoreContact& aContact )
 				const MVPbkFieldType* fieldType = field.BestMatchingFieldType();
 				if( fieldType )
 					{
+                    const TInt fieldTypeResId = fieldType->FieldTypeResId();
 					// if one of the number fields
-					if( fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_LANDPHONEHOME   ||
-						fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_MOBILEPHONEHOME ||
-						fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_VIDEONUMBERHOME ||
-						fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_LANDPHONEWORK   ||
-						fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_MOBILEPHONEWORK ||
-						fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_VIDEONUMBERWORK ||
-						fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_LANDPHONEGEN    ||
-						fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_MOBILEPHONEGEN  ||
-						fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_VIDEONUMBERGEN  ||
-                        fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_CARPHONE )
+					if( fieldTypeResId == R_VPBK_FIELD_TYPE_LANDPHONEGEN    ||
+     			        fieldTypeResId == R_VPBK_FIELD_TYPE_LANDPHONEHOME   ||
+                        fieldTypeResId == R_VPBK_FIELD_TYPE_LANDPHONEWORK   ||
+                        fieldTypeResId == R_VPBK_FIELD_TYPE_MOBILEPHONEGEN  ||
+                        fieldTypeResId == R_VPBK_FIELD_TYPE_MOBILEPHONEHOME ||
+                        fieldTypeResId == R_VPBK_FIELD_TYPE_MOBILEPHONEWORK ||
+                        fieldTypeResId == R_VPBK_FIELD_TYPE_CARPHONE        ||
+                        fieldTypeResId == R_VPBK_FIELD_TYPE_ASSTPHONE       ||
+                        fieldTypeResId == R_VPBK_FIELD_TYPE_PAGERNUMBER )
 						{
-						numberCount++;
-						// if only one number, store it
-						if( numberCount == 1 )
-							{
-							const MVPbkContactFieldTextData* textData =
-									&MVPbkContactFieldTextData::Cast( field.FieldData() );
-							number.CreateL( textData->Text() );
-							}
+					    const MVPbkContactFieldTextData* textData =
+                                &MVPbkContactFieldTextData::Cast( field.FieldData() );
+					    const TPtrC phoneNumber( textData->Text() );
+					    
+                        // we need count phonenumbers same way how this is implemented in CCA
+                        // so that we show same count for phonenumbers in names list
+                        // CCA uses descriptor folded compare for phonenumbers
+					    TInt dummy = 0;
+					    if( 0 != phoneNumberArray->FindIsq( phoneNumber, dummy, ECmpFolded ) )
+					        {
+                            // phone number doesn't exist
+                            phoneNumberArray->InsertIsqL( phoneNumber, ECmpFolded );
+					        }
 						}
 					}
 				}
 			}
+        numberCount = phoneNumberArray->Count();
+        // if only one number, store it
+        if( numberCount == 1 )
+            {
+            number.CreateL( (*phoneNumberArray)[0] );
+            }
+        CleanupStack::PopAndDestroy( phoneNumberArray );
 		}
 	
 	// no number was found
-	if( number.Length() == 0 )
-		{
-        iContent.PhoneNumberUpdatedL( KNullDesC, 
-            CSpbContentProvider::ETypePhoneNumber );
-		}
-	else if( numberCount > 1 )
+	if( numberCount > 1 )
 	    {
         // contact has multiple numbers and no default
         TBuf<12> count;

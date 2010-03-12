@@ -148,6 +148,7 @@ void CCCAppCommLauncherContactHandler::ContactFieldDataObserverNotifyL(
     if ( MCCAppContactFieldDataObserver::TParameter::EContactInfoAvailable 
         == aParameter.iType && NULL != aParameter.iContactInfo )
         {
+        iDynamicAddressGroupSet = EFalse;
         ContactInfoFetchedNotifyL( *aParameter.iContactInfo );
         }
     else if ( MCCAppContactFieldDataObserver::TParameter::EContactDataFieldAvailable 
@@ -163,6 +164,7 @@ void CCCAppCommLauncherContactHandler::ContactFieldDataObserverNotifyL(
     else if ( MCCAppContactFieldDataObserver::TParameter::EContactsChanged 
         == aParameter.iType )
         {
+        iDynamicAddressGroupSet = EFalse;
         iObserver.ContactsChangedL();
         }
     else if (MCCAppContactFieldDataObserver::TParameter::EContactPresenceChanged == aParameter.iType)
@@ -464,10 +466,10 @@ void CCCAppCommLauncherContactHandler::ConstructDynamicFieldArrayIfNeeded(
         {
         case VPbkFieldTypeSelectorFactory::EVOIPCallSelector: 
             {
-            if ( !iDynamicAddressGroupSet & EDynamicVoipAddressGroupSet )
+            if ( !iDynamicAddressGroupSet )
                 {
                 CreateDynamicVoipAddressGroup( IsServiceAvailable( aContactAction ));
-                iDynamicAddressGroupSet |= EDynamicVoipAddressGroupSet;
+                iDynamicAddressGroupSet = ETrue;
                 }
             }
             break;
@@ -545,6 +547,15 @@ void CCCAppCommLauncherContactHandler::RefetchContactL()
     {
     iCmsWrapper->RefetchContactL();
     iCmsWrapper->AddObserverL( *this );
+    }
+
+// --------------------------------------------------------------------------
+// CCCAppCommLauncherContactHandler::IsTopContact
+// --------------------------------------------------------------------------
+// 
+TBool CCCAppCommLauncherContactHandler::IsTopContact()
+    {
+    return iCmsWrapper->IsTopContact();
     }
 
 // End of file

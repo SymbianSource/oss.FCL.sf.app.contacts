@@ -207,6 +207,11 @@ private:
     void ProcessContactImageDisplayL();
     
     /**
+     * Helper function for changing Favorite Icon size
+     */
+    void FavoriteIconSizeChanged();
+    
+    /**
      * The image control
      * Own.
      */
@@ -289,8 +294,20 @@ private:
       * Own
       */ 
     HBufC8* iContactThumbnailData;
+
+    /** 
+      * Store contact image path
+      * Own
+      */ 
+    HBufC* iStoreContactImageFullName;
     
     TBool iStatusButtonVisibility;
+    
+    /**
+     * The Favorite Icon control
+     * Own.
+     */
+    CEikImage* iFavContactIcon;
     };
 
 #endif // CCCAPPCOMMLAUNCHERHEADERCONTROL_H

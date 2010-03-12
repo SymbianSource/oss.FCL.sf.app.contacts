@@ -27,7 +27,6 @@
 class CCCAppCommLauncherContactHandler;
 class CCCAppCommLauncherMenuHandler;
 class CCAContactorService;
-class CCCAppCommLauncherLSetDefault;
 
 /**
  *  Class implementing CCCAppViewPluginBase interface. This is
@@ -218,7 +217,6 @@ public:
      */
     CCAContactorService* ContactorService();
     
-    void DefaultSettingComplete();
     /**
      *  Start timer.
      */
@@ -291,7 +289,6 @@ private:// data
      */
     CCCAppCommLauncherContactHandler* iContactHandler;
     
-    CCCAppCommLauncherLSetDefault* iSetDefault;
 
     /**
      * Pointer to preferred communication methods.
@@ -318,7 +315,6 @@ private:// data
      */
     CCAContactorService* iContactorService;
     
-    CActiveSchedulerWait* iWaitFinish;
     
 	/**
 	 * The timer notifier an aiw service request timeout. 

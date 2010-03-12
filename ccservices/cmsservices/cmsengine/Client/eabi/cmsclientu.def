@@ -58,4 +58,6 @@ EXPORTS
 	_ZTV20CCmsContactFieldInfo @ 57 NONAME ; #<VT>#
 	_ZTV20CCmsContactFieldItem @ 58 NONAME ; #<VT>#
 	_ZNK20CCmsContactFieldItem4InfoEv @ 59 NONAME
+	_ZN11RCmsContact12IsTopContactEv @ 60 NONAME
+	_ZNK11RCmsContact19SetVoiceCallDefaultER14TRequestStatus @ 61 NONAME
 

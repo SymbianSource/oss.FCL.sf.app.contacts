@@ -312,9 +312,7 @@ RESOURCE TBUF r_qtn_contacts_mc_my_card
 //
 RESOURCE TBUF r_qtn_phob_n_numbers
     {
-    //buf = qtn_phob_n_numbers;
-    // TODO: replace with correct strings once available
-    buf = "%N numbers";
+    buf = qtn_phob_n_numbers;
     }   
 
 // --------------------------------------------------------------------------

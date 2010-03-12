@@ -70,6 +70,9 @@ NONSHARABLE_CLASS(CPbk2ContactEditorTextField) :
                 CPbk2IconInfoContainer& aIconInfoContainer );
         void ConstructL();
 
+        // Deactivate T9 in editor
+        void DeactivateT9(TInt8 aEditMode);
+
     protected: // Data
         /// Ref: Editor control
         CEikEdwin* iControl;

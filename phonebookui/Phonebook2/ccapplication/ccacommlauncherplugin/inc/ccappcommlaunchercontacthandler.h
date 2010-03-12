@@ -348,6 +348,13 @@ public: //new
      */     
     void RefetchContactL();
     
+	/**
+     * Checks whether the Current contact is top contact.
+     *
+     * @return ETrue if Contact is a top contact, otherwise EFalse 
+     */
+    TBool IsTopContact();
+    
 private: // from MCCAppContactFieldDataObserver
 
 	/**
@@ -436,14 +443,14 @@ private: // data
      */
     MCCAppContactHandlerNotifier& iObserver;
     /**
+     * Notify if dynamic address fields are set or not
+     * Own.
+     */
+    TBool iDynamicAddressGroupSet;
+    /**
      * Dynamic address fields
      * Own.
      * */
-    enum TDynamicAddressGroupSetFlag
-        {
-        EDynamicVoipAddressGroupSet = 1
-        };
-    TInt iDynamicAddressGroupSet;
     RArray<TInt> iDynamicVoipAddressGroup;
     /**
      * Default attributes as bitmasks

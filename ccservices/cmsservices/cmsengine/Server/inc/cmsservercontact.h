@@ -23,6 +23,7 @@
 // INCLUDES
 #include "cmscontact.h"
 #include <VPbkEng.rsg>
+#include <MVPbkSingleContactOperationObserver.h>
 #include "bpasobserver.h"
 #include "cmscontactinterface.h"
 #include "mpresencetrafficlightsobs.h"
@@ -48,7 +49,8 @@ class MVPbkContactOperationBase;
 NONSHARABLE_CLASS( CCmsServerContact ) : public CBase,
                                          public MBPASObserver,
                                          public MCmsContactInterface,
-                                         public MPresenceIconNotifier
+                                         public MPresenceIconNotifier,
+                                         public MVPbkSingleContactOperationObserver
     {
     public:  
         
@@ -179,6 +181,13 @@ NONSHARABLE_CLASS( CCmsServerContact ) : public CBase,
         * @param aNextFindStringPos Position of next string to find in the iIdArray
         */
         void StartNextFindOperationL( TInt aNextFindStringPos );
+        
+        /**
+     	* Checks whether the Current contact is top contact.
+        *
+        * @param aMessage Kernel message with client's data
+        */
+        void IsTopContactL( const RMessage2& aMessage );
         
     private:
         
@@ -349,13 +358,14 @@ NONSHARABLE_CLASS( CCmsServerContact ) : public CBase,
     private:  //From MCmsContactInterface
 
         void ContactReadyL( TInt aError, MVPbkStoreContact* aContact );
-        TBool OfferContactEventL( TCmsPhonebookEvent aEventType,
+        void OfferContactEventL( TCmsPhonebookEvent aEventType,
                                   const MVPbkContactLink* aContactLink );
         const MVPbkStoreContact& Contact() const;
         TBool HandleField( HBufC* aFieldData );
         TBool HandleField( HBufC8* aFieldData );
         TBool HandleEnabledFields( HBufC* aEnabledFields );   
         void HandleError( TInt aError );         
+        void FetchContactL( MVPbkContactLink* aContactLinkToFetch);
         
     private:  //From MBPASObserver
         
@@ -374,6 +384,15 @@ NONSHARABLE_CLASS( CCmsServerContact ) : public CBase,
                 MVPbkContactLink* aLink, 
                 RPointerArray <MPresenceServiceIconInfo>& aInfoArray,
                 TInt aId );          
+
+    private:  //From MVPbkSingleContactOperationObserver
+
+        void VPbkSingleContactOperationComplete(
+            MVPbkContactOperationBase& aOperation,
+            MVPbkStoreContact* aContact );
+        void VPbkSingleContactOperationFailed(
+            MVPbkContactOperationBase& aOperation,
+            TInt aError );
         
     private:  //Data
         
@@ -448,6 +467,10 @@ NONSHARABLE_CLASS( CCmsServerContact ) : public CBase,
         
         /// Array of find operations in xSP stores. Owned.
         RPointerArray<MVPbkContactOperationBase>          iXSPFindOperationsArray;
+
+        /// Used to save Retrieve Contact operation. Owned.
+        MVPbkContactOperationBase*              iOperation;
+
     };
 
 #endif  //__CMSSERVERCONTACT__

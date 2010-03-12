@@ -33,3 +33,4 @@
 /c8,8 qgn_indi_many_items_add.svg
 /c8,8 qgn_prop_pb_thump_mycard.svg
 /c8,8 qgn_prop_pb_add_top.svg
+/c8,8 qgn_prop_pb_topc.svg

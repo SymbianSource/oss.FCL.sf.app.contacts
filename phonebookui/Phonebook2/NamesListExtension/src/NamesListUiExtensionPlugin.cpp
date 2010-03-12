@@ -232,10 +232,8 @@ void CNamesListUIExtensionPlugin::DynInitMenuPaneL(TInt aResourceId,
             }
         case R_PHONEBOOK2_RCL_MENU:
             {
-            if ( Pbk2NlxMenuFiltering::RclCmdSelectOptSelected( aControl )   ||
-                 Pbk2NlxMenuFiltering::AddToFavoritesCmdSelected( aControl ) ||                    
-                 aControl.ContactsMarked() ||
-                 !(iNamesListExViewRef && iNamesListExViewRef->IsRclOnL())) 
+            if ( aControl.ContactsMarked() || 
+                 !(iNamesListExViewRef && iNamesListExViewRef->IsRclOnL()))            
                 {
                 DimItem( aMenuPane, EPbk2CmdRcl ); 
                 }
@@ -351,17 +349,7 @@ void CNamesListUIExtensionPlugin::DynInitMenuPaneL(TInt aResourceId,
 #endif            
         case R_AVKON_MENUPANE_MARKABLE_LIST_IMPLEMENTATION:
         	{
-        	MPbk2ContactUiControl2* tempControl = 
-        	     reinterpret_cast<MPbk2ContactUiControl2*>
-        	        (aControl.ContactUiControlExtension
-        	            (KMPbk2ContactUiControlExtension2Uid ));
 
-        	if ( tempControl->FocusedCommandItem() &&
-        		 aControl.ContactsMarked() )
-        		{
-        		DimItem( aMenuPane, EAknCmdMark );
-        		DimItem( aMenuPane, EAknMarkAll );
-        		}
             if ( Pbk2NlxMenuFiltering::AddToFavoritesCmdSelected( aControl ) )
                 {
                 DimItem( aMenuPane, EAknCmdMark );
@@ -411,9 +399,10 @@ void CNamesListUIExtensionPlugin::DynInitMenuPaneL(TInt aResourceId,
         case R_PHONEBOOK2_NAMESLIST_DELETE_MENU:
             {
             // show delete mycard if mycard command is focused / tapped and 
-            // mycard is available
+            // mycard is available and there aren't any marked contacts.
             if( !Pbk2NlxMenuFiltering::MyCardCmdSelected( aControl ) ||
-                !MyCardLink() )
+                !MyCardLink() || 
+                aControl.ContactsMarked() )
                 {
                 DimItem( aMenuPane, EPbk2CmdDeleteMyCard );
                 }

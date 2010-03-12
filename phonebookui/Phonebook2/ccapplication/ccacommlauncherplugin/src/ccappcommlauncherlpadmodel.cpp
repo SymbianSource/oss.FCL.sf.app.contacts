@@ -258,9 +258,16 @@ TPtrC CCCAppCommLauncherLPadModel::MdcaPoint( TInt aIndex ) const
         tempText.Append( KColumnListSeparator );
         tempText.Append( iButtonDataArray[ aIndex ].iText );      
         tempText.Append( KColumnListSeparator );  
-        tempText.Append( textPtr );
-        tempText.Append( KColumnListSeparator ); 
-        
+        if( textPtr.Length() + tempText.Length() >=
+                KCCAppCommLauncherMaxButtonDataTextLength )
+            {
+            tempText.Append( textPtr.Left(
+               KCCAppCommLauncherMaxButtonDataTextLength - tempText.Length() - 1 ) );
+            }
+        else
+            {
+            tempText.Append( textPtr );
+            }
         // TODO: Check presence icon
         tempText.Append( KColumnListSeparator ); 
         

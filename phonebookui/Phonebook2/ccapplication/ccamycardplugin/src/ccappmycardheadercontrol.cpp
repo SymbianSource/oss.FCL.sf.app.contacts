@@ -38,6 +38,7 @@
 #include <gulicon.h>
 #include <layoutmetadata.cdl.h>
 #include <StringLoader.h>
+#include <AknsUtils.h>
 
 namespace {
 /// Amount of child UI components
@@ -235,18 +236,33 @@ void CCCAppMyCardHeaderControl::SizeChanged()
     
     iPortraitImage->SetRect( imageRect );
     iPortraitImageSize = imageRect.Size();
-   
+
+    
     // label 1
     AknLayoutUtils::LayoutLabel( 
             iLabel1, 
             rect, 
             AknLayoutScalable_Apps::phob2_cc_data_pane_t1( option ) );
-
+    
     // label 2
     AknLayoutUtils::LayoutLabel( 
             iLabel2, 
             rect, 
             AknLayoutScalable_Apps::phob2_cc_data_pane_t2( option ) );
+
+    TRgb color;
+    AknsUtils::GetCachedColor( 
+            AknsUtils::SkinInstance(), 
+            color, 
+            KAknsIIDQsnTextColors, 
+            EAknsCIQsnTextColorsCG6 );
+    
+    TRAP_IGNORE(
+        {
+        iLabel1->OverrideColorL( EColorLabelText, color );        
+        iLabel2->OverrideColorL( EColorLabelText, color );
+        } );
+    
     
     // resize images for new resolution
     if( iPortraitBitmap ) 

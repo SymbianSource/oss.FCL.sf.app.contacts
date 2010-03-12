@@ -39,4 +39,5 @@ EXPORTS
 	_ZN19CCCAppImageDecoding6StartLERK5TSize @ 38 NONAME
 	_ZN19CCCAppStatusControl21SetDefaultStatusTextLEP7HBufC16 @ 39 NONAME
 	_ZN19CCCAppStatusControl21SetDefaultStatusIconLEP8CGulIcon @ 40 NONAME
+	_ZN30CCCAppCmsContactFetcherWrapper12IsTopContactEv @ 41 NONAME
 

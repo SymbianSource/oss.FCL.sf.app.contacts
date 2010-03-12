@@ -30,6 +30,7 @@
 #include <MVPbkContactFieldUriData.h>
 #include <MVPbkContactStoreProperties.h>
 #include <MVPbkContactOperationBase.h>
+#include <CVPbkTopContactManager.h>
 
 #include <featmgr.h>
 #include <crcseprofileregistry.h>
@@ -127,6 +128,7 @@ CCmsServerContact::~CCmsServerContact()
     delete iCachedField16;
     delete iBrandedPresence;
     delete iPackedContactLinkArray;
+    delete iOperation;
     iPresenceEvents.ResetAndDestroy();
     iPhonebookEvents.ResetAndDestroy();
     iPresenceEvents.Close();
@@ -198,14 +200,13 @@ CCmsServerAsyncContact& CCmsServerContact::AsyncContact()
 // 
 // ----------------------------------------------------
 //
-TBool CCmsServerContact::OfferContactEventL( TCmsPhonebookEvent aEventType,
+void CCmsServerContact::OfferContactEventL( TCmsPhonebookEvent aEventType,
                                              const MVPbkContactLink* aContactLink )
     {
     PRINT( _L(" Start CCmsServerContact::OfferContactEventL()" ) );
     
     TBuf<5> buffer( _L( "" ) );
 
-		
     if ( !iContact )
     	{
 		buffer.AppendNum( aEventType );
@@ -213,15 +214,12 @@ TBool CCmsServerContact::OfferContactEventL( TCmsPhonebookEvent aEventType,
         CleanupStack::PushL( event );
         User::LeaveIfError( iPhonebookEvents.Append( event ) );
         CleanupStack::Pop();  //event
-            
-    	return ETrue;
+        return;
     	}
 
-    TBool linkConsumed = EFalse;
     MVPbkContactLink* self = Contact().CreateLinkLC();
     if( aContactLink && aContactLink->IsSame( *self ) )
         {
-        linkConsumed = ETrue;
         buffer.AppendNum( aEventType );
         
         if( ECmsContactDeleted == aEventType )
@@ -261,7 +259,6 @@ TBool CCmsServerContact::OfferContactEventL( TCmsPhonebookEvent aEventType,
         }
     CleanupStack::PopAndDestroy();  //self
     PRINT( _L(" End CCmsServerContact::OfferContactEventL()" ) );
-    return linkConsumed;
     }
 
 // ----------------------------------------------------
@@ -1449,4 +1446,65 @@ void CCmsServerContact::DoNewIconForContactL(
     CleanupStack::PopAndDestroy( data );    
 	}
 
+// ----------------------------------------------------------
+// CCmsServerContact::IsTopContactL
+// 
+// ----------------------------------------------------------
+//
+void CCmsServerContact::IsTopContactL( const RMessage2& aMessage )
+    {
+    PRINT( _L(" Start CCmsServerContact::IsTopContactL()" ) );    
+    
+    __ASSERT_DEBUG( iContact, CCmsServer::PanicServer( ENullContactHandle ) );    
+    
+    TBool isFav( EFalse );
+    isFav = CVPbkTopContactManager::IsTopContact( *iContact );
+    
+    TPckgC<TInt> isTopContact( isFav );        
+    aMessage.WriteL( KFirstParam, isTopContact );       
+    
+    aMessage.Complete( KErrNone );
+    
+    PRINT( _L(" End CCmsServerContact::IsTopContactL()" ) );                 
+    }
+// ----------------------------------------------------
+// CCmsServerContact::VPbkSingleContactOperationComplete
+// 
+// ----------------------------------------------------
+//
+void CCmsServerContact::VPbkSingleContactOperationComplete(
+        MVPbkContactOperationBase& /*aOperation*/,
+        MVPbkStoreContact* aContact )
+    {
+    TRAPD( res, ContactReadyL( KErrNone, aContact ) );
+    iCmsServer.CmsSingleContactOperationComplete( res );
+    }
+
+// ----------------------------------------------------
+// CCmsServerContact::VPbkSingleContactOperationFailed
+// 
+// ----------------------------------------------------
+//
+void CCmsServerContact::VPbkSingleContactOperationFailed(
+        MVPbkContactOperationBase& /*aOperation*/,
+        TInt aError )
+    {
+    TRAP_IGNORE ( ContactReadyL( aError, NULL ) );
+    iCmsServer.CmsSingleContactOperationComplete( aError );
+    }
+
+// ----------------------------------------------------
+// CCmsServerContact::FetchContactL
+// 
+// ----------------------------------------------------
+//
+void CCmsServerContact::FetchContactL( MVPbkContactLink* aContactLinkToFetch )
+    {
+    if( iOperation )
+        {
+        delete iOperation;
+        iOperation = NULL;
+        }
+    iOperation = iContactManager->RetrieveContactL( *aContactLinkToFetch, *this );
+    }
 // End of File

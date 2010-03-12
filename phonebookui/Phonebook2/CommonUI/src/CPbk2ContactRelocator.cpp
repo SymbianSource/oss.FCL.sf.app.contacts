@@ -348,7 +348,23 @@ void CPbk2ContactRelocator::StoreReady
     {
     iTargetStoreOpen = ETrue;
     // Safe to ignore error
-    TRAP_IGNORE( DoRelocateContactL() );
+    TRAPD( err, DoRelocateContactL() );
+    if ( err == KErrDiskFull )
+        {
+        IssueRequest();
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ContactRelocator::IssueRequest
+// Inform failure asynchronously
+// --------------------------------------------------------------------------
+//
+void CPbk2ContactRelocator::IssueRequest()
+    {
+    TRequestStatus* status = &iStatus;
+    User::RequestComplete( status, KErrNone );
+    SetActive();
     }
 
 // --------------------------------------------------------------------------
@@ -485,7 +501,7 @@ void CPbk2ContactRelocator::VPbkSingleContactOperationComplete
         // One contact from given link array was retrieved, now it has
         // to be stored and then relocated
         iSourceContact = aContact;
-        TRAP_IGNORE( DoRelocateContactL() );
+        DoRelocateContactL();
         }
     }
 
@@ -497,11 +513,18 @@ void CPbk2ContactRelocator::VPbkSingleContactOperationComplete
 void CPbk2ContactRelocator::VPbkSingleContactOperationFailed
         ( MVPbkContactOperationBase& /*aOperation*/, TInt aError )
     {
-    iObserver->ContactRelocationFailed( aError, iSourceContact );
-    iSourceContact = NULL; // ownership was given away
+    if ( aError != KErrDiskFull )
+        {
+        iObserver->ContactRelocationFailed( aError, iSourceContact );
+        iSourceContact = NULL; // ownership was given away
 
-    // Move to next request, if any
-    TRAP_IGNORE( DoRelocateContactL() );
+        // Move to next request, if any
+        TRAP_IGNORE( DoRelocateContactL() );
+        }
+    else
+        {
+        IssueRequest();
+        }
     }
 
 // --------------------------------------------------------------------------
@@ -889,10 +912,7 @@ TBool CPbk2ContactRelocator::PrepareToRelocateContactL(
 
         if ( iErrorCode != KErrNone )
             {
-            // Inform failure asynchronously
-            TRequestStatus* status = &iStatus;
-            User::RequestComplete( status, KErrNone );
-            SetActive();
+            IssueRequest();
             }
         else
             {

@@ -40,6 +40,7 @@ SOURCE                          cmsphonebookproxy.cpp
 SOURCE                          cmsserverasynccontact.cpp
 SOURCE                          cmsserverxspcontacthandler.cpp 
 SOURCE							cmsfindlinkedcontact.cpp 
+SOURCE                          cmssetvoicecalldefault.cpp 
 
 USERINCLUDE                     ../inc
 USERINCLUDE                     ../../inc

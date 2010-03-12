@@ -37,6 +37,7 @@
 #include "cmsdefines.h"
 #include "cmsserver.h"
 #include "cmsdebug.h"
+#include "cmssetvoicecalldefault.h"
 
 #include "cmsfindlinkedcontact.h"
 #include <MVPbkContactLink.h>
@@ -88,6 +89,7 @@ void CCmsPhonebookProxy::ConstructL()
     iStoreConfiguration = CPbk2StoreConfiguration::NewL();
     iStoreConfiguration->AddObserverL( *this );
     CreateConfigurationL();
+    iSetDefault = CmsSetVoiceCallDefault::NewL();
     PRINT ( _L("End CCmsPhonebookProxy::ConstructL()") );
     }
 
@@ -110,6 +112,7 @@ CCmsPhonebookProxy::~CCmsPhonebookProxy()
         }
     iObserverArray.Close();
     ixSPStoresArray.Reset();
+    delete iSetDefault;
     }
 
 // ----------------------------------------------------------
@@ -228,14 +231,9 @@ TInt CCmsPhonebookProxy::FetchContactL( const TDesC8& aPackedLink, MCmsContactIn
             {
             contactLinkToFetch = contactLink.CloneLC();
             }
-        
-        //Retreive the contact Info
-        if( iOperation )
-            {
-            delete iOperation;
-            iOperation = NULL;
-            }
-        iOperation = iContactManager->RetrieveContactL( *contactLinkToFetch, *this );
+        // Send the latest contact link to cmsservercontact
+        // to fetch contact.
+        iContactInterface->FetchContactL( contactLinkToFetch );
         CleanupStack::PopAndDestroy();  //contactLinkToFetch
         
         if ( findLinkedContact )
@@ -406,6 +404,16 @@ TInt CCmsPhonebookProxy::WordParser( TAny* aWordParserParam )
     }
 
 // ----------------------------------------------------------
+// CCmsPhonebookProxy::SetVoiceCallDefaultL
+//
+// ----------------------------------------------------------
+//
+void CCmsPhonebookProxy::SetVoiceCallDefaultL()
+	{
+	iSetDefault->SetVoiceCallDefaultL( iContact, iContactManager );
+	}
+
+// ----------------------------------------------------------
 // CCmsPhonebookProxy::ExternalStoresIntalled
 //
 // ----------------------------------------------------------
@@ -542,15 +550,15 @@ void CCmsPhonebookProxy::HandleStoreEventL( MVPbkContactStore& /*aContactStore*/
     {
     PRINT( _L("Start CCmsPhonebookProxy::HandleStoreEventL()" ) );
     
-    TBool found = EFalse;
     const TInt count = iObserverArray.Count();
-    for( TInt i = 0;!found && i < count;i++ )
+    // send store event to all observers
+    for( TInt i = 0; i < count ; i++ )
         {
         MCmsContactInterface* observer( iObserverArray[i] );
         if( observer )
             {
             TCmsPhonebookEvent event = SelectEventType( aStoreEvent.iEventType );
-            found = observer->OfferContactEventL( event, aStoreEvent.iContactLink );
+            observer->OfferContactEventL( event, aStoreEvent.iContactLink );
             }
         }
     PRINT( _L("End CCmsPhonebookProxy::HandleStoreEventL()" ) );
@@ -719,6 +727,7 @@ void CCmsPhonebookProxy::VPbkSingleContactOperationComplete(
     PRINT( _L( "Start CCmsPhonebookProxy::VPbkSingleContactOperationComplete()" ) );
 
     ResetData();
+    iContact = aContact;
     CompleteContactRequestL( KErrNone, aContact );
     iCmsPhonebookOperationsObserver.CmsSingleContactOperationComplete( KErrNone );
 

@@ -27,6 +27,9 @@
 #include <Pbk2UIControls.hrh>
 #include <Pbk2UIControls.rsg>
 #include <CPbk2ViewState.h>
+#include <MPbk2AppUi.h>
+#include <MPbk2ApplicationServices.h>
+#include <MPbk2ContactViewSupplier.h>
 
 // Virtual Phonebook
 #include <MVPbkContactViewBase.h>
@@ -87,6 +90,10 @@ CPbk2FetchDlgPage::~CPbk2FetchDlgPage()
         {
         iContactView->RemoveObserver( *iControl );
         }
+    if ( iStoreConfiguration )
+        {
+        iStoreConfiguration->RemoveObserver( *this );
+        }
     }
 
 // --------------------------------------------------------------------------
@@ -101,6 +108,8 @@ inline void CPbk2FetchDlgPage::ConstructL()
 
     iControl->AddObserverL( *this );
     iContactView->AddObserverL( *iControl );
+    iStoreConfiguration = &Phonebook2::Pbk2AppUi()->ApplicationServices().StoreConfiguration();
+    iStoreConfiguration->AddObserverL( *this );
 
     AknLayoutUtils::LayoutControl
         ( iControl, iParentDlg.FetchDlgClientRect(),
@@ -383,4 +392,42 @@ HBufC* CPbk2FetchDlgPage::ListEmptyTextLC( TInt aListState )
     return text;
     }
 
+// --------------------------------------------------------------------------
+// CPbk2FetchDlgPage::ConfigurationChanged
+// --------------------------------------------------------------------------
+//
+void CPbk2FetchDlgPage::ConfigurationChanged()
+    {
+    if ( iControl )
+        {
+        iControl->Reset();
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2FetchDlgPage::ConfigurationChangedComplete
+// --------------------------------------------------------------------------
+//
+void CPbk2FetchDlgPage::ConfigurationChangedComplete()
+    {
+    if ( iControl )
+        {
+        MVPbkContactViewBase* allContactsView = NULL;
+
+        TRAPD( res, allContactsView = Phonebook2::Pbk2AppUi()->
+            ApplicationServices().ViewSupplier().AllContactsViewL() );
+
+        if ( res == KErrNone )
+            {
+            TRAP( res, iControl->SetViewL( *allContactsView ) );
+            iControl->DrawNow();
+            }
+
+        if ( res != KErrNone )
+            {
+            CCoeEnv::Static()->HandleError( res );
+            iControl->Reset();
+            }
+        }
+    }
 // End of File

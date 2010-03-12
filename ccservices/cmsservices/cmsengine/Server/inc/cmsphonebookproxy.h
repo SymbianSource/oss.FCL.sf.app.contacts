@@ -50,6 +50,7 @@ class MVPbkContactOperationBase;
 class CVPbkContactStoreUriArray;
 class CVPbkContactViewDefinition;
 class MVPbkContactFindFromStoresObserver;
+class CmsSetVoiceCallDefault;
 
 /**
  * CCmsPhonebookProxy keeps all stores opened to speed up contact
@@ -181,6 +182,11 @@ NONSHARABLE_CLASS( CCmsPhonebookProxy ) : public CBase,
         * Destructor
         */
         ~CCmsPhonebookProxy();
+        
+        /**
+        * Set default attribute for voice call
+        */
+        void SetVoiceCallDefaultL();
 
     public:
         
@@ -316,6 +322,10 @@ NONSHARABLE_CLASS( CCmsPhonebookProxy ) : public CBase,
         RFs&                                    iFileSessionHandle;
         /// Array to keep a list of installed xSP stores. Owned.
         CDesCArrayFlat                          ixSPStoresArray;
+        /// Default setting handle
+        CmsSetVoiceCallDefault*                 iSetDefault;
+        /// Store contact
+        MVPbkStoreContact*                      iContact;
     };
 
 #endif  //__CMSPHONEBOOKPROXY__

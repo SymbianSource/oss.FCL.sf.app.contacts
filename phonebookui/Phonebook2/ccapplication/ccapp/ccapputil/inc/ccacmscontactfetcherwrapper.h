@@ -209,7 +209,8 @@ public: //new
         EFindingFromOtherStores,
         ELoadingEnabledFields,
         ELoadingFields,
-        EOperationsCompleted 
+        EOperationsCompleted,
+        ESettingVoiceCallDefault
         };
 
     /**
@@ -324,6 +325,13 @@ public: //new
      */
     virtual void RefetchContactL();
 
+	/**
+     * Checks whether the Current contact is top contact.
+     *
+     * @return ETrue if aContact it top contact, otherwise EFalse 
+     */
+    IMPORT_C TBool IsTopContact();
+
 private:// new
 
     /**
@@ -331,7 +339,7 @@ private:// new
      *
      * @since S60 v5.0
      */ 
-    void StartFetcherL();        
+    void StartFetcherL( TBool aSetDefault = EFalse );        
     
     /**
      * Opens the contact from contact db
@@ -404,6 +412,12 @@ private:// new
      */ 
     void NotifyErrorL();
     
+    /**
+    * Set default for voice call.
+    *
+    * @since S60 v5.0
+    */
+    void SetDefaultForVoiceCallL();
 private: // from base class CActive
  
     /**

@@ -31,11 +31,11 @@
 #include <avkon.mbg>
 #include <Pbk2UIControls.rsg>
 #include <MPbk2MergeConflict.h>
-#include <cpbk2imagemanager.h>
-#include <tpbk2imagemanagerparams.h>
+#include <CPbk2ImageManager.h>
+#include <TPbk2ImageManagerParams.h>
 #include <MVPbkBaseContact.h>
 #include <MVPbkFieldType.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <MPbk2AppUi.h>
 #include <MPbk2ApplicationServices.h>
 #include <CVPbkContactManager.h>

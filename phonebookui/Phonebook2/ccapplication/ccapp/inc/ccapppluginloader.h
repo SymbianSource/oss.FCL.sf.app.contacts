@@ -20,6 +20,7 @@
 #define __CCAPPLUGINLOADER_H__
 
 #include <e32base.h>
+#include <RPbk2LocalizedResourceFile.h>
 
 class CCCAppView;
 class CCCAppPluginData;
@@ -29,7 +30,8 @@ class CEikonEnv;
 class MCCAppEngine;
 class TCCAPluginsOrderInfo;
 class CcaPluginFactoryOwner;
-
+class TVPbkContactStoreUriPtr;
+class CPbk2ApplicationServices;
 /**
  *  Class for loading and handling the plugins
  *
@@ -351,7 +353,28 @@ private:
      * @param aDataPtr property string  
      */    
     void GetNameValue( TPtrC8& aName, TPtrC8& aValue, TPtrC8& aDataPtr );
+
+    /**
+     * Determine whether a Contact Store URI is SIM Card storage.
+     *
+     * @param aUri, the Contact Store URI to compare.
+     */
+    TBool IsSimStoreUri( const TVPbkContactStoreUriPtr& aUri ) const;
+
+    /**
+     * Determine whether an implementation plug-in is supported by Current Contact Store.
+     *
+     * @param aImplmentationUid, the plug-in's ImplmentationUid.
+     */
+    TBool IsCurrentContactStoreSupportL( const TInt& aImplmentationUid ) const;
     
+    /**
+     * Prepare application services
+     *
+     */
+    void PreparePbk2ApplicationServicesL();
+
+
 private://data
 
 
@@ -375,7 +398,19 @@ private://data
      * Temporary holder for CcaPluginFactoryOwner, 
      * owned unless ownership handed over.
      */    
-    CcaPluginFactoryOwner* iFactoryTempPtr;    
+    CcaPluginFactoryOwner* iFactoryTempPtr;
+    
+    /// Own: Phonebook2 application services
+    CPbk2ApplicationServices* iAppServices;
+    
+    /// Own: Phonebook2 commands dll resource file
+    RPbk2LocalizedResourceFile iCommandsResourceFile;
+
+    /// Own: Phonebook2 UI controls dll resource file
+    RPbk2LocalizedResourceFile iUiControlsResourceFile;
+
+    /// Own: Phonebook2 common UI dll resource file
+    RPbk2LocalizedResourceFile iCommonUiResourceFile;
 	};
 
 #endif // __CCAPPUNITTESTMODE

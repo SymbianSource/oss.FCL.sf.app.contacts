@@ -141,12 +141,10 @@ TBool CPbk2SetImageCmd::ExecuteCommandL()
     
     if ( res && selectedFile->Count() > 0 )
         {
-        CAknWaitDialog* waitNote = 
-            new(ELeave) CAknWaitDialog( 
+        iWaitNote = new(ELeave) CAknWaitDialog( 
                 reinterpret_cast<CEikDialog**>( &iWaitNote ), ETrue );
-        waitNote->ExecuteLD( R_QTN_GEN_NOTE_FETCHING );
-        CleanupStack::PushL( waitNote );
-
+        iWaitNote->ExecuteLD( R_QTN_GEN_NOTE_FETCHING );
+       
         TPtrC fileName = (*selectedFile)[0];
 
         // store reference to image field
@@ -157,8 +155,6 @@ TBool CPbk2SetImageCmd::ExecuteCommandL()
             iImageManager->SetImageAsyncL(
                 *iStoreContact, *iThumbnailFieldType, *this, fileName );
                 
-        CleanupStack::Pop( waitNote );
-        iWaitNote = waitNote;
         result = ETrue;
         }
 
@@ -219,8 +215,8 @@ void CPbk2SetImageCmd::DismissWaitNote()
 		if ( err != KErrNone )
 			{
 			delete iWaitNote;
+			iWaitNote = NULL;
 			}
-		iWaitNote = NULL;
 		}
 	}
 

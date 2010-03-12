@@ -117,7 +117,7 @@ TBool RCmsSession::IsRunning()
     #ifdef _DEBUG
         RCmsSession::WriteToLog( _L8( "RCmsSession::IsRunning()" ) );
     #endif
-    TFindServer findServer( KCmsServerName );
+    TFindServer findServer( KCmsServerLib );
     TFullName name;
     return ( findServer.Next( name ) == KErrNone );
     } 

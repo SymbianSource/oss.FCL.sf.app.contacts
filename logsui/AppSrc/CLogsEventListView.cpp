@@ -496,7 +496,7 @@ TLogsFilter CLogsEventListView::InitFilterPopupListL()
             popUpRow[i++] = ELogsFilterWlan;
             }
         }   
-    if( count > 0 ) 
+    if( count > 0 && MenuBar()->ItemSpecificCommandsEnabled() )
         {
         const MLogsEventGetter* event = Engine()->Model( ELogsMainModel )->At( iEventListCurrent );
         //Seletected event supported only for events that have number or remoty party available, so e.g
