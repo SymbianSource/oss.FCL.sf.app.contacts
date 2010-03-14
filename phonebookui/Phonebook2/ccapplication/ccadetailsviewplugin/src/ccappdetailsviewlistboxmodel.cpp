@@ -1226,10 +1226,16 @@ void CCCAppDetailsViewListBoxModel::HandleDateTimeTypeFieldL(
 // ---------------------------------------------------------------------------
 //
 void CCCAppDetailsViewListBoxModel::HandleUriTypeFieldL(
-    TInt /*aIndex*/,
+    TInt aIndex,
     const MVPbkContactFieldData& aFieldData,
     CCCAppDetailsViewListBoxRow* aRow)
 {
+    TBool isXspField = IsFieldTypeL( aIndex, R_DETAILSVIEW_EL_ADDRESS_SELECTOR );
+    if ( isXspField )
+        {
+        aRow->SetClipRequired( ETrue );
+        }
+    
     const MVPbkContactFieldUriData& uri =
         MVPbkContactFieldUriData::Cast(aFieldData);
 

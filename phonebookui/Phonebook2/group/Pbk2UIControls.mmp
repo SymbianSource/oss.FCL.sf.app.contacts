@@ -222,5 +222,5 @@ LIBRARY  aknlistloadertfx.lib
 LIBRARY         akntransitionutils.lib
 LIBRARY         aknphysics.lib
 LIBRARY			aknpictograph.lib
-LIBRARY		cone.lib
+
 // End of File

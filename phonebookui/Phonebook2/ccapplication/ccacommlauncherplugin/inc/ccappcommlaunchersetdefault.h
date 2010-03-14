@@ -20,13 +20,13 @@
 
 #include <e32base.h>
 #include "ccalogger.h"
-#include <mvpbksinglecontactoperationobserver.h>
-#include <mvpbkcontactattributemanager.h>
-#include <mvpbkcontactstoreobserver.h>
-#include <vpbkfieldtype.hrh>
-#include <mvpbkcontactobserver.h>
-#include <rpbk2localizedresourcefile.h>
-#include <mvpbkbatchoperationobserver.h>
+#include <MVPbkSingleContactOperationObserver.h>
+#include <MVPbkContactAttributeManager.h>
+#include <MVPbkContactStoreObserver.h>
+#include <VPbkFieldType.hrh>
+#include <MVPbkContactObserver.h>
+#include <RPbk2LocalizedResourceFile.h>
+#include <MVPbkBatchOperationObserver.h>
 
 class CCCAppCmsContactFetcherWrapper;
 class CPbk2ApplicationServices;

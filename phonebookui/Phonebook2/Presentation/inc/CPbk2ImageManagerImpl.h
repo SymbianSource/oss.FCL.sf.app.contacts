@@ -26,7 +26,7 @@
 
 // CONSTANTS
 // Size of thumbnail images stored to contacts
-#define KPbk2PersonalImageSize TSize(80,96)
+#define KPbk2PersonalImageSize TSize(150,150)
 
 //  FORWARD DECLARATIONS
 class MPbk2ImageGetObserver;

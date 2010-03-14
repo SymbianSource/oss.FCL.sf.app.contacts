@@ -76,8 +76,60 @@ void CPcsAlgorithm1Utils::FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR
 }
 
 // ----------------------------------------------------------------------------
+// CPcsAlgorithm1Utils::CompareByLength()
+// Compare by length.
+// ----------------------------------------------------------------------------
+TBool CPcsAlgorithm1Utils::CompareByLength ( const HBufC& aFirst, const HBufC& aSecond )
+{
+   return ( aFirst.Length() > aSecond.Length() );
+}
+
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm1Utils::CompareExact()
+// Compare strings exactly case sensitively.
+// ----------------------------------------------------------------------------
+TBool CPcsAlgorithm1Utils::CompareExact ( const TDesC& aFirst, const TDesC& aSecond )
+{
+    return aFirst == aSecond;
+}
+
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm1Utils::CompareCollate()
+// Compare strings with collate rules depending on locale.
+// ----------------------------------------------------------------------------
+TBool CPcsAlgorithm1Utils::CompareCollate ( const TDesC& aFirst, const TDesC& aSecond )
+{
+    return CPcsAlgorithm1Utils::MyCompareC(aFirst, aSecond);
+}
+
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm1Utils::MyCompareKeyAndString()
+// Compare for keys and strings:
+// - Case sensitive compare for keys,
+// - Case insensitive and language dependent compare for Contact Data and Query.
+// ----------------------------------------------------------------------------
+TBool CPcsAlgorithm1Utils::MyCompareKeyAndString(const TDesC& aContactString,
+                                                 const TDesC& aQueryAsString,
+                                                 CPsQuery& aPsQuery)
+{
+    TBool comparison = MyCompareK(aContactString, aQueryAsString, aPsQuery); 
+        
+    if (comparison)
+        {
+        // The aContactString can be longer than aQueryAsString and we want a match to be
+        // successful if both strings are equal for the length of the query (aQueryAsString)
+        comparison = (MyCompareC(aContactString.Left(aQueryAsString.Length()), aQueryAsString) == 0);
+        }
+    
+    return comparison;
+}
+
+// ----------------------------------------------------------------------------
 // CPcsAlgorithm1Utils::MyCompareK()
 // Case sensitive compare for keys of first 2 input params.
+// INFO: We have some cases that TPtiKey "Z" (uppercase) is mapping chars "Zz...."
+//       and TPtiKey "z" (lowercase) is mapping chars ".," or "Ää".
+//       The comparison of "Z" and "z" should fail for the keys.
 // ----------------------------------------------------------------------------
 TBool CPcsAlgorithm1Utils::MyCompareK(const TDesC& aLeft, const TDesC& aRight, CPsQuery& aPsQuery)
 {

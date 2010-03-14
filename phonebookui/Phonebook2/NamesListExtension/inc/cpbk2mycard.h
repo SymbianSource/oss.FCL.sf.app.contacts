@@ -70,9 +70,9 @@ NONSHARABLE_CLASS( CPbk2MyCard ) : public CBase,
     	
     	/*
     	 * Returns my card thumbnail bitmap, NULL if it doesn't exist.
-    	 * 
+    	 * ownership is transferred to the client
     	 */
-    	CFbsBitmap* MyCardBitmap() const;
+    	CFbsBitmap* MyCardBitmapL() const;
     	
     	/*
     	 * Returns MyCard icon id if created, otherwise empty TPbk2IconId

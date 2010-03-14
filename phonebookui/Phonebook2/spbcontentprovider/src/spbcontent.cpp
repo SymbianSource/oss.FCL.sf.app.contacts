@@ -80,7 +80,7 @@ inline void CSpbContent::ConstructL(const MVPbkContactLink& aLink)
 inline CSpbContent::CSpbContent(
     const CSpbContent::TParameters& aParameters ) :
     iParameters(aParameters),
-    iAsyncCallBack( TCallBack( CSpbContent::StartFetchContent, this ), 
+    iAsyncCallBack( TCallBack( CSpbContent::StartFetchContentL, this ), 
         CActive::EPriorityStandard ),
     iType( CSpbContentProvider::ETypeNone )
     {
@@ -90,13 +90,13 @@ inline CSpbContent::CSpbContent(
 // CSpbContent::RefreshNumber
 // ----------------------------------------------------------------------------
 //
-void CSpbContent::RefreshNumber()
+void CSpbContent::RefreshNumberL()
 	{
 	// if no status text
 	if( iType != CSpbContentProvider::ETypeSocialStatus && iPhoneNumberParser )
 		{
 		// re-fetch phonenumber
-		iPhoneNumberParser->FetchPhoneNumber( Link() );
+		iPhoneNumberParser->FetchPhoneNumberL( Link() );
 		}
 	}
 
@@ -104,9 +104,9 @@ void CSpbContent::RefreshNumber()
 // CSpbContent::StartFetchContent
 // ----------------------------------------------------------------------------
 //
-TInt CSpbContent::StartFetchContent( TAny* aPtr )
+TInt CSpbContent::StartFetchContentL( TAny* aPtr )
     {
-    static_cast<CSpbContent*>(aPtr)->DoStartFetchContent();
+    static_cast<CSpbContent*>(aPtr)->DoStartFetchContentL();
     return 0;
     }
 
@@ -114,17 +114,22 @@ TInt CSpbContent::StartFetchContent( TAny* aPtr )
 // CSpbContent::PhoneNumberUpdatedL
 // ----------------------------------------------------------------------------
 //
-void CSpbContent::DoStartFetchContent()
+void CSpbContent::DoStartFetchContentL()
     {
-    if(iParameters.iStatusProvider)
+    TBool fetching = EFalse;
+    if( iParameters.iStatusProvider )
         {
-        iParameters.iStatusProvider->FetchStatusDataL(*this);
+        TRAPD( err, iParameters.iStatusProvider->FetchStatusDataL(*this) );
+        fetching = ( err == KErrNone );
         }
-    else if(iPhoneNumberParser)
+    
+    if( !fetching && iPhoneNumberParser)
         {
-        iPhoneNumberParser->FetchPhoneNumber(Link());
+        iPhoneNumberParser->FetchPhoneNumberL(Link());
+        fetching = ETrue;
         }
-    else
+
+    if( !fetching )
         {
         NotifyObservers( MSpbContentProviderObserver::EContentNotAvailable );
         }
@@ -134,7 +139,8 @@ void CSpbContent::DoStartFetchContent()
 // CSpbContent::PhoneNumberUpdatedL
 // ----------------------------------------------------------------------------
 //
-void CSpbContent::PhoneNumberUpdatedL( const TDesC& aPhoneNumber )
+void CSpbContent::PhoneNumberUpdatedL( const TDesC& aPhoneNumber, 
+    CSpbContentProvider::TSpbContentType aType )
     {
     delete iText;
     iText = NULL;
@@ -145,7 +151,7 @@ void CSpbContent::PhoneNumberUpdatedL( const TDesC& aPhoneNumber )
         {
         iText = aPhoneNumber.AllocL();
         iReady = ETrue;
-        iType = CSpbContentProvider::ETypePhoneNumber;
+        iType = aType;
         }
     NotifyObservers(MSpbContentProviderObserver::EContentChanged);
     }
@@ -161,7 +167,7 @@ void CSpbContent::StatusDataUpdatedL(
     {
     if(!aStatusMessage.Length() && iPhoneNumberParser )
         {
-        iPhoneNumberParser->FetchPhoneNumber(Link());
+        iPhoneNumberParser->FetchPhoneNumberL(Link());
         return;
         }
     

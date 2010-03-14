@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -16,13 +16,31 @@
 */
 
 
-#ifndef CCAPPCOMMLAUNCHERIMAGEDECODING_H_
-#define CCAPPCOMMLAUNCHERIMAGEDECODING_H_
+#ifndef CCAPPIMAGEDECODING_H_
+#define CCAPPIMAGEDECODING_H_
 
-#include "ccappcommlauncherheaders.h"
+#include <e32base.h>
 
-class CCCAppCommLauncherHeaderControl;
 class CBitmapScaler;
+class CImageDecoder;
+class CFbsBitmap;
+class RFs;
+
+class MCCAppImageDecodingObserver
+	{
+public:
+	/**
+	 * Bitmap is decoded.
+	 * @param aBitmap Decoded bitmap, ownership is transferred.
+	 */ 
+	virtual void BitmapReadyL( CFbsBitmap* aBitmap ) = 0;
+
+protected:
+	MCCAppImageDecodingObserver() {};
+	virtual ~MCCAppImageDecodingObserver() {};
+	};
+
+
 /**
  * Utility class for asynchronously decoding the header thumbnail image
  *
@@ -30,33 +48,38 @@ class CBitmapScaler;
  *   ?good_class_usage_example(s)
  *  @endcode
  *
- *  @lib ccappcommlauncherplugin.dll
- *  @since S60 v5.0
+ *  @lib ccapputil.dll
+ *  @since S60 v9.2
  */
-class CCCAppCommLauncherImageDecoding : public CActive
+NONSHARABLE_CLASS( CCCAppImageDecoding ) : public CActive
     {
 public:
     /**
      * Two-phased constructor
      * 
-     * @param aHeader The header control to which the bitmap is to be inserted after loading
-     * @param aBitmapData Descriptor containing the bitmap data stream
-     * @param aImageFile Descriptor containing image file name full path
+     * @param aObserver 
+     * @param aBitmapData Descriptor containing the bitmap data stream, takes ownership
+     * @param aImageFile Descriptor containing image file name full path, takes ownership
      */
-    static CCCAppCommLauncherImageDecoding* NewL(CCCAppCommLauncherHeaderControl* aHeader, const TDesC8* aBitmapData, const TDesC* aImageFile);
+    IMPORT_C static CCCAppImageDecoding* NewL(
+            MCCAppImageDecodingObserver& aObserver,
+            RFs& aFs,
+            HBufC8* aBitmapData, 
+            HBufC* aImageFile );
     
     /**
      * Destructor
      */
-    ~CCCAppCommLauncherImageDecoding();
+    ~CCCAppImageDecoding();
     
     /**
      * Starts the decoding process
      * 
      * @param aImageSize defines image size
      */
-    void StartL( TSize aImageSize );
-    
+    IMPORT_C void StartL( const TSize& aImageSize );
+
+private:
     /**
      * From CActive
      * (see details from baseclass )
@@ -71,18 +94,17 @@ public:
 private:
     /**
      * First-phase (C++) constructor
-     * 
-     * @param aHeader The header control to which the bitmap is to be inserted after loading 
      */
-    CCCAppCommLauncherImageDecoding(CCCAppCommLauncherHeaderControl* aHeader);
+    inline CCCAppImageDecoding(
+            MCCAppImageDecodingObserver& aObserver,
+            RFs& aFs,
+            HBufC8* aBitmapData, 
+            HBufC* aImageFile);
     
     /**
      * Second phase constructor
-     * 
-     * @param aBitmapData Descriptor containing the bitmap data stream
-     * @param aImageFile Descriptor containing image file name full path
      */
-    void ConstructL(const TDesC8* aBitmapData, const TDesC* aImageFile);
+    inline void ConstructL();
     
     /**
      * Scales bitmap
@@ -90,6 +112,8 @@ private:
      */
     void ScaleBitmapL();
 
+    void CropBitmapL();
+    
     /**
      * Create bitmap
      *
@@ -117,16 +141,12 @@ private:
      */
     CImageDecoder* iImgDecoder;
     
-    /**
-     * The header control to which the bitmap is to be inserted after loading
-     * Not own.
-     */
-    CCCAppCommLauncherHeaderControl* iHeader;
+    MCCAppImageDecodingObserver& iObserver;
     
     /**
      * Handle to the file server session for loading the bitmap
      */ 
-    RFs iFs;
+    RFs& iFs;
     
     /**
      * The bitmap.
@@ -135,13 +155,11 @@ private:
     CFbsBitmap* iBitmap; // owned until completion
     
     /**
-     * Copy of the bitmap data stream
      * Own.
      */
     HBufC8* iBitmapData;
 
     /**
-     * Copy of image name with path
      * Own.
      */
     HBufC* iImageFullName;
@@ -162,4 +180,4 @@ private:
     RTimer iTimer;
     };
 
-#endif /*CCAPPCOMMLAUNCHERIMAGEDECODING_H_*/
+#endif /*CCAPPIMAGEDECODING_H_*/

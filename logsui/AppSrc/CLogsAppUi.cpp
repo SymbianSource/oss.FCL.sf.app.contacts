@@ -260,12 +260,20 @@ void CLogsAppUi::DoConstructDelayedL()
     //This is needed if we lose foreground and later gain it from AppShell to AppListView. 
     //Because of EMSH-6JDFBV it's also better not try do the below in HandleLosingForeground()
     //so we need to accept a minor performance penalty of executing the below already here.
-    if( ! View( TUid::Uid( ELogAppListViewId ) ) )  
+    if( ! View( TUid::Uid( ELogAppListViewId ) ) && !FeatureManager::FeatureSupported( KFeatureIdSimpleLogs ) )  
         {
         CAknView* logsView = CLogsAppListView::NewL();    
         CleanupStack::PushL(logsView);
         AddViewL( logsView );       //takes ownership
         CleanupStack::Pop(logsView);   
+        }
+    else if ( ! View( TUid::Uid( ELogSubAppListViewId ) ) && FeatureManager::FeatureSupported( KFeatureIdSimpleLogs ) )
+        {
+        // When simple mode enabled, provide SubAppListView here.
+        CAknView* logsView = CLogsSubAppListView::NewL();    
+        CleanupStack::PushL(logsView);
+        AddViewL( logsView );       //takes ownership
+        CleanupStack::Pop(logsView);
         }
         
     TRACE_EXIT_POINT;
@@ -689,7 +697,14 @@ void CLogsAppUi::HandleWsEventL(
             if (ExecutionMode() == ELogsInBackground_ExitOrEndPressed && ResetViewOnFocusRegain())
                 {
                 SetResetViewOnFocusRegain(EFalse); // prevent further view switches
-                ActivateLogsViewL(ELogAppListViewId);
+                if ( FeatureManager::FeatureSupported( KFeatureIdSimpleLogs ) )
+                    {
+                    ActivateLogsViewL( ELogSubAppListViewId );
+                    }
+                else
+                    {
+                    ActivateLogsViewL( ELogAppListViewId );
+                    }    
                 }
            
             CAknAppUi::HandleWsEventL( aEvent, aDestination );                    

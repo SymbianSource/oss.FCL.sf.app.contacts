@@ -19,7 +19,7 @@
 #define CPBK2DOUBLELISTBOXMODELCMDDECORATOR_H_
 
 // internal
-#include "cpbk2listboxmodelcmddecorator.h"
+#include "CPbk2ListboxModelCmdDecorator.h"
 
 class CPbk2ContactViewDoubleListboxDataElement;
 

@@ -26,6 +26,7 @@
 #include <MPbk2ControlObserver.h>
 #include <MPbk2StoreConfigurationObserver.h>
 #include <MPbk2MenuCommandObserver.h>
+#include <mpbk2uiextensionview2.h>
 #include <akntoolbarobserver.h>
 #include <eiklbo.h>
 #include <coemain.h>
@@ -50,7 +51,6 @@ class MCCAConnection;
 class CPbk2ContactUiControlProxy;
 class CAknStylusPopUpMenu;
 class CPbk2MyCard;
-class CPbk2ThumbnailManager;
 class CSpbContentProvider;
 class CPbk2ContextLaunch;
 
@@ -69,7 +69,8 @@ class CPbk2NamesListExView : public CBase,
                              public MAknToolbarObserver,
                              public MCoeControlObserver,
                              public MEikListBoxObserver,
-                             private MCoeForegroundObserver
+                             private MCoeForegroundObserver,
+                             public MPbk2UIExtensionView2
     {
     public: // Construction and destruction
 
@@ -114,6 +115,7 @@ class CPbk2NamesListExView : public CBase,
         void HandleLongTapEventL(
                 const TPoint& aPenEventLocation,
                 const TPoint& aPenEventScreenLocation);
+        TAny* UIExtensionViewExtension( TUid aExtensionUid );
 
     protected: 
         // from MEikListBoxObserver
@@ -255,8 +257,6 @@ class CPbk2NamesListExView : public CBase,
         // application is back in the foreground.
         TBool iNeedSetFocus;
         
-        // Own: thumnail manager for social phonebook 
-        CPbk2ThumbnailManager* iThumbManager;
         // REF: content provider
         CSpbContentProvider&  iContentProvider;
         // Not own. CCA launcher connection

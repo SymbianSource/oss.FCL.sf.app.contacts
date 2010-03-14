@@ -34,7 +34,6 @@ SOURCE          ccappcommlaunchermenuhandler.cpp
 SOURCE          ccappcommlaunchercontainer.cpp
 SOURCE          ccappcommlauncherlpadmodel.cpp
 SOURCE          ccappcommlauncherheadercontrol.cpp
-SOURCE          ccappcommlauncherimagedecoding.cpp
 SOURCE          ccappcommlauncherheadertextorder.cpp
 SOURCE          CCCAppCommLauncherPbkCmd.cpp
 SOURCE          ccappcommlaunchercustomlistboxdata.cpp 
@@ -115,6 +114,9 @@ LIBRARY 	gdi.lib
 LIBRARY         pbk2spbcontentprovider.lib
 LIBRARY			charconv.lib 
 
+LIBRARY         FontUtils.lib
 
+LIBRARY         apgrfx.lib
+LIBRARY         ws32.lib
 // End of File
 

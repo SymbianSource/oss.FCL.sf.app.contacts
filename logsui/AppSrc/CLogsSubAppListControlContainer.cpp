@@ -105,7 +105,10 @@ void CLogsSubAppListControlContainer::ConstructL( const TRect& aRect )
     if ( FeatureManager::FeatureSupported( KFeatureIdSimpleLogs ) )
         {
         // use alt. title and do not create navi decorator for simple logs
+        // Refresh navi pane to empty here to cover navi pane of RecentListView.
         MakeTitleL( R_LOGS_TITLE_TEXT );
+        NavigationTabGroupL( R_AVKON_STATUS_PANE_LAYOUT_EMPTY, 
+                             CLogsNaviDecoratorWrapper::InstanceL() );
         }
     else
         {

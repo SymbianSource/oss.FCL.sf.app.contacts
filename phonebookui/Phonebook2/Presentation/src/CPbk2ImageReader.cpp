@@ -23,6 +23,8 @@
 // From Phonebook2
 #include "MPbk2ImageReaderObserver.h"
 #include "TPbk2ImageManagerParams.h"
+#include <Pbk2CmdExtRes.rsg>
+#include "Pbk2PresentationUtils.h"
 
 // From Virtual Phonebook
 
@@ -30,6 +32,9 @@
 #include <imageconversion.h>
 #include <bitmaptransforms.h>
 #include <JP2KUids.hrh>
+#include <aknnotewrappers.h>
+#include <StringLoader.h>
+#include <AknIconUtils.h>
 
 /// Unnamed namespace for local defintions
 namespace {
@@ -279,7 +284,17 @@ void CPbk2ImageReader::RecognizeFormatFromFileL(const TDesC& aFileName)
     iMimeString = NULL;
     iMimeString = HBufC8::NewL(KMaxMimeTypeLength);
     TPtr8 mimePtr = iMimeString->Des();
-    CImageDecoder::GetMimeTypeFileL(iFsSession, aFileName, mimePtr);
+    
+    TRAPD( err, CImageDecoder::GetMimeTypeFileL(iFsSession, aFileName, mimePtr) );
+    	
+    if( err == KErrNotFound )
+        {
+        HBufC* prompt = StringLoader::LoadLC( R_QTN_ALBUM_ERR_FORMAT_UNKNOWN );
+        CAknInformationNote* dlg = new ( ELeave ) CAknInformationNote( ETrue );
+        dlg->ExecuteLD( *prompt );
+        CleanupStack::PopAndDestroy( prompt );
+        User::Leave( err );
+        }    		
     }
 
 // --------------------------------------------------------------------------
@@ -385,49 +400,13 @@ void CPbk2ImageReader::ConvertImageToBitmapL()
 //
 void CPbk2ImageReader::CropImageToSquareL()
 	{
-	TInt useCropping = 0x0008;
 	// if cropping is wanted
-	if( iParams.iFlags & useCropping )	//TODO change value ( contacts_plat/image_managemet_api/TPbk2ImageManagerParams )
+	if( iParams.iFlags & TPbk2ImageManagerParams::ECropImage )	
 		{
-		TSize size = iBitmap->SizeInPixels();
-		// crop the image only if the width is bigger than height 
-		if( size.iHeight >= size.iWidth )
-			{
-			// no cropping
-			return;
-			}
-		// take the shorter side
-		TInt sideSize = size.iHeight;	
-		
-		// set target size
-		TSize targetSize( sideSize,sideSize );
-	
-		// crop from both sides
-		TRect targetRect( TPoint( ( size.iWidth - targetSize.iWidth ) / 2,
-								  ( size.iHeight - targetSize.iHeight ) / 2 ),
-									targetSize );
-		
-		// create new bitmap
-		CFbsBitmap* target = new( ELeave ) CFbsBitmap;
-		CleanupStack::PushL( target );
-		User::LeaveIfError( target->Create( targetSize, iBitmap->DisplayMode() ) );
-		
-		// get scanline
-		HBufC8* scanLine = HBufC8::NewLC( iBitmap->ScanLineLength
-			( targetSize.iWidth, iBitmap->DisplayMode() ) );
-		TPtr8 scanLinePtr = scanLine->Des();
-		
-		TPoint startPoint( targetRect.iTl.iX, targetRect.iTl.iY );
-		TInt targetY = 0;
-		for (; startPoint.iY < targetRect.iBr.iY; ++startPoint.iY )
-			{
-			iBitmap->GetScanLine( scanLinePtr, startPoint, targetSize.iWidth, iBitmap->DisplayMode() );
-			target->SetScanLine( scanLinePtr, targetY++ );
-			}
-	
-		iBitmap->Reset();
-		User::LeaveIfError( iBitmap->Duplicate( target->Handle() ) );
-		CleanupStack::PopAndDestroy(2, target); // scanLine, target
+        Pbk2PresentationImageUtils::CropImageL( 
+                *iBitmap, 
+                Pbk2PresentationImageUtils::ELandscapeOptimizedCropping, 
+                iParams.iSize );
 		}
 	}
 
@@ -440,10 +419,38 @@ void CPbk2ImageReader::ScaleBitmapL()
     {
     __ASSERT_DEBUG(iBitmap, Panic(EPanicPreCond_ScaleBitmapL));
 
+    const TSize bitmapSize = iBitmap->SizeInPixels();
     if ((iParams.iFlags & TPbk2ImageManagerParams::EScaleImage) && 
-        !(iParams.iFlags & TPbk2ImageManagerParams::EUseFastScaling))
+         !(iParams.iFlags & TPbk2ImageManagerParams::EUseFastScaling) &&
+         (iParams.iFlags & TPbk2ImageManagerParams::EUseSpeedOptimizedScaling) &&
+         ( bitmapSize.iHeight == bitmapSize.iWidth ) )
         {
-        const TSize bitmapSize = iBitmap->SizeInPixels();
+        if( bitmapSize.iWidth > iParams.iSize.iWidth || 
+            bitmapSize.iHeight > iParams.iSize.iHeight )
+            {
+            // Use avkon scaler
+            TRect targetRect(TPoint(0,0), 
+                    TSize( ( iParams.iSize.iWidth ), 
+                           ( iParams.iSize.iHeight ) ) );
+            
+            CFbsBitmap* target = new( ELeave ) CFbsBitmap;
+            CleanupStack::PushL( target );
+            User::LeaveIfError( target->Create( 
+                    targetRect.Size(), iBitmap->DisplayMode() ) );
+            
+            AknIconUtils::ScaleBitmapL( targetRect, target, iBitmap );
+            
+            iBitmap->Reset();
+            User::LeaveIfError( iBitmap->Duplicate( target->Handle() ) );
+            CleanupStack::PopAndDestroy( target );
+            
+            NextStateL();
+            return;
+            }
+        }
+    else if ((iParams.iFlags & TPbk2ImageManagerParams::EScaleImage) && 
+             !(iParams.iFlags & TPbk2ImageManagerParams::EUseFastScaling) )
+        {
         if (bitmapSize.iWidth > iParams.iSize.iWidth || 
             bitmapSize.iHeight > iParams.iSize.iHeight)
             {
@@ -456,7 +463,7 @@ void CPbk2ImageReader::ScaleBitmapL()
             return;
             }
         }
-
+    
     // No scaling requested or needed, go directly to next state
     NextStateL();
     }

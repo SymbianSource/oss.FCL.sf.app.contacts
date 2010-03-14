@@ -138,6 +138,7 @@ LIBRARY cone.lib fbscli.lib imageconversion.lib bitmaptransforms.lib
 
 // Dependencies to S60 components
 LIBRARY FeatMgr.lib
+LIBRARY avkon.lib eikcdlg.lib eikctl.lib CommonEngine.lib AknIcon.lib
 
 // Dependencies to Phonebook
 LIBRARY VPbkEng.lib

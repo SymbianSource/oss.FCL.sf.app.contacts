@@ -59,6 +59,7 @@ void CCCAppCommLauncherHeaderControl::ConstructL()
     // Create the header image
     iImage = new (ELeave) CEikImage();
     iImage->SetPictureOwnedExternally(ETrue);
+    iImage->SetBrushStyle( CGraphicsContext::ENullBrush ); // transparent
     iImage->SetAlignment(EHCenterVCenter);
     
     // Create the header labels
@@ -93,15 +94,7 @@ CCCAppCommLauncherHeaderControl::~CCCAppCommLauncherHeaderControl()
         delete iImage;
         iImage = NULL;
         }
-    if (iImageDecoding)
-        {
-        if (iImageDecoding->IsActive())
-            {
-            iImageDecoding->Cancel();
-            }
-        delete iImageDecoding;
-        iImageDecoding = NULL;
-        }
+    delete iImageDecoding;
     if (iTextOrder)
         {
         delete iTextOrder;
@@ -164,40 +157,44 @@ CCoeControl* CCCAppCommLauncherHeaderControl::ComponentControl(TInt aIndex)  con
 //
 void CCCAppCommLauncherHeaderControl::SizeChanged()
     {
-    TInt isLandscape = Layout_Meta_Data::IsLandscapeOrientation() ? 1 : 0;
+    const TInt isLandscape = Layout_Meta_Data::IsLandscapeOrientation() ? 1 : 0;
+    const TRect rect(Rect());
+    
+    /**
+     * Option0 (w button, lsc)
+     * Option2 (w/o button, lsc)
+     * Option0 (w button, prt)
+     * Option1 (w/o button, prt)
+     */
+   
+    // (w/o button)
+    TInt option( isLandscape ? 2 : 1 );
+    if( iStatusButtonVisibility )
+        {
+        // (w button)
+        if( isLandscape )
+            {
+            option = 0;
+            }
+        else
+            {
+            option = 0;
+            }
+        }
     
     AknLayoutUtils::LayoutImage(
-            iImage, Rect(), AknLayoutScalable_Apps::cl_header_pane_g1(isLandscape));
+            iImage, rect, AknLayoutScalable_Apps::phob2_cc_data_pane_g1(option));
    
-    TPoint position = iImage->Position();
-    TSize size = iImage->Size();
-    
-    const TPoint newImagePosition = TPoint( position.iX/2, position.iY/2 );
-    iImage->SetPosition( newImagePosition );
-    
-    const TSize newImageSize = TSize( size.iWidth + 2*( position.iX - newImagePosition.iX ) ,
-            size.iHeight + 2*( position.iY - newImagePosition.iY ) );
-    
-    iImage->SetSize( newImageSize );
-    
-    iContactImageSize = newImageSize;
+    iContactImageSize = iImage->Size();
     
     if ( iImageDecoding )
         {
-        // if bitmap was set resize it
-        if (iImageDecoding->IsActive())
-            {
-            iImageDecoding->Cancel();
-            }
         TRAP_IGNORE( iImageDecoding->StartL( iContactImageSize ) );
         }
     
-    TAknLayoutRect labelsRect;
-    labelsRect.LayoutRect(Rect(), AknLayoutScalable_Apps::cl_header_name_pane(isLandscape));
-    
-    AknLayoutUtils::LayoutLabel(iLabels[0], labelsRect.Rect(), AknLayoutScalable_Apps::cl_header_name_pane_t1(2));
-    AknLayoutUtils::LayoutLabel(iLabels[1], labelsRect.Rect(), AknLayoutScalable_Apps::cl_header_name_pane_t2(2));
-    AknLayoutUtils::LayoutLabel(iLabels[2], labelsRect.Rect(), AknLayoutScalable_Apps::cl_header_name_pane_t3(2));
+    AknLayoutUtils::LayoutLabel(iLabels[0], rect, AknLayoutScalable_Apps::phob2_cc_data_pane_t1(option));
+    AknLayoutUtils::LayoutLabel(iLabels[1], rect, AknLayoutScalable_Apps::phob2_cc_data_pane_t2(option));
+    AknLayoutUtils::LayoutLabel(iLabels[2], rect, AknLayoutScalable_Apps::phob2_cc_data_pane_t3(option));
     
     if( iImageSelectionPopup )
         {
@@ -251,7 +248,7 @@ void CCCAppCommLauncherHeaderControl::SetContainerWindowL(const CCoeControl& aCo
 // ---------------------------------------------------------------------------
 //
 void CCCAppCommLauncherHeaderControl::ContactInfoFetchedNotifyL( 
-    const CCmsContactFieldInfo& aContactFieldInfo )
+    const CCmsContactFieldInfo& /*aContactFieldInfo*/ )
     {
     }
 
@@ -320,6 +317,11 @@ void CCCAppCommLauncherHeaderControl::ContactFieldFetchingCompletedL()
         iLabels[i]->SetTextL(iTextOrder->GetTextForRow(i));
         }
     DrawDeferred();
+    }
+
+void CCCAppCommLauncherHeaderControl::BitmapReadyL( CFbsBitmap* aBitmap )
+    {
+    SetBitmap(aBitmap);
     }
 
 // ---------------------------------------------------------------------------
@@ -591,7 +593,7 @@ void CCCAppCommLauncherHeaderControl::DoChangeImageCmdL()
      }
  
  TKeyResponse CCCAppCommLauncherHeaderControl::OfferKeyEventL(
-         const TKeyEvent& aKeyEvent, TEventCode aType)
+         const TKeyEvent& aKeyEvent, TEventCode /*aType*/)
      {
      TKeyResponse ret( EKeyWasNotConsumed );
      
@@ -612,19 +614,19 @@ void CCCAppCommLauncherHeaderControl::DoChangeImageCmdL()
 	 {
 	 iHasContactImage = EFalse;
 	 
-     if (iImageDecoding)
-         {
-         if (iImageDecoding->IsActive())
-             {
-             iImageDecoding->Cancel();
-             }
-         delete iImageDecoding;
-         iImageDecoding = NULL;
-         }
+     delete iImageDecoding;
+     iImageDecoding = NULL;
      
      if ( iContactThumbnailData )
     	 {
-         iImageDecoding = CCCAppCommLauncherImageDecoding::NewL(this, iContactThumbnailData, iContactImageFullName );
+         RFs& fs = CEikonEnv::Static()->FsSession();
+         iImageDecoding = CCCAppImageDecoding::NewL(
+                 *this, 
+                 fs, 
+                 iContactThumbnailData, 
+                 iContactImageFullName );
+         iContactImageFullName = NULL;  // ownership is moved to CCCAppImageDecoding
+         iContactThumbnailData = NULL;  // ownership is moved to CCCAppImageDecoding   
          iImageDecoding->StartL( iContactImageSize );
          iHasContactImage = ETrue;
          }

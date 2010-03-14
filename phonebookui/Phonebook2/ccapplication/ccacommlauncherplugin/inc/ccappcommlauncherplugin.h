@@ -137,6 +137,9 @@ public: //From MCCAppViewPluginBase2
     
     TBool PluginBusy();
 
+public: // From CAknView
+    void HandleForegroundEventL( TBool aForeground );
+    
 public:
 
     /**
@@ -216,6 +219,15 @@ public:
     CCAContactorService* ContactorService();
     
     void DefaultSettingComplete();
+    /**
+     *  Start timer.
+     */
+    void StartTimerL();
+    
+    /**
+     *  Cancel timer.
+     */
+    void CancelTimer();
 
 private: // new
 
@@ -239,6 +251,12 @@ private: // new
      * @since S60 v5.0
      */
     void EnsureMenuHandlerCreatedL();
+    
+    /**
+     *  Exit CCA application if it is at background when the request timeout.
+     * 
+     */
+    void CloseCCApp();
 
 private: // constructors
 
@@ -258,6 +276,12 @@ public:
      * methods or not.
      */
     void UpdateMSKinCbaL( TBool aCommMethodsAvailable );
+    
+    /**
+     * Notify the timeout after sent an aiw service request.
+     * 
+     */
+    static TInt ServiceTimeOutL( TAny* aObject );
 
 private:// data
 
@@ -295,7 +319,24 @@ private:// data
     CCAContactorService* iContactorService;
     
     CActiveSchedulerWait* iWaitFinish;
-
+    
+	/**
+	 * The timer notifier an aiw service request timeout. 
+	 * Own.
+	 */
+	CPeriodic* iAiwRequestTimer;
+    
+    /**
+     * Record whether the View foreground flag.
+     * Own.
+     */
+    TBool iIsCcaForeground;
+    
+    /**
+     * Timer start flag.
+     * Own.
+     */
+    TBool iIsTimerStart;
     };
 
 #endif // C_CCAPPCOMMLAUNCHERPLUGIN_H

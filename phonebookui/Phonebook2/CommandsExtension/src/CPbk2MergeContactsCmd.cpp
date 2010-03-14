@@ -43,9 +43,9 @@
 #include <CPbk2MergeConflictsDlg.h>
 #include <CPbk2MergePhotoConflictDlg.h>
 
-#include <pbk2uicontrols.rsg> 
-#include <pbk2cmdextres.rsg>
-#include <pbk2commonui.rsg>
+#include <Pbk2UIControls.rsg> 
+#include <Pbk2CmdExtRes.rsg>
+#include <Pbk2CommonUi.rsg>
 //Virtual Phonebook
 #include <MVPbkContactLink.h>
 #include <MVPbkContactViewBase.h>
@@ -57,7 +57,7 @@
 #include <MVPbkStoreContact.h>
 #include <MVPbkContactFieldBinaryData.h>
 #include <MVPbkContactFieldTextData.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <MVPbkContactGroup.h>
 
 //System
@@ -129,6 +129,9 @@ CPbk2MergeContactsCmd::~CPbk2MergeContactsCmd()
         }
 
     CleanAfterFetching();
+    delete iFirstContactString;
+    delete iSecondContactString;
+    delete iMergedContactString;
     delete iRetrieveOperation;
     delete iDeleteOperation;
     delete iCommitOperation;
@@ -141,9 +144,6 @@ CPbk2MergeContactsCmd::~CPbk2MergeContactsCmd()
     delete iStoreContactSecond;
     delete iMergedContact;
     delete iMergeResolver;
-    delete iBitmapFirst;
-    delete iBitmapSecond;
-    delete iImgDecoder;
     delete iWaitDecorator;
     if( iGroupsToAdd )
         {
@@ -202,8 +202,6 @@ void CPbk2MergeContactsCmd::ConstructL()
     iContactManager = &Phonebook2::Pbk2AppUi()->ApplicationServices().ContactManager();
     iAppServices = CPbk2ApplicationServices::InstanceL();
     iPhotoConflictIndex = KErrNotFound;
-    iDataFirst.Set( KNullDesC8() );
-    iDataSecond.Set( KNullDesC8() );
     }
     
 // --------------------------------------------------------------------------
@@ -306,7 +304,7 @@ void CPbk2MergeContactsCmd::RunL()
     	    break;
     	case EPhaseGetStoreContacts:
             {
-            GetStoreContactsL();
+            GetStoreContacts();
             }   
             break;
     	case EPhaseMerge:
@@ -431,34 +429,31 @@ void CPbk2MergeContactsCmd::FinalizeMergeL()
 //
 void CPbk2MergeContactsCmd::ShowContactsMergedNoteL()
     {
-    HBufC* firstContactString = ContactAsStringLC( iStoreContactFirst );
-    HBufC* secondContactString = ContactAsStringLC( iStoreContactSecond );
-    HBufC* mergedContactString = ContactAsStringLC( iMergedContact );
     HBufC* unnamed = StringLoader::LoadLC( R_QTN_PHOB_UNNAMED );
     CDesCArrayFlat* strings = new(ELeave) CDesCArrayFlat( 3 );
     CleanupStack::PushL( strings );
     
     HBufC* prompt = NULL;
-    if ( (firstContactString->Length() > 0 || secondContactString->Length() > 0)
-            && mergedContactString->Length() > 0 )
+    if ( (iFirstContactString->Length() > 0 || iSecondContactString->Length() > 0)
+            && iMergedContactString->Length() > 0 )
         {
-        if ( 0 != firstContactString->Length() )
+        if ( 0 != iFirstContactString->Length() )
             {
-            strings->AppendL( *firstContactString );
+            strings->AppendL( *iFirstContactString );
             }
         else
             {
             strings->AppendL( *unnamed );
             }
-        if ( 0 != secondContactString->Length() )
+        if ( 0 != iSecondContactString->Length() )
             {
-            strings->AppendL( *secondContactString );
+            strings->AppendL( *iSecondContactString );
             }
         else
             {
             strings->AppendL( *unnamed );
             }
-        strings->AppendL( *mergedContactString );
+        strings->AppendL( *iMergedContactString );
 
         prompt = StringLoader::LoadLC( R_QTN_PHOB_NOTE_CONTACTS_WERE_MERGED, *strings );
         }
@@ -475,16 +470,14 @@ void CPbk2MergeContactsCmd::ShowContactsMergedNoteL()
     CleanupStack::PopAndDestroy( prompt );
     CleanupStack::PopAndDestroy( strings );
     CleanupStack::PopAndDestroy( unnamed );
-    CleanupStack::PopAndDestroy( mergedContactString );
-    CleanupStack::PopAndDestroy( secondContactString );
-    CleanupStack::PopAndDestroy( firstContactString );
+
     }
 
 // --------------------------------------------------------------------------
 // CPbk2MergeContactsCmd::ContactAsStringLC
 // --------------------------------------------------------------------------
 //
-HBufC* CPbk2MergeContactsCmd::ContactAsStringLC( MVPbkStoreContact* aStoreContact )
+HBufC* CPbk2MergeContactsCmd::ContactAsStringL( MVPbkStoreContact* aStoreContact )
     {
     _LIT(KResultFormat, "%S %S");
     TPtrC firstName( KNullDesC() );
@@ -513,17 +506,17 @@ HBufC* CPbk2MergeContactsCmd::ContactAsStringLC( MVPbkStoreContact* aStoreContac
     HBufC* result = NULL;
     if ( firstName.Length() > 0 && lastName.Length() > 0 )
         {
-        result = HBufC::NewLC( firstName.Length() + lastName.Length() + KResultFormat().Length() );
+        result = HBufC::NewL( firstName.Length() + lastName.Length() + KResultFormat().Length() );
         TPtr resAsDes = result->Des();
         resAsDes.Format( KResultFormat, &firstName, &lastName );
         }
     else if ( firstName.Length() > 0 )
         {
-        result = firstName.AllocLC(); 
+        result = firstName.AllocL(); 
         }    
     else
         {
-        result = lastName.AllocLC();
+        result = lastName.AllocL();
         }
     return result;
     }
@@ -783,12 +776,18 @@ void CPbk2MergeContactsCmd::StartNext()
 // CPbk2MergeContactsCmd::RetrieveContactL
 // --------------------------------------------------------------------------
 //
-void CPbk2MergeContactsCmd::RetrieveContactL(
+void CPbk2MergeContactsCmd::RetrieveContact(
         const MVPbkContactLink& aContactLink )
     {
     // Retrieve the actual store contact from the given link
-    iRetrieveOperation = iAppServices->
+    TRAPD( error, 
+        iRetrieveOperation = iAppServices->
         ContactManager().RetrieveContactL( aContactLink, *this );
+    );
+    if( error != KErrNone )
+        {
+        Finish( error );
+        }
     }
 
 ////////////////////////////// CALLBACKS /////////////////////////////////////
@@ -809,12 +808,20 @@ void CPbk2MergeContactsCmd::VPbkSingleContactOperationComplete(
         if( !iStoreContactFirst )
             {
             iStoreContactFirst = aContact;
-            TRAP_IGNORE( RetrieveContactL( *iContactSecond ) ); 
+            TRAPD( error, iStoreContactFirst->LockL( *this ) );
+            if( error != KErrNone )
+                {
+                Finish( error );
+                }
             }
         else if( !iStoreContactSecond )
             {
             iStoreContactSecond = aContact;
-            StartNext();
+            TRAPD( error, iStoreContactSecond->LockL( *this ) );
+            if( error != KErrNone )
+                {
+                Finish( error );
+                }
             }
         else if( iNextPhase == EPhaseGetGroups 
                  && aContact->Group()
@@ -866,11 +873,11 @@ void CPbk2MergeContactsCmd::VPbkSingleContactOperationComplete(
             
             if( countFirst )
                 {
-                TRAP( error, RetrieveContactL( iGroupLinksFirst->At( countFirst - 1 ) ); );
+                RetrieveContact( iGroupLinksFirst->At( countFirst - 1 ) );
                 }
             else if( countSecond )
                 {
-                TRAP( error, RetrieveContactL( iGroupLinksSecond->At( countSecond - 1 ) ); );
+                RetrieveContact( iGroupLinksSecond->At( countSecond - 1 ) );
                 }
             else
                 {
@@ -914,7 +921,17 @@ void CPbk2MergeContactsCmd::VPbkSingleContactOperationFailed(
 void CPbk2MergeContactsCmd::ContactOperationCompleted(
         TContactOpResult aResult )
     {
-    if( aResult.iOpCode == MVPbkContactObserver::EContactLock )
+    if( aResult.iOpCode == MVPbkContactObserver::EContactLock 
+            && iNextPhase == EPhaseGetStoreContacts && !iStoreContactSecond )
+        {
+        RetrieveContact( *iContactSecond );
+        }
+    else if( aResult.iOpCode == MVPbkContactObserver::EContactLock 
+            && iNextPhase == EPhaseGetStoreContacts )
+        {
+        StartNext( EPhaseMerge );
+        }
+    else if( aResult.iOpCode == MVPbkContactObserver::EContactLock )
         {
         TInt countGroups = iGroupsToAdd->Count();
         if( countGroups )
@@ -970,9 +987,16 @@ void CPbk2MergeContactsCmd::ContactOperationCompleted(
 // --------------------------------------------------------------------------
 //
 void CPbk2MergeContactsCmd::ContactOperationFailed(
-        TContactOp /*aOpCode*/, TInt /*aErrorCode*/, TBool /*aErrorNotified*/ )
+        TContactOp aOpCode, TInt aErrorCode, TBool /*aErrorNotified*/ )
     {
-    DeleteMergedContact();
+    if( aOpCode == MVPbkContactObserver::EContactLock && iNextPhase == EPhaseGetStoreContacts )
+        {
+        Finish( aErrorCode );
+        }
+    else
+        {
+        DeleteMergedContact();
+        }
     }
 
 // --------------------------------------------------------------------------
@@ -1223,11 +1247,6 @@ void CPbk2MergeContactsCmd::CheckPhotoConflictL()
                     if ( firstField->FieldData().DataType() == EVPbkFieldStorageTypeBinary && 
                             secondField->FieldData().DataType() == EVPbkFieldStorageTypeBinary )
                         {
-                        iDataFirst.Set( MVPbkContactFieldBinaryData::Cast
-                            ( firstField->FieldData() ).BinaryData() );
-                        iDataSecond.Set( MVPbkContactFieldBinaryData::Cast
-                            ( secondField->FieldData() ).BinaryData() );
-                        
                         iPhotoConflictIndex = i;
                         break;
                         }
@@ -1267,29 +1286,10 @@ void CPbk2MergeContactsCmd::ResolvePhotoConflictL()
         return;
         }
     
-    if ( iDataFirst.Length() == 0 || iDataSecond.Length() == 0 )
-        {
-        StartNext( EPhaseFinish );
-        return;
-        }
-    
-    if ( !iBitmapFirst )
-        {
-        InitBitmapL( iBitmapFirst, iDataFirst );
-        return;
-        }
-    if ( !iBitmapSecond )
-        {
-        InitBitmapL( iBitmapSecond, iDataSecond  );
-        return;
-        }
-    
-    delete iImgDecoder;
-    iImgDecoder = NULL;
     TInt result = EPbk2ConflictedFirst;
     
     CPbk2MergePhotoConflictDlg* dlg = 
-        CPbk2MergePhotoConflictDlg::NewL( iBitmapFirst, iBitmapSecond, &result );
+        CPbk2MergePhotoConflictDlg::NewL( iStoreContactFirst, iStoreContactSecond, &result );
     if ( !dlg->ExecuteLD( R_PBK2_MERGE_CONTACTS_PHOTO_CONFLICT_RESOLUTION_DLG ) )
         {
         // dlg returns 0 if canceled
@@ -1300,30 +1300,6 @@ void CPbk2MergeContactsCmd::ResolvePhotoConflictL()
         ResolveAllPhotoConflicts( (EPbk2ConflictedNumber) result );
         StartNext( EPhaseCreateMergedContact );
         }
-    delete iBitmapFirst;
-    iBitmapFirst = NULL;
-    delete iBitmapSecond;
-    iBitmapSecond = NULL;
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2MergeContactsCmd::InitBitmapL
-// --------------------------------------------------------------------------
-//
-void CPbk2MergeContactsCmd::InitBitmapL( CFbsBitmap*& aBitmap, TDesC8& aData )
-    {
-    delete iImgDecoder;
-    iImgDecoder = NULL;
-    iImgDecoder = CImageDecoder::DataNewL
-        ( iContactManager->FsSession(), aData, CImageDecoder::EOptionAlwaysThread );
-    
-    TFrameInfo info = iImgDecoder->FrameInfo();
-    aBitmap = new ( ELeave ) CFbsBitmap;
-    User::LeaveIfError( aBitmap->Create
-        ( info.iOverallSizeInPixels, info.iFrameDisplayMode ));
-    
-    iImgDecoder->Convert( &iStatus, *aBitmap );
-    SetActive();
     }
 
 // --------------------------------------------------------------------------
@@ -1382,17 +1358,13 @@ void CPbk2MergeContactsCmd::ResolveConflictsL()
 // CPbk2MergeContactsCmd::GetStoreContactsL
 // --------------------------------------------------------------------------
 //
-void CPbk2MergeContactsCmd::GetStoreContactsL()
+void CPbk2MergeContactsCmd::GetStoreContacts()
     {
     if( iContactFirst && iContactSecond )
         {
         if( !iStoreContactFirst )
             {
-            RetrieveContactL( *iContactFirst );
-            }
-        else if( iStoreContactSecond )
-            {
-            StartNext( EPhaseMerge );
+            RetrieveContact( *iContactFirst );
             }
         else
             {
@@ -1413,6 +1385,17 @@ void CPbk2MergeContactsCmd::DeleteSourceContactsL()
     {
     User::LeaveIfNull( iContactFirst );
     User::LeaveIfNull( iContactSecond );
+    
+    iFirstContactString = ContactAsStringL( iStoreContactFirst );
+    iSecondContactString = ContactAsStringL( iStoreContactSecond );
+    iMergedContactString = ContactAsStringL( iMergedContact );
+    
+    delete iStoreContactFirst;
+    iStoreContactFirst = NULL;
+    
+    delete iStoreContactSecond;
+    iStoreContactSecond = NULL;
+    
     if( iContactsToDelete )
         {
         delete iContactsToDelete;
@@ -1504,11 +1487,11 @@ void CPbk2MergeContactsCmd::GetGroupsL()
         
         if( countFirst )
             {
-            RetrieveContactL( iGroupLinksFirst->At( countFirst - 1 ) );
+            RetrieveContact( iGroupLinksFirst->At( countFirst - 1 ) );
             }
         else if( countSecond )
             {
-            RetrieveContactL( iGroupLinksSecond->At( countSecond - 1 ) );
+            RetrieveContact( iGroupLinksSecond->At( countSecond - 1 ) );
             }
         else
             {

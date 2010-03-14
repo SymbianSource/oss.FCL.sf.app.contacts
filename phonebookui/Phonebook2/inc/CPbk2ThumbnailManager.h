@@ -24,7 +24,7 @@
 #include <MPbk2ImageOperationObservers.h>
 #include <MVPbkContactViewObserver.h>
 #include <TPbk2IconId.h>
-
+#include "MPbk2FilteredViewStack.h"
 
 //FORWARD declaration
 class CPbk2ImageManager;
@@ -85,7 +85,8 @@ public:
 NONSHARABLE_CLASS( CPbk2ThumbnailManager ) : public CBase,
 											 public MVPbkSingleContactOperationObserver,
 											 public MPbk2ImageGetObserver,
-											 public MVPbkContactViewObserver
+											 public MVPbkContactViewObserver,
+											 public MPbk2FilteredViewStackObserver
 	{
 public:	// constructor & destructor
 	
@@ -110,7 +111,7 @@ public:	// new functions
 	 * Returns icon index from Pbk2IconArray for double listbox index. 
 	 * If icon is not set, default icon index is returned
 	 */
-	TInt GetPbkIconIndex( TInt aListboxIndex, const MVPbkBaseContact& aContactLink );
+	TInt GetPbkIconIndexL( TInt aListboxIndex, const MVPbkBaseContact& aContactLink );
 	
 	/*
 	 * Setter for default icon ID
@@ -136,20 +137,7 @@ public:	// new functions
 	 * Returns number of loaded thumbnails
 	 */
 	TInt ThumbnailCount();	
-	
-	/*
-	 * Adds contact to the array and starts loading the thumbnail for it. 
-	 * If loading is already in progress, contact is added to queue. 
-	 * 
-	 */
-	void LoadThumbnailL(  const MVPbkContactLink& aContactLink, TInt aListboxIndex  );
 
-	/*
-	 * Removes contact from loader's array and deletes the thumbnail. 
-	 * Returns KErrNone or KErrNotFound.
-	 */
-	TInt RemoveThumbnail( const MVPbkContactLink& aContactLink, TInt aListboxIndex  );
-	
 	/**
 	 * Reset thumbnail manager. Clear cache and cancel all ongoing operations.
 	 */
@@ -165,17 +153,24 @@ public:	// new functions
 	 */
 	const TSize& GetThumbnailIconSize();
 	
+	/**
+	 * Set view for thumbnail manager. Thumbnail manager will start observing the 
+	 * view and update it's internal state accordingly. Remove view by setting it
+	 * to NULL.
+	 */
+	void SetContactViewL( MPbk2FilteredViewStack* aView );
+	
 private:	// new functions
 	
-	/*
-	 * If contact is added to  middle of the list, increase indexes that are added after the given index
-	 */
-	void IncreaseIndexes( TInt aListboxIndex );
+    /**
+     * Removes contact from loader's array and deletes the thumbnail. 
+     */
+    void RemoveThumbnail( const MVPbkContactLink& aContactLink, TInt aListboxIndex  );
 	
 	/*
-	 * If contact is removed from middle of the list, decrease indexes that are added after the given index
+	 * reset listbox indexes to match the array order
 	 */
-	void DecreaseIndexes( TInt aListboxIndex );
+	void ResetIndexes();
 	
 	/*
 	 * Removes allready loaded thumbnail from the last position of the priorization array. 
@@ -183,10 +178,6 @@ private:	// new functions
 	 */
 	void MakeRoomForNextThumbnail();
 	
-	/*
-	 * Finds correct item from the iContactThumbnails based on the base contact
-	 */
-	CPbk2TmItem* FindItem( const MVPbkBaseContact& aContactLink );
 	/*
 	 * Starts loading of the contact thumbnails. 
 	 */
@@ -222,6 +213,11 @@ private:	// new functions
 	 */
 	void DoContactViewReadyL( MVPbkContactViewBase& aView );
 
+	/**
+	 * Create empty thumbnail item array reflecting the aView. 
+	 */
+	void PreCreateThumbnailArrayL( MVPbkContactViewBase& aView );
+
 private: // From MVPbkSingleContactOperationObserver
    void VPbkSingleContactOperationComplete(
 		   MVPbkContactOperationBase& aOperation,
@@ -255,7 +251,17 @@ private: // From MVPbkContactViewObserver
         TInt aError, 
         TBool aErrorNotified );
 
-	
+private: // From MPbk2FilteredViewStackObserver
+    void TopViewChangedL( MVPbkContactViewBase& aOldView );
+    void TopViewUpdatedL();
+    void BaseViewChangedL();
+    void ViewStackError( TInt aError );
+    void ContactAddedToBaseView( 
+        MVPbkContactViewBase& aBaseView,
+        TInt aIndex,
+        const MVPbkContactLink& aContactLink );
+
+
 private:	//constructors
 	CPbk2ThumbnailManager( CVPbkContactManager& aContactManager );
 	void ConstructL();
@@ -308,6 +314,8 @@ private:	//data
 	/// Own: Holds the item whose thumbnail load is in progress
 	/// This item needs to be removed when its safe
 	CPbk2TmItem*                    iInProgressItemToBeRemoved;
+	/// Not own. Filtered view of contacts.
+	MPbk2FilteredViewStack*         iView;
 	};
 
 #endif /* CPBK2THUMBNAILMANAGER_H_ */

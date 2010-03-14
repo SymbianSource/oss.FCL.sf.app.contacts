@@ -29,12 +29,12 @@
 #include    "MPbkControlKeyObserver.h"
 #include    <CPbkIconArray.h>
 #include    "MPbkClipListBoxText.h"
-#include    "cpbkfieldanalyzer.h"
+#include    "CPbkFieldAnalyzer.h"
 
 #include    <CPbkContactItem.h> // CPbkFieldArray
 #include    <CPbkExtGlobals.h>
 #include    <MPbkExtensionFactory.h>
-#include    <cpbkcontactengine.h>
+#include    <CPbkContactEngine.h>
 
 // Unnamed namespace for local definitions
 namespace {

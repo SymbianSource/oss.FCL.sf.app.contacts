@@ -125,7 +125,7 @@ void CPsu2ThinUIExtensionPlugin::DynInitMenuPaneL
         case R_PHONEBOOK2_NAMESLIST_OTHER_MEMORIES_MENU_PLACEHOLDER:
             {
             if ( iServiceTable.IsOff( KAllSimStores ) ||
- //                aControl.ContactsMarked() || 
+                aControl.ContactsMarked() || 
                  ( iStoreChecker &&
                    !iStoreChecker->IsContactsAvailabe(
                         VPbkContactStoreUris::SimGlobalOwnNumberUri()) &&

@@ -517,17 +517,17 @@
 //d:Phonebook info popup's contact count text
 //l:list_single_heading_pane_t1_cp2
 //
-#define qtn_phob_pb_info_names                  "contacts"
+#define qtn_phob_pb_info_names                  "Contacts:"
 
 //d:Phonebook info popup's used memory text
 //l:list_single_heading_pane_t1_cp2
 //
-#define qtn_phob_pb_info_reserved               "used"
+#define qtn_phob_pb_info_reserved               "Used:"
 
 //d:Phonebook info popup's free memory text
 //l:list_single_heading_pane_t1_cp2
 //
-#define qtn_phob_pb_info_free                   "free"
+#define qtn_phob_pb_info_free                   "Free:"
 
 //d:Wait note text for deleting phonebook entries
 //l:popup_note_wait_window
@@ -1655,7 +1655,7 @@
 //w:
 //r:3.1
 //
-#define qtn_phob_pb_info_all                "All"
+#define qtn_phob_pb_info_all                "All contacts:"
 
 //d:List query pop-up item one "group"
 //l:list_single_heading_pane_t1_cp2
@@ -1669,7 +1669,7 @@
 //w:
 //r:3.1
 //
-#define qtn_phob_pb_info_groups             "groups"
+#define qtn_phob_pb_info_groups             "Groups:"
 
 //d:Prompt text for memory query pop-up when copying one contact
 //l:heading_pane_t1
@@ -1845,14 +1845,25 @@
 //w:
 //r:3.2
 //
-#define qtn_phob_pb_info_memory_phone          "Phone"
-
+#define qtn_phob_pb_info_memory_phone          "Phone mem."
+//d:Phonebook info pop-up item "Phone:"
+//l:list_single_heading_pane_t1_cp2/opt1
+//w:
+//r:3.2
+//
+#define qtn_phob_pb_info_memory_phone_colon    "Phone mem.:"
 //d:Phonebook info pop-up item "SIM"
 //l:list_single_heading_pane_t1_cp2
 //w:
 //r:3.2
 //
-#define qtn_phob_pb_info_memory_sim          "SIM"
+#define qtn_phob_pb_info_memory_sim          "SIM memory"
+//d:Phonebook info pop-up item "SIM:"
+//l:list_single_heading_pane_t1_cp2
+//w:
+//r:3.2
+//
+#define qtn_phob_pb_info_memory_sim_colon    "SIM memory:"
 
 /////////////////////////////////////////////////////////////////////////////
 // Localisation strings from Service dialling numbers

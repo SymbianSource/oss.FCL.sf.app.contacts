@@ -48,15 +48,15 @@
 #include <MVPbkContactLink.h>
 #include <telvmbxsettingscrkeys.h>
 
-#include <SettingsInternalCRKeys.h>
+#include <settingsinternalcrkeys.h>
 #include <SpeeddialPrivateCRKeys.h>
-#include "Spdctrl.rsg"
+#include "SpdCtrl.rsg"
 
 
 #include <CMessageData.h>
 #include <txtrich.h>
 #include <SendUiConsts.h>
-#include <sendnorm.rsg>
+#include <Sendnorm.rsg>
 #include <MVPbkContactFieldTextData.h>
 
 // ================= MEMBER FUNCTIONS =======================

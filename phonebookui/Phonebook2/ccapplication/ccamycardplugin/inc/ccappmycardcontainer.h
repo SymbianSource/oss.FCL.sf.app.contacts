@@ -24,7 +24,8 @@
 #include <ccappviewpluginakncontainer.h>
 #include "ccappmycard.h"
 #include "ccappmycardimageloader.h"
-#include <mpbk2contactuicontrol.h>
+#include <MPbk2ContactUiControl.h>
+#include <aknlongtapdetector.h>
 #include "ccappmycardheadercontrol.h"
 
 #include "ccappstatuscontrol.h"
@@ -55,7 +56,8 @@ class CCCAppMyCardContainer :
     public MEikListBoxObserver,
     public MPbk2ContactUiControl,
     public MCCAStatusControlObserver,
-    public MMyCardHeaderControlObserver
+    public MMyCardHeaderControlObserver,
+    public MAknLongTapDetectorCallBack
     {
 public: // constructor and destructor
 
@@ -141,6 +143,23 @@ public: // Functions from base classes
      */
     void MyCardHeaderControlClickL( TPoint aPos );
     
+    /**
+     * Default callback function for CAknLongTapDetector member object.
+     * Base class implementation does nothing
+     * 
+     * @param aPenEventLocation Long tap event location relative to parent control.
+     * @param aPenEventScreenLocation Long tap event location relative to screen.
+     */
+    void HandleLongTapEventL( const TPoint& aPenEventLocation, 
+        const TPoint& aPenEventScreenLocation );
+    
+    /**
+    * From CoeControl
+    * Overridden to receive pointer events
+    */
+    void HandlePointerEventL( const TPointerEvent& aPointerEvent );
+
+    
 public: // New
 
     /**
@@ -206,7 +225,7 @@ public: // From MPbk2ContactUiControl
         MPbk2Command* aCommand );
     void SetTextL(
        const TDesC& aText );
-    TAny* ContactUiControlExtension(TUid aExtensionUid );
+    TAny* ContactUiControlExtension(TUid aExtensionUid );    
     void ProcessCommandL( TInt aCommandId ) const;
 
     /*
@@ -312,6 +331,23 @@ private: // Data
 	CCCaFactoryExtensionNotifier* iFactoryExtensionNotifier;
 
 	TInt iNameOrder;
+	
+	/**
+     * iLongTapDetector
+     * Own.
+     */
+    CAknLongTapDetector* iLongTapDetector;  
+    
+    /** 
+      * Contact detail selection stylus popup menu 
+      * Own. 
+      */  
+    CAknStylusPopUpMenu* iDetailsPopup;
+    
+    /*
+     * Flag for checking if Stylys opened 
+     */
+    TBool iLongTapHandled;    
     };
 
 #endif // CCAPPMYCARDCONTAINER_H

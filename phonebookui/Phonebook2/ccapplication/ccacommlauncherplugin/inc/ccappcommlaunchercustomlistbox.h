@@ -59,6 +59,7 @@ NONSHARABLE_CLASS(CCCAppCommLauncherCustomListBox) :
     private: // Implementation
     	
     	CCCAppCommLauncherCustomListBox();
+    	void SizeChangedL();
 
     private: // Data
         /// Doesnt Own - Ownership Transferred to CPbk2ContactViewCustomListBoxItemDrawer

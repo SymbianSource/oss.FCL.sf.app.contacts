@@ -21,6 +21,7 @@
 
 // From system
 #include <featmgr.h>
+#include <fbs.h>
 
 /// Namespace for local PresentationUtils definitions
 namespace __RVCT_UNS_Pbk2PresentationUtils {
@@ -225,6 +226,67 @@ EXPORT_C const TDesC& Pbk2PresentationUtils::PresentationResourceFile()
         }
     return KPbk2PresentationResFile;
     }    
+
+
+// --------------------------------------------------------------------------
+// Pbk2PresentationImageUtils::CropImageL
+// --------------------------------------------------------------------------
+//
+EXPORT_C void Pbk2PresentationImageUtils::CropImageL( 
+        CFbsBitmap& aBitmap, 
+        TCroppingMode aCroppingMode, 
+        const TSize& aTargetSize  )
+    {
+    const TSize sourceSize( aBitmap.SizeInPixels() );
+    // crop the image only if the width is bigger than height 
+    if( sourceSize.iHeight >= sourceSize.iWidth )
+        {
+        // no cropping
+        return;
+        }
+    // take the shorter side
+    const TInt sideSize( sourceSize.iHeight );   
+    TInt sideSizeW( sourceSize.iHeight );   
+    if( ELandscapeOptimizedCropping &&
+        sideSizeW < aTargetSize.iWidth )
+        {
+        sideSizeW = aTargetSize.iWidth;
+        if( sideSizeW >= sourceSize.iWidth )
+            {
+            return; // no cropping
+            }
+        }
     
+    // set target size
+    const TSize targetSize( sideSizeW, sideSize );
+
+    // crop from both sides
+    const TRect targetRect( TPoint( ( sourceSize.iWidth - targetSize.iWidth ) / 2,
+                              ( sourceSize.iHeight - targetSize.iHeight ) / 2 ),
+                              targetSize );
     
+    // create new bitmap
+    CFbsBitmap* target = new( ELeave ) CFbsBitmap;
+    CleanupStack::PushL( target );
+    const TDisplayMode displayMode( aBitmap.DisplayMode() );
+    User::LeaveIfError( target->Create( targetSize, displayMode ) );
+    
+    // get scanline
+    HBufC8* scanLine = HBufC8::NewLC( aBitmap.ScanLineLength
+        ( targetSize.iWidth, displayMode ) );
+    TPtr8 scanLinePtr = scanLine->Des();
+    
+    TPoint startPoint( targetRect.iTl.iX, targetRect.iTl.iY );
+    TInt targetY = 0;
+    for (; startPoint.iY < targetRect.iBr.iY; ++startPoint.iY )
+        {
+        aBitmap.GetScanLine( scanLinePtr, startPoint, targetSize.iWidth, displayMode );
+        target->SetScanLine( scanLinePtr, targetY++ );
+        }
+
+    aBitmap.Reset();
+    User::LeaveIfError( aBitmap.Duplicate( target->Handle() ) );
+    CleanupStack::PopAndDestroy( 2, target ); // scanLine, target    
+    }    
+
 // End of File

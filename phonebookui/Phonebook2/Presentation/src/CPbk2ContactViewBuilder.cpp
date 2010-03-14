@@ -44,7 +44,6 @@
 #include <coemain.h>
 #include <barsread.h>
 
-
 // --------------------------------------------------------------------------
 // CPbk2ContactViewBuilder::CPbk2ContactViewBuilder
 // --------------------------------------------------------------------------
@@ -95,6 +94,22 @@ EXPORT_C MVPbkContactViewBase*
         ( EPbk2MainNamesList, aUriArray, aObserver, aSortOrder, aFilter, aFlags );
     }
 
+// --------------------------------------------------------------------------
+// CPbk2ContactViewBuilder::CreateContactViewForStoresLC
+// --------------------------------------------------------------------------
+//
+EXPORT_C MVPbkContactViewBase*
+    CPbk2ContactViewBuilder::CreateContactViewForStoresLC(
+        const CVPbkContactStoreUriArray& aUriArray,
+        MVPbkContactViewObserver& aObserver,
+        const MVPbkFieldTypeList& aSortOrder,
+        CVPbkFieldTypeSelector* aFilter,
+        TUint32 aFlags,
+        MVPbkContactSelector* aContactSelector) const
+    {
+    return CreateViewForStoresLC
+        ( EPbk2MainNamesList, aUriArray, aObserver, aSortOrder, aFilter, aFlags, EFalse, aContactSelector );
+    }
 
 // --------------------------------------------------------------------------
 // CPbk2ContactViewBuilder::CreateTopNonTopContactViewForStoresLC
@@ -195,7 +210,8 @@ MVPbkContactViewBase* CPbk2ContactViewBuilder::CreateViewForStoresLC(
         const MVPbkFieldTypeList& aSortOrder,
         CVPbkFieldTypeSelector* aFilter,
         TUint32 aFlags,
-        TBool aTopContacts ) const
+        TBool aTopContacts,
+        MVPbkContactSelector* aContactSelector) const
     {
     // Main view is a composite view that contains several sub composite
     // views. The subviews are identified by TPbk2ContactViewLocation. 
@@ -255,6 +271,10 @@ MVPbkContactViewBase* CPbk2ContactViewBuilder::CreateViewForStoresLC(
                     	{
                     	newSubView->SetFlag ( EVPbkExcludeEmptyGroups, ETrue );
                     	}
+                    if( !(newSubView->ContactSelector()) )
+                        {
+                        newSubView->SetContactSelector( aContactSelector );
+                        }
                     
                     subView.AddSubViewL( newSubView );
                     CleanupStack::Pop();

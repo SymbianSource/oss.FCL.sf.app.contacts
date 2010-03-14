@@ -106,7 +106,7 @@ private: // new
 
 private: // Commands for Options-menu items
 
-    void DoEditCmdL();
+    void DoEditCmdL( TInt aCommand );
     void DoViewImageCmdL();
     void DoSendBusinessCardCmdL();
     void DoTopContactCmdL();

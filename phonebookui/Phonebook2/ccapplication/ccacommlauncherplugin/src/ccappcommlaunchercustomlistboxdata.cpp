@@ -11,50 +11,29 @@
 *
 * Contributors:
 *
-* Description: 
+* Description: CCA customized control. Code has been modified to suit 
+               CCA requirements. See CFormattedCellListBoxData
+*       	   in EIKCLBD.CPP. 
+*              Ensure that this piece of code is in sync with Avkon EIKFRLBD.CPP(CFormattedCellListBoxData)
 *
 */
-/*
- * ccappcommlaunchercustomlistboxdata.cpp
- *
- *  Created on: 2009-11-2
- *      Author: dev
- */
-/*
- * ============================================================================
- *  Name     : Eikfrlbd.cpp
- *  Part of  : Avkon
- *
- *  Description:
- *  Version:
- *
- *  Copyright � 2002-2009 Nokia Corporation.
- *  This material, including documentation and any related 
- *  computer programs, is protected by copyright controlled by 
- *  Nokia Corporation. All rights are reserved. Copying, 
- *  including reproducing, storing,  adapting or translating, any 
- *  or all of this material requires the prior written consent of 
- *  Nokia Corporation. This material also contains confidential 
- *  information which may not be disclosed to others without the 
- *  prior written consent of Nokia Corporation.
- * ============================================================================
- */
+
 
 #include <eikfrlbd.h>
 #include <aknlists.h>
 #include <AknMarqueeControl.h>
-#include <aknpictographinterface.h>
-#include <aknpictographdrawerinterface.h>
-#include <aknseffectanim.h>
-#include <aknslistboxbackgroundcontrolcontext.h>
-#include <aknsframebackgroundcontrolcontext.h>
-#include <aknpanic.h>
-#include <aknbiditextutils.h>
+#include <AknPictographInterface.h>
+#include <AknPictographDrawerInterface.h>
+#include <AknsEffectAnim.h>
+#include <AknsListBoxBackgroundControlContext.h>
+#include <AknsFrameBackgroundControlContext.h>
+#include <AknPanic.h>
+#include <AknBidiTextUtils.h>
 #include <centralrepository.h>
-#include <avkoninternalcrkeys.h>
+#include <AvkonInternalCRKeys.h>
 #include <gulicon.h>
 #include <eikslbd.h>
-//#include <akndebug.h>
+
 #include <aknlayoutscalable_avkon.cdl.h>
 #include <layoutmetadata.cdl.h>
 #include <aknphysics.h>
@@ -69,9 +48,8 @@
 #include <aknlistboxtfxinternal.h>
 #endif //RD_UI_TRANSITION_EFFECTS_LIST
 
-#ifdef RD_TACTILE_FEEDBACK
+
 #include <touchfeedback.h>
-#endif //RD_TACTILE_FEEDBACK
 // there are 17(!) subcells in qdial grid (0 ... 16)
 const TInt KMaxSubCellIndex = 16 + 1;
 
@@ -992,9 +970,9 @@ TBool CCCAppCommLauncherCustomListBoxDataExtension::DrawHighlightBackground(
 		cc = SkinBackgroundContext();
 		}
 
-	return AknsDrawUtils::DrawBackground(AknsUtils::SkinInstance(), cc,
-			iControl, aGc, TPoint(0, 0), itemRect,
-			KAknsDrawParamBottomLevelRGBOnly);
+    TBool ret = AknsDrawUtils::DrawBackground( AknsUtils::SkinInstance(), cc, iControl, aGc, TPoint(0,0),
+                                          itemRect, KAknsDrawParamBottomLevelRGBOnly );
+    return ret;
 	}
 
 // -----------------------------------------------------------------------------
@@ -1298,22 +1276,25 @@ CCCAppCommLauncherCustomListBoxDataExtension *CCCAppCommLauncherCustomListBoxDat
  void CCCAppCommLauncherCustomListBoxData::SetSkinPopupFrame(
 		const TAknsItemID *aFrameId, const TAknsItemID *aFrameCenterId)
 	{
-	if (iExtension && iExtension->iPopupFrame)
-		{
-		iExtension->iPopupFrame->SetFrame(*aFrameId);
-		iExtension->iPopupFrame->SetCenter(*aFrameCenterId);
-		}
-	else
-		{
-		TRAPD(err, iExtension->iPopupFrame = CAknsFrameBackgroundControlContext::NewL(
+    if ( iExtension )
+        {
+        if ( iExtension->iPopupFrame )
+		    {
+		    iExtension->iPopupFrame->SetFrame(*aFrameId);
+            iExtension->iPopupFrame->SetCenter(*aFrameCenterId);
+	    	}
+	    else
+	    	{
+	        TRAPD(err, iExtension->iPopupFrame = CAknsFrameBackgroundControlContext::NewL(
 						KAknsIIDNone,
 						TRect(0,0,1,1), // these must be set by using SetSkinPopupFramePosition
 						TRect(0,0,1,1),
 						EFalse ) );
-		if (!err)
-			{
-			iExtension->iPopupFrame->SetFrame(*aFrameId);
-			iExtension->iPopupFrame->SetCenter(*aFrameCenterId);
+            if (!err)
+			    {
+			    iExtension->iPopupFrame->SetFrame(*aFrameId);
+			    iExtension->iPopupFrame->SetCenter(*aFrameCenterId);
+                }
 			}
 		}
 	}
@@ -1748,27 +1729,27 @@ CCCAppCommLauncherCustomListBoxData::Font(
 		TListItemProperties aProperties, CWindowGc& aGc, const TDesC* aText,
 		const TRect& aItemRect, TBool aHighlight, const TColors& aColors) const
 	{
+    CListBoxView* view = static_cast<CEikListBox*>( iExtension->iControl )->View();
+    if (!view->ViewRect().Intersects(aItemRect))
+        {
+        // outside of the clipping rect -> don't process this item
+        return;
+        }
 	if (aHighlight)
 		{
 		iExtension->iClippedSubcells = 0;
 		}
 
 #ifdef RD_UI_TRANSITION_EFFECTS_LIST
-	MAknListBoxTfxInternal *transApi = CAknListLoader::TfxApiInternal(&aGc);
-	TBool effectsDisabled = ETrue;
-
-	if (transApi)
-		{
-		transApi->StartDrawing(MAknListBoxTfxInternal::EListItem);
-		effectsDisabled = transApi->EffectsDisabled();
-
-		if (effectsDisabled)
-			{
-			CListBoxView* view =
-					static_cast<CEikListBox*> (iExtension->iControl)->View();
-			aGc.SetClippingRect(view->ViewRect());
-			}
-		}
+    MAknListBoxTfxInternal *transApi = CAknListLoader::TfxApiInternal( &aGc );
+    if ( transApi )
+        {
+        transApi->StartDrawing( MAknListBoxTfxInternal::EListItem );
+        if(transApi->EffectsDisabled())
+            {
+            aGc.SetClippingRect( view->ViewRect() );
+            }
+        }
 #else
 	CListBoxView* view = static_cast<CEikListBox*>( iExtension->iControl )->View();
 	aGc.SetClippingRect( view->ViewRect() );
@@ -1794,7 +1775,7 @@ CCCAppCommLauncherCustomListBoxData::Font(
 #ifdef RD_UI_TRANSITION_EFFECTS_LIST  
 	if (transApi)
 		{
-		if (effectsDisabled)
+        if(transApi->EffectsDisabled())
 			{
 			aGc.CancelClippingRect();
 			}
@@ -1873,189 +1854,186 @@ void CCCAppCommLauncherCustomListBoxData::DrawFormattedSimple(
 	TPtrC tempText;
 	TRect textShadowRect; // For transparent list
 	TRgb textShadowColour = AKN_LAF_COLOR_STATIC(215); // Black shadow for item text.
-	MAknsControlContext *cc = AknsDrawUtils::ControlContext(Control());
-	TBool skinEnabled = AknsUtils::AvkonSkinEnabled();
+    MAknsControlContext *cc = AknsDrawUtils::ControlContext( Control() );
+    if (!cc)
+        {
+        cc = SkinBackgroundContext();
+        }
 
-	if (!cc)
-		{
-		cc = SkinBackgroundContext();
-		}
-
-	TAknTextLineLayout textLines[KMaxSubCellIndex];
-	TBool rectClipped[KMaxSubCellIndex];
-
-	Mem::FillZ(&rectClipped[0], KMaxSubCellIndex * sizeof(TBool));
-
-	if (iExtension->iSubCellsMightIntersect)
-		{
-		CheckIfSubCellsIntersect(&textLines[0], &rectClipped[0], *aText,
-				aItemRect);
-		}
+    TAknTextLineLayout textLines[KMaxSubCellIndex];
+    TBool rectClipped[KMaxSubCellIndex];
+    
+    Mem::FillZ( &rectClipped[0], KMaxSubCellIndex * sizeof( TBool ) );
+    
+    if ( iExtension->iSubCellsMightIntersect )
+        {
+        CheckIfSubCellsIntersect( &textLines[0], &rectClipped[0], *aText, aItemRect );
+        }
 
 	TInt SCindex = 0;
 
-	// This loop does the drawing.    
-	aGc.SetPenStyle(CGraphicsContext::ENullPen);
-	subcell = 0;
-	FOREVER{
-	if (subcell>lastSubCell)
-		{
-		break;
-		}
+    // This loop does the drawing.    
+    aGc.SetPenStyle(CGraphicsContext::ENullPen);
+    subcell=0;
+    FOREVER
+        {        
+        if (subcell>lastSubCell)
+            {
+            break;
+            }
+        
+        TextUtils::ColumnText(text,subcell, aText);
+        if (text == KNullDesC)
+            {
+            // empty subcell, continue to draw next subcell
+            ++ subcell;
+            continue;
+            }
+        if (!iExtension) break;
+        if (iExtension->FindSLSubCellIndex(SCindex,subcell)!=0) break;
 
-	TextUtils::ColumnText(text,subcell, aText);
-	if (text == KNullDesC)
-		{
-		// empty subcell, continue to draw next subcell
-		++ subcell;
-		continue;
-		}
-	if (!iExtension) break;
-	if (iExtension->FindSLSubCellIndex(SCindex,subcell)!=0) break;
+        if (UseSubCellColors(subcell))
+            {
+            subcellColors = &SubCellColors(subcell);
+            }
+        else
+            {
+            subcellColors = &aColors;
+            }
+            
+        TRgb color;
 
-	if (UseSubCellColors(subcell))
-		{
-		subcellColors = &SubCellColors(subcell);
-		}
-	else
-		{
-		subcellColors = &aColors;
-		}
+        if (aHighlight)
+            {
+            color = subcellColors->iHighlightedText;
+            aGc.SetBrushColor(subcellColors->iHighlightedBack); 
+            if ( AknsUtils::AvkonSkinEnabled() )
+                {
+                if ( iExtension->iHighlightedTextColor != NULL )
+                    {
+                    color = iExtension->iHighlightedTextColor;
+                    }
+                }
+            }
+        else
+            {
+            color = subcellColors->iText;
+            aGc.SetBrushColor(subcellColors->iBack);
+            if ( AknsUtils::AvkonSkinEnabled() )
+                {
+                if ( iExtension->iTextColor != NULL )
+                    {
+                    color = iExtension->iTextColor;
+                    }
+                }
+            }
+        
+        // graphics or text column
+        if (iExtension->AtSL(SCindex).iSubCellType == CCCAppCommLauncherCustomListBoxDataExtension::EAknSLText)
+            {
+            const CFont* rowAndCellFont=RowAndSubCellFont(iExtension->iCurrentlyDrawnItemIndex,subcell);
+            const CFont* cellFont=Font(aProperties, subcell);
+            const CFont* tempFont=(cellFont) ? cellFont : NULL;
+            const CFont* usedFont=(rowAndCellFont) ? rowAndCellFont : tempFont;
+            
+            TAknTextLineLayout textLineLayout = NULL;
 
-	TRgb color;
+            if ( rectClipped[subcell] )
+                {
+                textLineLayout = textLines[subcell];
+                }
+            else
+                {
+                // check if there are icons affecting this text layout
+                TInt gSC = iExtension->AtSL(SCindex).iConditionValue; // graphical subcell which might affect this text subcell
+                
+                if (gSC > -1)
+                    {
+                    TInt tempIndex;
+                    while (gSC > -1) // when gSC == -1, we have found our graphical subcell
+                        {
+                        if (iExtension->FindSLSubCellIndex(tempIndex,gSC)!=0) break;
+                        TextUtils::ColumnText(tempText,gSC, aText);
+                        if (tempText != KNullDesC)
+                            {
+                            textLineLayout = iExtension->AtSL(tempIndex).iTextLayout;
+                            break;                      
+                            }
+                        gSC = iExtension->AtSL(tempIndex).iConditionValue;
+                        }
+                    }
+                    
+                if (gSC == -1) // no affecting icons -> use default layout
+                    {
+                    textLineLayout = iExtension->AtSL(SCindex).iTextLayout;
+                    }
+                }
 
-	if (aHighlight)
-		{
-		color = subcellColors->iHighlightedText;
-		aGc.SetBrushColor(subcellColors->iHighlightedBack);
-		if ( skinEnabled )
-			{
-			if ( iExtension->iHighlightedTextColor != NULL )
-				{
-				color = iExtension->iHighlightedTextColor;
-				}
-			}
-		}
-	else
-		{
-		color = subcellColors->iText;
-		aGc.SetBrushColor(subcellColors->iBack);
-		if ( skinEnabled )
-			{
-			if ( iExtension->iTextColor != NULL )
-				{
-				color = iExtension->iTextColor;
-				}
-			}
-		}
+                      
+            CGraphicsContext::TTextAlign align=SubCellAlignment(subcell); //gumq
+            TBool isLayoutAlignment = iExtension->SubCellLayoutAlignment(subcell); //gumq  
+            if( !isLayoutAlignment )
+                { 
+                switch(align) 
+                    {
+                    case CGraphicsContext::ELeft : 
+                        {
+                        textLineLayout.iJ = ELayoutAlignLeft;    
+                        }
+                        break; 
+                    case CGraphicsContext::ECenter: 
+                        {
+                        textLineLayout.iJ = ELayoutAlignCenter;
+                        }
+                        break; 
+                    case CGraphicsContext::ERight:  
+                        {
+                        textLineLayout.iJ = ELayoutAlignRight;
+                        } 
+                        break; 
+                    default:  break;
+                    }; 
+                }    
+                
+            TAknLayoutText textLayout;
+            textLayout.LayoutText(textRect, textLineLayout, usedFont);
 
-	// graphics or text column
-	if (iExtension->AtSL(SCindex).iSubCellType == CCCAppCommLauncherCustomListBoxDataExtension::EAknSLText)
-		{
-		const CFont* rowAndCellFont=RowAndSubCellFont(iExtension->iCurrentlyDrawnItemIndex,subcell);
-		const CFont* cellFont=Font(aProperties, subcell);
-		const CFont* tempFont=(cellFont) ? cellFont : NULL;
-		const CFont* usedFont=(rowAndCellFont) ? rowAndCellFont : tempFont;
+            SetUnderlineStyle( aProperties, aGc, subcell );
 
-		TAknTextLineLayout textLineLayout = NULL;
+            // * 2 == leave some room for marquee
+            const TInt maxlen( KMaxColumnDataLength * 2 ); 
+            TBuf<maxlen> convBuf = text.Left(maxlen);
 
-		if ( rectClipped[subcell] )
-			{
-			textLineLayout = textLines[subcell];
-			}
-		else
-			{
-			// check if there are icons affecting this text layout
-			TInt gSC = iExtension->AtSL(SCindex).iConditionValue; // graphical subcell which might affect this text subcell
+            // Note that this potentially modifies the text so its lenght in pixels
+            // might increase. Therefore, this should always be done before
+            // wrapping/clipping text. In some cases, WordWrapListItem is called
+            // before coming here. Is it certain that it is not done for number subcells?
 
-			if (gSC> -1)
-				{
-				TInt tempIndex;
-				while (gSC> -1) // when gSC == -1, we have found our graphical subcell
+            // Do number conversion if required.
+            if (SubCellIsNumberCell(subcell))
+                {
+                AknTextUtils::LanguageSpecificNumberConversion(convBuf);
+                }
 
-					{
-					if (iExtension->FindSLSubCellIndex(tempIndex,gSC)!=0) break;
-					TextUtils::ColumnText(tempText,gSC, aText);
-					if (tempText != KNullDesC)
-						{
-						textLineLayout = iExtension->AtSL(tempIndex).iTextLayout;
-						break;
-						}
-					gSC = iExtension->AtSL(tempIndex).iConditionValue;
-					}
-				}
+            // Check whether logical to visual conversion should be done here or not.
+            TBool bidiConv =
+                iExtension->iUseLogicalToVisualConversion &&
+                subcell != iExtension->iFirstWordWrappedSubcellIndex &&
+                subcell != iExtension->iSecondWordWrappedSubcellIndex;
 
-			if (gSC == -1) // no affecting icons -> use default layout
-
-				{
-				textLineLayout = iExtension->AtSL(SCindex).iTextLayout;
-				}
-			}
-
-		CGraphicsContext::TTextAlign align=SubCellAlignment(subcell); //gumq
-		TBool isLayoutAlignment = iExtension->SubCellLayoutAlignment(subcell); //gumq  
-		if( !isLayoutAlignment )
-			{
-			switch(align)
-				{
-				case CGraphicsContext::ELeft :
-					{
-					textLineLayout.iJ = ELayoutAlignLeft;
-					}
-				break;
-				case CGraphicsContext::ECenter:
-					{
-					textLineLayout.iJ = ELayoutAlignCenter;
-					}
-				break;
-				case CGraphicsContext::ERight:
-					{
-					textLineLayout.iJ = ELayoutAlignRight;
-					}
-				break;
-				default: break;
-				};
-			}
-
-		TAknLayoutText textLayout;
-		textLayout.LayoutText(textRect, textLineLayout, usedFont);
-
-		SetUnderlineStyle( aProperties, aGc, subcell );
-
-		// * 2 == leave some room for marquee
-		const TInt maxlen( KMaxColumnDataLength * 2 );
-		TBuf<maxlen> convBuf = text.Left(maxlen);
-
-		// Note that this potentially modifies the text so its lenght in pixels
-		// might increase. Therefore, this should always be done before
-		// wrapping/clipping text. In some cases, WordWrapListItem is called
-		// before coming here. Is it certain that it is not done for number subcells?
-
-		// Do number conversion if required.
-		if (SubCellIsNumberCell(subcell))
-			{
-			AknTextUtils::LanguageSpecificNumberConversion(convBuf);
-			}
-
-		// Check whether logical to visual conversion should be done here or not.
-		TBool bidiConv =
-		iExtension->iUseLogicalToVisualConversion &&
-		subcell != iExtension->iFirstWordWrappedSubcellIndex &&
-		subcell != iExtension->iSecondWordWrappedSubcellIndex;
-
-		TBool doesNotFit( EFalse );
-		if ( aHighlight )
-			{
-			doesNotFit = usedFont->TextWidthInPixels( convBuf )> textLayout.TextRect().Width();
-
-			if ( doesNotFit )
-				{
-				iExtension->iClippedSubcells |= ( 1 << subcell );
-				}
-			else
-				{
-				iExtension->iClippedSubcells &= ~( 1 << subcell );
-				}
+            TBool doesNotFit( EFalse );
+            if ( aHighlight )
+                {
+                doesNotFit = usedFont->TextWidthInPixels( convBuf ) > textLayout.TextRect().Width();
+            
+                if ( doesNotFit )
+                    {
+                    iExtension->iClippedSubcells |= ( 1 << subcell );
+                    }
+                else 
+                    {
+                    iExtension->iClippedSubcells &= ~( 1 << subcell );
+                    }
 
 			if ( iExtension->iUseClippedByWrap ) // override if already clipped
 
@@ -2554,8 +2532,19 @@ void CCCAppCommLauncherCustomListBoxData::HandleResourceChange(TInt aType)
 		iExtension->iAnimFlags.Set(
 				CCCAppCommLauncherCustomListBoxDataExtension::EFlagUpdateBg);
 		}
+    else if( ( aType == KEikMessageUnfadeWindows ) ||
+             ( aType == KEikMessageFadeAllWindows ) )
+        {
+        if( iExtension->iMarquee )
+            {
+            iExtension->iMarquee->HandleResourceChange( aType );
+            }
+        if( iExtension->i2ndLineMarquee )
+            {
+            iExtension->i2ndLineMarquee->HandleResourceChange( aType );
+            }
+        }
 	}
-
 // -----------------------------------------------------------------------------
 // CCCAppCommLauncherCustomListBoxData::HighlightAnim
 // -----------------------------------------------------------------------------
@@ -2785,7 +2774,7 @@ TBool CCCAppCommLauncherCustomListBoxData::IsScrollbarBackgroundDrawingEnabled()
  void CCCAppCommLauncherCustomListBoxData::SetSubCellIconSize(
 		TInt aIndex, TSize aSize)
 	{
-	if (iExtension && aIndex <= KMaxSubCellIndex && aIndex >= 0)
+    if ( iExtension && aIndex < KMaxSubCellIndex && aIndex >= 0 )
 		{
 		iExtension->iSubCellIconSize[aIndex] = aSize;
 		}
@@ -2793,7 +2782,7 @@ TBool CCCAppCommLauncherCustomListBoxData::IsScrollbarBackgroundDrawingEnabled()
 
 TSize CCCAppCommLauncherCustomListBoxData::GetSubCellIconSize(TInt aIndex)
 	{
-	if (iExtension && aIndex <= KMaxSubCellIndex && aIndex >= 0)
+    if ( iExtension && aIndex < KMaxSubCellIndex && aIndex >= 0 )
 		{
 		return iExtension->iSubCellIconSize[aIndex];
 		}
@@ -2975,7 +2964,7 @@ TInt CCCAppCommLauncherCustomListBoxData::CorrectBaseline(TInt aParentHeight, TI
     {
     TInt B = aBaseline;
 
-    if( /*TAknFontId::IsEncodedFont(aFontId) &&*/ aFontId != ELayoutEmpty ) // This tells us that the font id has come from scalable layout API
+    if( TAknFontId::IsEncodedFont(aFontId) && aFontId != ELayoutEmpty ) // This tells us that the font id has come from scalable layout API
         {
         TInt b = aBaseline;
         if (IsParentRelative(b)) { b = aParentHeight - ELayoutP + b; }
@@ -3089,18 +3078,16 @@ void CCCAppCommLauncherCustomListBoxData::UseScalableLayoutData(TBool aUse)
 		{
 		if (!aUse && iExtension->iSimpleList)
 			{
-			CEikFormattedCellListBox
-					* list =
-							static_cast<CEikFormattedCellListBox*> (iExtension->iControl);
-			MAknListBoxTfxInternal* transApi = CAknListLoader::TfxApiInternal(
-					list->View()->ItemDrawer()->Gc());
-			if (transApi)
-				{
-				transApi->SetPosition(MAknListBoxTfxInternal::EListTLMargin,
-						TPoint(0, 0));
-				transApi->SetPosition(MAknListBoxTfxInternal::EListBRMargin,
-						TPoint(0, 0));
-				}
+#ifdef RD_UI_TRANSITION_EFFECTS_LIST
+            CEikFormattedCellListBox* list = static_cast<CEikFormattedCellListBox*>( iExtension->iControl );
+            MAknListBoxTfxInternal* transApi =
+                CAknListLoader::TfxApiInternal( list->View()->ItemDrawer()->Gc() );
+            if ( transApi )
+                {
+                transApi->SetPosition( MAknListBoxTfxInternal::EListTLMargin, TPoint( 0, 0 ) );
+                transApi->SetPosition( MAknListBoxTfxInternal::EListBRMargin, TPoint( 0, 0 ) );
+                }
+#endif
 			}
 		iExtension->iSimpleList = aUse;
 		}
@@ -3333,7 +3320,6 @@ void CCCAppCommLauncherCustomListBoxData::CheckIfSubCellsIntersect(
 	TInt lastSubCell = Min(KMaxSubCellIndex, LastSubCell());
 	TPtrC text;
 	TBool isEmpty[KMaxSubCellIndex];
-	TBool layoutMirrored = AknLayoutUtils::LayoutMirrored();
 
 	// cache the empty text states
 	while (ETrue)
@@ -3393,44 +3379,41 @@ void CCCAppCommLauncherCustomListBoxData::CheckIfSubCellsIntersect(
 
 			TRect bRect2(SubCellPosition(subCell2), SubCellSize(subCell2));
 
-			if (bRect.Intersects(bRect2) && !SubCellIsTransparent(subCell)
-					&& !SubCellIsTransparent(subCell2))
-				{
-				aResults[subCell] = ETrue;
+            if ( bRect.Intersects( bRect2 ) && !SubCellIsTransparent( subCell ) && !SubCellIsTransparent( subCell2 ) ) 
+                {
+                aResults[subCell] = ETrue;
 
-				if (!layoutMirrored)
-					{
-					bRect.iBr.iX = bRect2.iTl.iX;
-					}
-				else
-					{
-					bRect.iTl.iX = bRect2.iBr.iX;
-					}
-				}
-			}
+                if ( !AknLayoutUtils::LayoutMirrored() )
+                    {
+                    bRect.iBr.iX = bRect2.iTl.iX;
+                    }
+                else
+                    {
+                    bRect.iTl.iX = bRect2.iBr.iX;
+                    }
+                }
+            }
+            
+        if ( aResults[subCell] )
+            {
+            if ( iExtension->AtSL( subCellIndex ).iSubCellType == CCCAppCommLauncherCustomListBoxDataExtension::EAknSLText )
+                {
+                TAknTextLineLayout textLine = iExtension->AtSL( subCellIndex ).iTextLayout;
+                
+                textLine.iW = bRect.Width();
 
-		if (aResults[subCell])
-			{
-			if (iExtension->AtSL(subCellIndex).iSubCellType
-					== CCCAppCommLauncherCustomListBoxDataExtension::EAknSLText)
-				{
-				TAknTextLineLayout textLine =
-						iExtension->AtSL(subCellIndex).iTextLayout;
-
-				textLine.iW = bRect.Width();
-
-				if (!layoutMirrored)
-					{
-					textLine.ir = aItemRect.iBr.iX - bRect.iBr.iX;
-					}
-				else
-					{
-					textLine.il = bRect.iTl.iX - aItemRect.iTl.iX;
-					}
-
-				aLayouts[subCell] = textLine;
-				}
-			}
+                if ( !AknLayoutUtils::LayoutMirrored() )
+                    {
+                    textLine.ir = aItemRect.iBr.iX - bRect.iBr.iX;
+                    }
+                else
+                    {
+                    textLine.il = bRect.iTl.iX - aItemRect.iTl.iX;
+                    }
+                
+                aLayouts[subCell] = textLine;
+                }
+            }
 
 		++subCell;
 		}
@@ -3568,8 +3551,7 @@ void CCCAppCommLauncherCustomListBoxData::DrawFormattedOld(
 		{
 		cc = SkinBackgroundContext();
 		}
-	TBool linesShown = AknListBoxUtils::ListBoxLinesShown(
-			AknsUtils::SkinInstance(), cc);
+
 
 	Mem::FillZ(textNull, sizeof(textNull));
 
@@ -3609,8 +3591,7 @@ void CCCAppCommLauncherCustomListBoxData::DrawFormattedOld(
 
 		TRect bRect(SubCellPosition(subcell), SubCellSize(subcell));
 		TMargins m(SubCellMargins(subcell));
-		TRect cRect(bRect.iTl + TSize(m.iLeft, m.iTop), bRect.Size() - TSize(
-				m.iRight + m.iLeft, m.iBottom + m.iTop));
+        TRect cRect(bRect.iTl+TSize(m.iLeft,m.iTop),bRect.Size()-TSize(m.iRight+m.iLeft,m.iBottom+m.iTop));
 
 		for (subcell2 = subcell + 1; subcell2 <= lastSubCell; subcell2++)
 			{
@@ -3620,10 +3601,8 @@ void CCCAppCommLauncherCustomListBoxData::DrawFormattedOld(
 				}
 
 			// This is called O(N^2) times - Do not put anything extra to it, it'll slow down drawing!
-			TRect bRect2(SubCellPosition(subcell2), SubCellSize(subcell2));
-			if (cRect.Intersects(bRect2) && bRect.Intersects(bRect2)
-					&& !SubCellIsTransparent(subcell) && !SubCellIsTransparent(
-					subcell2))
+            TRect bRect2 = TRect(SubCellPosition(subcell2),SubCellSize(subcell2));
+            if (cRect.Intersects(bRect2) && bRect.Intersects(bRect2) && !SubCellIsTransparent(subcell) && !SubCellIsTransparent(subcell2)) 
 				{
 				if (!layoutMirrored)
 					{
@@ -3661,8 +3640,8 @@ void CCCAppCommLauncherCustomListBoxData::DrawFormattedOld(
 		// SetPosition, SetSize and margins support
 		TRect bRect(SubCellPosition(subcell), SubCellRealSize(subcell));
 		TMargins m(SubCellMargins(subcell));
-		TRect cRect(bRect.iTl + TSize(m.iLeft, m.iTop), SubCellRealTextSize(
-				subcell));
+        TRect cRect(bRect.iTl+TSize(m.iLeft,m.iTop),SubCellRealTextSize(subcell));
+        
 
 		if (bRect.iBr.iX == 0)
 			{
@@ -3672,9 +3651,9 @@ void CCCAppCommLauncherCustomListBoxData::DrawFormattedOld(
 
 		if (layoutMirrored)
 			{
-			TRect bRect(SubCellPosition(subcell), SubCellSize(subcell));
-			TRect cRect2(bRect.iTl + TSize(m.iLeft, m.iTop), bRect.Size()
-					- TSize(m.iRight + m.iLeft, m.iBottom + m.iTop));
+            TRect bRect = TRect(SubCellPosition(subcell),SubCellSize(subcell));
+            TRect cRect2 = TRect(bRect.iTl+TSize(m.iLeft,m.iTop),bRect.Size()-TSize(m.iRight+m.iLeft,m.iBottom+m.iTop));
+            
 
 			TInt shift = (cRect2.Size() - SubCellRealTextSize(subcell)).iWidth;
 			cRect.iTl.iX += shift;
@@ -3735,12 +3714,10 @@ void CCCAppCommLauncherCustomListBoxData::DrawFormattedOld(
 			CGraphicsContext::TTextAlign align = SubCellAlignment(subcell);
 			if (!SubCellIsGraphics(subcell))
 				{
-				const CFont* rowAndCellFont = RowAndSubCellFont(
-						iExtension->iCurrentlyDrawnItemIndex, subcell);
-				const CFont* cellFont = Font(aProperties, subcell);
-				const CFont* tempFont = (cellFont) ? cellFont : font;
-				const CFont* usedFont = (rowAndCellFont) ? rowAndCellFont
-						: tempFont;
+                const CFont* rowAndCellFont=RowAndSubCellFont(iExtension->iCurrentlyDrawnItemIndex,subcell);
+                const CFont* cellFont=Font(aProperties, subcell);
+                const CFont* tempFont=(cellFont) ? cellFont : font;
+                const CFont* usedFont=(rowAndCellFont) ? rowAndCellFont : tempFont;
 				aGc.UseFont(usedFont);
 				SetUnderlineStyle(aProperties, aGc, subcell);
 
@@ -3749,9 +3726,7 @@ void CCCAppCommLauncherCustomListBoxData::DrawFormattedOld(
 				baseLineOffset -= cRect.iTl.iY;
 				if (!baseLineOffset)
 					{
-					baseLineOffset = (cRect.Size().iHeight
-							- usedFont->HeightInPixels()) / 2
-							+ usedFont->AscentInPixels();
+                    baseLineOffset = (cRect.Size().iHeight-usedFont->HeightInPixels())/2 + usedFont->AscentInPixels();
 					}
 
 				TBuf<KMaxColumnDataLength + KAknBidiExtraSpacePerLine> clipbuf =
@@ -3769,15 +3744,18 @@ void CCCAppCommLauncherCustomListBoxData::DrawFormattedOld(
 				TBool clipped(EFalse);
 				TInt clipgap = SubCellTextClipGap(subcell);
 
-				if (iExtension->iUseLogicalToVisualConversion && subcell
-						!= iExtension->iFirstWordWrappedSubcellIndex && subcell
-						!= iExtension->iSecondWordWrappedSubcellIndex)
-					{
-					TInt maxClipWidth = textRect.Size().iWidth + clipgap;
-
-					clipped = AknBidiTextUtils::ConvertToVisualAndClip(
-							text.Left(KMaxColumnDataLength), clipbuf,
-							*usedFont, textRect.Size().iWidth, maxClipWidth);
+                if ( iExtension->iUseLogicalToVisualConversion &&
+                     subcell != iExtension->iFirstWordWrappedSubcellIndex &&
+                     subcell != iExtension->iSecondWordWrappedSubcellIndex )
+                    {
+                    TInt maxClipWidth = textRect.Size().iWidth + clipgap;
+                    
+                    clipped = AknBidiTextUtils::ConvertToVisualAndClip(
+                        text.Left(KMaxColumnDataLength), 
+                        clipbuf,
+                        *usedFont,
+                        textRect.Size().iWidth, 
+                        maxClipWidth );
 					}
 
 				if (clipped)
@@ -3805,32 +3783,27 @@ void CCCAppCommLauncherCustomListBoxData::DrawFormattedOld(
 
 					if (iExtension->iUseClippedByWrap) // override if already clipped
 						{
-						iExtension->iClippedSubcells
-								= iExtension->iClippedByWrap;
+                        iExtension->iClippedSubcells = iExtension->iClippedByWrap;
 						}
 					}
 
-				CAknMarqueeControl* marquee =
-						subcell == 1 ? iExtension->iMarquee
-								: iExtension->i2ndLineMarquee;
-
-				TBool
-						marqueeDisabled =
-								static_cast<CEikListBox*> (Control())->View()->ItemDrawer()->Flags()
-										& CListItemDrawer::EDisableMarquee;
-
-				if (aHighlight && iExtension->IsMarqueeOn() && clipped
-						&& !marqueeDisabled)
-					{
-					// Let marquee know if it needs to do bidi conversion.
-					marquee->UseLogicalToVisualConversion(clipped);
-
-					if (marquee->DrawText(aGc, textRect, text, baseLineOffset,
-							align, *usedFont))
-						{
-						// All the loops have been executed -> the text needs to be truncated.
-						aGc.DrawText(clipbuf, textRect, baseLineOffset, align,
-								0);
+                CAknMarqueeControl* marquee =
+                    subcell == 1 ? iExtension->iMarquee :
+                                   iExtension->i2ndLineMarquee;
+                
+                TBool marqueeDisabled =
+                        static_cast<CEikListBox*>(
+                            Control() )->View()->ItemDrawer()->Flags() & CListItemDrawer::EDisableMarquee;
+                
+                if ( aHighlight && iExtension->IsMarqueeOn() && clipped && !marqueeDisabled )
+                    {                    
+                    // Let marquee know if it needs to do bidi conversion.
+                    marquee->UseLogicalToVisualConversion( clipped );
+                    
+                    if ( marquee->DrawText( aGc, textRect, text, baseLineOffset, align, *usedFont ) )
+                        {
+                        // All the loops have been executed -> the text needs to be truncated.
+                        aGc.DrawText( clipbuf, textRect, baseLineOffset, align, 0 );
 						}
 					}
 				else
@@ -3842,34 +3815,30 @@ void CCCAppCommLauncherCustomListBoxData::DrawFormattedOld(
 
 					if (IsBackgroundDrawingEnabled())
 						{
-						aGc.DrawText(clipbuf, textRect, baseLineOffset, align,
-								0);
-						}
-					else // "Transparent" list, draw text shadow first, then the actual text.
-						{
-						textShadowRect = textRect;
-						textShadowRect.Move(1, 1);
-						aGc.SetPenColor(textShadowColour);
-						aGc.DrawText(clipbuf, textShadowRect, baseLineOffset,
-								align, 0);
-						if (aHighlight)
-							{
-							aGc.SetPenColor(subcellColors->iHighlightedText);
-							}
-						else
-							{
-							aGc.SetPenColor(subcellColors->iText);
-							}
-						aGc.DrawText(clipbuf, textRect, baseLineOffset, align,
-								0);
+                        aGc.DrawText( clipbuf, textRect, baseLineOffset, align, 0 );
+                        }
+                    else  // "Transparent" list, draw text shadow first, then the actual text.
+                        {
+                        textShadowRect = textRect;
+                        textShadowRect.Move( 1, 1 );
+                        aGc.SetPenColor( textShadowColour );
+                        aGc.DrawText( clipbuf, textShadowRect, baseLineOffset, align, 0 );
+                        if ( aHighlight )
+                            {
+                            aGc.SetPenColor( subcellColors->iHighlightedText );
+                            }
+                        else
+                            {
+                            aGc.SetPenColor( subcellColors->iText );
+                            }
+                        aGc.DrawText( clipbuf, textRect, baseLineOffset, align, 0 );
 						}
 					}
 
 				if (iExtension->iPictoInterface)
 					{
 					iExtension->iPictoInterface->Interface()->DrawPictographsInText(
-							aGc, *usedFont, clipbuf, textRect, baseLineOffset,
-							align, 0);
+                        aGc, *usedFont, clipbuf, textRect, baseLineOffset, align, 0 );
 					}
 				// disable underline after first text.
 				// at least phonebook uses this. See SetSubcellUnderlined to override
@@ -3942,10 +3911,9 @@ void CCCAppCommLauncherCustomListBoxData::DrawFormattedOld(
 							break;
 						}
 					bmpRect = TRect(bmpPos, size);
-					TPoint posInBitmap = TPoint(0, 0) + bitmap->SizeInPixels()
-							- textRect.Size();
-					posInBitmap.iX >> 1;
-					posInBitmap.iY >> 1;
+                    TPoint posInBitmap = TPoint(0,0) + bitmap->SizeInPixels() - textRect.Size();
+                    posInBitmap.iX /= 2;
+                    posInBitmap.iY /= 2;
 					if (posInBitmap.iX < 0)
 						{
 						posInBitmap.iX = 0;

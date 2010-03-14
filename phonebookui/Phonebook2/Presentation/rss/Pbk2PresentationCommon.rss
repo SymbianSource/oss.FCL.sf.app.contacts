@@ -2012,6 +2012,11 @@ RESOURCE PHONEBOOK2_STORE_PROPERTY_ARRAY r_phonebook2_store_properties
                     {
                     context = EPbk2CopyQueryItem;
                     text = qtn_pbcop_copy_query_list_item_phone;
+                    },
+                PHONEBOOK2_LOCALIZED_TEXT
+                    {
+                    context = EPbk2MemInfoContacts;
+                    text = qtn_phob_pb_info_memory_phone_colon;
                     }
                 };
             }

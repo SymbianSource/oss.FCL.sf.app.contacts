@@ -121,7 +121,7 @@ void CPbk2ContactViewDoubleListBoxModel::FormatBufferForContactL(
     //const TPbk2IconId& thumb = iThumbManager.GetPbkIconIndex( aIndex, aViewContact );
     //element->SetIconId( MPbk2DoubleListboxDataElement::EThumbnail, thumb );
     // -- temporary sollution:
-    TInt index = iThumbManager.GetPbkIconIndex( aIndex, aViewContact );
+    TInt index = iThumbManager.GetPbkIconIndexL( aIndex, aViewContact );
     if( index != KErrNotFound )
         {
         iBuffer.AppendNum( index );

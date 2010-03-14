@@ -76,7 +76,7 @@ NONSHARABLE_CLASS(CPbk2NameslistUiControlExtension) :
         /*
          * Creates icon of the bitmap and adds it ot Pbk2IconArray
          */
-        void AddThumbnailToIconArrayL( );
+        void AddMyCardThumbnailToIconArrayL( );
         
     private: // Construction & destruction
         CPbk2NameslistUiControlExtension( CVPbkContactManager& aContactManager,
@@ -132,10 +132,8 @@ NONSHARABLE_CLASS(CPbk2NameslistUiControlExtension) :
         CSpbContentProvider& iContentProvider;
         // Ref:
         CPbk2MyCard* iMyCard;
-        // Ref: my card thumbnail bitmap
+        // Own: my card thumbnail bitmap
         CFbsBitmap* iBitmap;
-        // Current thumbnail icon id
-        TPbk2IconId	iIconId;
         // Ref: thumbnail on array
         CGulIcon* 	iThumbIcon;
     };

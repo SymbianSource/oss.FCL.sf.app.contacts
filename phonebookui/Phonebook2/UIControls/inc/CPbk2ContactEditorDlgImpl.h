@@ -444,10 +444,6 @@ class CPbk2ContactEditorDlgImpl : public CAknForm,
         MPbk2ApplicationServices* iAppServices;
         // Own: Custom title text
         HBufC* iTitleText;
-        // The latest command id
-        TInt iCommandId;      
-        //Resource loader
-        RCoeResourceLoader iPbk2UiResource;
     };
 
 #endif // CPBK2CONTACTEDITORDLGIMPL_H

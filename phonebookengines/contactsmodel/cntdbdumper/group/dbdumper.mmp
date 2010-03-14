@@ -21,7 +21,7 @@ VENDORID 0x70000001
 SOURCEPATH		../src
 
 
-systeminclude   	\EPOC32\INCLUDE 
+systeminclude   	/EPOC32/INCLUDE 
 userinclude			../src ../../src
 source          	dbdbmsdumper.CPP
 

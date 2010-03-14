@@ -32,7 +32,7 @@ namespace {
 
 // LOCAL CONSTANTS AND MACROS
 // Default size for thumbnail images
-#define KDefaultThumbnailSize TSize(80,96)
+#define KDefaultThumbnailSize TSize(150,150)
 /// JPEG file mime type
 _LIT8(KJpegMimeType, "image/jpeg");
 

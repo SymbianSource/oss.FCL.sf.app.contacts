@@ -92,11 +92,18 @@ public: // New implementation
     TBool IsPressed();
      
      /**
-	 * Sets the default status text and icon 
-	 * 
-	 * @aLink Link to current contact
+	 * Set the default status icon 
+	 * 	 
+	 * @aDefaultStatusIcon Default status icon
 	 */
-     IMPORT_C void SetDefaultStatusL( TInt aDefaultResource, CGulIcon* aDefaultStatusIcon );
+     IMPORT_C void SetDefaultStatusIconL( CGulIcon* aDefaultStatusIcon );
+     
+     /**
+	 * Set the default status text 
+	 * 	 
+	 * @aDefaultStatusText Default status text
+	 */
+     IMPORT_C void SetDefaultStatusTextL( HBufC* aDefaultStatusText );     
              
 public: // From CCoeControl
      
@@ -145,11 +152,11 @@ private: // New functions
      * Wraps the status text to fit into the space allocated for it.
      */
     TInt RewrapStatusTextL();
-   
+
     /**
-     * Set default status
+     * Show default status icon and text
      */
-    void DefaultStatusL();
+    void ShowDefaultContentL();
     
     /**
      * Handle status update event
@@ -181,6 +188,21 @@ protected: // construction
      */
     void ConstructL();
 
+protected: // enums
+    
+    /**
+     * Internal states
+     */
+    enum TStatusControlState
+        {
+        // Show nothing
+        EStateUndefined,
+        // Default content shown
+        EStateDefaultContent,
+        // Status content shown
+        EStateStatusContent
+        };
+    
 protected: // data
 
     /**
@@ -208,6 +230,11 @@ protected: // data
      * Own. Current status text
      */
     HBufC* iStatusText;
+    
+    /**
+	 * Own. Default status text
+	 */
+	HBufC* iDefaultStatusText;
         
     /**
 	* Ref, Not owned. Status provider for updating the status and icon.
@@ -225,7 +252,6 @@ protected: // data
     // Own.
     CGulIcon* iDefaultIcon;              
         
-    TInt iDefaultResource;
     /**
      * Own. Button background graphics context (button effect)
      */
@@ -240,6 +266,11 @@ protected: // data
      * Not own (singleton). Tactile feedback interface
      */
     MTouchFeedback* iTouchFeedBack;
+    
+    /*
+     * Current control state.
+     */
+    TStatusControlState iState;
     };
 
 #endif // CCAPPSTATUSCONTROL_H_

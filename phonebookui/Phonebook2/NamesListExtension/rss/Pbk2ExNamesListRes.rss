@@ -26,6 +26,7 @@
 #include <AvkonIcons.hrh>
 #include <phonebook2ece.loc>
 #include <phonebook2ece.mbg>
+#include <phonebook2.loc>
 
 //pbk2
 #include <Pbk2UIExtension.rh>
@@ -289,11 +290,9 @@ RESOURCE TBUF r_qtn_phob_add_top_contacts
 // Text for "Create MyCard"
 // --------------------------------------------------------------------------
 //
-RESOURCE TBUF r_qtn_phob_create_mycard
+RESOURCE TBUF r_qtn_contacts_mc_set_up_my_card
     {
-    //buf = qtn_phob_create_mycard;
-    // TODO: replace with correct strings once available
-    buf = "Create MyCard";
+    buf = qtn_contacts_mc_set_up_my_card;
     }    
 
 // --------------------------------------------------------------------------
@@ -301,12 +300,32 @@ RESOURCE TBUF r_qtn_phob_create_mycard
 // Text for "MyCard"
 // --------------------------------------------------------------------------
 //
-RESOURCE TBUF r_qtn_phob_open_mycard
+RESOURCE TBUF r_qtn_contacts_mc_my_card
     {
-    //buf = qtn_phob_open_mycard;
-    // TODO: replace with correct strings once available
-    buf = "MyCard";
+    buf = qtn_contacts_mc_my_card;
     }    
+
+// --------------------------------------------------------------------------
+// TBUF
+// Text for nameslist's secondary row "%N numbers"
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_n_numbers
+    {
+    //buf = qtn_phob_n_numbers;
+    // TODO: replace with correct strings once available
+    buf = "%N numbers";
+    }   
+
+// --------------------------------------------------------------------------
+// TBUF
+// Text for delete mycard confirmation query
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_my_card_clear_confirm
+    {
+    buf = qtn_phob_my_card_clear_confirm;
+    }   
 
 // --------------------------------------------------------------------------
 // PBK2_CONTACT_CONTROL
@@ -381,8 +400,7 @@ RESOURCE MENU_PANE r_pbk2_names_list_mycard_menu
         MENU_ITEM
             {
             command = EPbk2CmdDeleteMyCard;
-            // TODO: replace with real localized text once available
-            txt = "Delete MyCard";
+            txt = qtn_phob_opt_entry_delete;
             flags = EEikMenuItemSpecific;
             }
         };

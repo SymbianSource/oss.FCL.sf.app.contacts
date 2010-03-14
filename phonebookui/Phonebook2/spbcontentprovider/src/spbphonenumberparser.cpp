@@ -86,11 +86,7 @@ void CSpbPhoneNumberParser::VPbkSingleContactOperationComplete(
     {
     delete iOperation;
     iOperation = NULL;
-    TRAPD( err, SolvePhoneNumberL( *aContact ) );
-	if( err )
-		{
-		//TODO error handling
-		}
+    TRAP_IGNORE( SolvePhoneNumberL( *aContact ) );
 	delete aContact;
     }
 
@@ -104,7 +100,8 @@ void CSpbPhoneNumberParser::VPbkSingleContactOperationFailed(
     {
     delete iOperation;
     iOperation = NULL;
-    iContent.PhoneNumberUpdatedL(KNullDesC());
+    TRAP_IGNORE( iContent.PhoneNumberUpdatedL( 
+            KNullDesC, CSpbContentProvider::ETypePhoneNumber ) );
     }
 
 // ---------------------------------------------------------------------------
@@ -159,7 +156,8 @@ void CSpbPhoneNumberParser::SolvePhoneNumberL( MVPbkStoreContact& aContact )
 						fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_VIDEONUMBERWORK ||
 						fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_LANDPHONEGEN    ||
 						fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_MOBILEPHONEGEN  ||
-						fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_VIDEONUMBERGEN )
+						fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_VIDEONUMBERGEN  ||
+                        fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_CARPHONE )
 						{
 						numberCount++;
 						// if only one number, store it
@@ -173,28 +171,29 @@ void CSpbPhoneNumberParser::SolvePhoneNumberL( MVPbkStoreContact& aContact )
 					}
 				}
 			}
-		// if several numbers
-		if( numberCount > 1 )
-			{
-			// empty
-			number.Copy( KNullDesC );
-			// this is for future use.
-			// load localization text for multiple numbers
-			// number = StringLoader::LoadLC( QTN_PHOB_N_NUMBERS,
-			//							   numberCount,
-			//							   CCoeEnv::Static() );
-			}
 		}
+	
 	// no number was found
 	if( number.Length() == 0 )
 		{
-		iContent.PhoneNumberUpdatedL( KNullDesC() );
+        iContent.PhoneNumberUpdatedL( KNullDesC, 
+            CSpbContentProvider::ETypePhoneNumber );
 		}
-	else
-		{
-		// inform the observer
-		iContent.PhoneNumberUpdatedL( number );
-		}
+	else if( numberCount > 1 )
+	    {
+        // contact has multiple numbers and no default
+        TBuf<12> count;
+        count.Num( numberCount );
+        iContent.PhoneNumberUpdatedL( 
+            count, CSpbContentProvider::ETypePhoneNumberMultiple );
+	    }
+    else
+        {
+        // inform the observer
+        iContent.PhoneNumberUpdatedL( 
+            number, CSpbContentProvider::ETypePhoneNumber );
+        }
+
 	number.Close();
 	}
 
@@ -202,7 +201,7 @@ void CSpbPhoneNumberParser::SolvePhoneNumberL( MVPbkStoreContact& aContact )
 // CSpbPhoneNumberParser::FetchPhoneNumber
 // ---------------------------------------------------------------------------
 //
-void CSpbPhoneNumberParser::FetchPhoneNumber(
+void CSpbPhoneNumberParser::FetchPhoneNumberL(
             const MVPbkContactLink& aLink)
     {
     delete iOperation;

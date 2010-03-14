@@ -207,6 +207,14 @@ public: // New
      * @since S60 v5.0
      */
     VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector SelectedCommunicationMethod();
+    
+    /**
+     * To check whether the listbox is highlight
+     *
+     * @return ETrue if Highlight,otherwise EFalse
+     * @since S60 v5.0
+    */
+    const TBool IsListBoxHighlightEnabled();
 
 private: // New
 
@@ -253,6 +261,11 @@ private: // New
     * availability.
     */
     void DoCheckExtensionFactoryL();
+    
+    /**
+	* Set default status text to CCCAppStatusControl
+	*/
+    void SetDefaultStatusTextL();
 
 private: // Constructors
 

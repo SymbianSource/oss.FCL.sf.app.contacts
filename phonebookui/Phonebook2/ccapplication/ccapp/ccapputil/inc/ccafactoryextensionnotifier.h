@@ -46,7 +46,7 @@ public:
      * 
      * @since TB 9.2
      */
-    IMPORT_C void ObserveExtensionFactory( TCallBack& aCallBack );
+    IMPORT_C void ObserveExtensionFactoryL( TCallBack& aCallBack );
     
     /**
      * Returns CCCAExtensionFactory pointer

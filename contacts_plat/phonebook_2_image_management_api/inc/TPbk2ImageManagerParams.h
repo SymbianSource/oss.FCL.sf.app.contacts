@@ -42,7 +42,13 @@
 
             /// Fast scaling of the image close, but not excactly to desired
             /// size (always keeps aspect ratio).
-            EUseFastScaling  = 0x0004
+            EUseFastScaling  = 0x0004,
+
+            /// Crop landscape image to square, before thumbnail is scaled.
+            ECropImage       = 0x0008,
+
+            /// Speed optimized algorithm is used for scaling. @See AknIconUtils::ScaleBitmapL
+            EUseSpeedOptimizedScaling  = 0x0010			
             };
 
     public: // Interface

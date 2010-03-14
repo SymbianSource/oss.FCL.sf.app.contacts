@@ -276,6 +276,20 @@ void CPbk2DeleteContactsCmd::RunL()
             }
         case EStarting:
             {
+            
+            // Returns NULL if there are no selected contacts.
+            // In that case we will delete the focused contact.
+            if ( iUiControl )
+                {
+                //Re-Fetch the Contact Iterator
+                MPbk2ContactLinkIterator* contactIterator = iUiControl->SelectedContactsIteratorL();
+                if ( contactIterator )
+                    {
+                    delete iContactIterator;
+                    iContactIterator = contactIterator;
+                    }
+                }
+                
             if( iDecorator )
             	{
                 iDecorator->ProcessStartedL( iContactCount );

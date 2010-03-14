@@ -28,7 +28,6 @@
 #include "Pbk2NamesListEx.hrh"
 #include "cpbk2contextlaunch.h"
 
-#include "CPbk2ThumbnailManager.h"
 #include <spbcontentprovider.h>
 
 // Phonebook 2
@@ -240,8 +239,6 @@ CPbk2NamesListExView::~CPbk2NamesListExView()
     delete iMyCard;
     CCoeEnv::Static()->RemoveForegroundObserver( *this );
 
-
-    delete iThumbManager;
     delete iContextLauncher;
     FeatureManager::UnInitializeLib();
     }
@@ -291,7 +288,6 @@ inline void CPbk2NamesListExView::ConstructL()
     
     iControlProxy = new( ELeave )CPbk2ContactUiControlProxy;
 
-    iThumbManager = CPbk2ThumbnailManager::NewL( *iContactManager );
     iContextLauncher = new(ELeave) CPbk2ContextLaunch( iCCAConnection );
 
     PBK2_PROFILE_END(Pbk2Profile::ENamesListPenSupportConstruction);
@@ -606,7 +602,8 @@ void CPbk2NamesListExView::AddCommandItemsToContainerL()
     TInt commandCount = iControl->CommandItemCount();
        
     // Check if there is need to create MyCard
-    if( !iMyCard && IsPhoneMemoryUsedL() ) 
+    if( FeatureManager::FeatureSupported( KFeatureIdffContactsMycard ) &&
+        ( !iMyCard && IsPhoneMemoryUsedL() ) )
     	{				
 		// Get the phoneStore for MyCard
 		MVPbkContactStore* phoneStore = iContactManager->ContactStoresL()
@@ -801,25 +798,6 @@ void CPbk2NamesListExView::DimItem( CEikMenuPane* aMenuPane, TInt aCmd )
     if ( aMenuPane->MenuItemExists( aCmd, pos ) )
         {
         aMenuPane->SetItemDimmed( aCmd, ETrue );
-        }
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2NamesListExView::HandleForegroundEventL
-// --------------------------------------------------------------------------
-//
-void CPbk2NamesListExView::HandleForegroundEventL( TBool aForeground )
-    {
-    // CPbk2AppView::HandleForegroundEventL( aForeground );
-
-    // If this view is gaining foreground, then make sure that thumbnail
-    // gets drawn
-    if ( aForeground && iControl )
-        {
-        if ( iControl->IsVisible() )
-            {
-            iControl->ShowThumbnail();
-            }
         }
     }
 
@@ -1207,7 +1185,8 @@ void CPbk2NamesListExView::ConfigurationChanged()
                
     if( !phoneStore )
     	{
-		iContactManager->LoadContactStoreL( VPbkContactStoreUris::DefaultCntDbUri() );
+        TRAP_IGNORE( iContactManager->LoadContactStoreL( 
+                VPbkContactStoreUris::DefaultCntDbUri() ) );
     	}
     }
 
@@ -1482,8 +1461,7 @@ inline void CPbk2NamesListExView::CreateControlsL()
                 *Phonebook2::Pbk2AppUi()->ApplicationServices().
                     ViewSupplier().AllContactsViewL(),
                 *iNameFormatter,
-                Phonebook2::Pbk2AppUi()->ApplicationServices().StoreProperties(),
-                iThumbManager );
+                Phonebook2::Pbk2AppUi()->ApplicationServices().StoreProperties() );
 
         PBK2_PROFILE_END
             ( Pbk2Profile::ENamesListViewCreateNamesListControl );
@@ -1860,4 +1838,32 @@ void CPbk2NamesListExView::HandleLosingForeground()
     // is back in the foreground.
     iNeedSetFocus = EFalse;
     }
+
+// --------------------------------------------------------------------------
+// CPbk2NamesListExView::UIExtensionViewExtension
+// --------------------------------------------------------------------------
+//
+TAny* CPbk2NamesListExView::UIExtensionViewExtension(
+                TUid aExtensionUid )
+    {
+    if( aExtensionUid == KMPbk2UIExtensionView2Uid )
+        {
+        return static_cast<MPbk2UIExtensionView2*>( this );
+        }
+    
+    return NULL;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2NamesListExView::HandleForegroundEventL
+// --------------------------------------------------------------------------
+//
+void CPbk2NamesListExView::HandleForegroundEventL(TBool aForeground)
+    {
+    if ( iControl )
+        {
+        iControl->HandleViewForegroundEventL( aForeground );
+        }
+    }
+
 //  End of File

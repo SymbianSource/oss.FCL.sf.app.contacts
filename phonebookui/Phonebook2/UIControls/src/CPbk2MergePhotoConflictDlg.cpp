@@ -16,15 +16,29 @@
 *
 */
 
+
+
+#include <eikclbd.h>
+#include <aknlayoutscalable_apps.cdl.h>
 #include <aknlists.h>
 #include <AknIconArray.h>
 #include <eikapp.h>
 #include <gulicon.h>
+#include <AknIconUtils.h>
 #include <StringLoader.h>
 #include <aknnavide.h>
 #include <akntitle.h>
+#include <avkon.mbg>
 #include <Pbk2UIControls.rsg>
 #include <MPbk2MergeConflict.h>
+#include <cpbk2imagemanager.h>
+#include <tpbk2imagemanagerparams.h>
+#include <MVPbkBaseContact.h>
+#include <MVPbkFieldType.h>
+#include <vpbkeng.rsg>
+#include <MPbk2AppUi.h>
+#include <MPbk2ApplicationServices.h>
+#include <CVPbkContactManager.h>
 #include "CPbk2MergePhotoConflictDlg.h"
 
 /// Unnamed namespace for local definitions
@@ -32,16 +46,27 @@ namespace {
 
 _LIT( KPictureRowFormat, "%d\t   %S\t\t" );
 
+inline CGulIcon* CreateEmptyIconL()
+        {               
+        CFbsBitmap* image = NULL;
+        CFbsBitmap* mask = NULL;
+        AknIconUtils::CreateIconL( image, mask, 
+                AknIconUtils::AvkonIconFileName(),
+                EMbmAvkonQgn_prop_empty, 
+                EMbmAvkonQgn_prop_empty_mask );                             
+        return CGulIcon::NewL( image, mask );
+        } 
+
 }
 
 // -----------------------------------------------------------------------------
 // CPbk2MergePhotoConflictDlg::CPbk2MergePhotoConflictDlg
 // -----------------------------------------------------------------------------
 //
-CPbk2MergePhotoConflictDlg::CPbk2MergePhotoConflictDlg( CFbsBitmap* aFirstImage,
-                                                        CFbsBitmap* aSecondImage, 
+CPbk2MergePhotoConflictDlg::CPbk2MergePhotoConflictDlg( MVPbkBaseContact* aFirstContact,
+                                                        MVPbkBaseContact* aSecondContact, 
                                                         TInt* aResult ):
-        iFirstImage( aFirstImage ), iSecondImage( aSecondImage ), iSelectedItem( aResult )
+        iFirstContact( aFirstContact ), iSecondContact( aSecondContact ), iSelectedItem( aResult )
     {
     // No implementation required
     }
@@ -52,6 +77,13 @@ CPbk2MergePhotoConflictDlg::CPbk2MergePhotoConflictDlg( CFbsBitmap* aFirstImage,
 //
 CPbk2MergePhotoConflictDlg::~CPbk2MergePhotoConflictDlg()
     {
+    StopWait();
+    delete iWait;
+    delete iImageOperationFirst;
+    delete iImageOperationSecond;
+    delete iImageManager;
+    delete iFirstImage;
+    delete iSecondImage;
     delete iNaviDecorator;
     delete iSelectedString;
     }
@@ -60,12 +92,12 @@ CPbk2MergePhotoConflictDlg::~CPbk2MergePhotoConflictDlg()
 // CPbk2MergePhotoConflictDlg::NewL
 // -----------------------------------------------------------------------------
 //
-EXPORT_C CPbk2MergePhotoConflictDlg* CPbk2MergePhotoConflictDlg::NewL( CFbsBitmap* aFirstImage,
-                                                                       CFbsBitmap* aSecondImage, 
+EXPORT_C CPbk2MergePhotoConflictDlg* CPbk2MergePhotoConflictDlg::NewL( MVPbkBaseContact* aFirstContact,
+                                                                       MVPbkBaseContact* aSecondContact, 
                                                                        TInt* aResult )
     {
     CPbk2MergePhotoConflictDlg* self = 
-        new (ELeave) CPbk2MergePhotoConflictDlg( aFirstImage, aSecondImage, aResult );
+        new (ELeave) CPbk2MergePhotoConflictDlg( aFirstContact, aSecondContact, aResult );
     CleanupStack::PushL(self);
     self->ConstructL();
     CleanupStack::Pop(); // self;
@@ -82,7 +114,10 @@ void CPbk2MergePhotoConflictDlg::ConstructL()
     SetTitlePaneL( ETrue );
     *iSelectedItem = EPbk2ConflictedFirst;
     iSelectedString = StringLoader::LoadL( R_QTN_PHOB_TITLE_SELECTED );
+    iContactManager = &Phonebook2::Pbk2AppUi()->ApplicationServices().ContactManager();
+    iImageManager = CPbk2ImageManager::NewL( *iContactManager );
     CAknDialog::ConstructL( R_AVKON_MENUPANE_EMPTY );
+    iWait = new (ELeave) CActiveSchedulerWait();
     }
 
 // -----------------------------------------------------------------------------
@@ -102,7 +137,6 @@ void CPbk2MergePhotoConflictDlg::PreLayoutDynInitL()
     
     iListBox = static_cast<CEikFormattedCellListBox*>( Control( 1 ) );
     
-    SetIconsL();
     SetItemsL();
     
     iListBox->CreateScrollBarFrameL( ETrue );
@@ -151,6 +185,19 @@ TKeyResponse CPbk2MergePhotoConflictDlg::OfferKeyEventL( const TKeyEvent& aKeyEv
     return result;
     }
 
+void CPbk2MergePhotoConflictDlg::SizeChanged()
+    {
+    CAknDialog::SizeChanged();
+    TSize size = iListBox->ItemDrawer()->FormattedCellData()->SubCellSize(0);
+    
+    if ( iSize != size )
+        {
+        iSize = size;
+        TRAP_IGNORE( InitBitmapAsyncL( *iFirstContact ) );
+        StartWait();
+        }
+    }
+
 // -----------------------------------------------------------------------------
 // CPbk2MergePhotoConflictDlg::HandleListBoxEventL
 // -----------------------------------------------------------------------------
@@ -173,22 +220,34 @@ void CPbk2MergePhotoConflictDlg::HandleListBoxEventL( CEikListBox* /*aListBox*/,
 //
 void CPbk2MergePhotoConflictDlg::SetIconsL()
     {
-    if ( iFirstImage == NULL || iSecondImage == NULL )
-        {
-        User::Leave( KErrArgument );
-        }
-    
     CArrayPtr<CGulIcon>* iconList = new (ELeave) CAknIconArray( 2 );
     CleanupStack::PushL( iconList );
-
-    CGulIcon* first = CGulIcon::NewL( iFirstImage );
-    first->SetBitmapsOwnedExternally( ETrue );
+  
+    CGulIcon* first = NULL;
+    if ( iFirstImage )
+        {
+        first = CGulIcon::NewL( iFirstImage );
+        first->SetBitmapsOwnedExternally( ETrue );
+        }
+    else
+        {
+        first = CreateEmptyIconL();
+        }  
     CleanupStack::PushL( first );
     iconList->AppendL( first );
     CleanupStack::Pop( first );
     
-    CGulIcon* second = CGulIcon::NewL( iSecondImage );
-    second->SetBitmapsOwnedExternally( ETrue );
+    CGulIcon* second = NULL;
+    if ( iSecondImage )
+        {
+        second = CGulIcon::NewL( iSecondImage );
+        second->SetBitmapsOwnedExternally( ETrue );
+        
+        }
+    else
+        {
+        second = CreateEmptyIconL();
+        }
     CleanupStack::PushL( second );
     iconList->AppendL( second );
     CleanupStack::Pop( second );
@@ -296,5 +355,134 @@ void CPbk2MergePhotoConflictDlg::SetTitlePaneL( TBool aCustom )
             {
             titlePane->SetTextToDefaultL();
             }
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2MergePhotoConflictDlg::InitBitmapAsyncL
+// --------------------------------------------------------------------------
+//
+void CPbk2MergePhotoConflictDlg::InitBitmapAsyncL( MVPbkBaseContact& aContact )
+    {  
+    // cancel previous operations
+    if ( &aContact == iFirstContact )
+        {
+        delete iImageOperationFirst;
+        iImageOperationFirst = NULL;
+        }
+
+    const MVPbkFieldType* thumbType = iContactManager->FieldTypes().Find(
+            R_VPBK_FIELD_TYPE_THUMBNAILPIC );
+    
+    if( thumbType )
+        {
+        if( iImageManager->HasImage( aContact, *thumbType ) )
+            {
+            // Define parameters for thumbnail
+            TPbk2ImageManagerParams params;
+            TInt useCropping = 0x0008;
+
+            params.iSize = iSize;
+            params.iFlags = TPbk2ImageManagerParams::EScaleImage |
+                            TPbk2ImageManagerParams::EKeepAspectRatio |
+                            useCropping;    //CROP IMAGE    
+            // contact has image. load it.
+            if ( &aContact == iFirstContact )
+                {
+                iImageOperationFirst = iImageManager->GetImageAsyncL( 
+                &params, aContact, *thumbType, *this ); 
+                }
+            else if ( &aContact == iSecondContact )
+                {
+                iImageOperationSecond = iImageManager->GetImageAsyncL( 
+                &params, aContact, *thumbType, *this ); 
+                }
+            }
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2MergePhotoConflictDlg::StopWait
+// --------------------------------------------------------------------------
+//
+void CPbk2MergePhotoConflictDlg::StopWait()
+    {
+    if ( iWait->IsStarted() )
+        {
+        iWait->AsyncStop();
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2MergePhotoConflictDlg::StartWait
+// --------------------------------------------------------------------------
+//
+void CPbk2MergePhotoConflictDlg::StartWait()
+    {
+    if ( !iWait->IsStarted() )
+        {
+        iWait->Start();
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2MergePhotoConflictDlg::Pbk2ImageGetComplete
+// --------------------------------------------------------------------------
+//
+void CPbk2MergePhotoConflictDlg::Pbk2ImageGetComplete(
+                MPbk2ImageOperation& aOperation,
+                CFbsBitmap* aBitmap )
+    {
+    if ( &aOperation == iImageOperationFirst )
+        {
+        delete iImageOperationFirst;
+        iImageOperationFirst = NULL;
+        delete iFirstImage;
+        iFirstImage = aBitmap;
+        
+        TRAPD( err, InitBitmapAsyncL( *iSecondContact ) );
+        
+        if ( err != KErrNone )
+            {
+            StopWait();
+            TRAP_IGNORE( SetIconsL() ); 
+            }
+        else 
+            {
+            StartWait();
+            }
+        }
+
+    else if ( &aOperation == iImageOperationSecond )
+        {
+        delete iImageOperationSecond;
+        iImageOperationSecond = NULL;
+        delete iSecondImage;
+        iSecondImage = aBitmap;
+        TRAP_IGNORE( SetIconsL() );
+  
+        StopWait();
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2MergePhotoConflictDlg::Pbk2ImageGetFailed
+// --------------------------------------------------------------------------
+//
+void CPbk2MergePhotoConflictDlg::Pbk2ImageGetFailed(
+                MPbk2ImageOperation& aOperation,
+                TInt /*aError*/ )
+    {
+    StopWait();
+    
+    if ( &aOperation == iImageOperationFirst )
+        {
+        delete iImageOperationFirst;
+        iImageOperationFirst = NULL;
+        }
+    else if ( &aOperation == iImageOperationSecond )
+        {
+        delete iImageOperationSecond;
+        iImageOperationSecond = NULL;
         }
     }

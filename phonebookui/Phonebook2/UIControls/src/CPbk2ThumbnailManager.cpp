@@ -47,6 +47,8 @@
 #include <Pbk2UIControls.rsg>
 #include <Pbk2UID.h>
 
+namespace {
+
 // Default size for thumbnail images
 #define KDefaultThumbnailSize TSize(36,36)
 // icon offset. Thumbnail indexing starts from 10000 in CPbk2IconArray, so that there is 0 - 9999 indexes free for 
@@ -58,6 +60,10 @@ const TInt KLoadingLimit = 100;
 const TInt KQueueLimit = 25;
 // Denotes Start Index for an item in the any Queue
 const TInt KStartIndex = 0;
+// Granularity of the thumbnail array
+const TInt KThumbnailArrayGranularity = 200;
+
+}
 
 /*
  * Helper class for mapping between contact link + image + index on listbox
@@ -330,7 +336,6 @@ EXPORT_C CPbk2ThumbnailManager* CPbk2ThumbnailManager::NewL( CVPbkContactManager
    return self;
    }
 
-
 // --------------------------------------------------------------------------
 // CPbk2ThumbnailManager::CPbk2ThumbnailManager
 // --------------------------------------------------------------------------
@@ -338,11 +343,11 @@ EXPORT_C CPbk2ThumbnailManager* CPbk2ThumbnailManager::NewL( CVPbkContactManager
 CPbk2ThumbnailManager::CPbk2ThumbnailManager( 
     CVPbkContactManager& aContactManager ) :
         iState( EIdle ),
+        iContactThumbnails( KThumbnailArrayGranularity ),
         iContactManager( aContactManager ),
         iDefaultIconIndex( KErrNotFound )
 	{
 	}
-
 
 // --------------------------------------------------------------------------
 // CPbk2ThumbnailManager::~CPbk2ThumbnailManager()
@@ -360,7 +365,6 @@ CPbk2ThumbnailManager::~CPbk2ThumbnailManager()
     iPriorityArray.Reset();
     }
 
-
 // --------------------------------------------------------------------------
 // CPbk2ThumbnailManager::ConstructL()
 // --------------------------------------------------------------------------
@@ -371,10 +375,7 @@ void CPbk2ThumbnailManager::ConstructL()
 	iManager = CPbk2ImageManager::NewL( iContactManager );
 	// read file type for thumbnail field
 	ReadFieldTypeL();
-	//reset thumbnail array
-	iContactThumbnails.Reset();
 	}
-
 
 // --------------------------------------------------------------------------
 // CPbk2ThumbnailManager::SetObserver()
@@ -403,104 +404,76 @@ TInt CPbk2ThumbnailManager::ThumbnailCount()
 	return iContactThumbnails.Count();
 	}
 
-
 // --------------------------------------------------------------------------
-// CPbk2ThumbnailManager::GetPbkIconIndex()
+// CPbk2ThumbnailManager::GetPbkIconIndexL()
 // --------------------------------------------------------------------------
 //
-TInt CPbk2ThumbnailManager::GetPbkIconIndex( TInt aListboxIndex, const MVPbkBaseContact& aContactLink )
+TInt CPbk2ThumbnailManager::GetPbkIconIndexL( TInt aListboxIndex, const MVPbkBaseContact& aContactLink )
 	{
-	TBool reLoadThumbnail = EFalse;
 	TInt arrIndex = iDefaultIconIndex;
 	
 	// check that requested thumbnail is allready added to thumbnail array
-	if( aListboxIndex < iContactThumbnails.Count() )
+	if( Rng( 0, aListboxIndex, iContactThumbnails.Count() - 1 ) )
 		{
 		CPbk2TmItem* item = iContactThumbnails[ aListboxIndex ];
-		
-        // This is because when find is in use, the indexes are not mapped
-		// directly to thumbnail managers indexes
-		if( !item->GetLink()->RefersTo( aContactLink ) )
+		if( !item )
 		    {
-            // try to find correct one from the array based on contact link
-            item = FindItem( aContactLink );
+            item = CPbk2TmItem::NewL( aContactLink.CreateLinkLC(), aListboxIndex );
+            CleanupStack::Pop(); // link
+            // set default icon index
+            item->SetIconArrayIndexAndId( iDefaultIconIndex,iDefaultIconId );
+            item->SetHasThumbnail( ETrue );
+            iContactThumbnails[ aListboxIndex ] = item;
 		    }
 		
-		if( item )
-		    {
-            // if item has a thumbnail image, but it is not loaded yet ( queue )
-            if( item->HasThumbnail() && !item->GetBitmap() )
+        // if item has a thumbnail image, but it is not loaded yet ( queue )
+        if( item->HasThumbnail() && !item->GetBitmap() )
+            {
+            TBool reOrderItem = ETrue;
+            TInt res = iLoadingQueue.Find( item );
+            //remove from array if duplicate
+            if( res != KErrNotFound )
                 {
-                reLoadThumbnail = ETrue;
+                // if item's position is 0 or 1, dont reorder
+                if( res <= 1 )
+                    {
+                    reOrderItem = EFalse;
+                    }
+                // else remove item from the array for reordering
+                else
+                    {
+                    iLoadingQueue.Remove( res );
+                    }
                 }
-            else
+            
+            // if item is to be reordered
+            if( reOrderItem )
                 {
-                arrIndex = item->GetIconArrayIndex();
+                // if there are more than 2 items
+                if( iLoadingQueue.Count() > 2 && iState == ELoading )
+                    {
+                    // insert to second position, first one is under loading
+                    iLoadingQueue.Insert( item, 1 );
+                    }
+                // else append to first or second
+                else
+                    {
+                    iLoadingQueue.Append( item );
+                    }
                 }
-		    }
-			
-		//if item and thumbnail index was not found ( queue limit ), reload thumbnail
-		if( reLoadThumbnail )
-			{
-			TBool reOrderItem = ETrue;
-			TInt res = iLoadingQueue.Find( item );
-			//remove from array if duplicate
-			if( res != KErrNotFound )
-				{
-				// if item's position is 0 or 1, dont reorder
-				if( res <= 1 )
-					{
-					reOrderItem = EFalse;
-					}
-				// else remove item from the array for reordering
-				else
-					{
-					iLoadingQueue.Remove( res );
-					}
-				}
-			
-			// if item is to be reordered
-			if( reOrderItem )
-				{
-				// if there are more than 2 items
-				if( iLoadingQueue.Count() > 2 && iState == ELoading )
-					{
-					// insert to second position, first one is under loading
-					iLoadingQueue.Insert( item, 1 );
-					}
-				// else append to first or second
-				else
-					{
-					iLoadingQueue.Append( item );
-					}
-				}
-			
-			//if idle, start loading
-			if( iState == EIdle )
-				{
-				StartLoading();
-				}
-			}
+            
+            //if idle, start loading
+            if( iState == EIdle )
+                {
+                StartLoading();
+                }
+            }
+        else
+            {
+            arrIndex = item->GetIconArrayIndex();
+            }
 		}
 	return arrIndex;
-	}
-
-// --------------------------------------------------------------------------
-// CPbk2ThumbnailManager::FindItem()
-// --------------------------------------------------------------------------
-//
-CPbk2TmItem* CPbk2ThumbnailManager::FindItem( const MVPbkBaseContact& aContactLink )
-	{
-	const TInt count = iContactThumbnails.Count();
-	for( TInt i = 0; i < count; ++i )
-		{
-		if( iContactThumbnails[ i ]->GetLink()->RefersTo( aContactLink ) )
-			{
-			return iContactThumbnails[i];
-			}
-		}
-	// shouldn't come here ever
-	return NULL;
 	}
 
 // --------------------------------------------------------------------------
@@ -516,7 +489,6 @@ void CPbk2ThumbnailManager::SetDefaultIconId( TPbk2IconId aDefaultIconId )
 	iDefaultIconId = aDefaultIconId;
 	}
 
-
 // --------------------------------------------------------------------------
 // CPbk2ThumbnailManager::GetDefaultIconIndex()
 // --------------------------------------------------------------------------
@@ -526,7 +498,6 @@ const TPbk2IconId& CPbk2ThumbnailManager::GetDefaultIconId()
 	return iDefaultIconId;
 	}
 
-
 // --------------------------------------------------------------------------
 // CPbk2ThumbnailManager::SetPbkIconArray()
 // --------------------------------------------------------------------------
@@ -535,7 +506,6 @@ void CPbk2ThumbnailManager::SetPbkIconArray( CPbk2IconArray* aIconArray )
 	{
 	iIconArray = aIconArray;
 	}
-
 
 // --------------------------------------------------------------------------
 // CPbk2ThumbnailManager::RemoveIconArray()
@@ -550,53 +520,30 @@ void CPbk2ThumbnailManager::RemoveIconArray()
 	// set all the indexes to default because there is no items in icon array to refer to
 	for( TInt i = 0; i < count; ++i )
 		{
-		iContactThumbnails[i]->SetIconArrayIndexAndId( iDefaultIconIndex, iDefaultIconId );
+        CPbk2TmItem* item = iContactThumbnails[i];
+		if( item )
+		    {
+            item->SetIconArrayIndexAndId( iDefaultIconIndex, iDefaultIconId );
+		    }
 		}
 	iIconIdCounter = 0;
 	}
-
-
-// --------------------------------------------------------------------------
-// CPbk2ThumbnailManager::IncreaseIndexes()
-// --------------------------------------------------------------------------
-//
-void CPbk2ThumbnailManager::IncreaseIndexes( TInt aListboxIndex )
-	{
-	TInt i;
-	TInt index = 0;
-	const TInt count = iContactThumbnails.Count();
-	// go through all contacts
-	for( i = 0; i < count; ++i )
-		{
-		index = iContactThumbnails[i]->GetListboxIndex();
-		// increase by one all the indexes that are bigger than newly added index
-		if( index  >= aListboxIndex )
-			{
-			iContactThumbnails[i]->SetListboxIndex( index+1 );
-			}
-		}
-	}
-
 
 // --------------------------------------------------------------------------
 // CPbk2ThumbnailManager::DecreaseIndexes()
 // --------------------------------------------------------------------------
 //
-void CPbk2ThumbnailManager::DecreaseIndexes( TInt aListboxIndex )
+void CPbk2ThumbnailManager::ResetIndexes()
 	{
-	TInt i;
+    // go through items
 	const TInt count = iContactThumbnails.Count();
-	TInt index = 0;
-	
-	// go through items
-	for( i = 0; i < count; ++i )
+	for( TInt i = 0; i < count; ++i )
 		{
-		index = iContactThumbnails[i]->GetListboxIndex();
-		// decrease all indexes that were bigger than removed index
-		if( index > aListboxIndex )
-			{
-			iContactThumbnails[i]->SetListboxIndex( index-1 );
-			}
+        CPbk2TmItem* item = iContactThumbnails[i];
+        if( item )
+            {
+            item->SetListboxIndex( i );
+            }
 		}
 	}
 
@@ -638,119 +585,35 @@ const TSize& CPbk2ThumbnailManager::GetThumbnailIconSize()
 	}
 
 // --------------------------------------------------------------------------
-// CPbk2ThumbnailManager::LoadThumbnailL()
+// CPbk2ThumbnailManager::SetContactViewL()
 // --------------------------------------------------------------------------
 //
-void CPbk2ThumbnailManager::LoadThumbnailL( const MVPbkContactLink& aContactLink, TInt aListboxIndex )
-	{
-	// check if the thumbnail is already loaded
-	if( aListboxIndex < iContactThumbnails.Count() &&
-		iContactThumbnails[aListboxIndex]->GetLink()->IsSame( aContactLink ) )
-		{
-		CFbsBitmap* tmp = iContactThumbnails[ aListboxIndex ]->GetBitmap();
-		// if there is icon for the contact allready loaded
-		if( tmp )
-			{
-			//inform observer 
-			if( iObserver )
-				{
-				//if icon array exists
-				if( iIconArray )
-					{
-					//create icon and pass it to the array
-					CGulIcon* icon = CGulIcon::NewL( DuplicateBitmapL( tmp ) );
-					// counter to add icon ids
-					TPbk2IconId iconID( TUid::Uid(KPbk2UID3 ), 
-							KIconIndexOffset + iIconIdCounter );
-					iIconIdCounter++;
-					iIconArray->AppendIconL( icon, iconID );
-					// store the index
-					iContactThumbnails[ aListboxIndex ]->SetIconArrayIndexAndId( iIconArray->FindIcon( iconID ), iconID );
-					iObserver->ThumbnailLoadingComplete( KErrNone,iContactThumbnails[ aListboxIndex]->GetListboxIndex() );
-					}
-				}
-			}
-		else
-			{
-			// has a default icon
-			iObserver->ThumbnailLoadingComplete( KErrNotFound,iContactThumbnails[ aListboxIndex]->GetListboxIndex() );
-			}
-		}
-	// new contact, add new CPbk2TmItem to thumbnail array
-	else
-		{
-		// create new contact item. Thumbnail is not yet loaded so it's set to NULL
-		CPbk2TmItem* item = CPbk2TmItem::NewL( aContactLink.CloneLC(), aListboxIndex );
-		CleanupStack::Pop();
-		// set default icon index
-		item->SetIconArrayIndexAndId( iDefaultIconIndex,iDefaultIconId );
-		item->SetHasThumbnail( ETrue );
-		
-		
-		// if thumbnail to be loaded is added middle of the list (new contact), handle indexes
-		const TInt lastIndex = iContactThumbnails.Count() - 1;
-		if( lastIndex >= 0 && 
-				aListboxIndex <= iContactThumbnails[ lastIndex ]->GetListboxIndex() )
-			{
-			// make room for the new thumbnail. Function does nothing if priority array is not full 
-			// This is because we need to get the thumbnail showing right away when new contact is added
-			MakeRoomForNextThumbnail();
-			// increase indexes after this added index
-			IncreaseIndexes( aListboxIndex );
-			}
-		
-		// add item
-		TLinearOrder<CPbk2TmItem> sorter( CPbk2TmItem::CompareByListboxIndex );
-		iContactThumbnails.InsertInOrderL( item, sorter );
-		
-		// also add item to loading queue. This is because the actual array is sorted between thumbnail loading
-		// list doesn't own the items
-		// if added item's listbox index is smaller than already added, add to start end on loading queue
-		const TInt queueCount = iLoadingQueue.Count();
-		if( aListboxIndex <  queueCount && queueCount > 2  )
-			{
-			//add to second place, first one is under loading
-			iLoadingQueue.Insert( item, 1 );
-			}
-		// just add last place on the list
-		else
-			{
-			iLoadingQueue.Append( item );
-			}
-		
-		//if idle, start loading
-		if( iState == EIdle )
-			{
-			StartLoading();
-			}
-		}
-	}
+void CPbk2ThumbnailManager::SetContactViewL( MPbk2FilteredViewStack* aView )
+    {
+    iView = aView;
+    if( iView )
+        {
+        iView->AddObserverL( *this );
+        iView->AddStackObserverL( *this );
+        }
+    Reset();
+    }
 
 // --------------------------------------------------------------------------
 // CPbk2ThumbnailManager::RemoveThumbnail()
 // --------------------------------------------------------------------------
 //
-TInt CPbk2ThumbnailManager::RemoveThumbnail( const MVPbkContactLink& aContactLink, TInt aListboxIndex  )
+void CPbk2ThumbnailManager::RemoveThumbnail( 
+    const MVPbkContactLink& /*aContactLink*/, TInt aListboxIndex  )
 	{
-	TInt i;
-	const TInt count = iContactThumbnails.Count();
-	CPbk2TmItem* item = NULL;
-	TInt listBoxIndex = 0;
-	
-	for( i = 0; i < count; ++i )
-		{
-		item = iContactThumbnails[i];
-		if( item->GetLink()->IsSame( aContactLink ) )
-			{
-			// store listbox index before updating
-			listBoxIndex = item->GetListboxIndex();
-		
-            // handle indexes
-		    DecreaseIndexes( aListboxIndex );
-
-			// remove item from the list
-			iContactThumbnails.Remove( i );
-			
+    const TInt count = iContactThumbnails.Count();
+    if( count > aListboxIndex )
+        {
+        CPbk2TmItem* item = iContactThumbnails[aListboxIndex];
+        iContactThumbnails.Remove( aListboxIndex );
+        ResetIndexes();
+        if( item )
+            {
 			// check that the icon is not a default icon
 			if( item->GetIconArrayIndex() != iDefaultIconIndex )
 				{
@@ -763,48 +626,41 @@ TInt CPbk2ThumbnailManager::RemoveThumbnail( const MVPbkContactLink& aContactLin
 				UpdateIconIndexes();
 				}
 			
-			//remove item from priority array if in it
-			const TInt index = iPriorityArray.Find( item->GetLink() );
-			//remove if found
-			if( index != KErrNotFound )
-				{
-				iPriorityArray.Remove( index );
-				}
-			
-			//The item might be even in the loading queue
-			//Remove from loading queue
-			//remove item from priority array if in it
+            // remove from priority list
+            const TInt priIndex = iPriorityArray.Find( item->GetLink() );
+            if( priIndex != KErrNotFound )
+                {
+                iPriorityArray.Remove( priIndex );
+                }
+            
+            // remove from loading queue
             const TInt loadIndex = iLoadingQueue.Find( item );
-            //remove if found
             if( loadIndex != KErrNotFound )
                 {
                 iLoadingQueue.Remove( loadIndex );
                 }
-			
-			// inform observer
-			if( iObserver )
-				{
-				iObserver->ThumbnailRemoved( *item->GetLink(),listBoxIndex );
-				}
-			
-			//The item at 0th position, denotes the current item
-			//whose thumbnail load is in progress.			
-			if ( KStartIndex == loadIndex && !iInProgressItemToBeRemoved )
-			    {
-			    //Remove it when its safe
-			    iInProgressItemToBeRemoved = item;
-			    }
-			else
-			    {
-			    //can be safely deleted immediately
-			    delete item;
-			    }
-			return KErrNone;
-			}
-		}
-	return KErrNotFound;
+            
+            // inform observer
+            if( iObserver )
+                {
+                iObserver->ThumbnailRemoved( *item->GetLink(), aListboxIndex );
+                }
+            
+            //The item at 0th position, denotes the current item
+            //whose thumbnail load is in progress.          
+            if ( KStartIndex == loadIndex && !iInProgressItemToBeRemoved )
+                {
+                //Remove it when its safe
+                iInProgressItemToBeRemoved = item;
+                }
+            else
+                {
+                //can be safely deleted immediately
+                delete item;
+                }
+            }
+        }
 	}
-
 
 // --------------------------------------------------------------------------
 // CPbk2ThumbnailManager::UpdateIconIndexes()
@@ -818,17 +674,16 @@ void CPbk2ThumbnailManager::UpdateIconIndexes(  )
 		const TInt count = iContactThumbnails.Count();
 		for( TInt i = 0; i < count; ++i )
 			{
-			if( !( iDefaultIconId == iContactThumbnails[ i ]->GetIconId() ) ) 
+            CPbk2TmItem* item = iContactThumbnails[ i ];
+			if( item && !( iDefaultIconId == item->GetIconId() ) ) 
 				{
 				// icon is removed from the CPbk2IconArray, update indexes
-				TPbk2IconId id = iContactThumbnails[ i ]->GetIconId();	
-				iContactThumbnails[ i ]->SetIconArrayIndexAndId( iIconArray->FindIcon( id ), id );
+				TPbk2IconId id = item->GetIconId();	
+				item->SetIconArrayIndexAndId( iIconArray->FindIcon( id ), id );
 				}
 			}
 		}
 	}
-
-
 
 // --------------------------------------------------------------------------
 // CPbk2ThumbnailManager::DuplicateBitmapL()
@@ -850,12 +705,11 @@ CFbsBitmap* CPbk2ThumbnailManager::DuplicateBitmapL( CFbsBitmap* aSourceBitmap )
 	return dstbitmap;
 	}
 
-
 // --------------------------------------------------------------------------
 // CPbk2ThumbnailManager::StartLoading()
 // --------------------------------------------------------------------------
 //
-void CPbk2ThumbnailManager::StartLoading( )
+void CPbk2ThumbnailManager::StartLoading()
 	{
 	//its safe to delete the item here
 	if ( iInProgressItemToBeRemoved )
@@ -889,7 +743,6 @@ void CPbk2ThumbnailManager::StartLoading( )
 			StartLoading();
 			}
 		}
-		
 	// no more items
 	else
 		{
@@ -941,7 +794,6 @@ void CPbk2ThumbnailManager::VPbkSingleContactOperationFailed
     StartLoading();
     }
 
-
 // --------------------------------------------------------------------------
 // CPbk2ThumbnailManager::DoLoadThumbnail()
 // --------------------------------------------------------------------------
@@ -982,12 +834,12 @@ void CPbk2ThumbnailManager::DoLoadThumbnail(
 				{
 				iIconSize = KDefaultThumbnailSize;
 				}
-			TInt useCropping = 0x0008;
 			// set params
 			params.iSize = iIconSize;
 			params.iFlags = TPbk2ImageManagerParams::EScaleImage |
-							TPbk2ImageManagerParams::EKeepAspectRatio |
-							useCropping;	//CROP IMAGE	//TODO change value
+			                TPbk2ImageManagerParams::EUseSpeedOptimizedScaling |
+							TPbk2ImageManagerParams::ECropImage ;
+			params.iDisplayMode = EColor16MU;
 			// fetch the image
 			TRAP( err, iThumbOperation =
 				iManager->GetImageAsyncL( &params, aContact, *iFieldType, *this ) );
@@ -1026,7 +878,6 @@ void CPbk2ThumbnailManager::DoLoadThumbnail(
 		}
 	}
 
-
 // --------------------------------------------------------------------------
 // CPbk2ThumbnailManager::MakeRoomForNextThumbnail
 // --------------------------------------------------------------------------
@@ -1041,9 +892,10 @@ void CPbk2ThumbnailManager::MakeRoomForNextThumbnail()
 		const TInt count = iContactThumbnails.Count();
 		for( TInt i = 0; i < count; ++i )
 			{
-			if( iContactThumbnails[ i ]->GetLink()->IsSame( *iPriorityArray[ KStartIndex ] ) )
+            CPbk2TmItem* item = iContactThumbnails[ i ];
+			if( item && item->GetLink()->IsSame( *iPriorityArray[ KStartIndex ] ) )
 				{
-				rem = iContactThumbnails[i];
+				rem = item;
 				break;
 				}
 			}
@@ -1067,8 +919,6 @@ void CPbk2ThumbnailManager::MakeRoomForNextThumbnail()
 			}
 		}
 	}
-
-
 
 // --------------------------------------------------------------------------
 // CPbk2ThumbnailManager::Pbk2ImageGetComplete
@@ -1163,48 +1013,43 @@ void CPbk2ThumbnailManager::ContactViewReady( MVPbkContactViewBase& aView )
 void CPbk2ThumbnailManager::DoContactViewReadyL( MVPbkContactViewBase& aView )
     {   
     // get contact count
-    const TInt contactCount = aView.ContactCountL();
     const TInt thumbnailCount = iContactThumbnails.Count();
-    
     if( thumbnailCount == 0 )
         {
-        // first time initialization
-        for( TInt i = 0; i < contactCount; ++i )
-            {
-            CPbk2TmItem* item = CPbk2TmItem::NewL( aView.CreateLinkLC( i ), i );
-            CleanupStack::Pop(); // link
-            CleanupStack::PushL( item );
-            // set default icon index
-            item->SetIconArrayIndexAndId( iDefaultIconIndex,iDefaultIconId );
-            item->SetHasThumbnail( ETrue );
-            
-            // add item
-            iContactThumbnails.AppendL( item );
-            CleanupStack::Pop( item );
-            }
+        PreCreateThumbnailArrayL( aView );
         }
     else
         {
         // there is items in the listbox that are not loaded yet. If there is favorite contacts, 
         // those are added afterwards to the list. normal items are added first.
-        const TInt itemCount = contactCount - thumbnailCount;
+        const TInt itemCount = aView.ContactCountL() - thumbnailCount;
         for( TInt i = 0; i < itemCount; ++i )
-            {            
-            MVPbkContactLink* link = aView.CreateLinkLC( i );
-            // if link exists and some thumbnails are not loaded
-            if( link  )
-                {
-                // add to thumb manager and load thumbnail
-                LoadThumbnailL( *link,i );
-                // created link
-                CleanupStack::PopAndDestroy();
-                }
+            {
+            iContactThumbnails.InsertL( NULL, 0 );
+            }
+        if( itemCount > 0 )
+            {
+            ResetIndexes();
             }
         }  
     }
 
 // --------------------------------------------------------------------------
-// CPbk2ThumbnailManager::ContactAddedToView
+// CPbk2ThumbnailManager::PreCreateThumbnailArrayL
+// --------------------------------------------------------------------------
+//
+void CPbk2ThumbnailManager::PreCreateThumbnailArrayL( MVPbkContactViewBase& aView )
+    {
+    iContactThumbnails.ResetAndDestroy();
+    const TInt contactCount = aView.ContactCountL();
+    for( TInt i = 0; i < contactCount; ++i )
+        {
+        iContactThumbnails.AppendL( NULL );
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ThumbnailManager::ContactViewUnavailable
 // --------------------------------------------------------------------------
 //
 void CPbk2ThumbnailManager::ContactViewUnavailable( 
@@ -1220,13 +1065,14 @@ void CPbk2ThumbnailManager::ContactViewUnavailable(
 void CPbk2ThumbnailManager::ContactAddedToView(
     MVPbkContactViewBase& /*aView*/, 
     TInt aIndex, 
-    const MVPbkContactLink& aContactLink )
+    const MVPbkContactLink& /*aContactLink*/ )
     {
-    TRAP_IGNORE( LoadThumbnailL( aContactLink, aIndex ) );
+    iContactThumbnails.Insert( NULL, aIndex );
+    ResetIndexes();
     }
 
 // --------------------------------------------------------------------------
-// CPbk2ThumbnailManager::ContactViewError
+// CPbk2ThumbnailManager::ContactRemovedFromView
 // --------------------------------------------------------------------------
 //
 void CPbk2ThumbnailManager::ContactRemovedFromView(
@@ -1247,6 +1093,54 @@ void CPbk2ThumbnailManager::ContactViewError(
     TBool /*aErrorNotified*/ )
     {
     // ignored
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ThumbnailManager::TopViewChangedL
+// --------------------------------------------------------------------------
+//
+void CPbk2ThumbnailManager::TopViewChangedL( MVPbkContactViewBase& /*aOldView*/ )
+    {
+    Reset();
+    if( iView )
+        {
+        PreCreateThumbnailArrayL( *iView );
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ThumbnailManager::TopViewUpdatedL
+// --------------------------------------------------------------------------
+//
+void CPbk2ThumbnailManager::TopViewUpdatedL()
+    {
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ThumbnailManager::BaseViewChangedL
+// --------------------------------------------------------------------------
+//
+void CPbk2ThumbnailManager::BaseViewChangedL()
+    {
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ThumbnailManager::ViewStackError
+// --------------------------------------------------------------------------
+//
+void CPbk2ThumbnailManager::ViewStackError( TInt /*aError*/ )
+    {
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ThumbnailManager::ContactAddedToBaseView
+// --------------------------------------------------------------------------
+//
+void CPbk2ThumbnailManager::ContactAddedToBaseView( 
+    MVPbkContactViewBase& /*aBaseView*/,
+    TInt /*aIndex*/,
+    const MVPbkContactLink& /*aContactLink*/ )
+    {
     }
 
 // --------------------------------------------------------------------------

@@ -39,6 +39,7 @@ class MVPbkStoreContact;
 class CPbk2StoreConfiguration;
 class CVPbkSortOrderAcquirer;
 class MVPbkContactLinkArray;
+class CPbk2MyCardFilter;
 
 // CLASS DECLARATION
 
@@ -191,6 +192,8 @@ class CPbk2ServerAppStoreManager : public CBase,
         CVPbkSortOrderAcquirer* iSortOrderAcquirer;
         /// Ref: list of opened contact stores
         RPointerArray<MVPbkContactStore> iOpenedStores;
+        /// Own: 
+        CPbk2MyCardFilter* iMyCardFilter;
     };
 
 #endif // CPBK2SERVERAPPSTOREMANAGER_H

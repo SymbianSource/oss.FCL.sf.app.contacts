@@ -32,8 +32,11 @@ EXPORTS
 	_ZTV30CCCAppCmsContactFetcherWrapper @ 31 NONAME ; #<VT>#	
 	_ZN19CCCAppStatusControl15SetContactLinkLER16MVPbkContactLink @ 32 NONAME
 	_ZN19CCCAppStatusControl4NewLER19CSpbContentProviderR25MCCAStatusControlObserver @ 33 NONAME
-	_ZN19CCCAppStatusControl17SetDefaultStatusLEiP8CGulIcon @ 34 NONAME
-	_ZN28CCCaFactoryExtensionNotifier16ExtensionFactoryEv @ 35 NONAME
-	_ZN28CCCaFactoryExtensionNotifier23ObserveExtensionFactoryER9TCallBack @ 36 NONAME
-	_ZN28CCCaFactoryExtensionNotifier4NewLEv @ 37 NONAME
+	_ZN28CCCaFactoryExtensionNotifier16ExtensionFactoryEv @ 34 NONAME
+	_ZN28CCCaFactoryExtensionNotifier24ObserveExtensionFactoryLER9TCallBack @ 35 NONAME
+	_ZN28CCCaFactoryExtensionNotifier4NewLEv @ 36 NONAME
+	_ZN19CCCAppImageDecoding4NewLER27MCCAppImageDecodingObserverR3RFsP6HBufC8P7HBufC16 @ 37 NONAME
+	_ZN19CCCAppImageDecoding6StartLERK5TSize @ 38 NONAME
+	_ZN19CCCAppStatusControl21SetDefaultStatusTextLEP7HBufC16 @ 39 NONAME
+	_ZN19CCCAppStatusControl21SetDefaultStatusIconLEP8CGulIcon @ 40 NONAME
 

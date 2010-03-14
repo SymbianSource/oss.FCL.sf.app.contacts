@@ -22,6 +22,7 @@
 // INCLUDES
 #include <eikmobs.h>
 #include "ccappcommlauncherheaders.h"
+#include <ccappimagedecoding.h>
 
 // FORWARD DECLARATIONS
 class CEikImage;
@@ -42,7 +43,10 @@ class CCCAppCommLauncherPbkCmd;
  *  @lib ccappcommlauncherplugin.dll
  *  @since S60 v5.0
  */
-class CCCAppCommLauncherHeaderControl : public CCoeControl,  public MEikMenuObserver 
+class CCCAppCommLauncherHeaderControl : 
+            public CCoeControl,  
+            public MEikMenuObserver, 
+            public MCCAppImageDecodingObserver
     {
 public:
     // Construction & destruction
@@ -130,10 +134,16 @@ public:
     TKeyResponse OfferKeyEventL(
         const TKeyEvent& aKeyEvent, TEventCode aType);
 
+    inline void SetStatusButtonVisibility( TBool aVisible )
+        { iStatusButtonVisibility = aVisible; }
+    
 public: // MEikMenuObserver
      virtual void ProcessCommandL(TInt aCommandId);
      virtual void SetEmphasis(CCoeControl* aMenuControl,TBool aEmphasis);
 
+private:    // from MCCAppImageDecodingObserver
+     void BitmapReadyL( CFbsBitmap* aBitmap );
+     
 private:
 
     /**
@@ -219,7 +229,7 @@ private:
      * Active listener to make asynchronic operation synchronic
      * Own.
      */    
-    CCCAppCommLauncherImageDecoding* iImageDecoding;
+    CCCAppImageDecoding* iImageDecoding;
     
     /**
      * Helper for ordering the texts
@@ -279,6 +289,8 @@ private:
       * Own
       */ 
     HBufC8* iContactThumbnailData;
+    
+    TBool iStatusButtonVisibility;
     };
 
 #endif // CCCAPPCOMMLAUNCHERHEADERCONTROL_H

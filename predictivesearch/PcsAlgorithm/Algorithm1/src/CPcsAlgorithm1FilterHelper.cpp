@@ -24,7 +24,6 @@
 TBool ComparePsPattern ( const TPsPatternDetails& aFirst, const TPsPatternDetails& aSecond )
 {
 	return (CPcsAlgorithm1Utils::MyCompareC(*(aFirst.matchPattern), *(aSecond.matchPattern)));
-	     
 }
 
 // ============================== MEMBER FUNCTIONS ============================
@@ -356,13 +355,13 @@ void CPcsAlgorithm1FilterHelper::GetPatternsL(RPointerArray<CPsPattern>& aPatter
 // ----------------------------------------------------------------------------
 TInt CPcsAlgorithm1FilterHelper::FindSequence(TDesC* aSeq)
 {
-	TBuf<50> seqBuf;
+	TBuf<KPsQueryMaxLen> seqBuf;
 	seqBuf.Append(*aSeq);
 	
 	TInt j = 0;
 	for( ; j < iMatchPatternDetails.Count(); j++)
 	{
-		TBuf<50> matchPatternBuf;
+		TBuf<KPsQueryMaxLen> matchPatternBuf;
 		matchPatternBuf.Copy((iMatchPatternDetails[j]->matchPattern->Des()));
 		if ( CPcsAlgorithm1Utils::MyCompareC(seqBuf, matchPatternBuf) == 0 )
             break;
@@ -382,13 +381,13 @@ TInt CPcsAlgorithm1FilterHelper::FindSequence(TDesC* aSeq)
 // ----------------------------------------------------------------------------
 TInt CPcsAlgorithm1FilterHelper::FindSubSequence(TDesC* aSeq,TInt aPatternIndex)
 {
-	TBuf<50> seqBuf;
+	TBuf<KPsQueryMaxLen> seqBuf;
 	seqBuf.Append(*aSeq);
 	
 	TInt j = 0;
 	for( ; j < iMatchPatternDetails[aPatternIndex]->subPatternArray.Count(); j++)
 	{
-		TBuf<50> matchPatternBuf;
+		TBuf<KPsQueryMaxLen> matchPatternBuf;
 		matchPatternBuf.Copy((iMatchPatternDetails[aPatternIndex]->subPatternArray[j]->matchPattern->Des()));
 		if ( CPcsAlgorithm1Utils::MyCompareC(seqBuf, matchPatternBuf) == 0 )
             break;

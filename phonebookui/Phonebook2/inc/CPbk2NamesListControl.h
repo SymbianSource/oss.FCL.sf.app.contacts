@@ -32,7 +32,6 @@
 #include <aknsfld.h>
 #include <eiklbo.h>
 #include "CPbk2ControlContainer.h"
-#include "CPbk2ThumbnailManager.h"
 
 // FORWARD DECLARATIONS
 class MPbk2NamesListState;
@@ -51,6 +50,10 @@ class CPbk2ListBoxSelectionObserver;
 class MPbk2ContactUiControlExtension;
 class CPbk2PredictiveSearchFilter;
 class CPbk2ContactViewDoubleListBox;
+class MVPbkContactLinkArray;
+class CPbk2NamesListControlBgTask;
+class CPbk2ThumbnailManager;
+class CPbk2HandleMassUpdate;
 
 // CLASS DECLARATION
 
@@ -89,6 +92,16 @@ class CPbk2NamesListControl : public CCoeControl,
             EStateReady,
             EStateFiltered,
             EStateHidden
+            };
+        
+        /// The names list Background Events
+        enum TPbk2NamesListBgEvents
+            {
+            /// Startup state
+            EStateBgTaskEmpty = 0,
+            /// Mark & Unmark States
+            EStateSaveMarkedContacts,
+            EStateRestoreMarkedContacts            
             };
 
     public: // Constructors and destructor
@@ -219,6 +232,14 @@ class CPbk2NamesListControl : public CCoeControl,
          * @return  Current view.
          */
         MVPbkContactViewBase& View();
+        
+        /**
+         * Foreground event handling function. 
+         * @param aForeground - Indicates the required focus state of the control.
+         * Needs to be called when there is a Foreground Event trigerred for the View.
+         */
+        
+        IMPORT_C void HandleViewForegroundEventL( TBool aForeground );
 
     
         
@@ -398,6 +419,13 @@ class CPbk2NamesListControl : public CCoeControl,
 
     private: //from MPbk2ControlContainerForegroundEventObserver
         void HandleForegroundEventL( TBool aForeground );
+    
+    public: //For Storing/Restoring/Clearing the Marked Contacts
+        void StoreMarkedContactsAndResetViewL();
+        void RestoreMarkedContactsL();
+        void ClearMarkedContactsInfo();
+        
+        
         
     private: // Data
         /// Ref: Current state
@@ -449,10 +477,20 @@ class CPbk2NamesListControl : public CCoeControl,
         //Flag to indicate Feature manager initilization
         TBool iFeatureManagerInitilized;
         
-        //REF: Thumbnail manager	//TODO
+        // Own/Ref (see below): Thumbnail manager
         CPbk2ThumbnailManager* iThumbManager;
+        // Wheter this control owns the thumbnail manager (iThumbManager) or not 
+        TBool iOwnThumbManager;
         //OWN: double list box "handle"
         CPbk2ContactViewDoubleListBox* 	iDoubleListBox;
+        
+        //Own: Selected/Marked Contacts
+        MVPbkContactLinkArray* iSelectedLinkArray;      
+           
+        //Own: Background Task Handler     
+        CPbk2NamesListControlBgTask* iBgTask;
+        //Own: Mass update checker/handler
+        CPbk2HandleMassUpdate* iCheckMassUpdate;
         
     };
 

@@ -18,13 +18,11 @@
 #ifndef CCAPPMYCARDIMAGELOADER_H
 #define CCAPPMYCARDIMAGELOADER_H
 
-#include <e32base.h>
-#include <MPbk2ImageOperationObservers.h>
+#include <CCAppImageDecoding.h>
 
-class CVPbkContactManager;
-class CPbk2ImageManager;
 class MVPbkStoreContact;
-class MPbk2ImageOperation;
+class CCCAppImageDecoding;
+class CFbsBitmap;
 
 /**
  * MyCard image loading observer class
@@ -59,8 +57,8 @@ protected:
  *  @since S60 9.2
  */
 NONSHARABLE_CLASS( CCCAppMyCardImageLoader ) : 
-    public CBase, 
-    public MPbk2ImageGetObserver
+    public CBase,
+    public MCCAppImageDecodingObserver
 {
 
 public:
@@ -69,7 +67,6 @@ public:
      * Two-phased constructor.
      */
     static CCCAppMyCardImageLoader* NewL(
-        CVPbkContactManager& aContactManager,
         MMyCardImageLoaderObserver& aObserver );
 
     /**
@@ -87,46 +84,35 @@ public: // Interface
      * 
      * @param aContact source contact for the image
      */
-    void LoadContactImageL( MVPbkStoreContact& aContact );
-
+    void LoadContactImageL( 
+            MVPbkStoreContact& aContact, 
+            const TSize& aThumbnailSize );
+    void ResizeImageL( const TSize& aThumbnailSize );
     
-private: // From MPbk2ImageGetObserver
-    virtual void Pbk2ImageGetComplete(
-            MPbk2ImageOperation& aOperation,
-            CFbsBitmap* aBitmap );
-    virtual void Pbk2ImageGetFailed(
-            MPbk2ImageOperation& aOperation,
-            TInt aError );
-
+private:    // From MCCAppImageDecodingObserver
+    void BitmapReadyL( CFbsBitmap* aBitmap );
     
 private: // constructors
     
     /**
      * Constructor
      */
-    CCCAppMyCardImageLoader(
-        CVPbkContactManager& aContactManager,
+    inline CCCAppMyCardImageLoader(
         MMyCardImageLoaderObserver& aObserver );
-
-    /**
-     * Constructor
-     */
-    void ConstructL();
-
     
 private: // data
-	
-	/// Not own. Virtual phonebook contact manager
-	CVPbkContactManager& iContactManager;
 	
 	/// Not own. Observer
 	MMyCardImageLoaderObserver& iObserver;
 	
-	/// Own. Phonebook image manager
-	CPbk2ImageManager* iImageManager;
-	
-	/// Own. Image operation
-	MPbk2ImageOperation* iOperation;
+	/// Own.
+	HBufC8* iImageBuffer;
+
+    /// Own.
+    HBufC* iImageFileName;
+    
+    /// Own
+    CCCAppImageDecoding* iImageDecoding;
 };
 
 #endif // CCAPPMYCARDIMAGELOADER_H

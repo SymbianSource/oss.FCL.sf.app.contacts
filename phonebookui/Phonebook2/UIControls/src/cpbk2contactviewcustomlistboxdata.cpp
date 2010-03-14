@@ -2158,8 +2158,8 @@ void CPbk2ContactViewCustomListBoxData::DrawSimpleL( const TListItemProperties& 
                 iExtension->iClippedColumns |= ( 1 << column );
                 }
 
-            TBool marqueeDisabled =ETrue;
-            if(listbox)
+            TBool marqueeDisabled = ETrue;
+            if ( listbox )
                 {
                 marqueeDisabled = listbox->View()->ItemDrawer()->Flags()
                     & CListItemDrawer::EDisableMarquee;
