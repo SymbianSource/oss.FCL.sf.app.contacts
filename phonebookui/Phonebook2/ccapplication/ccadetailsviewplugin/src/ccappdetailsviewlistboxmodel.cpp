@@ -383,6 +383,26 @@ void CCCAppDetailsViewListBoxModel::SetInitialFocusIndex(TInt aIndex)
     }
 }
 
+TInt CCCAppDetailsViewListBoxModel::FindFocusListIndexByStoreIndex(TInt aIndex)
+    {
+    TInt fieldIndex = iPresentationContact->PresentationFields().FieldIndexOfStoreField( aIndex );
+    
+    TInt focusListIndex = KErrNotFound;
+    
+    TInt count = iInxToPresentationIdx.Count();
+    
+    for ( TInt i = 0; i < count && focusListIndex == KErrNotFound; i++ )
+        {
+        TInt *index = iInxToPresentationIdx.Find( i );
+        if ( index && *index >= KErrNone && *index == fieldIndex )
+            {
+            focusListIndex = i;
+            }
+        }
+    return focusListIndex;
+    }
+
+
 // --------------------------------------------------------------------------
 // CCCAppDetailsViewListBoxModel::FocusedFieldLC
 // --------------------------------------------------------------------------

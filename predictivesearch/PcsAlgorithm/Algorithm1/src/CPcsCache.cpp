@@ -37,7 +37,7 @@
 // CPcsCache::NewL
 // Two Phase Construction
 // ----------------------------------------------------------------------------
-CPcsCache* CPcsCache::NewL(TDesC& aURI, CPcsKeyMap& aKeyMap, TUint8 aUriId)
+CPcsCache* CPcsCache::NewL(const TDesC& aURI, CPcsKeyMap& aKeyMap, TUint8 aUriId)
 {
     PRINT ( _L("Enter CPcsCache::NewL") );
     
@@ -68,7 +68,7 @@ CPcsCache::CPcsCache()
 // CPcsCache::ConstructL
 // 2nd Phase Constructor
 // ----------------------------------------------------------------------------
-void CPcsCache::ConstructL(TDesC& aURI, CPcsKeyMap& aKeyMap, TUint8 aUriId)
+void CPcsCache::ConstructL(const TDesC& aURI, CPcsKeyMap& aKeyMap, TUint8 aUriId)
 {
     PRINT ( _L("Enter CPcsCache::ConstructL") );
     
@@ -77,13 +77,13 @@ void CPcsCache::ConstructL(TDesC& aURI, CPcsKeyMap& aKeyMap, TUint8 aUriId)
     //Update the caching status for this cache
     iCacheStatus = ECachingNotStarted;
     
-    keyMap = &aKeyMap;        
+    iKeyMap = &aKeyMap;        
 
-    // Populate keyArr
+    // Populate iKeyArr
     for(TInt i= 0; i <aKeyMap.PoolCount();i++ )
         {
         RPointerArray<CPcsPoolElement> *keyMap = new (ELeave) RPointerArray<CPcsPoolElement>(1);
-        keyArr.InsertL(keyMap,i);
+        iKeyArr.InsertL(keyMap,i);
         }
    
     
@@ -98,90 +98,17 @@ CPcsCache::~CPcsCache()
 {
     PRINT ( _L("Enter CPcsCache::~CPcsCache") );
 
-    if ( iURI )
-       delete iURI;
-    
-    // Loop thru cache info and free and the data elements
-    THashMapIter<TInt, TInt> iter(cacheInfo);
-    
-    do
-    {
-    	TInt* id = const_cast<TInt*>(iter.NextKey());
-    	
-    	if ( id == NULL )
-    	     break;
-            
-	    TInt* poolMap = iter.CurrentValue();            
-	    
-	    if ( poolMap == NULL )        
-	    {
-	    	continue;
-	    }
+    delete iURI;
 
-        CPsData *data = NULL;	    	
-	    for ( int keyIndex = 0; keyIndex < keyArr.Count(); keyIndex++ )
-	    {
-	        TBool present = GetPoolMap(*poolMap, keyIndex); 
-	        
-	        if ( ! present )
-	        {
-	        	continue;
-	        }
-
-	        RPointerArray<CPcsPoolElement> tmpKeyMap = *(keyArr[keyIndex]);
-	        for ( int arrayIndex = 0; 
-	              arrayIndex < tmpKeyMap.Count();
-	              arrayIndex++ )
-	        {
-			    CPcsPoolElement *element = tmpKeyMap[arrayIndex];
-			    TInt localId = element->GetPsData()->Id();
-			    if ( *id == localId )
-			    {
-			        data = element->GetPsData();
-			    	delete element;
-			    	keyArr[keyIndex]->Remove(arrayIndex);  
-			    }  
-	        }      	
-	    };   
-	    
-	    // Remove this element from master pool
-	    for ( int arrayIndex = 0; 
-	              arrayIndex < masterPool.Count();
-	              arrayIndex++ )
-	    {
-		    CPsData *dataElement = masterPool[arrayIndex];
-		    TInt localId = dataElement->Id();
-		    if ( *id == localId )
-		    {
-		    	masterPool.Remove(arrayIndex);  
-		    }  
-	    }   
-	    
-	    if( data )
-	    {
-	    	delete data;
-	    }
-     
-    }
-    while (1);
-
-    for(TInt i= 0; i <keyArr.Count();i++ )
-            {
-             keyArr[i]->ResetAndDestroy();
-             delete keyArr[i];
-             keyArr[i] = NULL;
-            }
-    
-	masterPool.ResetAndDestroy();
-	
-	cacheInfo.Close();
-
-    keyArr.Reset();
+    RemoveAllFromCache(); // cleans up iMasterPool and iCacheInfo
+   
+    iKeyArr.ResetAndDestroy();
     iDataFields.Reset();
     iSortOrder.Reset();
     iIndexOrder.Reset();
-	
-	PRINT ( _L("End CPcsCache::~CPcsCache") );
+    iMasterPoolBackup.Close();
+
+    PRINT ( _L("End CPcsCache::~CPcsCache") );
 }
  
 // ----------------------------------------------------------------------------
@@ -192,8 +119,8 @@ void CPcsCache::GetContactsForKeyL(TInt aKeyId, RPointerArray<CPcsPoolElement>& 
 {
     PRINT ( _L("Enter CPcsCache::GetContactsForKeyL") );
         	
-	RPointerArray<CPcsPoolElement> arr = *keyArr[aKeyId];
-	for ( int i = 0; i < arr.Count(); i++ )
+	const RPointerArray<CPcsPoolElement>& arr = *iKeyArr[aKeyId];
+	for ( TInt i = 0; i < arr.Count(); i++ )
 	{
 		CPcsPoolElement* value = arr[i];
         aData.AppendL(value);
@@ -210,9 +137,9 @@ void CPcsCache::GetAllContentsL(RPointerArray<CPsData>& aData)
 {
     PRINT ( _L("Enter CPcsCache::GetAllContentsL") );
         	
-	for ( int i = 0; i < masterPool.Count(); i++ )
+	for ( TInt i = 0; i < iMasterPool.Count(); i++ )
 	{
-		CPsData* value = masterPool[i];
+		CPsData* value = iMasterPool[i];
         aData.AppendL(value);
 	}
     
@@ -224,86 +151,101 @@ void CPcsCache::GetAllContentsL(RPointerArray<CPsData>& aData)
 // CPcsCache::AddToPool
 // Adds a contact to cache
 // ----------------------------------------------------------------------------
-void CPcsCache::AddToPoolL(TInt& aPoolMap, CPsData& aData)
+void CPcsCache::AddToPoolL(TUint64& aPoolMap, CPsData& aData)
 {	
      // Temp hash to remember the location of pool elements
      // First TInt  = Pool 
      // Second TInt = Location in the pool
      // Required for memory optimization so that more than one pool
      // element doesn't get added for the same data
-     RHashMap<TInt, TInt> elementHash;     
+     RHashMap<TInt, TInt> elementHash;
+     CleanupClosePushL( elementHash );
      TLinearOrder<CPcsPoolElement> rule( CPcsPoolElement::CompareByData );
               
-     // Parse thru each data element    
-     for ( int dataIndex = 0; dataIndex < aData.DataElementCount(); dataIndex++ )
+     // Parse thru each data element
+     for ( TInt dataIndex = 0; dataIndex < aData.DataElementCount(); dataIndex++ )
      {     	
-     	// Stores first key for each word
-		RArray<TUint> firstKey;
+     	// Find store all the pool IDs where this contact should be
+		RArray<TUint> poolIds;
+		CleanupClosePushL( poolIds );
 		
 		// Recover the first character
 		if ( aData.Data(dataIndex) && aData.Data(dataIndex)->Length() != 0 )
 		{
-		    // Split the data into words	
+		    // Split the data into words
 		    CWords* words = CWords::NewLC(*aData.Data(dataIndex));
   
 		    // Store the first numeric key for each word
-		    for ( int i = 0; i < words->MdcaCount(); i++ )
+		    for ( TInt i = 0; i < words->MdcaCount(); i++ )
 		    {
 		    	TChar firstChar = (words->MdcaPoint(i))[0];
-		    	firstKey.Append(firstChar);
+		    	
+		    	// Pool ID according to ITU-T mappings
+		    	TInt itutPoolId = iKeyMap->PoolIdForCharacter(firstChar, EPredictiveItuT);
+		    	if ( itutPoolId != KErrNotFound )
+		    	    {
+                    poolIds.Append(itutPoolId);
+		    	    }
+		    	
+		    	// Pool ID according to QWERTY mappings
+                TInt qwertyPoolId = iKeyMap->PoolIdForCharacter(firstChar, EPredictiveQwerty);
+                if ( qwertyPoolId != KErrNotFound )
+                    {
+                    poolIds.Append(qwertyPoolId);
+                    }
 		    }
 		    
 		    CleanupStack::PopAndDestroy(words); 
 		}
 		
-		for ( TInt wordIndex = 0; wordIndex < firstKey.Count(); wordIndex++ )
-		{		
-		    TInt arrayIndex =keyMap->PoolIdForCharacter(firstKey[wordIndex]);
-					
+		for ( TInt poolIdIndex = 0; poolIdIndex < poolIds.Count(); poolIdIndex++ )
+		{
+            TUint poolId = poolIds[ poolIdIndex ];
 		    CPcsPoolElement* element = NULL;
 		    
 		    // Check if an element already exists in the pool for this data
 		    TInt* loc = NULL;
-		    loc = elementHash.Find(arrayIndex);
+		    loc = elementHash.Find(poolId);
 		    if ( loc != NULL )
 		    {
 		        // Exists. Then recover ...
-		        RPointerArray<CPcsPoolElement> tmpKeyMap = *(keyArr[arrayIndex]);
+		        const RPointerArray<CPcsPoolElement>& tmpKeyMap = *(iKeyArr[poolId]);
 		    	element = tmpKeyMap[*loc];
 		    }
 		
 			if ( element == NULL ) // Pool element doesn't exist. Create new ...
 			{
 		        element = CPcsPoolElement::NewL(aData);
+		        CleanupStack::PushL( element );
 		    	element->ClearDataMatchAttribute();
 				element->SetDataMatch(dataIndex);
 				
 				// Insert to pool
-				keyArr[arrayIndex]->InsertInOrderAllowRepeatsL(element, rule);
-				TInt index = keyArr[arrayIndex]->FindInOrderL(element, rule);
+				iKeyArr[poolId]->InsertInOrderAllowRepeatsL(element, rule);
+				CleanupStack::Pop( element ); // ownership transferred
+				TInt index = iKeyArr[poolId]->FindInOrderL(element, rule);
 				
-				// Set the bit for this pool					
-				SetPoolMap(aPoolMap, arrayIndex);												
+				// Set the bit for this pool
+				SetPoolMap(aPoolMap, poolId);
 				
 				// Store the array index in the temp hash
-				elementHash.InsertL(arrayIndex, index  );				
-	        }		        
+				elementHash.InsertL(poolId, index);
+	        }
 	        else // Pool element exists. Just alter the data match attribute
 	        {
 	        	element->SetDataMatch(dataIndex);
 	        	
-	            // Set the bit for this pool					
-				SetPoolMap(aPoolMap, arrayIndex);	
+	            // Set the bit for this pool
+				SetPoolMap(aPoolMap, poolId);
 	        }
-
 			
 		} // for 2 loop
 		
-		firstKey.Reset();
+		CleanupStack::PopAndDestroy( &poolIds );
 		
      } // for 1 loop
      
-     elementHash.Close();
+     CleanupStack::PopAndDestroy( &elementHash );
 }
 
 // ---------------------------------------------------------------------
@@ -313,19 +255,19 @@ void CPcsCache::AddToPoolL(TInt& aPoolMap, CPsData& aData)
 void CPcsCache::AddToCacheL( CPsData& aData )
 {
     // Protect against duplicate items getting added
-    if ( cacheInfo.Find(aData.Id()) != NULL )
+    if ( iCacheInfo.Find(aData.Id()) != NULL )
     {
-    	return;
-    }   
+        return;
+    }
     
-    // Include this element in the pool     
-    TInt poolMap = 0;
-	AddToPoolL(poolMap, aData);	
-    cacheInfo.InsertL(aData.Id(), poolMap); 
-    
-    // Include this element in master pool        
+    // Include this element in the pool
+    TUint64 poolMap = 0;
+    AddToPoolL(poolMap, aData);
+    iCacheInfo.InsertL(aData.Id(), poolMap);
+
+    // Include this element in master pool
     TLinearOrder<CPsData> rule( CPcsAlgorithm1Utils::CompareDataBySortOrderL );
-    masterPool.InsertInOrderAllowRepeatsL(&aData, rule);   
+    iMasterPool.InsertInOrderAllowRepeatsL(&aData, rule);
 }
 
 // ---------------------------------------------------------------------
@@ -336,15 +278,15 @@ void CPcsCache::RemoveFromCacheL( TInt aItemId )
 {
     CPsData *data = NULL;
             
-    TInt* poolMap = cacheInfo.Find(aItemId);            
+    TUint64* poolMap = iCacheInfo.Find(aItemId);
     
-    if ( poolMap == NULL )        
+    if ( poolMap == NULL )
     {
     	return;
     }
     
     // Remove this element from pools
-    for ( int keyIndex = 0; keyIndex < keyArr.Count(); keyIndex++ )
+    for ( TInt keyIndex = 0; keyIndex < iKeyArr.Count(); keyIndex++ )
     {
         TBool present = GetPoolMap(*poolMap, keyIndex); 
         
@@ -353,8 +295,8 @@ void CPcsCache::RemoveFromCacheL( TInt aItemId )
         	continue;
         }
 
-        RPointerArray<CPcsPoolElement> tmpKeyMap = *(keyArr[keyIndex]);
-        for ( int arrayIndex = 0; 
+        const RPointerArray<CPcsPoolElement>& tmpKeyMap = *(iKeyArr[keyIndex]);
+        for ( TInt arrayIndex = 0; 
               arrayIndex < tmpKeyMap.Count();
               arrayIndex++ )
         {
@@ -364,21 +306,21 @@ void CPcsCache::RemoveFromCacheL( TInt aItemId )
 		    {
 		        data = element->GetPsData();
 		    	delete element;
-		    	keyArr[keyIndex]->Remove(arrayIndex);  
+		    	iKeyArr[keyIndex]->Remove(arrayIndex);  
 		    }  
         }      	
     };   
     
     // Remove this element from master pool
-    for ( int arrayIndex = 0; 
-              arrayIndex < masterPool.Count();
+    for ( TInt arrayIndex = 0; 
+              arrayIndex < iMasterPool.Count();
               arrayIndex++ )
     {
-	    CPsData *dataElement = masterPool[arrayIndex];
+	    CPsData *dataElement = iMasterPool[arrayIndex];
 	    TInt id = dataElement->Id();
 	    if ( id == aItemId )
 	    {
-	    	masterPool.Remove(arrayIndex);  
+	    	iMasterPool.Remove(arrayIndex);  
 	    }  
     }      	
      
@@ -390,52 +332,48 @@ void CPcsCache::RemoveFromCacheL( TInt aItemId )
     }
 
     // Clear up cache information
-    cacheInfo.Remove(aItemId);    
+    iCacheInfo.Remove(aItemId);    
 }
 
 // ---------------------------------------------------------------------
-// CPcsCache::RemoveAllFromCacheL
+// CPcsCache::RemoveAllFromCache
 // 
 // ---------------------------------------------------------------------
-void CPcsCache::RemoveAllFromCacheL()
+void CPcsCache::RemoveAllFromCache()
 {
-    PRINT ( _L("Enter CPcsCache::RemoveAllFromCacheL") );
+    PRINT ( _L("Enter CPcsCache::RemoveAllFromCache") );
     
+    for ( TInt i = 0 ; i < iKeyArr.Count() ; i++ )
+        {
+        iKeyArr[i]->ResetAndDestroy();
+        }
 	
-    for(TInt i= 0; i <keyArr.Count();i++ )
-            {
-            keyArr[i]->ResetAndDestroy();
-            
-            }
+	iMasterPool.ResetAndDestroy();
+	iCacheInfo.Close();
 	
-	masterPool.ResetAndDestroy();
-	cacheInfo.Close();
-	
-	PRINT ( _L("End CPcsCache::RemoveAllFromCacheL") );
+	PRINT ( _L("End CPcsCache::RemoveAllFromCache") );
 }
 
 // ---------------------------------------------------------------------
 // CPcsCache::SetPoolMap
 // 
 // ---------------------------------------------------------------------
-void CPcsCache::SetPoolMap(TInt& aPoolMap, TInt arrayIndex)
+void CPcsCache::SetPoolMap(TUint64& aPoolMap, TInt aArrayIndex)
 {
-	TReal val;
-	Math::Pow(val, 2, arrayIndex);
-
-	aPoolMap |= (TInt)val;	
+    __ASSERT_DEBUG( aArrayIndex < 64, User::Panic(_L("CPcsCache"), KErrOverflow ) );
+    TUint64 val = 1 << aArrayIndex;
+    aPoolMap |= val;
 }
 
 // ---------------------------------------------------------------------
 // CPcsCache::GetPoolMap
 // 
 // ---------------------------------------------------------------------
-TBool CPcsCache::GetPoolMap(TInt& aPoolMap, TInt arrayIndex)
+TBool CPcsCache::GetPoolMap(TUint64& aPoolMap, TInt aArrayIndex)
 {
-	TReal val;
-	Math::Pow(val, 2, arrayIndex);
-
-	return (aPoolMap & (TInt)val);
+    __ASSERT_DEBUG( aArrayIndex < 64, User::Panic(_L("CPcsCache"), KErrOverflow ) );
+    TUint64 val = 1 << aArrayIndex;
+    return (aPoolMap & val);
 }
 
 // ---------------------------------------------------------------------
@@ -564,9 +502,9 @@ void CPcsCache::ComputeIndexOrder()
 {   
     iIndexOrder.Reset();
     
-	for ( int i = 0; i < iSortOrder.Count(); i++ )
+	for ( TInt i = 0; i < iSortOrder.Count(); i++ )
 	{
-		for ( int j = 0; j < iDataFields.Count(); j++ )
+		for ( TInt j = 0; j < iDataFields.Count(); j++ )
 		{
 			if ( iSortOrder[i] == iDataFields[j] )
 			{
@@ -583,24 +521,24 @@ void CPcsCache::ComputeIndexOrder()
 // ---------------------------------------------------------------------
 void CPcsCache::ResortdataInPoolsL()
     {
-    // copy masterPool data into masterPoolBackup
-    for (TInt i = 0; i < masterPool.Count(); i++ )
+    // copy iMasterPool data into iMasterPoolBackup
+    for (TInt i = 0; i < iMasterPool.Count(); i++ )
         {
-        masterPoolBackup.Append( masterPool[i] );
+        iMasterPoolBackup.Append( iMasterPool[i] );
         }
     //Now reset the key array
-    for (TInt i = 0; i < keyArr.Count(); i++ )
+    for (TInt i = 0; i < iKeyArr.Count(); i++ )
         {
-        keyArr[i]->ResetAndDestroy();
+        iKeyArr[i]->ResetAndDestroy();
         }
-    masterPool.Reset();
-    cacheInfo.Close();
-    //now add data again from the masterPoolBackup
-    for (TInt i = 0; i < masterPoolBackup.Count(); i++ )
+    iMasterPool.Reset();
+    iCacheInfo.Close();
+    //now add data again from the iMasterPoolBackup
+    for (TInt i = 0; i < iMasterPoolBackup.Count(); i++ )
         {
-        CPsData* temp = static_cast<CPsData*>(masterPoolBackup[i]);
+        CPsData* temp = iMasterPoolBackup[i];
         AddToCacheL( *temp );
         }
-    masterPoolBackup.Reset();
+    iMasterPoolBackup.Reset();
     } 
 // End of file

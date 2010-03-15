@@ -51,7 +51,7 @@ CPcsPoolElement::CPcsPoolElement()
 // ----------------------------------------------------------------------------
 void CPcsPoolElement::ConstructL(CPsData& aPsData)
 {
-     psData = &aPsData;
+     iPsData = &aPsData;
 }
 
 // ----------------------------------------------------------------------------
@@ -70,30 +70,29 @@ CPcsPoolElement::~CPcsPoolElement()
 // ----------------------------------------------------------------------------
 CPsData* CPcsPoolElement::GetPsData()
 {
-	return psData;
+	return iPsData;
 }
 
 // ----------------------------------------------------------------------------
 // CPcsPoolElement::CompareByData
 // Calls CPsData::CompareByData to compare CPsData objects
-// 
 // ----------------------------------------------------------------------------
 TInt CPcsPoolElement::CompareByData ( const CPcsPoolElement& aObject1,  const CPcsPoolElement& aObject2 )
 {
-  CPsData *data1 = const_cast<CPcsPoolElement&> (aObject1).GetPsData();
-  CPsData *data2 = const_cast<CPcsPoolElement&> (aObject2).GetPsData();  
-  return (CPcsAlgorithm1Utils::CompareDataBySortOrderL(*(data1), *(data2)));
+    CPsData *data1 = const_cast<CPcsPoolElement&> (aObject1).GetPsData();
+    CPsData *data2 = const_cast<CPcsPoolElement&> (aObject2).GetPsData();  
+    return (CPcsAlgorithm1Utils::CompareDataBySortOrderL(*(data1), *(data2)));
 }
 
+// ----------------------------------------------------------------------------
 // CPcsPoolElement::IsDataMatch
 // 
 // ----------------------------------------------------------------------------		
-TBool CPcsPoolElement::IsDataMatch (TInt aIndex)
+TBool CPcsPoolElement::IsDataMatch(TInt aIndex)
 {
-	TReal val;
-	Math::Pow(val, 2, aIndex);
-
-	return(iDataMatchAttribute & (TUint8)val);	
+    __ASSERT_DEBUG( aIndex < 8, User::Panic( _L("CPcsPoolElement"), KErrOverflow ) );
+    TUint8 val = 1 << aIndex;
+    return (iDataMatchAttribute & val);
 }
 
 // ----------------------------------------------------------------------------
@@ -102,10 +101,9 @@ TBool CPcsPoolElement::IsDataMatch (TInt aIndex)
 // ----------------------------------------------------------------------------
 void CPcsPoolElement::SetDataMatch(TInt aIndex)
 {
-	TReal val;
-	Math::Pow(val, 2, aIndex);
-
-	iDataMatchAttribute |= (TUint8)val;	
+    __ASSERT_DEBUG( aIndex < 8, User::Panic( _L("CPcsPoolElement"), KErrOverflow ) );
+    TUint8 val = 1 << aIndex;
+    iDataMatchAttribute |= val;
 }
 
 // ----------------------------------------------------------------------------

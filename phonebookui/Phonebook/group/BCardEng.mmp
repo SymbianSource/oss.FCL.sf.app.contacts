@@ -59,7 +59,7 @@ SYSTEMINCLUDE   ../inc ../View/inc
 APP_LAYER_SYSTEMINCLUDE // macro that defines the platform system includes
 
 // .def file name
-DEFFILE         BCARDENG.DEF
+DEFFILE         BCardEng.def
 
 // Dependencies to system components
 LIBRARY         euser.lib bafl.lib estor.lib    // User libraries

@@ -408,9 +408,9 @@ TInt CCmsPhonebookProxy::WordParser( TAny* aWordParserParam )
 //
 // ----------------------------------------------------------
 //
-void CCmsPhonebookProxy::SetVoiceCallDefaultL()
+void CCmsPhonebookProxy::SetVoiceCallDefaultL( MVPbkStoreContact* aContact )
 	{
-	iSetDefault->SetVoiceCallDefaultL( iContact, iContactManager );
+	iSetDefault->SetVoiceCallDefaultL( aContact, iContactManager );
 	}
 
 // ----------------------------------------------------------
@@ -727,7 +727,6 @@ void CCmsPhonebookProxy::VPbkSingleContactOperationComplete(
     PRINT( _L( "Start CCmsPhonebookProxy::VPbkSingleContactOperationComplete()" ) );
 
     ResetData();
-    iContact = aContact;
     CompleteContactRequestL( KErrNone, aContact );
     iCmsPhonebookOperationsObserver.CmsSingleContactOperationComplete( KErrNone );
 

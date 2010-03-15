@@ -615,32 +615,59 @@ void CTestSuiteInputData::CreateSearchQueryL(CPsQuery& aPsQuery, TDesC& aQueryBu
 	TKeyboardModes keyboardMode = EModeUndefined;
 
     // Check the keyboard mode
-	if(iKeyboardModeBuf->Des().Compare(KItut) == 0)
+	if(iKeyboardModeBuf->Compare(KItut) == 0)
 	{
 	    keyboardMode = EItut;
 	}
-	else if (iKeyboardModeBuf->Des().Compare(KQwerty) == 0)
+	else if (iKeyboardModeBuf->Compare(KQwerty) == 0)
 	{
 	    keyboardMode = EQwerty;
+	}
+	else if (iKeyboardModeBuf->Compare(KPredictiveItuT) == 0)
+	{
+		keyboardMode = EPredictiveItuT;
+	}
+	else if (iKeyboardModeBuf->Compare(KPredictiveQwerty) == 0)
+	{
+		keyboardMode = EPredictiveQwerty;
+	}
+	else if (iKeyboardModeBuf->Compare(KPredictiveDefaultKeyboard) == 0)
+	{
+		keyboardMode = EPredictiveDefaultKeyboard;
+	}
+	else if (iKeyboardModeBuf->Compare(KNonPredictive) == 0)
+	{
+		keyboardMode = ENonPredictive;
 	}
 
 	else // mixed mode
 	{
 		// convert the search query to the required format
-		_LIT(KCode,"i");
 		for(TInt i = 0; i < aQueryBuf.Length(); i++)
 		{
 			CPsQueryItem* item = CPsQueryItem::NewL();
 	    	item->SetCharacter(aQueryBuf[i]); // set search character
 	    	
 	    	// set the keyboard mode
-	    	if( (iKeyboardModeBuf->Des().Mid(i,1)).Compare(KCode) == 0)
+	    	if( (iKeyboardModeBuf->Des().Mid(i,1)).Compare(KPredictiveItuTCode) == 0)
  			{
- 				item->SetMode(EItut);
+ 				item->SetMode(EPredictiveItuT);
  			}
+            else if( (iKeyboardModeBuf->Des().Mid(i,1)).Compare(KPredictiveQwertyCode) == 0)
+            {
+                item->SetMode(EPredictiveQwerty);
+            }
+            else if( (iKeyboardModeBuf->Des().Mid(i,1)).Compare(KPredictiveDefaultCode) == 0)
+            {
+                item->SetMode(EPredictiveDefaultKeyboard);
+            }
+            else if( (iKeyboardModeBuf->Des().Mid(i,1)).Compare(KNonPredictiveCode) == 0)
+            {
+                item->SetMode(ENonPredictive);
+            }
  			else 
  			{
- 				item->SetMode(EQwerty);
+ 				item->SetMode(EModeUndefined);
  			}
  			
  			aPsQuery.AppendL(*item);

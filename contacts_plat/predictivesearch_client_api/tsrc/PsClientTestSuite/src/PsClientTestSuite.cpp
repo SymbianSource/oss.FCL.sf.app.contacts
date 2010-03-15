@@ -44,6 +44,11 @@ CPsClientTestSuite::CPsClientTestSuite(CTestModuleIf& aTestModuleIf):CScriptBase
 //
 void CPsClientTestSuite::ConstructL()
 {
+    // Local timer for block fetch delay. This is created as first step to 
+    // ensure that the handle is valid in destructor, even if some other
+    // step of construction fails and leaves.
+    iTimer.CreateLocal();
+
     //Read logger settings to check whether test case name is to be
     //appended to log file name.
     RSettingServer settingServer;
@@ -91,9 +96,6 @@ void CPsClientTestSuite::ConstructL()
     iPsClientHandler = CPSRequestHandler::NewL();
     iPsClientHandler->AddObserverL(this); 
 	iCurrentOperation = EDefaultCase;
-	
-	// Local timer for block fetch delay
-    iTimer.CreateLocal();
 }
 
 // -----------------------------------------------------------------------------

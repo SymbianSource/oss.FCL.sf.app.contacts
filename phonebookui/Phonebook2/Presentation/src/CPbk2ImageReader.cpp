@@ -23,7 +23,6 @@
 // From Phonebook2
 #include "MPbk2ImageReaderObserver.h"
 #include "TPbk2ImageManagerParams.h"
-#include <Pbk2CmdExtRes.rsg>
 #include "Pbk2PresentationUtils.h"
 
 // From Virtual Phonebook
@@ -106,7 +105,6 @@ TInt Ceil(const TInt aVal, const TInt aDiv)
     return (((aVal%aDiv)>0) ? (TInt)((aVal/aDiv)+1):(TInt)(aVal/aDiv));
     }
 
-
 /**
  * Calculates the the size based on divider. Uses Ceil function for ceiling
  * the calculated size.
@@ -165,7 +163,6 @@ TSize OptimalLoadingSize(const TSize& aOriginalSize, const TSize& aNeededSize)
 
     return resSize;
     }
-
 }  // namespace
 
 
@@ -230,12 +227,13 @@ void CPbk2ImageReader::ReadFromFileL
     InitReadL(aParams);
     delete iImageDecoder;
     iImageDecoder = NULL;
-    iImageDecoder = CImageDecoder::FileNewL(iFsSession, aFileName);
+               
+    TRAPD( err, iImageDecoder = CImageDecoder::FileNewL( iFsSession, aFileName ) );
 
     // Make the open phase asynchronous as well by signaling own iStatus
     iState = EStateOpenImage;
     TRequestStatus* status = &iStatus;
-    User::RequestComplete(status, KErrNone);
+    User::RequestComplete( status, err );            
     SetActive();
     }
 
@@ -249,12 +247,12 @@ void CPbk2ImageReader::ReadFromBufferL
     InitReadL(aParams);
     delete iImageDecoder;
     iImageDecoder = NULL;
-    iImageDecoder = CImageDecoder::DataNewL(iFsSession, aBuffer);
-
+    TRAPD( err, iImageDecoder = CImageDecoder::DataNewL( iFsSession, aBuffer ) );
+    
     // Make the open phase asynchronous as well by signaling own iStatus
     iState = EStateOpenImage;
     TRequestStatus* status = &iStatus;
-    User::RequestComplete(status, KErrNone);
+    User::RequestComplete( status, err );
     SetActive();
     }
 
@@ -285,16 +283,12 @@ void CPbk2ImageReader::RecognizeFormatFromFileL(const TDesC& aFileName)
     iMimeString = HBufC8::NewL(KMaxMimeTypeLength);
     TPtr8 mimePtr = iMimeString->Des();
     
-    TRAPD( err, CImageDecoder::GetMimeTypeFileL(iFsSession, aFileName, mimePtr) );
-    	
-    if( err == KErrNotFound )
+    TRAPD( err, CImageDecoder::GetMimeTypeFileL( iFsSession, aFileName, mimePtr ) );
+    	    
+    if( err != KErrNone )
         {
-        HBufC* prompt = StringLoader::LoadLC( R_QTN_ALBUM_ERR_FORMAT_UNKNOWN );
-        CAknInformationNote* dlg = new ( ELeave ) CAknInformationNote( ETrue );
-        dlg->ExecuteLD( *prompt );
-        CleanupStack::PopAndDestroy( prompt );
-        User::Leave( err );
-        }    		
+        iObserver.ImageReadFailed( *this, err );           
+        }    
     }
 
 // --------------------------------------------------------------------------
@@ -307,7 +301,12 @@ void CPbk2ImageReader::RecognizeFormatFromBufferL(const TDesC8& aBuffer)
     iMimeString = NULL;
     iMimeString = HBufC8::NewL(KMaxMimeTypeLength);
     TPtr8 mimePtr = iMimeString->Des();
-    CImageDecoder::GetMimeTypeDataL(aBuffer, mimePtr);
+    TRAPD( err, CImageDecoder::GetMimeTypeDataL( aBuffer, mimePtr ) );
+        
+    if( err != KErrNone )
+        {
+        iObserver.ImageReadFailed( *this, err );           
+        }    
     }
 
 // --------------------------------------------------------------------------
@@ -393,7 +392,6 @@ void CPbk2ImageReader::ConvertImageToBitmapL()
     SetActive();
     }
 
-
 // --------------------------------------------------------------------------
 // CPbk2ImageReader::CropImageToSquareL
 // --------------------------------------------------------------------------
@@ -405,11 +403,10 @@ void CPbk2ImageReader::CropImageToSquareL()
 		{
         Pbk2PresentationImageUtils::CropImageL( 
                 *iBitmap, 
-                Pbk2PresentationImageUtils::ELandscapeOptimizedCropping, 
+                Pbk2PresentationImageUtils::EOptimizedCropping, 
                 iParams.iSize );
 		}
 	}
-
 
 // --------------------------------------------------------------------------
 // CPbk2ImageReader::ScaleBitmapL
@@ -524,6 +521,7 @@ void CPbk2ImageReader::CloseImage()
 void CPbk2ImageReader::RunL()
     {
     TInt status = iStatus.Int();
+        
     switch (status)
         {
         case KErrNone:
@@ -541,7 +539,7 @@ void CPbk2ImageReader::RunL()
             break;
             }
         default:
-            {
+            {                              
             // Jpeg2000 decoder might need more heap than Phonebook can 
             // provide, the situation is handled so, that "Feature not 
             // supported" -note is shown if memory runs out when decoding 
@@ -555,6 +553,7 @@ void CPbk2ImageReader::RunL()
             // image is tried to be decoded.
             if ( status == KErrNoMemory )            
                 {
+                
                 TUid imageType;
                 TUid imageSubType;
                 iImageDecoder->ImageType(iParams.iFrameNumber, 
@@ -565,7 +564,8 @@ void CPbk2ImageReader::RunL()
                     {
                     status = KErrNotSupported;
                     }
-                }            
+                }                   
+            
             iObserver.ImageReadFailed(*this, status);
             break;
             }

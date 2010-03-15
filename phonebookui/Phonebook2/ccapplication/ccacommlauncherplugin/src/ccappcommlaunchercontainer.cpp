@@ -60,7 +60,7 @@ CCCAppCommLauncherContainer::CCCAppCommLauncherContainer(
 // ----------------------------------------------------------------------------
 //
 CCCAppCommLauncherContainer::~CCCAppCommLauncherContainer()
-    {
+    {    
     delete iListBox;
     delete iBackground;
     delete iModel;
@@ -166,7 +166,7 @@ void CCCAppCommLauncherContainer::ConstructL()
     // Get the skin background for the view
     iBackground = CAknsBasicBackgroundControlContext::NewL(
         KAknsIIDQsnBgAreaMain, TRect(0, 0, 0, 0), EFalse);
-    LongTapDetectorL();
+    LongTapDetectorL();    
     }
 
 // ----------------------------------------------------------------------------
@@ -473,22 +473,32 @@ void CCCAppCommLauncherContainer::HandleLongTapEventL( const TPoint& /*aPenEvent
         
             VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector
                 contactActionType = iPlugin.Container().SelectedCommunicationMethod();
-            CCAContactorService::TCSParameter param(
-                contactActionType,
-                *iPlugin.ContactHandler().ContactIdentifierLC(),//contactlinkarray
-                paramFlag, 
-                fullName );
-        
-            if ( contactActionType == VPbkFieldTypeSelectorFactory::EVoiceCallSelector ||
-                contactActionType == VPbkFieldTypeSelectorFactory::EVideoCallSelector ||
-                contactActionType == VPbkFieldTypeSelectorFactory::EVOIPCallSelector )
-                {
-                iPlugin.StartTimerL();
+            
+            if ( !iLongTap && contactActionType
+                            == VPbkFieldTypeSelectorFactory::EFindOnMapSelector )
+                {  
+                iLongTap = ETrue;    
+                DoShowMapCmdL( (TPbk2CommandId)EPbk2ExtensionShowOnMap );
                 }
-        
-            contactorService->ExecuteServiceL( param );
-
-            CleanupStack::PopAndDestroy( 1 );// contactlinkarray
+            else
+                {
+                CCAContactorService::TCSParameter param(
+                    contactActionType,
+                    *iPlugin.ContactHandler().ContactIdentifierLC(),//contactlinkarray
+                    paramFlag, 
+                    fullName );
+            
+                if ( contactActionType == VPbkFieldTypeSelectorFactory::EVoiceCallSelector ||
+                    contactActionType == VPbkFieldTypeSelectorFactory::EVideoCallSelector ||
+                    contactActionType == VPbkFieldTypeSelectorFactory::EVOIPCallSelector )
+                    {
+                    iPlugin.StartTimerL();
+                    }
+            
+                contactorService->ExecuteServiceL( param );
+    
+                CleanupStack::PopAndDestroy( 1 );// contactlinkarray
+                }
             }
         }
     }
@@ -539,7 +549,14 @@ void CCCAppCommLauncherContainer::HandleListBoxEventL(
         if ( contactActionType
         		== VPbkFieldTypeSelectorFactory::EFindOnMapSelector )
         	{
-        	DoShowMapCmdL( (TPbk2CommandId)EPbk2ExtensionShowOnMap );
+            if ( !iLongTap )
+                {
+                DoShowMapCmdL( (TPbk2CommandId)EPbk2ExtensionShowOnMap );
+                }
+            else
+                {
+                iLongTap = EFalse;
+                }
         	}
         else
         	{
@@ -749,10 +766,12 @@ void CCCAppCommLauncherContainer::DoShowMapCmdL( TPbk2CommandId aCommandId )
         iPbkCmd = CCCAppCommLauncherPbkCmd::NewL( iPlugin );
     	}
 
+   
     iPbkCmd->ExecutePbk2CmdShowMapL(
             iPlugin.ContactHandler().ContactIdentifierLC(), aCommandId );
 
     CleanupStack::PopAndDestroy( 1 ); // ContactIdentifierLC
+   
     }
 
 // --------------------------------------------------------------------------
@@ -851,5 +870,6 @@ void CCCAppCommLauncherContainer::DoCheckExtensionFactoryL()
         }
     
     }
+
 
 // End of File

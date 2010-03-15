@@ -588,7 +588,7 @@ TInt CCCAppDetailsViewContainer::FocusedFieldIndex() const
     // PreCond:
     __ASSERT_DEBUG(iListBoxModel, Panic(EPanicPreCond_FocusedFieldIndex));
 
-    return iListBoxModel->FocusedListIndex();
+    return iListBoxModel->FocusedFieldIndex();
 }
 
 // --------------------------------------------------------------------------
@@ -597,7 +597,8 @@ TInt CCCAppDetailsViewContainer::FocusedFieldIndex() const
 //
 void CCCAppDetailsViewContainer::SetFocusedFieldIndex(TInt aIndex)
 {
-    iListBoxModel->SetInitialFocusIndex(aIndex);
+    TInt focusedItemIndex = iListBoxModel->FindFocusListIndexByStoreIndex( aIndex );
+    iListBoxModel->SetInitialFocusIndex(focusedItemIndex);
 }
 
 // --------------------------------------------------------------------------

@@ -39,8 +39,8 @@ class MVPbkContactViewObserver
     {
     public: // Interface
         /**
-         * Called when a view is ready for use. 
-         * 
+         * Called when a view is ready for use.
+         *
          * This function may also be called if view is already ready. Then
          * it means that the view has been updated and the observer have
          * to take this into account.
@@ -51,8 +51,8 @@ class MVPbkContactViewObserver
                 MVPbkContactViewBase& aView ) = 0;
 
         /**
-         * Called when a view is unavailable for a while. 
-         * 
+         * Called when a view is unavailable for a while.
+         *
          * When the view is again available ContactViewReady will be called.
          * The contents of the view may change completely while it is
          * unavailable.
@@ -71,8 +71,8 @@ class MVPbkContactViewObserver
          *                     valid only during the functio call.
          */
         virtual void ContactAddedToView(
-                MVPbkContactViewBase& aView, 
-                TInt aIndex, 
+                MVPbkContactViewBase& aView,
+                TInt aIndex,
                 const MVPbkContactLink& aContactLink ) = 0;
 
         /**
@@ -84,8 +84,8 @@ class MVPbkContactViewObserver
          *                      valid only during this function call.
          */
         virtual void ContactRemovedFromView(
-                MVPbkContactViewBase& aView, 
-                TInt aIndex, 
+                MVPbkContactViewBase& aView,
+                TInt aIndex,
                 const MVPbkContactLink& aContactLink ) = 0;
 
         /**
@@ -97,13 +97,13 @@ class MVPbkContactViewObserver
          *
          * @param aView A contact view sending the event.
          * @param aError An error code of the failure.
-         * @param aErrorNotified  ETrue if the implementation has already 
+         * @param aErrorNotified  ETrue if the implementation has already
          *                        notified user about the error using e.g
          *                        an ECOM plug-in, EFalse otherwise.
          */
         virtual void ContactViewError(
-                MVPbkContactViewBase& aView, 
-                TInt aError, 
+                MVPbkContactViewBase& aView,
+                TInt aError,
                 TBool aErrorNotified ) = 0;
 
         /**
@@ -112,13 +112,39 @@ class MVPbkContactViewObserver
          * @param aExtensionUid no extensions defined currently.
          * @return an extension point for this interface or NULL.
          */
-        virtual TAny* ContactViewObserverExtension(TUid /*aExtensionUid*/) 
+        virtual TAny* ContactViewObserverExtension(TUid /*aExtensionUid*/)
                 { return NULL; }
 
     protected: // Destructor
         virtual ~MVPbkContactViewObserver() { }
 
     };
+
+
+
+/// Use this UID to access base contact extension 2.
+// Used as a parameter to ContactViewObserverExtension() method.
+const TUid KVPbkContactViewObserverExtension2Uid = { 2 };
+
+/**
+ * This class is an extension to MVPbkContactViewObserver.
+ *
+ * @see MVPbkContactViewObserver
+ *
+ */
+class MVPbkContactViewObserverExtension
+    {
+    protected:  // Destructor
+        virtual ~MVPbkContactViewObserverExtension() { }
+
+    public:
+
+        /**
+         * Called when filtered contact removed from view
+         */
+        virtual void FilteredContactRemovedFromView( MVPbkContactViewBase& aView ) = 0;
+    };
+
 
 #endif  // MVPBKCONTACTVIEWOBSERVER_H
 

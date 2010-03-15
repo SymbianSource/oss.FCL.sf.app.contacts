@@ -41,7 +41,7 @@ RESOURCE RSS_SIGNATURE { }
 
 RESOURCE TBUF { buf = ""; }
 
-RESOURCE TBUF r_fs_action_send_businsess_card  { buf = qtn_phob_longtap_send; }
+RESOURCE TBUF r_fs_action_send_businsess_card  { buf = qtn_bcard_opt_send_entry_via; }
 
 
 // -----------------------------------------------------------------------------
@@ -52,11 +52,11 @@ RESOURCE TBUF r_fs_action_send_businsess_card  { buf = qtn_phob_longtap_send; }
 //
 RESOURCE LOCALISABLE_APP_INFO r_fssendbcplugin_localisable_app_info
     {
-    short_caption = qtn_phob_longtap_send;
+    short_caption = qtn_bcard_opt_send_entry_via;
     caption_and_icon = 
     CAPTION_AND_ICON_INFO
         {
-        caption = qtn_phob_longtap_send;
+        caption = qtn_bcard_opt_send_entry_via;
         number_of_icons = 1;
         icon_file = "\\resource\\apps\\pbk2rclsendbusinesscardplugin.mif";
         };

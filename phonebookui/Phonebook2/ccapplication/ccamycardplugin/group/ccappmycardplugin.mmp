@@ -34,8 +34,6 @@ SOURCE          ccappmycardpluginfactory.cpp
 SOURCE          ccappmycardcontainer.cpp
 SOURCE          ccappmycard.cpp
 SOURCE          ccappmycardheadercontrol.cpp
-SOURCE          ccappmycardlistboxmodel.cpp
-SOURCE          ccappmycardlistboxrow.cpp
 SOURCE          ccappmycardimageloader.cpp
 
 
@@ -88,6 +86,9 @@ LIBRARY         pbk2spbcontentprovider.lib
 LIBRARY         egul.lib // CGulIcon
 LIBRARY         touchfeedback.lib 
 LIBRARY         centralrepository.lib
+
+LIBRARY         estor.lib
+LIBRARY         efsrv.lib
 
 DEBUGLIBRARY    flogger.lib
 

@@ -939,6 +939,15 @@ void CPbk2NamesListExView::HandleListBoxEventL(
                 ShowContextMenuL();
                 break;
                 }
+#if 0            	
+            case EEventEmptyAreaClicked:  //An empty area of non-empty listbox was clicked 
+            case EEventEmptyListClicked:  //An empty listbox was clicked                
+                {
+                ProcessEmptyAreaClickL();
+                break;
+                }     
+#endif                
+
             case EEventItemClicked: //Happens after focus changed
             break;
 
@@ -993,10 +1002,20 @@ void CPbk2NamesListExView::HandlePointerEventL(
 
     if ( AknLayoutUtils::PenEnabled() )
         {
-        if ( iContainer && !iControl->ContactsMarked() && iPointerEventInspector->FocusableItemPointed() )
-            {
-            iContainer->LongTapDetectorL().PointerEventL( aPointerEvent );
-            }
+// Longtap detection is currently not needed here 
+#if 0  
+    // If at some point we need to enable longtap detection here, then need
+    // to implement a way to prevent passing the event to longtap detector 
+    // when a command item is tapped. Because command items should not have the 
+    // longtap animation.
+    if ( iContainer 
+            && <tapped item is not a command item> // <-- implement this logic by any means 
+            && !iControl->ContactsMarked() && iPointerEventInspector->FocusableItemPointed() )
+        {
+        iContainer->LongTapDetectorL().PointerEventL( aPointerEvent );
+        }
+#endif  
+            
 // ece has stylus menu for empty state, no need to initiate touch feedback
 // context menu disabled as well
 #if 0
@@ -1068,6 +1087,35 @@ void CPbk2NamesListExView::ShowContextMenuL()
             }
         }
     }
+
+#if 0
+// --------------------------------------------------------------------------
+// CPbk2NamesListExView::ProcessEmptyAreaClickL
+// --------------------------------------------------------------------------
+//
+void CPbk2NamesListExView::ProcessEmptyAreaClickL()
+    {
+    if ( iStylusPopupMenuLaunched )
+         {
+         // Absorb EButton1Up event if we already launched the stylus
+         // popup menu
+         iStylusPopupMenuLaunched = EFalse;
+         }
+    else if ( !iPointerEventInspector->SearchFieldPointed() &&
+              !iSelectionModifierUsed )
+        {
+        if ( iControl->NumberOfContacts() == 0 ) 
+            {
+            MTouchFeedback* feedback = MTouchFeedback::Instance();
+            if ( feedback )
+                   {
+                   feedback->InstantFeedback( ETouchFeedbackBasic );
+                   }			
+            HandleCommandL( EPbk2CmdCreateNew );
+            }
+        }    
+    }
+#endif
 
 // --------------------------------------------------------------------------
 // CPbk2NamesListExView::GetViewSpecificMenuFilteringFlagsL
@@ -1652,7 +1700,7 @@ void CPbk2NamesListExView::HandleLongTapEventL(
         const TPoint& /*aPenEventLocation*/,
         const TPoint& /*aPenEventScreenLocation*/ )
     {
-//no implementation needed for single tap
+//no implementation needed currently
     }
 
 // --------------------------------------------------------------------------

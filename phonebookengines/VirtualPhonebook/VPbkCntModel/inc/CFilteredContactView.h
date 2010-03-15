@@ -35,11 +35,12 @@ class CCustomFilteredContactView;
 
 /**
  * Virtual phonebook filtered contact view. This class filters contacts
- * based on field types. 
+ * based on field types.
  */
-NONSHARABLE_CLASS( CFilteredContactView ): 
+NONSHARABLE_CLASS( CFilteredContactView ):
         public CViewBase,
-        public MVPbkContactViewObserver
+        public MVPbkContactViewObserver,
+        public MVPbkContactViewObserverExtension
     {
     public: // Constructor and destructor
 
@@ -56,7 +57,7 @@ NONSHARABLE_CLASS( CFilteredContactView ):
         static CFilteredContactView* NewLC(
                 const CVPbkContactViewDefinition& aViewDefinition,
                 MVPbkContactViewObserver& aObserver,
-                CContactStore& aParentStore, 
+                CContactStore& aParentStore,
                 const MVPbkFieldTypeList& aSortOrder,
                 RFs& aFs );
         /**
@@ -80,17 +81,22 @@ NONSHARABLE_CLASS( CFilteredContactView ):
         void ContactViewUnavailable(
                 MVPbkContactViewBase& aView );
         void ContactAddedToView(
-                MVPbkContactViewBase& aView, 
-                TInt aIndex, 
+                MVPbkContactViewBase& aView,
+                TInt aIndex,
                 const MVPbkContactLink& aContactLink );
         void ContactRemovedFromView(
-                MVPbkContactViewBase& aView, 
-                TInt aIndex, 
+                MVPbkContactViewBase& aView,
+                TInt aIndex,
                 const MVPbkContactLink& aContactLink );
         void ContactViewError(
-                MVPbkContactViewBase& aView, 
-                TInt aError, 
+                MVPbkContactViewBase& aView,
+                TInt aError,
                 TBool aErrorNotified );
+        TAny* ContactViewObserverExtension( TUid aExtensionUid );
+
+    private: // From MVPbkContactViewObserverExtension
+		void FilteredContactRemovedFromView(
+				MVPbkContactViewBase& aView );
 
     private: // Implementation
         CFilteredContactView(

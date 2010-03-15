@@ -178,7 +178,7 @@ EXPORT_C TInt CPsQuery:: Count()
 }
 
 // ----------------------------------------------------------------------------
-// Deprecated: Use CPcsDebug::PrintQuery 
+// Deprecated: Use CPcsDebug::PrintQuery
 // CPsQuery::PrintQuery
 // Prints the query as array of query items (query items cannot be spaces)
 // Used only for debugging
@@ -193,14 +193,25 @@ EXPORT_C void CPsQuery:: PrintQuery()
 		buffer.Format(_L("%c"), inputKey);
 	    switch(iSearchQuery[i]->Mode())
 	    {
-	    	case EItut:
-	    	    PRINT2 ( _L("Character at index %d: '%S' (ITU-T)"), i, &buffer);
+	    	case EPredictiveDefaultKeyboard:
+	    	    PRINT2 ( _L("Character at index %d: '%S' (EPredictiveDefaultKeyboard)"),
+	    	             i, &buffer);
 	    	    break;
-	    	case EQwerty:
-                PRINT2 ( _L("Character at index %d: '%S' (QWERTY)"), i, &buffer);
-	    	    break;	    	
+	    	case ENonPredictive:
+	    	    PRINT2 ( _L("Character at index %d: '%S' (ENonPredictive)"),
+	    	             i, &buffer);
+	    	    break;
+	    	case EPredictiveItuT:
+	    	    PRINT2 ( _L("Character at index %d: '%S' (EPredictiveItuT)"),
+	    	             i, &buffer);
+	    	    break;
+	    	case EPredictiveQwerty:
+	    	    PRINT2 ( _L("Character at index %d: '%S' (EPredictiveQwerty)"),
+	    	             i, &buffer);
+	    	    break;
 	    	default:
-                PRINT2 ( _L("Character at index %d: '%S' (mode=?)"), i, &buffer);
+	    	    PRINT3 ( _L("Character at index %d: '%S' (mode=%d)"),
+	    	             i, &buffer, iSearchQuery[i]->Mode());
 	    	    break;
 	    }
 	}
@@ -213,7 +224,7 @@ EXPORT_C void CPsQuery:: PrintQuery()
 EXPORT_C void CPsQuery::ExternalizeL(RWriteStream& aStream) const
 {	
     aStream.WriteUint8L(iSearchQuery.Count()); // Number of query items
-	for ( int index = 0; index < iSearchQuery.Count(); index++ )
+	for ( TInt index = 0; index < iSearchQuery.Count(); index++ )
 	{
 		(iSearchQuery[index])->ExternalizeL(aStream);
 	}
@@ -229,7 +240,7 @@ EXPORT_C void CPsQuery::InternalizeL(RReadStream& aStream)
     TInt numQueryItems = aStream.ReadUint8L();
     
     // Internalize each item
-    for ( int index = 0; index < numQueryItems; index++ )
+    for ( TInt index = 0; index < numQueryItems; index++ )
     {
         CPsQueryItem *item = CPsQueryItem::NewL();
         item->InternalizeL(aStream);

@@ -63,6 +63,7 @@
 #include <Pbk2CmdExtRes.rsg>
 #include <sysutil.h>
 #include <CPbk2ApplicationServices.h>
+#include <AknProgressDialog.h>
 
 /// Unnamed namespace for local definitions
 namespace {
@@ -116,6 +117,7 @@ NONSHARABLE_CLASS( CSetImageCmd ):
     public CBase,
 	public MPbk2BaseCommand,
     private MPbk2ImageSetObserver,
+    public MProgressDialogCallback,
     private MMGFetchVerifier
 	{
 	public:
@@ -131,6 +133,9 @@ NONSHARABLE_CLASS( CSetImageCmd ):
 	            MPbk2ImageOperation& aOperation,
 	            TInt aError);
 	
+	private: // from MProgressDialogCallback
+	        void DialogDismissedL( TInt aButtonId );
+	        
 	private: // from MMGFetchVerifier
 	    TBool VerifySelectionL(
 	            const MDesCArray* aSelectedFiles);
@@ -141,6 +146,9 @@ NONSHARABLE_CLASS( CSetImageCmd ):
 		void DismissWaitNote();
 		void SetImageRefL( MVPbkStoreContact* aContact,
 				const TDesC& aFileName);
+		TBool DoVerifySelectionL(
+		        const MDesCArray* aSelectedFiles);
+		void ShowErrorNoteL();
 		
 	private:
         /// Own: image set operation
@@ -161,6 +169,9 @@ NONSHARABLE_CLASS( CSetImageCmd ):
         MPbk2ImageFieldObserver* iObserver;
         // Ref:
         CPbk2ApplicationServices* iServices;	
+        TBool iVerificationFailed;
+        TBool iImageSetFailed;
+        TBool iImageSetError;
 	};
 
 CSetImageCmd* CSetImageCmd::NewL()
@@ -183,24 +194,27 @@ CSetImageCmd::~CSetImageCmd()
 
 void CSetImageCmd::ExecuteL( MVPbkStoreContact* aContact,MPbk2ImageFieldObserver* aObserver )
 	{
+    iImageSetFailed = EFalse;
     iObserver=aObserver;
     CDesCArray* selectedFile = new(ELeave) CDesCArrayFlat(
             KSelectedFilesDefaultGranularity );
     CleanupStack::PushL( selectedFile );
 	TBool res( EFalse );
-	
+		
 	// run image fetch dialog
-	res = MGFetch::RunL( *selectedFile, 
+ 	res = MGFetch::RunL( *selectedFile, 
 	        EImageFile, 
 	        EFalse, /* multiselection */
 	        this /* provide MMGFetchVerifier interface to check DRM */);
-
-	if ( res && selectedFile->Count() > 0 )
+ 	        
+    if ( !iVerificationFailed && res && selectedFile->Count() > 0 )
         {
         if (iWaitNote==NULL)
             {
             iWaitNote =new(ELeave) CAknWaitDialog(reinterpret_cast<CEikDialog**>( &iWaitNote ),ETrue );
             }
+        iWaitNote->SetCallback( this );
+        
         // doesn't delete waitNote
         iWaitNote->ExecuteLD( R_QTN_GEN_NOTE_FETCHING );
 
@@ -211,17 +225,15 @@ void CSetImageCmd::ExecuteL( MVPbkStoreContact* aContact,MPbk2ImageFieldObserver
         iImageFilename=NULL;
         // store these for later use
         iImageFilename=fileName.AllocL();
-        iContact=aContact;
+        iContact=aContact;        
         
-        
-        // write data to thumbnail field
+        // write data to thumbnail field        
         iImageOperation = 
             iImageManager->SetImageAsyncL(
-                *aContact, *iThumbnailFieldType, *this, fileName );
-                
-        }
-
-    CleanupStack::PopAndDestroy( selectedFile );	
+                *aContact, *iThumbnailFieldType, *this, fileName );                                       
+        }        
+ 	
+    CleanupStack::PopAndDestroy( selectedFile );
 	}
 
 CSetImageCmd::CSetImageCmd()
@@ -263,6 +275,11 @@ void CSetImageCmd::DismissWaitNote()
 		{
 		delete iWaitNote;
 		iWaitNote = NULL;
+		
+		if( iImageSetFailed )
+            {
+            ShowErrorNoteL();
+            }
 		}
 	}
 
@@ -279,8 +296,7 @@ void CSetImageCmd::Pbk2ImageSetComplete
     if (iObserver)
         {
         iObserver->ImageLoadingComplete();
-        }
-	
+        }	
     }
 
 // --------------------------------------------------------------------------
@@ -289,19 +305,14 @@ void CSetImageCmd::Pbk2ImageSetComplete
 //
 void CSetImageCmd::Pbk2ImageSetFailed
         ( MPbk2ImageOperation& /*aOperation*/, TInt aError )
-    {
+    {        
     delete iImageOperation;
     iImageOperation = NULL;
-	DismissWaitNote();
-    if (iObserver)
-        {
-        iObserver->ImageLoadingFailed();
-        }
-	
-	if ( aError != KErrNone )
-		{
-		CCoeEnv::Static()->HandleError( aError );
-		}
+    
+    iImageSetFailed = ETrue;
+    iImageSetError = aError;
+    
+	DismissWaitNote();    		   		
     }
 
 void CSetImageCmd::SetImageRefL( MVPbkStoreContact* aContact,
@@ -337,42 +348,108 @@ void CSetImageCmd::SetImageRefL( MVPbkStoreContact* aContact,
     }
 
 // --------------------------------------------------------------------------
-// DRM check for image fetch dialog
+// CSetImageCmd::DialogDismissedL
+// --------------------------------------------------------------------------
+//  
+void CSetImageCmd::DialogDismissedL( TInt /*aButtonId*/ )
+    {
+    if( iImageSetFailed )
+        {
+        ShowErrorNoteL();
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CSetImageCmd::VerifySelectionL
 // --------------------------------------------------------------------------
 //	
 TBool CSetImageCmd::VerifySelectionL
-        (const MDesCArray* aSelectedFiles)
+    (const MDesCArray* aSelectedFiles)
     {
-    TBool result = EFalse;
+    iVerificationFailed = EFalse;
+    TBool ret = ETrue;
+       
+    TRAPD( err, ret = DoVerifySelectionL( aSelectedFiles ) );
+    
+    if( err != KErrNone )
+       {
+       iVerificationFailed = ETrue;
+       ShowErrorNoteL();    
+       } 
+    
+    // Selection is always accepted if the image is not drm protected.
+    // Image fetch dialog functionality is always same in spite of error 
+    // type (DRM check, ImageDecoder, etc. errors) Dialog is always closed.    
+    return ret;
+    }
+
+// --------------------------------------------------------------------------
+// CSetImageCmd::DoVerifySelectionL
+// --------------------------------------------------------------------------
+//  
+TBool CSetImageCmd::DoVerifySelectionL
+    (const MDesCArray* aSelectedFiles)
+    {     
+    TBool ret = ETrue;
+    
     if ( aSelectedFiles && aSelectedFiles->MdcaCount() > 0 )
-        {
+        {    
         // DRM for phonebook image fetch
         TPtrC fileName = aSelectedFiles->MdcaPoint( 0 );
+                
         TBool isProtected( ETrue );
         User::LeaveIfError( 
             iDrmManager->IsProtectedFile( fileName, isProtected ) );
+                
         if ( isProtected )
-            {
+            {        
+            ret = EFalse;
+            
 			RPbk2LocalizedResourceFile resFile( *CCoeEnv::Static() );
 			resFile.OpenLC( 
 			    KPbk2RomFileDrive, 
 				KDC_RESOURCE_FILES_DIR, 
 				Pbk2PresentationUtils::PresentationResourceFile() );
             // show user copyright note
+						
             HBufC* prompt = 
                 CCoeEnv::Static()->AllocReadResourceLC( R_PBK2_QTN_DRM_NOT_ALLOWED );
             CAknInformationNote* dlg = new(ELeave) CAknInformationNote( ETrue );
             dlg->ExecuteLD( *prompt );
             CleanupStack::PopAndDestroy( 2 ); // resFile, prompt
-            }
-        else
-            {
-            result = ETrue;
-            }
-        }
-        
-    return result;
+            }        
+        }  
+    
+    return ret;
     }	
+
+// --------------------------------------------------------------------------
+// CSetImageCmd::ShowErrorNoteL
+// --------------------------------------------------------------------------
+//
+void CSetImageCmd::ShowErrorNoteL()
+    {                     
+    HBufC* prompt = StringLoader::LoadLC( R_QTN_ALBUM_ERR_FORMAT_UNKNOWN );
+    CAknInformationNote* dlg = new ( ELeave ) CAknInformationNote( ETrue );
+    dlg->ExecuteLD( *prompt );
+    CleanupStack::PopAndDestroy( prompt );
+    
+    if( iImageSetFailed )
+        {
+        iImageSetFailed = EFalse;
+        
+        if (iObserver)
+           {
+           iObserver->ImageLoadingFailed();
+           }
+       
+       if ( iImageSetError != KErrNone )
+           {
+           CCoeEnv::Static()->HandleError( iImageSetError );
+           iImageSetError = KErrNone;
+           }
+        }    
+    }
 
 // --------------------------------------------------------------------------
 // Starts external image viewer via doc.handler and waits for its exit

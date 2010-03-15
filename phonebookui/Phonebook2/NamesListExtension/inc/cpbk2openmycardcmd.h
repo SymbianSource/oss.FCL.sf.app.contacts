@@ -25,6 +25,10 @@
 
 // FORWARD DECLARATIONS
 class MPbk2ContactUiControl;
+class CPbk2FieldPropertyArray;
+class CPbk2StoreSpecificFieldPropertyArray;
+class CPbk2PresentationContact;
+class CPbk2MyCard;
 
 //Cca
 class MCCAParameter;
@@ -49,6 +53,7 @@ class CPbk2OpenMyCardCmd : public CActive,
          */
         static CPbk2OpenMyCardCmd* NewL(
             MCCAConnection*& aCCAConnection,
+            CPbk2MyCard* aMyCard,
             MPbk2ContactUiControl* aUiControl = NULL );
 
         /**
@@ -67,6 +72,7 @@ class CPbk2OpenMyCardCmd : public CActive,
     private: //Construction
         CPbk2OpenMyCardCmd(
             MPbk2ContactUiControl* aUiControl,
+            CPbk2MyCard* aMyCard,
             MCCAConnection*& aCCAConnection );
         void ConstructL();
 
@@ -74,6 +80,11 @@ class CPbk2OpenMyCardCmd : public CActive,
 
         void LaunchCcaL(); // Sync
 		void IssueRequest();
+		
+		/**
+		 * Create presentation contact from mycard.
+		 */
+		CPbk2PresentationContact* PresentationContactL();
 
     private: // From CActive
         void RunL();
@@ -100,6 +111,14 @@ class CPbk2OpenMyCardCmd : public CActive,
         TProcessState iState;
         /// Requested view uid for CCA 
         TUid iViewUid;
+        /// Not own. My card instance
+        CPbk2MyCard* iMyCard;
+        /// Own. Field properties for presentation contact
+        CPbk2FieldPropertyArray* iFieldProperties;
+        /// Own. Field properties for presentation contact
+        CPbk2StoreSpecificFieldPropertyArray* iSpecificFieldProperties;
+        /// Own. Presentation contact of mycard
+        CPbk2PresentationContact* iPresentationContact;
     };
 
 #endif // CPBK2OPENMYCARDCMD_H

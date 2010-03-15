@@ -88,7 +88,7 @@ NONSHARABLE_CLASS(CPbk2PrependCmd) : public CBase,
         void ExecuteDlgL();
         CPbk2PresentationContact* CreatePresentationContactLC();
         TInt ToStoreFieldIndexL( TInt aPresIndex );
-        TInt MaxLengthOfEditorL( TInt aFieldIndex );
+        TInt MaxLengthOfEditorL( TInt aFieldStoreIndex );
                         
     private: // Data
         /// Ref: UI control

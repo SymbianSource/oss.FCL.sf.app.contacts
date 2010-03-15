@@ -208,6 +208,14 @@ public:
     void SetInitialFocusIndex(TInt aIndex);
     
     /**
+      * Set focused list item index by store field index
+      * 
+      * @param aIndex, a field index in store
+      * @retrun actually focused list item
+      */
+    TInt FindFocusListIndexByStoreIndex(TInt aIndex);
+    
+    /**
      *
      */
     MVPbkBaseContactField* FocusedFieldLC();

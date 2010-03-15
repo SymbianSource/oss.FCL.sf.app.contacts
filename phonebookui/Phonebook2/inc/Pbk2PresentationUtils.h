@@ -126,13 +126,13 @@ class Pbk2PresentationImageUtils
 public:
     enum TCroppingMode
         {
-        /// Landscape image is cropped to square, target size is not used
-        ELandscapeCropping                  = 0x0,
+        /// Image is cropped to square, target size is not used
+        ECropping                  = 0x0,
         /**
-         * Landscape image is cropped to square and optimized to target size.
-         * Cropped bitmap minimum width is aTargetSize width. 
+         * Image is cropped to square and optimized to target size.
+         * Cropped bitmap minimum width/height is aTargetSize width/height. 
          */
-        ELandscapeOptimizedCropping
+        EOptimizedCropping
         };
     
     IMPORT_C static void CropImageL( 

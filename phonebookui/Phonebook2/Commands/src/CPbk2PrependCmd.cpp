@@ -170,8 +170,7 @@ void CPbk2PrependCmd::ExecuteDlgL()
         // get field text (phone no)
         TInt fieldIndex( iUiControl->FocusedFieldIndex() );
         MVPbkStoreContactField* field =
-            iStoreContact->Fields().FieldAtLC(
-                ToStoreFieldIndexL( fieldIndex ) );
+            iStoreContact->Fields().FieldAtLC( fieldIndex );
         TPtrC phoneNo =
             MVPbkContactFieldTextData::Cast( field->FieldData() ).Text();
         HBufC* number = HBufC::NewLC( KBufferSize );
@@ -261,16 +260,22 @@ TInt CPbk2PrependCmd::ToStoreFieldIndexL
 // CPbk2PrependCmd::MaxLengthOfEditorL
 // --------------------------------------------------------------------------
 //
-TInt CPbk2PrependCmd::MaxLengthOfEditorL( TInt aFieldIndex )
+TInt CPbk2PrependCmd::MaxLengthOfEditorL( TInt aFieldStoreIndex )
     {
     TInt maxLength( KErrNotFound );
     CPbk2PresentationContact* presentationContact =
         CreatePresentationContactLC();
+    
+    TInt fieldIndex = KErrNotFound;
+     
+    fieldIndex = presentationContact->PresentationFields().FieldIndexOfStoreField( aFieldStoreIndex );
 
     __ASSERT_DEBUG( presentationContact->PresentationFields().FieldCount() >
-                    aFieldIndex, Panic( EMaxLengthOfEditorL_OOB ) );
+                       fieldIndex, Panic( EMaxLengthOfEditorL_OOB ) );
+    
+    __ASSERT_DEBUG( fieldIndex > KErrNotFound, Panic( EMaxLengthOfEditorL_OOB ) );
 
-    maxLength = presentationContact->PresentationFields().At( aFieldIndex ).
+    maxLength = presentationContact->PresentationFields().At( fieldIndex ).
                 MaxDataLength();
 
     CleanupStack::PopAndDestroy( presentationContact );

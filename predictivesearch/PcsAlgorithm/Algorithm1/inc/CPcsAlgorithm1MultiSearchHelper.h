@@ -66,10 +66,10 @@ class CPcsAlgorithm1MultiSearchHelper : public CBase
 		 * Filter subset results for multi query mode. 
 		 */
         void  FilterResultsMultiL(CPcsAlgorithm1FilterHelper* aAlgorithmFilterHelper,
-        						  RPointerArray<CPcsPoolElement>& searchSet,
-		                          RPointerArray<CPsQuery>& searchQuery,
+        						  RPointerArray<CPcsPoolElement>& aSearchSet,
+		                          RPointerArray<CPsQuery>& aSearchQuery,
 		                          TUint8 aFilteredDataMatch,
-		                          TBool isGroupSearch,
+		                          TBool aIsGroupSearch,
 		                          RArray<TInt>& aContactsInGroup);
 
     public:
@@ -80,10 +80,10 @@ class CPcsAlgorithm1MultiSearchHelper : public CBase
 		 */
 		void  SearchMultiL(const CPsSettings& aSettings,
 		                   RPointerArray<CPsQuery>& aQuery,
-		                   TBool isGroupSearch,
+		                   TBool aIsGroupSearch,
 		                   RArray<TInt>& aContactsInGroup,
-		                   RPointerArray<CPsData>& searchResults,
-		                   RPointerArray<CPsPattern>& searchSeqs );		
+		                   RPointerArray<CPsData>& aSearchResults,
+		                   RPointerArray<CPsPattern>& aSearchSeqs );		
 
 		/**
 		 * Funtion to Search matching sequences for multi query

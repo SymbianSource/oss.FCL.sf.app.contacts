@@ -1507,4 +1507,14 @@ void CCmsServerContact::FetchContactL( MVPbkContactLink* aContactLinkToFetch )
         }
     iOperation = iContactManager->RetrieveContactL( *aContactLinkToFetch, *this );
     }
+
+// ----------------------------------------------------
+// CCmsServerContact::SetVoiceCallDefaultL
+// 
+// ----------------------------------------------------
+//
+void CCmsServerContact::SetVoiceCallDefaultL()
+    {
+    iCmsServer.PhonebookProxyHandle().SetVoiceCallDefaultL( iContact );
+    }
 // End of File

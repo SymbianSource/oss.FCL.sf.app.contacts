@@ -26,6 +26,7 @@
 #include <MMGFetchVerifier.h>             // MMGFetchVerifier
 #include <MediaFileTypes.hrh>
 #include <badesca.h>
+#include <AknProgressDialog.h>
 
 
 // FORWARD DECLARATIONS
@@ -39,8 +40,9 @@ class CPbk2DrmManager;
  */
 NONSHARABLE_CLASS(CPbk2SetImageCmd) : 
         public CPbk2ImageCmdBase,
+        public MProgressDialogCallback,
         private MPbk2ImageSetObserver,
-        private MMGFetchVerifier
+        private MMGFetchVerifier        
     {
     public:  // Constructors and destructor
         /**
@@ -74,10 +76,12 @@ NONSHARABLE_CLASS(CPbk2SetImageCmd) :
                 MPbk2ImageOperation& aOperation,
                 TInt aError);
 
+    private: // from MProgressDialogCallback
+        void DialogDismissedL( TInt aButtonId );
+        
     private: // from MMGFetchVerifier
         TBool VerifySelectionL(
-                const MDesCArray* aSelectedFiles);
-        
+                const MDesCArray* aSelectedFiles);        
     private:  // Implementation
         CPbk2SetImageCmd(
                 MPbk2ContactUiControl& aUiControl);
@@ -87,13 +91,20 @@ NONSHARABLE_CLASS(CPbk2SetImageCmd) :
         void SetImageRefL(
                 const TDesC& aFileName);
         
+        TBool DoVerifySelectionL(
+                const MDesCArray* aSelectedFiles);
+        void ShowErrorNoteL();
+        
     private:    // Data
         /// Own: image set operation
         MPbk2ImageOperation* iImageOperation;
         /// Own: wait note dialog
         CAknWaitDialog* iWaitNote;
         /// Own: DRM support
-        CPbk2DrmManager* iDrmManager;
+        CPbk2DrmManager* iDrmManager;        
+        TBool iVerificationFailed;
+        TBool iImageSetFailed;
+        TInt iImageSetError;
     };
 
 #endif // CPBK2SETIMAGECMD_H

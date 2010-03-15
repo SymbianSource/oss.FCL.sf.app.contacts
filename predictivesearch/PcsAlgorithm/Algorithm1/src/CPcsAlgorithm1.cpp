@@ -30,7 +30,7 @@
 #include "CPsDataPluginInterface.h"
 #include "CPcsDefs.h"
 
-const TInt KSpace = 32;
+const TText KSpace = ' ';
 
 // UID used for Publish and Subscribe mechanism
 // This should be same as the one defined in CPsPropertyHandler.cpp
@@ -95,15 +95,16 @@ void CPcsAlgorithm1::ConstructL()
     }
     
     // Initialize key map and pti engine
-    //keyMap = CPcsKeyMap::NewL();
+    //iKeyMap = CPcsKeyMap::NewL();
     TInt keyMapErr = KErrNone;
     TRAP( keyMapErr, iKeyMap = CPcsKeyMap::NewL());
     if ( keyMapErr != KErrNone )
     {
-    PRINT ( _L("**********************************************."));
-    PRINT1 ( _L("CPcsAlgorithm1::ConstructL() KeyMap construction error. The keymap crashed with error code %d."),keyMapErr );
-    PRINT ( _L("Please check the keypad/language for which keymap got crashed.") );
-    PRINT ( _L("**********************************************."));
+        PRINT ( _L("**********************************************."));
+        PRINT1( _L("CPcsAlgorithm1::ConstructL() KeyMap construction error. The keymap crashed with error code %d."),keyMapErr );
+        PRINT ( _L("Please check the keypad/language for which keymap got crashed.") );
+        PRINT ( _L("**********************************************."));
+        User::Leave( keyMapErr ); // we can't go on without a key map; constructing cache needs it
     }
     
     // Initialize helpers
@@ -185,7 +186,8 @@ void  CPcsAlgorithm1::RemoveSpacesL(CPsQuery& aQuery)
 
 // ----------------------------------------------------------------------------
 // CPcsAlgorithm1::ReplaceZeroWithSpaceL
-// Replace all '0's in a search query with " "s
+// Replace all "0"s in a search query with " "s if those characters are on
+// the same key.
 // ----------------------------------------------------------------------------
 TBool  CPcsAlgorithm1::ReplaceZeroWithSpaceL(CPsQuery& aQuery)
 {   
@@ -195,43 +197,33 @@ TBool  CPcsAlgorithm1::ReplaceZeroWithSpaceL(CPsQuery& aQuery)
 
     TBool queryModified = EFalse;    
 
-    if (iKeyMap->GetSpaceAndZeroOnSameKey())
-    {
-        /* In phones like E52 and E55, where the "0" and the " " characters are on
-         * the same key, then the "0"s EItut have to be considered as possible
-         * separators.
-         */
+    /* In phones like E52 and E55, where the "0" and the " " characters are on
+     * the same key, the "0"s have to be considered as possible separators.
+     *
+     * In phones like N97 and E72, where the "0" and the " " characters are on
+     * different keys, the "0"s must not be considered as possible separators.
+     */
 
-        // Skip initial "0"s, they are not replaced into spaces
-        TInt skipIndex = 0;
-        while ( (skipIndex < aQuery.Count()) && 
-                (aQuery.GetItemAtL(skipIndex).Character().GetNumericValue() == 0) )
-        {
-            skipIndex++;
-        }
-        
-        // Replace remaining EItut "0"s into spaces
-        TChar space(KSpace);    
-        for ( TInt index = skipIndex; index < aQuery.Count(); index++ )
-        {
-            CPsQueryItem& item = aQuery.GetItemAtL(index);
-    
-            if ( item.Character().GetNumericValue() == 0 &&
-                 item.Mode() == EItut )
-            {
-                item.SetCharacter(space);
-                queryModified = ETrue;
-            }
-        }    
-    }
-    else
+    // Skip initial "0"s, they are not replaced into spaces
+    TInt skipIndex = 0;
+    while ( (skipIndex < aQuery.Count()) && 
+            (aQuery.GetItemAtL(skipIndex).Character().GetNumericValue() == 0) )
     {
-        /* In phones like N97 and E72, where the "0" and the " " characters are on
-         * a different key, then the "0" EItut does not have to be considered as a
-         * possible separator.
-         */
-        
-        PRINT ( _L("CPcsAlgorithm1::ReplaceZeroWithSpaceL: \"0\" and \" \" are on different keys, not attepting to replace") );
+        skipIndex++;
+    }
+    
+    // Replace remaining "0"s into spaces in case they are entered with a keyboard
+    // that has "0" and " " on the same key.
+    for ( TInt index = skipIndex; index < aQuery.Count(); index++ )
+    {
+        CPsQueryItem& item = aQuery.GetItemAtL(index);
+
+        if ( iKeyMap->GetSpaceAndZeroOnSameKey( item.Mode() ) &&
+             item.Character().GetNumericValue() == 0 )
+        {
+            item.SetCharacter(KSpace);
+            queryModified = ETrue;
+        }
     }
     
     //PRINTQUERY ( _L("CPcsAlgorithm1::ReplaceZeroWithSpaceL (AFTER): "), aQuery );
@@ -256,12 +248,13 @@ void  CPcsAlgorithm1::PerformSearchL(const CPsSettings& aSettings,
 	
 	__LATENCY_MARK ( _L("CPcsAlgorithm1::PerformSearchL") );
 
-	RPointerArray<CPsQuery> query;
-	
 	// Local arrays to hold the search results 
 	RPointerArray<CPsData> tempSearchResults;
+	CleanupClosePushL( tempSearchResults );
     RPointerArray<CPsData> tempSearchResultsIni;
+    CleanupClosePushL( tempSearchResultsIni );
     RPointerArray<CPsData> tempSearchResultsMod;
+    CleanupClosePushL( tempSearchResultsMod );
 
     // ----------------------- Perform the basic search -----------------------
 	/* Even before replacing zeroes with spaces the query can have multiple words
@@ -345,7 +338,7 @@ void  CPcsAlgorithm1::PerformSearchL(const CPsSettings& aSettings,
 	else
 	{
 		// Copy all the contents from tempSearchResults to the results stream
-		for(int i = 0; i < resultSet; i++)
+		for(TInt i = 0; i < resultSet; i++)
 		{
 			aSearchResults.Append(WriteClientDataL(*(tempSearchResults[i])));
 		}
@@ -353,9 +346,9 @@ void  CPcsAlgorithm1::PerformSearchL(const CPsSettings& aSettings,
 	// ------------------------------------------------------------------------
 
     // Cleanup local results array
-	tempSearchResults.Reset();    // Don't destroy
-    tempSearchResultsIni.Reset(); // Don't destroy
-    tempSearchResultsMod.Reset(); // Don't destroy
+    CleanupStack::PopAndDestroy( &tempSearchResultsMod ); // Close, don't destroy
+    CleanupStack::PopAndDestroy( &tempSearchResultsIni ); // Close, don't destroy
+    CleanupStack::PopAndDestroy( &tempSearchResults );    // Close, don't destroy
 
 	__LATENCY_MARKEND ( _L("CPcsAlgorithm1::PerformSearchL") );
 
@@ -545,8 +538,8 @@ void CPcsAlgorithm1::SearchMatchStringL( CPsQuery& aSearchQuery,
 // ----------------------------------------------------------------------------
 void  CPcsAlgorithm1::DoSearchL(const CPsSettings& aSettings,
 								CPsQuery& aQuery,
-								RPointerArray<CPsData>& searchResults,
-								RPointerArray<CPsPattern>& searchSeqs )
+								RPointerArray<CPsData>& aSearchResults,
+								RPointerArray<CPsPattern>& aSearchSeqs )
 {
     PRINT ( _L("Enter CPcsAlgorithm1::DoSearchL") );
 
@@ -554,10 +547,13 @@ void  CPcsAlgorithm1::DoSearchL(const CPsSettings& aSettings,
     
     // -(0)----------------- Check if group search is required ---------------    
     RArray<TInt> contactsInGroup;
+    CleanupClosePushL( contactsInGroup );
     RArray<TInt> groupIdArray;
+    CleanupClosePushL( groupIdArray );
     
     // Create a new settings instance
     CPsSettings *tempSettings = aSettings.CloneL();
+    CleanupStack::PushL( tempSettings );
     
     TBool isGroupSearch = IsGroupSearchL(*tempSettings, groupIdArray);
     
@@ -570,33 +566,32 @@ void  CPcsAlgorithm1::DoSearchL(const CPsSettings& aSettings,
     	GetContactsInGroupL ( groupIdArray[0], contactsInGroup );
     }
     
-   	groupIdArray.Close();
-   	
     // -----------------------------------------------------------------------
         
     // Extract query list. 
     RPointerArray<CPsQuery> queryList = iMultiSearchHelper->MultiQueryL(aQuery);
+    CleanupResetAndDestroyPushL( queryList );
     PRINTQUERYLIST ( _L("CPcsAlgorithm1::DoSearchL: "), queryList );
 
-    // (1)-------------------- No query return all contacts -------------------    
+    // (1)-------------------- No query return all contacts -------------------
     if ( queryList.Count() == 0 )
     {
-    	GetAllContentsL(*tempSettings, searchResults);   
+    	GetAllContentsL(*tempSettings, aSearchResults);
     	
     	if ( isGroupSearch ) 
     	{
-    		FilterSearchResultsForGroupsL ( contactsInGroup, searchResults );
+    		FilterSearchResultsForGroupsL( contactsInGroup, aSearchResults );
     	}
     }
     // ------------------------------------------------------------------------
 
     // (2)-------------------- Perform a single query search ------------------
-    else if ( queryList.Count() == 1 ) // single qwery
+    else if ( queryList.Count() == 1 ) // single query
     {
         PRINT ( _L("CPcsAlgorithm1::DoSearchL: Query received is Single. Performing a SingleSearch") );
 
         iHelper->SearchSingleL(*tempSettings, *queryList[0], isGroupSearch,
-                               contactsInGroup, searchResults, searchSeqs);
+                               contactsInGroup, aSearchResults, aSearchSeqs);
     }
     // ------------------------------------------------------------------------
 
@@ -607,17 +602,16 @@ void  CPcsAlgorithm1::DoSearchL(const CPsSettings& aSettings,
 
 		// Search results
 		iMultiSearchHelper->SearchMultiL(*tempSettings, queryList, isGroupSearch,
-		                                 contactsInGroup, searchResults, searchSeqs);
+		                                 contactsInGroup, aSearchResults, aSearchSeqs);
     }
     // -------------------------------------------------------------------------
 
     // Cleanup
-    delete tempSettings;
-    tempSettings = NULL;
     
-    groupIdArray.Close();
-    contactsInGroup.Close();
-	queryList.ResetAndDestroy();
+    CleanupStack::PopAndDestroy( &queryList ); // ResetAndDestroy
+    CleanupStack::PopAndDestroy( tempSettings );
+    CleanupStack::PopAndDestroy( &groupIdArray ); // Close
+    CleanupStack::PopAndDestroy( &contactsInGroup ); // Close
 
 	__LATENCY_MARKEND ( _L("CPcsAlgorithm1::DoSearchL") );
 
@@ -629,7 +623,7 @@ void  CPcsAlgorithm1::DoSearchL(const CPsSettings& aSettings,
 // Search function helper
 // ----------------------------------------------------------------------------
 void  CPcsAlgorithm1::DoSearchInputL(CPsQuery& aQuery,
-		                             TDesC& aData,
+		                             const TDesC& aData,
 		                             RPointerArray<TDesC>& aMatchSet,
 		                             RArray<TPsMatchLocation>& aMatchLocation )
 {
@@ -736,19 +730,14 @@ void CPcsAlgorithm1::RemoveAll(TDesC& aDataStore)
 	
     CPcsCache* cache = iPcsCache[dataStoreIndex];
     	
-	TRAPD(err, cache->RemoveAllFromCacheL());
-	
-	if ( err != KErrNone )
-	{
-		SetCachingError(aDataStore, err);
-	}
+	cache->RemoveAllFromCache();
 }
 
 // ----------------------------------------------------------------------------
 // CPcsAlgorithm1::GetCacheIndex
 // Return the cache index for a data store
 // ----------------------------------------------------------------------------
-TInt CPcsAlgorithm1::GetCacheIndex(TDesC& aDataStore)
+TInt CPcsAlgorithm1::GetCacheIndex(const TDesC& aDataStore)
 {
     for ( int i = 0; i < iPcsCache.Count(); i++ )
     {
@@ -781,13 +770,13 @@ void CPcsAlgorithm1::AddDataStore(TDesC& aDataStore)
 	{
 		SetCachingError(aDataStore, err);
 		return;
-	}	
+	}
 	
 	// Increment the cachecount
 	iCacheCount++;
 	
-    RArray<TInt> dataFields;        	   
-    TRAP(err, iPsDataPluginInterface->GetSupportedDataFieldsL(cache->GetURI(), dataFields));   
+    RArray<TInt> dataFields;
+    TRAP(err, iPsDataPluginInterface->GetSupportedDataFieldsL(cache->GetURI(), dataFields));
 	if ( err != KErrNone )
 	{
 		SetCachingError(aDataStore, err);
@@ -860,7 +849,7 @@ TBool CPcsAlgorithm1::IsLanguageSupportedL(TUint32 aLang)
 // CPcsAlgorithm1::GetUriForIdL
 // Get the URI string for this internal id
 // ----------------------------------------------------------------------------
-TDesC& CPcsAlgorithm1::GetUriForIdL(TUint8 aUriId)
+const TDesC& CPcsAlgorithm1::GetUriForIdL(TUint8 aUriId)
 {
     TBool found = EFalse;
     TInt i = 0;
@@ -886,7 +875,7 @@ TDesC& CPcsAlgorithm1::GetUriForIdL(TUint8 aUriId)
 // CPcsAlgorithm1::FindStoreUri
 // Checks if this store exists
 // ----------------------------------------------------------------------------
-TInt CPcsAlgorithm1::FindStoreUri ( TDesC& aDataStore )
+TInt CPcsAlgorithm1::FindStoreUri ( const TDesC& aDataStore )
 {
     for ( int i = 0; i < iPcsCache.Count(); i++ )
     {
@@ -961,14 +950,12 @@ void CPcsAlgorithm1::UpdateCachingStatus(TDesC& aDataStore, TInt aStatus)
 // CPcsAlgorithm1::SetCachingError
 // Updates cachinge error
 // ----------------------------------------------------------------------------
-void CPcsAlgorithm1::SetCachingError(TDesC& aDataStore, TInt aError)
+void CPcsAlgorithm1::SetCachingError(const TDesC& aDataStore, TInt aError)
 {
-	TBuf<KBufferMaxLen> store;
-	store.Copy(aDataStore);
-	PRINT2 ( _L("SetCachingError::URI %S ERROR %d"), &store, aError );
+	PRINT2 ( _L("SetCachingError::URI %S ERROR %d"), &aDataStore, aError );
 
 	iCacheError = aError;
-	RProperty::Set(KCStatus,1,iCacheError );
+	RProperty::Set( KCStatus,1,iCacheError );
 }
 
 // ----------------------------------------------------------------------------
@@ -982,46 +969,50 @@ void CPcsAlgorithm1::GetAllContentsL ( const CPsSettings& aSettings,
     
     PRINT ( _L("Enter CPcsAlgorithm1::GetAllContentsL") );   
     
-    // Get the data stores
-    RPointerArray<TDesC> aDataStores;
-    aSettings.SearchUrisL(aDataStores);
-
     // To hold array of results from different data stores
     typedef RPointerArray<CPsData> CPSDATA_R_PTR_ARRAY;
-    RPointerArray<CPSDATA_R_PTR_ARRAY> iSearchResultsArr;
+    RPointerArray<CPSDATA_R_PTR_ARRAY> searchResultsArr;
+    CleanupResetAndDestroyPushL( searchResultsArr );
+    // TODO: Here's still a potential memory leak if a leave happens. The child
+    // arrays of searchResultsArr are not Reset in that case. The CPsData objects
+    // may leak as well. Handling this safely is somewhat complicated because some of
+    // the CPsData objects may already be transferred to ownership of aResults array
+    // at the time the leave happens, and those items must not be deleted.
     
+    // Get the data stores
+    RPointerArray<TDesC> dataStores;
+    CleanupResetAndDestroyPushL( dataStores );
+    aSettings.SearchUrisL(dataStores);
+
     // Get all contacts for each data store
-    for ( int dsIndex = 0; 
-          dsIndex < aDataStores.Count(); 
+    for ( TInt dsIndex = 0; 
+          dsIndex < dataStores.Count(); 
           dsIndex++ )
     {	        	
         RPointerArray<CPsData> *temp = new (ELeave) RPointerArray<CPsData>();
-        iSearchResultsArr.Append(temp);
+        searchResultsArr.Append(temp);
         
-        TInt arrayIndex = GetCacheIndex(*(aDataStores[dsIndex]));
+        TInt arrayIndex = GetCacheIndex(*(dataStores[dsIndex]));
         
 		if ( arrayIndex < 0 ) continue;
 		
 		CPcsCache* cache = GetCache(arrayIndex);
         	      
-        cache->GetAllContentsL(*(iSearchResultsArr[dsIndex]));
-    }	   		   
-    	    	         	
-    aDataStores.ResetAndDestroy();    
+        cache->GetAllContentsL(*(searchResultsArr[dsIndex]));
+    }
+    
+    CleanupStack::PopAndDestroy( &dataStores ); // ResetAndDestroy
   
     // Merge the results from different data stores
-    CPcsAlgorithm1Utils::FormCompleteSearchResultsL(iSearchResultsArr,
+    CPcsAlgorithm1Utils::FormCompleteSearchResultsL(searchResultsArr,
     												aResults);
   
     // Cleanup the local arrays
-    for(TInt i = 0; i < iSearchResultsArr.Count(); i++)
+    for(TInt i = 0; i < searchResultsArr.Count(); i++)
     {
-    	iSearchResultsArr[i]->Reset();
-    	delete iSearchResultsArr[i];
-    	iSearchResultsArr[i] = NULL;
-    }    
-    
-    iSearchResultsArr.Reset();    
+    	searchResultsArr[i]->Reset();
+    }
+    CleanupStack::PopAndDestroy( &searchResultsArr ); // ResetAndDestroy
 
     PRINT1 ( _L("Number of results = %d"), aResults.Count() );
    
@@ -1044,18 +1035,18 @@ TBool CPcsAlgorithm1::IsGroupSearchL ( CPsSettings& aSettings,
      
     // Get the current URIs defined in settings    
     RPointerArray<TDesC> searchUris;
+    CleanupResetAndDestroyPushL( searchUris );
     aSettings.SearchUrisL(searchUris);
     
     if ( aGroupIdArray.Count() && (searchUris.Count() > aGroupIdArray.Count() ) )
     {
     	// There is an error, either there are more than one groups
     	// or the settings contain a combination of group/non-group Uris
-    	searchUris.ResetAndDestroy();
     	aGroupIdArray.Close();
     	User::Leave(KErrArgument); 
     }
     
-    searchUris.ResetAndDestroy();
+    CleanupStack::PopAndDestroy( &searchUris ); // ResetAndDestroy
         
     PRINT ( _L("End CPcsAlgorithm1::IsGroupSearchL") );    
     
@@ -1069,18 +1060,19 @@ TBool CPcsAlgorithm1::IsGroupSearchL ( CPsSettings& aSettings,
 // CPcsAlgorithm1::ReplaceGroupsUriL
 // Replace groups uri to contacts uri
 // ----------------------------------------------------------------------------
-void CPcsAlgorithm1::ReplaceGroupsUriL ( CPsSettings& aSettings )
+void CPcsAlgorithm1::ReplaceGroupsUriL( CPsSettings& aSettings )
 {
-	RPointerArray<TDesC> uri; 
+	RPointerArray<TDesC> uri;
+	CleanupResetAndDestroyPushL( uri );
     
     // Set contacts db uri
-	HBufC* cntdb = HBufC::NewL(KBufferMaxLen);
-	cntdb->Des().Copy(KVPbkDefaultCntDbURI);
-	uri.Append(cntdb);
+	HBufC* cntdb = KVPbkDefaultCntDbURI().AllocLC();
+	uri.AppendL(cntdb);
+	CleanupStack::Pop( cntdb ); // ownership transferred
 	aSettings.SetSearchUrisL(uri);
 	
 	// Cleanup
-	uri.ResetAndDestroy();
+	CleanupStack::PopAndDestroy( &uri ); // ResetAndDestroy
 }
 
 // ----------------------------------------------------------------------------
@@ -1119,27 +1111,20 @@ void CPcsAlgorithm1::FilterSearchResultsForGroupsL(RArray<TInt>& contactsInGroup
 // CPcsAlgorithm1::GetContactsInGroupL
 // Recover contacts that belong to a group
 // ----------------------------------------------------------------------------
-void CPcsAlgorithm1::GetContactsInGroupL ( TInt aGroupId, 
-                                           RArray<TInt>& aGroupContactIds )
+void CPcsAlgorithm1::GetContactsInGroupL( TInt aGroupId, 
+                                          RArray<TInt>& aGroupContactIds )
 {	    
     // Clear results array
     aGroupContactIds.Reset();
     
-    // Groups URI
-    HBufC* groupURI = HBufC::NewL(50);
-    groupURI->Des().Copy(KVPbkDefaultGrpDbURI);
-       
-    // Cache Index   
-    TInt cacheIndex = GetCacheIndex(*groupURI);
-    
-    // Cleanup
-    delete groupURI;
-    groupURI = NULL;
+    // Cache Index for group database
+    TInt cacheIndex = GetCacheIndex(KVPbkDefaultGrpDbURI);
     
     // Get the groups contact ids 
 	if ( cacheIndex != -1 )
 	{
 		RPointerArray<CPsData> groups;
+		CleanupClosePushL( groups );
 		
 		// Get all groups
 		iPcsCache[cacheIndex]->GetAllContentsL(groups);
@@ -1154,7 +1139,7 @@ void CPcsAlgorithm1::GetContactsInGroupL ( TInt aGroupId,
 			}		
 		}
 		
-		groups.Reset();	
+		CleanupStack::PopAndDestroy( &groups ); // Close
 	}
 }
 
@@ -1263,7 +1248,7 @@ void CPcsAlgorithm1::ChangeSortOrderL ( TDesC& aURI,
     if ( aSortOrder.Count() == mySortOrder.Count() )    
     {
          TBool same = ETrue;
-         for ( int i = 0; i < mySortOrder.Count(); i++ )	
+         for ( TInt i = 0; i < mySortOrder.Count(); i++ )	
          {
             if ( mySortOrder[i] != aSortOrder[i] )
      		{
@@ -1308,7 +1293,7 @@ void CPcsAlgorithm1::ChangeSortOrderL ( TDesC& aURI,
 // Read the persisted sort order from the central repository
 // Persisted sort order is of form URI Field1 Field2 Field3 .. FieldN (space delimited)
 // ---------------------------------------------------------------------------------
-void CPcsAlgorithm1::ReadSortOrderFromCenRepL(TDesC& aURI, 
+void CPcsAlgorithm1::ReadSortOrderFromCenRepL(const TDesC& aURI, 
                                               RArray<TInt>& aSortOrder)
 {
     PRINT ( _L("Enter CPcsAlgorithm1::ReadSortOrderFromCenRepL.") );
@@ -1343,7 +1328,7 @@ void CPcsAlgorithm1::ReadSortOrderFromCenRepL(TDesC& aURI,
 		        // Extract the sort order
 		        token.Set(lex.NextToken());
 		        
-				while ( token.Length() != 0 )				
+				while ( token.Length() != 0 )
 				{	
 				    TLex lex1(token);
 				    
@@ -1353,16 +1338,16 @@ void CPcsAlgorithm1::ReadSortOrderFromCenRepL(TDesC& aURI,
 					if ( KErrNone == err )
 					{
 						aSortOrder.Append(intVal);
-					}				    	        		    				    
+					}
 				    
 					// Next token
-					token.Set(lex.NextToken());				
+					token.Set(lex.NextToken());
 				}	
 				
 				break;
-		    }		    		    
+		    }
 	    }
-	    		
+	
     }
     
     delete repository;
@@ -1374,12 +1359,12 @@ void CPcsAlgorithm1::ReadSortOrderFromCenRepL(TDesC& aURI,
 // Write the sort order into the central repository
 // Persisted sort order is of form URI Field1 Field2 Field3 .. FieldN (space delimited)
 // ---------------------------------------------------------------------------------
-void CPcsAlgorithm1::WriteSortOrderToCenRepL(TDesC& aURI, 
+void CPcsAlgorithm1::WriteSortOrderToCenRepL(const TDesC& aURI, 
                                              RArray<TInt>& aSortOrder)
 {   
     PRINT ( _L("Enter CPcsAlgorithm1::WriteSortOrderToCenRepL.") );
 
-    CRepository *repository = CRepository::NewL( KCRUidPSSortOrder );
+    CRepository *repository = CRepository::NewLC( KCRUidPSSortOrder );
 
 	// Check if there an entry for this URI in cenrep
 	TBuf<KCRMaxLen> str;
@@ -1444,7 +1429,7 @@ void CPcsAlgorithm1::WriteSortOrderToCenRepL(TDesC& aURI,
 	}
 
     // Persist the sort order
-	HBufC* str1 = HBufC::NewL(KCRMaxLen);
+	HBufC* str1 = HBufC::NewLC(KCRMaxLen);
 	TPtr ptr(str1->Des());
 
 	// Append the URI
@@ -1452,7 +1437,7 @@ void CPcsAlgorithm1::WriteSortOrderToCenRepL(TDesC& aURI,
 	ptr.Append(KSpace);
 
 	// Append the sort order fields
-	for ( int j = 0; j < aSortOrder.Count(); j++ )
+	for ( TInt j = 0; j < aSortOrder.Count(); j++ )
 	{
 		ptr.AppendNum(aSortOrder[j]);
 	    ptr.Append(KSpace);
@@ -1463,9 +1448,9 @@ void CPcsAlgorithm1::WriteSortOrderToCenRepL(TDesC& aURI,
 
 	User::LeaveIfError(err);
 
-	delete str1;   	
+	CleanupStack::PopAndDestroy( str1 );
   
-    delete repository;
+    CleanupStack::PopAndDestroy( repository );
      
     PRINT ( _L("End CPcsAlgorithm1::WriteSortOrderToCenRepL.") );
 }
@@ -1530,15 +1515,17 @@ void CPcsAlgorithm1::DoLaunchPluginsL()
     User::LeaveIfError( Dll::SetTls(&iPcsCache) );
     
     // Initialize cache
-    RPointerArray<TDesC> dataStores;    
+    RPointerArray<TDesC> dataStores;
+    CleanupClosePushL( dataStores );
     
     iPsDataPluginInterface->GetAllSupportedDataStoresL(dataStores);
         
-    for ( int dIndex = 0; dIndex < dataStores.Count(); dIndex++ )
-    {
-    AddDataStore(*(dataStores[dIndex]));
-    }
-    dataStores.Reset();
+    for ( TInt dIndex = 0; dIndex < dataStores.Count(); dIndex++ )
+        {
+        AddDataStore(*(dataStores[dIndex]));
+        }
+    
+    CleanupStack::PopAndDestroy( &dataStores ); // Close
     }
 // End of file
 

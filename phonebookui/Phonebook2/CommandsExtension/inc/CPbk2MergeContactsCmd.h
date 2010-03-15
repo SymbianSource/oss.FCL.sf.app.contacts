@@ -277,15 +277,18 @@ private: // Data
     /// Own: Waiting note
     MPbk2ProcessDecorator* iWaitDecorator;
     
-	/// Own: string for ending note
+    /// Own: string for ending note
     HBufC* iFirstContactString;
-	
-	/// Own: string for ending note
+    
+    /// Own: string for ending note
     HBufC* iSecondContactString;
-	
-	/// Own: string for ending note
+    	
+    /// Own: string for ending note
     HBufC* iMergedContactString;
     
+    /// Own: Timer used to delay contact's deletion after new contact creation
+    /// it ensures that all filtered views are updated before deleting contacts
+    RTimer iTimer;
     };
 
 #endif // CPBK2MERGECONTACTSCMD_H

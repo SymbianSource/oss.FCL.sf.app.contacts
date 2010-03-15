@@ -1,4 +1,4 @@
-// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+// Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 // All rights reserved.
 // This component and the accompanying materials are made available
 // under the terms of "Eclipse Public License v1.0"
@@ -401,6 +401,11 @@ CVirtualFolders* CPbapServer::SIMTelecomSubTreeL()
 	return *static_cast<MPbapExporter*>(this);
 	}
 
+/*virtual*/ CPbapVCardExporterUtil& CPbapServer::ExporterUtil()
+	{
+	LOG_FUNC
+	return *iVCardExporter;
+	}
 
 /*virtual*/ MPbapErrorReporter& CPbapServer::ErrorReporter()
 	{

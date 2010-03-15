@@ -41,6 +41,10 @@ SOURCE          spbstatusprovider.cpp
 SOURCE          spbphonenumberparser.cpp
 SOURCE          spbcontactstorelistener.cpp
 
+SOURCE          spbcontactdatamodel.cpp
+SOURCE          spbcontactdatamodelprivate.cpp
+SOURCE          spbcontactdatamodelrow.cpp
+
 // Resources
 
 // Include paths
@@ -52,11 +56,14 @@ LIBRARY         euser.lib
 LIBRARY         bafl.lib
 LIBRARY         egul.lib 
 LIBRARY         ecom.lib
+LIBRARY         cone.lib
+LIBRARY         estor.lib 
 
 LIBRARY         featmgr.lib
 LIBRARY         vpbkeng.lib
 LIBRARY         bsclient.lib
 LIBRARY         pbk2presentation.lib
+LIBRARY         pbk2commonui.lib
 LIBRARY         presencecacheclient2.lib
 LIBRARY         presencecacheutils.lib
 

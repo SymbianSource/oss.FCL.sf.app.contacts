@@ -85,7 +85,7 @@ private:
      * Pointer to contact data
      * Not owned.
      */
-    CPsData* psData;
+    CPsData* iPsData;
 
     /*
      * This attribute indicates due to which

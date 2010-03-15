@@ -23,7 +23,7 @@
 #include <mccapluginfactory.h>
 
 #include <cpbk2applicationservices.h>
-#include <cvpbkcontactmanager.h>
+#include <CVPbkContactManager.h>
 #include <MVPbkContactStoreProperties.h>
 #include <VPbkContactStoreUris.h>
 #include <TVPbkContactStoreUriPtr.h>

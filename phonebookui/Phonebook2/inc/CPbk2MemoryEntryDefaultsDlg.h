@@ -99,6 +99,7 @@ class CPbk2MemoryEntryDefaultsDlg :
                 TInt& aIndex ) const;
         TBool IsSupported(
                 const VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aSelectorID ) const;
+        TBool HasMailboxAccountsL() const;
         TBool IsAvailableL(
                 const VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aSelectorID ) const;
         void SetDefaultL(

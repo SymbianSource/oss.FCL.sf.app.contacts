@@ -21,6 +21,7 @@
 #include "CPsData.h"
 #include "CPcsDefs.h"
 #include "CPcsCache.h"
+#include "CPsQuery.h"
 #include "CPsQueryItem.h"
 
 #include <collate.h>
@@ -38,7 +39,7 @@ _LIT(KGroupIdUri, "cntdb://c:contacts.gdb?id=");
 // Merges all the respective data store result sets to single set in sorted order.
 // ----------------------------------------------------------------------------
 void CPcsAlgorithm1Utils::FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR_ARRAY>& aSearchResultsArr, 
-												     RPointerArray<CPsData>& SearchResults)
+												     RPointerArray<CPsData>& aSearchResults)
 {
 	TInt maxIndex = 0;
     TInt maxValue = aSearchResultsArr[maxIndex]->Count();
@@ -57,7 +58,7 @@ void CPcsAlgorithm1Utils::FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR
     // Assign the largets array to searchresults 
     for(TInt i = 0; i < aSearchResultsArr[maxIndex]->Count(); i++)
     {
-    	SearchResults.Append((*(aSearchResultsArr[maxIndex]))[i]);
+    	aSearchResults.Append((*(aSearchResultsArr[maxIndex]))[i]);
     }
     
     // Merge the remaining result arrays to the largest array in sequential order
@@ -69,7 +70,7 @@ void CPcsAlgorithm1Utils::FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR
     		TInt numElements = (aSearchResultsArr[i])->Count();
     		for( TInt j = 0; j < numElements; j++)
     		{
-    			SearchResults.InsertInOrderAllowRepeatsL((*(aSearchResultsArr[i]))[j], rule);
+    			aSearchResults.InsertInOrderAllowRepeatsL((*(aSearchResultsArr[i]))[j], rule);
     		}
     	}
     }
@@ -79,9 +80,9 @@ void CPcsAlgorithm1Utils::FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR
 // CPcsAlgorithm1Utils::CompareByLength()
 // Compare by length.
 // ----------------------------------------------------------------------------
-TBool CPcsAlgorithm1Utils::CompareByLength ( const HBufC& aFirst, const HBufC& aSecond )
+TInt CPcsAlgorithm1Utils::CompareByLength ( const HBufC& aFirst, const HBufC& aSecond )
 {
-   return ( aFirst.Length() > aSecond.Length() );
+    return ( aFirst.Length() - aSecond.Length() );
 }
 
 // ----------------------------------------------------------------------------
@@ -97,7 +98,7 @@ TBool CPcsAlgorithm1Utils::CompareExact ( const TDesC& aFirst, const TDesC& aSec
 // CPcsAlgorithm1Utils::CompareCollate()
 // Compare strings with collate rules depending on locale.
 // ----------------------------------------------------------------------------
-TBool CPcsAlgorithm1Utils::CompareCollate ( const TDesC& aFirst, const TDesC& aSecond )
+TInt CPcsAlgorithm1Utils::CompareCollate ( const TDesC& aFirst, const TDesC& aSecond )
 {
     return CPcsAlgorithm1Utils::MyCompareC(aFirst, aSecond);
 }
@@ -144,7 +145,8 @@ TBool CPcsAlgorithm1Utils::MyCompareK(const TDesC& aLeft, const TDesC& aRight, C
         for ( TInt i = 0; i < aPsQuery.Count(); i++ )
             {
             CPsQueryItem& currentItem = aPsQuery.GetItemAtL(i);
-            if ( (currentItem.Mode() == EItut) && (aLeft[i] != aRight[i]) )
+            if ( (CPcsKeyMap::IsModePredictive(currentItem.Mode()))
+                 && (aLeft[i] != aRight[i]) )
                 {
                 comparison = EFalse;
                 break;
@@ -273,23 +275,23 @@ void CPcsAlgorithm1Utils::MyTrim(TDes& aString)
         }
     }
     
-    aString.TrimAll();        
+    aString.TrimAll();
 }
 
 // ----------------------------------------------------------------------------
 // CPcsAlgorithm1Utils::IsGroupUri()
 // Check if the input URI is of contact search in a group template form
-// ----------------------------------------------------------------------------                         
+// ----------------------------------------------------------------------------
 TBool CPcsAlgorithm1Utils::IsGroupUri(TDesC& aURI)
 {
-	TBuf<255> uri(aURI);
+    TBuf<255> uri(aURI);
     uri.LowerCase();
     
     TInt index = uri.FindF(KGroupIdUri);
     
     if ( index == KErrNotFound )
     {
-	    return EFalse;
+        return EFalse;
     }
     
     return ETrue;

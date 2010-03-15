@@ -184,6 +184,7 @@ class CPbk2NamesListExView : public CBase,
                 TAny* aSelf );
         void DimItem( CEikMenuPane* aMenuPane, TInt aCmd );
         void ShowContextMenuL();
+        // void ProcessEmptyAreaClickL();        
         void AddCommandItemsToContainerL();
         TBool NeedToHideToolbar(TInt aCurrentCommand);
         TBool IsPhoneMemoryUsedL() const;

@@ -319,6 +319,14 @@ void CPbk2NamesListReadyState::DeactivateState()
 
     AllowCommandsToShowThemselves( EFalse );  
     HideThumbnail();
+    // Stop creating adaptive search grid.
+    if (iAdaptiveSearchGridFiller)
+        {
+        if (iAdaptiveSearchGridFiller->IsActive())
+            {
+            iAdaptiveSearchGridFiller->StopFilling();
+            }
+        }
     }
 
 // --------------------------------------------------------------------------

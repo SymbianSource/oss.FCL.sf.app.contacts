@@ -84,6 +84,10 @@ NONSHARABLE_CLASS( CPbk2MyCard ) : public CBase,
     	 */
     	MVPbkStoreContact* MyCardStoreContact() const;
     	
+    	/**
+    	 * Contact manager used by mycard
+    	 */
+    	CVPbkContactManager& ContactManager();
         
     private: // From MVPbkSingleContactLinkOperationObserver
         void VPbkSingleContactLinkOperationComplete(

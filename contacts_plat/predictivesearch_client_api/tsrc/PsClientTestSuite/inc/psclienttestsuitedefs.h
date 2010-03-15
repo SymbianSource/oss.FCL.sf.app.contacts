@@ -40,15 +40,26 @@ struct cacheData
  * parameters in the psclientapitest.cfg file. 
  */
  
- // Keyboard modes
-_LIT(KItut,        "EItut");
-_LIT(KQwerty,      "EQwerty");
+// Keyboard modes for query
+_LIT(KItut,                      "EItut");   // Deprecated
+_LIT(KQwerty,                    "EQwerty"); // Deprecated
+_LIT(KPredictiveItuT,            "EPredictiveItuT");
+_LIT(KPredictiveQwerty,          "EPredictiveQwerty");
+_LIT(KPredictiveDefaultKeyboard, "EPredictiveDefaultKeyboard");
+_LIT(KNonPredictive,             "ENonPredictive");
+_LIT(KWrongKeyboardMode,         "EWrongKeyBoardMode");
+
+// Keyboard modes for query-item
+_LIT(KPredictiveItuTCode,        "i");
+_LIT(KPredictiveQwertyCode,      "q");
+_LIT(KPredictiveDefaultCode,     "d");
+_LIT(KNonPredictiveCode,         "n");
+
+// Sort Modes
 _LIT(KPatternSort, "EPatternSort");
 _LIT(KAlphaSort,   "EAlphaSort");
 
-_LIT(KWrongKeyboardMode, "EWrongKeyBoardMode");
-
-//True/False
+// True/False
 _LIT(KTrue,  "ETrue");
 _LIT(KFalse, "EFalse");
 

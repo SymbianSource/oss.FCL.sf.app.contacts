@@ -25,6 +25,7 @@
 #include <AknsDrawUtils.h>
 #include <AknsBasicBackgroundControlContext.h>
 #include <AknUtils.h>
+#include <s32mem.h>
 
 #include <MPbk2ContactNameFormatter.h>
 #include <MVPbkStoreContact.h>
@@ -39,13 +40,15 @@
 #include "ccappmycardcontainer.h"
 #include "ccappmycardcommon.h"
 #include "ccappmycardheadercontrol.h"
-#include "ccappmycardlistboxmodel.h"
 #include "ccappmycardplugin.h"
 #include "ccafactoryextensionnotifier.h"
-#include "spbcontentprovider.h"
+
+#include <spbcontentprovider.h>
+#include <spbcontactdatamodel.h> 
 
 #include <MVPbkContactFieldTextData.h>
 #include <ccaextensionfactory.hrh>
+#include <mccaparameter.h>
 
 #include <aknlayoutscalable_avkon.cdl.h>
 #include <layoutmetadata.cdl.h>
@@ -65,18 +68,22 @@
 #include <pbk2nameordercenrep.h>
 #include <centralrepository.h>
 #include <Phonebook2PrivateCRKeys.h>
+#include <CPbk2PresentationContact.h>
+#include <CPbk2PresentationContactFieldCollection.h>
 
 #include <CPbk2ApplicationServices.h>
 #include <CPbk2ServiceManager.h>
 #include <TPbk2IconId.h>
 #include <CPbk2IconInfo.h>
+#include <csxhelp/phob.hlp.hrh>
+#include <Pbk2UID.h>
 
+#include <f32file.h>
 
 // unnamed namespace
 namespace
 {
 _LIT( KMyCardIconDefaultFileName, "\\resource\\apps\\phonebook2ece.mif" );
-const TText KLineChange = '\n';
 const TInt KSubComponentCount = 2;
 const TInt KNumberOfContacts = 1;
 const TInt KNoContacts = 0;
@@ -93,6 +100,7 @@ const TInt KPbk2UiSpecNameOrderLastNameFirstName = 1;
 CCCAppMyCardContainer::CCCAppMyCardContainer(
     CCCAppMyCardPlugin& aPlugin ) :
     iPlugin( aPlugin ),
+    iModel( aPlugin.Model() ),
     iNameOrder(KPbk2UiSpecNameOrderFirstNameLastName)
     {
     }
@@ -103,6 +111,7 @@ CCCAppMyCardContainer::CCCAppMyCardContainer(
 //
 CCCAppMyCardContainer::~CCCAppMyCardContainer()
     {
+    iModel.SetClipListBoxText( NULL );
 	iPlugin.MyCard().RemoveObserver( this );
 	delete iBackground;
     delete iHeaderCtrl;
@@ -136,7 +145,8 @@ void CCCAppMyCardContainer::ConstructL()
     iListBox = new(ELeave) CAknFormDoubleGraphicStyleListBox;
     iListBox->ConstructL( this, EAknListBoxSelectionList );
     iListBox->SetContainerWindowL( *this );
-
+    iListBox->EnableStretching( EFalse );
+    
     // Setup listbox
     iListBox->View()->SetListEmptyTextL( KNullDesC );
     iListBox->CreateScrollBarFrameL( ETrue );
@@ -147,7 +157,7 @@ void CCCAppMyCardContainer::ConstructL()
     // Create icons for listbox.
     TResourceReader reader;
     iCoeEnv->CreateResourceReaderLC( reader, R_PBK2_FIELDTYPE_ICONS );
-    CPbk2IconArray* iconArray = CPbk2IconArray::NewL( reader );
+    iIconArray = CPbk2IconArray::NewL( reader );
   
     // Calculate preferred size for xsp service icons.
     TRect mainPane;
@@ -181,20 +191,23 @@ void CCCAppMyCardContainer::ConstructL()
             TPbk2IconId id = TPbk2IconId( uid, service.iBitmapId );
             CPbk2IconInfo* info = CPbk2IconInfo::NewLC(
                id, service.iBitmap, service.iMask, size );
-            iconArray->AppendIconL( info );
+            iIconArray->AppendIconL( info );
             CleanupStack::Pop( info );
             }        
         }
     
     Release( appServices );
         
-    iListBox->ItemDrawer()->ColumnData()->SetIconArray( iconArray );
+    iListBox->ItemDrawer()->ColumnData()->SetIconArray( iIconArray );
     CleanupStack::PopAndDestroy(); // reader
 
-    // Create listbox model
-    iModel = CCCAppMyCardListBoxModel::NewL(
-        iPlugin.MyCard(), *iCoeEnv, *iListBox, *iconArray );
-    iListBox->Model()->SetItemTextArray( iModel );
+    // setup model
+    iModel.SetClipListBoxText( this );
+    iModel.UpdateIconsL( *iIconArray );
+    SetNameForHeaderControlL();
+    
+    iListBox->Model()->SetItemTextArray( &iModel.ListBoxModel() );
+    iListBox->Model()->SetOwnershipType( ELbmDoesNotOwnItemArray );
 
     // Get the skin background for the view
     iBackground = CAknsBasicBackgroundControlContext::NewL(
@@ -373,7 +386,30 @@ void CCCAppMyCardContainer::SizeChanged()
 	delete iDetailsPopup;
 	iDetailsPopup = NULL;
 	
-	if( iImageLoader )
+	if( !iImageLoader )
+	    {
+        if( !iModel.IsEmpty() )
+            {
+            TPtrC8 data( iModel.Data( CSpbContactDataModel::EDataImageContent ) );
+            TInt err = KErrNotFound;
+            if( data.Length() )
+                {
+                // thumbnail image in model -> load it
+                TPtrC file( iModel.Text( CSpbContactDataModel::ETextImageFileName ) );
+                TRAP( err, 
+                    iImageLoader = CCCAppMyCardImageLoader::NewL( *this );
+                    iImageLoader->LoadImageL( data, file, iHeaderCtrl->ThumbnailSize() );
+                    );
+                }
+            
+            if( err )
+                {
+                // no thumbnail image available -> load default
+                ThumbnailLoadError( KErrNotFound ); 
+                }
+            }
+	    }
+	else
 	    {
         TRAP_IGNORE( iImageLoader->ResizeImageL(iHeaderCtrl->ThumbnailSize()));
 	    }
@@ -489,11 +525,18 @@ TKeyResponse CCCAppMyCardContainer::OfferKeyEventL(
 //
 void CCCAppMyCardContainer::MyCardEventL( MMyCardObserver::TEvent aEvent )
     {
-    if( aEvent == MMyCardObserver::EEventContactLoaded )
-        {    
-        // Set own contact name
+    if( aEvent == MMyCardObserver::EEventContactChanged ||
+        ( aEvent == MMyCardObserver::EEventContactLoaded && iModel.IsEmpty() ) )
+        {   
         CCCAppMyCard& mycard = iPlugin.MyCard();
+
+        iModel.SetDataL( mycard.PresentationContactL(), iIconArray );
+        if( iListBox )
+            {
+            iListBox->HandleItemAdditionL();
+            }
           
+        // Set own contact name
         SetNameForHeaderControlL();
         
         // start loading image
@@ -526,9 +569,9 @@ void CCCAppMyCardContainer::ThumbnailReady( CFbsBitmap* aThumbnail )
     {
     // takes ownership
     TRAPD( err, iHeaderCtrl->SetPortraitBitmapL( aThumbnail ) );
-    if( err )
+    if( err != KErrNone )
         {
-        // TODO: how to handle? ignore? show note?
+        iPlugin.HandleError( err );
         }
     // Contact Image set. Set the flag.
     iMyCardImageSet = ETrue;
@@ -724,11 +767,13 @@ const MVPbkBaseContactField* CCCAppMyCardContainer::FocusedField() const
 //
 TInt CCCAppMyCardContainer::FocusedFieldIndex() const
 	{
-	if( iModel )
-		{
-		return iModel->FieldIndex( iListBox->CurrentItemIndex() );
-		}
-	return KErrNotFound;
+    TInt index = KErrNotFound;
+    TRAP_IGNORE( 
+        CPbk2PresentationContact& contact = iPlugin.MyCard().PresentationContactL();
+        index = contact.PresentationFields().StoreIndexOfField( 
+            iModel.PresentationFieldIndex( iListBox->CurrentItemIndex() ) );
+        );
+	return index;
 	}
 
 // --------------------------------------------------------------------------
@@ -1008,52 +1053,24 @@ void CCCAppMyCardContainer::StatusClickedL()
 //
 void CCCAppMyCardContainer::SetNameForHeaderControlL()
 	{
-    // Set own contact name
-    CCCAppMyCard& mycard = iPlugin.MyCard();
-    // Get the myCard store and the field set 
-    MVPbkStoreContact& storeContact = mycard.StoreContact();
-    MVPbkStoreContactFieldCollection& fields = storeContact.Fields();
-                    
-    TInt fieldCount = fields.FieldCount();                           
-    
-    TPtrC firstName( KNullDesC );
-    TPtrC lastName( KNullDesC );
-    
-    // Check all the fields and store first and last name
-    for ( TInt i = 0; i < fieldCount;  ++i )
-    	{
-		MVPbkStoreContactField& field = fields.FieldAt( i );	
-		const MVPbkFieldType* fieldType = field.BestMatchingFieldType();
-		
-		if ( fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_FIRSTNAME )
-			{
-			MVPbkContactFieldData& contactField = field.FieldData();            
-			firstName.Set( MVPbkContactFieldTextData::Cast(contactField).Text());
-			}
-		
-		if ( fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_LASTNAME )
-			{
-			MVPbkContactFieldData& contactField = field.FieldData();			            
-			lastName.Set( MVPbkContactFieldTextData::Cast(contactField).Text());
-			}		
-    	}
-    
+    TPtrC fname( iModel.Text( CSpbContactDataModel::ETextFirstName ) );
+    TPtrC lname( iModel.Text( CSpbContactDataModel::ETextLastName ) );
     switch ( iNameOrder )
         {
         case KPbk2UiSpecNameOrderFirstNameLastName:
             {
-            iHeaderCtrl->SetLabel1TextL( firstName );
-            iHeaderCtrl->SetLabel2TextL( lastName );
+            iHeaderCtrl->SetLabel1TextL( fname );
+            iHeaderCtrl->SetLabel2TextL( lname );
             break;
             }
         case KPbk2UiSpecNameOrderLastNameFirstName: // FALL THROUGH
         default:
             {
-            iHeaderCtrl->SetLabel2TextL( firstName );
-            iHeaderCtrl->SetLabel1TextL( lastName );
+            iHeaderCtrl->SetLabel2TextL( fname );
+            iHeaderCtrl->SetLabel1TextL( lname );
             break;
             }
-        }    
+        }
 	}
 
 //------------------------------------------------------------------------------
@@ -1072,10 +1089,15 @@ void CCCAppMyCardContainer::MyCardHeaderControlClickL( TPoint aPos )
         CleanupStack::PopAndDestroy(); // reader
         }
     
-    // MyCard image has been set. Dim optiosn menu items accordingly
+    // MyCard image has been set. Dim option menu items accordingly
     if( iMyCardImageSet )
-        {
-        iImageSelectionPopup->SetItemDimmed(ECCAppMyCardCmdStylusViewImageCmd, EFalse);
+        {        
+        // If the image has been deleted in the memory, "view image" should be hidden.
+        TPtrC imageFileName( iModel.Text( CSpbContactDataModel::ETextImageFileName ) );                        
+        RFs& fs( iCoeEnv->FsSession() );
+        TEntry entry;
+        iImageSelectionPopup->SetItemDimmed( ECCAppMyCardCmdStylusViewImageCmd, 
+                ( fs.Entry( imageFileName , entry ) == KErrNone ) ? EFalse : ETrue );                                                    
         iImageSelectionPopup->SetItemDimmed(ECCAppMyCardCmdStylusChangeImageCmd, EFalse);
         iImageSelectionPopup->SetItemDimmed(ECCAppMyCardCmdStylusRemoveImageCmd, EFalse);
         iImageSelectionPopup->SetItemDimmed(ECCAppMyCardCmdStylusAddImageCmd, ETrue);
@@ -1147,6 +1169,21 @@ void CCCAppMyCardContainer::HandlePointerEventL(
     CCoeControl::HandlePointerEventL( aPointerEvent );              
     }
 
+// --------------------------------------------------------------------------
+// CCCAppMyCardContainer::ClipFromBeginning
+// --------------------------------------------------------------------------
+//
+TBool CCCAppMyCardContainer::ClipFromBeginning(
+    TDes& aBuffer, TInt aItemIndex, TInt aSubCellNumber )
+    {
+    if( iListBox )
+        {   
+        return AknTextUtils::ClipToFit( aBuffer, AknTextUtils::EClipFromBeginning,
+            iListBox, aItemIndex, aSubCellNumber );
+        }
+    return EFalse;
+    }
+
 // ---------------------------------------------------------------------------
 // CCCAppCommLauncherContainer::PosToScreenCoordinates
 // ---------------------------------------------------------------------------
@@ -1157,5 +1194,15 @@ void CCCAppMyCardContainer::PosToScreenCoordinates(
      TPoint leftUpperPos = aControl->PositionRelativeToScreen();
      aPos += leftUpperPos;
      }
+
+// ----------------------------------------------------------------------------
+// CCCAppMyCardContainer::GetHelpContext()
+// ----------------------------------------------------------------------------
+//
+void CCCAppMyCardContainer::GetHelpContext(TCoeHelpContext& aContext) const
+    {
+    aContext.iMajor.iUid = KPbk2UID3;
+    aContext.iContext = KHLP_CCA_MY_CARD;
+    }
 
 // End of File

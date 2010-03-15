@@ -93,16 +93,16 @@ class CPcsAlgorithm1Helper : public CBase
          */
         void SearchSingleL(const CPsSettings& aSettings,
                            CPsQuery& aPsQuery,
-                           TBool isGroupSearch,
+                           TBool aIsGroupSearch,
                            RArray<TInt>& aContactsInGroup,
-                           RPointerArray<CPsData>& searchResults,
-                           RPointerArray<CPsPattern>& searchSeqs );
+                           RPointerArray<CPsData>& aSearchResults,
+                           RPointerArray<CPsPattern>& aSearchSeqs );
 
         /**
          * Funciton to search matching sequences in the input text.
          */
         void SearchMatchSeqL(CPsQuery& aPsQuery,
-                             TDesC& aData,
+                             const TDesC& aData,
                              RPointerArray<TDesC>& aMatchSet,
                              RArray<TPsMatchLocation>& aMatchLocation );
 

@@ -79,7 +79,7 @@ class CPcsServer : public CServer2
         /**
          * A PCS algorithm instance (owned)
          */
-    	CPcsPluginInterface* pcs;
+    	CPcsPluginInterface* iPcs;
 };
 
 #endif // End of file

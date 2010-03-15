@@ -55,6 +55,7 @@ CAsyncContactOperation::~CAsyncContactOperation()
     CActive::Cancel();
     delete iDiskSpaceChecker;
     iFs.Close();
+    delete iViewDef;
     }
     
 void CAsyncContactOperation::ConstructL()
@@ -67,6 +68,13 @@ void CAsyncContactOperation::ConstructL()
     User::LeaveIfError( iFs.CharToDrive
         ( ptr[0], drive) );
     iDiskSpaceChecker = VPbkEngUtils::CVPbkDiskSpaceCheck::NewL( iFs, drive );
+    
+    iViewDef = CContactItemViewDef::NewL(
+                      CContactItemViewDef::EIncludeFields, 
+                      CContactItemViewDef::EMaskHiddenFields);
+
+    iViewDef->AddL( KUidContactFieldMatchAll );
+    
     }    
 
 void CAsyncContactOperation::PrepareL
@@ -134,10 +142,11 @@ void CAsyncContactOperation::RunL()
             }
 
         case MVPbkContactObserver::EContactReadAndLock:
-            {
+            {          
             CContactItem* ci = 
-                iContactStore.NativeDatabase().OpenContactLX( iTargetContactId );
+                iContactStore.NativeDatabase().OpenContactLX( iTargetContactId, *iViewDef );
             CleanupStack::PushL( ci );
+            
             CContact* contact = CContact::NewL( iContactStore, ci );
             result.iStoreContact = contact;
             contact->SetModified();
@@ -156,7 +165,7 @@ void CAsyncContactOperation::RunL()
             if( iClientContact )
             	{
             	CContactItem* ci = iContactStore.NativeDatabase().OpenContactLX(
-            			iClientContact->NativeContact()->Id() );
+            			iClientContact->NativeContact()->Id(), *iViewDef );
 	            CleanupStack::PushL( ci );
 	            const_cast<CContact*>( iClientContact )->SetContact( ci );
 	            const_cast<CContact*>( iClientContact )->SetModified();

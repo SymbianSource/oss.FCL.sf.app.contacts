@@ -21,8 +21,7 @@
 #include "CPcsKeyMap.h"
 #include <CPcsDefs.h>
 #include <bldvariant.hrh>
-#include <PtiDefs.h>
-#include <PtiKeyMappings.h>
+#include <PtiEngine.h>
 #include <PtiKeyMapData.h>
 #include <AknFepInternalCRKeys.h>
 #include <AvkonInternalCRKeys.h>
@@ -40,6 +39,8 @@ namespace {
         EPanicPreCond_MultipleUIPriorityMatching = 2,
         EPanicPreCond_MultipleEnglishPriorityMatching = 3,
         EPanicPreCond_MultipleOthersPriorityMatching = 4,
+        EPanic_OverflowInPoolIndex = 5,
+        EPanic_InvalidKeyboardType = 6
    };
 
     void Panic(TInt aReason)
@@ -95,52 +96,13 @@ void CPcsKeyMap::ConstructL()
     iLanguageNotSupported.Append(ELangPrcChinese);
     iLanguageNotSupported.Append(ELangHongKongChinese);
     iLanguageNotSupported.Append(ELangTaiwanChinese);
+    iLanguageNotSupported.Append(ELangKorean);
 
-#ifdef RD_INTELLIGENT_TEXT_INPUT
-
-    TInt physicalKeyboard = 0;
-    CRepository* aknFepRepository = CRepository::NewL( KCRUidAknFep );
-    aknFepRepository->Get( KAknFepPhysicalKeyboards, physicalKeyboard );
-    delete aknFepRepository;
-
-    PRINT1 ( _L("CPcsKeyMap::ConstructL: Physical keyboard support flag = 0x%02X"), physicalKeyboard );
-
-    // Constants follow the definition of KAknFepPhysicalKeyboards
-    const TInt ptiKeyboard12Key = 0x01;
-    //const TInt ptiKeyboardQwerty4x12 = 0x02;    // Not used at the moment
-    const TInt ptiKeyboardQwerty4x10 = 0x04;
-    const TInt ptiKeyboardQwerty3x11 = 0x08;
-    const TInt ptiKeyboardHalfQwerty = 0x10;
-    //const TInt ptiKeyboardCustomQwerty = 0x20;  // Not used at the moment
-
-    // The following if contains the order of precedence given for keyboards
-    // i.e. one phone has both "ITUT 12 Key" and "Qwerty 4x10" physical keyboards
-    if ( physicalKeyboard & ptiKeyboard12Key )
-        {
-        iKeyboardType = EPtiKeyboard12Key;
-        }
-    else if ( physicalKeyboard & ptiKeyboardHalfQwerty )
-        {
-        iKeyboardType = EPtiKeyboardHalfQwerty;
-        }
-    else if ( physicalKeyboard & ptiKeyboardQwerty4x10 )
-        {
-        iKeyboardType = EPtiKeyboardQwerty4x10;
-        }
-    else if ( physicalKeyboard & ptiKeyboardQwerty3x11 )
-        {
-        iKeyboardType = EPtiKeyboardQwerty3x11;
-        }
-    else
-#endif // RD_INTELLIGENT_TEXT_INPUT
-        {
-        iKeyboardType = EPtiKeyboard12Key; // default
-        }
-
-    PRINT1 ( _L("CPcsKeyMap::ConstructL: Keyboard chosen for Predictive Search = %d"), iKeyboardType );
+    SetupKeyboardTypesL();
 
     // Create structure for holding characters<-->key mappings
-    CreateKeyMappingL();
+    CreateKeyMappingL( EPredictiveItuT );
+    CreateKeyMappingL( EPredictiveQwerty );
 
     // Sets attribute for holding info if "0" and " " are on the same key
     // Needed for decision if the "0" should be considered as a possible separator
@@ -162,40 +124,83 @@ CPcsKeyMap::~CPcsKeyMap()
     // Cleanup local arrays
     iLanguageNotSupported.Reset();
 
-    for (TInt i = 0; i < PoolCount(); i++)
+    for (TInt i = 0; i < iItutKeyMaps.Count(); i++)
         {
         for (TInt j = 0; j < TKeyMappingData::EKeyMapNumberArr; j++)
             {
-            iKeyMapPtrArr[i]->iKeyMapCharArr[j].Close();
+            iItutKeyMaps[i]->iKeyMapCharArr[j].Close();
             }
         }
-    iKeyMapPtrArr.ResetAndDestroy();
-    iKeysArr.Close();
+    iItutKeyMaps.ResetAndDestroy();
+    
+    for (TInt i = 0; i < iQwertyKeyMaps.Count(); i++)
+        {
+        for (TInt j = 0; j < TKeyMappingData::EKeyMapNumberArr; j++)
+            {
+            iQwertyKeyMaps[i]->iKeyMapCharArr[j].Close();
+            }
+        }
+    iQwertyKeyMaps.ResetAndDestroy();
+    
+    iItutKeys.Close();
+    iQwertyKeys.Close();
 
     PRINT ( _L("End CPcsKeyMap::~CPcsKeyMap") );
+    }
+
+// ----------------------------------------------------------------------------
+// CPcsKeyMap::IsModePredictive
+// 
+// ----------------------------------------------------------------------------
+TBool CPcsKeyMap::IsModePredictive( TKeyboardModes aKbMode )
+    {
+    return ( (EPredictiveDefaultKeyboard == aKbMode) ||
+             (EPredictiveItuT == aKbMode) ||
+             (EPredictiveQwerty == aKbMode) );
+    }
+
+// ----------------------------------------------------------------------------
+// CPcsKeyMap::ResolveKeyboardMode
+// Resolve EPredictiveDefaultKeyboard or ENonPredictive mode to EPredictiveItuT
+// or EPredictiveQwerty mode
+// ----------------------------------------------------------------------------
+TKeyboardModes CPcsKeyMap::ResolveKeyboardMode( TKeyboardModes aKbMode,
+                                                TKeyboardModes aKbModeToResolve ) const
+    {    
+    // Substitute "default predictive" mode with actual mode
+    if ( (aKbMode == aKbModeToResolve) &&
+         ((aKbMode == ENonPredictive) || (aKbMode == EPredictiveDefaultKeyboard)) )
+        {
+        return iPredictiveDefaultKeyboardMode;
+        }
+    else
+        {
+        return aKbMode;
+        }
     }
 
 // ----------------------------------------------------------------------------
 // CPcsKeyMap::GetMixedKeyStringForQueryL
 // aDestStr will have the length as the number of items in aSrcQuery.
 // ----------------------------------------------------------------------------
-void CPcsKeyMap::GetMixedKeyStringForQueryL(CPsQuery& aSrcQuery, TDes& aDestStr)
-{
+void CPcsKeyMap::GetMixedKeyStringForQueryL(
+        CPsQuery& aSrcQuery, TDes& aDestStr) const
+    {
     PRINT ( _L("Enter CPcsKeyMap::GetMixedKeyStringForQueryL") ); 
 
     GetMixedKeyStringForDataL( aSrcQuery, aSrcQuery.QueryAsStringLC(), aDestStr );
     CleanupStack::PopAndDestroy(); //result of QueryAsStringLC
 
     PRINT ( _L("End CPcsKeyMap::GetMixedKeyStringForQueryL") );
-}
+    }
 
 // ----------------------------------------------------------------------------
 // CPcsKeyMap::GetMixedKeyStringForDataL
 // aDestStr will have the same length as aSrcData. aSrcQuery can be shorter.
 // ----------------------------------------------------------------------------
 void CPcsKeyMap::GetMixedKeyStringForDataL(
-        CPsQuery& aSrcQuery, const TDesC& aSrcData, TDes& aDestStr)
-{
+        CPsQuery& aSrcQuery, const TDesC& aSrcData, TDes& aDestStr) const
+    {
     PRINT ( _L("Enter CPcsKeyMap::GetMixedKeyStringForDataL") );
 
     for ( TInt i = 0; i < aSrcData.Length(); ++i )
@@ -205,32 +210,19 @@ void CPcsKeyMap::GetMixedKeyStringForDataL(
         if ( i < aSrcQuery.Count() )
             {
             CPsQueryItem& currentItem = aSrcQuery.GetItemAtL(i);
-            switch ( currentItem.Mode() )
+            TPtiKey key = KeyForCharacterMultiMatch( aSrcData[i], currentItem.Mode() );
+            // If a character is not mapped to any key or it's entered in non-predictive mode,
+            // then append the character.
+            if ( EPtiKeyNone == key )
                 {
-                case EItut:
-                    {
-                    TPtiKey key = KeyForCharacterMultiMatch(aSrcData[i]);
-                    // If a character is not mapped to numeric key append the character
-                    if ( EPtiKeyNone == key )
-                        {
-                        PRINT3 ( _L("CPcsKeyMap::GetMixedKeyStringForDataL: Char at index %d not mapped to a key, appending char '%c' (#%d)"),
-                                 i, (TUint) character, (TUint) character );
+                PRINT3 ( _L("CPcsKeyMap::GetMixedKeyStringForDataL: Char at index %d not mapped to a key, appending char '%c' (#%d)"),
+                         i, (TUint) character, (TUint) character );
 
-                        aDestStr.Append( character );
-                        }
-                    else 
-                        {
-                        aDestStr.Append( key );
-                        }
-                    }
-                    break;
-                case EQwerty:
-                    //fall through
-                default:
-                    PRINT2 ( _L("CPcsKeyMap::GetMixedKeyStringForDataL: Char '%c' (#%d) is taken exact (non predictive in query)"),
-                            (TUint) character, (TUint) character );
-                    aDestStr.Append( character );
-                    break;
+                aDestStr.Append( character );
+                }
+            else 
+                {
+                aDestStr.Append( key );
                 }
             }
         else
@@ -246,13 +238,14 @@ void CPcsKeyMap::GetMixedKeyStringForDataL(
              &aDestStr );
 
     PRINT ( _L("End CPcsKeyMap::GetMixedKeyStringForDataL") );
-}
+    }
 
 // ----------------------------------------------------------------------------
 // CPcsKeyMap::CharacterForKeyMappingExists
 // Returns true if the character is mapped to the key
 // ----------------------------------------------------------------------------
-TBool CPcsKeyMap::CharacterForKeyMappingExists(TKeyMappingData& aKeyMap, const TUint aIntChar)
+TBool CPcsKeyMap::CharacterForKeyMappingExists(
+        TKeyMappingData& aKeyMap, TUint aIntChar) const
     {
     TBool found = EFalse;
     
@@ -274,7 +267,10 @@ TBool CPcsKeyMap::CharacterForKeyMappingExists(TKeyMappingData& aKeyMap, const T
 // CPcsKeyMap::CheckPotentialErrorConditions
 //
 // ----------------------------------------------------------------------------
-void CPcsKeyMap::CheckPotentialErrorConditions(RArray<TInt>& aPoolIndexArr, const TChar& aChar)
+void CPcsKeyMap::CheckPotentialErrorConditions(const RArray<TInt>& aPoolIndexArr, 
+                                               const TChar& aChar,
+                                               const RArray<TPtiKey>& aPtiKeys,
+                                               const RPointerArray<TKeyMappingData>& aKeyMappings) const
     {
     PRINT ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: ===================================================") );
     PRINT ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: Checking potential error conditions") );
@@ -294,10 +290,10 @@ void CPcsKeyMap::CheckPotentialErrorConditions(RArray<TInt>& aPoolIndexArr, cons
         countArr[j] = 0;
         for ( TInt i = 0; i < aPoolIndexArr.Count(); i++ )
             {
-            if ( KErrNotFound != iKeyMapPtrArr[aPoolIndexArr[i]]->iKeyMapCharArr[j].Find((TUint) aChar) )
+            if ( KErrNotFound != aKeyMappings[aPoolIndexArr[i]]->iKeyMapCharArr[j].Find((TUint) aChar) )
                 {
-                PRINT5 ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: Char '%c' (#%d) %S for pool %d with key '%c'"),
-                        (TUint) aChar, (TUint) aChar, &charArrStr[j], aPoolIndexArr[i], iKeysArr[aPoolIndexArr[i]] );
+                PRINT5 ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: Char '%c' (0x%04X) %S for pool %d with key '%c'"),
+                        (TUint) aChar, (TUint) aChar, &charArrStr[j], aPoolIndexArr[i], aPtiKeys[aPoolIndexArr[i]] );
                 countArr[j]++;
                 }
             }
@@ -306,11 +302,17 @@ void CPcsKeyMap::CheckPotentialErrorConditions(RArray<TInt>& aPoolIndexArr, cons
     PRINT ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: ===================================================") );
     
 #ifdef __WINS__
+    /*
+    The reference 4x10 QWERTY mappings of 9.2 emulator have each number mapped to two keys.
+    That kind of mappings can't be handled correctly, so panic in debug would basically be correct.
+    However, assertions are commented out for now to be able to do some testing.
+    
     // Check in debug mode if we have wrong situations
-    __ASSERT_DEBUG( (countArr[TKeyMappingData::EKeyMapSingleCharArr]  > 1), Panic(EPanicPreCond_MultipleSingleCharMatching) );
-    __ASSERT_DEBUG( (countArr[TKeyMappingData::EKeyMapUILangArr]      > 1), Panic(EPanicPreCond_MultipleUIPriorityMatching) );
-    __ASSERT_DEBUG( (countArr[TKeyMappingData::EKeyMapEnglishLangArr] > 1), Panic(EPanicPreCond_MultipleEnglishPriorityMatching) );
-    __ASSERT_DEBUG( (countArr[TKeyMappingData::EKeyMapOthersLangArr]  > 1), Panic(EPanicPreCond_MultipleOthersPriorityMatching) );
+    __ASSERT_DEBUG( (countArr[TKeyMappingData::EKeyMapSingleCharArr]  <= 1), Panic(EPanicPreCond_MultipleSingleCharMatching) );
+    __ASSERT_DEBUG( (countArr[TKeyMappingData::EKeyMapUILangArr]      <= 1), Panic(EPanicPreCond_MultipleUIPriorityMatching) );
+    __ASSERT_DEBUG( (countArr[TKeyMappingData::EKeyMapEnglishLangArr] <= 1), Panic(EPanicPreCond_MultipleEnglishPriorityMatching) );
+    __ASSERT_DEBUG( (countArr[TKeyMappingData::EKeyMapOthersLangArr]  <= 1), Panic(EPanicPreCond_MultipleOthersPriorityMatching) );
+    */
 #endif // __WINS__
     }
 #endif // _DEBUG        
@@ -329,18 +331,33 @@ void CPcsKeyMap::CheckPotentialErrorConditions(RArray<TInt>& aPoolIndexArr, cons
 //   - 4th choice: choose the 1st pool that has the char mapped for the English language.
 //   - 5th choice: choose the 1st pool that has the char mapped for the Other languages.
 // ----------------------------------------------------------------------------
-TPtiKey CPcsKeyMap::KeyForCharacterMultiMatch(const TChar& aChar)
-    {
+TPtiKey CPcsKeyMap::KeyForCharacterMultiMatch( const TChar& aChar, TKeyboardModes aKbMode ) const
+    {    
+    aKbMode = ResolveKeyboardMode( aKbMode, EPredictiveDefaultKeyboard ); 
+
+    // Select key arrays to use according to keyboard mode
+    const RArray<TPtiKey>* ptiKeyArray;
+    const RPointerArray<TKeyMappingData>* keyMappingArray;
+    TPtiKeyboardType kbType;
+    GetPredictiveKeyboardData( aKbMode, ptiKeyArray, keyMappingArray, kbType );
+    if ( !ptiKeyArray || !keyMappingArray || ptiKeyArray->Count() == 0 )
+        {
+        // No mappings available. This may be, for example, because aKbMode is non-predictive.
+        // Return no mapping in that case to indicate that character should be treated in
+        // non-predictive way.
+        return EPtiKeyNone;
+        }
+    
     // Set an array of pool index matches (more matches are possible)
     RArray<TInt> poolIndexArr;
-    for ( TInt i = 0; i < PoolCount(); i++ )
+    for ( TInt i = 0; i < keyMappingArray->Count(); i++ )
         {
-        if ( CharacterForKeyMappingExists(*iKeyMapPtrArr[i], (TUint) aChar) )
+        if ( CharacterForKeyMappingExists(*(*keyMappingArray)[i], (TUint) aChar) )
             {
             poolIndexArr.Append(i);
 
-            PRINT4 ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: Char '%c' (#%d) found in pool %d with key '%c'"),
-                    (TUint) aChar, (TUint) aChar, i, iKeysArr[i] );
+            PRINT4 ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: Char '%c' (0x%04X) found in pool %d with key '%c'"),
+                    (TUint) aChar, (TUint) aChar, i, (*ptiKeyArray)[i] );
             }
         }
 
@@ -353,7 +370,7 @@ TPtiKey CPcsKeyMap::KeyForCharacterMultiMatch(const TChar& aChar)
     // Character not found in any pool
     if ( poolIndexArr.Count() == 0 )
         {
-        PRINT2 ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: Char '%c' (#%d) NOT found in all pools"),
+        PRINT2 ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: Char '%c' (0x%04X) NOT found from any pool"),
                  (TUint) aChar, (TUint) aChar );
         }
 
@@ -363,7 +380,7 @@ TPtiKey CPcsKeyMap::KeyForCharacterMultiMatch(const TChar& aChar)
         poolIndex = poolIndexArr[0];
 
         PRINT2 ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: Chosen (for unique match) pool %d with key '%c'"),
-                poolIndex, iKeysArr[poolIndex] );
+                poolIndex, (*ptiKeyArray)[poolIndex] );
         }
 
     /* Character found in more pools, this can happen in some known conditions:
@@ -389,11 +406,11 @@ TPtiKey CPcsKeyMap::KeyForCharacterMultiMatch(const TChar& aChar)
          * this piece of code shall be removed.
          * With "client" it is referred to MCL contacts client.
          */
-        if (EPtiKeyboard12Key == iKeyboardType)
+        if (EPtiKeyboard12Key == kbType)
             {
             for ( TInt i = 0; i < poolIndexArr.Count() ; i++ )
                 {
-                if ( EPtiKey1 == iKeysArr[poolIndexArr[i]] )
+                if ( EPtiKey1 == (*ptiKeyArray)[poolIndexArr[i]] )
                     {
                     poolIndexArr.Remove(i);
     
@@ -406,12 +423,12 @@ TPtiKey CPcsKeyMap::KeyForCharacterMultiMatch(const TChar& aChar)
                 poolIndex = poolIndexArr[0];
 
                 PRINT2 ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: Chosen (for unique match after removing key '1') pool %d with key '%c'"),
-                        poolIndex, iKeysArr[poolIndex] );
+                        poolIndex, (*ptiKeyArray)[poolIndex] );
                 }
             }
 
 #ifdef _DEBUG
-        CheckPotentialErrorConditions(poolIndexArr, aChar);
+        CheckPotentialErrorConditions(poolIndexArr, aChar, *ptiKeyArray, *keyMappingArray);
 #endif // _DEBUG        
 
         // Search the char in the char arrays in priority order, the 1st match is taken
@@ -423,7 +440,7 @@ TPtiKey CPcsKeyMap::KeyForCharacterMultiMatch(const TChar& aChar)
 
                 for ( TInt i = 0; i < poolIndexArr.Count(); i++ )
                     {
-                    TInt position = iKeyMapPtrArr[poolIndexArr[i]]->iKeyMapCharArr[j].Find((TUint) aChar);
+                    TInt position = (*keyMappingArray)[poolIndexArr[i]]->iKeyMapCharArr[j].Find((TUint) aChar);
                     if ( KErrNotFound != position )
                         {
                         // Get the key that has the char in the leftmost index.
@@ -440,7 +457,6 @@ TPtiKey CPcsKeyMap::KeyForCharacterMultiMatch(const TChar& aChar)
                                 poolIndex = poolIndexArr[i];
                                 positionLeftMostOnKeys = position;
                                 }
-
                             }
                         // Get the 1st key that has the char mapped to it
                         else
@@ -448,7 +464,7 @@ TPtiKey CPcsKeyMap::KeyForCharacterMultiMatch(const TChar& aChar)
                             poolIndex = poolIndexArr[i];
                     
                             PRINT3 ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: Chosen (for multi match - char arr: %d) pool %d with key '%c'"),
-                                     j, poolIndex, iKeysArr[poolIndex] );
+                                     j, poolIndex, (*ptiKeyArray)[poolIndex] );
                         
                             break;
                             }
@@ -463,7 +479,7 @@ TPtiKey CPcsKeyMap::KeyForCharacterMultiMatch(const TChar& aChar)
     TPtiKey key = EPtiKeyNone;
     if ( KErrNotFound != poolIndex )
         {
-        key = iKeysArr[poolIndex];
+        key = (*ptiKeyArray)[poolIndex];
         }
     
     poolIndexArr.Close();
@@ -474,16 +490,40 @@ TPtiKey CPcsKeyMap::KeyForCharacterMultiMatch(const TChar& aChar)
 // CPcsKeyMap::PoolIdForKey
 //
 // ----------------------------------------------------------------------------
-TInt CPcsKeyMap::PoolIdForKey(const TPtiKey aKey)
+TInt CPcsKeyMap::PoolIdForKey(const TPtiKey aKey, TKeyboardModes aKbMode)
     {
-    TInt poolId = iKeysArr.Find(aKey);
+    aKbMode = ResolveKeyboardMode( aKbMode, EPredictiveDefaultKeyboard ); 
 
-    // IF the key is not found, then it should go to the special pool,
-    // which is the last pool of iKeyMapPtrArr
-    if (KErrNotFound == poolId)
+    // From logical point of view, the Pool ID is an index of the key in
+    // an array which is formed by concatenating QWERTY keys array in the end
+    // of the ITU-T keys array.
+    TInt poolId = KErrNotFound;
+    if ( aKbMode == EPredictiveItuT && iItutKeys.Count() )
         {
-        poolId = PoolCount() - 1;
+        poolId = iItutKeys.Find(aKey);
+        // IF the key is not found, then it should go to the special pool,
+        // which is the pool of the dummy key in the ITU-T keys array
+        if (KErrNotFound == poolId)
+            {
+            poolId = iItutKeys.Count() - 1;
+            }
         }
+    else if ( aKbMode == EPredictiveQwerty && iQwertyKeys.Count() )
+        {
+        poolId = iQwertyKeys.Find(aKey);
+        // IF the key is not found, then it should go to the special pool,
+        // which is the pool of the dummy key in the QWERTY keys array
+        if (KErrNotFound == poolId)
+            {
+            poolId = iQwertyKeys.Count() - 1;
+            }
+        // Pools of QWERTY keys come after pools of ITU-T keys
+        poolId += iItutKeys.Count();
+        }
+
+    // Pool ID must never exceed value 63, because CPcsCache class
+    // stores these values as bitmask into 64 bit variable.
+    __ASSERT_DEBUG( poolId < 64, Panic(EPanic_OverflowInPoolIndex) );
 
     return poolId;
     }
@@ -492,11 +532,18 @@ TInt CPcsKeyMap::PoolIdForKey(const TPtiKey aKey)
 // CPcsKeyMap::PoolIdForCharacter
 //
 // ----------------------------------------------------------------------------
-TInt CPcsKeyMap::PoolIdForCharacter(const TChar& aChar)
+TInt CPcsKeyMap::PoolIdForCharacter(const TChar& aChar, TKeyboardModes aKbMode)
     {
-    TPtiKey key = KeyForCharacterMultiMatch(aChar);
+    // Pools are formed according the predictive keyboard mapping(s).
+    // When selecting pool for non-predictive mode, we use the pool of the
+    // default keyboard. The non-predictive matches should be a sub set of the
+    // predictive matches of the default keyboard, although strictly speaking,
+    // there' no guarantee for this.
+    aKbMode = ResolveKeyboardMode( aKbMode, ENonPredictive ); 
 
-    TInt poolId = PoolIdForKey(key);
+    TPtiKey key = KeyForCharacterMultiMatch( aChar, aKbMode );
+
+    TInt poolId = (key == EPtiKeyNone) ? KErrNotFound : PoolIdForKey(key, aKbMode);
 
     return poolId;
     }
@@ -507,7 +554,7 @@ TInt CPcsKeyMap::PoolIdForCharacter(const TChar& aChar)
 // ----------------------------------------------------------------------------
 TInt CPcsKeyMap::PoolCount()
     {
-    return iKeyMapPtrArr.Count();
+    return iItutKeyMaps.Count() + iQwertyKeyMaps.Count();
     }
 
 // ----------------------------------------------------------------------------
@@ -516,147 +563,152 @@ TInt CPcsKeyMap::PoolCount()
 // ----------------------------------------------------------------------------
 void CPcsKeyMap::SetSpaceAndZeroOnSameKey()
     {
-    const TInt KSpace = 32; // ASCII for " "
-    const TInt KZero  = 48; // ASCII for "0"
+    PRINT ( _L("Enter CPcsKeyMap::SetSpaceAndZeroOnSameKey") );
+
+    static const TInt KSpace = 0x20; // ASCII for " "
+    static const TInt KZero  = 0x30; // ASCII for "0"
 
     TChar charSpace(KSpace);
     TChar charZero(KZero);
 
-    TPtiKey keySpace = KeyForCharacterMultiMatch(charSpace);
-    TPtiKey keyZero = KeyForCharacterMultiMatch(charZero);
+    TPtiKey keySpace;
+    TPtiKey keyZero;
+	
+    // ITU-T mode
+    keySpace = KeyForCharacterMultiMatch(charSpace, EPredictiveItuT);
+    keyZero = KeyForCharacterMultiMatch(charZero, EPredictiveItuT);
+    iSpaceAndZeroOnSameKeyOnItut = (keySpace == keyZero && keyZero != EPtiKeyNone);
+    PRINT1 ( _L("CPcsKeyMap::iSpaceAndZeroOnSameKeyOnItut = %d"), iSpaceAndZeroOnSameKeyOnItut );
+    
+    // QWERTY mode
+    keySpace = KeyForCharacterMultiMatch(charSpace, EPredictiveQwerty);
+    keyZero = KeyForCharacterMultiMatch(charZero, EPredictiveQwerty);
+    iSpaceAndZeroOnSameKeyOnQwerty = (keySpace == keyZero && keyZero != EPtiKeyNone);
+    PRINT1 ( _L("CPcsKeyMap::iSpaceAndZeroOnSameKeyOnQwerty = %d"), iSpaceAndZeroOnSameKeyOnQwerty );
 
-    iSpaceAndZeroOnSameKey = (keySpace == keyZero);
+    PRINT ( _L("CPcsKeyMap::SetSpaceAndZeroOnSameKey") );
     }
 
 // ----------------------------------------------------------------------------
 // CPcsKeyMap::GetSpaceAndZeroOnSameKey
 // 
 // ----------------------------------------------------------------------------
-TBool CPcsKeyMap::GetSpaceAndZeroOnSameKey()
+TBool CPcsKeyMap::GetSpaceAndZeroOnSameKey( TKeyboardModes aKbMode )
     {
-    return iSpaceAndZeroOnSameKey;
+    TBool result = EFalse;
+
+    aKbMode = ResolveKeyboardMode( aKbMode, EPredictiveDefaultKeyboard );
+
+    if ( aKbMode == EPredictiveItuT )
+        {
+        result = iSpaceAndZeroOnSameKeyOnItut;
+        }
+    else if ( aKbMode == EPredictiveQwerty )
+        {
+        result = iSpaceAndZeroOnSameKeyOnQwerty;
+        }
+
+    return result;
     }
 
 // ----------------------------------------------------------------------------
-// CPcsKeyMap::GetKeyboardKeyMapping
-// Helper function to get Key Mappings depending on keyboard type
+// CPcsKeyMap::SetupKeyboardTypesL
+// Initialise the keyboard type variables
 // ----------------------------------------------------------------------------
-MPtiKeyMappings* CPcsKeyMap::GetKeyboardKeyMapping(CPtiCoreLanguage& aCurrLanguage)
+void CPcsKeyMap::SetupKeyboardTypesL()
     {
-    MPtiKeyMappings* ptiKeyMappings;
+    TInt physicalKeyboard = 0;
+    CRepository* aknFepRepository = CRepository::NewL( KCRUidAknFep );
+    aknFepRepository->Get( KAknFepPhysicalKeyboards, physicalKeyboard );
+    delete aknFepRepository;
 
-    switch ( iKeyboardType )
+    PRINT1 ( _L("CPcsKeyMap::SetupKeyboardTypesL: Physical keyboard support flag = 0x%02X"), physicalKeyboard );
+
+    // Constants follow the definition of KAknFepPhysicalKeyboards
+    const TInt KPtiKeyboard12Key = 0x01;
+    const TInt KPtiKeyboardQwerty4x12 = 0x02;
+    const TInt KPtiKeyboardQwerty4x10 = 0x04;
+    const TInt KPtiKeyboardQwerty3x11 = 0x08;
+    const TInt KPtiKeyboardHalfQwerty = 0x10;
+    const TInt KPtiKeyboardCustomQwerty = 0x20; 
+
+    // Setup ITU-T mode first.
+    // Use always 12-key mode since all the supported devices should have at least
+    // virtual ITU-T available.
+    iItutKeyboardType = EPtiKeyboard12Key;
+    // TODO: ITU-T type could be set to "none" if device does not have either
+    // virtual keypad or hardware ITU-T available. This could be decided according
+    // some cenrep value, feature flag, device model, or platform version.
+    
+    // Then setup QWERTY mode. On real-life devices there should never
+    // be more than one QWERTY keyboard available but on emulator there can be several.
+    // Use the first one found in the following precedence
+    if ( physicalKeyboard & KPtiKeyboardQwerty3x11 )
         {
-        case EPtiKeyboardQwerty4x12:
-        case EPtiKeyboardQwerty4x10:
-        case EPtiKeyboardQwerty3x11:
-        case EPtiKeyboardCustomQwerty:
-            ptiKeyMappings = aCurrLanguage.GetQwertyKeymappings();
-            break;
-
-        case EPtiKeyboard12Key:
-            ptiKeyMappings = aCurrLanguage.GetKeymappings();
-            break;
-
-        case EPtiKeyboardHalfQwerty:
-            ptiKeyMappings = aCurrLanguage.GetHalfQwertyKeymappings();
-            break;
-
-        default:
-            ptiKeyMappings = aCurrLanguage.GetKeymappings();
-            break;
+        iQwertyKeyboardType = EPtiKeyboardQwerty3x11;
         }
-
-    return ptiKeyMappings;
-    }
-
-// ----------------------------------------------------------------------------
-// CPcsKeyMap::GetKeyMapData
-//
-// ----------------------------------------------------------------------------
-CPtiKeyMapData* CPcsKeyMap::GetKeyMapData(CPtiCoreLanguage& aCurrLanguage)
-    {
-    MPtiKeyMappings* ptiKeyMappings = GetKeyboardKeyMapping( aCurrLanguage );
-
-    CPtiKeyMapData* keyMapData;
-
-    switch ( iKeyboardType )
+    else if ( physicalKeyboard & KPtiKeyboardQwerty4x10 )
         {
-        case EPtiKeyboardQwerty4x12:
-        case EPtiKeyboardQwerty4x10:
-        case EPtiKeyboardQwerty3x11:
-        case EPtiKeyboardCustomQwerty:
-            keyMapData = static_cast<CPtiQwertyKeyMappings*>(ptiKeyMappings)->KeyMapData();
-            break;
-
-        case EPtiKeyboard12Key:
-            keyMapData = static_cast<CPtiKeyMappings*>(ptiKeyMappings)->KeyMapData();
-            break;
-
-        case EPtiKeyboardHalfQwerty:
-            keyMapData = static_cast<CPtiHalfQwertyKeyMappings*>(ptiKeyMappings)->KeyMapData();
-            break;
-
-        default:
-            keyMapData = static_cast<CPtiKeyMappings*>(ptiKeyMappings)->KeyMapData();
-            break;
+        iQwertyKeyboardType = EPtiKeyboardQwerty4x10;
         }
-
-    return keyMapData;
+    else if ( physicalKeyboard & KPtiKeyboardQwerty4x12 )
+        {
+        iQwertyKeyboardType = EPtiKeyboardQwerty4x12;
+        }
+    else if ( physicalKeyboard & KPtiKeyboardCustomQwerty )
+        {
+        iQwertyKeyboardType = EPtiKeyboardCustomQwerty;
+        }
+    else if ( physicalKeyboard & KPtiKeyboardHalfQwerty )
+        {
+        iQwertyKeyboardType = EPtiKeyboardHalfQwerty;
+        }
+    else
+        {
+        iQwertyKeyboardType = EPtiKeyboardNone;
+        }
+    
+    // Set the Default Predictive keyboard mode
+    iPredictiveDefaultKeyboardMode = ( 
+            (physicalKeyboard & KPtiKeyboard12Key) || (iQwertyKeyboardType == EPtiKeyboardNone) ?
+                EPredictiveItuT : EPredictiveQwerty );
+    
+    PRINT1 ( _L("CPcsKeyMap::SetupKeyboardTypesL: ITU-T Keyboard chosen for Predictive Search = %d"), iItutKeyboardType );
+    PRINT1 ( _L("CPcsKeyMap::SetupKeyboardTypesL: QWERTY Keyboard chosen for Predictive Search = %d"), iQwertyKeyboardType );
     }
 
 // ----------------------------------------------------------------------------
 // CPcsKeyMap::AppendEntryWithFakeKeyToKeyList
 // Add pool with unused id for for key
 // ----------------------------------------------------------------------------
-void CPcsKeyMap::AppendEntryWithFakeKeyToKeyList()
+void CPcsKeyMap::AppendEntryWithFakeKeyToKeyList( RArray<TPtiKey>& aKeyArray )
     {
     TUint keyUInt = (TUint) EPtiKeyNone + 1;
 
-    while ( KErrNotFound != iKeysArr.Find( (TPtiKey) keyUInt) )
+    while ( KErrNotFound != aKeyArray.Find( (TPtiKey) keyUInt) )
         {
         keyUInt++;
         }
 
     TPtiKey key = (TPtiKey) keyUInt;
-    iKeysArr.Append( key );
+    aKeyArray.Append( key );
 
     // This should always be the last one in the array
     PRINT2 ( _L("CPcsKeyMap::AppendEntryWithFakeKeyToKeyList: Added additional last pool %d with key id #%d"),
-             iKeysArr.Count()-1, key );
-    }
-
-// ----------------------------------------------------------------------------
-// CPcsKeyMap::CreateKeyMapFromITUTHardcodedKeys
-//
-// ----------------------------------------------------------------------------
-void CPcsKeyMap::CreateKeyListFromITUTHardcodedKeys()
-    {
-    PRINT ( _L("Enter CPcsKeyMap::CreateKeyListFromITUTHardcodedKeys") );
-
-    iKeysArr.Append( EPtiKey0 );
-    iKeysArr.Append( EPtiKey1 );
-    iKeysArr.Append( EPtiKey2 );
-    iKeysArr.Append( EPtiKey3 );
-    iKeysArr.Append( EPtiKey4 );
-    iKeysArr.Append( EPtiKey5 );
-    iKeysArr.Append( EPtiKey6 );
-    iKeysArr.Append( EPtiKey7 );
-    iKeysArr.Append( EPtiKey8 );
-    iKeysArr.Append( EPtiKey9 );
-
-    AppendEntryWithFakeKeyToKeyList();
-
-    PRINT ( _L("End CPcsKeyMap::CreateKeyListFromITUTHardcodedKeys") );
+            aKeyArray.Count()-1, key );
     }
 
 // ----------------------------------------------------------------------------
 // CPcsKeyMap::CreateKeyMapFromKeyBindingTable
 //
 // ----------------------------------------------------------------------------
-void CPcsKeyMap::CreateKeyListFromKeyBindingTable( CPtiEngine* aPtiEngine )
+void CPcsKeyMap::CreateKeyListFromKeyBindingTable( RArray<TPtiKey>& aKeyArray, 
+        TPtiKeyboardType aKbType, CPtiEngine* aPtiEngine )
     {
     PRINT ( _L("Enter CPcsKeyMap::CreateKeyListFromKeyBindingTable") );
+
+    PRINT1 ( _L("CPcsKeyMap::CreateKeyListFromKeyBindingTable: Creating KeyList for TPtiKeyboardType=%d"),
+             aKbType  );
 
     // Get the user language
     TLanguage keyMapLanguage = iUILanguage;
@@ -685,8 +737,19 @@ void CPcsKeyMap::CreateKeyListFromKeyBindingTable( CPtiEngine* aPtiEngine )
 
     if (currLanguage)
         {
+        TInt langCode = currLanguage->LanguageCode();
+        TRAP_IGNORE( aPtiEngine->ActivateLanguageL( langCode ) );
+        const CPtiKeyMapData* keyMapData = currLanguage->RawKeyMapData();
+        const TPtiKeyBinding* table = NULL;
         TInt numItems = 0;
-        const TPtiKeyBinding* table = GetKeyMapData(*currLanguage)->KeyBindingTable(iKeyboardType, numItems);
+        if ( keyMapData )
+            {
+            table = keyMapData->KeyBindingTable(aKbType, numItems);
+            }
+        else
+            {
+            PRINT1( _L("CPcsKeyMap::CreateKeyListFromKeyBindingTable: #### Failed to get RawKeyMapData for language %d ####"), langCode );
+            }
         
         PRINT1 ( _L("CPcsKeyMap::CreateKeyListFromKeyBindingTable: Num of Items in KeyBindingTable is %d"), numItems );
 
@@ -700,10 +763,15 @@ void CPcsKeyMap::CreateKeyListFromKeyBindingTable( CPtiEngine* aPtiEngine )
                 // Only for one of the casing to avoid repetitions
                 if ( (EPtiKeyNone != key) && (EPtiCaseLower == table[i].iCase) )
                     {
-                    PRINT3 ( _L("CPcsKeyMap::CreateKeyListFromKeyBindingTable: Adding pool %d with key '%c' (%d)"),
-                            iKeysArr.Count(), key, key );
-                    iKeysArr.Append( key );
+                    PRINT3 ( _L("CPcsKeyMap::CreateKeyListFromKeyBindingTable: Adding pool %d with key '%c' (0x%02X)"),
+                            aKeyArray.Count(), key, key );
+                    aKeyArray.Append( key );
                     }
+                }
+            // Add a fake key at the end if the KeyList is not empty
+            if (aKeyArray.Count() > 0)
+                {
+                AppendEntryWithFakeKeyToKeyList(aKeyArray);
                 }
             }
         else
@@ -716,43 +784,8 @@ void CPcsKeyMap::CreateKeyListFromKeyBindingTable( CPtiEngine* aPtiEngine )
         PRINT ( _L("CPcsKeyMap::CreateKeyListFromKeyBindingTable: ##### Failed to create Key List (Language) #####") );
         }
 
-    AppendEntryWithFakeKeyToKeyList();
-
     PRINT ( _L("End CPcsKeyMap::CreateKeyListFromKeyBindingTable") );
 }
-
-// ----------------------------------------------------------------------------
-// CPcsKeyMap::CreateKeyListL
-//
-// ----------------------------------------------------------------------------
-void CPcsKeyMap::CreateKeyListL( CPtiEngine* aPtiEngine )
-    {
-    PRINT ( _L("Enter CPcsKeyMap::CreateKeyListL") );
-
-    switch ( iKeyboardType )
-        {
-        case EPtiKeyboardQwerty4x12:
-        case EPtiKeyboardQwerty4x10:
-        case EPtiKeyboardQwerty3x11:
-        case EPtiKeyboardCustomQwerty:
-            CreateKeyListFromKeyBindingTable( aPtiEngine );
-            break;
-
-        case EPtiKeyboard12Key:
-            CreateKeyListFromITUTHardcodedKeys( );
-            break;
-
-        case EPtiKeyboardHalfQwerty:
-            CreateKeyListFromKeyBindingTable( aPtiEngine );
-            break;
-
-        default:
-            CreateKeyListFromKeyBindingTable( aPtiEngine );
-            break;
-        }
-
-    PRINT ( _L("End CPcsKeyMap::CreateKeyListL") );
-    }
 
 // ----------------------------------------------------------------------------
 // CPcsKeyMap::IsLanguageSupported
@@ -760,104 +793,121 @@ void CPcsKeyMap::CreateKeyListL( CPtiEngine* aPtiEngine )
 // ----------------------------------------------------------------------------
 TBool CPcsKeyMap::IsLanguageSupported(TInt aLang)
     {
-    return (KErrNotFound == iLanguageNotSupported.Find((TLanguage) aLang));
+    TBool supported = 
+#ifdef __WINS__
+            // Only few languages for emulator 
+            ( ELangEnglish == aLang || 
+              ELangRussian == aLang || 
+              ELangHebrew == aLang || 
+              ELangFinnish == aLang ) &&
+#endif // __WINS__
+            ( KErrNotFound == iLanguageNotSupported.Find((TLanguage)aLang) );
+                
+    return supported;
     }
 
 // ----------------------------------------------------------------------------
 // CPcsKeyMap::CreateKeyMappingL
 //
 // ----------------------------------------------------------------------------
-void CPcsKeyMap::CreateKeyMappingL()
+void CPcsKeyMap::CreateKeyMappingL( TKeyboardModes aKbMode )
     {
     PRINT ( _L("Enter CPcsKeyMap::CreateKeyMappingL") );
 
+    __ASSERT_DEBUG( (aKbMode==EPredictiveItuT || aKbMode==EPredictiveQwerty),
+                    Panic(EPanic_InvalidKeyboardType) );
+
+    // Select the arrays we are operating on
+    RArray<TPtiKey>* ptiKeysArray;
+    RPointerArray<TKeyMappingData>* keyMappingArray;
+    TPtiKeyboardType kbType;
+    GetPredictiveKeyboardData( aKbMode, ptiKeysArray, keyMappingArray, kbType );
+    if ( kbType == EPtiKeyboardNone )
+        {
+        PRINT1( _L("CPcsKeyMap::CreateKeyMappingL: ##### No Keyboard available for mode %d => skipping #####"), aKbMode );
+        return;
+        }
+    
     // Instantiate the engine
     CPtiEngine* ptiEngine = CPtiEngine::NewL(ETrue);
     CleanupStack::PushL( ptiEngine );
 
-    ptiEngine->SetKeyboardType( iKeyboardType );
+    ptiEngine->SetKeyboardType( kbType );
 
-    CreateKeyListL( ptiEngine );
+    CreateKeyListFromKeyBindingTable( *ptiKeysArray, kbType, ptiEngine );
 
-    // Now add the keymap arrays to hold the keymap data
-    for (TInt i = 0; i < iKeysArr.Count(); i++)
-    {
-        TKeyMappingData *keyData = new(ELeave) TKeyMappingData;
-        iKeyMapPtrArr.Append(keyData);
-    }
-
-    // Get the available Languages on the phone
-    RArray<TInt> LanguagesOnThisPhone;
-    ptiEngine->GetAvailableLanguagesL(LanguagesOnThisPhone);
-    PRINT2 ( _L("CPcsKeyMap::CreateKeyMappingL: Languages on this phone %d, maximum is set to %d"),
-             LanguagesOnThisPhone.Count(), KMaxNbrOfLangKeymapping );
+    if ( ptiKeysArray->Count() > 0 )
+        {
+        // Now add the keymap arrays to hold the keymap data
+        for (TInt i = 0; i < ptiKeysArray->Count(); i++)
+            {
+            TKeyMappingData *keyData = new(ELeave) TKeyMappingData;
+            keyMappingArray->Append(keyData);
+            }
     
-    // Remove the non-supported languages
-    for (TInt i = 0; i < LanguagesOnThisPhone.Count(); /* do not increment i */)
-        {
-        if ( (IsLanguageSupported(LanguagesOnThisPhone[i]))
-#ifdef __WINS__
-             && (ELangEnglish == LanguagesOnThisPhone[i]) // Only English for emulator 
-#endif // __WINS__
-           )
+        // Get the available Languages on the phone
+        RArray<TInt> languagesOnThisPhone;
+        CleanupClosePushL( languagesOnThisPhone );
+        ptiEngine->GetAvailableLanguagesL(languagesOnThisPhone);
+        PRINT2 ( _L("CPcsKeyMap::CreateKeyMappingL: Languages on this phone %d, maximum is set to %d"),
+                 languagesOnThisPhone.Count(), KMaxNbrOfLangKeymapping );
+        
+        // Remove the non-supported languages
+        for (TInt i = 0; i < languagesOnThisPhone.Count(); /* do not increment i */)
             {
-            i++;
+            if ( IsLanguageSupported(languagesOnThisPhone[i]) )
+                {
+                i++;
+                }
+            else
+                {
+                PRINT1 ( _L("CPcsKeyMap::CreateKeyMappingL: Removing not supported Language %d"),
+                         languagesOnThisPhone[i] );
+                languagesOnThisPhone.Remove(i);
+                }
             }
-        else
+    
+        // Set current UI language as 1st language and English as 2nd language,
+        // if present in AvailableLanguages
+        TInt langIndex;
+        if ( KErrNotFound != (langIndex = languagesOnThisPhone.Find(ELangEnglish)) )
             {
-            PRINT1 ( _L("CPcsKeyMap::CreateKeyMappingL: Removing not supported Language %d"),
-                     LanguagesOnThisPhone[i] );
-            LanguagesOnThisPhone.Remove(i);
+            languagesOnThisPhone.Remove(langIndex);
+            languagesOnThisPhone.Insert(ELangEnglish, 0);
             }
-        }
-
-    // Set current UI language as 1st language and English as 2nd language,
-    // if present in AvailableLanguages
-    TInt langIndex;
-    if ( KErrNotFound != (langIndex = LanguagesOnThisPhone.Find(ELangEnglish)) )
-        {
-        LanguagesOnThisPhone.Remove(langIndex);
-        LanguagesOnThisPhone.Insert(ELangEnglish, 0);
-        }
-    if ( KErrNotFound != (langIndex = LanguagesOnThisPhone.Find(iUILanguage)) )
-        {
-        LanguagesOnThisPhone.Remove(langIndex);
-        LanguagesOnThisPhone.Insert(iUILanguage, 0);
-        }
-
-    // Set max number of languages for Key Map
-    TInt count = LanguagesOnThisPhone.Count();
-    if (count > KMaxNbrOfLangKeymapping)
-        {
-        PRINT2 ( _L("CPcsKeyMap::CreateKeyMappingL: Supported Languages on this phone %d, limiting to %d"),
-                 count, KMaxNbrOfLangKeymapping );
-        count = KMaxNbrOfLangKeymapping;
-        }
-
-    // Add Key Map for the languages
-    for (TInt i = 0; i < count; i++)
-        {
-        TLanguage languageToUse = (TLanguage) LanguagesOnThisPhone[i];
-
-        PRINT1 ( _L("CPcsKeyMap::CreateKeyMappingL: Constructing Key Map for Language %d"), languageToUse );
-        TInt errStatus = ptiEngine->ActivateLanguageL(languageToUse);
-        if (KErrNone == errStatus)
+        if ( KErrNotFound != (langIndex = languagesOnThisPhone.Find(iUILanguage)) )
             {
-            TRAP_IGNORE(AddKeyMappingForActiveLanguageL(ptiEngine, languageToUse));
+            languagesOnThisPhone.Remove(langIndex);
+            languagesOnThisPhone.Insert(iUILanguage, 0);
             }
-        else
+    
+        // Set max number of languages for Key Map
+        TInt count = languagesOnThisPhone.Count();
+        if (count > KMaxNbrOfLangKeymapping)
             {
-            PRINT1 ( _L("CPcsKeyMap::CreateKeyMappingL: ##### Unable to activate Language %d #####"),
-                     languageToUse );
+            PRINT2 ( _L("CPcsKeyMap::CreateKeyMappingL: Supported Languages on this phone %d, limiting to %d"),
+                     count, KMaxNbrOfLangKeymapping );
+            count = KMaxNbrOfLangKeymapping;
             }
-
-        // Close the currently activated language
-        ptiEngine->CloseCurrentLanguageL();
-
-        PRINT ( _L("CPcsKeyMap::CreateKeyMappingL: ===================================================") );
+    
+        // Add Key Map for the languages
+        for (TInt i = 0; i < count; i++)
+            {
+            TLanguage languageToUse = (TLanguage) languagesOnThisPhone[i];
+    
+            PRINT1 ( _L("CPcsKeyMap::CreateKeyMappingL: Constructing Key Map for Language %d"), languageToUse );
+            TRAPD( leaveCode, AddKeyMappingForLanguageL(ptiEngine, languageToUse, kbType, *ptiKeysArray, *keyMappingArray) );
+            if ( leaveCode )
+                {
+                PRINT2 ( _L("CPcsKeyMap::CreateKeyMappingL: ##### Adding mappings for language %d failed, leave code = %d #####"),
+                         languageToUse, leaveCode );
+                }
+    
+            PRINT ( _L("CPcsKeyMap::CreateKeyMappingL: ===================================================") );
+            }
+    
+        CleanupStack::PopAndDestroy( &languagesOnThisPhone );
         }
-
-    LanguagesOnThisPhone.Close();
 
     CleanupStack::PopAndDestroy( ptiEngine );
 
@@ -868,110 +918,107 @@ void CPcsKeyMap::CreateKeyMappingL()
 // CPcsKeyMap::AddKeyMappingForActiveLanguageL
 //
 // ----------------------------------------------------------------------------
-void CPcsKeyMap::AddKeyMappingForActiveLanguageL(CPtiEngine* aPtiEngine, TLanguage aLanguage)
+void CPcsKeyMap::AddKeyMappingForLanguageL(
+        CPtiEngine* aPtiEngine, 
+        TLanguage aLanguage,
+        TPtiKeyboardType aKbType,
+        const RArray<TPtiKey>& aPtiKeys,
+        RPointerArray<TKeyMappingData>& aResultMapping )
 {
-    PRINT ( _L("Enter CPcsKeyMap::AddKeyMappingForActiveLanguageL") );
+    PRINT ( _L("Enter CPcsKeyMap::AddKeyMappingForLanguageL") );
+
+    TInt err = aPtiEngine->ActivateLanguageL( aLanguage );
+    if ( err )
+        {
+        PRINT2 ( _L("##### CPcsKeyMap::AddKeyMappingForLanguageL failed to activate language %d, error=%d) #####"),
+                aLanguage, err );
+        User::Leave( err );
+        }
 
     // Make a language object based on the language
-    CPtiCoreLanguage* activeLanguage = static_cast<CPtiCoreLanguage*>(aPtiEngine->GetLanguage( aLanguage ));
+    CPtiCoreLanguage* language = static_cast<CPtiCoreLanguage*>(aPtiEngine->GetLanguage( aLanguage ));
 
-    if (activeLanguage)
+    if (language)
         {
-        // Get the keyboard Mappings for the Active Language
-        MPtiKeyMappings* ptiKeyMappings = GetKeyboardKeyMapping( *activeLanguage );
-
-        for (TInt i = 0; i < PoolCount() - 1; i++)
+        for (TInt i = 0; i < aResultMapping.Count() - 1; i++)
             {
-            TPtiKey key = iKeysArr[i];
+            TPtiKey key = aPtiKeys[i];
 
-            PRINT ( _L("CPcsKeyMap::AddKeyMappingForActiveLanguageL: ===================================================") );
-            PRINT4 ( _L("CPcsKeyMap::AddKeyMappingForActiveLanguageL: Adding characters for Key '%c' (%d) at Pool %d and Language %d"),
-                     (TInt) key, (TInt) key, PoolIdForKey(key), aLanguage );
+            PRINT ( _L("CPcsKeyMap::AddKeyMappingForLanguageL: ===================================================") );
+            PRINT4 ( _L("CPcsKeyMap::AddKeyMappingForLanguageL: Adding chars for Key '%c' (0x%02X) for Keyboard Type %d and Language %d"),
+                     key, key, aKbType, aLanguage );
 
             // Get the pointer to the language class (UI, English, Others)
             RArray<TUint>* keyMapLang;
             if (aLanguage == iUILanguage)
                 {
-                keyMapLang = &(iKeyMapPtrArr[i]->iKeyMapCharArr[TKeyMappingData::EKeyMapUILangArr]);
-                PRINT1 ( _L("CPcsKeyMap::AddKeyMappingForActiveLanguageL: Language %d is the UI language"), aLanguage );
+                keyMapLang = &(aResultMapping[i]->iKeyMapCharArr[TKeyMappingData::EKeyMapUILangArr]);
+                PRINT1 ( _L("CPcsKeyMap::AddKeyMappingForLanguageL: Language %d is the UI language"), aLanguage );
                 }
             else if (aLanguage == ELangEnglish)
                 {
                 // If (iUILanguage == ELangEnglish) ok to be in previous if case
-                keyMapLang = &(iKeyMapPtrArr[i]->iKeyMapCharArr[TKeyMappingData::EKeyMapEnglishLangArr]);
-                PRINT1 ( _L("CPcsKeyMap::AddKeyMappingForActiveLanguageL: Language %d is English language"), aLanguage );
+                keyMapLang = &(aResultMapping[i]->iKeyMapCharArr[TKeyMappingData::EKeyMapEnglishLangArr]);
+                PRINT1 ( _L("CPcsKeyMap::AddKeyMappingForLanguageL: Language %d is English language"), aLanguage );
                 }
             else
                 {
-                keyMapLang = &(iKeyMapPtrArr[i]->iKeyMapCharArr[TKeyMappingData::EKeyMapOthersLangArr]);
-                PRINT1 ( _L("CPcsKeyMap::AddKeyMappingForActiveLanguageL: Language %d is in the Other languages"), aLanguage );
+                keyMapLang = &(aResultMapping[i]->iKeyMapCharArr[TKeyMappingData::EKeyMapOthersLangArr]);
+                PRINT1 ( _L("CPcsKeyMap::AddKeyMappingForLanguageL: Language %d is in the Other languages"), aLanguage );
                 }
             
-            PRINT ( _L("CPcsKeyMap::AddKeyMappingForActiveLanguageL: ---------------------------------------------------") );
+            PRINT ( _L("CPcsKeyMap::AddKeyMappingForLanguageL: ---------------------------------------------------") );
 
             TBool isSingleCharForKey = ETrue;
             TUint singleChar = 0;
 
             // EPtiCaseUpper must be the 1st TPtiTextCase for iUILanguage
-            AddCharactersToKey( *ptiKeyMappings, key, EPtiCaseUpper, *iKeyMapPtrArr[i], *keyMapLang, isSingleCharForKey, singleChar );
-            AddCharactersToKey( *ptiKeyMappings, key, EPtiCaseLower, *iKeyMapPtrArr[i], *keyMapLang, isSingleCharForKey, singleChar );
+            AddCharactersToKey( *language, aKbType, key, EPtiCaseUpper, *aResultMapping[i], *keyMapLang, isSingleCharForKey, singleChar );
+            AddCharactersToKey( *language, aKbType, key, EPtiCaseLower, *aResultMapping[i], *keyMapLang, isSingleCharForKey, singleChar );
 
             // 1. No other TPtiTextCase values for ITUT keyboard
             // 2. No language variants handling for ITUT keyboard
-            if ( EPtiKeyboard12Key != iKeyboardType )
+            if ( EPtiKeyboard12Key != aKbType )
                 {
-                AddCharactersToKey( *ptiKeyMappings, key, EPtiCaseFnLower,  *iKeyMapPtrArr[i], *keyMapLang, isSingleCharForKey, singleChar );
-                AddCharactersToKey( *ptiKeyMappings, key, EPtiCaseFnUpper,  *iKeyMapPtrArr[i], *keyMapLang, isSingleCharForKey, singleChar );
-                AddCharactersToKey( *ptiKeyMappings, key, EPtiCaseChrLower, *iKeyMapPtrArr[i], *keyMapLang, isSingleCharForKey, singleChar );
-                AddCharactersToKey( *ptiKeyMappings, key, EPtiCaseChrUpper, *iKeyMapPtrArr[i], *keyMapLang, isSingleCharForKey, singleChar );
+                AddCharactersToKey( *language, aKbType, key, EPtiCaseFnLower,  *aResultMapping[i], *keyMapLang, isSingleCharForKey, singleChar );
+                AddCharactersToKey( *language, aKbType, key, EPtiCaseFnUpper,  *aResultMapping[i], *keyMapLang, isSingleCharForKey, singleChar );
+                AddCharactersToKey( *language, aKbType, key, EPtiCaseChrLower, *aResultMapping[i], *keyMapLang, isSingleCharForKey, singleChar );
+                AddCharactersToKey( *language, aKbType, key, EPtiCaseChrUpper, *aResultMapping[i], *keyMapLang, isSingleCharForKey, singleChar );
 
                 // Support for key guessing given the char in some phone language variants
                 if ( (isSingleCharForKey) && (0 != singleChar) )
                     {
-                    iKeyMapPtrArr[i]->iKeyMapCharArr[TKeyMappingData::EKeyMapSingleCharArr].Append(singleChar); // singleChar is in LowerCase
-                    iKeyMapPtrArr[i]->iKeyMapCharArr[TKeyMappingData::EKeyMapSingleCharArr].Append(User::UpperCase(singleChar));
+                    aResultMapping[i]->iKeyMapCharArr[TKeyMappingData::EKeyMapSingleCharArr].Append(singleChar); // singleChar is in LowerCase
+                    aResultMapping[i]->iKeyMapCharArr[TKeyMappingData::EKeyMapSingleCharArr].Append(User::UpperCase(singleChar));
 
-                    PRINT ( _L("CPcsKeyMap::AddKeyMappingForActiveLanguageL: ---------------------------------------------------") );
-                    PRINT5 ( _L("CPcsKeyMap::AddKeyMappingForActiveLanguageL: For Language %d and key '%c' of pool %d single char is '%c' (#%d)"),
-                            aLanguage, (TInt) key, i, singleChar, singleChar );
+                    PRINT ( _L("CPcsKeyMap::AddKeyMappingForLanguageL: ---------------------------------------------------") );
+                    PRINT5 ( _L("CPcsKeyMap::AddKeyMappingForLanguageL: For Language %d and key '%c' of pool %d single char is '%c' (0x%04X)"),
+                            aLanguage, key, i, singleChar, singleChar );
                     }
                 }
             }
-        PRINT ( _L("CPcsKeyMap::AddKeyMappingForActiveLanguageL: ===================================================") );
+        PRINT ( _L("CPcsKeyMap::AddKeyMappingForLanguageL: ===================================================") );
         }
 
-    PRINT ( _L("End CPcsKeyMap::AddKeyMappingForActiveLanguageL") );
+    PRINT ( _L("End CPcsKeyMap::AddKeyMappingForLanguageL") );
 }
 
 // ----------------------------------------------------------------------------
 // CPcsKeyMap::GetCharactersForKey
 //
 // ----------------------------------------------------------------------------
-void CPcsKeyMap::GetCharactersForKey(MPtiKeyMappings& aPtiKeyMappings,
+void CPcsKeyMap::GetCharactersForKey(CPtiCoreLanguage& aPtiLanguage,
+                                     TPtiKeyboardType aKbType,
                                      TPtiKey aKey,
                                      TPtiTextCase aTextCase,
                                      TDes& aResult)
     {
-    switch ( iKeyboardType )
+    const CPtiKeyMapData* keyMapData = aPtiLanguage.RawKeyMapData();
+    if  ( keyMapData )
         {
-        case EPtiKeyboardQwerty4x12:
-        case EPtiKeyboardQwerty4x10:
-        case EPtiKeyboardQwerty3x11:
-        case EPtiKeyboardCustomQwerty:
-            (static_cast<CPtiQwertyKeyMappings*>(&aPtiKeyMappings))->GetDataForKey(aKey, aResult, aTextCase);
-            break;
-
-        case EPtiKeyboard12Key:
-            (static_cast<CPtiKeyMappings*>(&aPtiKeyMappings))->GetDataForKey(aKey, aResult, aTextCase);
-            break;
-
-        case EPtiKeyboardHalfQwerty:
-            (static_cast<CPtiHalfQwertyKeyMappings*>(&aPtiKeyMappings))->GetDataForKey(aKey, aResult, aTextCase);
-            break;
-
-        default:
-            (static_cast<CPtiKeyMappings*>(&aPtiKeyMappings))->GetDataForKey(aKey, aResult, aTextCase);
-            break;
+        TPtrC dataPtr = keyMapData->DataForKey( aKbType, aKey, aTextCase );
+        // truncate results if supplied buffer is not large enough
+        aResult = dataPtr.Left( aResult.MaxLength() );
         }
     }
 
@@ -979,7 +1026,8 @@ void CPcsKeyMap::GetCharactersForKey(MPtiKeyMappings& aPtiKeyMappings,
 // CPcsKeyMap::AddDataForKeyL
 //
 // ----------------------------------------------------------------------------
-void CPcsKeyMap::AddCharactersToKey(MPtiKeyMappings& aPtiKeyMappings,
+void CPcsKeyMap::AddCharactersToKey(CPtiCoreLanguage& aPtiLanguage,
+                                    TPtiKeyboardType aKbType,
                                     TPtiKey aKey,
                                     TPtiTextCase aTextCase,
                                     TKeyMappingData& aKeyDataList,
@@ -990,37 +1038,38 @@ void CPcsKeyMap::AddCharactersToKey(MPtiKeyMappings& aPtiKeyMappings,
     PRINT ( _L("Enter CPcsKeyMap::AddCharactersToKey") );
 
     TBuf<255> result;
-    GetCharactersForKey(aPtiKeyMappings, aKey, aTextCase, result);
+    GetCharactersForKey(aPtiLanguage, aKbType, aKey, aTextCase, result);
 
-    PRINT3 ( _L("CPcsKeyMap::AddCharactersToKey: Get mapping chars for Key '%c' (%d) and TextCase %d"),
-             (TInt) aKey, (TInt) aKey, aTextCase );
+    PRINT3 ( _L("CPcsKeyMap::AddCharactersToKey: Get mapping chars for Key '%c' (0x%02X) and TextCase %d"),
+             aKey, aKey, aTextCase );
     PRINT1 ( _L("CPcsKeyMap::AddCharactersToKey: Got chars: \"%S\""), &result );
 
     for ( TInt i = 0; i < result.Length(); i++ )
         {
-        if ( !CharacterForKeyMappingExists(aKeyDataList, (TUint) result[i]) )
+        TText character = result[i];
+        if ( !CharacterForKeyMappingExists(aKeyDataList, character ) )
             {
-            PRINT1 ( _L("CPcsKeyMap::AddCharactersToKey: ----- Appending char to list: '%c'"), result[i] );
-            aKeyMapLang.Append(result[i]);
+            PRINT2 ( _L("CPcsKeyMap::AddCharactersToKey: ----- Appending char to list: '%c' (0x%04X)"), character, character );
+            aKeyMapLang.Append(character);
             }
         else
             {
-            PRINT1 ( _L("CPcsKeyMap::AddCharactersToKey: ***** NOT Appending char to list: '%c'"), result[i] );
+            PRINT2 ( _L("CPcsKeyMap::AddCharactersToKey: ***** NOT Appending char to list: '%c' (0x%04X)"), character, character );
             }
 
         // No language variants handling for ITUT keyboard
-        if ( EPtiKeyboard12Key != iKeyboardType )
+        if ( EPtiKeyboard12Key != aKbType )
             {
             // Support for key guessing given the char in some phone language variants
             if ( aIsSingleCharForKey )
                 {
                 if ( 0 == aSingleChar )
                     {
-                    aSingleChar = User::LowerCase(result[i]);
+                    aSingleChar = User::LowerCase(character);
                     }
                 else
                     {
-                    TInt newChar = User::LowerCase(result[i]);
+                    TInt newChar = User::LowerCase(character);
                     if (newChar != aSingleChar)
                         {
                         aSingleChar = 0;
@@ -1034,6 +1083,87 @@ void CPcsKeyMap::AddCharactersToKey(MPtiKeyMappings& aPtiKeyMappings,
     PRINT ( _L("CPcsKeyMap::AddCharactersToKey: ---------------------------------------------------") );
 
     PRINT ( _L("End CPcsKeyMap::AddCharactersToKey") );
+    }
+
+// ----------------------------------------------------------------------------
+// CPcsKeyMap::GetPredictiveKeyboardData
+//
+// ----------------------------------------------------------------------------
+void CPcsKeyMap::GetPredictiveKeyboardData( TKeyboardModes aKbMode, 
+                                            RArray<TPtiKey>*& aPtiKeys, 
+                                            RPointerArray<TKeyMappingData>*& aKeyMappings, 
+                                            TPtiKeyboardType& aKbType )
+    {
+    // Get the data from constant version of this function
+    const RArray<TPtiKey>* constKeys;
+    const RPointerArray<TKeyMappingData>* constMappings;
+    GetPredictiveKeyboardData( aKbMode, constKeys, constMappings, aKbType );
+    
+    // Convert pointers to non-const
+    aPtiKeys = const_cast< RArray<TPtiKey>* >( constKeys );
+    aKeyMappings = const_cast< RPointerArray<TKeyMappingData>* >( constMappings );
+    }
+
+// ----------------------------------------------------------------------------
+// CPcsKeyMap::GetPredictiveKeyboardData
+//
+// ----------------------------------------------------------------------------
+void CPcsKeyMap::GetPredictiveKeyboardData( TKeyboardModes aKbMode, 
+                                            const RArray<TPtiKey>*& aPtiKeys, 
+                                            const RPointerArray<TKeyMappingData>*& aKeyMappings, 
+                                            TPtiKeyboardType& aKbType ) const
+    {
+    PRINT1 ( _L("CPcsKeyMap::GetPredictiveKeyboardData: aKbMode=%d "), aKbMode );
+    
+    // EPredictiveItuT or EPredictiveQwerty mode to ENonPredictive mode if keyboard is not mapped
+    if ( aKbMode == EPredictiveItuT && iItutKeyboardType == EPtiKeyboardNone )
+        {
+        aKbMode = ENonPredictive;    
+        }
+    if ( aKbMode == EPredictiveQwerty && iQwertyKeyboardType == EPtiKeyboardNone )
+        {
+        aKbMode = ENonPredictive;    
+        }
+
+    // Get Predictive Keyboard Data
+    switch (aKbMode)
+        {
+        case EPredictiveItuT:
+            {
+            aPtiKeys = &iItutKeys;
+            aKeyMappings = &iItutKeyMaps;
+            aKbType = iItutKeyboardType;
+            break;
+            }
+
+        case EPredictiveQwerty:
+            {
+            aPtiKeys = &iQwertyKeys;
+            aKeyMappings = &iQwertyKeyMaps;
+            aKbType = iQwertyKeyboardType;
+            break;
+            }
+
+        case ENonPredictive:
+            {
+            aPtiKeys = NULL;
+            aKeyMappings = NULL;
+            aKbType = EPtiKeyboardNone;
+            break;
+            }
+
+        // EPredictiveDefaultKeyboard must have been resolved previously
+        // to EPredictiveItuT or EPredictiveQwerty mode
+        case EPredictiveDefaultKeyboard: 
+        default:
+            {
+            aPtiKeys = NULL;
+            aKeyMappings = NULL;
+            aKbType = EPtiKeyboardNone;
+            __ASSERT_DEBUG( EFalse, Panic( EPanic_InvalidKeyboardType ) );
+            break;
+            }
+        }
     }
 
 // End of file

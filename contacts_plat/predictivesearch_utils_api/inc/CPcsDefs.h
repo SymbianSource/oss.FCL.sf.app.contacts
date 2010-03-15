@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007 - 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -67,9 +67,38 @@ enum TPsServerResponseCommand
  */
 enum TKeyboardModes
 {
-   EItut,
-   EQwerty,
-   EModeUndefined
+    /**
+     * Predictive matching mode with default keyboard. 
+     * The key mappings used are either those of the first available
+     * hardware keyboard or those of virtual-ITU-T if no hardware keyboard
+     * is available.
+     */
+    EPredictiveDefaultKeyboard = 0,
+    
+    /**
+     * Non-predictive matching mode.
+     * Keyboard mappings of any kind are not used. Entered characters are
+     * matched just as themselves, but using locale specific tolerant
+     * matching rules (i.e. the collated comparison).
+     */
+    ENonPredictive = 1,
+    
+    /**
+     * Predictive matching using 12-key ITU-T keymappings.
+     */
+    EPredictiveItuT = 2,
+    
+    /**
+     * Predictive matching using hardware QWERTY key mappings.
+     * Also half-QWERTY is here considered as QWERTY.
+     */
+    EPredictiveQwerty = 3,
+    
+    // These modes are provided for backward source and binary compatibility.
+    EItut = EPredictiveDefaultKeyboard,  //! deprecated
+    EQwerty = ENonPredictive,            //! deprecated
+    
+    EModeUndefined = -1
 };
 
 /**
@@ -117,11 +146,11 @@ const TInt KSearchResultsBufferLen = 8192;
 /**
  * Data Stores Constants 
  */
-_LIT(KVPbkDefaultCntDbURI, "cntdb://c:contacts.cdb"); //Phone Store
+_LIT(KVPbkDefaultCntDbURI, "cntdb://c:contacts.cdb"); // Phone Store
 _LIT(KVPbkSimGlobalAdnURI, "sim://global_adn");       // SIM ADN Store
 _LIT(KVPbkSimGlobalFdnURI, "sim://global_fdn");       // SIM FDN Store
 _LIT(KVPbkSimGlobalSdnURI, "sim://global_sdn");       // SIM SDN Store
-_LIT(KVPbkDefaultGrpDbURI, "cntdb://c:contacts.gdb"); // groups Store
+_LIT(KVPbkDefaultGrpDbURI, "cntdb://c:contacts.gdb"); // Groups Store
 
 /**
  * Data Structure to identify the matched locations
@@ -129,9 +158,9 @@ _LIT(KVPbkDefaultGrpDbURI, "cntdb://c:contacts.gdb"); // groups Store
 struct TPsMatchLocation
 {
 	public:
-		TInt index;   						  // starting index for the match sequence
-		TInt length;  						  // lenght of the match sequence
-		TBidiText::TDirectionality direction; // directionality for the sequence
+		TInt index;   						  // Starting index for the match sequence
+		TInt length;  						  // Lenght of the match sequence
+		TBidiText::TDirectionality direction; // Directionality for the sequence
 };
 
 /**

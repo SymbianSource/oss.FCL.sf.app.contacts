@@ -528,10 +528,6 @@ MPbk2Command* CPbk2AiwInterestItemCall::CreateCallCmdObjectL
                     iAppUi->ApplicationServices().ContactManager().FieldTypes());
             
             CleanupStack::PushL( actionTypeSelector );
-            iSelector->SetDefaultPrioritiesLC
-                        ( defaultPrioritiesArray,
-                          *aStoreContact,
-                          VPbkFieldTypeSelectorFactory::EVOIPCallSelector );
             }
         // Normal voice calls
 		else
@@ -542,11 +538,13 @@ MPbk2Command* CPbk2AiwInterestItemCall::CreateCallCmdObjectL
                     iAppUi->ApplicationServices().ContactManager().FieldTypes());
             
             CleanupStack::PushL( actionTypeSelector );
-            iSelector->SetDefaultPrioritiesLC
-                        ( defaultPrioritiesArray,
-                          *aStoreContact,
-                          VPbkFieldTypeSelectorFactory::EVoiceCallSelector );
             }
+        
+        // Set default according to priority rule
+        iSelector->SetDefaultPrioritiesLC
+		            ( defaultPrioritiesArray,
+		              *aStoreContact );
+
         
         params.iCommMethod = action;
         params.SetDefaultPriorities( defaultPrioritiesArray );

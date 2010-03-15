@@ -38,8 +38,13 @@
 #include <MVPbkContactFieldTextData.h>
 #include <MVPbkContactFieldUriData.h>
 #include <MVPbkContactFieldData.h>
-#include <cemailaccounts.h> // For finding out available email account counts
 #include <e32base.h>
+
+// For finding mailbox accounts
+#include <EmailInterfaceFactory.h>
+#include <MEmailMailbox.h>
+
+
 namespace {
 
 TBool IsFieldTypeVoipCapable( TInt aFieldTypeResId, TInt aVoipFlag )
@@ -482,25 +487,34 @@ TInt CCmsServerSession::FindServiceAvailabilityL( const RMessage2& aMessage )
                 }
             case VPbkFieldTypeSelectorFactory::EEmailEditorSelector:
             	{
-            	CEmailAccounts* emailAccounts = CEmailAccounts::NewLC();
-            	RArray<TPopAccount> popAccounts;
-            	RArray<TImapAccount> imapAccounts;
-            	RArray<TSmtpAccount> smtpAccounts;
+            	using namespace EmailInterface;
+
+            	CEmailInterfaceFactory* factory = CEmailInterfaceFactory::NewL();
+            	CleanupStack::PushL( factory );
+            	MEmailInterface* ifPtr = factory->InterfaceL( KEmailClientApiInterface );
+            	MEmailClientApi* clientApi = static_cast<MEmailClientApi*>( ifPtr );
+            	CleanupReleasePushL( *clientApi );
             	
-            	emailAccounts->GetPopAccountsL(popAccounts);
-            	emailAccounts->GetImapAccountsL(imapAccounts);
-            	emailAccounts->GetSmtpAccountsL(smtpAccounts);
-            	CleanupStack::PopAndDestroy(emailAccounts);
+            	RMailboxPtrArray mailboxes;
+            	TRAPD( error, clientApi->GetMailboxesL( mailboxes ););
+            	TInt count = mailboxes.Count();
             	
-            	// If no mailbox exists, set availability to false
-            	if( ( popAccounts.Count() + imapAccounts.Count() + smtpAccounts.Count() ) == 0 )
+            	// Release mailboxs before releasing clientapi
+            	for ( TInt i=0; i<count; i++ )
             		{
-            		availability = EFalse;
+            		MEmailMailbox* mailbox = mailboxes[i];
+            		mailbox->Release();
             		}
             	
-            	popAccounts.Reset();
-            	imapAccounts.Reset();
-            	smtpAccounts.Reset();
+            	mailboxes.Close();
+            	
+            	CleanupStack::PopAndDestroy( 2 ); // clientApi and factory
+            	
+            	if( count == 0 )
+            	    {
+            	    availability = EFalse;
+            	    }           					            					
+                
             	break;
             	}
             default:
@@ -810,7 +824,7 @@ void CCmsServerSession::DoServiceL( const RMessage2& aMessage )
             }
 		case ECmsSetVoiceCallDefault:
         	{
-        	iCmsServer->PhonebookProxyHandle().SetVoiceCallDefaultL();
+        	iServerContact->SetVoiceCallDefaultL();
         	aMessage.Complete( KErrNone );
         	break;
         	}

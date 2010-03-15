@@ -59,6 +59,10 @@
 #include <aknlists.h>
 #include <aknPopup.h>
 
+// For checking mailbox accounts
+#include <EmailInterfaceFactory.h>
+#include <MEmailMailbox.h>
+
 // Debugging headers
 #include <Pbk2Debug.h>
 
@@ -798,11 +802,13 @@ TBool CPbk2MemoryEntryDefaultsDlg::IsSupported
     {
     TBool ret(ETrue);
 
-    // Skip the line if Email field not supported
-    if ( aSelectorID == VPbkFieldTypeSelectorFactory::EEmailEditorSelector &&
-         !FeatureManager::FeatureSupported( KFeatureIdEmailUi ) )
+    // Skip the line if Email field not supported or having no mailbox
+    if ( aSelectorID == VPbkFieldTypeSelectorFactory::EEmailEditorSelector )
         {
-        ret = EFalse;
+        if ( !FeatureManager::FeatureSupported( KFeatureIdEmailUi ) || !HasMailboxAccountsL() )
+        	{
+        	ret = EFalse;
+        	}
         }
     // Do not add video fields if they are not enabled
     else if ( ( aSelectorID == VPbkFieldTypeSelectorFactory::EVideoCallSelector ) &&
@@ -826,6 +832,41 @@ TBool CPbk2MemoryEntryDefaultsDlg::IsSupported
     return ret;
     }
 
+// --------------------------------------------------------------------------
+// CPbk2MemoryEntryDefaultsDlg::HasMailboxAccountsL
+// --------------------------------------------------------------------------
+//
+TBool CPbk2MemoryEntryDefaultsDlg::HasMailboxAccountsL() const
+	{
+	using namespace EmailInterface;
+
+	TBool result = EFalse;
+	CEmailInterfaceFactory* factory = CEmailInterfaceFactory::NewL();
+	CleanupStack::PushL( factory );
+	MEmailInterface* ifPtr = factory->InterfaceL( KEmailClientApiInterface );
+	MEmailClientApi* clientApi = static_cast<MEmailClientApi*>( ifPtr );
+	CleanupReleasePushL( *clientApi );
+	
+	// Get mailboxs
+	RMailboxPtrArray mailboxes;
+	clientApi->GetMailboxesL( mailboxes );
+	TInt count = mailboxes.Count();	
+	if ( count > 0 )
+		{
+		result = ETrue;
+		}
+	
+	// Release mailboxs before releasing clientapi
+	for ( TInt i=0; i<count; i++ )
+		{
+		MEmailMailbox* mailbox = mailboxes[i];
+		mailbox->Release();
+		}	
+	mailboxes.Close();	
+	CleanupStack::PopAndDestroy( 2 ); // clientApi and factory
+	
+	return result;
+	}
 // --------------------------------------------------------------------------
 // CPbk2MemoryEntryDefaultsDlg::IsAvailable
 // --------------------------------------------------------------------------

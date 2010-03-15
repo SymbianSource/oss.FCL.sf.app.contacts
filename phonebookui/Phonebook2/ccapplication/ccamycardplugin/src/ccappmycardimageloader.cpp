@@ -103,17 +103,20 @@ void CCCAppMyCardImageLoader::LoadContactImageL(
         MVPbkStoreContactField& field = fields.FieldAt( i );    
         const MVPbkFieldType* fieldType = field.BestMatchingFieldType();
         
-        if ( fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_THUMBNAILPIC )
+        if ( fieldType )
             {
-            MVPbkContactFieldData& contactField = field.FieldData(); 
-            iImageBuffer = 
-                MVPbkContactFieldBinaryData::Cast(contactField).BinaryData().AllocL();
-            }
-        
-        if ( fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_CALLEROBJIMG )
-            {
-            MVPbkContactFieldData& contactField = field.FieldData();                        
-            iImageFileName = MVPbkContactFieldTextData::Cast(contactField).Text().AllocL();
+            if ( fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_THUMBNAILPIC )
+                {
+                MVPbkContactFieldData& contactField = field.FieldData(); 
+                iImageBuffer = 
+                    MVPbkContactFieldBinaryData::Cast(contactField).BinaryData().AllocL();
+                }
+            
+            if ( fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_CALLEROBJIMG )
+                {
+                MVPbkContactFieldData& contactField = field.FieldData();                        
+                iImageFileName = MVPbkContactFieldTextData::Cast(contactField).Text().AllocL();
+                }
             }
         }
         
@@ -139,6 +142,34 @@ void CCCAppMyCardImageLoader::LoadContactImageL(
     
     CCA_DP(KMyCardLogFile, 
         CCA_L("<-CCCAppMyCardImageLoader::LoadContactImageL()"));
+    }
+
+// ---------------------------------------------------------------------------
+// CCCAppMyCardImageLoader::LoadImageL
+// ---------------------------------------------------------------------------
+//
+void CCCAppMyCardImageLoader::LoadImageL( 
+    const TDesC8& aImageData,
+    const TDesC& aImageFileName,
+    const TSize& aThumbnailSize )
+    {
+    CCA_DP(KMyCardLogFile, 
+        CCA_L("->CCCAppMyCardImageLoader::LoadImageL()"));
+
+    delete iImageDecoding;
+    iImageDecoding = NULL;
+    
+    RFs& fs = CEikonEnv::Static()->FsSession();
+    iImageDecoding = CCCAppImageDecoding::NewL(
+            *this, 
+            fs, 
+            aImageData.AllocLC(), 
+            aImageFileName.AllocLC() );
+    CleanupStack::Pop( 2 ); // imagedata, imagefilename
+    iImageDecoding->StartL( aThumbnailSize );      
+
+    CCA_DP(KMyCardLogFile, 
+        CCA_L("<-CCCAppMyCardImageLoader::LoadImageL()"));
     }
 
 // ---------------------------------------------------------------------------

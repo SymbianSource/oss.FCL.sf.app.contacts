@@ -137,52 +137,21 @@
 #define qtn_xsp_skype "Skype" 
 
 //d:label for "Add Favorities" promotion text in nameslist
-//l: list_single_graphic_pane_t1
+//l:list_single_graphic_pane_t1
 //r:5.01
 #define qtn_phob_add_top_contacts "Add Favorities"
 
-//d:Shown in long tap menu of names list
-//l: list_single_touch_menu_pane_t1
+//d:Shown in options menu of names list and details view
+//l:list_single_pane_t1_cp2
 //w:
 //r:5.2
 #define qtn_phob_opt_call "Call"
 
-//d:Shown in long tap menu of names list
-//l: list_single_touch_menu_pane_t1
+//d:Shown in options menu of names list
+//l:list_single_pane_t1_cp2
 //w:
 //r:5.2
 #define qtn_phob_opt_send_message "Send message"
-
-//d:Shown in long tap menu of names list 
-//l: list_single_touch_menu_pane_t1 
-//w: 
-//r:5.01
-#define qtn_phob_longtap_create "New" 
-
-//d:Shown in long tap menu of names list 
-//l: list_single_touch_menu_pane_t1 
-//w: 
-//r:5.01
-#define qtn_phob_longtap_edit "Edit" 
-
-//d:Shown in long tap menu of names list 
-//l: list_single_touch_menu_pane_t1 
-//w: 
-//r:5.01
-#define qtn_phob_longtap_add_favourites "Assign as favorite"
-
-//d:Shown in long tap menu of names list 
-//l: list_single_touch_menu_pane_t1 
-//w: 
-//r:5.01
-#define qtn_phob_longtap_drop_favourites "Unassign favorite"
-
-//d:Shown in long tap menu of names list 
-//l: list_single_touch_menu_pane_t1 
-//w: 
-//r:5.01
-#define qtn_phob_longtap_move "Rearrange favorites"
-
 
 //d:Label text for unknown memory entry item
 //l:list_single_graphic_pane_t1_cp2
@@ -316,16 +285,17 @@
 //
 #define qtn_cca_multiple_accounts "%N accounts"
 
-
-//----------------------------------------------------------------------------
-// cmscontactor
-//----------------------------------------------------------------------------
-
 // d:Prompt text for select number/address popup
 // l:heading_pane_t1
 // r:5.0
 //
 #define qtn_cca_popup_call "Call:"
+
+// d:Prompt text for select number/address popup
+// l:heading_pane_t1
+// r:5.0
+//
+#define qtn_cca_popup_voice_call "Voice call:"
 
 // d:Prompt text for select number/address popup
 // l:heading_pane_t1
@@ -387,6 +357,7 @@
 // r:5.2
 //
 #define qtn_cca_popup_voip_call_single_service "%U call:"
+
 //----------------------------------------------------------------------------
 // Other
 //----------------------------------------------------------------------------
@@ -916,7 +887,7 @@
 //l:phob2_cc_button_pane
 //r:9.2
 //
-#define qtn_cca_ftu_discover "Discover %U on Ovi"
+#define qtn_cca_ftu_discover "See what %U is up to"
 
 //d:Default string for MyCard status button when the social information text
 //d:cannot be displayed.

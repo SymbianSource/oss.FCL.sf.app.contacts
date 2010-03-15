@@ -37,6 +37,7 @@
 #include <cbsbitmap.h>
 #include <AknIconUtils.h>
 
+#include <AknBidiTextUtils.h>
 
 namespace {
 
@@ -246,7 +247,17 @@ TPtrC CCCAppCommLauncherLPadModel::MdcaPoint( TInt aIndex ) const
         {
         TPtr textPtr(iTextBuf->Des());
         textPtr.Zero();
-        textPtr.Copy(iButtonDataArray[ aIndex ].iPopupText);
+        TPtrC popupText;        
+        TRAPD( error, popupText.Set( const_cast <CCCAppCommLauncherLPadModel*>(this)->TextForPopUpL( aIndex ) ) );
+        if ( KErrNone == error )
+            {
+            textPtr.Copy( popupText );
+            }
+        else
+            {
+            textPtr.Copy( iButtonDataArray[ aIndex ].iPopupText );
+            }
+        
         if ( iButtonDataArray[ aIndex ].iClipFromBegining )
         	{
         	// Clip for second row text
@@ -1487,14 +1498,36 @@ TBool CCCAppCommLauncherLPadModel::ClipFromBeginning(
 {
     CAknDoubleLargeStyleListBox* listbox =
         static_cast<CAknDoubleLargeStyleListBox*>(&iListBox);
-
-    return AknTextUtils::ClipToFit(
+    TBool result = EFalse;
+    if ( IfShowMultiIcon( aItemIndex ) )
+        {
+        TRect mainPane = iPlugin.ClientRect();
+        TAknLayoutRect listLayoutRect;
+        listLayoutRect.LayoutRect(
+            mainPane,
+            AknLayoutScalable_Apps::list_double_large_graphic_phob2_cc_pane_g3(0).LayoutLine() );
+        TInt multiIconWidth(listLayoutRect.Rect().Width());
+        const TInt KCalculationErrors = 1;
+        CFormattedCellListBoxData *data = listbox->ItemDrawer()->FormattedCellData();
+        const CFont *font = data->Font(listbox->ItemDrawer()->Properties(aItemIndex), aSubCellNumber);
+        TSize cellsize = data->SubCellSize(aSubCellNumber);
+        TMargins margin = data->SubCellMargins(aSubCellNumber);
+        TInt width = cellsize.iWidth - margin.iLeft - margin.iRight - 
+                        multiIconWidth - KAknBidiExtraSpacePerLine - KCalculationErrors;
+        TInt clipgap = data->SubCellTextClipGap(aSubCellNumber);
+        result = AknTextUtils::ClipToFit(
+            aBuffer, *font, width, AknTextUtils::EClipFromBeginning, width + clipgap);
+        }
+    else
+        {
+        result = AknTextUtils::ClipToFit(
         aBuffer,
         AknTextUtils::EClipFromBeginning,
         listbox,
         aItemIndex,
         aSubCellNumber);
 }
-
+    return result;
+    }
 
 // End of File

@@ -21,14 +21,16 @@
 
 // INCLUDE FILES
 
+#include <e32base.h>
 #include <e32hashtab.h>
 
-#include "CPsData.h"
-#include "CPsQuery.h"
 
 // FORWARD DECLARATION
+class CPsData;
+class CPsQuery;
 
 typedef RPointerArray<CPsData> CPSDATA_R_PTR_ARRAY;
+
 
 // CLASS DECLARATION
 class CPcsAlgorithm1Utils : public CBase
@@ -48,7 +50,7 @@ class CPcsAlgorithm1Utils : public CBase
 		/**
 		 * Compare by length.
 		 */
-		static TBool CompareByLength(const HBufC& aFirst, const HBufC& aSecond);
+		static TInt CompareByLength(const HBufC& aFirst, const HBufC& aSecond);
 
 		/**
 		 * Compare strings exactly case sensitively.
@@ -58,7 +60,7 @@ class CPcsAlgorithm1Utils : public CBase
 		/**
 		 * Compare strings with collate rules depending on locale.
 		 */
-		static TBool CompareCollate(const TDesC& aFirst, const TDesC& aSecond);
+		static TInt CompareCollate(const TDesC& aFirst, const TDesC& aSecond);
 
 		/**
 		 * Compare for keys and strings:
@@ -75,28 +77,46 @@ class CPcsAlgorithm1Utils : public CBase
 		static TBool MyCompareK(const TDesC& aLeft, const TDesC& aRight, CPsQuery& aPsQuery);
 
 		/**
-         * Customized CompareC         
-         */					
-        static TInt MyCompareC(const TDesC& aLeft, const TDesC& aRight); 					       
+         * Customized CompareC
+         */
+        static TInt MyCompareC(const TDesC& aLeft, const TDesC& aRight);
 		
         
         /**
          * TLinearOrder rule for comparison of data objects
          */
         static TInt CompareDataBySortOrderL(const CPsData& aObject1,
-                                           const CPsData& aObject2);
+                                            const CPsData& aObject2);
 
         /**
          * Trim off all white spaces and special chars
-         */                                   
+         */
         static void MyTrim(TDes& aString);
         
         
         /**
          * Check if the input URI is of contact search in a group template form
-         */                                   
+         */
         static TBool IsGroupUri(TDesC& aURI);
                                     
 };
+
+
+// CleanupStack helpers for item owning RPointerArrays
+template <class T>
+class CleanupResetAndDestroy
+    {
+public:
+    inline static void PushL(T& aRef)
+        { CleanupStack::PushL(TCleanupItem(&ResetAndDestroy,&aRef)); }
+private:
+    inline static void ResetAndDestroy(TAny *aPtr)
+        { static_cast<T*>(aPtr)->ResetAndDestroy(); }
+    };
+
+template <class T>
+inline void CleanupResetAndDestroyPushL(T& aRef)
+    { CleanupResetAndDestroy<T>::PushL(aRef); }
+
 #endif // C_PCS_ALGORITHM_1_UTILS
     

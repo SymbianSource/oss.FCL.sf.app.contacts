@@ -792,6 +792,7 @@ void CPcsContactStore::RunL()
 	   						
 	   	case EComplete:
 		    PRINT ( _L("Contacts Caching FINISHED") );
+		    PRINT_BOOT_PERFORMANCE ( _L("Contacts Caching FINISHED") );
 		    break;
     }
 }

@@ -65,7 +65,6 @@ LIBRARY                         presencecacheclient2.lib
 LIBRARY                         Pbk2Presentation.lib // nameformatter
 LIBRARY					        serviceprovidersettings.lib
 LIBRARY                         presencetrafficlights.lib
-LIBRARY                         imcm.lib 
 
 LIBRARY	 rcse.lib
 

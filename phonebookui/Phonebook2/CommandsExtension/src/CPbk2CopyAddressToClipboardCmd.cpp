@@ -230,18 +230,12 @@ MVPbkStoreContactField* CPbk2CopyAddressToClipboardCmd::FocusedFieldLC
     ( MVPbkStoreContact& aStoreContact )
     {
     TInt index = KErrNotFound;
-    CPbk2PresentationContact* presentationContact = 
-        CPbk2PresentationContact::NewL( aStoreContact,
-            iAppServices->FieldProperties() );
-    CleanupStack::PushL( presentationContact );
-
+    
     if (iUiControl)
         {
-        index = presentationContact->PresentationFields().StoreIndexOfField( 
-                iUiControl->FocusedFieldIndex() );
+        index = iUiControl->FocusedFieldIndex();
         }
-    CleanupStack::PopAndDestroy( presentationContact );
-    
+
     if ( index != KErrNotFound )
         {
         // Use FieldAtLC to avoid the unvalidity of the field after new

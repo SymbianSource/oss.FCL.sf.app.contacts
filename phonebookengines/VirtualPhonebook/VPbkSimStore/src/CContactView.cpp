@@ -393,9 +393,14 @@ TInt CContactView::ContactCountL() const
 //
 const MVPbkViewContact& CContactView::ContactAtL( TInt aIndex ) const
     {
-    __ASSERT_ALWAYS( aIndex >= 0, 
+    __ASSERT_ALWAYS( aIndex >= KErrNotFound, 
         VPbkError::Panic( VPbkError::EInvalidContactIndex ) );
-    if ( aIndex >= iNativeView->CountL() )
+
+    if( aIndex == KErrNotFound)
+	    {
+		User::Leave( KErrNotFound );	
+        }
+    else if ( aIndex >= iNativeView->CountL() )
         {
         User::Leave( KErrArgument );
         }

@@ -1,0 +1,44 @@
+/*
+* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*/
+
+// Includes
+#include "ecom\registryinfo.rh"
+
+// RESOURCE DEFINITION
+RESOURCE REGISTRY_INFO cs_ecom_reg_info
+    {
+    dll_uid = 0x2001FDE5;
+    interfaces =
+        {
+        INTERFACE_INFO
+            {
+            interface_uid = 0x2001E2DA;
+            implementations = 
+                {
+                IMPLEMENTATION_INFO
+                    {
+                    implementation_uid = 0x10208413; // randomly selected value
+                    version_no = 1;
+                    display_name = "Custom Icon test plugin";
+                    default_data = "";
+                    opaque_data = "";
+                    }
+                };
+            }
+        };
+    }
+
+// End of File

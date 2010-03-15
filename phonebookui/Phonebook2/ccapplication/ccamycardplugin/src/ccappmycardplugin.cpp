@@ -22,6 +22,7 @@
 #include "ccappmycardpluginuids.hrh"
 #include "ccappmycard.h"
 #include "ccappmycard.hrh"
+#include <spbcontactdatamodel.h>
 #include <ccappmycardpluginrsc.rsg>
 #include <Pbk2UIControls.rsg>
 #include <data_caging_path_literals.hrh>
@@ -34,6 +35,7 @@
 #include <AiwContactAssignDataTypes.h>
 #include <avkon.hrh>
 #include <aknappui.h>
+#include <s32mem.h>
 #include <CPbk2CommandHandler.h>
 #include <Pbk2Commands.hrh>		//pbk2cmdsend
 #include <Pbk2DataCaging.hrh>	
@@ -43,6 +45,9 @@
 #include <CPbk2PresentationContactFieldCollection.h>
 #include <StringLoader.h>
 #include <AknQueryDialog.h>
+#include <mccapppluginparameter.h>
+#include <mccaparameter.h>
+#include <CVPbkContactManager.h>
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -94,6 +99,8 @@ CCCAppMyCardPlugin::~CCCAppMyCardPlugin()
     
     iCommandsResourceFile.Close();
     
+    delete iModel;
+
     delete iMyCard;
     
     delete iCommandHandler;
@@ -138,15 +145,61 @@ CCCAppMyCard& CCCAppMyCardPlugin::MyCard()
     }
 
 // ---------------------------------------------------------------------------
+// CCCAppMyCardPlugin::Model
+// ---------------------------------------------------------------------------
+//
+CSpbContactDataModel& CCCAppMyCardPlugin::Model()
+    {
+    return *iModel;
+    }
+
+// ---------------------------------------------------------------------------
 // CCCAppMyCardPlugin::PreparePluginViewL
 // ---------------------------------------------------------------------------
 //
 void CCCAppMyCardPlugin::PreparePluginViewL(
-    MCCAppPluginParameter& /*aPluginParameter*/ )
+    MCCAppPluginParameter& aPluginParameter )
     {
     CCA_DP(KMyCardLogFile, CCA_L("->CCCAppMyCardPlugin::PreparePluginViewL()"));
 
+    iModel = CSpbContactDataModel::NewL( 
+        iMyCard->ContactManager(), *iCoeEnv, R_MYCARD_CLIP_FIELD_SELECTOR );
+    
     BaseConstructL( R_CCAMYCARD_VIEW );
+    MCCAParameter& param = aPluginParameter.CCAppLaunchParameter();
+    if( param.ContactDataFlag() == MCCAParameter::EContactLink )
+        {
+        HBufC& data = param.ContactDataL();
+        HBufC8* data8 = HBufC8::NewLC( data.Size() );
+        data8->Des().Copy( data );
+        CVPbkContactLinkArray* array = CVPbkContactLinkArray::NewLC( 
+            *data8, iMyCard->ContactManager().ContactStoresL() );
+        if( array->Count() )
+            {
+            iMyCard->SetLinkL( array->At( 0 ) );
+            }
+        CleanupStack::PopAndDestroy( 2 ); // data, array
+        }
+    else if( param.ContactDataFlag() == MCCAParameter::EContactDataModel )
+        {
+        HBufC& cntData = param.ContactDataL();
+        TPtrC8 data( (TUint8*)cntData.Ptr(), cntData.Size() );
+        RDesReadStream stream( data );
+        CleanupClosePushL( stream );
+        iModel->InternalizeL( stream );
+        CleanupStack::PopAndDestroy(); // strean
+
+        MVPbkContactLink* link = iModel->ContactLink();
+        if( link )
+            {
+            iMyCard->SetLinkL( *link );
+            }
+        else
+            {
+            // model without a link means that mycard does not exist.
+            iMyCard->ForceCreateMyCard();
+            }
+        }
     
     CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCardPlugin::PreparePluginViewL()"));
     }
@@ -170,6 +223,8 @@ void CCCAppMyCardPlugin::DoActivateL(
     HBufC* title = iCoeEnv->AllocReadResourceLC( R_QTN_CCA_TITLE_MY_CARD );
     SetTitleL( *title );
     CleanupStack::PopAndDestroy( title );
+    
+    iMyCard->FetchMyCardL();
     
     CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCardPlugin::DoActivateL()"));
     }
@@ -299,6 +354,14 @@ void CCCAppMyCardPlugin::EditL( TInt aFocusedFieldIndex )
 	iMyCard->EditContactL(  aFocusedFieldIndex );
 	}
 
+// ---------------------------------------------------------------------------
+// CCCAppMyCardPlugin::HandleError
+// ---------------------------------------------------------------------------
+//
+void CCCAppMyCardPlugin::HandleError( TInt aError )
+    {
+    CCoeEnv::Static()->HandleError( aError );
+    }
 
 // ---------------------------------------------------------------------------
 // CCCAppMyCardPlugin::NewContainerL
@@ -395,31 +458,38 @@ void CCCAppMyCardPlugin::SendBusinessCardL()
 //
 void CCCAppMyCardPlugin::ProcessCommandL(TInt aCommandId)
      {
+     TInt err = KErrNone;
+     
      switch(aCommandId)
          {
-         case ECCAppMyCardCmdStylusViewImageCmd:
-             ViewImageCmdL();
-             break;
+         case ECCAppMyCardCmdStylusViewImageCmd:             
+             TRAP( err, ViewImageCmdL() );             
+             break;             
              
          case ECCAppMyCardCmdStylusChangeImageCmd:
-             ChangeImageCmdL();
+             TRAP( err, ChangeImageCmdL() );             
              break;
              
          case ECCAppMyCardCmdStylusRemoveImageCmd:
-             RemoveImageCmdL();
+             TRAP( err, RemoveImageCmdL() );             
              break;
              
          case ECCAppMyCardCmdStylusAddImageCmd:
-             AddImageCmdL();
+             TRAP( err, AddImageCmdL() );             
              break;
              
          case ECCAppMyCardCmdStylusCopyDetailCmd:             
-              CopyDetailL();
+              TRAP( err, CopyDetailL() );              
               break;                        
              
          default:
         	 CAknView::ProcessCommandL(aCommandId);
              break;
+         }
+     
+      if( err != KErrNone )
+         {
+         HandleError( err );
          }
      }
 
@@ -467,4 +537,5 @@ void CCCAppMyCardPlugin::CopyDetailL()
     {
     CommandHandlerL()->HandleCommandL( EPbk2CmdCopyDetail, *iOwnContainer, NULL );
     }
+
 // End of File

@@ -587,8 +587,9 @@ MPbk2Command* CNamesListUIExtensionPlugin::CreatePbk2CommandForIdL
         case EPbk2CmdOpenMyCard:    // fallthrough
         case EPbk2CmdSelectMyCard:
 			{
-            result = CPbk2OpenMyCardCmd::NewL( 
+			result = CPbk2OpenMyCardCmd::NewL( 
                 const_cast<MCCAConnection*&>( iCCAConnection ),
+                iNamesListExViewRef ? iNamesListExViewRef->MyCard() : NULL,
                 &aUiControl );
 			break;
 			}

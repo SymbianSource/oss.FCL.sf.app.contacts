@@ -25,6 +25,7 @@
 #include "ccappmycard.h"
 #include "ccappmycardimageloader.h"
 #include <MPbk2ContactUiControl.h>
+#include <MPbk2ClipListBoxText.h>
 #include <aknlongtapdetector.h>
 #include "ccappmycardheadercontrol.h"
 
@@ -34,13 +35,14 @@ class CCCAppMyCardPlugin;
 class CCCAppMyCardHeaderControl;
 class CAknsBasicBackgroundControlContext;
 class CAknFormDoubleGraphicStyleListBox;
-class CCCAppMyCardListBoxModel;
+class CSpbContactDataModel;
 class CCCAppStatusControl;
 class CPbk2ApplicationServices;
 class CSpbContentProvider;
 class MCCAViewLauncher;
 class CCCAExtensionFactory;
 class CCCaFactoryExtensionNotifier;
+class CPbk2IconArray;
 
 /**
  * Class implementing CCAppMyCard -container for UI controls
@@ -57,7 +59,8 @@ class CCCAppMyCardContainer :
     public MPbk2ContactUiControl,
     public MCCAStatusControlObserver,
     public MMyCardHeaderControlObserver,
-    public MAknLongTapDetectorCallBack
+    public MAknLongTapDetectorCallBack,
+    public MPbk2ClipListBoxText
     {
 public: // constructor and destructor
 
@@ -114,6 +117,11 @@ public: // Functions from base classes
         TEventCode aType );
 
     /**
+     * From CCoeControl
+     */
+    void GetHelpContext(TCoeHelpContext& aContext) const;
+    
+    /**
      * From MMyCardObserver
      */
     void MyCardEventL( MMyCardObserver::TEvent aEvent );
@@ -158,6 +166,14 @@ public: // Functions from base classes
     * Overridden to receive pointer events
     */
     void HandlePointerEventL( const TPointerEvent& aPointerEvent );
+
+    /**
+     * From MPbk2ClipListBoxText
+     */
+    TBool ClipFromBeginning(
+        TDes& aBuffer,
+        TInt aItemIndex,
+        TInt aSubCellNumber);
 
     
 public: // New
@@ -294,7 +310,7 @@ private: // Data
      * Reference to listbox model
      * Not own.
      */
-    CCCAppMyCardListBoxModel* iModel;
+    CSpbContactDataModel& iModel;
 
     /**
      * Contact image loader
@@ -348,6 +364,11 @@ private: // Data
      * Flag for checking if Stylys opened 
      */
     TBool iLongTapHandled;    
+    
+    /**
+     * Not own. Listbox's icon array
+     */
+    CPbk2IconArray* iIconArray;
     };
 
 #endif // CCAPPMYCARDCONTAINER_H

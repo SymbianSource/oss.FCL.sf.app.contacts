@@ -90,12 +90,12 @@ CPcsAlgorithm1Helper::~CPcsAlgorithm1Helper()
 // CPcsAlgorithm1Helper::SearchSingleL
 // Search function for query in ITU-T mode, QWERTY mode, or Mixed (ITU-T and QWERTY) mode.
 // ----------------------------------------------------------------------------
-void  CPcsAlgorithm1Helper::SearchSingleL(const CPsSettings& aSettings,
-                                       CPsQuery& aPsQuery,
-                                       TBool isSearchInGroup,
-                                       RArray<TInt>& aContactsInGroup,
-                                       RPointerArray<CPsData>& searchResults,
-                                       RPointerArray<CPsPattern>& searchSeqs )
+void  CPcsAlgorithm1Helper::SearchSingleL( const CPsSettings& aSettings,
+                                           CPsQuery& aPsQuery,
+                                           TBool aIsSearchInGroup,
+                                           RArray<TInt>& aContactsInGroup,
+                                           RPointerArray<CPsData>& aSearchResults,
+                                           RPointerArray<CPsPattern>& aSearchSeqs )
 {
     PRINT ( _L("Enter CPcsAlgorithm1Helper::SearchSingleL") );
 
@@ -104,39 +104,45 @@ void  CPcsAlgorithm1Helper::SearchSingleL(const CPsSettings& aSettings,
     // Create filtering helper for the required sort type
     TSortType sortType = aSettings.GetSortType();
     CPcsAlgorithm1FilterHelper* filterHelper = CPcsAlgorithm1FilterHelper::NewL(sortType);
-
-    // Search based on first character
-    TInt numValue = iKeyMap->PoolIdForCharacter(aPsQuery.GetItemAtL(0).Character());
+    CleanupStack::PushL( filterHelper );
+    
+    // Search from cache based on first character
+    const CPsQueryItem& firstCharItem = aPsQuery.GetItemAtL(0);
+    TInt cachePoolId = iKeyMap->PoolIdForCharacter( firstCharItem.Character(), firstCharItem.Mode() );
 
     // Reset the result set array for new search
     iSearchResultsArr.ResetAndDestroy();
 
     // Get the data stores
-    RPointerArray<TDesC> aDataStores;
-    aSettings.SearchUrisL(aDataStores);
+    RPointerArray<TDesC> dataStores;
+    CleanupResetAndDestroyPushL( dataStores );
+    aSettings.SearchUrisL(dataStores);
 
     // Get the required display fields from the client
     RArray<TInt> requiredDataFields;
+    CleanupClosePushL( requiredDataFields );
     aSettings.DisplayFieldsL(requiredDataFields);
 
     // Perform search for each required data store
     RPointerArray<CPcsPoolElement> elements;
+    CleanupClosePushL( elements );
 
-    for ( int dsIndex = 0;
-          dsIndex < aDataStores.Count();
+    for ( TInt dsIndex = 0; 
+          dsIndex < dataStores.Count();
           dsIndex++ )
     {
         RPointerArray<CPsData> *temp = new (ELeave) RPointerArray<CPsData> ();
         iSearchResultsArr.Append(temp);
 
         // Get the contents for this data store
-        TInt arrayIndex = iAlgorithm->GetCacheIndex(*(aDataStores[dsIndex]));
+        TInt arrayIndex = iAlgorithm->GetCacheIndex(*(dataStores[dsIndex]));
         if ( arrayIndex < 0 ) continue;
         CPcsCache* cache = iAlgorithm->GetCache(arrayIndex);
-        cache->GetContactsForKeyL(numValue,elements);
+        cache->GetContactsForKeyL(cachePoolId, elements);
 
         // Get the supported data fields for this data store
         RArray<TInt> supportedDataFields;
+        CleanupClosePushL( supportedDataFields );
         cache->GetDataFields(supportedDataFields);
 
         // Get the filtered data fields for this data store
@@ -148,7 +154,7 @@ void  CPcsAlgorithm1Helper::SearchSingleL(const CPsSettings& aSettings,
                              elements,
                              aPsQuery,
                              filteredDataMatch,
-                             isSearchInGroup,
+                             aIsSearchInGroup,
                              aContactsInGroup);
 
         // If alphabetical sorting, get the results for this datastore
@@ -158,40 +164,39 @@ void  CPcsAlgorithm1Helper::SearchSingleL(const CPsSettings& aSettings,
         }
 
         elements.Reset();
-        supportedDataFields.Reset();
+        CleanupStack::PopAndDestroy( &supportedDataFields ); // Close
     }
 
-    aDataStores.ResetAndDestroy();
-    requiredDataFields.Reset();
+    CleanupStack::PopAndDestroy( &elements );           // Close
+    CleanupStack::PopAndDestroy( &requiredDataFields ); // Close
+    CleanupStack::PopAndDestroy( &dataStores );         // ResetAndDestroy
 
     // If alphabetical sorting, merge the result sets of all datastores
     if ( sortType == EAlphabetical )
     {
         // Merge the result sets of individual datastores alphabetically
         CPcsAlgorithm1Utils::FormCompleteSearchResultsL(iSearchResultsArr,
-                                                        searchResults);
+                                                        aSearchResults);
     }
     else
     {
         // Results are already sorted pattern based
-        filterHelper->GetResults(searchResults);
+        filterHelper->GetResults(aSearchResults);
     }
 
     // Get the sorted match sequence list
-    filterHelper->GetPatternsL(searchSeqs);
+    filterHelper->GetPatternsL(aSearchSeqs);
 
-    PRINT1 ( _L("CPcsAlgorithm1Helper::SearchSingleL: Number of search results = %d"), searchResults.Count() );
+    PRINT1 ( _L("CPcsAlgorithm1Helper::SearchSingleL: Number of search results = %d"), aSearchResults.Count() );
 
     // Cleanup
     for ( TInt i = 0; i < iSearchResultsArr.Count(); i++ )
     {
         iSearchResultsArr[i]->Reset();
-        delete iSearchResultsArr[i];
-        iSearchResultsArr[i] = NULL;
     }
-    iSearchResultsArr.Reset();
+    iSearchResultsArr.ResetAndDestroy();
 
-    delete filterHelper;
+    CleanupStack::PopAndDestroy( filterHelper );
 
     __LATENCY_MARKEND ( _L("CPcsAlgorithm1Helper::SearchSingleL") );
 
@@ -203,10 +208,10 @@ void  CPcsAlgorithm1Helper::SearchSingleL(const CPsSettings& aSettings,
 // Subset search function
 // ----------------------------------------------------------------------------
 void  CPcsAlgorithm1Helper::FilterResultsSingleL(CPcsAlgorithm1FilterHelper* aAlgorithmFilterHelper,
-                                                 RPointerArray<CPcsPoolElement>& searchSet,
+                                                 RPointerArray<CPcsPoolElement>& aSearchSet,
                                                  CPsQuery& aPsQuery,
                                                  TUint8 aFilteredDataMatch,
-                                                 TBool isSearchInGroup,
+                                                 TBool aIsSearchInGroup,
                                                  RArray<TInt>& aContactsInGroup)
 {
     PRINT ( _L("Enter CPcsAlgorithm1Helper::FilterResultsSingleL") );
@@ -223,22 +228,22 @@ void  CPcsAlgorithm1Helper::FilterResultsSingleL(CPcsAlgorithm1FilterHelper* aAl
              &queryAsDes );      
 
     // Parse thru each search set elements and filter the results
-    for ( TInt index = 0; index < searchSet.Count(); index++ )
+    for ( TInt index = 0; index < aSearchSet.Count(); index++ )
     {
-        CPcsPoolElement* poolElement = static_cast<CPcsPoolElement*>(searchSet[index]);
+        CPcsPoolElement* poolElement = static_cast<CPcsPoolElement*>(aSearchSet[index]);
         CPsData* psData = poolElement->GetPsData();
         psData->ClearDataMatches();
         RPointerArray<TDesC> tempMatchSeq;
+        CleanupResetAndDestroyPushL( tempMatchSeq );
         TBool isAdded = EFalse;
 
         // Parse thru each data and filter the results
         for ( TInt dataIndex = 0; dataIndex < psData->DataElementCount(); dataIndex++ )
         {
             // Filter off data fields not required in search
-            TReal bitIndex;
-            Math::Pow(bitIndex, 2, dataIndex);
+            TUint8 bitIndex = 1 << dataIndex;
 
-            TUint8 filter = (TUint8)bitIndex & aFilteredDataMatch;
+            TUint8 filter = bitIndex & aFilteredDataMatch;
             if ( filter == 0x0 )
             {
                 // Move to next data
@@ -247,7 +252,7 @@ void  CPcsAlgorithm1Helper::FilterResultsSingleL(CPcsAlgorithm1FilterHelper* aAl
 
             if ( poolElement->IsDataMatch(dataIndex) )
             {
-                TLex lex(psData->Data(dataIndex)->Des());
+                TLex lex( *psData->Data(dataIndex) );
 
                 // First word
                 TPtrC token = lex.NextToken();
@@ -274,11 +279,11 @@ void  CPcsAlgorithm1Helper::FilterResultsSingleL(CPcsAlgorithm1FilterHelper* aAl
                         if ( tempMatchSeq.Find(seq, rule) == KErrNotFound )
                         {
                             tempMatchSeq.Append(seq);
-                            CleanupStack::Pop();
+                            CleanupStack::Pop(seq);
                         }
                         else
                         {
-                            CleanupStack::PopAndDestroy();
+                            CleanupStack::PopAndDestroy(seq);
                         }
                     }
                     // Next word
@@ -290,7 +295,7 @@ void  CPcsAlgorithm1Helper::FilterResultsSingleL(CPcsAlgorithm1FilterHelper* aAl
         // Add the result
         if ( isAdded )
         {
-            if ( isSearchInGroup )
+            if ( aIsSearchInGroup )
             {
                 if ( aContactsInGroup.Find(psData->Id()) != KErrNotFound )
                 {
@@ -305,7 +310,7 @@ void  CPcsAlgorithm1Helper::FilterResultsSingleL(CPcsAlgorithm1FilterHelper* aAl
 
         // Cleanup the match sequence array as
         // they are stored in pattern details structure
-        tempMatchSeq.ResetAndDestroy();
+        CleanupStack::PopAndDestroy( &tempMatchSeq ); // ResetAndDestroy
     }
 
     __LATENCY_MARKEND ( _L("CPcsAlgorithm1Helper::FilterResultsSingleL") );
@@ -318,7 +323,7 @@ void  CPcsAlgorithm1Helper::FilterResultsSingleL(CPcsAlgorithm1FilterHelper* aAl
 // Funciton to search matching sequences in the input text
 // ----------------------------------------------------------------------------
 void  CPcsAlgorithm1Helper::SearchMatchSeqL(CPsQuery& aPsQuery,
-                                            TDesC& aData,
+                                            const TDesC& aData,
                                             RPointerArray<TDesC>& aMatchSet,
                                             RArray<TPsMatchLocation>& aMatchLocation )
 {
@@ -411,16 +416,14 @@ TUint8 CPcsAlgorithm1Helper::FilterDataFieldsL(RArray<TInt>& aRequiredDataFields
 {
     TUint8 filteredMatch = 0x0;
 
-    for ( int i = 0; i < aSupportedDataFields.Count(); i++ )
+    for ( TInt i = 0; i < aSupportedDataFields.Count(); i++ )
     {
-        for ( int j = 0; j < aRequiredDataFields.Count(); j++ )
+        for ( TInt j = 0; j < aRequiredDataFields.Count(); j++ )
         {
             if ( aSupportedDataFields[i] == aRequiredDataFields[j] )
             {
-                TReal val;
-                Math::Pow(val, 2, i);
-
-                filteredMatch |= (TUint8)val;
+                TUint8 val = 1 << i;
+                filteredMatch |= val;
             }
         }
     }

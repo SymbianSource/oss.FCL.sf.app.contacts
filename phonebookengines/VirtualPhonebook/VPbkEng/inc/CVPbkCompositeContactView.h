@@ -40,10 +40,11 @@ class MVPbkCompositeContactViewPolicy;
  * Composite contact views can be used to compose a view from
  * multiple sub views.
  */
-NONSHARABLE_CLASS(CVPbkCompositeContactView) : 
+NONSHARABLE_CLASS(CVPbkCompositeContactView) :
         public CBase,
         public MVPbkContactViewBase,
         public MVPbkContactViewObserver,
+        public MVPbkContactViewObserverExtension,
         protected MVPbkContactViewFiltering,
         public MVPbkContactViewBaseChildAccessExtension
 	{
@@ -65,7 +66,7 @@ NONSHARABLE_CLASS(CVPbkCompositeContactView) :
          */
         void AddSubViewL(
                 MVPbkContactViewBase* aSubView, TInt  aViewId = KVPbkDefaultViewId);
-        
+
         /**
          * ActualContactCountL returns the number of contact's in subviews.
          * It might be that all subview events haven't
@@ -75,21 +76,21 @@ NONSHARABLE_CLASS(CVPbkCompositeContactView) :
          * @return the contact count calculated from subviews.
          */
         TInt ActualContactCountL() const;
-        
+
         /**
          * @return The number of contacts in iContactMapping
          */
         inline TInt CompositeContactCountL() const;
-        
+
         /**
          * If the parent of this view is also a composite view
          * it calls this to configure this view as an internal view
          * that has no external observers.
          */
         void ApplyInternalCompositePolicyL();
-        
+
         void SetViewId(TInt aViewId);
-        
+
     private: // Abstract interface for composite implementations
         /**
          * Builds view mapping.
@@ -133,8 +134,8 @@ NONSHARABLE_CLASS(CVPbkCompositeContactView) :
         TInt IndexOfBookmarkL(
                 const MVPbkContactBookmark& aContactBookmark ) const;
         MVPbkContactViewFiltering* ViewFiltering();
-        TAny* ContactViewBaseExtension(TUid aExtensionUid); 
-            
+        TAny* ContactViewBaseExtension(TUid aExtensionUid);
+
     private: // From MVPbkContactViewObserver
         void ContactViewReady(
                 MVPbkContactViewBase& aView );
@@ -152,6 +153,11 @@ NONSHARABLE_CLASS(CVPbkCompositeContactView) :
                 MVPbkContactViewBase& aView,
                 TInt aError,
                 TBool aErrorNotified);
+        TAny* ContactViewObserverExtension( TUid aExtensionUid );
+
+    private: // From MVPbkContactViewObserverExtension
+        void FilteredContactRemovedFromView(
+			 	MVPbkContactViewBase& aView );
 
     private: // From MVPbkContactViewFiltering
         /// Composite implementations must implement this
@@ -159,7 +165,7 @@ NONSHARABLE_CLASS(CVPbkCompositeContactView) :
             MVPbkContactViewObserver& aObserver,
             const MDesCArray& aFindWords,
             const MVPbkContactBookmarkCollection* aAlwaysIncludedContacts ) = 0;
-        void UpdateFilterL( 
+        void UpdateFilterL(
             const MDesCArray& aFindWords,
             const MVPbkContactBookmarkCollection* aAlwaysIncludedContacts );
 
@@ -171,7 +177,7 @@ NONSHARABLE_CLASS(CVPbkCompositeContactView) :
 
     protected: // Types
         class CSubViewData;
-                
+
         /**
          * Contact mapping structure. Mapping supports 128 subviews
          * and over 8 million contacts per sub view.
@@ -182,7 +188,7 @@ NONSHARABLE_CLASS(CVPbkCompositeContactView) :
             TInt iViewIndex: 8;
             /// Own: Contact index
             TInt iContactIndex: 24;
-            };                          
+            };
 
     protected: // Implementation
         CVPbkCompositeContactView();
@@ -194,7 +200,7 @@ NONSHARABLE_CLASS(CVPbkCompositeContactView) :
         TBool IsCompositeReady() const;
         /// Returns the composite's view policy.
         MVPbkCompositeContactViewPolicy& CompositePolicy() const;
-        
+
     private: // Implementation
         TInt FindSubViewIndex(MVPbkContactViewBase& aView) const;
         TBool AllSubViewsKnown() const;
@@ -217,7 +223,7 @@ NONSHARABLE_CLASS(CVPbkCompositeContactView) :
         void SendViewUnavailableEvent();
         void SendViewErrorEvent( TInt aError, TBool aErrorNotified );
         void UpdateSortOrderL();
-            
+
     protected: // Data
         /// Own: Array of subviews
         RPointerArray<CSubViewData> iSubViews;
@@ -266,7 +272,7 @@ NONSHARABLE_CLASS( CVPbkCompositeContactView::CSubViewData ):
          * @param aState    View state.
          */
         CSubViewData(TViewState aState) : iState( aState ) {}
-            
+
         /**
          * Destructor.
          */
@@ -288,29 +294,29 @@ NONSHARABLE_CLASS( CVPbkCompositeContactView::CSubViewData ):
 /**
  * Internal interface for different behavior of exterior and interior
  * composite views.
- */ 
+ */
 NONSHARABLE_CLASS(MVPbkCompositeContactViewPolicy)
     {
-    public: 
+    public:
         /**
          * Destructor
          */
         virtual ~MVPbkCompositeContactViewPolicy() {}
-        
+
         /**
          * Handles contact added & removed events.
          */
-        virtual void HandleViewEventsL( 
+        virtual void HandleViewEventsL(
             CVPbkEventArrayItem::TViewEventType aEvent,
             MVPbkContactViewBase& aSubview,
-            TInt aIndex, const 
+            TInt aIndex, const
             MVPbkContactLink& aContactLink ) = 0;
-        
-        /** 
+
+        /**
          * Reset policy if it has cached data.
          */
         virtual void Reset() = 0;
-        
+
         /**
          * Returns the contact count in composite or 0 if
          * composite is not up to date with leaf views.
@@ -318,11 +324,11 @@ NONSHARABLE_CLASS(MVPbkCompositeContactViewPolicy)
          * @return aCompositeCount or 0.
          */
         virtual TInt ContactCountL() const = 0;
-        
+
         /**
          * Returns ETrue if this is an internal composite policy
          * @return ETrue if this is an internal composite policy
-         */ 
+         */
         virtual TBool InternalPolicy() const = 0;
     };
 
@@ -338,22 +344,22 @@ NONSHARABLE_CLASS(CVPbkExternalCompositeViewPolicy) :
                 CVPbkCompositeContactView& aCompositeView,
                 RPointerArray<MVPbkContactViewObserver>& aObservers );
         ~CVPbkExternalCompositeViewPolicy();
-        
+
     private: // From MVPbkCompositeContactViewPolicy
-        void HandleViewEventsL( 
+        void HandleViewEventsL(
             CVPbkEventArrayItem::TViewEventType aEvent,
             MVPbkContactViewBase& aSubview,
-            TInt aIndex, const 
+            TInt aIndex, const
             MVPbkContactLink& aContactLink );
         void Reset();
         TInt ContactCountL() const;
         TBool InternalPolicy() const;
-    
+
     private: // Implementation
         CVPbkExternalCompositeViewPolicy(
             CVPbkCompositeContactView& aCompositeView,
             RPointerArray<MVPbkContactViewObserver>& aObservers );
-        
+
     private: // Data
         /// Ref: The parent of this policy
         CVPbkCompositeContactView& iCompositeView;
@@ -374,22 +380,22 @@ NONSHARABLE_CLASS(CVPbkInternalCompositeViewPolicy) :
         static CVPbkInternalCompositeViewPolicy* NewL(
                 CVPbkCompositeContactView& aCompositeView,
                 RPointerArray<MVPbkContactViewObserver>& aObservers );
-        
+
     private: // From MVPbkCompositeContactViewPolicy
-        void HandleViewEventsL( 
+        void HandleViewEventsL(
             CVPbkEventArrayItem::TViewEventType aEvent,
             MVPbkContactViewBase& aSubview,
-            TInt aIndex, const 
+            TInt aIndex, const
             MVPbkContactLink& aContactLink );
         void Reset();
         TInt ContactCountL() const;
         TBool InternalPolicy() const;
-    
+
     private: // Implementation
         CVPbkInternalCompositeViewPolicy(
             CVPbkCompositeContactView& aCompositeView,
             RPointerArray<MVPbkContactViewObserver>& aObservers );
-        
+
     private: // Data
         /// Ref: The parent of this policy
         CVPbkCompositeContactView& iCompositeView;

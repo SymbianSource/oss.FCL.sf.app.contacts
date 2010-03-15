@@ -24,6 +24,7 @@
 
 #include "CPsData.h"
 #include "CPcsDefs.h"
+
 // ============================== MEMBER FUNCTIONS ============================
 
 
@@ -324,7 +325,7 @@ EXPORT_C TInt CPsData::CompareByData( const CPsData& aObject1,
         if( !compareRes )
             {
             break;
-			}
+            }
         }
     return compareRes;
 }
@@ -342,18 +343,17 @@ EXPORT_C TBool CPsData::CompareById(const CPsData& aObject1, const CPsData& aObj
 	
 	return EFalse;
 }
-				     
+
 
 // ----------------------------------------------------------------------------
 // CPsData::IsDataMatch
 // Return TRUE if data is matched for predictive search
 // ----------------------------------------------------------------------------		
 EXPORT_C TBool CPsData::IsDataMatch(TInt aIndex)
-{	
-    TReal val;
-	Math::Pow(val, 2, aIndex);
-
-	return(iDataMatches & (TUint8)val);
+{
+    __ASSERT_DEBUG( aIndex < 8, User::Panic( _L("CPsData"), KErrOverflow ) );
+    TUint8 val = 1 << aIndex;
+    return (iDataMatches & val);
 }
 
 // ----------------------------------------------------------------------------
@@ -370,11 +370,10 @@ EXPORT_C TUint8 CPsData::DataMatch()
 // 
 // ----------------------------------------------------------------------------
 EXPORT_C void CPsData::SetDataMatch(TInt aIndex)
-{	
-    TReal val;
-	Math::Pow(val, 2, aIndex);
-
-	iDataMatches |= (TUint8)val;
+{
+    __ASSERT_DEBUG( aIndex < 8, User::Panic( _L("CPsData"), KErrOverflow ) );
+    TUint8 val = 1 << aIndex;
+    iDataMatches |= val;
 }
 
 // ----------------------------------------------------------------------------

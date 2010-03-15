@@ -27,6 +27,7 @@
 #include <phonebook2ece.loc>
 #include <phonebook2ece.mbg>
 #include <phonebook2.loc>
+#include <VPbkFieldType.rh>
 
 //pbk2
 #include <Pbk2UIExtension.rh>
@@ -403,5 +404,44 @@ RESOURCE MENU_PANE r_pbk2_names_list_mycard_menu
             }
         };
     }
+
+// --------------------------------------------------------------------------
+// r_pbk2_mycard_field_clip_selector
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_pbk2_mycard_field_clip_selector
+{
+    versitProperties =
+    {
+        // email fields
+        VBK_FIELD_VERSIT_PROPERTY
+        {
+            name = EVPbkVersitNameEMAIL;
+        },
+        // SIP fields (POC, SWIS, VoIP, etc.)
+        VBK_FIELD_VERSIT_PROPERTY
+        {
+            name = EVPbkVersitNameX;
+            extensionName = "X-SIP";
+        },
+        // xSP fields
+        VBK_FIELD_VERSIT_PROPERTY
+        {
+            name = EVPbkVersitNameIMPP;
+        },
+        // telephone
+        VBK_FIELD_VERSIT_PROPERTY
+        {
+            name = EVPbkVersitNameTEL;
+        },
+        // telephone
+        VBK_FIELD_VERSIT_PROPERTY
+        {
+            name = EVPbkVersitNameX;
+            extensionName = "X-ASSISTANT-TEL";
+        }
+    };
+}
+
 
 // EOF

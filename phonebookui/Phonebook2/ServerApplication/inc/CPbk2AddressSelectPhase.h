@@ -154,6 +154,9 @@ class CPbk2AddressSelectPhase : public CBase,
         TInt iTitleResId;
         /// Ref: Eikon enviroment
         CEikonEnv* iEikenv;
+        ///Bool to denote whether the Current Obj has been deleted or not
+		///Doesnt Own
+        TBool *iThisPtrDestroyed;
     };
 
 #endif // CPBK2ADDRESSSELECTPHASE_H

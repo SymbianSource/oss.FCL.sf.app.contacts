@@ -206,7 +206,7 @@ void CCCAppImageDecoding::CropBitmapL()
     TSize dummy;
     Pbk2PresentationImageUtils::CropImageL(
             *iBitmap, 
-            Pbk2PresentationImageUtils::ELandscapeCropping, 
+            Pbk2PresentationImageUtils::ECropping, 
             dummy );
     }
 

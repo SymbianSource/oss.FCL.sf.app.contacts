@@ -221,19 +221,20 @@ void  CPsDataPluginInterface::GetSupportedDataFieldsL(TDesC& aUri, RArray<TInt>&
     PRINT ( _L("Enter CPsDataPluginInterface::GetAllSupportedDataStoresL") );
    
     for ( TInt idx = 0; idx < iPsDataPluginInstances.Count(); idx++ )
-    {   
-       RPointerArray<TDesC> aDataStores;    
-       iPsDataPluginInstances[idx]->GetSupportedDataStoresL(aDataStores);
+    {
+       RPointerArray<TDesC> dataStores;
+       CleanupClosePushL( dataStores );
+       iPsDataPluginInstances[idx]->GetSupportedDataStoresL(dataStores);
        
-       for( TInt i(0); i<aDataStores.Count(); i++)
-       {       	
-	       	if( aDataStores[i]->Compare(aUri) == 0)
+       for ( TInt i(0); i<dataStores.Count(); i++)
+       {
+	       	if ( dataStores[i]->Compare(aUri) == 0)
 	       	{
 	       		iPsDataPluginInstances[idx]->GetSupportedDataFieldsL(aDataFields);
 	       		break;
-	       	}    	
+	       	}
        }
-       aDataStores.Reset();
+       CleanupStack::PopAndDestroy( &dataStores ); // Close
     }
     
     PRINT ( _L("End CPsDataPluginInterface::GetAllSupportedDataStoresL") );

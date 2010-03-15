@@ -189,6 +189,11 @@ NONSHARABLE_CLASS( CCmsServerContact ) : public CBase,
         */
         void IsTopContactL( const RMessage2& aMessage );
         
+        /**
+        * Sets default number for Voice Call
+        */
+        void SetVoiceCallDefaultL();
+        
     private:
         
         /**

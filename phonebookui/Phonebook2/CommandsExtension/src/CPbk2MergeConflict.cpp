@@ -114,25 +114,26 @@ void CPbk2MergeConflict::AddFields(
     iFieldSecond = &aFieldSecond;
     
     const MVPbkFieldType* fieldType = aFieldFirst.BestMatchingFieldType();
-    __ASSERT_ALWAYS( fieldType, Panic( EPbk2FieldTypeNotExists ) );
-
-    if( fieldType->NonVersitType() == EVPbkNonVersitTypeCodImage )
-        {
-        iConflictType = EPbk2ConflictTypeImage;
-        }
-    else
-        {
-        TArray<TVPbkFieldVersitProperty> versitPropArr = fieldType->VersitProperties();
-        TInt count = versitPropArr.Count();
-    
-        for( TInt idx = 0; idx < count; idx++ )
+    if ( fieldType )
+        {            
+        if( fieldType->NonVersitType() == EVPbkNonVersitTypeCodImage )
             {
-            TVPbkFieldVersitProperty versitProp = versitPropArr[idx];
-            if( versitProp.Name() == EVPbkVersitNameLOGO ||
-                versitProp.Name() == EVPbkVersitNamePHOTO )
+            iConflictType = EPbk2ConflictTypeImage;
+            }
+        else
+            {
+            TArray<TVPbkFieldVersitProperty> versitPropArr = fieldType->VersitProperties();
+            TInt count = versitPropArr.Count();
+        
+            for( TInt idx = 0; idx < count; idx++ )
                 {
-                iConflictType = EPbk2ConflictTypeImage;
-                break;
+                TVPbkFieldVersitProperty versitProp = versitPropArr[idx];
+                if( versitProp.Name() == EVPbkVersitNameLOGO ||
+                    versitProp.Name() == EVPbkVersitNamePHOTO )
+                    {
+                    iConflictType = EPbk2ConflictTypeImage;
+                    break;
+                    }
                 }
             }
         }
@@ -248,16 +249,19 @@ void CPbk2MergeConflict::GetChosenFieldsL(
 void CPbk2MergeConflict::CustomizeTextValueL( const MVPbkStoreContactField& aField, TDes& aBuf )
     {
     const MVPbkFieldType* fieldType= aField.BestMatchingFieldType();
-    TVPbkNonVersitFieldType nonVersitType = fieldType->NonVersitType();
-    if ( nonVersitType == EVPbkNonVersitTypeRingTone )
+    if ( fieldType )
         {
-        TParsePtr fileName = TParsePtr( aBuf );
-        if ( fileName.NamePresent() )
+        TVPbkNonVersitFieldType nonVersitType = fieldType->NonVersitType();
+        if ( nonVersitType == EVPbkNonVersitTypeRingTone )
             {
-            TPtrC namePtr = fileName.Name();
-            HBufC* name = namePtr.AllocL();
-            aBuf.Copy( *name );
-            delete name;
+            TParsePtr fileName = TParsePtr( aBuf );
+            if ( fileName.NamePresent() )
+                {
+                TPtrC namePtr = fileName.Name();
+                HBufC* name = namePtr.AllocL();
+                aBuf.Copy( *name );
+                delete name;
+                }
             }
         }
     }

@@ -67,7 +67,7 @@ void CPcsServer::ConstructL()
 {  
 	PRINT ( _L("Enter CPcsServer::ConstructL") );
 	
-	pcs = CPcsPluginInterface::NewL();
+	iPcs = CPcsPluginInterface::NewL();
     
 	// Check if the phone is chinese feature id installed
 	TBool isChineseVariant = IsChineseFeatureInitilizedL();
@@ -79,7 +79,7 @@ void CPcsServer::ConstructL()
 	    // Chinese variant phones. Use Algorithm 2
 	    PRINT ( _L("Enter CPcsServer::ConstructL() - Chinese Variant Phone Algorithm Instantiated") );
 	    TBuf<KAlgorithmNameMaxLen> algorithmName(KPcsAlgorithm_Chinese);
-	    pcs->InstantiateAlgorithmL(algorithmName);
+	    iPcs->InstantiateAlgorithmL(algorithmName);
 	    
 	    
 	    }
@@ -89,7 +89,7 @@ void CPcsServer::ConstructL()
 	    PRINT ( _L("Enter CPcsServer::ConstructL() - NON-Chinese Variant Phone Algorithm Instantiated") );
 	    TBuf<KAlgorithmNameMaxLen> algorithmName(KPcsAlgorithm_NonChinese);
 	   // TBuf<KAlgorithmNameMaxLen> algorithmName(KPcsAlgorithm_Chinese);
-	    pcs->InstantiateAlgorithmL(algorithmName);
+	    iPcs->InstantiateAlgorithmL(algorithmName);
 	    
 	    }
   
@@ -103,11 +103,7 @@ void CPcsServer::ConstructL()
 CPcsServer::~CPcsServer()
 {
 	PRINT ( _L("Enter CPcsServer::~CPcsServer") );
-	if(pcs)
-	{
-	  delete pcs;
-	  pcs=NULL;
-	}  	
+	delete iPcs;
 	PRINT ( _L("End CPcsServer::~CPcsServer") );
 }
 
@@ -137,7 +133,7 @@ CSession2* CPcsServer::NewSessionL(const TVersion& aVersion,
 // ----------------------------------------------------------------------------
 CPcsPluginInterface* CPcsServer::PluginInterface()
 {
-	return pcs;
+	return iPcs;
 };
 
 // ----------------------------------------------------------------------------

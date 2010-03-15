@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+// Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies).
 // All rights reserved.
 // This component and the accompanying materials are made available
 // under the terms of "Eclipse Public License v1.0"
@@ -239,6 +239,14 @@ TBool CPbapChListingExporter::EventFetchedL(const CLogEvent& aEvent, TInt aEvent
 		TInt handle = aEventIndex + 1; // call history handles start from 1
 
 		TContactItemId contactId = aEvent.Contact();
+		
+		if (contactId == KNullContactId && aEvent.RemoteParty() != KNullDesC)
+			{
+			// The S60 phonebook uses the remote party for the name, so if there isn't a name
+			// there won't be a contact, so we only look up the contact if there is a Remote Party
+			contactId = iClient.ExporterUtil().FindContactIdFromNumberL(aEvent.Number());
+			}
+		
 		if (contactId != KNullContactId)
 			{
 			// a contact is associated with the log event so read its name from the database

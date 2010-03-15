@@ -466,23 +466,11 @@ void CPguDeleteGroupCmd::ConfirmDeletionL()
     TInt queryResult = 0;
     MVPbkContactLinkArray* items = iContactGroup->ItemsContainedLC();
 
-    // The query depends on whether there are contacts in the group
-    if ( items->Count() > 0 )
-        {
-        HBufC* prompt = StringLoader::LoadLC(
-            R_PBK2_QTN_FLDR_DEL_FULL_GROUPS_QUERY );
-        CAknQueryDialog* dlg = CAknQueryDialog::NewL();
-        queryResult = dlg->ExecuteLD(
-            R_PBK2_GENERAL_CONFIRMATION_QUERY, *prompt );
-        CleanupStack::PopAndDestroy( prompt );
-        }
-    else
-        {
-        CPbk2GeneralConfirmationQuery* query =
-            CPbk2GeneralConfirmationQuery::NewL();
-        queryResult = query->ExecuteLD(
-            *iContactGroup, R_QTN_QUERY_COMMON_CONF_DELETE, MPbk2ContactNameFormatter::EPreserveAllOriginalSpaces );
-        }
+    // Show the query "Delete X” "( X is the group name ).
+    CPbk2GeneralConfirmationQuery* query =
+        CPbk2GeneralConfirmationQuery::NewL();
+    queryResult = query->ExecuteLD(
+        *iContactGroup, R_QTN_QUERY_COMMON_CONF_DELETE, MPbk2ContactNameFormatter::EPreserveAllOriginalSpaces );
 
     if ( queryResult )
         {

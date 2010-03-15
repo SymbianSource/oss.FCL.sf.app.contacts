@@ -76,6 +76,8 @@ namespace {
 
 const TInt KFirstContact = 0;
 const TInt KSecondContact = 1;
+const TInt KAmountToMerge = 2;
+const TInt KDeletionDelay = 1000000; // 1s
 
 _LIT( KLocalStore, "cntdb://c:contacts.cdb" );
 
@@ -129,6 +131,8 @@ CPbk2MergeContactsCmd::~CPbk2MergeContactsCmd()
         }
 
     CleanAfterFetching();
+    iTimer.Cancel();
+    iTimer.Close();
     delete iFirstContactString;
     delete iSecondContactString;
     delete iMergedContactString;
@@ -202,6 +206,7 @@ void CPbk2MergeContactsCmd::ConstructL()
     iContactManager = &Phonebook2::Pbk2AppUi()->ApplicationServices().ContactManager();
     iAppServices = CPbk2ApplicationServices::InstanceL();
     iPhotoConflictIndex = KErrNotFound;
+    User::LeaveIfError( iTimer.CreateLocal() );
     }
     
 // --------------------------------------------------------------------------
@@ -487,19 +492,23 @@ HBufC* CPbk2MergeContactsCmd::ContactAsStringL( MVPbkStoreContact* aStoreContact
     for ( TInt i(0); i < fields.FieldCount(); ++i )
         {
         MVPbkStoreContactField& field = fields.FieldAt( i );
-        if ( field.BestMatchingFieldType()->FieldTypeResId() == R_VPBK_FIELD_TYPE_FIRSTNAME )
+        const MVPbkFieldType* fieldType = field.BestMatchingFieldType();
+        if ( fieldType )
             {
-            MVPbkContactFieldData& data = field.FieldData();
-            __ASSERT_DEBUG( data.DataType() == EVPbkFieldStorageTypeText, Panic( EPbk2WrongTypeOfData ) );
-            MVPbkContactFieldTextData& textData = MVPbkContactFieldTextData::Cast( data );
-            firstName.Set( textData.Text() );
-            }
-        else if ( field.BestMatchingFieldType()->FieldTypeResId() == R_VPBK_FIELD_TYPE_LASTNAME )
-            {
-            MVPbkContactFieldData& data = field.FieldData();
-            __ASSERT_DEBUG( data.DataType() == EVPbkFieldStorageTypeText, Panic( EPbk2WrongTypeOfData ) );
-            MVPbkContactFieldTextData& textData = MVPbkContactFieldTextData::Cast( data );
-            lastName.Set( textData.Text() );        
+            if ( fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_FIRSTNAME )
+                {
+                MVPbkContactFieldData& data = field.FieldData();
+                __ASSERT_DEBUG( data.DataType() == EVPbkFieldStorageTypeText, Panic( EPbk2WrongTypeOfData ) );
+                MVPbkContactFieldTextData& textData = MVPbkContactFieldTextData::Cast( data );
+                firstName.Set( textData.Text() );
+                }
+            else if ( fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_LASTNAME )
+                {
+                MVPbkContactFieldData& data = field.FieldData();
+                __ASSERT_DEBUG( data.DataType() == EVPbkFieldStorageTypeText, Panic( EPbk2WrongTypeOfData ) );
+                MVPbkContactFieldTextData& textData = MVPbkContactFieldTextData::Cast( data );
+                lastName.Set( textData.Text() );        
+                }
             }
         }
     
@@ -640,6 +649,7 @@ void CPbk2MergeContactsCmd::GetContactsFromUiFetchL()
     params.iResId = R_PBK2_MULTIPLE_ENTRY_FETCH_NO_GROUPS_DLG;
     params.iCbaId = R_PBK2_SOFTKEYS_MERGE_BACK_MARK;
     params.iNaviPaneId = R_PBK2_MERGE_CONTACTS_FETCH_NAVILABEL;
+    params.iMinSelection = KAmountToMerge;
     
     CPbk2StorePropertyArray& storeProperties =
         Phonebook2::Pbk2AppUi()->ApplicationServices().StoreProperties();
@@ -753,10 +763,19 @@ void CPbk2MergeContactsCmd::Finish( TInt aReason )
 //
 void CPbk2MergeContactsCmd::StartNext( TPhase aPhase )
     {
-    __ASSERT_DEBUG( !IsActive(), Panic( EPbk2WronglyActivated ));    
-    iNextPhase = aPhase;    
-    TRequestStatus* status = &iStatus;
-    User::RequestComplete(status, KErrNone);
+    __ASSERT_DEBUG( !IsActive(), Panic( EPbk2WronglyActivated )); 
+    
+    iNextPhase = aPhase;
+    
+    if ( iNextPhase == EPhaseGetGroups )
+        {
+        iTimer.After( iStatus, KDeletionDelay ); 
+        }
+    else
+        {
+        TRequestStatus* status = &iStatus;
+        User::RequestComplete( status, KErrNone );
+        }
     SetActive();
     }
 
@@ -1236,19 +1255,22 @@ void CPbk2MergeContactsCmd::CheckPhotoConflictL()
             conflict.GetFieldsL( firstField, secondField );
             
             const MVPbkFieldType* fieldType = firstField->BestMatchingFieldType();
-            TArray<TVPbkFieldVersitProperty> versitPropArr = fieldType->VersitProperties();
-            TInt count = versitPropArr.Count();
-        
-            for( TInt idx = 0; idx < count; idx++ )
+            if ( fieldType )
                 {
-                TVPbkFieldVersitProperty versitProp = versitPropArr[idx];
-                if( versitProp.Name() == EVPbkVersitNamePHOTO )
+                TArray<TVPbkFieldVersitProperty> versitPropArr = fieldType->VersitProperties();
+                TInt count = versitPropArr.Count();
+            
+                for( TInt idx = 0; idx < count; idx++ )
                     {
-                    if ( firstField->FieldData().DataType() == EVPbkFieldStorageTypeBinary && 
-                            secondField->FieldData().DataType() == EVPbkFieldStorageTypeBinary )
+                    TVPbkFieldVersitProperty versitProp = versitPropArr[idx];
+                    if( versitProp.Name() == EVPbkVersitNamePHOTO )
                         {
-                        iPhotoConflictIndex = i;
-                        break;
+                        if ( firstField->FieldData().DataType() == EVPbkFieldStorageTypeBinary && 
+                                secondField->FieldData().DataType() == EVPbkFieldStorageTypeBinary )
+                            {
+                            iPhotoConflictIndex = i;
+                            break;
+                            }
                         }
                     }
                 }

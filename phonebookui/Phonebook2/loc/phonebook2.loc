@@ -415,9 +415,9 @@
 #define qtn_phob_opt_speed_dial_remove          "Remove speed dial"
 
 //d:Options list text for sending business card of a memory entry
-//l:list_single_pane_t1_cp2/opt3
+//l:list_single_pane_t1_cp2
 //
-#define qtn_bcard_opt_send_entry_via            "Send contact"
+#define qtn_bcard_opt_send_entry_via            "Send as business card"
 
 //d:Options list text for displaying information about phonebook memory
 //l:list_single_pane_t1_cp2/opt3
@@ -2282,54 +2282,6 @@
 //r:5.0
 //
 #define qtn_phob_protected_tone "Protected file. Cannot be selected as ringing tone"
-
-//d:Shown in long tap menu of names list 
-//l: list_single_touch_menu_pane_t1 
-//w: 
-//r:5.0 
-#define qtn_phob_longtap_copy	"Copy"
-
-//d:Shown in long tap menu of names list 
-//l: list_single_touch_menu_pane_t1 
-//w: 
-//r:5.0 
-#define qtn_phob_longtap_send "Send business card" 
-
-//d:Shown in long tap menu of names list 
-//l: list_single_touch_menu_pane_t1 
-//w: 
-//r:5.0 
-#define qtn_phob_longtap_delete "Delete" 
-
-//d:Shown in long tap menu of groups list 
-//l: list_single_touch_menu_pane_t1 
-//w: 
-//r:5.0 
-#define qtn_phob_longtap_message "Create message" 
-
-//d:Shown in long tap menu of groups list 
-//l: list_single_touch_menu_pane_t1 
-//w: 
-//r:5.0 
-#define qtn_phob_longtap_rename "Rename" 
-
-//d:Shown in long tap menu of groups list 
-//l: list_single_touch_menu_pane_t1 
-//w: 
-//r:5.0 
-#define qtn_phob_longtap_tone "Ringing tone" 
-
-//d:Shown in long tap menu of group members list 
-//l: list_single_touch_menu_pane_t1 
-//w: 
-//r:5.0 
-#define qtn_phob_longtap_rem_from_grp "Remove from group" 
-
-//d:Shown in long tap menu of group memebers list 
-//l: list_single_touch_menu_pane_t1 
-//w: 
-//r:5.0 
-#define qtn_phob_longtap_is_in_grp "Belongs to groups" 
 
 //d:Data value "According to profile" shown when no contact specific ringing tone is selected
 //l:list_form_graphic_pane_t1

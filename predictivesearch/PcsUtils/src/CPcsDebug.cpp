@@ -150,7 +150,7 @@ void CPcsDebug::UnMark(TRefByValue<const TDesC> str,...)
 }
 
 // ----------------------------------------------------------------------------
-// CPcsDebug::PrintQuery
+// CPcsDebug::PrintQueryL
 // Prints the query as array of query items (query items cannot be spaces)
 // Used only for debugging
 // ----------------------------------------------------------------------------
@@ -158,19 +158,31 @@ EXPORT_C void CPcsDebug::PrintQueryL(const TDesC& aPreTxt, CPsQuery& aQuery)
 {
     for ( TInt i = 0; i < aQuery.Count(); i++ )
     {
-        TUint inputKey = aQuery.GetItemAtL(i).Character().GetUpperCase();
+        CPsQueryItem& item = aQuery.GetItemAtL(i);
+        TUint inputKey = item.Character().GetUpperCase();
         TBuf<2> buffer;
         buffer.Format(_L("%c"), inputKey);
-        switch ( aQuery.GetItemAtL(i).Mode() )
+        switch ( item.Mode() )
         {
-            case EItut:
-                PRINT3 ( _L("%SQuery[%d].{Character.Up=%S, Mode=EItut}"), &aPreTxt, i, &buffer);
+            case ENonPredictive:
+                PRINT3 ( _L("%SQuery[%d].{Character.Up=%S, Mode=ENonPredictive}"),
+                         &aPreTxt, i, &buffer);
                 break;
-            case EQwerty:
-                PRINT3 ( _L("%SQuery[%d].{Character.Up=%S, Mode=EQwerty}"), &aPreTxt, i, &buffer);
-                break;          
+            case EPredictiveDefaultKeyboard:
+                PRINT3 ( _L("%SQuery[%d].{Character.Up=%S, Mode=EPredictiveDefaultKeyboard}"),
+                         &aPreTxt, i, &buffer);
+                break;
+            case EPredictiveItuT:
+                PRINT3 ( _L("%SQuery[%d].{Character.Up=%S, Mode=EPredictiveItuT}"),
+                         &aPreTxt, i, &buffer);
+                break;
+            case EPredictiveQwerty:
+                PRINT3 ( _L("%SQuery[%d].{Character.Up=%S, Mode=EPredictiveQwerty}"),
+                         &aPreTxt, i, &buffer);
+                break;
             default:
-                PRINT3 ( _L("%SQuery[%d].{Character.Up=%S, Mode=EModeUndefined}"), &aPreTxt, i, &buffer);
+                PRINT4 ( _L("%SQuery[%d].{Character.Up=%S, Mode=%d (Error}"),
+                         &aPreTxt, i, &buffer, item.Mode());
                 break;
         }
     }

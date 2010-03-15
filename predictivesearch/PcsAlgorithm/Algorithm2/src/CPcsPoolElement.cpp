@@ -50,7 +50,7 @@ CPcsPoolElement::CPcsPoolElement()
 // ----------------------------------------------------------------------------
 void CPcsPoolElement::ConstructL(CPsData& aPsData)
 {
-     psData = &aPsData;
+     iPsData = &aPsData;
 }
 
 // ----------------------------------------------------------------------------
@@ -69,7 +69,7 @@ CPcsPoolElement::~CPcsPoolElement()
 // ----------------------------------------------------------------------------
 CPsData* CPcsPoolElement::GetPsData()
 {
-	return psData;
+	return iPsData;
 }
 
 // ----------------------------------------------------------------------------

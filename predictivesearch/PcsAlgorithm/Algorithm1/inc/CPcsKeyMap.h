@@ -20,12 +20,15 @@
 
 // INCLUDES
 #include <e32base.h>
-#include <PtiEngine.h>
-#include <PtiKeyMappings.h>
+#include <PtiDefs.h>
 #include <AvkonInternalCRKeys.h>
 #include <e32property.h>
+#include <CPcsDefs.h>
 
 class CPsQuery;
+class CPtiEngine;
+class CPtiCoreLanguage;
+
 
 class TKeyMappingData
     {
@@ -70,34 +73,29 @@ class CPcsKeyMap : public CBase
          */
         virtual ~CPcsKeyMap();
 
-		/**
-		 * Convert functions to get the key string from query and/or chars string
-		 */
-		void GetMixedKeyStringForQueryL(CPsQuery& aSrcQuery, TDes& aDestStr);
-		void GetMixedKeyStringForDataL(CPsQuery& aSrcQuery, const TDesC& aSrcData, TDes& aDestStr);
-		
-		/**
-		 * Returns true if the character is mapped to the key
-		 */
-		TBool CharacterForKeyMappingExists(TKeyMappingData& aKeyMap, const TUint aIntChar);
+        static TBool IsModePredictive( TKeyboardModes aKbMode );
 
-#ifdef _DEBUG
-		/**
-		 * Check potential error conditions for KeyForCharacterMultiMatch
-		 */
-		void CheckPotentialErrorConditions(RArray<TInt>& aPoolIndexArr, const TChar& aChar);
-#endif // _DEBUG
+        /**
+         * Convert functions to get the key string from query and/or chars string
+         */
+        void GetMixedKeyStringForQueryL(CPsQuery& aSrcQuery, TDes& aDestStr) const;
+        void GetMixedKeyStringForDataL(CPsQuery& aSrcQuery, const TDesC& aSrcData, TDes& aDestStr) const;
+
+        /**
+         * Returns true if the character is mapped to the key
+         */
+        TBool CharacterForKeyMappingExists(TKeyMappingData& aKeyMap, TUint aIntChar) const;
 
         /**
          * Returns the numeric key id corresponding to a specific character
          * Considers possible multiple matches for some phone variants
          */
-        TPtiKey KeyForCharacterMultiMatch(const TChar& aChar);
+        TPtiKey KeyForCharacterMultiMatch( const TChar& aChar, TKeyboardModes aKbMode ) const;
 
         /**
          * Returns true if the characters "0" and " " are on the same key
          */
-        TBool GetSpaceAndZeroOnSameKey();
+        TBool GetSpaceAndZeroOnSameKey( TKeyboardModes aKbMode );
 
         /**
          * Returns true if this language is supported
@@ -105,14 +103,9 @@ class CPcsKeyMap : public CBase
         TBool IsLanguageSupported(TInt aLang);
 
         /**
-         * Returns the pool Id for a key
-         */
-        TInt PoolIdForKey(const TPtiKey aKey);
-
-        /**
          * Returns the pool Id for a character
          */
-        TInt PoolIdForCharacter(const TChar& aChar);
+        TInt PoolIdForCharacter(const TChar& aChar, TKeyboardModes aKbMode);
 
         /**
          * Returns total number of pools
@@ -132,46 +125,93 @@ class CPcsKeyMap : public CBase
         void ConstructL();
 
         /**
-         * Helper functions to get Key Mappings and Key Mappings Data depending
-         * on keyboard type
+         * Select keyboard types according to available physical keyboard(s)
          */
-        MPtiKeyMappings* GetKeyboardKeyMapping(CPtiCoreLanguage& aCurrLanguage);
-        CPtiKeyMapData* GetKeyMapData(CPtiCoreLanguage& aCurrLanguage);
+        void SetupKeyboardTypesL();
 
         /**
-         * Helper functions to construct Key List for different keyboards
+         * Returns the pool Id for a key
          */
-        void AppendEntryWithFakeKeyToKeyList();
-        void CreateKeyListFromITUTHardcodedKeys();
-        void CreateKeyListFromKeyBindingTable( CPtiEngine* aPtiEngine );
-        void CreateKeyListL( CPtiEngine* aPtiEngine );
+        TInt PoolIdForKey(const TPtiKey aKey, TKeyboardModes aKbMode);
 
         /**
          * Helper function to construct Key Mappings
          */
-        void CreateKeyMappingL();
+        void CreateKeyMappingL( TKeyboardModes aKbMode );
+
+        /**
+         * Create list of PTI keys for the given keyboard type
+         */
+        void CreateKeyListFromKeyBindingTable( RArray<TPtiKey>& aKeyArray, TPtiKeyboardType aKbType, CPtiEngine* aPtiEngine );
+
+        /**
+         * Add a non-existing key ID in the end of given array
+         */
+        void AppendEntryWithFakeKeyToKeyList( RArray<TPtiKey>& aKeyArray );
 
         /**
          * Helper functions to populate Keyboard Key Mappings (Characters for
-         * all Keys) for the Active Language
+         * all Keys) for the given Language
          */
-        void AddKeyMappingForActiveLanguageL(CPtiEngine* aPtiEngine, TLanguage aLanguage);
-        void GetCharactersForKey(MPtiKeyMappings& aPtiKeyMappings,
+        void AddKeyMappingForLanguageL( CPtiEngine* aPtiEngine, 
+                                        TLanguage aLanguage,
+                                        TPtiKeyboardType aKbType,
+                                        const RArray<TPtiKey>& aPtiKeys,
+                                        RPointerArray<TKeyMappingData>& aResultMapping );
+        void GetCharactersForKey( CPtiCoreLanguage& aPtiLanguage,
+                                  TPtiKeyboardType aKbType,
+                                  TPtiKey aKey,
+                                  TPtiTextCase aTextCase,
+                                  TDes& aResult );
+        void AddCharactersToKey( CPtiCoreLanguage& aPtiLanguage,
+                                 TPtiKeyboardType aKbType,
                                  TPtiKey aKey,
                                  TPtiTextCase aTextCase,
-                                 TDes& aResult);
-        void AddCharactersToKey(MPtiKeyMappings& aPtiKeyMappings,
-                                TPtiKey aKey,
-                                TPtiTextCase aTextCase,
-                                TKeyMappingData& aKeyDataList,
-                                RArray<TUint>& aKeyMapLang,
-                                TBool& aIsSingleCharForKey,
-                                TUint& aSingleChar);
+                                 TKeyMappingData& aKeyDataList,
+                                 RArray<TUint>& aKeyMapLang,
+                                 TBool& aIsSingleCharForKey,
+                                 TUint& aSingleChar );
 
         /**
          * Sets attribute to true if the characters "0" and " " are on the same key
          */
         void SetSpaceAndZeroOnSameKey();
+
+        /**
+         * Gets predictive keyboard mapping data for given match mode.
+         * @param   aKbMode      Matching mode for which data is asked. 
+         * @param   aPtiKeys     On return, will point to the array of PtiKeys for the given mode.
+         * @param   aKeyMappings On return, will point to key mapping array for the given mode.
+         * @param   aKbType      On return, will hold the keyboard type for the given mode.
+         */
+        void GetPredictiveKeyboardData( TKeyboardModes aKbMode, 
+                                        RArray<TPtiKey>*& aPtiKeys, 
+                                        RPointerArray<TKeyMappingData>*& aKeyMappings, 
+                                        TPtiKeyboardType& aKbType );
+        /**
+         * Constant overload of the GetPredictiveKeyboardData function.
+         */
+        void GetPredictiveKeyboardData( TKeyboardModes aKbMode, 
+                                        const RArray<TPtiKey>*& aPtiKeys, 
+                                        const RPointerArray<TKeyMappingData>*& aKeyMappings, 
+                                        TPtiKeyboardType& aKbType ) const;
+
+        /**
+         * Resolve keyboard mode to "ITU-T predictive" or "QWERTY predictive".
+         */
+        TKeyboardModes ResolveKeyboardMode( TKeyboardModes aKbMode,
+                                            TKeyboardModes aKbModeToResolve ) const;
+
+
+#ifdef _DEBUG
+        /**
+         * Check potential error conditions for KeyForCharacterMultiMatch
+         */
+        void CheckPotentialErrorConditions(const RArray<TInt>& aPoolIndexArr, 
+                                           const TChar& aChar,
+                                           const RArray<TPtiKey>& aPtiKeys,
+                                           const RPointerArray<TKeyMappingData>& aKeyMappings) const;
+#endif // _DEBUG
 
     private:
 
@@ -186,24 +226,54 @@ class CPcsKeyMap : public CBase
         TLanguage iUILanguage;
 
         /**
-         * Flag to indicate if Phone is Chinese variant
+         * Type of keyboard used in ITU-T search mode. Typically this is
+         * standard ITU-T 12-key keypad.
          */
-        RArray<TPtiKey> iKeysArr;
-
-        /**
-         * Contains all the keys and the characters mapped to each key own
-         */
-        RPointerArray<TKeyMappingData> iKeyMapPtrArr;
-
-        /**
-         * Type of keyboard for example, half-qwerty, 4x10 qwerty etc
-         */
-        TPtiKeyboardType iKeyboardType;
+        TPtiKeyboardType iItutKeyboardType;
         
         /**
-         * True if "0" and " " are on the same key
+         * Type of keyboard used in QWERTY search mode. Typically this is either
+         * 3x11 or 4x10 QWERTY or EPtiKeyboardNone if there's no any kind of
+         * QWERTY available. This may also be half-QWERTY.
          */
-        TBool iSpaceAndZeroOnSameKey;
+        TPtiKeyboardType iQwertyKeyboardType;
+
+        /**
+         * Type of keyboard used in Default Preditive search mode. This will
+         * point to ITU-T or QWERTY keypad.
+         */
+        TKeyboardModes iPredictiveDefaultKeyboardMode;
+
+        /**
+         * Pti keys of ITU-T mode
+         */
+        RArray<TPtiKey> iItutKeys;
+
+        /**
+         * Pti keys of QWERTY mode
+         */
+        RArray<TPtiKey> iQwertyKeys;
+
+        /**
+         * Contains all the keys and the characters mapped to each key in ITU-T mode. Owned.
+         */
+        RPointerArray<TKeyMappingData> iItutKeyMaps;
+
+        /**
+         * Contains all the keys and the characters mapped to each key in QWERTY mode. Owned.
+         */
+        RPointerArray<TKeyMappingData> iQwertyKeyMaps;
+
+        /**
+         * True if "0" and " " are on the same key in the ITU-T mode
+         */
+        TBool iSpaceAndZeroOnSameKeyOnItut;
+        
+        /**
+         * True if "0" and " " are on the same key in the QWERTY mode
+         */
+        TBool iSpaceAndZeroOnSameKeyOnQwerty;
+
 };
 
 #endif // __CPCS_KEY_MAP_H__

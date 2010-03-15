@@ -19,12 +19,12 @@
 #define CMSSETVOICECALLDEFAULT_H_
 
 #include <e32base.h>
-#include <mvpbksinglecontactoperationobserver.h>
-#include <mvpbkcontactattributemanager.h>
-#include <mvpbkcontactstoreobserver.h>
-#include <vpbkfieldtype.hrh>
-#include <mvpbkcontactobserver.h>
-#include <mvpbkbatchoperationobserver.h>
+#include <MVPbkSingleContactOperationObserver.h>
+#include <MVPbkContactAttributeManager.h>
+#include <MVPbkContactStoreObserver.h>
+#include <VPbkFieldType.hrh>
+#include <MVPbkContactObserver.h>
+#include <MVPbkBatchOperationObserver.h>
 
 class CmsSetVoiceCallDefault: 
     public CBase,

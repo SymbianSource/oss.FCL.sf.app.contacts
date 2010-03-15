@@ -355,6 +355,9 @@ private: // Data
      * Own.
      */
 	CCCaFactoryExtensionNotifier* iFactoryExtensionNotifier;
+	
+	
+	TBool iLongTap;
     };
 
 #endif // __CCAPPCOMMALAUNCHERCONTAINER_H

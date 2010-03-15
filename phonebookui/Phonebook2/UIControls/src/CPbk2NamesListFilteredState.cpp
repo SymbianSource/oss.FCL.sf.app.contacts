@@ -183,6 +183,15 @@ void CPbk2NamesListFilteredState::ActivateStateL()
 void CPbk2NamesListFilteredState::DeactivateState()
     {
     AllowCommandsToShowThemselves( EFalse );  
+    
+    // Stop creating adaptive search grid.
+    if (iAdaptiveSearchGridFiller)
+        {
+        if (iAdaptiveSearchGridFiller->IsActive())
+            {
+            iAdaptiveSearchGridFiller->StopFilling();
+            }
+        }
     }
 
 // --------------------------------------------------------------------------

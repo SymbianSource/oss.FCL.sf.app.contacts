@@ -35,7 +35,7 @@ const TInt KObserverArrayGranularity = 4;
 // ---------------------------------------------------------------------------
 // Event sending function for one reference parameter
 // ---------------------------------------------------------------------------
-// 
+//
 template <class NotifyFunc>
 void SendEventToObservers(MVPbkContactViewBase& aView,
                           RPointerArray<MVPbkContactViewObserver>& iObservers,
@@ -52,7 +52,7 @@ void SendEventToObservers(MVPbkContactViewBase& aView,
 // ---------------------------------------------------------------------------
 // Event sending functions for 3 parameters
 // ---------------------------------------------------------------------------
-// 
+//
 template <class NotifyFunc, class ParamType1, class ParamType2>
 void SendEventToObservers(MVPbkContactViewBase& aView,
                           RPointerArray<MVPbkContactViewObserver>& iObservers,
@@ -73,7 +73,7 @@ void SendEventToObservers(MVPbkContactViewBase& aView,
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::CVPbkFilteredContactView
 // ---------------------------------------------------------------------------
-// 
+//
 CVPbkFilteredContactView::CVPbkFilteredContactView(
         MVPbkContactViewBase& aBaseView,
         MVPbkContactSelector& aContactSelector,
@@ -88,8 +88,8 @@ CVPbkFilteredContactView::CVPbkFilteredContactView(
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::ConstructL
 // ---------------------------------------------------------------------------
-// 
-inline void CVPbkFilteredContactView::ConstructL( 
+//
+inline void CVPbkFilteredContactView::ConstructL(
         MVPbkContactViewObserver& aObserver )
     {
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
@@ -106,7 +106,7 @@ inline void CVPbkFilteredContactView::ConstructL(
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::NewL
 // ---------------------------------------------------------------------------
-// 
+//
 EXPORT_C CVPbkFilteredContactView* CVPbkFilteredContactView::NewL(
         MVPbkContactViewBase& aBaseView,
         MVPbkContactViewObserver& aObserver,
@@ -123,12 +123,12 @@ EXPORT_C CVPbkFilteredContactView* CVPbkFilteredContactView::NewL(
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::NewL
 // ---------------------------------------------------------------------------
-//     
+//
 EXPORT_C CVPbkFilteredContactView* CVPbkFilteredContactView::NewL(
         MVPbkContactViewBase& aBaseView,
         MVPbkContactViewObserver& aObserver,
         MVPbkContactSelector& aContactSelector,
-        const MVPbkFieldTypeList& aMasterFieldTypeList )    
+        const MVPbkFieldTypeList& aMasterFieldTypeList )
     {
     CVPbkFilteredContactView* self = new(ELeave) CVPbkFilteredContactView
         (aBaseView, aContactSelector, &aMasterFieldTypeList );
@@ -141,7 +141,7 @@ EXPORT_C CVPbkFilteredContactView* CVPbkFilteredContactView::NewL(
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::~CVPbkFilteredContactView
 // ---------------------------------------------------------------------------
-// 
+//
 CVPbkFilteredContactView::~CVPbkFilteredContactView()
     {
     iObservers.Close();
@@ -153,7 +153,7 @@ CVPbkFilteredContactView::~CVPbkFilteredContactView()
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::Type
 // ---------------------------------------------------------------------------
-// 
+//
 TVPbkContactViewType CVPbkFilteredContactView::Type() const
     {
     return iBaseView.Type();
@@ -162,7 +162,7 @@ TVPbkContactViewType CVPbkFilteredContactView::Type() const
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::ChangeSortOrderL
 // ---------------------------------------------------------------------------
-// 
+//
 void CVPbkFilteredContactView::ChangeSortOrderL(
         const MVPbkFieldTypeList& aSortOrder )
     {
@@ -175,7 +175,7 @@ void CVPbkFilteredContactView::ChangeSortOrderL(
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::SortOrder
 // ---------------------------------------------------------------------------
-// 
+//
 const MVPbkFieldTypeList& CVPbkFilteredContactView::SortOrder() const
     {
     return iBaseView.SortOrder();
@@ -184,7 +184,7 @@ const MVPbkFieldTypeList& CVPbkFilteredContactView::SortOrder() const
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::RefreshL
 // ---------------------------------------------------------------------------
-// 
+//
 void CVPbkFilteredContactView::RefreshL()
     {
     iBaseView.RefreshL();
@@ -193,7 +193,7 @@ void CVPbkFilteredContactView::RefreshL()
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::ContactCountL
 // ---------------------------------------------------------------------------
-// 
+//
 TInt CVPbkFilteredContactView::ContactCountL() const
     {
     return iContactMapping.Count();
@@ -202,7 +202,7 @@ TInt CVPbkFilteredContactView::ContactCountL() const
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::ContactAtL
 // ---------------------------------------------------------------------------
-// 
+//
 const MVPbkViewContact& CVPbkFilteredContactView::ContactAtL(
         TInt aIndex ) const
     {
@@ -219,7 +219,7 @@ const MVPbkViewContact& CVPbkFilteredContactView::ContactAtL(
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::CreateLinkLC
 // ---------------------------------------------------------------------------
-// 
+//
 MVPbkContactLink* CVPbkFilteredContactView::CreateLinkLC( TInt aIndex ) const
     {
     __ASSERT_ALWAYS( aIndex >= 0,
@@ -235,7 +235,7 @@ MVPbkContactLink* CVPbkFilteredContactView::CreateLinkLC( TInt aIndex ) const
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::IndexOfLinkL
 // ---------------------------------------------------------------------------
-// 
+//
 TInt CVPbkFilteredContactView::IndexOfLinkL(
         const MVPbkContactLink& aContactLink ) const
     {
@@ -246,8 +246,8 @@ TInt CVPbkFilteredContactView::IndexOfLinkL(
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::AddObserverL
 // ---------------------------------------------------------------------------
-// 
-void CVPbkFilteredContactView::AddObserverL( 
+//
+void CVPbkFilteredContactView::AddObserverL(
         MVPbkContactViewObserver& aObserver )
     {
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
@@ -274,20 +274,20 @@ void CVPbkFilteredContactView::AddObserverL(
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::DoAddObserverL
 // ---------------------------------------------------------------------------
-// 
+//
 void CVPbkFilteredContactView::DoAddObserverL(
         MVPbkContactViewObserver& aObserver )
     {
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
         ("CVPbkFilteredContactView::DoAddObserverL(0x%x)"), &aObserver);
-    
+
 // Check if aObserver is still observer of this view
     if ( iObservers.FindInAddressOrder( &aObserver ) != KErrNotFound )
         {
         if (iIsReady)
             {
             VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
-            ("CVPbkFilteredContactView::DoAddObserverL(0x%x) contact view ready"), 
+            ("CVPbkFilteredContactView::DoAddObserverL(0x%x) contact view ready"),
                 &aObserver);
 
             // If this view is ready and there was no error,
@@ -305,7 +305,7 @@ void CVPbkFilteredContactView::DoAddObserverL(
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::AddObserverError
 // ---------------------------------------------------------------------------
-// 
+//
 void CVPbkFilteredContactView::AddObserverError(
         MVPbkContactViewObserver& aObserver, TInt aError )
     {
@@ -318,7 +318,7 @@ void CVPbkFilteredContactView::AddObserverError(
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::RemoveObserver
 // ---------------------------------------------------------------------------
-// 
+//
 void CVPbkFilteredContactView::RemoveObserver(
         MVPbkContactViewObserver& aObserver )
     {
@@ -335,7 +335,7 @@ void CVPbkFilteredContactView::RemoveObserver(
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::MatchContactStore
 // ---------------------------------------------------------------------------
-// 
+//
 TBool CVPbkFilteredContactView::MatchContactStore(
         const TDesC& aContactStoreUri ) const
     {
@@ -345,7 +345,7 @@ TBool CVPbkFilteredContactView::MatchContactStore(
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::MatchContactStoreDomain
 // ---------------------------------------------------------------------------
-// 
+//
 TBool CVPbkFilteredContactView::MatchContactStoreDomain(
         const TDesC& aContactStoreDomain ) const
     {
@@ -355,11 +355,11 @@ TBool CVPbkFilteredContactView::MatchContactStoreDomain(
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::CreateBookmarkLC
 // ---------------------------------------------------------------------------
-// 
+//
 MVPbkContactBookmark* CVPbkFilteredContactView::CreateBookmarkLC(
         TInt aIndex ) const
     {
-    __ASSERT_ALWAYS( aIndex >= 0, 
+    __ASSERT_ALWAYS( aIndex >= 0,
         VPbkError::Panic( VPbkError::EInvalidContactIndex ) );
 
     return iBaseView.ContactAtL(iContactMapping[aIndex]).CreateBookmarkLC();
@@ -368,7 +368,7 @@ MVPbkContactBookmark* CVPbkFilteredContactView::CreateBookmarkLC(
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::IndexOfBookmarkL
 // ---------------------------------------------------------------------------
-// 
+//
 TInt CVPbkFilteredContactView::IndexOfBookmarkL(
         const MVPbkContactBookmark& aContactBookmark ) const
     {
@@ -379,54 +379,54 @@ TInt CVPbkFilteredContactView::IndexOfBookmarkL(
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::ViewFiltering
 // ---------------------------------------------------------------------------
-//         
+//
 MVPbkContactViewFiltering* CVPbkFilteredContactView::ViewFiltering()
-    {   
+    {
     if ( iMasterFieldTypeList )
         {
         return this;
-        }    
-    return NULL;        
+        }
+    return NULL;
     }
 
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::CreateFilteredViewLC
 // ---------------------------------------------------------------------------
-//    
-MVPbkContactViewBase* CVPbkFilteredContactView::CreateFilteredViewLC( 
+//
+MVPbkContactViewBase* CVPbkFilteredContactView::CreateFilteredViewLC(
         MVPbkContactViewObserver& aObserver,
         const MDesCArray& aFindWords,
         const MVPbkContactBookmarkCollection* aAlwaysIncludedContacts )
     {
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
         ("CVPbkFilteredContactView::CreateFilteredViewLC(0x%x)"), this);
-        
+
     if ( iMasterFieldTypeList )
         {
-        return CVPbkFindView::NewLC( *this, 
-                                     aObserver, 
-                                     aFindWords, 
+        return CVPbkFindView::NewLC( *this,
+                                     aObserver,
+                                     aFindWords,
                                      aAlwaysIncludedContacts,
                                      *iMasterFieldTypeList );
         }
-    return NULL;  
+    return NULL;
     }
 
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::UpdateFilterL
 // ---------------------------------------------------------------------------
-// 
-void CVPbkFilteredContactView::UpdateFilterL( 
+//
+void CVPbkFilteredContactView::UpdateFilterL(
         const MDesCArray& /*aFindWords*/,
         const MVPbkContactBookmarkCollection* /*aAlwaysIncludedContacts*/ )
     {
     User::Leave( KErrNotSupported );
     }
-    
+
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::BuildViewMappingL
 // ---------------------------------------------------------------------------
-//         
+//
 void CVPbkFilteredContactView::BuildViewMappingL()
     {
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
@@ -442,7 +442,7 @@ void CVPbkFilteredContactView::BuildViewMappingL()
             iContactMapping.AppendL(i);
             }
         }
-    
+
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
         ("CVPbkFilteredContactView::BuildViewMappingL(0x%x) end"), this);
     }
@@ -450,14 +450,14 @@ void CVPbkFilteredContactView::BuildViewMappingL()
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::HandleBuildViewMapping
 // ---------------------------------------------------------------------------
-//         
+//
 void CVPbkFilteredContactView::HandleBuildViewMapping()
     {
     TRAPD( res, BuildViewMappingL() );
     if ( res == KErrNone )
         {
         // Mapping was succesfully built. Send ready event
-        SendEventToObservers( *this, iObservers, 
+        SendEventToObservers( *this, iObservers,
             &MVPbkContactViewObserver::ContactViewReady );
         }
     else
@@ -468,12 +468,12 @@ void CVPbkFilteredContactView::HandleBuildViewMapping()
             &MVPbkContactViewObserver::ContactViewError, res, EFalse );
         }
     }
-    
+
 // ---------------------------------------------------------------------------
 // From class MVPbkContactViewBase.
 // CVPbkFilteredContactView::ContactViewReady
 // ---------------------------------------------------------------------------
-//         
+//
 void CVPbkFilteredContactView::ContactViewReady( MVPbkContactViewBase& aView )
     {
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
@@ -481,7 +481,7 @@ void CVPbkFilteredContactView::ContactViewReady( MVPbkContactViewBase& aView )
 
     iIsReady = ETrue;
     HandleBuildViewMapping();
-    
+
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
         ("CVPbkFilteredContactView::ContactViewReady(0x%x) end"), &aView);
     }
@@ -490,8 +490,8 @@ void CVPbkFilteredContactView::ContactViewReady( MVPbkContactViewBase& aView )
 // From class MVPbkContactViewBase.
 // CVPbkFilteredContactView::ContactViewUnavailable
 // ---------------------------------------------------------------------------
-//         
-void CVPbkFilteredContactView::ContactViewUnavailable( 
+//
+void CVPbkFilteredContactView::ContactViewUnavailable(
         MVPbkContactViewBase& aView )
     {
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
@@ -509,8 +509,8 @@ void CVPbkFilteredContactView::ContactViewUnavailable(
 // From class MVPbkContactViewBase.
 // CVPbkFilteredContactView::ContactViewError
 // ---------------------------------------------------------------------------
-//         
-void CVPbkFilteredContactView::ContactViewError( MVPbkContactViewBase& aView, 
+//
+void CVPbkFilteredContactView::ContactViewError( MVPbkContactViewBase& aView,
         TInt aError, TBool aErrorNotified )
     {
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
@@ -528,14 +528,14 @@ void CVPbkFilteredContactView::ContactViewError( MVPbkContactViewBase& aView,
 // From class MVPbkContactViewBase.
 // CVPbkFilteredContactView::ContactAddedToView
 // ---------------------------------------------------------------------------
-//         
+//
 void CVPbkFilteredContactView::ContactAddedToView
         (MVPbkContactViewBase& /*aView*/, TInt aIndex,
         const MVPbkContactLink& aContactLink)
     {
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
         ("CVPbkFilteredContactView::ContactAddedToView(0x%x %d)"), this, aIndex);
-    
+
     TInt filteredIndex(0);
     TRAPD( res, filteredIndex = UpdateViewMappingAfterAddingL( aIndex ) );
     if ( res == KErrNone )
@@ -545,7 +545,7 @@ void CVPbkFilteredContactView::ContactAddedToView
             // Mapping was succesfully updated and the new contact
             // belongs to the filtered view.
             SendEventToObservers( *this, iObservers,
-                &MVPbkContactViewObserver::ContactAddedToView, filteredIndex, 
+                &MVPbkContactViewObserver::ContactAddedToView, filteredIndex,
                 aContactLink );
             }
         }
@@ -563,35 +563,58 @@ void CVPbkFilteredContactView::ContactAddedToView
 // From class MVPbkContactViewBase.
 // CVPbkFilteredContactView::ContactRemovedFromView
 // ---------------------------------------------------------------------------
-//         
+//
 void CVPbkFilteredContactView::ContactRemovedFromView(
-        MVPbkContactViewBase& /*aView*/, TInt aIndex, 
+        MVPbkContactViewBase& /*aView*/, TInt aIndex,
         const MVPbkContactLink& aContactLink)
     {
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
         ("CVPbkFilteredContactView::ContactRemovedFromView(0x%x %d)"), this, aIndex);
-    
+
     const TInt filteredIndex = UpdateViewMappingAfterDeleting( aIndex );
     if ( filteredIndex != KErrNotFound )
         {
         // Mapping was succesfully updated and the contact removed from the mapping
         SendEventToObservers( *this, iObservers,
-            &MVPbkContactViewObserver::ContactRemovedFromView, filteredIndex, 
+            &MVPbkContactViewObserver::ContactRemovedFromView, filteredIndex,
             aContactLink );
+        }
+    else
+        {
+        const TInt count = iObservers.Count();
+
+        for( TInt i = 0; i < count; i++ )
+           {
+           MVPbkContactViewObserver* observer = iObservers[i];
+         
+           TAny* extension = observer->ContactViewObserverExtension(
+                   KVPbkContactViewObserverExtension2Uid );
+
+           if( extension )
+               {
+               MVPbkContactViewObserverExtension* contactViewExtension =
+                       static_cast<MVPbkContactViewObserverExtension*>( extension );
+
+               if( contactViewExtension )
+                   {
+                   contactViewExtension->FilteredContactRemovedFromView( *this );
+                   }
+               }
+           }
         }
 
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
-        ("CVPbkFilteredContactView::ContactRemovedFromView(0x%x)"), this);    
+        ("CVPbkFilteredContactView::ContactRemovedFromView(0x%x)"), this);
     }
 
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::UpdateViewMappingAfterAdding
 //
-// Update the mapping when a new contact is added to the base view 
-// Returns its mapped index if it is added to the mapping 
+// Update the mapping when a new contact is added to the base view
+// Returns its mapped index if it is added to the mapping
 // or KErrNotFound if it's filtered out
 // ---------------------------------------------------------------------------
-//  
+//
 TInt CVPbkFilteredContactView::UpdateViewMappingAfterAddingL( TInt aBaseIndex )
 	{
 	// first update the mapping for all elements which > aBaseIndex
@@ -614,35 +637,35 @@ TInt CVPbkFilteredContactView::UpdateViewMappingAfterAddingL( TInt aBaseIndex )
 		{
 		filteredIndex = KErrNotFound;
 		}
-	
+
 	return filteredIndex;
 	}
 
 // ---------------------------------------------------------------------------
 // CVPbkFilteredContactView::UpdateViewMappingAfterDeleting
 //
-// Update the mapping when a new contact is deleted from the base view 
-// Returns its mapped index if it was removed from the mapping 
+// Update the mapping when a new contact is deleted from the base view
+// Returns its mapped index if it was removed from the mapping
 // or KErrNotFound otherwise
 // ---------------------------------------------------------------------------
-//  
+//
 TInt CVPbkFilteredContactView::UpdateViewMappingAfterDeleting( TInt aBaseIndex )
 	{
     // if the contact is in mappings, filteredIndex contains its index
     // otherwise, the index of the next element greater than aIndex
 	TInt filteredIndex;
 	const TInt err = iContactMapping.FindInOrder( aBaseIndex, filteredIndex );
-	
+
     // mapping should be updated in any case even if deleted contact
     // is not in the mapping
-    // because all items in the mappings which > aIndex should be updated 
+    // because all items in the mappings which > aIndex should be updated
     for ( TInt i = filteredIndex; i < iContactMapping.Count(); ++i )
         {
         // Subtract one because one contact was deleted
         // from the list before the current index
         --iContactMapping[i];
         }
-    
+
     if ( err == KErrNone )
     	{
     	iContactMapping.Remove( filteredIndex );
@@ -651,7 +674,7 @@ TInt CVPbkFilteredContactView::UpdateViewMappingAfterDeleting( TInt aBaseIndex )
     	{
     	filteredIndex = KErrNotFound;
     	}
-    
+
     return filteredIndex;
 	}
 

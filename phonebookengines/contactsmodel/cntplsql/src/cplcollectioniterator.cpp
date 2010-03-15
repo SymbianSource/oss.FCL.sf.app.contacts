@@ -63,7 +63,7 @@ const TFindFieldFlags KNameFlags[] =
 	EFindCompanyNamePronunciation
 	};
 
-// Collation level that ignore accents (i.e. 'a' == 'ä').
+// Collation level that ignore accents (i.e. 'a' == '?).
 const TInt KCollationLevel= 0;
 
 //
@@ -419,7 +419,7 @@ CPlCollection constructor.
 */
 CPlCollection::CPlCollection(CPplContactsFile& aContactsFile)
 	: 
-	iContactsFile(aContactsFile)
+	iContactsFile( aContactsFile ), iRSqlstatementsWorking( EFalse )
 	{
 	}
 	
@@ -1249,6 +1249,11 @@ needs to be reset to a known state when a find is completed.
 */
 void CPlCollection::Reset()
 	{
+	if ( !iRSqlstatementsWorking )
+        {
+        //If RSqlstatements was reseted, don't reset it again.
+        return;
+        }
 	// Could introduce methods specific to the find operation such that this
 	// method is called only if an asynchronous find has taken place. 
 	delete iFieldDef;
@@ -1272,6 +1277,7 @@ void CPlCollection::Reset()
 	selectEmailStatement.Close();
 	selectSIPStatement.Close();
 	selectIdFromIdentityStatement.Close();
+	iRSqlstatementsWorking = EFalse;
 	}
 
 
@@ -1291,6 +1297,7 @@ void CPlCollection::FindAsyncInitL(const TDesC& aText,CContactItemFieldDef* aFie
 	// Persistence Layer CPlCollection is not deleted but Reset()'s the member
 	// variables for iterative FindAsyncL() calls.
 	Reset();
+	iRSqlstatementsWorking = ETrue;
 	iText = CreateFindTextL(aText);
 	iFieldDef = aFieldDef;
 	iOriginalText = aText.AllocL();
@@ -1430,7 +1437,7 @@ void CPlCollection::FindAsyncTextDefInitL(const CDesCArray& aWords,CContactTextD
 	// Persistence Layer CPlCollection is not deleted but Reset()'s the member
 	// variables for iterative FindAsyncL() calls.
 	Reset();
-
+    iRSqlstatementsWorking = ETrue;
 	iFindWords = new(ELeave) CDesCArrayFlat(5);
 	iFindWords2 = new(ELeave) CDesCArrayFlat(5);
 	for(TInt loop = 0;loop < aWords.MdcaCount();++loop)

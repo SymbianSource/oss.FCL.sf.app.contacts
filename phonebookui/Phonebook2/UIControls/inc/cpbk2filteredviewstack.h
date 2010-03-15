@@ -32,7 +32,7 @@ class MPbk2FilteredViewStackElement;
 class CElementStack;
 
 // CLASS DECLARATION
- 
+
 /**
  * A stack for the base view and filtered views that can be used
  * as a contact view. MVPbkContactViewBase reuqests are forwarded
@@ -44,10 +44,11 @@ class CElementStack;
  */
 NONSHARABLE_CLASS(CPbk2FilteredViewStack) : public CBase,
                                             public MPbk2FilteredViewStack,
+                                            public MVPbkContactViewObserverExtension,
                                             private MVPbkContactViewObserver
     {
     public: // Constructors and destructor
-            
+
         /**
          * Creates a new instance of this class.
          *
@@ -67,29 +68,29 @@ NONSHARABLE_CLASS(CPbk2FilteredViewStack) : public CBase,
 
 
         void UpdateFilterL(
-                const MDesCArray& aFindStrings, 
+                const MDesCArray& aFindStrings,
                 const MVPbkContactBookmarkCollection* aAlwaysincluded,
                 TBool aAlwaysIncludedChanged );
-        
+
         void Reset();
-     
+
         MVPbkContactViewBase& BaseView() const;
-        
-  
+
+
         void SetNewBaseViewL(
                 MVPbkContactViewBase& aBaseView );
-        
-        
+
+
         TInt Level() const;
 
-        void AddStackObserverL( 
+        void AddStackObserverL(
                 MPbk2FilteredViewStackObserver& aStackObserver );
-        
- 
-        void RemoveStackObserver( 
+
+
+        void RemoveStackObserver(
                 MPbk2FilteredViewStackObserver& aStackObserver );
-        
-    
+
+
     public:  // From MVPbkContactViewBase
         TVPbkContactViewType Type() const;
         void ChangeSortOrderL(
@@ -109,7 +110,7 @@ NONSHARABLE_CLASS(CPbk2FilteredViewStack) : public CBase,
                 MVPbkContactViewObserver& aObserver );
         TBool MatchContactStore(
                 const TDesC& aContactStoreUri ) const;
-        TBool MatchContactStoreDomain( 
+        TBool MatchContactStoreDomain(
                 const TDesC& aContactStoreDomain ) const;
         MVPbkContactBookmark* CreateBookmarkLC(
                 TInt aIndex ) const;
@@ -134,6 +135,11 @@ NONSHARABLE_CLASS(CPbk2FilteredViewStack) : public CBase,
                 MVPbkContactViewBase& aView,
                 TInt aError,
                 TBool aErrorNotified );
+        TAny* ContactViewObserverExtension(TUid aExtensionUid );
+
+    private: // From MVPbkContactViewObserverExtension
+        void FilteredContactRemovedFromView(
+			 MVPbkContactViewBase& aView );
 
     private: // Implementation
         CPbk2FilteredViewStack();
@@ -146,7 +152,7 @@ NONSHARABLE_CLASS(CPbk2FilteredViewStack) : public CBase,
         void UpdateStackL();
         class CCallback;
         void DoAddObserverL(
-                MVPbkContactViewObserver& aObserver, 
+                MVPbkContactViewObserver& aObserver,
                 CCallback& aCallback );
         void DoAddObserverError(
                 TInt aError,
@@ -163,7 +169,7 @@ NONSHARABLE_CLASS(CPbk2FilteredViewStack) : public CBase,
                 const MDesCArray& aStringArray,
                 TInt aLevel );
         TBool IsElementsUnderDestruction();
-                
+
     private: // Data
         /// Own: the stacked views that are currently used
         CElementStack* iViewStack;
@@ -179,7 +185,7 @@ NONSHARABLE_CLASS(CPbk2FilteredViewStack) : public CBase,
         RPointerArray<CCallback> iCallbacks;
         /// Own: Contact find policy
         CVPbkContactFindPolicy* iFindPolicy;
- 
+
  #ifdef _DEBUG
         void __DbgTestInvariant() const;
  #endif // _DEBUG

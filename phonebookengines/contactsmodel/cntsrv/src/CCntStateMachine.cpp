@@ -72,6 +72,7 @@ CState::CState(CCntStateMachine& aStateMachine, CPersistenceLayer&	aPersistenceL
 void CState::TransactionStartLC(TUint aSessionId)
 	{
 	iCurrentTransactionSessionId = aSessionId;
+	iPersistenceLayer.FactoryL().GetCollectorL().Reset();
 	iPersistenceLayer.TransactionManager().StartTransactionL();
 	CleanupStack::PushL(TCleanupItem(CState::CleanupTransactionRollback, this));
 	}
@@ -1682,6 +1683,7 @@ TAccept CStateTransaction::AcceptRequestL(CReqDbBeginTrans* aRequest)
 	if (iSessionId == 0)
 		{
 		iSessionId = aRequest->SessionId();
+		iPersistenceLayer.FactoryL().GetCollectorL().Reset();
 		iPersistenceLayer.TransactionManager().StartTransactionL();
 		iTimeOut->Start();
 		aRequest->Complete();

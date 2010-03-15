@@ -52,11 +52,11 @@ _LIT(KDummyPhoneNumber,"9900211");
 // ---------------------------------------------------------------------------------
 // 1st phase constructor
 // ---------------------------------------------------------------------------------
-CPcsTestContactsHandler* CPcsTestContactsHandler::NewL(TBool SimStoreOnly)
+CPcsTestContactsHandler* CPcsTestContactsHandler::NewL(TBool aSimStoreOnly)
 {
 	CPcsTestContactsHandler* self = new ( ELeave ) CPcsTestContactsHandler();
 	CleanupStack::PushL( self );
-	self->ConstructL(SimStoreOnly);
+	self->ConstructL(aSimStoreOnly);
 	CleanupStack::Pop( self );
 	
 	return self;
@@ -77,13 +77,13 @@ CPcsTestContactsHandler::CPcsTestContactsHandler() : CActive( CActive::EPriority
 // ---------------------------------------------------------------------------------
 // 2nd phase constructor
 // ---------------------------------------------------------------------------------
-void CPcsTestContactsHandler::ConstructL(TBool SimStoreOnly)
+void CPcsTestContactsHandler::ConstructL(TBool aSimStoreOnly)
 {
 	iOperationComplete = EFalse;
 
 	// initialize virtual phonebook with phonebook and sim contact uris.
 	CVPbkContactStoreUriArray* uriArray = CVPbkContactStoreUriArray::NewLC();
-	if(SimStoreOnly)
+	if(aSimStoreOnly)
 	{
 		uriArray->AppendL( TVPbkContactStoreUriPtr( VPbkContactStoreUris::SimGlobalAdnUri() ) );
 	}
@@ -103,7 +103,7 @@ void CPcsTestContactsHandler::ConstructL(TBool SimStoreOnly)
 
 	// Open al the stores
 	iContactManager->ContactStoresL().OpenAllL( *this );
-	if(SimStoreOnly)
+	if(aSimStoreOnly)
 	{
 		iStore = iContactManager->ContactStoresL().Find( TVPbkContactStoreUriPtr( VPbkContactStoreUris::SimGlobalAdnUri() ) );
 	}

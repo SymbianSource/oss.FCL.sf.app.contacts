@@ -28,7 +28,7 @@ class CCCAppMyCard;
 class CAiwServiceHandler;
 class CCCAppMyCardContainer;
 class CPbk2CommandHandler;
-
+class CSpbContactDataModel;
 
 /**
  *  Class implementing CCCAppViewPluginBase interface. This is
@@ -66,12 +66,24 @@ public: // New methods
      */
     CCCAppMyCard& MyCard();
     
+    /**
+     * MyCard's contact data model
+     */
+    CSpbContactDataModel& Model();
+    
     /*
      * Edit my card fields
      * 
      * @param aFocusedFieldIndex  field to be focused in editor
      */
     void EditL( TInt aFocusedFieldIndex );
+    
+    /*
+    * Handle error code
+    * @aError System wide error code
+    */
+    void HandleError( TInt aError );
+       
     
 public: 
 
@@ -187,8 +199,7 @@ private:
      * Creates command handler if not created, and returns pointer to it.
      */
     CPbk2CommandHandler* CommandHandlerL();
-    
-      
+           
 private: // constructors
     
     /**
@@ -220,6 +231,9 @@ private: // data
     
     // Own. Command handler
     CPbk2CommandHandler* iCommandHandler;
+    
+    // Own. MyCard contact model
+    CSpbContactDataModel* iModel;
     };
 
 #endif // CCAPPMYCARDPLUGIN_H

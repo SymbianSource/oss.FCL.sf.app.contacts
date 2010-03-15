@@ -160,7 +160,7 @@ class CPcsAlgorithm1 : public CPcsPlugin,
 		/**
 		* Returns the array index of cache (in iPcsCache) for a datastore
 		*/
-		TInt GetCacheIndex(TDesC& aDataStore);	
+		TInt GetCacheIndex(const TDesC& aDataStore);	
 
 		/** 
 		* Return the cache instance at a specific array index
@@ -176,7 +176,7 @@ class CPcsAlgorithm1 : public CPcsPlugin,
 		inline CPcsKeyMap* GetKeyMap() 
 		{ 
 			return iKeyMap; 
-		};
+		}
         
 		
 	private:
@@ -209,38 +209,38 @@ class CPcsAlgorithm1 : public CPcsPlugin,
 		void DoSearchL ( const CPsSettings& aPcsSettings,
 						 CPsQuery& aCondition,
 						 RPointerArray<CPsData>& searchResults,
-	                     RPointerArray<CPsPattern>& searchSeqs );		                       
-							                       
+	                     RPointerArray<CPsPattern>& searchSeqs );
+		
 		/**                
 		* Search function helper
 		*/
 		void DoSearchInputL ( CPsQuery& aQuery,
-						 	  TDesC& aData,
-							  RPointerArray<TDesC>& searchSeqs,
-							  RArray<TPsMatchLocation>& aMatchLocation );	 
-						                    		                       
+						 	  const TDesC& aData,
+							  RPointerArray<TDesC>& aSearchSeqs,
+							  RArray<TPsMatchLocation>& aMatchLocation );
+		
 		/**
 		* Returns the index corresponding a URI in iDataStoreUri
 		*/
-		TInt FindStoreUri ( TDesC& aDataStoreUri );
+		TInt FindStoreUri ( const TDesC& aDataStoreUri );
 
 		/**
 		* Function to return all cached content
 		*/
-		void GetAllContentsL ( const CPsSettings& aPcsSettings,	                    
-		                       RPointerArray<CPsData>& searchResults );
+		void GetAllContentsL ( const CPsSettings& aPcsSettings,
+		                       RPointerArray<CPsData>& aSearchResults );
 		    
 		/**
 		* Checks if search is on groups
-        * Return ETrue if there is a valid group URI        
+        * Return ETrue if there is a valid group URI
 		*/
 		TBool IsGroupSearchL ( CPsSettings& aSettings,
-		                       RArray<TInt>& aGroupIdArray );						 
+		                       RArray<TInt>& aGroupIdArray );
 
         /**
         * Utility function to replace groups uri with that of contacts uri
         */
-        void ReplaceGroupsUriL ( CPsSettings& aSettings );							 
+        void ReplaceGroupsUriL ( CPsSettings& aSettings );
 
 		/**
 		* Filters the search results array for groups
@@ -250,40 +250,40 @@ class CPcsAlgorithm1 : public CPcsPlugin,
 
         /**
         * Get the list of contact ids that belong to a group.
-        */							 	           
+        */
 		void GetContactsInGroupL ( TInt aGroupId, 
                                    RArray<TInt>& aGroupContactIds );
-                                                						
+        
 		/**
 		* Read sort order for a data store from the central repository
 		* @param aURI - The data store URI for which sort order is required
 		* @param aSortOrder - The persisted sort order from the cenrep
 		*/
-		void ReadSortOrderFromCenRepL ( TDesC& aURI, 
-		                               RArray<TInt>& aSortOrder );
+		void ReadSortOrderFromCenRepL ( const TDesC& aURI, 
+		                                RArray<TInt>& aSortOrder );
 
 		/** Write sort order for a data store to the central repository
 		* @param aURI - The data store URI for which sort order is to be persisted
 		* @param aSortOrder - The sort order to be persisted	
 		*/
-		void WriteSortOrderToCenRepL ( TDesC& aURI, 
-		                              RArray<TInt>& aSortOrder );	
+		void WriteSortOrderToCenRepL ( const TDesC& aURI, 
+		                               RArray<TInt>& aSortOrder );	
 		                         								
 		/**
 		* Utility function that sets the caching error value
-		*/                             
-		void SetCachingError ( TDesC& aDataStore, 
-		                       TInt aError );	
+		*/
+		void SetCachingError ( const TDesC& aDataStore, 
+		                       TInt aError );
 
 		/**
 		* Write the content required by client 
 		*/
-		CPsClientData* WriteClientDataL ( CPsData& aPsData );	
+		CPsClientData* WriteClientDataL ( CPsData& aPsData );
 			
 		/**
 		* Function to return data base URI for an internal identifier
-		*/		                     
-		TDesC& GetUriForIdL( TUint8 aUriId );		
+		*/
+		const TDesC& GetUriForIdL( TUint8 aUriId );
 		
         /**
         * launch plugins by idle
@@ -294,7 +294,7 @@ class CPcsAlgorithm1 : public CPcsPlugin,
         * launch plugins
         */
          static TInt DoLaunchPluginsL(TAny* aPtr);
-									
+
     private:
     
 		/**
@@ -317,7 +317,7 @@ class CPcsAlgorithm1 : public CPcsPlugin,
 		/**
 		* Data plugin interface. Owned
 		*/
-		CPsDataPluginInterface *iPsDataPluginInterface;
+		CPsDataPluginInterface* iPsDataPluginInterface;
 
 		/**
 		* Instance of algorithm helper. Owned

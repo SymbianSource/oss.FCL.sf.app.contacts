@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+// Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies).
 // All rights reserved.
 // This component and the accompanying materials are made available
 // under the terms of "Eclipse Public License v1.0"
@@ -107,11 +107,19 @@ void CPbapVCardExporterUtil::ExportCallHistoryL(const CLogEvent& aLogEvent,
 	LOG_FUNC
 	TContactItemId contactId = aLogEvent.Contact();	
 	
+	if (contactId == KNullContactId && aLogEvent.RemoteParty() != KNullDesC)
+		{
+		// The S60 phonebook uses the remote party for the name, so if there isn't a name
+		// there won't be a contact, so we only look up the contact if there is a Remote Party
+		contactId = FindContactIdFromNumberL(aLogEvent.Number());
+		}
+	
 	if (ContactExistsL(contactId))
 		{
 		// store the log event, format and filter parameters to use in the callback
 		// from the contacts vCard converter
 		iLogEvent = &aLogEvent;
+		iLogEventContactId = contactId;
 		iFormat = aFormat;
 		iFilter = aFilter;
 	
@@ -150,6 +158,22 @@ void CPbapVCardExporterUtil::ExportCallHistoryL(const CLogEvent& aLogEvent,
 		}
 	}
 
+TContactItemId CPbapVCardExporterUtil::FindContactIdFromNumberL(const TDesC& aNumber)
+	{
+	TContactItemId ret = KNullContactId;
+	CContactItemFieldDef* fieldDef;
+	fieldDef = new(ELeave) CContactItemFieldDef;
+	CleanupStack::PushL(fieldDef);
+	fieldDef->AppendL(KUidContactFieldPhoneNumber);
+	CContactIdArray* contactIdArray = iDatabase.FindLC(aNumber, fieldDef);
+	if (contactIdArray->Count() > 0)
+		{
+		ret = (*contactIdArray)[0];
+		}
+	CleanupStack::PopAndDestroy(2); // contactIdArray, fieldDef
+	return ret;
+	}
+
 /**
 Writes a vCard to the stream containing only the mandatory properties defined in the PBAP specification
 with all properties set to empty (null) values
@@ -181,7 +205,7 @@ void CPbapVCardExporterUtil::AddIntraContactPropertiesL(const TContactItemId& aC
 														CArrayPtr<CParserProperty>* aPropertyList)
 	{
 	LOG_FUNC
-	if(iLogEvent && iLogEvent->Contact() == aContactId)
+	if(iLogEvent && iLogEventContactId == aContactId)
 		{
 		CParserProperty* property;
 

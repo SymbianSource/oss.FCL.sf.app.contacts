@@ -68,12 +68,6 @@ RESOURCE TBUF r_qtn_rcl_update_note { buf = qtn_rcl_update_note; }
 
 RESOURCE TBUF r_qtn_rcl_add_recipient_action_menu_text { buf = qtn_fs_action_recipient; }
 
-RESOURCE TBUF r_qtn_phob_set_server_search { buf = qtn_phob_set_server_search; }
-
-RESOURCE TBUF r_qtn_rcl_setting_rcl_server_none { buf = qtn_fs_setting_rcl_server_none; }
-
-RESOURCE TBUF r_qtn_rcl_setting_rcl_not_defined { buf = qtn_fs_setting_rcl_not_defined; }
-
 RESOURCE TBUF r_qtn_rcl_replace_existing_detail_note { buf = qtn_rcl_replace_existing_detail_note; }
 
 RESOURCE TBUF r_qtn_rcl_title_server_contacts { buf = qtn_rcl_title_server_contacts; }

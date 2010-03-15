@@ -16,13 +16,13 @@
 */
 
 #include <mvpbkcontactstoreproperties.h>
-#include <mvpbkcontactstore.h>
-#include <mvpbkstorecontact.h>
+#include <MVPbkContactStore.h>
+#include <MVPbkStoreContact.h>
 
-#include <cvpbkcontactmanager.h>
-#include <cvpbkdefaultattribute.h>
+#include <CVPbkContactManager.h>
+#include <CVPbkDefaultAttribute.h>
 #include <CVPbkFieldTypeSelector.h>
-#include <vpbkcontactstoreuris.h>
+#include <VPbkContactStoreUris.h>
 #include <MVPbkFieldType.h>
 #include <CVPbkContactFieldIterator.h>
 #include <VPbkFieldTypeSelectorFactory.h>

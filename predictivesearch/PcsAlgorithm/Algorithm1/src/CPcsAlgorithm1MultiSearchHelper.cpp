@@ -23,6 +23,16 @@
 #include <collate.h>
 #include <biditext.h>
 
+
+#ifdef _DEBUG
+_LIT( KPanicMultiSearchHelper, "CPcsAlgorithm1MultiSearchHelper" );
+static void Panic( TInt aReason )
+    {
+    User::Panic( KPanicMultiSearchHelper, aReason );
+    }
+#endif
+
+
 // ============================== MEMBER FUNCTIONS ============================
 
 // ----------------------------------------------------------------------------
@@ -96,10 +106,10 @@ CPcsAlgorithm1MultiSearchHelper::~CPcsAlgorithm1MultiSearchHelper()
 // ----------------------------------------------------------------------------
 void  CPcsAlgorithm1MultiSearchHelper::SearchMultiL(const CPsSettings& aSettings,
 	                                     RPointerArray<CPsQuery>& aPsQuery,
-	                                     TBool isSearchInGroup,
+	                                     TBool aIsSearchInGroup,
 	                                     RArray<TInt>& aContactsInGroup,
-	                                     RPointerArray<CPsData>& searchResults,
-	                                     RPointerArray<CPsPattern>& searchSeqs )
+	                                     RPointerArray<CPsData>& aSearchResults,
+	                                     RPointerArray<CPsPattern>& aSearchSeqs )
 {
     PRINT ( _L("Enter CPcsAlgorithm1MultiSearchHelper::SearchMultiL") );
 
@@ -110,50 +120,56 @@ void  CPcsAlgorithm1MultiSearchHelper::SearchMultiL(const CPsSettings& aSettings
     // Create CPcsAlgorithm1FilterHelper object to be used for filtering the results
 	TSortType sortType = aSettings.GetSortType();
     CPcsAlgorithm1FilterHelper* filterHelper = CPcsAlgorithm1FilterHelper::NewL(sortType);
+    CleanupStack::PushL( filterHelper );
     RPointerArray<CPcsPoolElement> elements;
+    CleanupClosePushL( elements );
     
-    iMultiSearchResultsArr.ResetAndDestroy();  
+    iMultiSearchResultsArr.ResetAndDestroy();
     
     // Get the data stores  
-    RPointerArray<TDesC> aDataStores;
-    aSettings.SearchUrisL(aDataStores);
+    RPointerArray<TDesC> dataStores;
+    CleanupResetAndDestroyPushL( dataStores );
+    aSettings.SearchUrisL(dataStores);
           
     // Get the required display fields from the client
     RArray<TInt> requiredDataFields;
+    CleanupClosePushL( requiredDataFields );
     aSettings.DisplayFieldsL(requiredDataFields);
 
-    // Search based on first character of 1st item in query list
-    TInt numValue = iKeyMap->PoolIdForCharacter(aPsQuery[0]->GetItemAtL(0).Character());
+    // Search from cache based on first character of 1st item in query list
+    const CPsQueryItem& firstCharItem = aPsQuery[0]->GetItemAtL(0);
+    TInt cachePoolId = iKeyMap->PoolIdForCharacter( firstCharItem.Character(), firstCharItem.Mode() );
 
     // Get the elements from all the databases
-    for ( int dsIndex = 0; 
-			dsIndex < aDataStores.Count(); 
+    for ( TInt dsIndex = 0; 
+			dsIndex < dataStores.Count(); 
 			dsIndex++ )
 	{
 	    RPointerArray<CPsData> *temp = new (ELeave) RPointerArray<CPsData> ();
 	    iMultiSearchResultsArr.Append(temp);
 	    
 	    // Get the contents for this data store
-	    TInt arrayIndex = iAlgorithm->GetCacheIndex(*(aDataStores[dsIndex]));					    
-		if ( arrayIndex < 0 ) continue;		
-		CPcsCache* cache = iAlgorithm->GetCache(arrayIndex);	    		   
-	    cache->GetContactsForKeyL(numValue,elements);
+	    TInt arrayIndex = iAlgorithm->GetCacheIndex(*(dataStores[dsIndex]));
+		if ( arrayIndex < 0 ) continue;
+		CPcsCache* cache = iAlgorithm->GetCache(arrayIndex);
+	    cache->GetContactsForKeyL(cachePoolId, elements);
 		
 	    // Get the supported data fields for this data store
         RArray<TInt> supportedDataFields;
+        CleanupClosePushL( supportedDataFields );
 		cache->GetDataFields(supportedDataFields);
 		
-		// Get the filtered data fields for this data store    		
+		// Get the filtered data fields for this data store
 		TUint8 filteredDataMatch = FilterDataFieldsL(requiredDataFields, 
 		                                             supportedDataFields);
 
 	    // Filter the results now
 	    FilterResultsMultiL(filterHelper,
-                            elements,
-                            aPsQuery,
-                            filteredDataMatch,
-                            isSearchInGroup,
-                            aContactsInGroup);	
+	    			   elements, 
+		               aPsQuery, 
+		               filteredDataMatch,
+		               aIsSearchInGroup,
+		               aContactsInGroup);
 	    
 		// If alphabetical sorting, get the results for this datastore               
 		if ( sortType == EAlphabetical )
@@ -162,28 +178,28 @@ void  CPcsAlgorithm1MultiSearchHelper::SearchMultiL(const CPsSettings& aSettings
 		}
 		
 	    elements.Reset();
-	    supportedDataFields.Reset();
+	    CleanupStack::PopAndDestroy( &supportedDataFields ); // Close
 	}
-	aDataStores.ResetAndDestroy();
-    requiredDataFields.Reset(); 
+    CleanupStack::PopAndDestroy( &requiredDataFields ); // Close
+    CleanupStack::PopAndDestroy( &dataStores );         // ResetAndDestroy
 	
 	// If alphabetical sorting, merge the result sets of all datastores
   	if ( sortType == EAlphabetical )
   	{
   		// Form the complete searchResults array
     	CPcsAlgorithm1Utils::FormCompleteSearchResultsL(iMultiSearchResultsArr,
-    											   	    searchResults);
+    											   	    aSearchResults);
   	}
   	else
   	{
   		// Results are already sorted patternbased
-  		filterHelper->GetResults(searchResults);
+  		filterHelper->GetResults(aSearchResults);
   	}
   
   	// Get the sorted match sequence list
-	filterHelper->GetPatternsL(searchSeqs);
+	filterHelper->GetPatternsL(aSearchSeqs);
 	
-	PRINT1 ( _L("CPcsAlgorithm1MultiSearchHelper::SearchMultiL: Number of search results = %d"), searchResults.Count() ); 
+	PRINT1 ( _L("CPcsAlgorithm1MultiSearchHelper::SearchMultiL: Number of search results = %d"), aSearchResults.Count() );
              
 	// Cleanup             
     for(TInt i = 0; i < iMultiSearchResultsArr.Count(); i++)
@@ -194,7 +210,8 @@ void  CPcsAlgorithm1MultiSearchHelper::SearchMultiL(const CPsSettings& aSettings
     }
     
     iMultiSearchResultsArr.Reset();
-    delete filterHelper;
+    CleanupStack::PopAndDestroy( &elements ); // Close
+    CleanupStack::PopAndDestroy( filterHelper );
    
     __LATENCY_MARKEND ( _L("CPcsAlgorithm1MultiSearchHelper::SearchMultiL") );
 
@@ -411,16 +428,14 @@ void  CPcsAlgorithm1MultiSearchHelper::ConvertQueryToListL(RPointerArray<CPsQuer
 {
     PRINT ( _L("Enter CPcsAlgorithm1MultiSearchHelper::ConvertQueryToListL") );
 
-    for ( int queryIndex = 0; queryIndex < aSearchQuery.Count(); queryIndex++ )
+    for ( TInt queryIndex = 0; queryIndex < aSearchQuery.Count(); queryIndex++ )
     {
         TBuf<KPsQueryMaxLen> dataWithKeys;
         iKeyMap->GetMixedKeyStringForQueryL( *aSearchQuery[queryIndex], dataWithKeys );
 
-        HBufC* dWKToAppend = HBufC::NewL(KPsQueryMaxLen);
-        TPtr tPtr(dWKToAppend->Des());
-        tPtr.Copy(dataWithKeys);
-
-        aQueryList.Append( dWKToAppend );
+        HBufC* dWKToAppend = dataWithKeys.AllocLC();
+        aQueryList.AppendL( dWKToAppend );
+        CleanupStack::Pop( dWKToAppend ); // ownership transfered
     }
 
     PRINT ( _L("End CPcsAlgorithm1MultiSearchHelper::ConvertQueryToListL") );
@@ -432,10 +447,10 @@ void  CPcsAlgorithm1MultiSearchHelper::ConvertQueryToListL(RPointerArray<CPsQuer
 // ----------------------------------------------------------------------------
 void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
         CPcsAlgorithm1FilterHelper* aAlgorithmFilterHelper,
-        RPointerArray<CPcsPoolElement>& searchSet,
-        RPointerArray<CPsQuery>& searchQuery,
+        RPointerArray<CPcsPoolElement>& aSearchSet,
+        RPointerArray<CPsQuery>& aSearchQuery,
         TUint8 aFilteredDataMatch,
-        TBool isSearchInGroup,
+        TBool aIsSearchInGroup,
         RArray<TInt>& aContactsInGroup)
 {
     PRINT ( _L("Enter CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL") );
@@ -443,9 +458,11 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
     __LATENCY_MARK ( _L("CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL") );
 
     // Convert the individual queries to string form
-    RPointerArray<HBufC> queryList;    
-    RPointerArray<HBufC> tempqueryList;   
-    ConvertQueryToListL(searchQuery, queryList);
+    RPointerArray<HBufC> queryList;
+    CleanupResetAndDestroyPushL( queryList );
+    RPointerArray<HBufC> tempqueryList;
+    CleanupClosePushL( tempqueryList );
+    ConvertQueryToListL(aSearchQuery, queryList);
     
     // Remember a temporary copy of query list
     // since we sort the queries
@@ -459,17 +476,18 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
 	queryList.Sort(rule);
 	
     // To hold the match results
-    RPointerArray<TDesC> tmpMatchSet;  
+    RPointerArray<TDesC> tmpMatchSet;
+    CleanupResetAndDestroyPushL( tmpMatchSet );
        
     // Parse thru each search set elements and filter the results    
-	for ( int index = 0; index < searchSet.Count(); index++ )
+	for ( TInt index = 0; index < aSearchSet.Count(); index++ )
 	{
-	    CPcsPoolElement* poolElement = static_cast<CPcsPoolElement*>(searchSet[index]);
+	    CPcsPoolElement* poolElement = static_cast<CPcsPoolElement*>(aSearchSet[index]);
 		CPsData* psData = poolElement->GetPsData();
 		psData->ClearDataMatches();
 		
 		TBool isMatch = ETrue;		
-		TUint8 wordMatches = 0;
+		TInt wordMatches = 0;
 		
 		// Reset iWordMatches to zero 
 		ClearWordMatches();
@@ -483,20 +501,22 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
 		    // Get the original query mode corresponding to this query
 		    TInt modeIndex = tempqueryList.Find(tmpQuery);
 		    
-		    for ( TInt dataIndex = 0; dataIndex < psData->DataElementCount(); dataIndex++ )
+		    TInt dataCount = psData->DataElementCount();
+		    __ASSERT_DEBUG( dataCount < MAX_DATA_FIELDS, Panic(KErrOverflow) );
+		    
+		    for ( TInt dataIndex = 0; dataIndex < dataCount; dataIndex++ )
 		    {
 		        // Filter off data fields not required in search
-		        TReal bitIndex;
-		        Math::Pow(bitIndex, 2, dataIndex);
+                TUint8 bitIndex = 1 << dataIndex;
 
-                TUint8 filter = (TUint8)bitIndex & aFilteredDataMatch;     		         
+                TUint8 filter = bitIndex & aFilteredDataMatch;
 		        if ( filter == 0x0 )
 		        {
 		            // Move to next data
 		        	continue;
 		        }
 		       	
-		        TInt wordIndex = -1;			     
+		        TInt wordIndex = -1;
 			    
 			    TLex lex(psData->Data(dataIndex)->Des());
 			    
@@ -505,23 +525,23 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
 			    
 			    // Search thru multiple words
 			    while ( tmpData.Length() != 0 ) 
-			    {			      
-			        wordIndex++;			         				  
+			    {
+			        wordIndex++;
 			     	
-			     	TBuf<KPsQueryMaxLen> data; 
+			     	TBuf<KPsQueryMaxLen> data;
 
 	                // Convert the data to required form (mode specific)
-	                iKeyMap->GetMixedKeyStringForDataL(*searchQuery[modeIndex], tmpData, data);
+	                iKeyMap->GetMixedKeyStringForDataL(*aSearchQuery[modeIndex], tmpData, data);
 
 				    // Compare the data against query
-                    if ( CPcsAlgorithm1Utils::MyCompareKeyAndString(data, *tmpQuery, *searchQuery[modeIndex]) )
+                    if ( CPcsAlgorithm1Utils::MyCompareKeyAndString(data, *tmpQuery, *aSearchQuery[modeIndex]) )
 				    {
-				        psData->SetDataMatch(dataIndex);				        			        
+				        psData->SetDataMatch(dataIndex);
 
 				        // Perform two checks.
 				        // 1. Ensure that the word is not matched against any previous query
 				        // 2. If it is the first match to the query
-				        TBool isWordMatch = IsWordMatch(dataIndex, wordIndex);				        
+				        TBool isWordMatch = IsWordMatch(dataIndex, wordIndex);
 
 				        // Check if the current word is not matched to any query
 		                if( !isWordMatch )
@@ -536,18 +556,18 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
 
 					        // Extract matched character sequence and fill in temp array
 							TInt len = tmpQuery->Length();
-							HBufC* seq = HBufC::NewL(len);
-							*seq = tmpData.Mid(0, len);
+							HBufC* seq = tmpData.Left(len).AllocLC();
 							
 							seq->Des().UpperCase();
 							TIdentityRelation<TDesC> searchRule(CPcsAlgorithm1Utils::CompareExact);
 							if ( tmpMatchSet.Find(seq, searchRule) == KErrNotFound )
 							{
-                                tmpMatchSet.Append(seq);
+                                tmpMatchSet.AppendL(seq);
+                                CleanupStack::Pop(seq);
 							}
 							else
 							{ 
-                                delete seq;
+                                CleanupStack::PopAndDestroy(seq);
 								seq = NULL;
 							}
 						}
@@ -555,7 +575,7 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
 				     
 				    // Next word
 				    tmpData.Set(lex.NextToken());
-			    }			     
+			    }
 		    }
 		    
 		    // No data element matches the query. Ignore this result.
@@ -568,9 +588,9 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
 		
 		// If match add the element to the result set
 		//  And before adding to the result set, check if there is atleast one match per query
-		if (( isMatch ) && ( wordMatches >= queryList.Count()))
+		if ( isMatch && wordMatches >= queryList.Count() )
 		{
-			if ( isSearchInGroup )
+			if ( aIsSearchInGroup )
 			{
 				if ( aContactsInGroup.Find(psData->Id()) != KErrNotFound )
 				{
@@ -585,12 +605,13 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
 	    
 	    // Cleanup the match sequence array as 
 		// they are stored in pattern details structure
-		tmpMatchSet.ResetAndDestroy();       
+		tmpMatchSet.ResetAndDestroy();
 	}
 	
 	// Free the query list
-	queryList.ResetAndDestroy();
-	tempqueryList.Reset();
+	CleanupStack::PopAndDestroy( &tmpMatchSet );   // ResetAndDestroy
+    CleanupStack::PopAndDestroy( &tempqueryList ); // Close
+	CleanupStack::PopAndDestroy( &queryList );     // ResetAndDestroy
 
 	__LATENCY_MARKEND ( _L("CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL") );
 
@@ -600,12 +621,10 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
 // ----------------------------------------------------------------------------
 // CPcsAlgorithm1MultiSearchHelper::SetWordMap()
 // ----------------------------------------------------------------------------
-void CPcsAlgorithm1MultiSearchHelper::SetWordMap( TInt aIndex, TInt aPosition)
+void CPcsAlgorithm1MultiSearchHelper::SetWordMap(TInt aIndex, TInt aPosition)
 {
-    TReal val;
-	Math::Pow(val, 2, aPosition);
-
-	iWordMatches[aIndex] |= (TUint8)val;
+    TUint8 val = 1 << aPosition;
+    iWordMatches[aIndex] |= val;
 }
 
 // ----------------------------------------------------------------------------
@@ -613,10 +632,8 @@ void CPcsAlgorithm1MultiSearchHelper::SetWordMap( TInt aIndex, TInt aPosition)
 // ----------------------------------------------------------------------------
 TBool CPcsAlgorithm1MultiSearchHelper::IsWordMatch(TInt aDataIndex, TInt aWordIndex)
 {
-    TReal val;
-	Math::Pow(val, 2, aWordIndex);
-
-	return(iWordMatches[aDataIndex] & (TUint8)val);
+    TUint8 val = 1 << aWordIndex;
+    return (iWordMatches[aDataIndex] & val);
 }
 
 // ----------------------------------------------------------------------------
@@ -638,20 +655,20 @@ void CPcsAlgorithm1MultiSearchHelper::ClearWordMatches()
 TInt CPcsAlgorithm1MultiSearchHelper::CountMultiQueryWordsL(CPsQuery& aQuery)
 {    
     TInt wordCount = 0;
-    TBool newWord = true;
+    TBool newWord = ETrue;
 
     for (TInt i = 0; i < aQuery.Count(); i++ )
     {
         if ( aQuery.GetItemAtL(i).Character().IsSpace() )
         {
-            newWord = true;
+            newWord = ETrue;
         }
         else
         {
             if ( newWord )
             {
                 wordCount++;
-                newWord = false;
+                newWord = EFalse;
             }
         }
     }
@@ -677,12 +694,12 @@ RPointerArray<CPsQuery> CPcsAlgorithm1MultiSearchHelper::MultiQueryL(CPsQuery& a
 	
     for (TInt beg = 0; beg < textLength; beg++)
     {
-        // Skip separators before next word	                
+        // Skip separators before next word
         if ( !aQuery.GetItemAtL(beg).Character().IsSpace() )
         {
             // Scan the end of the word
             TInt end = beg+1;
-            while (end < textLength &&                  
+            while (end < textLength &&
                    !aQuery.GetItemAtL(end).Character().IsSpace())
             {
                 end++;
@@ -695,7 +712,7 @@ RPointerArray<CPsQuery> CPcsAlgorithm1MultiSearchHelper::MultiQueryL(CPsQuery& a
                 CPsQueryItem* item = CPsQueryItem::NewL();
                 item->SetCharacter(aQuery.GetItemAtL(i).Character());
                 item->SetMode(aQuery.GetItemAtL(i).Mode());
-            	newQuery->AppendL(*item);
+                newQuery->AppendL(*item);
             }
             query.Append(newQuery);
             
@@ -719,16 +736,14 @@ TUint8 CPcsAlgorithm1MultiSearchHelper::FilterDataFieldsL(RArray<TInt>& aRequire
 {
     TUint8 filteredMatch = 0x0;
     
-	for ( int i = 0; i < aSupportedDataFields.Count(); i++ )
+	for ( TInt i = 0; i < aSupportedDataFields.Count(); i++ )
 	{
-		for ( int j = 0; j < aRequiredDataFields.Count(); j++ )
+		for ( TInt j = 0; j < aRequiredDataFields.Count(); j++ )
 		{
 			if ( aSupportedDataFields[i] == aRequiredDataFields[j] )
 			{
-				TReal val;
-			    Math::Pow(val, 2, i);
-			    
-			    filteredMatch |= (TUint8)val;	
+                TUint8 val = 1 << i;
+			    filteredMatch |= val;
 			}
 		}
 	}

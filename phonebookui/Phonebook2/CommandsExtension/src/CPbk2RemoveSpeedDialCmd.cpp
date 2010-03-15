@@ -255,14 +255,12 @@ void CPbk2RemoveSpeedDialCmd::ContactOperationCompleted
         {    
         TInt index = KErrNotFound;
         TInt err = KErrNone;
+        
         if (iUiControl)
-            {            
-            // Convert presentation index to store index.
-            TRAP( err, 
-                index = ToStoreFieldIndexL( iUiControl->FocusedFieldIndex(), 
-                	iStoreContact ) );
+            {
+            index = iUiControl->FocusedFieldIndex();
             }
-
+    
         if ( index != KErrNotFound )
             {
             MVPbkStoreContactField& field = 
@@ -405,10 +403,9 @@ TBool CPbk2RemoveSpeedDialCmd::HasSpeedDialL()
     const MVPbkStoreContact* storeContact =
             iUiControl->FocusedStoreContact();
 
-    // Convert presentation index to store index.
-    TInt index( ToStoreFieldIndexL(
-                    iUiControl->FocusedFieldIndex(),
-                    storeContact ) );
+   
+    TInt index = iUiControl->FocusedFieldIndex();
+
 
     if ( index != KErrNotFound )
         {

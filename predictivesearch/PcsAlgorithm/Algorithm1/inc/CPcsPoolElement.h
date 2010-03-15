@@ -44,7 +44,7 @@ class CPcsPoolElement : public CBase
 		/**
 		 * Clears the data match element attribute
 		 */	
-		void ClearDataMatchAttribute();				
+		void ClearDataMatchAttribute();
 				
 		/**
 		 * Checks if data matched
@@ -60,9 +60,10 @@ class CPcsPoolElement : public CBase
 		 * Return the CPsData object of this pool element
 		 */
 		CPsData* GetPsData();
+		
 		/**
-		  * Compares the two Pool Elements and returms the comparison value.
-		  * It takes care of language variance too.
+		 * Compares the two Pool Elements and returms the comparison value.
+		 * It takes care of language variance too.
 		 */
 		 static TInt CompareByData ( const CPcsPoolElement& aObject1, 
 					     const CPcsPoolElement& aObject2 );
@@ -85,7 +86,7 @@ class CPcsPoolElement : public CBase
          * Pointer to contact data
          * Not owned.
          */
-         CPsData* psData;
+         CPsData* iPsData;
          
 		/*
 		 * This attribute indicates due to which
@@ -100,7 +101,7 @@ class CPcsPoolElement : public CBase
 		 * Bit 6 = Not used
 		 * Bit 7 = Not used
 		 */
-		TInt8     iDataMatchAttribute;		
+		TUint8 iDataMatchAttribute;
 };
 
 #endif // __CPCS_POOL_ELEMENT_H__

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -11,14 +11,16 @@
 *
 * Contributors:
 *
-* Description:  Phonebook 2 Group UI Extension group members view resources.
+* Description: 
+*     This file contains all the resources for Touch UI enabled Phonebook 2
+*     groups list view.
 *
 */
 
 
-// --------------------------------------------------------------------------
+// ---------------------------------------------------------
 // Groups Members View's control
-// --------------------------------------------------------------------------
+// ---------------------------------------------------------
 //
 RESOURCE PBK2_CONTACT_CONTROL r_pbk2_groupmembers_control
     {
@@ -26,7 +28,7 @@ RESOURCE PBK2_CONTACT_CONTROL r_pbk2_groupmembers_control
             KPbk2ContactViewListControlFindBox;
     listbox = LISTBOX
         {
-        flags = EAknListBoxLoopScrolling|EAknListBoxMarkableList|EAknListBoxShiftEnterMarks;
+        flags = EAknListBoxStylusMarkableList|EAknListBoxLoopScrolling;        
         };
     iconArray = R_PBK2_FIELDTYPE_ICONS;
     emptyIconId = PHONEBOOK2_ICON_ID
@@ -34,14 +36,7 @@ RESOURCE PBK2_CONTACT_CONTROL r_pbk2_groupmembers_control
         ownerUid = KPbk2UID3;
         id = EPbk2qgn_prop_nrtyp_empty;
         };
-    defaultIconId = PHONEBOOK2_ICON_ID {};
+	defaultIconId = PHONEBOOK2_ICON_ID {};
     }
-
-
-// --------------------------------------------------------------------------
-// Dummy Groups Members View's stylus popup menus. Not used, but IDs needed.
-// --------------------------------------------------------------------------
-//
-RESOURCE STYLUS_POPUP_MENU r_phonebook2_groupmembers_unmarked_stylus_menu {}
 
 // End of File

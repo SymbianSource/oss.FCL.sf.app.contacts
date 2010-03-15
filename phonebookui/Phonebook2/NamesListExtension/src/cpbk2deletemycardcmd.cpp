@@ -240,7 +240,13 @@ TBool CPbk2DeleteMyCardCmd::StepFailed(
     TInt /*aStepSize*/,
     TInt aError )
     {
-    ProcessDismissed( aError );
+    ProcessDismissed( aError );   
+    
+    if ( aError == KErrInUse )
+        {                                                             
+        CCoeEnv::Static()->HandleError( KErrInUse );    
+        }
+    
     return EFalse;
     }
 

@@ -29,6 +29,7 @@
 // FORWARD DECLARATIONS
 class CContactDatabase;
 class CContactItem;
+class CContactItemViewDef;
 
 namespace VPbkEngUtils { 
 class CVPbkDiskSpaceCheck;
@@ -125,6 +126,9 @@ NONSHARABLE_CLASS( CAsyncContactOperation ): public CAsyncOneShot
         RFs iFs;
         ///Own: Disk Space Checker
         VPbkEngUtils::CVPbkDiskSpaceCheck* iDiskSpaceChecker;
+        
+        ///Own: for giving CContactItemViewDef to OpenContactLX
+        CContactItemViewDef* iViewDef;
     };
 
 

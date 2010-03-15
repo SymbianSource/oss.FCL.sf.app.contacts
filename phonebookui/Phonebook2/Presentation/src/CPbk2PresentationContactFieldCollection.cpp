@@ -316,6 +316,32 @@ EXPORT_C TInt CPbk2PresentationContactFieldCollection::StoreIndexOfField(
     }
     
 // --------------------------------------------------------------------------
+// CPbk2PresentationContactFieldCollection::FieldIndexOfStoreField
+// --------------------------------------------------------------------------
+//  
+EXPORT_C TInt CPbk2PresentationContactFieldCollection::FieldIndexOfStoreField(
+    TInt aStoreFieldIndex) const
+    { 
+    __ASSERT_DEBUG(aStoreFieldIndex >= 0 && 
+            aStoreFieldIndex < iFieldCollection.FieldCount(),
+        Panic(EGetStoreContactIndex_PreCond));
+   
+    const TInt count = iFields.Count();
+    const MVPbkStoreContactField& collectionField = iFieldCollection.FieldAt( aStoreFieldIndex );
+    for (TInt i = 0; i < count; ++i)
+        {
+        MVPbkStoreContactField& field = iFields[i]->StoreField();
+        if ( field.IsSame( collectionField ) )
+            {
+            return i;
+            }
+        }
+    __ASSERT_DEBUG(EFalse, Panic(EGetStoreContactIndex_PostCond));
+    return KErrNotFound;
+    }
+    
+
+// --------------------------------------------------------------------------
 // CPbk2PresentationContactFieldCollection::ParentContact
 // --------------------------------------------------------------------------
 //

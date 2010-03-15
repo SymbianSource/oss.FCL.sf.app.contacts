@@ -37,7 +37,7 @@ class CPcsCache : public CBase
 		/**
 		* Two phase construction
 		*/
-		static CPcsCache* NewL(TDesC& aURI, CPcsKeyMap& aKeyMap, TUint8 aUriId);
+		static CPcsCache* NewL(const TDesC& aURI, CPcsKeyMap& aKeyMap, TUint8 aUriId);
 
 		/**
 		* Virtual destructor
@@ -72,7 +72,7 @@ class CPcsCache : public CBase
 		/**
 		* Removes all data elements from the cache
 		*/
-		void RemoveAllFromCacheL();
+		void RemoveAllFromCache();
 
 		/**
 		* Sets data fields to the cache
@@ -133,60 +133,60 @@ class CPcsCache : public CBase
 		/**
 		* Second phase constructor
 		*/
-		void ConstructL(TDesC& aURI, CPcsKeyMap& aKeyMap, TUint8 aUriId);
+		void ConstructL(const TDesC& aURI, CPcsKeyMap& aKeyMap, TUint8 aUriId);
 
 		/**
 		* Utility function to add a contact to the pool
 		*/
-		void AddToPoolL(TInt& aInfo, CPsData& data);
+		void AddToPoolL(TUint64& aPoolMap, CPsData& aData);
 
 		/**
 		* Utility function 
 		*/
-		void SetPoolMap(TInt& aPoolMap, TInt aPoolId);
+		void SetPoolMap(TUint64& aPoolMap, TInt aArrayIndex);
 
 		/**
 		* Utility function 
 		*/
-		TBool GetPoolMap(TInt& aPoolMap, TInt arrayIndex);
+		TBool GetPoolMap(TUint64& aPoolMap, TInt aArrayIndex);
 
         /**
          * Utility function
          */
         void ComputeIndexOrder();
+        
 	private:    
-
 
 		/*
 		* Array of key maps
 		*/
 		typedef RPointerArray<CPcsPoolElement> R_PTR_ARRAY;
-		RPointerArray<R_PTR_ARRAY> keyArr;     
+		RPointerArray<R_PTR_ARRAY> iKeyArr;
 
 		/*
 		* Hashmaps to remember the location of a contact in the pools
 		*/
-		RHashMap<TInt, TInt> cacheInfo;			
+		RHashMap<TInt, TUint64> iCacheInfo;
 
 		/*
 		* Master pool of all contacts in this cache
 		*/
-		RPointerArray<CPsData> masterPool;	
+		RPointerArray<CPsData> iMasterPool;	
 		
 	    /*
 	    * Master pool backup of all contacts in this cache when sortorder changed
 	    */
-	    RPointerArray<CPsData> masterPoolBackup;  
+	    RPointerArray<CPsData> iMasterPoolBackup;
 
 		/*
 		* Not owned
 		*/
-		CPcsKeyMap* keyMap;		
+		CPcsKeyMap* iKeyMap;
 
 		/**
 		* Owned. Refer to the database URI this cache is for.
 		*/
-		HBufC* iURI;	
+		HBufC* iURI;
 
 		/**
 		* Internal URI id for this cache

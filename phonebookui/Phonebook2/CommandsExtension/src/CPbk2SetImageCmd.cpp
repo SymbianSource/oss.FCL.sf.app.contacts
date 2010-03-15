@@ -31,6 +31,7 @@
 #include <RPbk2LocalizedResourceFile.h>
 #include <CPbk2DriveSpaceCheck.h>
 #include <CPbk2AppUiBase.h>
+#include <Pbk2CmdExtRes.rsg>
 
 // Virtual Phonebook
 #include <MVPbkStoreContact.h>
@@ -131,18 +132,22 @@ CPbk2SetImageCmd::~CPbk2SetImageCmd()
 TBool CPbk2SetImageCmd::ExecuteCommandL()
     {
     TBool result = EFalse;
+    iImageSetFailed = EFalse;
     Cancel();
     
     // fetch image from media gallery
     CDesCArray* selectedFile = new(ELeave) CDesCArrayFlat( 1 );
     CleanupStack::PushL( selectedFile );
-    TBool res( EFalse );
+    TBool res( EFalse );    
+    
     res = MGFetchL( *selectedFile, EImageFile, EFalse, this );
     
-    if ( res && selectedFile->Count() > 0 )
+    if ( !iVerificationFailed && res && selectedFile->Count() > 0 )
         {
         iWaitNote = new(ELeave) CAknWaitDialog( 
                 reinterpret_cast<CEikDialog**>( &iWaitNote ), ETrue );
+        
+        iWaitNote->SetCallback( this );
         iWaitNote->ExecuteLD( R_QTN_GEN_NOTE_FETCHING );
        
         TPtrC fileName = (*selectedFile)[0];
@@ -193,13 +198,13 @@ void CPbk2SetImageCmd::Pbk2ImageSetFailed
     {
     __ASSERT_DEBUG( &aOperation == iImageOperation, 
         Panic( EPanicPreCond_Pbk2ImageSetFailed ) );
-
+       
     delete iImageOperation;
     iImageOperation = NULL;
-
-	DismissWaitNote();
-
-	ProcessDismissed( aError );
+    
+    iImageSetFailed = ETrue;
+    iImageSetError = aError;
+	DismissWaitNote();			
     }
 
 // --------------------------------------------------------------------------
@@ -216,9 +221,26 @@ void CPbk2SetImageCmd::DismissWaitNote()
 			{
 			delete iWaitNote;
 			iWaitNote = NULL;
+			
+			if( iImageSetFailed )
+                {
+                ShowErrorNoteL();
+                }
 			}
 		}
 	}
+
+// --------------------------------------------------------------------------
+// CPbk2SetImageCmd::DialogDismissedL
+// --------------------------------------------------------------------------
+//  
+void CPbk2SetImageCmd::DialogDismissedL( TInt /*aButtonId*/ )
+    {
+    if( iImageSetFailed )
+        {
+        ShowErrorNoteL();
+        }
+    }
 
 // --------------------------------------------------------------------------
 // CPbk2SetImageCmd::VerifySelectionL
@@ -226,8 +248,33 @@ void CPbk2SetImageCmd::DismissWaitNote()
 //	
 TBool CPbk2SetImageCmd::VerifySelectionL
         (const MDesCArray* aSelectedFiles)
-    {
-    TBool result = EFalse;
+    {    
+    iVerificationFailed = EFalse;
+    TBool ret = ETrue;
+    
+    TRAPD( err, ret = DoVerifySelectionL( aSelectedFiles ) );
+    
+    if( err != KErrNone )
+        {
+        iVerificationFailed = ETrue;
+        ShowErrorNoteL();    
+        } 
+      
+    // Selection is always accepted if the image is not drm protected.
+    // Image fetch dialog functionality is always same in spite of error 
+    // type (DRM check, ImageDecoder, etc. errors) Dialog is always closed.    
+    return ret;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2SetImageCmd::DoVerifySelectionL
+// --------------------------------------------------------------------------
+//  
+TBool CPbk2SetImageCmd::DoVerifySelectionL
+        (const MDesCArray* aSelectedFiles)
+    {    
+    TBool ret = ETrue;
+    
     if ( aSelectedFiles && aSelectedFiles->MdcaCount() > 0 )
         {
         // DRM for phonebook image fetch
@@ -235,27 +282,44 @@ TBool CPbk2SetImageCmd::VerifySelectionL
         TBool isProtected( ETrue );
         User::LeaveIfError( 
             iDrmManager->IsProtectedFile( fileName, isProtected ) );
+        
         if ( isProtected )
-            {
-			RPbk2LocalizedResourceFile resFile( *CCoeEnv::Static() );
-			resFile.OpenLC( 
-			    KPbk2RomFileDrive, 
-				KDC_RESOURCE_FILES_DIR, 
-				Pbk2PresentationUtils::PresentationResourceFile() );
+            {        
+            ret = EFalse; 
+            RPbk2LocalizedResourceFile resFile( *CCoeEnv::Static() );
+            resFile.OpenLC( 
+                KPbk2RomFileDrive, 
+                KDC_RESOURCE_FILES_DIR, 
+                Pbk2PresentationUtils::PresentationResourceFile() );
             // show user copyright note
             HBufC* prompt = 
                 CCoeEnv::Static()->AllocReadResourceLC( R_PBK2_QTN_DRM_NOT_ALLOWED );
             CAknInformationNote* dlg = new(ELeave) CAknInformationNote( ETrue );
             dlg->ExecuteLD( *prompt );
             CleanupStack::PopAndDestroy( 2 ); // resFile, prompt
-            }
-        else
-            {
-            result = ETrue;
-            }
-        }
-        
-    return result;
+            }                
+        }   
+    
+    return ret;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2SetImageCmd::ShowErrorNoteL
+// --------------------------------------------------------------------------
+//
+void CPbk2SetImageCmd::ShowErrorNoteL()
+    {               
+    HBufC* prompt = StringLoader::LoadLC( R_QTN_ALBUM_ERR_FORMAT_UNKNOWN );
+    CAknInformationNote* dlg = new ( ELeave ) CAknInformationNote( ETrue );
+    dlg->ExecuteLD( *prompt );
+    CleanupStack::PopAndDestroy( prompt );
+    
+    if( iImageSetFailed )
+        {        
+        ProcessDismissed( iImageSetError );
+        iImageSetFailed = EFalse;      
+        iImageSetError = KErrNone;
+        }      
     }
 
 // --------------------------------------------------------------------------
@@ -324,6 +388,7 @@ TBool CPbk2SetImageCmd::MGFetchL( CDesCArray& aSelectedFiles,
         }
     
     TBool result( EFalse );
+            
     // run image fetch dialog
     TRAPD(error, result = MGFetch::RunL( aSelectedFiles, 
             aMediaType, 

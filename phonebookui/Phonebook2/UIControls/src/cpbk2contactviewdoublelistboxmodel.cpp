@@ -198,7 +198,7 @@ void CPbk2ContactViewDoubleListBoxModel::FormatBufferForContactL(
 
     // Clip secondary text if it's a phone number 
     if( MPbk2DoubleListboxDataElement::ETypePhoneNumber == 
-        element->TextType( MPbk2DoubleListboxDataElement::EStatusText ) )
+        element->TextType( MPbk2DoubleListboxDataElement::EStatusText ) && iClipListBoxText )
         {
         TPtr secondary( element->TextPtr( 
             MPbk2DoubleListboxDataElement::EStatusText ) );

@@ -110,7 +110,7 @@ RESOURCE DIALOG r_qtn_phob_note_clearing_pb
             control = AVKON_NOTE
                 {
                 layout = EProgressLayout;
-                singular_label = qtn_phob_note_clearing_pb;
+                singular_label = qtn_fldr_deleting_wait_note;
                 imagefile = AVKON_ICON_FILE;
                 imageid   = qgn_note_erased;
                 imagemask = qgn_note_erased_mask;

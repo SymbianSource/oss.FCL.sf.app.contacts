@@ -178,6 +178,7 @@ public:
 	void FindAsyncInitL(const TDesC& aText,CContactItemFieldDef* aFieldDef);
 	void FindAsyncTextDefInitL(const CDesCArray& aWords,CContactTextDef* aTextDef);
 	CContactIdArray* FindAsyncL(TBool& aMoreToGo, TUint aSessionId);
+	void Reset();
 
 	TBool UsesIdentityFieldsOnly(TInt aFindFlags);
 	void ConstructBitwiseFlagsFromTextDef(TInt& aFindFlags,TInt& aIdentityColumnsCount,const CContactTextDef* aTextDef);
@@ -194,7 +195,7 @@ private:
 	TBool PerformIdFindIterationL(CContactIdArray *aIdsFound, RSqlStatement aStatement);
 	TBool FindL(CContactIdArray *aIdsFound, const TDesC& aText,const CContactItemFieldDef *aFieldDef, RSqlStatement aStatement, TUint aSessionId);
 	CContactIdArray* FilterDatabaseL(CCntFilter& aFilter);
-	void Reset();
+
 	TInt MaximumSizeOfIdentitySearchSyntax();
 	TInt ApproximateSizeOfSearchString();
 	void doAppendFieldsToSearchString(HBufC* aOrderFields) const;
@@ -233,6 +234,9 @@ private:
 	RSqlStatement			selectEmailStatement;
 	RSqlStatement			selectSIPStatement;
 	RSqlStatement			selectIdFromIdentityStatement;
+	
+	//The flag for RSqlstatements
+    TBool iRSqlstatementsWorking;
 	};
 
 // Forward class reference.

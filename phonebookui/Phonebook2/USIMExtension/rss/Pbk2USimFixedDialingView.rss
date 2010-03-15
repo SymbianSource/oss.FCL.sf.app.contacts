@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:  Phonebook 2 fixed dialing view definition.
+* Description:  Phonebook 2 touchable fixed dialing view definition.
 *
 */
 
@@ -28,7 +28,7 @@ RESOURCE VPBK_CONTACT_VIEW r_psu2_fdn_contacts_view
     }
 
 // --------------------------------------------------------------------------
-// View definition
+// Avkon view definition
 // --------------------------------------------------------------------------
 //
 RESOURCE AVKON_VIEW r_psu2_fixed_dialing_appview
@@ -63,7 +63,7 @@ RESOURCE MENU_BAR r_psu2_fixed_dialing_menubar
             },
         MENU_TITLE
             {
-            menu_pane = R_PHONEBOOK2_CALL_MENU;
+            menu_pane = R_PHONEBOOK2_STYLUS_CALL_MENU;
             },
         MENU_TITLE
             {
@@ -73,13 +73,17 @@ RESOURCE MENU_BAR r_psu2_fixed_dialing_menubar
     }
 
 // --------------------------------------------------------------------------
-// Context menubar
+// Context menu bar
 // --------------------------------------------------------------------------
 //
 RESOURCE MENU_BAR r_psu2_fixed_dialing_context_menubar
     {
     titles =
         {
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_MARKABLE_LIST_CONTEXT_MENU;
+            },                
         MENU_TITLE
             {
             menu_pane = r_psu2_fixed_dialing_copy_context_menupane;
@@ -90,11 +94,45 @@ RESOURCE MENU_BAR r_psu2_fixed_dialing_context_menubar
             },
         MENU_TITLE
             {
-            menu_pane = R_AVKON_MENUPANE_MARKABLE_LIST;
-            },
-        MENU_TITLE
-            {
             menu_pane = r_psu2_fixed_dialing_delete_menupane;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Menu pane
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_psu2_fixed_dialing_menupane
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPsu2CmdActivateFDN;
+            txt = qtn_fdn_activate_fdn;
+            },
+        MENU_ITEM
+            {
+            command = EPsu2CmdDeactivateFDN;
+            txt = qtn_fdn_deactivate_fdn;
+            },
+        MENU_ITEM
+            {
+            command = EPsu2CmdNewContact;
+            txt = qtn_simp_opt_entry_create;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdEditMe;
+            txt = qtn_phob_opt_entry_edit;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdDeleteMe;
+            txt = qtn_phob_opt_entry_delete;
+            flags = EEikMenuItemSpecific;
             }
         };
     }
@@ -111,6 +149,7 @@ RESOURCE MENU_PANE r_psu2_fixed_dialing_open_menupane
             {
             command = EPsu2CmdOpenFixedDialingInfoView;
             txt = qtn_simp_opt_entry_view;
+            flags = EEikMenuItemAction; 
             }
         };
     }
@@ -148,42 +187,6 @@ RESOURCE MENU_PANE r_psu2_fixed_dialing_newcontact_menupane
     }
 
 // --------------------------------------------------------------------------
-// Menu pane
-// --------------------------------------------------------------------------
-//
-RESOURCE MENU_PANE r_psu2_fixed_dialing_menupane
-    {
-    items=
-        {
-        MENU_ITEM
-            {
-            command = EPsu2CmdActivateFDN;
-            txt = qtn_fdn_activate_fdn;
-            },
-        MENU_ITEM
-            {
-            command = EPsu2CmdDeactivateFDN;
-            txt = qtn_fdn_deactivate_fdn;
-            },
-        MENU_ITEM
-            {
-            command = EPsu2CmdNewContact;
-            txt = qtn_simp_opt_entry_create;
-            },
-        MENU_ITEM
-            {
-            command = EPbk2CmdEditMe;
-            txt = qtn_phob_opt_entry_edit;
-            },
-        MENU_ITEM
-            {
-            command = EPbk2CmdDeleteMe;
-            txt = qtn_phob_opt_entry_delete;
-            }
-        };
-    }
-
-// --------------------------------------------------------------------------
 // Copy menu pane
 // --------------------------------------------------------------------------
 //
@@ -195,6 +198,7 @@ RESOURCE MENU_PANE r_psu2_fixed_dialing_copy_menupane
             {
             command = EPbk2CmdCopy;
             txt = qtn_simp_opt_copy_to_pb;
+            flags = EEikMenuItemSpecific;
             },
         MENU_ITEM
             {
@@ -230,16 +234,16 @@ RESOURCE MENU_PANE r_psu2_fixed_dialing_copy_context_menupane
 //
 RESOURCE PBK2_CONTACT_CONTROL r_psu2_fixed_dialing_name_list_control
     {
-    /// Flags
+    // Flags
     flags = KPbk2ContactViewListControlUpdateContextPane | KPbk2ContactViewListControlFindBox;
-    /// Listbox resource
+    // Listbox resource
     listbox = LISTBOX
         {
-        flags = EAknListBoxMarkableList|EAknListBoxLoopScrolling|EAknListBoxShiftEnterMarks;
+        flags = EAknListBoxStylusMarkableList|EAknListBoxLoopScrolling;
         };
-    /// Optional link to an icon array resource, see PBK2_ICON_ARRAY
+    // Optional link to an icon array resource, see PBK2_ICON_ARRAY
     iconArray = R_PBK2_FIELDTYPE_ICONS;
-    /// Empty icon id in iconArray(s)
+    // Empty icon id in iconArray(s)
     emptyIconId = PHONEBOOK2_ICON_ID
         {
         ownerUid = KPbk2UID3;
@@ -285,7 +289,7 @@ RESOURCE TAB r_psu2_fixed_dialing_view_tab1
 RESOURCE DIALOG r_psu2_fdn_numberquery_dialog
     {
     flags=  EAknGeneralQueryFlags;
-    buttons=R_PBK2_SOFTKEYS_CALL_CANCEL_CALL;
+    buttons=R_AVKON_SOFTKEYS_CALL_CANCEL__CALL;
     items=
         {
         DLG_LINE
@@ -312,6 +316,14 @@ RESOURCE VPBK_FIELD_TYPE_MAPPING_LIST r_psu2_fdn_name_display_order
     {
     items =
         {
+        /// Top contact indicator / Top contact internal order        
+        VPBK_FIELD_TYPE_MAPPING
+            {
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                name = EVPbkVersitNameTopContact;
+                };
+            },                
         // Last name
         VPBK_FIELD_TYPE_MAPPING
             {
@@ -377,20 +389,17 @@ RESOURCE VPBK_FIELD_TYPE_SELECTOR r_psu2_fdn_title_field_selector
     {
     versitProperties =
         {
-        /// Last name
+        // Last name
         VBK_FIELD_VERSIT_PROPERTY
             {
             name = EVPbkVersitNameN;
             subField = EVPbkVersitSubFieldFamilyName;
             },
-        /// SIM GSM number = general mobile
+        // SIM GSM number = general mobile
         VBK_FIELD_VERSIT_PROPERTY
             {
             name = EVPbkVersitNameTEL;
-            parameters =
-                {
-                EVPbkVersitParamCELL
-                };
+            parameters = { EVPbkVersitParamCELL };
             }
         };
     nonVersitType =

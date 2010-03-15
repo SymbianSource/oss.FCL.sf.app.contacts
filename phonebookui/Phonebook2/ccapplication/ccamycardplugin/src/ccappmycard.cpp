@@ -23,6 +23,8 @@
 #include <coemain.h>
 #include <f32file.h>
 #include <avkon.hrh>
+#include <eikenv.h>
+#include <aknViewAppUi.h>
 
 // Virtual phonebook
 #include <CVPbkContactManager.h>
@@ -50,14 +52,86 @@
 #include <CPbk2SortOrderManager.h>
 #include <Pbk2ContactNameFormatterFactory.h>
 #include <MPbk2ContactNameFormatter.h>
-#include <CPbk2ApplicationServices.h>	
+#include <CPbk2ApplicationServices.h>
 #include <CPbk2StoreManager.h>
-#include <CPbk2StoreConfiguration.h>	
+#include <CPbk2StoreConfiguration.h>
 #include <CPbk2ContactEditorDlg.h>
 #include <MVPbkBaseContactField.h>
+
 // internal
 #include "ccappmycardplugin.h"
 #include <ccappmycardpluginrsc.rsg>
+
+/**
+ * Helper class for making delayed callbacks
+ * @see public methods of CTimer for help
+ */
+class CTimerCallBack : public CTimer
+    {
+public:
+    /**
+     * @param aCallBack called when CTimer is due to run
+     * @param aPriority priority of CTimer
+     */
+    static CTimerCallBack* NewL(
+        const TCallBack& aCallBack,
+        CActive::TPriority aPriority = CActive::EPriorityIdle );
+
+protected: // From CActive
+    void RunL();
+    TInt RunError( TInt /*aError*/ );
+
+protected:
+    CTimerCallBack( const TCallBack& aCallBack, CActive::TPriority aPriority );
+
+private: // data
+    TCallBack iCallBack;
+    };
+
+
+// ---------------------------------------------------------------------------
+// CTimerCallBack::NewL
+// ---------------------------------------------------------------------------
+//
+CTimerCallBack* CTimerCallBack::NewL(
+    const TCallBack& aCallBack,
+    CActive::TPriority aPriority )
+    {
+    CTimerCallBack* self = new(ELeave) CTimerCallBack( aCallBack, aPriority );
+    CleanupStack::PushL( self );
+    self->ConstructL();
+    CleanupStack::Pop( self );
+    return self;
+    }
+
+// ---------------------------------------------------------------------------
+// CTimerCallBack::RunL
+// ---------------------------------------------------------------------------
+//
+CTimerCallBack::CTimerCallBack( const TCallBack& aCallBack, CActive::TPriority aPriority ) :
+    CTimer( aPriority ), iCallBack( aCallBack )
+    {
+    CActiveScheduler::Add( this );
+    }
+
+// ---------------------------------------------------------------------------
+// CTimerCallBack::RunL
+// ---------------------------------------------------------------------------
+//
+void CTimerCallBack::RunL()
+    {
+    iCallBack.CallBack();
+    }
+
+// ---------------------------------------------------------------------------
+// CTimerCallBack::RunError
+// ---------------------------------------------------------------------------
+//
+TInt CTimerCallBack::RunError( TInt /*aError*/ )
+    {
+    // Leaves in RunL are ignored
+    return KErrNone;
+    }
 
 
 // ======== MEMBER FUNCTIONS ========
@@ -69,12 +143,12 @@
 CCCAppMyCard* CCCAppMyCard::NewL( CCCAppMyCardPlugin& aPlugin, RFs* aFs )
     {
     CCA_DP(KMyCardLogFile, CCA_L("->CCCAppMyCard::NewL()"));
-    
+
     CCCAppMyCard* self = new ( ELeave ) CCCAppMyCard( aPlugin );
     CleanupStack::PushL( self );
     self->ConstructL(aFs);
     CleanupStack::Pop( self );
-    
+
     CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCard::NewL()"));
     return self;
     }
@@ -94,7 +168,7 @@ CCCAppMyCard::~CCCAppMyCard()
     delete iMyCardContact;
     delete iFieldProperties;
     delete iSpecificFieldProperties;
-    
+
     iObservers.Reset();
 
     if( iAppServices )
@@ -102,10 +176,11 @@ CCCAppMyCard::~CCCAppMyCard()
 	   iAppServices->StoreManager().DeregisterStoreEvents(*this);
 	   }
 	Release(iAppServices);
-    
+
 	delete iCloseCallBack;
     delete iCreateCallBack;
     delete iDlgCloseCallBack;
+    delete iStoreCallBack;
 
 	CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCard::~CCCAppMyCard()"));
     }
@@ -115,7 +190,8 @@ CCCAppMyCard::~CCCAppMyCard()
 // ---------------------------------------------------------------------------
 //
 inline CCCAppMyCard::CCCAppMyCard( CCCAppMyCardPlugin& aPlugin )
-: iPlugin( aPlugin )
+: iPlugin( aPlugin ), iEvent( MMyCardObserver::EEventContactLoaded )
+
 	{
     }
 
@@ -127,19 +203,17 @@ inline void CCCAppMyCard::ConstructL( RFs* /*aFs*/ )
     {
     // Get the AppServices instance
 	iAppServices = CPbk2ApplicationServices::InstanceL();
-	
+
 	CPbk2StoreManager& storeManager = iAppServices->StoreManager();
 	iVPbkContactManager = &iAppServices->ContactManager();
 	storeManager.RegisterStoreEventsL( *this );
 	storeManager.EnsureDefaultSavingStoreIncludedL();
-	// open stores
-	storeManager.OpenStoresL();
-	
-	iCloseCallBack = new(ELeave) CAsyncCallBack( 
-        TCallBack( CloseCcaL, this ), CActive::EPriorityIdle );	
-    iCreateCallBack = new(ELeave) CAsyncCallBack( 
-        TCallBack( CreateMyCardContact, this ), CActive::EPriorityHigh );  
-    iDlgCloseCallBack = new(ELeave) CAsyncCallBack( 
+
+	iCloseCallBack = new(ELeave) CAsyncCallBack(
+        TCallBack( CloseCcaL, this ), CActive::EPriorityIdle );
+    iCreateCallBack = new(ELeave) CAsyncCallBack(
+        TCallBack( CreateMyCardContact, this ), CActive::EPriorityHigh );
+    iDlgCloseCallBack = new(ELeave) CAsyncCallBack(
         TCallBack( ExitDlgL, this ), CActive::EPriorityHigh );
 	}
 
@@ -156,23 +230,23 @@ CPbk2PresentationContact& CCCAppMyCard::PresentationContactL()
             // own contact not loaded
             User::Leave( KErrNotReady );
             }
-        
+
         const MVPbkContactStoreProperties& storeProperties =
             iMyCardContact->ParentStore().StoreProperties();
         const MVPbkFieldTypeList& supportedFieldTypes =
             storeProperties.SupportedFields();
-    
+
         if( !iFieldProperties )
             {
             iFieldProperties = CPbk2FieldPropertyArray::NewL(
                 supportedFieldTypes, iVPbkContactManager->FsSession() );
             }
-    
+
         // Create a field property list of the supported
         // field types of the used store
         CPbk2StorePropertyArray* pbk2StoreProperties = CPbk2StorePropertyArray::NewL();
         CleanupStack::PushL( pbk2StoreProperties );
-    
+
         if( !iSpecificFieldProperties )
             {
             iSpecificFieldProperties = CPbk2StoreSpecificFieldPropertyArray::NewL(
@@ -182,12 +256,12 @@ CPbk2PresentationContact& CCCAppMyCard::PresentationContactL()
                 iMyCardContact->ParentStore() );
             }
 
-        iPresentationContact = CPbk2PresentationContact::NewL( 
+        iPresentationContact = CPbk2PresentationContact::NewL(
             *iMyCardContact, *iSpecificFieldProperties );
-        
+
         CleanupStack::PopAndDestroy( pbk2StoreProperties );
         }
-    
+
     return *iPresentationContact;
     }
 
@@ -243,7 +317,7 @@ void CCCAppMyCard::AddObserverL( MMyCardObserver* aObserver )
             iObservers.AppendL( aObserver );
             if( iMyCardContact )
                 {
-                aObserver->MyCardEventL( MMyCardObserver::EEventContactLoaded ); 
+                aObserver->MyCardEventL( MMyCardObserver::EEventContactLoaded );
                 }
             }
         }
@@ -263,6 +337,44 @@ void CCCAppMyCard::RemoveObserver( MMyCardObserver* aObserver )
     }
 
 // ---------------------------------------------------------------------------
+// CCCAppMyCard::SetLinkL
+// ---------------------------------------------------------------------------
+//
+void CCCAppMyCard::SetLinkL( const MVPbkContactLink& aLink )
+    {
+    MVPbkContactLink* link = aLink.CloneLC();
+    CleanupStack::Pop(); // link
+    delete iMyCard;
+    iMyCard = link;
+    }
+
+// ---------------------------------------------------------------------------
+// CCCAppMyCard::FetchMyCardL
+// ---------------------------------------------------------------------------
+//
+void CCCAppMyCard::FetchMyCardL()
+    {
+    if( !iStoreCallBack )
+        {
+        iStoreCallBack = CTimerCallBack::NewL(
+            TCallBack( &CCCAppMyCard::OpenStoresL, this ) );
+
+        // 200 ms delay before open. Used to prevent system jamming before the
+        // UI is drawn, so that launching of mycard feels a lot faster.
+        iStoreCallBack->After( 200e3 );
+        }
+    }
+
+// ---------------------------------------------------------------------------
+// CCCAppMyCard::ForceCreateMyCard
+// ---------------------------------------------------------------------------
+//
+void CCCAppMyCard::ForceCreateMyCard()
+    {
+    iForceCreateMyCard = ETrue;
+    }
+
+// ---------------------------------------------------------------------------
 // CCCAppMyCard::NotifyObservers
 // ---------------------------------------------------------------------------
 //
@@ -274,7 +386,7 @@ void CCCAppMyCard::NotifyObservers( MMyCardObserver::TEvent aEvent ) const
         TRAPD( err, iObservers[i]->MyCardEventL( aEvent ) );
         if( err )
             {
-            CCA_DP(KMyCardLogFile, 
+            CCA_DP(KMyCardLogFile,
                 CCA_L("<-CCCAppMyCard::NotifyObservers notify error (%d)"), err );
             }
         }
@@ -286,23 +398,23 @@ void CCCAppMyCard::NotifyObservers( MMyCardObserver::TEvent aEvent ) const
 //
 void CCCAppMyCard::LoadContact()
     {
-    CCA_DP(KMyCardLogFile, CCA_L("->CCCAppMyCard::LoadContact()"));    
+    CCA_DP(KMyCardLogFile, CCA_L("->CCCAppMyCard::LoadContact()"));
 
     if( !iFetchOperation && iMyCard )
         {
-        TRAPD( err, iFetchOperation = 
+        TRAPD( err, iFetchOperation =
             iVPbkContactManager->RetrieveContactL( *iMyCard, *this ) );
         if( err )
             {
-            // Cannot load own contact from VPbk  
-            CCA_DP(KMyCardLogFile, 
-                CCA_L("  CCCAppMyCard::LoadContact load error = %d"), err ); 
-    
-            // TODO: How is this handled. show error on UI?
+            // Cannot load own contact from VPbk
+            CCA_DP(KMyCardLogFile,
+                CCA_L("  CCCAppMyCard::LoadContact load error = %d"), err );
+
+            iPlugin.HandleError( err );
             }
         }
-    
-    CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCard::LoadContact()"));    
+
+    CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCard::LoadContact()"));
     }
 
 // ---------------------------------------------------------------------------
@@ -312,19 +424,35 @@ void CCCAppMyCard::LoadContact()
 void CCCAppMyCard::StoreReady( MVPbkContactStore& aContactStore )
 	{
     CCA_DP(KMyCardLogFile, CCA_L("->CCCAppMyCard::StoreReady()"));
-    
-    // MyCard is always created to contact model. So we check that event was
-    // from the correct store.
-    const MVPbkContactStoreProperties& storeProperties = 
-				aContactStore.StoreProperties();
-    TVPbkContactStoreUriPtr uri = storeProperties.Uri();
-    TInt isSame = uri.Compare( VPbkContactStoreUris::DefaultCntDbUri(), 
-    		TVPbkContactStoreUriPtr::EContactStoreUriAllComponents );
-	if( isSame == 0 )
-		{				
+
+	const MVPbkContactStoreProperties& storeProperties =
+		aContactStore.StoreProperties();
+	TVPbkContactStoreUriPtr uri = storeProperties.Uri();
+	TInt isSame = uri.Compare( VPbkContactStoreUris::DefaultCntDbUri(),
+		TVPbkContactStoreUriPtr::EContactStoreUriAllComponents );
+
+	if( isSame != 0 )
+		{
+		return;
+		}
+
+    if( iMyCard )
+        {
+        // if link is already available then use that
+        LoadContact();
+        }
+    else if( iForceCreateMyCard )
+        {
+        // launch editor because we don't have mycard
+        iCreateCallBack->Call();
+        }
+    else
+        {
+        // MyCard is always created to contact model. So we check that event was
+        // from the correct store.
 		delete iOperation;
 		iOperation = NULL;
-		
+
 		MVPbkContactStore2* phoneStoreExtension =
 			static_cast<MVPbkContactStore2*>(aContactStore.ContactStoreExtension(KMVPbkContactStoreExtension2Uid));
 		if ( phoneStoreExtension )
@@ -332,11 +460,11 @@ void CCCAppMyCard::StoreReady( MVPbkContactStore& aContactStore )
 			TRAPD( err, iOperation = phoneStoreExtension->OwnContactLinkL(*this) );
 			if( err )
 				{
-				// TODO: how is this handled?
+                iPlugin.HandleError( err );
 				}
 			}
-		}
-    CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCard::StoreReady()"));    
+        }
+    CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCard::StoreReady()"));
 	}
 
 // ---------------------------------------------------------------------------
@@ -344,10 +472,10 @@ void CCCAppMyCard::StoreReady( MVPbkContactStore& aContactStore )
 // ---------------------------------------------------------------------------
 //
 void CCCAppMyCard::StoreUnavailable(
-		MVPbkContactStore& /*aContactStore*/, 
+		MVPbkContactStore& /*aContactStore*/,
         TInt /*aReason*/)
 	{
-    CCA_DP(KMyCardLogFile, CCA_L("  CCCAppMyCard::StoreUnavailable()"));    
+    CCA_DP(KMyCardLogFile, CCA_L("  CCCAppMyCard::StoreUnavailable()"));
 	}
 
 // ---------------------------------------------------------------------------
@@ -355,23 +483,36 @@ void CCCAppMyCard::StoreUnavailable(
 // ---------------------------------------------------------------------------
 //
 void CCCAppMyCard::HandleStoreEventL(
-        MVPbkContactStore& /*aContactStore*/, 
+        MVPbkContactStore& /*aContactStore*/,
         TVPbkContactStoreEvent aStoreEvent )
 	{
-    CCA_DP(KMyCardLogFile, 
-        CCA_L("->CCCAppMyCard::HandleStoreEventL Event = %d"), 
+    CCA_DP(KMyCardLogFile,
+        CCA_L("->CCCAppMyCard::HandleStoreEventL Event = %d"),
         aStoreEvent.iEventType );
-    
+
     if( aStoreEvent.iEventType == TVPbkContactStoreEvent::EContactChanged )
         {
         if( iMyCard && aStoreEvent.iContactLink->IsSame( *iMyCard ) )
             {
             // Own contact has changed. Reload contact to update content
+            iEvent = MMyCardObserver::EEventContactChanged;
             LoadContact();
             }
         }
+    else if( aStoreEvent.iEventType == TVPbkContactStoreEvent::EContactDeleted )
+        {
+        if( iMyCard && aStoreEvent.iContactLink->IsSame( *iMyCard ) )
+            {
+            if( !iDialogIsRunning )
+                {
+                CEikAppUi* aEikAppUi = CEikonEnv::Static()->EikAppUi();
+                CAknViewAppUi* appUi = static_cast<CAknViewAppUi*> ( aEikAppUi );
+                appUi->RunAppShutter();
+                }
+            }
+        }
 
-    CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCard::HandleStoreEventL()") ); 
+    CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCard::HandleStoreEventL()") );
 	}
 
 // ---------------------------------------------------------------------------
@@ -382,15 +523,15 @@ void CCCAppMyCard::VPbkSingleContactLinkOperationComplete(
         MVPbkContactOperationBase& /*aOperation*/,
         MVPbkContactLink* aLink )
 	{
-    CCA_DP(KMyCardLogFile, 
+    CCA_DP(KMyCardLogFile,
         CCA_L("->CCCAppMyCard::VPbkSingleContactLinkOperationComplete()") );
-    
+
     delete iMyCard;
 	iMyCard = aLink;
-	
+
 	LoadContact();
 
-	CCA_DP(KMyCardLogFile, 
+	CCA_DP(KMyCardLogFile,
         CCA_L("<-CCCAppMyCard::VPbkSingleContactLinkOperationComplete()") );
 	}
 
@@ -415,9 +556,9 @@ void CCCAppMyCard::VPbkSingleContactLinkOperationFailed(
         // launch contact editor
         iCreateCallBack->Call();
         }
-	if( error )
+	if( error != KErrNone && error != KErrNotFound )
 	    {
-	    // TODO handle error
+        iPlugin.HandleError( error );
 	    }
 	
 	CCA_DP(KMyCardLogFile, 
@@ -433,6 +574,12 @@ TInt CCCAppMyCard::CreateMyCardContact( TAny* aPtr )
 	CCCAppMyCard* self = static_cast<CCCAppMyCard*>( aPtr );
 	TRAPD( err, self->LaunchContactEditorL( TPbk2ContactEditorParams::ENewContact | 
         TPbk2ContactEditorParams::EOwnContact ) );
+	
+	if( err != KErrNone )
+        {
+        self->iPlugin.HandleError( err );
+        }
+	
 	return err;
 	}
 
@@ -476,6 +623,8 @@ void CCCAppMyCard::LaunchContactEditorL( TUint32 aFlags )
         CleanupStack::Pop( title );
         iEditorEliminator = dlg;
         dlg->ResetWhenDestroyed( &iEditorEliminator );
+        
+        iDialogIsRunning = ETrue;
         dlg->ExecuteLD();
         }
 	
@@ -523,6 +672,7 @@ void CCCAppMyCard::ContactEditingComplete( MVPbkStoreContact* aEditedContact )
         }
     
     delete aEditedContact; // ignore given contact
+    iDialogIsRunning = EFalse;
 	}
 
 // ---------------------------------------------------------------------------
@@ -535,6 +685,7 @@ void CCCAppMyCard::ContactEditingDeletedContact(
 	// Editing was cancelled, go back to phonebook
 	delete aEditedContact;	
 	iCloseCallBack->Call();
+	iDialogIsRunning = EFalse;
 	}
 
 // ---------------------------------------------------------------------------
@@ -543,6 +694,7 @@ void CCCAppMyCard::ContactEditingDeletedContact(
 //
 void CCCAppMyCard::ContactEditingAborted()
 	{
+    iDialogIsRunning = EFalse;
 	// Editing was aborted -> move to pb2
 	}
 
@@ -587,6 +739,17 @@ TInt CCCAppMyCard::ExitDlgL( TAny* aPtr )
     }
 
 // ---------------------------------------------------------------------------
+// CCCAppMyCard::OpenStoresL
+// ---------------------------------------------------------------------------
+//
+TInt CCCAppMyCard::OpenStoresL( TAny* aPtr )
+    {
+    CCCAppMyCard* self = static_cast<CCCAppMyCard*>( aPtr );
+    self->iAppServices->StoreManager().OpenStoresL();
+    return 0;
+    }
+
+// ---------------------------------------------------------------------------
 // CCCAppMyCard::DoCloseCCaL
 // ---------------------------------------------------------------------------
 //
@@ -611,17 +774,13 @@ void CCCAppMyCard::ContactOperationCompleted( TContactOpResult aResult )
             TPbk2ContactEditorParams::EOwnContact) );
     	if( err != KErrNone )
 			{
-			//TODO handle errors
+            iPlugin.HandleError( err );
 			}
     	}    
     else if( aResult.iOpCode == MVPbkContactObserver::EContactDelete )
     	{
 		iCloseCallBack->Call();
-    	}
-    else
-    	{
-    	//TODO handle errors
-    	}
+    	}   
         
     CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCard::ContactOperationCompleted()")); 
     }
@@ -631,9 +790,12 @@ void CCCAppMyCard::ContactOperationCompleted( TContactOpResult aResult )
 // ---------------------------------------------------------------------------
 //
 void CCCAppMyCard::ContactOperationFailed(
-    TContactOp /*aOpCode*/, TInt /*aErrorCode*/, TBool /*aErrorNotified*/)    
+    TContactOp aOpCode, TInt aErrorCode, TBool /*aErrorNotified*/ )    
     {
-    // TODO handle error
+    if ( aErrorCode != KErrNone )          
+        {                                  
+        iPlugin.HandleError( aErrorCode );    
+        }        
     }
 
 // ---------------------------------------------------------------------------
@@ -657,7 +819,7 @@ void CCCAppMyCard::VPbkSingleContactOperationComplete(
     delete iPresentationContact;
     iPresentationContact = NULL;
     
-    NotifyObservers( MMyCardObserver::EEventContactLoaded );
+    NotifyObservers( iEvent );
 
     CCA_DP(KMyCardLogFile, 
         CCA_L("<-CCCAppMyCard::VPbkSingleContactOperationComplete()"));    
@@ -681,7 +843,10 @@ void CCCAppMyCard::VPbkSingleContactOperationFailed(
     delete iOperation;
     iOperation = NULL;
     
-    // TODO: How to handle loading error?
+    if( aError != KErrNone )
+        {
+        iPlugin.HandleError( aError );
+        }
 
     CCA_DP(KMyCardLogFile, 
         CCA_L("<-CCCAppMyCard::VPbkSingleContactOperationFailed()") );    

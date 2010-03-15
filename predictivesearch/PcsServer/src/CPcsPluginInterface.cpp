@@ -117,6 +117,7 @@ void CPcsPluginInterface::InstantiateAlgorithmL( TDes& aAlgorithm )
 	        
 	        PRINT ( _L("------------- PCS Algorithm Details -----------"));
 	        PRINT1 ( _L("Name: %S"), &(info.DisplayName()) );
+	        PRINT1_BOOT_PERFORMANCE ( _L("Name: %S"), &(info.DisplayName()) );
 	        PRINT1 ( _L("UID: %X"), impUid.iUid );
 	        iAlgorithmInUse.iUid = impUid.iUid;
 	        PRINT ( _L("-----------------------------------------------"));

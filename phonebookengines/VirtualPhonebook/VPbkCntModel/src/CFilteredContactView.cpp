@@ -87,10 +87,10 @@ static const TVPbkFieldTypeFilterMapping FilterMapping[] =
 
         { R_CNTMODEL_NATIVE_FILTER_ASSISTANT_PHONE_NUMBER,
           CContactDatabase::EPhonable },
-          
+
         { R_CNTMODEL_NATIVE_FILTER_TOP_CONTACT,
           CContactDatabase::ECustomFilter2 },
-          
+
         /// This has to be the last
         { KLastElement,
           CContactDatabase::EUnfiltered }
@@ -147,10 +147,10 @@ TBool RequiresCustomFiltering(
                 {
                 TBool versitIsMatched = matchingProperty->Matches(
                        aFilterType->VersitProperties()[matchPriority]);
-                TBool excludedParmaterIsMatched = 
+                TBool excludedParmaterIsMatched =
                        aFilterType->ExcludedParameters().
                            ContainsAll(aFieldType.ExcludedParameters());
-                // if the FilterType is matched the Versit Property and 
+                // if the FilterType is matched the Versit Property and
                 // the excludeParameter of FiledType, it needn't custom filter.
                 if ( versitIsMatched && excludedParmaterIsMatched )
                     {
@@ -314,13 +314,13 @@ CFilteredContactView::~CFilteredContactView()
     if ( iFilteredView )
         {
         //after iFilteredView->Close( *iNativeObserver )
-        //both iFilteredView and iBaseView are deleted 
+        //both iFilteredView and iBaseView are deleted
         iFilteredView->Close( *iNativeObserver );
         }
     else if ( iBaseView )
         {
         //but iBaseView's pointer is still not NULL
-        //make sure iBaseView is unable to call its member function	
+        //make sure iBaseView is unable to call its member function
         iBaseView->Close( *iNativeObserver );
         }
     }
@@ -378,7 +378,7 @@ void CFilteredContactView::DoInitializeViewL(
         const CFieldFactory& fieldFactory = Store().FieldFactory();
 
         // Copy construct the filter
-        iFilter = CVPbkFieldTypeSelector::NewL( 
+        iFilter = CVPbkFieldTypeSelector::NewL(
                 *aViewDefinition.FieldTypeFilter() );
 
         iNativeFilter = ConvertFieldTypeFilterL
@@ -394,20 +394,20 @@ void CFilteredContactView::DoInitializeViewL(
         {
         // Stop observing the base view, the custom view
         // will observe it and report back
-        // Construction of the iCustomFilteredView should be done in two 
-        // phases. Due to that there is dependencies between views in this 
+        // Construction of the iCustomFilteredView should be done in two
+        // phases. Due to that there is dependencies between views in this
         // and iCustomFilteredView class.
-        iCustomFilteredView = 
-            new (ELeave) CCustomFilteredContactView( Store(), iFilter, 
+        iCustomFilteredView =
+            new (ELeave) CCustomFilteredContactView( Store(), iFilter,
                 *this, aViewDefinition.ContactSelector() );
-        ConstructBaseViewsL( aViewDefinition, *iCustomFilteredView, 
+        ConstructBaseViewsL( aViewDefinition, *iCustomFilteredView,
                 aViewSortOrder );
 
         if ( iFilteredView )
             {
             iBaseView->Close( *iCustomFilteredView );
-            }                
-                
+            }
+
         iCustomFilteredView->ConstructL
             ( aViewDefinition, *this, *iSortOrder, *iView );
 
@@ -440,21 +440,21 @@ void CFilteredContactView::DoTeardownView()
 // CFilteredContactView::DoChangeSortOrderL
 // --------------------------------------------------------------------------
 //
-TBool CFilteredContactView::DoChangeSortOrderL( 
+TBool CFilteredContactView::DoChangeSortOrderL(
         const CVPbkContactViewDefinition& aViewDefinition,
 		RContactViewSortOrder& aSortOrder )
     {
     TBool canBeChanged = ETrue;
     if ( iRemoteView )
         {
-        if ( RemoteViewName( aViewDefinition ).Compare( 
+        if ( RemoteViewName( aViewDefinition ).Compare(
                 KVPbkAllContactsViewName ) == 0 )
             {
             // Set Contacts Model default view setting only if client
             // is using KVPbkAllContactsViewName shared view.
             NamedRemoteViewViewDefinitionStoreUtility::
                 SetNamedRemoteViewViewDefinitionL(
-                    KVPbkAllContactsViewName, aSortOrder, 
+                    KVPbkAllContactsViewName, aSortOrder,
                     KVPbkDefaultContactViewPrefs);
             }
         iRemoteView->ChangeSortOrderL( aSortOrder );
@@ -464,7 +464,7 @@ TBool CFilteredContactView::DoChangeSortOrderL(
         // CContactLocalView doesn't support ChangeSortOrderL
         canBeChanged = EFalse;
         }
-        
+
     return canBeChanged;
     }
 
@@ -477,7 +477,7 @@ void CFilteredContactView::ContactViewReady(
     {
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
         ("CFilteredContactView::ContactViewReady(0x%x)"), &aView);
-    
+
     /* when custom filtering view is used, MVPbkContactViewObserver doesn't support
      * sortOrder changed notification, CViewBase will send viewReady instead,
      * use it to keep sort order up to date */
@@ -529,11 +529,11 @@ void CFilteredContactView::ContactAddedToView(
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
         ("CFilteredContactView::ContactAddedToView(0x%x)"), &aView);
 
-    VPbkEng::SendViewEventToObservers( *this, aIndex, aContactLink, 
+    VPbkEng::SendViewEventToObservers( *this, aIndex, aContactLink,
         iObservers,
         &MVPbkContactViewObserver::ContactAddedToView,
         &MVPbkContactViewObserver::ContactViewError );
-    VPbkEng::SendViewEventToObservers( *this, aIndex, aContactLink, 
+    VPbkEng::SendViewEventToObservers( *this, aIndex, aContactLink,
         iFilteringObservers,
         &MVPbkContactViewObserver::ContactAddedToView,
         &MVPbkContactViewObserver::ContactViewError );
@@ -550,11 +550,11 @@ void CFilteredContactView::ContactRemovedFromView(
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
         ("CFilteredContactView::ContactRemovedFromView(0x%x)"), &aView);
 
-    VPbkEng::SendViewEventToObservers( *this, aIndex, aContactLink, 
+    VPbkEng::SendViewEventToObservers( *this, aIndex, aContactLink,
         iObservers,
         &MVPbkContactViewObserver::ContactRemovedFromView,
         &MVPbkContactViewObserver::ContactViewError );
-    VPbkEng::SendViewEventToObservers( *this, aIndex, aContactLink, 
+    VPbkEng::SendViewEventToObservers( *this, aIndex, aContactLink,
         iFilteringObservers,
         &MVPbkContactViewObserver::ContactRemovedFromView,
         &MVPbkContactViewObserver::ContactViewError );
@@ -573,8 +573,50 @@ void CFilteredContactView::ContactViewError(
 
     VPbkEng::SendEventToObservers( *this, aError, aErrorNotified, iObservers,
         &MVPbkContactViewObserver::ContactViewError );
-    VPbkEng::SendEventToObservers( *this, aError, aErrorNotified, 
+    VPbkEng::SendEventToObservers( *this, aError, aErrorNotified,
         iFilteringObservers, &MVPbkContactViewObserver::ContactViewError );
+    }
+
+// --------------------------------------------------------------------------
+// CFilteredContactView::ContactViewObserverExtension
+// --------------------------------------------------------------------------
+//
+TAny* CFilteredContactView::ContactViewObserverExtension( TUid aExtensionUid )
+    {
+    if( aExtensionUid == KVPbkContactViewObserverExtension2Uid )
+        {
+        return static_cast<MVPbkContactViewObserverExtension*>( this );
+        }
+    return NULL;
+    }
+
+// --------------------------------------------------------------------------
+// CFilteredContactView::FilteredContactRemovedFromView
+// --------------------------------------------------------------------------
+//
+void CFilteredContactView::FilteredContactRemovedFromView(
+		MVPbkContactViewBase& aView )
+    {
+    const TInt count = iObservers.Count();
+
+    for( TInt i = 0; i < count; i++ )
+        {
+        MVPbkContactViewObserver* observer = iObservers[i];
+
+        TAny* extension = observer->ContactViewObserverExtension(
+              KVPbkContactViewObserverExtension2Uid );
+
+        if( extension )
+            {
+            MVPbkContactViewObserverExtension* contactViewExtension =
+                  static_cast<MVPbkContactViewObserverExtension*>( extension );
+
+            if( contactViewExtension )
+                {
+                contactViewExtension->FilteredContactRemovedFromView( aView );
+                }
+            }
+        }
     }
 
 // --------------------------------------------------------------------------
@@ -591,23 +633,23 @@ void CFilteredContactView::ConstructBaseViewsL
     // Construct the all contacts view first
     if ( RemoteViewDefinition( aViewDefinition ) )
         {
-        iRemoteView = CContactNamedRemoteView::NewL( 
-                *iNativeObserver, RemoteViewName( aViewDefinition ), 
-                Store().NativeDatabase(), aViewSortOrder, 
+        iRemoteView = CContactNamedRemoteView::NewL(
+                *iNativeObserver, RemoteViewName( aViewDefinition ),
+                Store().NativeDatabase(), aViewSortOrder,
                 KVPbkDefaultContactViewPrefs );
-                
+
         iBaseView = iRemoteView;
         }
     else
         {
-        iBaseView = CContactLocalView::NewL( *iNativeObserver, 
-                Store().NativeDatabase(), aViewSortOrder, 
+        iBaseView = CContactLocalView::NewL( *iNativeObserver,
+                Store().NativeDatabase(), aViewSortOrder,
                 KVPbkDefaultContactViewPrefs );
         }
-    
+
     // Set base class view pointer
     iView = iBaseView;
-    
+
     // If there is a native filter, construct a native filtered view
     if ( iNativeFilter > 0 )
         {

@@ -1924,35 +1924,13 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::HandleListBoxEventL(CEik
 void CPguGroupMembersView::CGroupMembersAllGroupsReady::HandlePointerEventL
         ( const TPointerEvent& aPointerEvent )
     {
-
-
     if ( AknLayoutUtils::PenEnabled() )
         {
         if ( iPointerEventInspector->FocusableItemPointed() && iContainer && !(iControl->ContactsMarked()))
             {
             iContainer->LongTapDetectorL().PointerEventL( aPointerEvent );
             }
-            
-
-
-        if ( iControl->NumberOfContacts()==0) 
-            {       
-            if ( aPointerEvent.iType == TPointerEvent::EButton1Down )
-                {
-                MTouchFeedback* feedback = MTouchFeedback::Instance();
-                if ( feedback )
-                    {
-                    feedback->InstantFeedback( ETouchFeedbackBasic );
-                    }
-                }
-            else if  ( aPointerEvent.iType == TPointerEvent::EButton1Up )       
-                {
-                ShowContextMenuL();
-                }
-            }
-
         }
-
     }
     
     

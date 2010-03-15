@@ -507,7 +507,11 @@ void CPguGroupView::DynInitMenuPaneL(
                 }
             break;
             }
-
+        case R_PHONEBOOK2_INFO_MENU:
+            {
+            // menu always visible in group view
+            break;
+            }
         default:
             {
             // Phonebook 2 menu filtering happens in Commands

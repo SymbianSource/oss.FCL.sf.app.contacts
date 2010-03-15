@@ -276,8 +276,8 @@ NONSHARABLE_CLASS( CPbk2ListBoxSelectionObserver ) :  public CBase,
  * Background Task Handler.
  */
 NONSHARABLE_CLASS(CPbk2NamesListControlBgTask) : public CActive
-    {    
-    
+    {
+
     public:
         CPbk2NamesListControlBgTask( CPbk2NamesListControl& aControl );
         ~CPbk2NamesListControlBgTask();
@@ -285,7 +285,7 @@ NONSHARABLE_CLASS(CPbk2NamesListControlBgTask) : public CActive
         void AddEvent( CPbk2NamesListControl::TPbk2NamesListBgEvents aEvent );
         void ClearAllEvents();
         void RemoveEvent( CPbk2NamesListControl::TPbk2NamesListBgEvents aEvent );
-        
+
     private: // From CActive
         void DoCancel();
         void RunL();
@@ -293,8 +293,8 @@ NONSHARABLE_CLASS(CPbk2NamesListControlBgTask) : public CActive
 
     private:
         //Owns
-        RArray <CPbk2NamesListControl::TPbk2NamesListBgEvents> iEventQueue;  
-        
+        RArray <CPbk2NamesListControl::TPbk2NamesListBgEvents> iEventQueue;
+
         //doesnt Own
         CPbk2NamesListControl& iControl;
     };
@@ -316,35 +316,35 @@ NONSHARABLE_CLASS( CPbk2HandleMassUpdate ) : public CBase
          */
        ~CPbk2HandleMassUpdate();
 
-    public: 
+    public:
         /**
          * Call this function after each update event.
          * @return  ETrue if this event is part of a mass update.
-         */	
+         */
        TBool MassUpdateCheckThis();
 
         /**
          * Call this function to check if mass update process is ongoing.
          * @return  ETrue if mass update process is ongoing.
-         */	   
+         */
        TBool MassUpdateDetected();
-       
-    private: 
+
+    private:
         CPbk2HandleMassUpdate(CEikListBox& iListBox);
         void ConstructL();
-        TBool HandleMassUpdateCheckL(); 
+        TBool HandleMassUpdateCheckL();
         void HandleMassUpdateCheckReset();
         void HandleMassUpdateDone();
-        static TInt HandleMassUpdateTimerCallBack(TAny* aAny);        
+        static TInt HandleMassUpdateTimerCallBack(TAny* aAny);
 
-    private: 
+    private:
 		CEikListBox& iListBox;
         TBool iHandleMassUpdate;
         TTime iHandleMassUpdateFirst;
-        TTime iHandleMassUpdatePrev;        
+        TTime iHandleMassUpdatePrev;
         TInt  iHandleMassUpdateCount;
-        CPeriodic* iHandleMassUpdateTimer;      
-		CAknWaitDialog*  iHandleMassUpdateDialog;		
+        CPeriodic* iHandleMassUpdateTimer;
+		CAknWaitDialog*  iHandleMassUpdateDialog;
     };
 
 // --------------------------------------------------------------------------
@@ -643,9 +643,9 @@ CPbk2HandleMassUpdate* CPbk2HandleMassUpdate::NewL(CEikListBox& aListBox)
 CPbk2HandleMassUpdate::~CPbk2HandleMassUpdate()
     {
     delete iHandleMassUpdateDialog;
-    delete iHandleMassUpdateTimer;    
+    delete iHandleMassUpdateTimer;
     }
-    
+
 // --------------------------------------------------------------------------
 // CPbk2HandleMassUpdate::CPbk2HandleMassUpdate
 // --------------------------------------------------------------------------
@@ -653,8 +653,8 @@ CPbk2HandleMassUpdate::~CPbk2HandleMassUpdate()
 CPbk2HandleMassUpdate::CPbk2HandleMassUpdate(CEikListBox& aListBox) :
     iListBox(aListBox)
     {
-    }	
-	
+    }
+
 // --------------------------------------------------------------------------
 // CPbk2HandleMassUpdate::ConstructL
 // --------------------------------------------------------------------------
@@ -662,7 +662,7 @@ CPbk2HandleMassUpdate::CPbk2HandleMassUpdate(CEikListBox& aListBox) :
 void CPbk2HandleMassUpdate::ConstructL()
     {
     iHandleMassUpdateTimer = CPeriodic::NewL( CActive::EPriorityIdle );
-    }    
+    }
 
 // --------------------------------------------------------------------------
 // CPbk2HandleMassUpdate::HandleMassUpdateCheckThis
@@ -675,29 +675,29 @@ void CPbk2HandleMassUpdate::ConstructL()
 TBool CPbk2HandleMassUpdate::MassUpdateCheckThis()
     {
     TBool ret(EFalse);
-    const TInt KNbrUpdBeforeMassCheck(5); 
+    const TInt KNbrUpdBeforeMassCheck(5);
     iHandleMassUpdateTimer->Cancel();
 
-    if( iHandleMassUpdateCount > KNbrUpdBeforeMassCheck ) 
+    if( iHandleMassUpdateCount > KNbrUpdBeforeMassCheck )
         {
         //candidates to be checked are they continual of a mass update
         TRAP_IGNORE(ret = HandleMassUpdateCheckL());
         }
-    else if( iHandleMassUpdateCount > 0 ) 
+    else if( iHandleMassUpdateCount > 0 )
         {
-        //Subsequent updates that are handled normally even if 
+        //Subsequent updates that are handled normally even if
         // they would be first ones in a mass update burst
         iHandleMassUpdateCount++;
         iHandleMassUpdatePrev.UniversalTime();
-        }    
+        }
     else
         {
         //very first update, set time & counter
-        HandleMassUpdateCheckReset();       
+        HandleMassUpdateCheckReset();
         }
     return ret;
     }
-	
+
 // --------------------------------------------------------------------------
 // CPbk2HandleMassUpdate::MassUpdateDetected
 // --------------------------------------------------------------------------
@@ -714,16 +714,16 @@ TBool CPbk2HandleMassUpdate::MassUpdateDetected()
 TBool CPbk2HandleMassUpdate::HandleMassUpdateCheckL()
     {
     //KDeltaAverage time per update to be considered as mass
-    //update. One occasional update can take KDeltaMax time as long as 
-    //average time not exeeded (therefore timeout for the very first updates in 
-    //practice is also KDeltaAverage).  
-    const TInt64 KDeltaAverage(2000000); 
-    const TInt64 KDeltaMax(KDeltaAverage * 2);     
-    const TTimeIntervalMicroSeconds KMaxPrev(KDeltaMax);  
+    //update. One occasional update can take KDeltaMax time as long as
+    //average time not exeeded (therefore timeout for the very first updates in
+    //practice is also KDeltaAverage).
+    const TInt64 KDeltaAverage(2000000);
+    const TInt64 KDeltaMax(KDeltaAverage * 2);
+    const TTimeIntervalMicroSeconds KMaxPrev(KDeltaMax);
     TBool ret(EFalse);
 
     TTime now;
-    now.UniversalTime();    
+    now.UniversalTime();
     TTimeIntervalMicroSeconds fs = now.MicroSecondsFrom(iHandleMassUpdateFirst);
     TTimeIntervalMicroSeconds ps = now.MicroSecondsFrom(iHandleMassUpdatePrev);
     TTimeIntervalMicroSeconds maxCumu(KDeltaAverage * iHandleMassUpdateCount);
@@ -731,21 +731,21 @@ TBool CPbk2HandleMassUpdate::HandleMassUpdateCheckL()
     if( fs < maxCumu && ps < KMaxPrev )
         {
         //mass update burst ongoing
-        iHandleMassUpdate=ETrue;        
+        iHandleMassUpdate=ETrue;
         iHandleMassUpdateCount++;
-        iHandleMassUpdatePrev.UniversalTime();   
+        iHandleMassUpdatePrev.UniversalTime();
         iListBox.UpdateScrollBarsL();
-		
+
         if( !iHandleMassUpdateDialog )
             {
             iHandleMassUpdateDialog = new(ELeave) CAknWaitDialog
                 (reinterpret_cast<CEikDialog**>(&iHandleMassUpdateDialog), EFalse);
             iHandleMassUpdateDialog->SetTone(CAknNoteDialog::ENoTone);
-            iHandleMassUpdateDialog->ExecuteLD(R_QTN_GEN_NOTE_SYNCHRONIZING_PROGRESS);  
-			//ExecuteLD above handles validity of pointer iHandleMassUpdateDialog plus 
+            iHandleMassUpdateDialog->ExecuteLD(R_QTN_GEN_NOTE_SYNCHRONIZING_PROGRESS);
+			//ExecuteLD above handles validity of pointer iHandleMassUpdateDialog plus
 			//cleanupstack
             }
-			
+
         TCallBack callback(HandleMassUpdateTimerCallBack, this);
         TTimeIntervalMicroSeconds32 delta32(KDeltaMax);
         iHandleMassUpdateTimer->Start( delta32, delta32, callback );
@@ -753,9 +753,9 @@ TBool CPbk2HandleMassUpdate::HandleMassUpdateCheckL()
         }
     else if(iHandleMassUpdate)
         {
-        //mass update burst ended    
+        //mass update burst ended
         HandleMassUpdateDone();
-        ret = ETrue;        
+        ret = ETrue;
         }
     else
         {
@@ -771,10 +771,10 @@ TBool CPbk2HandleMassUpdate::HandleMassUpdateCheckL()
 //
 void CPbk2HandleMassUpdate::HandleMassUpdateCheckReset()
     {
-    iHandleMassUpdate=EFalse;        
+    iHandleMassUpdate=EFalse;
     iHandleMassUpdateCount = 1;  //set as first candidate for next burst
     iHandleMassUpdateFirst.UniversalTime();
-    iHandleMassUpdatePrev=iHandleMassUpdateFirst;    
+    iHandleMassUpdatePrev=iHandleMassUpdateFirst;
     }
 
 // ----------------------------------------------------------------------------
@@ -784,7 +784,7 @@ void CPbk2HandleMassUpdate::HandleMassUpdateCheckReset()
 TInt CPbk2HandleMassUpdate::HandleMassUpdateTimerCallBack(TAny* aAny)
     {
     CPbk2HandleMassUpdate* self = static_cast<CPbk2HandleMassUpdate*>( aAny );
-    self->iHandleMassUpdateTimer->Cancel();    
+    self->iHandleMassUpdateTimer->Cancel();
     self->HandleMassUpdateDone();
     return KErrNone;
     }
@@ -795,19 +795,19 @@ TInt CPbk2HandleMassUpdate::HandleMassUpdateTimerCallBack(TAny* aAny)
 //
 void CPbk2HandleMassUpdate::HandleMassUpdateDone()
     {
-    if( iHandleMassUpdateDialog ) 
+    if( iHandleMassUpdateDialog )
         {
         TRAP_IGNORE(iHandleMassUpdateDialog->ProcessFinishedL());
         //The below 2 lines just in case... ProcessFinishedL already took care of these
-        delete iHandleMassUpdateDialog;     
+        delete iHandleMassUpdateDialog;
         iHandleMassUpdateDialog = NULL;
         }
 
-    HandleMassUpdateCheckReset();        
+    HandleMassUpdateCheckReset();
     iListBox.SetCurrentItemIndex(0);
     iListBox.SetTopItemIndex(0);
     }
-	
+
 ///////////////////////// End of helper classes /////////////////////////////
 
 
@@ -858,13 +858,13 @@ CPbk2NamesListControl::CPbk2NamesListControl
 CPbk2NamesListControl::~CPbk2NamesListControl()
     {
     ClearMarkedContactsInfo();
-    
+
     if (iBgTask)
-        {    
+        {
         delete iBgTask;
         iBgTask = NULL;
         }
-    
+
     if ( iViewStack && iStackObserver )
         {
         iViewStack->RemoveStackObserver( *iStackObserver );
@@ -875,7 +875,7 @@ CPbk2NamesListControl::~CPbk2NamesListControl()
         TRAP_IGNORE( iThumbManager->SetContactViewL( NULL ) );
         iThumbManager->RemoveObserver();
         }
-    
+
     if (iCommand)
         {
         // inform the command that the control is deleted
@@ -952,6 +952,10 @@ EXPORT_C CPbk2NamesListControl* CPbk2NamesListControl::NewL(
 
 // --------------------------------------------------------------------------
 // CPbk2NamesListControl::ConstructL
+//
+// Note that NewL (and hence ConstructL) will not be called when custom control  
+// constructed. Instead public constructor and ConstructFromResourceL are 
+// called (happens when ServerApp launches custom fetch dialog)
 // --------------------------------------------------------------------------
 //
 inline void CPbk2NamesListControl::ConstructL(
@@ -971,7 +975,6 @@ inline void CPbk2NamesListControl::ConstructL(
     CleanupStack::PopAndDestroy(); // resReader
     FeatureManager::InitializeLibL();
     iFeatureManagerInitilized = ETrue;
-	iCheckMassUpdate = CPbk2HandleMassUpdate::NewL(*iListBox); //iListbox created in ConstructFromResourceL
     }
 
 // --------------------------------------------------------------------------
@@ -1028,7 +1031,7 @@ inline void CPbk2NamesListControl::ConstructFromResourceL
             iThumbManager = CPbk2ThumbnailManager::NewL( iContactManager );
             iOwnThumbManager = ETrue;
             }
-    
+
         iDoubleListBox = CPbk2ContactViewDoubleListBox::NewL
             ( *this, aReader, iContactManager,
             *iViewStack, iNameFormatter, iStoreProperties,
@@ -1059,14 +1062,14 @@ inline void CPbk2NamesListControl::ConstructFromResourceL
     iListBox->SetListBoxObserver(this);
     iUiExtension->SetContactUiControlUpdate( this );
     // set command item updater
-    TAny* ext = iUiExtension->ContactUiControlExtensionExtension( 
+    TAny* ext = iUiExtension->ContactUiControlExtensionExtension(
         TUid::Uid( KPbk2ContactUiControlExtensionExtensionUID ) );
     if( ext )
         {
         static_cast<MPbk2ContactUiControlDoubleListboxExtension*>(ext)->
             SetCommandItemUpdater( this );
         }
-    
+
     if ( iListBox->Flags() & KPbk2ContactViewListControlFindBox )
         {
         // Create a find box
@@ -1108,6 +1111,7 @@ inline void CPbk2NamesListControl::ConstructFromResourceL
     iCurrentState = &iStateFactory->ActivateStartupStateL( iCurrentState );
 
     iBgTask = new (ELeave) CPbk2NamesListControlBgTask( *this );
+    iCheckMassUpdate = CPbk2HandleMassUpdate::NewL(*iListBox); //iListbox created above    
     
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
         ("CPbk2NamesListControl::ConstructFromResourceL end"));
@@ -1163,9 +1167,9 @@ EXPORT_C void CPbk2NamesListControl::Reset()
     const TInt firstContactIndex = 0;
     // Best effort: try to reset the focus.
     TRAP_IGNORE( iCurrentState->SetFocusedContactIndexL( firstContactIndex ) );
-    //scroll listbox into beginning (ignore focus that may be below promotion items)      
+    //scroll listbox into beginning (ignore focus that may be below promotion items)
     iListBox->SetTopItemIndex(firstContactIndex);
-    
+
     // Switch to the background state. This enables the next state to avtivate fully (ActivateStateL()) once phonebook
     // comes from the background.
     TRAP_IGNORE( iCurrentState = &iStateFactory->ActivateHiddenStateL( iCurrentState ); );
@@ -1957,7 +1961,7 @@ void CPbk2NamesListControl::ContactAddedToView(
 
     if (&aView == iViewStack)
         {
-        if( !iCheckMassUpdate->MassUpdateDetected() ) 
+        if( !iCheckMassUpdate->MassUpdateDetected() )
             {
             TRAPD(err, DoHandleContactAdditionL(aIndex));
             HandleError(err);
@@ -2003,6 +2007,29 @@ void CPbk2NamesListControl::ContactViewError(
     // destroyed when the control is reset.
     HandleError(aError);
     Reset();
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2NamesListControl::ContactViewObserverExtension
+// --------------------------------------------------------------------------
+//
+TAny* CPbk2NamesListControl::ContactViewObserverExtension( TUid aExtensionUid )
+    {
+    if( aExtensionUid == KVPbkContactViewObserverExtension2Uid )
+        {
+        return static_cast<MVPbkContactViewObserverExtension*>( this );
+        }
+    return NULL;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2NamesListControl::FilteredContactRemovedFromView
+// --------------------------------------------------------------------------
+//
+void CPbk2NamesListControl::FilteredContactRemovedFromView(
+		MVPbkContactViewBase& /*aView*/ )
+    {    
+    DrawDeferred();
     }
 
 // --------------------------------------------------------------------------
@@ -2095,7 +2122,7 @@ void CPbk2NamesListControl::UpdateCommandItem( TInt aCommandId )
                 {
                 iListBox->RedrawItem( i );
                 break; // only one command with same id
-                }   
+                }
             }
         }
     }
@@ -2158,16 +2185,16 @@ void CPbk2NamesListControl::DoHandleContactViewReadyL
 //
 void CPbk2NamesListControl::DoHandleContactAdditionL( TInt aIndex )
     {
-	//Prevent messing with focus with always-on when Phonebook hidden in 
-	//reseted state. Otherwise background-added contacts will change focus. 
+	//Prevent messing with focus with always-on when Phonebook hidden in
+	//reseted state. Otherwise background-added contacts will change focus.
 	//This would cause Phonebook not to look like freshly started when opened again.
-	//And also make sure foreground-added contact will show the new contact 
+	//And also make sure foreground-added contact will show the new contact
 	//even though the focus is not seen.
     if( (static_cast<CPbk2AppUi*>(
             CEikonEnv::Static()->AppUi()))->IsForeground() )
         {
-        SelectAndChangeReadyStateL(); 
-        }        
+        SelectAndChangeReadyStateL();
+        }
 
     if( !iCheckMassUpdate->MassUpdateDetected() )
         {
@@ -2379,9 +2406,9 @@ void CPbk2NamesListControl::HandleScrollEventL(CEikScrollBar* aScrollBar, TEikSc
 
             }
         }
-    
+
     // To avoid slow redraw of the scrollbar, make sure it gets drawn. Fixes MJAA-7ZGHRH.
-    aScrollBar->DrawNow(); 
+    aScrollBar->DrawNow();
     }
 // --------------------------------------------------------------------------
 // CPbk2NamesListControl::HandleListBoxEventL
@@ -2446,16 +2473,16 @@ void CPbk2NamesListControl::HandleForegroundEventL(TBool aForeground)
         iSearchFilter->HandleForegroundEventL( aForeground );
         }
     }
-        
+
 // ---------------------------------------------------------------------------
 // CPbk2NamesListControl::StoreMarkedContactsAndResetViewL
 // ---------------------------------------------------------------------------
 //
 void CPbk2NamesListControl::StoreMarkedContactsAndResetViewL()
-    {  
+    {
     delete iSelectedLinkArray;
     iSelectedLinkArray = NULL;
-    
+
     iSelectedLinkArray = iCurrentState->SelectedContactsL();
     }
 
@@ -2465,16 +2492,16 @@ void CPbk2NamesListControl::StoreMarkedContactsAndResetViewL()
 // ---------------------------------------------------------------------------
 //
 void CPbk2NamesListControl::RestoreMarkedContactsL()
-    {    
+    {
     //Set the Marked Contacts
     if ( iSelectedLinkArray )
         {
         for ( TInt index = 0; index<iSelectedLinkArray->Count(); index++ )
             {
             iCurrentState->SetSelectedContactL( iSelectedLinkArray->At(index), ETrue );
-            }        
-        }    
-    
+            }
+        }
+
     delete iSelectedLinkArray;
     iSelectedLinkArray = NULL;
     }
@@ -2484,7 +2511,7 @@ void CPbk2NamesListControl::RestoreMarkedContactsL()
 // ---------------------------------------------------------------------------
 //
 void CPbk2NamesListControl::ClearMarkedContactsInfo()
-    {   
+    {
     if ( iBgTask )
         {
         iBgTask->ClearAllEvents();
@@ -2543,7 +2570,7 @@ CPbk2NamesListControlBgTask::~CPbk2NamesListControlBgTask()
 // ---------------------------------------------------------------------------
 //
 void CPbk2NamesListControlBgTask::DoCancel()
-    {    
+    {
     }
 
 // ---------------------------------------------------------------------------
@@ -2552,7 +2579,7 @@ void CPbk2NamesListControlBgTask::DoCancel()
 //
 void CPbk2NamesListControlBgTask::RunL()
     {
-    
+
     if ( iEventQueue.Count() )
         {
         switch ( iEventQueue[0] )
@@ -2561,14 +2588,14 @@ void CPbk2NamesListControlBgTask::RunL()
                 iControl.StoreMarkedContactsAndResetViewL();
                 iEventQueue.Remove( 0 );
                 break;
-                
+
             case CPbk2NamesListControl::EStateRestoreMarkedContacts:
                 iControl.RestoreMarkedContactsL();
                 iEventQueue.Remove( 0 );
                 break;
-            
-            case CPbk2NamesListControl::EStateBgTaskEmpty :    
-            default:            
+
+            case CPbk2NamesListControl::EStateBgTaskEmpty :
+            default:
                 iControl.ClearMarkedContactsInfo();
                 break;
             }
@@ -2580,7 +2607,7 @@ void CPbk2NamesListControlBgTask::RunL()
 // ---------------------------------------------------------------------------
 //
 TInt CPbk2NamesListControlBgTask::RunError(TInt /*aError*/)
-    {    
+    {
     return KErrNone;
     }
 
@@ -2610,14 +2637,14 @@ void CPbk2NamesListControlBgTask::RemoveEvent( CPbk2NamesListControl::TPbk2Names
         {
         if ( aEvent == iEventQueue[index] )
             {
-            iEventQueue.Remove( index );      
+            iEventQueue.Remove( index );
             if ( 0 == index )
                 {
-                Cancel(); 
+                Cancel();
                 }
             break;
             }
-        }    
+        }
     }
 
 

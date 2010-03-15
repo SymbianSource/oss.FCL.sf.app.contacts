@@ -82,12 +82,7 @@ CPcsSession::~CPcsSession()
 {
 	PRINT ( _L("Enter CPcsSession::~CPcsSession") );
 
-	if ( iSettings )
-	{
-		delete iSettings;
-		iSettings = NULL;
-	}
-	
+	delete iSettings;
 	delete iDes;
 
 	PRINT ( _L("End CPcsSession::~CPcsSession") );
@@ -151,7 +146,7 @@ void CPcsSession::DoServiceL(const RMessage2& aMessage)
         case ESearchMatchString:
             PRINT ( _L("Received function ESearchMatchString") );
             SearchMatchStringL(aMessage);
-            break;    	    
+            break;
 
     	case ELangSupport:
 			PRINT ( _L("Received function ELangSupport") );
@@ -247,24 +242,18 @@ void CPcsSession::GetAsyncPcsResultsL(const RMessage2& aMessage)
         // -------------------------------------------------------------
 
 	    // Read search query from the message
-	    HBufC8* searchQuery = HBufC8::NewLC(KBufferMaxLen);
-
-	    TPtr8 searchQueryPtr(searchQuery->Des());
-        aMessage.ReadL(0, searchQueryPtr);
-
-	    // Stream over the buffer
-	    RDesReadStream searchQueryStream(searchQueryPtr);
-	    searchQueryStream.PushL();
-
-	    // Query object
-	    CPsQuery* psQuery = CPsQuery::NewL();
-
-	    psQuery->InternalizeL(searchQueryStream);
-
-	    // searchQueryStream, searchQuery
-	    CleanupStack::PopAndDestroy(2, searchQuery);
+	    CPsQuery* psQuery = ReadQueryLC( 0, aMessage );
 
 	    // -------------------------------------------------------------
+
+        RPointerArray<CPsClientData>  searchResults;
+        RPointerArray<CPsPattern>     searchSeqs;
+
+        iServer->PluginInterface()->PerformSearchL(*iSettings,
+                                                   *psQuery,
+                                                   searchResults,
+                                                   searchSeqs);
+        CleanupStack::PopAndDestroy( psQuery );
 
 		// Dynamic data buffer
 	    CBufFlat* buf = CBufFlat::NewL(KBufferMaxLen);
@@ -274,20 +263,11 @@ void CPcsSession::GetAsyncPcsResultsL(const RMessage2& aMessage)
 	    RBufWriteStream stream(*buf);
 	    stream.PushL();
 
-        RPointerArray<CPsClientData>  searchResults;
-	    RPointerArray<CPsPattern>     searchSeqs;
-
-
-		iServer->PluginInterface()->PerformSearchL(*iSettings,
-		                                           *psQuery,
-		                                           searchResults,
-		                                           searchSeqs);
-
         // Write the number of contacts
 	    stream.WriteInt32L(searchResults.Count());
 
 	    // Write the contacts
-	    for ( int i = 0; i < searchResults.Count(); i++ )
+	    for ( TInt i = 0; i < searchResults.Count(); i++ )
 	    {
 	        searchResults[i]->ExternalizeL(stream);
 	    }
@@ -296,7 +276,7 @@ void CPcsSession::GetAsyncPcsResultsL(const RMessage2& aMessage)
 	    stream.WriteInt32L(searchSeqs.Count());
 
 	    // Write the seqs
-	    for ( int j = 0; j < searchSeqs.Count(); j++ )
+	    for ( TInt j = 0; j < searchSeqs.Count(); j++ )
 	    {
 	        searchSeqs[j]->ExternalizeL(stream);
 	    }
@@ -304,16 +284,15 @@ void CPcsSession::GetAsyncPcsResultsL(const RMessage2& aMessage)
 	    // Cleanup
 	    searchResults.ResetAndDestroy();
 	    searchSeqs.ResetAndDestroy();
-	    delete psQuery;
 
         // Results are already packed in the stream
         stream.CommitL();
 
         // Create a heap descriptor from the buffer
-	    iDes = HBufC8::NewL(buf->Size());
-	    TPtr8 ptr(iDes->Des());
-	    buf->Read(0, ptr, buf->Size());
-
+        delete iDes;
+        iDes = NULL;
+	    iDes = buf->Ptr(0).AllocL();
+	    
 	    CleanupStack::PopAndDestroy(2, buf); // buf, stream
     }
 
@@ -370,21 +349,7 @@ void CPcsSession::SearchInputL(const RMessage2& aMessage)
     // -------------------------------------------------------------
 
     // Read search query from the message
-    HBufC8* searchQuery = HBufC8::NewLC(KBufferMaxLen);
-
-    TPtr8 searchQueryPtr(searchQuery->Des());
-    aMessage.ReadL(0, searchQueryPtr);
-
-    // Stream over the buffer
-    RDesReadStream searchQueryStream(searchQueryPtr);
-    searchQueryStream.PushL();
-
-    // Query object
-    CPsQuery* psQuery = CPsQuery::NewL();
-    psQuery->InternalizeL(searchQueryStream);
-
-    // searchQueryStream, searchQuery
-    CleanupStack::PopAndDestroy(2, searchQuery);
+    CPsQuery* psQuery = ReadQueryLC( 0, aMessage );
 
     // -------------------------------------------------------------
 
@@ -405,23 +370,15 @@ void CPcsSession::SearchInputL(const RMessage2& aMessage)
 
     // searchQueryStream, searchQuery
     CleanupStack::PopAndDestroy(2, searchData);
+    CleanupStack::PushL( data );
 
     // -------------------------------------------------------------
-
-	// Dynamic data buffer
-    CBufFlat* buf = CBufFlat::NewL(KBufferMaxLen);
-    CleanupStack::PushL(buf);
-
-    // Stream over the buffer
-    RBufWriteStream stream(*buf);
-    stream.PushL();
 
     // To hold the matches
     RPointerArray<TDesC> searchSeqs;
 
     // To hold matched location
     RArray<TPsMatchLocation> sequenceLoc;
-
 
 	iServer->PluginInterface()->SearchInputL(*psQuery,
 	                                         *data,
@@ -430,15 +387,24 @@ void CPcsSession::SearchInputL(const RMessage2& aMessage)
 
 
     // Delete the search query and search data
-    delete psQuery;
-    delete data;
+	CleanupStack::PopAndDestroy( data );
+    CleanupStack::PopAndDestroy( psQuery );
+
+    // --------- create write stream ---------------------------
+    // Dynamic data buffer
+    CBufFlat* buf = CBufFlat::NewL(KBufferMaxLen);
+    CleanupStack::PushL(buf);
+
+    // Stream over the buffer
+    RBufWriteStream stream(*buf);
+    stream.PushL();
 
     // --------- write match sequence ---------------------------
     // Write the number of match seqs
     stream.WriteUint16L(searchSeqs.Count());
 
     // Write the matches
-    for ( int j = 0; j < searchSeqs.Count(); j++ )
+    for ( TInt j = 0; j < searchSeqs.Count(); j++ )
     {
         TInt length = searchSeqs[j]->Length();
 
@@ -476,14 +442,10 @@ void CPcsSession::SearchInputL(const RMessage2& aMessage)
 
     stream.CommitL();
 
-    // Create a heap descriptor from the buffer
-    HBufC8* des = HBufC8::NewLC(buf->Size());
-    TPtr8 ptr(des->Des());
-    buf->Read(0, ptr, buf->Size());
-
-	aMessage.Write(2, *des);
+	aMessage.Write(2, buf->Ptr(0));
 	aMessage.Complete(KErrNone);
-	CleanupStack::PopAndDestroy(3, buf); // buf, stream, des
+	
+	CleanupStack::PopAndDestroy(2, buf); // buf, stream
 	
     PRINT ( _L("End CPcsSession::SearchInputL") );
     __LATENCY_MARKEND ( _L("CPcsSession::SearchInputL") );
@@ -501,22 +463,14 @@ void CPcsSession::SearchMatchStringL(const RMessage2& aMessage)
 
     // -------------------------------------------------------------
 
+    // Create result buffer
+    HBufC* des = HBufC::NewLC(KBufferMaxLen);
+    TPtr ptr(des->Des());
+    
+    // -------------------------------------------------------------
+
     // Read search query from the message
-    HBufC8* searchQuery = HBufC8::NewLC(KBufferMaxLen);
-
-    TPtr8 searchQueryPtr(searchQuery->Des());
-    aMessage.ReadL(0, searchQueryPtr);
-
-    // Stream over the buffer
-    RDesReadStream searchQueryStream(searchQueryPtr);
-    searchQueryStream.PushL();
-
-    // Query object
-    CPsQuery* psQuery = CPsQuery::NewL();
-    psQuery->InternalizeL(searchQueryStream);
-
-    // searchQueryStream, searchQuery
-    CleanupStack::PopAndDestroy(2, searchQuery);
+    CPsQuery* psQuery = ReadQueryLC( 0, aMessage );
 
     // -------------------------------------------------------------
 
@@ -537,29 +491,22 @@ void CPcsSession::SearchMatchStringL(const RMessage2& aMessage)
 
     // searchQueryStream, searchQuery
     CleanupStack::PopAndDestroy(2, searchData);
+    CleanupStack::PushL( data );
 
     // -------------------------------------------------------------
 
-    // Dynamic data buffer
-    CBufFlat* buf = CBufFlat::NewL(KBufferMaxLen);
-    CleanupStack::PushL(buf);
-
-    // Create a heap descriptor from the buffer
-    HBufC* des = HBufC::NewLC(KBufferMaxLen);
-    TPtr ptr(des->Des());
-    
     iServer->PluginInterface()->SearchMatchStringL(*psQuery,
-                                             *data,
-                                             ptr);
+                                                   *data,
+                                                   ptr);
 
 
     // Delete the search query and search data
-    delete psQuery;
-    delete data;
+    CleanupStack::PopAndDestroy( data );
+    CleanupStack::PopAndDestroy( psQuery );
 
     aMessage.Write(2, *des);
     aMessage.Complete(KErrNone);
-    CleanupStack::PopAndDestroy(2, buf); // buf, des
+    CleanupStack::PopAndDestroy(des);
     
     PRINT ( _L("End CPcsSession::SearchMatchStringL") );
     __LATENCY_MARKEND ( _L("CPcsSession::SearchMatchStringL") );
@@ -613,14 +560,9 @@ void CPcsSession::IsLanguageSupportedL(const RMessage2& aMessage)
 
     // --------------------------------------------------------------
 
-    // Create a heap descriptor from the buffer
-    HBufC8* des = HBufC8::NewLC(buffer1->Size());
-    TPtr8 ptr(des->Des());
-    buffer1->Read(0, ptr, buffer1->Size());
-
-	aMessage.Write(1, *des);
+	aMessage.Write(1, buffer1->Ptr(0));
 	aMessage.Complete(KErrNone);
-	CleanupStack::PopAndDestroy(3, buffer1); // buffer1, stream1, des
+	CleanupStack::PopAndDestroy(2, buffer1); // buffer1, stream1
 
 	PRINT ( _L("End CPcsSession::IsLanguageSupportedL") );
 }
@@ -680,7 +622,7 @@ void CPcsSession::GetDataOrderL(const RMessage2& aMessage)
 	stream1.WriteUint16L(fieldCount);
 
 	// Pack the fields
-	for ( int i = 0; i < fieldCount; i++ )
+	for ( TInt i = 0; i < fieldCount; i++ )
 	{
 		stream1.WriteUint16L(dataOrder[i]);
 	}
@@ -689,14 +631,9 @@ void CPcsSession::GetDataOrderL(const RMessage2& aMessage)
 
     // --------------------------------------------------------------
 
-    // Create a heap descriptor from the buffer
-    HBufC8* des = HBufC8::NewLC(buffer1->Size());
-    TPtr8 ptr(des->Des());
-    buffer1->Read(0, ptr, buffer1->Size());
-
-	aMessage.Write(1, *des);
+	aMessage.Write(1, buffer1->Ptr(0));
 	aMessage.Complete(KErrNone);
-	CleanupStack::PopAndDestroy(4, &dataOrder); // des, stream1, buffer1, dataOrder
+	CleanupStack::PopAndDestroy(3, &dataOrder); // stream1, buffer1, dataOrder
 
     PRINT ( _L("End CPcsSession::GetDataOrderL") );
 }
@@ -725,7 +662,10 @@ void CPcsSession::GetSortOrderL(const RMessage2& aMessage)
 	TInt uriSize = stream.ReadUint16L();
 
     // URI
-    HBufC* uri = HBufC::NewLC(stream, uriSize);
+    HBufC* uri = HBufC::NewL(stream, uriSize);
+    CleanupStack::PopAndDestroy( &stream );
+    CleanupStack::PopAndDestroy( buffer );
+    CleanupStack::PushL( uri );
 
     // --------------------------------------------------------------
 
@@ -733,8 +673,7 @@ void CPcsSession::GetSortOrderL(const RMessage2& aMessage)
     RArray<TInt> sortOrder;
     iServer->PluginInterface()->GetSortOrderL(*uri, sortOrder);
     
-    // uri, stream, buffer
-    CleanupStack::PopAndDestroy(3, buffer);
+    CleanupStack::PopAndDestroy( uri );
     
     CleanupClosePushL( sortOrder );
     
@@ -753,7 +692,7 @@ void CPcsSession::GetSortOrderL(const RMessage2& aMessage)
 	stream1.WriteUint16L(fieldCount);
 
 	// Pack the fields
-	for ( int i = 0; i < fieldCount; i++ )
+	for ( TInt i = 0; i < fieldCount; i++ )
 	{
 		stream1.WriteUint16L(sortOrder[i]);
 	}
@@ -762,14 +701,9 @@ void CPcsSession::GetSortOrderL(const RMessage2& aMessage)
 
     // --------------------------------------------------------------
 
-    // Create a heap descriptor from the buffer
-    HBufC8* des = HBufC8::NewLC(buffer1->Size());
-    TPtr8 ptr(des->Des());
-    buffer1->Read(0, ptr, buffer1->Size());
-
-	aMessage.Write(1, *des);
+	aMessage.Write(1, buffer1->Ptr(0));
 	aMessage.Complete(KErrNone);
-	CleanupStack::PopAndDestroy(4, &sortOrder); // des, buffer1, stream1, sortOrder
+	CleanupStack::PopAndDestroy(3, &sortOrder); // buffer1, stream1, sortOrder
 
     PRINT ( _L("End CPcsSession::GetSortOrderL") );
 }
@@ -799,27 +733,26 @@ void CPcsSession::ChangeSortOrderL(const RMessage2& aMessage)
 
     // URI
     HBufC* uri = HBufC::NewLC(stream, uriSize);
-    CleanupStack::Pop(); // uri
 
     // Number of data fields
     TInt fieldCount = stream.ReadUint16L();
     RArray<TInt> sortOrder;
+    CleanupClosePushL( sortOrder );
 
-    for ( int i = 0; i < fieldCount; i++ )
+    for ( TInt i = 0; i < fieldCount; i++ )
     {
-    	sortOrder.Append(stream.ReadUint16L());
+    	sortOrder.AppendL(stream.ReadUint16L());
     }
-
-    // stream, buffer
-    CleanupStack::PopAndDestroy(2, buffer);
 
     // --------------------------------------------------------------
 
     // Set the sort order
     iServer->PluginInterface()->ChangeSortOrderL(*uri, sortOrder);
 
-    delete uri;
-    sortOrder.Reset();
+    CleanupStack::PopAndDestroy( &sortOrder ); // Close
+    CleanupStack::PopAndDestroy( uri );
+    CleanupStack::PopAndDestroy( &stream );
+    CleanupStack::PopAndDestroy( buffer );
 
     // --------------------------------------------------------------
 
@@ -840,4 +773,34 @@ void CPcsSession::ShutdownServerL(const RMessage2& aMessage)
 	CActiveScheduler::Stop();
 
 	PRINT ( _L("End CPcsSession::ShutdownServerL") );
+}
+
+// ----------------------------------------------------------------------------
+// CPcsSession::ReadQueryLC
+//
+// ----------------------------------------------------------------------------
+CPsQuery* CPcsSession::ReadQueryLC( TInt aParam, const RMessage2& aMessage )
+{
+    TInt size = aMessage.GetDesLength( aParam );
+    HBufC8* tempBuf = HBufC8::NewLC( size );
+
+    TPtr8 ptr( tempBuf->Des() );
+    aMessage.ReadL( aParam, ptr );
+
+    // Stream over the buffer
+    RDesReadStream stream( ptr );
+    stream.PushL();
+
+    // Query object
+    CPsQuery* psQuery = CPsQuery::NewL();
+    CleanupStack::PushL( psQuery );
+
+    psQuery->InternalizeL( stream );
+
+    CleanupStack::Pop( psQuery ); // temporarily
+    CleanupStack::PopAndDestroy( &stream );
+    CleanupStack::PopAndDestroy( tempBuf );
+    CleanupStack::PushL( psQuery );
+    
+    return psQuery;
 }

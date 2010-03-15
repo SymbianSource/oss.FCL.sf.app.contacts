@@ -87,6 +87,20 @@ public: // Interface
     void LoadContactImageL( 
             MVPbkStoreContact& aContact, 
             const TSize& aThumbnailSize );
+    
+    /**
+     * Start loading contacts image. Will cancel any previous requests.
+     * Once loading is complete the new image is delivered to observer 
+     * with a call to MMyCardImageLoaderObserver::ThumbnailReady.
+     * 
+     * @param aImageData source data for the image
+     * @param aImageFileName filename of the image
+     */
+    void LoadImageL( 
+        const TDesC8& aImageData,
+        const TDesC& aImageFileName,
+        const TSize& aThumbnailSize );
+    
     void ResizeImageL( const TSize& aThumbnailSize );
     
 private:    // From MCCAppImageDecodingObserver

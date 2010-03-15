@@ -18,6 +18,8 @@
 
 #include "emailtrace.h"
 #include <pbk2rclengine.rsg>
+#include <pbk2rclsettingres.rsg> 
+
 #include <ecom/ecom.h>
 #include "cpbkxremotecontactlookupprotocoladapter.h"
 #include <cpbkxremotecontactlookupprotocolaccount.h>

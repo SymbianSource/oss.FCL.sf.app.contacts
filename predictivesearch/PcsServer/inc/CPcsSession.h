@@ -24,6 +24,7 @@
 
 // FORWARD DECLARATIONS
 class CPcsServer;
+class CPsQuery;
 
 /**
  * Represents a session (version 2) for a client thread on 
@@ -119,6 +120,11 @@ class CPcsSession : public CSession2
 		 */
 		void ShutdownServerL(const RMessage2& aMessage);
 
+		/**
+		 * Utility function for reading search query from message
+		 */
+		static CPsQuery* ReadQueryLC( TInt aParam, const RMessage2& aMessage );
+		
     private:
     
         /**

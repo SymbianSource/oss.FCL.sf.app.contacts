@@ -379,17 +379,7 @@ void CPbk2AssignSpeedDialCmd::AssignSpeedDialL()
 MVPbkStoreContactField* CPbk2AssignSpeedDialCmd::FocusedFieldLC
         ( MVPbkStoreContact& aStoreContact )
     {
-    TInt index = KErrNotFound;
-    CPbk2PresentationContact* presentationContact =
-        CPbk2PresentationContact::NewL( aStoreContact,
-            iAppServices->FieldProperties() );
-    CleanupStack::PushL( presentationContact );
-
-    index = presentationContact->PresentationFields().StoreIndexOfField(
-                iUiControl->FocusedFieldIndex() );
-
-    CleanupStack::PopAndDestroy( presentationContact );
-
+    TInt index = iUiControl->FocusedFieldIndex();
     if ( index != KErrNotFound )
         {
         // Use FieldAtLC to avoid the unvalidity of the field after new

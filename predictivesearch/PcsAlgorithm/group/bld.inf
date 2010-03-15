@@ -26,5 +26,5 @@ PRJ_EXPORTS
 // Generic configuration interface for component cenrep settings  
 // .crml files contain implementation specifics for cenrep data
 ../conf/predictivesearch_sortorder.confml                  APP_LAYER_CONFML(predictivesearch_sortorder.confml)
-../conf/predictivesearch_sortorder_2000B5C5.crml 	        APP_LAYER_CRML(predictivesearch_sortorder_2000B5C5.crml)
+../conf/predictivesearch_sortorder_2000B5C5.crml           APP_LAYER_CRML(predictivesearch_sortorder_2000B5C5.crml)
 

@@ -77,7 +77,8 @@ class CPbk2NamesListControl : public CCoeControl,
                               public MAdaptiveSearchTextObserver,
                               public MEikListBoxObserver,
                               public MPbk2ControlContainerForegroundEventObserver,
-                              public MPbk2CommandItemUpdater
+                              public MPbk2CommandItemUpdater,
+                              public MVPbkContactViewObserverExtension 
     {
     public: // Enumerations
 
@@ -347,7 +348,11 @@ class CPbk2NamesListControl : public CCoeControl,
                 MVPbkContactViewBase& aView,
                 TInt aError,
                 TBool aErrorNotified );
-
+        TAny* ContactViewObserverExtension(TUid aExtensionUid );
+                  
+    private: // From MVPbkContactViewUpdateObserver        
+          void FilteredContactRemovedFromView( MVPbkContactViewBase& aView );
+                  
     public: // From MPbk2PointerEventInspector
         TBool FocusedItemPointed();
         TBool FocusableItemPointed();

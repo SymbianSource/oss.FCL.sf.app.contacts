@@ -71,6 +71,7 @@ namespace {
 
 const TInt KPbk2MSKControlId( CEikButtonGroupContainer::EMiddleSoftkeyPosition );
 const TInt KFirstElement = 0;
+const TInt KDefaultMinSelection = 1;
 
 enum TPanicCode
     {
@@ -100,7 +101,8 @@ EXPORT_C CPbk2FetchDlg::TParams::TParams() :
         iGroupsListView( NULL ),
         iCbaId( 0 ),
         iNaviPaneId( 0 ),
-        iExitCallback( NULL )
+        iExitCallback( NULL ),
+        iMinSelection( KDefaultMinSelection )
     {
     }
 
@@ -492,6 +494,13 @@ TKeyResponse CPbk2FetchDlg::OfferKeyEventL
             iPages->FocusedContactL();
         if ( focusedContact )
             {
+            if ( !( iParams.iFlags & EFetchMultiple ) )
+                {
+                delete iFocusedContactLink;
+                iFocusedContactLink = NULL;
+                iFocusedContactLink = focusedContact->CreateLinkLC();
+                CleanupStack::Pop(); // iFocusedContactLink
+                }
             MVPbkContactLink* link = focusedContact->CreateLinkLC();
             SelectContactL( *link, selectContact );
             CleanupStack::PopAndDestroy(); // link
@@ -821,8 +830,7 @@ void CPbk2FetchDlg::HandleControlEventL
 void CPbk2FetchDlg::ContactSelected
         ( const MVPbkContactLink& aLink, TBool aSelected )
     {
-    if ( aSelected && iFocusedContactLink &&
-         iFocusedContactLink->IsSame( aLink ) )
+    if ( aSelected && iFocusedContactLink && iFocusedContactLink->IsSame( aLink ) )
         {
         // Deleting focused contact link that next time single fetch
         // also fetches the contact.
@@ -835,6 +843,10 @@ void CPbk2FetchDlg::ContactSelected
             // If not nicely then use the force
             delete this;
             }
+        }
+    else
+        {
+        TRAP_IGNORE( UpdateCbasL() );
         }
     }
 
@@ -920,7 +932,7 @@ void CPbk2FetchDlg::SetupStatusPaneL()
 //
 void CPbk2FetchDlg::UpdateCbasL()
     {
-    if (iResults && iPages &&  iPages->CurrentPage().DlgPageReady() &&
+    if ( iResults && iPages &&  iPages->CurrentPage().DlgPageReady() &&
          !iPages->CurrentPage().DlgPageEmpty() )
         {
         // Use user defined CBA parameter if exist
@@ -939,6 +951,21 @@ void CPbk2FetchDlg::UpdateCbasL()
             SetCbaCommandSetL( R_PBK2_SOFTKEYS_OK_BACK_OK );
             }
     
+        if ( iParams.iFlags & EFetchMultiple )
+            {
+            CEikButtonGroupContainer& cba = ButtonGroupContainer();
+            if ( iResults->Count() < iParams.iMinSelection )
+                {
+                cba.MakeCommandVisibleByPosition
+                    ( CEikButtonGroupContainer::ELeftSoftkeyPosition, EFalse );
+                }
+            else
+                {
+                cba.MakeCommandVisibleByPosition
+                    ( CEikButtonGroupContainer::ELeftSoftkeyPosition, ETrue );
+                }
+            }
+        
         MVPbkContactLink* link = NULL;
         TBool contactSelected = EFalse;
         //Used the TRAPD to catch the exception when the contact can't be found in DB. 
@@ -1085,23 +1112,20 @@ inline TBool CPbk2FetchDlg::CheckIsOkToExitL( TInt aButtonId )
         {
         // Focused contact must be returned if no contacts yet selected,
         // and the focused contact selection is not already on its way
-        if ( FetchDlgSelection().Count() == 0 )
+        if ( FetchDlgSelection().Count() == 0 && !( iParams.iFlags & EFetchMultiple ) )
             {
-            const MVPbkBaseContact* focusedContact =
-                iPages->FocusedContactL();
+            const MVPbkBaseContact* focusedContact = iPages->FocusedContactL();    
             if ( focusedContact )
                 {
                 delete iFocusedContactLink;
                 iFocusedContactLink = NULL;
                 iFocusedContactLink = focusedContact->CreateLinkLC();
                 CleanupStack::Pop(); // iFocusedContactLink
-
                 if ( iParams.iFlags & EFetchSingle )
                     {
                     // Clean result if this is single fetch.
                     iResults->ResetAndDestroy();
                     }
-
                 SelectContactL( *iFocusedContactLink, ETrue );
                 }
 

@@ -168,4 +168,5 @@ EXPORTS
 	?RefreshDataL@CPbk2ServiceManager@@QAEXXZ @ 167 NONAME ; void CPbk2ServiceManager::RefreshDataL(void)
 	?CreateContactViewForStoresLC@CPbk2ContactViewBuilder@@QBEPAVMVPbkContactViewBase@@ABVCVPbkContactStoreUriArray@@AAVMVPbkContactViewObserver@@ABVMVPbkFieldTypeList@@PAVCVPbkFieldTypeSelector@@KPAVMVPbkContactSelector@@@Z @ 168 NONAME ; class MVPbkContactViewBase * CPbk2ContactViewBuilder::CreateContactViewForStoresLC(class CVPbkContactStoreUriArray const &, class MVPbkContactViewObserver &, class MVPbkFieldTypeList const &, class CVPbkFieldTypeSelector *, unsigned long, class MVPbkContactSelector *) const
 	?CropImageL@Pbk2PresentationImageUtils@@SAXAAVCFbsBitmap@@W4TCroppingMode@1@ABVTSize@@@Z @ 169 NONAME ; void Pbk2PresentationImageUtils::CropImageL(class CFbsBitmap &, enum Pbk2PresentationImageUtils::TCroppingMode, class TSize const &)
+	?FieldIndexOfStoreField@CPbk2PresentationContactFieldCollection@@QBEHH@Z @ 170 NONAME ; int CPbk2PresentationContactFieldCollection::FieldIndexOfStoreField(int) const
 

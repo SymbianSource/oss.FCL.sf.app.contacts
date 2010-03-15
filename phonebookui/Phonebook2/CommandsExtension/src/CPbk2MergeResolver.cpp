@@ -285,17 +285,18 @@ TBool CPbk2MergeResolver::IsTopContactField(
         const MVPbkStoreContactField& aField )
     {
     const MVPbkFieldType* fieldType = aField.BestMatchingFieldType();
-    __ASSERT_ALWAYS( fieldType, Panic( EPbk2FieldTypeNotExists ) );
-    TArray<TVPbkFieldVersitProperty> versitProp = fieldType->VersitProperties();
+    TBool topContact( EFalse );
     
-    TBool topContact = EFalse;
-    
-    for( TInt idx = 0; idx < versitProp.Count() && !topContact; idx++ )
+    if ( fieldType )
         {
-        TVPbkFieldVersitProperty versitPropFirst = versitProp[idx];
-        if( versitPropFirst.Name() == EVPbkVersitNameTopContact )
+        TArray<TVPbkFieldVersitProperty> versitProp = fieldType->VersitProperties();        
+        for( TInt idx = 0; idx < versitProp.Count() && !topContact; idx++ )
             {
-            topContact = ETrue;
+            TVPbkFieldVersitProperty versitPropFirst = versitProp[idx];
+            if( versitPropFirst.Name() == EVPbkVersitNameTopContact )
+                {
+                topContact = ETrue;
+                }
             }
         }
     
@@ -524,18 +525,20 @@ CPbk2MergeResolver::ECompareAddress CPbk2MergeResolver::DoCompareAddresses(
 TBool CPbk2MergeResolver::AddressField( const MVPbkStoreContactField& aField )
     {
     const MVPbkFieldType* fieldType = aField.BestMatchingFieldType();
-    __ASSERT_ALWAYS( fieldType, Panic( EPbk2FieldTypeNotExists ) );
-    TArray<TVPbkFieldVersitProperty> versitProp = fieldType->VersitProperties();
+    TBool address( EFalse );
     
-    TBool address = EFalse;
-    
-    for( TInt idx = 0; idx < versitProp.Count() && !address; idx++ )
+    if ( fieldType )
         {
-        TVPbkFieldVersitProperty versitPropFirst = versitProp[idx];
-        if( versitPropFirst.Name() == EVPbkVersitNameADR ||
-            versitPropFirst.Name() == EVPbkVersitNameGEO )
+        TArray<TVPbkFieldVersitProperty> versitProp = fieldType->VersitProperties();
+        
+        for( TInt idx = 0; idx < versitProp.Count() && !address; idx++ )
             {
-            address = ETrue;
+            TVPbkFieldVersitProperty versitPropFirst = versitProp[idx];
+            if( versitPropFirst.Name() == EVPbkVersitNameADR ||
+                versitPropFirst.Name() == EVPbkVersitNameGEO )
+                {
+                address = ETrue;
+                }
             }
         }
     
@@ -630,30 +633,29 @@ TBool CPbk2MergeResolver::AreAddressesSubTypeSame(
         const MVPbkStoreContactField& aFieldFirst,
         const MVPbkStoreContactField& aFieldSecond )
     {
+    TBool retCompare( EFalse );
     const MVPbkFieldType* fieldTypeFirst = aFieldFirst.BestMatchingFieldType();
-    __ASSERT_ALWAYS( fieldTypeFirst, Panic( EPbk2FieldTypeNotExists ) );
+    const MVPbkFieldType* fieldTypeSecond = aFieldSecond.BestMatchingFieldType();    
     
-    const MVPbkFieldType* fieldTypeSecond = aFieldSecond.BestMatchingFieldType();
-    __ASSERT_ALWAYS( fieldTypeSecond, Panic( EPbk2FieldTypeNotExists ) );
-    
-    TArray<TVPbkFieldVersitProperty> versitPropArrFirst = fieldTypeFirst->VersitProperties();
-    TArray<TVPbkFieldVersitProperty> versitPropArrSecond = fieldTypeSecond->VersitProperties();
-    
-    TInt countFirst = versitPropArrFirst.Count();
-    TInt countSecond = versitPropArrSecond.Count();
-
-    TBool retCompare = EFalse;
-    
-    for( TInt idxFirst = 0; idxFirst < countFirst && !retCompare; idxFirst++ )
+    if ( fieldTypeFirst && fieldTypeSecond )
         {
-        TVPbkFieldVersitProperty versitPropFirst = versitPropArrFirst[idxFirst];
-        for( TInt idxSecond = 0; idxSecond < countSecond; idxSecond++ )
+        TArray<TVPbkFieldVersitProperty> versitPropArrFirst = fieldTypeFirst->VersitProperties();
+        TArray<TVPbkFieldVersitProperty> versitPropArrSecond = fieldTypeSecond->VersitProperties();
+        
+        TInt countFirst = versitPropArrFirst.Count();
+        TInt countSecond = versitPropArrSecond.Count();    
+        
+        for( TInt idxFirst = 0; idxFirst < countFirst && !retCompare; idxFirst++ )
             {
-            TVPbkFieldVersitProperty versitPropSecond = versitPropArrSecond[idxSecond];
-            if( versitPropFirst.SubField() == versitPropSecond.SubField() )
+            TVPbkFieldVersitProperty versitPropFirst = versitPropArrFirst[idxFirst];
+            for( TInt idxSecond = 0; idxSecond < countSecond; idxSecond++ )
                 {
-                retCompare = ETrue;
-                break;
+                TVPbkFieldVersitProperty versitPropSecond = versitPropArrSecond[idxSecond];
+                if( versitPropFirst.SubField() == versitPropSecond.SubField() )
+                    {
+                    retCompare = ETrue;
+                    break;
+                    }
                 }
             }
         }
@@ -669,13 +671,16 @@ TBool CPbk2MergeResolver::AreFieldsTypeSame(
         const MVPbkStoreContactField& aFieldFirst,
         const MVPbkStoreContactField& aFieldSecond )
     {
-    const MVPbkFieldType* fieldTypeFirst = aFieldFirst.BestMatchingFieldType();
-    __ASSERT_ALWAYS( fieldTypeFirst, Panic( EPbk2FieldTypeNotExists ) );
+    TBool isSame( EFalse );    
+    const MVPbkFieldType* fieldTypeFirst = aFieldFirst.BestMatchingFieldType();  
+    const MVPbkFieldType* fieldTypeSecond = aFieldSecond.BestMatchingFieldType();    
     
-    const MVPbkFieldType* fieldTypeSecond = aFieldSecond.BestMatchingFieldType();
-    __ASSERT_ALWAYS( fieldTypeSecond, Panic( EPbk2FieldTypeNotExists ) );
+    if ( fieldTypeFirst && fieldTypeSecond )
+        {
+        isSame = fieldTypeFirst->IsSame( *fieldTypeSecond );
+        }
     
-    return fieldTypeFirst->IsSame( *fieldTypeSecond );
+    return isSame;
     }
 
 // --------------------------------------------------------------------------

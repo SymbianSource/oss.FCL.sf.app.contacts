@@ -22,6 +22,8 @@
 
 #include <Pbk2UIExtension.rh>
 #include <Pbk2ExtensionUID.h>
+#include <phonebook2rcl.loc> 
+#include "../../../inc/Pbk2InternalUID.h"   //KFscRclSettingExtensionImplementationUID from pbk2internaluid.h
 
 // --------------------------------------------------------------------------
 // Resource identifier
@@ -35,7 +37,55 @@ NAME FCRC   // From Freestyle Contacts 2.0 Remote Contact Lookup
 //
 RESOURCE RSS_SIGNATURE { }
 
-// Additional include files
-#include "fscrclsettinginformation.rss"
+// --------------------------------------------------------------------------
+// r_fsc_rcl_setting_extension_information
+// Extension information
+// --------------------------------------------------------------------------
+//
+RESOURCE PHONEBOOK2_EXTENSION_INFORMATION r_fsc_rcl_setting_extension_information
+    {
+    version = 0;
+    implementationUid = KFscRclSettingExtensionImplementationUID;
+    loadingPolicy = KPbk2LoadOnSettingsExecution;  
+    
+    // NO Commands
+    menuCommandRange = PHONEBOOK2_EXTENSION_RANGE
+        {
+        firstId = 0;
+        lastId  = 0;
+        };   
+    
+    overwrittenCommands = {};
+    
+    extensionMenus = {};
+    }
+    
+// ---------------------------------------------------------
+// The RCL settings list
+// ---------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_ITEM_LIST r_rcl_setting_list
+    {
+    title = "Settings";
+    }
+
+// ---------------------------------------------------------
+// Strings shown by RCL settings plugin in Phonebook2 settings
+// ---------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_set_server_search 
+     {
+     buf = qtn_phob_set_server_search;
+     }
+     
+RESOURCE TBUF r_qtn_rcl_setting_rcl_server_none 
+    {
+    buf = qtn_fs_setting_rcl_server_none;
+    }
+    
+RESOURCE TBUF r_qtn_rcl_setting_rcl_not_defined 
+    {
+    buf = qtn_fs_setting_rcl_not_defined;
+    }
 
 // End of File

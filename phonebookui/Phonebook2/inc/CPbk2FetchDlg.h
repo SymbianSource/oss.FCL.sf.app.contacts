@@ -123,6 +123,9 @@ class CPbk2FetchDlg : public CAknDialog,
                 TInt iNaviPaneId;
                 /// Ref: Exit callback
                 MPbk2ExitCallback* iExitCallback;
+                /// Own: SK1 is invisible till user selects defined amount of entries
+                /// default is 1 if not defined by user
+                TInt iMinSelection;
             };
 
     public: // Construction and destruction

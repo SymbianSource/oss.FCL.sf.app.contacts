@@ -321,7 +321,7 @@ void CPbk2ImageWriterBase::ScaleBitmapL()
     
     Pbk2PresentationImageUtils::CropImageL( 
             *iBitmap, 
-            Pbk2PresentationImageUtils::ELandscapeOptimizedCropping, 
+            Pbk2PresentationImageUtils::EOptimizedCropping, 
             ImageSize() );
     
     if (iBitmap->SizeInPixels() <= ImageSize())

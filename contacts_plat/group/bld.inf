@@ -58,6 +58,7 @@
 #include "../phonebook_2_commands_api/group/bld.inf"
 #include "../phonebook_2_presentation_api/group/bld.inf"
 #include "../phonebook_2_ui_utilities_api/group/bld.inf"
+#include "../phonebook_2_contact_related_icon_customization_api/group/bld.inf"
 #include "../cca_launch_api/group/bld.inf"
 #include "../cca_view_plugin_api/group/bld.inf"
 #include "../predictivesearch_client_api/group/bld.inf"

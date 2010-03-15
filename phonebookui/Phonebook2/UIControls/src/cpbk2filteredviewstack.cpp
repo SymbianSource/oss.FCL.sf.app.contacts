@@ -484,7 +484,7 @@ void CElementStack::AppendStackL( CElementStack& aStack )
 //
 void CElementStack::Reset()
     {
-    // Stack's elements need to destroy vice versa, 
+    // Stack's elements need to destroy vice versa,
     // because views in elements are always linked to previous view.
     // Like BaseView<-FindView<-RefineView<-RefineView...
     const TInt count( iStack.Count() );
@@ -565,7 +565,7 @@ void CElementStack::Append( MPbk2FilteredViewStackElement* aElement )
 CPbk2FilteredViewStack::CCallback::CCallback(
         CPbk2FilteredViewStack& aViewStack,
         MVPbkContactViewObserver& aObserver, AddObserverL aAddObserverFuncL,
-        AddObserverError aAddObserverErrorFunc ) : 
+        AddObserverError aAddObserverErrorFunc ) :
             CActive( EPriorityStandard ),
             iViewStack( aViewStack ),
             iObserver( aObserver ),
@@ -707,7 +707,7 @@ void CPbk2FilteredViewStack::UpdateFilterL( const MDesCArray& aFindStrings,
         TBool aAlwaysIncludedChanged )
     {
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING(
-        "CPbk2FilteredViewStack::UpdateFilterL: topview(0x%x), always=%x"), 
+        "CPbk2FilteredViewStack::UpdateFilterL: topview(0x%x), always=%x"),
         &TopView(), aAlwaysincluded );
 
 
@@ -809,7 +809,7 @@ void CPbk2FilteredViewStack::UpdateFilterL( const MDesCArray& aFindStrings,
             if ( IsElementsUnderDestruction() )
                 {
                 UpdateStackL();
-                }            
+                }
             }
         }
 
@@ -1242,6 +1242,48 @@ void CPbk2FilteredViewStack::ContactViewError
     }
 
 // --------------------------------------------------------------------------
+// CPbk2FilteredViewStack::ContactViewObserverExtension
+// --------------------------------------------------------------------------
+//
+TAny* CPbk2FilteredViewStack::ContactViewObserverExtension( TUid aExtensionUid )
+    {
+    if( aExtensionUid == KVPbkContactViewObserverExtension2Uid )
+        {
+        return static_cast<MVPbkContactViewObserverExtension*>( this );
+        }
+    return NULL;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2FilteredViewStack::FilteredContactRemovedFromView
+// --------------------------------------------------------------------------
+//
+void CPbk2FilteredViewStack::FilteredContactRemovedFromView(
+		MVPbkContactViewBase& aView )
+    {
+    const TInt count = iViewObservers.Count();
+
+    for( TInt i = 0; i < count; i++ )
+       {
+       MVPbkContactViewObserver* observer = iViewObservers[i];
+
+       TAny* extension = observer->ContactViewObserverExtension(
+               KVPbkContactViewObserverExtension2Uid );
+
+       if( extension )
+           {
+           MVPbkContactViewObserverExtension* contactViewExtension =
+                   static_cast<MVPbkContactViewObserverExtension*>( extension );
+
+           if( contactViewExtension )
+               {
+               contactViewExtension->FilteredContactRemovedFromView( aView );
+               }
+           }
+       }
+    }
+
+// --------------------------------------------------------------------------
 // CPbk2FilteredViewStack::TopElement
 // --------------------------------------------------------------------------
 //
@@ -1276,12 +1318,12 @@ void CPbk2FilteredViewStack::DoHandleContactViewReadyL(
     // Check first if the aView is the base view.
     if ( iBaseViewElement->View() == &aView )
         {
-        if ( iBaseViewElement->ViewState() == 
+        if ( iBaseViewElement->ViewState() ==
                 MPbk2FilteredViewStackElement::EUndefined )
             {
             // The Base view is changed.
-            SendBaseViewChangedEvent();            
-            }  
+            SendBaseViewChangedEvent();
+            }
 
         iBaseViewElement->SetViewState(
             MPbk2FilteredViewStackElement::EReady );
@@ -1546,7 +1588,7 @@ void CPbk2FilteredViewStack::SendTopViewUpdatedEvent()
 // --------------------------------------------------------------------------
 // CPbk2FilteredViewStack::SendBaseViewChangedEvent
 // --------------------------------------------------------------------------
-//    
+//
 void CPbk2FilteredViewStack::SendBaseViewChangedEvent()
     {
     const TInt count = iStackObservers.Count();

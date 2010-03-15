@@ -167,24 +167,11 @@ TBool CPguGroupNameQueryDlg::OkToExitL( TInt aButtonId )
 //
 void CPguGroupNameQueryDlg::UpdateGroupTitleL()
     {
-    TBool found = EFalse;
     HBufC* groupTitle;
-    for ( TInt number = 1; !found; ++number )
-        {
-        groupTitle = StringLoader::LoadLC
-            ( R_PHONEBOOK2_QTN_FLDR_DEFAULT_GROUP_NAME, number );
-
-        // Convert the digits if necessary
-        TPtr ptr = groupTitle->Des();
-        AknTextUtils::DisplayTextLanguageSpecificNumberConversion( ptr );
-
-        if ( !ContainsL( *groupTitle ) )
-            {
-            Text().Copy( *groupTitle );
-            found = ETrue;
-            }
-        CleanupStack::PopAndDestroy( groupTitle );
-        }
+    TInt newGroupNumber = iGroupsListView.ContactCountL() + 1;
+    groupTitle = StringLoader::LoadL( R_PHONEBOOK2_QTN_FLDR_DEFAULT_GROUP_NAME, newGroupNumber );
+    Text().Copy( *groupTitle );
+    delete groupTitle;
     }
 
 // --------------------------------------------------------------------------

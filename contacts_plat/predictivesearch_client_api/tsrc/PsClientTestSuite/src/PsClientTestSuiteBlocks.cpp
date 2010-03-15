@@ -55,33 +55,36 @@ TInt CPsClientTestSuite::RunMethodL( CStifItemParser& aItem )
         // First string is the function name used in TestScripter script file.
         // Second is the actual implementation member function.
 
-        ENTRY( "WriteTitleToLog",              CPsClientTestSuite::WriteTitleToLog ),
-        ENTRY( "CreateContactsInPhone",        CPsClientTestSuite::CreateContactsL ),
-	    ENTRY( "ADDGroups",                    CPsClientTestSuite::CreateGroupsInPhoneL ),
-	    ENTRY( "DeleteAllContactsInPhonebook", CPsClientTestSuite::DeleteAllContactsInPhonebookL ),
-        ENTRY( "SearchOnInputString",          CPsClientTestSuite::SearchOnInputStringL ),
-        ENTRY( "TC_ITU_SearchOnInputString",   CPsClientTestSuite::SearchOnInputStringL ), // For easy handling of .cgf file
-        ENTRY( "TC_N97_SearchOnInputString",   CPsClientTestSuite::SearchOnInputStringL ), // For easy handling of .cgf file
-        ENTRY( "SearchLookupMatchString",      CPsClientTestSuite::SearchLookupMatchStringL ),
-        ENTRY( "TC_ITU_SearchLookupMatchString",CPsClientTestSuite::SearchLookupMatchStringL ), // For easy handling of .cgf file
-        ENTRY( "TC_N97_SearchLookupMatchString",CPsClientTestSuite::SearchLookupMatchStringL ), // For easy handling of .cgf file
-        ENTRY( "TestSearchingInCache",         CPsClientTestSuite::SearchCacheL ),
-        ENTRY( "TC_ITU_TestSearchingInCache",  CPsClientTestSuite::SearchCacheL ), // For easy handling of .cgf file
-        ENTRY( "TC_N97_TestSearchingInCache",  CPsClientTestSuite::SearchCacheL ), // For easy handling of .cgf file
-	    ENTRY( "CheckCachingStatus",           CPsClientTestSuite::CheckCachingStatusL ),
-	    ENTRY( "CheckVersion",                 CPsClientTestSuite::CheckVersion),
-	    ENTRY( "CheckLanguageSupport",         CPsClientTestSuite::TestIsLanguageSupportedL),
-	    ENTRY( "GetAllContents",               CPsClientTestSuite::GetAllContentsL),
-	    ENTRY( "TestSortOrder",                CPsClientTestSuite::TestSortOrderL),
-	    ENTRY( "TestSortOrderErrCaseL",        CPsClientTestSuite::TestSortOrderErrCaseL),	    
-	    ENTRY( "TestSearchingWithInGroup",     CPsClientTestSuite::SearchWithInGroupL),
-	    ENTRY( "ConvertToVpbkLink",            CPsClientTestSuite::ConvertToVpbkLinkL), 
-	    ENTRY( "RemoveObserver",               CPsClientTestSuite::RemoveObserverL ),
-	    ENTRY( "ShutDown",                     CPsClientTestSuite::ShutDownL ),
-	    ENTRY( "AddMarkedContactsTest",        CPsClientTestSuite::AddMarkedContactsTestL ),
-	    ENTRY( "TestDataOrder",                CPsClientTestSuite::TestDataOrderL ),
-	    ENTRY( "TestDataOrderForErrL",         CPsClientTestSuite::TestDataOrderForErrL ),
-	    ENTRY( "CancelSearch",                 CPsClientTestSuite::CancelSearchL )
+        ENTRY( "WriteTitleToLog",                CPsClientTestSuite::WriteTitleToLog ),
+        ENTRY( "CreateContactsInPhone",          CPsClientTestSuite::CreateContactsL ),
+	    ENTRY( "ADDGroups",                      CPsClientTestSuite::CreateGroupsInPhoneL ),
+	    ENTRY( "DeleteAllContactsInPhonebook",   CPsClientTestSuite::DeleteAllContactsInPhonebookL ),
+        ENTRY( "SearchOnInputString",            CPsClientTestSuite::SearchOnInputStringL ),
+        ENTRY( "TC_ITU_SearchOnInputString",     CPsClientTestSuite::SearchOnInputStringL ), // For easy handling of .cgf file
+        ENTRY( "TC_N97_SearchOnInputString",     CPsClientTestSuite::SearchOnInputStringL ), // For easy handling of .cgf file
+        ENTRY( "TC_N00_SearchOnInputString",     CPsClientTestSuite::SearchOnInputStringL ), // For easy handling of .cgf file
+        ENTRY( "SearchLookupMatchString",        CPsClientTestSuite::SearchLookupMatchStringL ),
+        ENTRY( "TC_ITU_SearchLookupMatchString", CPsClientTestSuite::SearchLookupMatchStringL ), // For easy handling of .cgf file
+        ENTRY( "TC_N97_SearchLookupMatchString", CPsClientTestSuite::SearchLookupMatchStringL ), // For easy handling of .cgf file
+        ENTRY( "TC_N00_SearchLookupMatchString", CPsClientTestSuite::SearchLookupMatchStringL ), // For easy handling of .cgf file
+        ENTRY( "TestSearchingInCache",           CPsClientTestSuite::SearchCacheL ),
+        ENTRY( "TC_ITU_TestSearchingInCache",    CPsClientTestSuite::SearchCacheL ), // For easy handling of .cgf file
+        ENTRY( "TC_N97_TestSearchingInCache",    CPsClientTestSuite::SearchCacheL ), // For easy handling of .cgf file
+        ENTRY( "TC_N00_TestSearchingInCache",    CPsClientTestSuite::SearchCacheL ), // For easy handling of .cgf file
+	    ENTRY( "CheckCachingStatus",             CPsClientTestSuite::CheckCachingStatusL ),
+	    ENTRY( "CheckVersion",                   CPsClientTestSuite::CheckVersion),
+	    ENTRY( "CheckLanguageSupport",           CPsClientTestSuite::TestIsLanguageSupportedL),
+	    ENTRY( "GetAllContents",                 CPsClientTestSuite::GetAllContentsL),
+	    ENTRY( "TestSortOrder",                  CPsClientTestSuite::TestSortOrderL),
+	    ENTRY( "TestSortOrderErrCaseL",          CPsClientTestSuite::TestSortOrderErrCaseL),	    
+	    ENTRY( "TestSearchingWithInGroup",       CPsClientTestSuite::SearchWithInGroupL),
+	    ENTRY( "ConvertToVpbkLink",              CPsClientTestSuite::ConvertToVpbkLinkL), 
+	    ENTRY( "RemoveObserver",                 CPsClientTestSuite::RemoveObserverL ),
+	    ENTRY( "ShutDown",                       CPsClientTestSuite::ShutDownL ),
+	    ENTRY( "AddMarkedContactsTest",          CPsClientTestSuite::AddMarkedContactsTestL ),
+	    ENTRY( "TestDataOrder",                  CPsClientTestSuite::TestDataOrderL ),
+	    ENTRY( "TestDataOrderForErrL",           CPsClientTestSuite::TestDataOrderForErrL ),
+	    ENTRY( "CancelSearch",                   CPsClientTestSuite::CancelSearchL )
         };
 
     const TInt count = sizeof( KFunctions ) / sizeof( TStifFunctionInfo );

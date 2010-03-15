@@ -111,6 +111,14 @@ class CPbk2PresentationContactFieldCollection : public CBase,
                 TInt aFieldIndex ) const;
 
         /**
+         * get index if field by store field index
+         * 
+         * @param aStoreFieldIndex, a store field's index
+         * @return the index of the field.
+         */
+        IMPORT_C TInt FieldIndexOfStoreField( TInt aStoreFieldIndex ) const;
+        
+        /**
          * Returns the field properties.
          *
          * @return  Field properties.

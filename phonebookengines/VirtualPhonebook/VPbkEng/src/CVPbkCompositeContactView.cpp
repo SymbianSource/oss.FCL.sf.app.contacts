@@ -36,7 +36,7 @@ namespace {
         {
         EPanicLogic_CreateBookmarkLC = 3
         };
-        
+
     void Panic(TPanic aPanic)
         {
         _LIT(KPanicCat, "CVPbkCompositeContactView");
@@ -56,7 +56,7 @@ const TInt KObserverArrayGranularity = 4;
 // --------------------------------------------------------------------------
 //
 template <class NotifyFunc>
-void SendEventToObservers( MVPbkContactViewBase& aView, 
+void SendEventToObservers( MVPbkContactViewBase& aView,
         RPointerArray<MVPbkContactViewObserver>& aObservers,
         NotifyFunc aNotifyFunc )
     {
@@ -73,7 +73,7 @@ void SendEventToObservers( MVPbkContactViewBase& aView,
 // --------------------------------------------------------------------------
 //
 template <class NotifyFunc, class ParamType1, class ParamType2>
-void SendEventToObservers( MVPbkContactViewBase& aView, 
+void SendEventToObservers( MVPbkContactViewBase& aView,
         RPointerArray<MVPbkContactViewObserver>& aObservers,
         NotifyFunc aNotifyFunc, ParamType1 aParam1, const ParamType2& aParam2 )
     {
@@ -111,7 +111,7 @@ CVPbkCompositeContactView::CVPbkCompositeContactView() :
 // --------------------------------------------------------------------------
 //
 CVPbkCompositeContactView::~CVPbkCompositeContactView()
-    {    
+    {
     delete iCompositePolicy;
     delete iSortOrder;
     iSubViews.ResetAndDestroy();
@@ -130,7 +130,7 @@ void CVPbkCompositeContactView::BaseConstructL
     iSortOrder = CVPbkSortOrder::NewL(aSortOrder);
 
     // Always apply internal policy
-    iCompositePolicy = 
+    iCompositePolicy =
             CVPbkInternalCompositeViewPolicy::NewL( *this, iObservers );
 
     // External policy's view event buffering mechanism does not work when
@@ -154,11 +154,11 @@ void CVPbkCompositeContactView::AddSubViewL(MVPbkContactViewBase* aSubView, TInt
     subViewData->iView = aSubView;
     subViewData->iViewId = aViewId;
     }
-        
+
 // --------------------------------------------------------------------------
 // CVPbkCompositeContactView::ActualContactCountL
 // --------------------------------------------------------------------------
-//        
+//
 TInt CVPbkCompositeContactView::ActualContactCountL() const
     {
     const TInt subViewCount = iSubViews.Count();
@@ -173,7 +173,7 @@ TInt CVPbkCompositeContactView::ActualContactCountL() const
                 // CVPbkCompositeContactView is VPbkEng internal
                 // and EVPbkCompositeView type view is always
                 // derived from CVPbkCompositeContactView.
-                contactCount += static_cast<CVPbkCompositeContactView*>( 
+                contactCount += static_cast<CVPbkCompositeContactView*>(
                     iSubViews[i]->iView )->ActualContactCountL();
                 }
             else
@@ -188,18 +188,18 @@ TInt CVPbkCompositeContactView::ActualContactCountL() const
 // --------------------------------------------------------------------------
 // CVPbkCompositeContactView::ApplyInternalCompositePolicyL
 // --------------------------------------------------------------------------
-//        
+//
 void CVPbkCompositeContactView::ApplyInternalCompositePolicyL()
     {
     if ( !iCompositePolicy || !iCompositePolicy->InternalPolicy() )
         {
-        MVPbkCompositeContactViewPolicy* newPolicy = 
+        MVPbkCompositeContactViewPolicy* newPolicy =
                 CVPbkInternalCompositeViewPolicy::NewL( *this, iObservers );
         delete iCompositePolicy;
         iCompositePolicy = newPolicy;
         }
     }
-    
+
 // --------------------------------------------------------------------------
 // CVPbkCompositeContactView::Type
 // Returns view type.
@@ -230,7 +230,7 @@ void CVPbkCompositeContactView::ChangeSortOrderL
             iSubViews[i]->iView->ChangeSortOrderL(aSortOrder);
             }
         }
-    
+
     // Create new sort order and take it in use
     MVPbkFieldTypeList* sortOrder = CVPbkSortOrder::NewL(aSortOrder);
     delete iSortOrder;
@@ -330,9 +330,9 @@ TInt CVPbkCompositeContactView::IndexOfLinkL
         TInt index = KErrNotFound;
         if (iSubViews[i]->iState == CSubViewData::EReady)
             {
-            index = iSubViews[i]->iView->IndexOfLinkL(aContactLink);        
-            }        
-            
+            index = iSubViews[i]->iView->IndexOfLinkL(aContactLink);
+            }
+
         if (index != KErrNotFound)
             {
             // Establish contact mapping for view and contact index
@@ -361,13 +361,13 @@ void CVPbkCompositeContactView::AddObserverL
         User::Leave( err );
         }
 
-    TRAP(err, 
+    TRAP(err,
         {
         VPbkEngUtils::MAsyncCallback* notifyObserver =
             VPbkEngUtils::CreateAsyncCallbackLC(
-                *this, 
-                &CVPbkCompositeContactView::DoAddObserverL, 
-                &CVPbkCompositeContactView::AddObserverError, 
+                *this,
+                &CVPbkCompositeContactView::DoAddObserverL,
+                &CVPbkCompositeContactView::AddObserverError,
                 aObserver);
         iAsyncOperation.CallbackL(notifyObserver);
         CleanupStack::Pop(notifyObserver);
@@ -410,7 +410,7 @@ TBool CVPbkCompositeContactView::MatchContactStore
         }
     return result;
     }
-    
+
 // --------------------------------------------------------------------------
 // CVPbkCompositeContactView::MatchContactStoreDomain
 // Check does any of the subviews match given contact store domain.
@@ -438,9 +438,9 @@ TBool CVPbkCompositeContactView::MatchContactStore
 MVPbkContactBookmark* CVPbkCompositeContactView::CreateBookmarkLC
         (TInt aIndex) const
     {
-    __ASSERT_ALWAYS( aIndex >= 0, 
+    __ASSERT_ALWAYS( aIndex >= 0,
         VPbkError::Panic( VPbkError::EInvalidContactIndex ) );
-    __ASSERT_DEBUG(ContactCountL() > aIndex, 
+    __ASSERT_DEBUG(ContactCountL() > aIndex,
             Panic(EPanicLogic_CreateBookmarkLC));
 
     const TContactMapping& mapping = iContactMapping[aIndex];
@@ -459,7 +459,7 @@ TInt CVPbkCompositeContactView::IndexOfBookmarkL
     TIdentityRelation<TContactMapping> comparisonOperator(
         &CVPbkCompositeContactView::CompareMappings);
     TInt result = KErrNotFound;
-    
+
     // Search the bookmark from all the subviews
     const TInt subViewCount = iSubViews.Count();
     for (TInt i = 0; i < subViewCount; ++i)
@@ -470,7 +470,7 @@ TInt CVPbkCompositeContactView::IndexOfBookmarkL
             {
             index = iSubViews[i]->iView->IndexOfBookmarkL(aContactBookmark);
             }
-            
+
         if (index != KErrNotFound)
             {
             // Establish contact mapping for view and contact index
@@ -551,7 +551,7 @@ void CVPbkCompositeContactView::ContactAddedToView
     {
     TInt compositeIndex = HandleContactAddition(aView, aIndex);
 
-    TRAPD( error, iCompositePolicy->HandleViewEventsL( 
+    TRAPD( error, iCompositePolicy->HandleViewEventsL(
         CVPbkEventArrayItem::EAdded, aView, compositeIndex, aContactLink ) );
     if ( error != KErrNone )
         {
@@ -571,8 +571,8 @@ void CVPbkCompositeContactView::ContactRemovedFromView
     {
     TInt compositeIndex( KErrNotFound );
     compositeIndex = HandleContactRemoval(aView, aIndex);
-    TRAPD( error, iCompositePolicy->HandleViewEventsL( 
-        CVPbkEventArrayItem::ERemoved, aView, compositeIndex, 
+    TRAPD( error, iCompositePolicy->HandleViewEventsL(
+        CVPbkEventArrayItem::ERemoved, aView, compositeIndex,
             aContactLink ) );
     if ( error != KErrNone )
         {
@@ -593,17 +593,59 @@ void CVPbkCompositeContactView::ContactViewError
     }
 
 // --------------------------------------------------------------------------
+// CVPbkCompositeContactView::ContactViewObserverExtension
+// --------------------------------------------------------------------------
+//
+TAny* CVPbkCompositeContactView::ContactViewObserverExtension( TUid aExtensionUid )
+    {
+    if( aExtensionUid == KVPbkContactViewObserverExtension2Uid )
+        {
+        return static_cast<MVPbkContactViewObserverExtension*>( this );
+        }
+    return NULL;
+    }
+
+// --------------------------------------------------------------------------
+// CVPbkCompositeContactView::FilteredContactRemovedFromView
+// --------------------------------------------------------------------------
+//
+void CVPbkCompositeContactView::FilteredContactRemovedFromView(
+		MVPbkContactViewBase& aView )
+    {
+    const TInt count = iObservers.Count();
+
+    for( TInt i = 0; i < count; i++ )
+        {
+        MVPbkContactViewObserver* observer = iObservers[i];
+
+        TAny* extension = observer->ContactViewObserverExtension(
+              KVPbkContactViewObserverExtension2Uid );
+
+        if( extension )
+            {
+            MVPbkContactViewObserverExtension* contactViewExtension =
+                  static_cast<MVPbkContactViewObserverExtension*>( extension );
+
+            if( contactViewExtension )
+                {
+                contactViewExtension->FilteredContactRemovedFromView( aView );
+                }
+            }
+        }
+    }
+
+// --------------------------------------------------------------------------
 // CVPbkCompositeContactView::UpdateFilterL
 // --------------------------------------------------------------------------
-//    
-void CVPbkCompositeContactView::UpdateFilterL( 
+//
+void CVPbkCompositeContactView::UpdateFilterL(
         const MDesCArray& aFindWords,
         const MVPbkContactBookmarkCollection* aAlwaysIncludedContacts )
     {
     const TInt count = iSubViews.Count();
     for( TInt i = 0; i < count; ++i )
         {
-        MVPbkContactViewFiltering* filtering = 
+        MVPbkContactViewFiltering* filtering =
             iSubViews[i]->iView->ViewFiltering();
         // Check if the subview supports filtering.
         if ( filtering )
@@ -618,7 +660,7 @@ void CVPbkCompositeContactView::UpdateFilterL(
             // On the other hand a client can still use this view while it's
             // updating itself so in that point of view the composite is not
             // in unknown state but in update state.
-            iSubViews[i]->iState = CSubViewData::ENotKnown;            
+            iSubViews[i]->iState = CSubViewData::ENotKnown;
             }
         }
     }
@@ -639,7 +681,7 @@ MVPbkContactViewBase* CVPbkCompositeContactView::GetChildViewById( TInt aId)
     const TInt count = iSubViews.Count();
     for (TInt i = 0; i < count; ++i)
         {
-        view=iSubViews[i]->iView; 
+        view=iSubViews[i]->iView;
         if (iSubViews[i]->iViewId == aId)
            {
            return view;
@@ -655,7 +697,7 @@ TInt CVPbkCompositeContactView::GetViewId()
 // --------------------------------------------------------------------------
 // CVPbkCompositeContactView::SendViewReadyEvent
 // --------------------------------------------------------------------------
-//         
+//
 void CVPbkCompositeContactView::SendViewReadyEvent()
     {
     VPBK_DEBUG_PRINT( VPBK_DEBUG_STRING(
@@ -669,7 +711,7 @@ void CVPbkCompositeContactView::SendViewReadyEvent()
 // --------------------------------------------------------------------------
 // CVPbkCompositeContactView::SendViewUnavailableEvent
 // --------------------------------------------------------------------------
-//        
+//
 void CVPbkCompositeContactView::SendViewUnavailableEvent()
     {
     VPBK_DEBUG_PRINT( VPBK_DEBUG_STRING(
@@ -684,13 +726,13 @@ void CVPbkCompositeContactView::SendViewUnavailableEvent()
 // CVPbkCompositeContactView::SendViewErrorEvent
 // --------------------------------------------------------------------------
 //
-void CVPbkCompositeContactView::SendViewErrorEvent( TInt aError, 
+void CVPbkCompositeContactView::SendViewErrorEvent( TInt aError,
         TBool aErrorNotified )
     {
-    SendEventToObservers(*this, iObservers, 
+    SendEventToObservers(*this, iObservers,
         &MVPbkContactViewObserver::ContactViewError, aError, aErrorNotified);
     }
-    
+
 // --------------------------------------------------------------------------
 // CVPbkCompositeContactView::CompareMappings
 // --------------------------------------------------------------------------
@@ -717,8 +759,8 @@ TBool CVPbkCompositeContactView::IsCompositeReady() const
 // --------------------------------------------------------------------------
 // CVPbkCompositeContactView::CompositePolicy
 // --------------------------------------------------------------------------
-//        
-MVPbkCompositeContactViewPolicy& 
+//
+MVPbkCompositeContactViewPolicy&
         CVPbkCompositeContactView::CompositePolicy() const
     {
     return *iCompositePolicy;
@@ -788,7 +830,7 @@ TBool CVPbkCompositeContactView::AnySubViewReady() const
 // --------------------------------------------------------------------------
 // CVPbkCompositeContactView::ResetContactMapping
 // --------------------------------------------------------------------------
-//    
+//
 void CVPbkCompositeContactView::ResetContactMapping()
     {
     iContactMapping.Reset();
@@ -798,7 +840,7 @@ void CVPbkCompositeContactView::ResetContactMapping()
 // CVPbkCompositeContactView::RemoveContactMappingsFromView
 // --------------------------------------------------------------------------
 //
-void CVPbkCompositeContactView::RemoveContactMappingsFromView( 
+void CVPbkCompositeContactView::RemoveContactMappingsFromView(
         MVPbkContactViewBase& aView )
     {
     TInt subviewIndex = FindSubViewIndex( aView );
@@ -819,12 +861,12 @@ void CVPbkCompositeContactView::RemoveContactMappingsFromView(
 // CVPbkCompositeContactView::HandleContactViewReadyL
 // --------------------------------------------------------------------------
 //
-void CVPbkCompositeContactView::HandleContactViewReadyL( 
+void CVPbkCompositeContactView::HandleContactViewReadyL(
         MVPbkContactViewBase& aView )
     {
     VPBK_DEBUG_PRINT( VPBK_DEBUG_STRING(
         "CVPbkCompositeContactView::HandleContactViewReadyL(0x%x)"), this );
-    
+
     // Find matching subview and set its state to ready
     TInt subViewIndex = FindSubViewIndex(aView);
     if (subViewIndex != KErrNotFound)
@@ -834,7 +876,7 @@ void CVPbkCompositeContactView::HandleContactViewReadyL(
 
     // Check that composite's sort order up to date with subviews.
     UpdateSortOrderL();
-    
+
     // If composite is ready, build view mapping and notify observers
     if ( IsCompositeReady() )
         {
@@ -842,19 +884,19 @@ void CVPbkCompositeContactView::HandleContactViewReadyL(
         DoBuildContactMappingL();
         VPBK_PROFILE_END(VPbkProfile::ECompositeContactViewMapping);
         SendViewReadyEvent();
-        }    
+        }
     }
 
 // --------------------------------------------------------------------------
 // CVPbkCompositeContactView::HandleContactViewUnavailableL
 // --------------------------------------------------------------------------
 //
-void CVPbkCompositeContactView::HandleContactViewUnavailableL( 
+void CVPbkCompositeContactView::HandleContactViewUnavailableL(
         MVPbkContactViewBase& aView )
     {
     VPBK_DEBUG_PRINT( VPBK_DEBUG_STRING(
         "CVPbkCompositeContactView::ContactViewUnavailable(0x%x)"), this );
-    
+
     // Find matching subview and set its state
     TInt subViewIndex = FindSubViewIndex(aView);
     if (subViewIndex != KErrNotFound)
@@ -881,7 +923,7 @@ void CVPbkCompositeContactView::HandleContactViewUnavailableL(
         else
             {
             // Composite is still under construction.
-            
+
             // Dont't send event here because the state of the composite is
             // not yet known and sending event can cause problems for client
             // e.g unwanted changes in the UI state.
@@ -889,7 +931,7 @@ void CVPbkCompositeContactView::HandleContactViewUnavailableL(
             }
         }
     }
-    
+
 // --------------------------------------------------------------------------
 // CVPbkCompositeContactView::CVPbkCompositeContactView
 // --------------------------------------------------------------------------
@@ -898,7 +940,7 @@ TInt CVPbkCompositeContactView::HandleContactRemoval
         ( MVPbkContactViewBase& aView, TInt aIndex )
     {
     TInt index = KErrNotFound;
-    
+
     // Find correct subview
     TInt subViewIndex = FindSubViewIndex( aView );
     if ( subViewIndex != KErrNotFound )
@@ -911,9 +953,9 @@ TInt CVPbkCompositeContactView::HandleContactRemoval
         mapping.iContactIndex = aIndex;
         // Find the composite index by comparing the two mappings
         index = iContactMapping.Find( mapping, comparisonOperator );
-        
+
         if ( index > KErrNotFound )
-            {            
+            {
             // Loop through the rest of the contacts of the subview
             // and modify their global contact mapping information
             for (TInt i = index; i < iContactMapping.Count(); ++i)
@@ -936,7 +978,7 @@ TInt CVPbkCompositeContactView::HandleContactRemoval
         }
     return index;
     }
-        
+
 // --------------------------------------------------------------------------
 // CVPbkCompositeContactView::HandleContactAddition
 // --------------------------------------------------------------------------
@@ -945,7 +987,7 @@ TInt CVPbkCompositeContactView::HandleContactAddition
         (MVPbkContactViewBase& aView, TInt aIndex)
     {
     TInt index = KErrNotFound;
-    
+
     // Find correct subview
     TInt subViewIndex = FindSubViewIndex(aView);
     if (subViewIndex != KErrNotFound)
@@ -956,7 +998,7 @@ TInt CVPbkCompositeContactView::HandleContactAddition
             {
             index = err;
             }
-        else 
+        else
         	{
         	// We have to fix the indexes of all the succeeding
             // contacts in the view where the contact addition took place
@@ -971,7 +1013,7 @@ TInt CVPbkCompositeContactView::HandleContactAddition
         }
     return index;
     }
-    
+
 // --------------------------------------------------------------------------
 // CVPbkCompositeContactView::DoAddObserverL
 // Notifies composite view readiness to observer.
@@ -986,9 +1028,9 @@ void CVPbkCompositeContactView::DoAddObserverL
     if ( iObservers.FindInAddressOrder( &aObserver ) != KErrNotFound )
         {
         if( IsCompositeReady() )
-            {            
-            // If this view is ready and there was no error tell it to the observer            
-            aObserver.ContactViewReady(*this);            
+            {
+            // If this view is ready and there was no error tell it to the observer
+            aObserver.ContactViewReady(*this);
             }
         else if ( AllSubViewsKnown() )
             {
@@ -1023,7 +1065,7 @@ void CVPbkCompositeContactView::AddObserverError
 void CVPbkCompositeContactView::UpdateSortOrderL()
     {
     const MVPbkFieldTypeList* sortOrder = NULL;
-    
+
     // Inspect the sort order of subviews. If all ready subviews have
     // same sort order then update composite's sort order.
     // This is done because subviews can be shared views whose sort order
@@ -1034,18 +1076,18 @@ void CVPbkCompositeContactView::UpdateSortOrderL()
         {
         if ( iSubViews[i]->iState == CSubViewData::EReady )
             {
-            const MVPbkFieldTypeList& curViewsOrder = 
+            const MVPbkFieldTypeList& curViewsOrder =
                     iSubViews[i]->iView->SortOrder();
             if ( sortOrder )
                 {
-                subViewsHaveSameOrder = 
+                subViewsHaveSameOrder =
                     VPbkFieldTypeList::IsSame( *sortOrder, curViewsOrder );
                 }
             sortOrder = &curViewsOrder;
             }
         }
-        
-    if ( subViewsHaveSameOrder && sortOrder && 
+
+    if ( subViewsHaveSameOrder && sortOrder &&
          !VPbkFieldTypeList::IsSame( *sortOrder, *iSortOrder ) )
         {
         CVPbkSortOrder* newOrder = CVPbkSortOrder::NewL( *sortOrder );
@@ -1053,23 +1095,23 @@ void CVPbkCompositeContactView::UpdateSortOrderL()
         iSortOrder = newOrder;
         }
     }
-    
+
 void CVPbkCompositeContactView::SetViewId(TInt aViewId)
     {
     iViewId = aViewId;
-    }   
+    }
 // --------------------------------------------------------------------------
 // CVPbkExternalCompositeViewPolicy::CVPbkExternalCompositeViewPolicy
 // --------------------------------------------------------------------------
 //
-CVPbkExternalCompositeViewPolicy::CVPbkExternalCompositeViewPolicy( 
+CVPbkExternalCompositeViewPolicy::CVPbkExternalCompositeViewPolicy(
         CVPbkCompositeContactView& aCompositeView,
         RPointerArray<MVPbkContactViewObserver>& aObservers )
         :   iCompositeView( aCompositeView ),
             iObservers( aObservers )
     {
     }
-    
+
 // --------------------------------------------------------------------------
 // CVPbkExternalCompositeViewPolicy::NewL
 // --------------------------------------------------------------------------
@@ -1078,8 +1120,8 @@ CVPbkExternalCompositeViewPolicy* CVPbkExternalCompositeViewPolicy::NewL(
         CVPbkCompositeContactView& aCompositeView,
         RPointerArray<MVPbkContactViewObserver>& aObservers )
     {
-    CVPbkExternalCompositeViewPolicy* self = 
-        new ( ELeave ) CVPbkExternalCompositeViewPolicy( aCompositeView, 
+    CVPbkExternalCompositeViewPolicy* self =
+        new ( ELeave ) CVPbkExternalCompositeViewPolicy( aCompositeView,
             aObservers );
     return self;
     }
@@ -1087,7 +1129,7 @@ CVPbkExternalCompositeViewPolicy* CVPbkExternalCompositeViewPolicy::NewL(
 // --------------------------------------------------------------------------
 // CVPbkExternalCompositeViewPolicy::~CVPbkExternalCompositeViewPolicy
 // --------------------------------------------------------------------------
-//    
+//
 CVPbkExternalCompositeViewPolicy::~CVPbkExternalCompositeViewPolicy()
     {
     iEventArray.ResetAndDestroy();
@@ -1096,20 +1138,20 @@ CVPbkExternalCompositeViewPolicy::~CVPbkExternalCompositeViewPolicy()
 // --------------------------------------------------------------------------
 // CVPbkExternalCompositeViewPolicy::HandleViewEventsL
 // --------------------------------------------------------------------------
-//    
-void CVPbkExternalCompositeViewPolicy::HandleViewEventsL( 
+//
+void CVPbkExternalCompositeViewPolicy::HandleViewEventsL(
         CVPbkEventArrayItem::TViewEventType aEvent,
         MVPbkContactViewBase& /*aSubview*/,
-        TInt aIndex, const 
+        TInt aIndex, const
         MVPbkContactLink& aContactLink )
-    {        
+    {
     // Append all view events to proper event array.
-    CVPbkEventArrayItem* item = 
+    CVPbkEventArrayItem* item =
         CVPbkEventArrayItem::NewLC( aIndex, aContactLink, aEvent );
-            
+
     iEventArray.AppendL( item );
     CleanupStack::Pop(); // item
-    
+
     // Check if the composite is up to date. Note that if the underlying
     // native store view resides in a separate process or thread,
     // this check may "accidentally" pass whilst the native view is still
@@ -1121,30 +1163,30 @@ void CVPbkExternalCompositeViewPolicy::HandleViewEventsL(
     // The count of zero might be in severe contradiction with the
     // view events the client just received.
     // If the native view resides in the  same process, there are no risks.
-    if (iCompositeView.CompositeContactCountL() == 
+    if (iCompositeView.CompositeContactCountL() ==
             iCompositeView.ActualContactCountL() )
         {
         // Composite mapping is valid according to contact counts. Flush
         // the event cache.
         TInt eventCount( iEventArray.Count() );
-                          
+
         for( TInt i = 0; i < eventCount; ++i )
             {
             if ( iEventArray[ i ]->Event() == CVPbkEventArrayItem::ERemoved )
                 {
                 SendEventToObservers( iCompositeView, iObservers,
                     &MVPbkContactViewObserver::ContactRemovedFromView,
-                    iEventArray[ i ]->Index(), 
-                    *iEventArray[ i ]->Link() ); 
+                    iEventArray[ i ]->Index(),
+                    *iEventArray[ i ]->Link() );
                 }
             else
                 {
                 SendEventToObservers( iCompositeView, iObservers,
                     &MVPbkContactViewObserver::ContactAddedToView,
-                    iEventArray[ i ]->Index(), 
-                    *iEventArray[ i ]->Link() );                                                
-                }            
-            }                   
+                    iEventArray[ i ]->Index(),
+                    *iEventArray[ i ]->Link() );
+                }
+            }
         iEventArray.ResetAndDestroy();
         }
     }
@@ -1152,7 +1194,7 @@ void CVPbkExternalCompositeViewPolicy::HandleViewEventsL(
 // --------------------------------------------------------------------------
 // CVPbkExternalCompositeViewPolicy::Reset
 // --------------------------------------------------------------------------
-//    
+//
 void CVPbkExternalCompositeViewPolicy::Reset()
     {
     iEventArray.ResetAndDestroy();
@@ -1161,11 +1203,11 @@ void CVPbkExternalCompositeViewPolicy::Reset()
 // --------------------------------------------------------------------------
 // CVPbkExternalCompositeViewPolicy::ContactCountL
 // --------------------------------------------------------------------------
-//    
+//
 TInt CVPbkExternalCompositeViewPolicy::ContactCountL() const
     {
     TInt compositeCount = iCompositeView.CompositeContactCountL();
-    
+
     if ( compositeCount != iCompositeView.ActualContactCountL() )
         {
         // If composite count is different as the contact count in subviews
@@ -1181,7 +1223,7 @@ TInt CVPbkExternalCompositeViewPolicy::ContactCountL() const
 // --------------------------------------------------------------------------
 // CVPbkExternalCompositeViewPolicy::InternalPolicy
 // --------------------------------------------------------------------------
-//    
+//
 TBool CVPbkExternalCompositeViewPolicy::InternalPolicy() const
     {
     return EFalse;
@@ -1191,14 +1233,14 @@ TBool CVPbkExternalCompositeViewPolicy::InternalPolicy() const
 // CVPbkInternalCompositeViewPolicy::CVPbkInternalCompositeViewPolicy
 // --------------------------------------------------------------------------
 //
-CVPbkInternalCompositeViewPolicy::CVPbkInternalCompositeViewPolicy( 
+CVPbkInternalCompositeViewPolicy::CVPbkInternalCompositeViewPolicy(
         CVPbkCompositeContactView& aCompositeView,
         RPointerArray<MVPbkContactViewObserver>& aObservers )
         :   iCompositeView( aCompositeView ),
             iObservers( aObservers )
     {
     }
-    
+
 // --------------------------------------------------------------------------
 // CVPbkInternalCompositeViewPolicy::NewL
 // --------------------------------------------------------------------------
@@ -1207,8 +1249,8 @@ CVPbkInternalCompositeViewPolicy* CVPbkInternalCompositeViewPolicy::NewL(
         CVPbkCompositeContactView& aCompositeView,
         RPointerArray<MVPbkContactViewObserver>& aObservers )
     {
-    CVPbkInternalCompositeViewPolicy* self = 
-        new ( ELeave ) CVPbkInternalCompositeViewPolicy( aCompositeView, 
+    CVPbkInternalCompositeViewPolicy* self =
+        new ( ELeave ) CVPbkInternalCompositeViewPolicy( aCompositeView,
             aObservers );
     return self;
     }
@@ -1217,41 +1259,41 @@ CVPbkInternalCompositeViewPolicy* CVPbkInternalCompositeViewPolicy::NewL(
 // CVPbkInternalCompositeViewPolicy::HandleViewEventsL
 // --------------------------------------------------------------------------
 //
-void CVPbkInternalCompositeViewPolicy::HandleViewEventsL( 
+void CVPbkInternalCompositeViewPolicy::HandleViewEventsL(
         CVPbkEventArrayItem::TViewEventType aEvent,
         MVPbkContactViewBase& /*aSubview*/,
-        TInt aIndex, const 
+        TInt aIndex, const
         MVPbkContactLink& aContactLink )
     {
     if ( aEvent == CVPbkEventArrayItem::ERemoved )
         {
         SendEventToObservers( iCompositeView, iObservers,
             &MVPbkContactViewObserver::ContactRemovedFromView,
-            aIndex, 
-            aContactLink ); 
+            aIndex,
+            aContactLink );
         }
     else
         {
         SendEventToObservers( iCompositeView, iObservers,
             &MVPbkContactViewObserver::ContactAddedToView,
-            aIndex, 
-            aContactLink ); 
-        }            
+            aIndex,
+            aContactLink );
+        }
     }
 
 // --------------------------------------------------------------------------
 // CVPbkInternalCompositeViewPolicy::Reset
 // --------------------------------------------------------------------------
-//    
+//
 void CVPbkInternalCompositeViewPolicy::Reset()
     {
     // No cached data to reset
     }
-    
+
 // --------------------------------------------------------------------------
 // CVPbkInternalCompositeViewPolicy::ContactCountL
 // --------------------------------------------------------------------------
-//    
+//
 TInt CVPbkInternalCompositeViewPolicy::ContactCountL() const
     {
     return iCompositeView.CompositeContactCountL();
@@ -1260,10 +1302,10 @@ TInt CVPbkInternalCompositeViewPolicy::ContactCountL() const
 // --------------------------------------------------------------------------
 // CVPbkInternalCompositeViewPolicy::InternalPolicy
 // --------------------------------------------------------------------------
-//    
+//
 TBool CVPbkInternalCompositeViewPolicy::InternalPolicy() const
     {
     return ETrue;
     }
-    
+
 // End of File

@@ -16,7 +16,7 @@
 */
 
 
-#include <pbk2icons.hrh>
+#include <Pbk2Icons.hrh>
 
 // --------------------------------------------------------------------------
 // Navi pane label for single entry fetch
@@ -50,7 +50,7 @@ RESOURCE PBK2_FETCH_DIALOG r_pbk2_single_entry_fetch_dlg
 RESOURCE PBK2_FETCH_DIALOG r_pbk2_multiple_entry_fetch_dlg
     {
     dialog = r_pbk2_multiple_entry_fetch_control_dlg;
-    cba = r_pbk2_softkeys_ok_back_ok;
+    cba = r_pbk2_softkeys_ok_back_mark;
     emptyCba = r_pbk2_softkeys_empty_back_empty;
     }
 
@@ -61,7 +61,7 @@ RESOURCE PBK2_FETCH_DIALOG r_pbk2_multiple_entry_fetch_dlg
 RESOURCE PBK2_FETCH_DIALOG r_pbk2_multiple_entry_fetch_no_groups_dlg
     {
     dialog = r_pbk2_multiple_entry_fetch_no_groups_control_dlg;
-    cba = r_pbk2_softkeys_ok_back_ok;
+    cba = r_pbk2_softkeys_ok_back_mark;
     emptyCba = r_pbk2_softkeys_empty_back_empty;
     }
 
@@ -148,20 +148,21 @@ RESOURCE ARRAY r_pbk2_multiple_entry_fetch_dlg_pages
             {
             id = ECtrlFetchNamesList;
             bmpfile = phonebook2_mbm_file_location;
-            bmpid = qgn_prop_nrtyp_empty; // Tab skinning handles icons
-            bmpmask = qgn_prop_nrtyp_empty_mask; // Tab skinning handles icons
+            bmpid = qgn_prop_pb_all_tab2;
+            bmpmask = qgn_prop_pb_all_tab2_mask;
             lines = r_pbk2_multiple_entry_fetch_contactview;
             },
         PAGE
             {
             id = ECtrlFetchGroupsList;
             bmpfile = phonebook2_mbm_file_location;
-            bmpid = qgn_prop_nrtyp_empty; // Tab skinning handles icons
-            bmpmask = qgn_prop_nrtyp_empty_mask; // Tab skinning handles icons
+            bmpid = qgn_prop_group_tab2;
+            bmpmask = qgn_prop_group_tab2_mask;
             lines = r_pbk2_multiple_entry_fetch_groupsview;
             }
         };
     }
+
 // --------------------------------------------------------------------------
 // Multiple entry fetch without groups dialog pages
 // --------------------------------------------------------------------------
@@ -201,7 +202,7 @@ RESOURCE ARRAY r_pbk2_multiple_entry_fetch_contactview
                         KPbk2ContactViewListControlFindBox;
                 listbox = LISTBOX
                     {
-                    flags = EAknListBoxMultiselectionList |
+                    flags = EAknListBoxStylusMultiselectionList |
                             EAknListBoxLoopScrolling;
                     };
                 iconArray = r_pbk2_checkbox_icons;
@@ -239,7 +240,7 @@ RESOURCE ARRAY r_pbk2_multiple_entry_fetch_groupsview
                 flags = KPbk2ContactViewListControlUpdateContextPane;
                 listbox = LISTBOX
                     {
-                    flags = EAknListBoxMultiselectionList |
+                    flags = EAknListBoxStylusMultiselectionList |
                             EAknListBoxLoopScrolling;
                     };
                 iconArray = r_pbk2_checkbox_icons;

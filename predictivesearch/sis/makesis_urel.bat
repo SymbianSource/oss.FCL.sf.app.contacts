@@ -30,7 +30,7 @@ set path=%tmp_path%
 @echo on
 
 makesis cenrep.pkg
-signsis cenrep.sis  cenrep.sisx rd.cer rd-key.pem
+signsis cenrep.sis cenrep.sisx rd.cer rd-key.pem
 
 makesis pcs_urel.pkg
-signsis pcs_urel.sis  pcs.sisx rd.cer rd-key.pem
+signsis pcs_urel.sis pcs_urel.sisx rd.cer rd-key.pem

@@ -39,6 +39,7 @@ class CCreateMyCard;
 class CPbk2ApplicationServices;
 class CCCAppMyCardPlugin;	
 class MPbk2DialogEliminator;
+class CTimerCallBack;
 
 /**
  * MyCard Observer class
@@ -51,8 +52,12 @@ public:
      */
     enum TEvent
         {
+        /// Undefined event
         EEventNull = 0,
-        EEventContactLoaded
+        /// Contact loaded for the first time
+        EEventContactLoaded,
+        /// Contact has been changed
+        EEventContactChanged
         };
     
     /**
@@ -152,6 +157,26 @@ public: // New methods
      */
     void RemoveObserver( MMyCardObserver* aObserver );
 
+    /**
+     * Set contact link. If link is provided it will be used instead of resolving
+     * the own contact link from contact store. This should be called before call to
+     * FetchMyCardL().
+     * 
+     * @param aLink contact link 
+     */
+    void SetLinkL( const MVPbkContactLink& aLink );
+    
+    /**
+     * Start fetching the data of own contact and observe it's changing.
+     */
+    void FetchMyCardL();
+    
+    /**
+     * Force MyCard to open editor and create new own contact once the 
+     * contact store is opened. This should be called before calling FetchMyCardL.
+     */
+    void ForceCreateMyCard();
+    
 private: // from MVPbkContactStoreObserver
      void StoreReady(MVPbkContactStore& aContactStore);
      void StoreUnavailable(MVPbkContactStore& aContactStore, 
@@ -230,6 +255,11 @@ private:  // new functions
      */
     static TInt ExitDlgL( TAny* aPtr );
     
+    /**
+     * Async callback function for opening stores.
+     */
+    static TInt OpenStoresL( TAny* aPtr );
+
     /*
      * Closes the CCA
      */
@@ -270,6 +300,14 @@ private: // data
 	TInt iFocusedFieldIndex;	
 	/// Now own. Editor dialog eliminator
 	MPbk2DialogEliminator* iEditorEliminator;
+	/// Current event
+	MMyCardObserver::TEvent iEvent;
+	/// Own. Store opener callback
+	CTimerCallBack* iStoreCallBack;
+	/// Force editor flag
+	TBool iForceCreateMyCard;
+	// Flag for editor state
+	TBool iDialogIsRunning;
 	};
 
 #endif // CCAPPMYCARD_H

@@ -355,6 +355,12 @@ CPbk2ThumbnailManager::CPbk2ThumbnailManager(
 //
 CPbk2ThumbnailManager::~CPbk2ThumbnailManager()
 	{
+    if( iView )
+        {
+        iView->RemoveObserver(*this );
+        iView->RemoveStackObserver( *this ); 
+        }    
+    
 	delete iInProgressItemToBeRemoved;
 	delete iThumbOperation;
     delete iManager;
@@ -590,6 +596,12 @@ const TSize& CPbk2ThumbnailManager::GetThumbnailIconSize()
 //
 void CPbk2ThumbnailManager::SetContactViewL( MPbk2FilteredViewStack* aView )
     {
+    if( iView )
+        {
+        iView->RemoveObserver(*this );
+        iView->RemoveStackObserver( *this ); 
+        }    
+    
     iView = aView;
     if( iView )
         {
@@ -859,7 +871,7 @@ void CPbk2ThumbnailManager::DoLoadThumbnail(
 	// contact has no image or error occured, move to next contact
 	if( err )
 		{
-		if ( iLoadingQueue.Count() )
+		if ( !iInProgressItemToBeRemoved && iLoadingQueue.Count() )
 		    {
             if( iObserver )
                 {

@@ -14,6 +14,5 @@ rem
 rem Description:
 rem
 
-
 makesis pcs_udeb.pkg
-signsis pcs_udeb.sis  pcs.sisx rd.cer rd-key.pem
+signsis pcs_udeb.sis pcs_udeb.sisx rd.cer rd-key.pem

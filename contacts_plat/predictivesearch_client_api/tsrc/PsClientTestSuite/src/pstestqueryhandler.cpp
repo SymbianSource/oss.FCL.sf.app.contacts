@@ -208,20 +208,6 @@ void CPsTestQueryHandler :: FormTestSearchQueryL(const TDesC& aBuf, TKeyboardMod
 	 	{
 	 		item->SetMode(aMode);	 		
 	 	}
-	 	/*
-	 	else 
-	 	{
-	 		_LIT(KCode,"i");
- 			if( (iKeyboardModeString.Mid(i,1)).Compare(KCode) == 0)
- 			{
- 				item->SetMode(EItut);
- 			}
- 			else 
- 			{
- 				item->SetMode(EQwerty);
- 			}
-	 	}
-	 	*/
 		iPsQuery->AppendL(*item);			
 	}
 	

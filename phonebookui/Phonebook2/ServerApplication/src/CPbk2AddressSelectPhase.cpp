@@ -94,6 +94,10 @@ CPbk2AddressSelectPhase::~CPbk2AddressSelectPhase()
     delete iContactLinks;
     delete iResults;
     delete iDealer;
+    if ( iThisPtrDestroyed )
+        {
+        *iThisPtrDestroyed = ETrue;
+        }
     }
 
 // --------------------------------------------------------------------------
@@ -408,10 +412,21 @@ void CPbk2AddressSelectPhase::DoSelectAddressesL()
         ( &iAddressSelectEliminator );
 
     appUi.StoreManager().RegisterStoreEventsL( *this );
+    
+    TBool amIDestroyed( EFalse );
+    iThisPtrDestroyed = &amIDestroyed;    
+    
     MVPbkStoreContactField* resultField = addressSelect->ExecuteLD();
     appUi.StoreManager().DeregisterStoreEvents( *this );
     CleanupStack::PopAndDestroy(); // reader
 
+    if ( amIDestroyed )
+        {        
+        return;
+        }
+    
+    //Reset
+    iThisPtrDestroyed = NULL;
     if ( resultField )
         {
         CleanupDeletePushL(resultField);

@@ -160,37 +160,6 @@ RESOURCE PBK2_CONTACT_CONTROL r_pbk2_groups_list_control
         };
 	defaultIconId = PHONEBOOK2_ICON_ID {};
     }       
-
-// --------------------------------------------------------------------------
-// Group List View's stylus popup menu
-// --------------------------------------------------------------------------
-//
-RESOURCE STYLUS_POPUP_MENU r_phonebook2_groupslist_stylus_menu
-    {
-    items =
-        {
-        STYLUS_POPUP_MENU_ITEM
-            {
-            txt = qtn_phob_longtap_message;
-            command = EPbk2CmdWriteGroup;
-            },
-        STYLUS_POPUP_MENU_ITEM
-            {
-            txt = qtn_phob_longtap_delete;
-            command = EPbk2CmdRemoveGroup;
-            },
-        STYLUS_POPUP_MENU_ITEM
-            {
-            txt = qtn_phob_longtap_rename;
-            command = EPbk2CmdRenameGroup;
-            },
-        STYLUS_POPUP_MENU_ITEM
-            {
-            txt = qtn_phob_longtap_tone;
-            command = EPbk2CmdSetToneToGroup;
-            }
-        };
-    }
     
 // --------------------------------------------------------------------------
 // Group display order definition

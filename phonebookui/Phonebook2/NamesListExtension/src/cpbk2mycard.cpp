@@ -110,8 +110,6 @@ CPbk2MyCard::CPbk2MyCard( MVPbkContactStore& aPhoneStore )
 //
 CPbk2MyCard::~CPbk2MyCard()
     {
-	
-	
 	delete iThumbBitmap;
 	delete iMyCardStoreContact;
 	delete iImageManager;
@@ -123,7 +121,6 @@ CPbk2MyCard::~CPbk2MyCard()
         {
         iPhoneStore->Close(*this);
         }
-    
     }
 
 // --------------------------------------------------------------------------
@@ -218,6 +215,15 @@ MVPbkStoreContact* CPbk2MyCard::MyCardStoreContact() const
     return iMyCardStoreContact;
     }
 
+// --------------------------------------------------------------------------
+// CPbk2MyCard::ContactManager
+// --------------------------------------------------------------------------
+//
+CVPbkContactManager& CPbk2MyCard::ContactManager()
+    {
+    return *iContactManager;
+    }
+	
 // --------------------------------------------------------------------------
 // CPbk2MyCard::VPbkSingleContactLinkOperationComplete
 // --------------------------------------------------------------------------

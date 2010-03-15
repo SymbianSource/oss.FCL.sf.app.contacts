@@ -75,7 +75,8 @@ public:
         EContactNone = 0,
         EContactId,         //Depricated; not supported anymore.
         EContactLink,
-        EContactMSISDN      //Depricated; not supported anymore.
+        EContactMSISDN,     //Depricated; not supported anymore.
+        EContactDataModel   //Internal flag for Phonebook2
         };
 
     /**

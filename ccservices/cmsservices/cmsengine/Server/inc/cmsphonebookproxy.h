@@ -186,7 +186,7 @@ NONSHARABLE_CLASS( CCmsPhonebookProxy ) : public CBase,
         /**
         * Set default attribute for voice call
         */
-        void SetVoiceCallDefaultL();
+        void SetVoiceCallDefaultL( MVPbkStoreContact* aContact );
 
     public:
         
@@ -324,8 +324,6 @@ NONSHARABLE_CLASS( CCmsPhonebookProxy ) : public CBase,
         CDesCArrayFlat                          ixSPStoresArray;
         /// Default setting handle
         CmsSetVoiceCallDefault*                 iSetDefault;
-        /// Store contact
-        MVPbkStoreContact*                      iContact;
     };
 
 #endif  //__CMSPHONEBOOKPROXY__

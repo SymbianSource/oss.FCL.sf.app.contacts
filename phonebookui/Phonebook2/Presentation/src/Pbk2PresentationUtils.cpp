@@ -238,32 +238,38 @@ EXPORT_C void Pbk2PresentationImageUtils::CropImageL(
         const TSize& aTargetSize  )
     {
     const TSize sourceSize( aBitmap.SizeInPixels() );
-    // crop the image only if the width is bigger than height 
+    // crop the image only if the width is bigger than height
+    TBool landscape( ETrue );
     if( sourceSize.iHeight >= sourceSize.iWidth )
         {
-        // no cropping
-        return;
+        // portrait image
+        landscape = EFalse;
         }
     // take the shorter side
-    const TInt sideSize( sourceSize.iHeight );   
-    TInt sideSizeW( sourceSize.iHeight );   
-    if( ELandscapeOptimizedCropping &&
-        sideSizeW < aTargetSize.iWidth )
+    const TInt sideSizeH( 
+            landscape ? sourceSize.iHeight : sourceSize.iWidth );
+    const TInt targetSizeW( 
+            landscape ? aTargetSize.iWidth : aTargetSize.iHeight );
+    TInt sideSizeW( sideSizeH );   
+    if( EOptimizedCropping == aCroppingMode &&
+        sideSizeW < targetSizeW )
         {
-        sideSizeW = aTargetSize.iWidth;
-        if( sideSizeW >= sourceSize.iWidth )
+        sideSizeW = targetSizeW;
+        if( sideSizeW >= 
+                ( landscape ? sourceSize.iWidth : sourceSize.iHeight ) )
             {
             return; // no cropping
             }
         }
     
     // set target size
-    const TSize targetSize( sideSizeW, sideSize );
+    const TSize targetSize( landscape? 
+            TSize(sideSizeW, sideSizeH ): TSize( sideSizeH, sideSizeW ) );
 
     // crop from both sides
-    const TRect targetRect( TPoint( ( sourceSize.iWidth - targetSize.iWidth ) / 2,
-                              ( sourceSize.iHeight - targetSize.iHeight ) / 2 ),
-                              targetSize );
+    const TPoint targetPoint( ( sourceSize.iWidth - targetSize.iWidth ) / 2,
+                              ( sourceSize.iHeight - targetSize.iHeight ) / 2 );
+    const TRect targetRect( targetPoint, targetSize );
     
     // create new bitmap
     CFbsBitmap* target = new( ELeave ) CFbsBitmap;
@@ -280,7 +286,8 @@ EXPORT_C void Pbk2PresentationImageUtils::CropImageL(
     TInt targetY = 0;
     for (; startPoint.iY < targetRect.iBr.iY; ++startPoint.iY )
         {
-        aBitmap.GetScanLine( scanLinePtr, startPoint, targetSize.iWidth, displayMode );
+        aBitmap.GetScanLine( 
+                scanLinePtr, startPoint, targetSize.iWidth, displayMode );
         target->SetScanLine( scanLinePtr, targetY++ );
         }
 
