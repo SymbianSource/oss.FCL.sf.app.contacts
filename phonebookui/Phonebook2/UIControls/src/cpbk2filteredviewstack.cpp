@@ -1146,7 +1146,7 @@ void CPbk2FilteredViewStack::ContactViewUnavailable(
         {
         // Always forward top view events to clients
         SendEventToObservers( *this, iViewObservers,
-            MVPbkContactViewObserver::ContactViewUnavailable );
+            &MVPbkContactViewObserver::ContactViewUnavailable );
         }
     }
 
@@ -1167,7 +1167,7 @@ void CPbk2FilteredViewStack::ContactAddedToView
     if ( &aView == iBaseViewElement->View() )
         {
         SendEventToObservers( *this, iStackObservers,
-            MPbk2FilteredViewStackObserver::ContactAddedToBaseView, aIndex,
+            &MPbk2FilteredViewStackObserver::ContactAddedToBaseView, aIndex,
             aContactLink );
         }
 
@@ -1175,7 +1175,7 @@ void CPbk2FilteredViewStack::ContactAddedToView
         {
         // Always forward only top view events to clients
         SendEventToObservers( *this, iViewObservers,
-            MVPbkContactViewObserver::ContactAddedToView, aIndex,
+            &MVPbkContactViewObserver::ContactAddedToView, aIndex,
             aContactLink );
         }
     }
@@ -1196,7 +1196,7 @@ void CPbk2FilteredViewStack::ContactRemovedFromView
         {
         // Always forward top view events to clients
         SendEventToObservers( *this, iViewObservers,
-            MVPbkContactViewObserver::ContactRemovedFromView, aIndex,
+            &MVPbkContactViewObserver::ContactRemovedFromView, aIndex,
             aContactLink );
         }
     }
@@ -1237,7 +1237,7 @@ void CPbk2FilteredViewStack::ContactViewError
     // Always forward view erros to clients. The view stack is not in valid
     // state and client must reset the stack
     SendEventToObservers( *this, iViewObservers,
-        MVPbkContactViewObserver::ContactViewError, aError,
+        &MVPbkContactViewObserver::ContactViewError, aError,
         aErrorNotified );
     }
 
@@ -1369,7 +1369,7 @@ void CPbk2FilteredViewStack::DoHandleContactViewReadyL(
         ContactViewReady"));
 
         SendEventToObservers( *this, iViewObservers,
-            MVPbkContactViewObserver::ContactViewReady );
+            &MVPbkContactViewObserver::ContactViewReady );
         }
     }
 
