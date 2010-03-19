@@ -207,7 +207,9 @@ public:
 CStoreFieldByTypeIterator::CStoreFieldByTypeIterator(
         const MVPbkFieldType& aFieldType,
         MVPbkStoreContactFieldCollection& aFields )
-    :   CFieldByTypeIterator( aFieldType, aFields )
+    :   CFieldByTypeIterator<
+            MVPbkStoreContactFieldCollection,
+            MVPbkStoreContactField>( aFieldType, aFields )
     {
     }
 
@@ -229,7 +231,9 @@ public:
 CBaseFieldByTypeIterator::CBaseFieldByTypeIterator(
         const MVPbkFieldType& aFieldType,
         const MVPbkBaseContactFieldCollection& aFields )
-    :   CFieldByTypeIterator( aFieldType, aFields )
+    :   CFieldByTypeIterator<
+            const MVPbkBaseContactFieldCollection,
+            const MVPbkBaseContactField>( aFieldType, aFields )
     {
     }
 
@@ -251,7 +255,9 @@ public:
 CBaseFieldByTypeListIterator::CBaseFieldByTypeListIterator(
         const MVPbkFieldTypeList& aFieldTypeList,
         const MVPbkBaseContactFieldCollection& aFields )
-    :   CFieldByTypeListIterator( aFieldTypeList, aFields )
+    :   CFieldByTypeListIterator<
+            const MVPbkBaseContactFieldCollection,
+            const MVPbkBaseContactField>( aFieldTypeList, aFields )
     {
     }
 
