@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -10,13 +10,16 @@
 * Nokia Corporation - initial contribution.
 *
 * Contributors:
-* 
-* Description:
+
+*
+
+* Description: 
+
 *
 */
 
 // INCLUDE FILES
-#include "CntModelTesterSetToneToContacts.h"
+#include "cntmodeltestersettonetocontacts.h"
 #include <cntdef.h>
 #include <cntitem.h>
 #include <cntdb.h>

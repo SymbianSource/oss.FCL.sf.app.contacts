@@ -1,19 +1,21 @@
-// Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// FilteredViewSort Test module
-// 
-//
+/*
+* Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* FilteredViewSort Test module
+*
+*/
+
 
 
 #include <e32test.h>
@@ -24,8 +26,8 @@
 #include <cntfldst.h>
 #include <cntviewbase.h>
 
-#include "CContactViewEventQueue.h"
-#include "CContactDbEventQueue.h"
+#include "ccontactvieweventqueue.h"
+#include "ccontactdbeventqueue.h"
 
 
 _LIT(KTestName, "T_FilteredViewSorting");
@@ -39,17 +41,17 @@ _LIT(KFilteredViewOrder, "CContactFilteredView ordering:");
 
 // Following lists the names used in the test,
 // constants are named alphabetically (the first being KName1)
-_LIT(KName1, "Abc");
-_LIT(KName2, "Albc");
-_LIT(KName3, "Grabcdef");
-_LIT(KName4, "Joabcde");
-_LIT(KName5, "Konabcabcde");
-_LIT(KName6, "Kosabcde");
-_LIT(KName7, "Lamabcde");
-_LIT(KName8, "Rosabcdef");
-_LIT(KName9, "Smabcdefg");
-_LIT(KName10, "Taabcd");
-_LIT(KName11, "Tuabcdefg");
+_LIT(KName1, "Aho");
+_LIT(KName2, "Alho");
+_LIT(KName3, "Granholm");
+_LIT(KName4, "Jokinen");
+_LIT(KName5, "Kontulainen");
+_LIT(KName6, "Koskinen");
+_LIT(KName7, "Lampinen");
+_LIT(KName8, "Rosendahl");
+_LIT(KName9, "Smolander");
+_LIT(KName10, "Tanabe");
+_LIT(KName11, "Tukiainen");
 
 
 

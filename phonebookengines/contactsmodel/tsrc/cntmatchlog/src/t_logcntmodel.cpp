@@ -1,17 +1,20 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <cntdb.h>
@@ -34,9 +37,9 @@ LOCAL_D void Check(TInt aValue, TInt aExpected, TInt aLine)
 		}
 	}
 
-_LIT(KFirstName1, "Example");
-_LIT(KLastName1, "Name");
-_LIT(KNumber1, "447700900000");
+_LIT(KFirstName1, "Barney");
+_LIT(KLastName1, "Rubble");
+_LIT(KNumber1, "447774770432");
 _LIT(KFirstName2, "Elma");
 _LIT(KLastName2, "Fudd");
 

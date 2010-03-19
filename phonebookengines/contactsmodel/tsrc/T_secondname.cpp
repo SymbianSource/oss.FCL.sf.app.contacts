@@ -1,21 +1,23 @@
-// Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// This test code tests the contacts model and vCard import / export functionality 
-// 
-//
+/*
+* Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* This test code tests the contacts model and vCard import / export functionality 
+*
+*/
 
-#include "T_secondname.h"
+
+#include "t_secondname.h"
 #include <vutil.h>
 
 _LIT(KTestTitle,"T_SecondName - CNTVCARD tests for new contact fields");
@@ -328,7 +330,7 @@ void CSecondNameTest::ConstructL()
 void CSecondNameTest::RunTestsL()
 	{
 	_LIT(KSecondNameTestDescription,"Second Name Tests Starting\n");
-	iTest.Next(KSecondNameTestDescription);
+	iTest.Next(_L("Second Name Tests Starting"));
 
 	_LIT8(KImportVCard, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:1\r\nX-EPOCSECONDNAME:test\r\nEND:VCARD\r\n");
 	_LIT8(KUpdateVCard, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:1\r\nX-EPOCSECONDNAME:change\r\nEND:VCARD\r\n");
@@ -367,49 +369,49 @@ void CSipIdTest::ConstructL()
 void CSipIdTest::RunTestsL()
 	{
 	_LIT(KSipTestDescription,"SIP Identity Field Tests starting\n");
-	iTest.Next(KSipTestDescription);
+	iTest.Next(_L("SIP Identity Field Tests starting"));
 
 
 	// Test X-SIP:
-	_LIT8(KImportVCard, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:1\r\nX-SIP:sip:namet@symbianfoundation.com\r\nEND:VCARD\r\n");
-	_LIT8(KUpdateVCard, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:1\r\nX-SIP:sip:tes@example.com\r\nEND:VCARD\r\n");
+	_LIT8(KImportVCard, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:1\r\nX-SIP:sip:alice@atlanta.com\r\nEND:VCARD\r\n");
+	_LIT8(KUpdateVCard, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:1\r\nX-SIP:sip:bob@biloxi.com\r\nEND:VCARD\r\n");
 	RunTestCaseL(KImportVCard,KUpdateVCard,KUidContactFieldVCardMapSIPID);
 
 	// Test X-SIP;POC:
-	_LIT8(KImportVCardPOC, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:2\r\nX-SIP;POC:sip:namet@symbianfoundation.com\r\nEND:VCARD\r\n");
-	_LIT8(KUpdateVCardPOC, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:2\r\nX-SIP;POC:sip:tes@example.com\r\nEND:VCARD\r\n");
+	_LIT8(KImportVCardPOC, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:2\r\nX-SIP;POC:sip:alice@atlanta.com\r\nEND:VCARD\r\n");
+	_LIT8(KUpdateVCardPOC, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:2\r\nX-SIP;POC:sip:bob@biloxi.com\r\nEND:VCARD\r\n");
 	RunTestCaseL(KImportVCardPOC,KUpdateVCardPOC,KUidContactFieldVCardMapPOC);
 
 	// Test X-SIP;SWIS:
-	_LIT8(KImportVCardSWIS, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:3\r\nX-SIP;SWIS:sip:namet@symbianfoundation.com\r\nEND:VCARD\r\n");
-	_LIT8(KUpdateVCardSWIS, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:3\r\nX-SIP;SWIS:sip:tes@example.com\r\nEND:VCARD\r\n");
+	_LIT8(KImportVCardSWIS, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:3\r\nX-SIP;SWIS:sip:alice@atlanta.com\r\nEND:VCARD\r\n");
+	_LIT8(KUpdateVCardSWIS, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:3\r\nX-SIP;SWIS:sip:bob@biloxi.com\r\nEND:VCARD\r\n");
 	RunTestCaseL(KImportVCardSWIS,KUpdateVCardSWIS,KUidContactFieldVCardMapSWIS);
 
 	// Test X-SIP;VOIP:
-	_LIT8(KImportVCardVOIP, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:4\r\nX-SIP;VOIP:sip:namet@symbianfoundation.com\r\nEND:VCARD\r\n");
-	_LIT8(KUpdateVCardVOIP, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:4\r\nX-SIP;VOIP:sip:tes@example.com\r\nEND:VCARD\r\n");
+	_LIT8(KImportVCardVOIP, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:4\r\nX-SIP;VOIP:sip:alice@atlanta.com\r\nEND:VCARD\r\n");
+	_LIT8(KUpdateVCardVOIP, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:4\r\nX-SIP;VOIP:sip:bob@biloxi.com\r\nEND:VCARD\r\n");
 	RunTestCaseL(KImportVCardVOIP,KUpdateVCardVOIP,KUidContactFieldVCardMapVOIP);
 
 	// Test alternative representation - X-SIP;TYPE=POC:
-	_LIT8(KImportVCardAltPOCImport, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:5\r\nX-SIP;TYPE=POC:sip:namet@symbianfoundation.com\r\nEND:VCARD\r\n");
-	_LIT8(KUpdateVCardAltPOCUpdate, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:5\r\nX-SIP;TYPE=POC:sip:tes@example.com\r\nEND:VCARD\r\n");
+	_LIT8(KImportVCardAltPOCImport, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:5\r\nX-SIP;TYPE=POC:sip:alice@atlanta.com\r\nEND:VCARD\r\n");
+	_LIT8(KUpdateVCardAltPOCUpdate, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:5\r\nX-SIP;TYPE=POC:sip:bob@biloxi.com\r\nEND:VCARD\r\n");
 	RunTestCaseL(KImportVCardAltPOCImport,KUpdateVCardAltPOCUpdate,KUidContactFieldVCardMapPOC);
 
 	// Test alternative representation - X-SIP;TYPE=SWIS:
-	_LIT8(KImportVCardAltSWISImport, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:6\r\nX-SIP;TYPE=SWIS:sip:namet@symbianfoundation.com\r\nEND:VCARD\r\n");
-	_LIT8(KUpdateVCardAltSWISUpdate, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:6\r\nX-SIP;TYPE=SWIS:sip:tes@example.com\r\nEND:VCARD\r\n");
+	_LIT8(KImportVCardAltSWISImport, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:6\r\nX-SIP;TYPE=SWIS:sip:alice@atlanta.com\r\nEND:VCARD\r\n");
+	_LIT8(KUpdateVCardAltSWISUpdate, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:6\r\nX-SIP;TYPE=SWIS:sip:bob@biloxi.com\r\nEND:VCARD\r\n");
 	RunTestCaseL(KImportVCardAltSWISImport,KUpdateVCardAltSWISUpdate,KUidContactFieldVCardMapSWIS);
 
 	// Test alternative representation - X-SIP;TYPE=VOIP:
-	_LIT8(KImportVCardAltVOIPImport, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:7\r\nX-SIP;TYPE=VOIP:sip:namet@symbianfoundation.com\r\nEND:VCARD\r\n");
-	_LIT8(KUpdateVCardAltVOIPUpdate, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:7\r\nX-SIP;TYPE=VOIP:sip:tes@example.com\r\nEND:VCARD\r\n");
+	_LIT8(KImportVCardAltVOIPImport, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:7\r\nX-SIP;TYPE=VOIP:sip:alice@atlanta.com\r\nEND:VCARD\r\n");
+	_LIT8(KUpdateVCardAltVOIPUpdate, "BEGIN:VCARD\r\nVERSION:2.1\r\nUID:7\r\nX-SIP;TYPE=VOIP:sip:bob@biloxi.com\r\nEND:VCARD\r\n");
 	RunTestCaseL(KImportVCardAltVOIPImport,KUpdateVCardAltVOIPUpdate,KUidContactFieldVCardMapVOIP);
 	}
 
 void CSipIdTest::RunTestCaseL(const TDesC8& aImportVCard, const TDesC8& aUpdateVCard, TUid aVCardMapping)
 	{
-	_LIT(KFieldContent, "sip:namet@symbianfoundation.com");
-	_LIT(KUpdatedFieldContent, "sip:tes@example.com");
+	_LIT(KFieldContent, "sip:alice@atlanta.com");
+	_LIT(KUpdatedFieldContent, "sip:bob@biloxi.com");
 	_LIT8(KVersitTokenSIPID,"X-SIP");
 
 	TTestData t(aImportVCard,aUpdateVCard,KVersitTokenSIPID,KUidContactFieldSIPID,KFieldContent,KUpdatedFieldContent,KTestFile1,KTestFile2);
@@ -458,8 +460,8 @@ and tested as per description of the method CNewFieldTestBase::TestUpdateL().
 
 void CWvIdTest::RunTestsL()
 	{
-	_LIT(KWvidTestDescription,"@SYMTESTCaseID:PIM-T-SECONDNAME-0002 Wireless Village Identity Field Tests starting\n");
-	iTest.Next(KWvidTestDescription);
+	_LIT(KWvidTestDescription,"Wireless Village Identity Field Tests starting\n");
+	iTest.Next(_L("@SYMTESTCaseID:PIM-T-SECONDNAME-0002 Wireless Village Identity Field Tests starting"));
 
 
 	_LIT8(KImportVCard,"BEGIN:VCARD\r\nVERSION:2.1\r\nUID:1\r\nX-WV-ID:test\r\nEND:VCARD\r\n");
@@ -501,7 +503,7 @@ void CFieldLimitationTest::ConstructL()
 void CFieldLimitationTest::RunTestsL()
 	{
 	_LIT(KNameTestDescription,"Field limitation Tests Starting\n");
-	iTest.Next(KNameTestDescription);
+	iTest.Next(_L("Field limitation Tests Starting"));
 
 
 	iTest.Printf(_L("Test if name is truncated or not at import"));
@@ -510,17 +512,17 @@ void CFieldLimitationTest::RunTestsL()
 	RunTestCaseL(KImportNameVCard, KVersitTokenFN, KUidContactFieldFamilyName, KFieldNameExpectedContent);
 
 	iTest.Printf(_L("Test if company name is truncated or not at import"));
-	_LIT8(KImportOrgVCard, "BEGIN:VCARD\r\nVERSION:2.1\r\nN:Name Testa;;;\r\nFN:Name Testa\r\nORG:12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890\r\nTEL;CELL:0123456789\r\nADR;HOME:;;;;;;\r\nADR;WORK:;;;;;;\r\nEND:VCARD");
+	_LIT8(KImportOrgVCard, "BEGIN:VCARD\r\nVERSION:2.1\r\nN:John Smith;;;\r\nFN:John Smith\r\nORG:12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890\r\nTEL;CELL:0123456789\r\nADR;HOME:;;;;;;\r\nADR;WORK:;;;;;;\r\nEND:VCARD");
 	_LIT(KFieldOrgExpectedContent, "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345");
 	RunTestCaseL(KImportOrgVCard, KVersitTokenORG, KUidContactFieldCompanyName, KFieldOrgExpectedContent);
 
 	iTest.Printf(_L("Test if email is truncated or not at import"));
-	_LIT8(KImportEmailVCard, "BEGIN:VCARD\r\nVERSION:2.1\r\nN:Name Testa;;;\r\nFN:Name Testa\r\nEMAIL:12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890\r\nTEL;CELL:0123456789\r\nADR;HOME:;;;;;;\r\nADR;WORK:;;;;;;\r\nEND:VCARD");
+	_LIT8(KImportEmailVCard, "BEGIN:VCARD\r\nVERSION:2.1\r\nN:John Smith;;;\r\nFN:John Smith\r\nEMAIL:12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890\r\nTEL;CELL:0123456789\r\nADR;HOME:;;;;;;\r\nADR;WORK:;;;;;;\r\nEND:VCARD");
 	_LIT(KFieldEmailExpectedContent, "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345");
 	RunTestCaseL(KImportEmailVCard, KVersitTokenEMAIL, KUidContactFieldEMail, KFieldEmailExpectedContent);
 
 	iTest.Printf(_L("Test if note is truncated or not at import"));
-	_LIT8(KImportNoteVCard, "BEGIN:VCARD\r\nVERSION:2.1\r\nN:Smith;John;;;\r\nFN:Name Testa\r\nNOTE:12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890\r\nTEL;CELL:0123456789\r\nADR;HOME:;;;;;;\r\nADR;WORK:;;;;;;\r\nEND:VCARD");
+	_LIT8(KImportNoteVCard, "BEGIN:VCARD\r\nVERSION:2.1\r\nN:Smith;John;;;\r\nFN:John Smith\r\nNOTE:12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890\r\nTEL;CELL:0123456789\r\nADR;HOME:;;;;;;\r\nADR;WORK:;;;;;;\r\nEND:VCARD");
 	_LIT(KFieldNoteExpectedContent, "12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
 	RunTestCaseL(KImportNoteVCard, KVersitTokenNOTE, KUidContactFieldVCardMapNOTE, KFieldNoteExpectedContent);
 	}

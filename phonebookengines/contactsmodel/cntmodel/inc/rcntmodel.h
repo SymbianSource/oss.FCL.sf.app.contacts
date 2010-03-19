@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -28,7 +29,7 @@
 #define RCNTMODEL_H
 
 #include <cntdb.h>
-#include "CCntIpcCodes.h"
+#include "ccntipccodes.h"
 
 #include <e32base.h>
 #include <f32file.h>

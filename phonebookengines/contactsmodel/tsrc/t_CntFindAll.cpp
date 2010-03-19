@@ -1,17 +1,20 @@
-// Copyright (c) 1999-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1999-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
 @SYMTestCaseID PIM-T-CNTFINDALL-INC049017-0001
@@ -33,7 +36,7 @@ Perform the search synchronously and asynchronously.
 #include <cntfldst.h>
 
 #include "t_utils2.h"
-#include "t_CntFindAll.h"
+#include "t_cntfindall.h"
 
 
 // Constants.
@@ -76,39 +79,39 @@ void CFindTest::DoTestsL()
 		iLog->LogLine(_L("Adding The Contacts."));
 	//	AddContactCompactL(aFirstName,aLastName,aCompanyName,aWorkPhone, 
 	//												aHomePhone,& aWorkMobile,aHomeMobile,aWorkEmail)											
-		AddContactCompactL(_L("TestRt"),_L("Jrtstn"),_L("Example Company"),_L("02079460100"), 
-												_L("02079460900"), _L("07700900329"),_L("07700900300"),_L("tj2@example_company.abc"));									
-		AddContactCompactL(_L("Atsta"),_L("Jrtstn"),_L("Example Company"),_L("02079460100"), 
-												_L("02079460900"), _L("07700900101"),_L("07700900301"),_L("aj2@example_company.abc"));									
-		AddContactCompactL(_L("Btest"),_L("Tester"),_L("High Test Example"),_L("02079460658"), 
-												_L("02079460901"), _L("07700900210"),_L("07700900321"),_L("btester@hightestex.abc"));									
-		AddContactCompactL(_L("Chtsts"),_L("Artestw"),_L("Testx Kick"),_L("1234567890"), 
-												_L("02079460678"), _L("07700900890"),_L("07700900891"),_L("c_Artestw@testxkick.abc"));
+		AddContactCompactL(_L("Robert"),_L("Jordan"),_L("Software Solutions"),_L("015672354658"), 
+												_L("01617246900"), _L("077962345100"),_L("07785674300"),_L("rj2@software_solutions.com"));									
+		AddContactCompactL(_L("Amanda"),_L("Jordan"),_L("Software Solutions"),_L("015672354658"), 
+												_L("01617246900"), _L("077962345101"),_L("07785674301"),_L("aj1@software_solutions.com"));									
+		AddContactCompactL(_L("Ben"),_L("Turner"),_L("High Res Solutions"),_L("017652354658"), 
+												_L("01717246901"), _L("07896543210"),_L("07987654321"),_L("bturn@highres.com"));									
+		AddContactCompactL(_L("Chris"),_L("Andrews"),_L("Soft Kicks"),_L("1234567890"), 
+												_L("01712345678"), _L("07234567890"),_L("07234567891"),_L("c_andrew@softkicks.com"));
 		}
 
 	//start of tests for defect where identity fields were not searched when using KUidMatchInAllFields
 	iTest.Next(_L("FINDING CONTACTS BY NAME FROM GIVEN NAME FIELD."));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS BY NAME FROM GIVEN NAME FIELD."));
-		FindNameInFirstNameFieldL(_L("Chtsts"),1);
-		FindNameInFirstNameFieldL(_L("Tester"),0);
+		FindNameInFirstNameFieldL(_L("Chris"),1);
+		FindNameInFirstNameFieldL(_L("Turner"),0);
 		FindNameInFirstNameFieldL(_L("e"),2);
 		}
 
 	iTest.Next(_L("FINDING CONTACTS BY NAME FROM FAMILY NAME FIELD"));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS BY NAME FROM FAMILY NAME FIELD."));
-		FindNameInLastNameFieldL(_L("Tester"),1);
-		FindNameInLastNameFieldL(_L("Jrtstn"),2);
+		FindNameInLastNameFieldL(_L("Turner"),1);
+		FindNameInLastNameFieldL(_L("Jordan"),2);
 		FindNameInLastNameFieldL(_L("r"),4);
-		FindNameInLastNameFieldL(_L("Chtsts"),0);
+		FindNameInLastNameFieldL(_L("Chris"),0);
 		}
 
 	iTest.Next(_L("FINDING CONTACTS BY NAME FROM ALL FIELDS"));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS BY NAME FROM ALL FIELDS"));
-		FindInAllFieldsL(_L("Btest"),1);
-		FindInAllFieldsL(_L("Jrtstn"),2);
+		FindInAllFieldsL(_L("Ben"),1);
+		FindInAllFieldsL(_L("Jordan"),2);
 		FindInAllFieldsL(_L("r"),4);
 		FindInAllFieldsL(_L("xxxxxxxxx"),0);
 		}
@@ -116,19 +119,19 @@ void CFindTest::DoTestsL()
 	iTest.Next(_L("FINDING CONTACTS BY COMPANY FROM COMPANY NAME FIELD"));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS COMPANY FROM COMPANY NAME FIELD"));
-		FindInCompanyFieldL(_L("Btest"),0);
-		FindInCompanyFieldL(_L("High Test Example"),1);
-		FindInCompanyFieldL(_L("Example Company"),2);
-		FindInCompanyFieldL(_L("c"),3);
+		FindInCompanyFieldL(_L("Ben"),0);
+		FindInCompanyFieldL(_L("High Res Solutions"),1);
+		FindInCompanyFieldL(_L("Software Solutions"),2);
+		FindInCompanyFieldL(_L("s"),4);
 		}
 
 	iTest.Next(_L("FINDING CONTACTS BY COMPANY FROM  ALL FIELDS"));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS BY COMPANY FROM ALL FIELDS"));
 		FindInAllFieldsL(_L("Kick"),1);
-		FindInAllFieldsL(_L("High Test Example"),1);
-		FindInAllFieldsL(_L("Example Company"),2);
-		FindInAllFieldsL(_L("c"),4);
+		FindInAllFieldsL(_L("High Res Solutions"),1);
+		FindInAllFieldsL(_L("Software Solutions"),2);
+		FindInAllFieldsL(_L("s"),4);
 		}
 	//end of tests for defect where identity fields were not searched when using KUidMatchInAllFields
 
@@ -136,25 +139,25 @@ void CFindTest::DoTestsL()
 	iTest.Next(_L("FINDING CONTACTS BY NAME FROM GIVEN NAME FIELD ASYNCHRONOUSLY"));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS BY NAME FROM GIVEN NAME FIELD ASYNCHRONOUSLY."));
-		FindNameInFirstNameFieldL(_L("Chtsts"),1,ETrue);
-		FindNameInFirstNameFieldL(_L("Tester"),0,ETrue);
+		FindNameInFirstNameFieldL(_L("Chris"),1,ETrue);
+		FindNameInFirstNameFieldL(_L("Turner"),0,ETrue);
 		FindNameInFirstNameFieldL(_L("e"),2,ETrue);
 		}
 
 	iTest.Next(_L("FINDING CONTACTS BY NAME FROM FAMILY NAME FIELD ASYNCHRONOUSLY"));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS BY NAME FROM FAMILY NAME FIELD ASYNCHRONOUSLY."));
-		FindNameInLastNameFieldL(_L("Tester"),1,ETrue);
-		FindNameInLastNameFieldL(_L("Jrtstn"),2,ETrue);
+		FindNameInLastNameFieldL(_L("Turner"),1,ETrue);
+		FindNameInLastNameFieldL(_L("Jordan"),2,ETrue);
 		FindNameInLastNameFieldL(_L("r"),4,ETrue);
-		FindNameInLastNameFieldL(_L("Chtsts"),0,ETrue);
+		FindNameInLastNameFieldL(_L("Chris"),0,ETrue);
 		}
 
 	iTest.Next(_L("FINDING CONTACTS BY NAME FROM ALL FIELDS ASYNCHRONOUSLY"));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS BY NAME FROM ALL FIELDS ASYNCHRONOUSLY"));
-		FindInAllFieldsL(_L("Btest"),1,ETrue);
-		FindInAllFieldsL(_L("Jrtstn"),2,ETrue);
+		FindInAllFieldsL(_L("Ben"),1,ETrue);
+		FindInAllFieldsL(_L("Jordan"),2,ETrue);
 		FindInAllFieldsL(_L("r"),4,ETrue);
 		FindInAllFieldsL(_L("xxxxxxxxx"),0,ETrue);
 		}
@@ -162,24 +165,19 @@ void CFindTest::DoTestsL()
 	iTest.Next(_L("FINDING CONTACTS BY COMPANY FROM COMPANY NAME FIELD"));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS COMPANY FROM COMPANY NAME FIELD ASYNCHRONOUSLY"));
-		FindInCompanyFieldL(_L("Btest"),0,ETrue);
-		FindInCompanyFieldL(_L("High Test Example"),1,ETrue);
-		FindInCompanyFieldL(_L("Example Company"),2,ETrue);
-		FindInCompanyFieldL(_L("s"),2,ETrue);
+		FindInCompanyFieldL(_L("Ben"),0,ETrue);
+		FindInCompanyFieldL(_L("High Res Solutions"),1,ETrue);
+		FindInCompanyFieldL(_L("Software Solutions"),2,ETrue);
+		FindInCompanyFieldL(_L("s"),4,ETrue);
 		}
 
 	iTest.Next(_L("FINDING CONTACTS BY COMPANY FROM  ALL FIELDS ASYNCHRONOUSLY"));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS BY COMPANY FROM ALL FIELDS ASYNCHRONOUSLY"));
 		FindInAllFieldsL(_L("Kick"),1,ETrue);
-		FindInAllFieldsL(_L("High Test Example"),1,ETrue);
-		FindInAllFieldsL(_L("Example Company"),2,ETrue);
+		FindInAllFieldsL(_L("High Res Solutions"),1,ETrue);
+		FindInAllFieldsL(_L("Software Solutions"),2,ETrue);
 		FindInAllFieldsL(_L("s"),4,ETrue);
-		}
-    iTest.Next(_L("FINDING CONTACTS BY SIP ADDRESS IN ALL FIELDS ASYNCHRONOUSLY"));
-        {
-		iLog->LogLine(_L("\r\nFINDING CONTACTS BY SIP ADDRESS IN ALL FIELDS"));
-		FindInSipAddressL(_L("123@a.com"),1, ETrue);
 		}
 	//end of Async tests for defect where identity fields were not searched when using KUidMatchInAllFields
 
@@ -187,58 +185,58 @@ void CFindTest::DoTestsL()
 	iTest.Next(_L("FINDING CONTACTS BY WORK PHONE NUMBER FROM   PHONE FIELD"));
 		{ 
 		iLog->LogLine(_L("\r\nFINDING CONTACTS BY WORK PHONE NUMBER FROM   PHONE FIELD"));
-		FindPhoneNumberL(_L("02079460100"),2);
-		FindPhoneNumberL(_L("02079460658"),1);
+		FindPhoneNumberL(_L("015672354658"),2);
+		FindPhoneNumberL(_L("017652354658"),1);
 		FindPhoneNumberL(_L("999999999999"),0);
 		}
 	iTest.Next(_L("FINDING CONTACTS BY  HOME PHONE NUMBER FROM PHONE FIELD"));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS BY HOME PHONE NUMBER FROM   PHONE FIELD"));
-		FindPhoneNumberL(_L("02079460900"),2);
-		FindPhoneNumberL(_L("02079460678"),1);
+		FindPhoneNumberL(_L("01617246900"),2);
+		FindPhoneNumberL(_L("01712345678"),1);
 		FindPhoneNumberL(_L("999999999999"),0);
 		}
 	iTest.Next(_L("FINDING CONTACTS BY  WORK MOBILE  NUMBER FROM PHONE FIELD"));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS BY WORK MOBILE NUMBER FROM   PHONE FIELD"));
-		FindPhoneNumberL(_L("07700900329"),1);
-		FindPhoneNumberL(_L("07700900101"),1);
-		FindPhoneNumberL(_L("07700900210"),1);
+		FindPhoneNumberL(_L("077962345100"),1);
+		FindPhoneNumberL(_L("077962345101"),1);
+		FindPhoneNumberL(_L("07896543210"),1);
 		FindPhoneNumberL(_L("999999999999"),0);
 		}
 	iTest.Next(_L("FINDING CONTACTS BY HOME MOBILE  NUMBER FROM  PHONE FIELD"));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS BY HOME MOBILE NUMBER FROM   PHONE FIELD"));
-		FindPhoneNumberL(_L("07700900891"),1);
-		FindPhoneNumberL(_L("07700900301"),1);
-		FindPhoneNumberL(_L("07700900300"),1);
+		FindPhoneNumberL(_L("07234567891"),1);
+		FindPhoneNumberL(_L("07785674301"),1);
+		FindPhoneNumberL(_L("07785674300"),1);
 		FindPhoneNumberL(_L("999999999999"),0);
 		}
 	iTest.Next(_L("FINDING CONTACTS BY PHONE NUMBER FROM  ALL FIELDS"));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS BY PHONE NUMBER FROM  ALL FIELDS"));
-		FindInAllFieldsL(_L("02079460100"),2);
-		FindInAllFieldsL(_L("02079460900"),2);
-		FindInAllFieldsL(_L("02079460658"),1);
-		FindInAllFieldsL(_L("02079460678"),1);
+		FindInAllFieldsL(_L("015672354658"),2);
+		FindInAllFieldsL(_L("01617246900"),2);
+		FindInAllFieldsL(_L("017652354658"),1);
+		FindInAllFieldsL(_L("01712345678"),1);
 		FindInAllFieldsL(_L("999999999999"),0);
 		}
 	iTest.Next(_L("FINDING CONTACTS BY EMAIL FROM  EMAIL FIELD"));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS BY EMAIL FROM  EMAIL FIELD"));
 		FindEmailAddressL(_L("@@"),0);
-		FindEmailAddressL(_L("aj2@example_company.abc"),1);
-		FindEmailAddressL(_L("example_company.abc"),2);
-		FindEmailAddressL(_L("example"),2);
+		FindEmailAddressL(_L("aj1@software_solutions.com"),1);
+		FindEmailAddressL(_L("software_solutions.com"),2);
+		FindEmailAddressL(_L("soft"),3);
 		FindEmailAddressL(_L("@"),4);
 		}
 	iTest.Next(_L("FINDING CONTACTS BY EMAIL FROM  ALL FIELDS"));
 		{
 		iLog->LogLine(_L("\r\nFINDING CONTACTS BY EMAIL FROM  ALL FIELDS"));
 		FindInAllFieldsL(_L("@@"),0);
-		FindInAllFieldsL(_L("aj2@example_company.abc"),1);
-		FindInAllFieldsL(_L("example_company.abc"),2);
-		FindInAllFieldsL(_L("example"),3);
+		FindInAllFieldsL(_L("aj1@software_solutions.com"),1);
+		FindInAllFieldsL(_L("software_solutions.com"),2);
+		FindInAllFieldsL(_L("soft"),3);
 		FindInAllFieldsL(_L("@"),4);
 		}
 	iTest.Next(_L("FINDING CONTACTS BY NOTES FROM NOTES FIELDS"));
@@ -249,11 +247,6 @@ void CFindTest::DoTestsL()
 		FindNotesL(_L("nonexistant"),0);
 		FindNotesL(_L("nonexistant"),0, ETrue);
 		}
-	iTest.Next(_L("FINDING CONTACTS BY SIP ADDRESS IN ALL FIELDS"));
-        {
-		iLog->LogLine(_L("\r\nFINDING CONTACTS BY SIP ADDRESS IN ALL FIELDS"));
-		FindInSipAddressL(_L("123@a.com"),1);
-		}
 	iTest.Next(_L("FINDING NOTES FROM  ALL FIELDS"));
 		{
 		iLog->LogLine(_L("\r\nFINDING NOTES FROM  ALL FIELDS"));
@@ -261,30 +254,6 @@ void CFindTest::DoTestsL()
 		FindInAllFieldsL(_L("dummy"),4, ETrue);
 		FindInAllFieldsL(_L("nonexistant"),0);
 		FindInAllFieldsL(_L("nonexistant"),0, ETrue);
-		}
-	iTest.Next(_L("FINDING All CONTACTS WITH NULL SEARCH STRING"));
-		{
-		iLog->LogLine(_L("\r\nFINDING All CONTACTS WITH NULL SEARCH STRING"));
-				
-		//Create a new database and check that there are no contacts on it.
-		delete iDb;
-		iDb=CContactDatabase::ReplaceL(iDbFileName);
-		iTest(iDb->CountL() == 0);
-
-		//Add a fixed number of contacts to the database and check if they have been added or not.
-		CRandomContactGenerator* rcg = CRandomContactGenerator::NewL();
-		CleanupStack::PushL(rcg);
-		rcg->SetDbL(*iDb);
-		const TInt KContactsCount = 50;
-		for(TInt count = 0;count < KContactsCount;++count)
-			{
-			rcg->AddTypicalRandomContactL();
-			}
-		iTest(iDb->CountL() == KContactsCount);
-		
-		//Actual Test: This should return all 50 contacts. No less, no more!
-		FindInAllFieldsL(_L(""), KContactsCount, ETrue);
-		CleanupStack::PopAndDestroy();
 		}
 	iTest.End();
 	}
@@ -359,97 +328,6 @@ void CFindTest::FindNameInLastNameFieldL(const TDesC& aTextToFind, const TInt aN
 		}
 	CleanupStack::PopAndDestroy(); // def.	
 	}
-
-void CFindTest::FindInSipAddressL(const TDesC& aTextToFind, const TInt aNumExpectedFinds,TBool aAsync)
-    {
-    CContactCard *contactItem = CContactCard::NewL(iTemplate); CleanupStack::PushL(contactItem);
-
-    CContactItemField* itemFieldPtr = CContactItemField::NewLC( KStorageTypeText, KUidContactFieldSIPID );
-    CContactTextField* textStoragePtr = itemFieldPtr->TextStorage();
-    textStoragePtr->SetTextL( aTextToFind );
-    contactItem->AddFieldL( *itemFieldPtr );
-    CleanupStack::Pop( itemFieldPtr ); 
- 
-    CContactItemField* itemFieldPtr_1 = CContactItemField::NewLC( KStorageTypeStore, KUidContactFieldPicture );
-    CContactStoreField* binaryStoragePtr = itemFieldPtr_1->StoreStorage();
-      
-    binaryStoragePtr->SetThingL(_L8("Jpeg"));
-     
-    contactItem->AddFieldL( *itemFieldPtr_1 ); 
-    CleanupStack::Pop( itemFieldPtr_1 ); 
-           
-    TContactItemId id = iDb->AddNewContactL(*contactItem);
-   
-    CContactItemFieldDef* def = new(ELeave) CContactItemFieldDef();
-    CleanupStack::PushL(def);
-    def->AppendL(KUidContactFieldSIPID);
- 
-    if(!aAsync)
-        {
-        DoFindL(aTextToFind,*def,aNumExpectedFinds);
-        }
-    else
-        {
-        DoFindAsyncL(aTextToFind,*def,aNumExpectedFinds);
-        }
-
-    CleanupStack::PopAndDestroy(2); //def, contactItem
-    
-    iDb->DeleteContactL(id);
-        
-    contactItem = CContactCard::NewL(iTemplate); 
-    CleanupStack::PushL(contactItem);
-    
-    itemFieldPtr = CContactItemField::NewLC( KStorageTypeText, KUidContactFieldFamilyName );
-    textStoragePtr = itemFieldPtr->TextStorage();
-    textStoragePtr->SetTextL( _L("A") );
-    contactItem->AddFieldL( *itemFieldPtr );
-    CleanupStack::Pop( itemFieldPtr ); 
-    id = iDb->AddNewContactL(*contactItem);
-    CleanupStack::PopAndDestroy( contactItem );
-   
-    // retrieve the contact add an image to it
-    CContactItem *contactItem1 = iDb->OpenContactL( id );
-    CleanupStack::PushL( contactItem1 );
-    itemFieldPtr_1 = CContactItemField::NewLC( KStorageTypeStore, KUidContactFieldVCardMapJPEG );
-    binaryStoragePtr = itemFieldPtr_1->StoreStorage();   
-    binaryStoragePtr->SetThingL(_L8("Jpeg"));
-   
-    contactItem1->AddFieldL( *itemFieldPtr_1 ); 
-    CleanupStack::Pop( itemFieldPtr_1 );
-    iDb->CommitContactL(*contactItem1);
-    iDb->CloseContactL( id );
-    CleanupStack::PopAndDestroy( contactItem1 );
-   
-    //retrieve the contact and add voip to it
-    CContactItem *contactItem2 = iDb->OpenContactL( id );
-    CleanupStack::PushL( contactItem2 );
-    CContactItemField* itemFieldPtr2 = CContactItemField::NewLC( KStorageTypeText, KUidContactFieldSIPID );
-    CContactTextField* textStoragePtr2 = itemFieldPtr2->TextStorage();
-    textStoragePtr2->SetTextL( aTextToFind );
-    contactItem2->AddFieldL( *itemFieldPtr2 );
-    CleanupStack::Pop( itemFieldPtr2 );
-    iDb->CommitContactL( *contactItem2 );
-    iDb->CloseContactL( id );
-    CleanupStack::PopAndDestroy( contactItem2 );
-  
-    // find the contact with voip number
-    def = new(ELeave) CContactItemFieldDef();
-    CleanupStack::PushL(def);
-    def->AppendL(KUidContactFieldSIPID);
-    if(!aAsync)
-        {
-        DoFindL(aTextToFind,*def,aNumExpectedFinds);
-        }
-    else
-        {
-        DoFindAsyncL(aTextToFind,*def,aNumExpectedFinds);
-        }
-
-    CleanupStack::PopAndDestroy(1); 
-   
-    iDb->DeleteContactL(id);
-    }
 
 void CFindTest::FindInAllFieldsL(const TDesC& aTextToFind, const TInt aNumExpectedFinds,TBool aAsync)
 	{

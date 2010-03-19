@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -26,7 +27,7 @@
 #ifndef __UNIFIED_SINGULAR_STEP_H__
 #define __UNIFIED_SINGULAR_STEP_H__
 
-#include "CntBaseStep.h"
+#include "cntbasestep.h"
 
 class CUnifiedSingular : public CCntBaseStep
 	{

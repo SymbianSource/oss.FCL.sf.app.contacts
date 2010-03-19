@@ -1,26 +1,25 @@
-// Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// This test the speed of how fast it takes to filter a view, with various numbers of contacts. 
-// This can be automatic when run as a part of the test suite on the emulator, but 
-// on some hardware this can blow up since it can take up more memory that the device has.
-// This does not mean the test fails (it's just profiling speed), it just mean the full set of tests can't be run.
-// This for for testing defect INC038634 - Contact View filtered view takes too long to open.
-// 
-//
+/*
+* Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* This test the speed of how fast it takes to filter a view, with various numbers of contacts. 
+* This can be automatic when run as a part of the test suite on the emulator, but 
+* on some hardware this can blow up since it can take up more memory that the device has.
+* This does not mean the test fails (it's just profiling speed), it just mean the full set of tests can't be run.
+* This for for testing defect INC038634 - Contact View filtered view takes too long to open.
+*
+*/
 
-
-// System includes
 #include <cntdb.h>
 #include <cntdef.h>
 #include <cntitem.h>

@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -26,8 +27,8 @@
 #define CNTMSGHANDLER_H
 
 #include <e32base.h>
-#include "CCntDbManager.h" // For TCntFileMode
-#include "CCntMsgHandlerFptr.h"
+#include "ccntdbmanager.h" // for tcntfilemode
+#include "ccntmsghandlerfptr.h"
 
 class CCntSession;
 class CCntServer;

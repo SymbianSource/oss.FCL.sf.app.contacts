@@ -1,17 +1,20 @@
-// Copyright (c) 2001-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2001-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <ecom/implementationproxy.h>
 #include <cntdb.h>
@@ -56,18 +59,18 @@ there is '+' symbol between the code and the real phone number, the
 '+' has to be within first five characters or otherwise it is
 considered to start a DTMF function. (example 4)
 
-These all match 9461235:
-*#020# 79461235: p123
-*#020# +79461235: p123
-*020 79461235:
-*020 +79461235:
-+79461235: +3
-+79461235: p123
-(+020) 79461235:
+These all match 1234567:
+*#42# 0401234567 p123
+*#42# +358401234567 p123
+*61 0401234567
+*61 +358401234567
++358401234567 +3
++358401234567 p123
+(+358) 1234567
 
 And these something else:
-*#020# 79461235:#p123 -> empty
-*12345+79461235: -> 12345
+*#42# 0401234567#p123 -> empty
+*12345+0401234567 -> 12345
 *+123+456+++++++++++ ->123
 
 The relevant ETSI specifications are:

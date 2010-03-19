@@ -1,17 +1,20 @@
-// Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32std.h>
 #include <e32test.h>
@@ -20,10 +23,10 @@
 #include <cntitem.h>
 #include <cntfldst.h>
 #include "t_utils2.h"
-#include "T_UTILS.H"
+#include "t_utils.h"
 #include "t_viewsoom.h"
 #include <badesca.h>
-#include "CContactDbEventQueue.h"
+#include "ccontactdbeventqueue.h"
 
 _LIT(KTestName,"T_ViewsOOM");
 LOCAL_D RFs TheFs;
@@ -791,7 +794,7 @@ CViewExerciser* CViewExerciser::NewL(CTestConductor& aConductor)
 	CCntTest::ProfileEnd(0);
 	TCntProfile profile[1];
 	CCntTest::ProfileResult(profile,0,1);
-	TReal result = profile[0].iTime;//1000000.0;
+	TReal result = profile[0].iTime;///1000000.0;
 	RDebug::Print(_L("Profile ContactAt Time Taken: %g"),result);
 	}*/
 
@@ -986,7 +989,7 @@ CSortOrderChanger::CSortOrderChanger(CTestConductor& aConductor) : CTestBase(aCo
 
 
 
-//	
+///////////////////////////////////////////////////////////////////	
 //
 // COomFailBase
 //
@@ -1188,7 +1191,7 @@ TBool COomTest::TestsL()
 			}
 		User::LeaveIfError(TheFs.Connect());
 
-		//OOM TEST VIEWS//
+		//OOM TEST VIEWS/////////////
 		DoOomTestL(new(ELeave) COomLocalView(this, iDb, NULL), mode); //Pass
 		DoOomTestL(new(ELeave) COomLocalView(this, iDb, NULL, KSortPlugin), mode); //Pass
 		DoOomTestL(new(ELeave) COomRemoteView(this, iDb, NULL), mode); //Pass
@@ -1208,7 +1211,7 @@ TBool COomTest::TestsL()
 		DoOomTestL(new(ELeave) COomGroupView(this, iDb, iLocalView, iGroupOne), mode); //Pass
 		DoOomTestL(new(ELeave) COomMatchingCriteria(this, iDb, iLocalView), mode);
 		DoOomTestL(new(ELeave) COomMatchingCriteria(this, iDb, iRemoteView), mode);
-		//
+		//////////////////////////////
 		iConductor.iTest(TheFs.ResourceCount()==0);
 		TheFs.Close();
 		iConductor.iTest.End();

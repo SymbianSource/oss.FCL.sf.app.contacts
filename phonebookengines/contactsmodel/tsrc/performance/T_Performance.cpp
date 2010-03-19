@@ -1,17 +1,20 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
 @SYMTestCaseID PIM-APPENG-CNTMODEL-CNTDB-U-0001-HP
@@ -41,12 +44,12 @@
 	
 */
 
-#include "T_PerfInitialSync.h"
-#include "T_PerfBulkDelete.h"
-#include "T_PerfStartUp.h"
-#include "T_PerfDbCreator.h"
-#include "T_PerfResortView.h"
-#include "T_PerfCrudOperations.h"
+#include "t_perfinitialsync.h"
+#include "t_perfbulkdelete.h"
+#include "t_perfstartup.h"
+#include "t_perfdbcreator.h"
+#include "t_perfresortview.h"
+#include "t_perfcrudoperations.h"
 
 #include <coreappstest/testserver.h>
 

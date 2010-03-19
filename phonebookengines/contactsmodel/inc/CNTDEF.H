@@ -1,17 +1,20 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #ifndef __CNTDEF_H__
 #define __CNTDEF_H__
@@ -37,26 +40,26 @@
 const TInt KSpeedDialPhoneLength = 64;
 
 /**
-@publishedAll
+@internalTechnology
 @released
 */
 const TInt KCntMinSpeedDialIndex = 1;
 
 /**
-@publishedAll
+@internalTechnology
 @released
 */
 const TInt KCntMaxSpeedDialIndex = 9;
 
 /**
 Phone Match Length
-@publishedAll
+@internalTechnology
 @released
 */
 const TInt KMaxPhoneMatchLength = 15;
 
 /**
-@publishedAll
+@internalTechnology
 @released
 */
 const TInt KLowerSevenDigits = 7;
@@ -64,7 +67,7 @@ const TInt KLowerSevenDigits = 7;
 /**
 Used for firstname, lastname, companyname, secondname and their
 associated pronunciation fields and e-mail address
-@publishedAll
+@internalTechnology
 @released
 */
 const TInt KCntMaxTextFieldLength=255;
@@ -72,7 +75,7 @@ const TInt KCntMaxTextFieldLength=255;
 // Type definitions
 
 /**
-@publishedAll
+@internalTechnology
 @released
 */
 typedef TBuf<KSpeedDialPhoneLength> TSpeedDialPhoneNumber;
@@ -424,6 +427,20 @@ const TUid KUidContactFieldJobTitle={KUidContactFieldJobTitleValue};
 @released
 */
 const TUid KUidContactFieldIMAddress = { KUidContactFieldIMAddressValue };
+
+/** Identifies an IM or SIP Service Provider field.
+*/
+const TUid KUidContactFieldServiceProvider = { KUidContactFieldServiceProviderValue };
+
+/** Identifies an presence information about contact.
+*/
+const TUid KUidContactFieldPresence = { KUidContactFieldPresenceValue };
+
+/** Identifies status message field.
+*/
+const TUid KUidContactFieldStatusMsg = { KUidContactFieldStatusMsgValue };
+
+
 /** Identifies a USIM second name field. This field is provided to
 store an additional representation of the contact's name, such as a
 nickname or a different representation. An example could be a Japanese
@@ -934,6 +951,20 @@ const TUid KUidContactFieldVCardMapClass={KIntContactFieldVCardMapClass};
 @released
 */
 const TUid KUidContactFieldVCardMapDepartment={KIntContactFieldVCardMapDepartment};
+
+
+/** Favourites ranking field.
+@publishedAll
+@released
+*/
+const TUid KUidContactFieldFavourite={KUidContactFieldFavouriteValue};
+
+/** Field type maps to vCard extension property parameter value Favourite.
+@publishedAll
+@released
+*/
+const TUid KUidContactFieldVCardMapFavourite={KIntContactFieldVCardMapFavourite};
+
 
 /** Name of the TYPE property parameter, for which the values are work, home etc. 
 @publishedAll

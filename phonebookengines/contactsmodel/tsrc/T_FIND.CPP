@@ -1,19 +1,21 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// Run as part T_DBASE2, tests find
-// 
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* Run as part T_DBASE2, tests find
+*
+*/
+
 
 #include <e32test.h>
 #include <f32file.h>
@@ -23,8 +25,8 @@
 #include <cntitem.h>
 #include <cntfield.h>
 #include <cntfldst.h>
-#include "T_UTILS.H"
-#include "T_DBASE2.H"
+#include "t_utils.h"
+#include "t_dbase2.h"
 
 class CAsyncFinder : public CBase, public MIdleFindObserver
 	{
@@ -298,11 +300,11 @@ GLDEF_C void FindAsyncInTextDefL()
 	textDef2->AppendL(TContactTextDefItem(KUidContactFieldCompanyName));
 	textDef2->SetFallbackField(KUidContactFieldAddress);
 //
-	TContactItemId wally=AddFindRecordL(_L("Wally"),_L("Example"),_L("Example Comp Inc"),_L(""));
+	TContactItemId wally=AddFindRecordL(_L("Wally"),_L("Wombat"),_L("Wombat Soup Inc"),_L(""));
 	TContactItemId vincent=AddFindRecordL(_L("Vincent"),_L("Jones"),_L(""),_L(""));
-	TContactItemId wilbert=AddFindRecordL(_L("Wilbert"),_L("Example"),_L("Sample Test Name"),_L(""));
+	TContactItemId wilbert=AddFindRecordL(_L("Wilbert"),_L("Wombat"),_L("Great Ape Software"),_L(""));
 	TContactItemId vincent2=AddFindRecordL(_L("Vincent"),_L("Vincent"),_L(""),_L(""));
-	TContactItemId death=AddFindRecordL(_L("Black"),_L("De'ath"),_L("Hell"),_L("Sample of ExampleH"));
+	TContactItemId death=AddFindRecordL(_L("Black"),_L("De'ath"),_L("Hell"),_L("South of Heaven"));
 //
 	CContactIdArray* wallyResults=CreateIdArrayLC(&wally);
 	CContactIdArray* wombatResults=CreateIdArrayLC(&wally,&wilbert);
@@ -319,26 +321,26 @@ GLDEF_C void FindAsyncInTextDefL()
 	DoFindInTextDefTestLD(findWords, textDef1, wallyResults);
 	findWords=CreateFindWordsL(_L("Wally"),_L("NotFound"),_L(""));
 	DoFindInTextDefTestLD(findWords, textDef1, NULL);
-	findWords=CreateFindWordsL(_L("Wally"),_L("Example"),_L(""));
+	findWords=CreateFindWordsL(_L("Wally"),_L("Wombat"),_L(""));
 	DoFindInTextDefTestLD(findWords, textDef1, wallyResults);
-	findWords=CreateFindWordsL(_L("Wally"),_L("Example"),_L("xxx"));
+	findWords=CreateFindWordsL(_L("Wally"),_L("Wombat"),_L("xxx"));
 	DoFindInTextDefTestLD(findWords, textDef1, NULL);
-	findWords=CreateFindWordsL(_L("W"),_L("Example"),_L(""));
+	findWords=CreateFindWordsL(_L("W"),_L("Wombat"),_L(""));
 	DoFindInTextDefTestLD(findWords, textDef1, wombatResults);
 	findWords=CreateFindWordsL(_L("Wally"),_L("Wally"),_L(""));
 	DoFindInTextDefTestLD(findWords, textDef1, NULL);
-	findWords=CreateFindWordsL(_L("Example"),_L("Example"),_L(""));
+	findWords=CreateFindWordsL(_L("Wombat"),_L("Wombat"),_L(""));
 	DoFindInTextDefTestLD(findWords, textDef1, wallyResults);
-	findWords=CreateFindWordsL(_L("Example"),_L("Example"),_L("Example"));
+	findWords=CreateFindWordsL(_L("Wombat"),_L("Wombat"),_L("Wombat"));
 	DoFindInTextDefTestLD(findWords, textDef1, NULL);
-	findWords=CreateFindWordsL(_L("Example"),_L("Comp"),_L("Inc"));
+	findWords=CreateFindWordsL(_L("Wombat"),_L("Soup"),_L("Inc"));
 //chrisd: new code doesn't find anything here and should have - this is
 //chrisd: all words are contained in the company field
 DoFindInTextDefTestLD(findWords, textDef1, wallyResults);
 //
-	findWords=CreateFindWordsL(_L("ample"),_L("omp"),_L("lly"));
+	findWords=CreateFindWordsL(_L("ombat"),_L("oup"),_L("lly"));
 	DoFindInTextDefTestLD(findWords, textDef1, NULL);
-	findWords=CreateFindWordsL(_L("Example"),_L("Comp"),_L("Inc"));
+	findWords=CreateFindWordsL(_L("Wombat"),_L("Soup"),_L("Inc"));
 //chrisd: new code doesn't find anything here and should have - this is
 //chrisd: all words are contained in the company field
 DoFindInTextDefTestLD(findWords, textDef1, wallyResults);
@@ -354,19 +356,19 @@ DoFindInTextDefTestLD(findWords, textDef1, wallyResults);
 //chrisd: new code fails here
 //chrisd: last name contains both first & last names (PC PIM syncs both to one field)
 DoFindInTextDefTestLD(findWords, textDef1, deathResults);
-	findWords=CreateFindWordsL(_L("De"),_L("Ath"),_L("ExampleH"));
+	findWords=CreateFindWordsL(_L("De"),_L("Ath"),_L("Heaven"));
 	DoFindInTextDefTestLD(findWords, textDef1, NULL);
 //chrisd: new code fails here
 //chrisd: last name contains first and last
-findWords=CreateFindWordsL(_L("De"),_L("Ath"),_L("ExampleH"));
+findWords=CreateFindWordsL(_L("De"),_L("Ath"),_L("Heaven"));
 DoFindInTextDefTestLD(findWords, textDef2, deathResults);
-	findWords=CreateFindWordsL(_L("ExampleH"),_L(""),_L(""));
+	findWords=CreateFindWordsL(_L("Heaven"),_L(""),_L(""));
 //chrisd:one word at the end - partial match - so doesn't need to match
 DoFindInTextDefTestLD(findWords, textDef1, NULL);
-	findWords=CreateFindWordsL(_L("ExampleH"),_L(""),_L(""));
+	findWords=CreateFindWordsL(_L("Heaven"),_L(""),_L(""));
 //chrisd:one word at the end - partial match - so doesn't need to match
 DoFindInTextDefTestLD(findWords, textDef2, deathResults);
-findWords=CreateFindWordsL(_L("of"),_L("Sample"),_L("ExampleH"));
+findWords=CreateFindWordsL(_L("of"),_L("South"),_L("Heaven"));
 //chrisd:all words are in one field - this doesn't need to match
 DoFindInTextDefTestLD(findWords, textDef2, deathResults);
 //
@@ -747,48 +749,48 @@ GLDEF_C void FindUsingKUidContactFieldMatchAllL()
 
 	//add the contacts
 	//AddFindRecordL(const TDesC &aFirstName, const TDesC &aLastName, const TDesC &aCompanyName, const TDesC &aAddress)
-	AddFindRecordL(_L("NameR"),_L("NameJ"),_L("Symbian Foundation"),_L(" "));
-	AddFindRecordL(_L("NameAm"),_L("NameJ"),_L("Symbian Foundation"),_L(" "));
-	AddFindRecordL(_L("NameB"),_L("NameT"),_L("Test NameH"),_L(" "));
-	AddFindRecordL(_L("NameC"),_L("NameAn"),_L("Test Soft Kicks"),_L(" "));
+	AddFindRecordL(_L("Robert"),_L("Jordan"),_L("Software Solutions"),_L(" "));
+	AddFindRecordL(_L("Amanda"),_L("Jordan"),_L("Software Solutions"),_L(" "));
+	AddFindRecordL(_L("Ben"),_L("Turner"),_L("High Res Solutions"),_L(" "));
+	AddFindRecordL(_L("Chris"),_L("Andrews"),_L("Soft Kicks"),_L(" "));
 
 	//start of tests for defect where identity fields were not searched when using KUidMatchInAllFields
 	test.Next(_L("@SYMTestCaseID:PIM-T-FIND-INC049017-0001 FINDING CONTACTS BY NAME FROM GIVEN NAME FIELD."));
 		{
-		FindNameInFirstNameFieldL(_L("NameC"),1);
-		FindNameInFirstNameFieldL(_L("NameT"),0);
-		FindNameInFirstNameFieldL(_L("e"),4);
+		FindNameInFirstNameFieldL(_L("Chris"),1);
+		FindNameInFirstNameFieldL(_L("Turner"),0);
+		FindNameInFirstNameFieldL(_L("e"),2);
 		}
 
 	test.Next(_L("FINDING CONTACTS BY NAME FROM FAMILY NAME FIELD"));
 		{
-		FindNameInLastNameFieldL(_L("NameT"),1);
-		FindNameInLastNameFieldL(_L("NameJ"),2);
-		FindNameInLastNameFieldL(_L("N"),4);
-		FindNameInLastNameFieldL(_L("NameC"),0);
+		FindNameInLastNameFieldL(_L("Turner"),1);
+		FindNameInLastNameFieldL(_L("Jordan"),2);
+		FindNameInLastNameFieldL(_L("r"),4);
+		FindNameInLastNameFieldL(_L("Chris"),0);
 		}
 
 	test.Next(_L("FINDING CONTACTS BY NAME FROM ALL FIELDS"));
 		{
-		FindInAllFieldsL(_L("NameB"),1);
-		FindInAllFieldsL(_L("NameJ"),2);
-		FindInAllFieldsL(_L("r"),1);
+		FindInAllFieldsL(_L("Ben"),1);
+		FindInAllFieldsL(_L("Jordan"),2);
+		FindInAllFieldsL(_L("r"),4);
 		FindInAllFieldsL(_L("xxxxxxxxx"),0);
 		}
 
 	test.Next(_L("FINDING CONTACTS BY COMPANY FROM COMPANY NAME FIELD"));
 		{
-		FindInCompanyFieldL(_L("NameB"),0);
-		FindInCompanyFieldL(_L("Test NameH"),1);
-		FindInCompanyFieldL(_L("Symbian Foundation"),2);
+		FindInCompanyFieldL(_L("Ben"),0);
+		FindInCompanyFieldL(_L("High Res Solutions"),1);
+		FindInCompanyFieldL(_L("Software Solutions"),2);
 		FindInCompanyFieldL(_L("s"),4);
 		}
 
 	test.Next(_L("FINDING CONTACTS BY COMPANY FROM  ALL FIELDS"));
 		{
 		FindInAllFieldsL(_L("Kick"),1);
-		FindInAllFieldsL(_L("Test NameH"),1);
-		FindInAllFieldsL(_L("Symbian Foundation"),2);
+		FindInAllFieldsL(_L("High Res Solutions"),1);
+		FindInAllFieldsL(_L("Software Solutions"),2);
 		FindInAllFieldsL(_L("s"),4);
 		}
 	//end of tests for defect where identity fields were not searched when using KUidMatchInAllFields
@@ -796,40 +798,40 @@ GLDEF_C void FindUsingKUidContactFieldMatchAllL()
 	//start of Async tests for defect where identity fields were not searched when using KUidMatchInAllFields
 	test.Next(_L("FINDING CONTACTS BY NAME FROM GIVEN NAME FIELD ASYNCHRONOUSLY"));
 		{
-		FindNameInFirstNameFieldL(_L("NameC"),1,ETrue);
-		FindNameInFirstNameFieldL(_L("NameT"),0,ETrue);
-		FindNameInFirstNameFieldL(_L("e"),4,ETrue);
+		FindNameInFirstNameFieldL(_L("Chris"),1,ETrue);
+		FindNameInFirstNameFieldL(_L("Turner"),0,ETrue);
+		FindNameInFirstNameFieldL(_L("e"),2,ETrue);
 		}
 
 	test.Next(_L("FINDING CONTACTS BY NAME FROM FAMILY NAME FIELD ASYNCHRONOUSLY"));
 		{
-		FindNameInLastNameFieldL(_L("NameT"),1,ETrue);
-		FindNameInLastNameFieldL(_L("NameJ"),2,ETrue);
-		FindNameInLastNameFieldL(_L("m"),4,ETrue);
-		FindNameInLastNameFieldL(_L("NameC"),0,ETrue);
+		FindNameInLastNameFieldL(_L("Turner"),1,ETrue);
+		FindNameInLastNameFieldL(_L("Jordan"),2,ETrue);
+		FindNameInLastNameFieldL(_L("r"),4,ETrue);
+		FindNameInLastNameFieldL(_L("Chris"),0,ETrue);
 		}
 
 	test.Next(_L("FINDING CONTACTS BY NAME FROM ALL FIELDS ASYNCHRONOUSLY"));
 		{
-		FindInAllFieldsL(_L("NameB"),1,ETrue);
-		FindInAllFieldsL(_L("NameJ"),2,ETrue);
-		FindInAllFieldsL(_L("r"),1,ETrue);
+		FindInAllFieldsL(_L("Ben"),1,ETrue);
+		FindInAllFieldsL(_L("Jordan"),2,ETrue);
+		FindInAllFieldsL(_L("r"),4,ETrue);
 		FindInAllFieldsL(_L("xxxxxxxxx"),0,ETrue);
 		}
 
 	test.Next(_L("FINDING CONTACTS BY COMPANY FROM COMPANY NAME FIELD ASYNCHRONOUSLY"));
 		{
-		FindInCompanyFieldL(_L("NameB"),0,ETrue);
-		FindInCompanyFieldL(_L("Test NameH"),1,ETrue);
-		FindInCompanyFieldL(_L("Symbian Foundation"),2,ETrue);
+		FindInCompanyFieldL(_L("Ben"),0,ETrue);
+		FindInCompanyFieldL(_L("High Res Solutions"),1,ETrue);
+		FindInCompanyFieldL(_L("Software Solutions"),2,ETrue);
 		FindInCompanyFieldL(_L("s"),4,ETrue);
 		}
 
 	test.Next(_L("FINDING CONTACTS BY COMPANY FROM  ALL FIELDS ASYNCHRONOUSLY"));
 		{
 		FindInAllFieldsL(_L("Kick"),1,ETrue);
-		FindInAllFieldsL(_L("Test NameH"),1,ETrue);
-		FindInAllFieldsL(_L("Symbian Foundation"),2,ETrue);
+		FindInAllFieldsL(_L("High Res Solutions"),1,ETrue);
+		FindInAllFieldsL(_L("Software Solutions"),2,ETrue);
 		FindInAllFieldsL(_L("s"),4,ETrue);
 		}
 	//end of Async tests for defect where identity fields were not searched when using KUidMatchInAllFields

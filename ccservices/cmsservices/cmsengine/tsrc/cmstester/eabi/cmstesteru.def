@@ -1,7 +1,0 @@
-EXPORTS
-	_Z9LibEntryLR13CTestModuleIf @ 1 NONAME
-	_ZTI13CCmsPbHandler @ 2 NONAME ; #<TI>#
-	_ZTV13CCmsPbHandler @ 3 NONAME ; #<VT>#
-	_ZTI17CCmsNotifyHandler @ 4 NONAME ; #<TI>#
-	_ZTV17CCmsNotifyHandler @ 5 NONAME ; #<VT>#
-

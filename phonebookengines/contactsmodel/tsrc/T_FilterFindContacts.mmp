@@ -24,7 +24,7 @@ SOURCEPATH		.
 SOURCE			T_FilterFindContacts.cpp
 SOURCE			t_utils2.cpp
 
-APP_LAYER_SYSTEMINCLUDE_SYMBIAN
+SYSTEMINCLUDE	/epoc32/include
 
 LIBRARY	      	euser.lib 
 LIBRARY			cntmodel.lib

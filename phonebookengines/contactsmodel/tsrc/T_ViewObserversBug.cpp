@@ -1,19 +1,21 @@
-// Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// ViewObserversBug Test module
-// 
-//
+/*
+* Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* ViewObserversBug Test module
+*
+*/
+
 
 
 #include <e32test.h>
@@ -24,7 +26,7 @@
 #include <cntfldst.h>
 #include <cntviewbase.h>
 
-#include "CContactViewEventQueue.h"
+#include "ccontactvieweventqueue.h"
 
 _LIT(KTestName, "T_ViewObserversBug");
 

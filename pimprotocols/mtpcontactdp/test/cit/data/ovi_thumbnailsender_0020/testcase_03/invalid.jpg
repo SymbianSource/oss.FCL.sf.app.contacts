@@ -1,0 +1,608 @@
+<?xml version="1.0" ?>
+<Dataset name="ObjectPropList">
+<Array name="ObjectPropList">
+
+<Compound name="DateModifiedPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="DateModifiedPropCode" ref="DateModifiedPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">ffff</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="String" name="DefaultValue" count="0">20090703T103022</Field>
+</Dependency>
+</Compound>
+
+<Compound name="GivenNamePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="GivenNamePropCode" ref="GivenNamePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">GivenName</Field>
+</Dependency>
+</Compound>
+
+<Compound name="MiddleNamesPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="MiddleNamesPropCode" ref="MiddleNamesPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">MiddleName</Field>
+</Dependency>
+</Compound>
+
+<Compound name="FamilyNamePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="FamilyNamePropCode" ref="FamilyNamePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">FamilyName</Field>
+</Dependency>
+</Compound>
+
+<Compound name="TitlePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="TitlePropCode" ref="TitlePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">Title</Field>
+</Dependency>
+</Compound>
+
+<Compound name="SuffixPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="SuffixPropCode" ref="SuffixPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">Suffix</Field>
+</Dependency>
+</Compound>
+
+<Compound name="PersonalEmailPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="PersonalEmailPropCode" ref="PersonalEmailPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">personal@nokia.com</Field>
+</Dependency>
+</Compound>
+
+<Compound name="PersonalAddressStreetPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="PersonalAddressStreetPropCode" ref="PersonalAddressStreetPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">555 Dial Drive</Field>
+</Dependency>
+</Compound>
+
+<Compound name="PersonalAddressLine2PropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="PersonalAddressLine2PropCode" ref="PersonalAddressLine2PropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">888 Dial Drive</Field>
+</Dependency>
+</Compound>
+
+<Compound name="PersonalAddressCityPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="PersonalAddressCityPropCode" ref="PersonalAddressCityPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">Beijing</Field>
+</Dependency>
+</Compound>
+
+<Compound name="PersonalAddressRegionPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="PersonalAddressRegionPropCode" ref="PersonalAddressRegionPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">China</Field>
+</Dependency>
+</Compound>
+
+<Compound name="PersonalAddressPostalCodePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="PersonalAddressPostalCodePropCode" ref="PersonalAddressPostalCodePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">710021</Field>
+</Dependency>
+</Compound>
+
+<Compound name="PersonalAddressCountryPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="PersonalAddressCountryPropCode" ref="PersonalAddressCountryPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">China_Beijing</Field>
+</Dependency>
+</Compound>
+
+<Compound name="BusinessAddressStreetPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="BusinessAddressStreetPropCode" ref="BusinessAddressStreetPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">Dan ling Street</Field>
+</Dependency>
+</Compound>
+
+<Compound name="BusinessAddressLine2PropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="BusinessAddressLine2PropCode" ref="BusinessAddressLine2PropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">CEC plaza</Field>
+</Dependency>
+</Compound>
+
+<Compound name="BusinessAddressCityPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="BusinessAddressCityPropCode" ref="BusinessAddressCityPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">Beijing</Field>
+</Dependency>
+</Compound>
+
+<Compound name="BusinessAddressRegionPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="BusinessAddressRegionPropCode" ref="BusinessAddressRegionPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">000001</Field>
+</Dependency>
+</Compound>
+
+<Compound name="BusinessAddressPostalCodePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="BusinessAddressPostalCodePropCode" ref="BusinessAddressPostalCodePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">England</Field>
+</Dependency>
+</Compound>
+
+<Compound name="BusinessAddressCountryPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="BusinessAddressCountryPropCode" ref="BusinessAddressCountryPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">Wall Street</Field>
+</Dependency>
+</Compound>
+
+<Compound name="OtherAddressStreetPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="OtherAddressStreetPropCode" ref="OtherAddressStreetPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">Chang an Avenue</Field>
+</Dependency>
+</Compound>
+
+<Compound name="OtherAddressLine2PropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="OtherAddressLine2PropCode" ref="OtherAddressLine2PropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">Chang an Avenue</Field>
+</Dependency>
+</Compound>
+
+<Compound name="OtherAddressCityPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="OtherAddressCityPropCode" ref="OtherAddressCityPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">New York</Field>
+</Dependency>
+</Compound>
+
+<Compound name="OtherAddressRegionPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="OtherAddressRegionPropCode" ref="OtherAddressRegionPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">U.S.A</Field>
+</Dependency>
+</Compound>
+
+<Compound name="OtherAddressPostalCodePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="OtherAddressPostalCodePropCode" ref="OtherAddressPostalCodePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">123456</Field>
+</Dependency>
+</Compound>
+
+<Compound name="OtherPostalAddressCountryPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="OtherPostalAddressCountryPropCode" ref="OtherPostalAddressCountryPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">Netherland</Field>
+</Dependency>
+</Compound>
+
+<Compound name="EmailPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="EmailPropCode" ref="EmailPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">email.symbian.com</Field>
+</Dependency>
+</Compound>
+
+<Compound name="BusinessEmailPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="BusinessEmailPropCode" ref="BusinessEmailPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">business_email@symbian.com</Field>
+</Dependency>
+</Compound>
+
+<Compound name="PhonePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="PhonePropCode" ref="PhonePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">1234567</Field>
+</Dependency>
+</Compound>
+<Compound name="PersonalPhonePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="PersonalPhonePropCode" ref="PersonalPhonePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">1398888888</Field>
+</Dependency>
+</Compound>
+
+<Compound name="BusinessPhonePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="BusinessPhonePropCode" ref="BusinessPhonePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">65860000</Field>
+</Dependency>
+</Compound>
+
+<Compound name="MobilePhonePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="MobilePhonePropCode" ref="MobilePhonePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">13411111111</Field>
+</Dependency>
+</Compound>
+
+<Compound name="PersonalFaxPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="PersonalFaxPropCode" ref="PersonalFaxPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">800-123-9876</Field>
+</Dependency>
+</Compound>
+
+<Compound name="BusinessFaxPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="BusinessFaxPropCode" ref="BusinessFaxPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">6586000021</Field>
+</Dependency>
+</Compound>
+
+<Compound name="PagerPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="PagerPropCode" ref="PagerPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">Pager</Field>
+</Dependency>
+</Compound>
+
+<Compound name="PersonalWebAddressPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="PersonalWebAddressPropCode" ref="PersonalWebAddressPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">https://www.showmywebaddress.com</Field>
+</Dependency>
+</Compound>
+
+<Compound name="BusinessWebAddressPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="BusinessWebAddressPropCode" ref="BusinessWebAddressPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">www.businesswebaddress.com</Field>
+</Dependency>
+</Compound>
+
+<Compound name="OrganizationPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="OrganizationPropCode" ref="OrganizationPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">symbian fundation</Field>
+</Dependency>
+</Compound>
+
+<Compound name="RolePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="RolePropCode" ref="RolePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">software engineer</Field>
+</Dependency>
+</Compound>
+
+<Compound name="FaxPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="FaxPropCode" ref="FaxPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">888-999-666</Field>
+</Dependency>
+</Compound>
+
+<Compound name="SpousePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="SpousePropCode" ref="SpousePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">Liu Yifei</Field>
+</Dependency>
+</Compound>
+
+<Compound name="ChildrenPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="ChildrenPropCode" ref="ChildrenPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">Xiao Gui Dang Jia</Field>
+</Dependency>
+</Compound>
+
+<Compound name="AssistantPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="AssistantPropCode" ref="AssistantPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">Mr Hu</Field>
+</Dependency>
+</Compound>
+
+<Compound name="BirthdatePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="BirthdatePropCode" ref="BirthdatePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">ffff</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="String" name="DefaultValue" count="0">19810701</Field>
+</Dependency>
+</Compound>
+
+<Compound name="AnniversaryDatePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="AnniversaryDatePropCode" ref="AnniversaryDatePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">ffff</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="String" name="DefaultValue" count="0">20050903</Field>
+</Dependency>
+</Compound>
+
+<Compound name="RingtonePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="RingtonePropCode" ref="RingtonePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">6</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="UINT32" name="Value">0</Field>
+</Dependency>
+</Compound>
+
+<Compound name="BodyPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="BodyPropCode" ref="BodyPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" count="11" name="Value">contact body</Field>
+</Dependency>
+</Compound>
+
+<Compound name="MobilePhone3PropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="MobilePhone3PropCode" ref="MobilePhone3PropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16"name="Value">mobilephone3-ovi-12811111</Field>
+</Dependency>
+</Compound>
+
+<Compound name="AssistantPhonePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="AssistantPhonePropCode" ref="AssistantPhonePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">assistantphone-ovi-12811111</Field>
+</Dependency>
+</Compound>
+
+<Compound name="NickNamePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="NickNamePropCode" ref="NickNamePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">nickname-ovi-peppy</Field>
+</Dependency>
+</Compound>
+
+<Compound name="VideoPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="NickNamePropCode" ref="NickNamePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">nickname-ovi-peppy</Field>
+</Dependency>
+</Compound>
+
+<Compound name="VideoPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="VideoPropCode" ref="VideoPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">video-ovi-123456779</Field>
+</Dependency>
+</Compound>
+
+<Compound name="PersonalVideoPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="PersonalVideoPropCode" ref="PersonalVideoPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">personalvideo-ovi-123456779</Field>
+</Dependency>
+</Compound>
+
+<Compound name="BusinessVideoPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="BusinessVideoPropCode" ref="BusinessVideoPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">businessvideo-ovi-123456779</Field>
+</Dependency>
+</Compound>
+
+<Compound name="VoipPhonePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="VoipPhonePropCode" ref="VoipPhonePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">voipphone-ovi-09876543</Field>
+</Dependency>
+</Compound>
+
+<Compound name="PersonalVoipPhonePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="PersonalVoipPhonePropCode" ref="PersonalVoipPhonePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">personalvoipphone-ovi-09876543</Field>
+</Dependency>
+</Compound>
+
+<Compound name="BusinessVoipPhonePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="BusinessVoipPhonePropCode" ref="BusinessVoipPhonePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">businessvoipphone-ovi-09876543</Field>
+</Dependency>
+</Compound>
+
+<Compound name="POBoxPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="POBoxPropCode" ref="POBoxPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">pobox-ovi-cecplaza</Field>
+</Dependency>
+</Compound>
+
+<Compound name="PersonalPOBoxPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="PersonalPOBoxPropCode" ref="PersonalPOBoxPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">personalpobox-ovi-cecplaza</Field>
+</Dependency>
+</Compound>
+
+<Compound name="BusinessPOBoxPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="BusinessPOBoxPropCode" ref="BusinessPOBoxPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">businesspobox-ovi-cecplaza</Field>
+</Dependency>
+</Compound>
+
+<Compound name="DepartmentPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="DepartmentPropCode" ref="DepartmentPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">department-ovi-cecplaza</Field>
+</Dependency>
+</Compound>
+
+<Compound name="ProviderOviPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="ProviderOviPropCode" ref="ProviderOviPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">providerovi-nokia@ovi.com</Field>
+</Dependency>
+</Compound>
+
+<Compound name="ProviderOviPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="ProviderOviPropCode" ref="ProviderOviPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">providerovi-nokia@ovi.com</Field>
+</Dependency>
+</Compound>
+
+<Compound name="ProviderMSNPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="ProviderMSNPropCode" ref="ProviderMSNPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">providermsn-nokia@hotmail.com</Field>
+</Dependency>
+</Compound>
+
+<Compound name="ProviderGooglePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="ProviderGooglePropCode" ref="ProviderGooglePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">providergoogle-nokia@gmail.com</Field>
+</Dependency>
+</Compound>
+
+<Compound name="ProviderYahooPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="ProviderYahooPropCode" ref="ProviderYahooPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">provideryahoo-nokia@yahoo.com</Field>
+</Dependency>
+</Compound>
+
+<Compound name="ProviderFaceBookPropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="ProviderFaceBookPropCode" ref="ProviderFaceBookPropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">providerfacebook-nokia@facebook.com</Field>
+</Dependency>
+</Compound>
+
+<Compound name="ProviderSkypePropCode">
+<Field type="UINT32" name="ObjectHandle">0</Field>
+<Reference name="ProviderSkypePropCode" ref="ProviderSkypePropCode"/>
+<Field type="UINT16" dependable="true" name="Datatype">4004</Field>
+<Dependency name="Value" dependon="DataType">
+   <Field type="AUINT16" name="Value">providerskype-nokia@skype.com</Field>
+</Dependency>
+</Compound>
+
+</Array>
+</Dataset>

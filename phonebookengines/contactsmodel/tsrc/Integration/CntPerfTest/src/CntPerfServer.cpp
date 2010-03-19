@@ -1,17 +1,20 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file
@@ -19,23 +22,23 @@
  @released
 */
 
-#include "CntPerfServer.h"
-#include "ClientServer.h"
-#include "CustomLabelUid.h"
-#include "UnifiedSingular.h"
-#include "ViewDefAllFieldsTest.h"
-#include "SimpleViewDefTests.h"
-#include "ViewDefAnyFieldsTest.h"
-#include "ViewDefCustomFieldsTest.h"
-#include "CustomTemplateTest.h"
-#include "AccessCountTests.h"
-#include "ContactViewTest.h"
-#include "CContactViewEventQueue.h"
-#include "ContactUtilitiesCollection.h"
-#include "TestContactViewAccessStep.h"
-#include "PrepareDataTestStep.h"
-#include "TestContactViewUnderLyingViewUpdateStep.h"
-#include "TestContactViewCRUDOperationsStep.h"
+#include "cntperfserver.h"
+#include "clientserver.h"
+#include "customlabeluid.h"
+#include "unifiedsingular.h"
+#include "viewdefallfieldstest.h"
+#include "simpleviewdeftests.h"
+#include "viewdefanyfieldstest.h"
+#include "viewdefcustomfieldstest.h"
+#include "customtemplatetest.h"
+#include "accesscounttests.h"
+#include "contactviewtest.h"
+#include "ccontactvieweventqueue.h"
+#include "contactutilitiescollection.h"
+#include "testcontactviewaccessstep.h"
+#include "preparedatateststep.h"
+#include "testcontactviewunderlyingviewupdatestep.h"
+#include "testcontactviewcrudoperationsstep.h"
 
 
 

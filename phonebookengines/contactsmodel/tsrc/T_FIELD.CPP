@@ -1,17 +1,20 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <f32file.h>
@@ -21,7 +24,7 @@
 #include <cntitem.h>
 #include <cntfield.h>
 #include <cntfldst.h>
-#include "T_UTILS.H"
+#include "t_utils.h"
 #include "cnttestsynchroniser.h"
 
 CCntTest* CntTest=NULL;
@@ -596,8 +599,8 @@ void AdditionalUidTests3L()
 	const TInt KFirstPronunciationField=3;
 
 	_LIT(KCoName,"Symbian Ltd.");
-	_LIT(K1stName,"Name1");
-	_LIT(KLastName,"Test1");
+	_LIT(K1stName,"John");
+	_LIT(KLastName,"Doe");
 	_LIT(KFormatCo,"%S\n");
 	_LIT(KFormat1st,"%S ");
 	_LIT(KFormatLast,"%S from ");

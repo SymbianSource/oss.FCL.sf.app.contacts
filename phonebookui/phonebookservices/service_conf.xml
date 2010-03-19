@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<service name="com.nokia.services.phonebookservices"  filepath="must-not-be-empty" >
+  <description>Phonebook service</description>
+  <interface name="Fetch" version="1.0" capabilities="">
+    <description>Fetch interface</description>
+  </interface>
+</service>

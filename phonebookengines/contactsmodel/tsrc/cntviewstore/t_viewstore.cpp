@@ -1,22 +1,24 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// RTest based unit test to verify the operation of the functions
-// to get/set 'default' view definitions in cntmodel. The functions are:
-// TContactViewStore::DefaultViewsL()
-// TContactViewStore::SetDefaultViewsL()
-// 
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* RTest based unit test to verify the operation of the functions
+* to get/set 'default' view definitions in cntmodel. The functions are:
+* TContactViewStore::DefaultViewsL()
+* TContactViewStore::SetDefaultViewsL()
+*
+*/
+
 
 #include <e32base.h>
 #include <e32test.h>

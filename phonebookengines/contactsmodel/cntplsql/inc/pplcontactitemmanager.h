@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -28,6 +29,7 @@
 
 #include <e32base.h>
 #include <sqldb.h>
+//#include <columbo.h>
 #include "cntsqlprovider.h"
 #include "clplcontactproperties.h" 
 #include "persistencelayer.h"
@@ -68,11 +70,13 @@ public:
 	TBool IsDatabaseEmptyL();
 	CPplPreferencesPersistor& PreferencesPersitor();
 	CContactIdArray* GroupIdListL();	
+	CContactIdArray* SearchIdListL (const TDesC& aSearchQuery) const;
     CContactIdArray& CardTemplateIdsL();
     TContactItemId OwnCardIdL();
     void SetOwnCardIdL(TContactItemId aId);
     TInt CardTemplatePrefIdL() const;
     void SetCardTemplatePrefIdL(TInt aCardTemplatePrefId);
+	void SynchronizePredSearchTableL();
     
 private:
 	CPplContactItemManager(RSqlDatabase& aDatabase, MLplTransactionManager& aTransactionManager, CLplContactProperties&  aContactProperties, RPplIccContactStore& aIccContactStore);
@@ -84,6 +88,8 @@ private:
 	
 	TInt NameFieldIndex(const CContactItemField& aNameField) const;
 	void DeleteInLowDiskConditionL(CPplTableBase* aTable, CContactItem* aContactItem);
+
+	TBool DoesPredSearchTableExistL() const;
 	
 private:
 	RSqlDatabase&				iDatabase;				// CPplContactItemManager does not own the RSqlDatabase object
@@ -94,8 +100,11 @@ private:
 	CPplTableBase* 				iContactTable;
 	CPplTableBase* 				iGroupTable;	
 	CPplTableBase* 				iCommAddrTable;
+	CPplTableBase* 				iPredSearchTable;
+	CPplTableBase*              iPresenceTable;
 	CPplPreferencesPersistor*	iPreferencePersistor;
-	RPplIccContactStore&        iIccContactStore; 
+	RPplIccContactStore&        iIccContactStore;
+	//RColumboSession             iColSession;
 };
 
 #endif // __PPLCONTACTITEMMANAGER_H__

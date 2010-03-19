@@ -1,32 +1,34 @@
-// Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// for (WINS && !EKA2) versions will be xxxServer.Dll and require a thread to be started
-// in the process of the client. The client initialises the server by calling the
-// one and only ordinal.
-// 
-//
+/*
+* Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* for (WINS && !EKA2) versions will be xxxServer.Dll and require a thread to be started
+* in the process of the client. The client initialises the server by calling the
+* one and only ordinal.
+*
+*/
+
 
 #include <e32base.h>
 #include <e32cmn.h> 
 
 #if (!defined TS_PARAM_SVR_SUITENAME_SERVER_H_)
-	#include "CSuite.h"
+	#include "csuite.h"
 #endif
 
 
 PARAM_FOREACH_MESS_BEGIN
-#include "PARAM_MESS_NAME_CStep.h"
+#include "param_mess_name_cstep.h"
 PARAM_FOREACH_MESS_END
 
 // __EDIT_ME__ - Substitute the name of your test server 

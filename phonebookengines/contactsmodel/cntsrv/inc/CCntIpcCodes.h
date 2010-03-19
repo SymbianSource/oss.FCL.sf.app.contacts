@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -35,6 +36,8 @@
 #define KCapabilityReadUserData 100
 #define KCapabilityWriteUserData 400
 
+// To be removed. Should be defined in a header file
+#define KCntSearchResultIdLists 99
 
 /**
 Contacts database filename maximum length.  Used to police descriptors on Client
@@ -105,7 +108,9 @@ enum TCntClientIpcCodes
 	ECntOpenViewSession,
 	ECntCloseViewSession,
     ECntViewChangeSortOrderL,
-
+    ECntSearchResultIdLists = KCntSearchResultIdLists,  // Do not change this enum value
+                                                        // and do not add anything immediately
+                                                        // after this.
 	// ---- Read User Data capability ----
 	ECntOpenDataBase= KCapabilityReadUserData,
 	ECntReOpenDbTables,

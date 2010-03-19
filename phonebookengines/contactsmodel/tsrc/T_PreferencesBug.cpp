@@ -1,19 +1,21 @@
-// Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// PreferencesBug Test module
-// 
-//
+/*
+* Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* PreferencesBug Test module
+*
+*/
+
 
 
 #include <e32test.h>
@@ -24,8 +26,8 @@
 #include <cntfldst.h>
 #include <cntviewbase.h>
 
-#include "CContactViewEventQueue.h"
-#include "CContactDbEventQueue.h"
+#include "ccontactvieweventqueue.h"
+#include "ccontactdbeventqueue.h"
 
 _LIT(KTestName, "T_PreferencesBug");
 
@@ -279,7 +281,7 @@ LOCAL_C void TestOpenViewsWithExistingDataL
 
     // Create test contacts and a group
     CContactIdArray* groups = CContactIdArray::NewLC();
-    TContactItemId groupId = CreateTestGroupL(res->Db(), _L("SYMBIANFOUNDATION"));
+    TContactItemId groupId = CreateTestGroupL(res->Db(), _L("IBM"));
     groups->AddL(groupId);
 
     CContactIdArray* unsortedGroups = CContactIdArray::NewLC();
@@ -287,13 +289,13 @@ LOCAL_C void TestOpenViewsWithExistingDataL
     unsortedGroups->AddL(groupId);
 
     CContactIdArray* contacts = CContactIdArray::NewLC();
-    TContactItemId id = CreateTestContactL(res->Db(), _L("Test"), _L("Name"), _L("SYMBIANFOUNDATION"));
+    TContactItemId id = CreateTestContactL(res->Db(), _L("Foo"), _L("John"), _L("IBM"));
     contacts->AddL(id);
     res->Db().AddContactToGroupL(id,(*groups)[0]);
-    id = CreateTestContactL(res->Db(), _L("Example"), _L("Name"), _L("SYMBIANFOUNDATION"));
+    id = CreateTestContactL(res->Db(), _L("Smith"), _L("Peter"), _L("IBM"));
     contacts->AddL(id);
     res->Db().AddContactToGroupL(id,(*groups)[0]);
-    id = CreateTestContactL(res->Db(), _L("Sample"), _L("Name"), _L("SYMBIANFOUNDATION1"));
+    id = CreateTestContactL(res->Db(), _L("Paul"), _L("Linus"), _L("Bell Labs"));
     contacts->AddL(id);
 
     CContactIdArray* unsortedContacts = CContactIdArray::NewLC();
@@ -472,7 +474,7 @@ LOCAL_C void TestModifyUnsortedContactL(CTestResources& aRes, TContactItemId aCo
     {
     CContactItem* contact = aRes.Db().OpenContactLX(aContactId);
     CleanupStack::PushL(contact);
-    AddFieldToContactL(*contact, KUidContactFieldEMail, _L("test@symbianfoundation.test"));
+    AddFieldToContactL(*contact, KUidContactFieldEMail, _L("foo@bar.com"));
     aRes.Db().CommitContactL(*contact);
     CleanupStack::PopAndDestroy(2);
 
@@ -605,7 +607,7 @@ LOCAL_C void TestViewEventsL
     // Add a contact
     test.Next(_L("Add a contact"));
     CContactIdArray* contacts = CContactIdArray::NewLC();
-    TContactItemId id = CreateTestContactL(res->Db(), _L("Name2"), _L("LName"), _L("SYMBIANFOUNDATION"));
+    TContactItemId id = CreateTestContactL(res->Db(), _L("Foo"), _L("John"), _L("IBM"));
     contacts->AddL(id);
 
     TContactDbObserverEvent dbEvent;
@@ -628,7 +630,7 @@ LOCAL_C void TestViewEventsL
     // Add a group
     test.Next(_L("Add a group"));
     CContactIdArray* groups = CContactIdArray::NewLC();
-    id = CreateTestGroupL(res->Db(), _L("SYMBIANFOUNDATION"));
+    id = CreateTestGroupL(res->Db(), _L("IBM"));
     groups->AddL(id);
 
     test(res->DbEvents().ListenForEvent(KEventWaitTime,dbEvent));

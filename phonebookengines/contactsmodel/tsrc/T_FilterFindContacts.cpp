@@ -1,21 +1,23 @@
-// Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// Tests the following:
-// 1: Addition and removal of contacts from a CContactFindView
-// 2: Database update when editing an unsortable contact ie making it sortable
-// 
-//
+/*
+* Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* Tests the following:
+* 1: Addition and removal of contacts from a CContactFindView
+* 2: Database update when editing an unsortable contact ie making it sortable
+*
+*/
+
 
 #include <e32test.h>	
 #include <f32file.h>	
@@ -23,8 +25,8 @@
 #include <cntviewbase.h>
 #include <cntitem.h>
 
-#include "T_FilterFindContacts.h"
-#include "T_UTILS.H"	
+#include "t_filterfindcontacts.h"
+#include "t_utils.h"	
 #include "t_utils2.h"	
 
 _LIT(KTestName,			"T_FilterFindContacts Test");
@@ -129,7 +131,7 @@ void CFilterFindContactsTester::RunL()
 		case ECheckAddContactEntry:
 			{
 			// test step for for DEF065179- bug in contact views AllFieldsLC() 
-			test.Next(_L("Adding contact entry: ExampleJ,NameS,Symbianfoundation"));
+			test.Next(_L("Adding contact entry: John,Smith,Symbian"));
 
 			AddEntryL();
 			}
@@ -204,7 +206,7 @@ void CFilterFindContactsTester::RunL()
 			index  = iLocalView->FindL(iContactId);
 			HBufC* text= iLocalView->AllFieldsLC(index,KFieldSeparator);
 
-			_LIT(KExpectedText,"ExampleJ,NameS,Symbianfoundation");
+			_LIT(KExpectedText,"John,Smith,Symbian");
 			test (text->Des() == KExpectedText);
 
 			CleanupStack::PopAndDestroy(); // text
@@ -330,9 +332,9 @@ void CFilterFindContactsTestConductor::RunTestsL()
 //============================================================================ 
 void CFilterFindContactsTester::AddEntryL()
 	{
-	_LIT(KForename,"ExampleJ"); 
-	_LIT(KSurname,"NameS"); 
-	_LIT(KCompanyName,"Symbianfoundation"); 
+	_LIT(KForename,"John"); 
+	_LIT(KSurname,"Smith"); 
+	_LIT(KCompanyName,"Symbian"); 
 
 	// Create a  contact card to contain the data
 	CContactCard* newCard = CContactCard::NewLC();

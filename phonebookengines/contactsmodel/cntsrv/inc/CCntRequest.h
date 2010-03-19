@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
  
@@ -23,7 +24,7 @@
 #include <e32base.h>
 #include <cntdb.h>
 
-#include "CActiveLoop.h"
+#include "cactiveloop.h"
 
 enum TAccept		// TAccept is the return value for CState::AcceptRequestL methods
 	{

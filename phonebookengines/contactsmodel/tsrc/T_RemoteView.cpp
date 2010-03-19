@@ -1,29 +1,29 @@
-// Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// T_RemoteView creates a database in the main thread. Another thread is created containing
-// a remote view to the same database.  A number of contacts are added, then some deleted. 
-// Meanwhile whenever the view is updated and available, the second thread prints all the
-// contact IDs to the console using an active object, one at a time (a nicely time-consuming
-// process intended to cause a backlog of messages between the thread). 
-// After the contacts are added, a number of them are deleted at once.
-// Before the changes for INC037352 , this would Panic. Now it executes without any errors. 
-// Note: This overwrites the default contacts database:  c:\system\data\Contacts.cdb
-// This is necessary if this is to be used with phonebook server which requires this file
-// 
-//
+/*
+* Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* T_RemoteView creates a database in the main thread. Another thread is created containing
+* a remote view to the same database.  A number of contacts are added, then some deleted. 
+* Meanwhile whenever the view is updated and available, the second thread prints all the
+* contact IDs to the console using an active object, one at a time (a nicely time-consuming
+* process intended to cause a backlog of messages between the thread). 
+* After the contacts are added, a number of them are deleted at once.
+* Before the changes for INC037352 , this would Panic. Now it executes without any errors. 
+* Note: This overwrites the default contacts database:  c:\system\data\Contacts.cdb
+* This is necessary if this is to be used with phonebook server which requires this file
+*
+*/
 
-// System includes
 #include <cntdb.h>
 #include <cntdef.h>
 #include <cntitem.h>
@@ -51,9 +51,9 @@ const TInt KNumberToDeleteAtOneTime = 45;
 
 static RTest TheTest(_L("T_RemoteView"));
 
-//
+///////////////////////////////////////////////////////////////////////////////
 //#pragma mark ==== Class definitions ====
-//
+///////////////////////////////////////////////////////////////////////////////
 
 /** 
 This class recieves view events, prints them, and then prints all the
@@ -395,9 +395,9 @@ TThreadId CViewer::Create(const TDesC& aName, const TDesC& aViewName)
 
 
 
-//
+///////////////////////////////////////////////////////////////////////////////
 //#pragma mark -
-//
+///////////////////////////////////////////////////////////////////////////////
 
 /** This object creates and closes a thread containing a view to the contacts database. 
 	The view will output all changes and the current state of the database using an RDebug object. 
@@ -500,16 +500,16 @@ TInt RRemoteViewThread::Close()
 	return iStatus.Int();
 	}
 
-//
+///////////////////////////////////////////////////////////////////////////////
 //#pragma mark ==== Test Function Prototypes ====
-//
+///////////////////////////////////////////////////////////////////////////////
 void PopulateTestDatabaseL(CContactDatabase& aDatabase);
 void TestL();
 void doMainL();
 
-//
+///////////////////////////////////////////////////////////////////////////////
 //#pragma mark ==== Test Function Implementations ====
-//
+///////////////////////////////////////////////////////////////////////////////
 const TInt KPrintFreq=10;
 
 /** add aCount random contacts to the open database. The 1st item will always be the own card */
@@ -669,9 +669,9 @@ void Test2L()
 	}
 
 
-//
+////////////////////////////////////////////////////////////////////////////////////
 // -------> Static global functions (source)
-//
+////////////////////////////////////////////////////////////////////////////////////
 void doMainL()
 	{
 	CActiveScheduler*  scheduler = new (ELeave) CActiveScheduler;

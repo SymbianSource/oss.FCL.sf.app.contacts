@@ -1,17 +1,20 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file 
@@ -19,22 +22,22 @@
  @released
 */
 
-#include "PerformanceFunctionalityServer.h"
-#include "RequestMixStep.h"
-#include "TransactionsStep.h"
-#include "LowDiskSpaceStep.h"
-#include "ConcurrentNotifierStep.h"
-#include "ConcurrentListenerStep.h"
-#include "CRUDOOMStep.h"
-#include "TimeoutStep.h"
-#include "ConcurrentTimeOutNotifierStep.h"
-#include "ConcurrentTimeOutListenerStep.h"
-#include "RandomBlobStep.h"
-#include "NotificationStep.h"
+#include "performancefunctionalityserver.h"
+#include "requestmixstep.h"
+#include "transactionsstep.h"
+#include "lowdiskspacestep.h"
+#include "concurrentnotifierstep.h"
+#include "concurrentlistenerstep.h"
+#include "crudoomstep.h"
+#include "timeoutstep.h"
+#include "concurrenttimeoutnotifierstep.h"
+#include "concurrenttimeoutlistenerstep.h"
+#include "randomblobstep.h"
+#include "notificationstep.h"
 
-#include "CompactAndRecoverStep.h"
+#include "compactandrecoverstep.h"
 
-#include "StateMachineStep.h"
+#include "statemachinestep.h"
 
 _LIT(KServerName,"Te_PerformanceFunctionalitySuite");
 CPerformanceFunctionalityTestsSuite* CPerformanceFunctionalityTestsSuite::NewL()

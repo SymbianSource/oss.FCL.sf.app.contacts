@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,11 +11,11 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 * Generic import step to import the contact items into the database
-* 
 *
 */
+
 
 
  
@@ -27,7 +27,7 @@
 #include <s32file.h>
 #include <e32std.h>
 #include <f32file.h>
-#include <test/testexecutestepbase.h>
+#include <testexecutestepbase.h>
 #include <cntdb.h>
 #include <vcard.h>
 #include <cntitem.h>
@@ -35,7 +35,7 @@
 
 // User includes
 #include "cntvcardutils.h"
-#include "TestImpExvCardSuiteDefs.h"
+#include "testimpexvcardsuitedefs.h"
 
 class CTestGenericImportStep : public CTestStep
 	{

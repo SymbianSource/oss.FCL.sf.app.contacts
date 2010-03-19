@@ -1,17 +1,20 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <f32file.h>
@@ -176,7 +179,7 @@ void TUpdatingResults::AppendResults(TDes &aBuf) const
 	aBuf.AppendFormat(_L("%d/%d/%d/%d"),iLockedCount,iNotFoundCount,iModifiedErr,iTotalCount);
 	}
 
-//
+//////////////////
 
 LOCAL_C CFred2 *LaunchFred2L(TInt aFunc, const TDesC8 &aParams)
 	{
@@ -943,9 +946,9 @@ void CFred2::DoTestL()
 	CloseDbEtcL();
 	}
 
-//
+////////////////////////////////////////////////////////////////////////////////
 // Test code for DEF022709  (Propagated) Contact DB Monitoring Error Messages //
-//
+////////////////////////////////////////////////////////////////////////////////
 
 const TInt32	KNumContactsToAdd=50;
 // If there are many contacts, it is worth using the #define below.

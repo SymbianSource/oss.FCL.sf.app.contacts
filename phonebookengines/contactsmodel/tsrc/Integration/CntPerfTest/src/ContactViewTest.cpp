@@ -1,17 +1,20 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file
@@ -19,13 +22,13 @@
  @released
 */
 
-#include <test/testexecutelog.h>
+#include <testexecutelog.h>
 #include <cntfldst.h>
 #include <e32panic.h>
 #include <e32cmn.h>
-#include "ClientServer.h"
-#include "ContactViewTest.h"
-#include "ViewObserver.h"
+#include "clientserver.h"
+#include "contactviewtest.h"
+#include "viewobserver.h"
 
 _LIT(KRun1,"EmptyAll");
 _LIT(KRun2,"FullContacts");

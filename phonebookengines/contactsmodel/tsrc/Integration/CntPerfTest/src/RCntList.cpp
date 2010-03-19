@@ -1,25 +1,27 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// This iterator is intended as a replacement for tcontactiter
-// only to be used by tests. It is not update automatically
-// and allows explicit changes to its contents.
-// When a contact is added to the db, its id should be added to the iterator
-// and similarly when it is deleted.
-// It is possible to access the current item pointed to by the iterator, in addition
-// to the next and previous items.
-// 
-//
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* This iterator is intended as a replacement for tcontactiter
+* only to be used by tests. It is not update automatically
+* and allows explicit changes to its contents.
+* When a contact is added to the db, its id should be added to the iterator
+* and similarly when it is deleted.
+* It is possible to access the current item pointed to by the iterator, in addition
+* to the next and previous items.
+*
+*/
+
 
 /**
  @file
@@ -27,7 +29,7 @@
  @released
 */
 
-#include "RCntList.h"
+#include "rcntlist.h"
 
 RCntList::RCntList():iDatabase(), iPos(-1), iLength(0)
 	{

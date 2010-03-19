@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -37,6 +38,7 @@
 #include <sqldb.h>
 #include <e32hashtab.h>
 
+class CPcsKeyMap;
 
 /**
 The CPplTableBase class forms the base class for all SQLite tables in the
@@ -299,6 +301,62 @@ private:
 	};
 
 
+/**
+The CPplPredictiveSearchTable class contains numeric representation of the
+fields that are checked in predictive search.
+*/
+NONSHARABLE_CLASS(CPplPredictiveSearchTable) : public CPplTableBase
+	{
+public:
+	static CPplPredictiveSearchTable* NewL(RSqlDatabase& aDatabase);
+	static CPplPredictiveSearchTable* NewLC(RSqlDatabase& aDatabase);
+	~CPplPredictiveSearchTable();
+
+public: // From CPplTableBase
+	void CreateInDbL(CContactItem& aItem);
+	void UpdateL(const CContactItem& aItem);
+	void DeleteL(const CContactItem& aItem, TBool& aLowDiskErrorOccurred);
+	void CreateTableL();
+
+private:
+	void ConstructL();
+	CPplPredictiveSearchTable(RSqlDatabase& aDatabase);
+	void WriteToDbL(const CContactItem& aItem, CCntSqlStatement* aStatement);
+	HBufC* ConvertToNumericRepresentationLC( const TDesC& aString /*, key map */ );
+
+private:
+	// Owned
+	CCntSqlStatement* iInsertStmnt;
+	// Owned
+	CCntSqlStatement* iUpdateStmnt;
+	// Owned
+	CCntSqlStatement* iDeleteStmnt;
+	// Owned
+	CPcsKeyMap*		  iKeyMap;
+
+	RSqlDatabase&	  iDatabase;
+	
+	// For unit testing
+	friend class UT_CPplPredictiveSearchTable;
+	};
+
+NONSHARABLE_CLASS(CPplPresenceTable) : public CPplTableBase
+    {
+public:
+    static CPplPresenceTable* NewL(RSqlDatabase& aDatabase);
+    static CPplPresenceTable* NewLC(RSqlDatabase& aDatabase);
+    ~CPplPresenceTable();
+private:
+    void ConstructL();
+    CPplPresenceTable(RSqlDatabase& aDatabase);
+public: // From CPplTableBase
+    void CreateTableL();
+    void CreateInDbL(CContactItem& aItem);
+    void UpdateL(const CContactItem& aItem);
+    void DeleteL(const CContactItem& aItem, TBool& aLowDiskErrorOccurred);
+private:
+    RSqlDatabase&  iDatabase;
+    };
 /**
 This class holds a set of contact database preferences and is used in conjunction
 with the CPplPreferencesPersistor class.

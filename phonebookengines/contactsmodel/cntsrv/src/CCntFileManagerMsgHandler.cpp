@@ -1,39 +1,42 @@
-// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file
  @internalComponent
 */
 
-#include "CCntMsgHandler.h"
-#include "CCntMsgHandlerFptr.h"
-#include "CCntFileManagerMsgHandler.h"
+#include "ccntmsghandler.h"
+#include "ccntmsghandlerfptr.h"
+#include "ccntfilemanagermsghandler.h"
 
-#include "CCntServer.h"
-#include "CCntSession.h"
-#include "CCntIpcCodes.h"
-#include "CCntRequest.h"
-#include "CCntDbManager.h"
-#include "CCntStateMachine.h"
-#include "CCntDbManagerController.h"
-#include "CCntPackager.h"
-#include "CCntIpcCodes.h"
+#include "ccntserver.h"
+#include "ccntsession.h"
+#include "ccntipccodes.h"
+#include "ccntrequest.h"
+#include "ccntdbmanager.h"
+#include "ccntstatemachine.h"
+#include "ccntdbmanagercontroller.h"
+#include "ccntpackager.h"
+#include "ccntipccodes.h"
 #include <cntviewstore.h>
 #include "cntviewprivate.h"
-#include "CViewSubSessions.h"
+#include "cviewsubsessions.h"
 
 const TInt KCntFileManagerIpcCodes[] =
 	{
@@ -53,6 +56,7 @@ const TInt KCntFileManagerIpcCodes[] =
 	ECntGetDatabaseReady,
 	ECntFetchTemplateIds,
 	ECntFetchGroupIdLists,
+	ECntSearchResultIdLists,
 	ECntFilesSize,
 	ECntGetDefinitionsForExistingView
 	};
@@ -384,6 +388,38 @@ void CCntFileManagerMsgHandler::FetchGroupIdListsL(const RMessage2& aMessage)
 		}
 	}
 	
+
+void CCntFileManagerMsgHandler::FetchSearchResultsL(const RMessage2& aMessage)
+    {
+    const TInt KSqlQueryMaxLen = aMessage.GetDesLengthL(1); 
+    HBufC* searchQuery = HBufC::NewLC(KSqlQueryMaxLen);
+    TPtr searchQueryPtr(searchQuery->Des());
+    aMessage.ReadL(1, searchQueryPtr);
+    
+    CheckForManagerL();
+    CContactIdArray* arrayPtr = iManager->GetPersistenceLayer().ContactProperties().SearchIdListL(searchQuery->Des());
+    CleanupStack::PushL(arrayPtr);
+	TPtr8 cntIDBuff = iPackager.PackL(*arrayPtr); 
+    TInt length = cntIDBuff.Length();
+	CleanupStack::PopAndDestroy(); //arrayPtr
+    CleanupStack::PopAndDestroy(); //searchQuery
+	
+    // Write data if client buffer is large enough otherwise return the
+    // required buffer size.
+    if(aMessage.GetDesMaxLength(0) >= length)
+        { 
+        aMessage.WriteL(0, cntIDBuff); 
+        aMessage.Complete(KErrNone);
+        }
+    else
+        { 
+        aMessage.Complete(length);  
+        }
+	
+	
+    }
+    
+
 void CCntFileManagerMsgHandler::GetDefinitionsForExistingViewL(const RMessage2& aMessage)
 	{
 	DefinitionsOfExistingViewsL(aMessage);

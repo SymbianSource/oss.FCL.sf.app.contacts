@@ -39,7 +39,7 @@ UID 0x10009D8D 0x101F8010
 VENDORID 0x70000001
 
 
-APP_LAYER_SYSTEMINCLUDE_SYMBIAN
+systeminclude   /epoc32/include  /epoc32/include/ecom
 
 sourcepath              ../src
 source  cntfindplugin.cpp 

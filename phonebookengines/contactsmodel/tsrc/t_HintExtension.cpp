@@ -1,24 +1,27 @@
-// Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32std.h>
 #include <e32test.h>
 #include <cntdb.h>
 
 #include <f32file.h>
-#include "t_HintExtension.h"
+#include "t_hintextension.h"
 #include <coreappstest/testserver.h>
 
 
@@ -42,7 +45,7 @@ _LIT(KContactExtHintField, "CM_ExtHintField");
 
 
 
-// Logging macros //
+//////////// Logging macros ///////////////
 GLDEF_C RTest test(KTestName);
 int __ttp_err;
 
@@ -84,7 +87,7 @@ void _TestNoErrL(const TDesC& aMask, TInt aResult, const TText* aCommand, TInt a
 	test.Printf(str);
 	User::Leave(aResult < 0 ? aResult : KErrUnknown);
 	}
-//
+///////////////////////////////////////////////
 
 RPIMTestServer serv;
 

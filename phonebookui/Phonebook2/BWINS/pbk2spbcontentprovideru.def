@@ -1,7 +1,0 @@
-EXPORTS
-	?RemoveObserver@CSpbContentProvider@@QAEXAAVMSpbContentProviderObserver@@@Z @ 1 NONAME ; void CSpbContentProvider::RemoveObserver(class MSpbContentProviderObserver &)
-	?AddObserverL@CSpbContentProvider@@QAEXAAVMSpbContentProviderObserver@@@Z @ 2 NONAME ; void CSpbContentProvider::AddObserverL(class MSpbContentProviderObserver &)
-	?NewL@CSpbContentProvider@@SAPAV1@AAVCVPbkContactManager@@AAVCPbk2StoreManager@@J@Z @ 3 NONAME ; class CSpbContentProvider * CSpbContentProvider::NewL(class CVPbkContactManager &, class CPbk2StoreManager &, long)
-	?CreateServiceIconLC@CSpbContentProvider@@QAEPAVCGulIcon@@ABVTPbk2IconId@@@Z @ 4 NONAME ; class CGulIcon * CSpbContentProvider::CreateServiceIconLC(class TPbk2IconId const &)
-	?GetContentL@CSpbContentProvider@@QAEXAAVMVPbkContactLink@@AAPAVHBufC16@@AAVTPbk2IconId@@AAW4TSpbContentType@1@@Z @ 5 NONAME ; void CSpbContentProvider::GetContentL(class MVPbkContactLink &, class HBufC16 * &, class TPbk2IconId &, enum CSpbContentProvider::TSpbContentType &)
-

@@ -1,17 +1,20 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #ifndef __T_AGENT_H__
 #define __T_AGENT_H__
@@ -50,7 +53,7 @@ _LIT8(KAgentvCard, "BEGIN:VCARD\r\n"
 					"VERSION:2.1\r\n"
 					"REV:20061211T050714Z\r\n"
 					"UID:86454f285939ae79-00e1020032b20762-1\r\n"
-					"N:Testname;;;;\r\n"
+					"N:Morpheous;;;;\r\n"
 					"TEL;HOME;VOICE;CELL:755501\r\n"
 					"END:VCARD\r\n"
 					"BEGIN:VCARD\r\n"
@@ -64,7 +67,7 @@ _LIT8(KAgentvCard, "BEGIN:VCARD\r\n"
 					"VERSION:2.1\r\n"
 					"REV:20061211T050714Z\r\n"
 					"UID:86454f285939ae79-00e1020032b20762-1\r\n"
-					"N:Example1;;;;\r\n"
+					"N:AgentSmith;;;;\r\n"
 					"TEL;HOME;VOICE;CELL:755501\r\n"
 					"END:VCARD\r\n"
 					"\r\n"
@@ -74,14 +77,14 @@ _LIT8(KMultipleAgentvCard, "BEGIN:VCARD\r\n"
 					"VERSION:2.1\r\n"
 					"REV:20061211T050714Z\r\n"
 					"UID:86454f285939ae79-00e1020032b20762-1\r\n"
-					"N:Testname;;;;\r\n"
+					"N:Morpheous;;;;\r\n"
 					"TEL;HOME;VOICE;CELL:755501\r\n"
 					"AGENT:\r\n"
 					"BEGIN:VCARD\r\n"
 					"VERSION:2.1\r\n"
 					"REV:20061211T050714Z\r\n"
 					"UID:86454f285939ae79-00e1020032b20762-5\r\n"
-					"N:Example1;;;;\r\n"
+					"N:AgentSmith;;;;\r\n"
 					"TEL;HOME;VOICE;CELL:755501\r\n"
 					"END:VCARD\r\n"
 					"\r\n"					
@@ -97,7 +100,7 @@ _LIT8(KMultipleAgentvCard, "BEGIN:VCARD\r\n"
 					"VERSION:2.1\r\n"
 					"REV:20061211T050714Z\r\n"
 					"UID:86454f285939ae79-00e1020032b20762-3\r\n"
-					"N:SymbianFoundation;;;;\r\n"
+					"N:Oracle;;;;\r\n"
 					"TEL;HOME;VOICE;CELL:755501\r\n"
 					"END:VCARD\r\n"
 					"\r\n"

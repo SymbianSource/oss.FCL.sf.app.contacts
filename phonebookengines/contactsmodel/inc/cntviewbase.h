@@ -1,17 +1,20 @@
-// Copyright (c) 2001-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2001-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #ifndef __CNTVIEWBASE_H__
 #define __CNTVIEWBASE_H__
@@ -414,7 +417,18 @@ public:
 			/** List of contacts matching the criteria. */
 			RArray<TContactIdWithMapping>& iMatchingContacts;
 		};
+	class TVirtualFunction3Params
+	/** Holds the two parameters passed to the method InsertContactInView() from the 
+	reserved function CContactViewBase_Reserved_1(). It has an inline 
+	constructor to initialise the data members.
 
+	@internalAll */
+		{
+		public:
+			inline TVirtualFunction3Params(RPointerArray<CViewContact>& aContacts, const CViewContact* aNewContact) :iContacts(aContacts), iNewContact(aNewContact){};
+			RPointerArray<CViewContact>&	iContacts;
+			const CViewContact*				iNewContact;
+		};
 	/** Search type.
 
 	This controls whether a search term can occur anywhere in a contact item field, 
@@ -456,17 +470,6 @@ protected:
 		/** The view is not ready to be used, for instance immediately after the sort order 
 		has changed, or after an error has occurred. */
 		ENotReady
-		};
-	class TVirtualFunction3Params
-		/** Holds the two parameters passed to the method InsertContactInView() from the 
-		reserved function CContactViewBase_Reserved_1(). It has an inline 
-		constructor to initialise the data members.
-		*/
-		{
-		public:
-			inline TVirtualFunction3Params(RPointerArray<CViewContact>& aContacts, const CViewContact* aNewContact) :iContacts(aContacts), iNewContact(aNewContact){};
-			RPointerArray<CViewContact>&	iContacts;
-			const CViewContact*				iNewContact;
 		};
 public:
 	IMPORT_C void OpenL(MContactViewObserver& aObserver);
@@ -577,7 +580,6 @@ private:
 		TContactViewEvent iAsyncEvent;
 		MContactViewObserver* iObserverToNotify;
 		};
-	
 protected:
 	// Reference to CContactDatabase class.
 	const CContactDatabase& iDb;
@@ -591,6 +593,10 @@ private:
 	RArray<TObserverAndEvent> iOutstandingNotifications;
 	};
 
+inline TInt CContactViewBase::GetErrorValueFromExtensionClass()
+	{
+	return iExtension->iError;
+	}
 	
 class MLplPersistenceLayerFactory;
 class CViewContactManager;
@@ -678,7 +684,7 @@ class RContactRemoteView : public RSubSessionBase
 server side view object.
 
 @see CContactRemoteViewBase 
-@publishedAll
+@internalComponent
 @released
 */
 	{

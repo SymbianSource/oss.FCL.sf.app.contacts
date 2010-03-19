@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -10,18 +10,21 @@
 * Nokia Corporation - initial contribution.
 *
 * Contributors:
-* 
-* Description:
+
+*
+
+* Description: 
+
 *
 */
 
 //  Include Files  
 #include <e32base.h>
 #include <e32std.h>
-#include <e32test.h>	// RTest
-#include <bacline.h> 	// CCommandLineArguments
-#include "FuzzTest.h"
-#include "IpcFuzzTest.h"
+#include <e32test.h>	// rtest
+#include <bacline.h> 	// ccommandlinearguments
+#include "fuzztest.h"
+#include "ipcfuzztest.h"
 
 //  Constants
 

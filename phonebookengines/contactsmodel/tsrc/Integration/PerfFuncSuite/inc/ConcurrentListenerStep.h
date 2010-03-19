@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -24,8 +25,8 @@
 */
 #ifndef __CONCURRENT_LISTENER_STEP_H__
 #define __CONCURRENT_LISTENER_STEP_H__
-#include <test/testexecutestepbase.h>
-#include "PerformanceFunctionalityBase.h"
+#include <testexecutestepbase.h>
+#include "performancefunctionalitybase.h"
 
 class CConcurrentListenerStep : public CPerformanceFunctionalityBase
 	{	

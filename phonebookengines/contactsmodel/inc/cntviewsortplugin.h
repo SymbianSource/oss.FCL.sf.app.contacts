@@ -1,23 +1,26 @@
-// Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #ifndef __CNTVIEWSORTPLUGIN_H__
 #define __CNTVIEWSORTPLUGIN_H__
 
 #include <e32base.h>
-#include "ecom/ecom.h"		// For REComSession
+#include "ecom/ecom.h"		// for recomsession
 #include <cntviewbase.h>
 
 
@@ -34,7 +37,6 @@ const TUid KCntSortPluginInterfaceUid = {0x10200FBD};
 */
 _LIT8(KViewSortPluginDefaultName, "/default");
 
-#ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
 
 //********************************************************************************************
 //
@@ -250,6 +252,6 @@ inline CViewContactSortPlugin::~CViewContactSortPlugin()
 	{
 	REComSession::DestroyedImplementation(iDtor_ID_Key);
 	}
-#endif //SYMBIAN_ENABLE_SPLIT_HEADERS
+
 
 #endif

@@ -1,17 +1,20 @@
-// Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 
 #define __PROFILING__
@@ -21,9 +24,9 @@
 #include <cntitem.h>
 #include <cntfldst.h>
 #include "t_utils2.h"
-#include "T_UTILS.H"
+#include "t_utils.h"
 
-#include "CContactViewEventQueue.h"
+#include "ccontactvieweventqueue.h"
 
 // Type definitions
 _LIT(KTestName, "T_Cnt_ViewSortProfiling");

@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,11 +11,11 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 * Tests the performance of ExportSelectedContactsL(with PBAP support) api
-* 
 *
 */
+
 
 
  
@@ -32,13 +32,13 @@
 #include <vcard.h>
 #include <cntitem.h>
 #include <cntfldst.h>
-#include <test/testexecutestepbase.h>
+#include <testexecutestepbase.h>
 
 // User includes
 #include "cntvcardutils.h"
-#include "ContactsPBAPExportUtilityClass.h"
-#include "TestContactsPBAPExport.h"
-#include "TestImpExvCardSuiteServer.h"
+#include "contactspbapexportutilityclass.h"
+#include "testcontactspbapexport.h"
+#include "testimpexvcardsuiteserver.h"
 
 #define NOW(time) TTime time; time.HomeTime();
 

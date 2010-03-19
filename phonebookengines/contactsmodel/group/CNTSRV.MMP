@@ -1,19 +1,21 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// cntsrv.exe Contacts server (no external interfaces)
-// 
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* cntsrv.exe Contacts server (no external interfaces)
+*
+*/
+
 
 #include "cntmodel.mmh"
 
@@ -29,7 +31,9 @@ VENDORID 0x70000001
 //MACRO __STATE_MACHINE_DEBUG__
 //MACRO __PROFILE_DEBUG__
 
-APP_LAYER_SYSTEMINCLUDE_SYMBIAN
+APP_LAYER_SYSTEMINCLUDE
+
+systeminclude /epoc32/include/connect 
 
 USERINCLUDE ../src
 USERINCLUDE ../cntmodel/inc // For CCntPackager.h
@@ -37,33 +41,33 @@ USERINCLUDE	../cntsrv/inc
 USERINCLUDE	../inc
 
 SOURCEPATH  ../cntsrv/src
-SOURCE		CCntSession.Cpp
-SOURCE		CCntServer.cpp
-SOURCE		Main.cpp
-SOURCE		CCntDbManager.cpp
-SOURCE		CCntDbManagerController.cpp
-SOURCE		CCntStateMachine.cpp
-SOURCE		CCntRequest.cpp
-SOURCE		CActiveLoop.cpp
-SOURCE		CViewSubSessions.cpp
-SOURCE		CCntEventQueue.cpp
-SOURCE		CntCurrentItemMap.cpp
-SOURCE		CIniFileManager.cpp
-SOURCE		CntSpeedDials.cpp
-SOURCE		CCntBackupRestoreAgent.cpp
-SOURCE		CCntLowDiskManager.cpp
-SOURCE		CCntPermanentData.cpp
-SOURCE		CCntMsgHandler.cpp
-SOURCE		CCntItemMsgHandler.cpp
-SOURCE		CCntEventMsgHandler.cpp
-SOURCE		CCntTransactionMsgHandler.cpp
-SOURCE		CCntFileManagerMsgHandler.cpp
-SOURCE		CCntPropertiesMsgHandler.cpp
-SOURCE		CCntViewMsgHandler.cpp
+SOURCE		ccntsession.cpp
+SOURCE		ccntserver.cpp
+SOURCE		main.cpp
+SOURCE		ccntdbmanager.cpp
+SOURCE		ccntdbmanagercontroller.cpp
+SOURCE		ccntstatemachine.cpp
+SOURCE		ccntrequest.cpp
+SOURCE		cactiveloop.cpp
+SOURCE		cviewsubsessions.cpp
+SOURCE		ccnteventqueue.cpp
+SOURCE		cntcurrentitemmap.cpp
+SOURCE		cinifilemanager.cpp
+SOURCE		cntspeeddials.cpp
+SOURCE		ccntbackuprestoreagent.cpp
+SOURCE		ccntlowdiskmanager.cpp
+SOURCE		ccntpermanentdata.cpp
+SOURCE		ccntmsghandler.cpp
+SOURCE		ccntitemmsghandler.cpp
+SOURCE		ccnteventmsghandler.cpp
+SOURCE		ccnttransactionmsghandler.cpp
+SOURCE		ccntfilemanagermsghandler.cpp
+SOURCE		ccntpropertiesmsghandler.cpp
+SOURCE		ccntviewmsghandler.cpp
 
 
 SOURCEPATH	../src
-SOURCE		Debug.cpp
+SOURCE		debug.cpp
 
 
 LIBRARY		euser.lib

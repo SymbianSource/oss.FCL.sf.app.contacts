@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -21,7 +22,7 @@
 #define __ADD_MODIFY_DELETE_CONTACTS__
 
 // System Includes
-#include <test/testexecutestepbase.h>
+#include <testexecutestepbase.h>
 #include <cntdb.h>
 #include <cntitem.h>
 #include <cntviewbase.h>
@@ -30,7 +31,7 @@
 #include <e32math.h>
 
 // User Includes
-#include "ClientServer.h"
+#include "clientserver.h"
 
 /**
  * This class supports

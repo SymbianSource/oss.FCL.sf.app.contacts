@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -81,7 +82,10 @@ public:
 	TInt ParameterIndex(const TDesC& aParam) const;
 	void Reset();
 	~CCntSqlStatement();
-	
+
+	// aTableName New table name, ownership is transferred
+	void SetTableName(HBufC* aTableName);
+
 protected:
 	void ConstructL(const TDesC& aTableName);
 	

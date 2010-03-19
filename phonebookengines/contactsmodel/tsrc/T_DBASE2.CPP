@@ -1,22 +1,25 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
-#include "T_UTILS.H"
-#include "T_DBASE2.H"
-#include "CContactDbEventQueue.h"
+#include "t_utils.h"
+#include "t_dbase2.h"
+#include "ccontactdbeventqueue.h"
 
 GLDEF_D CCntTest* CntTest=NULL;
 GLDEF_D RTest test(_L("T_DBASE2"));
@@ -178,24 +181,24 @@ LOCAL_C TInt PopulateDatabaseForAsyncFindByEmailAddrTest(const TDesC& aEmailAddr
 			SetNameL(*newContact,KUidContactFieldUrl,_L("http://www.some-web-address.co.uk"));
 
 		if(Math::Rand(seed)%4)
-			SetNameL(*newContact,KUidContactFieldAddress,_L("1 Example Road"));
+			SetNameL(*newContact,KUidContactFieldAddress,_L("167a Hanover Road"));
 
 		if(Math::Rand(seed)%4)
-			SetNameL(*newContact,KUidContactFieldPostcode,_L("ZZ99 EXP"));
+			SetNameL(*newContact,KUidContactFieldPostcode,_L("06NW10 3DN"));
 
 		if(Math::Rand(seed)%4)
-			SetNameL(*newContact,KUidContactFieldRegion,_L("Example Town"));
+			SetNameL(*newContact,KUidContactFieldRegion,_L("LONDON"));
 
 		if(Math::Rand(seed)%4)
-			SetNameL(*newContact,KUidContactFieldLocality,_L("Exampleshire"));
+			SetNameL(*newContact,KUidContactFieldLocality,_L("Willesden Green"));
 
-		SetNameL(*newContact,KUidContactFieldPhoneNumber,_L("+02079460500"));
+		SetNameL(*newContact,KUidContactFieldPhoneNumber,_L("+46 457 11111"));
 
 		if(Math::Rand(seed)%4)
 			SetNameL(*newContact,KUidContactFieldNote,_L("The quick brown fox jumps over the smelly dog The quick brown dog jumps over the smelly cat"));
 
 		if(Math::Rand(seed)%4)
-			SetNameL(*newContact,KUidContactFieldCompanyName,_L("Symbian Foundation"));
+			SetNameL(*newContact,KUidContactFieldCompanyName,_L("S.G.Software"));
 
 		const TContactItemId id = CntTest->Db()->AddNewContactL(*newContact);
 

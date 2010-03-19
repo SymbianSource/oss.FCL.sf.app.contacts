@@ -10,14 +10,15 @@
 * Nokia Corporation - initial contribution.
 *
 * Contributors:
-* 
+*
 * Description:
 *
 */
 
+
 #include <e32math.h>
 #include <e32cmn.h>
-#include "IpcFuzzTest.h"
+#include "ipcfuzztest.h"
 
 RIpcFuzzTest::RIpcFuzzTest(RTest& aTest)
 	:iTest(aTest)

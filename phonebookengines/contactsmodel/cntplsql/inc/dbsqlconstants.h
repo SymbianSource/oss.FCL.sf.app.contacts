@@ -1,39 +1,49 @@
-// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
+#ifndef DBSQLCONSTANTS_H
+#define DBSQLCONSTANTS_H
 
 #include <cntdef.hrh>
 
 const TInt KInitialValue = -1;
-const TInt KNumOfTables = 4;
+const TInt KNumOfTables = 5;
 const TInt KNumColInPrefTable = 6;
 const TInt KNumColInContactTable = 16;
 const TInt KNumColInGroupTable = 3;
 const TInt KNumColInCommTable = 5;
+const TInt KNumColInPredSearchTable = 4;
+const TInt KNumColInPresenceTable = 5;
 
 // tables in the contact database 
 _LIT(KSqlContactTableName,"contact");
 _LIT(KSqlContactGroupTableName,"groups");
 _LIT(KSqlContactPrefTableName,"preferences");
 _LIT(KSqlContactCommAddrTableName,"comm_addr");
+_LIT(KSqlContactPredSearchTableName,"predictivesearch");
+_LIT(KSqlContactPresenceTableName, "presence");
 
 enum TDatabaseTables
 	{
 	EContactPrefTableName,
 	EContactTableName,
 	EContactGroupTableName,
-	EContactCommAddressTableName
+	EContactCommAddressTableName,
+	KContactPredSearchTableName
 	};
 
 // columns for contact table
@@ -135,7 +145,87 @@ _LIT(KPrefferredTemplateIdParam,":preferred_cardtemplate_id");
 _LIT(KPreferencesCreateStmnt,  "CREATE TABLE preferences (preference_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, data_schema_version INTEGER NOT NULL, preferred_cardtemplate_id INTEGER, machine_id , creation_date , preferred_sortorder BLOB); ");
 // end preferences table
 
+// predictive search table
+// columns
+_LIT(KPredSearchFirstNameAsNumber, "first_name_as_number");
+_LIT(KPredSearchLastNameAsNumber, "last_name_as_number");
+_LIT(KPredSearchCompanyNameAsNumber, "company_name_as_number");
+_LIT(KPredSearchContactId, "contact_id");
+// Do not store names. They can be looked up from contact table.
+// Do not store phone number. It can be searched from comm-address table.
 
+// parameters
+_LIT(KPredSearchFirstNameAsNumberParam, ":first_name_as_number");
+_LIT(KPredSearchLastNameAsNumberParam, ":last_name_as_number");
+_LIT(KPredSearchCompanyNameAsNumberParam, ":company_name_as_number");
+_LIT(KPredSearchContactIdParam, ":contact_id");
+
+// create statements
+_LIT(KPredSearchCreateStmnt,
+"CREATE TABLE predictivesearch (first_name_as_number VARCHAR(255) NULL,\
+ last_name_as_number VARCHAR(255) NULL,\
+ company_name_as_number VARCHAR(255) NULL, contact_id INTEGER);");
+ 
+// create table index
+_LIT(KPredSearchCreateIndex,
+"CREATE INDEX index_last_name_as_number \
+on predictivesearch (last_name_as_number, first_name_as_number );");
+ 
+_LIT(KPredSearchCreateView1,
+"CREATE VIEW view1 AS SELECT contact_id, last_name_as_number, first_name_as_number  FROM predictivesearch \
+WHERE (first_name_as_number LIKE \"%% 1%%\") OR (last_name_as_number LIKE \"%% 1%%\")");
+
+_LIT(KPredSearchCreateView2,
+"CREATE VIEW view2 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
+WHERE (first_name_as_number LIKE \"%% 2%%\") OR (last_name_as_number LIKE \"%% 2%%\")");
+
+_LIT(KPredSearchCreateView3,
+"CREATE VIEW view3 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
+WHERE (first_name_as_number LIKE \"%% 3%%\") OR (last_name_as_number LIKE \"%% 3%%\")");
+
+_LIT(KPredSearchCreateView4,
+"CREATE VIEW view4 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
+WHERE (first_name_as_number LIKE \"%% 4%%\") OR (last_name_as_number LIKE \"%% 4%%\")");
+
+_LIT(KPredSearchCreateView5,
+"CREATE VIEW view5 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
+WHERE (first_name_as_number LIKE \"%% 5%%\") OR (last_name_as_number LIKE \"%% 5%%\")");
+
+_LIT(KPredSearchCreateView6,
+"CREATE VIEW view6 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
+WHERE (first_name_as_number LIKE \"%% 6%%\") OR (last_name_as_number LIKE \"%% 6%%\")");
+
+_LIT(KPredSearchCreateView7,
+"CREATE VIEW view7 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
+WHERE (first_name_as_number LIKE \"%% 7%%\") OR (last_name_as_number LIKE \"%% 7%%\")");
+
+_LIT(KPredSearchCreateView8,
+"CREATE VIEW view8 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
+WHERE (first_name_as_number LIKE \"%% 8%%\") OR (last_name_as_number LIKE \"%% 8%%\")");
+
+_LIT(KPredSearchCreateView9,
+"CREATE VIEW view9 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
+WHERE (first_name_as_number LIKE \"%% 9%%\") OR (last_name_as_number LIKE \"%% 9%%\")");
+
+_LIT(KPredSearchCreateView0,
+"CREATE VIEW view0 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
+WHERE (first_name_as_number LIKE \"%% 0%%\") OR (last_name_as_number LIKE \"%% 0%%\")");
+
+_LIT(KPresenceContactId, "contact_id");
+_LIT(KPresenceAccountUri, "account_uri");
+_LIT(KPresenceServiceName, "service_name");
+_LIT(KPresenceStatus, "status");
+_LIT(KPresenceStatusMsg, "status_message");
+_LIT(KPresenceContactIdParam, ":contact_id");
+_LIT(KPresenceAccountUriParam, ":account_uri");
+_LIT(KPresenceServiceNameParam, ":service_name");
+_LIT(KPresenceStatusParam, ":status");
+_LIT(KPresenceStatusMsgParam, ":status_message");
+_LIT(KPresenceCreateStmnt,
+"CREATE TABLE presence (contact_id INTEGER NOT NULL,\
+account_uri VARCHAR(255),service_name VARCHAR(255),\
+status INTEGER, status_msg VARCHAR(255),\
+CONSTRAINT contactid_fk FOREIGN KEY (contact_id) REFERENCES contact(contact_id) ON DELETE CASCADE);"); 
 // Condition strings for searching id
 _LIT(KSelectCondition_SearchForEqual,   "%S == :SeekId");
 
@@ -255,3 +345,5 @@ enum TFastAccessField
 	};
 
 const TInt KFirstIndex = 0;
+
+#endif // #ifndef DBSQLCONSTANTS_H

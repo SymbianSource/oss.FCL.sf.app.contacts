@@ -20,7 +20,7 @@ TARGET			t_serverstart.exe
 TARGETTYPE		exe
 CAPABILITY   ReadUserData WriteUserData
 SOURCE			t_serverstart.cpp
-APP_LAYER_SYSTEMINCLUDE_SYMBIAN
+SYSTEMINCLUDE		/epoc32/include
 LIBRARY euser.lib cntmodel.lib 
 
 VENDORID 0x70000001

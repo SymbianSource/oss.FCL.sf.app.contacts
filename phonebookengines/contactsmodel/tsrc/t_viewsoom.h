@@ -1,17 +1,20 @@
-// Copyright (c) 2001-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2001-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <cntview.h>
 #include "cntviewprivate.h"
@@ -281,9 +284,9 @@ private:
 	TInt iNumNotifications;
 	};
 
-//
-//OOM TEST CODE
-//
+//////////////////
+///OOM TEST CODE
+//////////////////
 class COomTest;
 class COomFailBase : public CBase, public MContactViewObserver
 	{
@@ -343,7 +346,7 @@ private:
 	TPtrC8 iSortPluginName;
 	};
 
-//
+/////////////
 class COomRemoteView : public COomFailBase
 	{
 public:
@@ -361,7 +364,7 @@ private:
 	TPtrC8 iSortPluginName;
 	};
 
-//
+///////////////////
 class COomSubView : public COomFailBase
 	{
 public:
@@ -377,7 +380,7 @@ private:
 	CContactSubView* iSubViewAbc;
 	};
 
-//
+///////////////////
 class COomFilteredView : public COomFailBase
 	{
 public:
@@ -393,7 +396,7 @@ private:
 	};
 
 
-//
+///////////////////
 class COomGroupView : public COomFailBase
 	{
 public:

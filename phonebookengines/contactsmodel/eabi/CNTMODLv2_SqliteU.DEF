@@ -696,4 +696,6 @@ EXPORTS
 	_ZN21CContactItemPlusGroup11ResetGroupsEv @ 695 NONAME
 	_ZN21CContactItemPlusGroup9SetGroupsEP15CContactIdArray @ 696 NONAME
 	KNumberOfContactsToReadPerMerge @ 697 NONAME DATA 4
+	_ZN16CContactDatabase12AddObserverLER18MContactDbObserver @ 698 NONAME
+	_ZN16CContactDatabase14RemoveObserverERK18MContactDbObserver @ 699 NONAME
 

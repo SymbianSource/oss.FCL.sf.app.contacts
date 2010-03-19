@@ -1,17 +1,20 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file
@@ -19,9 +22,9 @@
  @released 
 */
 
-#include "CCntRequest.h"
-#include "CCntStateMachine.h"
-#include "CCntPackager.h"
+#include "ccntrequest.h"
+#include "ccntstatemachine.h"
+#include "ccntpackager.h"
 #include <cntitem.h>
 
 // CCntRequest 
@@ -940,7 +943,7 @@ void CReqCreateCnt::ConstructL(CCntPackager& aPackager)
 
 
 
-// Database Transactin Request Class implemenations //
+///////////////// Database Transactin Request Class implemenations ////////////
 
 
 /** 
@@ -1153,7 +1156,7 @@ TAccept CReqInternalSessionUnlock::VisitStateL(CState& aState)
 	}
 
 	
-//CReqInternalAsyncOpen //	
+/////////////////////////CReqInternalAsyncOpen ////////////////////	
 // Similar to CReqAsyncOpen but the request originates from inside the server.
 CReqInternalAsyncOpen* CReqInternalAsyncOpen::NewLC(const TUint aSessionId, const TDesC& aFileName, TRequestStatus& aStatus)
 	{
@@ -1179,7 +1182,7 @@ void CReqInternalAsyncOpen::Complete(TInt aErrorCode)
 	User::RequestComplete(iStatus, aErrorCode);
 	}
 
-//CReqCancelInternalAsyncOpen //	
+/////////////////////////CReqCancelInternalAsyncOpen ////////////////////	
 // Similar to CReqCancelAsyncOpen but the request originates from inside the server,
 // so there is no need to signal a RMessage that the request has completed
 CReqCancelInternalAsyncOpen* CReqCancelInternalAsyncOpen::NewLC(const TUint aSessionId)

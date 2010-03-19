@@ -1,17 +1,20 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 
 #if !defined(__CNTSTD_H__)
@@ -79,8 +82,8 @@ _LIT(KIdentityIdIndex, "IdentityIdIndex");
 
 //Email Table
 _LIT(KEMailTableName, "EMAILTABLE");
-_LIT(KEMailParentCMID, "EmailParent_CMID");//
-_LIT(KEMailFieldID, "EMail_FieldID");//Together these match a unique id.
+_LIT(KEMailParentCMID, "EmailParent_CMID");///
+_LIT(KEMailFieldID, "EMail_FieldID");////Together these match a unique id.
 _LIT(KEMailAddress,"EMailAddress");
 _LIT(KEMailIdentityIdIndex, "EmailIdentityIdIndex");
 

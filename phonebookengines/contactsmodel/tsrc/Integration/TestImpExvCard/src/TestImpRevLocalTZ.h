@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,17 +11,18 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
 
 
 
+
 #if (!defined __TESTIMPREVLOCALTZ_H__)
 #define __TESTIMPREVLOCALTZ_H__
-#include <test/testexecutestepbase.h>
-#include "TestImpExvCardSuiteStepBase.h"
-#include "TestImpExvCardSuiteDefs.h"
+#include <testexecutestepbase.h>
+#include "testimpexvcardsuitestepbase.h"
+#include "testimpexvcardsuitedefs.h"
 
 class CTestImpRevLocalTZ : public CTestImpExvCardSuiteStepBase
 	{

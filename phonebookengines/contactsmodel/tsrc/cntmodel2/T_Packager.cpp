@@ -1,19 +1,21 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// Packaging Test module
-// 
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* Packaging Test module
+*
+*/
+
 
 
 #include <e32test.h>
@@ -23,13 +25,13 @@ _LIT(KTestName, "T_Packager"); // Used by Testhelper
 
 #include <cntfldst.h>
 #include "testhelpers.h"
-//#include "T_CntTest.h"
+//#include "t_cnttest.h"
 
-#include "NbCntTestLib/NbCntTestLib.h" 
+#include "nbcnttestlib/nbcnttestlib.h" 
 
-#include "T_Packager.h"
-#include "T_CntTestImplDefs.h"
-#include "CCntPackager.h"
+#include "t_packager.h"
+#include "t_cnttestimpldefs.h"
+#include "ccntpackager.h"
 #include <cntfilt.h>
 
 
@@ -37,7 +39,7 @@ _LIT(KTestName, "T_Packager"); // Used by Testhelper
 //#define RUN_CNT
 #define RUN_PL
 
-//
+////////////////////////////////////////////////////////////////////
 // This test used to spit out a lot of html files which display
 // the contents of contact items. There are a lot of files
 // generated in the process which, as this is normally run on the
@@ -47,7 +49,7 @@ _LIT(KTestName, "T_Packager"); // Used by Testhelper
 //
 // So, uncomment the following line to turn on contact dumping.
 //#define __T_PACKAGER_DUMP_CONTACT__
-//
+////////////////////////////////////////////////////////////////////
 
 
 #define KUidContactFieldCustom1Value		0x101FD209
@@ -95,8 +97,8 @@ void CPackagerTests::ContactItemTestL()
 	CContactItem* card = CContactCard::NewLC(&goldenTemplate);
 	TCnt theCnt(card);
 
-	theCnt[KUidContactFieldGivenName] = _L("AExample");
-	theCnt[KUidContactFieldFamilyName] = _L("BExample");
+	theCnt[KUidContactFieldGivenName] = _L("David");
+	theCnt[KUidContactFieldFamilyName] = _L("Coulthard");
 
 	theCnt[KUidContactFieldPhoneNumber] & KHome & KVoice & KCell = _L("mo1 39849342");
 	theCnt[KUidContactFieldPhoneNumber] & KHome & KVoice & KCell += _L("mo2 34530903495803948503984545");
@@ -107,7 +109,7 @@ void CPackagerTests::ContactItemTestL()
 	theCnt[KUidContactFieldIMAddress] & KHome & KWv = _L("wireless@village");
 	theCnt[KUidContactFieldSecondName] = _L("Second name");
 
-	theCnt[KUidContactFieldCompanyName] = _L("SymbianFoundation");
+	theCnt[KUidContactFieldCompanyName] = _L("McLaren");
 	theCnt[KUidContactFieldJobTitle]	= _L("Driver");
 	theCnt[KUidContactFieldPhoneNumber] & KWork & KVoice = _L("work Tel 2342");
 
@@ -226,8 +228,8 @@ void CPackagerTests::ContentTypeTestL()
 	CContactItem* card = CContactCard::NewLC(&goldenTemplate);
 	TCnt theCnt(card);
 
-	theCnt[KUidContactFieldGivenName] = _L("AExample");
-	theCnt[KUidContactFieldFamilyName] = _L("BExample");
+	theCnt[KUidContactFieldGivenName] = _L("David");
+	theCnt[KUidContactFieldFamilyName] = _L("Coulthard");
 
 	theCnt[KUidContactFieldPhoneNumber] & KHome & KVoice & KCell = _L("mo1 39849342");
 	theCnt[KUidContactFieldPhoneNumber] & KHome & KVoice & KCell += _L("mo2 34530903495803948503984545");
@@ -238,7 +240,7 @@ void CPackagerTests::ContentTypeTestL()
 	theCnt[KUidContactFieldIMAddress] & KHome & KWv = _L("wireless@village");
 	theCnt[KUidContactFieldSecondName] = _L("Second name");
 
-	theCnt[KUidContactFieldCompanyName] = _L("SymbianFoundation");
+	theCnt[KUidContactFieldCompanyName] = _L("McLaren");
 	theCnt[KUidContactFieldJobTitle]	= _L("Driver");
 	theCnt[KUidContactFieldPhoneNumber] & KWork & KVoice = _L("work Tel 2342");
 
@@ -913,8 +915,8 @@ void CPackagerTests::CContactIdArrayTestL()
 	CContactItem* card = CContactCard::NewLC(&goldenTemplate);
 	TCnt theCnt(card);
 
-	theCnt[KUidContactFieldGivenName] = _L("AExample");
-	theCnt[KUidContactFieldFamilyName] = _L("BExample");
+	theCnt[KUidContactFieldGivenName] = _L("David");
+	theCnt[KUidContactFieldFamilyName] = _L("Coulthard");
 
 	theCnt[KUidContactFieldPhoneNumber] & KHome & KVoice & KCell = _L("mo1 39849342");
 	theCnt[KUidContactFieldPhoneNumber] & KHome & KVoice & KCell += _L("mo2 34530903495803948503984545");
@@ -925,7 +927,7 @@ void CPackagerTests::CContactIdArrayTestL()
 	theCnt[KUidContactFieldIMAddress] & KHome & KWv = _L("wireless@village");
 	theCnt[KUidContactFieldSecondName] = _L("Second name");
 
-	theCnt[KUidContactFieldCompanyName] = _L("SymbianFoundation");
+	theCnt[KUidContactFieldCompanyName] = _L("McLaren");
 	theCnt[KUidContactFieldJobTitle]	= _L("Driver");
 	theCnt[KUidContactFieldPhoneNumber] & KWork & KVoice = _L("work Tel 2342");
 

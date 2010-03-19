@@ -1,17 +1,20 @@
-// Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file
@@ -25,10 +28,10 @@
 #include <cntfilt.h>
 
 #include "rcntmodel.h"
-#include "persistencelayer.h" // For MLplCollection.
-#include "CCntNotificationMonitor.h"
-#include "ccontactprivate.h" // For MProgressEventHander.
-#include "CCntPackager.h"
+#include "persistencelayer.h" // for mlplcollection.
+#include "ccntnotificationmonitor.h"
+#include "ccontactprivate.h" // for mprogresseventhander.
+#include "ccntpackager.h"
 #include <cntviewstore.h>
 
 
@@ -1451,7 +1454,6 @@ CContactIdArray* RCntModel::FetchGroupListIdsL()
 	return idArray;	
 }
 
-
 /**
 Get a collection of contact IDs using the specified collection parameters.
 
@@ -1855,11 +1857,7 @@ TBool RCntModel::FindAsyncL(CContactIdArray*& aOrigIdArray)
 		// Append to the old array if it was not NULL.
 		for(TInt i=0;i<newIdArray->Count();++i)
 			{
-			if(aOrigIdArray->Find((*newIdArray)[i]) == KErrNotFound)
-				{
-				//Add only when we are sure that this ID has not been added to this array before.
-				aOrigIdArray->AddL((*newIdArray)[i]);
-				}
+			aOrigIdArray->AddL((*newIdArray)[i]);
 			}
 		CleanupStack::PopAndDestroy(newIdArray);
 		}

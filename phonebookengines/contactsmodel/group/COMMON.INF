@@ -1,51 +1,52 @@
-// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// Contacts application engine common file between sqlite and dabms
-// 
-//
+/*
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* Contacts application engine common file between sqlite and dabms
+*
+*/
+
+
+/**
+ @file
+*/
 
 PRJ_EXPORTS
-../inc/CNTDEF.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntdef.h)
-../inc/CNTDB.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntdb.h)         
-../inc/CNTDBOBS.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntdbobs.h)      
-../inc/CNTFIELD.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntfield.h)      
-../inc/CNTFLDST.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntfldst.h)	
-../inc/CNTFILT.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntfilt.h)	
-../inc/CNTITEM.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntitem.h)       
-../inc/cntview.h SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntview.h)
-../inc/cntviewbase.h SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntviewbase.h)
-../inc/cntsync.h SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntsync.h)
+../inc/CNTDEF.H /epoc32/include/cntdef.h
+../inc/CNTDB.H /epoc32/include/cntdb.h         
+../inc/CNTDBOBS.H /epoc32/include/cntdbobs.h      
+../inc/CNTFIELD.H /epoc32/include/cntfield.h      
+../inc/CNTFLDST.H /epoc32/include/cntfldst.h	
+../inc/CNTFILT.H /epoc32/include/cntfilt.h	
+../inc/CNTITEM.H /epoc32/include/cntitem.h       
+../inc/cntview.h
+../inc/cntviewbase.h
+../inc/cntsync.h
 //Cntmodel Find configuration Implementation definition header.
-../inc/cntviewfindconfig.h	 SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(cntviewfindconfig.h)
-../inc/cntviewfindconfig.inl SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(cntviewfindconfig.inl)
+../inc/cntviewfindconfig.h	
+../inc/cntviewfindconfig.inl
 //CntModel Sort Plug-in implementation definition header
-../inc/cntviewsortplugin.h SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntviewsortplugin.h)
-#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
-../inc/cntphonenumparser.h SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(cntphonenumparser.h)
-../inc/cntviewsortpluginbase.h SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(cntviewsortpluginbase.h)
-../inc/cntsyncecom.h SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(cntsyncecom.h)
-#endif
+../inc/cntviewsortplugin.h
 
-../inc/CNTMODEL.RH SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(cntmodel.rh)
+../inc/CNTMODEL.RH /epoc32/include/cntmodel.rh
 ../inc/CNTDEF.HRH /epoc32/include/cntdef.hrh
 
  
 // VCard Converter Plugin
-../cntvcard/CNTVCARD.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntvcard.h)
+../cntvcard/CNTVCARD.H /epoc32/include/cntvcard.h
 
 // Default View Definition store
-../inc/cntviewstore.h SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(cntviewstore.h)
+../inc/cntviewstore.h
 
 // Documentation
 ../documentation/contacts_connectivityapi.doc	/epoc32/engdoc/cntmodel/contacts_connectivityapi.doc

@@ -1,17 +1,20 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <f32file.h>
@@ -24,7 +27,7 @@
 #include <barsc.h>
 #include <barsread.h>
 #include <cntmodel.rsg>
-#include "T_UTILS.H"
+#include "t_utils.h"
 
 CCntTest* CntTest=NULL;
 LOCAL_D RTest test(_L("T_TEMPL"));
@@ -91,7 +94,7 @@ LOCAL_C void doTestTemplate(CContactDatabase* aDb, TContactItemId aTemplateId,CC
 	CleanupStack::PopAndDestroy();	// checkTemplate
 //
 	CContactCard *copy=CContactCard::NewLC(aContactTemplate);
-	// fails due to template lable being removed. // test code needs fixing
+	// fails due to template lable being removed. /// test code needs fixing
 	test(CompareItemFields(aContactTemplate,copy,EFalse,aTemplateLabelRemoved));
 	CleanupStack::PopAndDestroy();	// copy
 	}

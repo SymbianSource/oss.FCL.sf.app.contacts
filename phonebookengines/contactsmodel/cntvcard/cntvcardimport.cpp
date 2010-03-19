@@ -1,17 +1,20 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include "cntvcardutils.h"
 
@@ -27,7 +30,6 @@
 #include <cntdef.h>
 #include <cntitem.h>
 
-
 // Constants
 const TInt KVCardImportAddressArrayGranularity = 4;
 const TInt KContactGivenName = 1;
@@ -42,10 +44,6 @@ const TInt KContactLocality = 3;
 const TInt KContactRegion = 4;
 const TInt KContactPostcode = 5;
 const TInt KContactCountry = 6;
-
-#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
-const TInt KContactMaxFieldNumber = 32;
-#endif
 
 /**
  * Delete name fields from a contact
@@ -1441,7 +1439,7 @@ CContentType* CVCardToContactsAppConverter::MapVCardPropertyToContentAndStorageT
     		mapping=KUidContactFieldVCardMapNotRequired;
     		}
     	break;
-//
+//////////////
     default:	// aka case KVersitPropertyHBufCUid:
     	aStorageType=KStorageTypeText;
 		mapping = KUidContactFieldVCardMapUnknown; // Initialize to something sensible

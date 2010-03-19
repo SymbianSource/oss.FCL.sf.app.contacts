@@ -1,37 +1,36 @@
-// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// CR 1320 - REQ 8766
-// Test harness for testing the import and export behaviour for the vCard GEO property.
-// 1) Check that data can be added programatically
-// 2) Check that the exported format is as expected
-// 3) Check that vCard can be imported and the data is as expected.
-// GEO property has the form of 
-// GEO:[lat],[lon]
-// The latitude and longitude can have upto 6 decimal places, there is also a range from -90 to 90 for the latitude 
-// and -180 to 180 for the longitude, however there isn't any validation done. Invalid information is imported and 
-// exported as it is.
-// Include Files  
-// 
-//
+/*
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* CR 1320 - REQ 8766
+* Test harness for testing the import and export behaviour for the vCard GEO property.
+* 1) Check that data can be added programatically
+* 2) Check that the exported format is as expected
+* 3) Check that vCard can be imported and the data is as expected.
+* GEO property has the form of 
+* GEO:[lat],[lon]
+* The latitude and longitude can have upto 6 decimal places, there is also a range from -90 to 90 for the latitude 
+* and -180 to 180 for the longitude, however there isn't any validation done. Invalid information is imported and 
+* exported as it is.
+* Include Files  
+*
+*/
+
 
 #include <e32base.h>
 #include <e32std.h>
 #include <e32test.h>
-#include "T_UTILS.H"
-#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
-#include "cntdb_internal.h"
-#endif
+#include "t_utils.h"
 
 
 //  Global Variables

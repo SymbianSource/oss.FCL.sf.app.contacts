@@ -1,40 +1,5 @@
 Perforce Release 
 ================
-Made by Kalyan Reddy - 26 Aug 2009
-DEF141739 add S60 contacts confml file contents into symbian contacts confml file.
-
-Perforce Release 
-================
-Made by Kalyan Reddy - 23 Jun 2009
-DEF140428 Duplicate crml files from Contacts Model and Phonebook 2 
-
-Perforce Release 
-================
-Made by Kalyan Reddy - 17 Jun 2009
-PDEF140328 Partial VCard USER 21's
-
-Perforce Release 
-================
-Made by Raveendra Mullaguri - 28 May 2009
-PDEF139402: Contacts package in PIM not data protection compatible  
-
-Perforce Release 
-================
-Made by Lucian Piros - 19 May 2009
-PDEF139254: Contact picture is not shown in voip call buble / background image 
-
-Perforce Release 
-================
-Made by Kalyan Reddy - 21 Apr 2009
-PDEF137698: Contacts crash when adding multiple contacts to Top Contacts widget_TRUE
-
-Perforce Release 
-================
-Made by Kalyan Reddy - 09 Apr 2009
-PDEF137701: Can't create a group with more than 15 members using Creator
-
-Perforce Release 
-================
 Made by Lucian Piros - 20 Feb 2009
 DEF135301: Improve performace by removing RSqlColumnReadStream
 

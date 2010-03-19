@@ -1,29 +1,31 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// CPackagerTestServer - server classes
-// 
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* CPackagerTestServer - server classes
+*
+*/
+
 
 #ifndef __PACKAGER_TEST_SERVER_H__
 #define __PACKAGER_TEST_SERVER_H__
 
 #include <e32base.h>
 #include <f32file.h>
-#include "CCntPackager.h"
+#include "ccntpackager.h"
 #include <cntfilt.h>
-#include "T_PackagerTestHelper.h"
-#include "T_ServerActiveObject.h"
+#include "t_packagertesthelper.h"
+#include "t_serveractiveobject.h"
 
 // TestServer Class
 class CPackagerTestServer : public CServer2

@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -28,8 +29,8 @@
 #define CCNTSESSION_H
 
 
-#include "CCntDbManager.h" // For TCntFileMode.
-#include "CCntServer.h"
+#include "ccntdbmanager.h" // for tcntfilemode.
+#include "ccntserver.h"
 
 class CCntCrud;
 class CCntDbManager;
@@ -93,6 +94,6 @@ private:
 	RPointerArray<CCntMsgHandler> iMsgHandlerArray;
  	};
 
-#include "CCntSession.inl"
+#include "ccntsession.inl"
 
 #endif

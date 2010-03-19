@@ -1,19 +1,21 @@
-// Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// RecoverView Test module
-// 
-//
+/*
+* Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* RecoverView Test module
+*
+*/
+
 
 
 #include <e32test.h>
@@ -21,7 +23,7 @@
 #include <cntitem.h>
 #include <cntfldst.h>
 
-#include "CContactViewEventQueue.h"
+#include "ccontactvieweventqueue.h"
 
 _LIT(KTestName, "T_RecoverView");
 
@@ -109,7 +111,7 @@ LOCAL_C void TestRecoverWhenViewReadyL()
 	
 	//Creating a contact to test recovery
 	_LIT(KPhoneNumLabel,"Phone Number");
-	_LIT(KPhoneNum,		"+447700900012");
+	_LIT(KPhoneNum,		"+440000000000");
 
 	CContactCard* contact		= CContactCard::NewLC();
 	CContactItemField* field	= CContactItemField::NewLC(KStorageTypeText,KUidContactFieldPhoneNumber);

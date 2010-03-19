@@ -1,17 +1,20 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 
 #ifndef __PACKAGER_TEST_HARNESS_H__
@@ -23,9 +26,9 @@
 #include <cntfield.h>
 #include <cntdb.h>
 #include "persistencelayer.h"
-#include "T_CntTestImplementor.h"
-#include "T_PackagerTestHelper.h"
-#include "T_PackagerTestClient.h"
+#include "t_cnttestimplementor.h"
+#include "t_packagertesthelper.h"
+#include "t_packagertestclient.h"
 
 enum TTestSteps
 	{

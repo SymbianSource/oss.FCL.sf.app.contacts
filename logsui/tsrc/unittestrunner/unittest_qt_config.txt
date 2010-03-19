@@ -1,0 +1,4 @@
+ut_logsengine -noprompt,ut_logs_logsModel.xml,ut_logs_logsDetailsModel.xml,ut_logs_logsMatchesModel.xml,ut_logs_logsFilter.xml,ut_logs_logsCustomFilter.xml,ut_logs_logsCall.xml,ut_logs_logsContact.xml,ut_logs_logsMessage.xml,ut_logs_logsEvent.xml,ut_logs_logsEventData.xml
+ut_logssymbianos -noprompt,ut_logs_logsDbConnector.xml,ut_logs_logsRemove.xml,ut_logs_logsReader.xml,ut_logs_logsReaderStates.xml,ut_logs_logsEventParser.xml,ut_logs_logsEventDataParser.xml
+ut_logscntfinder -noprompt,ut_logs_logsCntFinder.xml,ut_logs_logsPredictiveTranslator.xml,ut_logs_logscntentry.xml
+ut_logsapp -noprompt,ut_logsMainWindow.xml,ut_logsRepository.xml,ut_logsViewManager.xml,ut_logsBaseView.xml,ut_logsRecentCallsView.xml,ut_logsDetailsView.xml,ut_logsMatchesView.xml,ut_logsEffectHandler.xml,ut_logsServiceHandler.xml

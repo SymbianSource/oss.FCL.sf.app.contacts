@@ -1,32 +1,34 @@
-// Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// This profiles the time it takes for a view to become ready and the 
-// time it takes to find all contacts matching a set of criteria.
-// This also tests to make sure the numbers found match the
-// numbers which should be found (this will fail for cntmodel builds
-// without the CR PHAR-5U6KGG changes)
-// 
-//
+/*
+* Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* This profiles the time it takes for a view to become ready and the 
+* time it takes to find all contacts matching a set of criteria.
+* This also tests to make sure the numbers found match the
+* numbers which should be found (this will fail for cntmodel builds
+* without the CR PHAR-5U6KGG changes)
+*
+*/
+
 
 #include <e32test.h>
 #include <cntviewbase.h>
 #include <cntitem.h>
 #include <cntfldst.h>
 #include "t_utils2.h"
-#include "T_UTILS.H"
+#include "t_utils.h"
 
-#include "CContactViewEventQueue.h"
+#include "ccontactvieweventqueue.h"
 
 _LIT(KTestName, "T_ViewSortProfiling");
 

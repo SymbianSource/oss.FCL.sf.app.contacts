@@ -1,17 +1,20 @@
-// Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <cntdb.h>
@@ -21,15 +24,11 @@
 #include <e32math.h>
 #include <phbksync.h>
 
-#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
-#include "cntsyncecom.h"
-#endif
-
-#include "T_UTILS.H"
+#include "t_utils.h"
 #include "cntsyncchecker.h"
-#include "CContactViewEventQueue.h"
-#include "CContactDbEventQueue.h"
-#include <ecom/ecom.h>
+#include "ccontactvieweventqueue.h"
+#include "ccontactdbeventqueue.h"
+#include <ecom.h>
 // include templates for CleanupResetAndDestroyPushL(T)
 #include "cntviewprivate.h"
 

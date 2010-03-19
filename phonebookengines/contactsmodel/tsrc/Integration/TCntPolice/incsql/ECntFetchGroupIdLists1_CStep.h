@@ -17,10 +17,10 @@
 #define ECntFetchGroupIdLists1_H_
 
 //Include the suite header
-#include "CSuite.h"
+#include "csuite.h"
 
-#include "CCntServer.h"
-#include "CCntIpcCodes.h"
+#include "ccntserver.h"
+#include "ccntipccodes.h"
 
 
 class CECntFetchGroupIdLists1Step: public CCapabilityTestStep

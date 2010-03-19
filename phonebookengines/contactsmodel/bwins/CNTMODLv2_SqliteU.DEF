@@ -533,4 +533,6 @@ EXPORTS
 	?ResetItems@CContactGroup@@QAEXXZ @ 532 NONAME ; void CContactGroup::ResetItems(void)
 	?SetGroups@CContactItemPlusGroup@@QAEXPAVCContactIdArray@@@Z @ 533 NONAME ; void CContactItemPlusGroup::SetGroups(class CContactIdArray *)
 	?SetItems@CContactGroup@@QAEXPAVCContactIdArray@@@Z @ 534 NONAME ; void CContactGroup::SetItems(class CContactIdArray *)
+	?AddObserverL@CContactDatabase@@QAEXAAVMContactDbObserver@@@Z @ 535 NONAME ; void CContactDatabase::AddObserverL(class MContactDbObserver &)
+	?RemoveObserver@CContactDatabase@@QAEXABVMContactDbObserver@@@Z @ 536 NONAME ; void CContactDatabase::RemoveObserver(class MContactDbObserver const &)
 

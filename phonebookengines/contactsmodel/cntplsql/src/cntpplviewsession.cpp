@@ -1,17 +1,20 @@
-// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file
@@ -28,9 +31,9 @@ const TInt KCachedPrepareTimeOut = 1000000; //1 second
 /**
 Object factory method.
 */
-CCntPplViewSession* CCntPplViewSession::NewL(CPplContactsFile& aContactsFile, const CLplContactProperties& aContactProperties, CCntSqlStatement& aSelectAllFields, TInt aViewId, const CContactTextDef& aTextDef, const TContactViewPreferences aViewPrefs)
+CCntPplViewSession* CCntPplViewSession::NewL(CPplContactsFile& aContactsFile, const CContactTemplate& aSystemTemplate, CCntSqlStatement& aSelectAllFields, TInt aViewId, const CContactTextDef& aTextDef, const TContactViewPreferences aViewPrefs)
 	{
-	CCntPplViewSession* viewSession = new (ELeave) CCntPplViewSession(aContactsFile, aContactProperties, aSelectAllFields, aViewId, aViewPrefs);
+	CCntPplViewSession* viewSession = new (ELeave) CCntPplViewSession(aContactsFile, aSystemTemplate, aSelectAllFields, aViewId, aViewPrefs);
 	CleanupStack::PushL(viewSession);
 	viewSession->ConstructL(aTextDef);
 	CleanupStack::Pop(viewSession);
@@ -41,10 +44,10 @@ CCntPplViewSession* CCntPplViewSession::NewL(CPplContactsFile& aContactsFile, co
 /**
 CCntPplViewSession first phase constructor.
 */
-CCntPplViewSession::CCntPplViewSession(CPplContactsFile& aContactsFile, const CLplContactProperties& aContactProperties, CCntSqlStatement& aSelectAllFields, TInt aViewId, TContactViewPreferences aViewPrefs)
+CCntPplViewSession::CCntPplViewSession(CPplContactsFile& aContactsFile, const CContactTemplate& aSystemTemplate, CCntSqlStatement& aSelectAllFields, TInt aViewId, TContactViewPreferences aViewPrefs)
 :  	CTimer(CActive::EPriorityIdle),
     iViewId(aViewId),
-	iContactProperties(aContactProperties),
+	iSystemTemplate(aSystemTemplate),
     iContactsFile(aContactsFile),
 	iSqlSmtSelectAllFieldsById(aSelectAllFields),
 	iViewPrefs(aViewPrefs)
@@ -346,7 +349,7 @@ CViewContact* CCntPplViewSession::CreateViewItemL(RSqlStatement& aSqlStmt, const
 		
 		/* set first field with possible content for group or unsorted contact */	
 		CContactDatabase::TTextFieldMinimal buf;
-		TextFieldL(contactSqlStmt, iSqlSmtSelectAllFieldsById, iContactProperties.SystemTemplateL(), typeUid, buf);
+		TextFieldL(contactSqlStmt, iSqlSmtSelectAllFieldsById, iSystemTemplate, typeUid, buf);
 		viewContact->SetFirstFieldForBlankContactL(buf);
 		CleanupStack::PopAndDestroy(&contactSqlStmt);
 		} //if(typeUid != 0)
@@ -399,7 +402,7 @@ void CCntPplViewSession::FillViewItemL(CViewContact& aViewContact, RSqlStatement
 		TPtrC textFieldPtrC = aSqlStmt.ColumnTextL(iCntSqlStatement->ParameterIndex(KContactTextFields()));
 		HBufC* textFieldsBuf = textFieldPtrC.AllocLC();
 			
-		TCntPersistenceUtility::ReadTextBlobL(textHeaderStoreStream, textFieldsBuf, *iTextDef, iContactProperties.SystemTemplateL(), fields, searchFastAccessFields);
+		TCntPersistenceUtility::ReadTextBlobL(textHeaderStoreStream, textFieldsBuf, *iTextDef, iSystemTemplate, fields, searchFastAccessFields);
 		CleanupStack::PopAndDestroy(4, &textHeaderStream); //textHeaderStore, textHeaderStream, textHeaderStoreStream, textFieldsBuf
 		
 		// Loop through fields, checking for fields from fast access fields, and add 

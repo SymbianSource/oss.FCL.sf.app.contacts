@@ -1,17 +1,20 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <f32file.h>
@@ -24,7 +27,7 @@
 #include <barsc.h>
 #include <barsread.h>
 #include <cntmodel.rsg>
-#include "T_UTILS.H"
+#include "t_utils.h"
 
 CCntTest* CntTest=NULL;
 LOCAL_D RTest test(_L("T_CARDTM"));
@@ -164,11 +167,11 @@ void TestCardTemplateCreationL(CContactDatabase& aDb)
 
 
 
-//
+/////////////////////////////////////////////////////////////////
 //
 //	SUPPORT MODULES
 //
-//
+/////////////////////////////////////////////////////////////////
 
 LOCAL_C void SetNameL(CContactItem& aItem,TUid aType,const TDesC& aName)
 //
@@ -323,11 +326,11 @@ LOCAL_C void PopulateDatabaseL(CContactItem& aTemplate, TInt aNumberToPopulate, 
 		}
 	}
 
-//
+/////////////////////////////////////////////////////////////////
 //
 //	TEST MODULES
 //
-//
+/////////////////////////////////////////////////////////////////
 
 
 LOCAL_C void CreateCardTemplateL()
@@ -960,17 +963,17 @@ LOCAL_C void TestModifyCardAttribs()
     //
 	{
 	test.Next(_L("set attribs check persist"));
-    //
+    ////////////////////////////////////////////////////////////////////
     // multiple template created card
 	CContactIdArray* tempIdList = CntTest->Db()->GetCardTemplateIdListL();
 	TContactItemId templateId = (*tempIdList)[0]; // first in the list
 	delete tempIdList;
 	CContactItem* tempTemplate = CntTest->Db()->OpenContactLX(templateId);	
-    //
+    /////////////////////////////////////////////////////////////////
     // golden template created card 
 
     //	CContactItem* tempTemplate = CntTest->Db()->OpenContactLX(0);
-    //
+    ////////////////////////////////////////////////////////////////
 	CleanupStack::PushL(tempTemplate);
 	CContactItem* newContactItem = CContactCard::NewLC(tempTemplate);
 	CntTest->Db()->CloseContactL(tempTemplate->Id());
@@ -1362,11 +1365,11 @@ LOCAL_C void TestTemplateCachingL()
 	CleanupStack::PopAndDestroy(2);	// ids,cntIdArray
 	}
 
-//
+/////////////////////////////////////////////////////////////////
 //
 //	Main dispatching module
 //
-//
+/////////////////////////////////////////////////////////////////
 /**
 
 @SYMTestCaseID     PIM-T-CARDTM-0001

@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,15 +11,15 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 * The test step to construct the views and access the view Api's like CountL(), AtL(), 
 * ContactAtL(), FindL(), SortOrder(), ViewPreferences(), AllFieldsLC(), RefineFindView(), 
 * GetContactsMatchingCriteria() and GetContactsMatchingPrefix() based on the variable set
 * in the ini file. 
 * Verify and Validate the values returned by the view API's
-* 
 *
 */
+
 
 
  
@@ -27,17 +27,17 @@
 #define TEST_CONTACT_VIEW_ACCESS_STEP_H
 
 // System Includes
-#include <test/testexecutestepbase.h>
+#include <testexecutestepbase.h>
 #include <cntdef.h>
 #include <cntviewbase.h>
 #include <cntdb.h>
 #include <e32property.h>
-#include <connect/sbeclient.h>
+#include <sbeclient.h>
 
 // User Includes
-#include "CntPerfServer.h"
-#include "ClientServer.h"
-#include "ContactUtilitiesCollection.h"
+#include "cntperfserver.h"
+#include "clientserver.h"
+#include "contactutilitiescollection.h"
 
 _LIT(KViewAccessList,				"viewaccesslist");
 _LIT(KTestAtLAPI,					"testatlapi");

@@ -1,30 +1,29 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// This test harness simulates aspects of the phbksync test plugin behaviour which
-// starts up the phbksync server if it is not running. The phbksync server configures itself
-// and needs to access the contacts DB. Accessing the contacts DB from within the contacts
-// server can cause deadlocks. The contacts client will load the test plugin and try to access
-// the contacts DB on first use only, this will avoid the problem of the server being deadlocked.
-// **This test only works with Contacts the test plugin and not the original phonebooksync plugin.**
-// winscw - DELETE phbksyncplugin.dll from %epocroot%/epoc32/release/winscw/udeb or similarly named directory
-// hardware - delete the line \"ECOM_PLUGIN(phbksyncplugin.dll,1020428C.rsc)\" from phbksync.iby
-// 
-//
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* This test harness simulates aspects of the phbksync test plugin behaviour which
+* starts up the phbksync server if it is not running. The phbksync server configures itself
+* and needs to access the contacts DB. Accessing the contacts DB from within the contacts
+* server can cause deadlocks. The contacts client will load the test plugin and try to access
+* the contacts DB on first use only, this will avoid the problem of the server being deadlocked.
+* **This test only works with Contacts the test plugin and not the original phonebooksync plugin.**
+*/
+
 
 #include <e32test.h>
-#include "T_UTILS.H"
-#include "./TestSyncPlugIn/cnttestsynchroniser.h"
+#include "t_utils.h"
+#include "./testsyncplugin/cnttestsynchroniser.h"
 
 _LIT(KICCStartupTest, "ICC Test plugin startup test");
 _LIT(KPhoneGroupId, "PhoneGroupId test");
@@ -91,13 +90,13 @@ void DoTestsL()
 	syncChecker = new (ELeave) CContactSyncChecker;
 	syncChecker->ResetEverythingL(); //set the counters to zero
 	
-	test.Next(KPhoneGroupId);
+	test.Next(_L("PhoneGroupId test"));
 
 	DoPhoneGroupIdTest();
 	
 	
 	syncChecker->ResetEverythingL(); //set the counters to zero
-	test.Next(KICCTemplateId);
+	test.Next(_L("ICCTemplateId test"));
 
 	DoICCTemplateIdTest();
 	

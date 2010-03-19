@@ -1,17 +1,20 @@
-// Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32std.h>
 #include <e32test.h>
@@ -23,9 +26,9 @@
 #include <coreappstest/testserver.h>
 #include "t_speeddialtest.h"
 
-//
+///////////////////////////////////////////////////////////////////////////////
 // Constants.
-//
+///////////////////////////////////////////////////////////////////////////////
 _LIT(KTestName,"T_SpeedDialTest");
 
 // Configure database locations
@@ -44,14 +47,14 @@ const TInt KSpeedDialContactA = 4;
 const TInt KSpeedDialContactB = 5;
 
 
-//
+///////////////////////////////////////////////////////////////////////////////
 // Global Data
-//
+///////////////////////////////////////////////////////////////////////////////
 RTest g_test( KTestName );
 
-//
+///////////////////////////////////////////////////////////////////////////////
 // Class CLockServerTester Implementation
-//
+///////////////////////////////////////////////////////////////////////////////
 
 CLockServerTester* CLockServerTester::NewL()
 	{
@@ -104,9 +107,9 @@ void CLockServerTester::DeleteProcess()
 	iProcess.iExecution = NULL;
 	}
 
-//
+///////////////////////////////////////////////////////////////////////////////
 // Function Implementation
-//
+///////////////////////////////////////////////////////////////////////////////
 TBool ContactIsASpeedDial(const CContactItem& aItem)
 	{
 	TBool retval = EFalse;

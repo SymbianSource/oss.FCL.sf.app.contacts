@@ -1,17 +1,20 @@
-// Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <s32file.h>
 #include <e32math.h>
@@ -22,8 +25,8 @@
 #include <coreappstest/testserver.h>
 
 _LIT(KTestName, "T_ViewSortPlugin");
-#include "testhelpers.h" //Defines RTest test;
-#include "T_ViewSortPlugin.h"
+#include "testhelpers.h" //defines rtest test;
+#include "t_viewsortplugin.h"
 
 LOCAL_D	RFs theFs;
 
@@ -100,7 +103,7 @@ void CTestMachine::StepRestoreDatabaseL()
 	}
 
 
-// Macros for asynchronous operations //
+//// Macros for asynchronous operations ////
 // These macros is the main part of the framework
 // Every step consists of several substeps. Between the steps active object
 // is idle and waiting for request to be completed, allowing other object to do their work
@@ -158,8 +161,8 @@ void CTestMachine::StepRestoreDatabaseL()
 		test.Printf(_L("Test step %d doesn't contain substep %d"), iStep, iSubStep);	\
 		User::Leave(KErrAbort);	}
 
-//
-// STEPS //
+///////////////////////////////////////
+/////////////// STEPS /////////////////
 
 void CTestMachine::StepFindViewsL()
 	{
@@ -168,7 +171,7 @@ void CTestMachine::StepFindViewsL()
 
 	BEGIN_ASYNC_TEST
 		
-		//
+		/////////////////////////////////////////
 		//Actions:	Create a local view with reverse sort plugin
 		TESTTRAP(iLocalView = CContactLocalView::NewL(*this, *iDb, iSurnNameSortOrder, viewPrefs, KReverseSortPlugin));
 	WAIT_EVENT(1)
@@ -178,7 +181,7 @@ void CTestMachine::StepFindViewsL()
 		CheckViewOrderL(iLocalView);
 		test.Printf(_L("\n\n"));
 
-		//
+		/////////////////////////////////////////
 		//Actions:	Create a remote view with reverse sort plugin
 		TESTTRAP(iRemoteViewReverse = CContactRemoteView::NewL(*this, *iDb, iSurnNameSortOrder, viewPrefs, KReverseSortPlugin));
 	WAIT_EVENT(2)
@@ -188,7 +191,7 @@ void CTestMachine::StepFindViewsL()
 		CheckViewOrderL(iRemoteViewReverse);
 		test.Printf(_L("\n\n"));
 
-		//
+		/////////////////////////////////////////
 		//Actions:	Create a remote view with default sorting behaviour
 		TESTTRAP(iRemoteViewForward = CContactRemoteView::NewL(*this, *iDb, iSurnNameSortOrder, viewPrefs));
 	WAIT_EVENT(3)
@@ -198,7 +201,7 @@ void CTestMachine::StepFindViewsL()
 		CheckViewOrderL(iRemoteViewForward, EFalse, EFalse); //do not Print, forward order
 		test.Printf(_L("\n\n"));
 
-		//
+		/////////////////////////////////////////
 		//Actions:	Create a Find view on top of the local view, using "Ma" search string 
 		iFindDesArray =new(ELeave)CPtrC16Array(1);
 		_LIT(KMa,"Ma");
@@ -212,7 +215,7 @@ void CTestMachine::StepFindViewsL()
 		CheckViewOrderL(iLocalFindView);
 		test.Printf(_L("\n\n"));
 
-		//
+		/////////////////////////////////////////
 		//Actions:	Create a Find view on top of the reverse remote view, using "el" search string 
 		iFindDesArray->Reset();
 		_LIT(Kel,"el");
@@ -225,7 +228,7 @@ void CTestMachine::StepFindViewsL()
 		CheckViewOrderL(iRemoteFindView);
 		test.Printf(_L("\n\n"));
 
-		//
+		/////////////////
 		//Actions:	Add a new contact to the database, it must have "ma" and "el" substrings in it 
 		//          to appear in either find view. Check the sorting in every view.		
 		_LIT8(KIrvVCard, "BEGIN:VCARD\r\nVERSION:2.1\r\nN:Mansell;Nigel;11\r\nPensioner\r\nEND:VCARD");
@@ -383,7 +386,7 @@ void CTestMachine::StepNamedRemoteViewsL()
 		CheckViewOrderL(iNamedRemoteView2, ETrue);
 		test.Printf(_L("\n\n"));
 
-		//
+		/////////////////////////////////////////
 		//Actions:	Create a Find view on top of the first instance of named remote view, 
 		//using "Ma" search string 
 		iFindDesArray =new(ELeave)CPtrC16Array(1);
@@ -399,7 +402,7 @@ void CTestMachine::StepNamedRemoteViewsL()
 		CheckViewOrderL(iNamedRemoteFindView, ETrue);
 		test.Printf(_L("\n\n"));
 
-		//
+		/////////////////////////////////////////
 		//Actions:	Create a Find view on top of the second instance of named remote view, 
 		// using "el" search string 
 		iFindDesArray->Reset();
@@ -747,7 +750,7 @@ GLDEF_C TInt E32Main()
 
 
 
-// Helpers //
+///// Helpers //////
 void RandomText(TDes& aText,TInt64& aSeed)
 {
 	TInt numChar=Math::Rand(aSeed)%aText.MaxLength();

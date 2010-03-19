@@ -1,0 +1,18 @@
+EXPORTS
+	qt_plugin_instance @ 1 NONAME
+	qt_plugin_query_verification_data @ 2 NONAME
+	?trUtf8@CntSymbianFactory@@SA?AVQString@@PBD0H@Z @ 3 NONAME ; class QString CntSymbianFactory::trUtf8(char const *, char const *, int)
+	?staticMetaObject@CntSymbianFactory@@2UQMetaObject@@B @ 4 NONAME ; struct QMetaObject const CntSymbianFactory::staticMetaObject
+	?trUtf8@CntSymbianFactory@@SA?AVQString@@PBD0@Z @ 5 NONAME ; class QString CntSymbianFactory::trUtf8(char const *, char const *)
+	?qt_metacall@CntSymbianFactory@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 6 NONAME ; int CntSymbianFactory::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?qt_metacast@CntSymbianFactory@@UAEPAXPBD@Z @ 7 NONAME ; void * CntSymbianFactory::qt_metacast(char const *)
+	?metaObject@CntSymbianFactory@@UBEPBUQMetaObject@@XZ @ 8 NONAME ; struct QMetaObject const * CntSymbianFactory::metaObject(void) const
+	??_ECntSymbianFactory@@UAE@I@Z @ 9 NONAME ; CntSymbianFactory::~CntSymbianFactory(unsigned int)
+	?tr@CntSymbianFactory@@SA?AVQString@@PBD0@Z @ 10 NONAME ; class QString CntSymbianFactory::tr(char const *, char const *)
+	?getStaticMetaObject@CntSymbianFactory@@SAABUQMetaObject@@XZ @ 11 NONAME ; struct QMetaObject const & CntSymbianFactory::getStaticMetaObject(void)
+	?engine@CntSymbianFactory@@UAEPAVQContactManagerEngine@QtMobility@@ABV?$QMap@VQString@@V1@@@AAW4Error@QContactManager@3@@Z @ 12 NONAME ; class QtMobility::QContactManagerEngine * CntSymbianFactory::engine(class QMap<class QString, class QString> const &, enum QtMobility::QContactManager::Error &)
+	?managerName@CntSymbianFactory@@UBE?AVQString@@XZ @ 13 NONAME ; class QString CntSymbianFactory::managerName(void) const
+	??0CntSymbianFactory@@QAE@XZ @ 14 NONAME ; CntSymbianFactory::CntSymbianFactory(void)
+	??1CntSymbianFactory@@UAE@XZ @ 15 NONAME ; CntSymbianFactory::~CntSymbianFactory(void)
+	?tr@CntSymbianFactory@@SA?AVQString@@PBD0H@Z @ 16 NONAME ; class QString CntSymbianFactory::tr(char const *, char const *, int)
+

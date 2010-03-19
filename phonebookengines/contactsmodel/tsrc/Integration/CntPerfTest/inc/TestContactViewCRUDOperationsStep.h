@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -21,7 +22,7 @@
 #define __TEST_CONTACTVIEW_CRUD_OPERATIONS_H__
 
 // System Includes
-#include <test/testexecutestepbase.h>
+#include <testexecutestepbase.h>
 #include <cntdb.h>
 #include <cntitem.h>
 #include <cntviewbase.h>
@@ -30,11 +31,11 @@
 #include <e32math.h>
 
 // User Includes
-#include "ContactUtilitiesCollection.h"
-#include "ClientServer.h"
-#include "AddModifyDeleteContactFields.h"
-#include "TestContactViewDatabaseUtilitiesStep.h"
-#include "ContactViewsThread.h"
+#include "contactutilitiescollection.h"
+#include "clientserver.h"
+#include "addmodifydeletecontactfields.h"
+#include "testcontactviewdatabaseutilitiesstep.h"
+#include "contactviewsthread.h"
 
 
 // Literals

@@ -1,19 +1,21 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// Persistence Layer Test module
-// 
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* Persistence Layer Test module
+*
+*/
+
 
 
 #include <e32test.h>
@@ -25,10 +27,10 @@ _LIT(KTestName, "T_PersistenceLayer"); // Used by Testhelper
 
 #include "testhelpers.h"
 
-#include "NbCntTestLib/NbCntTestLib.h" 
+#include "nbcnttestlib/nbcnttestlib.h" 
 
-#include "T_PersistenceLayer.h"
-#include "T_CntTestImplDefs.h"
+#include "t_persistencelayer.h"
+#include "t_cnttestimpldefs.h"
 
 
 #define RUN_PL
@@ -40,7 +42,7 @@ const TUid KUidContactFieldCustom1={KUidContactFieldCustom1Value};
 const TUid KUidContactFieldCustom2={KUidContactFieldCustom2Value};
 _LIT(KCrudTestDbFile, "C:CRUD_TEST");
 
-//
+////////////////////////////////////////////////////////////////////
 // This test used to spit out a lot of html files which display
 // the contents of contact items. There are a lot of files
 // generated in the process which, as this is normally run on the
@@ -50,7 +52,7 @@ _LIT(KCrudTestDbFile, "C:CRUD_TEST");
 //
 // So, uncomment the following line to turn on contact dumping.
 //#define __T_PERSISTENCELAYER_DUMP_CONTACT__
-//
+////////////////////////////////////////////////////////////////////
 
 
 void CPersistenceTests::AllTestsL()
@@ -83,8 +85,8 @@ void CPersistenceTests::IccL()
 	PUSH(iccEntry);
 	
 	TCnt theCnt(iccEntry);
-	theCnt[KUidContactFieldGivenName] = _L("Name");
-	theCnt[KUidContactFieldFamilyName] = _L("Example");
+	theCnt[KUidContactFieldGivenName] = _L("Johny");
+	theCnt[KUidContactFieldFamilyName] = _L("Herbert");
 
 	iCntTestImpl.CreateL(*iccEntry);
 
@@ -181,10 +183,10 @@ void CPersistenceTests::AccessCountL()
 	CContactItem* card = CContactCard::NewLC(&goldenTemplate);
 	TCnt theCnt(card);
 
-	theCnt[KUidContactFieldGivenName] = _L("Sample");
-	theCnt[KUidContactFieldFamilyName] = _L("Test1");
-	theCnt[KUidContactFieldPhoneNumber] & KHome & KVoice & KCell = _L("mo1 7700900333");
-	theCnt[KUidContactFieldEMail] & KHome = _L("test@email");
+	theCnt[KUidContactFieldGivenName] = _L("Giancarlo");
+	theCnt[KUidContactFieldFamilyName] = _L("Fisichella");
+	theCnt[KUidContactFieldPhoneNumber] & KHome & KVoice & KCell = _L("mo1 39849342");
+	theCnt[KUidContactFieldEMail] & KHome = _L("home@email");
 	theCnt[KUidContactFieldAddress] & KHome = _L("Home addresssssss");
 //	theCnt[KUidContactFieldLocality] & KHome = _L("Rome");
 
@@ -272,10 +274,10 @@ void CPersistenceTests::FileCreationL()
 	card->SetUidStringL(uidStr);
 	TCnt theCnt(card);
 
-	theCnt[KUidContactFieldGivenName] = _L("Example1");
-	theCnt[KUidContactFieldFamilyName] = _L("NameL");
+	theCnt[KUidContactFieldGivenName] = _L("David");
+	theCnt[KUidContactFieldFamilyName] = _L("Coulthard");
 
-	theCnt[KUidContactFieldPhoneNumber] & KHome & KVoice & KCell = _L("mo1 7700900333");
+	theCnt[KUidContactFieldPhoneNumber] & KHome & KVoice & KCell = _L("mo1 39849342");
 	theCnt[KUidContactFieldPhoneNumber] & KHome & KVoice & KCell += _L("mo2 34530903495803948503984545");
 
 	theCnt[KUidContactFieldEMail] & KHome = _L("home@email");
@@ -287,9 +289,9 @@ void CPersistenceTests::FileCreationL()
 	//test library that create the test version of the system template cntmodel.rsc
 	theCnt[KUidContactFieldSecondName] = _L("Second name");
 
-	theCnt[KUidContactFieldCompanyName] = _L("Test");
-	theCnt[KUidContactFieldJobTitle]	= _L("Name1");
-	theCnt[KUidContactFieldPhoneNumber] & KWork & KVoice = _L("work Tel 12345");
+	theCnt[KUidContactFieldCompanyName] = _L("McLaren");
+	theCnt[KUidContactFieldJobTitle]	= _L("Driver");
+	theCnt[KUidContactFieldPhoneNumber] & KWork & KVoice = _L("work Tel 2342");
 
 	theCnt[KUidContactFieldEMail] & KWork = _L("work@email");
 	theCnt[KUidContactFieldUrl] & KWork = _L("sdfsd");
@@ -313,11 +315,11 @@ void CPersistenceTests::FileCreationL()
 	POPD(card);
 
 	card = CContactCard::NewLC(&goldenTemplate);
-	theCnt[KUidContactFieldGivenName] = _L("Sample");
-	theCnt[KUidContactFieldFamilyName] = _L("Test");
-	theCnt[KUidContactFieldCompanyName] = _L("SYMBIANFOUNDATION");
-	theCnt[KUidContactFieldJobTitle]	= _L("Test");
-	theCnt[KUidContactFieldPhoneNumber] & KHome & KVoice & KCell = _L("tel. 7700900333");
+	theCnt[KUidContactFieldGivenName] = _L("Elton");
+	theCnt[KUidContactFieldFamilyName] = _L("John");
+	theCnt[KUidContactFieldCompanyName] = _L("EMI");
+	theCnt[KUidContactFieldJobTitle]	= _L("Singer");
+	theCnt[KUidContactFieldPhoneNumber] & KHome & KVoice & KCell = _L("tel. 39849342");
 	iCntTestImpl.CreateL(*card);
 	POPD(card);
 	
@@ -518,7 +520,7 @@ void CPersistenceTests::GroupsL()
 #ifdef __T_PERSISTENCELAYER_DUMP_CONTACT__
 	TESTTRAP(iCntTestImpl.DumpContactL(*group3, _L("Group3-Group1WasDeleted")));
 #endif
-	//
+	///////////////
 	
 	TRAPD(err, iCntTestImpl.GroupAddAndRemove(*group3, 238, -1));
 	TESTVALUE(err, KErrNotFound);

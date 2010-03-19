@@ -1,17 +1,20 @@
-// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file
@@ -328,12 +331,9 @@ sql condition.
 */	
 void CCntSqlStatement::Reset()
 	{
-	if(iCondition)
-		{
-		delete iCondition;	
-		iCondition = NULL;
-		}
-		
+	delete iCondition;	
+	iCondition = NULL;
+	
 	delete iSqlString;
 	iSqlString = NULL;
 		
@@ -387,6 +387,17 @@ CCntSqlStatement::~CCntSqlStatement()
 		}
 	}
 	
+void CCntSqlStatement::SetTableName(HBufC* aTableName)
+    {
+    delete iTableName;
+    iTableName = aTableName;
+    
+	// Table name changes, so SQL statement must be re-generated
+    iProcessed = EFalse;
+	delete iSqlString;
+	iSqlString = NULL;
+    }
+
 /**
 Creates a concrete CCntSqlUpdate object (used to retrieve sql update statements)
 

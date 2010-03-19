@@ -1,17 +1,20 @@
-// Copyright (c) 2001-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2001-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <cntdb.h>
@@ -20,8 +23,8 @@
 #include <cntfldst.h>
 #include <phbksync.h>
 
-#include "T_UTILS.H"
-#include "./TestSyncPlugIn/cnttestsynchroniser.h"
+#include "t_utils.h"
+#include "./testsyncplugin/cnttestsynchroniser.h"
 
 // include templates for CleanupResetAndDestroyPushL(T)
 #include "cntviewprivate.h"
@@ -40,8 +43,8 @@ _LIT(KDatabaseFileName,"C:T_ICCENTRY");
 _LIT(KTestName,"Basic tests for CContactICCEntry");
 _LIT(KGivenName,"Given");
 _LIT(KGivenEditName,"EditedName");
-_LIT(KTelephoneNum,"020 79460111");
-_LIT(KTelephoneNumModified,"020 79460222");
+_LIT(KTelephoneNum,"020 11111111");
+_LIT(KTelephoneNumModified,"020 22222222");
 _LIT(KTemplateName,"SIM Card Contacts"); 
 
 _LIT(KPluginName,"phone book synchronizer Implementation");
@@ -629,8 +632,8 @@ void CheckFieldContentL(CContactItemFieldSet& aFieldset, TFieldType aFieldType, 
 
 void TestCreationL(CContactDatabase& aDb)
 	{
-	_LIT(KTestCreation,"@SYMTESTCaseID:PIM-T-ICCENTRY-0001 Create CContactICCEntry item");
-	test.Start(KTestCreation);
+	_LIT(KTestCreation,"Create CContactICCEntry item");
+	test.Start(_L("@SYMTESTCaseID:PIM-T-ICCENTRY-0001 Create CContactICCEntry item"));
 
 	//System Template
 	TContactItemId systemTemplateId = aDb.TemplateId();

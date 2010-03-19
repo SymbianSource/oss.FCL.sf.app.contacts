@@ -1,28 +1,31 @@
-// Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
 
-#include "T_LongSql.h"
+
+#include "t_longsql.h"
 
 #include <e32test.h>
 #include <cntfield.h>
 
 RTest TheTest(_L("Building a long SQL query"));
 
-//
+////////////////////////////////
 // CSqlSearch class definition
-//
+////////////////////////////////
 CSqlSearcher::CSqlSearcher()
 	{
 	}
@@ -67,9 +70,9 @@ void CSqlSearcher::DoSearchL(const TDesC& aString, TUid aFieldId)
     CleanupStack::PopAndDestroy(fieldsToSearch);
 	}
 
-//
+////////////////////////////////
 // Main test:
-//
+////////////////////////////////
 
 static void doMainL()
 	{

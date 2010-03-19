@@ -1,25 +1,28 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32std.h>
 #include <e32test.h>
 #include <cntdb.h>
-#include "T_UTILS.H"
+#include "t_utils.h"
 
 _LIT(KTestName,"T_ServerStart");
-_LIT(KTest1,"@SYMTESTCaseID:PIM-T-SERVERSTART-0001 Simultaneous startup");
+_LIT(KTest1,"Simultaneous startup");
 
 LOCAL_D RTest test(KTestName);
 
@@ -89,7 +92,7 @@ LOCAL_C void simultaneousStartupL()
 
 void doMainL()
 	{
-	test.Start(KTest1);
+	test.Start(_L("@SYMTESTCaseID:PIM-T-SERVERSTART-0001 Simultaneous startup"));
 
 
 	TRAP_IGNORE(CContactDatabase::DeleteDefaultFileL());

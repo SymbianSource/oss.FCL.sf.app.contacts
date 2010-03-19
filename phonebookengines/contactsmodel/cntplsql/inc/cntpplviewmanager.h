@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -27,7 +28,7 @@
 #define __CNTPPLVIEWMANAGER_H__
 
 #include "cntsqlprovider.h"
-#include "persistencelayer.h" // For interface definitions.
+#include "persistencelayer.h" // for interface definitions.
 #include "persistencelayerimpl.h"
 #include <sqldb.h>
 
@@ -45,7 +46,7 @@ database).
 class NONSHARED CCntPplViewManager : public CBase, public MLplViewIteratorManager
 	{
 public:
-	static CCntPplViewManager* NewL(CPplContactsFile& aContactsFile, const CLplContactProperties& aContactProperties);
+	static CCntPplViewManager* NewL(CPplContactsFile& aContactsFile, const CContactTemplate& aSystemTemplate);
 	~CCntPplViewManager();
 	
 	//Methods defined in MLplViewIteratorManager
@@ -62,14 +63,14 @@ public:
 
 private:
 	void ConstructL();
-	CCntPplViewManager(CPplContactsFile& aContactsFile, const CLplContactProperties& aContactProperties);
+	CCntPplViewManager(CPplContactsFile& aContactsFile, const CContactTemplate& aSystemTemplate);
 	
 	TInt FindViewSessionIndexById(TInt aViewId) const;
 	CCntPplViewSession* FindViewSessionByIdL(TInt aViewId) const;
 	
 private:
 	CPplContactsFile& iContactsFile;
-	const CLplContactProperties& iContactProperties;
+	const CContactTemplate& iSystemTemplate;
 	
 	TInt  iNextViewId;
 	RPointerArray<CCntPplViewSession> iViewSessions;
@@ -80,7 +81,7 @@ private:
 class NONSHARED CCntPplViewSession : public CTimer
 	{
 public:	
-	static CCntPplViewSession* NewL(CPplContactsFile& aContactsFile, const CLplContactProperties& aContactProperties, CCntSqlStatement& aSelectAllFields, TInt aViewId, const CContactTextDef& aTextDef, TContactViewPreferences aViewPrefs);
+	static CCntPplViewSession* NewL(CPplContactsFile& aContactsFile, const CContactTemplate& aSystemTemplate, CCntSqlStatement& aSelectAllFields, TInt aViewId, const CContactTextDef& aTextDef, TContactViewPreferences aViewPrefs);
 	~CCntPplViewSession();
 	
 	void ChangeSortOrderL(const CContactTextDef& aTextDef);
@@ -96,7 +97,7 @@ public:
 	
 private:
 	void ConstructL(const CContactTextDef& aTextDef);
-	CCntPplViewSession(CPplContactsFile& aContactsFile, const CLplContactProperties& aContactProperties, CCntSqlStatement& aSelectAllFields, TInt aViewId, TContactViewPreferences aViewPrefs);
+	CCntPplViewSession(CPplContactsFile& aContactsFile, const CContactTemplate& aSystemTemplate, CCntSqlStatement& aSelectAllFields, TInt aViewId, TContactViewPreferences aViewPrefs);
 	
 	CViewContact* CreateViewItemL(RSqlStatement& aSqlStmt, const CCntSqlStatement& aCntSqlStmt, const TContactViewPreferences& aViewPrefs);
 	void  FillViewItemL(CViewContact& aViewContact, RSqlStatement& aSqlStmt, const TContactViewPreferences& aViewPrefs);
@@ -114,7 +115,7 @@ private:
     void CleanupCachedPrepareStatement();
 private:
 	const TInt 				iViewId;
-	const CLplContactProperties& iContactProperties;
+	const CContactTemplate& iSystemTemplate;
 	
 	CPplContactsFile& 		iContactsFile;
 	CCntSqlStatement&       iSqlSmtSelectAllFieldsById;

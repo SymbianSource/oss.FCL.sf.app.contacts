@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -29,8 +30,8 @@
 
 
 #include <e32base.h>
-#include <e32hashtab.h> // For RHashMap
-#include "CCntMsgHandlerFptr.h"
+#include <e32hashtab.h> // for rhashmap
+#include "ccntmsghandlerfptr.h"
 
 
 class CCntDbManagerController;

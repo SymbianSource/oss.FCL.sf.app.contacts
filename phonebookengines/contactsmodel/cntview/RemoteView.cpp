@@ -1,30 +1,30 @@
-// Copyright (c) 2001-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2001-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <cntviewbase.h>
 #include "cntviewprivate.h"
 #include <cntviewsortplugin.h>
-#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
-#include <cntviewsortpluginbase.h>
-#endif
 
-#include "CCntServer.h" //for KSlot1 and KSlot2
+#include "ccntserver.h" //for kslot1 and kslot2
 #include "rcntmodel.h"
 
 // uncomment define in header to select debug prints for API profiling 
-#include "CntApiProfile.h"
+#include "cntapiprofile.h"
 
 
 //

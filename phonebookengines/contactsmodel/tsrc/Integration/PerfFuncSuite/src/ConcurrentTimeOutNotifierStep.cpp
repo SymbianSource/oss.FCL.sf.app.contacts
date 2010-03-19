@@ -1,30 +1,32 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// Notifier step / thread, locks a contact / database, sends message to
-// concurrent running listener thread / step informing it what has been locked
-// waits for message from  listner to start countdown to release of lock
-// listener will send message and wait for specified lock to be released
-// or for timeout to be invoked by cntmodel.
-// Sending Messages:
-// Set shared string to contain length of time resource will be locked for in seconds. KSharedEvents. (6)
-// Set shared string to contain  id of contact that is locked. KSharedContact. (1)
-// Set shared string to contain a value, specify that new test case can start. KSharedNextTest. (aa)
-// Receiving messages:
-// Read shared string length signifying that thread should start countdown 
-// until realease of resource. KSharedClients. (AA)
-// 
-//
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* Notifier step / thread, locks a contact / database, sends message to
+* concurrent running listener thread / step informing it what has been locked
+* waits for message from  listner to start countdown to release of lock
+* listener will send message and wait for specified lock to be released
+* or for timeout to be invoked by cntmodel.
+* Sending Messages:
+* Set shared string to contain length of time resource will be locked for in seconds. KSharedEvents. (6)
+* Set shared string to contain  id of contact that is locked. KSharedContact. (1)
+* Set shared string to contain a value, specify that new test case can start. KSharedNextTest. (aa)
+* Receiving messages:
+* Read shared string length signifying that thread should start countdown 
+* until realease of resource. KSharedClients. (AA)
+*
+*/
+
 
 /**
  @file 
@@ -32,8 +34,8 @@
  @released
 */
  
-#include "ConcurrentTimeOutNotifierStep.h"
-#include "PerformanceFunctionalityDefs.h"
+#include "concurrenttimeoutnotifierstep.h"
+#include "performancefunctionalitydefs.h"
 
 _LIT(KRun1,"NonTrans");
 _LIT(KRun2,"Transaction");

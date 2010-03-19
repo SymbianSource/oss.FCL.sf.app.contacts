@@ -1,17 +1,20 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file
@@ -22,15 +25,15 @@
 
 #include <e32base.h>
 
-#include "CCntRequest.h"
-#include "CCntDbManager.h"
-#include "CCntDbManagerController.h"
-#include "CCntStateMachine.h"
+#include "ccntrequest.h"
+#include "ccntdbmanager.h"
+#include "ccntdbmanagercontroller.h"
+#include "ccntstatemachine.h"
 #include "cntviewprivate.h"
-#include "CViewSubSessions.h"
+#include "cviewsubsessions.h"
 #include <cntviewstore.h>
-#include "CCntPermanentData.h"
-#include "CCntLogger.h"
+#include "ccntpermanentdata.h"
+#include "ccntlogger.h"
 
 /**
 Object factory method.

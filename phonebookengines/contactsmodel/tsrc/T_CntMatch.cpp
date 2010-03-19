@@ -1,23 +1,26 @@
-// Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 
 
 #include <e32test.h>
 #include <f32file.h>
-#include "T_UTILS.H"
+#include "t_utils.h"
 
 _LIT(KTestName,"T_CntMatch");
 #include "testhelpers.h"
@@ -171,17 +174,17 @@ LOCAL_C void DontUnderestimateTheMeaningOfZeroL()
 	{
 	ResetDatabaseL();
 
-	//Database contains only this number 207 946 0321;
-	CreateContactL(KCntName,KCntSurname,_L("207 946 0321"),KNullDesC);
+	//Database contains only this number 228 876 5324;
+	CreateContactL(KCntName,KCntSurname,_L("228 876 5324"),KNullDesC);
 	//Trying to search on that exact number by 6 digits...
-		TESTVALUE(CheckPhoneMatchL(		_L("207 946 0321"), 6),0);
+		TESTVALUE(CheckPhoneMatchL(		_L("228 876 5324"), 6),0);
 	//No matches, well I kind of expected it... :-(
 
 	//Now we add a number that differs from the first one by one digit..
-	CreateContactL(KCntName,KCntSurname,_L("207 046 0321"),KNullDesC);
+	CreateContactL(KCntName,KCntSurname,_L("228 076 5324"),KNullDesC);
 
 	//Repeat our search
-		TESTVALUE(CheckPhoneMatchL(		_L("207 946 0321"), 6),1);
+		TESTVALUE(CheckPhoneMatchL(		_L("228 876 5324"), 6),1);
 	//It matches!!... Please don't laugh! There is logic in it!
 	//If the number doesn't match to itself - then it should match on different one! ;-)
 	}
@@ -192,14 +195,14 @@ LOCAL_C void Test2L()
 	ResetDatabaseL();
 
 	//if 5324 doesn't match to  228 100 5324...
-	CreateContactL(KCntName,KCntSurname,_L("207 100 0324"),KNullDesC);
-	TESTVALUE(CheckPhoneMatchL(					_L("0324"),11),0);
-	TESTVALUE(CheckPhoneMatchL(					_L("0324"), 4),0);
+	CreateContactL(KCntName,KCntSurname,_L("228 100 5324"),KNullDesC);
+	TESTVALUE(CheckPhoneMatchL(					_L("5324"),11),0);
+	TESTVALUE(CheckPhoneMatchL(					_L("5324"), 4),0);
 
 	//it shouldn't match to 228 000 5324 as well, but... it does
-	CreateContactL(KCntName,KCntSurname,_L("207 000 0324"),KNullDesC);
-	TESTVALUE(CheckPhoneMatchL(					_L("0324"),11),1);	// AB
-	TESTVALUE(CheckPhoneMatchL(					_L("0324"), 4),1);
+	CreateContactL(KCntName,KCntSurname,_L("228 000 5324"),KNullDesC);
+	TESTVALUE(CheckPhoneMatchL(					_L("5324"),11),1);	// AB
+	TESTVALUE(CheckPhoneMatchL(					_L("5324"), 4),1);
 	}
 
 
@@ -208,14 +211,14 @@ LOCAL_C void TestCallingAmericaL()
 	ResetDatabaseL();
 
 	//here are some additional test numbers for testing the acceptance of the '(+' combination
-	CreateContactL(KCntName,KCntSurname,_L("(+020) 79460123"),KNullDesC);
-	CreateContactL(KCntName,KCntSurname,_L("(020) 79460123"),KNullDesC);
-	CreateContactL(KCntName,KCntSurname,_L("+020 79460123"),KNullDesC);
+	CreateContactL(KCntName,KCntSurname,_L("(+358) 1234567"),KNullDesC);
+	CreateContactL(KCntName,KCntSurname,_L("(358) 1234567"),KNullDesC);
+	CreateContactL(KCntName,KCntSurname,_L("+358 1234567"),KNullDesC);
 
 	//when searching for any of the above numbers 3 instances should be found
-	TESTVALUE(CheckPhoneMatchL(_L("(+020) 79460123"),10),3);
-	TESTVALUE(CheckPhoneMatchL(_L("(020) 79460123"),10),3);
-	TESTVALUE(CheckPhoneMatchL(_L("+020 79460123"),10),3);
+	TESTVALUE(CheckPhoneMatchL(_L("(+358) 1234567"),10),3);
+	TESTVALUE(CheckPhoneMatchL(_L("(358) 1234567"),10),3);
+	TESTVALUE(CheckPhoneMatchL(_L("+358 1234567"),10),3);
 
 	// Note that the phone number parser does generate a hash of 0 for all
 	//these now that the '(+'combination is recognised
@@ -329,7 +332,7 @@ void TestPDEF097460()
 	TRAPD( err, CheckPhoneMatchL(KTestNumber3,1) );
 	test( err == KErrNone );
 	}
-// CCsvReader  class //
+/////// CCsvReader  class //////////////////////////
 
 class CCsvReader : CBase
 	{

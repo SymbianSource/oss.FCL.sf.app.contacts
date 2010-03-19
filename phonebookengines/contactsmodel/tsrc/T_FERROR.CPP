@@ -1,17 +1,20 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <e32math.h>
@@ -21,7 +24,7 @@
 #include <cntitem.h>
 #include <cntfield.h>
 #include <cntfldst.h>
-#include "T_UTILS.H"
+#include "t_utils.h"
 
 // Type definitions
 CCntTest* CntTest=NULL;
@@ -204,7 +207,7 @@ TBool CContactReadWriter::DeleteContactsL()
 	return(EFalse);
 	}
 
-//
+////////////////////////////////////////////////////////////
 
 CContactReadWriter::CContactReadWriter() : CIdle(CActive::EPriorityIdle)
 	{
@@ -299,7 +302,7 @@ TInt CContactReadWriter::CallbackL(TAny *aThis)
 	return(ret);
 	}
 
-//
+////////////////////////////////////////////////////////////
 
 LOCAL_C void CreateDatabaseL()
 //

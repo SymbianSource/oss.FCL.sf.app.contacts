@@ -1,17 +1,20 @@
-// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32std.h>
 #include <e32test.h>
@@ -21,7 +24,7 @@
 #include <cntitem.h>
 #include <cntfldst.h>
 #include "t_utils2.h"
-#include "T_UTILS.H"
+#include "t_utils.h"
 #include <badesca.h>
 
 LOCAL_D TInt ThreadFunction(TAny*);
@@ -248,9 +251,9 @@ LOCAL_D void ThreadFirstTestL(RTest& aTest)
         
     SwitchToMainThread(mutex); // 1) Back to MT-a
     
-    //
+    ///////////////////////////////////////////////
     // Main thread has now opened the database    
-    //
+    ///////////////////////////////////////////////
                         
     aTest.Printf(_L("Populating the database \n"));
     PopulateDatabaseL(db, KTotalContacts);    
@@ -274,9 +277,9 @@ LOCAL_D void ThreadFirstTestL(RTest& aTest)
         
     SwitchToMainThread(mutex); // 2) Back to MT-b 
     
-    //
+    ///////////////////////////////////////////////
     // Main thread has now checked the added values    
-    //    
+    ///////////////////////////////////////////////    
     
     DeleteMultipleContactsL(db);    
     WaitForNotificationsL(db);         
@@ -295,9 +298,9 @@ LOCAL_D void ThreadFirstTestL(RTest& aTest)
             
     SwitchToMainThread(mutex); // 3) Back to MT-c
     
-    //
+    ///////////////////////////////////////////////
     // Main thread has now checked the deleted values    
-    //    
+    ///////////////////////////////////////////////    
     
     CleanupStack::PopAndDestroy(dbAnother);        
     CleanupStack::PopAndDestroy(db);
@@ -325,9 +328,9 @@ LOCAL_D void TestSecondL(RTest& aTest)
          
     SwitchToWorkerThread(mtx, thd, EFalse, ETrue); // a) Run: WT-start to WT-1
                   
-    //
+    ///////////////////////////////////////////////
     // Worker thread has now replaced the database    
-    //
+    ///////////////////////////////////////////////
         
     aTest.Printf(_L("Open existing database \n"));
     CContactDatabase* db = CContactDatabase::OpenL(KDatabaseFileName);
@@ -335,9 +338,9 @@ LOCAL_D void TestSecondL(RTest& aTest)
         
     SwitchToWorkerThread(mtx, thd, ETrue, ETrue); // b) Run: WT-1 to WT-2                    
     
-    //
+    ///////////////////////////////////////////////
     // Worker thread has now added the contacts
-    //
+    ///////////////////////////////////////////////
         
     WaitForNotificationsL(db); 
     
@@ -353,9 +356,9 @@ LOCAL_D void TestSecondL(RTest& aTest)
     
     SwitchToWorkerThread(mtx, thd, ETrue, ETrue); // c) Run: WT-2 to WT-3      
     
-    //
+    ///////////////////////////////////////////////
     // Worker thread has now deleted the contacts
-    //
+    ///////////////////////////////////////////////
     
     aTest.Printf(_L("Checking deleted db count \n"));      
         

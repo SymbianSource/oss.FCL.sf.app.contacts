@@ -1,33 +1,31 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <s32std.h>
 
-#include "CNTSTD.H"
+#include "cntstd.h"
 #include <cntdef.h>
 #include <cntfield.h>
 #include <cntfldst.h>
 
 #include <cntitem.h>
 #include <versit.h>
-#include "CNTPROF.H"
-#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
-#include "cntfieldheader.h"
-#include "cnthint.h"
-#include "cntfield_internal.h"
-#endif
+#include "cntprof.h"
 
 //
 // class TContactFieldAtts
@@ -1847,72 +1845,8 @@ inline void CContactItemField::THint::SetAdditionalUidsNum(TInt aNumber)
     {
     iHintValue |= ((aNumber << KHintAdditionalMaskShift) & KHintAdditionalMask);       
     }
-#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS	
-inline void CContactItemField::THint::SetIsPhone()
-	{iHintValue|=KIntContactHintIsPhone;}
-inline void CContactItemField::THint::SetIsMsg()
-	{iHintValue|=KIntContactHintIsMsg;}
-// turn off Pronunciation bit too?
-inline void CContactItemField::THint::SetIsCompanyName()
-	{iHintValue|=KIntContactHintIsCompanyName;}
-inline void CContactItemField::THint::SetIsFamilyName()
-	{iHintValue|=KIntContactHintIsFamilyName;}
-inline void CContactItemField::THint::SetIsGivenName()
-	{iHintValue|=KIntContactHintIsGivenName;}
-inline void CContactItemField::THint::SetIsCompanyNamePronunciation()
-	{iHintValue|=KIntContactHintIsCompanyName|KIntContactHintIsPronunciation;}
-inline void CContactItemField::THint::SetIsFamilyNamePronunciation()
-	{iHintValue|=KIntContactHintIsFamilyName|KIntContactHintIsPronunciation;}
-inline void CContactItemField::THint::SetIsGivenNamePronunciation()
-	{iHintValue|=KIntContactHintIsGivenName|KIntContactHintIsPronunciation;}
-inline void CContactItemField::THint::SetIsAddress()
-	{iHintValue|=KIntContactHintIsAddress;}
-inline void CContactItemField::THint::SetIsAdditionalName()
-	{iHintValue|=KIntContactHintIsAdditionalName;}
-inline void CContactItemField::THint::SetIsSuffixName()
-	{iHintValue|=KIntContactHintIsSuffixName;}
-inline void CContactItemField::THint::SetIsPrefixName()
-	{iHintValue|=KIntContactHintIsPrefixName;}
-inline void CContactItemField::THint::SetStorageIsInline()
-	{iHintValue|=KIntContactHintStorageInline;}
-inline void CContactItemField::THint::SetIsEmail()
-	{iHintValue|=KIntContactHintIsEmail;}
-inline TBool CContactItemField::THint::IsPhone() const
-	{return (iHintValue&KIntContactHintIsPhone);}
-inline TBool CContactItemField::THint::IsMsg() const
-	{return (iHintValue&KIntContactHintIsMsg);}
-inline TBool CContactItemField::THint::IsCompanyName() const
-	{return ((iHintValue&KIntContactHintIsCompanyNamePronunciation) == KIntContactHintIsCompanyName);}
-inline TBool CContactItemField::THint::IsFamilyName() const
-	{return ((iHintValue&KIntContactHintIsFamilyNamePronunciation)==KIntContactHintIsFamilyName);}
-inline TBool CContactItemField::THint::IsGivenName() const
-	{return ((iHintValue&KIntContactHintIsGivenNamePronunciation)==KIntContactHintIsGivenName);}
-inline TBool CContactItemField::THint::IsCompanyNamePronunciation() const
-	{return ((iHintValue&KIntContactHintIsCompanyNamePronunciation) == KIntContactHintIsCompanyNamePronunciation);}
-inline TBool CContactItemField::THint::IsFamilyNamePronunciation() const
-	{return ((iHintValue&KIntContactHintIsFamilyNamePronunciation)==KIntContactHintIsFamilyNamePronunciation);}
-inline TBool CContactItemField::THint::IsGivenNamePronunciation() const
-	{return ((iHintValue&KIntContactHintIsGivenNamePronunciation)==KIntContactHintIsGivenNamePronunciation);}
-inline TBool CContactItemField::THint::IsAddress() const
-	{return (iHintValue&KIntContactHintIsAddress);}
-inline TBool CContactItemField::THint::IsAdditionalName() const
-	{return (iHintValue&KIntContactHintIsAdditionalName);}
-inline TBool CContactItemField::THint::IsSuffixName() const
-	{return (iHintValue&KIntContactHintIsSuffixName);}
-inline TBool CContactItemField::THint::IsPrefixName() const
-	{return (iHintValue&KIntContactHintIsPrefixName);}
-inline TBool CContactItemField::THint::IsStorageInline() const
-	{return (iHintValue&KIntContactHintStorageInline);}
-inline TBool CContactItemField::THint::IsEmail() const
-	{return (iHintValue&KIntContactHintIsEmail);}
+
 	
-#ifndef __SYMBIAN_CNTMODEL_USE_SQLITE__	
-inline void CContactItemField::THint::SetHasAdditionalUids()
-	{iHintValue|=KHintAdditionalMask;}
-#endif //__SYMBIAN_CNTMODEL_USE_SQLITE__ 
-inline TBool CContactItemField::THint::Contains(const THint& aHint) const
-	{return (iHintValue&aHint.iHintValue);}
-#endif	
 //
 //	class TFieldHeader
 //

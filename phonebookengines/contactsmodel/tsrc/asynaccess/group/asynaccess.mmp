@@ -30,7 +30,7 @@ SOURCE			  ../../t_utils2.cpp
 
 USERINCLUDE       ../inc ../..
 
-APP_LAYER_SYSTEMINCLUDE_SYMBIAN
+systeminclude     /epoc32/include /epoc32/include/kernel
 
 library         euser.lib  cntmodel.lib cntview.lib efsrv.lib pimtestclient.lib
 

@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,17 +11,18 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
 
 
 
+
 #if (!defined __TESTEXPORTCONTACT_H__)
 #define __TESTEXPORTCONTACT_H__
-#include <test/testexecutestepbase.h>
-#include "TestExportContactStep.h"
-#include "TestImpExvCardSuiteDefs.h"
+#include <testexecutestepbase.h>
+#include "testexportcontactstep.h"
+#include "testimpexvcardsuitedefs.h"
 
 class CTestExportContactStep : public CTestStep
 	{

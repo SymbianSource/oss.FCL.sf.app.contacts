@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -26,7 +27,7 @@
 #ifndef __PERSISTENCELAYERIMPL_H__
 #define __PERSISTENCELAYERIMPL_H__
 
-#include "persistencelayer.h" // For interface definitions.
+#include "persistencelayer.h" // for interface definitions.
 #include "pplcontactitemmanager.h"
 #include "pltables.h"
 #include <sqldb.h>

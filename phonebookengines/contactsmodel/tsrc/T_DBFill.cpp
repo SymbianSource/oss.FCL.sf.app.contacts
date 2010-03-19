@@ -1,17 +1,20 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <e32panic.h>
@@ -27,7 +30,7 @@
 static RTest test(_L("T_DBFill")) ;
 
 
-_LIT(KTestName,"@SYMTESTCaseID:PIM-T-DBFILL-0001 T_DBFill");
+_LIT(KTestName,"T_DBFill");
 _LIT(KDBFilled,"Database Filled");
 _LIT(KViewUpdated,"View Updated");
 _LIT(KTestFailed,"RTEST: FAILED : T_DBFill test completed Failed!");
@@ -266,7 +269,7 @@ LOCAL_C void doMainL()
 GLDEF_C TInt E32Main()
 	{
 	__UHEAP_MARK;
-	test.Start(KTestName);
+	test.Start(_L("@SYMTESTCaseID:PIM-T-DBFILL-0001 "));
 
 	test.Title();
 	CActiveScheduler* scheduler=new CActiveScheduler;

@@ -1,17 +1,20 @@
-// Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <f32file.h>
@@ -22,9 +25,9 @@
 #include <cntfldst.h>
 #include <coreappstest/testserver.h>
 
-#include <connect/sbeclient.h>
+#include <sbeclient.h>
 
-#include "T_UTILS.H"
+#include "t_utils.h"
 #include "t_utils2.h"
 #include "t_cnt_backup.h"
 
@@ -218,53 +221,53 @@ void CBackupTestConductor::PopulateDatabaseL(CContactDatabase* aDb,const TDesC& 
 		switch (index)
 			{ // (famous writers on computer topics)
 			case 0:
-				cardFields[posLastName].TextStorage()->SetTextL(_L("Test1"));
-				cardFields[posFirstName].TextStorage()->SetTextL(_L("Name1"));
+				cardFields[posLastName].TextStorage()->SetTextL(_L("Kernighan"));
+				cardFields[posFirstName].TextStorage()->SetTextL(_L("Brian"));
 				break;
 
 			case 1:
-				cardFields[posLastName].TextStorage()->SetTextL(_L("Test2"));
-				cardFields[posFirstName].TextStorage()->SetTextL(_L("Name2"));
+				cardFields[posLastName].TextStorage()->SetTextL(_L("Ritchie"));
+				cardFields[posFirstName].TextStorage()->SetTextL(_L("Dennis"));
 				break;
 
 			case 2:
-				cardFields[posLastName].TextStorage()->SetTextL(_L("Thompson10"));
-				cardFields[posFirstName].TextStorage()->SetTextL(_L("Name3"));
+				cardFields[posLastName].TextStorage()->SetTextL(_L("Thompson"));
+				cardFields[posFirstName].TextStorage()->SetTextL(_L("Ken"));
 				break;
 
 			case 3:
-				cardFields[posLastName].TextStorage()->SetTextL(_L("Test3"));
-				cardFields[posFirstName].TextStorage()->SetTextL(_L("Name4"));
+				cardFields[posLastName].TextStorage()->SetTextL(_L("Aho"));
+				cardFields[posFirstName].TextStorage()->SetTextL(_L("Alfred"));
 				break;
 
 			case 4:
-				cardFields[posLastName].TextStorage()->SetTextL(_L("Test4"));
-				cardFields[posFirstName].TextStorage()->SetTextL(_L("Name5"));
+				cardFields[posLastName].TextStorage()->SetTextL(_L("Weinberger"));
+				cardFields[posFirstName].TextStorage()->SetTextL(_L("Peter J."));
 				break;
 
 			case 5:
-				cardFields[posLastName].TextStorage()->SetTextL(_L("Test5"));
-				cardFields[posFirstName].TextStorage()->SetTextL(_L("Name6"));
+				cardFields[posLastName].TextStorage()->SetTextL(_L("Bourne"));
+				cardFields[posFirstName].TextStorage()->SetTextL(_L("Steven"));
 				break;
 
 			case 6:
-				cardFields[posLastName].TextStorage()->SetTextL(_L("Test6"));
-				cardFields[posFirstName].TextStorage()->SetTextL(_L("Name7"));
+				cardFields[posLastName].TextStorage()->SetTextL(_L("Pike"));
+				cardFields[posFirstName].TextStorage()->SetTextL(_L("Rob"));
 				break;
 
 			case 7:
-				cardFields[posLastName].TextStorage()->SetTextL(_L("Test7"));
-				cardFields[posFirstName].TextStorage()->SetTextL(_L("Name8"));
+				cardFields[posLastName].TextStorage()->SetTextL(_L("Bellovin"));
+				cardFields[posFirstName].TextStorage()->SetTextL(_L("Steven"));
 				break;
 
 			case 8:
-				cardFields[posLastName].TextStorage()->SetTextL(_L("Test8"));
-				cardFields[posFirstName].TextStorage()->SetTextL(_L("Name9"));
+				cardFields[posLastName].TextStorage()->SetTextL(_L("Stevens"));
+				cardFields[posFirstName].TextStorage()->SetTextL(_L("W. Richard"));
 				break;
 
 			case 9:
-				cardFields[posLastName].TextStorage()->SetTextL(_L("Test9"));
-				cardFields[posFirstName].TextStorage()->SetTextL(_L("Name10"));
+				cardFields[posLastName].TextStorage()->SetTextL(_L("Raymond"));
+				cardFields[posFirstName].TextStorage()->SetTextL(_L("Eric"));
 				// last contact
 				allDone = ETrue;
 				break;
@@ -390,7 +393,7 @@ TBool CBackupTestConductor::CheckXMLBackupRegistrationExistsL()
 	}
 			
 
-//
+///////////////////////////////////////////////////////////////////////////////////////
 
 /*
  Framework for simulating Contact Model clients
@@ -1206,7 +1209,7 @@ static const CBackupTestFramework::TBackupRestoreTestCase BackupTestCases[] =
 		1, 1, CBackupTestFramework::EContactsIniFileTest, ETrue, CBackupTestFramework::EAllCloseForBackup, conn::EBackupBase
 		},
 
-		//
+		//////////
 		// Incremental Backup and Restore. Should always succeed.
 		{
 		(TText*) L"INCREMENTAL: Clients that keep CContactDatabase Open",
@@ -2100,7 +2103,7 @@ TInt CBackupTestFramework::RunError(TInt aError)
 	}
 
 
-//
+/////////////////
 
 CContactsClient* CBackupTestFramework::NewDatabaseClientL(const TDesC& aDatabaseName, TBool aCloseForBackup)
 	{
@@ -2153,7 +2156,7 @@ void CBackupTestFramework::HandleContactViewEvent(const CContactViewBase& /*aVie
 
 
 
-//
+////////////////////////////////////////////////////////////
 
 
 LOCAL_C void TestCondition(TBool aCondition, TInt aLineNumber)

@@ -1,22 +1,25 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
 
-#include "TestStartUpServer.h"
-#include "TestGetSetViewSettingStep.h"
-#include "TestStartUpExeStep.h"
-#include "TestContactsDbStep.h"
+
+#include "teststartupserver.h"
+#include "testgetsetviewsettingstep.h"
+#include "teststartupexestep.h"
+#include "testcontactsdbstep.h"
 
 _LIT(KServerName,"TestStartUpSuite");
 

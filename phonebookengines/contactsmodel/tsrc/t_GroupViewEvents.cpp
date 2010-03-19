@@ -1,17 +1,20 @@
-// Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32std.h>
 #include <e32test.h>
@@ -19,7 +22,7 @@
 #include <cntitem.h>
 #include <cntfldst.h>
 #include "t_utils2.h"
-#include "t_GroupViewEvents.h"
+#include "t_groupviewevents.h"
 
 // Test Macro
 LOCAL_D RTest test(_L("t_GroupViewEvents"));
@@ -27,7 +30,7 @@ LOCAL_D RTest test(_L("t_GroupViewEvents"));
 //
 // Constants.
 //
-_LIT(KTestName,    "@SYMTESTCaseID:PIM-T-GROUPVIEWEVENTS-0001 t_GroupViewEvents" );
+_LIT(KTestName,    "t_GroupViewEvents" );
 _LIT(KLogFileName, "t_GroupViewEvents.log" );
 _LIT(KDbFileName,  "c:t_GroupViewEvents.cdb" );
 _LIT(KTextDefSeparator, "");
@@ -557,7 +560,7 @@ GLDEF_C TInt E32Main()
 		if (cleanup)
 			{
 			CTestConductor* testConductor=NULL;
-			test.Start(KTestName);
+			test.Start(_L("@SYMTESTCaseID:PIM-T-GROUPVIEWEVENTS-0001 t_GroupViewEvents"));
 
 			TRAPD(err,testConductor=CTestConductor::NewL());
 			test(err == KErrNone);

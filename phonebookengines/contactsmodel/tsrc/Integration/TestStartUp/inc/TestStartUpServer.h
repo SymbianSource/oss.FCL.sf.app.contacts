@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,21 +11,22 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
 #ifndef __TESTSTARTUPSERVER_H__
 #define __TESTSTARTUPSERVER_H__
 
-#include <test/testexecutestepbase.h>
+#include <testexecutestepbase.h>
 #include <e32base.h>
 #include <cntviewbase.h>
 #include <cntviewstore.h>
 #include <centralrepository.h>
-#include <test/testexecuteserverbase.h>
+#include <testexecuteserverbase.h>
 
 #include <cntdb.h>
 #include <cntitem.h>

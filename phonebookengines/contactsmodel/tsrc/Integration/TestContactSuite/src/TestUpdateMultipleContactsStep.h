@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,16 +11,17 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
 
 
 
+
 #if (!defined __TESTUPDATEMULTIPLECONTACTSSTEP_H__)
 #define __TESTUPDATEMULTIPLECONTACTSSTEP_H__
-#include <test/testexecutestepbase.h>
-
+#include <testexecutestepbase.h>
+//#include "testcontactsuiteserver.h"
 class CTestUpdateMultipleContactsStep : public CTestStep
 	{
 public:

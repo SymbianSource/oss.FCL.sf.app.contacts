@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,20 +11,21 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
 
 
 
+
 #if (!defined __TESTCONTACT_SERVER_H__)
 #define __TESTCONTACT_SERVER_H__
-#include <test/testexecuteserverbase.h>
+#include <testexecuteserverbase.h>
 #include <cntitem.h>
 #include <cntfield.h>
 
-//#include "TestAddFieldsStep.h"
-//#include "TestUpdateFieldsStep.h"
+//#include "testaddfieldsstep.h"
+//#include "testupdatefieldsstep.h"
 
 // Literal constants for INI file field-names
 _LIT(KIniFieldName, 			"fieldname");

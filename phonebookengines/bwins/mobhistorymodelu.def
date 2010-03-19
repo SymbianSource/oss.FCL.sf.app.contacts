@@ -1,0 +1,28 @@
+EXPORTS
+	?metaObject@MobHistoryModel@@UBEPBUQMetaObject@@XZ @ 1 NONAME ; struct QMetaObject const * MobHistoryModel::metaObject(void) const
+	?directionRoleData@MobHistoryModel@@ABE?AVQVariant@@H@Z @ 2 NONAME ; class QVariant MobHistoryModel::directionRoleData(int) const
+	?initializeModel@MobHistoryModel@@AAEXXZ @ 3 NONAME ; void MobHistoryModel::initializeModel(void)
+	?clearHistory@MobHistoryModel@@QAEXXZ @ 4 NONAME ; void MobHistoryModel::clearHistory(void)
+	??1MobHistoryModel@@UAE@XZ @ 5 NONAME ; MobHistoryModel::~MobHistoryModel(void)
+	?qt_metacast@MobHistoryModel@@UAEPAXPBD@Z @ 6 NONAME ; void * MobHistoryModel::qt_metacast(char const *)
+	??0MobHistoryModel@@QAE@IPAVQContactManager@QtMobility@@PAVQObject@@@Z @ 7 NONAME ; MobHistoryModel::MobHistoryModel(unsigned int, class QtMobility::QContactManager *, class QObject *)
+	?validRowId@MobHistoryModel@@ABE_NH@Z @ 8 NONAME ; bool MobHistoryModel::validRowId(int) const
+	?staticMetaObject@MobHistoryModel@@2UQMetaObject@@B @ 9 NONAME ; struct QMetaObject const MobHistoryModel::staticMetaObject
+	?tr@MobHistoryModel@@SA?AVQString@@PBD0H@Z @ 10 NONAME ; class QString MobHistoryModel::tr(char const *, char const *, int)
+	?dataFromMessageModel@MobHistoryModel@@AAEXABVQModelIndex@@HH@Z @ 11 NONAME ; void MobHistoryModel::dataFromMessageModel(class QModelIndex const &, int, int)
+	?trUtf8@MobHistoryModel@@SA?AVQString@@PBD0H@Z @ 12 NONAME ; class QString MobHistoryModel::trUtf8(char const *, char const *, int)
+	?trUtf8@MobHistoryModel@@SA?AVQString@@PBD0@Z @ 13 NONAME ; class QString MobHistoryModel::trUtf8(char const *, char const *)
+	?dataFromLogsModel@MobHistoryModel@@AAEXABVQModelIndex@@HH@Z @ 14 NONAME ; void MobHistoryModel::dataFromLogsModel(class QModelIndex const &, int, int)
+	?decorationRoleData@MobHistoryModel@@ABE?AVQVariant@@H@Z @ 15 NONAME ; class QVariant MobHistoryModel::decorationRoleData(int) const
+	?tr@MobHistoryModel@@SA?AVQString@@PBD0@Z @ 16 NONAME ; class QString MobHistoryModel::tr(char const *, char const *)
+	?data@MobHistoryModel@@UBE?AVQVariant@@ABVQModelIndex@@H@Z @ 17 NONAME ; class QVariant MobHistoryModel::data(class QModelIndex const &, int) const
+	?displayRoleData@MobHistoryModel@@ABE?AVQVariant@@H@Z @ 18 NONAME ; class QVariant MobHistoryModel::displayRoleData(int) const
+	?getStaticMetaObject@MobHistoryModel@@SAABUQMetaObject@@XZ @ 19 NONAME ; struct QMetaObject const & MobHistoryModel::getStaticMetaObject(void)
+	?seenStatusRoleData@MobHistoryModel@@ABE?AVQVariant@@H@Z @ 20 NONAME ; class QVariant MobHistoryModel::seenStatusRoleData(int) const
+	?rowCount@MobHistoryModel@@UBEHABVQModelIndex@@@Z @ 21 NONAME ; int MobHistoryModel::rowCount(class QModelIndex const &) const
+	?qt_metacall@MobHistoryModel@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 22 NONAME ; int MobHistoryModel::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?sort@MobHistoryModel@@UAEXHW4SortOrder@Qt@@@Z @ 23 NONAME ; void MobHistoryModel::sort(int, enum Qt::SortOrder)
+	?dataFromConversationsModel@MobHistoryModel@@AAEXABVQModelIndex@@HH@Z @ 24 NONAME ; void MobHistoryModel::dataFromConversationsModel(class QModelIndex const &, int, int)
+	??_EMobHistoryModel@@UAE@I@Z @ 25 NONAME ; MobHistoryModel::~MobHistoryModel(unsigned int)
+	?readEvents@MobHistoryModel@@AAEXHH@Z @ 26 NONAME ; void MobHistoryModel::readEvents(int, int)
+

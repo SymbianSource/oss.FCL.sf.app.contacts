@@ -1,71 +1,72 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// cntmodel.dll Contacts engine client interface
-// 
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* cntmodel.dll Contacts engine client interface
+*
+*/
+
 
 #include "cntmodel.mmh"
 
 target          cntmodel.dll
 targettype      DLL
 
-APP_LAYER_SYSTEMINCLUDE_SYMBIAN
+APP_LAYER_SYSTEMINCLUDE
 
 userinclude 	../inc
 userinclude 	../cntmodel/inc 
 userinclude 	../cntsrv/inc
-USERINCLUDE     ../cntplsql/inc
 userinclude    ../src			//for Panic code
 
 SOURCEPATH	.	
-DOCUMENT	../groupsql/RELEASE.TXT
-DOCUMENT	COMMON.INF
+DOCUMENT	../groupsql/release.txt
+DOCUMENT	common.inf
 
 //Contacts model next generation code
 SOURCEPATH	../cntmodel/src
 source		ccontactdatabase.cpp 
 source		ccontactprivate.cpp 
 #ifndef BUILD_SQL
-source		IteratorProxy.cpp
+source		iteratorproxy.cpp
 source		cviewiterator.cpp
 #endif //BUILD_SQL
-source		CCntCompact.cpp
-source		CCntPackager.cpp
-source		CCntNotificationMonitor.cpp
+source		ccntcompact.cpp
+source		ccntpackager.cpp
+source		ccntnotificationmonitor.cpp
 source		rcntmodel.cpp
 
 //Parts of original contacts model
 SOURCEPATH	../src
-source		CNTITEM.CPP 
-source		CNTFIELD.CPP 
-source		CNTFLDST.CPP 
-source		CNTDEF.CPP 
+source		cntitem.cpp 
+source		cntfield.cpp 
+source		cntfldst.cpp 
+source		cntdef.cpp 
 source		cntitemdef.cpp 
-source 		CNTFILT.CPP 
-source		CNTITER.CPP  
-source		CVIEWCONTACTEXTENSION.cpp
-source		Debug.cpp
+source 		cntfilt.cpp 
+source		cntiter.cpp  
+source		cviewcontactextension.cpp
+source		debug.cpp
 source		cntviewstore.cpp
 
 //Contact views code
 SOURCEPATH	../cntview
-source		ViewBase.cpp 
-source		RemoteView.cpp 
+source		viewbase.cpp 
+source		remoteview.cpp 
 #ifndef BUILD_SQL
-source		LocalView.cpp 
+source		localview.cpp 
 #endif //BUILD_SQL
-source		NamedLocalView.cpp
+source		namedlocalview.cpp
 source		cntphbksyncwatcher.cpp
 
 #ifdef BUILD_SQL
@@ -95,9 +96,9 @@ library		centralrepository.lib
 
 // Remove insecure API and use ECom plugin framework
 #ifdef BUILD_SQL
-deffile                 CNTMODLv2_Sqlite.DEF
+deffile                 cntmodlv2_sqlite.def
 #else //BUILD_SQL
-deffile                 CNTMODLv2_PLUGINSv2.DEF
+deffile                 cntmodlv2_pluginsv2u.def
 #endif //BUILD_SQL
 
 START WINS

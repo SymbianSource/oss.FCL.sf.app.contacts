@@ -1,27 +1,29 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// This is the base class/interface for a set of contact model tests.
-// It is based on the bridge pattern.
-// 
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* This is the base class/interface for a set of contact model tests.
+* It is based on the bridge pattern.
+*
+*/
+
 
 #ifndef __T_CNTTESTIMPLEMENTOR_H__
 #define __T_CNTTESTIMPLEMENTOR_H__
 
 #include "persistencelayer.h"
 #include <cntdb.h>
-#include "T_CntTestImplDefs.h"
+#include "t_cnttestimpldefs.h"
 
 #include <cntitem.h>
 

@@ -1,0 +1,48 @@
+CntEditViewDetailItem[icon][text][valueText]{
+    layout:customLayout;
+}
+
+CntEditViewDetailItem[icon][text][!valueText]{
+    layout:customLayoutNoValueText;
+}
+
+CntEditViewDetailItem[!icon][text][valueText]{
+    layout:customLayoutNoIcon;
+}
+
+CntEditViewDetailItem::icon{
+    fixed-width:var(hb-param-graphic-size-primary-small);
+	fixed-height:var(hb-param-graphic-size-primary-small);
+}
+
+CntEditViewDetailItem::text{
+    text-height:var(hb-param-text-height-secondary);
+    font-variant:secondary;
+    text-align:left;
+}
+
+CntEditViewDetailItem[icon][text][!valueText]::text{
+    text-height:var(hb-param-text-height-primary);
+    font-variant:primary;
+    text-align:left;
+}
+
+CntEditViewDetailItem::valueText{
+    text-height:var(hb-param-text-height-primary);
+    font-variant:primary;
+    text-align:left;
+}
+
+CntEditViewDetailItem::background{
+    left:0.0un;
+    right:0.0un;
+    top:0.0un;
+    bottom:0.0un;
+}
+
+CntEditViewDetailItem::highlight{
+    left: 0.0un;
+    right: 0.0un;
+    top: 0.0un;
+    bottom: 0.0un;
+}

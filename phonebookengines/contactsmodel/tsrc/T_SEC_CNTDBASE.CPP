@@ -1,17 +1,20 @@
-// Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <e32base.h>
@@ -23,8 +26,8 @@
 #include <cntitem.h>
 #include <cntfield.h>
 #include <cntfldst.h>
-#include <coreappstest/testserver.h>
-#include "T_UTILS.H"
+#include <testserver.h>
+#include "t_utils.h"
 
 _LIT(KTestName,"T_SEC_CNTDBASE");
 
@@ -609,7 +612,7 @@ LOCAL_C TInt CheckDatabaseIsAbsentOrOpenable(TBool aDeleteDatabase=EFalse)
 	}
 
 
-// Client Side OOM Tests //	
+//////////////////////////// Client Side OOM Tests ////////////////////////////	
 LOCAL_C TBool ReplaceLOOM_ClientSideL()
 	{
 	test.Next(_L("ReplaceL client side OOM test.\n"));
@@ -1753,7 +1756,7 @@ LOCAL_C void FunctionTestL()
 		TESTTRUEL(CheckCntFilesL( NoDatabases, KNoFiles, EFalse ));
 		TESTTRUEL(CheckNoDatabaseFilesL());
 
-		// ReplaceL and OpenL //
+		////////////////////////////// ReplaceL and OpenL /////////////////////////
 
 		test.Next(_L("Creating/Replacing default db: ReplaceL.\n"));
 		TRAP( err, db = CContactDatabase::ReplaceL() );
@@ -1834,7 +1837,7 @@ LOCAL_C void FunctionTestL()
 		TESTTRUEL( err == KErrNone);
 
 		// Files existing now: Contacts.cdb & Contacts.cdrchar
-		// File Deletion //
+		////////////////////////////// File Deletion ////////////////////////////
 
 		// So at this point we have a default db and another.
 		// Time to start deleting them ! Start with DeleteDefaultFileL

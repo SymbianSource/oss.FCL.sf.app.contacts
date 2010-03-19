@@ -123,9 +123,9 @@ SOURCE        ECntViewNextItemL1_CStep.cpp
 
 
 USERINCLUDE   ../incsql
-USERINCLUDE   ../../../../cntsrv/inc
+USERINCLUDE   ../../../../cntsrv/inc\
 
-APP_LAYER_SYSTEMINCLUDE_SYMBIAN
+SYSTEMINCLUDE /epoc32/include /epoc32/include/test
 LIBRARY       euser.lib 
 
 //For TEF 

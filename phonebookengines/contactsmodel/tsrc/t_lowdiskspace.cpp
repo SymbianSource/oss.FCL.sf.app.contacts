@@ -1,17 +1,20 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <cntdb.h>
@@ -179,7 +182,7 @@ void CLowDiskSpaceTest::RunL()
 void CLowDiskSpaceTest::FillDiskL()
 	{
 	_LIT(KFillDiskTitle, "Fill the disk");
-	test.Next(KFillDiskTitle);
+	test.Next(_L("Fill the disk"));
 
 	
 	TVolumeInfo tv;
@@ -268,7 +271,7 @@ void CLowDiskSpaceTest::DatabaseTestL()
 	_LIT(KDatabaseTestTitle, "Test add/delete contacts in low disk conditions");
 #endif
 
-	test.Next(KDatabaseTestTitle);
+	test.Next(_L("Test add/delete contacts in low disk conditions"));
 
 	CContactCard* card=CContactCard::NewL();
 	CleanupStack::PushL(card);

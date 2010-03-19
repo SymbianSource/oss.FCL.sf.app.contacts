@@ -1,17 +1,20 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h> 
 #include <cntdb.h>
@@ -136,9 +139,9 @@ void CPbTester::StartTestL()
 
 TContactItemId CPbTester::AddEntryL()
 	{
-	_LIT(KForename,"Myname"); 
-	_LIT(KSurname,"Mylastname"); 
-	_LIT(KPhoneNumber,"+447700900700"); 
+	_LIT(KForename,"John"); 
+	_LIT(KSurname,"Smith"); 
+	_LIT(KPhoneNumber,"+441617779700"); 
 
 	// Create a  contact card to contain the data
 	CContactCard* newCard = CContactCard::NewLC();
@@ -172,7 +175,7 @@ TContactItemId CPbTester::AddEntryL()
 
 void CPbTester::EditEntryL(TContactItemId itemId)
 	{
-	_LIT(KEmailAddress,"myname.mylastname@symbianfoundation.test"); 
+	_LIT(KEmailAddress,"john.smith@symbian.com"); 
 	CContactItem *item = ipbDb->OpenContactL(itemId);
 	CContactCard* card = NULL;
 	CleanupStack::PushL(item);

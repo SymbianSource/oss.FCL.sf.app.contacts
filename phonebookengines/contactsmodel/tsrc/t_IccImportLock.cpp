@@ -1,20 +1,20 @@
-// Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
 
-
-// System includes
 #include <cntdb.h>
 #include <cntdef.h>
 #include <cntitem.h>
@@ -29,7 +29,7 @@
 #include <e32math.h>
 
 // User includes
-#include "T_UTILS.H"
+#include "t_utils.h"
 #include "t_utils2.h"
 
 // Constant
@@ -51,7 +51,7 @@ const TInt KStandardTimeOut = 50000;
 static RTest					TheTest(_L("INC016848 - DB stressing - Group insert"));
 static RFs						TheFs;
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* CTestActiveScheduler                                                      */
 //  This class has been nicked from the t_currentdb.h / .cpp files
 class CTestActiveScheduler : public CActiveScheduler
@@ -75,7 +75,7 @@ LOCAL_C void CleanupFilesL()
 	}
 
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* CConcurrentDatabaseAccessBase - Specification                             */
 // Forms the base class for both threads.
 class CConcurrentDatabaseAccessBase : public CBase
@@ -123,7 +123,7 @@ class CConcurrentDatabaseAccessBase : public CBase
 		CTestRegister* 			iFileRegister;
 	};
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* CConcurrentDatabaseAccessBase - Implementation                            */
 CConcurrentDatabaseAccessBase::CConcurrentDatabaseAccessBase()
 	{
@@ -299,7 +299,7 @@ void CConcurrentDatabaseAccessBase::MoveWindow(TInt aDx)
 	}
 
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* CConcurrentDatabaseInserter - Specification                               */
 // This class is the inserter thread. It's thread function should insert
 // contacts into the database using the t_utils CRandomContactGenerator class
@@ -321,7 +321,7 @@ class CConcurrentDatabaseInserter : public CConcurrentDatabaseAccessBase
 	private:
 	};
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* CConcurrentDatabaseInserter - Implementation                              */
 
 CConcurrentDatabaseInserter* CConcurrentDatabaseInserter::NewLC(const TDesC& aFilename)
@@ -435,7 +435,7 @@ void CConcurrentDatabaseInserter::RunTestImplementationL()
 	CloseTest();
 	}
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* CConcurrentDBGroupInserter                                               */
 class CConcurrentDBGroupInserter : public CConcurrentDatabaseAccessBase
 	{
@@ -588,16 +588,16 @@ void CConcurrentDBGroupInserter::RunTestImplementationL()
 	CloseTest();
 	}
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* Test Function Prototypes                                                  */
-//
+///////////////////////////////////////////////////////////////////////////////
 void CreateTestDatabaseL(const TDesC& aFilename );
 void TestL();
 void doMainL();
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* Test Function Implementations                                             */
-//
+///////////////////////////////////////////////////////////////////////////////
 void CreateTestDatabaseL(const TDesC& aFilename )
 	{
 	CContactDatabase* database = NULL;
@@ -641,9 +641,9 @@ void TestL()
 	}
 
 
-//
+////////////////////////////////////////////////////////////////////////////////////
 // -------> Static global functions (source)
-//
+////////////////////////////////////////////////////////////////////////////////////
 void doMainL()
 	{
 	User::LeaveIfError( TheFs.Connect() );

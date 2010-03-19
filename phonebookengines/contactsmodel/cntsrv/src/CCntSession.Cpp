@@ -1,17 +1,20 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file
@@ -19,31 +22,31 @@
  @released
 */
 
-#include "CCntSession.h"
-#include "CCntDbManagerController.h"
-#include "CCntStateMachine.h"
-#include "CCntBackupRestoreAgent.h"
-#include "CCntPackager.h"
-#include "CViewSubSessions.h"
-#include "CCntIpcCodes.h"
-#include "CCntRequest.h"
-#include "CCntEventQueue.h"
+#include "ccntsession.h"
+#include "ccntdbmanagercontroller.h"
+#include "ccntstatemachine.h"
+#include "ccntbackuprestoreagent.h"
+#include "ccntpackager.h"
+#include "cviewsubsessions.h"
+#include "ccntipccodes.h"
+#include "ccntrequest.h"
+#include "ccnteventqueue.h"
 #include <cntdef.h>  // for tcontactitemid.
-#include "CIniFileManager.h"
-#include "CntSpeedDials.h"
+#include "cinifilemanager.h"
+#include "cntspeeddials.h"
 #include "cntviewprivate.h"
 #include <cntviewstore.h>
-#include "CCntLogger.h"
-#include "CCntMsgHandler.h"
-#include "CCntItemMsgHandler.h"
-#include "CCntEventMsgHandler.h"
-#include "CCntTransactionMsgHandler.h"
-#include "CCntFileManagerMsgHandler.h"
-#include "CCntPropertiesMsgHandler.h"
-#include "CCntViewMsgHandler.h"
+#include "ccntlogger.h"
+#include "ccntmsghandler.h"
+#include "ccntitemmsghandler.h"
+#include "ccnteventmsghandler.h"
+#include "ccnttransactionmsghandler.h"
+#include "ccntfilemanagermsghandler.h"
+#include "ccntpropertiesmsghandler.h"
+#include "ccntviewmsghandler.h"
 
 
-#define KPhoneBookServerUid 0x102030A1
+#define KPhoneBookServerUid 0x102030A1  //Pbk2 server secureid
 
 extern void DebugLogIPC(const TDesC& aMethod, TInt aOpCode, TUint aSessionId, TInt aErrCode);
 
@@ -157,36 +160,35 @@ delegated to the next handler. The last message handler leaves with KErrNotFound
 handled. The leave is caught in the ServiceError() method.
 */
 void CCntSession::ServiceL(const RMessage2& aMessage)
-	{
-	#if defined(__PROFILE_DEBUG__)
-		RDebug::Print(_L("[CNTMODEL] MTD: CCntSession::ServiceL"));
-	#endif 
-		
-	// The most likely operation is a ContactItem CRUD operation.
-	
+    {
+    #if defined(__PROFILE_DEBUG__)
+        RDebug::Print(_L("[CNTMODEL] MTD: CCntSession::ServiceL"));
+    #endif 
+        
+    // The most likely operation is a ContactItem CRUD operation.
+    
      DEBUG_PRINT4(__VERBOSE_DEBUG__,_L("[CNTMODEL] IPC"), aMessage.Function(), iSessionId, KErrNone);
 
-	TSecureId ClientSID = aMessage.SecureId();
-	if (ClientSID == KPhoneBookServerUid && iManager)
-		{
-		iManager->GetPersistenceLayer().ContactProperties().DisableSynchroniser(iSessionId);			
-		}
-		
-	// Delegate to message handlers.
-	for (TInt index = 0; index < iMsgHandlerArray.Count(); index++) 
-		{
-		TInt retCode = iMsgHandlerArray[index]->HandleMessageL(aMessage);
-		
-		/** Message handled or if message handler returned KErrNotFound,
-		delegate to next handler.
-		*/
-		if(retCode == KErrNone)
-			{
-			break;
-			}
-		}
-	}
-
+    TSecureId ClientSID = aMessage.SecureId();
+    if (ClientSID == KPhoneBookServerUid && iManager)
+        {
+        iManager->GetPersistenceLayer().ContactProperties().DisableSynchroniser(iSessionId);            
+        }
+        
+    // Delegate to message handlers.
+    for (TInt index = 0; index < iMsgHandlerArray.Count(); index++) 
+        {
+        TInt retCode = iMsgHandlerArray[index]->HandleMessageL(aMessage);
+        
+        /** Message handled or if message handler returned KErrNotFound,
+        delegate to next handler.
+        */
+        if(retCode == KErrNone)
+            {
+            break;
+            }
+        }
+    }
 
 /**
 We just complete the message with the error code.

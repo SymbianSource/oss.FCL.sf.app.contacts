@@ -1,23 +1,24 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
 
-// This harness reqires a writeable drive other than C: or Z:, e.g. an MMC drive
 
 #include <e32test.h>
-#include "T_UTILS.H"
-#include "CContactDbEventQueue.h"
+#include "t_utils.h"
+#include "ccontactdbeventqueue.h"
 #include <coreappstest/testserver.h>
 
 // Type definitions 
@@ -549,7 +550,7 @@ private:
 	TContactItemId iGroupId2;
 	};
 
-//
+///////////////////
 
 class COomTest : public CBase
 	{
@@ -606,7 +607,7 @@ LOCAL_C void CreateDatabaseL()
 	delete db;
 	}
 
-//	
+///////////////////////////////////////////////////////////////////	
 //
 // COomFailBase
 //
@@ -2309,7 +2310,7 @@ TBool COomTest::TestsL()
 	return(ETrue);
 	}
 
-//
+/////////////////////////////////
 
 // Code for DrivesOfMediaTypeL() and MMCDriveL() adapted from T_Sec_CntDbase
 

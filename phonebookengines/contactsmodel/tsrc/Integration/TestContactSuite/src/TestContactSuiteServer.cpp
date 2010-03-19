@@ -1,26 +1,29 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
 
-#include "TestContactSuiteServer.h"
-#include "TestAddFieldsStep.h"
-#include "TestUpdateFieldsStep.h"
-#include "TestDeleteFieldsStep.h"
-#include "TestAddMultipleContactsStep.h"
-#include "TestUpdateMultipleContactsStep.h"
-#include "TestDeleteMultipleContactsStep.h"
-#include "TestContactPerformanceStep.h"
+
+#include "testcontactsuiteserver.h"
+#include "testaddfieldsstep.h"
+#include "testupdatefieldsstep.h"
+#include "testdeletefieldsstep.h"
+#include "testaddmultiplecontactsstep.h"
+#include "testupdatemultiplecontactsstep.h"
+#include "testdeletemultiplecontactsstep.h"
+#include "testcontactperformancestep.h"
 
 
 _LIT(KServerName,"TestContactSuite");

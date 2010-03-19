@@ -1,24 +1,26 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// Persistence Layer Performance Test module
-// These tests compare the Contact Persistence Layer with the original
-// Contacts model.
-// This class is an implementation of the bridge pattern. It represents
-// the left hand side of the pattern or an abstraction class. The decoupled
-// implementation classes can be found in T_CntTestImplentor.h
-// 
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* Persistence Layer Performance Test module
+* These tests compare the Contact Persistence Layer with the original
+* Contacts model.
+* This class is an implementation of the bridge pattern. It represents
+* the left hand side of the pattern or an abstraction class. The decoupled
+* implementation classes can be found in T_CntTestImplentor.h
+*
+*/
+
 
 #include <e32test.h>
 #include <coreappstest/testserver.h>
@@ -27,12 +29,12 @@
 
 _LIT(KTestName, "T_PlPerformance"); // Used by Testhelper - gives an warning under ARMv5
 
-#include "T_PlPerformance.h"
+#include "t_plperformance.h"
 
 #include "testhelpers.h"
 #include "persistencelayer.h"
 
-#include "T_CntTestImplDefs.h"
+#include "t_cnttestimpldefs.h"
 
 
 //#define RUN_CNT

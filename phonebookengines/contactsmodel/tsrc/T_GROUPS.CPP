@@ -1,17 +1,20 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <f32file.h>
@@ -26,9 +29,9 @@
 #include <barsc.h>
 #include <barsread.h>
 #include <cntmodel.rsg>
-#include "T_UTILS.H"
+#include "t_utils.h"
 #include <hal.h>
-#include "CntClient.h"
+#include "cntclient.h"
 
 #pragma warning(disable:4239) // group label warning
 
@@ -55,11 +58,11 @@ const TInt KFamilySizeRecords=20;
 #define KCardFieldEditedText _L("UPDATED Card id %d, text field #%d")
 
 
-//
+//////////////////////////////////////////////////////////////////////////
 //
 //	SUPPORT MODULES 
 //
-//
+//////////////////////////////////////////////////////////////////////////
 
 GLDEF_C void Panic(TInt aPanic)
 //
@@ -164,11 +167,11 @@ LOCAL_C void PopulateDatabaseL(TInt aNumberToPopulate, TBool aPhoneNumbers)
 	}
 
 
-//
+//////////////////////////////////////////////////////////////////////////
 //
 //	TEST MODULES 
 //
-//
+//////////////////////////////////////////////////////////////////////////
 
 
 LOCAL_C void CreateBasicContactGroups()
@@ -877,11 +880,11 @@ LOCAL_C void AsyncDbOpenFollowedByAddGroupL()
 	CleanupStack::PopAndDestroy(database);
 	}	
 
-//
+//////////////////////////////////////////////////////////////////////////
 //
 //	MAIN DISPATCH MODULE
 //
-//
+//////////////////////////////////////////////////////////////////////////
 
 /**
 

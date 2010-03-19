@@ -1,32 +1,35 @@
-// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file
  @internalComponent
 */
 
-#include "CCntMsgHandler.h"
+#include "ccntmsghandler.h"
 
-#include "CCntSession.h"
-#include "CCntServer.h"
-#include "CCntBackupRestoreAgent.h"
-#include "CCntPackager.h"
+#include "ccntsession.h"
+#include "ccntserver.h"
+#include "ccntbackuprestoreagent.h"
+#include "ccntpackager.h"
 
-#include "CCntStateMachine.h"
-#include "CCntDbManagerController.h"
+#include "ccntstatemachine.h"
+#include "ccntdbmanagercontroller.h"
 	
 CCntMsgHandler::CCntMsgHandler(CCntSession& aSession)
 :iManager(aSession.iManager), iPackager(aSession.iPackager), iView(aSession.iView), iTimeOut(aSession.iTimeOut), iSessionId(aSession.iSessionId), iSession(aSession)

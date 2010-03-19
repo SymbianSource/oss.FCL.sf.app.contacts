@@ -1,17 +1,20 @@
-// Copyright (c) 2001-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2001-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <cntdef.h>
@@ -25,11 +28,11 @@
 #include <coreappstest/testserver.h>
 
 
-#include "CContactViewEventQueue.h"
+#include "ccontactvieweventqueue.h"
 #include "cfindtext.h"
 #include "t_utils2.h"
 
-//
+////////////////////////////////////////////////////////////////////////
 // Uncomment the following macro to run the large view creation test.
 // This takes a long time to run. Also, it requires the database file
 // SQLite__T_ViewContactId_10000_Contacts.cdb. This is *NOT* listed in
@@ -43,7 +46,7 @@
 //
 //#define __DO_CREATE_LARGE_VIEW_TEST__
 //
-//
+////////////////////////////////////////////////////////////////////////
 
 _LIT(KTestName, "T_ViewContactId");
 
@@ -315,8 +318,8 @@ LOCAL_C void TestBigDatabaseL()
 
 void DoTestsL()
     {
-	_LIT(KTestTitle, "@SYMTESTCaseID:PIM-T-VIEWCONTACTID-0001 T_ViewContactId: test contact view item IDs");
-	test.Start(KTestTitle);
+	_LIT(KTestTitle, "T_ViewContactId: test contact view item IDs");
+	test.Start(_L("@SYMTESTCaseID:PIM-T-VIEWCONTACTID-0001 T_ViewContactId: test contact view item IDs"));
 
 	TestGetContactIdsL();
 

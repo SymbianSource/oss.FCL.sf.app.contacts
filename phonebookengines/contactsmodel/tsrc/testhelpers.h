@@ -1,19 +1,21 @@
-// Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// TestHelpers Test module
-// 
-//
+/*
+* Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* TestHelpers Test module
+*
+*/
+
 
 
 #ifndef __TEST_HELPERS__
@@ -26,7 +28,7 @@
 #define POP(x)  CleanupStack::Pop(x)
 #define POPD(x) CleanupStack::PopAndDestroy(x); x = NULL;
 
-// Logging macros //
+//////////// Logging macros ///////////////
 GLDEF_C RTest test(KTestName);
 //int __NB_ERR;
 int __NB_failures = 0;
@@ -86,7 +88,7 @@ GLDEF_C void __NB_PRINT_ERROR(const TDesC& aMask, TInt aResult, const TText* aCo
 	else
 		++__NB_failures;
 	}
-//
+///////////////////////////////////////////////
 
 
 

@@ -1,17 +1,20 @@
-// Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32std.h>
 #include <e32test.h>
@@ -20,7 +23,7 @@
 #include <cntfldst.h>
 #include "t_utils2.h"
 #include "t_groupview.h"
-#include "CContactDbEventQueue.h"
+#include "ccontactdbeventqueue.h"
 
 // Test Macro
 LOCAL_D RTest test(_L("T_GROUPVIEW"));
@@ -29,7 +32,7 @@ LOCAL_D RTest test(_L("T_GROUPVIEW"));
 // Constants.
 //
 
-_LIT(KTestName,"@SYMTESTCaseID:PIM-T-GROUPVIEW-0001 t_groupview");
+_LIT(KTestName,"t_groupview");
 _LIT(KLogFileName,"t_groupview.log");
 
 _LIT(KDbFileName,"c:t_groupview.cdb");
@@ -386,7 +389,7 @@ TInt CGroupViewTester::RunError(TInt aError)
 
 void CGroupViewTester::HandleContactViewEvent(const CContactViewBase& aView,const TContactViewEvent& aEvent)
 	{
-	//LOGGING//
+	//LOGGING///////////////////////////////////////////////////////////////////////////////////
 				if(&aView == iLocalView)
 					test.Printf(_L("LocalView "));
 				else if(&aView == iGroupViewOne)
@@ -433,7 +436,7 @@ void CGroupViewTester::HandleContactViewEvent(const CContactViewBase& aView,cons
 						test.Printf(_L("Er, none of the known event types... "));
 						break;
 					}
-	//
+	////////////////////////////////////////////////////////////////////////////////////////////
 	
 	switch (iCurrentTest)
 		{
@@ -565,7 +568,7 @@ TInt CGroupViewTester::EventConsumerCallBack(TAny* aThis)
 	return KErrNone;
 	}
 
-//
+///////
 
 //
 // Main.
@@ -589,7 +592,7 @@ GLDEF_C TInt E32Main()
 		if (cleanup)
 			{
 			CTestConductor* testConductor=NULL;
-			test.Start(KTestName);
+			test.Start(_L("@SYMTESTCaseID:PIM-T-GROUPVIEW-0001 t_groupview"));
 
 			TRAPD(err,testConductor=CTestConductor::NewL());
 			test(err == KErrNone);

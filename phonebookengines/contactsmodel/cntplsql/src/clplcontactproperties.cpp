@@ -1,17 +1,20 @@
-// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file
@@ -20,14 +23,10 @@
 */
 
 
-#include <barsc.h> // For resource reading.
+#include <barsc.h> // for resource reading.
 #include <bautils.h>
-#include <cntmodel.rsg> // For System template resources.
-#include <phbksync.h> // For KUidIccGlobalAdnPhonebook.
-
-#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
-#include "cntsyncecom.h"
-#endif
+#include <cntmodel.rsg> // for system template resources.
+#include <phbksync.h> // for kuidiccglobaladnphonebook.
 
 #include "persistencelayerimpl.h"
 #include "clplcontactproperties.h" 
@@ -53,6 +52,7 @@ CLplContactProperties::~CLplContactProperties()
 	delete iSyncDummy;
 	delete iSystemTemplate;
 	delete iGroupIdList;
+
 	}
 
 
@@ -176,6 +176,12 @@ CContactIdArray& CLplContactProperties::GroupIdListL()
 	return *iGroupIdList;
 	}	
 
+
+CContactIdArray* CLplContactProperties::SearchIdListL(const TDesC& aSearchQuery) const 
+    {
+	return iContactItemManager->SearchIdListL(aSearchQuery);
+
+    }   
 
 TInt64 CLplContactProperties::MachineIdL() const
 	{

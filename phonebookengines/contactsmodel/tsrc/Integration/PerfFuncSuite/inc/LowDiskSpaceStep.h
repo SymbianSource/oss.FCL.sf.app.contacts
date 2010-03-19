@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,11 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
+
 
 
 /**
@@ -23,9 +25,8 @@
 */
 #ifndef __LOWDISKSPACE_STEP_H__
 #define __LOWDISKSPACE_STEP_H__
-
-#include <test/testexecutestepbase.h>
-#include "PerformanceFunctionalityBase.h"
+#include <testexecutestepbase.h>
+#include "performancefunctionalitybase.h"
 
 class CLowDiskSpaceStep : public CPerformanceFunctionalityBase
 	{
@@ -43,12 +44,9 @@ public:
 	virtual TVerdict doTestStepL();
 
 private:
-#ifndef __WINSCW__
 	void InitializeL();
 	void Cleanup();
-#endif
 	void PreTestL();
-#ifndef __WINSCW__
 	void Activate();
 	void FillDiskL();
 	void ClearDiskL();
@@ -62,8 +60,7 @@ private:
 	TBool StartLowDiskModeL();
 	void FailTransactionTestL( const TTransactionType aTransactionType );
 	void StartServerTestL();
-#endif
-
+	
 private: // From CActive.
 	void RunL();
 	void DoCancel();
@@ -83,8 +80,7 @@ private:
 	TBool 			iErrorPrinted;
 	CLowDiskSpaceStep::CLowDiskSpaceActive *iMyActive;
 	TDesC 			*iConfigSection;
-
-#ifndef __WINSCW__
+	
 private:
 	class CLowDiskSpaceActive : public CActive
 		{
@@ -100,7 +96,6 @@ private:
 	private:
 		CLowDiskSpaceStep *iStep;
 		};
-#endif
 	};
 
 _LIT(KLowDiskSpaceStep,"LowDiskSpaceStep");

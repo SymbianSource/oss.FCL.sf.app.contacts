@@ -1,36 +1,38 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// This step performs operations that generate notifications
-// It sends messages to the concurrently running listner step / thread
-// informing it what notifications it should be listening for, when it
-// should be listening when it should stop listening, also it waits for
-// messages from all the listeners infroming it that all mesasges have
-// been received.
-// Sending Messages:
-// Set shared string to contain the number of notifications to expect. (10)
-// Append shared string with valued of event in notification. KSharedEvents (1 2 3 4)
-// Append shared string with value of contact id in notification. KSharedContact. (1 2 3 4)
-// KSharedContact and KSharedEvents are synchronized so that at index X lies the contact and
-// event value for notification X+1.
-// Append shared string (KSharedNextTest) with single character. Signifies new
-// test case has started. (AAAA)
-// Receiving messages:
-// Read shared string length signifying the number of listner threads
-// that have finished from this test case. If this number equals number of
-// listener threads, stop this test case and start next test case. (AAAAAA)
-// 
-//
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* This step performs operations that generate notifications
+* It sends messages to the concurrently running listner step / thread
+* informing it what notifications it should be listening for, when it
+* should be listening when it should stop listening, also it waits for
+* messages from all the listeners infroming it that all mesasges have
+* been received.
+* Sending Messages:
+* Set shared string to contain the number of notifications to expect. (10)
+* Append shared string with valued of event in notification. KSharedEvents (1 2 3 4)
+* Append shared string with value of contact id in notification. KSharedContact. (1 2 3 4)
+* KSharedContact and KSharedEvents are synchronized so that at index X lies the contact and
+* event value for notification X+1.
+* Append shared string (KSharedNextTest) with single character. Signifies new
+* test case has started. (AAAA)
+* Receiving messages:
+* Read shared string length signifying the number of listner threads
+* that have finished from this test case. If this number equals number of
+* listener threads, stop this test case and start next test case. (AAAAAA)
+*
+*/
+
 
 /**
  @file
@@ -38,9 +40,9 @@
  @released
 */
 
-#include "ConcurrentNotifierStep.h"
-#include "PerformanceFunctionalityDefs.h"
-#include "CCntEventQueue.h"
+#include "concurrentnotifierstep.h"
+#include "performancefunctionalitydefs.h"
+#include "ccnteventqueue.h"
 
 _LIT(KRun1,"Update");
 _LIT(KRun2,"Commit");

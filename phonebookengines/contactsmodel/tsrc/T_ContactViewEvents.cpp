@@ -1,17 +1,20 @@
-// Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <cntdef.h>
@@ -21,8 +24,8 @@
 #include <cntfldst.h>
 #include <cntviewbase.h>
 
-#include "CContactViewEventQueue.h"
-#include "CContactDbEventQueue.h"
+#include "ccontactvieweventqueue.h"
+#include "ccontactdbeventqueue.h"
 
 _LIT(KTestName, "T_GroupViewEvents");
 
@@ -292,7 +295,7 @@ LOCAL_C CTestResources* DoTestAddContactAPILC(TBool aShowContactInGrp)
     //add 2 contacts and check if localview send events
     CTestResources* res = CTestResources::NewLC(aShowContactInGrp);
     
-    const TContactItemId contactId = res->CreateTestContactL(_L("Example1"));
+    const TContactItemId contactId = res->CreateTestContactL(_L("Joplin"));
     res->iContactIdArray->AddL(contactId);
 
     // Check that iLocalView sends an event
@@ -310,7 +313,7 @@ LOCAL_C CTestResources* DoTestAddContactAPILC(TBool aShowContactInGrp)
 	    test(event.iContactId == res->iGrpId);
 		}
 
-    const TContactItemId contactId1 = res->CreateTestContactL(_L("Example2"));
+    const TContactItemId contactId1 = res->CreateTestContactL(_L("Vidin"));
     res->iContactIdArray->AddL(contactId1);
 
     //get the EItemAdd event
@@ -726,8 +729,8 @@ LOCAL_C void TestSimulateSyncSessionL()
     TContactViewEvent viewEvent;
     
     // Create 2 contacts
-    TContactItemId firstContactId = res->CreateTestContactL(_L("ExampleA"));
-    TContactItemId secondContactId = res->CreateTestContactL(_L("ExampleB"));
+    TContactItemId firstContactId = res->CreateTestContactL(_L("Apan"));
+    TContactItemId secondContactId = res->CreateTestContactL(_L("Baname"));
         
 	//we should have 5 events here
 	test(res->iNewAPIGroupViewEventQueue->ListenForEvent(10,viewEvent));
@@ -751,8 +754,8 @@ LOCAL_C void TestSimulateSyncSessionL()
     CleanupStack::PushL(secondContact);
     
     // change name
-    SetTextFieldL(*firstContact, KUidContactFieldFamilyName, _L("ExampleA1"));
-    SetTextFieldL(*secondContact, KUidContactFieldFamilyName, _L("1ExampleB"));
+    SetTextFieldL(*firstContact, KUidContactFieldFamilyName, _L("Apan1"));
+    SetTextFieldL(*secondContact, KUidContactFieldFamilyName, _L("1Baname"));
 
 	res->iNewAPIGroupViewEventQueue->Flush();
 	res->iNewAPIFindViewEventQueue->Flush();
@@ -786,8 +789,8 @@ LOCAL_C void TestSimulateSyncSessionL()
     secondContact = res->iDb->OpenContactL(secondContactId);
     CleanupStack::PushL(secondContact);
     // change back contacts
-    SetTextFieldL(*firstContact, KUidContactFieldFamilyName, _L("ExampleA"));
-    SetTextFieldL(*secondContact, KUidContactFieldFamilyName, _L("ExampleB"));
+    SetTextFieldL(*firstContact, KUidContactFieldFamilyName, _L("Apan"));
+    SetTextFieldL(*secondContact, KUidContactFieldFamilyName, _L("Baname"));
     res->iDb->CommitContactL(*firstContact);	
     res->iDb->CommitContactL(*secondContact);
     //just consume events
@@ -805,8 +808,8 @@ LOCAL_C void TestSimulateSyncSessionL()
     secondContact = res->iDb->OpenContactL(secondContactId);
     CleanupStack::PushL(secondContact);
     // change back contacts
-    SetTextFieldL(*firstContact, KUidContactFieldFamilyName, _L("ExampleA1"));
-    SetTextFieldL(*secondContact, KUidContactFieldFamilyName, _L("1ExampleB"));
+    SetTextFieldL(*firstContact, KUidContactFieldFamilyName, _L("Apan1"));
+    SetTextFieldL(*secondContact, KUidContactFieldFamilyName, _L("1Baname"));
     res->iDb->CommitContactL(*firstContact);	
     res->iDb->CommitContactL(*secondContact);
     

@@ -1,49 +1,48 @@
-// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// PREQ 1775 - REQ 8135 and REQ 8136
-// Test harness for testing the import and export behaviour for the vCard TEL and EMAIL properties.
-// 1) Check that data can be added programatically
-// 2) Check that the exported format is as expected
-// 3) Check that vCard can be imported and the data is as expected.
-// EMail property TYPE parameter values MUST be supported
-// TYPE value	    Semantic Description
-// EMAIL;INTERNET	Default
-// EMAIL;CELL	    MMS mobile email address
-// EMAIL;HOME	    personal email address
-// EMAIL;WORK	    business email address
-// TEl property TYPE parameter values MUST be supported
-// TYPE value	    Semantic Description
-// TEL;VOICE	    personal wired phone number
-// TEL;CELL	        personal mobile phone number
-// TEL;WORK;VOICE	business wired phone number
-// TEL;WORK;FAX	    Business fax number
-// TEL;WORK;CELL	Business mobile phone number
-// The TEL property supports the following parameter sequence
-// TEL;["PREF;"]["WORK;"/"HOME;"]"VOICE;"/"FAX;"/"MSG;"/"CELL;"/PAGER;"/"BBS;"/"MODEM;"/"CAR;"/"ISDN;"/"VIDEO;"
-// Include Files  
-// 
-//
+/*
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* PREQ 1775 - REQ 8135 and REQ 8136
+* Test harness for testing the import and export behaviour for the vCard TEL and EMAIL properties.
+* 1) Check that data can be added programatically
+* 2) Check that the exported format is as expected
+* 3) Check that vCard can be imported and the data is as expected.
+* EMail property TYPE parameter values MUST be supported
+* TYPE value	    Semantic Description
+* EMAIL;INTERNET	Default
+* EMAIL;CELL	    MMS mobile email address
+* EMAIL;HOME	    personal email address
+* EMAIL;WORK	    business email address
+* TEl property TYPE parameter values MUST be supported
+* TYPE value	    Semantic Description
+* TEL;VOICE	    personal wired phone number
+* TEL;CELL	        personal mobile phone number
+* TEL;WORK;VOICE	business wired phone number
+* TEL;WORK;FAX	    Business fax number
+* TEL;WORK;CELL	Business mobile phone number
+* The TEL property supports the following parameter sequence
+* TEL;["PREF;"]["WORK;"/"HOME;"]"VOICE;"/"FAX;"/"MSG;"/"CELL;"/PAGER;"/"BBS;"/"MODEM;"/"CAR;"/"ISDN;"/"VIDEO;"
+* Include Files  
+*
+*/
+
 
 #include <e32test.h>
 #include <e32debug.h>
 #include <e32cmn.h>
 #include <f32file.h>
 #include <s32file.h>
-#include "T_UTILS.H"
-#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
-#include "cntdb_internal.h"
-#endif
+#include "t_utils.h"
 
 
 //  Global Variables

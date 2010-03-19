@@ -1,19 +1,21 @@
-// Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// GroupViewPanic Test module
-// 
-//
+/*
+* Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* GroupViewPanic Test module
+*
+*/
+
 
 
 #include <e32test.h>
@@ -24,7 +26,7 @@
 #include <cntfldst.h>
 #include <cntviewbase.h>
 
-#include "CContactViewEventQueue.h"
+#include "ccontactvieweventqueue.h"
 
 _LIT(KTestName, "T_GroupViewPanic");
 
@@ -176,13 +178,13 @@ LOCAL_C TContactItemId CreateTestContactL
 void CTestResources::CreateTestContactsL()
     {
     TContactItemId id;
-    id = CreateTestContactL(*iDb, _L("Example1"), _L("test"), _L("Name1"));
+    id = CreateTestContactL(*iDb, _L("Hakkinen"), _L("Mika"), _L("McLaren"));
     iContacts->AddL(id);
-    id = CreateTestContactL(*iDb, _L("Example2"), _L("test1"), _L("Name2"));
+    id = CreateTestContactL(*iDb, _L("Coulthard"), _L("David"), _L("McLaren"));
     iContacts->AddL(id);
-    id = CreateTestContactL(*iDb, _L("Example12"), _L("test0"), _L("Name3"));
+    id = CreateTestContactL(*iDb, _L("Schumacher"), _L("Michael"), _L("Ferrari"));
     iContacts->AddL(id);
-    id = CreateTestContactL(*iDb, _L("Example13"), _L("test3"), _L("Name4"));
+    id = CreateTestContactL(*iDb, _L("Raikkonen"), _L("Kimi"), _L("Sauber"));
     iContacts->AddL(id);
     }
 
@@ -289,13 +291,15 @@ void CRemoteViewTestResources::CreateTestGroupsL()
 	static_cast<CContactGroup*> (group01)->SetGroupLabelL(_L("EA"));
 	iDb->CommitContactL(*group01);
 
-	// Should receive events for operations above, order is not important 
+	// Should receive events as add for E F H 
+	// (none for G as add, then remove) 
+	// Similarly for H, the add and rename (ie remove + add ) is shrunk to a single add.
 	iViewEventQueue->ListenForEvent(2,event);
 	CheckEvent(event, TContactViewEvent::EItemAdded, 4, group5->Id());
 	iViewEventQueue->ListenForEvent(2,event);
-	CheckEvent(event, TContactViewEvent::EItemAdded, 5, group6->Id());
+	CheckEvent(event, TContactViewEvent::EItemAdded, 5, group8->Id());
 	iViewEventQueue->ListenForEvent(2,event);
-	CheckEvent(event, TContactViewEvent::EItemRemoved, 6, group7->Id());
+	CheckEvent(event, TContactViewEvent::EItemAdded, 6, group6->Id());
 	iViewEventQueue->ListenForEvent(2,event);
 	CheckEvent(event, TContactViewEvent::EGroupChanged, 0, group8->Id());
 

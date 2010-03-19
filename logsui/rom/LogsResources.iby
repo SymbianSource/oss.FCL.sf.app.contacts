@@ -14,11 +14,13 @@
 * Description:
 *
 */
-#ifndef __LOGS_RAVIPATI_IBY__
-#define __LOGS_RAVIPATI_IBY__
+#ifndef __LOGS_RESOURCES_IBY__
+#define __LOGS_RESOURCES_IBY__
 
-//Resource file(s) for LOGS application
-data=DATAZ_\APP_RESOURCE_DIR\Logs.rsc                                   APP_RESOURCE_DIR\Logs.rsc
-S60_APP_CAPTION(Logs)
+#include <data_caging_paths_for_iby.hrh> 
+
+//Resource files for Logs application
+data=DATAZ_\resource\apps\logs.rsc \resource\apps\logs.rsc
+data=DATAZ_\QT_TRANSLATIONS_DIR\dialer.qm QT_TRANSLATIONS_DIR\dialer.qm
 
 #endif

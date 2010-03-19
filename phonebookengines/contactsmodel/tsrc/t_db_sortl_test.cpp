@@ -1,52 +1,54 @@
-// Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// Summary:
-// A regression test to check changes to the CContactDatabase::SortL() API
-// that provide backward compatibility with <=v9.2 for some 3rd party apps 
-// that misuse the API.
-// Full description:
-// In cntmodel <=v9.2, sorting on the database was done with the now deprecated
-// method:
-// CContactDatabase::SortL(CArrayFix<TSortPref>* aSortOrder)
-// As is implied by the pass-by-pointer semantics, this has always taken
-// ownership of aSortOrder. In the past, aSortOrder was held as a data member
-// of CContactDatabase and so was held for the lifetime of the database object.
-// Some 3rd party apps called SortL(), mistakenly thinking that ownership
-// of aSortOrder had not been passed. Consequently, they used aSortOrder after 
-// the call. They were able to get away with this because aSortOrder had not 
-// been deleted yet at that point.
-// In cntmodel >=v9.3, the way sort preferences are stored changed and so
-// aSortOrder was deleted at the end of SortL() as it was no longer needed. 
-// The impact of this change was that aSortOrder was no longer available for
-// use after a call to SortL() and so the 3rd party apps panicked.
-// The fix for INC119319 provides a work-around that re-introduces the 
-// CContactDatabase member variable to hold aSortOrder for the lifetime of the
-// database object, as in pre-v9.3 versions. This extended lifetime allows the
-// 3rd party apps to continue to use aSortOrder as they had done before. 
-// Actions:
-// -- Create a new database;
-// -- Create and insert 2 contact items into the database;
-// -- Call SortL() to sort the contact items;
-// -- Test whether aSortOrder can still be used, failing if not;
-// -- Clean up the database.
-// Associated defect:
-// INC119319 Break in CContactDatabase::SortL
-// [Not actually a defect but a work-around was provided for compatibility.]
-// Written by:
-// James Clarke
-// 
-//
+/*
+* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* Summary:
+* A regression test to check changes to the CContactDatabase::SortL() API
+* that provide backward compatibility with <v9.2 for some 3rd party apps 
+* that misuse the API.
+* Full description:
+* In cntmodel <v9.2, sorting on the database was done with the now deprecated
+* method:
+* CContactDatabase::SortL(CArrayFix<TSortPref>* aSortOrder)
+* As is implied by the pass-by-pointer semantics, this has always taken
+* ownership of aSortOrder. In the past, aSortOrder was held as a data member
+* of CContactDatabase and so was held for the lifetime of the database object.
+* Some 3rd party apps called SortL(), mistakenly thinking that ownership
+* of aSortOrder had not been passed. Consequently, they used aSortOrder after 
+* the call. They were able to get away with this because aSortOrder had not 
+* been deleted yet at that point.
+* In cntmodel >v9.3, the way sort preferences are stored changed and so
+* aSortOrder was deleted at the end of SortL() as it was no longer needed. 
+* The impact of this change was that aSortOrder was no longer available for
+* use after a call to SortL() and so the 3rd party apps panicked.
+* The fix for INC119319 provides a work-around that re-introduces the 
+* CContactDatabase member variable to hold aSortOrder for the lifetime of the
+* database object, as in pre-v9.3 versions. This extended lifetime allows the
+* 3rd party apps to continue to use aSortOrder as they had done before. 
+* Actions:
+* -- Create a new database;
+* -- Create and insert 2 contact items into the database;
+* -- Call SortL() to sort the contact items;
+* -- Test whether aSortOrder can still be used, failing if not;
+* -- Clean up the database.
+* Associated defect:
+* INC119319 Break in CContactDatabase::SortL
+* [Not actually a defect but a work-around was provided for compatibility.]
+* Written by:
+* James Clarke
+*
+*/
+
 
 #include <e32test.h>
 #include <cntdb.h>
@@ -76,12 +78,12 @@ LOCAL_C void DoTestsL()
 	// create contact 1 and add it to the db
 	CContactCard* contact1 = CContactCard::NewLC();
 	CContactItemField* fname1 = CContactItemField::NewLC(KStorageTypeText, KUidContactFieldGivenName);
-	_LIT(KFname1, "Test");
+	_LIT(KFname1, "Aaron");
 	fname1->TextStorage()->SetTextL(KFname1() );
 	contact1->AddFieldL(*fname1);
 	CleanupStack::Pop(fname1);
 	CContactItemField* lname1 = CContactItemField::NewLC(KStorageTypeText, KUidContactFieldFamilyName);
-	_LIT(KLname1, "Name");
+	_LIT(KLname1, "Zimmerman");
 	lname1->TextStorage()->SetTextL(KLname1() );
 	contact1->AddFieldL(*lname1);
 	CleanupStack::Pop(lname1);
@@ -90,12 +92,12 @@ LOCAL_C void DoTestsL()
 	// create contact 2 and add it to the db
 	CContactCard* contact2 = CContactCard::NewLC();
 	CContactItemField* fname2 = CContactItemField::NewLC(KStorageTypeText, KUidContactFieldGivenName);
-	_LIT(KFname2, "Example");
+	_LIT(KFname2, "Zachary");
 	fname2->TextStorage()->SetTextL(KFname2() );
 	contact2->AddFieldL(*fname2);
 	CleanupStack::Pop(fname2);
 	CContactItemField* lname2 = CContactItemField::NewLC(KStorageTypeText, KUidContactFieldFamilyName);
-	_LIT(KLname2, "AExamp");
+	_LIT(KLname2, "Abrahams");
 	lname2->TextStorage()->SetTextL(KLname2() );
 	contact2->AddFieldL(*lname2);
 	CleanupStack::Pop(lname2);

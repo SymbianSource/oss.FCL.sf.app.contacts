@@ -21,7 +21,7 @@
 #define __CSortKeyArray_H__
 
 // INCLUDES
-#include <SortUtil.h>
+#include <sortutil.h>
 
 // CLASS DESCRIPTION
 /**

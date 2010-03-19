@@ -1,26 +1,29 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
 
-#include "connect/sbdefs.h" // For conn::EBURNormal etc.
-#include <utf.h> // For CnvUtfConverter::ConvertFromUnicodeToUtf8().
 
-#include "CCntBackupRestoreAgent.h"
-#include "CIniFileManager.h"
-#include "CCntDbManagerController.h"
-#include "CCntServer.h" // For KCntNullConnectionId.
-#include "CCntLogger.h"
+#include "connect/sbdefs.h" // for conn::eburnormal etc.
+#include <utf.h> // for cnvutfconverter::convertfromunicodetoutf8().
+
+#include "ccntbackuprestoreagent.h"
+#include "cinifilemanager.h"
+#include "ccntdbmanagercontroller.h"
+#include "ccntserver.h" // for kcntnullconnectionid.
+#include "ccntlogger.h"
 
 
 const TInt CCntBackupRestoreAgent::KMaxFileNameLength = 256;
@@ -155,10 +158,7 @@ void CCntBackupRestoreAgent::CreateBackupRegistrationFileL(const TDesC& aFileNam
 		
 	HBufC* nameAndExt = NULL;
 	nameAndExt = HBufC::NewLC(KSqLiteFilePrefix().Length() + parseFileName.NameAndExt().Length());
-	if (parseFileName.NameAndExt().Compare(KContactsIniFileName) != 0)
-		{
-		nameAndExt->Des().Append(KSqLiteFilePrefix);
-		}	
+	nameAndExt->Des().Append(KSqLiteFilePrefix);
 	nameAndExt->Des().Append(parseFileName.NameAndExt());
 
 	// Convert filename and extension to UTF8 before writing to file.

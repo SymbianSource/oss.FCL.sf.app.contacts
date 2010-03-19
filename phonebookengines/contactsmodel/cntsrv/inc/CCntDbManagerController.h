@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -27,10 +28,10 @@
 #define CCNTDBMANAGERCONTROLLER_H
 
 #include <e32base.h>
-#include <f32file.h> // For TDriveUnit.
-#include "CCntServer.h" // For TCntServerType.
-#include "CCntDbManager.h" // For TCntFileMode.
-#include "CIniFileManager.h" // For TSaveType.
+#include <f32file.h> // for tdriveunit.
+#include "ccntserver.h" // for tcntservertype.
+#include "ccntdbmanager.h" // for tcntfilemode.
+#include "cinifilemanager.h" // for tsavetype.
 
 
 class CCntDbManager;

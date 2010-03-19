@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,11 +11,11 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 * Checks if the exported file is present with no content
-* 
 *
 */
+
 
 
  
@@ -27,10 +27,10 @@
 #include <s32file.h>
 #include <e32std.h>
 #include <f32file.h>
-#include <test/testexecutestepbase.h>
+#include <testexecutestepbase.h>
 
 // User includes
-#include "TestImpExvCardSuiteServer.h"
+#include "testimpexvcardsuiteserver.h"
 
 class CTestContactsPBAPExportContents : public CTestStep
 	{

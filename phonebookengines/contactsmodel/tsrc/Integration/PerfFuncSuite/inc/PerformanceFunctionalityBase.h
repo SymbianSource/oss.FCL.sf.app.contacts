@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -25,11 +26,11 @@
 
 #ifndef __PERFORMANCEFUNCTIONALITY_BASE__
 #define __PERFORMANCEFUNCTIONALITY_BASE__
-#include <test/testexecutestepbase.h>
+#include <testexecutestepbase.h>
 #include <cntdb.h>
 #include <cntitem.h>
-#include "RCntList.h"
-#include "PerformanceFunctionalityServer.h"
+#include "rcntlist.h"
+#include "performancefunctionalityserver.h"
 
 class CPerformanceFunctionalityBase;
 

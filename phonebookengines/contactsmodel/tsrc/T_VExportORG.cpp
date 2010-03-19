@@ -1,29 +1,31 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// This tests the various options for the ORG property
-// This includes
-// 1) ORG:company;department
-// 2) ORG:Company;
-// 3) ORG:;Department
-// 
-//
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* This tests the various options for the ORG property
+* This includes
+* 1) ORG:company;department
+* 2) ORG:Company;
+* 3) ORG:;Department
+*
+*/
+
 
 #include <e32test.h>
 #include <e32debug.h>
 #include <f32file.h>
 #include <s32file.h>
-#include "T_UTILS.H"
+#include "t_utils.h"
 
 LOCAL_D CCntTest* CntTest=NULL;
 LOCAL_D const TPtrC KDatabaseFileName=_L("C:VOrgDb.cdb");

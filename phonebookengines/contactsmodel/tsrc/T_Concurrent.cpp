@@ -1,20 +1,21 @@
-// Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
 
-//  Include Files  
-#include "T_Concurrent.h"
+#include "t_concurrent.h"
 #include <e32base.h>
 #include <e32std.h>
 #include <e32cons.h>            
@@ -36,9 +37,9 @@ RSemaphore sem;							// Synchronising Semaphore
 TInt t1MachineId = 0;					// Thread1 machineId from db.
 TInt currentStep = 0;					// Current test step.
 
-//
+///////////////////////////////////////////////////////////
 //                  CHILD THREAD FUNCTIONS.
-//
+///////////////////////////////////////////////////////////
 
 /**
 * The main function called when the child thread is invoked.
@@ -126,9 +127,9 @@ void CChildThread::AccessDBTestL()
 	}
 
 
-//
+///////////////////////////////////////////////////////////
 //                  MAIN THREAD FUNCTIONS.
-//
+///////////////////////////////////////////////////////////
 /**
 * The main thread object which owns the session with the database in thread shared mode.
 */
@@ -271,9 +272,9 @@ void CMainThread::ResumeChildThreadL()
 	}
 
 
-//
+///////////////////////////////////////////////////////////
 //                  MAIN FUNCTIONS.
-//
+///////////////////////////////////////////////////////////
 
 /**
 * The main function which creates the main thread controller object 

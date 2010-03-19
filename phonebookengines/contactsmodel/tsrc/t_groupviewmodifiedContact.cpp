@@ -1,17 +1,20 @@
-// Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32std.h>
 #include <e32math.h>
@@ -23,7 +26,7 @@
 #include <cntview.h>
 #include <cntviewbase.h>
 
-#include "t_groupviewmodifiedContact.h"
+#include "t_groupviewmodifiedcontact.h"
 
 // Test Macro
 LOCAL_D RTest test(_L("T_GROUPVIEWMODIFIEDCONTACT"));
@@ -31,7 +34,7 @@ LOCAL_D RTest test(_L("T_GROUPVIEWMODIFIEDCONTACT"));
 //
 // Constants.
 //
-_LIT(KTestName,"@SYMTESTCaseID:PIM-T-GROUPVIEWMODIFIEDCONTACT-0001 t_groupviewmodifiedcontact");
+_LIT(KTestName,"t_groupviewmodifiedcontact");
 _LIT(KLogFileName,"t_groupviewmodifiedcontact.log");
 
 _LIT(KDbFileName,"c:t_groupview.cdb");
@@ -167,11 +170,11 @@ void CGroupViewTester::RunL()
 
 			contact->SetCompanyNameL(_L("CompanyName"));
 
-			contact->SetWorkPhoneL(_L("02079460090"));
+			contact->SetWorkPhoneL(_L("0123456789"));
 
-			contact->SetWorkMobileL(_L("02079460789"));
+			contact->SetWorkMobileL(_L("0223456789"));
 
-			contact->SetHomePhoneL(_L("02079460987"));
+			contact->SetHomePhoneL(_L("0323456789"));
 
 			contact->SetWorkEmailAddressL(_L("work@email.com"));
 
@@ -345,7 +348,7 @@ GLDEF_C TInt E32Main()
 		if (cleanup)
 			{
 			CTestConductor* testConductor=NULL;
-			test.Start(KTestName);
+			test.Start(_L("@SYMTESTCaseID:PIM-T-GROUPVIEWMODIFIEDCONTACT-0001 t_groupviewmodifiedcontact"));
 
 			TRAPD(err,testConductor=CTestConductor::NewL());
 			test(err == KErrNone);

@@ -23,7 +23,7 @@ CAPABILITY   ReadUserData WriteUserData
 UID		0
 VENDORID 0x70000001
 SOURCEPATH	.
-APP_LAYER_SYSTEMINCLUDE_SYMBIAN
+systeminclude   /epoc32/include
 userinclude	..
 source          T_Cnt_ViewSortProfiling.cpp
 source          t_utils2.cpp

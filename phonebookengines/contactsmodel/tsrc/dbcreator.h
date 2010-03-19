@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 * Summary:
 * A class for creating a CContactDatabase object with random data.
 * The contact items take the form of the following example:
@@ -25,16 +25,16 @@
 * // create a database populated with 500 randomly created contact items
 * const TInt KNumContacts(500);
 * _LIT(KDbName, "C:mydb.cbd");
-* CContactDatabase* db = DbCreator::CreateDbL(KDbName, KNumContacts);
+* CContactDatabase* db  DbCreator::CreateDbL(KDbName, KNumContacts);
 * CleanupStack::PushL(db);
 * // do something interesting...
 * CleanupStack::PopAndDestroy(db);
 * CContactDatabase::DeleteDatabaseL(KDbName);
 * Written by:
 * James Clarke
-* 
 *
 */
+
 
 
 

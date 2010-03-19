@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<TestCase>
+  <Connect/>
+  <Transaction TransactionName="TestCase">
+    <Request>
+      <OperationCode>1003</OperationCode>
+      <SessionID>1</SessionID>
+      <TransactionID>${auto}</TransactionID>
+      <Parameter1>0</Parameter1>
+      <Parameter2>0</Parameter2>
+      <Parameter3>0</Parameter3>
+      <Parameter4>0</Parameter4>
+      <Parameter5>0</Parameter5>
+    </Request>
+    <DataOut></DataOut>
+    <DataIn></DataIn>
+    <Response>
+      <ResponseCode>2001</ResponseCode>
+      <SessionID>1</SessionID>
+      <TransactionID>${auto}</TransactionID>
+      <Parameter1>0</Parameter1>
+      <Parameter2>0</Parameter2>
+      <Parameter3>0</Parameter3>
+      <Parameter4>0</Parameter4>
+      <Parameter5>0</Parameter5>
+    </Response>
+  </Transaction>
+</TestCase>

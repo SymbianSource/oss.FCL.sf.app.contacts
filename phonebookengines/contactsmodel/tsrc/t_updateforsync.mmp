@@ -23,7 +23,7 @@ TARGETTYPE      exe
 CAPABILITY   ReadUserData WriteUserData
 
 SOURCEPATH	.
-APP_LAYER_SYSTEMINCLUDE_SYMBIAN
+SYSTEMINCLUDE   /epoc32/include
 USERINCLUDE	..
 SOURCE          t_updateforsync.cpp t_utils2.cpp
 LIBRARY         euser.lib efsrv.lib cntmodel.lib cnttutil.lib pimtestclient.lib

@@ -23,7 +23,7 @@ CAPABILITY   ReadUserData WriteUserData
 UID		0
 VENDORID 0x70000001
 SOURCEPATH	.
-APP_LAYER_SYSTEMINCLUDE_SYMBIAN
+systeminclude   /epoc32/include
 source          t_filteredviewupdate.cpp
 source          CContactViewEventQueue.cpp
 library         euser.lib cntmodel.lib cntview.lib

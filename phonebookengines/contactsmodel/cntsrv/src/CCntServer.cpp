@@ -1,17 +1,20 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file
@@ -21,19 +24,19 @@
 
 
 #include <bacline.h>
-#include "CCntServer.h"
-#include "CCntSession.h"
-#include "CCntDbManagerController.h"
-#include "CCntPackager.h"
-#include "CCntIpcCodes.h"
-#include "CCntLogger.h"
-#include "CCntMsgHandler.h"
-#include "CCntItemMsgHandler.h"
-#include "CCntEventMsgHandler.h"
-#include "CCntTransactionMsgHandler.h"
-#include "CCntFileManagerMsgHandler.h"
-#include "CCntPropertiesMsgHandler.h"
-#include "CCntViewMsgHandler.h"
+#include "ccntserver.h"
+#include "ccntsession.h"
+#include "ccntdbmanagercontroller.h"
+#include "ccntpackager.h"
+#include "ccntipccodes.h"
+#include "ccntlogger.h"
+#include "ccntmsghandler.h"
+#include "ccntitemmsghandler.h"
+#include "ccnteventmsghandler.h"
+#include "ccnttransactionmsghandler.h"
+#include "ccntfilemanagermsghandler.h"
+#include "ccntpropertiesmsghandler.h"
+#include "ccntviewmsghandler.h"
 
 // Contacts server name.
 _LIT(KCntServerName,"CNTSRV");
@@ -361,6 +364,7 @@ void CCntServer::CreateMessageMapL()
 	iMsgLut.InsertL(ECntGetDatabaseReady,       static_cast<MsgHandlerFptr>(&CCntFileManagerMsgHandler::GetDatabaseReadyL));
 	iMsgLut.InsertL(ECntFetchTemplateIds,       static_cast<MsgHandlerFptr>(&CCntFileManagerMsgHandler::FetchTemplateIdsL));
 	iMsgLut.InsertL(ECntFetchGroupIdLists,      static_cast<MsgHandlerFptr>(&CCntFileManagerMsgHandler::FetchGroupIdListsL));
+	iMsgLut.InsertL(ECntSearchResultIdLists,  static_cast<MsgHandlerFptr>(&CCntFileManagerMsgHandler::FetchSearchResultsL));
 	
 	iMsgLut.InsertL(ECntFilesSize,          static_cast<MsgHandlerFptr>(&CCntFileManagerMsgHandler::FilesSizeL));
 	

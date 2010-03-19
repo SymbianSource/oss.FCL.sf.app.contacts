@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/docml" >
+        <file alias="detailsView.docml" >resources/detailsView.docml</file>
+        <file alias="recentCallsView.docml" >resources/recentCallsView.docml</file>
+        <file alias="matchesView.docml" >resources/matchesView.docml</file>
+    </qresource>
+    <qresource prefix="/" >
+        <file alias="view_show.fxml">resources/logs_view_fade_in_scale.fxml</file>
+        <file alias="view_hide.fxml">resources/logs_view_fade_out.fxml</file>
+        <file alias="logs_default">resources/logs_default.qm</file>
+    </qresource>
+    <qresource prefix="/" >
+        <file>themes/icons/hbdefault/scalable/qtg_mono_contacts.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_dialer.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_show_view.svg</file>
+    </qresource>
+    <qresource prefix="/logslayouts" >
+        <file alias="hblistviewitem.css">resources/hblistviewitem.css</file>
+        <file alias="hblistviewitem.widgetml">resources/hblistviewitem.widgetml</file>
+    </qresource>
+</RCC>

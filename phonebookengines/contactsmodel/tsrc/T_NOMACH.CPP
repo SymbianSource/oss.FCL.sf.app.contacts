@@ -1,21 +1,24 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <f32file.h>
-#include "T_UTILS.H"
+#include "t_utils.h"
 #include <coreappstest/testserver.h>
 
 _LIT(KCntTestTitle,"T_NOMACH");
@@ -212,12 +215,12 @@ LOCAL_C void CheckPhoneMatchL(const TDesC& aPhoneNumberToMatch, TInt aNumberOfMa
 Testcode for Graham's new API
 
 These all match 1234567:
-*#42# 0201234567 p123
-*#42# +358201234567 p123
-*61 0201234567
-*61 +358201234567
-+358201234567 +3
-+358201234567 p123
+*#42# 0401234567 p123
+*#42# +358401234567 p123
+*61 0401234567
+*61 +358401234567
++358401234567 +3
++358401234567 p123
 
 */
 LOCAL_C void TestNewMatchingL()
@@ -226,18 +229,18 @@ LOCAL_C void TestNewMatchingL()
 
 	const TInt KLastThreeDigits =3;
 	//These numbers match 1234567
-	_LIT(KCntDTMFNumber1,"*#42# 0201234567 p123");
+	_LIT(KCntDTMFNumber1,"*#42# 0401234567 p123");
 	_LIT(KCntDTMFNumber2,"*#42#+358401234567 p123");
-	_LIT(KCntDTMFNumber3,"*61 0201234567");
-	_LIT(KCntDTMFNumber4,"*61 +358201234567");
-	_LIT(KCntDTMFNumber5,"+358201234567 +3");
-	_LIT(KCntDTMFNumber6,"+358201234567 p123");
+	_LIT(KCntDTMFNumber3,"*61 0401234567");
+	_LIT(KCntDTMFNumber4,"*61 +358401234567");
+	_LIT(KCntDTMFNumber5,"+358401234567 +3");
+	_LIT(KCntDTMFNumber6,"+358401234567 p123");
 	_LIT(KCntMatch1to7ExtraCharacters,"mobile 12 345-67");
 	_LIT(KCntMatch1to7Brackets,"(020) 0123-4567");
 	_LIT(KCntMatch1to7TooManyNumbers,"123456789012345678901234567");
 	//These shouldn't match 1234567
-	_LIT(KCntDTMFNumber7,"*#42# 0201234567#p123");//empty
-	_LIT(KCntDTMFNumber8,"*12345+0201234567");    //matches 12345
+	_LIT(KCntDTMFNumber7,"*#42# 0401234567#p123");//empty
+	_LIT(KCntDTMFNumber8,"*12345+0401234567");    //matches 12345
 	_LIT(KCntDTMFNumber9,"*+123+456+++++++++++"); //matches 123
 	//Graham's possible defects
 	_LIT(KCntPossibleDefect,"70000");
@@ -247,18 +250,18 @@ LOCAL_C void TestNewMatchingL()
 	_LIT(KCntMatch1to3,"123");
 	_LIT(KCntMatch700,"700");
 	//Spaces at the start
-	_LIT(KCntSpaceInNumber,"   0 2 0      7 9 4 6  5 6 7 8    ");
-	_LIT(KCntSpaceMatch,"02079465678");
-	_LIT(KCntSpaceInNumberIntl,"   +44 7700 900 472");
-	_LIT(KCntSpaceInNumberIntlMatch,"+447700900472");
+	_LIT(KCntSpaceInNumber,"   0 2 0      7 1 2 0  5 6 7 8    ");
+	_LIT(KCntSpaceMatch,"02071205678");
+	_LIT(KCntSpaceInNumberIntl,"   +44 7447 065 472");
+	_LIT(KCntSpaceInNumberIntlMatch,"+447747065472");
 	_LIT(KCntSpaceWorstCase,"              ");
 	_LIT(KCntNoRealDigitsInNumber,"Lycos SMS");
 
 	_LIT(KCntShortNumber1,"789");
 	_LIT(KCntShortNumber2,"456");
 
-	_LIT(KCntEndingByShortNumber1,"+44(0)79460064789");
-	_LIT(KCntEndingByShortNumber2,"+447946008731456");
+	_LIT(KCntEndingByShortNumber1,"+44(0)32465764789");
+	_LIT(KCntEndingByShortNumber2,"+443216568731456");
 
 	_LIT(KCntMatchShortNumber1,"789"); // must not match other number ending with 789
 	_LIT(KCntMatchShortNumber2,"456"); // must not match other number ending with 456
@@ -329,8 +332,8 @@ LOCAL_C void TestNewMatchingL()
 LOCAL_C void TestNoPhoneMatchLibraryL()
 	{
 	ResetDatabaseL();
-	_LIT(KCntNumberWithSpaces,"+44  020 7946 0000");
-	_LIT(KCntNumberWithoutSpaces,"02079460000");
+	_LIT(KCntNumberWithSpaces,"+44  020 7563 2000");
+	_LIT(KCntNumberWithoutSpaces,"02075632000");
 	CreateContactL(KCntName,KCntSurname,KCntNumberWithSpaces,KNullDesC);
 	CheckPhoneMatchL(KCntNumberWithoutSpaces,KMatch7Digits,1);
 	}
@@ -358,13 +361,13 @@ LOCAL_C void TestFaxSMSMatchingL()
 	{
 	ResetDatabaseL();
 
-	_LIT(KCntFaxNumber1,"020 79460585");
-	_LIT(KCntFaxNumber2,"020 79460432");
-	_LIT(KCntSMSNumber1,"+442079460432");
-	_LIT(KCntSMSNumber2,"+442079460585");
+	_LIT(KCntFaxNumber1,"020 85858585");
+	_LIT(KCntFaxNumber2,"020 85858432");
+	_LIT(KCntSMSNumber1,"+442085858432");
+	_LIT(KCntSMSNumber2,"+442085858585");
 	
-	_LIT(KCntDuplicateNumber,"0207 9460585");
-	_LIT(KCntNewSMSNumber,"020 79460696");
+	_LIT(KCntDuplicateNumber,"0208 5858585");
+	_LIT(KCntNewSMSNumber,"020 85969696");
 	
 	TContactItemId one = CreateFaxSMSContactL(KCntName,KCntSurname,KCntFaxNumber1,KCntSMSNumber1);
 	TContactItemId two = CreateFaxSMSContactL(KCntName,KCntSurname,KCntFaxNumber2,KCntSMSNumber2);
@@ -572,11 +575,11 @@ LOCAL_C void Test11DigitMatchingL()
 	{
 	ResetDatabaseL();
 
-	_LIT(K11DigitTestNumber1,"020 7700 9001");
-	_LIT(K11DigitTestNumber2,"20 7700 90012");
-	_LIT(K11DigitTestNumber3,"020 7700 9081");
-	_LIT(K11DigitTestNumber4,"120 7700 9081");
-	_LIT(K11DigitTestNumber5,"9120 7700 9081");
+	_LIT(K11DigitTestNumber1,"20 7582 24220");
+	_LIT(K11DigitTestNumber2,"020 7582 2422");
+	_LIT(K11DigitTestNumber3,"020 7582 2381");
+	_LIT(K11DigitTestNumber4,"120 7582 2381");
+	_LIT(K11DigitTestNumber5,"9120 7582 2381");
 
 	CreateContactL(KCntName,KCntSurname,K11DigitTestNumber1,KNullDesC);
 	CreateContactL(KCntName,KCntSurname,K11DigitTestNumber2,KNullDesC);
@@ -585,12 +588,12 @@ LOCAL_C void Test11DigitMatchingL()
 	CreateContactL(KCntName,KCntSurname,K11DigitTestNumber5,KNullDesC);
 
 	//Match numbers
-	_LIT(K11DigitMatch1,"020 7700 9001");
-	_LIT(K11DigitMatch2,"20 7700 90012");
-	_LIT(K11DigitMatch3,"020 7700 9081");
-	_LIT(K11DigitMatch4,"120 7700 9081");
-	_LIT(K11DigitMatch5,"9120 7700 9081");
-	_LIT(K11DigitMatch6,"20 7700 9081");
+	_LIT(K11DigitMatch1,"020 7582 2422");
+	_LIT(K11DigitMatch2,"20 7582 24220");
+	_LIT(K11DigitMatch3,"020 7582 2381");
+	_LIT(K11DigitMatch4,"120 7582 2381");
+	_LIT(K11DigitMatch5,"9120 7582 2381");
+	_LIT(K11DigitMatch6,"20 7582 2381");
 
 	CheckPhoneMatchL(K11DigitMatch1,KMatch10Digits,1);
 	CheckPhoneMatchL(K11DigitMatch1,KMatch11Digits,1);
@@ -618,19 +621,19 @@ LOCAL_C void Test15DigitMatchingL()
 	{
 	ResetDatabaseL();
 
-	_LIT(K15DigitTestNumber1,"0086 207 9476 0454");
-	_LIT(K15DigitTestNumber2,"8186 207 9476 0454");
-	_LIT(K15DigitTestNumber3,"8620 794 7604 5400");
+	_LIT(K15DigitTestNumber1,"0086 207 3453 3454");
+	_LIT(K15DigitTestNumber2,"8186 207 3453 3454");
+	_LIT(K15DigitTestNumber3,"8620 734 5334 5400");
 
 	CreateContactL(KCntName,KCntSurname,K15DigitTestNumber1,KNullDesC);
 	CreateContactL(KCntName,KCntSurname,K15DigitTestNumber2,KNullDesC);
 	CreateContactL(KCntName,KCntSurname,K15DigitTestNumber3,KNullDesC);
 
 	//Match numbers
-	_LIT(K15DigitMatch1,"0086 207 9476 0454");
-	_LIT(K15DigitMatch2,"86 207 9476 0454");
-	_LIT(K15DigitMatch3,"8186 207 9476 0454");
-	_LIT(K15DigitMatch4,"08186 207 9476 0454");
+	_LIT(K15DigitMatch1,"0086 207 3453 3454");
+	_LIT(K15DigitMatch2,"86 207 3453 3454");
+	_LIT(K15DigitMatch3,"8186 207 3453 3454");
+	_LIT(K15DigitMatch4,"08186 207 3453 3454");
 
 	CheckPhoneMatchL(K15DigitMatch1,KMatch15Digits,1);
 	CheckPhoneMatchL(K15DigitMatch1,KMatch14Digits,1);

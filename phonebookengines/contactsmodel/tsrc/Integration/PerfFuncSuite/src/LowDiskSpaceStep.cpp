@@ -1,17 +1,20 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file 
@@ -19,9 +22,9 @@
  @released
 */
 #include <e32math.h>
-#include "CCntDbManager.h"
-#include "LowDiskSpaceStep.h"
-#include "PerformanceFunctionalityDefs.h"
+#include "ccntdbmanager.h"
+#include "lowdiskspacestep.h"
+#include "performancefunctionalitydefs.h"
 
 _LIT( KTest1, "CRUD tests" );
 _LIT( KTest2, "Database tests" );
@@ -44,8 +47,9 @@ _LIT(KCleanup, "cleanup");
 _LIT(KDiskSize, "size: %LD, free space: %LD");
 _LIT(KStars,"*******************************");
 
+
 // how much empty space will be made available on disk, in bytes
-const static TInt KMinusFull = KLowDiskThreshold - 8000;
+const static TInt KMinusFull = KLowDiskThreshold - 8000; 
 #define KNumberOfContacts 200
 
 CLowDiskSpaceStep::CLowDiskSpaceStep(CPerformanceFunctionalityTestsSuite &aParent) : CPerformanceFunctionalityBase( KNumberOfContacts, aParent ),
@@ -54,7 +58,7 @@ CLowDiskSpaceStep::CLowDiskSpaceStep(CPerformanceFunctionalityTestsSuite &aParen
 	SetTestStepName(KLowDiskSpaceStep);
 	}
 
-#ifndef __WINSCW__
+	
 void CLowDiskSpaceStep::CLowDiskSpaceActive::RunL()
 	{
 	const static TInt numberOfTests = iStep->iTests->Count();
@@ -114,11 +118,9 @@ void CLowDiskSpaceStep::CLowDiskSpaceActive::Activate()
 	User::RequestComplete(pS,KErrNone);
 	SetActive();
 	}
-#endif
 
 TVerdict CLowDiskSpaceStep::doTestStepPostambleL()
 	{
-#ifndef __WINSCW__
 	CLEAR( iMyActive );
 	if( iFile )
 		{
@@ -130,11 +132,9 @@ TVerdict CLowDiskSpaceStep::doTestStepPostambleL()
 		iTests->Close();
 		CLEAR(iTests);
 		}
-#endif
 	return CPerformanceFunctionalityBase::doTestStepPostambleL();
 	}
-
-#ifndef __WINSCW__
+	
 void CLowDiskSpaceStep::InitializeL()
 	{
 	CPerformanceFunctionalityBase::InitializeL();
@@ -150,11 +150,9 @@ void CLowDiskSpaceStep::Cleanup()
 	CLEAR( iCustomTemplate );
 	CPerformanceFunctionalityBase::Cleanup();
 	}
-#endif
 
 void CLowDiskSpaceStep::PreTestL()
 	{
-#ifndef __WINSCW__
 	iConfigSection = &ConfigSection();
 	iMyActive = new (ELeave) CLowDiskSpaceStep::CLowDiskSpaceActive( this );
 	iCleanup = (KCleanup() == *iConfigSection);
@@ -195,12 +193,10 @@ void CLowDiskSpaceStep::PreTestL()
 		iTests->AppendL( &CLowDiskSpaceStep::MiscDbTestsL );
 		iTests->AppendL( &CLowDiskSpaceStep::DatabaseTestsL );
 		}
-#endif
 	}
-
+	
 TVerdict CLowDiskSpaceStep::doTestStepL()
 	{
-#ifndef __WINSCW__
 	if(iCleanup)
 		{
 		ClearDiskL();
@@ -217,17 +213,16 @@ TVerdict CLowDiskSpaceStep::doTestStepL()
 		Cleanup();
 		__UHEAP_MARKEND;
 		}
-#endif
 	return TestStepResult();
 	}
-
-#ifndef __WINSCW__	
+	
 /**
 populates the disk so that only a very small amount of disk space is available,
 invoking low disk notification within cntsrv
 */
 void CLowDiskSpaceStep::FillDiskL()
 	{
+
 	TVolumeInfo tv;
 	User::LeaveIfError( iParent->Fs().Volume(tv) );
 	
@@ -812,4 +807,4 @@ TBool CLowDiskSpaceStep::StartLowDiskModeL()
 	FillDiskL();
 	return ETrue;
 	}
-#endif
+

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -10,8 +10,11 @@
 * Nokia Corporation - initial contribution.
 *
 * Contributors:
-* 
-* Description:
+
+*
+
+* Description: 
+
 *
 */
 
@@ -27,8 +30,8 @@
 #include <cntview.h>
 #include <cntfldst.h>
 
-#include "CntModelTesterAsynch.h" 
-#include "CntModelTesterSetToneToContacts.h"
+#include "cntmodeltesterasynch.h" 
+#include "cntmodeltestersettonetocontacts.h"
 
 _LIT(KTestName,"asynaccess");
 _LIT(KLogFileName,"asynaccess.log");

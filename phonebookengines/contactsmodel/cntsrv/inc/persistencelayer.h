@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -173,6 +174,7 @@ public:
 	virtual TInt64 MachineIdL() const = 0;
 	virtual CContactIdArray& CardTemplateIdsL() = 0;
 	virtual CContactIdArray& GroupIdListL() = 0;
+	virtual CContactIdArray* SearchIdListL(const TDesC& aSearchQuery) const = 0;
 	virtual void SetMachineIdL(TInt64 aMachineId) = 0;
 	virtual TPtrC UniqueIdL() = 0; 
 	

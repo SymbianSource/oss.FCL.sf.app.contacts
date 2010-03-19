@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,16 +11,17 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
 
 
 
+
 #if (!defined __TESTIMPEXVCARD_STEP_BASE__)
 #define __TESTIMPEXVCARD_STEP_BASE__
-#include <test/testexecutestepbase.h>
-#include "TestImpExvCardSuiteDefs.h"
+#include <testexecutestepbase.h>
+#include "testimpexvcardsuitedefs.h"
 
 /****************************************************************************
 * The reason to have a new step base is that it is very much possible

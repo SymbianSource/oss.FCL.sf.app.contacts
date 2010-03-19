@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -25,11 +26,11 @@
 #ifndef __CNT_BASE_STEP_H__
 #define __CNT_BASE_STEP_H__
 
-#include <test/testexecutestepbase.h>
+#include <testexecutestepbase.h>
 #include <cntdb.h>
 #include <cntitem.h>
-#include "CntPerfServer.h"
-#include "RCntList.h"
+#include "cntperfserver.h"
+#include "rcntlist.h"
 
 namespace TestConstants
 	{

@@ -1,0 +1,5 @@
+<Dataset>
+  <Array name="ObjectHandles">
+     <Field type="UINT32" name="ThumbnailHandle" export="true"/>
+  </Array>
+</Dataset>

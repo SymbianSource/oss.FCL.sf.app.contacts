@@ -1,17 +1,20 @@
-// Copyright (c) 1999-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1999-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
 @SYMTestCaseID INC049017
@@ -48,7 +51,6 @@ private:
 	void FindNameInFirstNameFieldL(const TDesC& aTextToFind, const TInt aNumExpectedFinds,TBool aAsync=EFalse);
 	void FindNameInLastNameFieldL(const TDesC& aTextToFind, const TInt aNumExpectedFinds,TBool aAsync=EFalse);
 	void FindInCompanyFieldL(const TDesC& aTextToFind, const TInt aNumExpectedFinds,TBool aAsync=EFalse);
-	void FindInSipAddressL(const TDesC& aTextToFind, const TInt aNumExpectedFinds,TBool aAsync=EFalse);
 	void FindInAllFieldsL(const TDesC& aTextToFind, const TInt aNumExpectedFinds,TBool aAsync=EFalse);
 	void FindNotesL(const TDesC& aTextToFind, const TInt aNumExpectedFinds,TBool aAsync=EFalse);
 	void DoFindL(const TDesC& aTextToFind,const CContactItemFieldDef& aFieldDef, const TInt aNumExpectedFinds);

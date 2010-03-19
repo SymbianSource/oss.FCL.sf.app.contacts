@@ -1,22 +1,24 @@
-// Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// This harness Creates a Contact Item and adds a single field to it (a birthday)
-// This is then exported to a vcard and the date from this export is checked.
-// This is to prove that INC038574 that time is not exported with the birthday and therefore
-// time differences from UTC do not affect the birthday date.
-// 
-//
+/*
+* Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* This harness Creates a Contact Item and adds a single field to it (a birthday)
+* This is then exported to a vcard and the date from this export is checked.
+* This is to prove that INC038574 that time is not exported with the birthday and therefore
+* time differences from UTC do not affect the birthday date.
+*
+*/
+
 
 #include <vutil.h>
 #include <e32test.h>
@@ -25,7 +27,7 @@
 #include <cntitem.h>
 #include <cntfield.h>
 #include <cntfldst.h>
-#include "T_UTILS.H"
+#include "t_utils.h"
 
 LOCAL_D CCntTest* CntTest=NULL;
 LOCAL_D const TPtrC KDatabaseFileName=_L("C:VBirthdayDb.cdb");

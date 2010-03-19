@@ -16,7 +16,7 @@
 
 
 //Test Step header
-#include "ECntFetchGroupIdLists1_CStep.h"
+#include "ecntfetchgroupidlists1_cstep.h"
 
 
 //TO BE SAFE

@@ -1,17 +1,20 @@
-// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
 @SYMTestCaseID          PIM-APPENG-CNTMODEL-CNTSRV-CT-106277-0001
@@ -34,7 +37,7 @@ Note: T_RequestStoreTest is created base on T_DBTransactionTest with minor modif
 
 #include <e32base.h>
 
-#include "NbCntTestLib.h"
+#include "nbcnttestlib.h"
 #include "t_requeststoretest.h"
 
 _LIT(KTestName, "T_RequestStoreTest"); // Used by Testhelper - gives an warning under ARMv5

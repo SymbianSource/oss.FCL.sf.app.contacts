@@ -1,19 +1,20 @@
-// Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2003-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
 
-// System includes
 #include <cntdb.h>
 #include <cntdef.h>
 #include <cntitem.h>
@@ -43,7 +44,7 @@ const TInt KDelay = 1000000;
 static RTest					TheTest(_L("t_owncard"));
 
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* CTestActiveScheduler                                                      */
 //  This class has been nicked from the t_currentdb.h / .cpp files
 class CTestActiveScheduler : public CActiveScheduler
@@ -58,7 +59,7 @@ void CTestActiveScheduler::Error(TInt aError) const
 
 
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* CConcurrentDatabaseAccessBase - Specification                             */
 // Forms the base class for both threads.
 class CConcurrentDatabaseAccessBase : public CActive
@@ -118,7 +119,7 @@ class CConcurrentDatabaseAccessBase : public CActive
 		HBufC*					iDatabaseName;
 	};
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* CConcurrentDatabaseAccessBase - Implementation                            */
 CConcurrentDatabaseAccessBase::CConcurrentDatabaseAccessBase()
 	: CActive( /*EPriorityStandard*/ EPriorityIdle )
@@ -266,7 +267,7 @@ void CConcurrentDatabaseAccessBase::SyncronizeWait()
 	iSemaphoreWait.Signal();
 	}
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* CConcurrentOwnerCardModifier - Specification                               */
 // This class should allow the two threads to compare the owner ID's of there db.
 class TOwnerCardCompare
@@ -293,7 +294,7 @@ class TOwnerCardCompare
 	TContactItemId	iCheckerValue;
 	};
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* CConcurrentOwnerCardModifier - Implementatio                              */
 // This class should allow the two threads to compare the owner ID's of there db.
 TOwnerCardCompare::TOwnerCardCompare()
@@ -339,7 +340,7 @@ void TOwnerCardCompare::ClearValues()
 	iModifierValue = 0xFFFFFFFF;
 	}
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* CConcurrentOwnerCardModifier - Specification                               */
 // This class should create the db, and set the owner card.
 class CConcurrentOwnerCardModifier : public CConcurrentDatabaseAccessBase
@@ -364,7 +365,7 @@ class CConcurrentOwnerCardModifier : public CConcurrentDatabaseAccessBase
 		TOwnerCardCompare&		iOwnerCardCompare;
 	};
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* CConcurrentOwnerCardModifier - Implementation                              */
 
 CConcurrentOwnerCardModifier* CConcurrentOwnerCardModifier::NewLC(const TDesC& aFilename, TOwnerCardCompare& aOwnerCardCompare)
@@ -503,7 +504,7 @@ void CConcurrentOwnerCardModifier::AssignAndCompareOwnerCardIdL(TContactItemId a
 	//SyncronizeWait();
 	}
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* CConcurrentOwnerCardChecker                                               */
 class CConcurrentOwnerCardChecker : public CConcurrentDatabaseAccessBase
 	{
@@ -651,16 +652,16 @@ void CConcurrentOwnerCardChecker::AssignAndCompareOwnerCardIdL(TContactItemId aO
 	//SyncronizeSignal();
 	}
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* Test Function Prototypes                                                  */
-//
+///////////////////////////////////////////////////////////////////////////////
 void CreateTestDatabaseL(const TDesC& aFilename);
 void TestL();
 void doMainL();
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* Test Function Implementations                                             */
-//
+///////////////////////////////////////////////////////////////////////////////
 void CreateTestDatabaseL(const TDesC& aFilename )
 	{
 	TInt counter = 0;
@@ -723,9 +724,9 @@ void TestL()
 	}
 
 
-//
+////////////////////////////////////////////////////////////////////////////////////
 // -------> Static global functions (source)
-//
+////////////////////////////////////////////////////////////////////////////////////
 void doMainL()
 	{
 	RFs fs;

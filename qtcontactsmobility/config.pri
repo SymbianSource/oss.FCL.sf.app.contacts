@@ -1,0 +1,15 @@
+CONFIG += release 
+CONFIG_WIN32 += debug_and_release build_all release 
+QT_MOBILITY_PREFIX = $$PWD
+build_unit_tests = no 
+build_examples = no 
+build_docs = no 
+qmf_enabled = no 
+isEmpty($$QT_MOBILITY_INCLUDE):QT_MOBILITY_INCLUDE=$$QT_MOBILITY_PREFIX/include 
+isEmpty($$QT_MOBILITY_LIB):QT_MOBILITY_LIB=$$QT_MOBILITY_PREFIX/lib 
+isEmpty($$QT_MOBILITY_BIN):QT_MOBILITY_BIN=$$QT_MOBILITY_PREFIX/bin 
+mobility_modules =  contacts  versit   
+maemo5|maemo6:mobility_modules -= systeminfo 
+contains(mobility_modules,versit): mobility_modules *= contacts  
+lbt_enabled = no 
+snap_enabled = no 

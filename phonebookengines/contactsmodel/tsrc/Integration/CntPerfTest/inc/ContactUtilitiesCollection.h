@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 * Utility Class which construct different type of views like local view, remote view,
 * named remote view, find view, filtered view, group view, concatenated view and sub view.
 * It is a collection of different classes like CContactViewCollection, CContactViewApiTest and
@@ -22,9 +22,9 @@
 * the value.
 * CContactViewValidation - It is set of validation functions which validates the result
 * returned by the functions in the CContactViewApiTest and the expected results from ini.
-* 
 *
 */
+
 
 
 
@@ -32,9 +32,9 @@
 #define CONTACT_UTILITIES_COLLECTION_H
 
 // User Includes
-#include "CntPerfServer.h"
-#include "CContactViewEventQueue.h"
-#include "ClientServer.h"
+#include "cntperfserver.h"
+#include "ccontactvieweventqueue.h"
+#include "clientserver.h"
 
 // System Includes
 #include <e32base.h>
@@ -43,7 +43,7 @@
 #include <cntdb.h>
 #include <cntitem.h>
 #include <cntviewbase.h>
-#include <test/testexecutestepbase.h>
+#include <testexecutestepbase.h>
 
 // Constant Literals
 

@@ -1,0 +1,15 @@
+HbListViewItem[layoutName="logsLandscape"]{
+    layout:logs-landscape;
+}
+
+HbListViewItem[layoutName="logsLandscapeDialpad"]{
+    layout:logs-landscape-dialpad;
+}
+
+HbListViewItem::text-1[layoutName="logsLandscape"]{
+	pref-width: 30.0un;
+}
+
+HbListViewItem::text-2[layoutName="logsLandscape"]{
+	pref-width: 30.0un;
+}

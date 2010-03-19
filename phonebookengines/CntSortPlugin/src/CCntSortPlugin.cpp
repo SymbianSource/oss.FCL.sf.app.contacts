@@ -18,26 +18,12 @@
 
 
 // INCLUDE FILES
-#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
-#include <cntviewsortpluginbase.h>
-#endif
-#include "CCntSortPlugin.h"
+#include "ccntsortplugin.h"
 
-#include <SortUtil.h>
+#include <sortutil.h>
 #include <cntdef.h>
 
-#include "CSortKeyArray.h"
-
-// Phonebook custom Field value.
-// Top Contact field type.
-const TInt KUidContactFieldTopContactValue  = 0x200100E3;
-
-const TInt KCompareGreater = 2;	// >0, left item is greater
-const TInt KCompareLess = -2;	// <0, left item is smaller
-
-// Greater than any practical top contact number string 
-// which is in form like '0000000001'. 
-_LIT(KBigNumStr, "9999999999"); 
+#include "csortkeyarray.h"
 
 namespace {
 
@@ -132,16 +118,6 @@ void CCntSortPlugin::SetSortOrderL
     {
     iSortOrder.Close();
     iSortOrder.CopyL(aViewSortOrder);
-    
-    iTopContactId = KErrNotFound;
-    for ( TInt i=0; i<iSortOrder.Count(); i++ )
-        {
-        if ( TUid::Uid(KUidContactFieldTopContactValue) == iSortOrder[i] )
-            {
-            iTopContactId = i;
-            break;
-            }
-        }
     }
 
 TInt CCntSortPlugin::SortStart(TSortStartTypes aSortStartType, TInt aCount)
@@ -203,34 +179,6 @@ TInt CCntSortPlugin::SortCompareViewContactsL
         {
         iLeftSortKeyArray->SetText(aLhs.Field(i), i);
         iRightSortKeyArray->SetText(aRhs.Field(i), i);
-        
-        if ( i == iTopContactId )
-            {
-            TInt leftTopContactLength = aLhs.Field(i).Length();
-            TInt rightTopContactLength = aRhs.Field(i).Length();
-            if ( leftTopContactLength == 0 && rightTopContactLength > 0 )
-                {
-                if ( i == 0 )   // If it's the first field, return result directly.
-                    {
-                    return KCompareGreater;
-                    }
-                else
-                    {
-                    iLeftSortKeyArray->SetText(KBigNumStr, i);
-                    }
-                }
-            else if ( leftTopContactLength > 0 && rightTopContactLength == 0 )
-                {
-                if ( i == 0 )
-                    {
-                    return KCompareLess;
-                    }
-                else
-                    {
-                    iRightSortKeyArray->SetText(KBigNumStr, i);
-                    }
-                }
-            }
         }
 
     return iSortUtil->Interface()->CompareItems

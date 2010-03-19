@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -122,7 +123,7 @@ public:
 
 	CContactIdArray& CardTemplateIdsL();
 	CContactIdArray& GroupIdListL();
-	
+	CContactIdArray* SearchIdListL(const TDesC& aSearchQuery) const; 
 	TInt64 MachineIdL() const;
 	void SetMachineIdL(TInt64 aMachineId);
 	TPtrC UniqueIdL(); 
@@ -164,6 +165,7 @@ private:
 	TBuf<40> iUidString;
 	TUid iDbViewContactType;
 	CContactIdArray* iGroupIdList;
+	
 	};
 
 #endif //__CLPLCONTACTPROPERTIES_H__

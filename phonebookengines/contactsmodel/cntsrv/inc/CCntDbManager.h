@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -27,7 +28,7 @@
 #define CCNTDBMANAGER_H
 
 #include "persistencelayer.h"
-#include "CCntLowDiskManager.h"
+#include "ccntlowdiskmanager.h"
 #include <e32base.h>
 
 

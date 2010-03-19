@@ -1,39 +1,42 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
 
-#include "TestImpExvCardSuiteServer.h"
-#include "TestImpRevLocalTZ.h"
-#include "TestImpRevLocal.h"
-#include "TestImpNoRev.h"
-#include "TestImpRevUTC.h"
-#include "TestImpBDay.h"
-#include "TestImpNoBDay.h"
-#include "TestImpOOM.h"
-#include "TestExRevUTC.h"
-#include "TestExBDayLocal.h"
-#include "TestExNoBDay.h"
-#include "TestImpExvCardSuiteDefs.h"
-#include "TestExportContactStep.h"
-#include "TestImportContactInsertModeStep.h"
-#include "TestImportContactMergeModeStep.h"
-#include "TestContactsPBAPExport.h"
-#include "TestCompareCntFiles.h"
-#include "TestContactOperations.h"
-#include "TestContactsPBAPExportPerformance.h"
-#include "TestContactsPBAPExportContents.h"
-#include "TestGenericImportStep.h"
+
+#include "testimpexvcardsuiteserver.h"
+#include "testimprevlocaltz.h"
+#include "testimprevlocal.h"
+#include "testimpnorev.h"
+#include "testimprevutc.h"
+#include "testimpbday.h"
+#include "testimpnobday.h"
+#include "testimpoom.h"
+#include "testexrevutc.h"
+#include "testexbdaylocal.h"
+#include "testexnobday.h"
+#include "testimpexvcardsuitedefs.h"
+#include "testexportcontactstep.h"
+#include "testimportcontactinsertmodestep.h"
+#include "testimportcontactmergemodestep.h"
+#include "testcontactspbapexport.h"
+#include "testcomparecntfiles.h"
+#include "testcontactoperations.h"
+#include "testcontactspbapexportperformance.h"
+#include "testcontactspbapexportcontents.h"
+#include "testgenericimportstep.h"
 
 _LIT(KServerName,"TestImpExvCardSuite");
 CTestImpExvCardSuite* CTestImpExvCardSuite::NewL()

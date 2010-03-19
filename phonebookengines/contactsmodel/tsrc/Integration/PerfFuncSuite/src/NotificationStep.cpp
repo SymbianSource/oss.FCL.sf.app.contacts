@@ -1,31 +1,33 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// These tests attempt to overload the transaction / event queue
-// by calling many operations before the active scheduler is started
-// or by calling the operations within the active scheduler.
-// Unknownchanges event should be generated when queue is overloaded
-// 
-//
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* These tests attempt to overload the transaction / event queue
+* by calling many operations before the active scheduler is started
+* or by calling the operations within the active scheduler.
+* Unknownchanges event should be generated when queue is overloaded
+*
+*/
+
 
 /**
  @file 
  @publishedAll
  @released
 */
-#include "NotificationStep.h"
-#include "PerformanceFunctionalityDefs.h"
-#include "CCntEventQueue.h"
+#include "notificationstep.h"
+#include "performancefunctionalitydefs.h"
+#include "ccnteventqueue.h"
 
 _LIT(KRun1,"UnkownChange");
 _LIT(KRun2,"TransactionUnkown");

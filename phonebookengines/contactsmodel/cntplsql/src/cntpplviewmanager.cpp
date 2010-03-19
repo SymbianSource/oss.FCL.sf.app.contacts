@@ -1,17 +1,20 @@
-// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file
@@ -30,9 +33,9 @@ const TInt KViewSessionsGranularity = 4;
 /**
 Object factory method.
 */
-CCntPplViewManager* CCntPplViewManager::NewL(CPplContactsFile& aContactsFile, const CLplContactProperties& aContactProperties)
+CCntPplViewManager* CCntPplViewManager::NewL(CPplContactsFile& aContactsFile, const CContactTemplate& aSystemTemplate)
 	{
-	CCntPplViewManager* manager = new (ELeave) CCntPplViewManager(aContactsFile, aContactProperties);
+	CCntPplViewManager* manager = new (ELeave) CCntPplViewManager(aContactsFile, aSystemTemplate);
 	CleanupStack::PushL(manager);
 	manager->ConstructL();
 	CleanupStack::Pop(manager);
@@ -43,9 +46,9 @@ CCntPplViewManager* CCntPplViewManager::NewL(CPplContactsFile& aContactsFile, co
 /**
 CCntPplViewManager first phase constructor.
 */
-CCntPplViewManager::CCntPplViewManager(CPplContactsFile& aContactsFile, const CLplContactProperties& aContactProperties)
+CCntPplViewManager::CCntPplViewManager(CPplContactsFile& aContactsFile, const CContactTemplate& aSystemTemplate)
 :  	iContactsFile(aContactsFile),
-	iContactProperties(aContactProperties),
+	iSystemTemplate(aSystemTemplate),
 	iNextViewId(KPLViewSessionIdNull + 1),
 	iViewSessions(KViewSessionsGranularity)
 	{
@@ -110,8 +113,7 @@ Create a new view session which is mapping to a local view.
 */
 TInt CCntPplViewManager::OpenViewL(const CContactTextDef& aTextDef, const TContactViewPreferences aViewPrefs)
 	{
-	CCntPplViewSession* viewSession = CCntPplViewSession::NewL(iContactsFile, 
-			iContactProperties, *iSelectFullFieldsStmt, iNextViewId, aTextDef, aViewPrefs);	
+	CCntPplViewSession* viewSession = CCntPplViewSession::NewL(iContactsFile, iSystemTemplate, *iSelectFullFieldsStmt, iNextViewId, aTextDef, aViewPrefs);	
 	CleanupStack::PushL(viewSession);
 	iViewSessions.AppendL(viewSession);
 	CleanupStack::Pop(viewSession);
@@ -308,7 +310,7 @@ TUid CCntPplViewManager::ReadContactTextDefL(TContactItemId aContactId, TDes &aR
     		CContactDatabase::TTextFieldMinimal textFieldMin;
     		textDefItem = aTextDef[i];
     		// Populate the TTextFieldMinimal.
-    		CCntPplViewSession::TextFieldL(contactSqlStmt, *iSelectFullFieldsStmt, iContactProperties.SystemTemplateL(), textDefItem.iFieldType, textFieldMin);
+    		CCntPplViewSession::TextFieldL(contactSqlStmt, *iSelectFullFieldsStmt, iSystemTemplate, textDefItem.iFieldType, textFieldMin);
     		// Append the returned text.
     		if (textFieldMin.Length() > 0)
     			{
@@ -329,11 +331,11 @@ TUid CCntPplViewManager::ReadContactTextDefL(TContactItemId aContactId, TDes &aR
     		CContactDatabase::TTextFieldMinimal textFieldMin;
     		if (aTextDef.FallbackField() != KUidContactFieldNone) 
     			{
-    			CCntPplViewSession::TextFieldL(contactSqlStmt, *iSelectFullFieldsStmt, iContactProperties.SystemTemplateL(), aTextDef.FallbackField(), textFieldMin);
+    			CCntPplViewSession::TextFieldL(contactSqlStmt, *iSelectFullFieldsStmt, iSystemTemplate, aTextDef.FallbackField(), textFieldMin);
     			}
     		if(textFieldMin.Length() == 0) // No results from call to TextFieldL()?
     			{
-    			CCntPplViewSession::TextFieldL(contactSqlStmt, *iSelectFullFieldsStmt, iContactProperties.SystemTemplateL(), KUidContactFieldMatchAll, textFieldMin);
+    			CCntPplViewSession::TextFieldL(contactSqlStmt, *iSelectFullFieldsStmt, iSystemTemplate, KUidContactFieldMatchAll, textFieldMin);
     			}
     		aResult.Append(textFieldMin.Left(Min(aResult.MaxLength(),textFieldMin.Length())));
     		}
@@ -389,7 +391,7 @@ void CCntPplViewManager::TextFieldL(TInt aContactId, TFieldType aFieldType, TDes
 		
 	User::LeaveIfError(err);
 	
-    CCntPplViewSession::TextFieldL(contactSqlStmt, *iSelectFullFieldsStmt, iContactProperties.SystemTemplateL(), aFieldType, aText);    
+    CCntPplViewSession::TextFieldL(contactSqlStmt, *iSelectFullFieldsStmt, iSystemTemplate, aFieldType, aText);    
     
 	CleanupStack::PopAndDestroy(&contactSqlStmt);
     }

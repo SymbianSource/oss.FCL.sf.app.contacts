@@ -1,17 +1,20 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file
@@ -19,21 +22,21 @@
  @released 
 */
 
-#include "CCntStateMachine.h"
-#include "CCntRequest.h"
-#include "CCntDbManager.h"
-#include "CCntBackupRestoreAgent.h"
+#include "ccntstatemachine.h"
+#include "ccntrequest.h"
+#include "ccntdbmanager.h"
+#include "ccntbackuprestoreagent.h"
 #include "persistencelayer.h"
-#include "CntSpeedDials.h"
+#include "cntspeeddials.h"
 #include <cntfldst.h> 		// for ccontacttextfield
 #include <cntfield.h> 		// for ccontacttextfield
-#include "CNTSTD.H"   		// for Panic codes
+#include "cntstd.h"   		// for panic codes
 
 // Event related headers
 #include <cntdbobs.h> 	    // for ccontactdbobserver
-#include "CCntServer.h"     // for KCntNullConnectionId.
-#include "CCntEventQueue.h" // for KMaxNumberOfEventsInEventQueue, KCntEventGranularity
-#include "CCntLogger.h"  
+#include "ccntserver.h"     // for kcntnullconnectionid.
+#include "ccnteventqueue.h" // for kmaxnumberofeventsineventqueue, kcnteventgranularity
+#include "ccntlogger.h"  
 
 // Require SQL header for leave code checking
 #include <sqldb.h>
@@ -1102,7 +1105,7 @@ TAccept CStateOpening::AcceptRequestL(CReqOpenCnt* aRequest)
 
 
 
-// CStateWritable Class implementation //
+///////////////////// CStateWritable Class implementation //////////////////////
 
 /** 
  CStateWritable Class NewL factory constructor
@@ -1588,7 +1591,7 @@ TInt CStateWritable::TimeOutErrorCode()
 
 
 
-// CStateTransaction Implementation//
+///////////////////// CStateTransaction Implementation/////////////////
 /** 
  CStateTransaction Class NewL factory constructor
  Create a transaction state
@@ -2129,7 +2132,7 @@ void CStateTransaction::PropagateDatabaseEventsL()
 
 
 
-// CTransactionTimer Implementation //
+////////////////// CTransactionTimer Implementation //////////////////////
 
 /** 
  CTransactionTimer Class NewL factory constructor
@@ -2211,7 +2214,7 @@ void CTransactionTimer::Reset()
 	CTimer::After(KSixtySeconds);
 	}
 	
-// CTransactionLock Class Implementation //
+////////////////// CTransactionLock Class Implementation ////////////////////////
 /** 
  CTransactionLock Class NewL factory constructor
  The CTransactionLock class locks contacts allowing only the locking session to

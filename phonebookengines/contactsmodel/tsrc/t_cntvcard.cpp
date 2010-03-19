@@ -1,20 +1,22 @@
-// Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// Unit tests for functionality delivered by the CNTVCARD.DLL library.
-// This test contains the tests originally in T_EXPDEL
-// 
-//
+/*
+* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* Unit tests for functionality delivered by the CNTVCARD.DLL library.
+* This test contains the tests originally in T_EXPDEL
+*
+*/
+
 
 #include <e32test.h>
 #include <f32file.h>
@@ -26,11 +28,8 @@
 #include <cntfldst.h>
 #include <e32def.h>
 #include "t_utils2.h"
-#include "T_rndutils.h"
+#include "t_rndutils.h"
 #include <coreappstest/testserver.h>
-#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
-#include "cntdb_internal.h"
-#endif
 
 _LIT(KTestName,"T_CNTVCARD");
 
@@ -108,7 +107,7 @@ _LIT8(KVCardTextKeyImportFileDes,"BEGIN:VCARD\r\n"
 _LIT8(KMultiParam,"BEGIN:VCARD\r\n"
 				"VERSION:2.1\r\n"
 				"N:;Neo;;Mr.;\r\n"
-				"FN:Mr. TestName\r\n"
+				"FN:Mr. Anderson\r\n"
 				"TEL;TYPE=HOME;TYPE=VOICE;TYPE=CELL:123\r\n"
 				"END:VCARD\r\n"
 				);
@@ -229,11 +228,6 @@ _LIT8(KModifierVcard,"BEGIN:VCARD\r\n"
 					"N:Cccc;Pekka;;;\r\n"
 					"END:VCARD\r\n"
 );
- 
-_LIT8(KPartialVCard,"BEGIN:VCARD\r\n"
-        "\r"
-);
-
 const TAny* GNames[]  = {&KFirstName, &KFirstNamePrn, &KSurName, &KSurNamePrn, &KOrgName, &KOrgNamePrn};
 const TAny* GLabels[]  = {&KFirstNameLabel, &KFirstNamePrnLabel, &KSurNameLabel, &KSurNamePrnLabel, &KOrgNameLabel, &KOrgNamePrnLabel};
 
@@ -809,9 +803,9 @@ LOCAL_C void AccessCountTestsL()
 	EmptyDatabase();
 	}
 
-//
+///////////////////////////////////////////////////////////////////////////////
 /* Test Function Implementations                                             */
-//
+///////////////////////////////////////////////////////////////////////////////
 TContactItemId AddContactL (CContactDatabase& aDatabase)
 	{
 	TInt bit = 0;
@@ -1096,25 +1090,25 @@ void UpdateVCardTestL()
 	CContactItemFieldSet& updatedContactFieldSet = updatedContact->CardFields();
 
 	test.Next(_L("Check Updated Mobile Number 1"));
-	TEST_CONDITION(FieldCheck(updatedContactFieldSet,5,_L("7700900329")));
+	TEST_CONDITION(FieldCheck(updatedContactFieldSet,5,_L("07905001")));
 		
 	test.Next(_L("Check Updated Mobile Number 2"));
-	TEST_CONDITION(FieldCheck(updatedContactFieldSet,6,_L("07700900529")));
+	TEST_CONDITION(FieldCheck(updatedContactFieldSet,6,_L("07906002")));
 
 	test.Next(_L("Check Updated Work Number 1"));
-	TEST_CONDITION(FieldCheck(updatedContactFieldSet,29,_L("7700900999")));
+	TEST_CONDITION(FieldCheck(updatedContactFieldSet,29,_L("1234567890")));
 
 	test.Next(_L("Check Updated Work Number 2"));
-	TEST_CONDITION(FieldCheck(updatedContactFieldSet,30,_L("7700900888")));
+	TEST_CONDITION(FieldCheck(updatedContactFieldSet,30,_L("2345678901")));
 
 	test.Next(_L("Check Updated Work Number 3"));
-	TEST_CONDITION(FieldCheck(updatedContactFieldSet,31,_L("7700900777")));
+	TEST_CONDITION(FieldCheck(updatedContactFieldSet,31,_L("3456789012")));
 
 	test.Next(_L("Check Updated Work Number 4"));
-	TEST_CONDITION(FieldCheck(updatedContactFieldSet,32,_L("7700900666")));
+	TEST_CONDITION(FieldCheck(updatedContactFieldSet,32,_L("4567890123")));
 
 	test.Next(_L("Check Updated Work Number 5"));
-	TEST_CONDITION(FieldCheck(updatedContactFieldSet,33,_L("7700900555")));
+	TEST_CONDITION(FieldCheck(updatedContactFieldSet,33,_L("5678901234")));
  
 	//cleanup
 	CleanupStack::PopAndDestroy(updatedContact);
@@ -2020,34 +2014,6 @@ void TestExportofContactHavingLargeBinaryFieldL()
 }
 
 /**
-@SYMTestCaseID PIM-T-CNTVCARD-PDEF140328-0001
-@SYMTestType UT
-@SYMTestPriority High
-@SYMTestCaseDesc Partial vCard's should be processed without any panics
-
-@SYMTestActions
-1.Import a partial vCard.
-
-@SYMTestExpectedResults For the above tests:
-1.There should be no panics while import is happening.
-*/
- void TestImportingPartialOrEmptyVCardsL()
-{
-    test.Next(_L("Test import of partial vCard"));
-    CArrayPtr<CContactItem>* contactItems = NULL;
-    RDesReadStream vcard(KPartialVCard());
-    CleanupClosePushL(vcard);
-    TInt success = EFalse;
-    CContactDatabase* db = CntTest->CreateDatabaseL();
-    contactItems = db->ImportContactsL(TUid::Uid(KUidVCardConvDefaultImpl), vcard, success, CContactDatabase::EImportSingleContact);
-    CleanupStack::PushL( TCleanupItem( CleanUpResetAndDestroy, contactItems ) );
-    CleanupStack::PopAndDestroy(contactItems);
-    CleanupStack::PopAndDestroy(&vcard);
-    test.Printf(_L("Import of partial vCard completed successfully"));
-}
-
-
-/**
 
 @SYMTestCaseID     PIM-T-CNTVCARD-0001
 
@@ -2069,8 +2035,6 @@ LOCAL_C void DoTestsL()
 	TempFiles->RegisterL(KVCardFile5);
 	TempFiles->RegisterL(KVCardFile6);
 
-	//without the fix this test will cause User 21 panic in versit 
-	TestImportingPartialOrEmptyVCardsL();
 	VCardEmailTestL();
 	AccessCountTestsL();			
 	DefaultVoiceParamTestsL();

@@ -1,35 +1,38 @@
-// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 /**
  @file
  @internalComponent
 */
 
-#include "CCntMsgHandler.h"
-#include "CCntMsgHandlerFptr.h"
-#include "CCntItemMsgHandler.h"
+#include "ccntmsghandler.h"
+#include "ccntmsghandlerfptr.h"
+#include "ccntitemmsghandler.h"
 
-#include "CCntIpcCodes.h"
-#include "CCntRequest.h"
-#include "CCntDbManager.h"
-#include "CCntStateMachine.h"
-#include "CCntDbManagerController.h"
-#include "CCntBackupRestoreAgent.h"
-#include "CCntPackager.h"
-#include "CntSpeedDials.h"
+#include "ccntipccodes.h"
+#include "ccntrequest.h"
+#include "ccntdbmanager.h"
+#include "ccntstatemachine.h"
+#include "ccntdbmanagercontroller.h"
+#include "ccntbackuprestoreagent.h"
+#include "ccntpackager.h"
+#include "cntspeeddials.h"
 
 const TInt KCntItemIpcCodes[] =
 	{

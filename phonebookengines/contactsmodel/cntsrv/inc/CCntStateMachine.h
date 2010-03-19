@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -27,9 +28,9 @@
 #ifndef __CCNTSTATEMACHINE_H__
 #define __CCNTSTATEMACHINE_H__
 
-#include "CActiveLoop.h" // For MActiveLoopCallBack.
+#include "cactiveloop.h" // for mactiveloopcallback.
 #include <cntdef.h>  	 // for tcontactitemid.
-#include "CCntRequest.h"
+#include "ccntrequest.h"
 
 namespace nsState 
 	{			  

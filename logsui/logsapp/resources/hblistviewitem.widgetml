@@ -1,0 +1,81 @@
+<hbwidget version="0.1" type="listviewitem">
+
+<!-- logs-landscape -->    
+    <!--
+        Required items: 
+            icon-1 & text-1
+            
+        Items from left to right:
+            icon -1 -> text-1 -> text-2 -> icon-2 ->
+                                     
+        Other:
+            icon-1: connected from TOP to item TOP and BOTTOM to item BOTTOM
+            icon-2: center aligned with icon-1 center
+            
+            text-1: center aligned with icon-1 center
+            text-2: center aligned with icon-1 center
+    -->
+    <layout name="logs-landscape" type="mesh">
+      <meshitem src="icon-1" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-left)"/>
+      <meshitem src="icon-1" srcEdge="TOP" dst="" dstEdge="TOP" spacing="0.0un"/>
+      <meshitem src="icon-1" srcEdge="RIGHT" dst="text-1" dstEdge="LEFT" spacing="var(hb-param-margin-gene-middle-horizontal)" />
+      <meshitem src="icon-1" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="var(hb-param-margin-gene-bottom)" />
+      
+      <meshitem src="text-1" srcEdge="RIGHT" dst="text-2" dstEdge="LEFT" spacing="var(hb-param-margin-gene-middle-horizontal)" />
+      <meshitem src="text-1" srcEdge="CENTERV" dst="icon-1" dstEdge="CENTERV" />
+
+      <meshitem src="text-2" srcEdge="RIGHT" dst="icon-2" dstEdge="LEFT" spacing="var(hb-param-margin-gene-middle-horizontal)"/>
+      <meshitem src="text-2" srcEdge="CENTERV" dst="icon-1" dstEdge="CENTERV" />
+
+      <meshitem src="icon-2" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="var(hb-param-margin-gene-right)"/>
+      <meshitem src="icon-2" srcEdge="CENTERV" dst="icon-1" dstEdge="CENTERV" />
+
+      <meshitem src="background" srcEdge="LEFT" dst="" dstEdge="LEFT" />
+      <meshitem src="background" srcEdge="TOP" dst="" dstEdge="TOP" />
+      <meshitem src="background" srcEdge="RIGHT" dst="" dstEdge="RIGHT" />
+      <meshitem src="background" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" />
+  
+      <meshitem src="frame" srcEdge="LEFT" dst="" dstEdge="LEFT" />
+      <meshitem src="frame" srcEdge="TOP" dst="" dstEdge="TOP" />
+      <meshitem src="frame" srcEdge="RIGHT" dst="" dstEdge="RIGHT" />
+      <meshitem src="frame" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" />
+    </layout>
+    
+    
+<!-- logs-landscape-dialpad -->    
+    <!--
+        Required items: 
+            icon-1 & text-1
+            
+        Items from left to right:
+            icon -1 -> text-1
+                                         
+        Other:
+            icon-1: connected from TOP to item TOP and BOTTOM to item BOTTOM
+            
+            text-1: center aligned with icon-1 center
+    -->
+    <layout name="logs-landscape-dialpad" type="mesh">
+      <meshitem src="selection-icon" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-left)" />
+      <meshitem src="selection-icon" srcEdge="CENTERV" dst="icon-1" dstEdge="CENTERV" />
+
+      <meshitem src="icon-1" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-left)"/>
+      <meshitem src="icon-1" srcEdge="TOP" dst="" dstEdge="TOP" spacing="0.0un"/>
+      <meshitem src="icon-1" srcEdge="RIGHT" dst="text-1" dstEdge="LEFT" spacing="var(hb-param-margin-gene-middle-horizontal)" />
+      <meshitem src="icon-1" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="var(hb-param-margin-gene-bottom)" />
+      
+      <meshitem src="text-1" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="var(hb-param-margin-gene-right)" />
+      <meshitem src="text-1" srcEdge="CENTERV" dst="icon-1" dstEdge="CENTERV" />
+
+      <meshitem src="background" srcEdge="LEFT" dst="" dstEdge="LEFT" />
+      <meshitem src="background" srcEdge="TOP" dst="" dstEdge="TOP" />
+      <meshitem src="background" srcEdge="RIGHT" dst="" dstEdge="RIGHT" />
+      <meshitem src="background" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" />
+
+      <meshitem src="frame" srcEdge="LEFT" dst="" dstEdge="LEFT" />
+      <meshitem src="frame" srcEdge="TOP" dst="" dstEdge="TOP" />
+      <meshitem src="frame" srcEdge="RIGHT" dst="" dstEdge="RIGHT" />
+      <meshitem src="frame" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" />
+    </layout>
+    
+</hbwidget>

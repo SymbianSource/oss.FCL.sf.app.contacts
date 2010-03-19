@@ -1,17 +1,20 @@
-// Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2000-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32std.h>
 #include <e32test.h>
@@ -21,7 +24,7 @@
 #include <cntfldst.h>
 #include "t_utils2.h"
 #include "t_view2.h"
-#include "T_UTILS.H"
+#include "t_utils.h"
 #include <badesca.h>
 
 //#define VERBOSE_LOGGING
@@ -33,7 +36,7 @@ LOCAL_D RTest test(_L("t_view2"));
 // Constants.
 //
 
-_LIT(KTestName,"@SYMTESTCaseID:PIM-T-VIEW2-0001 t_view2");
+_LIT(KTestName,"t_view2");
 _LIT(KLogFileName,"t_view2.log");
 
 _LIT(KDbFileName,"c:t_view2.cdb");
@@ -1386,7 +1389,7 @@ void CViewExerciser::ProfileViewL(CContactViewBase& aView)
 	CCntTest::ProfileEnd(0);
 	TCntProfile profile[1];
 	CCntTest::ProfileResult(profile,0,1);
-	TReal result = profile[0].iTime;//1000000.0;
+	TReal result = profile[0].iTime;///1000000.0;
 	RDebug::Print(_L("Profile ContactAt Time Taken: %g"),result);
 	}
 
@@ -1775,7 +1778,7 @@ GLDEF_C TInt E32Main()
 		if (cleanup)
 			{
 			CTestConductor* tester=NULL;
-			test.Start(KTestName);
+			test.Start(_L("@SYMTESTCaseID:PIM-T-VIEW2-0001 t_view2"));
 
 			TRAPD(err,tester=CTestConductor::NewL());
 			__ASSERT_ALWAYS(err == KErrNone, User::Invariant());

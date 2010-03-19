@@ -21,12 +21,7 @@
 #define __CCntSortPlugin_H__
 
 // INCLUDES
-#ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
 #include <cntviewsortplugin.h>
-#else
-#include <cntviewsortplugin.h>
-#include <cntviewsortpluginbase.h>
-#endif
 
 // FORWARD DECLARATIONS
 class CSortUtil;
@@ -82,8 +77,6 @@ class CCntSortPlugin : public CViewContactSortPlugin
         CSortUtil* iSortUtil;
         /// Currently active sort order
         RContactViewSortOrder iSortOrder;
-        /// Index of top contact field in iSortOrder
-        TInt iTopContactId;
         /// Ref: Is sortable function 
 	    TBool(*iIsSortable)(const CViewContact& aViewContact);
         /// Own: sort key array for left hand side

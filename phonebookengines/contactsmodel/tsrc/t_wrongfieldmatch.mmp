@@ -23,7 +23,7 @@ TARGETTYPE      exe
 CAPABILITY   ReadUserData WriteUserData
 
 SOURCEPATH	.
-APP_LAYER_SYSTEMINCLUDE_SYMBIAN
+SYSTEMINCLUDE   /epoc32/include
 USERINCLUDE	..
 SOURCE          t_wrongfieldmatch.cpp
 LIBRARY         euser.lib cntmodel.lib

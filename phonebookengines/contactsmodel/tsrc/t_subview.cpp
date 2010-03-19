@@ -1,41 +1,43 @@
-// Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// Summary:
-// A test to exercise the contacts model subview object and associated 
-// functionality. The test includes creating, resorting and searching a view. 
-// Actions:
-// -- Create a new database;
-// -- Populate database with randomly generated data;
-// -- Create a local named view sorted by lname, fname, company and telephone;
-// -- Create a subview based on the local view;
-// -- Verify the subview has been created properly;
-// -- Resort the local view;
-// -- Verify the subview has been updated properly after resort;
-// -- Clean up.
-// Associated defect:
-// DEF125393 PIM Sphinx QP: Improve test coverage of Cntmodel Subviews
-// Written by:
-// James Clarke
-// 
-//
+/*
+* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* Summary:
+* A test to exercise the contacts model subview object and associated 
+* functionality. The test includes creating, resorting and searching a view. 
+* Actions:
+* -- Create a new database;
+* -- Populate database with randomly generated data;
+* -- Create a local named view sorted by lname, fname, company and telephone;
+* -- Create a subview based on the local view;
+* -- Verify the subview has been created properly;
+* -- Resort the local view;
+* -- Verify the subview has been updated properly after resort;
+* -- Clean up.
+* Associated defect:
+* DEF125393 PIM Sphinx QP: Improve test coverage of Cntmodel Subviews
+* Written by:
+* James Clarke
+*
+*/
+
 
 #include "t_subview.h"
 
 
-//
+//////////////////////////////////////////////////////////////////////////////////////////////////
 // CSubViewTest methods
-//
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSubViewTest* CSubViewTest::NewLC()
 	{
@@ -382,9 +384,9 @@ void CSubViewTest::DoTestL()
 	}
 
 
-//
+//////////////////////////////////////////////////////////////////////////////////////////////////
 // main test functions
-//
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
 

@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -29,8 +30,6 @@
 
 #include "persistencelayer.h"
 
-//Forward declarations
-class CContactPhoneNumberParser;
 
 /** 
 Base class for Contacts Model plugins.

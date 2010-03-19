@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,16 +11,17 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
 #ifndef __TESTGETSETVIEWSETTINGSTEP_H__
 #define __TESTGETSETVIEWSETTINGSTEP_H__
 
-#include "TestStartUpServer.h"
+#include "teststartupserver.h"
 
 class CTestGetSetViewSettingStep : public CTestStep
     {

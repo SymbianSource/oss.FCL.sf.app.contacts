@@ -1,36 +1,38 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// Listener step / thread waits for messages from notifier thread
-// also listens to messages from the contacts model, and compares the two
-// set of messages to see if they are identical.
-// Prints out a list of expected messages ( those from notifier ) and
-// database messages (from cntmodel). If comparison fails or timeout occurs,
-// test fails.
-// Sending messages:
-// Append shared string length signifying the number of listner threads 
-// that have finished from this test case. Once all notifications have
-// been processed append single charcter to shared string.(AAAAAA)
-// Receiving Messages:
-// Read shared string containing the number of notifications to expect. iMessageCount. (10)
-// Read shared string containing events of notification. iSharedContacts. (1 2 3 4)
-// Read shared string with value of contact id in notification. iSharedEvents. (1 2 3 4)
-// iSharedContacts and iSharedEvents are synchronized so that at index X lies the contact and
-// event value for notification X+1.
-// Read shared string (KSharedNextTest), length of string signifies current test case number
-// when value inscreases signifies new test case has started. iLastCount. (AAAA)
-// 
-//
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* Listener step / thread waits for messages from notifier thread
+* also listens to messages from the contacts model, and compares the two
+* set of messages to see if they are identical.
+* Prints out a list of expected messages ( those from notifier ) and
+* database messages (from cntmodel). If comparison fails or timeout occurs,
+* test fails.
+* Sending messages:
+* Append shared string length signifying the number of listner threads 
+* that have finished from this test case. Once all notifications have
+* been processed append single charcter to shared string.(AAAAAA)
+* Receiving Messages:
+* Read shared string containing the number of notifications to expect. iMessageCount. (10)
+* Read shared string containing events of notification. iSharedContacts. (1 2 3 4)
+* Read shared string with value of contact id in notification. iSharedEvents. (1 2 3 4)
+* iSharedContacts and iSharedEvents are synchronized so that at index X lies the contact and
+* event value for notification X+1.
+* Read shared string (KSharedNextTest), length of string signifies current test case number
+* when value inscreases signifies new test case has started. iLastCount. (AAAA)
+*
+*/
+
 
 /**
  @file 
@@ -38,8 +40,8 @@
  @released
 */
  
-#include "ConcurrentListenerStep.h"
-#include "PerformanceFunctionalityDefs.h"
+#include "concurrentlistenerstep.h"
+#include "performancefunctionalitydefs.h"
 
 const static TInt KTimeout = 5000000;//5 seconds timeout
 const static TInt KMaxShareStringSize = 300; //Shared string used by TEF is < 300 charcters long

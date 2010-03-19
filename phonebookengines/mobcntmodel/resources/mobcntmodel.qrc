@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="qtg_large_avatar.svg">images/qtg_large_avatar.svg</file>
+    </qresource>
+</RCC>

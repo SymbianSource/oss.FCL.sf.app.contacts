@@ -1,0 +1,18 @@
+EXPORTS
+	qt_plugin_instance @ 1 NONAME
+	qt_plugin_query_verification_data @ 2 NONAME
+	?managerName@CntSymbianSimFactory@@UBE?AVQString@@XZ @ 3 NONAME ; class QString CntSymbianSimFactory::managerName(void) const
+	?qt_metacast@CntSymbianSimFactory@@UAEPAXPBD@Z @ 4 NONAME ; void * CntSymbianSimFactory::qt_metacast(char const *)
+	?metaObject@CntSymbianSimFactory@@UBEPBUQMetaObject@@XZ @ 5 NONAME ; struct QMetaObject const * CntSymbianSimFactory::metaObject(void) const
+	?trUtf8@CntSymbianSimFactory@@SA?AVQString@@PBD0@Z @ 6 NONAME ; class QString CntSymbianSimFactory::trUtf8(char const *, char const *)
+	?tr@CntSymbianSimFactory@@SA?AVQString@@PBD0H@Z @ 7 NONAME ; class QString CntSymbianSimFactory::tr(char const *, char const *, int)
+	?tr@CntSymbianSimFactory@@SA?AVQString@@PBD0@Z @ 8 NONAME ; class QString CntSymbianSimFactory::tr(char const *, char const *)
+	??_ECntSymbianSimFactory@@UAE@I@Z @ 9 NONAME ; CntSymbianSimFactory::~CntSymbianSimFactory(unsigned int)
+	?getStaticMetaObject@CntSymbianSimFactory@@SAABUQMetaObject@@XZ @ 10 NONAME ; struct QMetaObject const & CntSymbianSimFactory::getStaticMetaObject(void)
+	??0CntSymbianSimFactory@@QAE@XZ @ 11 NONAME ; CntSymbianSimFactory::CntSymbianSimFactory(void)
+	?engine@CntSymbianSimFactory@@UAEPAVQContactManagerEngine@QtMobility@@ABV?$QMap@VQString@@V1@@@AAW4Error@QContactManager@3@@Z @ 12 NONAME ; class QtMobility::QContactManagerEngine * CntSymbianSimFactory::engine(class QMap<class QString, class QString> const &, enum QtMobility::QContactManager::Error &)
+	?staticMetaObject@CntSymbianSimFactory@@2UQMetaObject@@B @ 13 NONAME ; struct QMetaObject const CntSymbianSimFactory::staticMetaObject
+	??1CntSymbianSimFactory@@UAE@XZ @ 14 NONAME ; CntSymbianSimFactory::~CntSymbianSimFactory(void)
+	?trUtf8@CntSymbianSimFactory@@SA?AVQString@@PBD0H@Z @ 15 NONAME ; class QString CntSymbianSimFactory::trUtf8(char const *, char const *, int)
+	?qt_metacall@CntSymbianSimFactory@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 16 NONAME ; int CntSymbianSimFactory::qt_metacall(enum QMetaObject::Call, int, void * *)
+

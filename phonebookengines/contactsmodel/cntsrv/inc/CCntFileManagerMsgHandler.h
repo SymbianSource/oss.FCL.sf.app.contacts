@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description:
+* Description: 
 *
 */
+
 
 
 
@@ -64,6 +65,7 @@ public:
 	void GetDatabaseReadyL(const RMessage2& aMessage);
 	void FetchTemplateIdsL(const RMessage2& aMessage);
 	void FetchGroupIdListsL(const RMessage2& aMessage);
+	void FetchSearchResultsL(const RMessage2& aMessage); 
 	
 	// Non-CRUD file operations
 	void RecoverDbL(const RMessage2& aMessage);

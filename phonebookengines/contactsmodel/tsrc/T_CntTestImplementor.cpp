@@ -1,31 +1,33 @@
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
 
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
 
 #include <e32test.h>
 #include <coreappstest/testserver.h>
 
 #include "persistencelayer.h"
-#include "NbCntTestLib/NbCntTestLib.h"
+#include "nbcnttestlib/nbcnttestlib.h"
 #include <cntitem.h>
 #include <cntdef.h>
 
-#include "T_PersistenceLayer.h"
+#include "t_persistencelayer.h"
 
-#include "T_CntTestImplDefs.h"
-#include "T_CntTestImplementor.h"
+#include "t_cnttestimpldefs.h"
+#include "t_cnttestimplementor.h"
 
 static const TUint KPlSessionId = 31415926;
 

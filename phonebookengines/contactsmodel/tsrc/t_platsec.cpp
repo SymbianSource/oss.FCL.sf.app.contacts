@@ -1,19 +1,21 @@
-// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-// Tests Contacts Database can be opened and read with only ReadUserData capability
-// 
-//
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+* Tests Contacts Database can be opened and read with only ReadUserData capability
+*
+*/
+
 
 #include <e32std.h>
 #include <e32test.h>
@@ -21,8 +23,8 @@
 #include <cntitem.h>
 #include <cntfldst.h>
 #include "t_utils2.h"
-#include "T_UTILS.H"
-#include <coreappstest/testserver.h>
+#include "t_utils.h"
+#include <testserver.h>
 #include "t_platsec.h"
 
 //
@@ -154,7 +156,7 @@ void CPlatSecTest::DoTestL()
 	iTest.Next(_L("Reading Contact field"));
 
 #ifdef __SYMBIAN_CNTMODEL_USE_SQLITE__
-  	iTest(fieldText1 == _L("Name1"));
+  	iTest(fieldText1 == _L("john"));
 #else //__SYMBIAN_CNTMODEL_USE_SQLITE__
   	iTest(fieldText1 == _L("9AB24C76BmQAte[POqjm_PoyFam\\\\cKq"));
 #endif //__SYMBIAN_CNTMODEL_USE_SQLITE__

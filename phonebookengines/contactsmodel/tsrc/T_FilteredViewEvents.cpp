@@ -1,17 +1,20 @@
-// Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #include <e32test.h>
 #include <cntdef.h>
@@ -21,8 +24,8 @@
 #include <cntfldst.h>
 #include <cntviewbase.h>
 
-#include "CContactViewEventQueue.h"
-#include "CContactDbEventQueue.h"
+#include "ccontactvieweventqueue.h"
+#include "ccontactdbeventqueue.h"
 
 _LIT(KTestName, "T_FilteredViewEvents");
 
@@ -161,7 +164,7 @@ LOCAL_C CTestResources* DoTestAddContactLC(TBool aWithPhoneNumber)
     }
     
     
-//
+//////////////////////////////////////////////////////////////////////////////////////////
 //
 class CFilteredViewTester : public CTimer, public MContactViewObserver
 {
@@ -210,7 +213,6 @@ private:
     CContactIdArray* iIdArray;
     TBool iTimerStarted;
     TInt iContactArrayIndex;
-    RArray<TInt>iPosition;
 };
 
 CFilteredViewTester* CFilteredViewTester::NewL()
@@ -230,7 +232,6 @@ CFilteredViewTester::CFilteredViewTester()
 
 CFilteredViewTester::~CFilteredViewTester()
 	{	
-	iPosition.Close();
 	iSortOrder.Close();
 	delete iIdArray;
 	if (iFilteredView)
@@ -340,7 +341,6 @@ void CFilteredViewTester::HandleContactViewEvent(const CContactViewBase& aView, 
 				}
 			else if (&aView == iFilteredView)
 				{
-				iPosition.AppendL(aEvent.iInt);
 				test.Printf(_L("Add event received: Filtered view\r\n"));
 				iFilteredContactsCount++;
 				}
@@ -363,31 +363,13 @@ void CFilteredViewTester::HandleContactViewEvent(const CContactViewBase& aView, 
 				{
 				test.Printf(_L("Remove event received: Filtered view\r\n"));
 				iFilteredContactsCount--;
-				//Verify that deleted contact is the one present in the event recieved.
-				//The order is not important. 
-				TBool found = EFalse;
-				TInt count = iIdArray->Count();
-				for(TInt loop = 0; loop < count;++loop)
-					{
-					if(aEvent.iContactId == (*iIdArray)[loop])
-						{
-						found = ETrue;
-						break;
-						}
-					} 
-				test(found);
-				//test that the underlying position is within the range of total number of contacts.				
-				found = EFalse;
-				count = iPosition.Count();
-				for(TInt loop = 0; loop < count;++loop)
-					{
-					if(aEvent.iInt == iPosition[loop])
-						{
-						found = ETrue;
-						break;
-						}
-					} 
-				test(found);				
+				//The contacts are deleted in descending order but the id and position should be reported correctly 
+				//The reported positions are 
+				//             contact 1 deleted at position 0 
+				//             contact 2 deleted at position 0 
+				//             contact 3 deleted at position 0 
+				test (aEvent.iInt == 0); 
+				test (aEvent.iContactId == (*iIdArray)[iContactArrayIndex++]); 
 				}
 
 			if (iBaseContactsCount == 0 && iFilteredContactsCount == 0 && iState == EDeleteContacts)
@@ -461,7 +443,7 @@ CContactItemField* CFilteredViewTester::CreateFieldLC(const TUid aMappingUId, TF
 	return field;
 	}
 // CFilteredViewTester
-//    
+////////////////////////////////////////////////////////////////////////    
 
 LOCAL_C void TestAddContactWithPhoneNumberL()
     {
