@@ -310,7 +310,7 @@ private:
      * @param aInfo, object of CImplementationInformation
      * @return opaque integer value.
      */
-    TInt CCCAppPluginLoader::OpaqueValueFrom( const CImplementationInformation& aInfo );
+    TInt OpaqueValueFrom( const CImplementationInformation& aInfo );
     
     /**
      * Loads a plugin.

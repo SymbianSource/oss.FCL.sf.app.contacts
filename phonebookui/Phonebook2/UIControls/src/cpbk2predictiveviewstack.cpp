@@ -684,7 +684,7 @@ void CPbk2PredictiveViewStack::ContactViewReady( MVPbkContactViewBase& /*aView*/
     SendBaseViewChangedEvent();
 
     SendEventToObservers( *this, iViewObservers,
-        MVPbkContactViewObserver::ContactViewReady );
+        &MVPbkContactViewObserver::ContactViewReady );
     }
 
 // --------------------------------------------------------------------------
@@ -696,7 +696,7 @@ void CPbk2PredictiveViewStack::ContactViewUnavailable(
     {
     iViewReady = EFalse;
     SendEventToObservers( *this, iViewObservers,
-        MVPbkContactViewObserver::ContactViewUnavailable );
+        &MVPbkContactViewObserver::ContactViewUnavailable );
     }
 
 // --------------------------------------------------------------------------
@@ -715,12 +715,12 @@ void CPbk2PredictiveViewStack::ContactAddedToView
    if ( iBaseView == &aView )
         {
         SendEventToObservers( *this, iStackObservers,
-            MPbk2FilteredViewStackObserver::ContactAddedToBaseView, aIndex,
+            &MPbk2FilteredViewStackObserver::ContactAddedToBaseView, aIndex,
             aContactLink );
         
         // Always forward only top view events to clients
         SendEventToObservers( *this, iViewObservers,
-            MVPbkContactViewObserver::ContactAddedToView, aIndex,
+            &MVPbkContactViewObserver::ContactAddedToView, aIndex,
             aContactLink );
         }
     }
@@ -740,7 +740,7 @@ void CPbk2PredictiveViewStack::ContactRemovedFromView
         {
         // Always forward top view events to clients
         SendEventToObservers( *this, iViewObservers,
-            MVPbkContactViewObserver::ContactRemovedFromView, aIndex,
+            &MVPbkContactViewObserver::ContactRemovedFromView, aIndex,
             aContactLink );
          }
     }
@@ -758,7 +758,7 @@ void CPbk2PredictiveViewStack::ContactViewError
         {
         // Always forward only top view events to clients
         SendEventToObservers( *this, iViewObservers,
-            MVPbkContactViewObserver::ContactViewError, aError,
+            &MVPbkContactViewObserver::ContactViewError, aError,
             aErrorNotified );
         }
     }

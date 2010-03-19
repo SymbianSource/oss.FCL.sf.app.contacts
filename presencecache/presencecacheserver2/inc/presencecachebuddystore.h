@@ -165,7 +165,7 @@ public:
     * @param aOtherIdentity other identity object
     * @return ETrue if identity matches.
     */
-    TBool CPresenceCacheBuddyStore::EqualsIdentity(
+    TBool EqualsIdentity(
                             const TDesC& aOtherIdentity ) const;
                     
     /**

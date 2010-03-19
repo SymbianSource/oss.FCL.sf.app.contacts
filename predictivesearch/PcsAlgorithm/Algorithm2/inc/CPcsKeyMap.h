@@ -74,7 +74,7 @@ public:
     /**
      * Returns the pool Id for a key                               
      */
-    TInt CPcsKeyMap::PoolIdForCharacter(const TChar& aChar);
+    TInt PoolIdForCharacter(const TChar& aChar);
     /**
      * Returns total number of pools                                
      */

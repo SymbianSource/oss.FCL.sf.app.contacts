@@ -124,7 +124,7 @@ class CSpdiaContainer : public CCoeControl,
         * Selection of the MiddleSoftKey
         * 
         */
-		void CSpdiaContainer::MiddleSoftKeyL();
+	void MiddleSoftKeyL();
 
         /**
         * Shows the ViewNumber note.
@@ -172,7 +172,7 @@ class CSpdiaContainer : public CCoeControl,
         void VoiceMailDialogLaunched( TBool aBool );
 
 
-        CAknLongTapDetector& CSpdiaContainer::LongTapDetectorL();
+        CAknLongTapDetector& LongTapDetectorL();
         /**
         * refresh the dialog in speeddial view 
         */

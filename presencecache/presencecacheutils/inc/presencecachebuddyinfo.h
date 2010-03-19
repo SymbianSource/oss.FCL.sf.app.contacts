@@ -172,7 +172,7 @@ private:
      */
     void ConstructL();
     
-    void CPresenceCacheBuddyInfo::DoSet16BitValueL( 
+    void DoSet16BitValueL( 
             const TDesC& aKey,    
             const TDesC& aValue );
     
