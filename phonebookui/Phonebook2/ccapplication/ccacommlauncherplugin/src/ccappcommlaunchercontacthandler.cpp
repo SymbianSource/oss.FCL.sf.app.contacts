@@ -374,6 +374,7 @@ TBool CCCAppCommLauncherContactHandler::ContactFieldTypeAndContactActionMatch(
                 CCACOMMLAUNCHER_ROMARRAY_SIZE( KCCAppCommLauncherVoiceCallGroup )); 
             break;
         case VPbkFieldTypeSelectorFactory::EUniEditorSelector: 
+        {
         	 TInt flags = 0;
         	 CRepository* key = CRepository::NewL(TUid::Uid(KCRUidPhonebook));
         	 TInt err = key->Get(KPhonebookLocalVariationFlags, flags);
@@ -391,7 +392,8 @@ TBool CCCAppCommLauncherContactHandler::ContactFieldTypeAndContactActionMatch(
         				 CCACOMMLAUNCHER_ROMARRAY_SIZE( KCCAppCommLauncherMessageGroup )); 
         		 }
         	 delete key;
-        	 break;
+        }
+        break;
         case VPbkFieldTypeSelectorFactory::EEmailEditorSelector:        
             isMatch = FieldArrayAndContactActionMatch( 
                 aContactField, KCCAppCommLauncherEmailGroup, 
