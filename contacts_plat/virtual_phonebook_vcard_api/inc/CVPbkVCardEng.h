@@ -322,7 +322,7 @@ class CVPbkVCardEng : public CBase
          * @return A new operation handle owned by the client.
          * @asynchronous
          */   
-        IMPORT_C MVPbkContactOperationBase* CVPbkVCardEng::ImportVCardMergeL(
+        IMPORT_C MVPbkContactOperationBase* ImportVCardMergeL(
             const MVPbkContactLink& aReplaceContact,
             MVPbkContactStore& aTargetStore, 
             RReadStream& aSourceStream,

@@ -73,7 +73,7 @@ class CPbk2ContactIconsUtils : public CBase
         IMPORT_C static CPbk2IconArray* CreateListboxIconArrayL(TInt aResourceId);
         
     private:
-        CPbk2ContactIconsUtils::CPbk2ContactIconsUtils(
+        CPbk2ContactIconsUtils(
                 CPbk2StorePropertyArray& aStoreProperties,
                 MPbk2ContactUiControlExtension* aUiExtension );        
 
