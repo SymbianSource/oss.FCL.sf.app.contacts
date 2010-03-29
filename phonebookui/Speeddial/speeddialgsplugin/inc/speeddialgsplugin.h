@@ -26,8 +26,8 @@
 #include <aknview.h>
 #include <eikclb.h>
 #include <gsparentplugin.h>
-#include <GSFWViewUIDs.h>
-#include <GSPluginInterface.h>
+#include <gsfwviewuids.h>
+#include <gsplugininterface.h>
 #include <AknServerApp.h> 
 // Classes referenced
 class CAknViewAppUi;

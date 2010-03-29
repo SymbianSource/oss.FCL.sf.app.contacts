@@ -26,9 +26,12 @@
 #include <CPbk2ImageManager.h>
 #include <TPbk2ImageManagerParams.h>
 #include <VPbkEng.rsg>
+#include <MVPbkContactFieldBinaryData.h>
+#include <MVPbkContactFieldTextData.h>
 
 // System
 #include <fbs.h>
+#include <eikenv.h>
 
 
 // ---------------------------------------------------------------------------
@@ -36,16 +39,12 @@
 // ---------------------------------------------------------------------------
 //
 CCCAppMyCardImageLoader* CCCAppMyCardImageLoader::NewL(
-    CVPbkContactManager& aContactManager,
     MMyCardImageLoaderObserver& aObserver )
     {
     CCA_DP(KMyCardLogFile, CCA_L("->CCCAppMyCardImageLoader::NewL()"));
     
     CCCAppMyCardImageLoader* self = 
-        new ( ELeave ) CCCAppMyCardImageLoader( aContactManager, aObserver );
-    CleanupStack::PushL( self );
-    self->ConstructL();
-    CleanupStack::Pop( self );
+        new ( ELeave ) CCCAppMyCardImageLoader( aObserver );
     
     CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCardImageLoader::NewL()"));
     return self;
@@ -59,9 +58,10 @@ CCCAppMyCardImageLoader::~CCCAppMyCardImageLoader()
     {
     CCA_DP(KMyCardLogFile, 
         CCA_L("->CCCAppMyCardImageLoader::~CCCAppMyCardImageLoader()"));
-    
-    delete iImageManager;
-    delete iOperation;
+
+    delete iImageDecoding;
+    delete iImageBuffer;
+    delete iImageFileName;
 
     CCA_DP(KMyCardLogFile, 
         CCA_L("<-CCCAppMyCardImageLoader::~CCCAppMyCardImageLoader()"));
@@ -72,20 +72,9 @@ CCCAppMyCardImageLoader::~CCCAppMyCardImageLoader()
 // ---------------------------------------------------------------------------
 //
 inline CCCAppMyCardImageLoader::CCCAppMyCardImageLoader(
-    CVPbkContactManager& aContactManager,
     MMyCardImageLoaderObserver& aObserver ) :
-        iContactManager( aContactManager ),
         iObserver( aObserver )
     {
-    }
-
-// ---------------------------------------------------------------------------
-// CCCAppMyCardImageLoader::ConstructL
-// ---------------------------------------------------------------------------
-//
-inline void CCCAppMyCardImageLoader::ConstructL()
-    {
-    iImageManager = CPbk2ImageManager::NewL( iContactManager );
     }
 
 // ---------------------------------------------------------------------------
@@ -93,80 +82,85 @@ inline void CCCAppMyCardImageLoader::ConstructL()
 // ---------------------------------------------------------------------------
 //
 void CCCAppMyCardImageLoader::LoadContactImageL( 
-    MVPbkStoreContact& aContact )
+    MVPbkStoreContact& aContact,
+    const TSize& aThumbnailSize )
     {
     CCA_DP(KMyCardLogFile, 
         CCA_L("->CCCAppMyCardImageLoader::LoadContactImageL()"));
+
+    MVPbkStoreContactFieldCollection& fields = aContact.Fields();
     
-    // cancel previous operations
-    delete iOperation;
-    iOperation = NULL;
+    delete iImageBuffer;
+    iImageBuffer = NULL;
+    delete iImageFileName;
+    iImageFileName = NULL;
     
-    const MVPbkFieldType* thumbType = iContactManager.FieldTypes().Find(
-        R_VPBK_FIELD_TYPE_THUMBNAILPIC );
-  
-    if( thumbType )
+    const TInt fieldCount = fields.FieldCount();                           
+    
+    // Check all the fields and store first and last name
+    for ( TInt i = 0; i < fieldCount;  ++i )
         {
-        if( iImageManager->HasImage( aContact, *thumbType ) )
+        MVPbkStoreContactField& field = fields.FieldAt( i );    
+        const MVPbkFieldType* fieldType = field.BestMatchingFieldType();
+        
+        if ( fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_THUMBNAILPIC )
             {
-            // contact has image. load it.
-            iOperation = iImageManager->GetImageAsyncL( 
-                NULL, aContact, *thumbType, *this );
+            MVPbkContactFieldData& contactField = field.FieldData(); 
+            iImageBuffer = 
+                MVPbkContactFieldBinaryData::Cast(contactField).BinaryData().AllocL();
+            }
+        
+        if ( fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_CALLEROBJIMG )
+            {
+            MVPbkContactFieldData& contactField = field.FieldData();                        
+            iImageFileName = MVPbkContactFieldTextData::Cast(contactField).Text().AllocL();
             }
         }
-    
-    if( !iOperation )
+        
+    if( iImageBuffer )
         {
-        // no operation means the contact does not have image
-        iObserver.ThumbnailLoadError( KErrNotFound );
+        delete iImageDecoding;
+        iImageDecoding = NULL;
+        
+        RFs& fs = CEikonEnv::Static()->FsSession();
+        iImageDecoding = CCCAppImageDecoding::NewL(
+                *this, 
+                fs, 
+                iImageBuffer, 
+                iImageFileName );
+        iImageFileName = NULL;  // ownership is moved to CCCAppImageDecoding
+        iImageBuffer = NULL;  // ownership is moved to CCCAppImageDecoding   
+        iImageDecoding->StartL( aThumbnailSize );      
         }
+    else
+        {
+        iObserver.ThumbnailLoadError( KErrNotFound );
+        }        
     
     CCA_DP(KMyCardLogFile, 
         CCA_L("<-CCCAppMyCardImageLoader::LoadContactImageL()"));
     }
 
 // ---------------------------------------------------------------------------
-// CCCAppMyCardImageLoader::Pbk2ImageGetComplete
+// CCCAppMyCardImageLoader::ResizeImageL
 // ---------------------------------------------------------------------------
 //
-void CCCAppMyCardImageLoader::Pbk2ImageGetComplete(
-    MPbk2ImageOperation& /*aOperation*/,
-    CFbsBitmap* aBitmap )
+void CCCAppMyCardImageLoader::ResizeImageL( const TSize& aThumbnailSize )
     {
-    CCA_DP(KMyCardLogFile, 
-        CCA_L("->CCCAppMyCardImageLoader::Pbk2ImageGetComplete()"));
-    
-    delete iOperation;
-    iOperation = NULL;
-    
-    // keep this last, so that observer can delete the image loader when it has
-    // received the notification.
+    if( iImageDecoding  )
+        {
+        iImageDecoding->StartL( aThumbnailSize );      
+        }
+    }
+
+// ---------------------------------------------------------------------------
+// CCCAppMyCardImageLoader::BitmapReadyL
+// ---------------------------------------------------------------------------
+//
+void CCCAppMyCardImageLoader::BitmapReadyL( CFbsBitmap* aBitmap )
+    {
     iObserver.ThumbnailReady( aBitmap );
-    
-    CCA_DP(KMyCardLogFile, 
-        CCA_L("<-CCCAppMyCardImageLoader::Pbk2ImageGetComplete()"));    
     }
 
-// ---------------------------------------------------------------------------
-// CCCAppMyCardImageLoader::Pbk2ImageGetFailed
-// ---------------------------------------------------------------------------
-//
-void CCCAppMyCardImageLoader::Pbk2ImageGetFailed( 
-    MPbk2ImageOperation& /*aOperation*/,
-    TInt aError )
-    {
-    CCA_DP(KMyCardLogFile, 
-        CCA_L("->CCCAppMyCardImageLoader::Pbk2ImageGetFailed() %d"), aError );    
-    
-    delete iOperation;
-    iOperation = NULL;
-
-    // keep this last, so that observer can delete the image loader when it has
-    // received the notification.
-    iObserver.ThumbnailLoadError( aError );
-
-    CCA_DP(KMyCardLogFile, 
-        CCA_L("<-CCCAppMyCardImageLoader::Pbk2ImageGetFailed()"));    
-    }
 
 // End of File

@@ -279,7 +279,8 @@ void CCCAppCommLauncherMenuHandler::DynInitSelectOtherMenuItemL(
     {
     CCA_DP(KCommLauncherLogFile, CCA_L("->CCCAppCommLauncherMenuHandler::DynInitSelectOtherMenuItemL()"));
 
-    if ( iPlugin.Container().CommMethodsAvailable())
+    if ( iPlugin.Container().CommMethodsAvailable() && 
+    		iPlugin.Container().IsListBoxHighlightEnabled())
         {// comm methods available, continue..
         VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector contactAction =
             iPlugin.Container().SelectedCommunicationMethod();
@@ -307,7 +308,7 @@ void CCCAppCommLauncherMenuHandler::DynInitSelectOtherMenuItemL(
             }
         }
     else
-        {// no comm methods available, don't show anything
+        {// no comm methods available or Listbox highlight is disabled, don't show anything
         aMenuPane->DeleteMenuItem( ECCAppCommLauncherSelectOtherNmbCmd );
         aMenuPane->DeleteMenuItem( ECCAppCommLauncherSelectOtherAddrCmd );
         }

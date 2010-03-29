@@ -21,7 +21,7 @@
 #define __CPBKFIELDANALYZER_H__
 
 #include <e32base.h>
-#include "mpbkfieldanalyzer.h"
+#include "MPbkFieldAnalyzer.h"
 
 //  FORWARD DECLARATIONS
 class CPbkFieldArray;

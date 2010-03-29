@@ -237,7 +237,7 @@
 // l:list_single_large_graphic_pane_t1
 // r:5.0
 //
-#define qtn_cca_call "Call"
+#define qtn_cca_call "Voice call"
 
 // d:Text for the VoIP call communication method.
 // l:list_single_large_graphic_pane_t1
@@ -937,5 +937,36 @@
 //r:9.2
 //
 #define qtn_phob_opt_entry_select_promotion "Select"
+
+//d:Phonebook names list's C-Column text (2nd line). Shown if contact has multiple
+//d:numbers from Call method group and no default for Call.
+//l:list_double_large_graphic_phob2_pane_t2
+//r:9.2
+//
+#define qtn_phob_n_numbers "%N numbers"
+
+//d:My Card item's text on names list.
+//l:list_double_large_graphic_phob2_pane_t1
+//r:9.2
+//
+#define qtn_contacts_mc_my_card "My Card"
+
+//d:My Card promotion item's text. Shown when My Card is not created.
+//l:list_double_large_graphic_phob2_pane_t1
+//r:9.2
+//
+#define qtn_contacts_mc_set_up_my_card "Create My Card"
+
+//d:Confirmation query shown to user when deleting My Card.
+//l:popup_note_window
+//r:9.2
+//
+#define qtn_phob_my_card_clear_confirm "Delete all data stored in My Card?"
+
+//d: Options list text for deleting My Card and all it's details
+//l: list_single_pane_t1_cp2
+//r:9.2
+//
+#define qtn_phob_my_card_clear "Clear My Card data"
 
 // End of File

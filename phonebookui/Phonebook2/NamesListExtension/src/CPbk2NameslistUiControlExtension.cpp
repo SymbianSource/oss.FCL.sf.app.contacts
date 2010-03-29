@@ -35,6 +35,8 @@
 #include <CVPbkTopContactManager.h>
 #include <Pbk2InternalUID.h>
 #include <mpbk2commanditemupdater.h>
+#include <StringLoader.h>
+#include <Pbk2ExNamesListRes.rsg>
 
 //ECE
 #include <gulicon.h>
@@ -86,8 +88,7 @@ CPbk2NameslistUiControlExtension::CPbk2NameslistUiControlExtension
           CPbk2MyCard* aMyCard )  :
             iContactManager( aContactManager ),
             iContentProvider( aContentProvider ),
-            iMyCard( aMyCard ),
-            iIconId( TPbk2IconId() )
+            iMyCard( aMyCard )
     {
     }
 
@@ -103,7 +104,7 @@ void CPbk2NameslistUiControlExtension::ConstructL()
 		// set this to be observer of the my card
 		iMyCard->SetObserverL( *this );
 		// check if the mycard has already a thumbnail
-		iBitmap = iMyCard->MyCardBitmap();
+		iBitmap = iMyCard->MyCardBitmapL();
 		}
 	
 	iPresenceEngine = CPbk2EcePresenceEngine::NewL(
@@ -145,6 +146,7 @@ CPbk2NameslistUiControlExtension::~CPbk2NameslistUiControlExtension()
     	{
     	iMyCard->RemoveObserver( *this );
     	}
+    delete iBitmap;
     }
 
 // -----------------------------------------------------------------------------
@@ -247,7 +249,7 @@ void CPbk2NameslistUiControlExtension::SetIconArray(CPbk2IconArray& aIconArray)
     // if bitmap is allready set. MyCardEvent - event has come before this one or there was an image on creation
     if( iBitmap && iMyCard )
     	{
-		AddThumbnailToIconArrayL();
+		TRAP_IGNORE( AddMyCardThumbnailToIconArrayL() );
     	}
     }
 
@@ -286,6 +288,25 @@ void CPbk2NameslistUiControlExtension::FormatDataL(
         if( type == CSpbContentProvider::ETypePhoneNumber )
             {
             elemType = MPbk2DoubleListboxDataElement::ETypePhoneNumber;
+            }
+        else if( type == CSpbContentProvider::ETypePhoneNumberMultiple && txt )
+            {
+            // if we get multiple phone numbers from content provider, then
+            // the string only contains the count (as text). We need to format
+            // that into proper UI text.
+            TInt num = 0;
+            TLex16 lex( *txt );
+            TInt err = lex.Val( num );
+            if( !err )
+                {
+                delete txt;
+                txt = StringLoader::LoadL( R_QTN_PHOB_N_NUMBERS, num );
+                }
+            else
+                {
+                // in case of convert error
+                txt->Des().Zero();
+                }
             }
         
         aDataElement.SetText(
@@ -343,12 +364,14 @@ void CPbk2NameslistUiControlExtension::MyCardEvent( TMyCardStatusEvent aEvent )
 	if( aEvent == EStateThumbnailLoaded && iMyCard )    
 		{
 		// get bitmap
-		iBitmap = iMyCard->MyCardBitmap();
+        delete iBitmap;
+        iBitmap = NULL;
+        TRAP_IGNORE( iBitmap = iMyCard->MyCardBitmapL() );
 			
 		// if icon array is already set, add icon
 		if( iIconArray )
 			{
-			AddThumbnailToIconArrayL();
+			TRAP_IGNORE( AddMyCardThumbnailToIconArrayL() );
 			}
 		}
 	}
@@ -357,22 +380,24 @@ void CPbk2NameslistUiControlExtension::MyCardEvent( TMyCardStatusEvent aEvent )
 // CPbk2NameslistUiControlExtension::AddThumbnailToIconArrayL
 // -----------------------------------------------------------------------------
 //
-void CPbk2NameslistUiControlExtension::AddThumbnailToIconArrayL( )
+void CPbk2NameslistUiControlExtension::AddMyCardThumbnailToIconArrayL( )
 	{
-	if( iMyCard )
+	if( !iMyCard )
 		{
-		iIconId = iMyCard->MyCardIconId();
+        return;
 		}
 	
+    const TPbk2IconId& iconId = iMyCard->MyCardIconId();
 	// if thumb icon is not created, create it and append to array
 	if( !iThumbIcon )
 		{
-		iThumbIcon = CGulIcon::NewLC();
-		CleanupStack::Pop( iThumbIcon );
-		iThumbIcon->SetBitmap( iBitmap );
+        CGulIcon* icon = CGulIcon::NewLC();
+        icon->SetBitmap( iBitmap );
 		iBitmap = NULL;
 		// takes ownership
-		iIconArray->AppendIconL( iThumbIcon, iIconId );
+		iIconArray->AppendIconL( icon, iconId );
+        CleanupStack::Pop( icon );
+        iThumbIcon = icon;  // cache icon pointer
 		}
 	    
 	// else change the bitmap. This is to prevent 
@@ -380,7 +405,7 @@ void CPbk2NameslistUiControlExtension::AddThumbnailToIconArrayL( )
 	else
 		{
 		iThumbIcon->SetBitmap( iBitmap );
-		iBitmap = NULL;
+        iBitmap = NULL;
 		}
 	}
 

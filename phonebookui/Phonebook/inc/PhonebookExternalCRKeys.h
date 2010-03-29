@@ -19,7 +19,7 @@
 #ifndef __PhonebookExternalCRKeys_H__
 #define __PhonebookExternalCRKeys_H__
 
-#include <SettingsInternalCRKeys.h> // includes KRCSEPreferredTelephony
+#include <settingsinternalcrkeys.h> // includes KRCSEPreferredTelephony
 
 /**
  * This file contains external CR keys used by Phonebook

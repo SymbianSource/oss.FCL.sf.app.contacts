@@ -34,7 +34,7 @@
 #include <AiwCommon.hrh>
 #include <MVPbkStoreContact.h>
 #include <aiwdialdata.h>
-#include <SettingsInternalCRKeys.h>
+#include <settingsinternalcrkeys.h>
 #include <centralrepository.h>
 #include <e32debug.h>
 

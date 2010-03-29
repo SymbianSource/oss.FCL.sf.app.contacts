@@ -27,9 +27,9 @@ NAME NEWC	// 4 letter ID
 #include "NewContactLauncher.hrh"
 #include "NewContactLauncher.rls"
 #include "phonebook2.loc"
-#include <aiwcommon.rh>
-#include <aiwcommon.hrh>
-#include <aiwgenericparam.hrh>
+#include <AiwCommon.rh>
+#include <AiwCommon.hrh>
+#include <AiwGenericParam.hrh>
 //  RESOURCE DEFINITIONS
 // -----------------------------------------------------------------------------
 //

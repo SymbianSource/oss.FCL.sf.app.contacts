@@ -43,7 +43,7 @@ public: // Construction & destruction
     ~CSpbPhoneNumberParser();
 
 public: // Interface
-    void FetchPhoneNumber( const MVPbkContactLink& aLink);
+    void FetchPhoneNumberL( const MVPbkContactLink& aLink);
     
 private:    // from MVPbkSingleContactOperationObserver
     void VPbkSingleContactOperationComplete(

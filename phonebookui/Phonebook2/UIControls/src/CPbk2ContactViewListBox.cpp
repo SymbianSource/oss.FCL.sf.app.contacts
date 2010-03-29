@@ -40,7 +40,7 @@
 #include <eikclbd.h>
 
 #include <aknappui.h>
-#include <aknviewappui.h>
+#include <aknViewAppUi.h>
 
 // Debugging headers
 #include <Pbk2Debug.h>

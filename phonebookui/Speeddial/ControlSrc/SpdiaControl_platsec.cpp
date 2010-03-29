@@ -33,7 +33,7 @@
 #include <ErrorUI.h>
 #include <vmnumber.h>
 #include <centralrepository.h>
-#include <SettingsInternalCRKeys.h>
+#include <settingsinternalcrkeys.h>
 #include <SpeeddialPrivateCRKeys.h>
 #include <telvmbxsettingscrkeys.h>
 #include <voicemailboxdomaincrkeys.h>
@@ -44,7 +44,7 @@
 #include <CPbkContactChangeNotifier.h>
 #include <RPbkViewResourceFile.h>  // Phonebook view dll resource file loader
 #include <StringLoader.h>
-#include <Spdctrl.rsg>
+#include <SpdCtrl.rsg>
 #include <spdctrl.mbg>
 #include <avkon.mbg>
 #include <gdi.h>
@@ -67,7 +67,7 @@
 #include "SpdiaControl.hrh"
 #include "Speeddial.laf"
 #include "SpdiaPanic.h"
-#include <SettingsInternalCRKeys.h>
+#include <settingsinternalcrkeys.h>
 #include "speeddial.hrh"
 
 #include <aknViewAppUi.h>

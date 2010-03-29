@@ -24,7 +24,7 @@
 #include <etelmm.h>
 #include <mmtsy_names.h>
 #include <secui.h>
-#include <SecUiSecurityHandler.h>
+#include <secuisecurityhandler.h>
 
 
 #include "CLogsEtelBase.h"

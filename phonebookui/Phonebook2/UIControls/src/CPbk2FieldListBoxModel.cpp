@@ -471,20 +471,13 @@ inline void CPbk2FieldListBoxModel::ClipText
          TPtr& aColumnText, TInt aColumnIndex ) const
     {
     TPbk2StoreContactAnalyzer analyzer( iParams.iContactManager, NULL );
-    TBool clip = analyzer.IsFieldTypeIncludedL
-        ( aField, R_PHONEBOOK2_PHONENUMBER_SELECTOR );
-
-    if ( !clip )
+    
+    if ( analyzer.IsFieldTypeIncludedL( aField, R_PHONEBOOK2_PHONENUMBER_SELECTOR )
+            || analyzer.IsFieldTypeIncludedL ( aField, R_PHONEBOOK2_EMAIL_SELECTOR )
+            || analyzer.IsFieldTypeIncludedL( aField, R_PHONEBOOK2_SIP_SELECTOR )
+            || analyzer.IsFieldTypeIncludedL( aField, R_PHONEBOOK2_IMPP_SELECTOR ) )
         {
-        clip = analyzer.IsFieldTypeIncludedL
-            ( aField, R_PHONEBOOK2_EMAIL_SELECTOR );
-        }
-
-    // Clip if required
-    if ( clip )
-        {
-        iTextClipper->ClipFromBeginning
-            ( aColumnText, aIndex, aColumnIndex );
+        iTextClipper->ClipFromBeginning( aColumnText, aIndex, aColumnIndex );
         }
     }
 

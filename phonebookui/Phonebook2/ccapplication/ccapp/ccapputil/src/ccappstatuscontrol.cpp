@@ -22,11 +22,11 @@
 #include <eikimage.h>
 #include <eiklabel.h>
 #include <AknIconUtils.h>
-#include <aknutils.h>
+#include <AknUtils.h>
 #include <avkon.mbg>
 #include <gulicon.h>
-#include <stringloader.h>
-#include <aknsframebackgroundcontrolcontext.h>
+#include <StringLoader.h>
+#include <AknsFrameBackgroundControlContext.h>
 #include <aknlayoutscalable_avkon.cdl.h>
 #include <AknsUtils.h>
 #include <AknsDrawUtils.h>
@@ -93,7 +93,7 @@ CCCAppStatusControl::CCCAppStatusControl(
     CSpbContentProvider& aContentProvider, MCCAStatusControlObserver& aObserver ) : 
     iContentProvider( aContentProvider ),
     iObserver( aObserver ),
-    iDefaultResource( KErrNotFound )
+    iState( EStateUndefined )
     {		
     } 
 
@@ -155,6 +155,7 @@ CCCAppStatusControl::~CCCAppStatusControl()
     delete iStatusText;    
 	delete iDefaultIcon;
     delete iBgContext; 
+    delete iDefaultStatusText;
     delete iLink;
     }
 
@@ -212,15 +213,33 @@ EXPORT_C void CCCAppStatusControl::SetContactLinkL( MVPbkContactLink& aLink )
 	}
 
 // ---------------------------------------------------------------------------
-// CCCAppStatusControl::SetDefaultStatusL
+// CCCAppStatusControl::SetDefaultStatusIconL
 // ---------------------------------------------------------------------------
 //
-EXPORT_C void CCCAppStatusControl::SetDefaultStatusL( TInt aDefaultResource, 
-		CGulIcon* aDefaultStatusIcon )
+EXPORT_C void CCCAppStatusControl::SetDefaultStatusIconL( CGulIcon* aDefaultStatusIcon )
 	{
-	iDefaultResource = aDefaultResource;
-	delete iDefaultIcon;	
-	iDefaultIcon = aDefaultStatusIcon;					
+	delete iDefaultIcon;
+	iDefaultIcon = aDefaultStatusIcon;
+
+	if( iStatusIconSize != TSize() && iState == EStateDefaultContent )
+        {
+        ShowDefaultContentL();
+        }
+	}
+
+// ---------------------------------------------------------------------------
+// CCCAppStatusControl::SetDefaultStatusTextL
+// ---------------------------------------------------------------------------
+//
+EXPORT_C void CCCAppStatusControl::SetDefaultStatusTextL( HBufC* aDefaultStatusText ) 		
+	{
+	delete iDefaultStatusText;
+	iDefaultStatusText = aDefaultStatusText;
+	
+	if( iState == EStateDefaultContent )
+	    {
+        ShowDefaultContentL();
+	    }
 	}
 
 // ---------------------------------------------------------------------------
@@ -290,6 +309,7 @@ void CCCAppStatusControl::SetVariableLayouts( TInt aOption )
 
     // resize images for new resolution
     ReSizeIcon( iStatusIcon, iStatusIconSize );
+    ReSizeIcon( iDefaultIcon, iStatusIconSize );
     }
 
 // ---------------------------------------------------------------------------
@@ -410,12 +430,11 @@ void CCCAppStatusControl::DoStatusUpdateL( MVPbkContactLink& aLink,
     {
     if( aEvent == EContentNotAvailable )
         {
-        DefaultStatusL();
-        return;
+		ShowDefaultContentL();
         }
-    
-    if( iLink && iLink->IsSame( aLink ) )
+    else if( iLink && iLink->IsSame( aLink ) )
         {
+        iState = EStateStatusContent;
         delete iStatusText;
         iStatusText = NULL;
         
@@ -540,6 +559,7 @@ TInt CCCAppStatusControl::RewrapStatusTextL()
         iStatusLabel1->SetTextL( label1 );
         iStatusLabel2->SetTextL( label2 );
         CleanupStack::PopAndDestroy( 2, statusTxtBuffer ); // txtArray
+        iStatusImage->MakeVisible( ETrue );
         DrawDeferred();
         }
     return txtCount;
@@ -567,37 +587,30 @@ void CCCAppStatusControl::Draw( const TRect& /*aRect*/ ) const
     }
 
 // ---------------------------------------------------------------------------
-// CCCAppStatusControl::DefaultStatusL
+// CCCAppStatusControl::ShowDefaultContentL
 // ---------------------------------------------------------------------------
 //
-void CCCAppStatusControl::DefaultStatusL()
+void CCCAppStatusControl::ShowDefaultContentL()
 	{
-	if( iDefaultResource != KErrNotFound )
+    iState = EStateDefaultContent;
+    
+	if( iDefaultIcon && ( iDefaultIcon->Bitmap() != iStatusImage->Bitmap() ) )
 		{
-		delete iStatusText;
-		iStatusText = NULL;
-		iStatusText = StringLoader::LoadL( iDefaultResource );
-        
-		const TInt count( RewrapStatusTextL() );
-        TInt option( 1 );
-        if( count > 1 )
-            {
-            option = 0;
-            }
-        SetVariableLayouts( option );
+        ReSizeIcon( iDefaultIcon, iStatusIconSize );
+        iStatusImage->SetPicture( iDefaultIcon->Bitmap(), iDefaultIcon->Mask() );
+        iStatusImage->DrawDeferred();
 		}
 	
-	if( iDefaultIcon )
+	if( iDefaultStatusText )
 		{
-        delete iStatusIcon;
-        iStatusIcon = NULL;
-        iStatusIcon = CGulIcon::NewL( iDefaultIcon->Bitmap(), iDefaultIcon->Mask() );
-        iStatusIcon->SetBitmapsOwnedExternally( ETrue ); // iDefaultIcon owns bitmaps
-        ReSizeIcon( iStatusIcon, iStatusIconSize );
-
-        iStatusImage->SetPicture( iDefaultIcon->Bitmap(), iDefaultIcon->Mask() );
-        iStatusImage->MakeVisible( ETrue );
-        DrawDeferred();
+        if( !iStatusText || iDefaultStatusText->CompareC( *iStatusText ) != 0 )
+            {
+            // update text
+            HBufC* txt = iDefaultStatusText->AllocL();
+            delete iStatusText;
+            iStatusText = txt;
+            RewrapStatusTextL();
+            }
 		}
 	}
 

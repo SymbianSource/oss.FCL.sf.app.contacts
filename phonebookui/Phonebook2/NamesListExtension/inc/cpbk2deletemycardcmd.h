@@ -21,7 +21,6 @@
 // INCLUDES
 #include <e32base.h>
 #include <MPbk2Command.h>
-#include <MVPbkSingleContactOperationObserver.h>
 #include <MVPbkBatchOperationObserver.h>
 
 // FORWARD DECLARATIONS
@@ -39,7 +38,6 @@ class CPbk2ApplicationServices;
 NONSHARABLE_CLASS( CPbk2DeleteMyCardCmd ) :
     public CActive,
     public MPbk2Command,
-    public MVPbkSingleContactOperationObserver,
     public MVPbkBatchOperationObserver
     {
 public: // Construction and destruction
@@ -72,15 +70,6 @@ private: // From CActive
     void RunL();
     TInt RunError( TInt aError );
 
-private: // From MVPbkSingleContactOperationObserver
-    
-    void VPbkSingleContactOperationComplete(
-        MVPbkContactOperationBase& aOperation,
-        MVPbkStoreContact* aContact );
-    void VPbkSingleContactOperationFailed(
-        MVPbkContactOperationBase& aOperation, 
-        TInt aError );
-
 private: // From MVPbkBatchOperationObserver
     
     void StepComplete( 
@@ -96,7 +85,6 @@ private: // Data structures
     /// Process states
     enum TProcessState
         {
-        ERetrieving,
         EConfirming,
         EStarting,
         EDeleting,
@@ -135,13 +123,6 @@ private: // Implementation
     void ProcessDismissed( TInt aCancelCode );
 
     /**
-     * Retrieve contact
-     * 
-     * @param aContactLink link for the contact to retrieve 
-     */
-    void RetrieveContactL( const MVPbkContactLink& aContactLink );
-
-    /**
      * Delete contact that was given in the construction
      */
     void DeleteContactL();
@@ -159,12 +140,8 @@ private: // Data
     
     /// Own: Current state of process
     TProcessState iState;
-    /// Own: Retrieve operation
-    MVPbkContactOperationBase* iRetrieveOperation;
     /// Own: Delete operation
     MVPbkContactOperationBase* iDeleteOperation;
-    /// Own: The store contact to delete
-    MVPbkStoreContact* iStoreContact;
     /// Own: Contact to be deleted (only one contact)
     CVPbkContactLinkArray* iContactsArray;
     /// Own: Application Services instance

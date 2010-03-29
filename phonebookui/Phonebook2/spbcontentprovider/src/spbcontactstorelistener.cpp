@@ -99,19 +99,23 @@ void CSpbContactStoreListener::HandleStoreEventL( MVPbkContactStore& /*aContactS
 	/// contact has changed, check if the number needs to be reloaded
 	if( aStoreEvent.iEventType == TVPbkContactStoreEvent::EContactChanged )
 		{
-		CSpbContent* content = ContentByLinkL( *aStoreEvent.iContactLink );
+		CSpbContent* content = ContentByLink( *aStoreEvent.iContactLink );
 		if( content )
 			{
-			content->RefreshNumber();
+			content->RefreshNumberL();
 			}
 		}
+	else if( aStoreEvent.iEventType == TVPbkContactStoreEvent::EContactDeleted )
+	    {
+        DeleteContentByLink( *aStoreEvent.iContactLink );
+	    }
 	}
 
 // ----------------------------------------------------------------------------
-// CSpbContactStoreListener::ContentByLinkL
+// CSpbContactStoreListener::ContentByLink
 // ----------------------------------------------------------------------------
 //
-CSpbContent* CSpbContactStoreListener::ContentByLinkL( 
+CSpbContent* CSpbContactStoreListener::ContentByLink( 
     const MVPbkContactLink& aLink )
     {
     const TInt count( iContentCache.Count() );
@@ -126,3 +130,24 @@ CSpbContent* CSpbContactStoreListener::ContentByLinkL(
     return NULL;
     }
 
+// ----------------------------------------------------------------------------
+// CSpbContactStoreListener::DeleteContentByLink
+// ----------------------------------------------------------------------------
+//
+void CSpbContactStoreListener::DeleteContentByLink( 
+    const MVPbkContactLink& aLink )
+    {
+    const TInt count = iContentCache.Count();
+    for( TInt i = 0 ; i < count ; ++i )
+        {
+        CSpbContent* content = iContentCache[i];
+        if( content->Match( aLink ) )
+            {
+            delete content;
+            iContentCache.Remove( i );
+            break; // only one content for each contact
+            }
+        }
+    }
+
+// End of file

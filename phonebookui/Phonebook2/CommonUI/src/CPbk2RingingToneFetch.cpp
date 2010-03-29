@@ -110,21 +110,21 @@ EXPORT_C TBool CPbk2RingingToneFetch::FetchRingingToneL
 void CPbk2RingingToneFetch::SetMaxToneFileSizeL( CMediaFileList* aFl )
     {
     // Set file size limit if configured ON.
-    TInt sizeLimitB( 0 );
+    TInt sizeLimitKB( 0 );
     CRepository* cenrep = CRepository::NewL( KCRUidProfileEngine );
     CleanupStack::PushL( cenrep );
 
     User::LeaveIfError( cenrep->Get( KProEngRingingToneMaxSize,
-                                     sizeLimitB ) );
+            sizeLimitKB ) );
     CleanupStack::PopAndDestroy(); // cenrep
-    if ( sizeLimitB < 0 )
+    if ( sizeLimitKB < 0 )
         {
-        sizeLimitB = 0;
+        sizeLimitKB = 0;
         }
-    sizeLimitB *= KKilo;
-    if ( sizeLimitB )
+    
+    if ( sizeLimitKB )
         {
-       aFl->SetAttrL( CMediaFileList::EAttrFileSize, sizeLimitB );
+       aFl->SetAttrL( CMediaFileList::EAttrFileSize, sizeLimitKB );
         }
     }
 

@@ -680,6 +680,7 @@ MVPbkStoreContact* CContactStore::CreateNewContactLC()
     if ( err != KErrNone )
         {
         CCoeEnv::Static()->HandleError( err );
+        User::Leave(err);
         }
     CContactItem* newContact = CContactCard::NewLC();
     CContact* result = CContact::NewL(*this, newContact, ETrue);

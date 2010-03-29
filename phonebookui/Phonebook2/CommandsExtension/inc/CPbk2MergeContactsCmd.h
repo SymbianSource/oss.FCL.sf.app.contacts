@@ -41,8 +41,6 @@ class CVPbkContactStoreUriArray;
 class CPbk2MergeResolver;
 class CPbk2ApplicationServices;
 class CAknNavigationDecorator;
-class CImageDecoder;
-class CFbsBitmap;
 class CVPbkContactLinkArray;
 class MVPbkStoreContactField;
 
@@ -164,18 +162,17 @@ private: // Implementation
     void CleanAfterFetching();
     TBool IsFromReadOnlyStore(
             const MVPbkContactLink& aContactLink ) const;
-    void RetrieveContactL( const MVPbkContactLink& aContactLink );
+    void RetrieveContact( const MVPbkContactLink& aContactLink );
     void NotifyObservers();
     void SetTitlePaneL( TBool aCustom );
     void CheckPhotoConflictL();
     void ResolvePhotoConflictL();
     void ResolveAllPhotoConflicts( 
             EPbk2ConflictedNumber aConflictResolutionNumber );
-    void InitBitmapL( CFbsBitmap*& aBitmap, TDesC8& aData );
     void AddFieldToMergedContactL( MVPbkStoreContactField& field );
-    HBufC* ContactAsStringLC( MVPbkStoreContact* aStoreContact );
+    HBufC* ContactAsStringL( MVPbkStoreContact* aStoreContact );
     void ShowContactsMergedNoteL();
-    void GetStoreContactsL();
+    void GetStoreContacts();
     void ResolveConflictsL();
     void FinalizeMergeL();
     void DeleteSourceContactsL();
@@ -261,15 +258,6 @@ private: // Data
     /// Own: Image field data  from second contact
     TPtrC8 iDataSecond;
     
-    /// Own: Conflict image from first contact
-    CFbsBitmap* iBitmapFirst;
-    
-    /// Own: Conflict image from second contact
-    CFbsBitmap* iBitmapSecond;
-    
-    /// Own: Converts images of any type to bitmaps
-    CImageDecoder* iImgDecoder;
-    
     /// Own: Index of photo conflict 
     //      KErrNotFound if conflit does not exist
     TInt iPhotoConflictIndex;
@@ -288,6 +276,16 @@ private: // Data
     
     /// Own: Waiting note
     MPbk2ProcessDecorator* iWaitDecorator;
+    
+	/// Own: string for ending note
+    HBufC* iFirstContactString;
+	
+	/// Own: string for ending note
+    HBufC* iSecondContactString;
+	
+	/// Own: string for ending note
+    HBufC* iMergedContactString;
+    
     };
 
 #endif // CPBK2MERGECONTACTSCMD_H

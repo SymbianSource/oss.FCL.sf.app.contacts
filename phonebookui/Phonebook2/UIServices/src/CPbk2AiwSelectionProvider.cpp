@@ -263,7 +263,7 @@ TBool CPbk2AiwSelectionProvider::OkToExitL
 // --------------------------------------------------------------------------
 //
 TBool CPbk2AiwSelectionProvider::AcceptSelectionL
-        ( TInt aNumberOfSelectedContacts, HBufC8& /*aContactLink*/ )
+        ( TInt aNumberOfSelectedContacts, HBufC8& aContactLink )
     {
     PBK2_DEBUG_PRINT( PBK2_DEBUG_STRING(
         "CPbk2AiwSelectionProvider::AcceptSelectionL(0x%x)"), this );
@@ -271,6 +271,9 @@ TBool CPbk2AiwSelectionProvider::AcceptSelectionL
     iEventParamList->AppendL(
         TAiwGenericParam( EGenericParamSelectedCount,
             TAiwVariant(aNumberOfSelectedContacts ) ) );
+    iEventParamList->AppendL(
+        TAiwGenericParam( EGenericParamContactLinkArray,
+            TAiwVariant( aContactLink ) ) );
     TBool acceptOutput = const_cast<MAiwNotifyCallback*>(iCallback)->
             HandleNotifyL( KAiwCmdSelect, KAiwEventOutParamCheck,
                 *iEventParamList, *iInParamList );

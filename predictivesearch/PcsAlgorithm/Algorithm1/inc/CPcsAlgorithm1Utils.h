@@ -46,6 +46,30 @@ class CPcsAlgorithm1Utils : public CBase
 										       RPointerArray<CPsData>& SearchResults);
 
 		/**
+		 * Compare by length.
+		 */
+		static TBool CompareByLength(const HBufC& aFirst, const HBufC& aSecond);
+
+		/**
+		 * Compare strings exactly case sensitively.
+		 */
+		static TBool CompareExact(const TDesC& aFirst, const TDesC& aSecond);
+
+		/**
+		 * Compare strings with collate rules depending on locale.
+		 */
+		static TBool CompareCollate(const TDesC& aFirst, const TDesC& aSecond);
+
+		/**
+		 * Compare for keys and strings:
+		 * - Case sensitive compare for keys,
+		 * - Case insensitive and language dependent compare for Contact Data and Query.
+		 */
+		static TBool MyCompareKeyAndString(const TDesC& aContactString,
+		                                   const TDesC& aQueryAsString,
+		                                   CPsQuery& aPsQuery);
+
+		/**
          * Case Sensitive compare for keys
          */
 		static TBool MyCompareK(const TDesC& aLeft, const TDesC& aRight, CPsQuery& aPsQuery);
@@ -54,24 +78,24 @@ class CPcsAlgorithm1Utils : public CBase
          * Customized CompareC         
          */					
         static TInt MyCompareC(const TDesC& aLeft, const TDesC& aRight); 					       
-			  
+		
         
         /**
          * TLinearOrder rule for comparison of data objects
          */
-        static TInt CompareDataBySortOrderL(const CPsData& aObject1, 
+        static TInt CompareDataBySortOrderL(const CPsData& aObject1,
                                            const CPsData& aObject2);
 
         /**
          * Trim off all white spaces and special chars
          */                                   
-        static void MyTrim(TDes& aString);                                           
+        static void MyTrim(TDes& aString);
         
         
         /**
          * Check if the input URI is of contact search in a group template form
          */                                   
-        static TBool IsGroupUri(TDesC& aURI);                                        
+        static TBool IsGroupUri(TDesC& aURI);
                                     
 };
 #endif // C_PCS_ALGORITHM_1_UTILS

@@ -31,17 +31,6 @@
 #include "CPsDataPluginInterface.h"
 #include "CPcsPoolElement.h"
 
-// Compare functions
-TBool Compare1 ( const TDesC& aFirst, const TDesC& aSecond )
-{
-    return aFirst == aSecond;
-}
-
-TBool Compare2 ( const TDesC& aFirst, const TDesC& aSecond )
-{
-    return CPcsAlgorithm1Utils::MyCompareC(aFirst, aSecond);
-}
-
 // ============================== MEMBER FUNCTIONS ============================
 
 // ----------------------------------------------------------------------------
@@ -270,12 +259,7 @@ void  CPcsAlgorithm1Helper::FilterResultsSingleL(CPcsAlgorithm1FilterHelper* aAl
                     TBuf<KPsQueryMaxLen> dataWithKeys;
                     iKeyMap->GetMixedKeyStringForDataL( aPsQuery, token, dataWithKeys );
 
-                    // MyCompareC is case insensitive.
-                    // We have some cases that key "Z" (uppercase) is mapping chars "Zz...."
-                    // and key "z" (lowercase) is mapping chars ".," or "Ää".
-                    // The comparison of "Z" and "z" should fail for the keys, that's why we use MyCompareK.
-                    if ( ( CPcsAlgorithm1Utils::MyCompareK(dataWithKeys, queryAsDes, aPsQuery) ) &&
-                         ( CPcsAlgorithm1Utils::MyCompareC(dataWithKeys.Left(queryAsDes.Length()), queryAsDes) == 0 ) )
+                    if ( CPcsAlgorithm1Utils::MyCompareKeyAndString(dataWithKeys, queryAsDes, aPsQuery) )
                     {
                         psData->SetDataMatch(dataIndex);
                         isAdded = ETrue;
@@ -286,7 +270,7 @@ void  CPcsAlgorithm1Helper::FilterResultsSingleL(CPcsAlgorithm1FilterHelper* aAl
                         *seq = token.Mid(0, len);
                         seq->Des().UpperCase();
 
-                        TIdentityRelation<TDesC> rule(Compare1);
+                        TIdentityRelation<TDesC> rule(CPcsAlgorithm1Utils::CompareExact);
                         if ( tempMatchSeq.Find(seq, rule) == KErrNotFound )
                         {
                             tempMatchSeq.Append(seq);
@@ -355,17 +339,12 @@ void  CPcsAlgorithm1Helper::SearchMatchSeqL(CPsQuery& aPsQuery,
     // Search thru multiple words
     while ( token.Length() != 0 )
     {
-         HBufC* data = HBufC::NewLC(token.Length());
-         TPtr dataPtr(data->Des());
-         iKeyMap->GetMixedKeyStringForDataL( aPsQuery, token, dataPtr );
+        HBufC* data = HBufC::NewLC(token.Length());
+        TPtr dataPtr(data->Des());
+        iKeyMap->GetMixedKeyStringForDataL( aPsQuery, token, dataPtr );
 
-         // MyCompareC is case insensitive.
-         // We have some cases that key "Z" (uppercase) is mapping chars "Zz...."
-         // and key "z" (lowercase) is mapping chars ".," or "Ää".
-         // The comparison of "Z" and "z" should fail for the keys, that's why we use MyCompareK.
-         if ( ( CPcsAlgorithm1Utils::MyCompareK(dataPtr, *queryAsDes, aPsQuery) ) &&
-              ( CPcsAlgorithm1Utils::MyCompareC(dataPtr.Left(queryAsDes->Length()), *queryAsDes) == 0 ) )
-         {
+        if ( CPcsAlgorithm1Utils::MyCompareKeyAndString(dataPtr, *queryAsDes, aPsQuery) )
+        {
             TInt len = queryAsDes->Length();
 
             TPsMatchLocation tempLocation;
@@ -386,7 +365,7 @@ void  CPcsAlgorithm1Helper::SearchMatchSeqL(CPsQuery& aPsQuery,
             *seq = token.Mid(0, len);
             seq->Des().UpperCase();
 
-            TIdentityRelation<TDesC> rule(Compare1);
+            TIdentityRelation<TDesC> rule(CPcsAlgorithm1Utils::CompareExact);
             if ( aMatchSet.Find(seq, rule) == KErrNotFound )
             {
                 aMatchSet.Append(seq);
@@ -396,13 +375,13 @@ void  CPcsAlgorithm1Helper::SearchMatchSeqL(CPsQuery& aPsQuery,
             {
                 CleanupStack::PopAndDestroy();
             }
-         }
+        }
 
-         // Next word
-         token.Set(lex.NextToken());
-         beg = lex.Offset() - token.Length();  // start index of next word
-         CleanupStack::PopAndDestroy(); //data
-     }
+        // Next word
+        token.Set(lex.NextToken());
+        beg = lex.Offset() - token.Length();  // start index of next word
+        CleanupStack::PopAndDestroy(); //data
+    }
 
     CleanupStack::PopAndDestroy( queryAsDes );
 
@@ -416,7 +395,7 @@ void  CPcsAlgorithm1Helper::SearchMatchSeqL(CPsQuery& aPsQuery,
 void  CPcsAlgorithm1Helper::SortSearchSeqsL(RPointerArray<TDesC>& aSearchSeqs)
 {
     // Sort the search seqs
-    TLinearOrder<TDesC> rule( Compare2 );
+    TLinearOrder<TDesC> rule( CPcsAlgorithm1Utils::CompareCollate );
     aSearchSeqs.Sort(rule);
 }
 

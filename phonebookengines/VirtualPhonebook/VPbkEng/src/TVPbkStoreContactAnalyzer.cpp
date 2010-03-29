@@ -274,12 +274,18 @@ template<class T> TBool t_IsFieldTypeIncludedL(
                            T aSelector,
                            const CVPbkContactManager& aClassContactManager )
     {
+    TBool ret = EFalse;
     // Get the field type
     const MVPbkFieldType* fieldType =
         VPbkUtils::MatchFieldType( aClassContactManager.FieldTypes(), aField );
-    CVPbkFieldTypeSelector* selector = CreateSelectorLC( aSelector, aClassContactManager );
-    TBool ret = selector->IsFieldTypeIncluded( *fieldType );
-    CleanupStack::PopAndDestroy( );
+  
+    if ( fieldType )
+        {
+        CVPbkFieldTypeSelector* selector = CreateSelectorLC( aSelector,
+            aClassContactManager );
+        ret = selector->IsFieldTypeIncluded( *fieldType );
+        CleanupStack::PopAndDestroy();
+        }
     return ret;
     }
 

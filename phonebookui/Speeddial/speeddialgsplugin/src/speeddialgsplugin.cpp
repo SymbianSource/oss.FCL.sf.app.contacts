@@ -29,7 +29,7 @@
 
 // Includes from GS framework:
 #include <gsfwviewuids.h>
-#include <GSPrivatePluginProviderIds.h>
+#include <gsprivatepluginproviderids.h>
 
 #include <AknNullService.h>
 // Plugin includes:

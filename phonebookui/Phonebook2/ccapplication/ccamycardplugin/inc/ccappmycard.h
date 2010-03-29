@@ -24,6 +24,7 @@
 #include <MVPbkContactObserver.h>
 #include <MVPbkSingleContactOperationObserver.h>
 #include <MPbk2EditedContactObserver.h>	
+#include <MPbk2ExitCallback.h>
 
 class CVPbkContactManager;
 class MVPbkContactLink;
@@ -37,6 +38,7 @@ class RFs;
 class CCreateMyCard;
 class CPbk2ApplicationServices;
 class CCCAppMyCardPlugin;	
+class MPbk2DialogEliminator;
 
 /**
  * MyCard Observer class
@@ -75,7 +77,8 @@ NONSHARABLE_CLASS( CCCAppMyCard ) :
 		public MVPbkSingleContactLinkOperationObserver,
 		public MVPbkSingleContactOperationObserver,
 		public MVPbkContactObserver,
-		public MPbk2EditedContactObserver
+		public MPbk2EditedContactObserver,
+		public MPbk2ExitCallback
     {
 
 public:
@@ -185,6 +188,9 @@ private:	// form MPbk2EditedContactObserver
 	                MVPbkStoreContact* aEditedContact );
 	 void ContactEditingAborted();
     
+private: // From MPbk2ExitCallback
+     TBool OkToExitL( TInt aCommandId );
+
 private: // constructors
     inline CCCAppMyCard( CCCAppMyCardPlugin& aPlugin );
     inline void ConstructL(RFs* aFs);
@@ -219,6 +225,11 @@ private:  // new functions
      */
     static TInt CloseCcaL( TAny* aPtr );
     
+    /**
+     * Async callback function for closing editor dialog.
+     */
+    static TInt ExitDlgL( TAny* aPtr );
+    
     /*
      * Closes the CCA
      */
@@ -251,10 +262,14 @@ private: // data
 	CAsyncCallBack*	iCloseCallBack; 
     /// Own: Asynchronous callback for create
     CAsyncCallBack* iCreateCallBack; 
+    /// Own: Asynchronous callback for close dialog
+    CAsyncCallBack* iDlgCloseCallBack; 
 	/// Ref: plugin
 	CCCAppMyCardPlugin& iPlugin;
 	/// Focused contact field index for the editor
 	TInt iFocusedFieldIndex;	
+	/// Now own. Editor dialog eliminator
+	MPbk2DialogEliminator* iEditorEliminator;
 	};
 
 #endif // CCAPPMYCARD_H

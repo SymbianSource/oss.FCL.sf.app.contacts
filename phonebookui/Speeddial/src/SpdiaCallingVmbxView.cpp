@@ -46,7 +46,7 @@
 #include "SpdiaCallingVmbxContainer.h"
 
 #include <featmgr.h>
-#include <SettingsInternalCRKeys.h>
+#include <settingsinternalcrkeys.h>
 #include <centralrepository.h>
 
 //_LIT8( KSpdiaCustomMesg, "outside" );

@@ -23,16 +23,6 @@
 #include <collate.h>
 #include <biditext.h>
 
-// Compare functions
-TBool CompareByLength ( const HBufC& aFirst, const HBufC& aSecond )
-{
-   return ( aFirst.Length() > aSecond.Length() );
-}
-
-TBool Compare3 ( const TDesC& aFirst, const TDesC& aSecond )
-{
-	return aFirst == aSecond;     
-}
 // ============================== MEMBER FUNCTIONS ============================
 
 // ----------------------------------------------------------------------------
@@ -226,13 +216,12 @@ void  CPcsAlgorithm1MultiSearchHelper::SearchMatchSeqMultiL(RPointerArray<CPsQue
     RPointerArray<HBufC> descriptorsQueryList;
     ConvertQueryToListL(aPsQuery, descriptorsQueryList);
     TLex lex(aData);
-    while ( !lex.Eos() )                                    // Search thru all words
+    while ( !lex.Eos() ) // Search thru all words
     {
-        TPtrC currentWord = lex.NextToken();                // next word
+        TPtrC currentWord = lex.NextToken(); // next word
 
         TPsMatchLocation newLocation = { lex.Offset() - currentWord.Length(), //start index
-                                         0,
-                                         TBidiText::TextDirectionality(currentWord) };
+                                         0, TBidiText::TextDirectionality(currentWord) };
 
         for ( TInt queryIndex = 0; queryIndex < aPsQuery.Count(); ++queryIndex )
         {
@@ -242,7 +231,7 @@ void  CPcsAlgorithm1MultiSearchHelper::SearchMatchSeqMultiL(RPointerArray<CPsQue
             // Convert the data to required form (mode specific)
             iKeyMap->GetMixedKeyStringForDataL(*aPsQuery[queryIndex], currentWord, convertedWord);
 
-            if ( CPcsAlgorithm1Utils::MyCompareC(convertedWord.Left(currentQuery->Length()), *currentQuery) == 0 )                
+            if ( CPcsAlgorithm1Utils::MyCompareKeyAndString(convertedWord, *currentQuery, *aPsQuery[queryIndex]) )
             {
                 newLocation.length = currentQuery->Length();
                 aMatchLocation.AppendL( newLocation );
@@ -259,20 +248,20 @@ void  CPcsAlgorithm1MultiSearchHelper::SearchMatchSeqMultiL(RPointerArray<CPsQue
 // ----------------------------------------------------------------------------
 void CPcsAlgorithm1MultiSearchHelper::AppendMatchToSeqL( 
         RPointerArray<TDesC>& aMatchSeq, const TDesC& aMatch  )
-    {
+{
     HBufC* seq = aMatch.AllocLC();
     seq->Des().UpperCase();
-    TIdentityRelation<TDesC> rule(Compare3);
+    TIdentityRelation<TDesC> rule(CPcsAlgorithm1Utils::CompareExact);
     if ( aMatchSeq.Find(seq, rule) == KErrNotFound )
-        {
+    {
         aMatchSeq.Append(seq);
         CleanupStack::Pop( seq );
-        }
-    else 
-        {
-        CleanupStack::PopAndDestroy( seq );
-        }
     }
+    else 
+    {
+        CleanupStack::PopAndDestroy( seq );
+    }
+}
 
 // ----------------------------------------------------------------------------
 // CPcsAlgorithm1MultiSearchHelper::LookupMatchL
@@ -280,7 +269,7 @@ void CPcsAlgorithm1MultiSearchHelper::AppendMatchToSeqL(
 void CPcsAlgorithm1MultiSearchHelper::LookupMatchL( CPsQuery& aSearchQuery,
         const TDesC& aData,
         TDes& aMatchedData )
-    {
+{
     RPointerArray<CPsQuery> queryList = MultiQueryL(aSearchQuery);
     TBuf<KPsQueryMaxLen> queryAsString = aSearchQuery.QueryAsStringLC();
     TBuf<KPsQueryMaxLen> convertedQuery;
@@ -290,116 +279,117 @@ void CPcsAlgorithm1MultiSearchHelper::LookupMatchL( CPsQuery& aSearchQuery,
     RArray<TInt> dataWordLengths;
     TLex lex( aData );
     while ( !lex.Eos() )
-        {
+    {
         TPtrC currentWord = lex.NextToken();
         PRINT2( _L("idx len: %d %d"), lex.Offset() - currentWord.Length(), currentWord.Length() );
         dataWordIndexes.AppendL( lex.Offset() -  currentWord.Length() );
         dataWordLengths.AppendL( currentWord.Length() );
-        }
+    }
 
     RArray<TInt> queryIndexes;
     RArray<TPtrC> convertedQueriesAsDes;
     lex.Assign( queryAsString );
     while ( !lex.Eos() )
-        {
+    {
         TPtrC currentWord = lex.NextToken();
         convertedQueriesAsDes.AppendL( 
                 convertedQuery.Mid( lex.Offset() - currentWord.Length(), currentWord.Length()) );
         queryIndexes.AppendL( lex.Offset() - currentWord.Length() );
-        }
+    }
     
     RPointerArray< RArray<TBool> > possibleMatches;
     for ( TInt i(0); i < queryList.Count(); ++i )
-        {
+    {
         RArray<TBool>* matchesForCurrentQuery = new (ELeave) RArray<TBool>;
         possibleMatches.AppendL( matchesForCurrentQuery );
         CPsQuery* currentQuery = queryList[i];
         for ( TInt j(0); j < dataWordIndexes.Count(); j++ )
-            {
+        {
             TPtrC currentDataWord = aData.Mid( dataWordIndexes[j], dataWordLengths[j] );
             RBuf convertedDataWord;
             convertedDataWord.CreateL( currentDataWord.Length() );
             CleanupClosePushL( convertedDataWord );
+
             iKeyMap->GetMixedKeyStringForDataL( *currentQuery, currentDataWord.Left(currentQuery->Count()), convertedDataWord );
-            if ( CPcsAlgorithm1Utils::MyCompareC( convertedQueriesAsDes[i], convertedDataWord ) == 0 )
-                {
+
+            if ( CPcsAlgorithm1Utils::MyCompareKeyAndString(convertedQueriesAsDes[i], convertedDataWord, *currentQuery) )
+            {
                 matchesForCurrentQuery->AppendL( ETrue );
-                }
+            }
             else
-                {
+            {
                 matchesForCurrentQuery->AppendL( EFalse );
-                }
+            }
             PRINT3( _L("CPcsAlgorithm1MultiSearchHelper::LookupMatchL: possibleMatches[%d][%d]=%d"),i,j, (*(possibleMatches[i]))[j] )
             CleanupStack::PopAndDestroy( &convertedDataWord );
-            }
         }
+    }
     
     const TInt KUnapplied(-1);
     RArray<TInt> appliedMatches;
     appliedMatches.ReserveL( queryList.Count() );
     for ( TInt i(0); i < queryList.Count(); ++i )
-        {
+    {
         appliedMatches.AppendL( KUnapplied );
-        }
+    }
     
     //backtrack algorithm starts here to find fully applied match
     TInt currentQueryIndex(0);
-    while ( currentQueryIndex < queryList.Count()   
-            && currentQueryIndex >= 0 )
-        {
+    while ( currentQueryIndex < queryList.Count() && currentQueryIndex >= 0 )
+    {
         TInt currentDataIndex = appliedMatches[ currentQueryIndex ] + 1;
         appliedMatches[ currentQueryIndex ] = KUnapplied;
         RArray<TBool>& matchesForCurrentQuery = *(possibleMatches[currentQueryIndex]);
         TBool doBacktrack( ETrue );
         while ( currentDataIndex < dataWordIndexes.Count() )
-            {
+        {
             PRINT2(_L("CPcsAlgorithm1MultiSearchHelper::LookupMatchL: matchesForCurrentQuery[%d] = %d"), 
                     currentDataIndex, matchesForCurrentQuery[ currentDataIndex ] );
             
             if ( matchesForCurrentQuery[ currentDataIndex ] 
                      && (appliedMatches.Find( currentDataIndex ) == KErrNotFound) )
-                {
+            {
                 appliedMatches[ currentQueryIndex ] = currentDataIndex;
                 doBacktrack = EFalse;
                 break;
-                }
+            }
             ++currentDataIndex;
-            }
-        if ( doBacktrack )
-            {
-            --currentQueryIndex;            
-            }
-        else
-            {
-            ++currentQueryIndex;
-            }
         }
+        if ( doBacktrack )
+        {
+            --currentQueryIndex;            
+        }
+        else
+        {
+            ++currentQueryIndex;
+        }
+    }
     
     if ( currentQueryIndex >= 0 ) //found
-        {
+    {
         aMatchedData = queryAsString;
         for ( TInt i(0); i < appliedMatches.Count(); ++i )
-            {
+        {
             TInt matchedDataIndex = appliedMatches[i];
             TPtr resultFragment = aMatchedData.MidTPtr( 
                 queryIndexes[ i ],
                 convertedQueriesAsDes[i].Length() );
             resultFragment = aData.Mid(
-                    dataWordIndexes[ matchedDataIndex ],
-                    convertedQueriesAsDes[i].Length() );
-            }        
-        }
+                dataWordIndexes[ matchedDataIndex ],
+                convertedQueriesAsDes[i].Length() );
+        }        
+    }
     else
-        {
+    {
         aMatchedData.Zero();
-        }
+    }
     
     for ( TInt i(0); i < possibleMatches.Count(); ++i )
-        {
+    {
         RArray<TBool>* pointerToDelete = possibleMatches[i];
         pointerToDelete->Close();
         delete pointerToDelete;
-        }
+    }
     possibleMatches.Close();
     dataWordIndexes.Close();
     dataWordLengths.Close();
@@ -410,7 +400,7 @@ void CPcsAlgorithm1MultiSearchHelper::LookupMatchL( CPsQuery& aSearchQuery,
     appliedMatches.Close();
     
     CleanupStack::PopAndDestroy();  //result of queryAsStringLC
-    }
+}
 
 // ----------------------------------------------------------------------------
 // CPcsAlgorithm1MultiSearchHelper::ConvertQueryToList
@@ -465,7 +455,7 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
 	}
          
 	// Sort the query items before we search them
-	TLinearOrder<HBufC> rule( CompareByLength );
+	TLinearOrder<HBufC> rule( CPcsAlgorithm1Utils::CompareByLength );
 	queryList.Sort(rule);
 	
     // To hold the match results
@@ -488,52 +478,51 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
 		// Loop from the last query so that longest match is seen first
 		for ( TInt queryIndex = queryList.Count() - 1; queryIndex >= 0; queryIndex-- )
 		{
-		     TBool queryMatch = EFalse;
-		     HBufC* tmpQuery = queryList[queryIndex];
-		     // Get the original query mode corresponding to this query
-		     TInt modeIndex = tempqueryList.Find(tmpQuery);
-		     
-		     for ( TInt dataIndex = 0; dataIndex < psData->DataElementCount(); dataIndex++ )
-		     {
-		         // Filter off data fields not required in search
-		         TReal bitIndex;
-		         Math::Pow(bitIndex, 2, dataIndex);
+		    TBool queryMatch = EFalse;
+		    HBufC* tmpQuery = queryList[queryIndex];
+		    // Get the original query mode corresponding to this query
+		    TInt modeIndex = tempqueryList.Find(tmpQuery);
+		    
+		    for ( TInt dataIndex = 0; dataIndex < psData->DataElementCount(); dataIndex++ )
+		    {
+		        // Filter off data fields not required in search
+		        TReal bitIndex;
+		        Math::Pow(bitIndex, 2, dataIndex);
 
-                 TUint8 filter = (TUint8)bitIndex & aFilteredDataMatch;     		         
-		         if ( filter == 0x0 )
-		         {
+                TUint8 filter = (TUint8)bitIndex & aFilteredDataMatch;     		         
+		        if ( filter == 0x0 )
+		        {
 		            // Move to next data
-		         	continue;
-		         }
-		       			     
-		         TInt wordIndex = -1;			     
-			     
-			     TLex lex(psData->Data(dataIndex)->Des());
-			     
-			     // First word
-			     TPtrC tmpData = lex.NextToken();
-			     
-			     // Search thru multiple words
-			     while ( tmpData.Length() != 0 ) 
-			     {			      
-			         wordIndex++;			         				  
-			     	 
-			     	 TBuf<KPsQueryMaxLen> data; 
-			     	  
-			         // Convert the data to required form (mode specific)
-				     iKeyMap->GetMixedKeyStringForDataL(*searchQuery[modeIndex], tmpData, data);
-				   
-				     // Compare the data against query
-                     if ( CPcsAlgorithm1Utils::MyCompareC(data.Left(tmpQuery->Length()),
-                                                          *tmpQuery) == 0 )				          
-				     {
+		        	continue;
+		        }
+		       	
+		        TInt wordIndex = -1;			     
+			    
+			    TLex lex(psData->Data(dataIndex)->Des());
+			    
+			    // First word
+			    TPtrC tmpData = lex.NextToken();
+			    
+			    // Search thru multiple words
+			    while ( tmpData.Length() != 0 ) 
+			    {			      
+			        wordIndex++;			         				  
+			     	
+			     	TBuf<KPsQueryMaxLen> data; 
+
+	                // Convert the data to required form (mode specific)
+	                iKeyMap->GetMixedKeyStringForDataL(*searchQuery[modeIndex], tmpData, data);
+
+				    // Compare the data against query
+                    if ( CPcsAlgorithm1Utils::MyCompareKeyAndString(data, *tmpQuery, *searchQuery[modeIndex]) )
+				    {
 				        psData->SetDataMatch(dataIndex);				        			        
-				        
+
 				        // Perform two checks.
 				        // 1. Ensure that the word is not matched against any previous query
 				        // 2. If it is the first match to the query
 				        TBool isWordMatch = IsWordMatch(dataIndex, wordIndex);				        
-				      
+
 				        // Check if the current word is not matched to any query
 		                if( !isWordMatch )
 		                {
@@ -544,37 +533,37 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
 	                 			queryMatch = ETrue;
 	                 			SetWordMap(dataIndex, wordIndex);
 							}
-							
+
 					        // Extract matched character sequence and fill in temp array
 							TInt len = tmpQuery->Length();
 							HBufC* seq = HBufC::NewL(len);
 							*seq = tmpData.Mid(0, len);
 							
 							seq->Des().UpperCase();
-							TIdentityRelation<TDesC> searchRule(Compare3);
+							TIdentityRelation<TDesC> searchRule(CPcsAlgorithm1Utils::CompareExact);
 							if ( tmpMatchSet.Find(seq, searchRule) == KErrNotFound )
 							{
-							tmpMatchSet.Append(seq);
+                                tmpMatchSet.Append(seq);
 							}
 							else
-							    { 
-								  delete seq;
-								  seq = NULL;
-							    }
-						}	
-				     }
+							{ 
+                                delete seq;
+								seq = NULL;
+							}
+						}
+				    }
 				     
-				     // Next word
-				     tmpData.Set(lex.NextToken());
-			     }			     
-		     }		   
-		     
-		     // No data element matches the query. Ignore this result.
-		     if ( queryMatch == EFalse )
-		     {
+				    // Next word
+				    tmpData.Set(lex.NextToken());
+			    }			     
+		    }
+		    
+		    // No data element matches the query. Ignore this result.
+		    if ( queryMatch == EFalse )
+		    {
 		        isMatch = EFalse;
 		     	break;
-		     }		     
+		    }
 		}
 		
 		// If match add the element to the result set
@@ -748,5 +737,3 @@ TUint8 CPcsAlgorithm1MultiSearchHelper::FilterDataFieldsL(RArray<TInt>& aRequire
 }
 
 // End of file
-
-

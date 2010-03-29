@@ -38,7 +38,7 @@
 #include <MPbk2ContactLinkIterator.h>
 #include <MPbk2UiControlCmdItem.h>
 #include <Pbk2Commands.hrh>
-#include "pbk2nameslistex.hrh"
+#include "Pbk2NamesListEx.hrh"
 
 
 const TInt KMinNumberOfTopContactsForRearranging = 2;

@@ -15,21 +15,43 @@
 *
 */
 
+#include "ccappimagedecoding.h"
 #include <bitmaptransforms.h>
-#include "ccappcommlauncherimagedecoding.h"
+#include <Pbk2PresentationUtils.h>
+#include <imageconversion.h>
+
+namespace{
 
 const TInt KDelay = 500000; // 0.5s
+
+inline TSize ScaledLoadSize( const TSize& aOriginalSize, TInt aScaleFactor )
+    {
+    // Divide original size with scalefactor
+    // Round always up if result is not integer
+    return TSize( aOriginalSize.iWidth / aScaleFactor + ( aOriginalSize.iWidth % aScaleFactor ? 1 : 0 ),
+               aOriginalSize.iHeight / aScaleFactor + ( aOriginalSize.iHeight % aScaleFactor ? 1 : 0 ) );
+    }
+} // namespace
+
 // ---------------------------------------------------------------------------
 // Two-phase construction
 // ---------------------------------------------------------------------------
 //
-CCCAppCommLauncherImageDecoding* CCCAppCommLauncherImageDecoding::NewL(
-        CCCAppCommLauncherHeaderControl* aHeader, const TDesC8* aBitmapData, const TDesC* aImageFile)
+EXPORT_C CCCAppImageDecoding* CCCAppImageDecoding::NewL(
+        MCCAppImageDecodingObserver& aObserver,
+        RFs& aFs,
+        HBufC8* aBitmapData, 
+        HBufC* aImageFile)
     {
-    CCCAppCommLauncherImageDecoding* self = new (ELeave) CCCAppCommLauncherImageDecoding(aHeader);
+    CCCAppImageDecoding* self = new (ELeave) CCCAppImageDecoding(
+            aObserver, aFs, aBitmapData, aImageFile);
     CleanupStack::PushL(self);
-    self->ConstructL(aBitmapData, aImageFile);
-    CleanupStack::Pop(self);
+    self->ConstructL();
+    CleanupStack::Pop(self);    
+    
+    self->iBitmapData = aBitmapData;   // take ownship
+    self->iImageFullName = aImageFile;  // take ownship
+
     return self;
     }
 
@@ -37,52 +59,47 @@ CCCAppCommLauncherImageDecoding* CCCAppCommLauncherImageDecoding::NewL(
 // First phase (C++) constructor
 // ---------------------------------------------------------------------------
 //
-CCCAppCommLauncherImageDecoding::CCCAppCommLauncherImageDecoding(CCCAppCommLauncherHeaderControl* aHeader) : 
-CActive( CActive::EPriorityStandard ), iHeader(aHeader)
+inline CCCAppImageDecoding::CCCAppImageDecoding(
+        MCCAppImageDecodingObserver& aObserver,
+        RFs& aFs,
+        HBufC8* aBitmapData, 
+        HBufC* aImageFile) : 
+CActive( CActive::EPriorityStandard ), 
+iObserver(aObserver), 
+iFs(aFs)
     { 
     CActiveScheduler::Add(this); 
     }
 
 // ---------------------------------------------------------------------------
-// ConstructL, second phase constructor
+// Second phase (C++) constructor
 // ---------------------------------------------------------------------------
 //
-void CCCAppCommLauncherImageDecoding::ConstructL(const TDesC8* aBitmapData, const TDesC* aImageFile)
+inline void CCCAppImageDecoding::ConstructL()
     {
-    if ( aImageFile )
-        {
-        iImageFullName = aImageFile->AllocL();
-        }
-    if ( aBitmapData )
-        {
-        iBitmapData = aBitmapData->AllocL();
-        }
-    User::LeaveIfError( iFs.Connect() );
-    iTimer.CreateLocal();
+    User::LeaveIfError( iTimer.CreateLocal() );
     }
 
 // ---------------------------------------------------------------------------
 // Destructor
 // ---------------------------------------------------------------------------
 //
-CCCAppCommLauncherImageDecoding::~CCCAppCommLauncherImageDecoding()
+CCCAppImageDecoding::~CCCAppImageDecoding()
     {
-    DoCancel();
-    if (iBitmap)
+    Cancel();
+    if (iImgDecoder)
         {
-        delete iBitmap;
-        iBitmap = NULL;
+        iImgDecoder->Cancel();
+        delete iImgDecoder;
         }
-    if (iBitmapData)
+    if (iBitmapScaler)
         {
-        delete iBitmapData;
-        iBitmapData = NULL;
+        iBitmapScaler->Cancel();
+        delete iBitmapScaler;
         }
-    if (iImageFullName)
-        {
-        delete iImageFullName;
-        }
-    iFs.Close();
+    delete iBitmap;
+    delete iBitmapData;
+    delete iImageFullName;
     iTimer.Close();
     }
 
@@ -90,8 +107,9 @@ CCCAppCommLauncherImageDecoding::~CCCAppCommLauncherImageDecoding()
 // Starts the decoding process
 // ---------------------------------------------------------------------------
 //
-void CCCAppCommLauncherImageDecoding::StartL( TSize aImageSize )
+EXPORT_C void CCCAppImageDecoding::StartL( const TSize& aImageSize )
     {
+    Cancel();
     iDecoderState = ECcaConvertThumbnailImage;
     iBitmapSize = aImageSize;
     CreateBitmapL();
@@ -102,7 +120,7 @@ void CCCAppCommLauncherImageDecoding::StartL( TSize aImageSize )
 // completed.
 // ---------------------------------------------------------------------------
 //
-void CCCAppCommLauncherImageDecoding::RunL() 
+void CCCAppImageDecoding::RunL() 
     {
     User::LeaveIfError( iStatus.Int() );
     switch ( iDecoderState )
@@ -110,6 +128,7 @@ void CCCAppCommLauncherImageDecoding::RunL()
 	    case ECcaConvertThumbnailImage:
 	    	{
 	        iDecoderState = ECcaScaleThumbnail;
+	        CropBitmapL();
 	        ScaleBitmapL();
 	        break;
 	    	}
@@ -129,7 +148,7 @@ void CCCAppCommLauncherImageDecoding::RunL()
 	    case ECcaScaleImage:
 	    	{
 	        // Ownership of the bitmap is transferred
-	        iHeader->SetBitmap( iBitmap );
+	        iObserver.BitmapReadyL( iBitmap );
 	        iBitmap = NULL;
 	        delete iBitmapScaler;
 	        iBitmapScaler = NULL;
@@ -152,6 +171,7 @@ void CCCAppCommLauncherImageDecoding::RunL()
 	    	{
 	        iDecoderState = ECcaScaleImage;
 	        SetPriority( EPriorityStandard );
+            CropBitmapL();
 	        ScaleBitmapL();
 	        break;
 	    	}
@@ -164,7 +184,7 @@ void CCCAppCommLauncherImageDecoding::RunL()
 // Called when the decoding (request) is cancelled for some reason.
 // ---------------------------------------------------------------------------
 //
-void CCCAppCommLauncherImageDecoding::DoCancel()
+void CCCAppImageDecoding::DoCancel()
     { 
     if (iImgDecoder)
         {
@@ -181,38 +201,65 @@ void CCCAppCommLauncherImageDecoding::DoCancel()
     iTimer.Cancel();
     }
 
-void CCCAppCommLauncherImageDecoding::ScaleBitmapL()
+void CCCAppImageDecoding::CropBitmapL()
+    {
+    TSize dummy;
+    Pbk2PresentationImageUtils::CropImageL(
+            *iBitmap, 
+            Pbk2PresentationImageUtils::ELandscapeCropping, 
+            dummy );
+    }
+
+void CCCAppImageDecoding::ScaleBitmapL()
     {   
     iBitmapScaler = CBitmapScaler::NewL();
     iBitmapScaler->Scale( &iStatus, *iBitmap, iBitmapSize );
     SetActive();
     }
 
-void CCCAppCommLauncherImageDecoding::CreateBitmapL()
+void CCCAppImageDecoding::CreateBitmapL()
     {
-    if ( iDecoderState == ECcaConvertThumbnailImage )
+    TInt initDecoder( KErrGeneral );
+    if ( iDecoderState == ECcaConvertThumbnailImage && iBitmapData )
         {
         iImgDecoder = CImageDecoder::DataNewL( iFs, *iBitmapData, CImageDecoder::EOptionAlwaysThread );
+        initDecoder = KErrNone;
         }
-    else if ( iDecoderState == ECcaConvertImageFromFile )
+    else if ( iDecoderState == ECcaConvertImageFromFile && iImageFullName )
         {
         // leaaves if file doesn't exist
-        TRAPD ( initDecoder, iImgDecoder = CImageDecoder::FileNewL( iFs, *iImageFullName, CImageDecoder::EOptionAlwaysThread ) );
-        if ( initDecoder )
-        	{
-	        delete iBitmapScaler;
-	        iBitmapScaler = NULL;
-	        delete iImgDecoder;
-	        iImgDecoder = NULL;
-        	return;
-        	}
+        TRAP ( initDecoder, iImgDecoder = CImageDecoder::FileNewL( iFs, *iImageFullName, CImageDecoder::EOptionAlwaysThread ) );
         }
-   
+    if ( initDecoder )
+        {
+        delete iBitmapScaler;
+        iBitmapScaler = NULL;
+        delete iImgDecoder;
+        iImgDecoder = NULL;
+        return;
+        }
+    
    if ( !iBitmap )
        {
-       TFrameInfo info = iImgDecoder->FrameInfo();
+       const TFrameInfo info = iImgDecoder->FrameInfo();
+	   // calculate size for the bitmap
+       const TSize size( iBitmapSize );
+       TSize loadSize( info.iOverallSizeInPixels );
+       
+       for( TInt i = 1 ; i < 9 ; i = i * 2 )
+           {
+		   // we can use scalers 1:1 1:2 1:4 1:8
+           TSize calcSize( ScaledLoadSize( info.iOverallSizeInPixels, i ) );
+           if( calcSize.iHeight < size.iHeight ||
+               calcSize.iWidth < size.iWidth )
+               {
+               break;
+               }
+           loadSize = calcSize;
+           }
+       
        iBitmap = new ( ELeave ) CFbsBitmap;
-       User::LeaveIfError( iBitmap->Create( info.iOverallSizeInPixels, info.iFrameDisplayMode ));
+       User::LeaveIfError( iBitmap->Create( loadSize, info.iFrameDisplayMode ));
        }
  
     iStatus = KRequestPending;

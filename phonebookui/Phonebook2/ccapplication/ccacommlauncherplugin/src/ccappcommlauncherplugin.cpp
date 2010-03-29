@@ -39,6 +39,7 @@ const TInt KSupportedMethodsArray[] = {
     };
 
 const TInt KSupportedMethodsArrayLength = sizeof( KSupportedMethodsArray ) / sizeof( TInt );
+const TInt KDelayTime = 30000000; // 30s
 
 // ======== MEMBER FUNCTIONS ========
 
@@ -82,6 +83,8 @@ CCCAppCommLauncherPlugin::~CCCAppCommLauncherPlugin()
        iWaitFinish->AsyncStop();
        }
     delete iWaitFinish;
+    
+    delete iAiwRequestTimer;
 
     CCA_DP(KCommLauncherLogFile, CCA_L("<-CCCAppCommLauncherPlugin::~CCCAppCommLauncherPlugin()"));
     }
@@ -90,7 +93,8 @@ CCCAppCommLauncherPlugin::~CCCAppCommLauncherPlugin()
 // CCCAppCommLauncherPlugin::CCCAppCommLauncherPlugin()
 // ---------------------------------------------------------------------------
 //
-CCCAppCommLauncherPlugin::CCCAppCommLauncherPlugin()
+CCCAppCommLauncherPlugin::CCCAppCommLauncherPlugin() : iIsCcaForeground( ETrue ),
+        iIsTimerStart( EFalse )
     {
     CCA_DP(KCommLauncherLogFile, CCA_L("CCCAppCommLauncherPlugin()"));
     }
@@ -202,6 +206,9 @@ void CCCAppCommLauncherPlugin::DoDeactivate()
     // if plugin is showing notifications, this is good place to disable those
     // until ActivatePluginViewL is called again
 
+    // After commlauncher view is deactivated, cancel the timer which started when requests
+    // a call services.
+    CancelTimer();
     CCA_DP(KCommLauncherLogFile, CCA_L("<-CCCAppCommLauncherPlugin::DoDeactivate()"));
     }
 
@@ -360,6 +367,28 @@ void CCCAppCommLauncherPlugin::EnsureMenuHandlerCreatedL()
     }
 
 // ---------------------------------------------------------------------------
+// CCCAppCommLauncherPlugin::CloseCCApp
+// ---------------------------------------------------------------------------
+//
+void CCCAppCommLauncherPlugin::CloseCCApp()
+    {
+    // Cancel timer after timer triggered to make sure the same timer just be 
+    // triggered once.
+    CancelTimer();
+    
+    // If CCA is at background, close CCA application.
+    if ( !iIsCcaForeground )
+        {
+        RWsSession& wsSession = CCoeEnv::Static()->WsSession();
+
+        TApaTask ccapp( wsSession );
+        TInt wgId = CCoeEnv::Static()->RootWin().WindowGroupId();
+        ccapp.SetWgId( wgId );
+        ccapp.EndTask();
+        }
+    }
+
+// ---------------------------------------------------------------------------
 // CCCAppCommLauncherContainer::ContactorService
 // ---------------------------------------------------------------------------
 //
@@ -368,6 +397,10 @@ CCAContactorService* CCCAppCommLauncherPlugin::ContactorService()
     return iContactorService;
     }
 
+// ---------------------------------------------------------------------------
+// CCCAppCommLauncherPlugin::DefaultSettingComplete
+// ---------------------------------------------------------------------------
+//
 void CCCAppCommLauncherPlugin::DefaultSettingComplete()
 	{
 	if ( iWaitFinish && iWaitFinish->IsStarted() )
@@ -375,6 +408,41 @@ void CCCAppCommLauncherPlugin::DefaultSettingComplete()
 	   iWaitFinish->AsyncStop();
 	   }
 	}
+
+// ---------------------------------------------------------------------------
+// CCCAppCommLauncherPlugin::StartTimerL
+// ---------------------------------------------------------------------------
+//
+void CCCAppCommLauncherPlugin::StartTimerL()
+    {
+    if ( !iAiwRequestTimer )
+        {
+        iAiwRequestTimer = CPeriodic::NewL( CActive::EPriorityStandard );
+        }
+    
+    // Cancel the timer before start it to make sure formal timer can be canceled
+    // when start a new timer.
+    CancelTimer();
+    
+    TCallBack callback( ServiceTimeOutL, this );
+    iAiwRequestTimer->Start( KDelayTime, KDelayTime, callback );
+    
+    iIsTimerStart = ETrue;
+    }
+
+// ---------------------------------------------------------------------------
+// CCCAppCommLauncherPlugin::CancelTimer
+// ---------------------------------------------------------------------------
+//
+void CCCAppCommLauncherPlugin::CancelTimer()
+    {
+    if ( iAiwRequestTimer && iIsTimerStart )
+        {
+        iAiwRequestTimer->Cancel();
+        iIsTimerStart = EFalse;
+        }
+    }
+
 // ---------------------------------------------------------------------------
 // CCCAppCommLauncherPlugin::IsTopContactL
 // ---------------------------------------------------------------------------
@@ -399,6 +467,9 @@ TBool CCCAppCommLauncherPlugin::IsContactL()
 //
 void CCCAppCommLauncherPlugin::HandleCommandL( TInt aCommand )
     {
+    // Make sure the aiw request timer is canceled before executing another command.
+    CancelTimer();
+    
     // Forward the command handling 1st to base-class.
     // The "Exit"- and "Back"-commands are handled there.
     CCCAppViewPluginAknView::HandleCommandL( aCommand );
@@ -476,6 +547,15 @@ TBool CCCAppCommLauncherPlugin::PluginBusy()
     }
 
 // ---------------------------------------------------------------------------
+// CCCAppCommLauncherPlugin::HandleForegroundEventL()
+// ---------------------------------------------------------------------------
+//
+void CCCAppCommLauncherPlugin::HandleForegroundEventL( TBool aForeground )
+    {
+    iIsCcaForeground = aForeground;
+    }
+
+// ---------------------------------------------------------------------------
 // CCCAppCommLauncherPlugin::Id
 // ---------------------------------------------------------------------------
 //
@@ -535,5 +615,16 @@ void CCCAppCommLauncherPlugin::UpdateMSKinCbaL( TBool aCommMethodsAvailable )
         cba->DrawDeferred();
         }
 }
+
+// ---------------------------------------------------------------------------
+// CCCAppCommLauncherPlugin::ServiceTimeOutL
+// ---------------------------------------------------------------------------
+//
+TInt CCCAppCommLauncherPlugin::ServiceTimeOutL( TAny* aObject )
+    {
+    CCCAppCommLauncherPlugin* self = static_cast<CCCAppCommLauncherPlugin*> (aObject);
+    self->CloseCCApp();
+    return 0;
+    }
 
 // End of File

@@ -37,6 +37,7 @@
 #include <phonebook2ece.mbg>
 #include <gulicon.h>
 #include <layoutmetadata.cdl.h>
+#include <StringLoader.h>
 
 namespace {
 /// Amount of child UI components
@@ -99,7 +100,9 @@ void CCCAppMyCardHeaderControl::ConstructL(
             EMbmPhonebook2eceQgn_prop_wml_bm_ovi_mask );    
                 
         CGulIcon* guiIcon = CGulIcon::NewL( bmp, bmpMask );
-        iStatusControl->SetDefaultStatusL( R_QTN_MYCARD_DEFAULT_STATUS, guiIcon );      
+        iStatusControl->SetDefaultStatusIconL( guiIcon );
+        HBufC* defaultText = StringLoader::LoadL( R_QTN_CCA_MC_MY_CARD_IN_OVI );                                            
+        iStatusControl->SetDefaultStatusTextL( defaultText );        
         }
     FeatureManager::UnInitializeLib();
     

@@ -261,6 +261,9 @@ TPtrC CCCAppCommLauncherLPadModel::MdcaPoint( TInt aIndex ) const
         tempText.Append( textPtr );
         tempText.Append( KColumnListSeparator ); 
         
+        // TODO: Check presence icon
+        tempText.Append( KColumnListSeparator ); 
+        
         // Check if show multi icon at the right end of second row
         if ( IfShowMultiIcon( aIndex ) )
         	{

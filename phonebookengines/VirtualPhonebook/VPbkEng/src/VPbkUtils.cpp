@@ -61,15 +61,19 @@ EXPORT_C TBool IsFieldTypeIncludedL(
         const MVPbkBaseContactField& aField,
         TResourceReader& aResourceReader)
     {
+    TBool ret = EFalse;
     // Get aField's field type
     const MVPbkFieldType* fieldType = MatchFieldType(aFieldTypeList, 
             aField);
-
-    CVPbkFieldTypeSelector* selector = CVPbkFieldTypeSelector::NewL(
-            aResourceReader, aFieldTypeList);
-    // Check if the fields type is the one needed
-    TBool ret = selector->IsFieldTypeIncluded(*fieldType);
-    delete selector;
+    
+    if ( fieldType )
+        {
+        CVPbkFieldTypeSelector* selector = CVPbkFieldTypeSelector::NewL(
+            aResourceReader, aFieldTypeList );
+        // Check if the fields type is the one needed
+        ret = selector->IsFieldTypeIncluded( *fieldType );
+        delete selector;
+        }
     return ret;
     }
 

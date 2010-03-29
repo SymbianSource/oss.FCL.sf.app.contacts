@@ -23,7 +23,7 @@
 #include "ccappmycard.h"
 #include "ccappmycard.hrh"
 #include <ccappmycardpluginrsc.rsg>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <data_caging_path_literals.hrh>
 #include <phonebook2.mbg>
 #include <mccappengine.h>
@@ -35,11 +35,13 @@
 #include <avkon.hrh>
 #include <aknappui.h>
 #include <CPbk2CommandHandler.h>
-#include <pbk2commands.hrh>		//pbk2cmdsend
-#include <pbk2datacaging.hrh>	
+#include <Pbk2Commands.hrh>		//pbk2cmdsend
+#include <Pbk2DataCaging.hrh>	
 #include <TPbk2ContactEditorParams.h>
 #include <CPbk2GeneralConfirmationQuery.h>
 #include <CPbk2PresentationContact.h>
+#include <StringLoader.h>
+#include <AknQueryDialog.h>
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -164,7 +166,7 @@ void CCCAppMyCardPlugin::DoActivateL(
         aPrevViewId, aCustomMessageId, aCustomMessage );
     
     // Set view title
-    HBufC* title = iCoeEnv->AllocReadResourceLC( R_QTN_MYCARD_TITLE );
+    HBufC* title = iCoeEnv->AllocReadResourceLC( R_QTN_CCA_TITLE_MY_CARD );
     SetTitleL( *title );
     CleanupStack::PopAndDestroy( title );
     
@@ -264,15 +266,15 @@ void CCCAppMyCardPlugin::HandleCommandL( TInt aCommand )
         	break;
         	}
         case ECCappMyCardCmdDelete: 
-        	{        	        
-        	CPbk2GeneralConfirmationQuery* query =
-			CPbk2GeneralConfirmationQuery::NewL();
-			
-        	if ( query->ExecuteLD( iMyCard->PresentationContactL(), R_QTN_QUERY_COMMON_CONF_DELETE ) )
-				{
-				iMyCard->PresentationContactL().DeleteL( *iMyCard );				
-				}       
-        	        	
+        	{
+            HBufC* prompt = 
+                StringLoader::LoadLC( R_QTN_PHOB_MY_CARD_CLEAR_CONFIRM );
+            CAknQueryDialog* dlg = CAknQueryDialog::NewL();
+            if( dlg->ExecuteLD( R_PBK2_GENERAL_CONFIRMATION_QUERY, *prompt ) )
+                {
+                iMyCard->PresentationContactL().DeleteL( *iMyCard );                
+                }
+            CleanupStack::PopAndDestroy( prompt );
         	break;
         	}        	
         default:
@@ -409,6 +411,10 @@ void CCCAppMyCardPlugin::ProcessCommandL(TInt aCommandId)
              AddImageCmdL();
              break;
              
+         case ECCAppMyCardCmdStylusCopyDetailCmd:             
+              CopyDetailL();
+              break;                        
+             
          default:
         	 CAknView::ProcessCommandL(aCommandId);
              break;
@@ -450,4 +456,13 @@ void CCCAppMyCardPlugin::ChangeImageCmdL()
     { 
 	CommandHandlerL()->HandleCommandL( EPbk2CmdChangeImage, *iOwnContainer, NULL );
     } 
+
+// ---------------------------------------------------------------------------
+// CCCAppMyCardContainer::CopyDetailL
+// ---------------------------------------------------------------------------
+//
+void CCCAppMyCardPlugin::CopyDetailL()
+    {
+    CommandHandlerL()->HandleCommandL( EPbk2CmdCopyDetail, *iOwnContainer, NULL );
+    }
 // End of File

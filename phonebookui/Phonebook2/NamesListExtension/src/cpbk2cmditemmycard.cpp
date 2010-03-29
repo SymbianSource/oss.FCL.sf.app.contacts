@@ -54,8 +54,8 @@ CPbk2CmdItemMyCard* CPbk2CmdItemMyCard::NewLC(
 
 void CPbk2CmdItemMyCard::ConstructL()
     {
-    iCreateMyCardText = StringLoader::LoadL( R_QTN_PHOB_CREATE_MYCARD );
-    iOpenMyCardText = StringLoader::LoadL( R_QTN_PHOB_OPEN_MYCARD );
+    iCreateMyCardText = StringLoader::LoadL( R_QTN_CONTACTS_MC_SET_UP_MY_CARD );
+    iOpenMyCardText = StringLoader::LoadL( R_QTN_CONTACTS_MC_MY_CARD );
     iMyCard.SetObserverL(*this);
     }
 

@@ -11,15 +11,12 @@
 *
 * Contributors:
 *
-* Description: 
+* Description: CCA customized control. Code has been modified to
+*              suit CCA requirements. See CFormattedCellListBoxData
+*              in EIKFRLBD.H. 
+*              Ensure that this piece of code is in sync with Avkon EIKFRLBD.H (CFormattedCellListBoxData)
 *
 */
-/*
- * ccappcommlaunchercustomlistboxdata.h
- *
- *  Created on: 2009-11-2
- *      Author: dev
- */
 
 #ifndef CCAPPCOMMLAUNCHERCUSTOMLISTBOXDATA_H_
 #define CCAPPCOMMLAUNCHERCUSTOMLISTBOXDATA_H_
@@ -30,7 +27,7 @@
 #include <eiklbd.h>
 #include <eikfrlb.h>
 #include <avkon.hrh>
-#include <aknsdrawutils.h> // for TAknsQsnTextColorsIndex
+#include <AknsDrawUtils.h> // for TAknsQsnTextColorsIndex
 #include <babitflags.h>    // for TBitFlags32
 
 class CWindowGc;

@@ -38,6 +38,7 @@ namespace
     {
     // LOCAL CONSTANTS AND MACROS
     _LIT( KSeparator, "\t" );    
+    _LIT( KSpace, " " );
     }
 
 
@@ -163,11 +164,12 @@ void CPbk2PhonebookInfoDlg::SetDataL(CVPbkContactManager& aContactManager,
         {
         MPbk2StoreInfoUiItem& uiItem = *iInfoItems->At(i);
         HBufC* itemBuf = HBufC::NewLC(uiItem.HeadingText().Length() +
-            uiItem.ItemText().Length() + KSeparator().Length());
+            uiItem.ItemText().Length() + KSeparator().Length() + KSpace().Length());
         TPtr ptr(itemBuf->Des());
-        ptr.Append(uiItem.ItemText());
         ptr.Append(KSeparator);
         ptr.Append(uiItem.HeadingText());
+        ptr.Append(KSpace);
+        ptr.Append(uiItem.ItemText());
         // Convert digits
         AknTextUtils::DisplayTextLanguageSpecificNumberConversion(ptr);
         array->AppendL(*itemBuf);

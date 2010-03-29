@@ -58,7 +58,13 @@ private:	// new functions
 	/*
 	 * Returns content corresponding to the link
 	 */
-	CSpbContent* ContentByLinkL( const MVPbkContactLink& aLink );
+	CSpbContent* ContentByLink( const MVPbkContactLink& aLink );
+    
+	/**
+	 * Delete content from cache corresponding to the link
+	 * @param aLink contact link to be matched with cache
+	 */
+	void DeleteContentByLink( const MVPbkContactLink& aLink );
 	
 private:    // constructors
     inline CSpbContactStoreListener(

@@ -63,11 +63,12 @@ public:
             const TDesC8& aBrandId,
             const TDesC8& aIconEntry );
     void PhoneNumberUpdatedL(
-            const TDesC& aPhoneNumber );
+            const TDesC& aPhoneNumber,
+            CSpbContentProvider::TSpbContentType aType );
     /*
 	 * Function reloads the phonenumber, if there is no status text provided
 	 */
-    void RefreshNumber();
+    void RefreshNumberL();
     
 private:
     inline CSpbContent(
@@ -75,9 +76,9 @@ private:
     inline void ConstructL(
             const MVPbkContactLink& aLink);
 private:
-    static TInt StartFetchContent( 
+    static TInt StartFetchContentL( 
             TAny* aPtr );
-    void DoStartFetchContent();
+    void DoStartFetchContentL();
     void NotifyObservers(
             MSpbContentProviderObserver::TSpbContentEvent aEvent);
     

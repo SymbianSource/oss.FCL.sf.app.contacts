@@ -11,15 +11,11 @@
 *
 * Contributors:
 *
-* Description: 
+* Description: CCA custom control. Code has been modified to
+*       suit CCA requirements. See CFormattedCellListBoxItemDrawer
+*       in eikfrlb.cpp
 *
 */
-/*
- * ccappcommlaunchercustomlistboxitemdrawer.h
- *
- *  Created on: 2009-10-30
- *      Author: dev
- */
 
 #ifndef CCAPPCOMMLAUNCHERCUSTOMLISTBOXITEMDRAWER_H_
 #define CCAPPCOMMLAUNCHERCUSTOMLISTBOXITEMDRAWER_H_
@@ -258,6 +254,10 @@ protected:
     * @internal
     */
     void DrawBackgroundAndSeparatorLines( const TRect& aItemTextRect ) const;
+    /**
+     *  Draw separator line 
+     */
+    void DrawSeparator( CGraphicsContext& aGc, const TRect& aRect, const TRgb& aColor ) const;
                         
 
 private:

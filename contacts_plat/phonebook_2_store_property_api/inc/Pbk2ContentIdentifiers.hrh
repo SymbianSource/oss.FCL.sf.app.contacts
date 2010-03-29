@@ -28,7 +28,9 @@ enum TPbk2ContentId
     /// Phonebook 2 memory info dialog (store name)
     EPbk2MemInfoPhone,
     /// Phonebook 2 copy query item (store name)
-    EPbk2CopyQueryItem
+    EPbk2CopyQueryItem,
+    /// Phonebook 2 memory info contacts dialog (store name)
+    EPbk2MemInfoContacts
     };
 
 #endif // PBK2CONTENTIDENTIFIERS_HRH

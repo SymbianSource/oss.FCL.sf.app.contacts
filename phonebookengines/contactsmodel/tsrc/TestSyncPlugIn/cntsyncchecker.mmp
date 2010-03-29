@@ -34,7 +34,7 @@ library         centralrepository.lib cntmodel.lib
 
 #if defined(WINS)
 deffile	 ../../bwins/CNTSYNCCHECKER.DEF
-#else if defined(EABI)
+#elif defined(EABI)
 deffile	 ../../EABI/cntsyncchecker.def
 #endif
 

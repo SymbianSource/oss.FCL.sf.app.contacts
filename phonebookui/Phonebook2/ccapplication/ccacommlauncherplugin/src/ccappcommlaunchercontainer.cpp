@@ -21,8 +21,8 @@
 #include "spbcontentprovider.h"
 #include "ccappcommlaunchercustomlistbox.h"
 #include <Pbk2PresentationUtils.h>
-#include <cpbk2applicationservices.h>
-#include <cvpbkcontactmanager.h>
+#include <CPbk2ApplicationServices.h>
+#include <CVPbkContactManager.h>
 #include <utf.h>
 #include <gulicon.h>
 #include "ccaextensionfactory.h"
@@ -37,12 +37,11 @@
 #include "ccafactoryextensionnotifier.h"
 #include <featmgr.h>
 
-
+namespace {
 const TInt KSocialPhonebookDisabled = 2;
 const TInt KSocialPhonebookEnabled = 3;
-const TText KReplacedChars = ' ';
-
 _LIT( KCcaIconDefaultFileName, "\\resource\\apps\\phonebook2ece.mif" );
+}
 
 // =========================== MEMBER FUNCTIONS ===============================
 
@@ -115,11 +114,14 @@ void CCCAppCommLauncherContainer::ConstructL()
                 link = contactArray->At( 0 ).CloneLC();
                 }				
                             
-             const MVPbkContactStoreProperties& storeProperties = link->ContactStore().StoreProperties();
-             TVPbkContactStoreUriPtr uri = storeProperties.Uri();
+            if ( link )
+                {    
+                const MVPbkContactStoreProperties& storeProperties = link->ContactStore().StoreProperties();
+                TVPbkContactStoreUriPtr uri = storeProperties.Uri();
             
-             isSame = uri.Compare( VPbkContactStoreUris::DefaultCntDbUri(), 
-                        TVPbkContactStoreUriPtr::EContactStoreUriAllComponents );
+                isSame = uri.Compare( VPbkContactStoreUris::DefaultCntDbUri(), 
+                            TVPbkContactStoreUriPtr::EContactStoreUriAllComponents );
+                }
             }
             
         if( isSame == 0 )
@@ -127,7 +129,7 @@ void CCCAppCommLauncherContainer::ConstructL()
             iStatusControl = CCCAppStatusControl::NewL( *iProvider, *this );
             iStatusControl->SetContainerWindowL( *this );                   
             iStatusControl->MakeVisible( EFalse );
-          
+            iHeaderCtrl->SetStatusButtonVisibility( EFalse );
             CFbsBitmap* bmp = NULL;
             CFbsBitmap* bmpMask = NULL;
         
@@ -139,12 +141,12 @@ void CCCAppCommLauncherContainer::ConstructL()
                 EMbmPhonebook2eceQgn_prop_wml_bm_ovi_mask );
         
             CGulIcon* guiIcon = CGulIcon::NewL( bmp, bmpMask );
-			iStatusControl->SetDefaultStatusL( R_QTN_CCA_DEFAULT_STATUS, guiIcon );
+            iStatusControl->SetDefaultStatusIconL( guiIcon );
             iStatusControl->SetContactLinkL( *link );
 	
             iFactoryExtensionNotifier = CCCaFactoryExtensionNotifier::NewL();
             TCallBack callBack( CCCAppCommLauncherContainer::CheckExtensionFactoryL, this );
-            iFactoryExtensionNotifier->ObserveExtensionFactory( callBack );
+            iFactoryExtensionNotifier->ObserveExtensionFactoryL( callBack );
             }
         
         if( link )
@@ -173,9 +175,8 @@ void CCCAppCommLauncherContainer::ConstructL()
 //
 void CCCAppCommLauncherContainer::CreateListboxControlL()
     {
-    // Will use customed list box later
-    // iListBox = CCCAppCommLauncherCustomListBox::NewL();
-    iListBox = new (ELeave) CAknDoubleLargeStyleListBox();
+    // Use customized list box 
+    iListBox = CCCAppCommLauncherCustomListBox::NewL();
     iListBox->ConstructL(this, EAknListBoxLoopScrolling);
     iListBox->SetContainerWindowL(*this);
     iListBox->CreateScrollBarFrameL(ETrue);
@@ -215,51 +216,73 @@ void CCCAppCommLauncherContainer::Draw(const TRect& /*aRect*/) const
 //
 void CCCAppCommLauncherContainer::SizeChanged()
     {
-    const TRect drawRect(Rect());
+    const TRect rect(Rect());
     const TBool isLandscape(Layout_Meta_Data::IsLandscapeOrientation());
 
-    // Header, Status and Listbox
-    TAknLayoutRect headerRect;
-	headerRect.LayoutRect(drawRect, AknLayoutScalable_Apps::cl_header_pane(isLandscape));
-	iHeaderCtrl->SetRect(headerRect.Rect());
+    // contact card pane layout
+    TAknWindowComponentLayout contactCardPaneLayout( 
+            TAknWindowComponentLayout::Compose( 
+                    AknLayoutScalable_Apps::main_phob2_pane( 0 ),
+                    AknLayoutScalable_Apps::phob2_contact_card_pane( 1 ) ) );
 
-    AknLayoutUtils::LayoutControl(
-        iListBox, drawRect, AknLayoutScalable_Apps::cl_listscroll_pane(isLandscape));
-
-    TRect listRect = iListBox->Rect();
-
-	if (!isLandscape)
-		{
-		listRect.iTl.iX = drawRect.iTl.iX;
-		listRect.iBr.iX = drawRect.iBr.iX;
-		}
-
-	if( iStatusControl && iStatusControl->IsVisible() )
-		{
-        // status control (similar to list_double2_graphic_pane)
-        TAknLayoutRect statusLayout;
-        statusLayout.LayoutRect( listRect,
-            AknLayoutScalable_Avkon::list_double2_graphic_pane( 0 ) );
-        TRect statusRect( statusLayout.Rect() );
-
-        // list gives space for status control (top of list)
-        listRect.Move( 0, statusRect.Height() );
-        listRect.Resize( 0, -statusRect.Height() );
-       
-        // status control
-        statusRect.Shrink( 10, 5 );
-        iStatusControl->SetRect( statusRect );
-		}
-
-	iListBox->SetRect( listRect );
+    
+    TInt option( isLandscape ? 3 : 2 ); // (w/o button)
+    if( iStatusControl && iStatusControl->IsVisible()  )
+        {
+        // (w button)
+        if( isLandscape )
+            {
+            option = 1;
+            }
+        else
+            {
+            option = 0;
+            }
+			
+        // Status control layout
+        TAknWindowComponentLayout statusPaneLayout(
+            TAknWindowComponentLayout::Compose(
+                TAknWindowComponentLayout::Compose( 
+                    contactCardPaneLayout,
+                    AknLayoutScalable_Apps::phob2_cc_data_pane( option ) ),
+                AknLayoutScalable_Apps::phob2_cc_button_pane( option ) ) );
+        
+        TAknLayoutRect statusPaneLayoutRect;
+        statusPaneLayoutRect.LayoutRect( rect, statusPaneLayout.LayoutLine() );
+        TRect statusPaneRect( statusPaneLayoutRect.Rect() );
+        iStatusControl->SetRect( statusPaneRect );
+        }
+    // Header and Listbox
+    
+    // header layout
+    TAknWindowComponentLayout headerPaneLayout( 
+        TAknWindowComponentLayout::Compose( 
+            contactCardPaneLayout,
+            AknLayoutScalable_Apps::phob2_cc_data_pane( option ) ) );
+    
+    TAknLayoutRect headerPaneLayoutRect;
+    headerPaneLayoutRect.LayoutRect( rect, headerPaneLayout.LayoutLine() );
+    TRect headerPaneRect( headerPaneLayoutRect.Rect() );
+    iHeaderCtrl->SetRect( headerPaneRect );
+    
+    // list layout
+    TAknWindowComponentLayout listPaneLayout( 
+        TAknWindowComponentLayout::Compose( 
+            contactCardPaneLayout,
+            AknLayoutScalable_Apps::phob2_cc_listscroll_pane( option ) ) );
+    
+    TAknLayoutRect listPaneLayoutRect;
+    listPaneLayoutRect.LayoutRect( rect, listPaneLayout.LayoutLine() );
+    TRect listPaneRect( listPaneLayoutRect.Rect() );
+    iListBox->SetRect( listPaneRect );
 
     // Background skin
     if (iBackground)
         {
-        iBackground->SetRect(drawRect);
+        iBackground->SetRect(rect);
         }   
     
-    DrawNow();
+    DrawDeferred();
     }
 
 // ----------------------------------------------------------------------------
@@ -318,6 +341,9 @@ CCoeControl* CCCAppCommLauncherContainer::ComponentControl(TInt aIndex) const
 TKeyResponse CCCAppCommLauncherContainer::OfferKeyEventL(
     const TKeyEvent& aKeyEvent, TEventCode aType)
     {
+    // Make sure timer can be canceled before user do any operation.
+    iPlugin.CancelTimer();
+    
     // Forward the key-event 1st to base-class
     TKeyResponse returnValue =
         CCCAppViewPluginAknContainer::OfferKeyEventL(aKeyEvent, aType);
@@ -402,6 +428,9 @@ void CCCAppCommLauncherContainer::FocusChanged(TDrawNow aDrawNow)
 void CCCAppCommLauncherContainer::HandlePointerEventL(
     const TPointerEvent& aPointerEvent)
     {
+    // Make sure timer can be canceled before user do any operation.
+    iPlugin.CancelTimer();
+    
     TInt index;
     if ( iListBox->View()->XYPosToItemIndex( aPointerEvent.iPosition, index ) )
         {
@@ -424,30 +453,43 @@ void CCCAppCommLauncherContainer::HandlePointerEventL(
 // CCCAppCommLauncherContainer::HandleLongTapEventL()
 // ----------------------------------------------------------------------------
 //
-void CCCAppCommLauncherContainer::HandleLongTapEventL( const TPoint& aPenEventLocation, 
-                                 	const TPoint& aPenEventScreenLocation )
+void CCCAppCommLauncherContainer::HandleLongTapEventL( const TPoint& /*aPenEventLocation*/, 
+                                 	const TPoint& /*aPenEventScreenLocation*/ )
     {
     CCAContactorService* contactorService = iPlugin.ContactorService();
-
-    if ( contactorService && contactorService->IsBusy() )
+    if ( contactorService )
         {
-        return;
-        }
-    else if ( CommMethodsAvailable() )
-        {
-        TPtrC fullName;
-        iPlugin.ContactHandler().ContactFieldItemDataL(
-            CCmsContactFieldItem::ECmsFullName, fullName );
+        if ( contactorService->IsBusy() )
+            {
+            return;
+            }
+        else if ( CommMethodsAvailable() )
+            {
+            TPtrC fullName;
+            iPlugin.ContactHandler().ContactFieldItemDataL(
+                CCmsContactFieldItem::ECmsFullName, fullName );
 
-        TUint paramFlag = 0;//CCAContactorService::TCSParameter::EEnableDefaults;
-        CCAContactorService::TCSParameter param(
-            iPlugin.Container().SelectedCommunicationMethod(),
-            *iPlugin.ContactHandler().ContactIdentifierLC(),//contactlinkarray
-            paramFlag, 
-            fullName );
-        contactorService->ExecuteServiceL( param );
+            TUint paramFlag = 0;//CCAContactorService::TCSParameter::EEnableDefaults;
+        
+            VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector
+                contactActionType = iPlugin.Container().SelectedCommunicationMethod();
+            CCAContactorService::TCSParameter param(
+                contactActionType,
+                *iPlugin.ContactHandler().ContactIdentifierLC(),//contactlinkarray
+                paramFlag, 
+                fullName );
+        
+            if ( contactActionType == VPbkFieldTypeSelectorFactory::EVoiceCallSelector ||
+                contactActionType == VPbkFieldTypeSelectorFactory::EVideoCallSelector ||
+                contactActionType == VPbkFieldTypeSelectorFactory::EVOIPCallSelector )
+                {
+                iPlugin.StartTimerL();
+                }
+        
+            contactorService->ExecuteServiceL( param );
 
-        CleanupStack::PopAndDestroy( 1 );// contactlinkarray
+            CleanupStack::PopAndDestroy( 1 );// contactlinkarray
+            }
         }
     }
 
@@ -491,7 +533,10 @@ void CCCAppCommLauncherContainer::HandleListBoxEventL(
 
     if (executeContactAction)
         {
-        if ( iPlugin.Container().SelectedCommunicationMethod()
+        VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector
+            contactActionType = iPlugin.Container().SelectedCommunicationMethod();
+        
+        if ( contactActionType
         		== VPbkFieldTypeSelectorFactory::EFindOnMapSelector )
         	{
         	DoShowMapCmdL( (TPbk2CommandId)EPbk2ExtensionShowOnMap );
@@ -508,11 +553,18 @@ void CCCAppCommLauncherContainer::HandleListBoxEventL(
                 TUint paramFlag = CCAContactorService::TCSParameter::EEnableDefaults;
     
                 CCAContactorService::TCSParameter param(
-                    iPlugin.Container().SelectedCommunicationMethod(),
+                    contactActionType,
                     *iPlugin.ContactHandler().ContactIdentifierLC(),//contactlinkarray
                     paramFlag,
                     fullName);
-    
+            
+                if ( contactActionType == VPbkFieldTypeSelectorFactory::EVoiceCallSelector ||
+                    contactActionType == VPbkFieldTypeSelectorFactory::EVideoCallSelector ||
+                    contactActionType == VPbkFieldTypeSelectorFactory::EVOIPCallSelector )
+                    {
+                    iPlugin.StartTimerL();
+                    }
+            
                 contactorService->ExecuteServiceL(param);
     
                 CleanupStack::PopAndDestroy(1);// contactlinkarray
@@ -555,6 +607,11 @@ void CCCAppCommLauncherContainer::ContactFieldFetchedNotifyL(
     iHeaderCtrl->ContactFieldFetchedNotifyL(aContactField);
     // Forwarding to listbox-model
     iModel->ContactFieldFetchedNotifyL(aContactField);
+    
+    if( iStatusControl )
+       	{
+		SetDefaultStatusTextL();
+       	}
     }
 
 // ----------------------------------------------------------------------------
@@ -578,6 +635,11 @@ void CCCAppCommLauncherContainer::ContactFieldFetchingCompletedL()
     iListBox->DrawDeferred();
     
     iMdlRowCount = mdlCount;
+    
+    if( iStatusControl )
+    	{
+		SetDefaultStatusTextL();
+    	}
     }
 
 // ---------------------------------------------------------------------------
@@ -599,6 +661,17 @@ TBool CCCAppCommLauncherContainer::CommMethodsAvailable()
     return (KErrNotFound == iListBox->CurrentItemIndex())
         ? EFalse : ETrue;
     }
+
+// ---------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::IsHighlight
+// ---------------------------------------------------------------------------
+//
+const TBool CCCAppCommLauncherContainer::IsListBoxHighlightEnabled()
+	{
+    return !( iListBox->ItemDrawer()->Flags() & 
+    		CListItemDrawer::ESingleClickDisabledHighlight );
+	}
+
 
 // ---------------------------------------------------------------------------
 // CCCAppCommLauncherContainer::SelectedCommunicationMethod
@@ -695,6 +768,27 @@ CAknLongTapDetector& CCCAppCommLauncherContainer::LongTapDetectorL()
     return *iLongTapDetector;
     }
 
+// --------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::SetDefaultStatusTextL
+// --------------------------------------------------------------------------
+//
+void CCCAppCommLauncherContainer::SetDefaultStatusTextL()
+	{	
+	TPtrC fullName;
+	iPlugin.ContactHandler().ContactFieldItemDataL(
+		CCmsContactFieldItem::ECmsFullName, 
+		fullName );
+	
+	if( fullName.Size() == 0 )
+		{
+		return;
+		}
+	
+	HBufC* defaultStatusText = StringLoader::LoadL( 
+        R_QTN_CCA_FTU_DISCOVER, fullName, iCoeEnv );       
+		
+	iStatusControl->SetDefaultStatusTextL( defaultStatusText );
+	}
 
 //-----------------------------------------------------------------------------
 // CCCAppCommLauncherContainer::StatusClicked()
@@ -739,13 +833,21 @@ void CCCAppCommLauncherContainer::DoCheckExtensionFactoryL()
             {
             iViewLauncher = extension->CreateViewLauncherL();
             }
-        iStatusControl->MakeVisible( ETrue );
+        if( iStatusControl )
+            {
+            iStatusControl->MakeVisible( ETrue );
+            iHeaderCtrl->SetStatusButtonVisibility( ETrue );
+            }
         }
     else
         {
         delete iViewLauncher;
         iViewLauncher = NULL;
-        iStatusControl->MakeVisible( EFalse );
+        if( iStatusControl )
+            {
+            iStatusControl->MakeVisible( EFalse );
+            iHeaderCtrl->SetStatusButtonVisibility( EFalse );
+            }
         }
     
     }

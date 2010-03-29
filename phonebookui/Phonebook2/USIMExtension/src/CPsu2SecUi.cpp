@@ -21,8 +21,8 @@
 #include "CPsu2SecUi.h"
 
 #include <MVPbkSimPhone.h>
-#include <SecUiSecuritySettings.h> // CSecuritySettings
-#include <SecUi.h> // TSecUi
+#include <secuisecuritysettings.h> // CSecuritySettings
+#include <secui.h> // TSecUi
 
 // ============================ MEMBER FUNCTIONS ===============================
 

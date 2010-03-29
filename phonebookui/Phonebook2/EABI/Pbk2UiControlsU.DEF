@@ -196,6 +196,7 @@ EXPORTS
 	_ZN21CPbk2ContactEditorDlg4NewLER24TPbk2ContactEditorParamsP17MVPbkStoreContactR26MPbk2EditedContactObserverP24MPbk2ApplicationServicesP7HBufC16i @ 195 NONAME
 	_ZN24CPbk2AddItemToContactDlg4NewLEP24MPbk2ApplicationServices @ 196 NONAME
 	_ZN22CPbk2MergeConflictsDlg4NewLEP18MPbk2MergeResolveri @ 197 NONAME
-	_ZN26CPbk2MergePhotoConflictDlg4NewLEP10CFbsBitmapS1_Pi @ 198 NONAME
+	_ZN26CPbk2MergePhotoConflictDlg4NewLEP16MVPbkBaseContactS1_Pi @ 198 NONAME
 	_ZN29CPbk2GeneralConfirmationQuery9StopQueryEv @ 199 NONAME
+	_ZN21CPbk2NamesListControl26HandleViewForegroundEventLEi @ 200 NONAME
 

@@ -17,19 +17,19 @@
 #include "ccappcommlauncherplugin.h"
 #include "ccappcommlaunchersetdefault.h"
 
-#include <mvpbkcontactlinkarray.h>
-#include <mvpbkcontactstoreproperties.h>
-#include <mvpbkcontactstore.h>
-#include <mvpbkstorecontact.h>
-#include <mvpbkcontactoperationbase.h>
+#include <MVPbkContactLinkArray.h>
+#include <MVPbkContactStoreProperties.h>
+#include <MVPbkContactStore.h>
+#include <MVPbkStoreContact.h>
+#include <MVPbkContactOperationBase.h>
 
-#include <cvpbkcontactmanager.h>
-#include <cpbk2applicationservices.h>
-#include <cvpbkdefaultattribute.h>
+#include <CVPbkContactManager.h>
+#include <CPbk2ApplicationServices.h>
+#include <CVPbkDefaultAttribute.h>
 #include <CVPbkFieldTypeSelector.h>
-#include <vpbkcontactstoreuris.h>
+#include <VPbkContactStoreUris.h>
 
-#include <pbk2datacaging.hrh>
+#include <Pbk2DataCaging.hrh>
 #include <featmgr.h>
 
 const TInt KGranularity = 4;

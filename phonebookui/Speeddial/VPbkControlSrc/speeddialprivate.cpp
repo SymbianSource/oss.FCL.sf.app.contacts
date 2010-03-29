@@ -39,12 +39,12 @@
 #include <ErrorUI.h>
 #include <vmnumber.h>
 #include <centralrepository.h>
-#include <SettingsInternalCRKeys.h>
+#include <settingsinternalcrkeys.h>
 #include <SpeeddialPrivateCRKeys.h>
 
 
 #include <StringLoader.h>
-#include <Spdctrl.rsg>
+#include <SpdCtrl.rsg>
 #include <spdctrl.mbg>
 #include <avkon.mbg>
 #include <gdi.h>

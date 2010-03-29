@@ -162,6 +162,7 @@ enum TPhonebook2NoteId
     EPbk2NoteCheckingContacts,
     EPbk2NoteContactsRetrievingProgressBar,
     EPbk2NoteContactsSaving,
+    EPbk2NoteContactsSynchronizing,
 
     /// Note range allocated to Group UI Extension
     EGroupUiExtensionFirstNoteId = 100,
