@@ -1270,7 +1270,7 @@ TPtrC CFscActionUtils::GetFileDirL( const TDesC& aFilePath )
 TInt CFscActionUtils::FindAndAddResourceFileL()
     {
     FUNC_LOG;
-    TFileName resourceFileName( KDC_RESOURCE_FILES_DIR );
+    TFileName resourceFileName( KDC_APP_RESOURCE_DIR );     
     resourceFileName.Append(KFscRscFileName);
     BaflUtils::NearestLanguageFile( CCoeEnv::Static()->FsSession(), resourceFileName );
     TInt offset = CCoeEnv::Static()->AddResourceFileL( resourceFileName );

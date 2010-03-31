@@ -17,13 +17,13 @@
 #include <platform_paths.hrh>
 
 PRJ_EXPORTS
-..\inc\CContactCustomIconPluginBase.h        APP_LAYER_PLATFORM_EXPORT_PATH(CContactCustomIconPluginBase.h)
-..\inc\ContactCustomIconPluginDefs.h         APP_LAYER_PLATFORM_EXPORT_PATH(ContactCustomIconPluginDefs.h)
-..\inc\CCustomIconDecisionData.h             APP_LAYER_PLATFORM_EXPORT_PATH(CCustomIconDecisionData.h)
-..\inc\CCustomIconDecisionData.inl           APP_LAYER_PLATFORM_EXPORT_PATH(CCustomIconDecisionData.inl)
-..\inc\CCustomIconIdMap.h                    APP_LAYER_PLATFORM_EXPORT_PATH(CCustomIconIdMap.h)
-..\inc\CCustomIconIdMap.inl                  APP_LAYER_PLATFORM_EXPORT_PATH(CCustomIconIdMap.inl)
-..\inc\MCustomIconChangeObserver.h           APP_LAYER_PLATFORM_EXPORT_PATH(MCustomIconChangeObserver.h)
+../inc/CContactCustomIconPluginBase.h        APP_LAYER_PLATFORM_EXPORT_PATH(CContactCustomIconPluginBase.h)
+../inc/ContactCustomIconPluginDefs.h         APP_LAYER_PLATFORM_EXPORT_PATH(ContactCustomIconPluginDefs.h)
+../inc/CCustomIconDecisionData.h             APP_LAYER_PLATFORM_EXPORT_PATH(CCustomIconDecisionData.h)
+../inc/CCustomIconDecisionData.inl           APP_LAYER_PLATFORM_EXPORT_PATH(CCustomIconDecisionData.inl)
+../inc/CCustomIconIdMap.h                    APP_LAYER_PLATFORM_EXPORT_PATH(CCustomIconIdMap.h)
+../inc/CCustomIconIdMap.inl                  APP_LAYER_PLATFORM_EXPORT_PATH(CCustomIconIdMap.inl)
+../inc/MCustomIconChangeObserver.h           APP_LAYER_PLATFORM_EXPORT_PATH(MCustomIconChangeObserver.h)
 
 PRJ_MMPFILES
 // None

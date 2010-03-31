@@ -160,8 +160,8 @@ void  CPcsAlgorithm1MultiSearchHelper::SearchMultiL(const CPsSettings& aSettings
 		cache->GetDataFields(supportedDataFields);
 		
 		// Get the filtered data fields for this data store
-		TUint8 filteredDataMatch = FilterDataFieldsL(requiredDataFields, 
-		                                             supportedDataFields);
+        TUint8 filteredDataMatch = CPcsAlgorithm1Utils::FilterDataFieldsL(requiredDataFields,
+                                                                          supportedDataFields);
 
 	    // Filter the results now
 	    FilterResultsMultiL(filterHelper,
@@ -231,6 +231,7 @@ void  CPcsAlgorithm1MultiSearchHelper::SearchMatchSeqMultiL(RPointerArray<CPsQue
 {
     PRINT ( _L("Enter CPcsAlgorithm1MultiSearchHelper::SearchMatchSeqMultiL") );
     RPointerArray<HBufC> descriptorsQueryList;
+    CleanupResetAndDestroyPushL( descriptorsQueryList );
     ConvertQueryToListL(aPsQuery, descriptorsQueryList);
     TLex lex(aData);
     while ( !lex.Eos() ) // Search thru all words
@@ -252,32 +253,13 @@ void  CPcsAlgorithm1MultiSearchHelper::SearchMatchSeqMultiL(RPointerArray<CPsQue
             {
                 newLocation.length = currentQuery->Length();
                 aMatchLocation.AppendL( newLocation );
-                AppendMatchToSeqL( aMatchSeq, currentWord.Left(newLocation.length) );
+                TPtrC matchPart = currentWord.Left(newLocation.length);
+                CPcsAlgorithm1Utils::AppendMatchToSeqL( aMatchSeq, matchPart );
             }
         }
     }
-    descriptorsQueryList.ResetAndDestroy();
+    CleanupStack::PopAndDestroy( &descriptorsQueryList ); // ResetAndDestroy
     PRINT ( _L("End CPcsAlgorithm1MultiSearchHelper::SearchMatchSeqMultiL") );
-}
-
-// ----------------------------------------------------------------------------
-// CPcsAlgorithm1MultiSearchHelper::AppendMatchToSeqL
-// ----------------------------------------------------------------------------
-void CPcsAlgorithm1MultiSearchHelper::AppendMatchToSeqL( 
-        RPointerArray<TDesC>& aMatchSeq, const TDesC& aMatch  )
-{
-    HBufC* seq = aMatch.AllocLC();
-    seq->Des().UpperCase();
-    TIdentityRelation<TDesC> rule(CPcsAlgorithm1Utils::CompareExact);
-    if ( aMatchSeq.Find(seq, rule) == KErrNotFound )
-    {
-        aMatchSeq.Append(seq);
-        CleanupStack::Pop( seq );
-    }
-    else 
-    {
-        CleanupStack::PopAndDestroy( seq );
-    }
 }
 
 // ----------------------------------------------------------------------------
@@ -299,7 +281,7 @@ void CPcsAlgorithm1MultiSearchHelper::LookupMatchL( CPsQuery& aSearchQuery,
     {
         TPtrC currentWord = lex.NextToken();
         PRINT2( _L("idx len: %d %d"), lex.Offset() - currentWord.Length(), currentWord.Length() );
-        dataWordIndexes.AppendL( lex.Offset() -  currentWord.Length() );
+        dataWordIndexes.AppendL( lex.Offset() - currentWord.Length() );
         dataWordLengths.AppendL( currentWord.Length() );
     }
 
@@ -374,7 +356,7 @@ void CPcsAlgorithm1MultiSearchHelper::LookupMatchL( CPsQuery& aSearchQuery,
         }
         if ( doBacktrack )
         {
-            --currentQueryIndex;            
+            --currentQueryIndex;
         }
         else
         {
@@ -394,7 +376,7 @@ void CPcsAlgorithm1MultiSearchHelper::LookupMatchL( CPsQuery& aSearchQuery,
             resultFragment = aData.Mid(
                 dataWordIndexes[ matchedDataIndex ],
                 convertedQueriesAsDes[i].Length() );
-        }        
+        }
     }
     else
     {
@@ -556,20 +538,8 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
 
 					        // Extract matched character sequence and fill in temp array
 							TInt len = tmpQuery->Length();
-							HBufC* seq = tmpData.Left(len).AllocLC();
-							
-							seq->Des().UpperCase();
-							TIdentityRelation<TDesC> searchRule(CPcsAlgorithm1Utils::CompareExact);
-							if ( tmpMatchSet.Find(seq, searchRule) == KErrNotFound )
-							{
-                                tmpMatchSet.AppendL(seq);
-                                CleanupStack::Pop(seq);
-							}
-							else
-							{ 
-                                CleanupStack::PopAndDestroy(seq);
-								seq = NULL;
-							}
+							TPtrC seq = tmpData.Left(len);
+							CPcsAlgorithm1Utils::AppendMatchToSeqL( tmpMatchSet, seq );
 						}
 				    }
 				     
@@ -722,33 +692,6 @@ RPointerArray<CPsQuery> CPcsAlgorithm1MultiSearchHelper::MultiQueryL(CPsQuery& a
     }
 	
 	return query;
-}
-
-// ----------------------------------------------------------------------------
-// CPcsAlgorithm1MultiSearchHelper::FilterDataFieldsL()
-// Constructs a bit pattern using the required/supported data fields
-// For example, 6, 4 and 27 are supported fields <-- 00000111
-//              6 and 4 are required fields      <-- 00000011
-// Bit pattern returned is 00000011.
-// ----------------------------------------------------------------------------
-TUint8 CPcsAlgorithm1MultiSearchHelper::FilterDataFieldsL(RArray<TInt>& aRequiredDataFields,
-                                                          RArray<TInt>& aSupportedDataFields)
-{
-    TUint8 filteredMatch = 0x0;
-    
-	for ( TInt i = 0; i < aSupportedDataFields.Count(); i++ )
-	{
-		for ( TInt j = 0; j < aRequiredDataFields.Count(); j++ )
-		{
-			if ( aSupportedDataFields[i] == aRequiredDataFields[j] )
-			{
-                TUint8 val = 1 << i;
-			    filteredMatch |= val;
-			}
-		}
-	}
-	
-	return filteredMatch;
 }
 
 // End of file

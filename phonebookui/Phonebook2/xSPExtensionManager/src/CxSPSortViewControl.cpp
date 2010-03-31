@@ -26,6 +26,7 @@
 #include <gulicon.h>
 #include <AknGlobalNote.h>
 #include <StringLoader.h>
+#include <avkon.hrh>
 
 // internal includes
 #include "CxSPLoader.h"
@@ -39,6 +40,7 @@
 #include <MPbk2ApplicationServices.h>
 #include <CPbk2ServiceManager.h>
 #include <MPbk2AppUi.h>
+#include <CPbk2UIExtensionView.h>
 
 // CONSTANTS
 _LIT( KTab, "\t" );
@@ -58,11 +60,13 @@ void CleanUpResetAndDestroy( TAny* aArray )
 // ================= MEMBER FUNCTIONS =======================
 
 CxSPSortViewControl::CxSPSortViewControl( CxSPViewIdChanger& aViewIdChanger, 
-											CxSPArray& aExtensions ) :
+											CxSPArray& aExtensions,
+											CPbk2UIExtensionView& aView ) :
 											iViewIdChanger( aViewIdChanger ),
 											iExtensions(aExtensions),
 											iGlobalNote(0),
-											iGlobalNoteObserver(0)
+											iGlobalNoteObserver(0),
+											iView( aView )
     {
     }
 
@@ -82,18 +86,20 @@ void CxSPSortViewControl::ConstructL()
     }
 
 CxSPSortViewControl* CxSPSortViewControl::NewL( CxSPViewIdChanger& aViewIdChanger,
-											CxSPArray& aExtensions )
+											CxSPArray& aExtensions, 
+											CPbk2UIExtensionView& aView )
     {
-    CxSPSortViewControl* self = NewLC( aViewIdChanger, aExtensions );
+    CxSPSortViewControl* self = NewLC( aViewIdChanger, aExtensions, aView );
     CleanupStack::Pop(self);
     return self;
     }
 
 CxSPSortViewControl* CxSPSortViewControl::NewLC( CxSPViewIdChanger& aViewIdChanger,
-											CxSPArray& aExtensions )
+											CxSPArray& aExtensions, 
+											CPbk2UIExtensionView& aView )
     {
     CxSPSortViewControl* self =
-        new (ELeave) CxSPSortViewControl( aViewIdChanger, aExtensions );
+        new (ELeave) CxSPSortViewControl( aViewIdChanger, aExtensions, aView );
     CleanupStack::PushL(self);
     self->ConstructL();
     return self;
@@ -111,10 +117,57 @@ TKeyResponse CxSPSortViewControl::OfferKeyEventL
         (const TKeyEvent& aKeyEvent,TEventCode aType)
     {
     TKeyResponse result = EKeyWasNotConsumed;
-	if( iListBox )
+    
+	if( iListBox && result == EKeyWasNotConsumed )
         {
         result = iListBox->OfferKeyEventL(aKeyEvent, aType);
         }
+	
+    // Update popup when moving up or down in the list
+     switch(aKeyEvent.iCode)
+         {
+         case EKeyUpArrow:
+         case EKeyDownArrow:
+             {
+             const CListBoxView::CSelectionIndexArray* inds = iListBox->SelectionIndexes();
+             TInt count = inds->Count();
+             
+             if ( count <= 0 )
+                 {
+                 iView.Cba()->SetCommandSetL( R_EXTENSION_MANAGER_SORT_VIEW_SOFTKEYS  );
+                 }
+             else
+                 {
+                 iView.Cba()->SetCommandSetL( R_AVKON_SOFTKEYS_OK_CANCEL );
+                 }
+             iView.Cba()->DrawDeferred();
+
+             break;
+             }
+         case EKeyEnter:
+         case EKeyOK: 
+             {
+             const CListBoxView::CSelectionIndexArray* inds = iListBox->SelectionIndexes();
+             TInt count = inds->Count();
+             
+             if ( count <= 0 )
+                 {
+                 SetCurrentItemMarkedL( ETrue );
+                 iView.Cba()->SetCommandSetL( R_AVKON_SOFTKEYS_OK_CANCEL );
+                 }
+             else
+                 {
+                 MoveMarkedItemL();
+                 iView.Cba()->SetCommandSetL( R_EXTENSION_MANAGER_SORT_VIEW_SOFTKEYS  );
+                 }
+             iView.Cba()->DrawDeferred();
+             break;
+             }
+         default:
+             {
+             break;
+             }
+         }
     return result;
     }
 
@@ -137,6 +190,19 @@ CCoeControl* CxSPSortViewControl::ComponentControl
         (TInt /*aIndex*/) const
     {
     return iListBox;
+    }
+
+void CxSPSortViewControl::HandlePointerEventL(const TPointerEvent& aPointerEvent)
+    {
+    if ( iListBox )
+        {
+        iListBox->HandlePointerEventL( aPointerEvent );
+        }
+    }
+
+CCoeControl& CxSPSortViewControl::ComponentControl() const
+    {
+    return *iListBox;
     }
 
 void CxSPSortViewControl::SetListBoxContentsL()
@@ -281,6 +347,7 @@ void CxSPSortViewControl::SetCurrentItemMarkedL( TBool aMark )
 void CxSPSortViewControl::MoveMarkedItemL()
 	{
 	TInt currentIndex = iListBox->CurrentItemIndex();
+
 	TInt markedIndex = -1;
 	
 	const CListBoxView::CSelectionIndexArray* inds = iListBox->SelectionIndexes();

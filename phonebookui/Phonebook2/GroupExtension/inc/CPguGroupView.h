@@ -115,6 +115,7 @@ class CPguGroupView : public CBase,
                 CPbk2UIExtensionView& aView );
         void ConstructL();
         TBool CurrentStoreSupportsGroupsL() const;
+        TBool CurrentStoreIsAvailableL() const;
         void CreateControlsL();
         void StoreStateL();
         void RestoreStateL();

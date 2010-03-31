@@ -286,6 +286,19 @@ void CCCAppCommLauncherContainer::SizeChanged()
     }
 
 // ----------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::HandleResourceChange()
+// ----------------------------------------------------------------------------
+//
+void CCCAppCommLauncherContainer::HandleResourceChange(TInt aType)
+	{
+	if ( aType == KEikDynamicLayoutVariantSwitch )
+		{
+		TRAP_IGNORE( iModel->LoadVoipButtonInfoL() );
+		CCCAppViewPluginAknContainer::HandleResourceChange(aType); 
+		}
+	}
+
+// ----------------------------------------------------------------------------
 // CCCAppCommLauncherContainer::CountComponentControls()
 // ----------------------------------------------------------------------------
 //
@@ -487,16 +500,19 @@ void CCCAppCommLauncherContainer::HandleLongTapEventL( const TPoint& /*aPenEvent
                     *iPlugin.ContactHandler().ContactIdentifierLC(),//contactlinkarray
                     paramFlag, 
                     fullName );
-            
-                if ( contactActionType == VPbkFieldTypeSelectorFactory::EVoiceCallSelector ||
-                    contactActionType == VPbkFieldTypeSelectorFactory::EVideoCallSelector ||
-                    contactActionType == VPbkFieldTypeSelectorFactory::EVOIPCallSelector )
+                   
+                contactorService->ExecuteServiceL( param );   
+                
+                //The Timer can be started after user selected any call item
+                if ( contactorService->IsSelected() && 
+                	(contactActionType == VPbkFieldTypeSelectorFactory::EVoiceCallSelector ||
+                     contactActionType == VPbkFieldTypeSelectorFactory::EVideoCallSelector ||
+                     contactActionType == VPbkFieldTypeSelectorFactory::EVOIPCallSelector) )
                     {
                     iPlugin.StartTimerL();
                     }
-            
-                contactorService->ExecuteServiceL( param );
-    
+                
+                
                 CleanupStack::PopAndDestroy( 1 );// contactlinkarray
                 }
             }
@@ -575,15 +591,17 @@ void CCCAppCommLauncherContainer::HandleListBoxEventL(
                     paramFlag,
                     fullName);
             
-                if ( contactActionType == VPbkFieldTypeSelectorFactory::EVoiceCallSelector ||
-                    contactActionType == VPbkFieldTypeSelectorFactory::EVideoCallSelector ||
-                    contactActionType == VPbkFieldTypeSelectorFactory::EVOIPCallSelector )
+                contactorService->ExecuteServiceL(param);
+                
+                //The Timer can be started after user selected any call item
+                if ( contactorService->IsSelected() && 
+                	(contactActionType == VPbkFieldTypeSelectorFactory::EVoiceCallSelector ||
+                     contactActionType == VPbkFieldTypeSelectorFactory::EVideoCallSelector ||
+                     contactActionType == VPbkFieldTypeSelectorFactory::EVOIPCallSelector) )
                     {
                     iPlugin.StartTimerL();
                     }
-            
-                contactorService->ExecuteServiceL(param);
-    
+                
                 CleanupStack::PopAndDestroy(1);// contactlinkarray
         	    }
         	}

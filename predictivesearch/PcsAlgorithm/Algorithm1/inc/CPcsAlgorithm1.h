@@ -304,11 +304,6 @@ class CPcsAlgorithm1 : public CPcsPlugin,
 		RPointerArray<CPcsCache> iPcsCache; 
 
 		/**
-		* Keeps the count of caches
-		*/
-		TUint8 iCacheCount; 
-
-		/**
 		* Instance of key map
 		* Own.
 		*/
@@ -324,7 +319,6 @@ class CPcsAlgorithm1 : public CPcsPlugin,
 		*/
 		CPcsAlgorithm1Helper* iHelper;
 		CPcsAlgorithm1MultiSearchHelper* iMultiSearchHelper;
-
 		
 		/**
 		* Global that keeps the updated status of the caching

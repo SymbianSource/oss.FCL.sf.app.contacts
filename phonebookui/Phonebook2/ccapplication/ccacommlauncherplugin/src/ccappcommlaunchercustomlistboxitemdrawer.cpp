@@ -156,13 +156,8 @@ void CCCAppCommLauncherCustomListBoxItemDrawer::DrawItemText( TInt aItemIndex,
    colors.iHighlightedText=iHighlightedTextColor;
    colors.iHighlightedBack=iHighlightedBackColor;
    
-   DrawBackgroundAndSeparatorLines( aItemTextRect );
-
-   // Draw separator line except last item 
-   if ( aItemIndex < iModel->NumberOfItems() - 1 )
-	   {
-	   DrawSeparator( *iGc, aItemTextRect, iTextColor);
-	   }
+   DrawBackgroundAndSeparatorLines( aItemTextRect, 
+            aItemIndex != FormattedCellData()->ListBox()->BottomItemIndex() );
    
    TBool highlightShown = ETrue;
    
@@ -392,7 +387,8 @@ void CCCAppCommLauncherCustomListBoxItemDrawer::CCCAppCommLauncherCustomListBoxI
     {
     }
 
-void CCCAppCommLauncherCustomListBoxItemDrawer::DrawBackgroundAndSeparatorLines( const TRect& aItemTextRect ) const
+void CCCAppCommLauncherCustomListBoxItemDrawer::DrawBackgroundAndSeparatorLines( 
+        const TRect& aItemTextRect, TBool aDrawSeparator ) const
     {
     MAknsSkinInstance *skin = AknsUtils::SkinInstance();
     CCoeControl* control = FormattedCellData()->Control();
@@ -461,24 +457,12 @@ void CCCAppCommLauncherCustomListBoxItemDrawer::DrawBackgroundAndSeparatorLines(
             transApi->StopDrawing();
             }
 #endif // RD_UI_TRANSITION_EFFECTS_LIST
+        if ( aDrawSeparator && 
+            static_cast<CEikListBox*>( control )->ItemsInSingleLine() == 1 )
+            {
+            AknListUtils::DrawSeparator( *iGc, aItemTextRect, iTextColor );
+            }
         }
     }
 
-void CCCAppCommLauncherCustomListBoxItemDrawer::DrawSeparator( CGraphicsContext& aGc, const TRect& aRect, const TRgb& aColor ) const
-	{
-	aGc.SetBrushStyle( CGraphicsContext::ENullBrush );
-	aGc.SetPenStyle( CGraphicsContext::ESolidPen );
-	
-	TRgb color( aColor );
-	color.SetAlpha( 32 );
-	aGc.SetPenColor( color );
-	
-	TRect lineRect( aRect );
-	TInt gap = AknLayoutScalable_Avkon::listscroll_gen_pane( 0 ).LayoutLine().it; 
-	lineRect.Shrink( gap, 0 );
-	lineRect.Move( 0, -1 );
-	
-	aGc.DrawLine( TPoint( lineRect.iTl.iX, lineRect.iBr.iY ), 
-	TPoint( lineRect.iBr.iX, lineRect.iBr.iY ) );
-	}
 // End of File

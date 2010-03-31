@@ -1,5 +1,6 @@
 EXPORTS
 	?ExecuteServiceL@CCAContactorService@@QAEXABVTCSParameter@1@@Z @ 1 NONAME ; void CCAContactorService::ExecuteServiceL(class CCAContactorService::TCSParameter const &)
-	?NewL@CCAContactorService@@SAPAV1@XZ @ 2 NONAME ; class CCAContactorService * CCAContactorService::NewL(void)
-	?IsBusy@CCAContactorService@@QBEHXZ @ 3 NONAME ; int CCAContactorService::IsBusy(void) const
+	?IsSelected@CCAContactorService@@QBEHXZ @ 2 NONAME ; int CCAContactorService::IsSelected(void) const
+	?NewL@CCAContactorService@@SAPAV1@XZ @ 3 NONAME ; class CCAContactorService * CCAContactorService::NewL(void)
+	?IsBusy@CCAContactorService@@QBEHXZ @ 4 NONAME ; int CCAContactorService::IsBusy(void) const
 

@@ -63,7 +63,13 @@ public:
      * @since S60 5.0
      */
     void Execute(const CCAContactorService::TCSParameter& aParameter);
-
+    
+    /**
+     * Is call item selected
+     * 
+     * @since S60 5.0
+     */
+    TBool IsSelected();
 private:
     /**
      * Constructor.
@@ -157,6 +163,12 @@ private:
      * Own.
      */
     TUint32 iServiceId;
+    
+    /**
+     * Is call item selected
+     * Own
+     */
+    TBool isSelected;
     };
 
 #endif // C_CCACONTACTORSERVICEHANDLER_H

@@ -23,6 +23,7 @@
 #include <CPbk2ServiceManager.h>
 
 #include <aknlayoutscalable_avkon.cdl.h>
+#include <aknlayoutscalable_apps.cdl.h>
 //SpSettings
 #include <spsettings.h>
 #include <spentry.h>
@@ -115,6 +116,59 @@ TInt SelectIMIndexL(const CCmsContactField& aContactField)
     CleanupStack::PopAndDestroy(2); // idArray, settings
     return result;
     }
+
+
+/**
+ * Returns index of a first VOIP field.
+ */
+TInt SelectVOIPIndexL(const CCmsContactField& aContactField)
+    {
+    TInt result = 0; // by default returns 0
+    CSPSettings* settings = CSPSettings::NewLC();
+    RIdArray idArray;
+    TBool found = EFalse;
+    CleanupClosePushL(idArray);
+
+    TInt error = settings->FindServiceIdsL(idArray);
+    if (error == KErrNone)
+        {
+        for (TInt i = 0; !found && i < idArray.Count(); ++i)
+            {
+            CSPEntry* entry = CSPEntry::NewLC();
+            settings->FindEntryL(idArray[i], *entry);
+
+            const CSPProperty* prop = NULL;
+            
+            if (entry->GetProperty(prop, EPropertyServiceAttributeMask) == KErrNone)
+                {
+                TInt value = 0;
+                prop->GetValue(value);
+                
+                if ( value & ESupportsInternetCall )
+                    {
+                    for (TInt i = 0; i < aContactField.ItemCount(); ++i)
+                                        {
+                        const CCmsContactFieldItem& item = aContactField.ItemL(i);
+                        TPtrC data = item.Data();
+                        TPtrC scheme = ParseService(data);
+                        if (CompareService(*entry, scheme))
+                            {
+                            result = i;
+                            found = ETrue;
+                            break;
+                            }
+                        }
+                    }
+                }                       
+            CleanupStack::PopAndDestroy(); // entry
+            }
+        }
+
+    CleanupStack::PopAndDestroy(2); // idArray, settings
+    return result;
+    }
+
+
 /**
  * Clones the Bitmap
  * This is better than Duplicating the bitmap
@@ -273,12 +327,14 @@ TPtrC CCCAppCommLauncherLPadModel::MdcaPoint( TInt aIndex ) const
                 KCCAppCommLauncherMaxButtonDataTextLength )
             {
             tempText.Append( textPtr.Left(
-               KCCAppCommLauncherMaxButtonDataTextLength - tempText.Length() - 1 ) );
+               KCCAppCommLauncherMaxButtonDataTextLength - tempText.Length() - 4 ) );
             }
         else
             {
             tempText.Append( textPtr );
             }
+        tempText.Append( KColumnListSeparator ); 
+		
         // TODO: Check presence icon
         tempText.Append( KColumnListSeparator ); 
         
@@ -286,7 +342,6 @@ TPtrC CCCAppCommLauncherLPadModel::MdcaPoint( TInt aIndex ) const
         if ( IfShowMultiIcon( aIndex ) )
         	{
         	tempText.AppendNum( EMultiIconIndex );
-        	tempText.Append( KColumnListSeparator );  
         	}  
         }
 
@@ -674,6 +729,11 @@ void CCCAppCommLauncherLPadModel::CheckPopupTextL(
                 index = SelectIMIndexL(aContactField);
                 }
             
+            if ( VPbkFieldTypeSelectorFactory::EVOIPCallSelector == aContactAction )
+                {
+                index = SelectVOIPIndexL( aContactField );
+                }
+                
             if ( aContactAction == VPbkFieldTypeSelectorFactory::EUniEditorSelector 
                 && buttonData.iPopupText.Length() > 0 
                 && aContactField.Type() != CCmsContactFieldItem::ECmsMobilePhoneGeneric
@@ -690,7 +750,51 @@ void CCCAppCommLauncherLPadModel::CheckPopupTextL(
                         KCCAppCommLauncherMaxButtonDataTextLength ));
                 }
             }
+        
+        if( IsPhoneNumber( aContactField ) )
+            {
+            AknTextUtils::DisplayTextLanguageSpecificNumberConversion( buttonData.iPopupText );
+            }
+        
         }
+    }
+
+// ---------------------------------------------------------------------------
+// CCCAppCommLauncherLPadModel::IsPhoneNumber
+// ---------------------------------------------------------------------------
+//
+TBool CCCAppCommLauncherLPadModel::IsPhoneNumber( const CCmsContactField& aContactField )
+    {
+    TBool isPhoneNumber = EFalse;
+
+    switch( aContactField.Type() )
+        {
+        case CCmsContactFieldItem::ECmsLandPhoneGeneric:
+        case CCmsContactFieldItem::ECmsLandPhoneHome:
+        case CCmsContactFieldItem::ECmsGroupVoice:
+        case CCmsContactFieldItem::ECmsAssistantNumber:
+        case CCmsContactFieldItem::ECmsDefaultTypePhoneNumber:
+        case CCmsContactFieldItem::ECmsFaxNumberHome:
+        case CCmsContactFieldItem::ECmsFaxNumberWork:
+        case CCmsContactFieldItem::ECmsMobilePhoneGeneric:
+        case CCmsContactFieldItem::ECmsMobilePhoneHome:
+        case CCmsContactFieldItem::ECmsMobilePhoneWork:
+        case CCmsContactFieldItem::ECmsVideoNumberGeneric:
+        case CCmsContactFieldItem::ECmsVideoNumberHome:
+        case CCmsContactFieldItem::ECmsVideoNumberWork:
+        case CCmsContactFieldItem::ECmsVoipNumberGeneric:
+        case CCmsContactFieldItem::ECmsVoipNumberHome:
+        case CCmsContactFieldItem::ECmsVoipNumberWork:
+        case CCmsContactFieldItem::ECmsCarPhone:
+        case CCmsContactFieldItem::ECmsPagerNumber:
+            isPhoneNumber = ETrue;
+            break;
+        default:
+            isPhoneNumber = EFalse;
+            break;
+        }
+
+    return isPhoneNumber;
     }
 
 // ---------------------------------------------------------------------------
@@ -774,10 +878,29 @@ CGulIcon* CCCAppCommLauncherLPadModel::LoadIconLC( TInt aBmpId, TInt aMaskId )
     CFbsBitmap* bmp = NULL;
     CFbsBitmap* mask = NULL;
     CGulIcon* icon = CGulIcon::NewLC();
-
-    AknIconUtils::CreateIconLC(
-        bmp, mask, KPbk2ECEIconFileName, aBmpId, aMaskId );
-
+   
+    // The color of Icon "many items" should be adjusted to the theme background
+    if( EMbmPhonebook2eceQgn_indi_many_items_add == aBmpId)
+        {
+        TAknsItemID skin; 
+        skin.Set( EAknsMajorGeneric,  EAknsMinorGenericQgnIndiManyItemsAdd );
+        TAknsItemID color;
+        color.Set( EAknsMajorSkin, EAknsMinorQsnIconColors );
+    
+        AknsUtils::CreateColorIconLC(
+            AknsUtils::SkinInstance(),skin,
+            color, EAknsCIQsnIconColorsCG13,
+            bmp, mask,
+            KPbk2ECEIconFileName,
+            aBmpId, aMaskId,
+            AKN_LAF_COLOR_STATIC( 215 ) );
+        }
+    else
+        {
+        AknIconUtils::CreateIconLC(
+            bmp, mask, KPbk2ECEIconFileName, aBmpId, aMaskId );
+        }
+   
     icon->SetBitmap( bmp );
     icon->SetMask( mask );
     CleanupStack::Pop( 2 ); // bmp, mask
@@ -1333,16 +1456,10 @@ void CCCAppCommLauncherLPadModel::LoadVoipButtonInfoFromPbkL(
         //Found the appropriate service info
         if ( service.iServiceId == aServiceId )
             {
-            //Calculate the Size of the Bitmap for Comm Launcher
-            TRect mainPane = iPlugin.ClientRect();                            
-            TAknLayoutRect listLayoutRect;
-                listLayoutRect.LayoutRect(
-                    mainPane,
-                    AknLayoutScalable_Avkon::list_single_large_graphic_pane_g1(0).LayoutLine() );
-            TSize size(listLayoutRect.Rect().Size());
-                        
-            //Set the size of this bitmap.
-            //without this Cloning of bitmap will not happen            
+            // Get service bitmap size
+            TSize size = GetServiceBitmapSize();           
+
+            // Set service bitmap size           
             AknIconUtils::SetSize( service.iBitmap, size );
             AknIconUtils::SetSize( service.iMask, size );
                
@@ -1350,17 +1467,7 @@ void CCCAppCommLauncherLPadModel::LoadVoipButtonInfoFromPbkL(
             //No direct way of cloning a bitmap
             aBitmap = CloneBitmapLC(size, service.iBitmap);
             aMask = CloneBitmapLC(size, service.iMask);
-            
-            //Calculate preferred size for xsp service icons
-            AknLayoutUtils::LayoutMetricsRect(
-                AknLayoutUtils::EMainPane, mainPane );            
-            listLayoutRect.LayoutRect(
-                mainPane,
-                AknLayoutScalable_Avkon::list_single_graphic_pane_g2(0).LayoutLine() );
-            TSize xspIconSize(listLayoutRect.Rect().Size()); 
-            AknIconUtils::SetSize( service.iBitmap, xspIconSize );
-            AknIconUtils::SetSize( service.iMask, xspIconSize );
-            
+                       
             aLocalisedServiceName = service.iDisplayName.AllocL(); 
             
             CleanupStack::Pop( 2 ); //aBitmap, aMask
@@ -1369,7 +1476,54 @@ void CCCAppCommLauncherLPadModel::LoadVoipButtonInfoFromPbkL(
         }            
     }
 
-
+// ---------------------------------------------------------------------------
+// CCCAppCommLauncherLPadModel::GetServiceBitmapSize
+// ---------------------------------------------------------------------------
+//
+TSize CCCAppCommLauncherLPadModel::GetServiceBitmapSize()
+    {     
+    /*
+     * Calculate the rect of list_double_large_graphic_phob2_cc_pane_g1 
+     * and select its size as service bitmap size.
+     * Since the layoutRect is relative to the layoutRect of its parent, so 
+     * we calculate from the topmost-mainPane, then follow below sequence:
+     * phob2_contact_card_pane
+     * phob2_cc_listscroll_pane
+     * phob2_cc_list_pane
+     * list_double_large_graphic_phob2_cc_pane
+     * list_double_large_graphic_phob2_cc_pane_g1
+     */
+    TRect mainPane = iPlugin.ClientRect();
+    
+    TAknLayoutRect listLayoutRect0;
+    listLayoutRect0.LayoutRect(
+            mainPane,
+            AknLayoutScalable_Apps::phob2_contact_card_pane(0).LayoutLine() );
+    
+    TAknLayoutRect listLayoutRect1;
+    listLayoutRect1.LayoutRect(
+    		listLayoutRect0.Rect(),
+            AknLayoutScalable_Apps::phob2_cc_listscroll_pane(0).LayoutLine() );
+    
+    TAknLayoutRect listLayoutRect2;
+    listLayoutRect2.LayoutRect(
+    		listLayoutRect1.Rect(),
+    		AknLayoutScalable_Apps::phob2_cc_list_pane(0).LayoutLine() );
+    
+    TAknLayoutRect listLayoutRect3;
+    listLayoutRect3.LayoutRect(
+    		listLayoutRect2.Rect(),
+    		AknLayoutScalable_Apps::list_double_large_graphic_phob2_cc_pane(0).LayoutLine() );
+            
+    TAknLayoutRect listLayoutRect4;
+    listLayoutRect4.LayoutRect(
+            listLayoutRect3.Rect(),
+            AknLayoutScalable_Apps::list_double_large_graphic_phob2_cc_pane_g1(0).LayoutLine() );
+    
+    TSize size(listLayoutRect4.Rect().Size());   
+    
+    return size;                                                    
+    }
 // ---------------------------------------------------------------------------
 // CCCAppCommLauncherLPadModel::HandleNotifyChange
 // ---------------------------------------------------------------------------

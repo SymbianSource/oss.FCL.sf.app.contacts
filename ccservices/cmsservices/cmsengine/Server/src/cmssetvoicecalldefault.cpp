@@ -15,7 +15,7 @@
 *
 */
 
-#include <mvpbkcontactstoreproperties.h>
+#include <MVPbkContactStoreProperties.h>
 #include <MVPbkContactStore.h>
 #include <MVPbkStoreContact.h>
 

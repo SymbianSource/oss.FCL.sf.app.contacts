@@ -21,14 +21,15 @@
 
 // logfile definition
 #define KCommLauncherLogFile CCA_L("commlauncherplugin.txt")
-#include "ccalogger.h"
 
 #include <e32base.h>
 #include <centralrepository.h>
 #include <vpbkfieldtypeselectorfactory.h>
 
+#include "ccalogger.h"
 #include "t_ccappcmscontactfetcher.h"
 #include "t_testsingleton.h"
+#include "phonebookPrivateCRKeys.h"
 
 class CCmsContactFieldInfo;
 class MCCAppContactFieldDataObserver;
@@ -47,10 +48,10 @@ const TInt KTestNormal = 0;
 const TInt KTestContactInfoNull = 1;
 _LIT8( KTestString, "TestString" );
 
-////////////////////////////////////////////////
+// -----------------------------------------------------------------------------
 // MCCAppContactFieldDataObserver
-// Dummy interface
-////////////////////////////////////////////////
+// dummy class
+// -----------------------------------------------------------------------------
 class MCCAppContactFieldDataObserver
     {
 public:
@@ -89,10 +90,10 @@ public:
 
     };    
 
-////////////////////////////////////////////////
-// CCmsContactField
-// Dummy class
-////////////////////////////////////////////////
+// -----------------------------------------------------------------------------
+// CCmsContactFieldItem
+// dummy class
+// -----------------------------------------------------------------------------
 class CCmsContactFieldItem : public CBase
     {
     public:  
@@ -202,171 +203,50 @@ class CCmsContactFieldItem : public CBase
             ECmsDefaultTypeUrl = 512
             };
         
-        TPtrC Data() const {};
+        const TPtrC Data() const {return KNullDesC.operator ()().Left(0);}
     };
 
-////////////////////////////////////////////////
+// -----------------------------------------------------------------------------
 // CCmsContactField
-// Dummy class
-////////////////////////////////////////////////
+// dummy class
+// -----------------------------------------------------------------------------
 class CCmsContactField : public CBase
     {
 public:
 
-    CCmsContactField( TInt aType )
-        {
-        iType = aType;
-        };
-
-    const CCmsContactFieldItem& ItemL( TInt /*aIndex*/) const {};    
+    CCmsContactField( TInt aType ):iType(aType){}
+    const CCmsContactFieldItem& ItemL( TInt /*aIndex*/) const;
+    CCmsContactFieldItem::TCmsContactField Type() const;
+    TInt ItemCount() const{ return 1; }
+    TInt HasDefaultAttribute() const;
     
-    CCmsContactFieldItem::TCmsContactField Type() const
-        {
-        switch ( iType )
-            {
-            // phone
-            case PHONE:
-                {
-                return CCmsContactFieldItem::ECmsLandPhoneHome;
-                break;
-                }
-            // email
-            case EMAIL:
-                {
-                return CCmsContactFieldItem::ECmsEmailWork;
-                break;
-                }
-           // voip
-            case VOIP:
-                {
-                return CCmsContactFieldItem::ECmsVoipNumberHome;
-                break;
-                }
-            // phone
-            case PHONE2:
-                {
-                return CCmsContactFieldItem::ECmsMobilePhoneHome;
-                break;
-                }
-            // email
-            case EMAIL2:
-                {
-                return CCmsContactFieldItem::ECmsEmailGeneric;
-                break;
-                }
-           // voip
-            case VOIP2:
-                {
-                return CCmsContactFieldItem::ECmsVoipNumberWork;
-                break;
-                }
-            // name
-            case NAME:
-                {
-                return CCmsContactFieldItem::ECmsLastName;
-                break;
-                }
-            // default phone
-            default:
-                {
-                return CCmsContactFieldItem::ECmsMobilePhoneWork;
-                break;
-                }
-            }
-        };
-    TInt ItemCount() const
-        {
-        return 1;
-        };
-
-    TInt HasDefaultAttribute() const 
-        { 
-        TInt ret ( KErrNotFound );
-        switch ( iType )
-            {
-            // phone
-            case PHONE:
-                {
-                ret = CCmsContactFieldItem::ECmsDefaultTypePhoneNumber;
-                break;
-                }
-            // email
-            case EMAIL:
-                {
-                ret = CCmsContactFieldItem::ECmsDefaultTypeEmail;
-                break;
-                }
-            // voip
-            case VOIP:
-                {
-                ret = CCmsContactFieldItem::ECmsDefaultTypeVoIP;
-                break;
-                }
-           // mms
-            default:
-                {
-                ret = CCmsContactFieldItem::ECmsDefaultTypeMms;
-                break;
-                }
-            }
-
-        return ret;
-        };
-
+public: // data
     TInt iDummyDefaultAttributeBitMask;
     TInt iDummy;
     TInt iType;
+    CCmsContactFieldItem* iCmsContactFieldItem;
     };
 
-    
-////////////////////////////////////////////////
+// -----------------------------------------------------------------------------
 // CCmsContactFieldInfo
-// Dummy class
-////////////////////////////////////////////////
+// dummy class
+// -----------------------------------------------------------------------------
 class CCmsContactFieldInfo : public CBase
     {
 public:
-    static CCmsContactFieldInfo* NewL()
-        {
-        CCmsContactFieldInfo* self = new (ELeave) CCmsContactFieldInfo();
-        self->ConstructL();
-        return self;
-        };
-    void ConstructL()
-        {
-        iArray = new (ELeave) RArray<CCmsContactFieldItem::TCmsContactField>();
-        // phone
-        iArray->Append( CCmsContactFieldItem::ECmsMobilePhoneHome );
-        // email
-        iArray->Append( CCmsContactFieldItem::ECmsEmailWork );
-        // voip
-        iArray->Append( CCmsContactFieldItem::ECmsVoipNumberHome );
-        // not number
-        iArray->Append( CCmsContactFieldItem::ECmsLastName );
-        };
-       
-    void AddMoreFields()
-        {
-        // phone
-        iArray->Append( CCmsContactFieldItem::ECmsLandPhoneHome );
-        iArray->Append( CCmsContactFieldItem::ECmsMobilePhoneGeneric );
-        iArray->Append( CCmsContactFieldItem::ECmsMobilePhoneHome );
-        // email
-        iArray->Append( CCmsContactFieldItem::ECmsEmailGeneric );
-        iArray->Append( CCmsContactFieldItem::ECmsEmailHome );
-        // voip
-        iArray->Append( CCmsContactFieldItem::ECmsVoipNumberWork );
-        // im
-        iArray->Append( CCmsContactFieldItem::ECmsImpp );
-        // url
-        iArray->Append( CCmsContactFieldItem::ECmsUrlHome );
-        }; 
-    const RArray<CCmsContactFieldItem::TCmsContactField>& Fields() const { return *iArray; };
-    ~CCmsContactFieldInfo()
-        {
-        iArray->Close();
-        delete iArray;
-        };
+    virtual ~CCmsContactFieldInfo();
+    static CCmsContactFieldInfo* NewL();
+    
+    void AddMoreFields(); 
+    const RArray<CCmsContactFieldItem::TCmsContactField>& Fields() const 
+            { 
+            return *iArray;
+            }
+private:
+    CCmsContactFieldInfo(){}
+    void ConstructL();
+    
+public: // data
     TInt iDummy;
     RArray<CCmsContactFieldItem::TCmsContactField>* iArray;
     };
@@ -374,17 +254,17 @@ public:
 #include "../../../inc/ccappcommlauncherprivatecrkeys.h"
 #include "../../../inc/ccappcommlaunchercontacthandler.h"
    
-////////////////////////////////////////////////
+
+// -----------------------------------------------------------------------------
 // CCCAppCommLauncherView
-// Dummy class
-////////////////////////////////////////////////
-class CCCAppCommLauncherView : 
-    public CBase,
-    public MCCAppContactHandlerNotifier
+// dummy class
+// -----------------------------------------------------------------------------
+class CCCAppCommLauncherView : public CBase,
+                               public MCCAppContactHandlerNotifier
     {
 public:
 
-    CCCAppCommLauncherView( /*CCCAppCommLauncherPlugin& aPlugin*/ ) /*: iPlugin( &aPlugin )*/
+    CCCAppCommLauncherView( /*CCCAppCommLauncherPlugin& aPlugin*/ )
         {
         iContactChangedNotifyCalled = EFalse;
         iContactEnabledFieldsChangedNotifyCalled = EFalse;
@@ -415,7 +295,7 @@ public:
     // MCCAppContactHandlerNotifier
     void ContactsChangedL(){};
     // MCCAppContactHandlerNotifier
-    void ContactPresenceChangedL( const CCmsContactField& /*aContactField*/){};
+    void ContactPresenceChangedL( const CCmsContactField& /*aContactField*/){}
         
     TBool ContactChangedNotifyCalled()
         {
@@ -431,41 +311,26 @@ public:
         iContactEnabledFieldsChangedNotifyCalled = EFalse;
         };
     
-    //CCCAppCommLauncherPlugin& Plugin(){ return *iPlugin; };        
-
-    //CCCAppCommLauncherPlugin* iPlugin;
+public: // data
     TBool iContactChangedNotifyCalled;
     TBool iContactEnabledFieldsChangedNotifyCalled;
-    };    
+    };
 
-////////////////////////////////////////////////
+// -----------------------------------------------------------------------------
 // CCCAppCommLauncherPlugin
-// Dummy class
-////////////////////////////////////////////////
-class CCCAppCommLauncherPlugin : 
-    public CBase
+// dummy class
+// -----------------------------------------------------------------------------
+class CCCAppCommLauncherPlugin : public CBase
     {
-
 public:
     
-    CCCAppCommLauncherPlugin()
-    {      
-    };
-    
-    ~CCCAppCommLauncherPlugin() 
-    {      
-    };
-    
-    /*
-     * Sets the title to the plugin
-     * @param aTitle - title to be set     
-     */
-    void SetTitleL( const TDesC& aTitle )
-    {      
-    };
+    CCCAppCommLauncherPlugin(){}
+    ~CCCAppCommLauncherPlugin(){}
+    static CCCAppCommLauncherPlugin* NewL();
+public:
+    void SetTitleL( const TDesC& /*aTitle*/ ){}
 
     };
-    
-    
-    
+
+
 #endif // __CCAPPCOMMLAUNCHERHEADERS_H__

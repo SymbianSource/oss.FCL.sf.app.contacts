@@ -26,7 +26,6 @@
 #include <ccappmycardpluginrsc.rsg>
 #include <Pbk2UIControls.rsg>
 #include <data_caging_path_literals.hrh>
-#include <phonebook2.mbg>
 #include <mccappengine.h>
 #include <bautils.h>
 #include <AknsUtils.h>
@@ -48,6 +47,8 @@
 #include <mccapppluginparameter.h>
 #include <mccaparameter.h>
 #include <CVPbkContactManager.h>
+#include <MVPbkFieldType.h>
+#include <TVPbkFieldVersitProperty.h>
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -55,8 +56,6 @@
 
 /// MyCard own resource file
 _LIT( KMyCardResourceFileName,          "ccappmycardpluginrsc.rsc" );
-
-_LIT( KMyCardIconFileName,              "\\resource\\apps\\phonebook2.mif");
 /// Phonebook2 UI controls resource file
 _LIT( KMyCardPbk2UiControlsResFileName, "pbk2uicontrols.rsc" );
 // pbk2 common ui
@@ -255,21 +254,10 @@ void CCCAppMyCardPlugin::ProvideBitmapL(
 
     if ( ECCAppTabIcon == aIconType )
         {
-        CFbsBitmap* bmp = NULL;
-        CFbsBitmap* bmpMask = NULL;
-
-        // TODO: Change icon
-        AknsUtils::CreateIconL(
-            AknsUtils::SkinInstance(),
-            KAknsIIDDefault,//todo; get a proper skin
-            bmp,
-            bmpMask,
-            KMyCardIconFileName,
-            EMbmPhonebook2Qgn_prop_pb_photo_tab3,
-            EMbmPhonebook2Qgn_prop_pb_photo_tab3_mask );
-
-        aIcon.SetBitmap( bmp );
-        aIcon.SetMask( bmpMask );
+        // CCA expects to always receive real icons. MyCard does not have
+        // tab icon defined, so provide some dummy icons.
+        aIcon.SetBitmap( new(ELeave) CFbsBitmap );
+        aIcon.SetMask( new(ELeave) CFbsBitmap );
         }
 
     CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCardPlugin::ProvideBitmapL()"));
@@ -289,17 +277,6 @@ TAny* CCCAppMyCardPlugin::CCCAppViewPluginBaseExtension( TUid aExtensionUid )
     }
 
 // ---------------------------------------------------------------------------
-// CCCAppMyCardPlugin::DynInitMenuPaneL
-// ---------------------------------------------------------------------------
-//
-void CCCAppMyCardPlugin::DynInitMenuPaneL(
-    TInt /*aResourceId*/,
-    CEikMenuPane* /*aMenuPane*/ )
-    {
-    // TODO: menupane handling
-    }
-
-// ---------------------------------------------------------------------------
 // CCCAppMyCardPlugin::HandleCommandL
 // ---------------------------------------------------------------------------
 //
@@ -307,14 +284,45 @@ void CCCAppMyCardPlugin::HandleCommandL( TInt aCommand )
     {
     CCA_DP(KMyCardLogFile, 
         CCA_L("->CCCAppMyCardPlugin::HandleCommandL command=%d"), aCommand );
-    
+                
     switch( aCommand )
-        {
+        {                
         case ECCAppMyCardCmdEdit:
-            {
-            // when editor is called via options menu, focus first field always 
-            EditL( iMyCard->PresentationContactL().
-                PresentationFields().StoreIndexOfField( 0 ) );
+            {            
+            TInt index;            
+            MVPbkStoreContact& storeContact = iMyCard->StoreContact();
+            
+            TRAPD( err,
+                {
+                index = iMyCard->PresentationContactL().PresentationFields().StoreIndexOfField( 0 );                        
+        
+                MVPbkBaseContactField* field = storeContact.Fields().FieldAtLC( index );
+                                        
+                const MVPbkFieldType* type = field->BestMatchingFieldType();
+                const TArray<TVPbkFieldVersitProperty> fieldProperty = type->VersitProperties();
+    
+                if( fieldProperty.Count() )
+                    {
+                    const TVPbkFieldVersitProperty property = fieldProperty[0];
+                        
+                    if( property.Name() == EVPbkVersitNameADR )
+                        {
+                        index = KErrNotSupported;
+                        }            
+                    }                       
+                                                 
+                if( field )
+                    {
+                    CleanupStack::PopAndDestroy( field );
+                    }
+            
+                EditL( index );
+                } );
+            
+            if( err != KErrNone )
+                {
+                HandleError( err );                
+                }
             break;
             }
         case ECCappMyCardCmdSendVCard:
@@ -483,7 +491,7 @@ void CCCAppMyCardPlugin::ProcessCommandL(TInt aCommandId)
               break;                        
              
          default:
-        	 CAknView::ProcessCommandL(aCommandId);
+             CAknView::ProcessCommandL( aCommandId );
              break;
          }
      

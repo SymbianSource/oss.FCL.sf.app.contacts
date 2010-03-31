@@ -94,11 +94,14 @@
 #include <hlplch.h>
 #include <aknnavide.h>
 #include <akninputblock.h>
+#include <charconv.h>
 
 /// Unnamed namespace for local definitions
 namespace {
 
 const TInt KEditorNameFormatFlags = MPbk2ContactNameFormatter::EUseSeparator;
+const TInt KTwoBytes = 2;
+const TInt KExtraByte = 1;
 
 #ifdef _DEBUG
 enum TPanicCode
@@ -239,6 +242,8 @@ CPbk2ContactEditorDlgImpl::~CPbk2ContactEditorDlgImpl()
     iTitleText = NULL;
     delete iStoredTitlePaneText;
     iStoredTitlePaneText = NULL;
+
+    delete iConverter;
     }
 
 // --------------------------------------------------------------------------
@@ -485,7 +490,10 @@ void CPbk2ContactEditorDlgImpl::HandlePointerEventL(
     //Here we can prevent recursive execution of ExecuteBaseCommandL if needed 
     //as touch events are handled in it too. So it may case multiple callbacks to here if 
     //user repeats the same pointer event very quickly using options menu.
-    // if(!iCommandPending) //seems that this check is not needed
+    // This check is needed, otherwise, when touch quickly on Address field and 
+    // quickly on Image field in the Editor Dialog, the address editor will be 
+    // opened, but touch input can not open in any of its editors.
+    if(!iCommandPending) 
         {
         CAknForm::HandlePointerEventL( aPointerEvent );
         }
@@ -695,6 +703,8 @@ TKeyResponse CPbk2ContactEditorDlgImpl::OfferKeyEventL
 
     if (currentField)
         {
+        CheckCurrentFieldTextL( currentField, aKeyEvent, aType );
+    
         if (currentField->ContactEditorField()
                 && currentField->ContactEditorField()->ConsumesKeyEvent(
                         aKeyEvent, aType))
@@ -1779,6 +1789,7 @@ CEikCaptionedControl* CPbk2ContactEditorDlgImpl::LineControl
 void CPbk2ContactEditorDlgImpl::DeleteControl(TInt aControlId)
     {
     DeleteLine( aControlId );
+    TRAP_IGNORE( UpdateTitleL() );    
     }
 
 // --------------------------------------------------------------------------
@@ -3250,6 +3261,110 @@ void CPbk2ContactEditorDlgImpl::WaitFinishL()
         
         iWaitFinish = new (ELeave) CActiveSchedulerWait();
         iWaitFinish->Start();
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ContactEditorDlgImpl::IsUnicodeL
+// --------------------------------------------------------------------------
+//    
+TBool CPbk2ContactEditorDlgImpl::IsUnicodeL( const TDesC& aText )
+    {
+    if ( !iConverter )
+        {
+        iConverter = CCnvCharacterSetConverter::NewLC();
+        CleanupStack::Pop();
+        RFs& fs = Phonebook2::Pbk2AppUi()->
+                ApplicationServices().ContactManager().FsSession();
+        iConverter->PrepareToConvertToOrFromL( KCharacterSetIdentifierSms7Bit, fs );
+        }
+    
+    TBool isUnicode( EFalse );
+    TInt unconvertedCount(0);
+    HBufC8* convertedText = HBufC8::NewLC( aText.Length()*KTwoBytes );
+    TPtr8 convertedTextPtr = convertedText->Des(); 
+
+    iConverter->ConvertFromUnicode( convertedTextPtr, aText, unconvertedCount );
+
+    // If any characters were not converted or if the converted text is longer
+    // than the original the text must be unicode
+    if( unconvertedCount > 0 ||
+        aText.Length() < convertedText->Length() )
+        {
+        isUnicode = ETrue;
+        }
+
+    CleanupStack::PopAndDestroy( convertedText );
+    return isUnicode;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ContactEditorDlgImpl::IsCheckPointEvent
+// --------------------------------------------------------------------------
+//    
+TBool CPbk2ContactEditorDlgImpl::IsCheckPointEvent(
+        const TKeyEvent& aKeyEvent, TEventCode aType )
+    {
+    TBool check = EFalse;
+    if ( EEventKeyDown == aType )
+        {
+        // Don't handle 'EStdKeyBackspace', 'EStdKeyHash' and those between 
+        // 'EStdKeyPrintScreen' and 'EStdKeyScrollLock'. 
+        // If the definition of standard scancode is changed, the scope here needs to 
+        // be examined again.
+        if ( ( EStdKeyPrintScreen > aKeyEvent.iScanCode || EStdKeyScrollLock < aKeyEvent.iScanCode ) &&
+                EStdKeyBackspace != aKeyEvent.iScanCode &&
+                EStdKeyHash != aKeyEvent.iScanCode )
+            {
+            check = ETrue;
+            }
+        }
+    else if ( EEventKey == aType && EStdKeyNull == aKeyEvent.iScanCode )
+        {
+        check = ETrue;
+        }
+    
+    return check;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ContactEditorDlgImpl::CheckCurrentFieldTextL
+// --------------------------------------------------------------------------
+//    
+void CPbk2ContactEditorDlgImpl::CheckCurrentFieldTextL( 
+        CPbk2ContactEditorArrayItem* aCurrentField,
+		const TKeyEvent& aKeyEvent, 
+		TEventCode aType )
+    {
+    MPbk2ContactEditorField* editorField = aCurrentField->ContactEditorField();
+    MVPbkStoreContactField& contactField = editorField->ContactField();
+    TVPbkFieldStorageType dataType = contactField.FieldData().DataType();
+    
+    if ( EVPbkFieldStorageTypeText == dataType )
+        {
+        const MVPbkContactFieldTextData& textData = 
+            MVPbkContactFieldTextData::Cast(contactField.FieldData());
+        TInt maxSize = textData.MaxLength();
+        
+        if ( KVPbkUnlimitedFieldLength != maxSize &&
+                IsCheckPointEvent( aKeyEvent, aType ) )
+            {
+            CEikEdwin* ctrl = editorField->Control();
+            HBufC* textBuf = ctrl->GetTextInHBufL();
+            
+            if ( textBuf )
+                {
+                TInt maxLen = maxSize;
+                if ( IsUnicodeL( *textBuf ) )
+                    {
+                    maxLen = maxSize / KTwoBytes - KExtraByte;
+                    }
+                if ( ctrl->MaxLength() != maxLen && textBuf->Length() <= maxLen )
+                    {
+                    ctrl->SetMaxLength( maxLen );
+                    }
+                }
+            }
         }
     }
 

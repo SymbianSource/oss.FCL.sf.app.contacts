@@ -73,6 +73,9 @@ class CPcsKeyMap : public CBase
          */
         virtual ~CPcsKeyMap();
 
+        TBool IsItutPredictiveAvailable() const;
+        TBool IsQwertyPredictiveAvailable() const;
+
         static TBool IsModePredictive( TKeyboardModes aKbMode );
 
         /**
@@ -125,9 +128,10 @@ class CPcsKeyMap : public CBase
         void ConstructL();
 
         /**
-         * Select keyboard types according to available physical keyboard(s)
+         * Get physical Itu-T and QWERTY keyboard types of the device
          */
-        void SetupKeyboardTypesL();
+        void GetPhysicalKeyboardTypesL( TPtiKeyboardType& aItutKbType,
+                                        TPtiKeyboardType& aQwertyKbType );
 
         /**
          * Returns the pool Id for a key

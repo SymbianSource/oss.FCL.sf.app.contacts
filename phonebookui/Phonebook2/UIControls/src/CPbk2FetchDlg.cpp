@@ -733,6 +733,11 @@ MPbk2FetchDlgObserver& CPbk2FetchDlg::FetchDlgObserver() const
 void CPbk2FetchDlg::SelectContactL
         ( const MVPbkContactLink& aLink, TBool aSelected )
     {
+    if ( iParams.iFlags & EFetchSingle )
+        {
+         // Clean result if this is single fetch.
+         iResults->ResetAndDestroy();
+        }
     if ( aSelected )
         {
         iResults->AppendL( aLink );

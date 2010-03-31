@@ -184,7 +184,7 @@ APP_LAYER_SYSTEMINCLUDE
 LIBRARY euser.lib cone.lib bafl.lib eikdlg.lib bitmaptransforms.lib
 LIBRARY eikcoctl.lib eikctl.lib eikcore.lib estor.lib fbscli.lib ecom.lib
 LIBRARY CentralRepository.lib efsrv.lib egul.lib
-LIBRARY hlplch.lib findutil.lib
+LIBRARY hlplch.lib findutil.lib charconv.lib
 LIBRARY form.lib etext.lib
 
 // Dependencies to AVKON

@@ -23,6 +23,7 @@
 #include <TPbk2IconId.h>
 #include <AknIconUtils.h>
 #include <fbs.h>
+#include <Pbk2NamesListExUID.h>
 
 // CONSTS
 
@@ -34,9 +35,8 @@ _LIT8( KApplicationId, "xsp" );
 // Staring index for icon id's
 const TInt KIconIndexStartValue = 500;
 
-// TODO: aquire proper uid
 // Used UID for icon id's
-const TInt KIconUidValue        = 3;
+const TInt KIconUidValue        = KPbk2NamesListExtPluginUID2;
 }
 
 /**

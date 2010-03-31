@@ -52,6 +52,7 @@ class CAknNavigationDecorator;
 class CPbk2ContactEditorArrayItem;
 class CAknInputBlock;
 class MPbk2ApplicationServices;
+class CCnvCharacterSetConverter;
 
 // CLASS DECLARATION
 
@@ -357,6 +358,15 @@ class CPbk2ContactEditorDlgImpl : public CAknForm,
         void WaitFinishL();
         void CloseDialog();
         
+        TBool IsUnicodeL( const TDesC& aText );
+        TBool IsCheckPointEvent(
+                const TKeyEvent& aKeyEvent,
+                TEventCode aType );
+        void CheckCurrentFieldTextL( 
+                CPbk2ContactEditorArrayItem* aCurrentField,
+                const TKeyEvent& aKeyEvent, 
+                TEventCode aType );
+
     private: // Data structures
 
         /**
@@ -444,6 +454,8 @@ class CPbk2ContactEditorDlgImpl : public CAknForm,
         MPbk2ApplicationServices* iAppServices;
         // Own: Custom title text
         HBufC* iTitleText;
+        /// Own: Converts text between Unicode and SMS 7-bit 
+        CCnvCharacterSetConverter* iConverter;
     };
 
 #endif // CPBK2CONTACTEDITORDLGIMPL_H

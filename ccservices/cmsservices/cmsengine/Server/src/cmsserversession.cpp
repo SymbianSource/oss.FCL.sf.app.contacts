@@ -41,8 +41,8 @@
 #include <e32base.h>
 
 // For finding mailbox accounts
-#include <EmailInterfaceFactory.h>
-#include <MEmailMailbox.h>
+#include <emailinterfacefactory.h>
+#include <memailmailbox.h>
 
 
 namespace {

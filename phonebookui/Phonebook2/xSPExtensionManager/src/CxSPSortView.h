@@ -22,6 +22,7 @@
 
 //  INCLUDES
 #include <e32base.h>
+#include <eiklbo.h>
 #include "CxSPBaseView.h"
 #include "MGlobalNoteObserver.h"
 
@@ -40,7 +41,7 @@ typedef CArrayPtrFlat<CxSPLoader> CxSPArray;
  * Sort view for Extension Manager. Provides extension sorting UI
  * for user.
  */
-class CxSPSortView : public CxSPBaseView, public MGlobalNoteObserver
+class CxSPSortView : public CxSPBaseView, public MGlobalNoteObserver, public MEikListBoxObserver
     {
     public: // Constructor
 
@@ -63,7 +64,9 @@ class CxSPSortView : public CxSPBaseView, public MGlobalNoteObserver
 		void DoDeactivate();
         void HandleCommandL( TInt aCommand );
         void HandleStatusPaneSizeChange();
-
+        
+    void HandleListBoxEventL(CEikListBox* aListBox, TListBoxEvent aEventType);
+    
    	private: // From CxSPBaseView
 
    		void DoActivateViewL( const TVwsViewId& aPrevViewId,
@@ -97,6 +100,9 @@ class CxSPSortView : public CxSPBaseView, public MGlobalNoteObserver
          * Standard C++ destructor.
          */
         ~CxSPSortView();
+   
+   	private:
+        void UpdateCbasL( TInt aResourceId );
 
     private: // Data
 

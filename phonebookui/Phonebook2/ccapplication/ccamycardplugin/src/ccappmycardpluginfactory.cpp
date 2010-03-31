@@ -67,10 +67,6 @@ CCCAppViewPluginBase* CCCAppMycardPluginFactory::CreateTabViewL( TInt aIndex )
             {
             return CCCAppMyCardPlugin::NewL();
             }
-        default:
-			{
-			// TODO: Panic?
-			}
         }
     return NULL;
     }

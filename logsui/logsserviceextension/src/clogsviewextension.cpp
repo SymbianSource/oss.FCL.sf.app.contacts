@@ -464,7 +464,7 @@ TBool CLogsViewExtension::SendMessageL()
     _LOG("CLogsViewExtension::SendMessageL iSendUi->ShowTypedQueryL")             
     TUid selectedServiceUid( KNullUid );
     selectedServiceUid = iSendUi->ShowTypedQueryL( CSendUi::ESendMenu,
-        messageData, capabilities, iServiceProvidersToDim );
+        NULL, capabilities, iServiceProvidersToDim );
 
     _LOGP("CLogsViewExtension::Selected service UID =0x%x",  
         selectedServiceUid.iUid )

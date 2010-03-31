@@ -49,6 +49,8 @@
 #include <CVPbkSortOrder.h>
 #include <data_caging_path_literals.hrh>
 #include <bautils.h>
+#include <featmgr.h>
+#include <CPbk2SortOrderManager.h>
 
 // USER INCLUDES
 #include "cpcscontactstore.h"
@@ -90,14 +92,14 @@ CPcsContactStore* CPcsContactStore::NewL(CVPbkContactManager&  aContactManager,
 // Constructor
 // ---------------------------------------------------------------------------------
 CPcsContactStore::CPcsContactStore():
-	CActive( CActive::EPriorityLow),
+    CActive( CActive::EPriorityLow ),
     iAllContactLinksCount(0),
     iFetchedContactCount(0),
     iContactViewReady(EFalse)
 {
     PRINT ( _L("Enter CPcsContactStore::CPcsContactStore") );
     CActiveScheduler::Add( this );
-	PRINT ( _L("End CPcsContactStore::CPcsContactStore") );
+    PRINT ( _L("End CPcsContactStore::CPcsContactStore") );
 }
 
 
@@ -117,7 +119,7 @@ void CPcsContactStore::ConstructL(CVPbkContactManager&  aContactManager,
 	iUri = HBufC::NewL(aUri.Length());
 	iUri->Des().Copy(aUri);
 	
-	// create containers for holding the sim data      
+	// create containers for holding the sim data
     iSimContactItems = CVPbkContactLinkArray::NewL();
    
 	
@@ -134,6 +136,13 @@ void CPcsContactStore::ConstructL(CVPbkContactManager&  aContactManager,
 	iNextState = ECreateView;
 	IssueRequest();
 	
+    FeatureManager::InitializeLibL();
+    if( FeatureManager::FeatureSupported( KFeatureIdffContactsMycard ) )
+        {
+        iMyCardSupported = ETrue;
+        }
+    FeatureManager::UnInitializeLib();    
+
 	PRINT ( _L("End CPcsContactStore::ConstructL") );
 }
 
@@ -158,7 +167,7 @@ CPcsContactStore::~CPcsContactStore()
 	
 	delete iUri;
 	iUri = NULL;
-		
+	
 	iTimer.Cancel();
     iTimer.Close();
 	iFieldsToCache.Close();	
@@ -169,6 +178,8 @@ CPcsContactStore::~CPcsContactStore()
 	{
 		Deque();
 	}
+	
+	delete iSortOrderMan;
 	
 	PRINT ( _L("End CPcsContactStore::~CPcsContactStore") );
 }
@@ -205,7 +216,8 @@ void CPcsContactStore::HandleStoreEventL(MVPbkContactStore& aContactStore,
 		case TVPbkContactStoreEvent::EGroupDeleted:
 		case TVPbkContactStoreEvent::EGroupChanged:
 		{
-		    if ( aStoreEvent.iEventType == TVPbkContactStoreEvent::EContactChanged ) 
+		    if ( aStoreEvent.iEventType == TVPbkContactStoreEvent::EContactChanged ||
+		         aStoreEvent.iEventType == TVPbkContactStoreEvent::EGroupChanged ) 
 		    {
 		    	PRINT ( _L("Change contact/group event received") );
 		    }
@@ -224,16 +236,16 @@ void CPcsContactStore::HandleStoreEventL(MVPbkContactStore& aContactStore,
 	        {
 	            // sim domain  
 	            // Pass the sim observer string in the next line
-	            TInt contactLocation =  iSimContactItems->Find(*aStoreEvent.iContactLink);	
+	            TInt contactLocation = iSimContactItems->Find(*aStoreEvent.iContactLink);
 				if( KErrNotFound != contactLocation)
 				{
 				    // We are not removing from the array cache. If you try to fetch, 
-				    // then it will give an error			       
+				    // then it will give an error
 				    TInt index = CreateCacheIDfromSimArrayIndex (contactLocation);
 				    
 	                iObserver->RemoveData(*iUri,index );
-		       	} 	               	           
-		               	           
+		       	}
+		    
 	        }
 	        else
 	        {
@@ -252,10 +264,9 @@ void CPcsContactStore::HandleStoreEventL(MVPbkContactStore& aContactStore,
 	            ( aStoreEvent.iEventType == TVPbkContactStoreEvent::EGroupChanged ) )
 	        {
 	  		    // Add the contact
-	  		   iContactManager->RetrieveContactL( *(aStoreEvent.iContactLink),
-	  		                                                           *this );
+	  		   iContactManager->RetrieveContactL( *(aStoreEvent.iContactLink), *this );
 	        }
-	        	  		  
+	        
 			break;
 		}
 	}
@@ -268,7 +279,7 @@ void CPcsContactStore::HandleStoreEventL(MVPbkContactStore& aContactStore,
 // ---------------------------------------------------------------------------
 TDesC& CPcsContactStore::GetStoreUri()
 {
-  return *iUri;
+    return *iUri;
 }
 
 // ---------------------------------------------------------------------------
@@ -344,23 +355,26 @@ void CPcsContactStore::VPbkSingleContactOperationFailed(
 // ---------------------------------------------------------------------------
 void CPcsContactStore::HandleRetrievedContactL(MVPbkStoreContact* aContact)
 {    
+    if ( iMyCardSupported && IsMyCard( *aContact ) )
+        {
+        return;
+        }
+    
+    // Take the ownership
+    aContact->PushL();
+
     // Fill the contact link
 	MVPbkContactLink* tmpLink = aContact->CreateLinkLC();
-		
+	
     // If the link is null, then it is not put on the cleanup stack,
     // so we need not pop in such a case
     if( NULL == tmpLink )
     {
-        delete aContact;
-        aContact = NULL;
-    	return;
+        CleanupStack::PopAndDestroy( aContact );
+        return;
     }
    
-    // Recover the URI
-    HBufC* storeUri = HBufC::NewL(aContact->ParentStore().StoreProperties().Uri().UriDes().Length());
-    storeUri->Des().Copy(aContact->ParentStore().StoreProperties().Uri().UriDes());
-        			
-	CPsData *phoneContact = CPsData::NewL();
+	CPsData* phoneContact = CPsData::NewL();
 
 	
 	// Fill the contact id
@@ -369,38 +383,40 @@ void CPcsContactStore::HandleRetrievedContactL(MVPbkStoreContact* aContact)
 	
 	if ( err == KErrNotSupported )
 	{
-		// simdb domain	
+		// simdb domain
 		PRINT ( _L("SIM domain data received") );
-			
-		TInt tempIndex =  iSimContactItems->Find(*tmpLink);	
+		
+        // Set the contact link 
+        HBufC8* extnInfo = tmpLink->PackLC();
+        phoneContact->SetDataExtension(extnInfo);
+        CleanupStack::Pop( extnInfo );
+
+        // Get the index of the SIM contact
+        TInt tempIndex =  iSimContactItems->Find(*tmpLink);	
 		
 		if( KErrNotFound == tempIndex)
-
 		    {
-		    	tempIndex = iSimContactItems->Count();
+		    tempIndex = iSimContactItems->Count();
 	        iSimContactItems->AppendL(tmpLink);
-	      }
+	        CleanupStack::Pop(); // tmpLink
+	        }
+		else
+		    {
+            CleanupStack::PopAndDestroy(); // tmpLink
+		    }
+		
 	    //Create a dummy sim index and set it
 	    TInt simIndex = CreateCacheIDfromSimArrayIndex(tempIndex);
 	    phoneContact->SetId(simIndex);
-	    
-	    // Set the contact link 
-	    HBufC8* extnInfo = tmpLink->PackLC();
-	    phoneContact->SetDataExtension(extnInfo);
-	    CleanupStack::Pop();//extnInfo		      
-	    CleanupStack::Pop(); // tmpLink
 	}
 	else 
 	{
 	    // cntdb domain
 		TInt32 contactId = converter->LinkToIdentifier(*tmpLink);
-		phoneContact->SetId(contactId);		
+		phoneContact->SetId(contactId);
 		CleanupStack::PopAndDestroy(); // tmpLink
 	}
    	 
-	// Take the ownership
-	aContact->PushL();
-
 	MVPbkContactGroup* myContactGroup= aContact->Group();
 	
 	// The retrieved contact can be a contact item or a contact group, Handle accordingly
@@ -408,63 +424,59 @@ void CPcsContactStore::HandleRetrievedContactL(MVPbkStoreContact* aContact)
 	{
 		// The fetched contact item (and not a contact group.)
 		GetDataForSingleContactL( *aContact, phoneContact );
+	    // Recover the URI
+	    HBufC* storeUri = aContact->ParentStore().StoreProperties().Uri().UriDes().AllocL();
 		//Add the data to the relevent cache through the observer
 		iObserver->AddData(*storeUri, phoneContact);
+		delete storeUri;
 	}
 	else
 	{  
 	    // Fetch the group name 
-	    HBufC* groupName = HBufC::NewL(myContactGroup->GroupLabel().Length());
-	    groupName->Des().Copy(myContactGroup->GroupLabel());
+	    HBufC* groupName = myContactGroup->GroupLabel().AllocLC();
 	    TInt grpArrayIndex = -1; 
 	    for(TInt i =0; i  <iFieldsToCache.Count(); i++)
 	    {
 	    	if(iFieldsToCache[i] == R_VPBK_FIELD_TYPE_LASTNAME)
-         
-			 {
-			 grpArrayIndex = i;
-			 	
-			 }
-			 phoneContact->SetDataL(i,KNullDesC);
+			{
+			    grpArrayIndex = i;
+			}
+			phoneContact->SetDataL(i, KNullDesC);
 	    }
 	    if(grpArrayIndex != -1)
 	    {
-	    	phoneContact->SetDataL(grpArrayIndex,groupName->Des());
-	    	storeUri->Des().Copy(KVPbkDefaultGrpDbURI);	    
+	    	phoneContact->SetDataL(grpArrayIndex, *groupName);
 	    
-	
-	    
-	    
-        // Check for the contact in the group.
-	    MVPbkContactLinkArray* contactsContainedInGroup = myContactGroup->ItemsContainedLC();
-        for(TInt i = 0; i < contactsContainedInGroup->Count(); i++)
-		{
-			TInt grpContactId = converter->LinkToIdentifier(contactsContainedInGroup->At(i));
-			phoneContact->AddIntDataExtL(grpContactId);
-		}
-		CleanupStack::PopAndDestroy(); // contactsContainedInGroup
- 
- 		
- 		//Add the data to the relevent cache through the observer
-	    iObserver->AddData(*storeUri, phoneContact);
+            // Check for the contact in the group.
+            MVPbkContactLinkArray* contactsContainedInGroup = myContactGroup->ItemsContainedLC();
+            for(TInt i = 0; i < contactsContainedInGroup->Count(); i++)
+            {
+                TInt grpContactId = converter->LinkToIdentifier(contactsContainedInGroup->At(i));
+                phoneContact->AddIntDataExtL(grpContactId);
+            }
+            CleanupStack::PopAndDestroy(); // contactsContainedInGroup
+            
+            // Recover the URI
+            HBufC* storeUri = KVPbkDefaultGrpDbURI().AllocL();
+            
+            //Add the data to the relevent cache through the observer
+            iObserver->AddData(*storeUri, phoneContact);
+            
+            delete storeUri;
 	 	}
 	    else
 	    {
 	    	//We do not add anything here since Lastname does not exists in cenrep
-	    	delete 	phoneContact;
+	    	delete phoneContact;
 	    	phoneContact = NULL;
 	    }
-	    delete groupName;
-	    groupName = NULL;
+	    CleanupStack::PopAndDestroy( groupName );
 	}
 	
 	delete converter;
 	converter = NULL;
 
-	delete storeUri;
-    storeUri = NULL;
-    
-	CleanupStack::PopAndDestroy(aContact); // aContact
+	CleanupStack::PopAndDestroy(aContact);
 }
  
     
@@ -533,8 +545,8 @@ void CPcsContactStore::AddContactFieldsL( MVPbkBaseContact& aContact,
                     {
                         aPhoneData->SetDataL(i,data.Text());
                     }
-				}			
-			}					
+				}
+			}
 		}
 	}
 	
@@ -549,19 +561,19 @@ void CPcsContactStore::FetchlinksL()
 
 	PRINT1 ( _L("CPcsContactStore::Total contacts downloaded = %d"),
 	          iFetchedContactCount );
-	          						
+	
     TInt blockCount = iFetchedContactCount + KLinksToFetchInOneGo;
     
     if( blockCount >= iAllContactLinksCount)
     	blockCount = iAllContactLinksCount;
     
-	for(int cnt = iFetchedContactCount; cnt < blockCount; cnt++)
+	for(TInt cnt = iFetchedContactCount; cnt < blockCount; cnt++)
 	{	
 		// Retrieve the contact 
 		MVPbkContactLink* tempLink =iContactViewBase->CreateLinkLC(cnt);
 		iContactManager->RetrieveContactL( *tempLink, *this );
-		CleanupStack::PopAndDestroy();
-	}				
+		CleanupStack::PopAndDestroy(); // tempLink
+	}
 
 }
 
@@ -670,7 +682,7 @@ void CPcsContactStore::CreateContactFetchViewL()
 	CleanupStack::PushL(viewName);
 
 	// Set the Uri
-	if ( iUri->Des().CompareC(KVPbkDefaultGrpDbURI) == 0)
+	if ( iUri->CompareC(KVPbkDefaultGrpDbURI) == 0)
 	{	    
 		// Special Handling required for Groups Data Store
 		// Read the resource file and create the sort order
@@ -727,9 +739,29 @@ void CPcsContactStore::CreateContactFetchViewL()
         iResourceFile.Close();                        
 	
 	}
-	else
-	{
+	else if ( iUri->CompareC(KVPbkDefaultCntDbURI) == 0)
+    {       
+        // For phone contacts DB we use the shared "AllContacts" -view so that 
+        // we don't need to generate a new view. This way we save some RAM
+        // from contacts server and some CPU time because the view is already
+        // generated and sorted. Difference is noticiable with larger amount 
+        // of contacts e.g. 7000. 
 	
+        viewDef->SetUriL( iUri->Des() );
+        viewDef->SetType( EVPbkContactsView );
+
+        if( !iSortOrderMan )
+            {
+            iSortOrderMan = CPbk2SortOrderManager::NewL( 
+                iContactManager->FieldTypes(), &iContactManager->FsSession() );
+            }
+
+        iContactViewBase = iContactManager->CreateContactViewLC( 
+            *this, *viewDef, iSortOrderMan->SortOrder() );
+        CleanupStack::Pop(); // iContactViewBase       
+    }
+	else
+	{        
 		// Create sort order with the fields from cenrep
 		CreateSortOrderL(iContactManager->FieldTypes());
 		
@@ -779,7 +811,7 @@ void CPcsContactStore::RunL()
 	   	case ECreateView :
 			CreateContactFetchViewL();
 		    break;
-   					      	
+   		
 	   	case EFetchContactBlock:
 	   		PRINT ( _L("Issuing the fetch request for next block") );
 			FetchlinksL();
@@ -789,7 +821,7 @@ void CPcsContactStore::RunL()
 			iTimer.After( timerStatus, 100000); // 100 milliseconds
 			User::WaitForRequest( timerStatus );
 			break;
-	   						
+	   	
 	   	case EComplete:
 		    PRINT ( _L("Contacts Caching FINISHED") );
 		    PRINT_BOOT_PERFORMANCE ( _L("Contacts Caching FINISHED") );
@@ -802,11 +834,11 @@ void CPcsContactStore::RunL()
 // ---------------------------------------------------------------------------------
 TInt CPcsContactStore::RunError(TInt /*aError*/) 
 {
-	 PRINT ( _L(" Enter CPcsContactStore:: CPcsContactStore::RunError()") );
+	PRINT ( _L(" Enter CPcsContactStore:: CPcsContactStore::RunError()") );
 
-	 PRINT1 ( _L(" CPcsContactStore:: RunError().  Completing caching in contacts store %S with status ECachingCompleteWithErrors "), &(iUri->Des()));
-   iObserver->UpdateCachingStatus(*iUri, ECachingCompleteWithErrors);
- 	 PRINT ( _L(" End CPcsContactStore:: CPcsContactStore::RunError()") );
+	PRINT1 ( _L(" CPcsContactStore:: RunError().  Completing caching in contacts store %S with status ECachingCompleteWithErrors "), &(iUri->Des()));
+    iObserver->UpdateCachingStatus(*iUri, ECachingCompleteWithErrors);
+ 	PRINT ( _L(" End CPcsContactStore:: CPcsContactStore::RunError()") );
 	return KErrNone;
 }
 
@@ -887,5 +919,25 @@ void CPcsContactStore::CreateSortOrderL(const MVPbkFieldTypeList& aMasterList)
 	}
 	
 }
+// ---------------------------------------------------------------------------------
+// Checks MyCard extension of contact
+// ---------------------------------------------------------------------------------
+TBool CPcsContactStore::IsMyCard( const MVPbkBaseContact& aContact )
+    {
+    TBool isMyCard( EFalse);
+    // this is temporary solution to hide own contact from phonebook contacts list,
+    // TODO remove this code when we can hide own contact with contact model
 
+    MVPbkBaseContact& contact = const_cast<MVPbkBaseContact&>( aContact );
+    TAny* extension = contact.BaseContactExtension( KVPbkBaseContactExtension2Uid );
+
+    if( extension )
+        {
+        MVPbkBaseContact2* baseContactExtension = static_cast<MVPbkBaseContact2*>( extension );
+        TInt error( KErrNone );
+        isMyCard = baseContactExtension->IsOwnContact( error );
+        }
+    
+    return isMyCard;
+    }
 // End of file

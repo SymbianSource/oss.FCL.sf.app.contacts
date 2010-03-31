@@ -21,7 +21,7 @@
 #include "CPcsDebug.h"
 
 // Compare functions
-TBool ComparePsPattern ( const TPsPatternDetails& aFirst, const TPsPatternDetails& aSecond )
+TInt ComparePsPattern ( const TPsPatternDetails& aFirst, const TPsPatternDetails& aSecond )
 {
 	return (CPcsAlgorithm1Utils::MyCompareC(*(aFirst.matchPattern), *(aSecond.matchPattern)));
 }
@@ -109,7 +109,7 @@ CPcsAlgorithm1FilterHelper::~CPcsAlgorithm1FilterHelper()
 // CPcsAlgorithm1FilterHelper::AddL
 // 
 // ----------------------------------------------------------------------------
-void CPcsAlgorithm1FilterHelper::AddL(CPsData* psData, RPointerArray<TDesC>& aPatternSequence)
+void CPcsAlgorithm1FilterHelper::AddL(CPsData* aPsData, RPointerArray<TDesC>& aPatternSequence)
 {
 	if(iSortType == EAlphabetical)
 	{
@@ -117,10 +117,12 @@ void CPcsAlgorithm1FilterHelper::AddL(CPsData* psData, RPointerArray<TDesC>& aPa
 		if(iMatchPatternPools.Count() == 0 )
 		{
 			RPointerArray<CPsData> *tempPsDataArray = new (ELeave) RPointerArray<CPsData> ();
-        	iMatchPatternPools.Append(tempPsDataArray);
+			CleanupStack::PushL( tempPsDataArray );
+        	iMatchPatternPools.AppendL(tempPsDataArray);
+        	CleanupStack::Pop( tempPsDataArray );
 		}
 		// Add result to the result set
-		iMatchPatternPools[0]->Append(psData);
+		iMatchPatternPools[0]->AppendL(aPsData);
 		
 		// Update the count
 		iResultCount++;
@@ -128,33 +130,32 @@ void CPcsAlgorithm1FilterHelper::AddL(CPsData* psData, RPointerArray<TDesC>& aPa
 		// Update sequence list
 		for(TInt i = 0; i < aPatternSequence.Count(); i++)
 		{
-			TInt index = FindSequence(aPatternSequence[i]);
+			TInt index = FindSequence(*aPatternSequence[i]);
 			if ( index  == KErrNotFound )
 			{
 				// sequence not found, add it to array
 				TPsPatternDetails* temp = new ( ELeave ) TPsPatternDetails;
+				CleanupStack::PushL( temp );
 				
-				TInt len = aPatternSequence[i]->Length();
-				temp->matchPattern = HBufC::NewL(len);
-				temp->matchPattern->Des().Copy(*(aPatternSequence[i]));
+				temp->matchPattern = aPatternSequence[i]->AllocL();
 				
 				// First occurence should be -1 for alphabetical sort
 				// and pool index will be 0 as only one pool will be created
 				temp->firstOccurence = -1;
 				temp->poolIndex = 0;
 				
-				iMatchPatternDetails.Append(temp);	
+				iMatchPatternDetails.AppendL(temp);
+				CleanupStack::Pop( temp );
 			}
 		}
 	}
 	else
 	{
 		// PatternBased sort
-		TInt index = AddToPoolL(psData, aPatternSequence);
+		TInt index = AddToPoolL(aPsData, aPatternSequence);
 		
 		// Increment the total count
 		iResultCount++;	
-							
 	}
 }
 
@@ -186,7 +187,7 @@ TInt CPcsAlgorithm1FilterHelper::AddToPoolL(CPsData* psData,
 	
 		// Create the pattern for aPatternSequence[cnt] in  iMatchPatternDetails
 		// and return the index
-	    TInt indexInMatchPatternDetails = CreateMatchPatternDetailsAndPoolsL(aPatternSequence[cnt]);
+	    TInt indexInMatchPatternDetails = CreateMatchPatternDetailsAndPoolsL(*aPatternSequence[cnt]);
 		
 		//Add the data to the pool the first pattern pool.
 		// The data should be added only once
@@ -203,14 +204,14 @@ TInt CPcsAlgorithm1FilterHelper::AddToPoolL(CPsData* psData,
 	       	else
 	       	{
 	       		poolItemCount = -1;
-	       	}	
-	       		
+	       	}
+	    
 	    }
 	    else if(cnt > 0)
 		{
 		    // Check if aPatternSequence[cnt] is listed in subpatterns of aPatternSequence[0]
 		    // If not, then create a sub pattern and apped it to  iMatchPatternDetails for aPatternSequence[0]
-		 	TInt subSeq = FindSubSequence(aPatternSequence[cnt],matchpatterpoolIndexToAppend);
+		 	TInt subSeq = FindSubSequence(*aPatternSequence[cnt], matchpatterpoolIndexToAppend);
 		 	if(subSeq  == KErrNotFound )
 		 	{
 		 	
@@ -235,7 +236,7 @@ TInt CPcsAlgorithm1FilterHelper::AddToPoolL(CPsData* psData,
 // Returns the index of the sequence in iMatchPatternDetails
 // ----------------------------------------------------------------------------
 
-TInt CPcsAlgorithm1FilterHelper::CreateMatchPatternDetailsAndPoolsL(TDesC* aSeq)
+TInt CPcsAlgorithm1FilterHelper::CreateMatchPatternDetailsAndPoolsL(const TDesC& aSeq)
 {
 
 	TInt indexInMatchPatternDetails = FindSequence(aSeq);
@@ -245,8 +246,7 @@ TInt CPcsAlgorithm1FilterHelper::CreateMatchPatternDetailsAndPoolsL(TDesC* aSeq)
 		TPsPatternDetails* tempPatternDetailsInstance = new ( ELeave ) TPsPatternDetails;
 		
 		//TInt len = aPatternSequence[cnt]->Length();
-		tempPatternDetailsInstance->matchPattern = HBufC::NewL(aSeq->Length());
-		tempPatternDetailsInstance->matchPattern->Des().Copy(*(aSeq));
+		tempPatternDetailsInstance->matchPattern = aSeq.AllocL();
 		tempPatternDetailsInstance->firstOccurence = -1; //RAVIKIRAN
 		
 		// Pools doesn't exist for this sequence..
@@ -353,17 +353,13 @@ void CPcsAlgorithm1FilterHelper::GetPatternsL(RPointerArray<CPsPattern>& aPatter
 // Searches for for aSeq in iMatchPatternDetails and returns index 
 //  where input sequence is found. Returns -1 if not found
 // ----------------------------------------------------------------------------
-TInt CPcsAlgorithm1FilterHelper::FindSequence(TDesC* aSeq)
+TInt CPcsAlgorithm1FilterHelper::FindSequence(const TDesC& aSeq)
 {
-	TBuf<KPsQueryMaxLen> seqBuf;
-	seqBuf.Append(*aSeq);
-	
 	TInt j = 0;
 	for( ; j < iMatchPatternDetails.Count(); j++)
 	{
-		TBuf<KPsQueryMaxLen> matchPatternBuf;
-		matchPatternBuf.Copy((iMatchPatternDetails[j]->matchPattern->Des()));
-		if ( CPcsAlgorithm1Utils::MyCompareC(seqBuf, matchPatternBuf) == 0 )
+		const TDesC& matchPattern = *(iMatchPatternDetails[j]->matchPattern);
+		if ( CPcsAlgorithm1Utils::MyCompareC(aSeq, matchPattern) == 0 )
             break;
 	}
 	
@@ -379,17 +375,13 @@ TInt CPcsAlgorithm1FilterHelper::FindSequence(TDesC* aSeq)
 // and returns index where input sequence is found. 
 // Returns -1 if not found
 // ----------------------------------------------------------------------------
-TInt CPcsAlgorithm1FilterHelper::FindSubSequence(TDesC* aSeq,TInt aPatternIndex)
+TInt CPcsAlgorithm1FilterHelper::FindSubSequence(const TDesC& aSeq,TInt aPatternIndex)
 {
-	TBuf<KPsQueryMaxLen> seqBuf;
-	seqBuf.Append(*aSeq);
-	
 	TInt j = 0;
 	for( ; j < iMatchPatternDetails[aPatternIndex]->subPatternArray.Count(); j++)
 	{
-		TBuf<KPsQueryMaxLen> matchPatternBuf;
-		matchPatternBuf.Copy((iMatchPatternDetails[aPatternIndex]->subPatternArray[j]->matchPattern->Des()));
-		if ( CPcsAlgorithm1Utils::MyCompareC(seqBuf, matchPatternBuf) == 0 )
+		const TDesC& matchPattern = *(iMatchPatternDetails[aPatternIndex]->subPatternArray[j]->matchPattern);
+		if ( CPcsAlgorithm1Utils::MyCompareC(aSeq, matchPattern) == 0 )
             break;
 	}
 	
@@ -408,13 +400,13 @@ TInt CPcsAlgorithm1FilterHelper::FindSubSequence(TDesC* aSeq,TInt aPatternIndex)
 // then, firstOccurence of all substring sequences ("A", "AB", "ABC") 
 //       in iMatchPatternDetails will be set to 2
 // ----------------------------------------------------------------------------
-void CPcsAlgorithm1FilterHelper::UpdateForSubSequencesL(TDesC& aSeq,TInt aFirstOccrVal)
+void CPcsAlgorithm1FilterHelper::UpdateForSubSequencesL(const TDesC& aSeq,TInt aFirstOccrVal)
 {
-    HBufC* tempSequence = HBufC::NewL(aSeq.Length() + 1);
-    for ( TInt i =0; i<aSeq.Length(); i++ )
+    TPtrC tempSequence;
+    for ( TInt i = 1; i <= aSeq.Length(); i++ )
 	{
 	    // Get the next substring in tempSequence
-		tempSequence->Des().Append(aSeq[i]);
+		tempSequence.Set( aSeq.Left(i) );
 	
 		// Find if this sequence exist in iMatchPatternDetails
 		TInt patternIndex = FindSequence(tempSequence);
@@ -423,14 +415,9 @@ void CPcsAlgorithm1FilterHelper::UpdateForSubSequencesL(TDesC& aSeq,TInt aFirstO
 		if((patternIndex != KErrNotFound) && (iMatchPatternDetails[patternIndex]->firstOccurence == -1))
 		{
 			iMatchPatternDetails[patternIndex]->firstOccurence = aFirstOccrVal;
-		}	
-				
-	}
-	delete tempSequence;
-	tempSequence = NULL;
+		}
 	
-	return;
-
+	}
 }
 // END OF FILE
 

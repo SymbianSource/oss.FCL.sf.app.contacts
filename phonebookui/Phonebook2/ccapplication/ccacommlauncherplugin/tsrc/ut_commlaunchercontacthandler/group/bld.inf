@@ -25,7 +25,7 @@ DEFAULT
 PRJ_TESTEXPORTS
 // NOTE: If using ARS requirements all export operations should be done under this.
 // 'abld test export'
-
+../init/ut_commlaunchercontacthandler.ini      /epoc32/winscw/c/TestFramework/ut_commlaunchercontacthandler.ini
 PRJ_EXPORTS
 // Specify the source file followed by its destination here
 // copy will be used to copy the source file to its destination

@@ -157,9 +157,9 @@ const TInt KLayoutCount(5);
 const TInt KNullIndexData(-1);
 const TInt32 KVmbxUid(0x100058F5) ;
 const TInt KOperatorNameLength(100);
-const TInt KIconsCount(13);
-const TInt KIconsIdCount(11);
-const TInt KIconsMaskCount(11);
+const TInt KIconsCount(14);
+const TInt KIconsIdCount(12);
+const TInt KIconsMaskCount(12);
 
 _LIT(KNullCell, "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t%d\t");
 _LIT(KDesTab, "\t");
@@ -448,12 +448,13 @@ void CSpdiaControl::InitializeArray()
     iSkinIcons->Append( KAknsIIDQgnPropNrtypFax );
     iSkinIcons->Append( KAknsIIDQgnPropNrtypPager );
     iSkinIcons->Append( KAknsIIDQgnPropNrtypCar );
-    if ( FeatureManager::FeatureSupported(KFeatureIdCommonVoip) )
+    if ( FeatureManager::FeatureSupported( KFeatureIdCommonVoip ) )
     	{
-        iSkinIcons->Append( KAknsIIDQgnPropNrtypVoip );  
+        iSkinIcons->Append( KAknsIIDQgnPropNrtypVoip ); 
+        iSkinIcons->Append( KAknsIIDQgnPropNrtypSwis );
         }
     iSkinIcons->Append( KAknsIIDQgnPropNrtypAssistant );
-    iSkinIcons->Append(KAknsIIDQgnPropEmpty);
+    iSkinIcons->Append( KAknsIIDQgnPropEmpty );
     iSkinIcons->Append( KAknsIIDQgnPropNrtypEmail );
     iSkinIcons->Append( KAknsIIDQgnPropNrtypAddress );
     
@@ -462,49 +463,52 @@ void CSpdiaControl::InitializeArray()
     iIcons->Append( EMbmAvkonQgn_prop_nrtyp_phone );
     iIcons->Append( EMbmAvkonQgn_prop_nrtyp_home );
     iIcons->Append( EMbmAvkonQgn_prop_nrtyp_work );
-    iIcons->Append( EMbmAvkonQgn_prop_nrtyp_mobile  );
-    iIcons->Append( EMbmAvkonQgn_prop_nrtyp_video  );
-    iIcons->Append( EMbmAvkonQgn_prop_nrtyp_fax  );
-    iIcons->Append( EMbmAvkonQgn_prop_nrtyp_pager  );
-    iIcons->Append( EMbmAvkonQgn_prop_nrtyp_car  );
-    if ( FeatureManager::FeatureSupported(KFeatureIdCommonVoip) )
+    iIcons->Append( EMbmAvkonQgn_prop_nrtyp_mobile );
+    iIcons->Append( EMbmAvkonQgn_prop_nrtyp_video );
+    iIcons->Append( EMbmAvkonQgn_prop_nrtyp_fax );
+    iIcons->Append( EMbmAvkonQgn_prop_nrtyp_pager );
+    iIcons->Append( EMbmAvkonQgn_prop_nrtyp_car );
+    if ( FeatureManager::FeatureSupported( KFeatureIdCommonVoip ) )
     	{
-        iIcons->Append( EMbmAvkonQgn_prop_nrtyp_voip   );
+        iIcons->Append( EMbmAvkonQgn_prop_nrtyp_voip );
+        iIcons->Append( EMbmAvkonQgn_prop_empty );
     	}
-    iIcons->Append( EMbmAvkonQgn_prop_nrtyp_assistant  );
-    iIcons->Append( EMbmAvkonQgn_prop_empty);
-    iIcons->Append( EMbmAvkonQgn_prop_nrtyp_email  );
+    iIcons->Append( EMbmAvkonQgn_prop_nrtyp_assistant );
+    iIcons->Append( EMbmAvkonQgn_prop_empty );
+    iIcons->Append( EMbmAvkonQgn_prop_nrtyp_email );
     iIcons->Append( EMbmAvkonQgn_prop_nrtyp_address );
     
-    iIconsId->Append( EPbkqgn_prop_nrtyp_phone  );
+    iIconsId->Append( EPbkqgn_prop_nrtyp_phone );
     iIconsId->Append( EPbkqgn_prop_nrtyp_home );
     iIconsId->Append( EPbkqgn_prop_nrtyp_work );
-    iIconsId->Append( EPbkqgn_prop_nrtyp_mobile  );
-    iIconsId->Append( EPbkqgn_prop_nrtyp_video  );
-    iIconsId->Append( EPbkqgn_prop_nrtyp_fax  );
-    iIconsId->Append( EPbkqgn_prop_nrtyp_pager  );
-    iIconsId->Append( EPbkqgn_prop_nrtyp_car  );
-    if ( FeatureManager::FeatureSupported(KFeatureIdCommonVoip) )
+    iIconsId->Append( EPbkqgn_prop_nrtyp_mobile );
+    iIconsId->Append( EPbkqgn_prop_nrtyp_video );
+    iIconsId->Append( EPbkqgn_prop_nrtyp_fax );
+    iIconsId->Append( EPbkqgn_prop_nrtyp_pager );
+    iIconsId->Append( EPbkqgn_prop_nrtyp_car );
+    if ( FeatureManager::FeatureSupported( KFeatureIdCommonVoip ) )
     	{
-    	iIconsId->Append( EPbkqgn_prop_nrtyp_voip   );
+    	iIconsId->Append( EPbkqgn_prop_nrtyp_voip );
+    	iIconsId->Append( EPbkqgn_prop_nrtyp_swis );
     	}
-    iIconsId->Append( EPbkqgn_prop_nrtyp_assistant  );
-    iIconsId->Append( EPbkqgn_prop_nrtyp_empty);
+    iIconsId->Append( EPbkqgn_prop_nrtyp_assistant );
+    iIconsId->Append( EPbkqgn_prop_nrtyp_empty );
     
     iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_phone_mask );
     iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_home_mask );
     iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_work_mask );
-    iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_mobile_mask  );
-    iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_video_mask  );
-    iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_fax_mask  );
-    iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_pager_mask  );
-    iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_car_mask  );
-    if ( FeatureManager::FeatureSupported(KFeatureIdCommonVoip) )
+    iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_mobile_mask );
+    iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_video_mask );
+    iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_fax_mask );
+    iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_pager_mask );
+    iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_car_mask );
+    if ( FeatureManager::FeatureSupported( KFeatureIdCommonVoip ) )
     	{
-    	iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_voip_mask   );
+    	iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_voip_mask );
+    	iIconsMask->Append( EMbmAvkonQgn_prop_empty_mask );
     	}
-    iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_assistant_mask  );
-    iIconsMask->Append( EMbmAvkonQgn_prop_empty_mask);
+    iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_assistant_mask );
+    iIconsMask->Append( EMbmAvkonQgn_prop_empty_mask );
     }
 // ---------------------------------------------------------
 // CSpdiaControl::CSpdiaControl

@@ -169,10 +169,9 @@ RESOURCE CBA r_extension_manager_sort_view_softkeys
     buttons =
         {
         CBA_BUTTON { id = EExtensionManagerCmdMove; txt = qtn_extension_manager_softkey_move; },
-        CBA_BUTTON { id = EAknSoftkeyExit; txt = text_softkey_exit; }
+        CBA_BUTTON { id = EAknSoftkeyBack; txt = text_softkey_back; }
         };
     }
-
 RESOURCE AVKON_VIEW r_extension_manager_sort_view
     {
     cba = r_extension_manager_sort_view_softkeys;

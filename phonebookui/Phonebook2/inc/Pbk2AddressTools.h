@@ -21,6 +21,7 @@
 #include "TPbk2ContactEditorParams.h"
 #include <Pbk2FieldProperty.hrh>
 #include <VPbkFieldType.hrh>
+#include <MVPbkFieldType.h>
 #include <e32hashtab.h>
 
 class MVPbkStoreContact;
@@ -113,6 +114,30 @@ public:
 				MVPbkStoreContact& aContact, 
 				TPbk2FieldGroupId aAddressGroup, 
 				RBuf& aText );
+	
+	 /**
+	 * Maps VPbkFieldType to field group
+	 *
+	 * @param aVPbkFieldType  Type of virtual phonebook field type
+	 * @return Suitable group id ( TPbk2FieldGroupId )
+	 */
+	IMPORT_C static TPbk2FieldGroupId MapVPbkFieldTypeToAddressGroupId( 
+			const MVPbkFieldType* aVPbkFieldType );
+	
+	 /**
+	 * Judge whether the address preview of one contact is empty
+	 * Address preview include the following four fields: 
+	 * EVPbkVersitSubFieldStreet, EVPbkVersitSubFieldLocality, 
+	 * EVPbkVersitSubFieldRegion and EVPbkVersitSubFieldCountry.
+	 * If the four fields are all empty, return ETrue; Otherwise, return EFalse.
+	 *
+	* @param aContact  contact
+	* @param aAddressGroup  field group
+	* @return If address preview is empty, return ETrue; Otherwiase, EFalse
+	 */
+	IMPORT_C static TBool IsAddressPreviewEmptyL( 
+			MVPbkStoreContact& aContact,
+			TPbk2FieldGroupId aAddressGroup );
 	};
 
 #endif // PBK2ADDRESSTOOLS_H

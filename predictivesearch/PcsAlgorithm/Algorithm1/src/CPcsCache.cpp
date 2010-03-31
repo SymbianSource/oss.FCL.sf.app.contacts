@@ -71,6 +71,8 @@ CPcsCache::CPcsCache()
 void CPcsCache::ConstructL(const TDesC& aURI, CPcsKeyMap& aKeyMap, TUint8 aUriId)
 {
     PRINT ( _L("Enter CPcsCache::ConstructL") );
+
+    PRINT2 ( _L("CPcsCache::ConstructL: aURI=%S, aUriId=%d"), &aURI, aUriId);
     
     iURI = aURI.AllocL();
     iUriId = aUriId;
@@ -110,24 +112,26 @@ CPcsCache::~CPcsCache()
 
     PRINT ( _L("End CPcsCache::~CPcsCache") );
 }
- 
+
 // ----------------------------------------------------------------------------
 // CPcsCache::GetContactsForKeyL
 // Get list of pool elements specific to a pool
 // ----------------------------------------------------------------------------     
 void CPcsCache::GetContactsForKeyL(TInt aKeyId, RPointerArray<CPcsPoolElement>& aData)
-{
+    {
     PRINT ( _L("Enter CPcsCache::GetContactsForKeyL") );
-        	
-	const RPointerArray<CPcsPoolElement>& arr = *iKeyArr[aKeyId];
-	for ( TInt i = 0; i < arr.Count(); i++ )
-	{
-		CPcsPoolElement* value = arr[i];
-        aData.AppendL(value);
-	}
     
-	PRINT ( _L("End CPcsCache::GetContactsForKeyL") );
-}  
+    if ( aKeyId >= 0 && aKeyId < iKeyArr.Count() )
+        {
+        const RPointerArray<CPcsPoolElement>& arr = *iKeyArr[aKeyId];
+        for ( TInt i = 0; i < arr.Count(); i++ )
+            {
+            aData.AppendL(arr[i]);
+            }
+        }
+    
+    PRINT ( _L("End CPcsCache::GetContactsForKeyL") );
+    }
 
 // ----------------------------------------------------------------------------
 // CPcsCache::GetAllContentsL
@@ -139,20 +143,18 @@ void CPcsCache::GetAllContentsL(RPointerArray<CPsData>& aData)
         	
 	for ( TInt i = 0; i < iMasterPool.Count(); i++ )
 	{
-		CPsData* value = iMasterPool[i];
-        aData.AppendL(value);
+        aData.AppendL(iMasterPool[i]);
 	}
     
 	PRINT ( _L("End CPcsCache::GetAllContentsL") );
-}  
-   
+}
 
 // ----------------------------------------------------------------------------
 // CPcsCache::AddToPool
 // Adds a contact to cache
 // ----------------------------------------------------------------------------
 void CPcsCache::AddToPoolL(TUint64& aPoolMap, CPsData& aData)
-{	
+{
      // Temp hash to remember the location of pool elements
      // First TInt  = Pool 
      // Second TInt = Location in the pool
@@ -161,11 +163,11 @@ void CPcsCache::AddToPoolL(TUint64& aPoolMap, CPsData& aData)
      RHashMap<TInt, TInt> elementHash;
      CleanupClosePushL( elementHash );
      TLinearOrder<CPcsPoolElement> rule( CPcsPoolElement::CompareByData );
-              
+
      // Parse thru each data element
      for ( TInt dataIndex = 0; dataIndex < aData.DataElementCount(); dataIndex++ )
-     {     	
-     	// Find store all the pool IDs where this contact should be
+     {
+        // Find store all the pool IDs where this contact should be
 		RArray<TUint> poolIds;
 		CleanupClosePushL( poolIds );
 		
@@ -174,24 +176,30 @@ void CPcsCache::AddToPoolL(TUint64& aPoolMap, CPsData& aData)
 		{
 		    // Split the data into words
 		    CWords* words = CWords::NewLC(*aData.Data(dataIndex));
-  
+
 		    // Store the first numeric key for each word
 		    for ( TInt i = 0; i < words->MdcaCount(); i++ )
 		    {
 		    	TChar firstChar = (words->MdcaPoint(i))[0];
 		    	
 		    	// Pool ID according to ITU-T mappings
-		    	TInt itutPoolId = iKeyMap->PoolIdForCharacter(firstChar, EPredictiveItuT);
-		    	if ( itutPoolId != KErrNotFound )
+		    	if ( iKeyMap->IsItutPredictiveAvailable() )
 		    	    {
-                    poolIds.Append(itutPoolId);
+                    TInt itutPoolId = iKeyMap->PoolIdForCharacter(firstChar, EPredictiveItuT);
+                    if ( itutPoolId != KErrNotFound )
+                        {
+                        poolIds.Append(itutPoolId);
+                        }
 		    	    }
 		    	
 		    	// Pool ID according to QWERTY mappings
-                TInt qwertyPoolId = iKeyMap->PoolIdForCharacter(firstChar, EPredictiveQwerty);
-                if ( qwertyPoolId != KErrNotFound )
+                if ( iKeyMap->IsQwertyPredictiveAvailable() )
                     {
-                    poolIds.Append(qwertyPoolId);
+                    TInt qwertyPoolId = iKeyMap->PoolIdForCharacter(firstChar, EPredictiveQwerty);
+                    if ( qwertyPoolId != KErrNotFound )
+                        {
+                        poolIds.Append(qwertyPoolId);
+                        }
                     }
 		    }
 		    
@@ -200,7 +208,7 @@ void CPcsCache::AddToPoolL(TUint64& aPoolMap, CPsData& aData)
 		
 		for ( TInt poolIdIndex = 0; poolIdIndex < poolIds.Count(); poolIdIndex++ )
 		{
-            TUint poolId = poolIds[ poolIdIndex ];
+            TUint poolId = poolIds[poolIdIndex];
 		    CPcsPoolElement* element = NULL;
 		    
 		    // Check if an element already exists in the pool for this data
@@ -267,6 +275,7 @@ void CPcsCache::AddToCacheL( CPsData& aData )
 
     // Include this element in master pool
     TLinearOrder<CPsData> rule( CPcsAlgorithm1Utils::CompareDataBySortOrderL );
+    
     iMasterPool.InsertInOrderAllowRepeatsL(&aData, rule);
 }
 
@@ -276,8 +285,8 @@ void CPcsCache::AddToCacheL( CPsData& aData )
 // ---------------------------------------------------------------------
 void CPcsCache::RemoveFromCacheL( TInt aItemId )
 {
-    CPsData *data = NULL;
-            
+    CPsData* data = NULL;
+    
     TUint64* poolMap = iCacheInfo.Find(aItemId);
     
     if ( poolMap == NULL )
@@ -289,8 +298,8 @@ void CPcsCache::RemoveFromCacheL( TInt aItemId )
     for ( TInt keyIndex = 0; keyIndex < iKeyArr.Count(); keyIndex++ )
     {
         TBool present = GetPoolMap(*poolMap, keyIndex); 
-        
-        if ( ! present )
+
+        if ( !present )
         {
         	continue;
         }
@@ -307,32 +316,30 @@ void CPcsCache::RemoveFromCacheL( TInt aItemId )
 		        data = element->GetPsData();
 		    	delete element;
 		    	iKeyArr[keyIndex]->Remove(arrayIndex);  
-		    }  
-        }      	
-    };   
-    
-    // Remove this element from master pool
-    for ( TInt arrayIndex = 0; 
-              arrayIndex < iMasterPool.Count();
-              arrayIndex++ )
-    {
-	    CPsData *dataElement = iMasterPool[arrayIndex];
-	    TInt id = dataElement->Id();
-	    if ( id == aItemId )
-	    {
-	    	iMasterPool.Remove(arrayIndex);  
-	    }  
-    }      	
-     
-    // Delete data 
-    if ( data )
-    {
-    	delete data;
-    	data = NULL;
+		    }
+        }
     }
+        
+    // Remove this element from master pool
+    TInt arrayIndex = 0;
+    while ( arrayIndex < iMasterPool.Count() )
+    {
+        if ( iMasterPool[arrayIndex]->Id() == aItemId )
+        {
+            iMasterPool.Remove(arrayIndex);  
+        }
+        else
+        {
+            arrayIndex++;
+        }
+    }
+    
+    // Delete data 
+    delete data;
+    data = NULL;
 
     // Clear up cache information
-    iCacheInfo.Remove(aItemId);    
+    iCacheInfo.Remove(aItemId);
 }
 
 // ---------------------------------------------------------------------
@@ -361,8 +368,29 @@ void CPcsCache::RemoveAllFromCache()
 void CPcsCache::SetPoolMap(TUint64& aPoolMap, TInt aArrayIndex)
 {
     __ASSERT_DEBUG( aArrayIndex < 64, User::Panic(_L("CPcsCache"), KErrOverflow ) );
-    TUint64 val = 1 << aArrayIndex;
-    aPoolMap |= val;
+
+    /* Some platforms do not support 64 bits shift operations.
+     * Split to two 32 bits operations.
+     */
+    
+    TUint32 poolMapH = I64HIGH(aPoolMap);
+    TUint32 poolMapL = I64LOW(aPoolMap);
+    
+    TUint32 valH = 0;
+    TUint32 valL = 0;
+    if (aArrayIndex < 32)
+        {
+        valL = 1 << aArrayIndex;
+        }
+    else
+        {
+        valH = 1 << (aArrayIndex-32);
+        }
+
+    poolMapH |= valH;
+    poolMapL |= valL;
+    
+    aPoolMap = MAKE_TUINT64(poolMapH, poolMapL);
 }
 
 // ---------------------------------------------------------------------
@@ -372,8 +400,28 @@ void CPcsCache::SetPoolMap(TUint64& aPoolMap, TInt aArrayIndex)
 TBool CPcsCache::GetPoolMap(TUint64& aPoolMap, TInt aArrayIndex)
 {
     __ASSERT_DEBUG( aArrayIndex < 64, User::Panic(_L("CPcsCache"), KErrOverflow ) );
-    TUint64 val = 1 << aArrayIndex;
-    return (aPoolMap & val);
+
+    /* Some platforms do not support 64 bits shift operations.
+     * Split to two 32 bits operations.
+     */
+
+    TUint32 poolMapH = I64HIGH(aPoolMap);
+    TUint32 poolMapL = I64LOW(aPoolMap);
+    
+    TUint32 valH = 0;
+    TUint32 valL = 0;
+    if (aArrayIndex < 32)
+        {
+        valL = 1 << aArrayIndex;
+        }
+    else
+        {
+        valH = 1 << (aArrayIndex-32);
+        }
+
+    TBool ret = (poolMapH & valH) || (poolMapL & valL);
+
+    return (ret);
 }
 
 // ---------------------------------------------------------------------
@@ -437,15 +485,6 @@ TUint8 CPcsCache::GetUriId()
 }
 
 // ---------------------------------------------------------------------
-// CPcsCache::GetUri
-// 
-// ---------------------------------------------------------------------
-HBufC* CPcsCache::GetUri()
-{
-	return iURI;
-}
-
-// ---------------------------------------------------------------------
 // CPcsCache::SetSortOrder
 // 
 // ---------------------------------------------------------------------
@@ -478,7 +517,6 @@ void CPcsCache::GetSortOrder(RArray<TInt>& aSortOrder)
 		aSortOrder.Append(iSortOrder[i]);
 	}	
 }
-
 
 // ---------------------------------------------------------------------
 // CPcsCache::GetIndexOrder
@@ -540,5 +578,6 @@ void CPcsCache::ResortdataInPoolsL()
         AddToCacheL( *temp );
         }
     iMasterPoolBackup.Reset();
-    } 
+    }
+
 // End of file

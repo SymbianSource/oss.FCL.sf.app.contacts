@@ -2086,11 +2086,10 @@ void CLogsBaseView::SendMessageCmdHandlerL(
 	// need care about the flag here.
     TUid uid;
     SetToolbarState(ELogsHideItemsAndDrawOnlyBackground, EFalse); 
- 
     TRAPD(err,     
         if (aCommandId == ELogsCmdMenuSendUi)           // with ELogsCmdMenuSendUi show query
             {
-            uid = LogsAppUi()->SendUiL()->ShowTypedQueryL(CSendUi::EWriteMenu, messageData, capabilities, servicesToDim );
+            uid = LogsAppUi()->SendUiL()->ShowTypedQueryL(CSendUi::EWriteMenu, NULL, capabilities, servicesToDim );
             } 
         else if (aCommandId == ELogsCmdToolBarSendUi)   // with ELogsCmdToolBarSendUi dont show query
             {

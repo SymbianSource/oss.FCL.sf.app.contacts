@@ -42,6 +42,8 @@
 #include <CPbk2StoreProperty.h>
 #include <MPbk2ApplicationServices.h>
 #include <MPbk2ContactViewSupplier.h>
+#include <CPbk2ApplicationServices.h>
+#include <MPbk2StoreValidityInformer.h>
 
 // Virtual Phonebook
 #include <MVPbkContactStoreList.h>
@@ -509,7 +511,11 @@ void CPguGroupView::DynInitMenuPaneL(
             }
         case R_PHONEBOOK2_INFO_MENU:
             {
-            // menu always visible in group view
+            // If there are no available stores, "memory details" should not be shown in Options menu
+            if( !CurrentStoreIsAvailableL() )
+                {
+                aMenuPane->SetItemDimmed( EPbk2CmdPhonebook2Info, ETrue ); 
+                }
             break;
             }
         default:
@@ -658,6 +664,27 @@ TBool CPguGroupView::CurrentStoreSupportsGroupsL() const
 
     CleanupStack::PopAndDestroy( uris );
     return ret;
+    }
+
+// --------------------------------------------------------------------------
+// CPguGroupView::CurrentStoreIsAvailable
+// --------------------------------------------------------------------------
+//
+TBool CPguGroupView::CurrentStoreIsAvailableL() const
+    {
+    TBool ret = ETrue;
+    CPbk2ApplicationServices* appServices = CPbk2ApplicationServices::InstanceLC();
+
+    // Returns the stores that are currently available and open(selected by user in Settings).
+    CVPbkContactStoreUriArray* aValidStores = appServices->StoreValidityInformer().CurrentlyValidStoresL();
+    CleanupStack::PushL( aValidStores );
+    if( 0 == aValidStores->Count() )
+        {
+        ret = EFalse;
+        }
+     CleanupStack::PopAndDestroy(); // aValidStores
+     CleanupStack::PopAndDestroy(); // appServices
+     return ret;
     }
 
 // --------------------------------------------------------------------------

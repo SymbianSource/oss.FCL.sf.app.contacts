@@ -14,22 +14,36 @@
 * Description:
 *
 */
+
+
 #include "ccappcommlauncherheaders.h"
 
-//#include "t_ccappcmscontactfetcher.h"
-// dummy class
 
+// ============================ MEMBER FUNCTIONS ===============================
 
-CCCAppCmsContactFetcherWrapper::CCCAppCmsContactFetcherWrapper( ) 
+// -----------------------------------------------------------------------------
+// CCmsContactField::ItemL()
+// -----------------------------------------------------------------------------
+//
+CCCAppCmsContactFetcherWrapper::CCCAppCmsContactFetcherWrapper( ):iTopContact(ETrue) 
     {
     }
+
+// -----------------------------------------------------------------------------
+// CCmsContactField::ItemL()
+// -----------------------------------------------------------------------------
+//
 void CCCAppCmsContactFetcherWrapper::ConstructL( ) 
     {
     iContactFieldInfo = CCmsContactFieldInfo::NewL();
     CCmsContactField* field = new (ELeave) CCmsContactField( PHONE );
     iFieldArray.Append( field );
     }
-    
+
+// -----------------------------------------------------------------------------
+// CCmsContactField::ItemL()
+// -----------------------------------------------------------------------------
+//
 CCCAppCmsContactFetcherWrapper::~CCCAppCmsContactFetcherWrapper( ) 
     {
     delete iContactFieldInfo;
@@ -37,6 +51,10 @@ CCCAppCmsContactFetcherWrapper::~CCCAppCmsContactFetcherWrapper( )
     iFieldArray.ResetAndDestroy();
     }
 
+// -----------------------------------------------------------------------------
+// CCmsContactField::ItemL()
+// -----------------------------------------------------------------------------
+//
 CCCAppCmsContactFetcherWrapper* CCCAppCmsContactFetcherWrapper::InstanceL( CCCAParameter* /*aParameter*/ )
         {
         CCCAppCmsContactFetcherWrapper* self = new (ELeave) CCCAppCmsContactFetcherWrapper( );
@@ -45,7 +63,11 @@ CCCAppCmsContactFetcherWrapper* CCCAppCmsContactFetcherWrapper::InstanceL( CCCAP
         CleanupStack::Pop( self );
         return self;
         }
-       
+
+// -----------------------------------------------------------------------------
+// CCmsContactField::ItemL()
+// -----------------------------------------------------------------------------
+//
 CCCAppCmsContactFetcherWrapper* CCCAppCmsContactFetcherWrapper::InstanceL()
         {
         CCCAppCmsContactFetcherWrapper* self = new (ELeave) CCCAppCmsContactFetcherWrapper(  );
@@ -56,11 +78,19 @@ CCCAppCmsContactFetcherWrapper* CCCAppCmsContactFetcherWrapper::InstanceL()
         //return NULL;
         }
 
+// -----------------------------------------------------------------------------
+// CCmsContactField::ItemL()
+// -----------------------------------------------------------------------------
+//
 void CCCAppCmsContactFetcherWrapper::Release()
         {
         delete this;
         } 
-        
+
+// -----------------------------------------------------------------------------
+// CCmsContactField::ItemL()
+// -----------------------------------------------------------------------------
+//
 const CCmsContactFieldInfo* CCCAppCmsContactFetcherWrapper::ContactInfo()
         {
         T_CTestSingleton* singleton = T_CTestSingleton::InstanceL();
@@ -75,11 +105,19 @@ const CCmsContactFieldInfo* CCCAppCmsContactFetcherWrapper::ContactInfo()
         return iContactFieldInfo;
         }
 
+// -----------------------------------------------------------------------------
+// CCmsContactField::ItemL()
+// -----------------------------------------------------------------------------
+//
 RPointerArray<CCmsContactField>& CCCAppCmsContactFetcherWrapper::ContactFieldDataArray()
         {
         return iFieldArray;
         }
 
+// -----------------------------------------------------------------------------
+// CCmsContactField::ItemL()
+// -----------------------------------------------------------------------------
+//
 HBufC8* CCCAppCmsContactFetcherWrapper::ContactIdentifierLC( 
         const TCmsContactIdentifierType /*aIdType = ECmsPackedContactLinkArray*/ )
         {
@@ -88,6 +126,10 @@ HBufC8* CCCAppCmsContactFetcherWrapper::ContactIdentifierLC(
         return buf;
         }
 
+// -----------------------------------------------------------------------------
+// CCmsContactField::ItemL()
+// -----------------------------------------------------------------------------
+//
 void CCCAppCmsContactFetcherWrapper::AddObserverL( MCCAppContactFieldDataObserver& aObserver )
     {
     const TInt index = iObservers.Find( &aObserver );
@@ -97,6 +139,10 @@ void CCCAppCmsContactFetcherWrapper::AddObserverL( MCCAppContactFieldDataObserve
         }
     }
 
+// -----------------------------------------------------------------------------
+// CCmsContactField::ItemL()
+// -----------------------------------------------------------------------------
+//
 void CCCAppCmsContactFetcherWrapper::RemoveObserver( MCCAppContactFieldDataObserver& aObserver )
     {
     const TInt index = iObservers.Find( &aObserver );
@@ -106,26 +152,51 @@ void CCCAppCmsContactFetcherWrapper::RemoveObserver( MCCAppContactFieldDataObser
         }
     }
 
+// -----------------------------------------------------------------------------
+// CCmsContactField::ItemL()
+// -----------------------------------------------------------------------------
+//
 TBool CCCAppCmsContactFetcherWrapper::IsServiceAvailable(
     VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector /*aContactAction */)
     {
     return ETrue;//iCmsContactDataFetcher.IsServiceAvailable( aContactAction );
     }
 
+// -----------------------------------------------------------------------------
+// CCmsContactField::ItemL()
+// -----------------------------------------------------------------------------
+//
 TCmsContactStore CCCAppCmsContactFetcherWrapper::ContactStore() const
     {
     const_cast<TBool&>(iContactStore_called) = ETrue;
+    return ECmsContactStorePbk;
     }
 
-
+// -----------------------------------------------------------------------------
+// CCmsContactField::ItemL()
+// -----------------------------------------------------------------------------
+//
 TInt CCCAppCmsContactFetcherWrapper::GetContactActionFieldCount(
-        VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector /*aContactAction*/)
+        VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector /*aContactAction*/ )
     {
     return ETrue; //iCmsContactDataFetcher.GetContactActionFieldCount(aContactAction);
     }
 
+// -----------------------------------------------------------------------------
+// CCmsContactField::ItemL()
+// -----------------------------------------------------------------------------
+//
 void CCCAppCmsContactFetcherWrapper::RefetchContactL()
     {
     
     }
-  
+
+// -----------------------------------------------------------------------------
+// CCCAppCmsContactFetcherWrapper::IsTopContact()
+// -----------------------------------------------------------------------------
+//
+TBool CCCAppCmsContactFetcherWrapper::IsTopContact()
+       {
+       return iTopContact;
+       }
+//  End of File

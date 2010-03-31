@@ -106,6 +106,6 @@ SOURCEPATH      ../data
 START RESOURCE	engine.rss
 HEADER
 TARGET          pbk2rclengine.rsc
-TARGETPATH      resource/apps
+TARGETPATH      APP_RESOURCE_DIR
 LANGUAGE_IDS
 END

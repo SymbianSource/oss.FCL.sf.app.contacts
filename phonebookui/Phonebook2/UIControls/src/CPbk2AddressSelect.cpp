@@ -29,6 +29,7 @@
 #include <CPbk2ServiceManager.h>
 #include <MPbk2AppUi.h>
 #include <Pbk2UIControls.rsg>
+#include <Pbk2Commands.rsg>
 #include <CPbk2ApplicationServices.h>
 #include <TPbk2StoreContactAnalyzer.h>
 
@@ -53,6 +54,7 @@
 #include <spsettings.h>
 #include <spentry.h>
 #include <spproperty.h>
+#include <spsettingsvoiputils.h>
 
 /// Unnamed namespace for local definitions
 namespace {
@@ -691,6 +693,73 @@ inline void CPbk2AddressSelect::SetSelectedFieldL
     }
 
 // --------------------------------------------------------------------------
+// CPbk2AddressSelect::IsVoiceCallExistL
+// --------------------------------------------------------------------------
+//
+inline TBool CPbk2AddressSelect::IsVoiceCallExistL()
+    {
+    TInt countFields = iParams.iContact.Fields().FieldCount();
+    TPbk2StoreContactAnalyzer analyzer( iParams.iContactManager, NULL );
+
+    for ( TInt i = 0; i < countFields; i++ )
+        {
+        const MVPbkStoreContactField& field =
+            iParams.iContact.Fields().FieldAt( i );
+        
+        // If the field is voice call, then return ETrue.
+        if ( analyzer.IsFieldTypeIncludedL( field, R_PHONEBOOK2_PHONENUMBER_SELECTOR ) )
+            {
+            return ETrue;
+            }
+        }
+    
+    // No voice call filed, return EFalse.    
+    return EFalse;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2AddressSelect::GetVoiceAndVOIPCallDialogTitleL
+// --------------------------------------------------------------------------
+//
+inline HBufC* CPbk2AddressSelect::GetVoiceAndVOIPCallDialogTitleL()
+    {
+    HBufC* title (NULL);
+    
+    // If the popped up dialog is started in namelist view.
+    // Then, the title of the dialog should obey such rules:
+    // 1. When there are only VoIP addresses for contact or if VoIP is preferred.
+    // Then show "Internet call:"
+    // 2. In other cases show "Call:". This would be shown when:
+    // 2.1 VoIP is not preferred and there's at least one Voice call number for the contact
+    // 2.2 So even in case when there's only voice call numbers.
+    // The title should be "Call:" instead of "Voice call:" 
+    if ( iParams.iTitleResId == R_QTN_PHOB_QTL_CALL_TO_NAME )
+        {
+        // Check whether VoIP is preferred.
+        CSPSettingsVoIPUtils* sPSettings = CSPSettingsVoIPUtils::NewLC();
+        if ( sPSettings->IsPreferredTelephonyVoIP() ||
+             !IsVoiceCallExistL() )
+        	{
+        	title = GetVOIPDialogTitleL();
+        	}
+        else
+        	{
+        	title = StringLoader::LoadL( R_QTN_PHOB_TITLE_POPUP_CALL );
+        	}
+        CleanupStack::PopAndDestroy( sPSettings ); 
+        }
+    else if ( iParams.iCommMethod == VPbkFieldTypeSelectorFactory::EVoiceCallSelector )
+        {                               
+        title =  StringLoader::LoadL( R_QTN_CCA_POPUP_VOICE_CALL );
+        }
+    else if ( iParams.iCommMethod == VPbkFieldTypeSelectorFactory::EVOIPCallSelector )
+        {
+        title = GetVOIPDialogTitleL();
+        }	
+    return title;
+    }
+	
+// --------------------------------------------------------------------------
 // CPbk2AddressSelect::LoadDialogTitleL
 // --------------------------------------------------------------------------
 //
@@ -700,10 +769,12 @@ inline HBufC* CPbk2AddressSelect::LoadDialogTitleL()
     switch( iParams.iCommMethod )
         {
         case VPbkFieldTypeSelectorFactory::EVoiceCallSelector:
+        case VPbkFieldTypeSelectorFactory::EVOIPCallSelector:
             {
-            title = StringLoader::LoadL( R_QTN_PHOB_TITLE_POPUP_CALL );
+            title = GetVoiceAndVOIPCallDialogTitleL();
             break;
             }
+        	
         case VPbkFieldTypeSelectorFactory::EUniEditorSelector:
             {
             title = StringLoader::LoadL( R_QTN_PHOB_TITLE_POPUP_MESSAGE );
@@ -718,12 +789,7 @@ inline HBufC* CPbk2AddressSelect::LoadDialogTitleL()
             {
             title = StringLoader::LoadL( R_QTN_PHOB_TITLE_POPUP_CHAT );
             break;
-            }
-        case VPbkFieldTypeSelectorFactory::EVOIPCallSelector:
-            {
-            title = GetVOIPDialogTitleL();
-            break;
-            }       
+            }    
         case VPbkFieldTypeSelectorFactory::EURLSelector:
             {
             title = StringLoader::LoadL( R_QTN_PHOB_TITLE_POPUP_URL );

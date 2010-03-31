@@ -253,11 +253,9 @@ protected:
     /**
     * @internal
     */
-    void DrawBackgroundAndSeparatorLines( const TRect& aItemTextRect ) const;
-    /**
-     *  Draw separator line 
-     */
-    void DrawSeparator( CGraphicsContext& aGc, const TRect& aRect, const TRgb& aColor ) const;
+	void DrawBackgroundAndSeparatorLines( 
+        const TRect& aItemTextRect, TBool aDrawSeparator ) const;
+		
                         
 
 private:

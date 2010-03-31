@@ -83,6 +83,12 @@ public: // Functions from base classes
      * (see details from baseclass )
      */
     virtual void SizeChanged();
+	
+	/**
+     * From CCoeControl
+     * (see details from baseclass )
+     */
+	void HandleResourceChange(TInt aType);
 
     /**
      * From CCoeControl
@@ -291,8 +297,8 @@ private: // Data
      * Listbox for the "communication buttons"
      * Own.
      */
-    // CCCAppCommLauncherCustomListBox* iListBox;
-    CAknDoubleLargeStyleListBox* iListBox;
+    CCCAppCommLauncherCustomListBox* iListBox;
+
     /**
      * Background for skinning
      * Own.

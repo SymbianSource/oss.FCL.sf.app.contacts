@@ -112,13 +112,6 @@ public:
     /**
      * From CAknView
      */
-    void DynInitMenuPaneL(
-        TInt aResourceId,
-        CEikMenuPane* aMenuPane );
-
-    /**
-     * From CAknView
-     */
     void HandleCommandL(
         TInt aCommand );
 

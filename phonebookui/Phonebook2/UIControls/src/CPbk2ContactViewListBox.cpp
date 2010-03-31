@@ -665,6 +665,7 @@ void CPbk2ContactViewListBox::CreateItemDrawerL()
 //
 void CPbk2ContactViewListBox::HandleGainingForeground()
     {
+	DrawDeferred();
     }
 
 // --------------------------------------------------------------------------

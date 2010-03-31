@@ -237,6 +237,23 @@ public: // New
      * @param aContactFieldInfo 
      */    
     void UpdateAddressesValidationL( const CCmsContactFieldInfo& aContactFieldInfo );
+    
+    
+    /**
+     * Loads the VOIP Button Icon & Label 
+     * Usecase : If we have only one voip service, the voip(Internet Call)
+     * button should have the Branded Icon of that Service and the label
+     * must be "ServiceName" appended with "Call".
+     * eg : If we have a service named SKYPE installed in the Phone
+     * and if SKYPE supports VOIP, then the VOIP Button Icon should be
+     * the Branded Icon of SKYPE and the Button Label should be
+     * "SKYPE CALL". 
+     * @return TInt - Stores the Info regd whether Image/Text was set for the
+     *          VOIP Buttton or not. We use KVOIPButtonImageSet && with the returnval
+     *          to know whether Image has been set or not
+     *          Will be used in   HandleNotifyChange
+     */
+    TInt LoadVoipButtonInfoL();
    
 
 private: // New
@@ -325,22 +342,6 @@ private:
     void ConstructL();        
     
     /**
-     * Loads the VOIP Button Icon & Label 
-     * Usecase : If we have only one voip service, the voip(Internet Call)
-     * button should have the Branded Icon of that Service and the label
-     * must be "ServiceName" appended with "Call".
-     * eg : If we have a service named SKYPE installed in the Phone
-     * and if SKYPE supports VOIP, then the VOIP Button Icon should be
-     * the Branded Icon of SKYPE and the Button Label should be
-     * "SKYPE CALL". 
-     * @return TInt - Stores the Info regd whether Image/Text was set for the
-     *          VOIP Buttton or not. We use KVOIPButtonImageSet && with the returnval
-     *          to know whether Image has been set or not
-     *          Will be used in   HandleNotifyChange
-     */
-    TInt LoadVoipButtonInfoL();
-    
-    /**
      * Finds the number of services that support internet call 
      * by scanning all the services in the SPSettings Table.
      * @param aServiceId - Stores the last matched service id    
@@ -366,7 +367,13 @@ private:
     /**
      * Handles SPSettings Changes
      */            
-		void DoHandleNotifyChangeL() ;
+	void DoHandleNotifyChangeL() ;
+	
+	/**
+     * Get the size of service bitmap
+	 * @return - Size of the bitmap
+     */	
+	TSize GetServiceBitmapSize();
     
 private:
     //From MSPNotifyChangeObserver
@@ -402,6 +409,14 @@ private:
         TDes& aBuffer,
         TInt aItemIndex,
         TInt aSubCellNumber) const;
+
+    /*
+     * In Arabic variant the displaying of numbers in phonebook should follow 
+     * the Arabic/Latin number setting that is found in General Settings > 
+     * Phone > Language, So the second row text must be digits.
+     * @param aContactField method
+     */
+    TBool IsPhoneNumber( const CCmsContactField& iContactField );
 
 private: // Data
 

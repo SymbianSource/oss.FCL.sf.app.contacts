@@ -23,6 +23,7 @@
 #include <coecntrl.h>     // CCoeControl
 #include <cntdef.h>       // TContactItemId
 
+
 // FORWARD DECLARATIONS
 class CAknSingleGraphicStyleListBox;
 class CxSPLoader;
@@ -30,6 +31,7 @@ class CxSPViewIdChanger;
 class MGlobalNoteObserver;
 class CAknGlobalNote;
 class CGlobalNoteObserver;
+class CPbk2UIExtensionView;
 
 typedef CArrayPtrFlat<CxSPLoader> CxSPArray;
 
@@ -47,7 +49,8 @@ class CxSPSortViewControl : public CCoeControl
          * @param aExtensions array of extensions
          */
         static CxSPSortViewControl* NewL( CxSPViewIdChanger& aViewIdChanger,
-        									CxSPArray& aExtensions );
+        									CxSPArray& aExtensions, 
+        									CPbk2UIExtensionView& aView);
 
         /**
          * Creates a new CxSPSortViewControl and leaves it to
@@ -55,7 +58,8 @@ class CxSPSortViewControl : public CCoeControl
          * @see NewL
          */
         static CxSPSortViewControl* NewLC( CxSPViewIdChanger& aViewIdChanger,
-        									CxSPArray& aExtensions );
+        									CxSPArray& aExtensions, 
+        									CPbk2UIExtensionView& aView );
 
         /**
          * Destructor.
@@ -68,9 +72,13 @@ class CxSPSortViewControl : public CCoeControl
         void SizeChanged();
         TInt CountComponentControls() const;
         CCoeControl* ComponentControl( TInt aIndex ) const;
+        
+        void HandlePointerEventL(const TPointerEvent& aPointerEvent);
 
     public: // Implementation
-
+        
+        CCoeControl& CxSPSortViewControl::ComponentControl() const;
+        
     	/**
     	 * Sets the listbox data
     	 */
@@ -107,7 +115,7 @@ class CxSPSortViewControl : public CCoeControl
          * @param aViewIdChanger Reference to view id changer
          * @param aExtensions array of extensions
          */
-        CxSPSortViewControl( CxSPViewIdChanger& aViewIdChanger, CxSPArray& aExtensions );
+        CxSPSortViewControl( CxSPViewIdChanger& aViewIdChanger, CxSPArray& aExtensions, CPbk2UIExtensionView& aView );
 
         /**
          * Performs the 2nd phase of construction.
@@ -121,6 +129,9 @@ class CxSPSortViewControl : public CCoeControl
 
         /// Own: list box control
         CAknSingleGraphicStyleListBox* iListBox;
+        
+        /// not own: sortview
+        CPbk2UIExtensionView& iView;
 
         /// Ref: Array of extensions
         CxSPArray& iExtensions;

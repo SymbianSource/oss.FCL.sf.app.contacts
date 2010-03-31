@@ -92,7 +92,7 @@ protected: // Implementation
         MPbk2ContactUiControlExtension* aUiExtension,
         CPbk2PredictiveSearchFilter& aSearchFilter,	
         MVPbkContactViewBase& aView,
-        CPbk2ThumbnailManager& aThumbManager );	//TODO
+        CPbk2ThumbnailManager& aThumbManager );
     
     /*
      * Constructor
@@ -114,13 +114,13 @@ protected: // Implementation
             		TPbk2IconId aDefaultIconId );
     
     /**
-     * TODO: write description
+     * Apply custom layout to listbox after size change
      */
     void SizeChangedL();
 
 
 private:	//data
-	//REF: View	TODO
+	//REF: View
 	MVPbkContactViewBase& iView;
 	//REF:	thumbnail manager
 	CPbk2ThumbnailManager& iThumbManager;

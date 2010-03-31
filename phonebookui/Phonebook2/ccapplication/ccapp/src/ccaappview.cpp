@@ -114,8 +114,8 @@ void CCCAppView::StartViewL( const TUid aUid )
          &iAppUi.Parameter(), CCCAppCmsContactFetcherWrapper::EFindContactFromOtherStores );
     iCmsWrapper->AddObserverL( *this );
 
-    // TODO: replace hardcoded uid comparison with better sollution that
-    // supports other mycard views too
+    // At the moment mycard does not need to support tabs, so this is 
+    // good enough sollution for launching mycard plugin
     TBool isUidMyCard = ( aUid == 
             TUid::Uid( KCCAMyCardPluginImplmentationUid ) );
 

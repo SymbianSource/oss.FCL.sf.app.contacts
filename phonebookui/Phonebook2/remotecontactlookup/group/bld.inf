@@ -28,7 +28,7 @@ WINSCW ARMV5
 PRJ_EXPORTS
 ../loc/phonebook2rcl.loc APP_LAYER_LOC_EXPORT_PATH(phonebook2rcl.loc)
 ../rom/pbk2remotecontactlookup.iby          CORE_APP_LAYER_IBY_EXPORT_PATH(pbk2remotecontactlookup.iby)
-../rom/pbk2remotecontactlookupresources.iby CORE_APP_LAYER_IBY_EXPORT_PATH(pbk2remotecontactlookupresources.iby)
+../rom/pbk2remotecontactlookupresources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(pbk2remotecontactlookupresources.iby)
 
 // Generic configuration interface for component cenrep settings  
 // component_1000292B implementation specifics for cenrep data

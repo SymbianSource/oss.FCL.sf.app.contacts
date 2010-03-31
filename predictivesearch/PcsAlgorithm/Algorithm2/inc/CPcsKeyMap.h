@@ -71,10 +71,12 @@ public:
     TBool IsLanguageSupportedL(const TUint32 aLanguage);
 
     void ReconstructKeymapL();
+    
     /**
-     * Returns the pool Id for a key                               
+     * Returns the pool Id for a Character                               
      */
-    TInt CPcsKeyMap::PoolIdForCharacter(const TChar& aChar);
+    TInt PoolIdForCharacter(TChar aChar);
+    
     /**
      * Returns total number of pools                                
      */
@@ -155,6 +157,13 @@ private:
      * @ aLanguage, the keymap construct language.
      */
     void AddKeyMapforConcreteKeyboardL( TInt aKeyboardType, TLanguage aLanguage );
+    
+    /**
+     * In case the given character is a Chinese characer, give the first
+     * character of it's first spelling using the current spelling mode.
+     * Otherwise, the character is returned unmodified.
+     */
+    TChar FirstCharFromSpellingL( TChar aChar ) const;
 
 private:
     CPtiEngine* iPtiEngine;

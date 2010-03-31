@@ -22,6 +22,9 @@
 #include "CxSPSortViewControl.h"
 
 // System includes
+#include <eiklbi.h>
+#include <eiklbx.h> 
+#include <AknUtils.h>
 #include <AknGlobalNote.h>
 #include <aknnavi.h>
 #include <aknnavide.h>
@@ -99,7 +102,7 @@ void CxSPSortView::HandleCommandL
     {
     switch (aCommand)
         {
-        case EAknSoftkeyExit: // Exit softkey
+        case EAknSoftkeyBack: // Back softkey
             {
             TBool changes = iContainer->CommitSortL( this );
             if( !changes )
@@ -116,22 +119,20 @@ void CxSPSortView::HandleCommandL
         case EExtensionManagerCmdMove: // Move softkey
         	{
         	iContainer->SetCurrentItemMarkedL( ETrue );
-        	iView.Cba()->SetCommandSetL( R_AVKON_SOFTKEYS_OK_CANCEL );
-        	iView.Cba()->DrawDeferred();
+            UpdateCbasL( R_AVKON_SOFTKEYS_OK_CANCEL );
         	break;
         	}
         case EAknSoftkeyOk: // Ok softkey
         	{
         	iContainer->MoveMarkedItemL();
-        	iView.Cba()->SetCommandSetL( R_EXTENSION_MANAGER_SORT_VIEW_SOFTKEYS );
-        	iView.Cba()->DrawDeferred();
+            UpdateCbasL( R_EXTENSION_MANAGER_SORT_VIEW_SOFTKEYS );
         	break;
         	}
         case EAknSoftkeyCancel: // Cancel softkey
         	{
         	iContainer->SetCurrentItemMarkedL( EFalse );
-        	iView.Cba()->SetCommandSetL( R_EXTENSION_MANAGER_SORT_VIEW_SOFTKEYS );
-        	iView.Cba()->DrawDeferred();
+            UpdateCbasL( R_EXTENSION_MANAGER_SORT_VIEW_SOFTKEYS );
+
         	break;
         	}
         default:
@@ -163,15 +164,19 @@ void CxSPSortView::DoActivateViewL( const TVwsViewId& aPrevViewId,
 	 
     if (!iContainer)
         {
-        iContainer = CxSPSortViewControl::NewL( iViewIdChanger, iExtensions );
+        iContainer = CxSPSortViewControl::NewL( iViewIdChanger, iExtensions, iView );
         CCoeEnv::Static()->AppUi()->AddToStackL( iView, iContainer );        
         iContainer->SetMopParent( &iView );        
-        iContainer->SetRect( iView.ClientRect() );
+        iContainer->SetRect( iView.ClientRect() );      
+        
+        CCoeControl& ctrl=iContainer->ComponentControl();
+        CEikListBox& listbox=static_cast <CEikListBox&> (ctrl);
+        listbox.SetListBoxObserver( this );
+        
         iContainer->ActivateL();
         
-        // Load the default cba for the sort view
-        iView.Cba()->SetCommandSetL( R_EXTENSION_MANAGER_SORT_VIEW_SOFTKEYS );
-        
+        UpdateCbasL( R_EXTENSION_MANAGER_SORT_VIEW_SOFTKEYS );
+         
         // Invoke DrawNow() to avoid the cba flicker
         iView.Cba()->DrawNow();
         } 
@@ -192,6 +197,44 @@ void CxSPSortView::DoActivateViewL( const TVwsViewId& aPrevViewId,
     np->PushL( *iNaviDecorator );
     sp->DrawNow();
 	}
+
+void CxSPSortView::UpdateCbasL( TInt aResourceId )
+    {
+    CCoeControl& ctrl=iContainer->ComponentControl();
+    CEikListBox& listbox=static_cast <CEikListBox&> (ctrl);
+       
+    TBool noItemHightLighted = listbox.View()->ItemDrawer()->Flags() & CListItemDrawer::ESingleClickDisabledHighlight;
+    
+    if ( aResourceId == R_EXTENSION_MANAGER_SORT_VIEW_SOFTKEYS )
+        {
+        if ( noItemHightLighted )
+            {
+            // Load the default cba for the sort view
+            iView.Cba()->SetCommandSetL( R_AVKON_SOFTKEYS_BACK );
+            }
+        else
+            {
+            // Load the default cba for the sort view
+            iView.Cba()->SetCommandSetL( R_EXTENSION_MANAGER_SORT_VIEW_SOFTKEYS );
+            }
+        iView.Cba()->DrawDeferred();
+        }
+    else if ( aResourceId == R_AVKON_SOFTKEYS_OK_CANCEL )
+        {
+        if ( noItemHightLighted )
+            {
+            // Load the default cba for the sort view
+            iView.Cba()->SetCommandSetL( R_AVKON_SOFTKEYS_CANCEL );
+            }
+        else
+            {
+            // Load the default cba for the sort view
+            iView.Cba()->SetCommandSetL( R_AVKON_SOFTKEYS_OK_CANCEL );
+            }
+        iView.Cba()->DrawDeferred();
+        }
+    
+    }
 
 void CxSPSortView::DoDeactivate()
 	{
@@ -221,6 +264,35 @@ void CxSPSortView::HandleStatusPaneSizeChange()
         {
         iContainer->SetRect( iView.ClientRect() );
         }
+    }
+
+void CxSPSortView::HandleListBoxEventL(CEikListBox* aListBox, TListBoxEvent aEventType)
+    {
+    if( AknLayoutUtils::PenEnabled() )
+        {
+        switch ( aEventType )
+            {
+            case EEventItemSingleClicked:
+                {
+                CCoeControl& ctrl=iContainer->ComponentControl();
+                CEikListBox& listbox=static_cast <CEikListBox&> (ctrl);
+                const CListBoxView::CSelectionIndexArray* inds = listbox.SelectionIndexes();
+                TInt count = inds->Count();
+                 
+                if ( count <= 0 )
+                     {
+                     HandleCommandL( EExtensionManagerCmdMove );
+                     }
+                 else
+                     {
+                     HandleCommandL( EAknSoftkeyOk );
+                     }
+                break;
+                }
+            default:
+               break;
+            }
+          }
     }
 
 void CxSPSortView::GlobalNoteClosed( const TInt aResult )

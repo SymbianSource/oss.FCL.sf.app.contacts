@@ -846,7 +846,7 @@ CPbk2NamesListControl::CPbk2NamesListControl
                 iContainer( aContainer ),
                 iNameFormatter( aNameFormatter ),
                 iStoreProperties( aStoreProperties ),
-                iThumbManager( aThumbManager ), //TODO
+                iThumbManager( aThumbManager ),
                 iAllowPointerEvents( ETrue )
     {
     }
@@ -940,7 +940,7 @@ EXPORT_C CPbk2NamesListControl* CPbk2NamesListControl::NewL(
                MVPbkContactViewBase& aView,
                MPbk2ContactNameFormatter& aNameFormatter,
                CPbk2StorePropertyArray& aStoreProperties,
-               CPbk2ThumbnailManager* aThumbManager )   //TODO
+               CPbk2ThumbnailManager* aThumbManager )
     {
     CPbk2NamesListControl* self = new (ELeave) CPbk2NamesListControl(
             aContainer, aManager, aView, aNameFormatter, aStoreProperties, aThumbManager );
@@ -1049,7 +1049,6 @@ inline void CPbk2NamesListControl::ConstructFromResourceL
             *iViewStack, iNameFormatter, iStoreProperties,
             iUiExtension, *iSearchFilter );
 
-        //TODO at this point remove observer
         if( iThumbManager )
             {
             iThumbManager->RemoveObserver();

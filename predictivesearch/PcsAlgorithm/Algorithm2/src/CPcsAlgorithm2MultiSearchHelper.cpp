@@ -130,12 +130,6 @@ void CPcsAlgorithm2MultiSearchHelper::SearchMultiL(const CPsSettings& aSettings,
     CPcsAlgorithm2FilterHelper* filterHelper = CPcsAlgorithm2FilterHelper::NewL(sortType);
     RPointerArray<CPcsPoolElement> elements;
 
-    // Get the initial search elements using the first key of first query
-    TBuf<50> numericKeyStr;
-    TPtrC queryPtr = aPsQuery[0]->QueryAsStringLC();
-    keyMap->GetNumericKeyString(queryPtr, numericKeyStr);
-    CleanupStack::PopAndDestroy();
-
     iMultiSearchResultsArr.ResetAndDestroy();
 
     // Get the data stores  
@@ -146,8 +140,10 @@ void CPcsAlgorithm2MultiSearchHelper::SearchMultiL(const CPsSettings& aSettings,
     RArray<TInt> requiredDataFields;
     aSettings.DisplayFieldsL(requiredDataFields);
 
-    // Search based on first key str
-    TInt numValue = keyMap->PoolIdForCharacter(numericKeyStr[0]);
+    // Search from cache based on first character
+    const CPsQueryItem& firstCharItem = aPsQuery[0]->GetItemAtL(0);
+    TInt numValue  = keyMap->PoolIdForCharacter( firstCharItem.Character() );
+    
     // Get the elements from all the databases
     for (int dsIndex = 0; dsIndex < aDataStores.Count(); dsIndex++)
         {

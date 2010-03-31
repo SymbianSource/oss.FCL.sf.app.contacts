@@ -412,6 +412,72 @@ EXPORT_C void Pbk2AddressTools::GetAddressFieldsLC(
      	}
     }
 
+// --------------------------------------------------------------------------
+// Pbk2AddressTools::MapVPbkFieldTypeToAddressGroupId
+// --------------------------------------------------------------------------
+//
+EXPORT_C TPbk2FieldGroupId Pbk2AddressTools::MapVPbkFieldTypeToAddressGroupId( 
+			const MVPbkFieldType* aVPbkFieldType )
+    {
+    TPbk2FieldGroupId groupId = EPbk2FieldGroupIdNone;
+    TArray<TVPbkFieldVersitProperty> versitArr = aVPbkFieldType->VersitProperties();
+    if (versitArr.Count())
+        {
+        const TVPbkFieldVersitProperty& prop = versitArr[0];
 
+        if (prop.Name() == EVPbkVersitNameADR)
+            {
+            if (versitArr[0].Parameters().Contains(EVPbkVersitParamHOME))
+                {
+                groupId = EPbk2FieldGroupIdHomeAddress;
+                }
+            else if (versitArr[0].Parameters().Contains(EVPbkVersitParamWORK))
+                {
+                groupId = EPbk2FieldGroupIdCompanyAddress;
+                }
+            else
+                {
+                groupId = EPbk2FieldGroupIdPostalAddress;
+                }
+            }
+        }
+    return groupId;
+    }
 
+// --------------------------------------------------------------------------
+// Pbk2AddressTools::IsAddressPreviewEmptyL
+// --------------------------------------------------------------------------
+//
+EXPORT_C TBool Pbk2AddressTools::IsAddressPreviewEmptyL( 
+		MVPbkStoreContact& aContact,
+		TPbk2FieldGroupId aAddressGroup )
+	{
+    if( aAddressGroup != EPbk2FieldGroupIdPostalAddress &&
+    		aAddressGroup != EPbk2FieldGroupIdCompanyAddress &&
+    		aAddressGroup != EPbk2FieldGroupIdHomeAddress )
+        	{
+        	User::Leave(KErrArgument);
+        	}
+    TBool isEmpty = ETrue;
+    RHashMap<TInt, TPtrC> fieldsMap;
+    GetAddressFieldsLC( aContact, aAddressGroup, fieldsMap );
+    if( fieldsMap.Find( EVPbkVersitSubFieldStreet ) )
+    	{
+        isEmpty = EFalse;
+    	}
+    else if( fieldsMap.Find( EVPbkVersitSubFieldLocality ) )
+    	{
+        isEmpty = EFalse;
+    	}
+    else if( fieldsMap.Find( EVPbkVersitSubFieldRegion ) )
+    	{
+        isEmpty = EFalse;
+    	}
+    else if( fieldsMap.Find( EVPbkVersitSubFieldCountry ) )
+    	{
+        isEmpty = EFalse;
+    	}
+    CleanupStack::PopAndDestroy( &fieldsMap );
+    return isEmpty;
+	}
 

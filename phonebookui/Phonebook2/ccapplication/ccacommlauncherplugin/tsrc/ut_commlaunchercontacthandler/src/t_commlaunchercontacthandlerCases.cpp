@@ -92,16 +92,23 @@ const TCaseInfo T_CCCAppCommLauncherContactHandler::Case (
         // gives errors.
         
         FUNCENTRY( T_CCCAppCommLauncherContactHandler::PrintTest ),
-        //ENTRY( "Loop test", T_CCCAppCommLauncherContactHandler::LoopTest ),
+        ENTRY( "Loop test", T_CCCAppCommLauncherContactHandler::LoopTest ),
         ENTRY( "CreateAndDelete", T_CCCAppCommLauncherContactHandler::TestNewL ),
-        ENTRY( "RequestContactDataL", T_CCCAppCommLauncherContactHandler::TestRequestContactDataL ),
-        ENTRY( "ContactFieldDataObserverNotifyL", TestContactFieldDataObserverNotifyL ),
-        //ENTRY( "CalculationAndGetters", TestCalculationAndGettersL ), Seems to be not valid any more
-        //ENTRY( "Updates", TestUpdatesL ),Seems to be not valid any more
+        ENTRY( "RequestContactDataL", 
+                T_CCCAppCommLauncherContactHandler::TestRequestContactDataL ),
+        ENTRY( "ContactFieldDataObserverNotifyL", 
+                TestContactFieldDataObserverNotifyL ),
+        // Seems to be not valid any more
+        ENTRY( "CalculationAndGetters", 
+                T_CCCAppCommLauncherContactHandler::TestCalculationAndGettersL ),
+        // Seems to be not valid any more
+        ENTRY( "Updates", 
+                T_CCCAppCommLauncherContactHandler::TestUpdatesL ),
         ENTRY( "DefaultAttributes", TestDefaultAttributesL ),
         ENTRY( "TestContactStoreApiL", TestContactStoreApiL ),
         // Example how to use OOM functionality
-        //OOM_ENTRY( "Loop test with OOM", T_CCCAppCommLauncherContactHandler::LoopTest, ETrue, 2, 3),
+        //OOM_ENTRY( "Loop test with OOM", 
+        //        T_CCCAppCommLauncherContactHandler::LoopTest, ETrue, 2, 3),
         //OOM_FUNCENTRY( T_CCCAppCommLauncherContactHandler::PrintTest, ETrue, 1, 3 ),
         };
 
@@ -133,7 +140,8 @@ const TCaseInfo T_CCCAppCommLauncherContactHandler::Case (
 //
 // -----------------------------------------------------------------------------
 //
-TInt T_CCCAppCommLauncherContactHandler::TestRequestContactDataL( TTestResult& aResult )
+TInt T_CCCAppCommLauncherContactHandler::TestRequestContactDataL( 
+        TTestResult& aResult )
     {
     
     CCCAppCommLauncherPlugin* plugin =
@@ -141,7 +149,8 @@ TInt T_CCCAppCommLauncherContactHandler::TestRequestContactDataL( TTestResult& a
     CleanupStack::PushL( plugin );
     CCCAppCommLauncherView* view = CCCAppCommLauncherView::NewL();
     CleanupStack::PushL( view );
-    CCCAppCommLauncherContactHandler* handler = CCCAppCommLauncherContactHandler::NewL( *view, *plugin );
+    CCCAppCommLauncherContactHandler* handler = 
+            CCCAppCommLauncherContactHandler::NewL( *view, *plugin );
     CleanupStack::PushL( handler );
     
     T_CTestSingleton* singleton = T_CTestSingleton::InstanceL();
@@ -173,14 +182,16 @@ TInt T_CCCAppCommLauncherContactHandler::TestRequestContactDataL( TTestResult& a
 //
 // -----------------------------------------------------------------------------
 //
-TInt T_CCCAppCommLauncherContactHandler::TestContactFieldDataObserverNotifyL ( TTestResult& aResult )
+TInt T_CCCAppCommLauncherContactHandler::TestContactFieldDataObserverNotifyL ( 
+        TTestResult& aResult )
     {
     CCCAppCommLauncherPlugin* plugin =
                 new (ELeave) CCCAppCommLauncherPlugin;
     CleanupStack::PushL( plugin );
     CCCAppCommLauncherView* view = CCCAppCommLauncherView::NewL();
     CleanupStack::PushL( view );
-    CCCAppCommLauncherContactHandler* handler = CCCAppCommLauncherContactHandler::NewL( *view, *plugin );
+    CCCAppCommLauncherContactHandler* handler = 
+            CCCAppCommLauncherContactHandler::NewL( *view, *plugin );
     CleanupStack::PushL( handler );
    
     CCmsContactFieldInfo* contactInfo = CCmsContactFieldInfo::NewL();
@@ -188,11 +199,13 @@ TInt T_CCCAppCommLauncherContactHandler::TestContactFieldDataObserverNotifyL ( T
     CCmsContactField* contactField = new (ELeave) CCmsContactField ( VOIP );
     CleanupStack::PushL( contactField );
    
-    MCCAppContactFieldDataObserver::TParameter param = MCCAppContactFieldDataObserver::TParameter();
+    MCCAppContactFieldDataObserver::TParameter param = 
+            MCCAppContactFieldDataObserver::TParameter();
     handler->ContactFieldDataObserverNotifyL( param );
 
     view->ResetVariables();
-    param.iType = MCCAppContactFieldDataObserver::TParameter::EContactInfoAvailable;
+    param.iType = 
+            MCCAppContactFieldDataObserver::TParameter::EContactInfoAvailable;
     handler->ContactFieldDataObserverNotifyL( param );
     TL( EFalse == view->ContactEnabledFieldsChangedNotifyCalled() );
     
@@ -202,7 +215,8 @@ TInt T_CCCAppCommLauncherContactHandler::TestContactFieldDataObserverNotifyL ( T
     TL( view->ContactEnabledFieldsChangedNotifyCalled() );
     
     view->ResetVariables();
-    param.iType = MCCAppContactFieldDataObserver::TParameter::EContactDataFieldAvailable;
+    param.iType = 
+        MCCAppContactFieldDataObserver::TParameter::EContactDataFieldAvailable;
     handler->ContactFieldDataObserverNotifyL( param );
     TL( EFalse == view->ContactChangedNotifyCalled() );
     
@@ -301,7 +315,8 @@ TInt T_CCCAppCommLauncherContactHandler::TestNewL( TTestResult& aResult )
     CleanupStack::PushL( plugin );
     CCCAppCommLauncherView* view = CCCAppCommLauncherView::NewL();
     CleanupStack::PushL( view );
-    CCCAppCommLauncherContactHandler* handler = CCCAppCommLauncherContactHandler::NewL( *view, *plugin );
+    CCCAppCommLauncherContactHandler* handler = 
+            CCCAppCommLauncherContactHandler::NewL( *view, *plugin );
     CleanupStack::PushL( handler );
     CleanupStack::PopAndDestroy( 3 );
     __UHEAP_MARKEND;
@@ -310,14 +325,16 @@ TInt T_CCCAppCommLauncherContactHandler::TestNewL( TTestResult& aResult )
     __UHEAP_MARK;
     CCCAppCommLauncherPlugin* plugin1 =
                 new (ELeave) CCCAppCommLauncherPlugin;
-    CleanupStack::PushL( plugin );
+    CleanupStack::PushL( plugin1 );
     CCCAppCommLauncherView* view2 = CCCAppCommLauncherView::NewL();
     CleanupStack::PushL( view2 );
-    CCCAppCommLauncherContactHandler* handler2 = CCCAppCommLauncherContactHandler::NewL( *view2, *plugin1 );
+    CCCAppCommLauncherContactHandler* handler2 = 
+            CCCAppCommLauncherContactHandler::NewL( *view2, *plugin1 );
     CleanupStack::PushL( handler2 );
     CleanupStack::Pop( 3 );
     delete view2;
     delete handler2;
+    delete plugin1;
     __UHEAP_MARKEND;
     
     // Sets test case result and description(Maximum size is KStifMaxResultDes)
@@ -334,39 +351,44 @@ TInt T_CCCAppCommLauncherContactHandler::TestNewL( TTestResult& aResult )
 //
 // -----------------------------------------------------------------------------
 //
-/*TInt T_CCCAppCommLauncherContactHandler::TestCalculationAndGettersL( TTestResult& aResult )
+TInt T_CCCAppCommLauncherContactHandler::TestCalculationAndGettersL( 
+        TTestResult& aResult )
     {
     CCCAppCommLauncherView* view = CCCAppCommLauncherView::NewL();
     CleanupStack::PushL( view );
-    CCCAppCommLauncherContactHandler* handler = CCCAppCommLauncherContactHandler::NewL( *view );
+    CCCAppCommLauncherPlugin *plugin = CCCAppCommLauncherPlugin::NewL();
+    CleanupStack::PushL( plugin );
+    CCCAppCommLauncherContactHandler* handler = 
+            CCCAppCommLauncherContactHandler::NewL( *view, *plugin );
     CleanupStack::PushL( handler );
     
     handler->ContactFieldDataObserverHandleErrorL( 1, -3 );
     
-    CCmsContactFieldInfo* fieldInfo = CCmsContactFieldInfo::NewL();
-    CleanupStack::PushL( fieldInfo );
-    
-    handler->CalculateAddressAmountsFromEnabledFields( *fieldInfo );
-    
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
-    T1L( 2, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EUniEditorSelector ));
-    fieldInfo->AddMoreFields();
-    
-    handler->CalculateAddressAmountsFromEnabledFields( *fieldInfo );
-    
-    T1L( 4, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
-    T1L( 3, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
-    T1L( 2, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
-    T1L( 6, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EUniEditorSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EInstantMessagingSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EURLSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EUniEditorSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EUniEditorSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EInstantMessagingSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EURLSelector ));
     
     RPointerArray<CCmsContactField> array = handler->ContactFieldDataArray();
     T1L( 1, array.Count( ) );
     
-    HBufC8* test = handler->ContactIdentifierLC( ECmsPackedContactLinkArray );
+    HBufC8* test = handler->ContactIdentifierLC();
     T1L( 0, test->Compare( KTestString ) );
     CleanupStack::PopAndDestroy( test );
     
@@ -378,117 +400,119 @@ TInt T_CCCAppCommLauncherContactHandler::TestNewL( TTestResult& aResult )
     // Case was executed
     return KErrNone;
     }  
-    */
+
 // -----------------------------------------------------------------------------
 // T_CCCAppCommLauncherContactHandler::TestUpdatesL
 //
 // -----------------------------------------------------------------------------
 //
-/*TInt T_CCCAppCommLauncherContactHandler::TestUpdatesL( TTestResult& aResult )
+TInt T_CCCAppCommLauncherContactHandler::TestUpdatesL( TTestResult& aResult )
     {
 
     CCCAppCommLauncherView* view = CCCAppCommLauncherView::NewL();
     CleanupStack::PushL( view );
-    CCCAppCommLauncherContactHandler* handler = CCCAppCommLauncherContactHandler::NewL( *view );
+    CCCAppCommLauncherPlugin *plugin = CCCAppCommLauncherPlugin::NewL();
+    CleanupStack::PushL( plugin );
+    CCCAppCommLauncherContactHandler* handler = 
+            CCCAppCommLauncherContactHandler::NewL( *view, *plugin );
     CleanupStack::PushL( handler );
-    
-    CCmsContactFieldInfo* fieldInfo = CCmsContactFieldInfo::NewL();
-    CleanupStack::PushL( fieldInfo );
-    handler->CalculateAddressAmountsFromEnabledFields( *fieldInfo );
 
-    CCmsContactField* emailField = new (ELeave) CCmsContactField ( EMAIL );
-    CleanupStack::PushL( emailField );
-    handler->UpdateAddressAmounts( *emailField );
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
-    CleanupStack::PopAndDestroy( emailField );
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
+
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
     
-    CCmsContactField* phoneField = new (ELeave) CCmsContactField ( PHONE );
-    CleanupStack::PushL( phoneField );
-    handler->UpdateAddressAmounts( *phoneField );
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
-    CleanupStack::PopAndDestroy( phoneField );
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
+
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
+    T1L( 1, handler->AddressAmount(
+            VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
+
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
     
-    CCmsContactField* voipField = new (ELeave) CCmsContactField ( VOIP );
-    CleanupStack::PushL( voipField );
-    handler->UpdateAddressAmounts( *voipField );
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
-    CleanupStack::PopAndDestroy( voipField );
-    
-    CCmsContactField* emailField2 = new (ELeave) CCmsContactField ( EMAIL2 );
-    CleanupStack::PushL( emailField2 );    
-    handler->UpdateAddressAmounts( *emailField2 );
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
-    CleanupStack::PopAndDestroy( emailField2 );
-    
-    CCmsContactField* phoneField2 = new (ELeave) CCmsContactField ( PHONE2 );
-    CleanupStack::PushL( phoneField2 );   
-    handler->UpdateAddressAmounts( *phoneField2 );   
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
-    CleanupStack::PopAndDestroy( phoneField2 );
-    
-    CCmsContactField* voipField2 = new (ELeave) CCmsContactField ( VOIP2 );
-    CleanupStack::PushL( voipField2 );    
-    handler->UpdateAddressAmounts( *voipField2 );  
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
-    CleanupStack::PopAndDestroy( voipField2 );
-    
-    CCmsContactField* name = new (ELeave) CCmsContactField ( NAME );
-    CleanupStack::PushL( name );
-    handler->UpdateAddressAmounts( *name );    
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
-    T1L( 1, handler->AddressAmount( VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
-    CleanupStack::PopAndDestroy( name );
-    
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
+
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVoiceCallSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EEmailEditorSelector ));
+    T1L( 1, handler->AddressAmount( 
+            VPbkFieldTypeSelectorFactory::EVOIPCallSelector ));
+
     CleanupStack::PopAndDestroy( 3 );
 
-    _LIT( KDescription, "TestCalculationAndGettersL passed" );
+    _LIT( KDescription, "TestUpdatesL passed" );
     aResult.SetResult( KErrNone, KDescription );
 
     // Case was executed
     return KErrNone;
     } 
-    */
+
 // -----------------------------------------------------------------------------
 // T_CCCAppCommLauncherContactHandler::TestDefaultAttributesL
 //
 // -----------------------------------------------------------------------------
 //
-TInt T_CCCAppCommLauncherContactHandler::TestDefaultAttributesL( TTestResult& aResult )
+TInt T_CCCAppCommLauncherContactHandler::TestDefaultAttributesL( 
+        TTestResult& aResult )
     {
     CCCAppCommLauncherPlugin* plugin =
                 new (ELeave) CCCAppCommLauncherPlugin;
     CleanupStack::PushL( plugin );
     CCCAppCommLauncherView* view = CCCAppCommLauncherView::NewL();
     CleanupStack::PushL( view );
-    CCCAppCommLauncherContactHandler* handler = CCCAppCommLauncherContactHandler::NewL( *view, *plugin );
+    CCCAppCommLauncherContactHandler* handler = 
+            CCCAppCommLauncherContactHandler::NewL( *view, *plugin );
     CleanupStack::PushL( handler );
     
-    TL( EFalse == handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EVoiceCallSelector ) );
-    TL( EFalse == handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EUniEditorSelector ) );
-    TL( EFalse == handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EEmailEditorSelector ) );
-    TL( EFalse == handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EVOIPCallSelector ) );
+    TL( EFalse == handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EVoiceCallSelector ) );
+    TL( EFalse == handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EUniEditorSelector ) );
+    TL( EFalse == handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EEmailEditorSelector ) );
+    TL( EFalse == handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EVOIPCallSelector ) );
                 
     CCmsContactField* emailField = new (ELeave) CCmsContactField ( EMAIL );
     CleanupStack::PushL( emailField );
     handler->UpdateDefaultAttributes( *emailField );
     
-    TL( EFalse == handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EVoiceCallSelector ) );
-    TL( EFalse == handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EUniEditorSelector ) );
-    TL( handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EEmailEditorSelector ) );
-    TL( EFalse == handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EVOIPCallSelector ) );
+    TL( EFalse == handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EVoiceCallSelector ) );
+    TL( EFalse == handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EUniEditorSelector ) );
+    TL( handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EEmailEditorSelector ) );
+    TL( EFalse == handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EVOIPCallSelector ) );
     
     CleanupStack::PopAndDestroy( emailField );
     
@@ -496,10 +520,14 @@ TInt T_CCCAppCommLauncherContactHandler::TestDefaultAttributesL( TTestResult& aR
     CleanupStack::PushL( voipField );
     handler->UpdateDefaultAttributes( *voipField );
     
-    TL( EFalse == handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EVoiceCallSelector ) );
-    TL( EFalse == handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EUniEditorSelector ) );
-    TL( handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EEmailEditorSelector ) );
-    TL( handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EVOIPCallSelector ) );
+    TL( EFalse == handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EVoiceCallSelector ) );
+    TL( EFalse == handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EUniEditorSelector ) );
+    TL( handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EEmailEditorSelector ) );
+    TL( handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EVOIPCallSelector ) );
     
     CleanupStack::PopAndDestroy( voipField );
     
@@ -507,10 +535,14 @@ TInt T_CCCAppCommLauncherContactHandler::TestDefaultAttributesL( TTestResult& aR
     CleanupStack::PushL( phoneField );
     handler->UpdateDefaultAttributes( *phoneField );
     
-    TL( handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EVoiceCallSelector ) );
-    TL( EFalse == handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EUniEditorSelector ) );
-    TL( handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EEmailEditorSelector ) );
-    TL( handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EVOIPCallSelector ) );
+    TL( handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EVoiceCallSelector ) );
+    TL( EFalse == handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EUniEditorSelector ) );
+    TL( handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EEmailEditorSelector ) );
+    TL( handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EVOIPCallSelector ) );
     
     CleanupStack::PopAndDestroy( phoneField );
     
@@ -518,16 +550,20 @@ TInt T_CCCAppCommLauncherContactHandler::TestDefaultAttributesL( TTestResult& aR
     CleanupStack::PushL( mmsField );
     handler->UpdateDefaultAttributes( *mmsField );
     
-    TL( handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EVoiceCallSelector ) );
-    TL( handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EUniEditorSelector ) );
-    TL( handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EEmailEditorSelector ) );
-    TL( handler->HasDefaultAttribute( VPbkFieldTypeSelectorFactory::EVOIPCallSelector ) );
+    TL( handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EVoiceCallSelector ) );
+    TL( handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EUniEditorSelector ) );
+    TL( handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EEmailEditorSelector ) );
+    TL( handler->HasDefaultAttribute( 
+            VPbkFieldTypeSelectorFactory::EVOIPCallSelector ) );
     
     CleanupStack::PopAndDestroy( mmsField );
     
     CleanupStack::PopAndDestroy( 3 );
 
-    _LIT( KDescription, "TestCalculationAndGettersL passed" );
+    _LIT( KDescription, "TestDefaultAttributesL passed" );
     aResult.SetResult( KErrNone, KDescription );
 
     // Case was executed
@@ -539,7 +575,8 @@ TInt T_CCCAppCommLauncherContactHandler::TestDefaultAttributesL( TTestResult& aR
 //
 // -----------------------------------------------------------------------------
 //
-TInt T_CCCAppCommLauncherContactHandler::TestContactStoreApiL( TTestResult& aResult )
+TInt T_CCCAppCommLauncherContactHandler::TestContactStoreApiL( 
+        TTestResult& aResult )
     {
     // setup
     CCCAppCommLauncherPlugin* plugin =
@@ -547,7 +584,8 @@ TInt T_CCCAppCommLauncherContactHandler::TestContactStoreApiL( TTestResult& aRes
     CleanupStack::PushL( plugin );
     CCCAppCommLauncherView* view = CCCAppCommLauncherView::NewL();
     CleanupStack::PushL( view );
-    CCCAppCommLauncherContactHandler* handler = CCCAppCommLauncherContactHandler::NewL( *view, *plugin );
+    CCCAppCommLauncherContactHandler* handler = 
+            CCCAppCommLauncherContactHandler::NewL( *view, *plugin );
     CleanupStack::PushL( handler );
     
     // test itself

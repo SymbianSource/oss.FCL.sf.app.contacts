@@ -116,12 +116,6 @@ void CPcsAlgorithm2Helper::SearchMixedL(const CPsSettings& aSettings,
     CPcsAlgorithm2FilterHelper* filterHelper =
             CPcsAlgorithm2FilterHelper::NewL(sortType);
 
-    // Convert the search condition to numeric key string
-    TBuf<KPsQueryMaxLen> numericKeyStr;
-    TPtrC queryPtr = aPsQuery.QueryAsStringLC();
-    keyMap->GetNumericKeyString(queryPtr, numericKeyStr);
-    PRINT2 ( _L("Numeric Key String for %S = %S"), &queryPtr, &numericKeyStr );
-
     // Reset the result set array for new search
     iSearchResultsArr.ResetAndDestroy();
 
@@ -132,9 +126,10 @@ void CPcsAlgorithm2Helper::SearchMixedL(const CPsSettings& aSettings,
     // Get the required display fields from the client
     RArray<TInt> requiredDataFields;
     aSettings.DisplayFieldsL(requiredDataFields);
-
-    // Search based on first key str
-    TInt numValue = keyMap->PoolIdForCharacter(numericKeyStr[0]);
+    
+    // Search from cache based on first character
+     const CPsQueryItem& firstCharItem = aPsQuery.GetItemAtL(0);
+     TInt numValue  = keyMap->PoolIdForCharacter( firstCharItem.Character() );
 
     // Perform search for each required data store
     RPointerArray<CPcsPoolElement> elements;
@@ -225,12 +220,12 @@ void CPcsAlgorithm2Helper::SearchITUL(const CPsSettings& aSettings,
     CPcsAlgorithm2FilterHelper* filterHelper =
             CPcsAlgorithm2FilterHelper::NewL(sortType);
 
-    // Convert the search condition to numeric key string
-    TBuf<KPsQueryMaxLen> numericKeyStr;
+    // Convert the query to string
     TPtrC queryPtr = aPsQuery.QueryAsStringLC();
-    keyMap->GetNumericKeyString(queryPtr, numericKeyStr);
-    PRINT2 ( _L("Numeric Key String for %S = %S"), &queryPtr, &numericKeyStr );
-    TInt numValue = keyMap->PoolIdForCharacter(numericKeyStr[0]);
+
+    // Search from cache based on first character
+    const CPsQueryItem& firstCharItem = aPsQuery.GetItemAtL(0);
+    TInt numValue  = keyMap->PoolIdForCharacter( firstCharItem.Character() );
 
     // Reset the result set array for new search
     iSearchResultsArr.ResetAndDestroy();
@@ -261,7 +256,7 @@ void CPcsAlgorithm2Helper::SearchITUL(const CPsSettings& aSettings,
         cache->GetContactsForKeyL(numValue, elements);
 
         // Perform filtering
-        FilterResultsL(filterHelper, elements, numericKeyStr,
+        FilterResultsL(filterHelper, elements, queryPtr,
                        isSearchInGroup, aContactsInGroup);
 
         // If alphabetical sorting, get the results for this datastore               
@@ -328,33 +323,13 @@ void CPcsAlgorithm2Helper::SearchQWERTYL(const CPsSettings& aSettings,
     CPcsAlgorithm2FilterHelper* filterHelper =
             CPcsAlgorithm2FilterHelper::NewL(sortType);
 
-    // Convert the search condition to numeric key string
-    TBuf<KPsQueryMaxLen> numericKeyStr;
+    // Convert the query to string
     TPtrC queryPtr = aPsQuery.QueryAsStringLC();
 
-    TChar queryChar;
-
-    // Handle Chinese word search case: extract the first char of one of its spelling
-    // which will be used as search string
-    if (iAlgorithm->FindUtilECE()->IsChineseWord(queryPtr))
-        {
-        RPointerArray<HBufC> spellList;
-        if (iAlgorithm->FindUtilECE()->T9ChineseTranslationL(queryPtr[0], spellList))
-            {
-            queryChar = *(spellList[0]->Ptr());
-            }
-        else
-            {
-            queryChar = queryPtr[0];
-            }
-        spellList.ResetAndDestroy();
-        }
-    else
-        {
-        queryChar = queryPtr[0];
-        }
-
-    TInt numValue = keyMap->PoolIdForCharacter(queryChar);
+    // Search from cache based on first character
+    const CPsQueryItem& firstCharItem = aPsQuery.GetItemAtL(0);
+    TInt numValue  = keyMap->PoolIdForCharacter( firstCharItem.Character() );
+    
     // Reset the result set array for new search
     iSearchResultsArr.ResetAndDestroy();
 

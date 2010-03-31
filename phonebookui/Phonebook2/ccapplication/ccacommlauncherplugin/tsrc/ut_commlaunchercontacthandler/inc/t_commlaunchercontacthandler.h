@@ -284,9 +284,9 @@ NONSHARABLE_CLASS(T_CCCAppCommLauncherContactHandler) : public CTestModuleBase
         
         TInt TestContactFieldDataObserverNotifyL ( TTestResult& aResult );
         
-        //TInt TestCalculationAndGettersL ( TTestResult& aResult );
+        TInt TestCalculationAndGettersL ( TTestResult& aResult );
         
-        //TInt TestUpdatesL( TTestResult& aResult );
+        TInt TestUpdatesL( TTestResult& aResult );
         
         TInt TestDefaultAttributesL( TTestResult& aResult );
         

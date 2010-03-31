@@ -1164,7 +1164,7 @@ void CCCAppMyCardContainer::HandlePointerEventL(
       }
       
     PosToScreenCoordinates( this, pos );    
-    iDetailsPopup->SetPosition( pos );      
+    iDetailsPopup->SetPosition( pos, CAknStylusPopUpMenu::EPositionTypeRightBottom );      
    
     CCoeControl::HandlePointerEventL( aPointerEvent );              
     }

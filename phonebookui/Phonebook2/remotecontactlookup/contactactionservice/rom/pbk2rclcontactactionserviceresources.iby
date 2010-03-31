@@ -31,6 +31,8 @@ S60_APP_RESOURCE(pbk2rclsendplugin)
 
 S60_APP_RESOURCE(pbk2rclsendbusinesscardpluginimpl)
 
+S60_APP_RESOURCE(pbk2rclactionutils)
+
 #endif // __PBK2RCLCONTACTACTIONSERVICERESOURCES_IBY__
 
 // End of file

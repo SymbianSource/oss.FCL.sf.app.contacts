@@ -196,12 +196,6 @@
 //
 #define qtn_cca_opt_select_other_address "Select other address"
 
-// d:Command in options menu for viewing the image.
-// l:list_single_pane_t1_cp2
-// r:5.0
-//
-#define qtn_cca_opt_view_image "View image"
-
 // d:Text for the call communication method.
 // l:list_single_large_graphic_pane_t1
 // r:5.0
@@ -594,7 +588,7 @@
 // l:list_single_pane_t1_cp2
 // r:5.0
 //
-#define qtn_cca_options_view_image "View image"
+#define qtn_phob_opt_view_image "View image"
 
 // d:Remove image command in details view options menu
 // l:list_single_pane_t1_cp2
@@ -939,5 +933,11 @@
 //r:9.2
 //
 #define qtn_phob_my_card_clear "Clear My Card data"
+
+// d:Change image command in details view options menu
+// l:list_single_pane_t1_cp2
+// r:5.0
+//
+#define qtn_phob_opt_change_image "Change image"
 
 // End of File

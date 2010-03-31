@@ -117,17 +117,12 @@ void CPbk2ContactViewDoubleListBoxModel::FormatBufferForContactL(
     
     // (1) Add thumbnail icon
     //
-    // TODO: to be fixed
-    //const TPbk2IconId& thumb = iThumbManager.GetPbkIconIndex( aIndex, aViewContact );
-    //element->SetIconId( MPbk2DoubleListboxDataElement::EThumbnail, thumb );
-    // -- temporary sollution:
     TInt index = iThumbManager.GetPbkIconIndexL( aIndex, aViewContact );
     if( index != KErrNotFound )
         {
         iBuffer.AppendNum( index );
         }
     iBuffer.Append( KListColumnSeparator );
-    // --
 
     // (2) Add contact name
     //
@@ -162,12 +157,11 @@ void CPbk2ContactViewDoubleListBoxModel::FormatBufferForContactL(
         MPbk2DoubleListboxDataElement::ETypeGenericText );
     CleanupStack::Pop( name );
 
-    // (3, 4) Secondary text and icon
-    //
-    // -> These are empty by default
+    // (3) Secondary text 
+    // 
+    // => Empty by default
   
-
-    // (5) Trailing icon
+    // (4) Trailing icon
     //
     RArray<TPbk2IconId> ids;
     CleanupClosePushL( ids );
@@ -222,12 +216,10 @@ void CPbk2ContactViewDoubleListBoxModel::FormatBufferFromElement(
 
     // List model format:
     //   [thumbnail icon] \t [contact name] \t [secondary text] \t
-    //   [secondary icon] \t [trailing icon]
+    //   [trailing icon]
 
     // (1) Thumbnail icon
-    // TODO: to be fixed
-    //AppendIconIndex( 
-    //    aElement.IconId( MPbk2DoubleListboxDataElement::EThumbnail ) );
+    // No element support needed for thumbnail at the moment 
 
     // (2) Contact name
     AppendName( aElement.TextPtr( MPbk2DoubleListboxDataElement::EName ) );
@@ -236,14 +228,8 @@ void CPbk2ContactViewDoubleListBoxModel::FormatBufferFromElement(
     // (3) Secondary text
     TPtr status( aElement.TextPtr( MPbk2DoubleListboxDataElement::EStatusText ) );
     AppendText( status );
-       
-#if 0	// Service icon is removed for now.
-    // (4) Secondary icon
-    AppendIconIndexIfFound( 
-        aElement.IconId( MPbk2DoubleListboxDataElement::EServiceIcon ) );
-#endif
     
-    // (5) Trailing icon
+    // (4) Trailing icon
     AppendIconIndexIfFound( 
         aElement.IconId( MPbk2DoubleListboxDataElement::EMainIcon ) );
     }
@@ -254,6 +240,9 @@ void CPbk2ContactViewDoubleListBoxModel::FormatBufferFromElement(
 //
 void CPbk2ContactViewDoubleListBoxModel::AppendText( TDes& aText ) const
     {
+	//Convert numbers to some languages specific version. E.g.: Arabic.
+    AknTextUtils::DisplayTextLanguageSpecificNumberConversion( aText );
+    
     // replace non-allowed characters with ' '
     Pbk2PresentationUtils::ReplaceNonGraphicCharacters(
         aText, KGraphicReplaceCharacter );

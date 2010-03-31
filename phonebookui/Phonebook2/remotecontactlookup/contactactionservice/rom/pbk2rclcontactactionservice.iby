@@ -20,7 +20,6 @@
 
 // Main service files
 ECOM_PLUGIN(pbk2rclcontactactionservice.dll, pbk2rclcontactactionservice.rsc)
-data=DATAZ_\RESOURCE_FILES_DIR\pbk2rclactionutils.rsc        RESOURCE_FILES_DIR\pbk2rclactionutils.rsc
 
 // Plugins
 ECOM_PLUGIN(pbk2rclcallplugin.dll, pbk2rclcallplugin.rsc)

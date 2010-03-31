@@ -104,6 +104,11 @@ void CCCAContactorServiceOperator::Execute(
             CommunicationEnumMapper(iParameter->iCommTypeSelector),
             useDefaults));
         
+        if (result != NULL)
+        	{
+        	isSelected = ETrue;
+        	}
+        
         if (KErrNone != err)
             {
             CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::ExecuteL: LaunchPopupL: Leaves %d."), err);
@@ -138,12 +143,18 @@ void CCCAContactorServiceOperator::Execute(
     CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::Execute: Done."));
     }
 
+
+TBool CCCAContactorServiceOperator::IsSelected()
+	{
+	return isSelected;
+	}
 // --------------------------------------------------------------------------
 // CCCAContactorServiceOperator::CCCAContactorServiceOperator
 // --------------------------------------------------------------------------
 //
 CCCAContactorServiceOperator::CCCAContactorServiceOperator():
-    iServiceId((TUint32)KErrNotFound)
+    iServiceId((TUint32)KErrNotFound),
+    isSelected(EFalse)
     {
     }
 

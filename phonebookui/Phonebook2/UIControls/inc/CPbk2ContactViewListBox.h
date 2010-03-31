@@ -230,7 +230,7 @@ NONSHARABLE_CLASS(CPbk2ContactViewListBox) :
             TPbk2IconId iDefaultIconId;
             };
 
-    protected:	//data	//TODO handle better
+    protected:	//data
     	/// Own: List box model
     	CPbk2ContactViewListBoxModel* iModel;
     	/// Own: Data loaded from resources

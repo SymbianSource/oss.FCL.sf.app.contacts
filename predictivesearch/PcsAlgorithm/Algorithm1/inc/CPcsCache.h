@@ -99,10 +99,6 @@ class CPcsCache : public CBase
 		*/
 		TUint8 GetUriId();
 
-		/**
-		* Returns the URI for this cache
-		*/
-		HBufC* GetUri();
 	    /**
 	    * Sets sort order for data fields
 	    */
@@ -191,7 +187,7 @@ class CPcsCache : public CBase
 		/**
 		* Internal URI id for this cache
 		*/
-		TInt8 iUriId;
+		TUint8 iUriId;
 
 		/**
 		* Current status of this cache
@@ -201,18 +197,18 @@ class CPcsCache : public CBase
 		/**
 		* List of data fields (mapped to VPbk ids) supported by this cache
 		*/
-		RArray<TInt> 	iDataFields;
+		RArray<TInt> iDataFields;
 		/**
 		* Sort order of data fields expected by the clients
 		*/
-		RArray<TInt>    iSortOrder;
+		RArray<TInt> iSortOrder;
 		
 		/**
 		* Order of indexes determined by correlating iDataFields and iSortOrder
 		* Each CPsData data element fields need to be compared in this order
 		* to get the client expected sort order for this cache.
 		*/
-		RArray<TInt>    iIndexOrder;
+		RArray<TInt> iIndexOrder;
 		
 };
 

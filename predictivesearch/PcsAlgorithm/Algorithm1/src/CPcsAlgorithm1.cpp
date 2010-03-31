@@ -76,7 +76,6 @@ void CPcsAlgorithm1::ConstructL()
     
     iCacheStatus = ECachingNotStarted;  // Starting status
     iCacheError = KErrNone;             // No error
-    iCacheCount = 0;                    // No data
         
     iPluginLauncher = CIdle::NewL( CActive::EPriorityStandard );
     
@@ -233,8 +232,8 @@ TBool  CPcsAlgorithm1::ReplaceZeroWithSpaceL(CPsQuery& aQuery)
     PRINT ( _L("End CPcsAlgorithm1::ReplaceZeroWithSpaceL") );
 
     return  queryModified;
-}  
-   
+}
+
 // ----------------------------------------------------------------------------
 // CPcsAlgorithm1::PerformSearchL
 // Search function for cache
@@ -242,7 +241,7 @@ TBool  CPcsAlgorithm1::ReplaceZeroWithSpaceL(CPsQuery& aQuery)
 void  CPcsAlgorithm1::PerformSearchL(const CPsSettings& aSettings,
                                      CPsQuery& aQuery,
                                      RPointerArray<CPsClientData>& aSearchResults,
-                                     RPointerArray<CPsPattern>& aSearchSeqs)                                    
+                                     RPointerArray<CPsPattern>& aSearchSeqs)
 {
 	PRINT ( _L("Enter CPcsAlgorithm1::PerformSearchL") );
 	
@@ -323,26 +322,24 @@ void  CPcsAlgorithm1::PerformSearchL(const CPsSettings& aSettings,
 	// ------------------------------------------------------------------------
 
     // ------------------ Write result objects to the stream ------------------
-	// Truncate the result set if required
-	TInt numToDisplay = aSettings.MaxResults();
-	TInt resultSet = tempSearchResults.Count();
-	
-	if( resultSet > numToDisplay && numToDisplay != -1)
-	{
-		// Copy the top N contents from tempSearchResults to the results stream
-		for(int i = 0; i < numToDisplay; i++)
-		{
-			aSearchResults.Append(WriteClientDataL(*(tempSearchResults[i])));
-		}
-	}
-	else
-	{
-		// Copy all the contents from tempSearchResults to the results stream
-		for(TInt i = 0; i < resultSet; i++)
-		{
-			aSearchResults.Append(WriteClientDataL(*(tempSearchResults[i])));
-		}
-	}
+    // Truncate the result set if required
+    TInt maxNumToDisplay = aSettings.MaxResults();
+    TInt resultSetCount = tempSearchResults.Count();
+    TInt numToDisplay = 0;
+    if ( maxNumToDisplay == -1 )
+        {
+        numToDisplay = resultSetCount;
+        }
+    else
+        {
+        numToDisplay = Min( maxNumToDisplay, resultSetCount );
+        }
+
+    // Copy desired number of results from tempSearchResults to the results stream
+    for (TInt i = 0; i < numToDisplay; i++)
+        {
+        aSearchResults.Append(WriteClientDataL(*(tempSearchResults[i])));
+        }
 	// ------------------------------------------------------------------------
 
     // Cleanup local results array
@@ -404,7 +401,7 @@ void  CPcsAlgorithm1::SearchInputL(CPsQuery& aQuery,
      * any other match for it than the one in "Nik0".
      */
 
-    // --- Remove items from aMatchLocation ---
+    // --- Remove duplicate items from aMatchLocation ---
     TInt i = 0;
     TBool incrementFirstCursor;
     while ( i < aMatchLocation.Count() )
@@ -436,7 +433,7 @@ void  CPcsAlgorithm1::SearchInputL(CPsQuery& aQuery,
         }
     }
 
-    // --- Remove items from aMatchSet ---
+    // --- Remove duplicate items from aMatchSet ---
     HBufC* dataUpper = HBufC::NewLC(aData.Length());
     dataUpper->Des().Copy(aData);
     dataUpper->Des().UpperCase(); // Get uppercase, as aMatchSet is in upper case
@@ -479,7 +476,7 @@ void  CPcsAlgorithm1::SearchInputL(CPsQuery& aQuery,
     // ------------------------------------------------------------------------
 
     // Sort match set
-	iHelper->SortSearchSeqsL(aMatchSet);  
+	iHelper->SortSearchSeqsL(aMatchSet);
 	
     PRINTQUERY    ( _L("CPcsAlgorithm1::SearchInputL: Final: "), aQuery );
     PRINT1        ( _L("CPcsAlgorithm1::SearchInputL: Final: Search Data: %S"), &aData );
@@ -488,7 +485,7 @@ void  CPcsAlgorithm1::SearchInputL(CPsQuery& aQuery,
 	
 	__LATENCY_MARKEND ( _L("CPcsAlgorithm1::SearchInputL") );
 
-    PRINT ( _L("End CPcsAlgorithm1::SearchInputL") );			
+    PRINT ( _L("End CPcsAlgorithm1::SearchInputL") );
 }
 
 // ----------------------------------------------------------------------------
@@ -552,7 +549,7 @@ void  CPcsAlgorithm1::DoSearchL(const CPsSettings& aSettings,
     CleanupClosePushL( groupIdArray );
     
     // Create a new settings instance
-    CPsSettings *tempSettings = aSettings.CloneL();
+    CPsSettings* tempSettings = aSettings.CloneL();
     CleanupStack::PushL( tempSettings );
     
     TBool isGroupSearch = IsGroupSearchL(*tempSettings, groupIdArray);
@@ -627,7 +624,6 @@ void  CPcsAlgorithm1::DoSearchInputL(CPsQuery& aQuery,
 		                             RPointerArray<TDesC>& aMatchSet,
 		                             RArray<TPsMatchLocation>& aMatchLocation )
 {
-
     PRINT ( _L("Enter CPcsAlgorithm1::DoSearchInputL") );
 
     TInt queryWords = iMultiSearchHelper->CountMultiQueryWordsL(aQuery);
@@ -640,6 +636,7 @@ void  CPcsAlgorithm1::DoSearchInputL(CPsQuery& aQuery,
     }
     
     RPointerArray<CPsQuery> queryList = iMultiSearchHelper->MultiQueryL(aQuery);
+    CleanupResetAndDestroyPushL( queryList );
     
     PRINTQUERYLIST ( _L("CPcsAlgorithm1::DoSearchInputL: "), queryList );
 
@@ -661,11 +658,11 @@ void  CPcsAlgorithm1::DoSearchInputL(CPsQuery& aQuery,
     }
 
 	// Delete all the query elements
-	queryList.ResetAndDestroy();
+	CleanupStack::PopAndDestroy( &queryList ); // ResetAndDestroy
 
 	PRINT ( _L("End CPcsAlgorithm1::DoSearchInputL") );
-}    
-    
+}
+
 // ----------------------------------------------------------------------------
 // CPcsAlgorithm1::AddData
 // Add a data element to the pool
@@ -686,7 +683,7 @@ void CPcsAlgorithm1::AddData(TDesC& aDataStore, CPsData* aData)
     }
     else 
     {
-    	PRINT(_L("CPcsAlgorithm1::AddDataL Unknown data store"));
+    	PRINT(_L("CPcsAlgorithm1::AddData: Unknown data store"));
     	return;
     }
     
@@ -762,18 +759,15 @@ void CPcsAlgorithm1::AddDataStore(TDesC& aDataStore)
     	// Already exists
     	return;
     }
-    
-    // Create a new cache    
+
+    // Create a new cache
     CPcsCache* cache = NULL;
-	TRAPD(err, cache = CPcsCache::NewL(aDataStore, *iKeyMap, iCacheCount));
+	TRAPD(err, cache = CPcsCache::NewL(aDataStore, *iKeyMap, (TUint8) iPcsCache.Count()));
 	if ( err != KErrNone )
 	{
 		SetCachingError(aDataStore, err);
 		return;
 	}
-	
-	// Increment the cachecount
-	iCacheCount++;
 	
     RArray<TInt> dataFields;
     TRAP(err, iPsDataPluginInterface->GetSupportedDataFieldsL(cache->GetURI(), dataFields));
@@ -786,7 +780,7 @@ void CPcsAlgorithm1::AddDataStore(TDesC& aDataStore)
     
     // Check if sort order is persisted already    
     RArray<TInt> sortOrder;
-    TRAP(err, ReadSortOrderFromCenRepL(*(cache->GetUri()), sortOrder));
+    TRAP(err, ReadSortOrderFromCenRepL(cache->GetURI(), sortOrder));
     if ( err != KErrNone )
 	{
 		SetCachingError(aDataStore, err);
@@ -831,7 +825,6 @@ void CPcsAlgorithm1::RemoveDataStore(TDesC& aDataStore)
     	{
     		delete iPcsCache[i];
     		iPcsCache.Remove(i);
-    		iCacheCount--;   		
     	}
     }
 }
@@ -868,7 +861,7 @@ const TDesC& CPcsAlgorithm1::GetUriForIdL(TUint8 aUriId)
 		User::Leave(KErrNotFound);
 	}
 	
-	return *(iPcsCache[i]->GetUri()); 
+	return iPcsCache[i]->GetURI(); 
 }
 
 // ----------------------------------------------------------------------------
@@ -879,7 +872,7 @@ TInt CPcsAlgorithm1::FindStoreUri ( const TDesC& aDataStore )
 {
     for ( int i = 0; i < iPcsCache.Count(); i++ )
     {
-    	if ( aDataStore.CompareC(*(iPcsCache[i]->GetUri())) == 0 ) 
+        if ( aDataStore.CompareC(iPcsCache[i]->GetURI()) == 0 ) 
     	{
     	   return i;   
     	}
@@ -955,7 +948,7 @@ void CPcsAlgorithm1::SetCachingError(const TDesC& aDataStore, TInt aError)
 	PRINT2 ( _L("SetCachingError::URI %S ERROR %d"), &aDataStore, aError );
 
 	iCacheError = aError;
-	RProperty::Set( KCStatus,1,iCacheError );
+	RProperty::Set( KCStatus, 1, iCacheError );
 }
 
 // ----------------------------------------------------------------------------
@@ -1157,8 +1150,7 @@ void CPcsAlgorithm1::GetDataOrderL ( TDesC& aURI,
     if ( CPcsAlgorithm1Utils::IsGroupUri(aURI) )
     {
         // If search in a group uri, use contacts db
-        TBuf<255> cntdb(KVPbkDefaultCntDbURI);
-        arrayIndex = GetCacheIndex(cntdb);
+        arrayIndex = GetCacheIndex(KVPbkDefaultCntDbURI);
     }
     else 
     {		
@@ -1186,7 +1178,7 @@ void CPcsAlgorithm1::GetSortOrderL ( TDesC& aURI,
 {
     PRINT ( _L("End CPcsAlgorithm1::GetSortOrderL") );
 
-    TInt arrayIndex = -1;     
+    TInt arrayIndex = -1;
     
     if ( CPcsAlgorithm1Utils::IsGroupUri(aURI) )
     {
@@ -1195,7 +1187,7 @@ void CPcsAlgorithm1::GetSortOrderL ( TDesC& aURI,
         arrayIndex = GetCacheIndex(cntdb);
     }
     else 
-    {		
+    {
 		arrayIndex = GetCacheIndex(aURI);
     }
     
@@ -1223,7 +1215,7 @@ void CPcsAlgorithm1::ChangeSortOrderL ( TDesC& aURI,
     PRINT ( _L("CPcsAlgorithm1::ChangeSortOrderL. Sort order change received.") );
     PRINT1 ( _L("URI = %S"), &aURI );
     
-    // If URI is search in a group URI return       
+    // If URI is search in a group URI return
     if ( CPcsAlgorithm1Utils::IsGroupUri(aURI) )
     {
        PRINT ( _L("CPcsAlgorithm1::ChangeSortOrderL. Sort order change not supported.") );
@@ -1247,23 +1239,23 @@ void CPcsAlgorithm1::ChangeSortOrderL ( TDesC& aURI,
     
     if ( aSortOrder.Count() == mySortOrder.Count() )    
     {
-         TBool same = ETrue;
-         for ( TInt i = 0; i < mySortOrder.Count(); i++ )	
-         {
+        TBool same = ETrue;
+        for ( TInt i = 0; i < mySortOrder.Count(); i++ )	
+        {
             if ( mySortOrder[i] != aSortOrder[i] )
-     		{
-     			same = EFalse;
-     			break;
-     		}
-         }
+            {
+                same = EFalse;
+                break;
+            }
+        }
          
-         if ( same )
-         {
-             PRINT ( _L("CPcsAlgorithm1::ChangeSortOrderL. Same sort order received. Ignoring ...") );
-             PRINT ( _L("End CPcsAlgorithm1::ChangeSortOrderL.") );
-             mySortOrder.Reset();
-             return;
-         }
+        if ( same )
+        {
+            PRINT ( _L("CPcsAlgorithm1::ChangeSortOrderL. Same sort order received. Ignoring ...") );
+            PRINT ( _L("End CPcsAlgorithm1::ChangeSortOrderL.") );
+            mySortOrder.Reset();
+            return;
+        }
     }
     
     mySortOrder.Reset();
@@ -1284,7 +1276,7 @@ void CPcsAlgorithm1::ChangeSortOrderL ( TDesC& aURI,
 		SetCachingError(aURI, err);
 		UpdateCachingStatus(aURI,ECachingCompleteWithErrors);
 		return;
-	}	
+	}
 	
 	PRINT ( _L("End CPcsAlgorithm1::ChangeSortOrderL.") );
 }

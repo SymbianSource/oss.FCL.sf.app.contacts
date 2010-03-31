@@ -297,5 +297,52 @@ TBool CPcsAlgorithm1Utils::IsGroupUri(TDesC& aURI)
     return ETrue;
 }
 
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm1Helper::FilterDataFieldsL()
+// Constructs a bit pattern using the required/supported data fields
+// For example, 6, 4 and 27 are supported fields <-- 00000111
+//              6 and 4 are required fields      <-- 00000011
+// Bit pattern returned is 00000011.
+// ----------------------------------------------------------------------------
+TUint8 CPcsAlgorithm1Utils::FilterDataFieldsL(const RArray<TInt>& aRequiredDataFields,
+                                              const RArray<TInt>& aSupportedDataFields)
+{
+    TUint8 filteredMatch = 0x0;
+
+    for ( TInt i = 0; i < aSupportedDataFields.Count(); i++ )
+    {
+        for ( TInt j = 0; j < aRequiredDataFields.Count(); j++ )
+        {
+            if ( aSupportedDataFields[i] == aRequiredDataFields[j] )
+            {
+                TUint8 val = 1 << i;
+                filteredMatch |= val;
+            }
+        }
+    }
+
+    return filteredMatch;
+}
+
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm1Utils::AppendMatchToSeqL
+// ----------------------------------------------------------------------------
+void CPcsAlgorithm1Utils::AppendMatchToSeqL( 
+        RPointerArray<TDesC>& aMatchSeq, const TDesC& aMatch )
+    {
+    HBufC* seq = aMatch.AllocLC();
+    seq->Des().UpperCase();
+    TIdentityRelation<TDesC> rule(CompareExact);
+    if ( aMatchSeq.Find(seq, rule) == KErrNotFound )
+        {
+        aMatchSeq.AppendL(seq);
+        CleanupStack::Pop( seq );
+        }
+    else 
+        {
+        CleanupStack::PopAndDestroy( seq );
+        }
+    }
+
 // End of File
 

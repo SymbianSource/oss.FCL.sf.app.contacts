@@ -64,12 +64,12 @@ RESOURCE MENU_PANE r_pbk2_contacteditor_menupane
         MENU_ITEM
             {
             command = EPbk2CmdEditorChangeImage;
-            txt = qtn_phob_field_change_sync;
+            txt = qtn_phob_opt_change_image;
             },
         MENU_ITEM
             {
             command = EPbk2CmdEditorViewImage;
-            txt = qtn_cca_options_view_image;
+            txt = qtn_phob_opt_view_image;
             },
         MENU_ITEM
             {
@@ -199,12 +199,12 @@ RESOURCE MENU_PANE r_pbk2_contacteditor_context_menupane
         MENU_ITEM
             {
             command = EPbk2CmdEditorChangeImage;
-            txt = qtn_phob_field_change_sync;
+            txt = qtn_phob_opt_change_image;
             },
         MENU_ITEM
             {
             command = EPbk2CmdEditorViewImage;
-            txt = qtn_cca_options_view_image;
+            txt = qtn_phob_opt_view_image;
             },
 #ifdef ECE_DISABLE_CONTEXT_MENU
         MENU_ITEM

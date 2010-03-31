@@ -1234,6 +1234,10 @@ public:
     * @return Instance of CEikListBox.
     */
     CEikListBox* ListBox() const;
+    
+    void InitSmileyL();
+    
+    void SetSmileySubCellL( TInt aSubCell );
 
     
 private:

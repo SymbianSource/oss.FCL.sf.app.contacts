@@ -537,7 +537,7 @@ void CPSRequestHandler::HandleSearchResultsL()
     PRINT1 ( _L("CPSRequestHandler::HandleSearchResultsL: Number of search results received = %d"), count );
 
     // Internalize each data element
-    for (int i = 0; i < count; i++)
+    for (TInt i = 0; i < count; i++)
         {
         CPsClientData* data = CPsClientData::NewL();
         CleanupStack::PushL(data);
@@ -575,7 +575,7 @@ void CPSRequestHandler::HandleSearchResultsL()
     PRINT1 ( _L("CPSRequestHandler::HandleSearchResultsL: Number of match sequences received = %d"), seqCount );
 
     // Internalize each char seq
-    for (int i = 0; i < seqCount; i++)
+    for (TInt i = 0; i < seqCount; i++)
         {
         CPsPattern* pattern = CPsPattern::NewL();
         CleanupStack::PushL(pattern);
@@ -590,36 +590,21 @@ void CPSRequestHandler::HandleSearchResultsL()
         searchSeqs.Append(pattern);
         }
 
-    CleanupStack::PopAndDestroy(); // stream
+    CleanupStack::PopAndDestroy( &stream );
 
     // Pass the results to the observer
-    for (int i = 0; i < iObservers.Count(); i++)
+    for (TInt i = 0; i < iObservers.Count(); i++)
         {
         iObservers[i]->HandlePsResultsUpdate(searchResults, searchSeqs);
         }
 
     // Clear all the internal buffers
-    if (iSearchQueryBuffer)
-        {
-        delete iSearchQueryBuffer;
-        iSearchQueryBuffer = NULL;
-        }
-
-    if (searchResults.Count())
-        {
-        searchResults.ResetAndDestroy();
-        }
-
-    if (searchSeqs.Count())
-        {
-        searchSeqs.ResetAndDestroy();
-        }
-
-    if (iSearchResultsBuffer)
-        {
-        delete iSearchResultsBuffer;
-        iSearchResultsBuffer = NULL;
-        }
+    searchResults.ResetAndDestroy();
+    searchSeqs.ResetAndDestroy();
+    delete iSearchQueryBuffer;
+    iSearchQueryBuffer = NULL;
+    delete iSearchResultsBuffer;
+    iSearchResultsBuffer = NULL;
 
     PRINT ( _L("End CPSRequestHandler::HandleSearchResultsL") );
 

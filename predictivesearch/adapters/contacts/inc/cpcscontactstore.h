@@ -29,322 +29,335 @@
 #include <MVPbkSingleContactOperationObserver.h>
 #include <MVPbkContactViewObserver.h>
 #include <CVPbkContactManager.h>
-#include <CVPbkContactLinkArray.h>
 
-// USER INCLUDES 
+// USER INCLUDES
 #include "mdatastoreobserver.h"
 #include "PSContactsAdapterInternalCRKeys.h"
 
 // FORWARD DECLARATIONS
 class CPsData;
 class CVPbkContactManager;
-class CVPbkContactStoreUriArray;
 class CVPbkContactLinkArray;
 class MVPbkContactOperationBase;
-class MVPbkContactLinkArray;
 class MVPbkBaseContact;
 class CVPbkFieldTypeRefsList;
-class CVPbkFieldTypeRefsList;
 class MVPbkContactViewObserver;
+class CPbk2SortOrderManager;
+
 /**
-* States involved in fetching the contacts
-*/
+ * States involved in fetching the contacts
+ */
 enum
 {
-	ECreateView,
-	EFetchContactBlock,
-	EComplete
+    ECreateView,
+    EFetchContactBlock,
+    EComplete
 };
 
 /**
- *  This class represents the data store for the contacts 
+ *  This class represents the data store for the contacts
  *  Each data store (phonecontacts, simcontact, group contacts) is an
  *  instance of this class
  *  @lib pscontactsadapter.lib
  */
-class CPcsContactStore: public CActive, 
+class CPcsContactStore: public CActive,
                         public MVPbkSingleContactOperationObserver,
                         public MVPbkContactViewObserver
-                          
-{	
-	public:
 
-		/**
-		* 2 phase construction
-		* @param aContactManager - the contact manager 
-		* @param aObserver - observer for receiving data
-		* @param aUri - the data store uri
-		* @return returns pointer to the constructed object of type CPcsContactStore
-		*/
-		static CPcsContactStore* NewL(CVPbkContactManager&  aContactManager,
-		                              MDataStoreObserver& aObserver,
-			                              const TDesC& aUri);
+{
+    public:
 
-		/**
-		* Destructor
-		*/
-		virtual ~CPcsContactStore();
-		
-		/**
-		* Handles store events (contact/group addition/modification/deletion etc.)
-		* @param aContactStore - the contact store 
-		* @param aStoreEvent - store event
-		*/
-		void HandleStoreEventL(MVPbkContactStore& aContactStore, 
-            				   TVPbkContactStoreEvent aStoreEvent);	
-                
-		/**
-		* Gets the store Uri
-		* @return - the store uri supported by this instance
-		*/    
-        TDesC& GetStoreUri();    
-        
-	public:
-	
-		// From base class MVPbkSingleContactOperationObserver
-		  
-		/**
-		* From MVPbkSingleContactOperationObserver
-		* Called when operation is completed.
-		*
-		* @param aOperation the completed operation.
-		* @param aContact  the contact returned by the operation.
-		*                  Client must take the ownership immediately.
-		*
-		*                  !!! NOTICE !!!
-		*                  If you use Cleanupstack for MVPbkStoreContact
-		*                  Use MVPbkStoreContact::PushL or
-		*                  CleanupDeletePushL from e32base.h.
-		*                  (Do Not Use CleanupStack::PushL(TAny*) because
-		*                  then the virtual destructor of the M-class
-		*                  won't be called when the object is deleted).
-		*/
-		void VPbkSingleContactOperationComplete(
-		        MVPbkContactOperationBase& aOperation,
-		        MVPbkStoreContact* aContact );
+        /**
+         * 2 phase construction
+         * @param aContactManager - the contact manager
+         * @param aObserver - observer for receiving data
+         * @param aUri - the data store uri
+         * @return returns pointer to the constructed object of type CPcsContactStore
+         */
+        static CPcsContactStore* NewL(CVPbkContactManager& aContactManager,
+                                      MDataStoreObserver& aObserver,
+                                      const TDesC& aUri);
 
-		/**
-		* From MVPbkSingleContactOperationObserver
-		* Called if the operation fails.
-		*
-		* @param aOperation    the failed operation.
-		* @param aError        error code of the failure.
-		*/
-		void VPbkSingleContactOperationFailed(
-		        MVPbkContactOperationBase& aOperation, 
-		        TInt aError );
-                	
-	public :
+        /**
+         * Destructor
+         */
+        virtual ~CPcsContactStore();
 
-		// From base class MVPbkContactViewObserver
+        /**
+         * Handles store events (contact/group addition/modification/deletion etc.)
+         * @param aContactStore - the contact store
+         * @param aStoreEvent - store event
+         */
+        void HandleStoreEventL(MVPbkContactStore& aContactStore,
+                               TVPbkContactStoreEvent aStoreEvent);
 
-		void ContactViewReady(
-		            MVPbkContactViewBase& aView ) ;
-		            
-		void ContactViewUnavailable(
-		            MVPbkContactViewBase& aView ) ;
-		            
-		void ContactAddedToView(
-		            MVPbkContactViewBase& aView, 
-		            TInt aIndex, 
-		            const MVPbkContactLink& aContactLink );
-		            
-		void ContactRemovedFromView(
-		            MVPbkContactViewBase& aView, 
-		            TInt aIndex, 
-		            const MVPbkContactLink& aContactLink ) ;
-		            
-		void ContactViewError(
-		            MVPbkContactViewBase& aView, 
-		            TInt aError, 
-		            TBool aErrorNotified ) ;
-		            
-			
-	protected: 
+        /**
+         * Gets the store Uri
+         * @return - the store uri supported by this instance
+         */
+        TDesC& GetStoreUri();
 
-		// From base class CActive
+    public:
 
-		/**
-		* From CActive
-		* Implements cancellation of an outstanding request.
-		*
-		* This function is called as part of the active object's Cancel().
-		*/
-		void DoCancel() ;
+        // From base class MVPbkSingleContactOperationObserver
 
-		/**
-		* From CActive
-		* Handles an active object's request completion event.
-		*
-		* The function is called by the active scheduler when a request
-		* completion event occurs, i.e. after the active scheduler's
-		* WaitForAnyRequest() function completes.
-		*
-		* Before calling this active object's RunL() function, the active scheduler 
-		* has:
-		* 	
-		* 1. decided that this is the highest priority active object with
-		*   a completed request
-		*
-		* 2. marked this active object's request as complete (i.e. the request is no 
-		*   longer outstanding)
-		*
-		* RunL() runs under a trap harness in the active scheduler. If it leaves,
-		* then the active scheduler calls RunError() to handle the leave.
-		*
-		* Note that once the active scheduler's Start() function has been called, 
-		* all user code is run under one of the program's active object's RunL() or 
-		* RunError() functions.
-		*/
-		void RunL();
+        /**
+         * From MVPbkSingleContactOperationObserver
+         * Called when operation is completed.
+         *
+         * @param aOperation the completed operation.
+         * @param aContact  the contact returned by the operation.
+         *                  Client must take the ownership immediately.
+         *
+         *                  !!! NOTICE !!!
+         *                  If you use Cleanupstack for MVPbkStoreContact
+         *                  Use MVPbkStoreContact::PushL or
+         *                  CleanupDeletePushL from e32base.h.
+         *                  (Do Not Use CleanupStack::PushL(TAny*) because
+         *                  then the virtual destructor of the M-class
+         *                  won't be called when the object is deleted).
+         */
+        void VPbkSingleContactOperationComplete(
+                MVPbkContactOperationBase& aOperation,
+                MVPbkStoreContact* aContact );
 
-			
-		/**
-		* From CActive 
-		* If the RunL function leaves,
-		* then the active scheduler calls RunError() to handle the leave.
-		* @param aError - The error code
-		*/
-		TInt RunError( TInt aError );
-			
-	private:	
-	
-		/**
-		* Constructor
-		*/
-		CPcsContactStore();
+        /**
+         * From MVPbkSingleContactOperationObserver
+         * Called if the operation fails.
+         *
+         * @param aOperation    the failed operation.
+         * @param aError        error code of the failure.
+         */
+        void VPbkSingleContactOperationFailed(
+                MVPbkContactOperationBase& aOperation,
+                TInt aError );
 
-		/** 
-		* 2nd phase constructor
-		*/
-			void ConstructL(CVPbkContactManager&  aContactManager,MDataStoreObserver& aObserver,const TDesC& aUri);
+    public :
 
-		/**
-		* Handles the operations for a single contact after it is fetched
-		* @param aContact - The contact from database 
-		*/
-		void HandleRetrievedContactL(MVPbkStoreContact* aContact);
+        // From base class MVPbkContactViewObserver
 
-		/**
-		* Fetches the data from a particular contact 
-		* @param aContact - The contact from database 
-		* 
-		*/
-		void  GetDataForSingleContactL ( MVPbkBaseContact& aContact,CPsData* aPhoneData );
+        void ContactViewReady(
+                    MVPbkContactViewBase& aView );
 
-		/**
-		* Add the data from contact fields
-		* @param aContact - The contact from database 
-		* @param afieldtype - Field to be added 
-		* @param aPhoneData - the contact data in PS format
-		*/
-		void AddContactFieldsL(MVPbkBaseContact& aContact,TInt afieldtype,CPsData* aPhoneData);		
+        void ContactViewUnavailable(
+                    MVPbkContactViewBase& aView );
 
-		/**
-		* Fetches the  data from contact links from the view 
-		*/
+        void ContactAddedToView(
+                    MVPbkContactViewBase& aView,
+                    TInt aIndex,
+                    const MVPbkContactLink& aContactLink );
+
+        void ContactRemovedFromView(
+                    MVPbkContactViewBase& aView,
+                    TInt aIndex,
+                    const MVPbkContactLink& aContactLink );
+
+        void ContactViewError(
+                    MVPbkContactViewBase& aView,
+                    TInt aError,
+                    TBool aErrorNotified );
+
+    protected:
+
+        // From base class CActive
+
+        /**
+         * From CActive
+         * Implements cancellation of an outstanding request.
+         *
+         * This function is called as part of the active object's Cancel().
+         */
+        void DoCancel();
+
+        /**
+         * From CActive
+         * Handles an active object's request completion event.
+         *
+         * The function is called by the active scheduler when a request
+         * completion event occurs, i.e. after the active scheduler's
+         * WaitForAnyRequest() function completes.
+         *
+         * Before calling this active object's RunL() function, the active scheduler
+         * has:
+         *
+         * 1. decided that this is the highest priority active object with
+         *   a completed request
+         *
+         * 2. marked this active object's request as complete (i.e. the request is no
+         *   longer outstanding)
+         *
+         * RunL() runs under a trap harness in the active scheduler. If it leaves,
+         * then the active scheduler calls RunError() to handle the leave.
+         *
+         * Note that once the active scheduler's Start() function has been called,
+         * all user code is run under one of the program's active object's RunL() or
+         * RunError() functions.
+         */
+        void RunL();
+
+        /**
+         * From CActive
+         * If the RunL function leaves,
+         * then the active scheduler calls RunError() to handle the leave.
+         * @param aError - The error code
+         */
+        TInt RunError( TInt aError );
+
+    private:
+
+        /**
+         * Constructor
+         */
+        CPcsContactStore();
+
+        /**
+         * 2nd phase constructor
+         */
+        void ConstructL(CVPbkContactManager& aContactManager, MDataStoreObserver& aObserver,const TDesC& aUri);
+
+        /**
+         * Handles the operations for a single contact after it is fetched
+         * @param aContact - The contact from database
+         */
+        void HandleRetrievedContactL(MVPbkStoreContact* aContact);
+
+        /**
+         * Fetches the data from a particular contact
+         * @param aContact - The contact from database
+         *
+         */
+        void  GetDataForSingleContactL ( MVPbkBaseContact& aContact, CPsData* aPhoneData );
+
+        /**
+         * Add the data from contact fields
+         * @param aContact - The contact from database
+         * @param afieldtype - Field to be added
+         * @param aPhoneData - the contact data in PS format
+         */
+        void AddContactFieldsL(MVPbkBaseContact& aContact, TInt afieldtype, CPsData* aPhoneData);
+
+        /**
+         * Fetches the  data from contact links from the view
+         */
         void FetchlinksL();
-        
-		/**
-		* Reads the fields to cache from the central repository 
-		*/            
+
+        /**
+         * Reads the fields to cache from the central repository
+         */
         void ReadFieldsToCacheFromCenrepL();
-        
-		/**
-		* Creates a cacheId corresponding to sim Id Array Index
-		* @param - aSimId - The sim id
-		*/            
+
+        /**
+         * Creates a cacheId corresponding to sim Id Array Index
+         * @param - aSimId - The sim id
+         */
         TInt CreateCacheIDfromSimArrayIndex(TInt aSimId);
 
-		/**
-		* Creates the contact fetch view 
-		*/
-		void CreateContactFetchViewL();
-		/**
-		* Issues request to active object to call RunL method
-		*/
-		void IssueRequest();
-		
-		/**
-		* Creates a sort order depending on the fields specified in the cenrep
-		* @param aMasterList - aMasterList (i.e list containing all the vpbk fields)
-		*/
-		void CreateSortOrderL(const MVPbkFieldTypeList& aMasterList);
-		
-	private:
-	
-	    
-		/**
-		* Flags for store operations
-		*/
-		TInt    iAllContactLinksCount;
-		TInt    iFetchedContactCount;
-		TBool   iContactViewReady;
-		/**
-		* Variable to store the next state for the RunL to take appropriate action
-		*/
-		TInt 	iNextState;
-		
-		/**
-		* The contact manager for accessing the phone contacts
-		* Not Own.  
-		*/
-		CVPbkContactManager*  iContactManager;		
-
-		/**
-		* Holds a view base instance
-		* Own.
-		*/
-		MVPbkContactViewBase* iContactViewBase;
-
-		/**
-		* Holds a contact operation
-		* Own.
-		*/
-		MVPbkContactOperationBase* iOp;
+        /**
+         * Creates the contact fetch view
+         */
+        void CreateContactFetchViewL();
 
         /**
-        * Owns an instance of active scheduler wait
-        */
-	    CActiveSchedulerWait *iWait;
-	        	    
-	    /**
-        * data fields to be cached(read from the central repository)
-        */
-	    RArray<TInt> iFieldsToCache;
-	    
-	  	/**
-        * Array of contact links 
-        */
-	    CVPbkContactLinkArray *iSimContactItems;
-	    
-        /**
-		* Holds the observer object to communicate add/modify/delete of contacts
-		* Not owned.
-		*/
-		MDataStoreObserver* iObserver;
-		
-		/**
-        * Contacts Database URI
-        */
-        HBufC* iUri;
+         * Issues request to active object to call RunL method
+         */
+        void IssueRequest();
 
-		/**
-        * File session
-        */
-        RFs iFs;
+        /**
+         * Creates a sort order depending on the fields specified in the cenrep
+         * @param aMasterList - aMasterList (i.e list containing all the vpbk fields)
+         */
+        void CreateSortOrderL(const MVPbkFieldTypeList& aMasterList);
         
         /**
-        * RTimer variable to set the timer before RunL calls any function.
-        * This is required to allow other threads to run since contact fetch 
-        * is CPU intensive task. 
-        */
-        RTimer iTimer;
-        /**
-        * Holds the sort order fields
-        */
-        CVPbkFieldTypeRefsList *iSortOrder;
+         * Checks if contact is my card
+         */
+        TBool IsMyCard( const MVPbkBaseContact& aContact );
 
+    private:
+
+
+        /**
+         * Flags for store operations
+         */
+        TInt  iAllContactLinksCount;
+        TInt  iFetchedContactCount;
+        TBool iContactViewReady;
+
+        /**
+         * Variable to store the next state for the RunL to take appropriate action
+         */
+        TInt iNextState;
+
+        /**
+         * The contact manager for accessing the phone contacts
+         * Not Own.
+         */
+        CVPbkContactManager* iContactManager;
+
+        /**
+         * Holds a view base instance
+         * Own.
+         */
+        MVPbkContactViewBase* iContactViewBase;
+
+        /**
+         * Holds a contact operation
+         * Own.
+         */
+        MVPbkContactOperationBase* iOp;
+
+        /**
+         * Owns an instance of active scheduler wait
+         */
+        CActiveSchedulerWait *iWait;
+
+        /**
+         * data fields to be cached(read from the central repository)
+         */
+        RArray<TInt> iFieldsToCache;
+
+        /**
+         * Array of contact links
+         */
+        CVPbkContactLinkArray *iSimContactItems;
+
+        /**
+         * Holds the observer object to communicate add/modify/delete of contacts
+         * Not owned.
+         */
+        MDataStoreObserver* iObserver;
+
+        /**
+         * Contacts Database URI
+         */
+        HBufC* iUri;
+
+        /**
+         * File session
+         */
+        RFs iFs;
+
+        /**
+         * RTimer variable to set the timer before RunL calls any function.
+         * This is required to allow other threads to run since contact fetch
+         * is CPU intensive task.
+         */
+        RTimer iTimer;
+
+        /**
+         * Holds the sort order fields
+         */
+        CVPbkFieldTypeRefsList *iSortOrder;
+        
+        /**
+         * Holds MyCard supported status
+         */
+        TBool iMyCardSupported;
+		
+        /**
+		 * Own. Sort order for all contacts view
+		 */
+        CPbk2SortOrderManager* iSortOrderMan;
 };
 
 #endif // C_PCS_CONTACT_STORE_H

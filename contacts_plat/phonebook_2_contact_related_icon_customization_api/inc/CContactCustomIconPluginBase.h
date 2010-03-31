@@ -20,7 +20,7 @@
 
 // INCLUDES
 #include <e32base.h>
-#include <ecom\ecom.h>
+#include <ecom/ecom.h>
 #include <ContactCustomIconPluginDefs.h>
 
 // FORWARD DECLARATIONS

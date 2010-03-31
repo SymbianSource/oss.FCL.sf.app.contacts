@@ -31,12 +31,12 @@ NONSHARABLE_CLASS(CWords) :
     public:  // Constructors and destructor
         /**
          * Creates a new instance of this class.
-		 * @param aText the text to separate
+         * @param aText the text to separate
          */
         IMPORT_C static CWords* NewLC(const TDesC& aText);
         /**
          * Destructor.
-		 */
+         */
         IMPORT_C ~CWords();
         
     public:  // from MDesCArray
@@ -49,8 +49,8 @@ NONSHARABLE_CLASS(CWords) :
         static TBool DefaultIsWordSeparator(TChar aChar);
 
     private:
-	
-		/// Own: array of words
+
+        /// Own: array of words
         RArray<TPtrC> iWords;
     };
     

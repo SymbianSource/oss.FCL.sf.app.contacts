@@ -610,6 +610,15 @@ void CPbk2SingleContactDataAssigner::LaunchAssignPhaseL
     delete iFetchPhase;
     iFetchPhase = NULL;
 
+    // If need to open the editor, then change StatuspaneLayout to 
+    // CPbk2ServerAppAppUi::EStatusPaneLayoutUsual
+    if (!(iAssignFlags & EDoNotOpenEditor))
+        {
+        CPbk2ServerAppAppUi& appUi = static_cast<CPbk2ServerAppAppUi&>
+            ( *CEikonEnv::Static()->EikAppUi() );
+        appUi.ChangeStatuspaneLayoutL(CPbk2ServerAppAppUi::EStatusPaneLayoutUsual);
+        }
+
     iAssignDataPhase->LaunchServicePhaseL();
     }
 

@@ -192,6 +192,16 @@ public:
      * 
      */
     void SetKeyboardMode(TInt aMode);
+    
+    /**
+     * Translate Chinese word to its spelling
+     *
+     * @since S60 v3.2
+     * @param aHZUnicode For translate word
+     * @param aSpellList Reference to spelling list for polyphonic word
+     * @return ETrue for this word can be translated; otherwise EFalse
+     */
+    TBool DoTranslationL(TInt16 aHZUnicode, RPointerArray<HBufC>& aSpellList);
 
     /*
      * 
@@ -230,15 +240,6 @@ private:
 
     TInt CategoryOfLang(TLanguage aLanguage);
 
-    /**
-     * Translate Chinese word to its spelling
-     *
-     * @since S60 v3.2
-     * @param aHZUnicode For translate word
-     * @param aSpellList Reference to spelling list for polyphonic word
-     * @return ETrue for this word can be translated; otherwise EFalse
-     */
-    TBool DoTranslationL(TInt16 aHZUnicode, RPointerArray<HBufC>& aSpellList);
 
     /**
      * This letter is stroke symbol

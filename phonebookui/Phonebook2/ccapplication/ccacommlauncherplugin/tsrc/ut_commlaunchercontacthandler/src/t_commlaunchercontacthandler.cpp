@@ -175,10 +175,10 @@ TInt T_CCCAppCommLauncherContactHandler::RunTestCaseL(
     TTestResult& aResult )
     {
     if(!iVersionLogged)
-    	{
-    	SendTestModuleVersion();
-    	iVersionLogged = ETrue;
-    	}
+        {
+        SendTestModuleVersion();
+        iVersionLogged = ETrue;
+        }
     
     // Return value
     TInt execStatus = KErrNone;
@@ -319,17 +319,17 @@ void T_CCCAppCommLauncherContactHandler::OOMTestFinalizeL(
 //-----------------------------------------------------------------------------
 //
 void T_CCCAppCommLauncherContactHandler::SendTestModuleVersion()
-	{
-	TVersion moduleVersion;
-	moduleVersion.iMajor = TEST_MODULE_VERSION_MAJOR;
-	moduleVersion.iMinor = TEST_MODULE_VERSION_MINOR;
-	moduleVersion.iBuild = TEST_MODULE_VERSION_BUILD;
-	
-	TFileName moduleName;
-	moduleName = _L("t_commlaunchercontacthandler.dll");
+    {
+    TVersion moduleVersion;
+    moduleVersion.iMajor = TEST_MODULE_VERSION_MAJOR;
+    moduleVersion.iMinor = TEST_MODULE_VERSION_MINOR;
+    moduleVersion.iBuild = TEST_MODULE_VERSION_BUILD;
+    
+    TFileName moduleName;
+    moduleName = _L("t_commlaunchercontacthandler.dll");
 
-	TestModuleIf().SendTestModuleVersion(moduleVersion, moduleName);
-	}
+    TestModuleIf().SendTestModuleVersion(moduleVersion, moduleName);
+    }
 
 // ========================== OTHER EXPORTED FUNCTIONS =========================
 

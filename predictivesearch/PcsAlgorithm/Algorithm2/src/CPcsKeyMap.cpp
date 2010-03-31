@@ -19,6 +19,7 @@
 // INCLUDE FILES
 
 #include "CPcsAlgorithm2.h"
+#include "CPcsAlgorithm2Utils.h"
 #include "FindUtilChineseECE.h"
 #include "CPcsDebug.h"
 #include "CPcsKeyMap.h"
@@ -693,9 +694,14 @@ TBool CPcsKeyMap::IsLanguageSupportedL(TUint32 aLang)
 // CPcsKeyMap::PoolIdForCharacter
 // 
 // ----------------------------------------------------------------------------
-TInt CPcsKeyMap::PoolIdForCharacter(const TChar& aChar)
+TInt CPcsKeyMap::PoolIdForCharacter(TChar aChar)
     {
     TInt numValue = KErrNotFound;
+    
+    // If character is a Chinese word character, then we select the
+    // pool ID according the first character of the first spelling of the word.
+    TRAP_IGNORE( aChar = FirstCharFromSpellingL( aChar ) );
+    
     TInt key = KeyForCharacter(aChar);
     if (key != KErrNotFound)
         {
@@ -711,6 +717,27 @@ TInt CPcsKeyMap::PoolIdForCharacter(const TChar& aChar)
     return numValue;
     }
 
+// ----------------------------------------------------------------------------
+// CPcsKeyMap::CPcsKeyMap::FirstCharFromSpellingL
+// 
+// ----------------------------------------------------------------------------
+TChar CPcsKeyMap::FirstCharFromSpellingL( TChar aChar ) const
+    {
+    TChar translated( aChar );
+    TBuf<1> temp;
+    temp.Append( aChar );
+    if ( iAlgorithm->FindUtilECE()->IsChineseWord( temp ) )
+        {
+        RPointerArray<HBufC> spellList;
+        CleanupResetAndDestroyPushL( spellList );
+        if (iAlgorithm->FindUtilECE()->DoTranslationL(aChar, spellList))
+            {
+            translated = (*spellList[0])[0];
+            }
+        CleanupStack::PopAndDestroy( &spellList ); // ResetAndDestroy
+        }
+    return translated;
+    }
 // ----------------------------------------------------------------------------
 // CPcsKeyMap::PoolCount
 // 

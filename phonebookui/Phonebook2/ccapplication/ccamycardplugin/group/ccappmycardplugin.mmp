@@ -89,6 +89,7 @@ LIBRARY         centralrepository.lib
 
 LIBRARY         estor.lib
 LIBRARY         efsrv.lib
+LIBRARY         fbscli.lib
 
 DEBUGLIBRARY    flogger.lib
 

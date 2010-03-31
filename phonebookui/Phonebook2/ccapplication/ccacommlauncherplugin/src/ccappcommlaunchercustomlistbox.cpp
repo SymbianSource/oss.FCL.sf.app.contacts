@@ -110,7 +110,23 @@ void CCCAppCommLauncherCustomListBox::SizeChangedL()
 	// ------------------------------------------------
 	//
 	
-		
+	// Calculate listbox rect
+    TAknWindowComponentLayout listPaneLayout( TAknWindowComponentLayout::Compose(
+        AknLayoutScalable_Apps::phob2_cc_listscroll_pane( 0 ),
+        TAknWindowComponentLayout::Compose( 
+            AknLayoutScalable_Apps::phob2_cc_list_pane( 0 ), 
+            AknLayoutScalable_Apps::list_double_large_graphic_phob2_cc_pane( 0 ) ) ) );    
+  
+    TAknLayoutRect listPaneLayoutRect;
+    listPaneLayoutRect.LayoutRect( TRect( Size() ), listPaneLayout.LayoutLine() );
+    TRect listPaneRowRect( listPaneLayoutRect.Rect() );
+    
+    // Set listbox item height
+    SetItemHeightL( listPaneRowRect.Height() );
+    iItemDrawer->SetItemCellSize( listPaneRowRect.Size() );
+    
+
+	// Reset sub cell array	
 	iColumnData->ResetSLSubCellArray();
 			  
 	// Comm method icon	

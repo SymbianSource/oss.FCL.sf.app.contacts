@@ -226,8 +226,8 @@ void CPcsPluginInterface::SearchMatchStringL(CPsQuery& aSearchQuery,
     for ( TInt idx = 0; idx < iPcsPluginInstances.Count(); idx++ )
     {
        iPcsPluginInstances[idx]->SearchMatchStringL( aSearchQuery,
-                                               aSearchData,                                                  
-                                               aMatch );
+                                                     aSearchData,
+                                                     aMatch );
     }
     
     PRINT ( _L("End CPcsPluginInterface::SearchMatchStringL") );

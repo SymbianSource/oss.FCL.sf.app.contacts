@@ -89,4 +89,12 @@ EXPORT_C TBool CCAContactorService::IsBusy() const
     return iCommandIsBeingHandled;
     }
 
+// --------------------------------------------------------------------------
+// CCAContactorService::IsSelected
+// --------------------------------------------------------------------------
+//
+EXPORT_C TBool CCAContactorService::IsSelected() const
+    {
+    return iOperator->IsSelected();
+    }
 // End of file

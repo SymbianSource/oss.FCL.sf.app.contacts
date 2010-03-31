@@ -98,11 +98,34 @@ void CPcsKeyMap::ConstructL()
     iLanguageNotSupported.Append(ELangTaiwanChinese);
     iLanguageNotSupported.Append(ELangKorean);
 
-    SetupKeyboardTypesL();
+    TPtiKeyboardType physicalItutKbType;
+    TPtiKeyboardType physicalQwertyKbType;    
+    GetPhysicalKeyboardTypesL( physicalItutKbType, physicalQwertyKbType );
 
-    // Create structure for holding characters<-->key mappings
-    CreateKeyMappingL( EPredictiveItuT );
-    CreateKeyMappingL( EPredictiveQwerty );
+    iItutKeyboardType = EPtiKeyboard12Key; // We want to support Virtual Itu-T in most devices
+    CreateKeyMappingL( EPredictiveItuT ); // Create structure for holding characters<-->key mappings
+    if (iItutKeys.Count() == 0)
+        {
+        iItutKeyboardType = EPtiKeyboardNone;
+        }
+
+    iQwertyKeyboardType = physicalQwertyKbType;
+    if (physicalQwertyKbType != EPtiKeyboardNone)
+        {
+        CreateKeyMappingL( EPredictiveQwerty ); // Create structure for holding characters<-->key mappings
+        if (iQwertyKeys.Count() == 0)
+            {
+            iQwertyKeyboardType = EPtiKeyboardNone;
+            }
+        }
+
+    // Set the Default Predictive keyboard mode. If Qwerty keyboard exists, it is always physical.
+    iPredictiveDefaultKeyboardMode =
+        (IsItutPredictiveAvailable() && physicalItutKbType != EPtiKeyboardNone) || !IsQwertyPredictiveAvailable() ?
+            EPredictiveItuT : EPredictiveQwerty;
+
+    PRINT1 ( _L("CPcsKeyMap::ConstructL: ITU-T Keyboard chosen for Predictive Search = %d"), iItutKeyboardType );
+    PRINT1 ( _L("CPcsKeyMap::ConstructL: QWERTY Keyboard chosen for Predictive Search = %d"), iQwertyKeyboardType );
 
     // Sets attribute for holding info if "0" and " " are on the same key
     // Needed for decision if the "0" should be considered as a possible separator
@@ -146,6 +169,24 @@ CPcsKeyMap::~CPcsKeyMap()
     iQwertyKeys.Close();
 
     PRINT ( _L("End CPcsKeyMap::~CPcsKeyMap") );
+    }
+
+// ----------------------------------------------------------------------------
+// CPcsKeyMap::IsItutPredictiveAvailable
+// 
+// ----------------------------------------------------------------------------
+TBool CPcsKeyMap::IsItutPredictiveAvailable() const
+    {
+    return ( iItutKeyboardType != EPtiKeyboardNone );
+    }
+
+// ----------------------------------------------------------------------------
+// CPcsKeyMap::IsQwertyPredictiveAvailable
+// 
+// ----------------------------------------------------------------------------
+TBool CPcsKeyMap::IsQwertyPredictiveAvailable() const
+    {
+    return ( iQwertyKeyboardType != EPtiKeyboardNone );
     }
 
 // ----------------------------------------------------------------------------
@@ -272,9 +313,9 @@ void CPcsKeyMap::CheckPotentialErrorConditions(const RArray<TInt>& aPoolIndexArr
                                                const RArray<TPtiKey>& aPtiKeys,
                                                const RPointerArray<TKeyMappingData>& aKeyMappings) const
     {
-    PRINT ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: ===================================================") );
-    PRINT ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: Checking potential error conditions") );
-    PRINT ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: ---------------------------------------------------") );
+    PRINT ( _L("CPcsKeyMap::CheckPotentialErrorConditions: ===================================================") );
+    PRINT ( _L("CPcsKeyMap::CheckPotentialErrorConditions: Checking potential error conditions") );
+    PRINT ( _L("CPcsKeyMap::CheckPotentialErrorConditions: ---------------------------------------------------") );
 
     _LIT(KTextCharArr0, "is single char");
     _LIT(KTextCharArr1, "has \"UI\" priority");
@@ -292,14 +333,14 @@ void CPcsKeyMap::CheckPotentialErrorConditions(const RArray<TInt>& aPoolIndexArr
             {
             if ( KErrNotFound != aKeyMappings[aPoolIndexArr[i]]->iKeyMapCharArr[j].Find((TUint) aChar) )
                 {
-                PRINT5 ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: Char '%c' (0x%04X) %S for pool %d with key '%c'"),
+                PRINT5 ( _L("CPcsKeyMap::CheckPotentialErrorConditions: Char '%c' (0x%04X) %S for pool %d with key '%c'"),
                         (TUint) aChar, (TUint) aChar, &charArrStr[j], aPoolIndexArr[i], aPtiKeys[aPoolIndexArr[i]] );
                 countArr[j]++;
                 }
             }
         }
 
-    PRINT ( _L("CPcsKeyMap::KeyForCharacterMultiMatch: ===================================================") );
+    PRINT ( _L("CPcsKeyMap::CheckPotentialErrorConditions: ===================================================") );
     
 #ifdef __WINS__
     /*
@@ -498,7 +539,7 @@ TInt CPcsKeyMap::PoolIdForKey(const TPtiKey aKey, TKeyboardModes aKbMode)
     // an array which is formed by concatenating QWERTY keys array in the end
     // of the ITU-T keys array.
     TInt poolId = KErrNotFound;
-    if ( aKbMode == EPredictiveItuT && iItutKeys.Count() )
+    if ( aKbMode == EPredictiveItuT && IsItutPredictiveAvailable() )
         {
         poolId = iItutKeys.Find(aKey);
         // IF the key is not found, then it should go to the special pool,
@@ -508,7 +549,7 @@ TInt CPcsKeyMap::PoolIdForKey(const TPtiKey aKey, TKeyboardModes aKbMode)
             poolId = iItutKeys.Count() - 1;
             }
         }
-    else if ( aKbMode == EPredictiveQwerty && iQwertyKeys.Count() )
+    else if ( aKbMode == EPredictiveQwerty && IsQwertyPredictiveAvailable() )
         {
         poolId = iQwertyKeys.Find(aKey);
         // IF the key is not found, then it should go to the special pool,
@@ -538,12 +579,12 @@ TInt CPcsKeyMap::PoolIdForCharacter(const TChar& aChar, TKeyboardModes aKbMode)
     // When selecting pool for non-predictive mode, we use the pool of the
     // default keyboard. The non-predictive matches should be a sub set of the
     // predictive matches of the default keyboard, although strictly speaking,
-    // there' no guarantee for this.
+    // there is no guarantee for this.
     aKbMode = ResolveKeyboardMode( aKbMode, ENonPredictive ); 
 
     TPtiKey key = KeyForCharacterMultiMatch( aChar, aKbMode );
 
-    TInt poolId = (key == EPtiKeyNone) ? KErrNotFound : PoolIdForKey(key, aKbMode);
+    TInt poolId = PoolIdForKey(key, aKbMode);
 
     return poolId;
     }
@@ -563,8 +604,6 @@ TInt CPcsKeyMap::PoolCount()
 // ----------------------------------------------------------------------------
 void CPcsKeyMap::SetSpaceAndZeroOnSameKey()
     {
-    PRINT ( _L("Enter CPcsKeyMap::SetSpaceAndZeroOnSameKey") );
-
     static const TInt KSpace = 0x20; // ASCII for " "
     static const TInt KZero  = 0x30; // ASCII for "0"
 
@@ -585,8 +624,6 @@ void CPcsKeyMap::SetSpaceAndZeroOnSameKey()
     keyZero = KeyForCharacterMultiMatch(charZero, EPredictiveQwerty);
     iSpaceAndZeroOnSameKeyOnQwerty = (keySpace == keyZero && keyZero != EPtiKeyNone);
     PRINT1 ( _L("CPcsKeyMap::iSpaceAndZeroOnSameKeyOnQwerty = %d"), iSpaceAndZeroOnSameKeyOnQwerty );
-
-    PRINT ( _L("CPcsKeyMap::SetSpaceAndZeroOnSameKey") );
     }
 
 // ----------------------------------------------------------------------------
@@ -612,17 +649,18 @@ TBool CPcsKeyMap::GetSpaceAndZeroOnSameKey( TKeyboardModes aKbMode )
     }
 
 // ----------------------------------------------------------------------------
-// CPcsKeyMap::SetupKeyboardTypesL
+// CPcsKeyMap::GetPhysicalKeyboardTypesL
 // Initialise the keyboard type variables
 // ----------------------------------------------------------------------------
-void CPcsKeyMap::SetupKeyboardTypesL()
+void CPcsKeyMap::GetPhysicalKeyboardTypesL( TPtiKeyboardType& aItutKbType,
+                                              TPtiKeyboardType& aQwertyKbType )
     {
     TInt physicalKeyboard = 0;
     CRepository* aknFepRepository = CRepository::NewL( KCRUidAknFep );
     aknFepRepository->Get( KAknFepPhysicalKeyboards, physicalKeyboard );
     delete aknFepRepository;
 
-    PRINT1 ( _L("CPcsKeyMap::SetupKeyboardTypesL: Physical keyboard support flag = 0x%02X"), physicalKeyboard );
+    PRINT1 ( _L("CPcsKeyMap::GetPhysicalKeyboardTypesL: Physical keyboard support flag = 0x%02X"), physicalKeyboard );
 
     // Constants follow the definition of KAknFepPhysicalKeyboards
     const TInt KPtiKeyboard12Key = 0x01;
@@ -632,49 +670,50 @@ void CPcsKeyMap::SetupKeyboardTypesL()
     const TInt KPtiKeyboardHalfQwerty = 0x10;
     const TInt KPtiKeyboardCustomQwerty = 0x20; 
 
-    // Setup ITU-T mode first.
+    // Get ITU-T mode first.
     // Use always 12-key mode since all the supported devices should have at least
     // virtual ITU-T available.
-    iItutKeyboardType = EPtiKeyboard12Key;
-    // TODO: ITU-T type could be set to "none" if device does not have either
-    // virtual keypad or hardware ITU-T available. This could be decided according
-    // some cenrep value, feature flag, device model, or platform version.
-    
-    // Then setup QWERTY mode. On real-life devices there should never
-    // be more than one QWERTY keyboard available but on emulator there can be several.
-    // Use the first one found in the following precedence
-    if ( physicalKeyboard & KPtiKeyboardQwerty3x11 )
+    // It will be set to EPtiKeyboardNone if getting the key list will fail.
+    if ( physicalKeyboard & KPtiKeyboard12Key )
         {
-        iQwertyKeyboardType = EPtiKeyboardQwerty3x11;
-        }
-    else if ( physicalKeyboard & KPtiKeyboardQwerty4x10 )
-        {
-        iQwertyKeyboardType = EPtiKeyboardQwerty4x10;
-        }
-    else if ( physicalKeyboard & KPtiKeyboardQwerty4x12 )
-        {
-        iQwertyKeyboardType = EPtiKeyboardQwerty4x12;
-        }
-    else if ( physicalKeyboard & KPtiKeyboardCustomQwerty )
-        {
-        iQwertyKeyboardType = EPtiKeyboardCustomQwerty;
-        }
-    else if ( physicalKeyboard & KPtiKeyboardHalfQwerty )
-        {
-        iQwertyKeyboardType = EPtiKeyboardHalfQwerty;
+        aItutKbType = EPtiKeyboard12Key;
         }
     else
         {
-        iQwertyKeyboardType = EPtiKeyboardNone;
+        aItutKbType = EPtiKeyboardNone;
         }
     
-    // Set the Default Predictive keyboard mode
-    iPredictiveDefaultKeyboardMode = ( 
-            (physicalKeyboard & KPtiKeyboard12Key) || (iQwertyKeyboardType == EPtiKeyboardNone) ?
-                EPredictiveItuT : EPredictiveQwerty );
-    
-    PRINT1 ( _L("CPcsKeyMap::SetupKeyboardTypesL: ITU-T Keyboard chosen for Predictive Search = %d"), iItutKeyboardType );
-    PRINT1 ( _L("CPcsKeyMap::SetupKeyboardTypesL: QWERTY Keyboard chosen for Predictive Search = %d"), iQwertyKeyboardType );
+    // Then get QWERTY mode. On real-life devices there should never
+    // be more than one QWERTY keyboard available but on emulator there can be several.
+    // Use the first one found in the following precedence
+    // It will be set to EPtiKeyboardNone if getting the key list will fail.
+    if ( physicalKeyboard & KPtiKeyboardQwerty3x11 )
+        {
+        aQwertyKbType = EPtiKeyboardQwerty3x11;
+        }
+    else if ( physicalKeyboard & KPtiKeyboardQwerty4x10 )
+        {
+        aQwertyKbType = EPtiKeyboardQwerty4x10;
+        }
+    else if ( physicalKeyboard & KPtiKeyboardQwerty4x12 )
+        {
+        aQwertyKbType = EPtiKeyboardQwerty4x12;
+        }
+    else if ( physicalKeyboard & KPtiKeyboardCustomQwerty )
+        {
+        aQwertyKbType = EPtiKeyboardCustomQwerty;
+        }
+    else if ( physicalKeyboard & KPtiKeyboardHalfQwerty )
+        {
+        aQwertyKbType = EPtiKeyboardHalfQwerty;
+        }
+    else
+        {
+        aQwertyKbType = EPtiKeyboardNone;
+        }
+        
+    PRINT1 ( _L("CPcsKeyMap::GetPhysicalKeyboardTypesL: Physical ITU-T Keyboard = %d"), aItutKbType );
+    PRINT1 ( _L("CPcsKeyMap::GetPhysicalKeyboardTypesL: Physical QWERTY Keyboard = %d"), aQwertyKbType );
     }
 
 // ----------------------------------------------------------------------------
@@ -1116,53 +1155,45 @@ void CPcsKeyMap::GetPredictiveKeyboardData( TKeyboardModes aKbMode,
     PRINT1 ( _L("CPcsKeyMap::GetPredictiveKeyboardData: aKbMode=%d "), aKbMode );
     
     // EPredictiveItuT or EPredictiveQwerty mode to ENonPredictive mode if keyboard is not mapped
-    if ( aKbMode == EPredictiveItuT && iItutKeyboardType == EPtiKeyboardNone )
+    if ( aKbMode == EPredictiveItuT && !IsItutPredictiveAvailable() )
         {
-        aKbMode = ENonPredictive;    
+        aKbMode = ENonPredictive;
         }
-    if ( aKbMode == EPredictiveQwerty && iQwertyKeyboardType == EPtiKeyboardNone )
+    if ( aKbMode == EPredictiveQwerty && !IsQwertyPredictiveAvailable() )
         {
-        aKbMode = ENonPredictive;    
+        aKbMode = ENonPredictive;
         }
 
     // Get Predictive Keyboard Data
     switch (aKbMode)
         {
         case EPredictiveItuT:
-            {
             aPtiKeys = &iItutKeys;
             aKeyMappings = &iItutKeyMaps;
             aKbType = iItutKeyboardType;
             break;
-            }
 
         case EPredictiveQwerty:
-            {
             aPtiKeys = &iQwertyKeys;
             aKeyMappings = &iQwertyKeyMaps;
             aKbType = iQwertyKeyboardType;
             break;
-            }
 
         case ENonPredictive:
-            {
             aPtiKeys = NULL;
             aKeyMappings = NULL;
             aKbType = EPtiKeyboardNone;
             break;
-            }
 
         // EPredictiveDefaultKeyboard must have been resolved previously
         // to EPredictiveItuT or EPredictiveQwerty mode
         case EPredictiveDefaultKeyboard: 
         default:
-            {
             aPtiKeys = NULL;
             aKeyMappings = NULL;
             aKbType = EPtiKeyboardNone;
             __ASSERT_DEBUG( EFalse, Panic( EPanic_InvalidKeyboardType ) );
             break;
-            }
         }
     }
 

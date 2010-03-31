@@ -60,8 +60,8 @@
 #include <aknPopup.h>
 
 // For checking mailbox accounts
-#include <EmailInterfaceFactory.h>
-#include <MEmailMailbox.h>
+#include <emailinterfacefactory.h>
+#include <memailmailbox.h>
 
 // Debugging headers
 #include <Pbk2Debug.h>

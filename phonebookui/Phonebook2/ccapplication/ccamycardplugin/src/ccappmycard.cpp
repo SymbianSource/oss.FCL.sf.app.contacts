@@ -576,8 +576,17 @@ TInt CCCAppMyCard::CreateMyCardContact( TAny* aPtr )
         TPbk2ContactEditorParams::EOwnContact ) );
 	
 	if( err != KErrNone )
-        {
+        {        
         self->iPlugin.HandleError( err );
+        
+        if( !self->iMyCard )
+            {
+            self->iCloseCallBack->Call();
+            }
+        else
+            {
+            self->LoadContact();
+            }
         }
 	
 	return err;
@@ -603,11 +612,17 @@ void CCCAppMyCard::LaunchContactEditorL( TUint32 aFlags )
 		}
 	else if( aFlags & TPbk2ContactEditorParams::EModified )
 		{
-		// focused field
-		field = iMyCardContact->Fields().FieldAtLC( iFocusedFieldIndex );
+        if( iFocusedFieldIndex >= KErrNone )
+            {
+            // focused field
+            field = iMyCardContact->Fields().FieldAtLC( iFocusedFieldIndex ); 
+            }
+        				
 		// pass current store contact, ownership is taken
 		contact = iMyCardContact;
-		iMyCardContact = NULL;
+		iMyCardContact = NULL;		
+		delete iPresentationContact;
+		iPresentationContact = NULL;		
 		}
 	// params for the editor
 	TPbk2ContactEditorParams params( aFlags, field, NULL, this );
@@ -657,21 +672,34 @@ void CCCAppMyCard::EditContactL( TInt aFocusedFieldIndex )
 void CCCAppMyCard::ContactEditingComplete( MVPbkStoreContact* aEditedContact )
 	{
     // create link of mycard
-    MVPbkContactLink* link = NULL;
-    TRAPD( err, 
-        link = aEditedContact->CreateLinkLC();   
-        CleanupStack::Pop(); ); //link
+    MVPbkContactLink* link = NULL;       
     
-    if( !err )
+    TRAPD( err,
         {
+        link = aEditedContact->CreateLinkLC(); 
+        
+        if( link )
+            {
+            CleanupStack::Pop(); //link
+            }
+        } );
+        
+    delete aEditedContact; // ignore given contact
+    
+    if( link && err == KErrNone )
+        {
+        
         delete iMyCard;
         iMyCard = link;
         
         // reload mycard to get rid of the empty template fields
         LoadContact();
         }
+    else if( !iMyCard )
+        {
+        iCloseCallBack->Call();
+        }               
     
-    delete aEditedContact; // ignore given contact
     iDialogIsRunning = EFalse;
 	}
 
@@ -774,7 +802,12 @@ void CCCAppMyCard::ContactOperationCompleted( TContactOpResult aResult )
             TPbk2ContactEditorParams::EOwnContact) );
     	if( err != KErrNone )
 			{
+            LoadContact();
             iPlugin.HandleError( err );
+            if( !iMyCard )
+                {
+                iCloseCallBack->Call();
+                }                
 			}
     	}    
     else if( aResult.iOpCode == MVPbkContactObserver::EContactDelete )

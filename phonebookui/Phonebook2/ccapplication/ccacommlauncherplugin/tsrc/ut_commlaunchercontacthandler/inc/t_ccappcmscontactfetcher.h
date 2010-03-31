@@ -46,7 +46,11 @@ enum TCmsContactIdentifierType
     //ECmsPackedContactLink,
     //ECmsContactId
     };
+
+// -----------------------------------------------------------------------------
+// CCCAppCmsContactFetcherWrapper
 // dummy class
+// -----------------------------------------------------------------------------
 class CCCAppCmsContactFetcherWrapper : public CBase
     {
 public:
@@ -93,10 +97,13 @@ public:
             VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aContactAction);
     
     virtual void RefetchContactL();
+    TBool CCCAppCmsContactFetcherWrapper::IsTopContact();
+        
     RPointerArray<MCCAppContactFieldDataObserver> iObservers;
     CCmsContactFieldInfo* iContactFieldInfo;
     RPointerArray<CCmsContactField> iFieldArray;
     TBool iContactStore_called;
+    TBool iTopContact;
     };    
     
     

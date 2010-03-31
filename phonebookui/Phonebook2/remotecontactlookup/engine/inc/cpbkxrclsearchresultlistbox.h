@@ -163,6 +163,12 @@ private: // data
     
     };
 
+
+
+//This strange old override below (class CPbkxRclSearchResultListView) causes on hardware empty 
+//list text not to draw. Most likely no need for this kind override at all.
+//To fix draw this override is not used (however is part of pbk2rclengine api
+//and therefore not removed completely)
 ////////////////////////////////////////////////////////////////////////////
 // CPbkxRclSearchResultListView
 ////////////////////////////////////////////////////////////////////////////

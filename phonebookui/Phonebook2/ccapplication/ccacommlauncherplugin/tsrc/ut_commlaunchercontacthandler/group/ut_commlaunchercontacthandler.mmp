@@ -31,17 +31,20 @@ SOURCE          t_commlaunchercontacthandler.cpp
 SOURCE          t_commlaunchercontacthandlerCases.cpp
 SOURCE          t_testsingleton.cpp
 SOURCE          t_ccappcmscontactfetcher.cpp
+SOURCE          ccappcommlauncherheaders.cpp
 
 // tested class
 SOURCE          ../../../src/ccappcommlaunchercontacthandler.cpp
 
 
 USERINCLUDE     ../inc 
-
+USERINCLUDE     ../../../../../../../ccservices/cmsservices/cmsengine/inc
+USERINCLUDE     ../../../../../../phonebook/inc
 
 APP_LAYER_SYSTEMINCLUDE 
 SYSTEMINCLUDE   /epoc32/include/ecom
 SYSTEMINCLUDE   ../../../../inc
+SYSTEMINCLUDE   ../../../../../inc 
 
 
 LIBRARY         euser.lib

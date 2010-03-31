@@ -146,6 +146,8 @@ class CPbk2AddressSelect : public CBase,
         void SetSelectedFieldL(
                 const MVPbkStoreContactField* aField );
         HBufC* LoadDialogTitleL();
+        HBufC* GetVoiceAndVOIPCallDialogTitleL();
+        TBool IsVoiceCallExistL();
         TBool AreGeoFieldsForAddressesL();
         HBufC* GetVOIPDialogTitleL();
 

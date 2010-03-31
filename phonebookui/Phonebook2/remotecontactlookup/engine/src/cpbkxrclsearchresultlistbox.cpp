@@ -145,7 +145,14 @@ void CPbkxRclSearchResultListBox::CreateItemDrawerL()
 //
 CListBoxView* CPbkxRclSearchResultListBox::MakeViewClassInstanceL()
     {
-    return ( new (ELeave) CPbkxRclSearchResultListView() );
+
+//This strange old override below (returning class CPbkxRclSearchResultListView) causes on hardware empty 
+//list text not to draw. Most likely no need for this kind override at all.
+//To fix draw this override is not used (however is part of pbk2rclengine api
+//and therefore not removed completely)
+//    return ( new (ELeave) CPbkxRclSearchResultListView() );
+
+    return ( new (ELeave) CAknColumnListBoxView() );    
     }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -254,6 +261,12 @@ void CPbkxRclSearchResultItemDrawer::DrawItemText(
     TRAP_IGNORE( AknsUtils::SetAvkonSkinEnabledL( skinEnabled ) );
     }
 
+
+
+//This strange old override below (CPbkxRclSearchResultListView) causes on hardware empty 
+//list text not to draw. Most likely no need for this kind override at all.
+//To fix draw this override is not used (however is part of pbk2rclengine api
+//and therefore not removed completely)
 ////////////////////////////////////////////////////////////////////////////
 // CPbkxRclSearchResultListView
 ////////////////////////////////////////////////////////////////////////////

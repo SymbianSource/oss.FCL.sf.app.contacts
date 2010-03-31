@@ -54,9 +54,21 @@ const TInt KTestManyContactFieldItems = 8;
 const TUid KTestPropertyCat={0x10012349};  
 enum TTestPropertyKeys 
     {
-	ETestCaseStateProperty = 1,
+    ETestCaseStateProperty = 1,
     ETestParameterTypeProperty
     };    
+
+enum TCmsContactStore
+    {    
+    ECmsContactStorePbk = 0,
+    ECmsContactStoreSim,
+    ECmsContactStoreSdn
+    };
+
+enum TCmsContactIdentifierType
+    {    
+    ECmsPackedContactLinkArray = 0
+    };
 
 // used in CCmsContactFieldItem creation
 const TInt PHONE = 1;
@@ -68,10 +80,10 @@ const TInt EMAIL2 = 6;
 const TInt VOIP2 = 7;
 const TInt NAME = 8;
 
-///////////////////////////////////////////////////
-// Dummy class interface
+// -----------------------------------------------------------------------------
+// Dummy class 
 // MCCAParameter
-///////////////////////////////////////////////////
+// -----------------------------------------------------------------------------
 class MCCAParameter
     {
 
@@ -123,12 +135,12 @@ class MCCAParameter
 
 
     };
-///////////////////////////////////////////////////
+// -----------------------------------------------------------------------------
 // Dummy class 
 // CCCAParameter
-///////////////////////////////////////////////////
+// -----------------------------------------------------------------------------
 class CCCAParameter : public CBase, 
-					  public MCCAParameter
+                      public MCCAParameter
     {
 
 public:
@@ -180,7 +192,8 @@ public:
         {
         // get property using category and key
         TInt type( MCCAParameter::EContactNone );
-        TInt err = RProperty::Get( KTestPropertyCat, ETestParameterTypeProperty, type );
+        TInt err = RProperty::Get( 
+                KTestPropertyCat, ETestParameterTypeProperty, type );
 
         if ( KErrNone == err )
             {
@@ -222,21 +235,12 @@ public:
     HBufC* iContactData;    
 
     };
-
-
-/** 
-* Contact identifier.
-*/
-enum TCmsContactIdentifierType
-    {    
-    ECmsPackedContactLinkArray = 0
-    };
     
     
-///////////////////////////////////////////////////
+// -----------------------------------------------------------------------------
 // Dummy class 
-// CCCAParameter
-///////////////////////////////////////////////////
+// CCmsContactBase
+// -----------------------------------------------------------------------------
 class CCmsContactBase : public CBase
     {
     public:
@@ -250,7 +254,10 @@ class CCmsContactBase : public CBase
     };
 
     
-// dummy class
+// -----------------------------------------------------------------------------
+// Dummy class 
+// CCmsContactField
+// -----------------------------------------------------------------------------
 class CCmsContactField : public CCmsContactBase
     {
     public:
@@ -332,10 +339,10 @@ class CCmsContactField : public CCmsContactBase
         TInt iType;
     };
 
-///////////////////////////////////////////////////
+// -----------------------------------------------------------------------------
 // Dummy class 
-// CCCAParameter
-///////////////////////////////////////////////////
+// CCmsContactFieldInfo
+// -----------------------------------------------------------------------------
 class CCmsContactFieldInfo : public CCmsContactBase
     {
 public:
@@ -350,7 +357,8 @@ public:
         iArray = new (ELeave) RArray<CCmsContactFieldItem::TCmsContactField>();
         TInt testCase( 0 );
         // get property using category and key
-        TInt err = RProperty::Get( KTestPropertyCat, ETestCaseStateProperty, testCase );
+        TInt err = RProperty::Get( 
+                KTestPropertyCat, ETestCaseStateProperty, testCase );
 
         if ( KTestOneContactFieldItem == testCase
              || KTestCompleteOpenWithError == testCase
@@ -393,10 +401,10 @@ public:
     };
    
 
-///////////////////////////////////////////////////
+// -----------------------------------------------------------------------------
 // Dummy class 
-// CCCAParameter
-///////////////////////////////////////////////////
+// RCmsSession
+// -----------------------------------------------------------------------------
 class RCmsSession : public CBase
     {
     public:
@@ -415,21 +423,15 @@ class RCmsSession : public CBase
             };
     };
 
-///////////////////////////////////////////////////
+// -----------------------------------------------------------------------------
 // Dummy class 
 // RCmsContact
-///////////////////////////////////////////////////
-enum TCmsContactStore
-    {    
-    ECmsContactStorePbk = 0,
-    ECmsContactStoreSim,
-    ECmsContactStoreSdn
-    };
+// -----------------------------------------------------------------------------
 
 class RCmsContact : public CBase 
     {
     public:  // New functions
-        
+        RCmsContact() : iTopContact( ETrue ){}
         TInt Open( RCmsSession& /*aSession*/,
                             TInt32 aContactId )
             {
@@ -482,33 +484,48 @@ class RCmsContact : public CBase
               return NULL;
               };
 
-          TBool IsServiceAvailable( VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector /*aContactAction*/ ) const
+          TBool IsServiceAvailable( 
+                  VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector 
+                  /*aContactAction*/ ) const
               {
               return ETrue;
               };
           
           void OrderNotificationsL( 
                       MCmsNotificationHandlerAPI* /*aHandler*/,
-                      CCmsContactFieldItem::TCmsContactNotification /*aNotificationType*/ )
+                      CCmsContactFieldItem::TCmsContactNotification 
+                      /*aNotificationType*/ )
               {
               };
                       
           TCmsContactStore ContactStore() const
               {
               const_cast<TBool&>(iContactStore_called) = ETrue;
+              return ECmsContactStorePbk;
               };
           
           void CancelNotifications( 
-                      CCmsContactFieldItem::TCmsContactNotification /*aNotificationType*/ ) {};
+                      CCmsContactFieldItem::TCmsContactNotification 
+                      /*aNotificationType*/ ) {};
                      
           void DeleteL(){};
           
           ~RCmsContact(){};
           
           TInt GetContactActionFieldCount(
-                  VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector /*aContactAction*/)
+                  VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector 
+                  /*aContactAction*/)
               {
-              return ETrue; //SendReceive( ECmsGetContactActionFieldCount, TIpcArgs( aContactAction ) );
+              return ETrue; 
+              }
+          
+          void SetVoiceCallDefault( TRequestStatus& aStatus ) const
+              {
+              aStatus = KRequestPending;
+              }
+          TBool IsTopContact()
+              {
+              return iTopContact;
               }
 
     public:
@@ -518,6 +535,7 @@ class RCmsContact : public CBase
     TBuf<128> iDesDummy;
     
     TBool iContactStore_called;
+    TBool iTopContact;
     };    
 
 #include "ccacmscontactfetcherwrapper.h"

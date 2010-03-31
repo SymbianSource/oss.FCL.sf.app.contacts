@@ -199,4 +199,6 @@ EXPORTS
 	_ZN26CPbk2MergePhotoConflictDlg4NewLEP16MVPbkBaseContactS1_Pi @ 198 NONAME
 	_ZN29CPbk2GeneralConfirmationQuery9StopQueryEv @ 199 NONAME
 	_ZN21CPbk2NamesListControl26HandleViewForegroundEventLEi @ 200 NONAME
+	_ZN16Pbk2AddressTools22IsAddressPreviewEmptyLER17MVPbkStoreContact17TPbk2FieldGroupId @ 201 NONAME
+	_ZN16Pbk2AddressTools32MapVPbkFieldTypeToAddressGroupIdEPK14MVPbkFieldType @ 202 NONAME
 

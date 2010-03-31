@@ -198,6 +198,11 @@ public:
      * Is contactor service busy.
      */
     IMPORT_C TBool IsBusy() const;
+    
+   /**
+    * Is call item selected.
+    */
+    IMPORT_C TBool IsSelected() const;
 
 private:
     /**

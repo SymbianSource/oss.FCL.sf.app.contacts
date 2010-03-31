@@ -32,7 +32,8 @@
 #include <CPbk2PresentationContactFieldCollection.h>
 #include <Pbk2Commands.rsg>
 #include <Pbk2CmdExtRes.rsg>
-
+#include <MVPbkContactFieldUriData.h>
+#include <Pbk2AddressTools.h>
 
 #include <txtetext.h>   // CPlainText
 #include <baclipb.h>    // CClipboard
@@ -188,13 +189,35 @@ void CPbk2CopyDetailToClipboardCmd::CopyDetailToClipboardL()
     // Fetch field from current UI control
     const MVPbkBaseContactField* field = iUiControl->FocusedField();
     TPtrC detail;
+    RBuf addText; 
     TVPbkFieldStorageType fieldType = field->FieldData().DataType();
     
     switch(fieldType)
         {
         case EVPbkFieldStorageTypeText:
             {
-            detail.Set(MVPbkContactFieldTextData::Cast(field->FieldData()).Text());
+            const MVPbkFieldType* vPbkFieldType = field->BestMatchingFieldType();
+            TPbk2FieldGroupId groupId = Pbk2AddressTools::MapVPbkFieldTypeToAddressGroupId( vPbkFieldType );
+            if( groupId == EPbk2FieldGroupIdHomeAddress || 
+            	groupId == EPbk2FieldGroupIdCompanyAddress || 
+            	groupId == EPbk2FieldGroupIdPostalAddress ) //the focused field belongs to Address
+            	{             
+                MVPbkStoreContact* vPbkStoreContact = const_cast<MVPbkStoreContact*>( iUiControl->FocusedStoreContact() );
+                //address view is empty
+                if( Pbk2AddressTools::IsAddressPreviewEmptyL(*vPbkStoreContact, groupId) )
+                	{
+                    detail.Set( KNullDesC() ); //KNullDesC will be copied to clipboard
+                	}
+                else //address view is not empty
+                	{
+                    Pbk2AddressTools::GetAddressPreviewLC(*vPbkStoreContact, groupId, addText);
+                    detail.Set( addText );
+                	}
+            	}
+            else //the focused field doesn't belong to Address
+            	{
+                detail.Set(MVPbkContactFieldTextData::Cast(field->FieldData()).Text());
+            	}            
             break;
             }
         case EVPbkFieldStorageTypeDateTime:
@@ -229,7 +252,11 @@ void CPbk2CopyDetailToClipboardCmd::CopyDetailToClipboardL()
         KBeginning, plainText->DocumentLength());
     cb->CommitL();
 
-    CleanupStack::PopAndDestroy(2); // cb, plainText
+    CleanupStack::PopAndDestroy(2); // cb, plainText	
+    if( addText.Length() )
+    	{
+        CleanupStack::PopAndDestroy(&addText);
+    	}
 
     // Show a note
     HBufC* prompt = StringLoader::LoadLC(R_QTN_CCA_INFO_NOTE_COPIED_TO_CLIPBOARD);

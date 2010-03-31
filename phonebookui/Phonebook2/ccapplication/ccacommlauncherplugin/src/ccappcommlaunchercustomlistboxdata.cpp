@@ -50,12 +50,15 @@
 
 
 #include <touchfeedback.h>
+#include <AknSmileyUtils.h>
 // there are 17(!) subcells in qdial grid (0 ... 16)
 const TInt KMaxSubCellIndex = 16 + 1;
 
 // colored tick marks support
 const TInt KColorIconFlag = -1;
 const TInt KColorIconIdx = 0;
+// smiley text place holder
+_LIT( KPlaceHolder, "\xFFF0i" );
 
 /**
  * This class needs to be in .cpp file so that we do not accidentally make it
@@ -76,7 +79,8 @@ NONSHARABLE_CLASS(CCCAppCommLauncherCustomListBoxDataExtension) : public CActive
 		public MAknPictographAnimatorCallBack,
 		public MCoeForegroundObserver,
 		public MAknsEffectAnimObserver,
-		public MListBoxItemChangeObserver
+        public MListBoxItemChangeObserver,
+        public MAknSmileyObserver
 	{
 public:
 	enum TFlag
@@ -120,6 +124,7 @@ public:
 		TAknWindowLineLayout iGraphicLayout;
 		TInt iSubCellType;
 		TInt iConditionValue; // used with conditional layouts for not always drawn subcells
+        TBool iSmileyCell;
 		};
 
 	SRowAndSubCell& At(TInt aArrayIndex);
@@ -170,6 +175,11 @@ public:
 
 	TBool DrawPressedDownEffectL(MAknsSkinInstance* aSkin, CWindowGc& aGc,
 			const TRect& aOutRect, const TRect& aInnerRect) const;
+    void DrawSmileyWithText( CWindowGc& aGc, const TDesC& aSmileyText, 
+                             const TAknLayoutText& aLayout, 
+                             TBool aUseLogicalToVisualConversion, 
+                             const TRgb &aColor);
+    TInt ConvertTextToSmiley( TDes& aText );
 private:
 	// New internal methods
 	TBool DrawHighlightBackground(CFbsBitGc& aGc);
@@ -191,7 +201,9 @@ public:
 
 	TInt FindSubCellExtIndex(TInt& aArrayIndex, TInt aSubCell) const;
 	TBool SubCellLayoutAlignment(TInt aSubCellIndex) const;
-
+public: // from MAknSmileyObserver
+    void SmileyStillImageLoaded( CAknSmileyIcon* aSmileyIcon );
+    void SmileyAnimationChanged( CAknSmileyIcon* aSmileyIcon );
 private:
 	// From MAknPictographAnimatorCallBack
 	void DrawPictographArea();
@@ -261,6 +273,8 @@ public:
 
 	TRect iMarginRect;
 	TBool iKineticScrolling;
+    CAknSmileyManager* iSmileyMan;
+    TSize iSmileySize; // last set simley size
 	};
 
 /**
@@ -317,6 +331,7 @@ CCCAppCommLauncherCustomListBoxDataExtension::~CCCAppCommLauncherCustomListBoxDa
 	// Stop receiving foreground events
 	CCoeEnv* env = CCoeEnv::Static();
 	env->RemoveForegroundObserver(*this);
+    delete iSmileyMan;
 
 	delete iRowAndSubCellArray;
 	iRowAndSubCellArray = NULL;
@@ -394,6 +409,7 @@ void CCCAppCommLauncherCustomListBoxDataExtension::AddSLSubCellL(TInt aSubCell)
 	subcell.iGraphicLayout = NULL;
 	subcell.iSubCellType = 0;
 	subcell.iConditionValue = -1;
+    subcell.iSmileyCell = EFalse;
 
 	TKeyArrayFix key(0, ECmpTInt32);
 	iSLSubCellArray->InsertIsqL(subcell, key);
@@ -1100,6 +1116,16 @@ TBool CCCAppCommLauncherCustomListBoxDataExtension::SubCellLayoutAlignment(
 		return (ETrue);
 	return (iSubCellExtArray->At(index).iLayoutAlign);
 	}
+void CCCAppCommLauncherCustomListBoxDataExtension::SmileyStillImageLoaded(
+    CAknSmileyIcon* /*aSmileyIcon*/)
+    {
+    iControl->DrawDeferred();
+    }
+
+void CCCAppCommLauncherCustomListBoxDataExtension::SmileyAnimationChanged( 
+    CAknSmileyIcon* /*aSmileyIcon*/ )
+    {
+    }
 
 ///////////handling TSubCellExt,end
 
@@ -1151,6 +1177,31 @@ TBool CCCAppCommLauncherCustomListBoxDataExtension::DrawPressedDownEffectL(
 	return AknsDrawUtils::DrawFrame(aInstance, aGc, aOutRect, aInnerRect,
 			KAknsIIDQsnFrListPressed, KAknsIIDQsnFrListCenterPressed);
 	}
+void CCCAppCommLauncherCustomListBoxDataExtension::DrawSmileyWithText( CWindowGc& aGc,
+                                                             const TDesC& aSmileyText,
+                                                             const TAknLayoutText& aLayout,
+                                                             TBool aUseLogicalToVisualConversion,
+                                                             const TRgb& aColor )
+    {
+    //__ASSERT_DEBUG( iSmileyMan, Panic(EAknPanicObjectNotFullyConstructed));
+    TInt l = Min( aLayout.Font()->TextWidthInPixels(KPlaceHolder), 
+                  aLayout.Font()->HeightInPixels() );
+    TSize s(l,l);
+    if ( iSmileySize != s )
+        {
+        iSmileyMan->SetSize( s );
+        iSmileySize = s;
+        }
+    aGc.SetPenColor( aColor ); // SmileyManager's DrawText does not accept aColor...
+    iSmileyMan->DrawText( aGc, aSmileyText, aLayout, aUseLogicalToVisualConversion );
+    }
+TInt CCCAppCommLauncherCustomListBoxDataExtension::ConvertTextToSmiley( TDes& aText)
+    {
+    //__ASSERT_DEBUG( iSmileyMan, Panic(EAknPanicObjectNotFullyConstructed));
+    TInt count = 0;
+    TRAPD( err, count = iSmileyMan->ConvertTextToCodesL( aText )) ;
+    return err == KErrNone ? count : err;
+    }
 
  CCoeControl *CCCAppCommLauncherCustomListBoxData::Control() const
 	{
@@ -2001,8 +2052,16 @@ void CCCAppCommLauncherCustomListBoxData::DrawFormattedSimple(
             SetUnderlineStyle( aProperties, aGc, subcell );
 
             // * 2 == leave some room for marquee
-            const TInt maxlen( KMaxColumnDataLength * 2 ); 
+            const TInt maxlen( KMaxColumnDataLength * 3 );
             TBuf<maxlen> convBuf = text.Left(maxlen);
+            TBool smileyDraw = EFalse;
+            // do smiley convert before clipping. don't worry marquee now.            
+            if ( iExtension->iSmileyMan && 
+                 iExtension->AtSL(SCindex).iSmileyCell &&
+                 iExtension->ConvertTextToSmiley( convBuf ) > 0 )
+                {
+                smileyDraw = ETrue;
+                }
 
             // Note that this potentially modifies the text so its lenght in pixels
             // might increase. Therefore, this should always be done before
@@ -2067,9 +2126,16 @@ void CCCAppCommLauncherCustomListBoxData::DrawFormattedSimple(
 				marquee->Stop();
 				}
 
-			textLayout.DrawText( aGc, convBuf, bidiConv, color );
-			}
-
+                if ( smileyDraw )
+                    {
+                    TRect tr(textLayout.TextRect());
+                    iExtension->DrawSmileyWithText( aGc, convBuf, textLayout, bidiConv, color );
+                    }
+                else
+                    {
+                textLayout.DrawText( aGc, convBuf, bidiConv, color );
+                    }
+                }
 		if ( iExtension->iPictoInterface )
 			{
 
@@ -2142,6 +2208,7 @@ void CCCAppCommLauncherCustomListBoxData::DrawFormattedSimple(
 
 		if( !iIconArray )
 			{
+            ++ subcell;
 			continue;
 			}
 
@@ -3978,6 +4045,24 @@ CEikListBox* CCCAppCommLauncherCustomListBoxData::ListBox() const
 		}
 	return NULL;
 	}
+void CCCAppCommLauncherCustomListBoxData::InitSmileyL()
+    {
+    //__ASSERT_DEBUG( iExtension, Panic( EAknPanicObjectNotFullyConstructed ));
+    if ( iExtension && !iExtension->iSmileyMan )
+        {
+        iExtension->iSmileyMan = CAknSmileyManager::NewL( iExtension );
+        }
+    }
 
+void CCCAppCommLauncherCustomListBoxData::SetSmileySubCellL( TInt aSubCell )
+    {    
+    //__ASSERT_DEBUG( iExtension, Panic( EAknPanicObjectNotFullyConstructed ));
+    TInt index = 0;
+    if ( iExtension )
+        {
+        iExtension->FindSLSubCellIndexOrAddL( index,aSubCell );
+        iExtension->AtSL(index).iSmileyCell = ETrue;
+        }
+    }
 // End of File
 

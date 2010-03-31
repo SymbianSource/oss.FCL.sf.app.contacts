@@ -98,7 +98,21 @@ class CPcsAlgorithm1Utils : public CBase
          * Check if the input URI is of contact search in a group template form
          */
         static TBool IsGroupUri(TDesC& aURI);
-                                    
+
+        /**
+         * Constructs a bit pattern using the required/supported data fields
+         * For example, 6, 4 and 27 are supported fields <-- 00000111
+         *              6 and 4 are required fields      <-- 00000011
+         * Bit pattern returned is 00000011.
+         */
+        static TUint8 FilterDataFieldsL(const RArray<TInt>& aRequiredDataFields,
+                                        const RArray<TInt>& aSupportedDataFields);
+    
+        /**
+         * Create upper-case match sequence buffer from matching part and append it to
+         * array unless there's equal sequence already present.
+         */
+        static void AppendMatchToSeqL( RPointerArray<TDesC>& aMatchSeq, const TDesC& aMatch );
 };
 
 

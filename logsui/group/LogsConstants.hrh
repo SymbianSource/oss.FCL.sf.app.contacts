@@ -25,7 +25,7 @@
 //  CONSTANTS  
 
 /// phone number max length  NOTE! In LOGWRAP.H KLogMaxNumberLength = 100;
-#define KLogsPhoneNumberMaxLen 48
+#define KLogsPhoneNumberMaxLen 100
 
 /// Sip uri max length  NOTE! In LOGWRAP.H KLogMaxNumberLength = 100; so 
 /// KLogsSipUriMaxLen should at least be the same

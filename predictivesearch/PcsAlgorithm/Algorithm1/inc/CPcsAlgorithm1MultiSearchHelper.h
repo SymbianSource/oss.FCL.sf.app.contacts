@@ -102,15 +102,6 @@ class CPcsAlgorithm1MultiSearchHelper : public CBase
 
     private:
     
-         /**
-          * Constructs a bit pattern using the required/supported data fields
-          * For example, 6, 4 and 27 are supported fields <-- 00000111
-          *              6 and 4 are required fields      <-- 00000011
-          * Bit pattern returned is 00000011.
-          */
-         TUint8 FilterDataFieldsL(RArray<TInt>& aRequiredDataFields,
-                                  RArray<TInt>& aSupportedDataFields);
-
         /**
 		 * Set the bits corresponding to word matches
 		 *
@@ -133,11 +124,6 @@ class CPcsAlgorithm1MultiSearchHelper : public CBase
          * Resets iWordMatches member variable
          */
         void ClearWordMatches();
-
-        /**
-         * Appends uppercased match to sequence, not allowing duplicates.
-         */
-        void AppendMatchToSeqL( RPointerArray<TDesC>& aMatchSeq, const TDesC& aMatch  );
         
     public:
         

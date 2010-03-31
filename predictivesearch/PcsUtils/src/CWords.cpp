@@ -65,7 +65,7 @@ void CWords::ConstructL(const TDesC& aText)
                 }
             const TInt len = end-beg;
             // Append found word to the array
-            User::LeaveIfError(iWords.Append(aText.Mid(beg,len)));
+            iWords.AppendL( aText.Mid(beg,len) );
             // Scan for next word
             beg = end;
             }
@@ -74,7 +74,7 @@ void CWords::ConstructL(const TDesC& aText)
     if (iWords.Count()==0 && textLength > 0)
         {
         // aText is all word separator characters -> make a "word" out of those
-        User::LeaveIfError(iWords.Append(aText));
+        iWords.AppendL(aText);
         }
     }
 

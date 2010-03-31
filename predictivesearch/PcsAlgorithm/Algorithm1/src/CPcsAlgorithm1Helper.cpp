@@ -132,7 +132,9 @@ void  CPcsAlgorithm1Helper::SearchSingleL( const CPsSettings& aSettings,
           dsIndex++ )
     {
         RPointerArray<CPsData> *temp = new (ELeave) RPointerArray<CPsData> ();
-        iSearchResultsArr.Append(temp);
+        CleanupStack::PushL( temp );
+        iSearchResultsArr.AppendL( temp );
+        CleanupStack::Pop( temp );
 
         // Get the contents for this data store
         TInt arrayIndex = iAlgorithm->GetCacheIndex(*(dataStores[dsIndex]));
@@ -146,8 +148,8 @@ void  CPcsAlgorithm1Helper::SearchSingleL( const CPsSettings& aSettings,
         cache->GetDataFields(supportedDataFields);
 
         // Get the filtered data fields for this data store
-        TUint8 filteredDataMatch = FilterDataFieldsL(requiredDataFields,
-                                                     supportedDataFields);
+        TUint8 filteredDataMatch = CPcsAlgorithm1Utils::FilterDataFieldsL(requiredDataFields,
+                                                                          supportedDataFields);
 
         // Perform filtering
         FilterResultsSingleL(filterHelper,
@@ -233,6 +235,14 @@ void  CPcsAlgorithm1Helper::FilterResultsSingleL(CPcsAlgorithm1FilterHelper* aAl
         CPcsPoolElement* poolElement = static_cast<CPcsPoolElement*>(aSearchSet[index]);
         CPsData* psData = poolElement->GetPsData();
         psData->ClearDataMatches();
+        
+        // Skip this contact if performing group search and this contact doesn't
+        // belong to the group
+        if ( aIsSearchInGroup && aContactsInGroup.Find(psData->Id()) == KErrNotFound )
+            {
+            continue;
+            }
+        
         RPointerArray<TDesC> tempMatchSeq;
         CleanupResetAndDestroyPushL( tempMatchSeq );
         TBool isAdded = EFalse;
@@ -271,20 +281,8 @@ void  CPcsAlgorithm1Helper::FilterResultsSingleL(CPcsAlgorithm1FilterHelper* aAl
 
                         // Extract matched character sequence
                         TInt len = queryAsDes.Length();
-                        HBufC* seq = HBufC::NewLC(len);
-                        *seq = token.Mid(0, len);
-                        seq->Des().UpperCase();
-
-                        TIdentityRelation<TDesC> rule(CPcsAlgorithm1Utils::CompareExact);
-                        if ( tempMatchSeq.Find(seq, rule) == KErrNotFound )
-                        {
-                            tempMatchSeq.Append(seq);
-                            CleanupStack::Pop(seq);
-                        }
-                        else
-                        {
-                            CleanupStack::PopAndDestroy(seq);
-                        }
+                        TPtrC seq = token.Left(len);
+                        CPcsAlgorithm1Utils::AppendMatchToSeqL( tempMatchSeq, seq );
                     }
                     // Next word
                     token.Set(lex.NextToken());
@@ -295,17 +293,7 @@ void  CPcsAlgorithm1Helper::FilterResultsSingleL(CPcsAlgorithm1FilterHelper* aAl
         // Add the result
         if ( isAdded )
         {
-            if ( aIsSearchInGroup )
-            {
-                if ( aContactsInGroup.Find(psData->Id()) != KErrNotFound )
-                {
-                    aAlgorithmFilterHelper->AddL(psData,tempMatchSeq);
-                }
-            }
-            else
-            {
-                aAlgorithmFilterHelper->AddL(psData,tempMatchSeq);
-            }
+            aAlgorithmFilterHelper->AddL(psData,tempMatchSeq);
         }
 
         // Cleanup the match sequence array as
@@ -366,20 +354,8 @@ void  CPcsAlgorithm1Helper::SearchMatchSeqL(CPsQuery& aPsQuery,
             aMatchLocation.Append(tempLocation);
 
             // Add the sequence to the match sequence
-            HBufC* seq = HBufC::NewLC(len);
-            *seq = token.Mid(0, len);
-            seq->Des().UpperCase();
-
-            TIdentityRelation<TDesC> rule(CPcsAlgorithm1Utils::CompareExact);
-            if ( aMatchSet.Find(seq, rule) == KErrNotFound )
-            {
-                aMatchSet.Append(seq);
-                CleanupStack::Pop();
-            }
-            else
-            {
-                CleanupStack::PopAndDestroy();
-            }
+            TPtrC seq = token.Left(len);
+            CPcsAlgorithm1Utils::AppendMatchToSeqL( aMatchSet, seq );
         }
 
         // Next word
@@ -402,33 +378,6 @@ void  CPcsAlgorithm1Helper::SortSearchSeqsL(RPointerArray<TDesC>& aSearchSeqs)
     // Sort the search seqs
     TLinearOrder<TDesC> rule( CPcsAlgorithm1Utils::CompareCollate );
     aSearchSeqs.Sort(rule);
-}
-
-// ----------------------------------------------------------------------------
-// CPcsAlgorithm1Helper::FilterDataFieldsL()
-// Constructs a bit pattern using the required/supported data fields
-// For example, 6, 4 and 27 are supported fields <-- 00000111
-//              6 and 4 are required fields      <-- 00000011
-// Bit pattern returned is 00000011.
-// ----------------------------------------------------------------------------
-TUint8 CPcsAlgorithm1Helper::FilterDataFieldsL(RArray<TInt>& aRequiredDataFields,
-                                               RArray<TInt>& aSupportedDataFields)
-{
-    TUint8 filteredMatch = 0x0;
-
-    for ( TInt i = 0; i < aSupportedDataFields.Count(); i++ )
-    {
-        for ( TInt j = 0; j < aRequiredDataFields.Count(); j++ )
-        {
-            if ( aSupportedDataFields[i] == aRequiredDataFields[j] )
-            {
-                TUint8 val = 1 << i;
-                filteredMatch |= val;
-            }
-        }
-    }
-
-    return filteredMatch;
 }
 
 // End of file
