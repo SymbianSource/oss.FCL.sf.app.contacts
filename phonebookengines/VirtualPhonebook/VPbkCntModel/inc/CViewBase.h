@@ -1,3 +1,4 @@
+// Last Change: 2010-04-05 04:07:52
 /*
 * Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
@@ -49,7 +50,7 @@ NONSHARABLE_CLASS( CViewBase ): public CBase,
                                 public MParentViewForFiltering,
                                 public MVPbkContactViewFiltering,
                                 public MVPbkContactStoreObserver,
-                                protected MContactViewObserver,
+                                public MContactViewObserver,
                                 protected MCustomContactViewObserver
     {
     public: // Destructor
