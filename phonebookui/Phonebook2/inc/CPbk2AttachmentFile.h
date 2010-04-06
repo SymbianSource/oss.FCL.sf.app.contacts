@@ -56,7 +56,7 @@ NONSHARABLE_CLASS(CPbk2AttachmentFile) : public CBase
          *                  @see RFile::Create.
          * @return  A new instance of this class.
          */
-        static CPbk2AttachmentFile* NewL(
+        IMPORT_C static CPbk2AttachmentFile* NewL(
                 const TDesC& aBaseName,
                 RFs& aRfs,
                 TUint aFileMode = EFileStream|EFileShareExclusive|EFileWrite );
@@ -164,7 +164,7 @@ NONSHARABLE_CLASS(CPbk2AttachmentFileArray) :
          *
          * @param aGranularity  Array reallocation granularity.
          */
-        CPbk2AttachmentFileArray(
+        IMPORT_C CPbk2AttachmentFileArray(
                 TInt aGranularity );
 
         /**
