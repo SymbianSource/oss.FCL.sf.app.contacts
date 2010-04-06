@@ -181,7 +181,7 @@ class CPbk2ControlContainerImpl : public CCoeControl,
                 
     public: // From MAknLongTapDetectorCallBack
 
-        void HandleLongTapEventL(
+        IMPORT_C void HandleLongTapEventL(
                 const TPoint& aPenEventLocation, 
                 const TPoint& aPenEventScreenLocation );                
 
