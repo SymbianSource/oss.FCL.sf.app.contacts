@@ -55,7 +55,6 @@ class RVPbkContactFieldDefaultPriorities
          * Default constructor for an empty array.
          */
         RVPbkContactFieldDefaultPriorities();
-        /**
 
         /**
          * Releases resources used for storing the array.
