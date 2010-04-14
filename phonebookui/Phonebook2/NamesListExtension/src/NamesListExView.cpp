@@ -1297,6 +1297,7 @@ void CPbk2NamesListExView::PreCommandExecutionL
             }
 
         iControl->HideThumbnail();
+        iControl->MassUpdateSkipProgressNote( ETrue );        
         }
     }
 
@@ -1311,6 +1312,8 @@ void CPbk2NamesListExView::PostCommandExecutionL
 
     if ( iControl )
         {
+        iControl->MassUpdateSkipProgressNote( EFalse );
+
         // There are some special cases that the names list view would be hide in backgroud
         // before one command is executing, and then get foreground later after the command
         // finished, which would cause the control to be set invisible. So reset the flag

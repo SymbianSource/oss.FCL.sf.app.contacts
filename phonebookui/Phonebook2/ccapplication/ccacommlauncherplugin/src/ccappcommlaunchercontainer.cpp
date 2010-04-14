@@ -132,13 +132,15 @@ void CCCAppCommLauncherContainer::ConstructL()
             iHeaderCtrl->SetStatusButtonVisibility( EFalse );
             CFbsBitmap* bmp = NULL;
             CFbsBitmap* bmpMask = NULL;
-        
-            AknIconUtils::CreateIconL(
+
+            AknsUtils::CreateIconL(
+                AknsUtils::SkinInstance(),
+                KAknsIIDQgnPropWmlBmOvi,
                 bmp,
                 bmpMask,
                 KCcaIconDefaultFileName,
                 EMbmPhonebook2eceQgn_prop_wml_bm_ovi,
-                EMbmPhonebook2eceQgn_prop_wml_bm_ovi_mask );
+                EMbmPhonebook2eceQgn_prop_wml_bm_ovi_mask );    
         
             CGulIcon* guiIcon = CGulIcon::NewL( bmp, bmpMask );
             iStatusControl->SetDefaultStatusIconL( guiIcon );
@@ -293,9 +295,9 @@ void CCCAppCommLauncherContainer::HandleResourceChange(TInt aType)
 	{
 	if ( aType == KEikDynamicLayoutVariantSwitch )
 		{
-		TRAP_IGNORE( iModel->LoadVoipButtonInfoL() );
-		CCCAppViewPluginAknContainer::HandleResourceChange(aType); 
+		TRAP_IGNORE( iModel->ResourceChangedL() );		 
 		}
+	CCCAppViewPluginAknContainer::HandleResourceChange(aType);
 	}
 
 // ----------------------------------------------------------------------------
@@ -889,5 +891,12 @@ void CCCAppCommLauncherContainer::DoCheckExtensionFactoryL()
     
     }
 
-
+//-----------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::GetListBoxItemAmount()
+//-----------------------------------------------------------------------------
+//
+const TInt CCCAppCommLauncherContainer::GetListBoxItemAmount() const
+	{
+	return iModel->MdcaCount();
+	}
 // End of File

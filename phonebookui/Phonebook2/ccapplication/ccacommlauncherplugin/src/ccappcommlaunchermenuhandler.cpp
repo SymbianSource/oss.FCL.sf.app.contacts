@@ -20,6 +20,9 @@
 #include <mccacontactobserver.h>
 #include <mccappengine.h>
 
+#include <mnproviderfinder.h>
+#include <mnprovider.h>
+
 using namespace AiwContactAssign;
 
 // ======== MEMBER FUNCTIONS ========
@@ -256,7 +259,12 @@ void CCCAppCommLauncherMenuHandler::DynInitSelectMenuItemL(
     CEikMenuPane* aMenuPane )
     {
     CCA_DP(KCommLauncherLogFile, CCA_L("->CCCAppCommLauncherMenuHandler::DynInitSelectMenuItemL()"));
-
+    
+    // Used for checking whether some maps have been installed or not.
+    RPointerArray<CMnProvider> providers;
+    CleanupClosePushL( providers );
+    MnProviderFinder::FindProvidersL( providers, CMnProvider::EServiceMapView );
+    
     if ( !iPlugin.Container().CommMethodsAvailable() )
         {// no comm methods available
         aMenuPane->DeleteMenuItem( ECCAppCommLauncherSelectCmd );
@@ -266,7 +274,28 @@ void CCCAppCommLauncherMenuHandler::DynInitSelectMenuItemL(
             aMenuPane->DeleteMenuItem( ECCAppCommLauncherDefaultsCmd );
             }
         }
+    // If the count equals to 0, it means:
+    // No map is installed and there must be no adress item displayed in launcher view. 
+    else if ( providers.Count() > 0 )
+    	{
+        CCCAppCommLauncherContactHandler& contactHandler = iPlugin.ContactHandler();
+        
+        // Get the number how many addresses are defined.
+        TInt addressAmount = 
+             contactHandler.AddressAmount( VPbkFieldTypeSelectorFactory::EFindOnMapSelector);
+        
+        // If the amount of address is not 0 and the amount of listbox in launcher view is 1.
+        // That means only address is defined in the contact.
+        if ( ( addressAmount > 0 ) 
+        	   && ( iPlugin.Container().GetListBoxItemAmount() == 1 ) )
+        	{
+        	aMenuPane->DeleteMenuItem( ECCAppCommLauncherDefaultsCmd );
+        	}
+    	}
 
+    providers.ResetAndDestroy();
+    CleanupStack::PopAndDestroy( &providers );
+    
     CCA_DP(KCommLauncherLogFile, CCA_L("<-CCCAppCommLauncherMenuHandler::DynInitSelectMenuItemL()"));
     }
 

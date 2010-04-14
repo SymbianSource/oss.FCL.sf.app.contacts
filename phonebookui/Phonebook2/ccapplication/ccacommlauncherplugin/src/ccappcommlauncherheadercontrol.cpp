@@ -439,10 +439,16 @@ void CCCAppCommLauncherHeaderControl::HandlePointerEventL(
     switch(aPointerEvent.iType)
         {
         case TPointerEvent::EButton1Down:
-
+            {
+            TCmsContactStore cntStore = iPlugin.ContactHandler().ContactStore();
             // Image selection popup
-            if( iPlugin.ContactHandler().ContactStore() != ECmsContactStoreSdn 
-                && IsPhoneMemoryInConfigurationL() 
+            // Image selection popup should not be shown for contact's that belong to sdn store
+            // Image selection popup can be shown only if the default 
+            //      saving memory includes local contact db (contacts.cdb) or if the contact belongs to
+            //      local contact DB            
+            if( cntStore != ECmsContactStoreSdn 
+                && ( IsPhoneMemoryInConfigurationL()
+                     || (cntStore != ECmsContactStoreSim) )
                 && iImage->Rect().Contains(aPointerEvent.iPosition) )
                 {
                 // Show the feedback
@@ -454,6 +460,7 @@ void CCCAppCommLauncherHeaderControl::HandlePointerEventL(
                 LaunchStylusPopupL( aPointerEvent );
                 }
             break;
+            }
             
         default:
             break;

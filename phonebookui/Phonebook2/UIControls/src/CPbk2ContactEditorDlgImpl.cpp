@@ -186,6 +186,8 @@ CPbk2ContactEditorDlgImpl::CPbk2ContactEditorDlgImpl
 //
 CPbk2ContactEditorDlgImpl::~CPbk2ContactEditorDlgImpl()
     {
+    iCoeEnv->RemoveForegroundObserver( *this );
+
     if ( iWaitFinish && iWaitFinish->IsStarted() )
         {
         iWaitFinish->AsyncStop();
@@ -196,6 +198,11 @@ CPbk2ContactEditorDlgImpl::~CPbk2ContactEditorDlgImpl()
     if ( iSelfPtr )
         {
         *iSelfPtr = NULL;
+        }
+    // Make the variable in CloseDialog() to ETrue.
+    if ( iDestroyedPtr )
+        {
+        *iDestroyedPtr = ETrue;
         }
     
     if( iAppServices )
@@ -299,6 +306,7 @@ CPbk2ContactEditorDlgImpl* CPbk2ContactEditorDlgImpl::NewL(
 void CPbk2ContactEditorDlgImpl::ConstructL()
     {
     CAknDialog::ConstructL(R_PBK2_CONTACTEDITOR_MENUBAR);
+    iCoeEnv->AddForegroundObserverL( *this );
     
     if(iParams.iActiveView != TPbk2ContactEditorParams::EEditorView)
         {
@@ -353,7 +361,6 @@ void CPbk2ContactEditorDlgImpl::ConstructL()
    
     StoreTitlePaneTextL();
     ConstructContextMenuL();
-    ConstructNaviPaneL();
 
     iExtensionManager = CPbk2UIExtensionManager::InstanceL();
     
@@ -790,6 +797,8 @@ void CPbk2ContactEditorDlgImpl::PreLayoutDynInitL()
     // This is needed here because previous settings might override extension's
     // buttons.
     iEditorExtension->ModifyButtonGroupContainerL(ButtonGroupContainer());
+
+    ConstructNaviPaneL();
     }
 
 // --------------------------------------------------------------------------
@@ -1461,10 +1470,26 @@ void CPbk2ContactEditorDlgImpl::DynInitImageL(
             EVPbkFieldStorageTypeText && 
             !aCurrentField.ContactField().FieldData().IsEmpty() )
             {
-            //'View' shown even if there would be cold file name, i.e. no file 
-            //available the moment (e.g other mem card). Gallery takes care of
-            //error message. So just dim add option.
             DimItem( aMenuPane, EPbk2CmdEditorAddImage );
+            
+            //Dim 'View image' if currently cold file name, e.g mem card not there.
+            TBool dimView(ETrue);
+            TPbk2FieldCtrlType type = aCurrentField.FieldProperty().CtrlType();
+            TAny* ext = aCurrentField.ContactEditorFieldExtension(TUid::Uid(NULL));
+            if (type == EPbk2FieldCtrlTypeImageEditor && ext)
+                {
+                CPbk2ContactEditorImageField* fld =
+                        static_cast<CPbk2ContactEditorImageField*> (ext);
+                TPtrC dataPtr(MVPbkContactFieldTextData::Cast(  
+                        fld->ContactField().FieldData()).Text());
+                TEntry entry;
+                RFs& fs( iCoeEnv->FsSession() );        
+                dimView = fs.Entry( dataPtr, entry ) == 0 ? EFalse : ETrue;
+                }        
+            if( dimView )
+                {
+                DimItem( aMenuPane,  EPbk2CmdEditorViewImage);
+                }
             }
         else
             {
@@ -2606,6 +2631,10 @@ void CPbk2ContactEditorDlgImpl::UpdateTitlePictureL()
 void CPbk2ContactEditorDlgImpl::CloseDialog(
         MVPbkContactObserver::TContactOp aOpCode, TBool aInformObserver)
     {
+    // For knowing if the destructor has been called
+    TBool destroyed = EFalse;
+    iDestroyedPtr = &destroyed;
+
     if (aInformObserver && iParams.iActiveView
             == TPbk2ContactEditorParams::EEditorView || iAddressViewStandalone)
         {
@@ -2632,6 +2661,14 @@ void CPbk2ContactEditorDlgImpl::CloseDialog(
                 break;
                 }
             };
+        }
+
+    // In VOIP/new contacts/exit case, this object will be destructed by
+    // iContactObserver.ContactEditingComplete() above.
+    // If this object is destructed, don't excute the following anymore
+    if ( destroyed )
+        {
+        return;
         }
 
     // Don't save any contact data (already saved)
@@ -2957,6 +2994,10 @@ void CPbk2ContactEditorDlgImpl::CmdDoneL(
                         {
                         CloseDialog();
                         }
+                    else
+                    	{
+                    	iExitRecord.Clear( EExitOrdered );
+                    	}
                     }
                 }
             }
@@ -3367,5 +3408,24 @@ void CPbk2ContactEditorDlgImpl::CheckCurrentFieldTextL(
             }
         }
     }
+
+// --------------------------------------------------------------------------
+// CPbk2ContactEditorDlgImpl::HandleLosingForeground
+// --------------------------------------------------------------------------
+//
+void CPbk2ContactEditorDlgImpl::HandleLosingForeground() 
+    {
+    //Fix for ou1cimx1#308012
+    iEditorStrategy.StopQuery();            
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ContactEditorDlgImpl::HandleGainingForeground
+// --------------------------------------------------------------------------
+//
+void CPbk2ContactEditorDlgImpl::HandleGainingForeground() 
+    {
+    }
+
 
 // End of File

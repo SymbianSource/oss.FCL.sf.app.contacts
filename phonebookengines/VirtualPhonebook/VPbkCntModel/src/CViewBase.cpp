@@ -744,7 +744,7 @@ void CViewBase::DoAddFilteringObserverL(
         aObserver.ContactViewReadyForFiltering( *this );
         // Then let the filtered view to send event to its external
         // observers.
-        aObserver.ContactViewReady( *this );
+        // aObserver.ContactViewReady( *this ); // removed to function CFindViewBase::ContactViewReadyForFiltering(...)
         }
     else if (!iViewReady && !iParentStore.IsOpened())
         {

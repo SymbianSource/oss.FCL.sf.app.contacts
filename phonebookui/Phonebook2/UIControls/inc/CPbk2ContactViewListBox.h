@@ -168,6 +168,16 @@ NONSHARABLE_CLASS(CPbk2ContactViewListBox) :
          */
         void SetListCommands( const RPointerArray<MPbk2UiControlCmdItem>* aCommands );
 
+        /**
+         * Handle showing of popupcharacter when user scrolls name list 
+         * using scroll bar.
+         *
+         * @param CWindowGc.
+         * @param TRect.
+         */
+        void HandlePopupCharacter( CWindowGc* aGc,
+                                   const TRect& aRectOfListBoxItem ) const;
+
     public: // From MPbk2ClipListBoxText
         TBool ClipFromBeginning(
                 TDes& aBuffer,

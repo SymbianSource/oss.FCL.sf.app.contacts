@@ -298,7 +298,256 @@ TVPbkContactStoreEvent MapDbEventToStoreEvent(TContactDbObserverEvent aEvent)
 
 }  // unnamed namespace
 
+// --------------------------------------------------------------------------
+// CContactStoreOpenOperation
+// --------------------------------------------------------------------------
+//
+class CContactStoreOpenOperation : public CActive
+{
+public: // construction & destruction
 
+    /**
+     * Open native contact database operation. Started automatically.
+     *
+     * @param aStore Store that will receive events when operation is complete 
+     * @param aReplace replace contact database (instead of open)
+     */
+    CContactStoreOpenOperation( CContactStore& aStore, TBool aReplace );
+    
+    ~CContactStoreOpenOperation();
+
+private: // From CActive
+    void DoCancel();
+    void RunL();
+    TInt RunError( TInt aError );
+
+private: // data types
+
+    /// Operation states
+    enum TStates
+        {
+        // Operation: Replace default store
+        // Next states: [EStateDone]
+        EStateReplaceStore,
+        
+        // Operation: Open default store
+        // Next states: [EStateStoreOpened]
+        EStateOpenStore,
+        
+        // Result: State when store has been opened (success or failure) 
+        // Next states: [EStateStoreOpenedAfterError, EStateDone]
+        EStateStoreOpened,
+        
+        // Result: State after second attempt to open store (first have failed).
+        // Next states: [EStateDone]
+        EStateStoreOpenedAfterError,
+        
+        // Result: DB has been opened successfully. Report it to store. 
+        // Next states: -
+        EStateDone,
+        };
+
+private: // implementation
+    
+    /**
+     * Move to next state asynchronously
+     */
+    void IssueRequest( TStates aNextState, TInt aError = KErrNone );
+    
+    /**
+     * Handle state EStateStoreOpened
+     */
+    void HandleStoreOpenedL( TInt aError );
+    
+private: // data
+    
+    /// Active state
+    TStates iState;
+    /// Ref: Contact store
+    CContactStore& iStore;
+    /// Own: Native contact database
+    CContactDatabase* iDb;
+    /// Own: Native contact database open operation
+    CContactOpenOperation* iOperation;
+};
+
+// --------------------------------------------------------------------------
+// CContactStoreOpenOperation::~CContactStoreOpenOperation
+// --------------------------------------------------------------------------
+//
+CContactStoreOpenOperation::~CContactStoreOpenOperation()
+    {
+    Cancel();
+    delete iDb;
+    delete iOperation;
+    }
+
+// --------------------------------------------------------------------------
+// CContactStoreOpenOperation::DoCancel
+// --------------------------------------------------------------------------
+//
+void CContactStoreOpenOperation::DoCancel()
+    {
+    delete iOperation;
+    iOperation = NULL;
+    }
+
+// --------------------------------------------------------------------------
+// CContactStoreOpenOperation::RunL
+// --------------------------------------------------------------------------
+//
+void CContactStoreOpenOperation::RunL()
+    {
+    switch( iState )
+        {
+        case EStateReplaceStore:
+            {
+            iDb = CContactDatabase::ReplaceL( 
+                iStore.StoreProperties().Name().UriDes() );
+            IssueRequest( EStateDone );
+            break;
+            }
+        case EStateOpenStore:
+            {
+            iOperation = CContactDatabase::Open( 
+                iStore.StoreProperties().Name().UriDes(), iStatus );
+            SetActive();
+            iState = EStateStoreOpened;
+            break;
+            }
+        case EStateStoreOpened:
+            {
+            HandleStoreOpenedL( iStatus.Int() );
+            break;
+            }
+        case EStateStoreOpenedAfterError:
+            {
+            User::LeaveIfError( iStatus.Int() ); // report errors immediately
+            iDb = iOperation->TakeDatabase();
+            IssueRequest( EStateDone );
+            break;
+            }
+        case EStateDone:
+            {
+            CContactDatabase* db = iDb;
+            iDb = NULL; // give ownership
+            CContactStore& store = iStore;
+            
+            TRAPD( err, store.StoreOpenedL( db ) );
+            // NOTE! Don't touch members after this call.
+            // This instance could be deleted
+            if( err )
+                {
+                store.StoreOpenFailed( err );
+                }
+            break;
+            }
+        default:
+            {
+            // unknown state
+            __ASSERT_DEBUG( EFalse,
+                ContactStorePanic( EPreCond_OpenOperationState ) );
+            iStore.StoreOpenFailed( KErrUnknown );
+            }
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CContactStoreOpenOperation::RunError
+// --------------------------------------------------------------------------
+//
+TInt CContactStoreOpenOperation::RunError( TInt aError )
+    {
+    iStore.StoreOpenFailed( aError );
+    return KErrNone;
+    }
+
+// --------------------------------------------------------------------------
+// CContactStoreOpenOperation::CContactStoreOpenOperation
+// --------------------------------------------------------------------------
+//
+CContactStoreOpenOperation::CContactStoreOpenOperation( 
+    CContactStore& aStore, TBool aReplace ) : 
+    CActive( EPriorityLow ),
+    iStore( aStore )
+    {
+    CActiveScheduler::Add( this );
+    IssueRequest( aReplace ? EStateReplaceStore : EStateOpenStore ); // start working
+    }
+
+// --------------------------------------------------------------------------
+// CContactStoreOpenOperation::IssueRequest
+// --------------------------------------------------------------------------
+//
+void CContactStoreOpenOperation::IssueRequest( TStates aNextState, TInt aError )
+    {
+    if( !IsActive() )
+        {
+        TRequestStatus* status = &iStatus;
+        User::RequestComplete( status, aError );
+        SetActive();
+        iState = aNextState; 
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CContactStoreOpenOperation::HandleStoreOpenedL
+// --------------------------------------------------------------------------
+//
+void CContactStoreOpenOperation::HandleStoreOpenedL( TInt aError )
+    {
+    if( aError == KErrNone )
+        {
+        // Store opened succesfully
+        iDb = iOperation->TakeDatabase();
+        IssueRequest( EStateDone );
+        }
+    else // some error happened
+        {
+        delete iOperation;
+        iOperation = NULL;
+        
+        const TDesC& dbName = iStore.StoreProperties().Name().UriDes();
+        TInt creating = EFalse;
+        
+        if( aError == KErrNotFound )
+            {
+            // Database not found --> Creating it
+            creating = ETrue;
+            TRAP( aError, iDb = CContactDatabase::CreateL( dbName ) );
+            }
+    
+        if ( KErrDiskFull == aError )
+            {
+            // Try to release space for contact db opening
+            if( iStore.RequestFreeDiskSpaceLC( KDiskSpaceForDbOpening ) )
+                {
+                aError = KErrNone;
+                if( creating )
+                    {
+                    // Databse was not found --> Creating it
+                    iDb = CContactDatabase::CreateL( dbName );
+                    }
+                else
+                    {
+                    // Opening database
+                    iOperation = CContactDatabase::Open( dbName, iStatus );
+                    SetActive();
+                    iState = EStateStoreOpenedAfterError;
+                    }
+                CleanupStack::PopAndDestroy();  // RequestFreeDiskSpaceLC
+                }
+            }
+        
+        // leave on unhandled error
+        User::LeaveIfError( aError );
+        
+        if( iDb )
+            {
+            IssueRequest( EStateDone );
+            }
+        }
+    }
 
 // --------------------------------------------------------------------------
 // CContactStore::CContactStore
@@ -331,6 +580,7 @@ CContactStore::~CContactStore()
     delete iFieldsInfo;
     delete iProperties;
     delete iDiskSpaceCheck;
+    delete iOpenOperation;
     FeatureManager::UnInitializeLib();
     }
 
@@ -878,6 +1128,100 @@ void CContactStore::SetAsOwnL(
 	}
 
 // --------------------------------------------------------------------------
+// CContactStore::StoreOpenedL
+// --------------------------------------------------------------------------
+//
+void CContactStore::StoreOpenedL( CContactDatabase* aDB )
+    {
+    VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
+        ("VPbkCntModel: CContactStore::StoreOpenedL"));
+    
+    CleanupStack::PushL( aDB );
+    
+    delete iOpenOperation;
+    iOpenOperation = NULL;
+
+    if( !iGoldenTemplateUpdated )
+        {
+        iSysTemplate = aDB->OpenContactL(aDB->TemplateId());
+        // set contact model template label texts according to localisation
+        // must be done in order for contact field labels to be correct after language change
+        if( UpdateSystemTemplateFieldsL( *iSysTemplate, *iFieldsInfo ) )
+            {
+            aDB->CommitContactL( *iSysTemplate );
+            iGoldenTemplateUpdated = ETrue;
+            }
+        CloseSystemTemplate( aDB );
+    
+        // reopen the contact database if the golden template has been changed
+        if( iGoldenTemplateUpdated )
+            {
+            // template updated -> reopen store
+            CleanupStack::PopAndDestroy( aDB );
+            iOpenOperation = new(ELeave) CContactStoreOpenOperation( *this, EFalse );
+            return;
+            }
+        }
+
+    // read the system template and create the field factory accordingly
+    iSysTemplate = aDB->ReadContactL(aDB->TemplateId());
+    iFieldFactory = CFieldFactory::NewL(iStoreDomain.FieldTypeMap(),
+        iSysTemplate, MasterFieldTypeList(), iStoreDomain.FsSession() );
+    iSysTemplate = NULL;
+
+    // set supported fields for this store
+    iProperties->SetSupportedFields(*iFieldFactory);
+    SetStaticPropertiesL();
+
+    iDbNotifier = CContactChangeNotifier::NewL(*aDB, this);
+    CleanupStack::Pop(aDB);
+    iContactDb = aDB;
+
+    // Activate remote views so that contacts server will build
+    // the view as soon as possible when system boots.
+    // This is trapped because it's not wanted to block
+    // the store opening if the view building failed.
+    TRAP_IGNORE( DoActivateRemoteViewsL() );
+
+    // Send event to all observers. This means that multiple pending open requests
+    // are all signalled as complete here and we can cancel all other open operations.
+    SendEventL(iObservers, &MVPbkContactStoreObserver::StoreReady, *this);
+    iAsyncOpenOp->Purge();
+    }
+
+// --------------------------------------------------------------------------
+// CContactStore::StoreOpenFailed
+// --------------------------------------------------------------------------
+//
+void CContactStore::StoreOpenFailed( TInt aError )
+    {
+    VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
+        ("VPbkCntModel: CContactStore::StoreOpenFailed(%d)"), aError);
+    
+    delete iOpenOperation;
+    iOpenOperation = NULL;
+    
+    SendErrorEvent(iObservers, &MVPbkContactStoreObserver::StoreUnavailable,
+        *this, aError );
+    }
+
+// --------------------------------------------------------------------------
+// CContactStore::RequestFreeDiskSpaceLC
+// --------------------------------------------------------------------------
+//
+TBool CContactStore::RequestFreeDiskSpaceLC( TInt aSpace )
+    {
+    RSharedDataClient* sharedDataClient = iStoreDomain.SharedDataClient();
+    if( sharedDataClient )
+        {
+        // Try to release space for contact db opening
+        sharedDataClient->RequestFreeDiskSpaceLC( aSpace );
+        return ETrue;
+        }
+    return EFalse;
+    }
+
+// --------------------------------------------------------------------------
 // CContactStore::CreateContactRetrieverL
 // --------------------------------------------------------------------------
 //
@@ -1162,62 +1506,11 @@ void CContactStore::DoOpenL(MVPbkContactStoreObserver& aObserver, TBool aReplace
 
     if (!iContactDb)
         {
-        CContactDatabase* db = NULL;
-        if (aReplace)
+        // start opening store if it's not already pending
+        if( !iOpenOperation )
             {
-            db = CContactDatabase::ReplaceL(StoreProperties().Name().UriDes());
+            iOpenOperation = new(ELeave) CContactStoreOpenOperation( *this, EFalse );
             }
-        else
-            {
-            db = OpenInternalL();
-            }
-        CleanupStack::PushL(db);
-
-        // opens the Symbian Contacts model golden template
-        TBool updated = EFalse;
-        iSysTemplate = db->OpenContactL(db->TemplateId());
-        // set contact model template label texts according to localisation
-        // must be done in order for contact field labels to be correct after language change
-        if (UpdateSystemTemplateFieldsL(*iSysTemplate, *iFieldsInfo))
-            {
-            db->CommitContactL(*iSysTemplate);
-            updated = ETrue;
-            }
-        CloseSystemTemplate(db);
-
-        // reopen the contact database if the golden template has been changed
-        if(updated)
-            {
-            CleanupStack::PopAndDestroy(db);
-            db = NULL;
-            // db already exists so we just reopen it
-            db = OpenInternalL();
-            CleanupStack::PushL(db);
-            }
-        // read the system template and create the field factory accordingly
-        iSysTemplate = db->ReadContactL(db->TemplateId());
-        iFieldFactory = CFieldFactory::NewL(iStoreDomain.FieldTypeMap(),
-            iSysTemplate, MasterFieldTypeList(), iStoreDomain.FsSession() );
-        iSysTemplate = NULL;
-
-        // set supported fields for this store
-        iProperties->SetSupportedFields(*iFieldFactory);
-        SetStaticPropertiesL();
-
-        iDbNotifier = CContactChangeNotifier::NewL(*db, this);
-        CleanupStack::Pop(db);
-        iContactDb = db;
-
-        // Activate remote views so that contacts server will build
-        // the view as soon as possible when system boots.
-        // This is trapped because it's not wanted to block
-        // the store opening if the view building failed.
-        TRAP_IGNORE( DoActivateRemoteViewsL() );
-
-        // Send event to all observers. This means that multiple pending open requests
-        // are all signalled as complete here and we can cancel all other open operations.
-        SendEventL(iObservers, &MVPbkContactStoreObserver::StoreReady, *this);
-        iAsyncOpenOp->Purge();
         }
     else
         {

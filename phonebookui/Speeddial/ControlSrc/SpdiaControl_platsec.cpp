@@ -340,6 +340,12 @@ EXPORT_C TInt CSpdiaControl::ExecuteLD(
         CleanupStack::Pop();  // title
         titlePane->DrawNow();
         }
+    if ( pAppUi )
+        {
+        CEikStatusPane* StatusPane = ( ( CAknAppUi* ) pAppUi )->StatusPane();
+        StatusPane->MakeVisible( ETrue );
+        StatusPane->DrawNow();
+        }
         
     // Check errors
     User::LeaveIfError(error);

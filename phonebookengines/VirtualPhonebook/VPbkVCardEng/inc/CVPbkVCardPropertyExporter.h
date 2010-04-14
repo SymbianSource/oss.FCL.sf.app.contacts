@@ -168,6 +168,10 @@ NONSHARABLE_CLASS(CVPbkVCardPropertyExporter)
         void DoNextL();
         void HandleOwnCardL();
         void HandleGroupCardL();
+        void AddRevL();
+        CParserPropertyValueDateTime* CreateDateTimePropertyL(
+            const TTime& aDateTime, 
+            TVersitDateTime::TRelativeTime aRelativeTime);
 
     private:
         CParserVCard* iParser;

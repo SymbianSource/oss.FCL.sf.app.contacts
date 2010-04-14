@@ -202,7 +202,7 @@ RESOURCE CBA r_spdctrl_softkeys_assign_back_assign
 RESOURCE DIALOG  r_spdia_grid_dialog
     {
     flags = EEikDialogFlagWait | EEikDialogFlagNoDrag |
-            EEikDialogFlagFillScreen | EEikDialogFlagNoBorder |
+            EEikDialogFlagFillAppClientRect | EEikDialogFlagNoBorder |
             EEikDialogFlagNoTitleBar | EEikDialogFlagCbaButtons;
     buttons = R_AVKON_SOFTKEYS_BACK;
     items =

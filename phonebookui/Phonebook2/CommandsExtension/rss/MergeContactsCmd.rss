@@ -22,17 +22,17 @@
 //
 RESOURCE DIALOG r_pbk2_merge_contacts_error_note
 {
-flags = EAknWaitNoteFlags;
+flags = EAknDialogGenericNoteFlags;
 buttons = R_AVKON_SOFTKEYS_OK_EMPTY__OK;
 items =
     {
     DLG_LINE
         {
-        type = EAknCtNote;
-        id = EGeneralQuery;
-        control= AVKON_NOTE 
-            { 
-            layout = EGeneralLayout;
+        type=EAknCtQuery;
+        id=EGeneralQuery;
+        control=AVKON_CONFIRMATION_QUERY
+            {
+            layout = EConfirmationQueryLayout;
             animation = R_QGN_NOTE_ERROR_ANIM;
             };
         }
@@ -45,17 +45,17 @@ items =
 //
 RESOURCE DIALOG r_pbk2_merge_contacts_confirmation_note
 {
-flags = EAknWaitNoteFlags;
+flags = EAknDialogGenericNoteFlags;
 buttons = R_AVKON_SOFTKEYS_OK_EMPTY__OK;
 items =
     {
     DLG_LINE
         {
-        type = EAknCtNote;
-        id = EGeneralQuery;
-        control= AVKON_NOTE 
-            { 
-            layout = EGeneralLayout;
+        type=EAknCtQuery;
+        id=EGeneralQuery;
+        control=AVKON_CONFIRMATION_QUERY
+            {
+            layout = EConfirmationQueryLayout;
             animation = R_QGN_NOTE_OK_ANIM;
             };
         }

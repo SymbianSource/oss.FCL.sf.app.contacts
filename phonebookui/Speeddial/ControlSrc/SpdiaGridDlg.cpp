@@ -364,12 +364,18 @@ void CSpdiaGridDlg::HandleResourceChange( TInt aType )
     
     if ( aType == KEikDynamicLayoutVariantSwitch )
         {
+        CEikStatusPane* StatusPane = 
+        ( ( CAknAppUi* ) CEikonEnv::Static()->EikAppUi() )->StatusPane();
+
         if ( Layout_Meta_Data::IsLandscapeOrientation() )
             {
+            StatusPane->MakeVisible( ETrue );
             AknLayoutUtils::LayoutMetricsRect( AknLayoutUtils::EMainPane,mainPaneRect );
+            StatusPane->DrawNow();
             }
         else
             {
+            StatusPane->MakeVisible( EFalse );
             AknLayoutUtils::LayoutMetricsRect( AknLayoutUtils::EMainPane, mainPaneRect );
             AknLayoutUtils::LayoutMetricsRect( AknLayoutUtils::EStatusPane, statusPaneRect );
             mainPaneRect.iTl = statusPaneRect.iTl;

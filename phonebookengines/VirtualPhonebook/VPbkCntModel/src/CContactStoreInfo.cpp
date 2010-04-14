@@ -74,8 +74,7 @@ TInt CContactStoreInfo::MaxNumberOfContactsL() const
 //                
 TInt CContactStoreInfo::NumberOfContactsL() const
     {
-    TInt groupCount = iStore.NativeDatabase().GroupCount();
-    return iStore.NativeDatabase().CountL() - groupCount;
+    return iStore.NativeDatabase().CountL() - NumberOfGroupsL();
     }
 
 // -----------------------------------------------------------------------------
@@ -116,6 +115,14 @@ TInt CContactStoreInfo::MaxNumberOfGroupsL() const
 //        
 TInt CContactStoreInfo::NumberOfGroupsL() const
     {
+    if( !iGroupsFetched )
+        {
+        CContactIdArray* arr = iStore.NativeDatabase().GetGroupIdListL();
+        iGroupsFetched = ETrue;
+        const TInt count = arr->Count();
+        delete arr;
+        return count;
+        }
     return iStore.NativeDatabase().GroupCount();
     }
     

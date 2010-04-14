@@ -12,7 +12,7 @@
 * Contributors:
 *
 * Description:  Implementation of ccappdetailsview menuhandler
-*  Version     : %version: he1s60#31.1.16 %
+*  Version     : %version: be1neux1#31.1.17 %
 *
 */
 
@@ -223,7 +223,7 @@ void CCCAppDetailsViewMenuHandler::DynInitMenuPaneL(TInt aResourceId,
                 && aMenuPane->MenuItemExists(
                     ECCAppDetailsViewShowOnMapCmd, pos ) )
             {
-                if ( iMapViewProvider && HasAddressFieldL() )
+                if ( iMapViewProvider && IsFocusedAddressFieldL())
                 {
                     if ( IsAddressValidatedL() )
                     {
@@ -842,37 +842,33 @@ void CCCAppDetailsViewMenuHandler::DoShowOnMapCmdL()
 }
 
 // ---------------------------------------------------------------------------
-// CCCAppDetailsViewMenuHandler::HasAddressFieldL
+// CCCAppDetailsViewMenuHandler::IsFocusedAddressFieldL
 // ---------------------------------------------------------------------------
 //
-TBool CCCAppDetailsViewMenuHandler::HasAddressFieldL()
+TBool CCCAppDetailsViewMenuHandler::IsFocusedAddressFieldL()
 {
     TBool addressField = EFalse;
 
     const CCCAppDetailsViewContainer& container =
         static_cast<const CCCAppDetailsViewContainer&>( iPlugin.GetContainer() );
-    TInt countFields =
-        container.FocusedStoreContact()->Fields().FieldCount();
-    for ( TInt i = 0; i < countFields; i++ )
-    {
-        const MVPbkStoreContactField& field =
-            container.FocusedStoreContact()->Fields().FieldAt( i );
-        const MVPbkFieldType* fieldType = field.BestMatchingFieldType();
-        if ( fieldType )
+
+    MVPbkBaseContactField* field =  container.ListBoxModel().FocusedFieldLC();
+    const MVPbkFieldType* fieldType = field->BestMatchingFieldType();
+    if ( fieldType )
+        {
+        TInt countProps = fieldType->VersitProperties().Count();
+        TArray<TVPbkFieldVersitProperty> props =
+            fieldType->VersitProperties();
+        for (TInt ii = 0; ii < countProps; ii++ )
             {
-            TInt countProps = fieldType->VersitProperties().Count();
-            TArray<TVPbkFieldVersitProperty> props =
-                fieldType->VersitProperties();
-            for (TInt ii = 0; ii < countProps; ii++ )
+            if ( props[ii].Name() == EVPbkVersitNameADR )
                 {
-                if ( props[ii].Name() == EVPbkVersitNameADR )
-                    {
-                    addressField = ETrue;
-                    break;
-                    }
+                addressField = ETrue;
+                break;
                 }
             }
-    }
+        }
+    CleanupStack::PopAndDestroy(field);
     return addressField;
 }
 

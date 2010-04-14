@@ -221,6 +221,14 @@ public: // New
      * @since S60 v5.0
     */
     const TBool IsListBoxHighlightEnabled();
+    
+    /**
+     * Get the amount of the list box
+     *
+     * @return the amount of the list box.
+     * @since S60 v5.0
+    */
+    const TInt GetListBoxItemAmount() const;
 
 private: // New
 

@@ -12,7 +12,7 @@
 * Contributors:
 *
 * Description:  The remote sim view implementation
-*  Version     : %version: he1s60#21.1.3 %
+*  Version     : %version: be1neux1#21.1.4 %
 *
 */
 
@@ -302,10 +302,13 @@ void CRemoteView::RunL()
                 }
             case EVPbkSimContactAdded:
                 {
-                SendEvent(iObservers, &MVPbkSimViewObserver::ViewContactEvent, 
-                          MVPbkSimViewObserver::EContactAdded, 
-                          iEventData.iData, iEventData.iOpData );
-                break;
+                if(	iEventData.iData != KErrNotFound )
+                	{
+                    SendEvent(iObservers, &MVPbkSimViewObserver::ViewContactEvent, 
+                              MVPbkSimViewObserver::EContactAdded, 
+                              iEventData.iData, iEventData.iOpData ); 
+                	}
+                break;                
                 }
             case EVPbkSimContactDeleted:
                 {

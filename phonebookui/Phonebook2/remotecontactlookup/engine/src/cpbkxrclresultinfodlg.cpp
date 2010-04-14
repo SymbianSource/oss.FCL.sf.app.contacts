@@ -511,7 +511,6 @@ void CPbkxRclResultInfoDlg::ExecuteLD()
     PrepareLC( R_RCL_RESULT_INFO_DIALOG );
     
     UpdateGraphics();
-    UpdateColors();
     iMenuBar->SetContextMenuTitleResourceId( 
         R_RCL_RESULT_INFO_DIALOG_CONTEXT_MENU_BAR );    
 

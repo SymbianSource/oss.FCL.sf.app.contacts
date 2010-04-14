@@ -55,6 +55,8 @@
 #include "cpbkxrclvcardsender.h"
 #include "cpbkxrclactionservicewrapper.h"
 
+#include <e32base.h>
+
 // list box field formats
 _LIT( KFieldFormat, "\t%S %S" );
 _LIT( KFieldFormatWithIcon, "\t%S %S\t%d" );
@@ -137,6 +139,10 @@ void CPbkxRclSearchResultDlg::ConstructL()
 
     // add foreground observer
     CCoeEnv::Static()->AddForegroundObserverL( *this );
+    
+    // Idle object for scheduling showing of the 
+    // "more than 50 results..." note
+    iIdleNote = CIdle::NewL(CActive::EPriorityIdle);
     }
 
 // ---------------------------------------------------------------------------
@@ -165,9 +171,28 @@ CPbkxRclSearchResultDlg::~CPbkxRclSearchResultDlg()
      	delete iActionMenu;
     	iActionMenu = NULL;
     	}    
+    
+    delete iIdleNote;
     }
 
+// ---------------------------------------------------------------------------
+// CPbkxRclSearchResultDlg::SetMoreThanMaxResults
+// ---------------------------------------------------------------------------
+//
+void CPbkxRclSearchResultDlg::SetMoreThanMaxResults(TBool aMoreThanMax)
+    {
+    iMoreThanMaxResults = aMoreThanMax;
+    }
 
+// ---------------------------------------------------------------------------
+// CPbkxRclSearchResultDlg::MoreThanMaxResults
+// ---------------------------------------------------------------------------
+//
+TBool CPbkxRclSearchResultDlg::MoreThanMaxResults()
+    {
+    return iMoreThanMaxResults;
+    }
+   
 // ---------------------------------------------------------------------------
 // CPbkxRclSearchResultDlg::DisplayTooManyResultsInfoNoteL
 // ---------------------------------------------------------------------------
@@ -176,12 +201,14 @@ void CPbkxRclSearchResultDlg::DisplayTooManyResultsInfoNoteL()
     {
     FUNC_LOG;
     // For making sure the note is not shown again set the flag off.  
-    iMoreThanMaxResults = EFalse; 
+    SetMoreThanMaxResults(EFalse); 
        
     HBufC* text = StringLoader::LoadLC( 
             R_QTN_RCL_TOO_MANY_RESULTS_NOTE, 
             KMaxMatches );               
-           
+    
+    // Note is non blocking and is displayed above the search results until
+    // the note expires and closes itself.
     CAknInformationNote* informationNote = new (ELeave) CAknInformationNote; 
     informationNote->SetTimeout(CAknNoteDialog::ELongTimeout);
     informationNote->ExecuteLD(*text);
@@ -200,7 +227,6 @@ void CPbkxRclSearchResultDlg::ExecuteLD()
     PrepareLC( R_RCL_SEARCH_RESULT_DIALOG );
 
     UpdateGraphics();
-    UpdateColors();
 
     HBufC* noItemText = StringLoader::LoadLC( R_QTN_RCL_NO_RESULTS );
     ListBox()->View()->SetListEmptyTextL( *noItemText );
@@ -216,15 +242,29 @@ void CPbkxRclSearchResultDlg::ExecuteLD()
       ConstructMenuBarL( R_RCL_OPTIONS_BACK_CONTEXTMENU );
       }
 
-    // If there was more than max number of results show an info note to user.
-    // Note is non blocking and is displayed above the search results until
-    // the note expires and closes by itself.
-    if (iMoreThanMaxResults)
-        {    
-        DisplayTooManyResultsInfoNoteL();
+    if ( MoreThanMaxResults() )
+        { 
+        // If there was more than max number of results found 
+        // show a "more than 50 results..." info note to user.  
+        iIdleNote->Cancel();  
+        // For smooth display of the note, request
+        // an idle callback for launching the note later.
+        iIdleNote->Start( TCallBack(
+                ( &CPbkxRclSearchResultDlg::TooManyResultsIdleCallbackL ),this ) );
         }  
       
     CAknSelectionListDialog::RunLD();
+    }
+
+// --------------------------------------------------------------------------
+// CPbkxRclSearchResultDlg::TooManyResultsIdleCallbackL
+// --------------------------------------------------------------------------
+//
+TInt CPbkxRclSearchResultDlg::TooManyResultsIdleCallbackL( TAny* aSelf )
+    {
+    CPbkxRclSearchResultDlg* self = static_cast<CPbkxRclSearchResultDlg*>( aSelf );
+    self->DisplayTooManyResultsInfoNoteL();
+    return 0;
     }
 
 // ---------------------------------------------------------------------------
@@ -289,6 +329,17 @@ void CPbkxRclSearchResultDlg::UpdateDialogL()
         {
         ConstructMenuBarL( R_RCL_OPTIONS_BACK_OPEN );
         }
+   
+    if ( MoreThanMaxResults() )
+        { 
+        // If there was more than max number of results found 
+        // show a "more than 50 results..." info note to user.  
+        iIdleNote->Cancel();  
+        // For smooth display of the note, request
+        // an idle callback for launching the note later.
+        iIdleNote->Start( TCallBack(
+                ( &CPbkxRclSearchResultDlg::TooManyResultsIdleCallbackL ),this ) );
+        }  
     }
 
 // ---------------------------------------------------------------------------

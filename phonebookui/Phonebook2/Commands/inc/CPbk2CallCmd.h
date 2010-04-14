@@ -23,6 +23,7 @@
 #include <e32base.h>
 #include <MPbk2Command.h>
 #include <VPbkFieldTypeSelectorFactory.h>
+#include <spdefinitions.h>
 
 // FORWARD DECLARATIONS
 class CAiwServiceHandler;
@@ -31,6 +32,7 @@ class MVPbkStoreContactField;
 class MVPbkStoreContact;
 class CPbk2CallTypeSelector;
 class CAiwDialDataExt;
+class MVPbkContactFieldData;
 
 // CLASS DECLARATION
 
@@ -109,6 +111,11 @@ NONSHARABLE_CLASS(CPbk2CallCmd) : public CBase,
                 VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aActionSelector );
         
         void SetCallTypeL( CAiwDialDataExt& dialData );
+        TBool ExtractXspId(
+            const MVPbkStoreContactField* aSelectedField, 
+            TPtrC& aXSPId) const;
+        TServiceId GetMatchedServiceIdL( const TDesC& aXSPId );
+        TPtrC GetFieldData( const MVPbkContactFieldData& aFieldData ) const;
 
     private: // Data
         /// Ref: Contact to call to

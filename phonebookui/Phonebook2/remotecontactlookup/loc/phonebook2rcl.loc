@@ -38,11 +38,6 @@
 // r:5.2
 #define qtn_rcl_retrieval_wait_note "Retrieving details"
 
-// d:Wait note text while retrieving details and saving contact.
-// l:popup_note_wait_window
-// r:5.2
-#define qtn_rcl_saving_wait_note "Saving contact"
-
 // d:Confirmation note shown to user when contact details is updated
 // d:but there is already existing detail.
 // d:%U stands for the name of the detail being replaced.

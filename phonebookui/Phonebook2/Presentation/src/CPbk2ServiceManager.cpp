@@ -243,8 +243,19 @@ void CPbk2ServiceManager::UpdateServiceL(
     CleanupStack::Pop(name);        
     name->Des().Copy(aServiceName);
 
-    aService.iName.Set(*name);
-    aService.iDisplayName.Set(*name); 
+    //iName &  iDisplayName will not be set if the service
+    //doesnt belong to the list of well known services
+    //Thus it makes sense that We copy the ServiceName provisioned
+    //in the Service Table to both iName as well as iDisplayName
+    //This iDisplayName will be visible to the end user.
+    if ( !aService.iName.Length() )
+        {
+        aService.iName.Set(*name);
+        }
+    if ( !aService.iDisplayName.Length() )
+        {
+        aService.iDisplayName.Set(*name);
+        }
     aService.iFlags = EInstalled;
     aService.iBitmap = aService.iMask = NULL;
     aService.iBitmapId = 0;

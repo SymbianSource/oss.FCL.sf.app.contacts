@@ -53,6 +53,7 @@ class CAsyncContactOperation;
 class CFieldsInfo;
 class CContactStoreInfo;
 class CNamedRemoteViewHandle;
+class CContactStoreOpenOperation;
 
 #ifdef _DEBUG
 enum TContactStorePanic
@@ -61,7 +62,8 @@ enum TContactStorePanic
 	EPreCond_ContactDestroyed,
 	EPreCond_CreateNewContactGroupLC,
 	EPreCond_ContactGroupsLC,
-	EPreCond_OwnContactLinkL
+	EPreCond_OwnContactLinkL,
+	EPreCond_OpenOperationState
 	};
 
 void ContactStorePanic( TContactStorePanic aPanic );
@@ -247,6 +249,31 @@ NONSHARABLE_CLASS( CContactStore ): public CBase,
                 const CContact& aContactItem,
                 MVPbkContactObserver& aObserver );
 
+        /**
+         * Asynchronous store opening is complete. 
+         * 
+         * @see CContactStoreOpenOperation.
+         * @param aDB Opened native contacts store database.
+         */
+        void StoreOpenedL( CContactDatabase* aDB );
+        
+        /**
+         * Asynchronous store opening has failed.
+         * 
+         * @see CContactStoreOpenOperation.
+         * @param aError Generic synbian error code.
+         */
+        void StoreOpenFailed( TInt aError );
+        
+        /**
+         * Request free disk space.
+         * NOTE: Request is put on cleanupstack only if return value is ETrue.
+         * 
+         * @param aSpace Amount of free space requested.
+         * @return ETrue if request was successful. 
+         */
+        TBool RequestFreeDiskSpaceLC( TInt aSpace );
+        
     public: // From MVPbkContactStore
         const MVPbkContactStoreProperties& StoreProperties() const;
         void OpenL(
@@ -360,6 +387,10 @@ NONSHARABLE_CLASS( CContactStore ): public CBase,
         VPbkEngUtils::CVPbkDiskSpaceCheck* iDiskSpaceCheck;
         /// Own: named remote view container
         RPointerArray<CNamedRemoteViewHandle> iNamedViewContainer;
+        /// Own: Contact store open operation
+        CContactStoreOpenOperation* iOpenOperation;
+        /// Has golden template been updated
+        TBool iGoldenTemplateUpdated;
     };
 
 

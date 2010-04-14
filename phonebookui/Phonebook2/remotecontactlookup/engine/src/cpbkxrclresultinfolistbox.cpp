@@ -162,18 +162,12 @@ void CPbkxRclResultInfoItemDrawer::DrawItemText(
         ptr->iHighlightedTextColor = iHighlightColor;
         }
 
-    // Disable AVKON skinning so that our own color definitions apply
-    TBool skinEnabled = AknsUtils::AvkonSkinEnabled();
-    // Safe to ignore error
-    TRAP_IGNORE( AknsUtils::SetAvkonSkinEnabledL( EFalse ) );
     CFormattedCellListBoxItemDrawer::DrawItemText(
         aItemIndex,
         aItemTextRect,
         aItemIsCurrent,
         aViewIsEmphasized,
         aItemIsSelected );
-    // Safe to ignore error
-    TRAP_IGNORE( AknsUtils::SetAvkonSkinEnabledL( skinEnabled ) );
 
     }
 

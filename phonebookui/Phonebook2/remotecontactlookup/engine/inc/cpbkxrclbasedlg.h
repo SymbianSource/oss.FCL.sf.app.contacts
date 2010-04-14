@@ -91,11 +91,6 @@ protected: // new methods
     * Updates graphics used in the component.
     */
     void UpdateGraphics();
-    
-    /**
-    * Updates colors used in the component.
-    */
-    void UpdateColors();
 
 private: // data
     

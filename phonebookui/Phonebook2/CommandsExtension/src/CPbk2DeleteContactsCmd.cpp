@@ -239,13 +239,16 @@ void CPbk2DeleteContactsCmd::RunL()
                 iContactIterator->SetToFirst();
                 if ( iContactIterator->HasNext() )
                     {
-                    MVPbkContactLink* link = iContactIterator->NextL();
-                    CleanupDeletePushL( link );
-                    if ( link )
+                    while ( MVPbkContactLink* link = iContactIterator->NextL() )
                         {
-                        RetrieveContactL( *link );
-                        }                    
-                    CleanupStack::PopAndDestroy(); // link
+                        if ( !IsFromReadOnlyStore( *link ) )
+                            {
+                            CleanupDeletePushL( link );
+                            RetrieveContactL( *link );
+                            CleanupStack::PopAndDestroy(); // link
+                            break;
+                            }
+                        }
                     }                   
                 }
             else

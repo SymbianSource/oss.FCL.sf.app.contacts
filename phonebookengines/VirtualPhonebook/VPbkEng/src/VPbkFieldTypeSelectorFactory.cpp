@@ -232,7 +232,7 @@ RArray<TInt> FilteredSelectorsL(
             CleanupStack::PushL(localVariation);
             
             if ( localVariation->LocallyVariatedFeatureEnabled(
-                		EVPbkLVShowEmailInSendMsg ) )
+                        EVPbkLVShowEmailInSendMsg ) )
             {
                 result.AppendL(R_VPBK_UNIEDITOR_EMAIL_ACTION_SELECTOR);
             }

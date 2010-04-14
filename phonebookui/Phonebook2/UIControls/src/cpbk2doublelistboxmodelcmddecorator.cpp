@@ -114,7 +114,7 @@ TPtrC CPbk2DoubleListboxModelCmdDecorator::MdcaPoint( TInt aIndex ) const
 				{
 				// List model format:
 				//   [thumbnail icon] \t [contact name] \t [secondary text] \t
-				//   [secondary icon] \t [trailing icon]
+				//   [trailing icon]
 				
 				// fetch status text
 				iElement->SetText( MPbk2DoubleListboxDataElement::EStatusText, NULL, 
@@ -141,20 +141,6 @@ TPtrC CPbk2DoubleListboxModelCmdDecorator::MdcaPoint( TInt aIndex ) const
                         // status text
                         iBuffer.Append( KSeparator );
                         AppendText( status );
-#if 0	// Service icon is removed for now.
-                        // add service icon
-                        iBuffer.Append( KSeparator );
-                        // get icon id 
-                        TPbk2IconId serviceId = element->IconId( MPbk2DoubleListboxDataElement::EServiceIcon );
-                        // try to find the icon 
-                        TInt indx = iIconArray.FindIcon( serviceId );
-                        // if not found, use default
-                        if( indx < 0 )
-                            {
-                            indx = iconIndex;
-                            }
-                        iBuffer.AppendNum( indx );
-#endif
                         }
 				    }
 				}
@@ -189,6 +175,9 @@ void CPbk2DoubleListboxModelCmdDecorator::AppendText( TDes& aText ) const
         aText, KGraphicReplaceCharacter );
     AknTextUtils::ReplaceCharacters(
         aText, KAknReplaceListControlChars, KGraphicReplaceCharacter );
-    
-    iBuffer.Append( aText );
+
+    // iBuffer max size is EMaxListBoxText = 256
+    // don't allow set too long status txt to iBuffer
+    const TInt KMaxTxtLength = 100;
+    iBuffer.Append( aText.Left( KMaxTxtLength ) );
     }

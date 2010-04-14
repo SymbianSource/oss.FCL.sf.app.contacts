@@ -99,6 +99,7 @@ NONSHARABLE_CLASS( CContactStoreInfo ): public CBase,
     private:    // Data
         CContactStore& iStore;
         CContactStoreDomain& iDomain;
+        mutable TBool iGroupsFetched;
     };
 } // namespace VPbkCntModel
 #endif      // VPBKCNTMODEL_CCONTACTSTOREINFO_H

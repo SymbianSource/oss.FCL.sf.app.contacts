@@ -674,9 +674,15 @@ EXPORT_C void CContactDatabase::RestoreSortOrderL()
  @return A pointer to an array of sort preferences of the contact database.
 */
 EXPORT_C const CArrayFix<CContactDatabase::TSortPref>* CContactDatabase::SortOrder() const
-	{
-	return iCntSvr->GetSortPreferenceL(); // this can leave
+    {
+    CArrayFix<CContactDatabase::TSortPref>* prefs = NULL;
+    TRAPD( err, prefs = iCntSvr->GetSortPreferenceL() );
+    if ( err != KErrNone )
+        {
+	prefs = NULL; // return NULL if have some error
 	}
+    return prefs;
+    }
 
 
 /** 
@@ -2326,21 +2332,22 @@ EXPORT_C CContactItem* CContactDatabase::UpdateContactLC(TContactItemId aContact
 		
 	doCommitContactL(*cntItem,ETrue,ETrue);
 	if (!count)
-		{
-		doDeleteContactL(aContactId,ETrue,ETrue);
-		delete cntItem;
-		cntItem = NULL;
-		}
+	    {
+	    doDeleteContactL(aContactId,ETrue,ETrue);
+	    CleanupStack::PopAndDestroy(cntItem); // Pop and destroy cntItem
+
+	    cntItem = NULL;
+	    CleanupStack::PushL(cntItem); // push a NULL ptr to cleanup stack
+	    }
 
 	if(cntItem != NULL)
-		{
-		CleanupStack::Pop(cntItem);
-		CleanupStack::Pop(); // Pop the lock
-		CleanupStack::PopAndDestroy(viewDef);	
-		CheckTemplateField(*cntItem);
-	
-		CleanupStack::PushL(cntItem);	
-		}
+	    {
+	    CheckTemplateField(*cntItem);
+	    }
+	CleanupStack::Pop(); // cntItem
+	CleanupStack::Pop(); // Pop the lock
+	CleanupStack::PopAndDestroy(viewDef);	
+	CleanupStack::PushL(cntItem);	
 	return(cntItem);
 	}
 

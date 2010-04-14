@@ -94,6 +94,8 @@ void CCCAppMyCardImageLoader::LoadContactImageL(
     iImageBuffer = NULL;
     delete iImageFileName;
     iImageFileName = NULL;
+    delete iImageDecoding;
+    iImageDecoding = NULL;
     
     const TInt fieldCount = fields.FieldCount();                           
     
@@ -122,9 +124,6 @@ void CCCAppMyCardImageLoader::LoadContactImageL(
         
     if( iImageBuffer )
         {
-        delete iImageDecoding;
-        iImageDecoding = NULL;
-        
         RFs& fs = CEikonEnv::Static()->FsSession();
         iImageDecoding = CCCAppImageDecoding::NewL(
                 *this, 

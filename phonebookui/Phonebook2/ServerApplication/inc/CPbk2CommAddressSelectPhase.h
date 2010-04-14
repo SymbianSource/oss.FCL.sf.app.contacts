@@ -235,6 +235,8 @@ class CPbk2CommAddressSelectPhase : public CBase,
         RPointerArray<CPbk2PresenceIconInfo> iPresenceIconArray;
         /// Own: ETrue, if presence icon has been retrieved
         TBool iPresenceIconsRetrieved;
+        /// Own: ETrue, if contact has been retrieved
+        TBool iContactRetrieved;
         /// Own: Communication method
         VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector iCommMethod;
     };

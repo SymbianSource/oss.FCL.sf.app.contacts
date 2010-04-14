@@ -47,12 +47,16 @@
 #include <VPbkDebug.h>
 
 #include <centralrepository.h> 
+#include <MVPbkStoreContactProperties.h>
 
 // CONSTANTS
 const TInt KNsmlDsGeoField = 0x0000;  //  defined in DS cenrep
 const TUid KCRUidGeoFieldInternalKeys = { 0x20022EE1 };  // 0x20022EE1 defined in DS cenrep
 
 _LIT8(KGEO, "GEO");
+_LIT8(KREV, "REV");
+
+
 
 namespace
     {
@@ -630,6 +634,10 @@ TInt CVPbkVCardPropertyExporter::Next(TInt& aRemainingSteps)
 	    TRAP( err, HandleOwnCardL() );
             if(err == KErrNone ) 
                 TRAP( err, HandleGroupCardL() );
+            
+            // Parse the REV (Revision) field if any
+            if(err == KErrNone ) 
+            	TRAP( err, AddRevL() ); 
 	    }
     return err;
     }
@@ -720,5 +728,45 @@ void CVPbkVCardPropertyExporter::StartL()
         }
     }
 
+void CVPbkVCardPropertyExporter::AddRevL()
+    {
+    MVPbkStoreContact* tempContact = const_cast<MVPbkStoreContact*>(iContact);
+    if( tempContact )
+        {	
+        MVPbkStoreContact2* tempContact2 = 	reinterpret_cast<MVPbkStoreContact2*>
+            (tempContact->StoreContactExtension (KMVPbkStoreContactExtension2Uid) );	    
+        if(tempContact2)
+            {
+            MVPbkStoreContactProperties* propreties = tempContact2->PropertiesL();
+            CleanupDeletePushL(propreties);
+            
+            // Convert the last_modified field defined in Contact Model database 
+            // to REV (Revision) field in vCard Specification 2.1
+            CParserPropertyValueDateTime* valueDateTime = 
+            		CreateDateTimePropertyL(
+                		propreties->LastModifiedL(), 
+                		TVersitDateTime::EIsUTC ); 
+            CleanupStack::PopAndDestroy(propreties);
+            
+            CleanupStack::PushL(valueDateTime);
+            CParserProperty* property = 
+            		CParserGroupedProperty::NewL(*valueDateTime, KREV, NULL, NULL);	
+            
+            CleanupStack::PushL( property );            
+            iParser->AddPropertyL(property); //takes ownership
+            CleanupStack::Pop(2);//valueDateTime and property
+            }
+        }
+    }	
+	
+CParserPropertyValueDateTime* CVPbkVCardPropertyExporter::CreateDateTimePropertyL
+    (const TTime& aDateTime, TVersitDateTime::TRelativeTime aRelativeTime)
+    {
+    TVersitDateTime* dateTime= new(ELeave)TVersitDateTime(aDateTime.DateTime(), aRelativeTime);
+    CleanupStack::PushL(dateTime);
+    CParserPropertyValueDateTime* dateTimeValue=new(ELeave) CParserPropertyValueDateTime(dateTime);
+    CleanupStack::Pop(dateTime);	
+    return dateTimeValue;
+    }
 
 // End of file

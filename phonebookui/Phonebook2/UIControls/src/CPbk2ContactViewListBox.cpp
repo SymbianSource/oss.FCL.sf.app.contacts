@@ -580,63 +580,7 @@ TBool CPbk2ContactViewListBox::IsContact( TInt aIndex ) const
 void CPbk2ContactViewListBox::Draw( const TRect& aRect ) const
     {
     CAknSingleGraphicStyleListBox::Draw(aRect);
-    
-    CPbk2NamesListControl& listControl = static_cast<CPbk2NamesListControl&>(iContainer);
-    TInt itemIndex = TopItemIndex() - listControl.CommandItemCount();
-   
-    // itemIndex >= 0 filter out command item
-    if ( itemIndex >= 0 && iShowPopupChar )
-        {
-        // Handle showing of popupcharacter when user scrolls list using using scroll bar
-        CWindowGc& gc = SystemGc();
-
-        TRgb normal;
-        AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                normal,
-                KAknsIIDQsnTextColors,
-                EAknsCIQsnTextColorsCG6 );
-
-        TAknLayoutRect layout;
-        layout.LayoutRect(Rect(), AknLayoutScalable_Apps::popup_navstr_preview_pane(0));
-
-        TAknLayoutRect cornerRect;
-        // skinned draw uses submenu popup window skin (skinned border)
-        
-        cornerRect.LayoutRect(
-            layout.Rect(),
-            SkinLayout::Submenu_skin_placing_Line_2() );
-
-        TRect innerRect( layout.Rect() );
-        innerRect.Shrink( cornerRect.Rect().Width(), cornerRect.Rect().Height() );
-
-        if ( !AknsDrawUtils::DrawFrame(
-                AknsUtils::SkinInstance(),
-                gc,
-                layout.Rect(),
-                innerRect,
-                KAknsIIDQsnFrPopupSub,
-                KAknsIIDQsnFrPopupCenterSubmenu ) )
-            {
-            // skinned border failed -> black border
-            gc.SetPenStyle( CGraphicsContext::ESolidPen );
-            gc.SetBrushColor( KRgbBlack );
-            gc.DrawRect( layout.Rect() );
-            }
-
-        TAknLayoutText textLayout;
-        textLayout.LayoutText(layout.Rect(), AknLayoutScalable_Apps::popup_navstr_preview_pane_t1(0).LayoutLine());
-
-        TPtrC desc(Model()->ItemTextArray()->MdcaPoint(View()->TopItemIndex()));
-
-        HBufC* buf = desc.Mid(desc.Find(_L("\t")) + 1, 1).AllocL();
-        TPtr textPtr = buf->Des();
-        textPtr.UpperCase();
-        
-        textLayout.DrawText(gc, textPtr, ETrue, normal );
-        
-        delete buf;
-        }
-
+    HandlePopupCharacter(NULL, Rect());
     }
 
 // --------------------------------------------------------------------------
@@ -682,6 +626,79 @@ void CPbk2ContactViewListBox::HandleLosingForeground()
         PointEvent.iType = TPointerEvent::EButton1Up ;
         TRAP_IGNORE( ScrollBarFrame()->VerticalScrollBar()->HandlePointerEventL( PointEvent ) );
         DrawDeferred();
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ContactViewListBox::HandlePopupCharacter
+// --------------------------------------------------------------------------
+//
+void CPbk2ContactViewListBox::HandlePopupCharacter( CWindowGc* aGc, const TRect& aRectOfListBoxItem ) const
+    {
+    CPbk2NamesListControl& listControl = static_cast<CPbk2NamesListControl&>(iContainer);
+    TInt itemIndex = TopItemIndex() - listControl.CommandItemCount();
+   
+    // itemIndex >= 0 filter out command item
+    if ( itemIndex >= 0 && iShowPopupChar )
+        {
+        TAknLayoutRect layout;
+        layout.LayoutRect(Rect(), AknLayoutScalable_Apps::popup_navstr_preview_pane(0));
+        
+        if (!layout.Rect().Intersects(aRectOfListBoxItem))
+            {
+            // If the rect of PopupCharacter not overlapped
+            // with aRectOfListBoxItem, do nothing.
+            return;
+            }
+
+        // Handle showing of popupcharacter when user scrolls list using using scroll bar
+        CWindowGc* gc = aGc;
+        if (!gc)
+            {
+            gc = &SystemGc();
+            }
+
+        TRgb normal;
+        AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
+                normal,
+                KAknsIIDQsnTextColors,
+                EAknsCIQsnTextColorsCG6 );
+
+        TAknLayoutRect cornerRect;
+        // skinned draw uses submenu popup window skin (skinned border)
+        cornerRect.LayoutRect(
+            layout.Rect(),
+            SkinLayout::Submenu_skin_placing_Line_2() );
+
+        TRect innerRect( layout.Rect() );
+        innerRect.Shrink( cornerRect.Rect().Width(), cornerRect.Rect().Height() );
+
+        if ( !AknsDrawUtils::DrawFrame(
+                AknsUtils::SkinInstance(),
+                *gc,
+                layout.Rect(),
+                innerRect,
+                KAknsIIDQsnFrPopupSub,
+                KAknsIIDQsnFrPopupCenterSubmenu ) )
+            {
+            // skinned border failed -> black border
+            gc->SetPenStyle( CGraphicsContext::ESolidPen );
+            gc->SetBrushColor( KRgbBlack );
+            gc->DrawRect( layout.Rect() );
+            }
+
+        TAknLayoutText textLayout;
+        textLayout.LayoutText(layout.Rect(), AknLayoutScalable_Apps::popup_navstr_preview_pane_t1(0).LayoutLine());
+
+        TPtrC desc(Model()->ItemTextArray()->MdcaPoint(View()->TopItemIndex()));
+
+        HBufC* buf = desc.Mid(desc.Find(_L("\t")) + 1, 1).AllocL();
+        TPtr textPtr = buf->Des();
+        textPtr.UpperCase();
+        
+        textLayout.DrawText(*gc, textPtr, ETrue, normal );
+        
+        delete buf;
         }
     }
 // End of File

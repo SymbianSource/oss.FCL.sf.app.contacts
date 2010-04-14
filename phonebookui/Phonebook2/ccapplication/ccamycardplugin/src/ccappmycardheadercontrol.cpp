@@ -93,7 +93,9 @@ void CCCAppMyCardHeaderControl::ConstructL(
         CFbsBitmap* bmp = NULL;
         CFbsBitmap* bmpMask = NULL;
                       
-        AknIconUtils::CreateIconL(
+        AknsUtils::CreateIconL(
+            AknsUtils::SkinInstance(),
+            KAknsIIDQgnPropWmlBmOvi,
             bmp,
             bmpMask,
             KMyCardIconDefaultFileName,

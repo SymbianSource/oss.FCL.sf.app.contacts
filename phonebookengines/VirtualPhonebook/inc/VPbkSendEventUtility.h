@@ -68,6 +68,23 @@ void SendEventToObservers( RefParam1& aRefParam1, ValParam2 aValParam2,
         }
     }
 
+template<typename RefParam1, typename ValParam2, typename RefParam3,
+    typename Observer, typename NotifyFunc>
+void SendEventToObserversWhenNotDestroyed( RefParam1& aRefParam1, ValParam2 aValParam2,
+        RefParam3& aRefParam3, RPointerArray<Observer>& aObservers,
+        NotifyFunc aNotifyFunc, TBool& aDestroy )
+    {
+    Observer* obs = NULL;
+    for ( TInt i = aObservers.Count() - 1; !aDestroy && i >= 0; --i )
+        {
+        if ( i < aObservers.Count() && obs != aObservers[i] )
+            {
+            obs = aObservers[i];
+            (obs->*aNotifyFunc)( aRefParam1, aValParam2,
+                    aRefParam3 );
+            }
+        }
+    }
 
 // -----------------------------------------------------------------------------
 // CopyPointerArrayL

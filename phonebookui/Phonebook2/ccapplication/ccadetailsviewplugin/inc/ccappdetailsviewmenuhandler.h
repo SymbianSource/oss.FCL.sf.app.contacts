@@ -120,7 +120,7 @@ private: // Commands for Options-menu items
     void DoCopyAddressCmdL();   
     void DoCopyNumberCmdL();
 	void DoShowOnMapCmdL();
-    TBool HasAddressFieldL();
+    TBool IsFocusedAddressFieldL();
     TBool IsAddressValidatedL();
 
     /**

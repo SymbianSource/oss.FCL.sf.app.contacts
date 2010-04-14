@@ -48,6 +48,10 @@
 #include <aiwdialdataext.h>
 #include <spsettingsvoiputils.h>
 
+//SPSettings
+#include <spsettings.h>
+#include <spproperty.h>
+
 // Debugging headers
 #include <Pbk2Debug.h>
 
@@ -276,6 +280,20 @@ void CPbk2CallCmd::ExecuteLD()
 
         // We also have select call type by ourselves
         SetCallTypeL( *dialData );
+        
+        // If field data has service prefix, extract it and find matched service id
+        // from SP setting, then set the matched service id to daildata.
+        // Service prefix from field data has higher priority over preferred service
+        TPtrC xspId;        
+        if ( ExtractXspId( iSelectedField, xspId ) )
+        	{
+        	TUint srcId = GetMatchedServiceIdL( xspId );
+        	
+            if ( srcId != (TUint)KErrNotFound )
+            	{
+            	dialData->SetServiceId( srcId );
+            	} 
+        	}      
         }
     else
         {
@@ -425,5 +443,94 @@ void CPbk2CallCmd::SetCallTypeL( CAiwDialDataExt& dialData )
             break;
         }
     }
+
+// --------------------------------------------------------------------------
+// CPbk2CallCmd::ExtractXspId
+// --------------------------------------------------------------------------
+//
+TBool CPbk2CallCmd::ExtractXspId(
+    const MVPbkStoreContactField* aSelectedField, TPtrC& aXSPId ) const
+    {
+    TBool found = EFalse;
+    _LIT( KColon, ":" );
+
+	const MVPbkContactFieldData& fieldData = aSelectedField->FieldData();
+	TPtrC data  = GetFieldData( fieldData );	  
+    TInt pos = data.Find( KColon );
+    
+    if ( pos > 0 )
+        {
+        aXSPId.Set( data.Left( pos ) );
+        found = ETrue;
+        }
+
+    return found;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2CallCmd::GetMatchedServiceIdL
+// --------------------------------------------------------------------------
+//
+TServiceId CPbk2CallCmd::GetMatchedServiceIdL( const TDesC& aXSPId )
+    {
+    TUint ret = ( TUint )KErrNotFound;
+    CDesCArrayFlat* nameArray = NULL;
+
+    RIdArray ids;
+    CleanupClosePushL( ids );
+
+    nameArray = new (ELeave) CDesCArrayFlat( 2 );
+    CleanupStack::PushL( nameArray );
+
+    CSPSettings* settings = CSPSettings::NewLC();
+
+    settings->FindServiceIdsL( ids );
+    settings->FindServiceNamesL( ids, *nameArray );
+
+    const TInt count = nameArray->MdcaCount();
+    for ( TInt i=0; i < count; i++ )
+        {
+        // Find the mathched service
+        TPtrC name = nameArray->MdcaPoint( i );
+        if ( !name.CompareF( aXSPId ) )
+            {
+            // Service found
+            ret = ids[i];
+            break;
+            }
+        }
+    CleanupStack::PopAndDestroy( 3 ); // ids, nameArray, settings
+
+    return ret;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2CallCmd::GetFieldData
+// --------------------------------------------------------------------------
+//
+TPtrC CPbk2CallCmd::GetFieldData( const MVPbkContactFieldData& aFieldData ) const
+	{
+	TPtrC text ( KNullDesC() );
+	
+    switch ( aFieldData.DataType() )
+        {
+        // Text storage type
+        case EVPbkFieldStorageTypeText:
+            {
+            const MVPbkContactFieldTextData& textData = MVPbkContactFieldTextData::Cast( aFieldData );
+            text.Set( textData.Text() );
+            break;
+            }
+        // URI storage type
+        case EVPbkFieldStorageTypeUri:
+            {
+            const MVPbkContactFieldUriData& textData = MVPbkContactFieldUriData::Cast( aFieldData );
+            text.Set( textData.Text() );
+            break;
+            }
+        }
+    
+    return text;
+	}
 
 // End of File

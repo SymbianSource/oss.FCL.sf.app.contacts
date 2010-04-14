@@ -67,7 +67,8 @@ class CPbk2ContactEditorDlgImpl : public CAknForm,
                                   public MPbk2ContactEditorControl,
                                   public MPbk2ContactEditorControlExtension,
                                   public MVPbkContactStoreObserver,
-                                  public MPbk2ImageFieldObserver
+                                  public MPbk2ImageFieldObserver,
+                                  public MCoeForegroundObserver
     {
     public: // Constructors and destructor
 
@@ -281,6 +282,10 @@ class CPbk2ContactEditorDlgImpl : public CAknForm,
          *
          */
         TInt ImageLoadingCancelled();
+
+    private: // From MCoeForegroundObserver
+        void HandleGainingForeground();
+        void HandleLosingForeground();        
         
     private: // From CEikDialog
         void LineChangedL(
@@ -456,6 +461,9 @@ class CPbk2ContactEditorDlgImpl : public CAknForm,
         HBufC* iTitleText;
         /// Own: Converts text between Unicode and SMS 7-bit 
         CCnvCharacterSetConverter* iConverter;
+        /// Ref: A pointer to stack variable in CloseDialog() for knowing
+        /// if the destructor has already been called
+        TBool* iDestroyedPtr;
     };
 
 #endif // CPBK2CONTACTEDITORDLGIMPL_H

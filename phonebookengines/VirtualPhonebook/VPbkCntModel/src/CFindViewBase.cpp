@@ -87,7 +87,8 @@ CFindViewBase::CFindViewBase(
         TBool aOwnsContacts ) :
             iParentView( aParentView ),
             iBaseView( aBaseView ),
-            iOwnsContacts( aOwnsContacts )
+            iOwnsContacts( aOwnsContacts ),
+            iDestroyed( NULL )
     {
     }
 
@@ -136,6 +137,10 @@ CFindViewBase::~CFindViewBase()
     delete iViewContact;
     delete iFieldTypeRefsList;
     delete iFindStrings;
+    if ( iDestroyed )
+        {
+        *iDestroyed = ETrue;
+        }
     }
 
 // --------------------------------------------------------------------------
@@ -501,6 +506,10 @@ void CFindViewBase::ContactViewReadyForFiltering(
         {
         ContactViewError( aView, error, EFalse );
         }
+    else
+        {
+        ContactViewReady( aView );
+        }
     }
 
 // --------------------------------------------------------------------------
@@ -786,13 +795,21 @@ void CFindViewBase::ResetContacts()
 void CFindViewBase::SendContactViewErrorEvent( TInt aError,
         TBool aErrorNotified )
     {
+    TBool destroy = EFalse;
+    iDestroyed = &destroy;
+
     // Send first to external observers...
-    VPbkEng::SendEventToObservers( *this, aError, aErrorNotified, iObservers,
-        &MVPbkContactViewObserver::ContactViewError );
+    VPbkEng::SendEventToObserversWhenNotDestroyed( *this, aError, aErrorNotified, iObservers,
+        &MVPbkContactViewObserver::ContactViewError, destroy );
     // ...then to internal. This ensures that events come first from lower
     // level find view.
-    VPbkEng::SendEventToObservers( *this, aError, aErrorNotified,
-        iFilteringObservers, &MVPbkContactViewObserver::ContactViewError );
+    VPbkEng::SendEventToObserversWhenNotDestroyed( *this, aError, aErrorNotified,
+        iFilteringObservers, &MVPbkContactViewObserver::ContactViewError, destroy );
+    
+    if ( !destroy )
+        {
+        iDestroyed = NULL;
+        }
     }
 } // namespace VPbkCntModel
 // End of File

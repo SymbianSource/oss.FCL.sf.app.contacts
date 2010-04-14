@@ -26,6 +26,7 @@
 
 // Virtual Phonebook engine
 #include <MVPbkBatchOperationObserver.h>
+#include <MVPbkContactStoreInfo.h>
 
 // Contact Model
 #include <cntdef.h>
@@ -101,7 +102,7 @@ inline void CDeleteContactsOperation::ConstructL
     iRemainingContactIds = CContactIdArray::NewL();
     iCurrentContactIds = CContactIdArray::NewL();
     
-    iGroupCount = iContactStore.NativeDatabase().GroupCount();
+    iGroupCount = iContactStore.StoreInfo().NumberOfGroupsL();
     
     const TInt count = aLinks.Count();
     for ( TInt i=0 ; i < count; ++i )

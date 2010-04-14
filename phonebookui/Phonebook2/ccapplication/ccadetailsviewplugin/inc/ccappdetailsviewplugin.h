@@ -33,6 +33,7 @@ class CCCAppDetailsViewMenuHandler;
 class MCCAParameter;
 class CCCAppCmsContactFetcherWrapper;
 class CCAContactorService;
+class MVPbkContactLink;
 
 /**
  *  Class implementing CCCAppViewPluginBase interface. This is
@@ -266,6 +267,9 @@ private: // data
     
 	/// Own: Pointer to contactor service.
     CCAContactorService* iContactorService;
+    
+    ///Contact Link - Owns
+    MVPbkContactLink* iLink;
 
 };
 

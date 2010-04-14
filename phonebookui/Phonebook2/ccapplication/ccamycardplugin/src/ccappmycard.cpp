@@ -800,7 +800,12 @@ void CCCAppMyCard::ContactOperationCompleted( TContactOpResult aResult )
     	{
     	TRAPD( err, LaunchContactEditorL( TPbk2ContactEditorParams::EModified | 
             TPbk2ContactEditorParams::EOwnContact) );
-    	if( err != KErrNone )
+    	
+    	if( err == KLeaveExit )
+    	    {                                                                           
+            iCloseCallBack->Call();
+            }    	    
+    	else if( err != KErrNone )
 			{
             LoadContact();
             iPlugin.HandleError( err );

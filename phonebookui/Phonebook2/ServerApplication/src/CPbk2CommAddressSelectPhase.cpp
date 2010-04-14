@@ -130,7 +130,8 @@ CPbk2CommAddressSelectPhase::CPbk2CommAddressSelectPhase
             iPriorities( aPriorities ),
             iRskBack( aRskBack ),
             iFieldTypeSelector ( aFieldTypeSelector ),
-            iCommMethod( aCommSelector )
+            iCommMethod( aCommSelector ),
+            iContactRetrieved( EFalse )
     {
     }
 
@@ -243,6 +244,7 @@ void CPbk2CommAddressSelectPhase::LaunchServicePhaseL()
     {
     // Start by retrieving first contact
     iState = EMainContactRetrieving;
+    iContactRetrieved = ETrue;
     RetrieveContactL();
     }
 
@@ -581,13 +583,18 @@ void CPbk2CommAddressSelectPhase::ErrorOccured(
         // Error occured, destroy presence icon array
         iPresenceIconsRetrieved = ETrue;
         iPresenceIconArray.ResetAndDestroy();
-    
-        // start address fetch dialog, if it waits for presence icons
-        TRAPD( err, DoSelectAddressesL() );
-        if ( err != KErrNone )
+        //Needn't to launch address fetch dialog if contact had been retrieved,
+        //because it will start this dialog after retrieve the contact,
+        //avoid multiple launching of the select dialog
+        if ( !iContactRetrieved )
             {
-            iObserver.PhaseError( *this, err );
-            }
+            // Launch the address fetch dialog if it's waiting for presence icons.
+            TRAPD( err, DoSelectAddressesL() );
+            if ( err != KErrNone )
+                {
+                iObserver.PhaseError( *this, err );
+                }
+        	}
         }
     }
 

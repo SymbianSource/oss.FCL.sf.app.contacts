@@ -12,7 +12,7 @@
 * Contributors:
 *
 * Description:  Implementation of details view plugin
-*  Version     : %version: he1s60#23.1.1.2.16 %
+*  Version     : %version: he1s60#23.1.1.2.17 %
 *
 */
 
@@ -37,6 +37,8 @@
 #include <VPbkContactStoreUris.h>
 #include <mccappengine.h>
 #include <ccacontactorservice.h>
+#include <MVPbkContactStoreProperties.h>
+#include <MVPbkContactStore.h>
 
 #include <Pbk2DataCaging.hrh>
 
@@ -97,6 +99,9 @@ CCCAppDetailsViewPlugin::~CCCAppDetailsViewPlugin()
 {
     //CCA_DP(KDetailsViewLogFile, CCA_L(">>> CCCAppDetailsViewPlugin::~CCCAppDetailsViewPlugin()"));
     
+    //Delete the Contact Link
+    delete iLink;
+
     //BG task for checking the visibility of this plugin
     if (iBgTaskForCheckingVisibility)
     {
@@ -193,6 +198,29 @@ void CCCAppDetailsViewPlugin::PreparePluginViewL(
     storeManager.RegisterStoreEventsL(*this);
     storeManager.OpenStoresL();
 
+    //Get the Contact Link
+    HBufC& contactData = AppEngine()->Parameter().ContactDataL();
+    HBufC8* contactData8 = HBufC8::NewLC( contactData.Size() );
+    TPtr8 contactData8Ptr( contactData8->Des() );
+    contactData8Ptr.Copy( contactData.Des() ); 
+    CVPbkContactManager* vPbkContactManager = &iAppServices->ContactManager();
+    
+    if( vPbkContactManager )
+    {
+        MVPbkContactLinkArray* contactArray = NULL;        
+        contactArray = vPbkContactManager->CreateLinksLC( contactData8Ptr );
+        if( contactArray->Count() > 0 )
+        {
+            iLink = contactArray->At( 0 ).CloneLC();
+            CleanupStack::Pop(); //link
+        }  
+        if( contactArray )
+        {
+            CleanupStack::PopAndDestroy(); // contactArray
+        }
+    }  
+    CleanupStack::PopAndDestroy(); // contactData8  
+    
     iSchedulerWait.Start();
 
     BaseConstructL(R_CCAPPDETAILSVIEW_MAINVIEW);
@@ -443,12 +471,35 @@ void CCCAppDetailsViewPlugin::OpenComplete()
 // CCCAppDetailsViewPlugin::StoreReady
 // --------------------------------------------------------------------------
 //
-void CCCAppDetailsViewPlugin::StoreReady(MVPbkContactStore& /*aContactStore*/)
+void CCCAppDetailsViewPlugin::StoreReady(MVPbkContactStore& aContactStore)
 {
-    if (iSchedulerWait.IsStarted())
+    if( iLink )
     {
-        iSchedulerWait.AsyncStop();
+        const MVPbkContactStoreProperties& storeProperties = 
+                            iLink->ContactStore().StoreProperties();
+        TVPbkContactStoreUriPtr uri = storeProperties.Uri();
+        if( 0 == uri.Compare( aContactStore.StoreProperties().Uri(), 
+                TVPbkContactStoreUriPtr::EContactStoreUriAllComponents ) )
+        {
+            delete iLink;
+            iLink = NULL;
+            if ( iSchedulerWait.IsStarted() )
+            {
+                iSchedulerWait.AsyncStop();
+            }
+        }
     }
+    else
+    {
+        //We shouldnt get here
+        //but if so, lets be safe
+        if ( iSchedulerWait.IsStarted() )
+        {
+            iSchedulerWait.AsyncStop();
+        }
+    }
+    
+    
 }
 
 // --------------------------------------------------------------------------

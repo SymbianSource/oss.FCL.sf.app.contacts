@@ -63,7 +63,7 @@ const TFindFieldFlags KNameFlags[] =
 	EFindCompanyNamePronunciation
 	};
 
-// Collation level that ignore accents (i.e. 'a' == '?).
+// Collation level that ignore accents (i.e. a == &auml; ).
 const TInt KCollationLevel= 0;
 
 //

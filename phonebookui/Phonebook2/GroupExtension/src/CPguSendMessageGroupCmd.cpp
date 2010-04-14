@@ -51,6 +51,9 @@
 #include <SenduiMtmUids.h>
 #include <CMessageData.h>
 #include <eikenv.h>
+#include <akntitle.h>
+#include <eikspane.h>
+#include <avkon.hrh>
 
 // Debugging headers
 #include <Pbk2Debug.h>
@@ -365,8 +368,21 @@ void CPguSendMessageGroupCmd::DoSendMessageL()
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
         ("CPguSendMessageGroupCmd::DoSendMessageL() start") );
 
+    // Gets current tile pane and saves it to title
+    HBufC* title = NULL;
+    CAknTitlePane* titlePane = NULL;
+    CEikStatusPane *sp = CEikonEnv::Static()->AppUiFactory()->StatusPane();
+    titlePane = STATIC_CAST( CAknTitlePane*, 
+        sp->ControlL( TUid::Uid( EEikStatusPaneUidTitle ) ) );
+    title = titlePane->Text()->AllocLC();
+
     Phonebook2::Pbk2AppUi()->ApplicationServices().SendUiL()->
         CreateAndSendMessageL( iMtmUid, iMessageData );
+
+    // Sets title pane for tile which was save
+    titlePane->SetText( title );
+    CleanupStack::Pop();
+
     iState = EStopping;
     IssueRequest();
     }

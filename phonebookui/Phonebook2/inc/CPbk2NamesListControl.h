@@ -242,7 +242,14 @@ class CPbk2NamesListControl : public CCoeControl,
         
         IMPORT_C void HandleViewForegroundEventL( TBool aForeground );
 
-    
+        /**
+         * For special case: Call this function to skip showing the 
+         * blocking progress note when mass update is going on in nameslistview.
+		 * When done, MassUpdateSkipProgressNote(EFalse) must always be
+		 * called to reset back to original state (even if a Leave would happen in between) 
+         * @param aSkip - ETrue if progress note should not be displayed. EFalse reset to normal.
+         */
+        IMPORT_C void MassUpdateSkipProgressNote( TBool aSkip );
         
     public: // From CCoeControl
         void MakeVisible(

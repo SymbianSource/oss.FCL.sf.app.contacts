@@ -301,7 +301,7 @@ void CCCAppCommLauncherPlugin::ProvideBitmapL(
 
         AknsUtils::CreateIconL(
             AknsUtils::SkinInstance(),
-            KAknsIIDDefault,//todo; get a proper skin
+            KAknsIIDQgnPropPbCommTab3,
             bmp,
             bmpMask,
             KPbk2ECEIconFileName,

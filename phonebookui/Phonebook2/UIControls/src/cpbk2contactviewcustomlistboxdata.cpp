@@ -50,6 +50,7 @@
 #include <MPbk2UiControlCmdItem.h>
 #include <AknFepInternalCRKeys.h>
 #include <AknLayoutFont.h>
+#include "CPbk2ContactViewListBox.h"
 
 //from PCS engine
 #include <CPcsDefs.h>
@@ -2007,11 +2008,18 @@ void CPbk2ContactViewCustomListBoxData::DrawSimpleL( const TListItemProperties& 
 #endif // RD_UI_TRANSITION_EFFECTS_LIST
         }
 
+    CEikListBox* list = static_cast<CEikListBox*>( iExtension->iControl );
+    if ( iExtension->iCurrentRow < list->BottomItemIndex() )
+        {
+        AknListUtils::DrawSeparator( aGc, aRect, aColors.iText, skin );
+        }
     DrawHighLight( aGc, aRect, aHighlight, skin );
     
     // The column draw loop
     column = 0;
     TInt subCellIndex = 0;
+    // Whether need to redraw the PopupCharacter
+    TBool redrawPopup = EFalse;
 
     if ( !iExtension ) { return; }
     
@@ -2296,6 +2304,14 @@ void CPbk2ContactViewCustomListBoxData::DrawSimpleL( const TListItemProperties& 
                 }
             aGc.SetPenStyle(CGraphicsContext::ESolidPen);
             }
+            if ( !redrawPopup && column > 1 )
+                {
+                // column > 1 means that this contact has more than 
+                // one column information to show, for excample name 
+                // and phonenumber. In this case, perhaps need to 
+                // redraw the popupCharacter
+                redrawPopup = ETrue;
+                }
         }
 #ifdef RD_UI_TRANSITION_EFFECTS_LIST
     if ( transApi )
@@ -2304,6 +2320,18 @@ void CPbk2ContactViewCustomListBoxData::DrawSimpleL( const TListItemProperties& 
         transApi->StopDrawing();
         }
 #endif //RD_UI_TRANSITION_EFFECTS_LIST
+    
+    // When scroll name list quickly using scroll bar, the popup charcter 
+    // will be overlaped by redraw of usrs' phonenumbers, to fix this,
+    // show the popup charcter after the refresh
+    if ( redrawPopup )
+        {
+        CPbk2ContactViewListBox* contactViewListBox = static_cast<CPbk2ContactViewListBox*>( iExtension->iControl );
+        if ( contactViewListBox )
+            {
+            contactViewListBox->HandlePopupCharacter(&aGc, aRect);
+            }
+        }
     }
 
 
@@ -2479,6 +2507,12 @@ void CPbk2ContactViewCustomListBoxData::Draw( const TListItemProperties& aItemPr
 #endif // RD_UI_TRANSITION_EFFECTS_LIST
         }
     
+    CEikListBox* list = static_cast<CEikListBox*>( iExtension->iControl );
+    if ( iExtension->iCurrentRow < list->BottomItemIndex() )
+        {
+        AknListUtils::DrawSeparator( aGc, aRect, aColors.iText, skin );
+        }
+
  // LISTBOX LINES NEED TO BE DRAWN HERE.
     DrawHighLight( aGc, aRect, aHighlight, skin );
 

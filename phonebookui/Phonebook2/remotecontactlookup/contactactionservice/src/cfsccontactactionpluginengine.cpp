@@ -100,6 +100,7 @@ void CFscContactActionPluginEngine::LoadPluginsL()
             // service totaly unusable
             if ( error == KErrNoMemory )
                 {
+                implArray.ResetAndDestroy();            
                 User::Leave( error );
                 }
             }
@@ -275,11 +276,14 @@ void CFscContactActionPluginEngine::QueryActionsL(
                  TFscContactActionVisibility::EFscActionHidden )
                 {
                 iContactActionQueryResult.iAction = &action;
-                iActionList->AppendL( iContactActionQueryResult );
+                if( iActionList )
+                    {
+                    iActionList->AppendL( iContactActionQueryResult );
+                    }
                 }
             
             // if only one action is needed we stop method execution
-            if ( iStopWhenOneActionFound && iActionList->Count() )
+            if ( iStopWhenOneActionFound && iActionList && iActionList->Count() )
                 {
                 iLastEvent = ECasEventIdle;
                 iObserver->QueryActionsComplete();
@@ -323,7 +327,10 @@ void CFscContactActionPluginEngine::QueryActionsL(
             iLastEvent = ECasEventIdle;
             iCurrentActionPlugin = 0;
             iCurrentAction = 0;
-            iActionList->Reset();
+            if( iActionList )
+                {
+                iActionList->Reset();
+                }
             break;
             }
             

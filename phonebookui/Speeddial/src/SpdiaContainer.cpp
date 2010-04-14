@@ -1052,10 +1052,14 @@ void CSpdiaContainer::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         return;
         }
   
-    if ( iLongTapDetector )
-        {
-        iLongTapDetector->PointerEventL( aPointerEvent );
-        }
+    if ( ( aPointerEvent.iType == TPointerEvent::EButton1Down ) ||
+             ( aPointerEvent.iType == TPointerEvent::EButton1Up ) )
+    	{
+        if ( iLongTapDetector )
+            {
+            iLongTapDetector->PointerEventL( aPointerEvent );
+            }
+    	}
     // Process only once when the grid control has been pressed
     if ( ( aPointerEvent.iType == TPointerEvent::EButton1Down ) ||
          ( aPointerEvent.iType == TPointerEvent::EDrag ) ||
@@ -1145,10 +1149,16 @@ CAknLongTapDetector& CSpdiaContainer::LongTapDetectorL()
 //    
  void CSpdiaContainer::HandleLongTapEventL(
         const TPoint& /*aPenEventLocation*/, 
-        const TPoint& /*aPenEventScreenLocation*/ )
+        const TPoint& aPenEventScreenLocation )
     {
-    //Get the Current Data Index
-    if ( AknLayoutUtils::PenEnabled() )
+    // Get the Current Data Index
+    TInt itemIndex( KErrNotFound );
+
+    // Get position when user press screen
+    iGrid->View()->XYPosToItemIndex( aPenEventScreenLocation, itemIndex );
+
+    // Compare two index
+    if ( AknLayoutUtils::PenEnabled() && ( itemIndex == iGrid->CurrentDataIndex() ) )
         {
         iLongTapUsed = ETrue;   	    
         TInt index = iGrid->CurrentDataIndex();
@@ -1192,9 +1202,9 @@ CAknLongTapDetector& CSpdiaContainer::LongTapDetectorL()
              statusPane->SwitchLayoutL( R_AVKON_STATUS_PANE_LAYOUT_USUAL );
              }
 
-         if ( !statusPane->IsVisible() )
+         if ( statusPane->IsVisible() )
              {
-             statusPane->MakeVisible( ETrue );
+             statusPane->MakeVisible( EFalse );
              }
 
          TRect mainPaneRect;

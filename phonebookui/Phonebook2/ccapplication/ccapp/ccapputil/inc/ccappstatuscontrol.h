@@ -50,7 +50,7 @@ protected:
 /**
  * Class implements the status control
  *
- *  @lib ccapputil.dll
+ *  @lib ccapputil.lib
  *  @since S60 9.2
  */
 NONSHARABLE_CLASS( CCCAppStatusControl ) : 
@@ -61,7 +61,9 @@ public: // Construction & destruction
     /**
      * Two-phased constructor.
      */
-	IMPORT_C static CCCAppStatusControl* NewL( CSpbContentProvider& aContentProvider, MCCAStatusControlObserver& aObserver );
+    IMPORT_C static CCCAppStatusControl* NewL( 
+            CSpbContentProvider& aContentProvider, 
+            MCCAStatusControlObserver& aObserver );
 
     /**
      * Destructor.
@@ -75,7 +77,8 @@ public: // New implementation
 	 * 
 	 * @aLink Link to current contact
 	 */
-     IMPORT_C void SetContactLinkL( MVPbkContactLink& aLink );
+    IMPORT_C void SetContactLinkL( 
+            MVPbkContactLink& aLink );
 
     /**
      * Change buttons state between pressed and released.
@@ -83,27 +86,20 @@ public: // New implementation
      * @param aPressed ETrue to make the button pressed
      */
     void SetPressed( TBool aPressed );
-    
-    /**
-     * Check if button is pressed down
-     * 
-     * @return ETrue if button is pressed
-     */
-    TBool IsPressed();
      
-     /**
-	 * Set the default status icon 
+    /**
+     * Set the default status icon 
 	 * 	 
 	 * @aDefaultStatusIcon Default status icon
 	 */
-     IMPORT_C void SetDefaultStatusIconL( CGulIcon* aDefaultStatusIcon );
+    IMPORT_C void SetDefaultStatusIconL( CGulIcon* aDefaultStatusIcon );
      
-     /**
+    /**
 	 * Set the default status text 
 	 * 	 
 	 * @aDefaultStatusText Default status text
 	 */
-     IMPORT_C void SetDefaultStatusTextL( HBufC* aDefaultStatusText );     
+    IMPORT_C void SetDefaultStatusTextL( HBufC* aDefaultStatusText );     
              
 public: // From CCoeControl
      
@@ -124,12 +120,12 @@ public: // From CCoeControl
 
     /**
      * From CoeControl
-    */
+     */
     void HandlePointerEventL( const TPointerEvent& aPointerEvent );
 
     /**
      * From CoeControl
-    */
+     */
     void SetContainerWindowL( const CCoeControl& aContainer );
     
     /**

@@ -60,11 +60,13 @@ inline void ReSizeIcon( CGulIcon* aIcon, const TSize& aSize )
         CFbsBitmap* mask = aIcon->Mask();
         if( bitmap )
             {
-            AknIconUtils::SetSize( bitmap, aSize, EAspectRatioPreservedAndUnusedSpaceRemoved );
+            AknIconUtils::SetSize( 
+                    bitmap, aSize, EAspectRatioPreservedAndUnusedSpaceRemoved );
             }
         if( mask )
             {
-            AknIconUtils::SetSize( mask, aSize, EAspectRatioPreservedAndUnusedSpaceRemoved );
+            AknIconUtils::SetSize( 
+                    mask, aSize, EAspectRatioPreservedAndUnusedSpaceRemoved );
             }
         }
     }
@@ -76,9 +78,11 @@ inline void ReSizeIcon( CGulIcon* aIcon, const TSize& aSize )
 // ---------------------------------------------------------------------------
 //                            
 EXPORT_C CCCAppStatusControl* CCCAppStatusControl::NewL( 
-    CSpbContentProvider& aContentProvider, MCCAStatusControlObserver& aObserver )
+    CSpbContentProvider& aContentProvider, 
+    MCCAStatusControlObserver& aObserver )
     {
-    CCCAppStatusControl* self= new(ELeave) CCCAppStatusControl( aContentProvider, aObserver );
+    CCCAppStatusControl* self= new(ELeave) CCCAppStatusControl( 
+            aContentProvider, aObserver );
     CleanupStack::PushL(self);
     self->ConstructL();
     CleanupStack::Pop(self);
@@ -90,7 +94,8 @@ EXPORT_C CCCAppStatusControl* CCCAppStatusControl::NewL(
 // ---------------------------------------------------------------------------
 //
 CCCAppStatusControl::CCCAppStatusControl( 
-    CSpbContentProvider& aContentProvider, MCCAStatusControlObserver& aObserver ) : 
+    CSpbContentProvider& aContentProvider, 
+    MCCAStatusControlObserver& aObserver ) : 
     iContentProvider( aContentProvider ),
     iObserver( aObserver ),
     iState( EStateUndefined )
@@ -186,15 +191,6 @@ void CCCAppStatusControl::SetPressed( TBool aPressed )
     }
 
 // ---------------------------------------------------------------------------
-// CCCAppStatusControl::IsPressed
-// ---------------------------------------------------------------------------
-//
-TBool CCCAppStatusControl::IsPressed()
-    {
-    return iPressed;
-    }
-
-// ---------------------------------------------------------------------------
 // CCCAppStatusControl::CountComponentControls
 // ---------------------------------------------------------------------------
 //
@@ -216,7 +212,8 @@ EXPORT_C void CCCAppStatusControl::SetContactLinkL( MVPbkContactLink& aLink )
 // CCCAppStatusControl::SetDefaultStatusIconL
 // ---------------------------------------------------------------------------
 //
-EXPORT_C void CCCAppStatusControl::SetDefaultStatusIconL( CGulIcon* aDefaultStatusIcon )
+EXPORT_C void CCCAppStatusControl::SetDefaultStatusIconL( 
+        CGulIcon* aDefaultStatusIcon )
 	{
 	delete iDefaultIcon;
 	iDefaultIcon = aDefaultStatusIcon;
@@ -231,7 +228,8 @@ EXPORT_C void CCCAppStatusControl::SetDefaultStatusIconL( CGulIcon* aDefaultStat
 // CCCAppStatusControl::SetDefaultStatusTextL
 // ---------------------------------------------------------------------------
 //
-EXPORT_C void CCCAppStatusControl::SetDefaultStatusTextL( HBufC* aDefaultStatusText ) 		
+EXPORT_C void CCCAppStatusControl::SetDefaultStatusTextL( 
+        HBufC* aDefaultStatusText ) 		
 	{
 	delete iDefaultStatusText;
 	iDefaultStatusText = aDefaultStatusText;
@@ -283,21 +281,21 @@ void CCCAppStatusControl::SetVariableLayouts( TInt aOption )
     {
     const TRect rect(Rect());
     // set background graphics layout
-    TAknWindowComponentLayout innerLayout(
+    const TAknWindowComponentLayout innerLayout(
             AknLayoutScalable_Apps::bg_button_pane_cp033( aOption ) );
     
     TAknLayoutRect innerLayoutRect;
     innerLayoutRect.LayoutRect( rect, innerLayout.LayoutLine() );
-    TRect innerRect( innerLayoutRect.Rect() );
+    const TRect innerRect( innerLayoutRect.Rect() );
     iBgContext->SetFrameRects( rect, innerRect );      
                        
     // status icon
-    TAknWindowComponentLayout statusIconLayout( 
+    const TAknWindowComponentLayout statusIconLayout( 
             AknLayoutScalable_Apps::phob2_cc_button_pane_g1( aOption ) );
     
     TAknLayoutRect statusIconLayoutRect;
     statusIconLayoutRect.LayoutRect( Rect(), statusIconLayout.LayoutLine() );
-    TRect statusIconRect( statusIconLayoutRect.Rect() );
+    const TRect statusIconRect( statusIconLayoutRect.Rect() );
     iStatusIconSize = statusIconRect.Size();
     iStatusImage->SetRect( statusIconRect );
       
@@ -405,7 +403,7 @@ void CCCAppStatusControl::SetContainerWindowL(
     CCoeControl::SetContainerWindowL( aContainer );
 
     // Assign window for child controls too
-    TInt childCount = CountComponentControls();
+    const TInt childCount = CountComponentControls();
     for( TInt i = 0; i < childCount; ++i )
         {
         ComponentControl( i )->SetContainerWindowL( *this );
@@ -452,10 +450,11 @@ void CCCAppStatusControl::DoStatusUpdateL( MVPbkContactLink& aLink,
         iStatusText = NULL;
         
         TPbk2IconId iconId;
-        CSpbContentProvider::TSpbContentType type = CSpbContentProvider::ETypeNone; 
+        CSpbContentProvider::TSpbContentType type = 
+                CSpbContentProvider::ETypeNone; 
         iContentProvider.GetContentL( aLink, iStatusText, iconId, type );
         
-        TInt count( RewrapStatusTextL() );
+        const TInt count( RewrapStatusTextL() );
         TInt option( 1 );
         if( count > 1 )
             {
@@ -584,7 +583,7 @@ TInt CCCAppStatusControl::RewrapStatusTextL()
 //
 void CCCAppStatusControl::Draw( const TRect& /*aRect*/ ) const
     {
-    TRect rect( Rect() );
+    const TRect rect( Rect() );
     MAknsSkinInstance* skin = AknsUtils::SkinInstance();
     CWindowGc& gc = SystemGc();
     
@@ -622,7 +621,13 @@ void CCCAppStatusControl::ShowDefaultContentL()
             HBufC* txt = iDefaultStatusText->AllocL();
             delete iStatusText;
             iStatusText = txt;
-            RewrapStatusTextL();
+            const TInt count( RewrapStatusTextL() );
+            TInt option( 1 );
+            if( count > 1 )
+                {
+                option = 0;
+                }
+            SetVariableLayouts( option );
             }
 		}
 	}

@@ -328,21 +328,31 @@ NONSHARABLE_CLASS( CPbk2HandleMassUpdate ) : public CBase
          * @return  ETrue if mass update process is ongoing.
          */
        TBool MassUpdateDetected();
+       
+       /**
+        * Call this function to skip the showing of blocking progress note.
+		* When done MassUpdateSkipProgressNote( EFalse ) must be called to reset.
+        */
+      void MassUpdateSkipProgressNote( TBool aSkip );       
 
     private:
         CPbk2HandleMassUpdate(CEikListBox& iListBox);
         void ConstructL();
         TBool HandleMassUpdateCheckL();
-        void HandleMassUpdateCheckReset();
+        void HandleMassUpdateBurstL(
+            const TTimeIntervalMicroSeconds aFromFirst, 
+            const TInt64 aDeltaMax64);        
+        void HandleMassUpdateResetCounters();
         void HandleMassUpdateDone();
         static TInt HandleMassUpdateTimerCallBack(TAny* aAny);
 
     private:
 		CEikListBox& iListBox;
-        TBool iHandleMassUpdate;
+        TBool iHandleMassUpdateDetected;
         TTime iHandleMassUpdateFirst;
         TTime iHandleMassUpdatePrev;
         TInt  iHandleMassUpdateCount;
+        TBool iHandleMassUpdateSkipDialog;        
         CPeriodic* iHandleMassUpdateTimer;
 		CAknWaitDialog*  iHandleMassUpdateDialog;
     };
@@ -692,8 +702,8 @@ TBool CPbk2HandleMassUpdate::MassUpdateCheckThis()
         }
     else
         {
-        //very first update, set time & counter
-        HandleMassUpdateCheckReset();
+        //very first update, reset time & counter
+        HandleMassUpdateResetCounters();
         }
     return ret;
     }
@@ -704,8 +714,18 @@ TBool CPbk2HandleMassUpdate::MassUpdateCheckThis()
 //
 TBool CPbk2HandleMassUpdate::MassUpdateDetected()
     {
-	return iHandleMassUpdate;
+	return iHandleMassUpdateDetected;
 	}
+
+// --------------------------------------------------------------------------
+// CPbk2HandleMassUpdate::MassUpdateSkipProgressNote
+// --------------------------------------------------------------------------
+//
+void CPbk2HandleMassUpdate::MassUpdateSkipProgressNote( TBool aSkip )
+    {
+    iHandleMassUpdateSkipDialog = aSkip;
+    HandleMassUpdateResetCounters();        
+    }
 
 // --------------------------------------------------------------------------
 // CPbk2HandleMassUpdate::HandleMassUpdateCheckL
@@ -724,34 +744,19 @@ TBool CPbk2HandleMassUpdate::HandleMassUpdateCheckL()
 
     TTime now;
     now.UniversalTime();
-    TTimeIntervalMicroSeconds fs = now.MicroSecondsFrom(iHandleMassUpdateFirst);
-    TTimeIntervalMicroSeconds ps = now.MicroSecondsFrom(iHandleMassUpdatePrev);
+    TTimeIntervalMicroSeconds fromFirst = 
+            now.MicroSecondsFrom(iHandleMassUpdateFirst);
+    TTimeIntervalMicroSeconds fromPrev = 
+            now.MicroSecondsFrom(iHandleMassUpdatePrev);
     TTimeIntervalMicroSeconds maxCumu(KDeltaAverage * iHandleMassUpdateCount);
 
-    if( fs < maxCumu && ps < KMaxPrev )
+    if( fromFirst < maxCumu && fromPrev < KMaxPrev )
         {
         //mass update burst ongoing
-        iHandleMassUpdate=ETrue;
-        iHandleMassUpdateCount++;
-        iHandleMassUpdatePrev.UniversalTime();
-        iListBox.UpdateScrollBarsL();
-
-        if( !iHandleMassUpdateDialog )
-            {
-            iHandleMassUpdateDialog = new(ELeave) CAknWaitDialog
-                (reinterpret_cast<CEikDialog**>(&iHandleMassUpdateDialog), EFalse);
-            iHandleMassUpdateDialog->SetTone(CAknNoteDialog::ENoTone);
-            iHandleMassUpdateDialog->ExecuteLD(R_QTN_GEN_NOTE_SYNCHRONIZING_PROGRESS);
-			//ExecuteLD above handles validity of pointer iHandleMassUpdateDialog plus
-			//cleanupstack
-            }
-
-        TCallBack callback(HandleMassUpdateTimerCallBack, this);
-        TTimeIntervalMicroSeconds32 delta32(KDeltaMax);
-        iHandleMassUpdateTimer->Start( delta32, delta32, callback );
-        ret = ETrue;
+        HandleMassUpdateBurstL(fromFirst, KDeltaMax);    
+        ret = ETrue;    
         }
-    else if(iHandleMassUpdate)
+    else if(iHandleMassUpdateDetected)
         {
         //mass update burst ended
         HandleMassUpdateDone();
@@ -759,19 +764,60 @@ TBool CPbk2HandleMassUpdate::HandleMassUpdateCheckL()
         }
     else
         {
-        //just normal update, set time & counter
-        HandleMassUpdateCheckReset();
+        //just normal update so reset counters
+        HandleMassUpdateResetCounters();
         }
     return ret;
     }
 
+// --------------------------------------------------------------------------
+// CPbk2HandleMassUpdate::HandleMassUpdateBurstL
+// --------------------------------------------------------------------------
+//
+void CPbk2HandleMassUpdate::HandleMassUpdateBurstL(
+    const TTimeIntervalMicroSeconds aFromFirst,
+    const TInt64 aDeltaMax64)
+    {
+    const TInt64 KMinWaitBeforeBlockUi(1500000);    
+    const TTimeIntervalMicroSeconds KWait(KMinWaitBeforeBlockUi);    
+    
+    //mass update burst ongoing, nameslist behaviour can be altered
+    iHandleMassUpdateDetected=ETrue;
+    iHandleMassUpdateCount++;
+    iHandleMassUpdatePrev.UniversalTime();
+    iListBox.UpdateScrollBarsL();
+
+    if( !iHandleMassUpdateDialog && 
+        !iHandleMassUpdateSkipDialog && 
+        aFromFirst > KWait)        
+        {
+        //mass update burst ongoing, ok also to block ui
+        iHandleMassUpdateDialog = new(ELeave) CAknWaitDialog
+            (reinterpret_cast<CEikDialog**>(&iHandleMassUpdateDialog), EFalse);
+        iHandleMassUpdateDialog->SetTone(CAknNoteDialog::ENoTone);
+        iHandleMassUpdateDialog->ExecuteLD(R_QTN_GEN_NOTE_SYNCHRONIZING_PROGRESS);
+        //ExecuteLD above handles validity of pointer iHandleMassUpdateDialog plus
+        //cleanupstack
+        }
+    else if( iHandleMassUpdateDialog && iHandleMassUpdateSkipDialog)
+        {
+        //burst ongoing but do not not block ui
+        TRAP_IGNORE(iHandleMassUpdateDialog->ProcessFinishedL());
+        delete iHandleMassUpdateDialog;
+        iHandleMassUpdateDialog = NULL;        
+        }
+
+    TCallBack callback(HandleMassUpdateTimerCallBack, this);
+    TTimeIntervalMicroSeconds32 delta32(aDeltaMax64);
+    iHandleMassUpdateTimer->Start( delta32, delta32, callback );
+    }
+
 // ----------------------------------------------------------------------------
-// CPbk2HandleMassUpdate::HandleMassUpdateCheckReset
+// CPbk2HandleMassUpdate::HandleMassUpdateResetCounters
 // ----------------------------------------------------------------------------
 //
-void CPbk2HandleMassUpdate::HandleMassUpdateCheckReset()
+void CPbk2HandleMassUpdate::HandleMassUpdateResetCounters()
     {
-    iHandleMassUpdate=EFalse;
     iHandleMassUpdateCount = 1;  //set as first candidate for next burst
     iHandleMassUpdateFirst.UniversalTime();
     iHandleMassUpdatePrev=iHandleMassUpdateFirst;
@@ -803,7 +849,8 @@ void CPbk2HandleMassUpdate::HandleMassUpdateDone()
         iHandleMassUpdateDialog = NULL;
         }
 
-    HandleMassUpdateCheckReset();
+    iHandleMassUpdateDetected = EFalse;
+    HandleMassUpdateResetCounters();
     iListBox.SetCurrentItemIndex(0);
     iListBox.SetTopItemIndex(0);
     }
@@ -1224,6 +1271,15 @@ EXPORT_C void CPbk2NamesListControl::SetCurrentGroupLinkL( MVPbkContactLink* aGr
         static_cast<CPbk2PredictiveViewStack*> (iViewStack)->SetCurrentGroupLinkL(aGroupLinktoSet);
         }
     return;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2NamesListControl::MassUpdateSkipProgressNote
+// --------------------------------------------------------------------------
+//
+EXPORT_C void CPbk2NamesListControl::MassUpdateSkipProgressNote( TBool aSkip )
+    {
+    iCheckMassUpdate->MassUpdateSkipProgressNote( aSkip ); 
     }
 
 // --------------------------------------------------------------------------

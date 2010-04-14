@@ -84,18 +84,13 @@ EXPORT_C TBool CPbk2RingingToneFetch::FetchRingingToneL
     TBool result = list->ShowMediaFileListL( &aRingingToneFile,
             &nullItem, NULL, NULL );
     CleanupStack::PopAndDestroy( list );
-        
-    // Set result to be ETrue if nullItem (like default tone) 
-    // is selected in media file list.
-    if ( KErrNotFound != nullItem )
+
+    //if DefaultTone is selected, then empty aRingingToneFile
+    if( !ringingToneFile.Compare(aRingingToneFile) )
         {
-        //if DefaultTone is selected, then empty aRingingToneFile
-        if( !ringingToneFile.Compare(aRingingToneFile) )
-        	{
-        	aRingingToneFile.Zero();
-        	}
-        result = ETrue;
+        aRingingToneFile.Zero();
         }
+
     return result;
     }
 

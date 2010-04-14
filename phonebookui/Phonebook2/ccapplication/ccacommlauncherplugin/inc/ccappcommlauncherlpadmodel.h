@@ -72,13 +72,14 @@ public:
 
 	enum TFlags
 	    {
-	    EDefaultSet = 1
+	    EDefaultSet = 0x01,
+	    EHasPresenceIcon = 0x02
 	    };
 
 	VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector iContactAction;
 	TBuf<KCCAppCommLauncherMaxButtonDataTextLength> iText;	
 	TInt iNumberOfAddresses;
-	TInt iFlags;
+	TUint iFlags;
 	TBuf<KCCAppCommLauncherMaxButtonDataTextLength> iPopupText;
 	TBool iClipFromBegining;
 	};
@@ -170,7 +171,8 @@ public: // New
         EVideocallIconIndex,
         EAddressValIconIndex,
         EAddressNotValIconIndex,
-        EMultiIconIndex
+        EMultiIconIndex,
+        EPresenceIconIndex
         };
 
     /**
@@ -240,20 +242,10 @@ public: // New
     
     
     /**
-     * Loads the VOIP Button Icon & Label 
-     * Usecase : If we have only one voip service, the voip(Internet Call)
-     * button should have the Branded Icon of that Service and the label
-     * must be "ServiceName" appended with "Call".
-     * eg : If we have a service named SKYPE installed in the Phone
-     * and if SKYPE supports VOIP, then the VOIP Button Icon should be
-     * the Branded Icon of SKYPE and the Button Label should be
-     * "SKYPE CALL". 
-     * @return TInt - Stores the Info regd whether Image/Text was set for the
-     *          VOIP Buttton or not. We use KVOIPButtonImageSet && with the returnval
-     *          to know whether Image has been set or not
-     *          Will be used in   HandleNotifyChange
-     */
-    TInt LoadVoipButtonInfoL();
+     * Handle resource change
+     *
+     */ 
+    void ResourceChangedL();
    
 
 private: // New
@@ -291,20 +283,6 @@ private: // New
     void ButtonTextL( 
         VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aContactAction, 
         TDes& aText );
-
-    /**
-     * Replace the bitmap with original default bitmap. Supports only
-     * ECmsPresenceVoIPNotification and ECmsPresenceChatNotification.
-     * Will leave with KErrArgument if tried with other type.
-     *
-     * @since S60 v5.0
-     * @param aBitmap, aMask bitmaps to be replaced
-     * @param aServiceType service type identifying the bitmap
-     */     
-    void ReplaceWithDefaultIconL(
-        CFbsBitmap*& aBitmap,
-        CFbsBitmap*& aMask,
-        const TUint32 aServiceType );
 
     /**
      * Draws find/show on map button
@@ -369,11 +347,27 @@ private:
      */            
 	void DoHandleNotifyChangeL() ;
 	
-	/**
-     * Get the size of service bitmap
-	 * @return - Size of the bitmap
-     */	
-	TSize GetServiceBitmapSize();
+    /**
+     * Loads the VOIP Button Icon & Label 
+     * Usecase : If we have only one voip service, the voip(Internet Call)
+     * button should have the Branded Icon of that Service and the label
+     * must be "ServiceName" appended with "Call".
+     * eg : If we have a service named SKYPE installed in the Phone
+     * and if SKYPE supports VOIP, then the VOIP Button Icon should be
+     * the Branded Icon of SKYPE and the Button Label should be
+     * "SKYPE CALL". 
+     * @return TInt - Stores the Info regd whether Image/Text was set for the
+     *          VOIP Buttton or not. We use KVOIPButtonImageSet && with the returnval
+     *          to know whether Image has been set or not
+     *          Will be used in   HandleNotifyChange
+     */
+    TInt LoadVoipButtonInfoL();
+    
+    /*
+     * Calculate the layout size
+     */
+    void CalculateLayoutSize();
+    
     
 private:
     //From MSPNotifyChangeObserver
@@ -484,7 +478,14 @@ private: // Data
     //Owns - Service provider settings change notifer
     CSPNotifyChange* iSPNotifyChange;
     
-    HBufC* iTextBuf;     
+	// Owns - Text buffer
+    HBufC* iTextBuf; 
+    
+	// Size for service icon
+    TSize iServiceIconSize;
+    
+	// Size for presence icon
+    TSize iPresenceIconSize;
         
     inline void RunLaunchLogger()
         {

@@ -170,24 +170,6 @@ void CPbk2ContactViewCustomListBoxItemDrawer::DrawItemMark(TBool /*aItemIsSelect
     // not used in S60
     }
 
-inline void DrawSeparator( 
-    CGraphicsContext& aGc, 
-    const TRect& aRect, const TRgb& aColor )
-    {
-    aGc.SetBrushStyle( CGraphicsContext::ENullBrush );
-    aGc.SetPenStyle( CGraphicsContext::ESolidPen );
-    TRgb color( aColor );
-    color.SetAlpha( 32 );
-    aGc.SetPenColor( color );
-    TRect lineRect( aRect );
-    TInt gap = AknLayoutScalable_Avkon::listscroll_gen_pane( 0 ).LayoutLine().it; 
-    lineRect.Shrink( gap, 0 );
-    lineRect.Move( 0, -1 );
-    aGc.DrawLine( TPoint( lineRect.iTl.iX, lineRect.iBr.iY ), 
-                  TPoint( lineRect.iBr.iX, lineRect.iBr.iY ) );
-    }
-
-
 void CPbk2ContactViewCustomListBoxItemDrawer::DrawItemText( TInt aItemIndex,
                                              const TRect& aItemTextRect,
                                              TBool aItemIsCurrent,
@@ -262,13 +244,6 @@ void CPbk2ContactViewCustomListBoxItemDrawer::DrawItemText( TInt aItemIndex,
         }
     ColumnData()->SetCurrentItemIndex(aItemIndex);
     ColumnData()->Draw(Properties(aItemIndex), *iGc,&des,aItemTextRect,(aItemIsCurrent /*|| aViewIsEmphasized*/),colors, aItemIndex);
-
-    const TInt itemCount(iModel->NumberOfItems());
-    if( itemCount - 1 > aItemIndex  )
-        {
-        DrawSeparator( *iGc, aItemTextRect, iTextColor );
-        }
-
     
 #ifdef RD_UI_TRANSITION_EFFECTS_LIST
     if ( transApi )

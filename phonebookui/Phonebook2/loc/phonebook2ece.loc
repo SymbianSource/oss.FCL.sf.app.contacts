@@ -940,4 +940,20 @@
 //
 #define qtn_phob_opt_change_image "Change image"
 
+//AIM service localized name 
+//l:list_single_graphic_pane_t1_cp2
+//r:9.2 
+#define qtn_xsp_aim "AIM"
+
+//MySpace service localized name 
+//l:list_single_graphic_pane_t1_cp2
+//r:9.2 
+#define qtn_xsp_myspace "MySpace" 
+
+//ICQ service localized name 
+//l:list_single_graphic_pane_t1_cp2
+//r:9.2 
+#define qtn_xsp_icq "ICQ" 
+
+
 // End of File

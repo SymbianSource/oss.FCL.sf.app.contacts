@@ -187,6 +187,8 @@ RESOURCE ARRAY r_name_list_icon_info_array
             mbmFileName = KPbk2EceMifFile;
             iconId = EMbmPhonebook2eceQgn_prop_pb_thumb_unknown;
             maskId = EMbmPhonebook2eceQgn_prop_pb_thumb_unknown_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropPbThumbUnknown;
             },
         PBK2_ICON_INFO
             {
@@ -199,6 +201,8 @@ RESOURCE ARRAY r_name_list_icon_info_array
             mbmFileName = KPbk2EceMifFile;
             iconId = EMbmPhonebook2eceQgn_prop_pb_thump_mycard;
             maskId = EMbmPhonebook2eceQgn_prop_pb_thump_mycard_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropPbThumpMycard;
             },
         PBK2_ICON_INFO
             {
@@ -211,6 +215,8 @@ RESOURCE ARRAY r_name_list_icon_info_array
             mbmFileName = KPbk2EceMifFile;
             iconId = EMbmPhonebook2eceQgn_prop_pb_add_top;
             maskId = EMbmPhonebook2eceQgn_prop_pb_add_top_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropPbAddTop;
             }
         };
     }

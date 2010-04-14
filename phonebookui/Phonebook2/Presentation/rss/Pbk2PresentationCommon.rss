@@ -2141,6 +2141,21 @@ RESOURCE PHONEBOOK2_WELL_KNOWN_SERVICES r_phonebook2_well_known_services
             {
             serviceName = "Skype";
             localizedName = qtn_xsp_skype;
+            },
+        PHONEBOOK2_WELL_KNOWN_SERVICE
+            {
+            serviceName = "AIM";
+            localizedName = qtn_xsp_aim;
+            },
+        PHONEBOOK2_WELL_KNOWN_SERVICE
+            {
+            serviceName = "MySpace";
+            localizedName = qtn_xsp_myspace;
+            },
+        PHONEBOOK2_WELL_KNOWN_SERVICE
+            {
+            serviceName = "ICQ";
+            localizedName = qtn_xsp_icq;
             }
         };
     }

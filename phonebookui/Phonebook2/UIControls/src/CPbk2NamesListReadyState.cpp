@@ -2081,7 +2081,10 @@ void CPbk2NamesListReadyState::AdaptiveSearchTextChanged( CAknSearchField* aSear
         }
     }
 
-
+// --------------------------------------------------------------------------
+// CPbk2NamesListReadyState::CmdItemVisibilityChanged
+// --------------------------------------------------------------------------
+//
 void CPbk2NamesListReadyState::CmdItemVisibilityChanged( TInt aCmdItemId, TBool aVisible )
     {
     TInt cmdItemIndex = FindCommand(aCmdItemId);

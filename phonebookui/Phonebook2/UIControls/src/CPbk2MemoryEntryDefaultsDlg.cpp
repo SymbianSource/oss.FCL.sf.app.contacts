@@ -34,6 +34,10 @@
 #include <Phonebook2PrivateCRKeys.h>
 #include <TPbk2DestructionIndicator.h>
 #include <phonebook2ece.mbg>
+#include <CPbk2ApplicationServices.h>
+#include <CPbk2ServiceManager.h>
+#include <MPbk2ApplicationServices.h>
+#include <ccappcommlauncherpluginrsc.rsg>
 
 // Virtual Phonebook
 #include <CVPbkContactManager.h>
@@ -58,6 +62,13 @@
 #include <eikclbd.h>
 #include <aknlists.h>
 #include <aknPopup.h>
+#include <aknlayoutscalable_avkon.cdl.h>
+
+//SpSettings
+#include <spsettings.h>
+#include <spentry.h>
+#include <spproperty.h>
+
 
 // For checking mailbox accounts
 #include <emailinterfacefactory.h>
@@ -482,7 +493,7 @@ CGulIcon* MapSelectorId2IconLC( const VPbkFieldTypeSelectorFactory::TVPbkContact
 inline CPbk2MemoryEntryDefaultsDlg::CPbk2MemoryEntryDefaultsDlg
         ( CPbk2PresentationContact& aContact,
           CVPbkContactManager& aManager ):
-            iContact( aContact ), iManager( aManager ), iLVFlags( 0 )
+            iContact( aContact ), iManager( aManager ), iLVFlags( 0 ), iServiceName( NULL )
     {
     // Do nothing
     }
@@ -502,6 +513,7 @@ CPbk2MemoryEntryDefaultsDlg::~CPbk2MemoryEntryDefaultsDlg()
     delete iListBox;
     delete iAttributeProcess;
     delete iDefaultsTable;
+    delete iServiceName;
 
     FeatureManager::UnInitializeLib();
 
@@ -721,18 +733,35 @@ void CPbk2MemoryEntryDefaultsDlg::CreateLinesL() const
             }
 
         // Allocate and format the listbox line
-        HBufC* lineBuf = HBufC::NewLC( KFormat().Length()
-            + defaultFieldText->Length() + label.Length() );
-        TPtr line( lineBuf->Des() );
-        
-        // Important: iconArray positions matchs with 
-        // iDefaultsTable positions. idx -> icon position
-        line.Format( KFormat, idx, defaultFieldText, &label);
-        
-        lines->AppendL( line ) ;
+        HBufC* lineBuf = NULL;
+        // If only one Voip service avaliable, use voip service name on internet call item
+        if ( iServiceName && 
+        		( iDefaultsTable->At( idx ) == VPbkFieldTypeSelectorFactory::EVOIPCallSelector ) )
+        	{
+        	// Use Voip service name
+            HBufC* str = StringLoader::LoadLC( R_QTN_CCA_VOIP_CALL_WITH_SERVICENAME, 
+                        *iServiceName,             
+                        iCoeEnv );
+        	lineBuf = HBufC::NewLC( KFormat().Length()
+        	            + str->Length() + label.Length() );
+        	TPtr line( lineBuf->Des() );
+        	line.Format( KFormat, idx, str, &label);
+        	lines->AppendL( line ) ;
+        	CleanupStack::PopAndDestroy(2); // lineBuf, str
+        	}
+        else
+        	{
+        	// Use default text
+        	lineBuf = HBufC::NewLC( KFormat().Length()
+        	            + defaultFieldText->Length() + label.Length() );
+        	TPtr line( lineBuf->Des() );
+        	line.Format( KFormat, idx, defaultFieldText, &label);
+        	lines->AppendL( line ) ;
+        	CleanupStack::PopAndDestroy(); // lineBuf
+        	}
         
         // Cleanup
-        CleanupStack::PopAndDestroy( 2 ); // lineBuf, defaultFieldText        
+        CleanupStack::PopAndDestroy(); // defaultFieldText        
         }
    
     CleanupStack::PopAndDestroy(); // noDefault
@@ -928,6 +957,24 @@ void CPbk2MemoryEntryDefaultsDlg::CreateTableOfDefaultsL()
         // with iDefaultsTable positions
         iconArray->AppendL( icon );
         
+        // If only one Voip service avaliable, use brand icon on internet call item
+        TServiceId serviceId;
+        if ( ( iDefaultsTable->At( idx ) == VPbkFieldTypeSelectorFactory::EVOIPCallSelector ) &&
+        		( SupportedVOIPServicesL( serviceId ) == 1 ) )
+        	{
+            CFbsBitmap* bitmap (NULL);
+            CFbsBitmap* mask (NULL);
+
+            // Load Voip brand bitmap and mask              
+            LoadVoipServiceInfoL( serviceId, bitmap, mask );
+            
+            if ( bitmap || mask )
+                {          
+                iconArray->At(idx)->SetBitmap(bitmap);
+                iconArray->At(idx)->SetMask(mask);
+                }
+        	}
+        
         CleanupStack::Pop(1); // icon
         }  
     // iListBox takes ownership of iconArray
@@ -1053,6 +1100,106 @@ void CPbk2MemoryEntryDefaultsDlg::RemoveDefaultL
         ( aSelectorID, *defaultProperties );
     CleanupStack::Pop( defaultProperties );
     iAttributeProcess->RemoveDefaultsL( defaultProperties );
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2MemoryEntryDefaultsDlg::SupportedVOIPServicesL
+// Get supported Voip services
+// --------------------------------------------------------------------------
+//
+TInt CPbk2MemoryEntryDefaultsDlg::SupportedVOIPServicesL( TServiceId& aServiceId )
+    {   
+    TInt availableVoipService = 0;    
+    RIdArray idArray;
+    CleanupClosePushL(idArray);
+    
+    CSPSettings* settings = CSPSettings::NewL();
+    CleanupStack::PushL( settings );
+    
+    User::LeaveIfError( settings->FindServiceIdsL(idArray) ); 
+    
+    const TInt count = idArray.Count();   
+    for (TInt i = 0; i < count; ++i)
+        {
+        TBool supported( EFalse );
+        CSPEntry* entry = CSPEntry::NewLC();
+        TServiceId id = idArray[i];
+        User::LeaveIfError( settings->FindEntryL(id, *entry) );
+        const CSPProperty* property = NULL;
+        
+        if (entry->GetProperty(property, EPropertyServiceAttributeMask) == KErrNone)
+            {
+            TInt value = 0;
+            property->GetValue(value);
+            supported = value & ESupportsInternetCall; 
+            }
+        
+        if ( supported )
+            {
+            availableVoipService++;            
+            aServiceId = id;
+            }
+        CleanupStack::PopAndDestroy(); // entry
+        }
+    CleanupStack::PopAndDestroy(2); // settings, idArray    
+    
+    return availableVoipService;
+    }
+
+// ---------------------------------------------------------------------------
+// CPbk2MemoryEntryDefaultsDlg::LoadVoipServiceInfoL
+// Load Voip service info
+// ---------------------------------------------------------------------------
+//
+void CPbk2MemoryEntryDefaultsDlg::LoadVoipServiceInfoL( 
+            TServiceId aServiceId,
+            CFbsBitmap*& aBitmap, CFbsBitmap*& aMask )
+    {   
+    CPbk2ApplicationServices* appServices =
+        CPbk2ApplicationServices::InstanceLC();
+    
+    CPbk2ServiceManager& servMan = appServices->ServiceManager();
+    const CPbk2ServiceManager::RServicesArray& services = servMan.Services();
+    
+    const TInt count = services.Count();   
+    for ( TInt i = 0; i < count; i++ )
+        {
+        const CPbk2ServiceManager::TService& service = services[i];
+
+        if ( service.iServiceId == aServiceId )
+            {
+            // Calculate preferred size for xsp service icon 
+            TRect mainPane;
+            AknLayoutUtils::LayoutMetricsRect(
+                AknLayoutUtils::EMainPane, mainPane );
+            TAknLayoutRect listLayoutRect;
+            listLayoutRect.LayoutRect(
+                mainPane,
+                AknLayoutScalable_Avkon::list_double_large_graphic_pane_g1(0).LayoutLine() );
+            TSize size(listLayoutRect.Rect().Size());
+            
+            AknIconUtils::SetSize(
+                    service.iBitmap,
+                    size );
+            AknIconUtils::SetSize(
+                    service.iMask,
+                    size );                               
+    		
+            aBitmap = new (ELeave) CFbsBitmap;
+            CleanupStack::PushL( aBitmap );
+            aBitmap->Duplicate( service.iBitmap->Handle() );
+            
+            aMask = new (ELeave) CFbsBitmap;
+            CleanupStack::PushL( aMask );
+            aMask->Duplicate( service.iMask->Handle() );                    
+                     
+            iServiceName = service.iDisplayName.AllocL();
+            CleanupStack::Pop( 2 ); // aMask, aBitmap
+            
+            break;
+            }
+        }
+    CleanupStack::PopAndDestroy(); // appServices
     }
 
 //  End of File

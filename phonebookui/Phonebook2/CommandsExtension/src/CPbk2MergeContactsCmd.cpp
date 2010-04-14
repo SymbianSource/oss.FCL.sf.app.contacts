@@ -468,10 +468,9 @@ void CPbk2MergeContactsCmd::ShowContactsMergedNoteL()
         prompt = StringLoader::LoadLC( R_QTN_PHOB_NOTE_UNNAMED_CONTACTS_WERE_MERGED , *strings );
         }
 
-    CAknNoteDialog* dlg = new( ELeave ) CAknNoteDialog( CAknNoteDialog::ENoTone );
-    dlg->PrepareLC( R_PBK2_MERGE_CONTACTS_CONFIRMATION_NOTE );
-    dlg->SetTextL( *prompt );
-    dlg->RunLD();
+    CAknQueryDialog* dlg = CAknQueryDialog::NewL();
+    dlg->ExecuteLD( R_PBK2_MERGE_CONTACTS_CONFIRMATION_NOTE, *prompt );
+    
     CleanupStack::PopAndDestroy( prompt );
     CleanupStack::PopAndDestroy( strings );
     CleanupStack::PopAndDestroy( unnamed );
@@ -590,10 +589,8 @@ void CPbk2MergeContactsCmd::FetchCompletedL(
             // Show a note
             HBufC* prompt = NULL;
             prompt = StringLoader::LoadLC( R_QTN_PHOB_NOTE_SELECT_2_TO_MERGE );
-            CAknNoteDialog* dlg = new( ELeave ) CAknNoteDialog( CAknNoteDialog::ENoTone );
-            dlg->PrepareLC( R_PBK2_MERGE_CONTACTS_ERROR_NOTE );
-            dlg->SetTextL( *prompt );
-            dlg->RunLD();
+            CAknQueryDialog* dlg = CAknQueryDialog::NewL();
+            dlg->ExecuteLD( R_PBK2_MERGE_CONTACTS_ERROR_NOTE, *prompt );
             CleanupStack::PopAndDestroy( prompt ); 
             }
         }

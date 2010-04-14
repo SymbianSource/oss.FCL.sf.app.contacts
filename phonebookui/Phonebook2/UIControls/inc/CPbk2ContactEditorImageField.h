@@ -82,7 +82,8 @@ NONSHARABLE_CLASS(CPbk2ContactEditorImageField) :
 
     public:
         void SetTextL();
-        TInt TextState();        
+        TInt TextState();
+        CPbk2PresentationContactField& ContactField();
         
     private: // From MPbk2ContactEditorField        
         CEikEdwin* Control() const;

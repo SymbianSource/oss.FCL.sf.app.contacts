@@ -59,6 +59,8 @@
 #include <Sendnorm.rsg>
 #include <MVPbkContactFieldTextData.h>
 
+_LIT( KSpace, " " );
+
 // ================= MEMBER FUNCTIONS =======================
 
 // ---------------------------------------------------------
@@ -497,6 +499,12 @@ void CSpdiaView::CmdNumberCallL ( TInt aCommand,
     TInt index( iContainer->CurGridPosition() );
 
     number = control.PhoneNumber( index );
+    TBuf<1>space( KSpace );
+    while( number.Length() > 0 && number.Find( space ) != KErrNotFound )
+    	{
+    	number.Delete( number.Find( space ), 1 );
+    	}
+    
     int type = control.NumberType( index );
     if ( ( iContainer->IsVoiceMailBox()) || ( iContainer->IsVdoMailBox() ) ) 
         {
@@ -604,7 +612,7 @@ void CSpdiaView::CmdNumberCallL ( 	TInt aCommandId,
             }
         CleanupStack::PopAndDestroy( nameBuffer );
         }
-        
+    
     dialData->SetPhoneNumberL( aNumber );
     dialData->SetWindowGroup( AIWDialData::KAiwGoToIdle );
     CAiwGenericParamList& paramList = iServiceHandler->InParamListL();
@@ -765,7 +773,9 @@ void CSpdiaView::DynInitAiwMenuPaneL( TInt aResourceId,
     iServiceHandler->InitializeMenuPaneL( *aMenuPane,
                                           aResourceId,
                                           ESpdiaCmdLast,
-                                          paramList );
+                                          paramList, 
+                                          EFalse,
+                                          ETrue );
     if ( aMenuPane->NumberOfItemsInPane() == KErrNone )
         {
         User::Leave( KErrNotFound );

@@ -89,6 +89,8 @@ CPbk2ContactEditorDlg::CPbk2ContactEditorDlg
 //
 CPbk2ContactEditorDlg::~CPbk2ContactEditorDlg()
     {
+    ForceExit();
+    
 	delete iTitleText;
     if ( iSelfPtr )
         {
@@ -104,7 +106,7 @@ CPbk2ContactEditorDlg::~CPbk2ContactEditorDlg()
     delete iEditorStrategy;
     delete iContactRelocator;
     delete iStoreContact;
-    delete iAddItemFieldTypeXspName;
+    delete iAddItemFieldTypeXspName;       
     }
 
 

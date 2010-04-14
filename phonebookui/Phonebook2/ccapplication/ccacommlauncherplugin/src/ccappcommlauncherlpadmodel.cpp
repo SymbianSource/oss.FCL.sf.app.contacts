@@ -302,7 +302,8 @@ TPtrC CCCAppCommLauncherLPadModel::MdcaPoint( TInt aIndex ) const
         TPtr textPtr(iTextBuf->Des());
         textPtr.Zero();
         TPtrC popupText;        
-        TRAPD( error, popupText.Set( const_cast <CCCAppCommLauncherLPadModel*>(this)->TextForPopUpL( aIndex ) ) );
+        TRAPD( error, popupText.Set( 
+        		const_cast <CCCAppCommLauncherLPadModel*>(this)->TextForPopUpL( aIndex ) ) );
         if ( KErrNone == error )
             {
             textPtr.Copy( popupText );
@@ -334,8 +335,13 @@ TPtrC CCCAppCommLauncherLPadModel::MdcaPoint( TInt aIndex ) const
             tempText.Append( textPtr );
             }
         tempText.Append( KColumnListSeparator ); 
-		
-        // TODO: Check presence icon
+        
+        // Check presence icon
+		if ( iButtonDataArray[ aIndex ].iFlags & 
+				TCommLauncherButtonData::EHasPresenceIcon )
+			{
+			tempText.AppendNum( EPresenceIconIndex );
+			}
         tempText.Append( KColumnListSeparator ); 
         
         // Check if show multi icon at the right end of second row
@@ -403,6 +409,8 @@ TInt CCCAppCommLauncherLPadModel::MapCommMethodToIcon(
 //
 void CCCAppCommLauncherLPadModel::FillButtonArrayL()
     {
+    CalculateLayoutSize();
+    
     RArray<VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector>&
         preferredCommMethods = iContainer.Plugin().PreferredCommMethods();//not owned
     const TInt buttonCount = preferredCommMethods.Count();
@@ -955,47 +963,7 @@ TPtrC CCCAppCommLauncherLPadModel::TextForPopUpL( TInt aButtonIndex )
 void CCCAppCommLauncherLPadModel::Reset()
     {
     iButtonDataArray.Reset();
-    }
-
-// ---------------------------------------------------------------------------
-// CCCAppCommLauncherLPadModel::ReplaceWithDefaultIconL
-// ---------------------------------------------------------------------------
-//
-void CCCAppCommLauncherLPadModel::ReplaceWithDefaultIconL(
-    CFbsBitmap*& aBitmap,
-    CFbsBitmap*& aMask,
-    const TUint32 aServiceType )
-    {
-    delete aBitmap;
-    delete aMask;
-    CGulIcon* icon = NULL;
-
-    switch ( aServiceType )
-        {
-        /* The VOIP Button doesnt show presence CCA UI Spec will be
-         * updated with this info.
-         * Thats why this part of code is commeneted
-        case CCmsContactFieldItem::ECmsPresenceVoIPNotification:
-            icon = LoadIconLC(
-                    EMbmPhonebook2eceQgn_prop_nrtyp_voip,
-                    EMbmPhonebook2eceQgn_prop_nrtyp_voip_mask  );
-            break;*/
-        case CCmsContactFieldItem::ECmsPresenceChatNotification:
-            icon = LoadIconLC(
-                    EMbmPhonebook2eceQgn_prop_nrtyp_chat,
-                    EMbmPhonebook2eceQgn_prop_nrtyp_chat_mask );
-            break;
-        default:
-            // Only ECmsPresenceVoIPNotification and
-            // ECmsPresenceChatNotification supported
-            User::Leave( KErrArgument );
-            break;
-        }
-
-    aBitmap = icon->Bitmap();
-    aMask = icon->Mask();
-    icon->SetBitmapsOwnedExternally( ETrue );
-    CleanupStack::PopAndDestroy( icon );
+    iButtonIconArray->Reset();
     }
 
 // ---------------------------------------------------------------------------
@@ -1005,52 +973,65 @@ void CCCAppCommLauncherLPadModel::ReplaceWithDefaultIconL(
 void CCCAppCommLauncherLPadModel::ContactPresenceChangedL(
     const CCmsContactField& aContactField )
     {
-    //Get the size of icon for Voip presence
-    TRect mainPane = iPlugin.ClientRect();
-    TAknLayoutRect listLayoutRect;
-        listLayoutRect.LayoutRect(
-            mainPane,
-            AknLayoutScalable_Avkon::list_single_large_graphic_pane_g1(0).LayoutLine() );
-    TSize size(listLayoutRect.Rect().Size());
-    
     const TInt count = aContactField.ItemCount();
     for (TUint i=0; i < count; i++)
         {
         CCmsPresenceData& presData = ( CCmsPresenceData& )aContactField.ItemL( i );
-        presData.PreparePresenceDataL( size );
-        TUint32 serviceType = presData.ServiceType();
-        TInt iconInd = KErrNotFound;
-        switch (serviceType)
-            {
-            /* The VOIP Button doesnt show presence CCA UI Spec will be
-             * updated with this info.
-             * Thats why this part of code is commeneted
-            case CCmsContactFieldItem::ECmsPresenceVoIPNotification:
-                iconInd = MapCommMethodToIcon(
-                    VPbkFieldTypeSelectorFactory::EVOIPCallSelector );
-                break;*/
-            case CCmsContactFieldItem::ECmsPresenceChatNotification:
-                iconInd = MapCommMethodToIcon(
-                    VPbkFieldTypeSelectorFactory::EInstantMessagingSelector );
-                break;
-            }
-        if (iconInd > 0 && iconInd < iButtonIconArray->Count())
+        presData.PreparePresenceDataL( iPresenceIconSize );
+        TUint32 serviceType = presData.ServiceType();      
+        
+        if ( serviceType == CCmsContactFieldItem::ECmsPresenceChatNotification )
             {
             CFbsBitmap* mask = presData.Mask();
             CFbsBitmap* bitmap = presData.Bitmap();
-
-            if ( bitmap && NULL == bitmap->Handle() )
-                {
-                // There should not be a case with empty bitmaps, so
-                // replace with the default icons.
-                ReplaceWithDefaultIconL( bitmap, mask, serviceType );
-                }
-
-            if ( bitmap || mask )
-                {
-                iButtonIconArray->At(iconInd)->SetBitmap(bitmap);
-                iButtonIconArray->At(iconInd)->SetMask(mask);
-                }
+            
+            // Find the index for chat item
+        	TInt index = KErrNotFound;
+        	const TInt dataCount = iButtonDataArray.Count();
+        	for ( TInt i = 0; i < dataCount; i++ )
+        		{
+        		if ( iButtonDataArray[ i ].iContactAction 
+    					== VPbkFieldTypeSelectorFactory::EInstantMessagingSelector )
+        			{
+        			index = i;
+        			break;
+        			}
+        		}
+        	
+        	if ( index != KErrNotFound )
+        		{
+        	    TBool hasPresenceIcon = iButtonDataArray[ index ].iFlags & 
+			                TCommLauncherButtonData::EHasPresenceIcon;
+        	
+                if ( bitmap && ( NULL == bitmap->Handle() ) )
+            	    {
+            	    if ( hasPresenceIcon )
+            		    {
+            		    // Delete presence icon from icon array 
+            		    iButtonDataArray[ index ].iFlags &= ~(TCommLauncherButtonData::EHasPresenceIcon);
+            		    iButtonIconArray->Delete( EPresenceIconIndex );
+            		    }
+            	    }
+                else if ( bitmap )
+                    {           	       	
+            	    if ( hasPresenceIcon )
+            		    {
+            		    // Update presence icon
+                	    iButtonIconArray->At( EPresenceIconIndex )->SetBitmap(bitmap);
+                	    iButtonIconArray->At( EPresenceIconIndex )->SetMask(mask);
+            		    }
+            	    else
+            		    { 
+            		    // Append presence icon to icon array
+                        CGulIcon* icon = CGulIcon::NewLC();
+                        icon->SetBitmap( bitmap );
+                        icon->SetMask( mask );
+                	    iButtonIconArray->AppendL( icon );
+                	    iButtonDataArray[ index ].iFlags |= TCommLauncherButtonData::EHasPresenceIcon;
+                	    CleanupStack::Pop(); // icon
+            		    }
+                    }
+        		}
             }
         else
             {
@@ -1455,18 +1436,15 @@ void CCCAppCommLauncherLPadModel::LoadVoipButtonInfoFromPbkL(
         const CPbk2ServiceManager::TService& service = services[i];
         //Found the appropriate service info
         if ( service.iServiceId == aServiceId )
-            {
-            // Get service bitmap size
-            TSize size = GetServiceBitmapSize();           
-
+            {          
             // Set service bitmap size           
-            AknIconUtils::SetSize( service.iBitmap, size );
-            AknIconUtils::SetSize( service.iMask, size );
+            AknIconUtils::SetSize( service.iBitmap, iServiceIconSize );
+            AknIconUtils::SetSize( service.iMask, iServiceIconSize );
                
             //Trickiest Bitmap cloning
             //No direct way of cloning a bitmap
-            aBitmap = CloneBitmapLC(size, service.iBitmap);
-            aMask = CloneBitmapLC(size, service.iMask);
+            aBitmap = CloneBitmapLC( iServiceIconSize, service.iBitmap );
+            aMask = CloneBitmapLC( iServiceIconSize, service.iMask );
                        
             aLocalisedServiceName = service.iDisplayName.AllocL(); 
             
@@ -1477,14 +1455,12 @@ void CCCAppCommLauncherLPadModel::LoadVoipButtonInfoFromPbkL(
     }
 
 // ---------------------------------------------------------------------------
-// CCCAppCommLauncherLPadModel::GetServiceBitmapSize
+// CCCAppCommLauncherLPadModel::CalculateLayoutSize()
 // ---------------------------------------------------------------------------
 //
-TSize CCCAppCommLauncherLPadModel::GetServiceBitmapSize()
+void CCCAppCommLauncherLPadModel::CalculateLayoutSize()
     {     
-    /*
-     * Calculate the rect of list_double_large_graphic_phob2_cc_pane_g1 
-     * and select its size as service bitmap size.
+    /* Calculate the layout size for Voip service icon and presence icon.
      * Since the layoutRect is relative to the layoutRect of its parent, so 
      * we calculate from the topmost-mainPane, then follow below sequence:
      * phob2_contact_card_pane
@@ -1520,9 +1496,16 @@ TSize CCCAppCommLauncherLPadModel::GetServiceBitmapSize()
             listLayoutRect3.Rect(),
             AknLayoutScalable_Apps::list_double_large_graphic_phob2_cc_pane_g1(0).LayoutLine() );
     
-    TSize size(listLayoutRect4.Rect().Size());   
+    TAknLayoutRect listLayoutRect5;
+    listLayoutRect5.LayoutRect(
+            listLayoutRect3.Rect(),
+            AknLayoutScalable_Apps::list_double_large_graphic_phob2_cc_pane_g2(0).LayoutLine() );
     
-    return size;                                                    
+    // Size for service icon
+    iServiceIconSize = listLayoutRect4.Rect().Size();
+    
+    // Size for presence icon
+    iPresenceIconSize = listLayoutRect5.Rect().Size(); 
     }
 // ---------------------------------------------------------------------------
 // CCCAppCommLauncherLPadModel::HandleNotifyChange
@@ -1684,4 +1667,17 @@ TBool CCCAppCommLauncherLPadModel::ClipFromBeginning(
     return result;
     }
 
+// ----------------------------------------------------------
+// CCCAppCommLauncherLPadModel::ResourceChangedL
+// 
+// ----------------------------------------------------------
+void CCCAppCommLauncherLPadModel::ResourceChangedL()
+	{
+	// When layout variant changed, calculate the layout size which will be
+	// used in listbox, eg: the size for service icon and presence icon
+	CalculateLayoutSize();
+	
+    LoadVoipButtonInfoL();
+	}
+	
 // End of File

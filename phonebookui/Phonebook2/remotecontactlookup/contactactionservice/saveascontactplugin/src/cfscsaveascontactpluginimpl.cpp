@@ -91,7 +91,6 @@ CFscSaveAsContactPluginImpl* CFscSaveAsContactPluginImpl::NewL(
 CFscSaveAsContactPluginImpl::~CFscSaveAsContactPluginImpl()
     {
     FUNC_LOG;
-    DismissWaitNote();
     delete iNewStoreContact;
     delete iContactSaveAsContactAction;
     delete iActionList;
@@ -252,11 +251,6 @@ void CFscSaveAsContactPluginImpl::ExecuteL(
 
         case EActionEventCanExecuteFinished:
             {
-
-            iWaitDialog = new(ELeave)CAknWaitDialog(
-                    (REINTERPRET_CAST(CEikDialog**,&iWaitDialog)), EFalse);
-            iWaitDialog->ExecuteLD(R_FS_WAIT_NOTE);
-            
             if (iCanDisplay == KErrNone)
                 {
                 iLastEvent = EActionEventContactRetrieve;
@@ -290,7 +284,6 @@ void CFscSaveAsContactPluginImpl::ExecuteL(
 void CFscSaveAsContactPluginImpl::CancelExecute()
     {
     FUNC_LOG;
-    DismissWaitNote();
     iLastEvent = EActionEventCanceled;
     ResetData();
     }
@@ -644,7 +637,6 @@ void CFscSaveAsContactPluginImpl::ResetData()
         TRAP_IGNORE( iContactSet->CancelNextGroupL() );
         iContactSet = NULL;
         }
-    DismissWaitNote();
 
     iLastEvent = EActionEventIdle;
     iActionMenuVisibility = NULL;
@@ -708,7 +700,6 @@ void CFscSaveAsContactPluginImpl::ContactOperationCompleted(
             }
         case EContactCommit:
             {
-            DismissWaitNote();
             TRAP( err, iParams.iUtils->ShowCnfNoteL( 
                     R_FS_ACTION_SAVED_NOTE ) );
             ResetData();
@@ -758,28 +749,10 @@ void CFscSaveAsContactPluginImpl::ContactOperationFailed(
     {
     FUNC_LOG;
     iLastEvent = EActionEventIdle;
-    DismissWaitNote();
     ResetData();
     iPluginObserver->ExecuteFailed(aErrorCode);
     }
 
-// ---------------------------------------------------------------------------
-// CFscSaveAsContactPluginImpl::DismissWaitDialog
-// ---------------------------------------------------------------------------
-//
-void CFscSaveAsContactPluginImpl::DismissWaitNote()
-    {
-    FUNC_LOG;
-    if (iWaitDialog != NULL)
-        {
-        TRAPD( err, iWaitDialog->ProcessFinishedL() );
-        if (err != KErrNone)
-            {
-            delete iWaitDialog;
-            iWaitDialog = NULL;
-            }
-        }
-    }
 // ======== GLOBAL FUNCTIONS ========
 
 // ---------------------------------------------------------------------------

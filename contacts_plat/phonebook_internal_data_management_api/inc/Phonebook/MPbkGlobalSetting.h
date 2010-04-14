@@ -138,7 +138,7 @@ class MPbkGlobalSetting
          * Returns one of the system wide error codes.
          * @param aKey Subcategory of the value to set.
          */
-        virtual TInt Set(TPbkGlobalSetting aKey, TReal aValue) = 0;
+        virtual TInt Set(TPbkGlobalSetting aKey, TReal aValue) __SOFTFP = 0;
         
         /**
          * Registers an observer for setting changes. Only one setting can be

@@ -267,11 +267,6 @@ private:
             MFscContactSet& aContactSet,
             TBool aIsExecute );
     
-    /**
-     * Dismisses wait note
-     */
-    void DismissWaitNote();
-
 private:
     // data
 

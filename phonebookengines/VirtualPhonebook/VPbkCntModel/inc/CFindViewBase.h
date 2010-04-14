@@ -282,6 +282,8 @@ NONSHARABLE_CLASS( CFindViewBase ): public CBase,
         TBool iOwnsContacts;
         /// Own: ETrue if this view is ready
         TBool iViewReady;
+        /// Own: Mark if this object be destroyed
+        TBool* iDestroyed;
     };
 } // namespace VPbkCntModel    
 

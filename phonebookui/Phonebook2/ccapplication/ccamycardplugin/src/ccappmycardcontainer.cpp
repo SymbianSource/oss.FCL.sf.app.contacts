@@ -77,8 +77,8 @@
 #include <CPbk2IconInfo.h>
 #include <csxhelp/phob.hlp.hrh>
 #include <Pbk2UID.h>
-
 #include <f32file.h>
+#include <AknsConstants.h>
 
 // unnamed namespace
 namespace
@@ -411,7 +411,12 @@ void CCCAppMyCardContainer::SizeChanged()
 	    }
 	else
 	    {
-        TRAP_IGNORE( iImageLoader->ResizeImageL(iHeaderCtrl->ThumbnailSize()));
+        // No need to call ResizeImageL() which would invoke the image decoder re-stating
+        // to show the previous user-assigned image if MyCard image is not set. 
+        if ( iMyCardImageSet )
+            {
+            TRAP_IGNORE( iImageLoader->ResizeImageL(iHeaderCtrl->ThumbnailSize()));
+            }
 	    }
 	
     DrawDeferred();
@@ -585,7 +590,10 @@ void CCCAppMyCardContainer::ThumbnailLoadError( TInt /*aError*/ )
     {
     CFbsBitmap* bitmap = NULL;
     CFbsBitmap* mask = NULL;
-    TRAPD( err, AknIconUtils::CreateIconL(
+    
+    TRAPD( err, AknsUtils::CreateIconL(
+        AknsUtils::SkinInstance(),
+        KAknsIIDQgnPropPbThumpMycard,
         bitmap,
         mask,
         KMyCardIconDefaultFileName,

@@ -35,7 +35,7 @@ class CPbkxContactActionMenu;
 class CGulIcon;
 class CFscContactActionMenu;
 class CAknLongTapDetector;
-
+class CIdle;
 /**
 * Dialog for showing remote contact lookup search results.
 *
@@ -164,6 +164,21 @@ public: // new methods
     */
     void InfoDlgVisible( TBool aVisible );
     
+    /**
+     * Set the internal flag telling wether last search found more than
+     * maximum number of results. 
+     * 
+     * @param aMoreThanMax ETrue\EFalse
+     */
+    void SetMoreThanMaxResults(TBool aMoreThanMax);
+    
+    /**
+     * The state of the internal flag telling wether last search
+     * found more than maximum number of results.
+     * 
+     * @return TBool ETrue\EFalse
+     */
+    TBool MoreThanMaxResults();
 
 protected: // redefinition of functions of the base class
 
@@ -341,6 +356,16 @@ private:
     
     CAknLongTapDetector& LongTapDetectorL();
     
+    /**
+     * Idle callback for the "more than 50 results" info note.
+     * 
+     * For smooth showing of the note, an idle object is used to
+     * schedule the display of the note.
+     * 
+     * @param aSelf - handle for the object that made the request
+     */
+    static TInt TooManyResultsIdleCallbackL(TAny* aSelf );
+    
 private: // data
     
     // Indexes of icon array.
@@ -420,6 +445,10 @@ private: // data
     HBufC* iOriginalTitleText;
     // Pointer reference to title pane. Not owned.
     CAknTitlePane* iTitlePane;
+    
+    /// own. idle object for scheduling the showing of the "more than 50 results" 
+    /// info note
+    CIdle* iIdleNote;
     };
 
 #endif

@@ -23,6 +23,7 @@
 #include <aknPopup.h>                       // CAknPopupList
 #include <MPbk2DefaultAttributeProcessObserver.h>
 #include <VPbkFieldTypeSelectorFactory.h>
+#include <spdefinitions.h>
 
 // FORWARD DECLARATIONS
 class CEikColumnListBox;
@@ -30,6 +31,7 @@ class CPbk2PresentationContact;
 class CVPbkContactManager;
 class CPbk2DefaultAttributeProcess;
 class MVPbkStoreContactField;
+class CFbsBitmap;
 
 // CLASS DECLARATION
 
@@ -108,7 +110,11 @@ class CPbk2MemoryEntryDefaultsDlg :
         void RemoveDefaultL(
                 const VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aSelectorID );
         void CreateTableOfDefaultsL();
-        void ReadDefaultsFromRepositoryL();
+        void ReadDefaultsFromRepositoryL();      
+        TInt SupportedVOIPServicesL( TServiceId& aServiceId );
+        void LoadVoipServiceInfoL( 
+                    TServiceId aServiceId,
+                    CFbsBitmap*& aBitmap, CFbsBitmap*& aMask );
         
     private: // Data
         /// Ref: The contact
@@ -129,6 +135,8 @@ class CPbk2MemoryEntryDefaultsDlg :
         CArrayFixFlat<VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector>* iDefaultsTable;
         /// Own: Indicates if focus has been dragged around the list, helps with single tap launching
         TBool iHasBeenDragged;
+        /// Voip service name
+        HBufC* iServiceName;
     };
 
 #endif // CPBK2MEMORYENTRYDEFAULTSDLG_H

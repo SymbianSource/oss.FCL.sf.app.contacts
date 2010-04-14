@@ -211,7 +211,7 @@ CEikEdwin* CPbk2ContactEditorImageField::Control() const
 //  
 HBufC* CPbk2ContactEditorImageField::ControlTextL() const
     {
-    return CPbk2ContactEditorFieldBase::ControlTextL();;    
+    return CPbk2ContactEditorFieldBase::ControlTextL();    
     }
 
 // --------------------------------------------------------------------------
@@ -305,6 +305,15 @@ TInt CPbk2ContactEditorImageField::TextState()
     {
     return iTextState;
     }   
+
+// -----------------------------------------------------------------------------
+// CPbk2ContactEditorImageField::ContactField
+// -----------------------------------------------------------------------------
+//
+CPbk2PresentationContactField& CPbk2ContactEditorImageField::ContactField()
+    {
+    return iContactField;
+    }
 
 // -----------------------------------------------------------------------------
 // CPbk2ContactEditorImageField::ContactEditorFieldExtension

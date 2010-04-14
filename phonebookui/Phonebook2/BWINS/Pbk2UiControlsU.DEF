@@ -119,4 +119,5 @@ EXPORTS
 	?HandleViewForegroundEventL@CPbk2NamesListControl@@QAEXH@Z @ 118 NONAME ; void CPbk2NamesListControl::HandleViewForegroundEventL(int)
 	?MapVPbkFieldTypeToAddressGroupId@Pbk2AddressTools@@SA?AW4TPbk2FieldGroupId@@PBVMVPbkFieldType@@@Z @ 119 NONAME ; enum TPbk2FieldGroupId Pbk2AddressTools::MapVPbkFieldTypeToAddressGroupId(class MVPbkFieldType const *)
 	?IsAddressPreviewEmptyL@Pbk2AddressTools@@SAHAAVMVPbkStoreContact@@W4TPbk2FieldGroupId@@@Z @ 120 NONAME ; int Pbk2AddressTools::IsAddressPreviewEmptyL(class MVPbkStoreContact &, enum TPbk2FieldGroupId)
+	?MassUpdateSkipProgressNote@CPbk2NamesListControl@@QAEXH@Z @ 121 NONAME ; void CPbk2NamesListControl::MassUpdateSkipProgressNote(int)
 

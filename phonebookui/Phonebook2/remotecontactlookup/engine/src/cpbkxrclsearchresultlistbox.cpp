@@ -247,18 +247,12 @@ void CPbkxRclSearchResultItemDrawer::DrawItemText(
         ptr->iHighlightedTextColor = iHighlightColor;
         }        
 
-    // Disable AVKON skinning so that our own color definitions apply
-    TBool skinEnabled = AknsUtils::AvkonSkinEnabled();
-    // Safe to ignore error
-    TRAP_IGNORE( AknsUtils::SetAvkonSkinEnabledL( EFalse ) );
     CColumnListBoxItemDrawer::DrawItemText(
         aItemIndex,
         aItemTextRect,
         aItemIsCurrent,
         aViewIsEmphasized,
         aItemIsSelected );
-    // Safe to ignore error
-    TRAP_IGNORE( AknsUtils::SetAvkonSkinEnabledL( skinEnabled ) );
     }
 
 
@@ -270,19 +264,18 @@ void CPbkxRclSearchResultItemDrawer::DrawItemText(
 ////////////////////////////////////////////////////////////////////////////
 // CPbkxRclSearchResultListView
 ////////////////////////////////////////////////////////////////////////////
-
 // ---------------------------------------------------------------------------
 // CPbkxRclSearchResultListView::DrawEmptyList
 // ---------------------------------------------------------------------------
 //
 void CPbkxRclSearchResultListView::DrawEmptyList(const TRect &aClientRect) const
     {
-    // Disable AVKON skinning so that our own color definitions apply
-    TBool skinEnabled = AknsUtils::AvkonSkinEnabled();
-    // Safe to ignore error
-    TRAP_IGNORE( AknsUtils::SetAvkonSkinEnabledL( EFalse ) );
-    CAknColumnListBoxView::DrawEmptyList( aClientRect );
-    // Safe to ignore error
-    TRAP_IGNORE( AknsUtils::SetAvkonSkinEnabledL( skinEnabled ) );
+//    // Disable AVKON skinning so that our own color definitions apply
+//    TBool skinEnabled = AknsUtils::AvkonSkinEnabled();
+//    // Safe to ignore error
+//    TRAP_IGNORE( AknsUtils::SetAvkonSkinEnabledL( EFalse ) );
+//    CAknColumnListBoxView::DrawEmptyList( aClientRect );
+//    // Safe to ignore error
+//    TRAP_IGNORE( AknsUtils::SetAvkonSkinEnabledL( skinEnabled ) );
     }
 

@@ -106,6 +106,9 @@ CPbkxRclServiceUiContextImpl::~CPbkxRclServiceUiContextImpl()
     {
     FUNC_LOG;
 
+	delete iWaitDialog;
+    iWaitDialog = NULL;
+
     if( iTimer )
         {
         iTimer->Cancel();
@@ -147,7 +150,7 @@ void CPbkxRclServiceUiContextImpl::ConstructL()
     Dll::FileName( dllFileName );
       
     TParse parse;
-    parse.Set( KResourceFile, &KDC_APP_RESOURCE_DIR, &dllFileName );
+    parse.Set( KResourceFile, &KDC_RESOURCE_FILES_DIR, &dllFileName );
     TFileName resourceFile = parse.FullName();
     BaflUtils::NearestLanguageFile( coeEnv->FsSession(), resourceFile );
 
@@ -435,7 +438,7 @@ void CPbkxRclServiceUiContextImpl::ProcessCommandL( TInt aCommandId )
             iActionServiceWrapper->ExecuteActionL( 
                         KFscAtSendBusinessCard );
             break;
-        case ERclCmdHelp:
+        case EAknCmdHelp:
             {
             CCoeAppUi* appUi = CCoeEnv::Static()->AppUi();
             CArrayFix<TCoeHelpContext>* contexts = appUi->AppHelpContextL();
@@ -679,7 +682,7 @@ void CPbkxRclServiceUiContextImpl::DisplayWaitDialogL(
     {
     FUNC_LOG;
 
-    iWaitDialog = new ( ELeave ) CAknWaitDialog( NULL, ETrue );
+    iWaitDialog = new ( ELeave ) CAknWaitDialog( reinterpret_cast<CEikDialog**>(&iWaitDialog), ETrue );  //TEROKOE    
     iWaitDialog->SetTextL( aText );
     iWaitDialog->SetCallback( this );
     iWaitDialog->ExecuteLD( aDialogResourceId );
@@ -750,7 +753,9 @@ void CPbkxRclServiceUiContextImpl::CloseWaitDialogL()
     
     if (iWaitDialog)
         {
-        iWaitDialog->ProcessFinishedL();
+        TRAP_IGNORE( iWaitDialog->ProcessFinishedL() );
+        //The below 2 lines just in case... ProcessFinishedL already took care of these		
+		delete iWaitDialog;
         iWaitDialog = NULL;
         }
     }
@@ -806,9 +811,8 @@ void CPbkxRclServiceUiContextImpl::DisplaySearchResultDialogL(TBool aShowTooMany
         SetState( EInitial );
         }
     else
-        { // iSearchResultDialog != NULL
-        
-        
+        { // iSearchResultDialog != NULL    
+        iSearchResultDialog->SetMoreThanMaxResults(aShowTooManyResultsNote);
         iSearchResultDialog->UpdateDialogL();
         }
     }

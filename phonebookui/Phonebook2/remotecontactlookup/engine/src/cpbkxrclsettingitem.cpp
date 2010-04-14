@@ -98,7 +98,7 @@ void CPbkxRclSettingItem::ConstructL()
     Dll::FileName( dllFileName );
 
     TParse parse;
-    parse.Set( KResourceFile, &KDC_APP_RESOURCE_DIR, &dllFileName );
+    parse.Set( KResourceFile, &KDC_RESOURCE_FILES_DIR, &dllFileName );
     TFileName resourceFile = parse.FullName();
     BaflUtils::NearestLanguageFile( coeEnv->FsSession(), resourceFile );
     

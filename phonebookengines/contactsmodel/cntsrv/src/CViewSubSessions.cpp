@@ -668,6 +668,10 @@ void CViewSubSessionBase::GetContactsMatchingFilterL(const RMessage2& aMessage)
 			idMap.iMapping=i;
 			User::LeaveIfError(array.Append(idMap));
 			}
+			
+        //Always keep server side local view in memory saving mode, so we
+        //change the view contact object stored in iView into lightweight object
+		const_cast<CViewContact&>( contact ).ChangeToLightweightObject();
 		}
 
 	// Externalize array to client.

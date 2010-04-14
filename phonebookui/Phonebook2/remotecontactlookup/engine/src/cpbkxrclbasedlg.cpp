@@ -85,11 +85,6 @@ void CPbkxRclBaseDlg::HandleResourceChange( TInt aType )
     if ( aType == KAknsMessageSkinChange ) 
         {
         UpdateGraphics();
-        UpdateColors();
-        }
-    else if ( aType == KEikMessageColorSchemeChange )
-        {
-        UpdateColors();
         }
     else if ( aType == KEikDynamicLayoutVariantSwitch )
         {
@@ -99,7 +94,6 @@ void CPbkxRclBaseDlg::HandleResourceChange( TInt aType )
         if ( !iColumnListBox )
             {
             UpdateGraphics();
-            UpdateColors();
             }
         }
     }
@@ -239,98 +233,5 @@ void CPbkxRclBaseDlg::UpdateGraphics()
             }
         }
 
-    }
-
-// ---------------------------------------------------------------------------
-// CPbkxRclBaseDlg::UpdateColors
-// ---------------------------------------------------------------------------
-//
-void CPbkxRclBaseDlg::UpdateColors()
-    {
-	FUNC_LOG;
-    
-    MAknsSkinInstance* skin = AknsUtils::SkinInstance();
-    
-    CPbkxRclResultInfoItemDrawer* fItemDrawer = NULL;
-    CPbkxRclSearchResultItemDrawer* cItemDrawer = NULL;
-    
-    if ( iColumnListBox )
-        {
-        CEikColumnListBox* listBox = 
-            static_cast<CEikColumnListBox*>( ListBox() );
-        cItemDrawer = static_cast<CPbkxRclSearchResultItemDrawer*>( 
-            listBox->ItemDrawer() );
-        }
-    else
-        {
-        CEikFormattedCellListBox* listBox = 
-            static_cast<CEikFormattedCellListBox*>( ListBox() );
-        fItemDrawer = static_cast<CPbkxRclResultInfoItemDrawer*>(
-            listBox->ItemDrawer() );
-        }
-
-    TRgb newColor;
-
-    // highlight text color
-    TInt error = AknsUtils::GetCachedColor(
-        skin,
-        newColor,
-        iHighlightTextColorId,
-        EAknsCIFsHighlightColorsCG1 );
-
-
-    if ( error == KErrNone )
-        {
-        if ( iColumnListBox )
-            {
-            cItemDrawer->SetHighlightColor( newColor );
-            }
-        else
-            {
-            fItemDrawer->SetHighlightColor( newColor );
-            }
-        }
-    else
-        {
-        if ( iColumnListBox )
-            {
-            cItemDrawer->ResetColors( ETrue );
-            }
-        else
-            {
-            fItemDrawer->ResetColors( ETrue );
-            }
-        }
-    
-    // text color
-    error = AknsUtils::GetCachedColor(
-        skin,
-        newColor,
-        iTextColorId,
-        EAknsCIFsTextColorsCG7 );
-
-
-    if ( error == KErrNone )
-        {
-        if ( iColumnListBox )
-            {
-            cItemDrawer->SetColor( newColor );
-            }
-        else
-            {
-            fItemDrawer->SetColor( newColor );
-            }
-        }
-    else
-        {
-        if ( iColumnListBox )
-            {
-            cItemDrawer->ResetColors();
-            }
-        else
-            {
-            fItemDrawer->ResetColors();
-            }
-        }
     }
 

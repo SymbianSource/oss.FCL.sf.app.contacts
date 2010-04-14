@@ -669,6 +669,9 @@ RESOURCE VPBK_FIELD_TYPE_SELECTOR r_vpbk_voice_call_action_selector
     excludedParameters = {EVPbkVersitParamFAX,EVPbkVersitParamVIDEO};
     }
 
+/**
+ * Warning: this selector has very poor performance.
+ */
 RESOURCE VPBK_FIELD_TYPE_SELECTOR r_vpbk_unieditor_action_selector
     {
     versitProperties =
@@ -703,6 +706,9 @@ RESOURCE VPBK_FIELD_TYPE_SELECTOR r_vpbk_voip_call_out_selector
     excludedParameters = {EVPbkVersitParamPAGER,EVPbkVersitParamFAX,EVPbkVersitParamVIDEO};
     }
 
+/**
+ * Warning: this selector has very poor performance.
+ */
 RESOURCE VPBK_FIELD_TYPE_SELECTOR r_vpbk_unieditor_email_action_selector
     {
     versitProperties =

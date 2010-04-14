@@ -41,7 +41,7 @@
 #include <MVPbkContactLink.h>
 
 // CONSTANTS
-
+namespace {
 // Character used to replace invalid characters for UI
 const TText KGraphicReplaceCharacter    = ' ';
 
@@ -58,6 +58,13 @@ const TInt KSecondaryTextColumn         = 2;
 const TInt KDefaultListFormatting =
         MPbk2ContactNameFormatter::EUseSeparator |
         MPbk2ContactNameFormatter::EPreserveLeadingSpaces;
+
+// iBuffer max size is EMaxListBoxText = 256
+// -> max length for name data is 100 and max lenght for status data is 100
+// rest 56 are reserved for icon data
+const TInt KMaxTxtLength = 100;
+
+}
 
 // --------------------------------------------------------------------------
 // CPbk2ContactViewDoubleListBoxModel::CPbk2ContactViewDoubleListBoxModel
@@ -222,7 +229,8 @@ void CPbk2ContactViewDoubleListBoxModel::FormatBufferFromElement(
     // No element support needed for thumbnail at the moment 
 
     // (2) Contact name
-    AppendName( aElement.TextPtr( MPbk2DoubleListboxDataElement::EName ) );
+    AppendName( aElement.TextPtr( 
+            MPbk2DoubleListboxDataElement::EName ).Left( KMaxTxtLength ) );
     iBuffer.Append( KListColumnSeparator );
     
     // (3) Secondary text
@@ -249,7 +257,7 @@ void CPbk2ContactViewDoubleListBoxModel::AppendText( TDes& aText ) const
     AknTextUtils::ReplaceCharacters(
         aText, KAknReplaceListControlChars, KGraphicReplaceCharacter );
     
-    iBuffer.Append( aText );
+    iBuffer.Append( aText.Left( KMaxTxtLength ) );
     iBuffer.Append( KListColumnSeparator );
     }
 
