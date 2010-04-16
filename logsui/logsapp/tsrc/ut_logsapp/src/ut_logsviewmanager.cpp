@@ -147,3 +147,8 @@ void UT_LogsViewManager::testStartingWithService()
     QVERIFY( vm.mMainWindow.currentView() == 0 );
     QVERIFY( vm.mViewStack.count() == 3 );
 }
+
+void UT_LogsViewManager::testHandleOrientationChanged()
+{
+    mLogsViewManager->handleOrientationChanged();
+}

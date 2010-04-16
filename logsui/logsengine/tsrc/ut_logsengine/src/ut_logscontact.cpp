@@ -63,7 +63,7 @@ void UT_LogsContact::testConstructor()
     QVERIFY( !mLogsContact->mService );
     QVERIFY( mLogsContact->mCurrentRequest == LogsContact::TypeLogsContactSave );
     
-    LogsContact contactWithoutEvent( 2, "2345", *mDbConnector );
+    LogsContact contactWithoutEvent("2345", *mDbConnector, 2);
     QVERIFY( contactWithoutEvent.mContactId == 2 );
     QVERIFY( contactWithoutEvent.mNumber == "2345" );
 }
@@ -118,7 +118,7 @@ void UT_LogsContact::testOpen()
     QVERIFY( mLogsContact->mService->message() == "open(int)" );
     
     // Same but without using logsevent at construction
-    LogsContact contactWithoutEvent( 2, "2345", *mDbConnector );
+    LogsContact contactWithoutEvent("2345", *mDbConnector, 2);
     QVERIFY( contactWithoutEvent.open() );
     QVERIFY( contactWithoutEvent.mService );
     QVERIFY( contactWithoutEvent.mCurrentRequest == LogsContact::TypeLogsContactOpen );
@@ -127,12 +127,12 @@ void UT_LogsContact::testOpen()
     
 }
 
-void UT_LogsContact::testSave()
+void UT_LogsContact::testAddNew()
 {
     //no caller ID, contact won't be saved
     mLogsEvent->setEventType(LogsEvent::TypeVoiceCall);
     QVERIFY( mLogsEvent->getNumberForCalling().isEmpty() );
-    QVERIFY( !mLogsContact->save() );
+    QVERIFY( !mLogsContact->addNew() );
     QVERIFY( !mLogsContact->mService );
     QVERIFY( mLogsContact->mCurrentRequest == LogsContact::TypeLogsContactSave );
 
@@ -144,7 +144,7 @@ void UT_LogsContact::testSave()
     mLogsContact = new LogsContact(*mLogsEvent, *mDbConnector);
     QVERIFY( !mLogsEvent->getNumberForCalling().isEmpty() );
     QVERIFY( !mLogsContact->isContactInPhonebook() );
-    QVERIFY( mLogsContact->save() );
+    QVERIFY( mLogsContact->addNew() );
     QVERIFY( mLogsContact->mService );
     QVERIFY( mLogsContact->mCurrentRequest == LogsContact::TypeLogsContactSave );
     QVERIFY( mLogsContact->mService->service() == logsFetchService );
@@ -160,11 +160,29 @@ void UT_LogsContact::testSave()
     mLogsContact = 0;
     mLogsContact = new LogsContact(*mLogsEvent, *mDbConnector);
     QVERIFY( mLogsContact->isContactInPhonebook() );
-    QVERIFY( mLogsContact->save() );
+    QVERIFY( mLogsContact->addNew() );
     QVERIFY( mLogsContact->mService );
     QVERIFY( mLogsContact->mCurrentRequest == LogsContact::TypeLogsContactSave );
     QVERIFY( mLogsContact->mService->service() == logsFetchService );
     QVERIFY( mLogsContact->mService->message() == "editCreateNew(QString,QString)" );
+}
+
+void UT_LogsContact::testUpdateExisting()
+{
+    //caller ID present, contact is in phonebook => update is ok
+    mLogsEvent->setNumber(QString::number(12345));
+    mLogsEvent->setEventType(LogsEvent::TypeVoiceCall);
+    mLogsEvent->logsEventData()->setContactLocalId(2);
+    QtContactsStubsHelper::setContactId(2);
+    delete mLogsContact;
+    mLogsContact = 0;
+    mLogsContact = new LogsContact(*mLogsEvent, *mDbConnector);
+    QVERIFY( mLogsContact->isContactInPhonebook() );
+    QVERIFY( mLogsContact->updateExisting() );
+    QVERIFY( mLogsContact->mService );
+    QVERIFY( mLogsContact->mCurrentRequest == LogsContact::TypeLogsContactSave );
+    QVERIFY( mLogsContact->mService->service() == logsFetchService );
+    QVERIFY( mLogsContact->mService->message() == "editUpdateExisting(QString,QString)" );
 }
 
 void UT_LogsContact::testIsContactInPhonebook()

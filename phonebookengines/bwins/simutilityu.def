@@ -1,0 +1,15 @@
+EXPORTS
+	?tr@SimUtility@@SA?AVQString@@PBD0H@Z @ 1 NONAME ; class QString SimUtility::tr(char const *, char const *, int)
+	?trUtf8@SimUtility@@SA?AVQString@@PBD0H@Z @ 2 NONAME ; class QString SimUtility::trUtf8(char const *, char const *, int)
+	?staticMetaObject@SimUtility@@2UQMetaObject@@B @ 3 NONAME ; struct QMetaObject const SimUtility::staticMetaObject
+	??0SimUtility@@QAE@W4StoreType@0@AAHPAVQObject@@@Z @ 4 NONAME ; SimUtility::SimUtility(enum SimUtility::StoreType, int &, class QObject *)
+	?qt_metacast@SimUtility@@UAEPAXPBD@Z @ 5 NONAME ; void * SimUtility::qt_metacast(char const *)
+	?trUtf8@SimUtility@@SA?AVQString@@PBD0@Z @ 6 NONAME ; class QString SimUtility::trUtf8(char const *, char const *)
+	??_ESimUtility@@UAE@I@Z @ 7 NONAME ; SimUtility::~SimUtility(unsigned int)
+	??1SimUtility@@UAE@XZ @ 8 NONAME ; SimUtility::~SimUtility(void)
+	?qt_metacall@SimUtility@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 9 NONAME ; int SimUtility::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?tr@SimUtility@@SA?AVQString@@PBD0@Z @ 10 NONAME ; class QString SimUtility::tr(char const *, char const *)
+	?getSimInfo@SimUtility@@QAE?AUSimInfo@1@AAH@Z @ 11 NONAME ; struct SimUtility::SimInfo SimUtility::getSimInfo(int &)
+	?getStaticMetaObject@SimUtility@@SAABUQMetaObject@@XZ @ 12 NONAME ; struct QMetaObject const & SimUtility::getStaticMetaObject(void)
+	?metaObject@SimUtility@@UBEPBUQMetaObject@@XZ @ 13 NONAME ; struct QMetaObject const * SimUtility::metaObject(void) const
+

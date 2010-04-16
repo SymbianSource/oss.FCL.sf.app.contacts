@@ -54,10 +54,17 @@ private slots: //test methods
     void testActivated();
     void testDeactivated();
     void testCallKeyPressed();
+    void testVideoCallToCurrentNum();
+    void testSendMessageToCurrentNum();
+    void testSaveNumberInDialpadToContacts();
     void testDialpadEditorTextChanged();
     void testDialpadClosed();
+    void testDialpadOpened();
     void testModel();
     void testUpdateWidgetsSizeAndLayout();
+    void testHandleOrientationChanged();
+    void testUpdateEmptyListWidgetsVisibility();
+    void testUpdateAddContactButton();
     
 private:
  

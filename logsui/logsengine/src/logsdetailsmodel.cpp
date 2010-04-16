@@ -36,8 +36,7 @@ Q_DECLARE_METATYPE(LogsContact*)
 //
 LogsDetailsModel::LogsDetailsModel( LogsDbConnector& dbConnector, LogsEvent& event ) 
     : LogsAbstractModel(),
-      mEvent( 0 ),
-      mDetailItemsCount( 0 )
+      mEvent( 0 )
 {
     LOGS_QDEBUG( "logs [ENG] -> LogsDetailsModel::LogsDetailsModel()" )
     
@@ -46,6 +45,13 @@ LogsDetailsModel::LogsDetailsModel( LogsDbConnector& dbConnector, LogsEvent& eve
     mEvent = new LogsEvent( event );
     
     initContent();
+    
+    if ( mEvent->direction() == LogsEvent::DirMissed && 
+            !mEvent->isRead() && mEvent->duplicates() > 0 ){
+        // Read duplicates to get all occurences
+        connect( mDbConnector, SIGNAL(duplicatesRead()), this, SLOT(duplicatesRead()) );
+        mDbConnector->readDuplicates(mEvent->logId());
+    }
     
     LOGS_QDEBUG( "logs [ENG] <- LogsDetailsModel::LogsDetailsModel()" )
 }
@@ -60,6 +66,7 @@ LogsDetailsModel::~LogsDetailsModel()
     
     delete mEvent;
     qDeleteAll(mDetailIcons);
+    qDeleteAll(mDuplicates);
     
     LOGS_QDEBUG( "logs [ENG] <- LogsDetailsModel::~LogsDetailsModel()" )
 }
@@ -83,7 +90,7 @@ void LogsDetailsModel::clearEvent()
 //
 int LogsDetailsModel::rowCount(const QModelIndex & /* parent */) const
 {
-    return mDetailItemsCount;
+    return mDetailTexts.count();
 }
 
 // -----------------------------------------------------------------------------
@@ -92,7 +99,7 @@ int LogsDetailsModel::rowCount(const QModelIndex & /* parent */) const
 //
 QVariant LogsDetailsModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || index.row() >= mDetailItemsCount || index.row() < 0 ) {
+    if (!index.isValid() || index.row() >= mDetailTexts.count() || index.row() < 0 ) {
         return QVariant();
     }
 
@@ -165,10 +172,31 @@ void LogsDetailsModel::contactActionCompleted(bool modified)
 //
 // -----------------------------------------------------------------------------
 //
+void LogsDetailsModel::duplicatesRead()
+{
+    LOGS_QDEBUG( "logs [ENG] -> LogsDetailsModel::duplicatesRead()" )
+    
+    qDeleteAll( mDuplicates );
+    mDuplicates.clear();
+    mDuplicates = mDbConnector->takeDuplicates();
+    
+    initContent();
+    reset();
+    
+    // Someone else might be reading duplicates as well, don't interfere with them.
+    disconnect( mDbConnector, SIGNAL(duplicatesRead()), this, SLOT(duplicatesRead()) );
+
+    LOGS_QDEBUG( "logs [ENG] <- LogsDetailsModel::duplicatesRead()" )
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void LogsDetailsModel::getDecorationData(int row, QList<QVariant>& iconList) const
 {
-    if ( mDetailIcons.contains(row) ){
-        iconList << *mDetailIcons.find(row).value();
+    if ( row < mDetailIcons.count() ){
+        iconList << *mDetailIcons.at(row);
     }
 }
 
@@ -178,8 +206,8 @@ void LogsDetailsModel::getDecorationData(int row, QList<QVariant>& iconList) con
 //
 void LogsDetailsModel::getDisplayData(int row, QStringList& texts) const
 {
-    if ( mDetailTexts.contains(row) ){
-        texts << mDetailTexts.find(row).value();
+    if ( row < mDetailTexts.count() ){
+        texts << mDetailTexts.at(row);
     }
 }
 
@@ -223,7 +251,7 @@ QString LogsDetailsModel::getHeaderData(const LogsEvent& event) const
     }
     
     if ( headerdata.length() == 0 ){
-        headerdata = tr("No number");
+        headerdata = hbTrId("txt_dial_dblist_call_id_val_unknown_number");
     }
     return headerdata;
 }
@@ -239,19 +267,6 @@ QString LogsDetailsModel::getRemoteUri(const LogsEvent& event) const
         remoteUri = event.logsEventData()->remoteUrl();
     }
     return remoteUri;
-}
-
-// -----------------------------------------------------------------------------
-// VoIP local Uri :
-// -----------------------------------------------------------------------------
-//
-QString LogsDetailsModel::getLocalUri(const LogsEvent& event) const
-{
-    QString localUri((""));
-    if (event.logsEventData()){
-        localUri = event.logsEventData()->localUrl();
-    }
-    return localUri;
 }
 
 // -----------------------------------------------------------------------------
@@ -297,18 +312,18 @@ QString LogsDetailsModel::getHeaderValue(QString value,bool isRemote) const
     QString headervalue("");
     if (isAddress(value)){
         if ((isOutgoingCall() && isRemote)|| (!isOutgoingCall() && !isRemote)){
-            headervalue = tr("Call to Address:");
+            headervalue = hbTrId("txt_dialer_ui_dblist_call_id");
         }
         else{
-            headervalue = tr("Call from Address:");
+            headervalue = hbTrId("txt_dialer_ui_dblist_call_id");
         }
     } 
     else {
         if ((isOutgoingCall() && isRemote)|| (!isOutgoingCall() && !isRemote)) {
-            headervalue = tr("Call to Number:");
+            headervalue = hbTrId("txt_dialer_ui_dblist_call_id");
         }
         else {
-            headervalue = tr("Call from Number:");
+            headervalue = hbTrId("txt_dialer_ui_dblist_call_id");
         }
     }
     
@@ -328,7 +343,6 @@ void LogsDetailsModel::initContent()
     initIcons();
     
     Q_ASSERT( mDetailIcons.count() == mDetailTexts.count() );
-    mDetailItemsCount = mDetailTexts.count();
 }
 
 // -----------------------------------------------------------------------------
@@ -337,43 +351,40 @@ void LogsDetailsModel::initContent()
 //
 void LogsDetailsModel::initTexts()
 {
-	int row = 0;
-	
 	if (getCallerId(*mEvent).length()!= 0){
         QStringList remotePartyRow;
         remotePartyRow << getHeaderValue(getCallerId(*mEvent),true);
         remotePartyRow << getCallerId(*mEvent);
-        mDetailTexts.insert(row++, remotePartyRow);
+        mDetailTexts.append(remotePartyRow);
 	}
-		
-	if (getLocalUri(*mEvent).length()!= 0) {
-        QStringList localUriRow;
-        localUriRow << getHeaderValue(getLocalUri(*mEvent),false);
-        localUriRow << getLocalUri(*mEvent);
-        mDetailTexts.insert(row++, localUriRow);
-	}
-		
-    QStringList dateAndTimeRow;
-    dateAndTimeRow << hbTrId("txt_dialer_ui_dblist_date_and_time") + tr(":");
-    dateAndTimeRow << mEvent->time().toTimeSpec(Qt::LocalTime).toString();
-    mDetailTexts.insert(row++, dateAndTimeRow);
+	
+	// TODO: if more than one date and time rows, first row has text "Last call event"
+	// but there's no localization string for that yet
+	bool firstOfMultipleDates( mDuplicates.count() > 0 );
+	addDateAndTimeTextRow(*mEvent, firstOfMultipleDates);
     
     QStringList callDirectionRow;
-    callDirectionRow << hbTrId("txt_dialer_ui_dblist_call_direction") + tr(":");
+    callDirectionRow << hbTrId("txt_dialer_ui_dblist_call_direction");
     callDirectionRow << mEvent->directionAsString();
-    mDetailTexts.insert(row++, callDirectionRow);
+    mDetailTexts.append(callDirectionRow);
     
     QStringList callTypeRow;
-    callTypeRow << hbTrId("txt_dialer_ui_dblist_call_type") + tr(":");
+    callTypeRow << hbTrId("txt_dialer_ui_dblist_call_type");
     callTypeRow << mEvent->typeAsString();
-    mDetailTexts.insert(row++, callTypeRow);
+    mDetailTexts.append(callTypeRow);
     
-    QStringList callDurationRow;
-    callDurationRow << hbTrId("txt_dialer_ui_dblist_call_duration") + tr(":");
-    QTime n(0, 0, 0);
-    QTime t = n.addSecs(mEvent->duration());                
-    callDurationRow << t.toString("hh:mm:ss");
-    mDetailTexts.insert(row, callDurationRow);
+    if ( mEvent->direction() != LogsEvent::DirMissed ){
+        QStringList callDurationRow;
+        callDurationRow << hbTrId("txt_dialer_ui_dblist_call_duration");
+        QTime n(0, 0, 0);
+        QTime t = n.addSecs(mEvent->duration());                
+        callDurationRow << t.toString("hh:mm:ss");
+        mDetailTexts.append(callDurationRow);
+    }
+    
+    foreach ( LogsEvent* event, mDuplicates ){
+        addDateAndTimeTextRow(*event);
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -382,26 +393,46 @@ void LogsDetailsModel::initTexts()
 //
 void LogsDetailsModel::initIcons()
 {
-	int row = 0;
 	if (getCallerId(*mEvent).length()!= 0){
         HbIcon* remotePartyIcon = new HbIcon(logsRemotePartyInfoIconId);
-        mDetailIcons.insert(row++, remotePartyIcon);
+        mDetailIcons.append(remotePartyIcon);
   	}
-  	
-  	if (getLocalUri(*mEvent).length()!= 0) {
-        HbIcon* localUriIcon = new HbIcon(logsRemotePartyInfoIconId);        
-        mDetailIcons.insert(row++, localUriIcon);
-    }
     
     HbIcon* dateAndTimeIcon = new HbIcon(logsCallDateAndTimeIconId);
-    mDetailIcons.insert(row++, dateAndTimeIcon);
+    mDetailIcons.append(dateAndTimeIcon);
     
     HbIcon* directionIcon = new HbIcon( LogsAbstractModel::directionIconName(*mEvent) );
-    mDetailIcons.insert(row++, directionIcon);
+    mDetailIcons.append(directionIcon);
     
     HbIcon* typeIcon = new HbIcon( LogsAbstractModel::typeIconName(*mEvent) );
-    mDetailIcons.insert(row++, typeIcon);
+    mDetailIcons.append(typeIcon);
     
-    HbIcon* durationIcon = new HbIcon(logsCallDurationIconId);
-    mDetailIcons.insert(row, durationIcon);
+    if ( mEvent->direction() != LogsEvent::DirMissed ){
+        HbIcon* durationIcon = new HbIcon(logsCallDurationIconId);
+        mDetailIcons.append(durationIcon);
+    }
+    
+    foreach ( LogsEvent* event, mDuplicates ){
+        // Having multiple date and time icon instances has no performance
+        // penalty due resource sharing inside HbIcon impl
+        HbIcon* dateAndTimeIcon = new HbIcon(logsCallDateAndTimeIconId);
+        mDetailIcons.append(dateAndTimeIcon);
+    }
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
+void LogsDetailsModel::addDateAndTimeTextRow(
+        const LogsEvent& event, bool firstOfMultipleDates)
+{
+    QStringList dateAndTimeRow;
+    if ( firstOfMultipleDates ){
+        dateAndTimeRow << hbTrId("txt_dial_dblist_last_call_event");
+    } else {
+        dateAndTimeRow << hbTrId("txt_dialer_ui_dblist_date_and_time");
+    }
+    dateAndTimeRow << event.time().toTimeSpec(Qt::LocalTime).toString();
+    mDetailTexts.append(dateAndTimeRow);
 }

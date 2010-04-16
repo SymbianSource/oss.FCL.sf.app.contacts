@@ -100,6 +100,25 @@ void UT_LogsDetailsView::testActivated()
     //QT_NO_DEBUG_OUTPUT
 }
 
+void UT_LogsDetailsView::testDeactivated()
+{
+    // Deactivation of not properly activated view
+    LogsDetailsView* view = mRepository->detailsView();
+    QVERIFY( !view->mListView );
+    view->deactivated();
+    QVERIFY( !view->mListView );
+    QVERIFY( !view->mDetailsModel );
+    
+    // Deactivation of properly activated view
+    LogsDetailsModel* model = new LogsDetailsModel;
+    QVariant arg = qVariantFromValue( model );
+    view->activated(false, arg);
+    QVERIFY( view->mListView );
+    view->deactivated();
+    QVERIFY( view->mListView );
+    QVERIFY( !view->mDetailsModel );
+}
+
 void UT_LogsDetailsView::testHandleBackSoftkey()
 {
     mViewManager->reset();
@@ -164,9 +183,9 @@ void UT_LogsDetailsView::testUpdateMenu()
     mDetailsView->updateMenu();
     QObject* obj = mRepository->findObject( logsDetailsViewVoiceCallMenuActionId );
     HbAction* voiceCallAction = qobject_cast<HbAction*>( obj );
-    QObject* obj2 = mRepository->findObject( logsDetailsViewVideoCallMenuActionId );
+    QObject* obj2 = mRepository->findObject( logsCommonVideoCallMenuActionId );
     HbAction* videoCallAction = qobject_cast<HbAction*>( obj2 );
-    QObject* obj3 = mRepository->findObject( logsDetailsMessageMenuActionId );
+    QObject* obj3 = mRepository->findObject( logsCommonMessageMenuActionId );
     HbAction* messageAction = qobject_cast<HbAction*>( obj3 );    
     QVERIFY( !voiceCallAction->isVisible() );
     QVERIFY( !videoCallAction->isVisible() );
@@ -233,7 +252,7 @@ void UT_LogsDetailsView::testContactActionCompleted()
     QVERIFY( mDetailsView->mViewName->titleText().length() > 0 );
     
     // No effect if no contact modify occurred
-    mDetailsView->mViewName->setTitleText("");
+    mDetailsView->mViewName->setHeading("");
     mDetailsView->contactActionCompleted(false);
     QVERIFY( mDetailsView->mViewName->titleText().length() == 0 );
 }
@@ -252,11 +271,13 @@ void UT_LogsDetailsView::testUpdateWidgetsSizeAndLayout()
     mDetailsView->updateWidgetsSizeAndLayout();
     
     HbListView list;
-    //listView exists, layout updated
+    //listView exists, layout and size updated
     mDetailsView->mViewManager.mainWindow().setOrientation( Qt::Horizontal );
-    mDetailsView->mDialpad->setVisible(true);
+    mDetailsView->mDialpad->openDialpad();
     mDetailsView->mListView = &list;
     mDetailsView->mListView->setLayoutName("dummy");
+    mDetailsView->mLayoutSectionName = "dummy";
     mDetailsView->updateWidgetsSizeAndLayout();
-    QVERIFY( mDetailsView->mListView->layoutName() == logsListLandscapeLayout );
+    QVERIFY( mDetailsView->mListView->layoutName() == logsListDefaultLayout );
+    QVERIFY( mDetailsView->mLayoutSectionName == logsViewLandscapeDialpadSection );
 }

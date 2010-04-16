@@ -14,8 +14,8 @@
 * Description:
 *
 */
-#ifndef UT_CNTPREFILTERING_H
-#define UT_CNTPREFILTERING_H
+#ifndef ST_LOGSCNTFINDER_H
+#define ST_LOGSCNTFINDER_H
 
 #include <QObject>
 #include <qcontactmanager.h>
@@ -41,35 +41,40 @@ private slots:
  * init() will be called before each testfunction is executed.
  * cleanup() will be called after every testfunction.
 */
-    void initTestCase();
-    void cleanupTestCase();
-    void init();
-    void cleanup();
+     void initTestCase();
+     void cleanupTestCase();
+     void init();
+     void cleanup();
 
 private slots: //test methods
-     
     void testPredictiveSearchQuery();
     void testKeymap();
     void testPredictiveSearchQueryZero();
+    void testPredictiveSearchQueryLimit();
     void testPredictiveSearchQueryLogs();
-    
+    void testQueryOrder();
+
 private:
-    void createContacts_testKeymap();
-    void createContact_one_Contact(QString firstname, QString Lastname, 
-                                   QString phnumber);
+
+
     
+    void createOneContact(
+        QString firstname, 
+        QString Lastname, 
+        QString phnumber);
     QContactFilter::MatchFlags flag(int f);
     void createContacts();
+    void createContactsForQueryOrder();
     void createHistoryEvents();
-    void createLogEvent(QString firstname, QString Lastname, 
-                        QString phnumber);
-    
-        
+    void createLogEvent(
+        QString firstname, 
+        QString Lastname, 
+        QString phnumber);
+
 private:
-    
-    QContactManager             *m_manager;
-	  LogsCntFinder  						  *m_finder;
+    QContactManager *m_manager;
+    LogsCntFinder   *m_finder;
 };
 
 
-#endif //UT_CNTSPREFILTERING_H
+#endif // ST_LOGSCNTFINDER_H

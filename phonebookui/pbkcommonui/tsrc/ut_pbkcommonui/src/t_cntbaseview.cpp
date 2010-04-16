@@ -21,7 +21,7 @@
 #include <QObject>
 
 #include <hbtoolbar.h>
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntmainwindow.h"
 
 #include "hbstubs_helper.h"
@@ -38,7 +38,7 @@ void TestCntBaseView::initTestCase()
 void TestCntBaseView::createClasses()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::noView);
     mBaseView = new CntBaseTestView(mViewManager);
     mWindow->addView(mBaseView);
     mWindow->setCurrentView(mBaseView);
@@ -83,7 +83,7 @@ void TestCntBaseView::commands()
 void TestCntBaseView::addSoftkeyAction()
 {
     mBaseView->addSoftkeyAction();
-    QVERIFY(mBaseView->mSoftKeyBackAction == mWindow->softKeyAction(Hb::SecondarySoftKey));
+    QVERIFY(mBaseView->mSoftKeyBackAction == mBaseView->navigationAction());
 }
 
 void TestCntBaseView::clearToolBar()
@@ -144,8 +144,7 @@ void TestCntBaseView::keyPressEvent()
 
 void TestCntBaseView::cleanupTestCase()
 {
-    delete mWindow;
-    mWindow = 0;
+    mWindow->deleteLater();
     delete mViewManager;
     mViewManager = 0;
 }

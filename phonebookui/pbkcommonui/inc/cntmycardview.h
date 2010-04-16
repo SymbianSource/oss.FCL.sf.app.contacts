@@ -19,8 +19,14 @@
 #define CNTMYCARDVIEW_H_
 
 #include <QObject>
-#include "cntbaseview.h"
+#include <hbdocumentloader.h>
+
+#include "cntabstractview.h"
 #include "cntviewparameters.h"
+
+class CntAbstractViewManager;
+class HbView;
+class HbAction;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -28,32 +34,34 @@ QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
 
-class CntMyCardView : public CntBaseView
+class CntMyCardView : public QObject, public CntAbstractView
 {
 
 Q_OBJECT
 
-public slots:
-
-    void aboutToCloseView();
-    void openNameEditor();
-    void openMyCardSelectionView();
-
-public: // from CntBaseView
-    virtual void setOrientation(Qt::Orientation orientation);
-    
 public:
-
-    CntMyCardView(CntViewManager *viewManager, QGraphicsItem *parent = 0);
+    CntMyCardView();
     ~CntMyCardView();
 
+public: // From CntAbstractView
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters& aArgs );
+    void deactivate();
+    bool isDefault() const { return false; }
+    HbView* view() const { return mView; }
     CntViewParameters::ViewId viewId() const { return CntViewParameters::myCardView; }
-    void activateView(const CntViewParameters &aViewParameters);
-
-private:
     
-    QContact* mContact;
-
+private slots:
+    void showPreviousView();
+    void openNameEditor();
+    void openMyCardSelectionView(); 
+    void setOrientation(Qt::Orientation orientation);
+    
+private:  
+    QContact* mContact; // own
+    CntAbstractViewManager* mViewManager;
+    HbDocumentLoader mDocumentLoader;
+    HbView* mView; // own
+    HbAction* mSoftkey;
 };
 
 #endif /* CNTMYCARDVIEW_H_ */

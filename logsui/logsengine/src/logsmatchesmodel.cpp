@@ -14,7 +14,7 @@
 * Description:
 *
 */
-#include "LogsMatchesModel.h"
+#include "logsmatchesmodel.h"
 #include "logsmodel.h"
 
 #include "logsevent.h"
@@ -31,9 +31,8 @@
 #include "logscommondata.h"
 #include <hblineedit.h>
 #include <QStringList>
-#include <QContactPhoneNumber.h>
-#include <QContactName.h>
-#include <QContactManager.h>
+#include <qcontactphonenumber.h>
+#include <qcontactmanager.h>
 
 Q_DECLARE_METATYPE(LogsEvent *)
 Q_DECLARE_METATYPE(LogsCall *)
@@ -160,7 +159,7 @@ QVariant LogsMatchesModel::createMessage(const LogsModelItemContainer& item) con
     }
     const LogsMatchesModelItemContainer& matchItem = 
         static_cast<const LogsMatchesModelItemContainer&>( item ); 
-    LogsMessage* logsMessage = new LogsMessage(matchItem.contact(), matchItem.number());
+    LogsMessage* logsMessage = new LogsMessage(matchItem.contact(), matchItem.number(),matchItem.contactName());
     if (!logsMessage->isMessagingAllowed()) {
         delete logsMessage;
         logsMessage = 0;
@@ -184,7 +183,7 @@ QVariant LogsMatchesModel::createContact(const LogsModelItemContainer& item) con
     const LogsMatchesModelItemContainer& matchItem = 
         static_cast<const LogsMatchesModelItemContainer&>( item ); 
     LogsContact* logsContact = 
-        new LogsContact(matchItem.contact(), matchItem.number(), *mDbConnector);
+        new LogsContact(matchItem.number(), *mDbConnector, matchItem.contact());
     if ( !logsContact->isContactRequestAllowed() ) {
         delete logsContact;
         logsContact = 0;
@@ -335,7 +334,7 @@ void LogsMatchesModel::readEvents(int first, int last)
 //
 // -----------------------------------------------------------------------------
 //
-void LogsMatchesModel::logsMatches( const QString& pattern )
+void LogsMatchesModel::logsMatches(const QString& pattern)
 {
     // Do user inputted searches in async manner to avoid from
     // blocking next input. This also decreases amount of queries when
@@ -347,7 +346,18 @@ void LogsMatchesModel::logsMatches( const QString& pattern )
 //
 // -----------------------------------------------------------------------------
 //
-void LogsMatchesModel::getLogsMatches( const QString& pattern, bool async, bool force )
+LogsContact* LogsMatchesModel::createContact(const QString& number)
+{
+    return new LogsContact(number, *mDbConnector);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
+void LogsMatchesModel::getLogsMatches(const QString& pattern, 
+                                      bool async, 
+                                      bool force )
 {
     LOGS_QDEBUG_2( "logs [ENG] -> LogsMatchesModel::getLogsMatches(), pattern:", pattern );   
     mCurrentSearchPattern = pattern;
@@ -511,6 +521,15 @@ QString LogsMatchesModelItemContainer::number() const
         num = contactNum.value(QContactPhoneNumber::FieldNumber);   
     }
     return num;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
+QString LogsMatchesModelItemContainer::contactName() const
+{
+   return mContactName;
 }
 
 // -----------------------------------------------------------------------------

@@ -28,7 +28,37 @@ int actionCount = 0;
 bool dialogOpened = false;
 Qt::Orientation windowOrientation = Qt::Vertical;
 
+HbMainWindow* testWindow = 0;
+HbView* testView = 0;
+int testViewCount = 0;
+HbAction* testSoftkeyAction = 0;
 
+TestViewManager::TestViewManager()
+{
+    mManager = new QContactManager();
+}
+
+TestViewManager::~TestViewManager()
+{
+    delete mManager;
+}
+
+void TestViewManager::changeView( const CntViewParameters& aArgs )
+{
+    Q_UNUSED( aArgs );
+}
+
+void TestViewManager::back( const CntViewParameters& aArgs )
+{
+    Q_UNUSED( aArgs );
+}
+
+QContactManager* TestViewManager::contactManager(const QString& aType)
+{
+    Q_UNUSED(aType);
+    return mManager;
+}
+    
 void HbStubHelper::reset()
 {
     actionCount = 0;
@@ -88,16 +118,11 @@ void HbWidget::clearActions()
     actionCount = 0;
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 
-void HbMainWindow::setOrientation(Qt::Orientation orientation)
-{
-    windowOrientation = orientation; 
-}
-
-Qt::Orientation HbMainWindow::orientation() const
-{
-    return windowOrientation;
-}
 
 class MobHistoryModelData : public QSharedData
 {
@@ -132,4 +157,100 @@ int MobHistoryModel::rowCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent);
     return 3;
+}
+
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
+HbMainWindow::HbMainWindow(QWidget *parent, Hb::WindowFlags windowFlags) : d_ptr(0)
+{
+    Q_UNUSED(parent)
+    Q_UNUSED(windowFlags)
+    testViewCount = 0;
+    testView = 0;
+    testWindow = this;
+}
+
+HbMainWindow::~HbMainWindow()
+{
+   // testView = 0;
+    testWindow = 0;
+}
+    
+void HbMainWindow::setOrientation(Qt::Orientation orientation, bool animate)
+{
+		Q_UNUSED( animate )
+		
+    windowOrientation = orientation; 
+}
+
+Qt::Orientation HbMainWindow::orientation() const
+{
+    return windowOrientation;
+}
+
+
+QRectF HbMainWindow::layoutRect() const
+{
+    return QRectF(0, 0, 100, 100);
+}
+
+HbAction* HbMainWindow::softKeyAction(Hb::SoftKeyId key) const
+{
+    Q_UNUSED(key)
+    return testSoftkeyAction;
+}
+
+void HbMainWindow::addSoftKeyAction(Hb::SoftKeyId key, HbAction *action)
+{
+    Q_UNUSED(key)
+    Q_UNUSED(action)
+    testSoftkeyAction = action;
+}
+
+void HbMainWindow::removeSoftKeyAction(Hb::SoftKeyId key, HbAction *action)
+{
+    Q_UNUSED(key)
+    Q_UNUSED(action)
+    testSoftkeyAction = 0;
+}
+
+HbView *HbMainWindow::addView(QGraphicsWidget *widget)
+{
+    Q_UNUSED(widget)
+    testViewCount++;
+}
+
+void HbMainWindow::setCurrentView(HbView *view, bool animate,Hb::ViewSwitchFlags flags)
+{
+    Q_UNUSED(animate)
+    Q_UNUSED(flags);
+    testView = view;
+}
+
+void HbMainWindow::removeView(QGraphicsWidget *widget)
+{
+    Q_UNUSED(widget)
+    testViewCount--;
+}
+
+int HbMainWindow::viewCount() const
+{
+    return testViewCount;
+}
+HbView *HbMainWindow::currentView() const
+{
+    return testView;
+}
+
+QList<HbView *> HbMainWindow::views() const
+{
+    QList<HbView *> result;
+    for ( int i=0; i<testViewCount; ++i )
+    {
+       result.append(testView);
+    }
+    return result;
 }

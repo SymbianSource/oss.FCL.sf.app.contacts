@@ -84,6 +84,9 @@ LogsModel::~LogsModel()
 bool LogsModel::clearList(LogsModel::ClearType cleartype)
 {
     LOGS_QDEBUG( "logs [ENG] -> LogsModel::clearList()" )
+    
+    connect( mDbConnector, SIGNAL(clearingCompleted(int)), 
+         this, SIGNAL(clearingCompleted(int)) );
     return mDbConnector->clearList(cleartype);
 }
 
@@ -298,6 +301,8 @@ void LogsModel::initIcons()
     mIcons.insert(logsDialledVoiceCallIconId, icon);
     icon = new HbIcon(logsMissedVoiceCallIconId);    
     mIcons.insert(logsMissedVoiceCallIconId, icon);
+    icon = new HbIcon(logsMissedVoiceCallUnseenIconId);    
+    mIcons.insert(logsMissedVoiceCallUnseenIconId, icon);
     icon = new HbIcon(logsReceivedVoiceCallIconId);    
     mIcons.insert(logsReceivedVoiceCallIconId, icon);
 
@@ -305,6 +310,8 @@ void LogsModel::initIcons()
     mIcons.insert(logsDialledVideoCallIconId, icon);
     icon = new HbIcon(logsMissedVideoCallIconId);    
     mIcons.insert(logsMissedVideoCallIconId, icon);
+    icon = new HbIcon(logsMissedVideoCallUnseenIconId);    
+    mIcons.insert(logsMissedVideoCallUnseenIconId, icon);
     icon = new HbIcon(logsReceivedVideoCallIconId);    
     mIcons.insert(logsReceivedVideoCallIconId, icon);
     
@@ -312,6 +319,8 @@ void LogsModel::initIcons()
     mIcons.insert(logsDialledVoipCallIconId, icon);
     icon = new HbIcon(logsMissedVoipCallIconId);    
     mIcons.insert(logsMissedVoipCallIconId, icon);
+    icon = new HbIcon(logsMissedVoipCallUnseenIconId);    
+    mIcons.insert(logsMissedVoipCallUnseenIconId, icon);
     icon = new HbIcon(logsReceivedVoipCallIconId);    
     mIcons.insert(logsReceivedVoipCallIconId, icon);
 

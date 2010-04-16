@@ -204,7 +204,7 @@ void CntEditViewDetailItem::setDetail(const QContactDetail &detail, const QStrin
             text = hbTrId("txt_phob_list_add_phone_number");
             icon = HbIcon(mStringMapper.getMappedIcon(number.definitionName()));
         }
-        else
+        else if ( !number.subTypes().isEmpty() )
         {
             QStringList list;
             list << mStringMapper.getMappedDetail(number.subTypes().at(0)) << context;
@@ -275,7 +275,7 @@ void CntEditViewDetailItem::setDetail(const QContactDetail &detail, const QStrin
             text = hbTrId("Add IM address");
             icon = HbIcon(mStringMapper.getMappedIcon(account.definitionName()));
         }
-        else
+        else if ( !account.subTypes().isEmpty() )
         {
             QStringList list;
             list << mStringMapper.getMappedDetail(account.subTypes().at(0)) << context;

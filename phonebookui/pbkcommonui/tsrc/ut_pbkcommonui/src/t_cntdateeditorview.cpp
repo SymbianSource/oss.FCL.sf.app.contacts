@@ -20,7 +20,7 @@
 #include <qtcontacts.h>
 
 #include "cntdateeditorview.h"
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntmainwindow.h"
 #include "t_cntdateeditorview.h"
 
@@ -34,7 +34,7 @@ void TestCntDateEditorView::initTestCase()
 void TestCntDateEditorView::createClasses()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::noView);
     mDateEditorView = new CntDateEditorView(mViewManager, 0);
     mWindow->addView(mDateEditorView);
     mWindow->setCurrentView(mDateEditorView);
@@ -115,8 +115,7 @@ void TestCntDateEditorView::initializeFormData()
 
 void TestCntDateEditorView::cleanupTestCase()
 {
-    delete mWindow;
-    mWindow = 0;
+    mWindow->deleteLater();
     delete mViewManager;
     mViewManager = 0;
     delete mDateEditorView;

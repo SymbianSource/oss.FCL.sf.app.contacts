@@ -32,6 +32,7 @@
 
 //SYSTEM
 #include <QtTest/QtTest>
+#include <QGesture>
 #include <hbmainwindow.h>
 #include <hblistview.h>
 #include <hblabel.h>
@@ -39,7 +40,6 @@
 #include <hblistviewitem.h>
 #include <hbmenu.h>
 #include <dialpad.h>
-#include <hbgesturefilter.h>
 #include <hbgroupbox.h>
 #include <hbmessagebox.h>
 
@@ -218,8 +218,9 @@ void UT_LogsRecentCallsView::testUpdateViewName()
     mRecentCallsView->addStringsToMap();
     mRecentCallsView->mViewName = new HbGroupBox();
     mRecentCallsView->updateViewName();
-    QVERIFY( mRecentCallsView->mViewName->titleText() 
-            == mRecentCallsView->mTitleMap.value(mRecentCallsView->mConversionMap.value(LogsServices::ViewMissed)) );
+    QVERIFY( mRecentCallsView->mViewName->heading() 
+            == mRecentCallsView->mTitleMap.value(
+                   mRecentCallsView->mConversionMap.value(LogsServices::ViewMissed)));
     delete mRecentCallsView->mViewName;
     mRecentCallsView->mViewName = 0;
 }
@@ -296,17 +297,17 @@ void UT_LogsRecentCallsView::testShowCallDetails()
 void UT_LogsRecentCallsView::testOpenDialpad()
 {
     QVERIFY( !mRecentCallsView->mFilter );
-    QVERIFY( !mRecentCallsView->mDialpad->isVisible() );
+    QVERIFY( !mRecentCallsView->mDialpad->isOpen() );
     mRecentCallsView->openDialpad();
     QVERIFY( mRecentCallsView->mMatchesModel );
-    QVERIFY( mRecentCallsView->mDialpad->isVisible() );
+    QVERIFY( mRecentCallsView->mDialpad->isOpen() );
     
     
     mRecentCallsView->mFilter = new LogsFilter( LogsFilter::Missed );
     LogsMatchesModel* oldmatchesModel = mRecentCallsView->mMatchesModel;
     mRecentCallsView->openDialpad();
     QVERIFY( mRecentCallsView->mMatchesModel == oldmatchesModel );
-    QVERIFY( mRecentCallsView->mDialpad->isVisible() );
+    QVERIFY( mRecentCallsView->mDialpad->isOpen() );
 }
 
 void UT_LogsRecentCallsView::testDialpadEditorTextChanged()
@@ -342,18 +343,111 @@ void UT_LogsRecentCallsView::testDialpadEditorTextChanged()
     QVERIFY( mRecentCallsView->mDialpad->mIsCallButtonEnabled );
 }
 
-void UT_LogsRecentCallsView::testInitializeGestures()
+void UT_LogsRecentCallsView::testGestureEvent()
 {
     LogsRecentCallsView* view = mRepository->recentCallsView();
-    view->activated( false, QVariant(LogsServices::ViewAll) );
+    view->activated( false, QVariant(LogsServices::ViewCalled) );
+    view->mCurrentView = LogsServices::ViewCalled;
+    view->mAppearingView = LogsServices::ViewCalled;
+    mRecentCallsView->mViewManager.mainWindow().setOrientation( Qt::Vertical );
+
+    QSwipeGesture* swipe = new QSwipeGesture();
+    QList<QGesture*> list;
+    QGestureEvent event(list);
+    event.ignore(Qt::SwipeGesture);
+
+    //no swipe gesture in event
+    QVERIFY(!event.isAccepted(Qt::SwipeGesture));    
+    view->gestureEvent(&event);
+    QVERIFY(!event.isAccepted(Qt::SwipeGesture));
+    QVERIFY(view->mAppearingView == LogsServices::ViewCalled);
     
-    view->initializeGestures(0);
+    //swipe gesture in event, but gesture isn't finished
+    list.append(swipe);
+    QGestureEvent event2(list);
+    event2.ignore(Qt::SwipeGesture);
+    QVERIFY(!event2.isAccepted(Qt::SwipeGesture));
+    QVERIFY(swipe->state() != Qt::GestureFinished);
+    view->gestureEvent(&event2);
+    QVERIFY(!event2.isAccepted(Qt::SwipeGesture));
+    QVERIFY(view->mAppearingView == LogsServices::ViewCalled);
     
-    HbGestureSceneFilter filter;
-    QVERIFY(filter.count() == 0);
-    view->initializeGestures(&filter);
-    QVERIFY(filter.count() == 2);
+    //vertical orientation swipe right up
+    HbStubHelper::setGestureState(Qt::GestureFinished);
+    event2.setAccepted(Qt::SwipeGesture, false);
+    swipe->setSwipeAngle(10);
+    view->gestureEvent(&event2);
+    QVERIFY( view->mAppearingView == LogsServices::ViewAll );
+    QVERIFY( event2.isAccepted(Qt::SwipeGesture) );
     
+    //vertical orientation swipe left up
+    event2.setAccepted(Qt::SwipeGesture, false);
+    swipe->setSwipeAngle(170);
+    view->gestureEvent(&event2);
+    QVERIFY(view->mAppearingView == LogsServices::ViewReceived);
+    QVERIFY(event2.isAccepted(Qt::SwipeGesture));
+
+    //vertical orientation swipe down, nothing happens
+    event2.setAccepted(Qt::SwipeGesture, false);
+    swipe->setSwipeAngle(70);
+    view->mAppearingView = view->mCurrentView;
+    view->gestureEvent(&event2);
+    QVERIFY(view->mAppearingView == LogsServices::ViewCalled);
+    QVERIFY(!event2.isAccepted(Qt::SwipeGesture));
+    
+    //horizontal orientation swipe right up
+    mRecentCallsView->mViewManager.mainWindow().setOrientation( Qt::Horizontal );
+    event2.setAccepted(Qt::SwipeGesture, false);
+    swipe->setSwipeAngle(80);
+    view->gestureEvent(&event2);
+    QVERIFY(view->mAppearingView == LogsServices::ViewReceived);
+    QVERIFY(event2.isAccepted(Qt::SwipeGesture));
+    
+    //horizontal orientation swipe right down
+    event2.setAccepted(Qt::SwipeGesture, false);
+    swipe->setSwipeAngle(280);
+    view->gestureEvent(&event2);
+    QVERIFY(view->mAppearingView == LogsServices::ViewAll);
+    QVERIFY(event2.isAccepted(Qt::SwipeGesture));
+
+    //horizontal orientation swipe left, nothing happens
+    event2.setAccepted(Qt::SwipeGesture, false);
+    swipe->setSwipeAngle(200);
+    view->mAppearingView = view->mCurrentView;
+    view->gestureEvent(&event2);
+    QVERIFY(view->mAppearingView == LogsServices::ViewCalled);
+    QVERIFY(!event2.isAccepted(Qt::SwipeGesture));
+}
+
+void UT_LogsRecentCallsView::testSwipeAngleToDirection()
+{
+    int delta = 30;
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(61, delta), QSwipeGesture::Up);    
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(119, delta), QSwipeGesture::Up);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(90, delta), QSwipeGesture::Up);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(60, delta), QSwipeGesture::NoDirection);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(120, delta), QSwipeGesture::NoDirection);
+
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(241, delta), QSwipeGesture::Down);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(299, delta), QSwipeGesture::Down);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(270, delta), QSwipeGesture::Down);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(300, delta), QSwipeGesture::NoDirection);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(240, delta), QSwipeGesture::NoDirection);
+    
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(29, delta), QSwipeGesture::Right);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(331, delta), QSwipeGesture::Right);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(0, delta), QSwipeGesture::Right);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(360, delta), QSwipeGesture::Right);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(30, delta), QSwipeGesture::NoDirection);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(330, delta), QSwipeGesture::NoDirection);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(361, delta), QSwipeGesture::NoDirection);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(-1, delta), QSwipeGesture::NoDirection);
+
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(151, delta), QSwipeGesture::Left);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(209, delta), QSwipeGesture::Left);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(180, delta), QSwipeGesture::Left);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(150, delta), QSwipeGesture::NoDirection);
+    QCOMPARE(mRecentCallsView->swipeAngleToDirection(210, delta), QSwipeGesture::NoDirection);
 }
 
 void UT_LogsRecentCallsView::testViewChangeByFlicking()
@@ -362,29 +456,30 @@ void UT_LogsRecentCallsView::testViewChangeByFlicking()
     LogsRecentCallsView* view = mRepository->recentCallsView();
     view->activated( false, QVariant(LogsServices::ViewAll) );
     view->mCurrentView = LogsServices::ViewAll;
-    view->rightFlick(0);
+    view->rightFlick();
     QVERIFY(view->mCurrentView == LogsServices::ViewAll);
     QVERIFY(view->mAppearingView == LogsServices::ViewMissed);
     
     // Moving to right possible
-    view->leftFlick(0);
+    view->leftFlick();
     QVERIFY(view->mCurrentView == LogsServices::ViewAll);
     QVERIFY(view->mAppearingView == LogsServices::ViewCalled);
     
     // At rightmost list, moving causes going to first list
     view->mCurrentView = LogsServices::ViewMissed;
-    view->leftFlick(0);
+    view->leftFlick();
     QVERIFY(view->mCurrentView == LogsServices::ViewMissed);
     QVERIFY(view->mAppearingView == LogsServices::ViewAll);
     
     // Now moving to left is possible
-    view->rightFlick(0);
+    view->rightFlick();
     QVERIFY(view->mCurrentView == LogsServices::ViewMissed);
     QVERIFY(view->mAppearingView == LogsServices::ViewReceived);
     
     // Simulate effect completion which activates new view
     view->dissappearByFadingComplete();
-    QVERIFY( view->mViewName->titleText() == view->mTitleMap.value(view->mConversionMap.value(LogsServices::ViewReceived)) );
+    QVERIFY( view->mViewName->heading() 
+             == view->mTitleMap.value(view->mConversionMap.value(LogsServices::ViewReceived)) );
     
     view->dissappearByMovingComplete();
     QVERIFY(view->mCurrentView == LogsServices::ViewReceived);
@@ -558,9 +653,10 @@ void UT_LogsRecentCallsView::testUpdateWidgetsSizeAndLayout()
     HbListView list;
     //listView exists, layout and size updated
     mRecentCallsView->mViewManager.mainWindow().setOrientation( Qt::Vertical );
-    mRecentCallsView->mDialpad->setVisible(false);
+    mRecentCallsView->mDialpad->closeDialpad();
     mRecentCallsView->mListView = &list;
     mRecentCallsView->mListView->setLayoutName("dummy");
+    mRecentCallsView->mLayoutSectionName = "dummy";
     mRecentCallsView->updateWidgetsSizeAndLayout();
     QVERIFY( mRecentCallsView->mListView->layoutName() == logsListDefaultLayout );
     QVERIFY( mRecentCallsView->mLayoutSectionName == logsViewDefaultSection );
@@ -572,7 +668,7 @@ void UT_LogsRecentCallsView::testDialpadClosed()
     mRecentCallsView->mListView = &list;
 
     mRecentCallsView->mViewManager.mainWindow().setOrientation( Qt::Horizontal );
-    mRecentCallsView->mDialpad->setVisible(false);
+    mRecentCallsView->mDialpad->closeDialpad();
     mRecentCallsView->mLayoutSectionName = QString(logsViewLandscapeDialpadSection);
     QString hello("hello");
     mRecentCallsView->mDialpad->editor().setText( hello );

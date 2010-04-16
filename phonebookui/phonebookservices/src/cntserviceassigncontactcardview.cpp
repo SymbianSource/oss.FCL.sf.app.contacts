@@ -88,7 +88,7 @@ void CntServiceAssignContactCardView::saveNew()
 {
     CntViewParameters viewParameters(CntViewParameters::serviceEditView);
     viewParameters.setSelectedContact(*mContact);
-    viewManager()->onActivateView(viewParameters);
+    viewManager()->changeView(viewParameters);
 }
 
 /*!
@@ -98,7 +98,7 @@ void CntServiceAssignContactCardView::updateExisting()
 {
     CntViewParameters viewParameters(CntViewParameters::serviceContactSelectionView);
     viewParameters.setSelectedDetail(mDetail);
-    viewManager()->onActivateView(viewParameters);
+    viewManager()->changeView(viewParameters);
 }
 
 void CntServiceAssignContactCardView::activateView(const CntViewParameters &viewParameters)

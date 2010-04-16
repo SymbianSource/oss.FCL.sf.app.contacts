@@ -28,14 +28,19 @@ class TestCntCollectionListModel : public QObject
 
 private slots:
 
-    void initTestCase();
-    void createNoUserGroups();
-    void createWithUserGroups();
+    void init();    
+    void cleanup();
+    
+    
     void data();
+    void rowCount();
     void removeRows();
     void removeGroup();
-    void cleanupTestCase();
-
+    void initializeStaticGroups();
+    void initializeUserGroups();
+    void isFavoriteGroupCreated();
+    void favoriteGroupId();
+    
 private:
 
     CntCollectionListModel  *mModel;

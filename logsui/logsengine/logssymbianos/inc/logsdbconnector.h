@@ -98,6 +98,11 @@ class LogsDbConnector :
          * @param err, 0 if marking completed succesfully
          */
         void markingCompleted(int err);
+        
+        /**
+         * Signaled once duplicate reading has completed.
+         */
+        void duplicatesRead();
 
     public:
         
@@ -150,6 +155,19 @@ class LogsDbConnector :
          * @return 0 if clearing was success
          */
         int clearMissedCallsCounter();
+        
+        /**
+         * Read duplicates for specified event
+         * @param eventId
+         * @return 0 if reading started succesfully
+         */
+        int readDuplicates(int eventId);
+        
+        /**
+         * Take current duplicates.
+         * @return list of duplicate events, ownership is transferred
+         */
+        QList<LogsEvent*> takeDuplicates();
 		
     protected: // From LogsReaderObserver
         
@@ -157,6 +175,7 @@ class LogsDbConnector :
         virtual void errorOccurred(int err);
 		virtual void temporaryErrorOccurred(int err);
 		virtual void eventModifyingCompleted();
+		virtual void duplicatesReadingCompleted(QList<LogsEvent*> duplicates);
 		
 	protected: // From LogsRemoveObserver
 		virtual void removeCompleted();
@@ -181,16 +200,18 @@ class LogsDbConnector :
         CRepository* mRepository;
         
         QList<LogsEvent*> mEvents;
+        QList<LogsEvent*> mDuplicatedEvents;
         QList<int> mRemovedEventIndexes;
         QList<int> mUpdatedEventIndexes;
         QList<int> mAddedEventIndexes;
         QList<int> mEventsSeen;
-
+        
     private: // Testing related friend definitions
         
         friend class UT_LogsDbConnector;
         friend class UT_LogsRemove;
         friend class UT_LogsModel;
+        friend class UT_LogsDetailsModel;
     
     };
 

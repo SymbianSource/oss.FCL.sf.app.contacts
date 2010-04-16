@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2009 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
@@ -65,6 +65,9 @@ QTM_USE_NAMESPACE
 
 #define CNT_SYMBIANSIM_MANAGER_NAME "symbiansim"
 
+class CntSimStore;
+class CntAbstractSimRequest;
+
 class CntSymbianSimEngine : public QContactManagerEngine
 {
     Q_OBJECT
@@ -76,15 +79,25 @@ public:
     QString managerName() const;
 
     /* Contacts - Accessors and Mutators */
-    QList<QContactLocalId> contacts(const QContactFilter& filter, const QList<QContactSortOrder>& sortOrders, QContactManager::Error& error) const;
-    QList<QContactLocalId> contacts(const QList<QContactSortOrder>& sortOrders, QContactManager::Error& error) const;
-    QContact contact(const QContactLocalId& contactId, QContactManager::Error& error) const;
+    QList<QContactLocalId> contactIds(const QContactFilter& filter, const QList<QContactSortOrder>& sortOrders, QContactManager::Error& error) const;
+    QList<QContactLocalId> contactIds(const QList<QContactSortOrder>& sortOrders, QContactManager::Error& error) const;
+    // TODO:
+    //QList<QContact> contacts(const QList<QContactSortOrder>& sortOrders, const QStringList& definitionRestrictions, QContactManager::Error& error) const;
+    //QList<QContact> contacts(const QContactFilter& filter, const QList<QContactSortOrder>& sortOrders, const QStringList& definitionRestrictions, QContactManager::Error& error) const;
+    QContact contact(const QContactLocalId& contactId, const QStringList& definitionRestrictions, QContactManager::Error& error) const;
+   
     bool saveContact(QContact* contact, QContactManager::Error& error);
     bool removeContact(const QContactLocalId& contactId, QContactManager::Error& error);
 
     /* Definitions - Accessors and Mutators */
     QMap<QString, QContactDetailDefinition> detailDefinitions(const QString& contactType, QContactManager::Error& error) const;
 
+    /* Asynchronous Request Support */
+    void requestDestroyed(QContactAbstractRequest* req);
+    bool startRequest(QContactAbstractRequest* req);
+    bool cancelRequest(QContactAbstractRequest* req);
+    bool waitForRequestFinished(QContactAbstractRequest* req, int msecs);    
+    
     /* Functionality reporting */
     bool hasFeature(QContactManager::ManagerFeature feature, const QString& contactType = QContactType::TypeContact) const;
     //QStringList supportedRelationshipTypes(const QString& contactType = QContactType::TypeContact) const;
@@ -93,16 +106,22 @@ public:
     QStringList supportedContactTypes() const;
 
     /* Synthesize the display label of a contact */
-    QString synthesizeDisplayLabel(const QContact& contact, QContactManager::Error& error) const;
+    QString synthesizedDisplayLabel(const QContact& contact, QContactManager::Error& error) const;
 
-private:
-    TInt getEtelStoreInfo() const;
-    QContact fetchContactL(const QContactLocalId &localId) const;
-    QList<QContact> fetchContactsL() const;
-    void saveContactL(QContact* contact) const;
+public:
+    void updateDisplayLabel(QContact& contact) const;
     void transformError(TInt symbianError, QContactManager::Error& qtError) const;
     QList<QContact> decodeSimContactsL(TDes8& rawData) const;
     QContact encodeSimContactL(const QContact* contact, TDes8& rawData) const;
+    RMobilePhoneBookStore &store() { return m_etelStore; }
+    CntSimStore *simStore() { return m_simStore; }  
+
+private:
+    void getEtelStoreInfoL() const;
+    QContact fetchContactL(const QContactLocalId &localId) const;
+    QList<QContact> fetchContactsL() const;
+    void saveContactL(QContact* contact) const;
+    void doSaveContactL(QContact* contact) const;
 
 private:
     RTelServer m_etelServer;
@@ -112,6 +131,8 @@ private:
     RMobilePhoneBookStore::TMobilePhoneBookInfoV5Pckg m_etelStoreInfoPckg;
 
     QString m_managerUri;
+    CntSimStore *m_simStore;
+    QMap<QContactAbstractRequest *, CntAbstractSimRequest *> m_asyncRequests;
 };
 
 class Q_DECL_EXPORT CntSymbianSimFactory : public QObject, public QContactManagerEngineFactory

@@ -22,6 +22,7 @@
 #include <apacmdln.h>
 #include <apgtask.h>
 #include <apgcli.h>
+#include <hbicon.h>
 
 #include <QtTest/QtTest>
 
@@ -160,6 +161,7 @@ void AT_LogsEngine::testClearEvents()
     QVERIFY( filter.clearEvents() );
     QTest::qWait(1000); // wait clearing completion
     QVERIFY( filter.rowCount() == 0 );
+    QVERIFY( spy.count() == 1 );
 }
 
 void AT_LogsEngine::testHomeScreenUsecase()
@@ -192,7 +194,7 @@ void AT_LogsEngine::testHomeScreenUsecase()
     QStringList displayData = filter.data( filter.index(0, 0), Qt::DisplayRole ).toStringList();
     QVERIFY( displayData.count() == 2 );
     QVERIFY( displayData.at(0) == logsTestHomeScreenMissedCallerName );
-    QIcon icon = qVariantValue<QIcon>( filter.data( filter.index(0, 0), Qt::DecorationRole ).toList().at(0) );
+    HbIcon icon = qVariantValue<HbIcon>( filter.data( filter.index(0, 0), Qt::DecorationRole ).toList().at(0) );
     QVERIFY( !icon.isNull() );
     
     // Cenrep missed calls counter is not tested here

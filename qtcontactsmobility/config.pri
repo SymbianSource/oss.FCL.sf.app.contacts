@@ -13,3 +13,4 @@ maemo5|maemo6:mobility_modules -= systeminfo
 contains(mobility_modules,versit): mobility_modules *= contacts  
 lbt_enabled = no 
 snap_enabled = no 
+symbiancntsim_enabled = yes 

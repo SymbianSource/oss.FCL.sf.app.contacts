@@ -22,8 +22,8 @@
 #include <hbframedrawer.h>
 #include <hbframeitem.h>
 
-#define INCOMING_EVENT_FRAME ":/bubble/qtg_fr_convlist_received_normal"
-#define OUTGOING_EVENT_FRAME ":/bubble/qtg_fr_convlist_sent_normal"
+#define INCOMING_EVENT_FRAME "qtg_fr_convlist_received_normal"
+#define OUTGOING_EVENT_FRAME "qtg_fr_convlist_sent_normal"
 
 CntHistoryViewItemWidget::CntHistoryViewItemWidget(QGraphicsItem *parent) :
     HbWidget(parent),

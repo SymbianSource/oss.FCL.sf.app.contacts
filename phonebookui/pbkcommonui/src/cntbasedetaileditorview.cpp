@@ -56,8 +56,13 @@ CntBaseDetailEditorView::~CntBaseDetailEditorView()
 
 void CntBaseDetailEditorView::aboutToCloseView()
 {
+    CntViewParameters args;//( CntViewParameters::editView );
+    args.setSelectedContact( *mContact );
+    viewManager()->back( args );
+    /*
     viewManager()->previousViewParameters().setSelectedContact(*mContact);
     viewManager()->onActivatePreviousView();
+    */
 }
 
 /*!
@@ -78,8 +83,13 @@ Cancel all changes made to the details and return to main edit view
 */
 void CntBaseDetailEditorView::cancelChanges()
 {
+    CntViewParameters args;//( CntViewParameters::editView );
+    args.setSelectedContact( *mContact );
+    viewManager()->back( args );
+    /*
     viewManager()->previousViewParameters().setSelectedContact(*mContact);
     viewManager()->onActivatePreviousView();
+    */
 }
 
 HbDataFormModel *CntBaseDetailEditorView::formModel()

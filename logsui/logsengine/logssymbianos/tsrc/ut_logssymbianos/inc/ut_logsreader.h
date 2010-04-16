@@ -55,6 +55,7 @@ private slots: //test methods
     void testStart2();
     void testStop();
     void testMarkEventSeen();
+    void testReadDuplicates();
     void testRunL();
     void testRunError();
     void testStateContext();
@@ -67,6 +68,7 @@ protected: // From LogsReaderObserver
     void errorOccurred(int err);
     void temporaryErrorOccurred(int err);
     void eventModifyingCompleted();
+    void duplicatesReadingCompleted(QList<LogsEvent*> duplicates);
         
 private:
   

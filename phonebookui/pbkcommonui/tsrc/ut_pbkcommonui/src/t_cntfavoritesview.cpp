@@ -18,26 +18,26 @@
 #include <QtTest/QtTest>
 #include <QObject>
 #include <QGraphicsLinearLayout>
-#include <hbtoolbar.h>
 
 #include "cntfavoritesview.h"
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntmainwindow.h"
 #include "t_cntfavoritesview.h"
+#include "cntgroupselectionpopup.h"
 
 #include "hbstubs_helper.h"
 
 void TestCntFavoritesView::initTestCase()
 {
-    mWindow = 0;
+    /*mWindow = 0;
     mViewManager = 0;
-    mFavoritesView = 0;
+    mFavoritesView = 0;*/
 }
 
-void TestCntFavoritesView::createClasses()
+void TestCntFavoritesView::init()
 {
-    mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
+    /*mWindow = new CntMainWindow(0, CntViewParameters::noView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::noView);
     mFavoritesView = new CntFavoritesView(mViewManager, 0);
     mWindow->addView(mFavoritesView);
     mWindow->setCurrentView(mFavoritesView);
@@ -45,57 +45,71 @@ void TestCntFavoritesView::createClasses()
     // check that we have a view
     QVERIFY(mWindow != 0);
     QVERIFY(mViewManager != 0);
-    QVERIFY(mFavoritesView != 0);
+    QVERIFY(mFavoritesView != 0);*/
 }
 
-void TestCntFavoritesView::openFetch()
+void TestCntFavoritesView::activateView()
 {
-    mFavoritesView->openFetch();
-    QVERIFY(static_cast<CntBaseView*>(mWindow->currentView())->viewId() ==
-            CntViewParameters::collectionFavoritesSelectionView);
+    /*CntViewParameters params(CntViewParameters::collectionFavoritesView);
+        
+    //Create Fav grp
+    QContact favoriteGroup;
+    favoriteGroup.setType(QContactType::TypeGroup);
+    QContactName favoriteGroupName;
+    favoriteGroupName.setCustomLabel("Favorites");
+    favoriteGroup.saveDetail(&favoriteGroupName);
+    mFavoritesView->contactManager()->saveContact(&favoriteGroup);
+
+    // set contact as the group id
+    params.setSelectedContact(favoriteGroup);
+    
+    mFavoritesView->activateView(params);
+    
+    
+    QVERIFY(mFavoritesView->findWidget("cnt_button_new")->isEnabled());*/
 }
 
 void TestCntFavoritesView::openNamesList()
 {
-    delete mFavoritesView;
-    mFavoritesView = 0;
+//    mWindow->addView(mFavoritesView);
+//    mWindow->setCurrentView(mFavoritesView);
+//    
+//    // create a group
+//    QContact firstGroup;
+//    firstGroup.setType(QContactType::TypeGroup);
+//    QContactName firstGroupName;
+//    firstGroupName.setCustomLabel("Favorites");
+//    firstGroup.saveDetail(&firstGroupName);
+//    mFavoritesView->contactManager()->saveContact(&firstGroup);
+//    
+//    QContact firstContact;
+//    QContactName firstContactName;
+//    firstContactName.setFirst("firstname");
+//    firstContact.saveDetail(&firstContactName);
+//    mFavoritesView->contactManager()->saveContact(&firstContact);
+//    
+//    mFavoritesView->openNamesList();
+//    
+//    // what to verify ?
     
-    mFavoritesView = new CntFavoritesView(mViewManager, 0);
-    mWindow->addView(mFavoritesView);
-    mWindow->setCurrentView(mFavoritesView);
-
-    mFavoritesView->openNamesList();
-    QVERIFY(static_cast<CntBaseView*>(mWindow->currentView())->viewId() ==
-            CntViewParameters::namesView);
 }
 
 void TestCntFavoritesView::aboutToCloseView()
 {
-    delete mFavoritesView;
-    mFavoritesView = 0;
-    
-    mFavoritesView = new CntFavoritesView(mViewManager, 0);
-    mWindow->addView(mFavoritesView);
+    /*mWindow->addView(mFavoritesView);
     mWindow->setCurrentView(mFavoritesView);
 
     mFavoritesView->aboutToCloseView();
     QVERIFY(static_cast<CntBaseView*>(mWindow->currentView())->viewId() ==
-            CntViewParameters::collectionView);
+            CntViewParameters::collectionView);*/
 }
 
-void TestCntFavoritesView::addActionsToToolBar()
-{
-    HbStubHelper::reset();
-    mFavoritesView->addActionsToToolBar();
-    QVERIFY(HbStubHelper::widgetActionsCount() == 3);
-}
 
-void TestCntFavoritesView::cleanupTestCase()
+void TestCntFavoritesView::cleanup()
 {
+    /*delete mFavoritesView;
+    mFavoritesView = 0;
     delete mViewManager;
     mViewManager = 0;
-    delete mWindow;
-    mWindow = 0;
+    mWindow->deleteLater();*/
 }
-
-// EOF

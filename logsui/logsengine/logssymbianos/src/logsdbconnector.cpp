@@ -25,7 +25,7 @@
 #include <logcli.h>
 #include <f32file.h>
 #include <centralrepository.h>
-#include <logsdomaincrkeys.h>
+#include <LogsDomainCRKeys.h>
 
 // CONSTANTS
 
@@ -63,9 +63,8 @@ LogsDbConnector::~LogsDbConnector()
     }
     delete mFsSession;
     
-    while ( !mEvents.isEmpty() ){
-        delete mEvents.takeFirst();
-    }
+    qDeleteAll( mEvents );
+    qDeleteAll( mDuplicatedEvents );
     
     delete mRepository;
     
@@ -265,6 +264,34 @@ int LogsDbConnector::clearMissedCallsCounter()
 }
 
 // ----------------------------------------------------------------------------
+// LogsDbConnector::readDuplicates
+// ----------------------------------------------------------------------------
+//
+int LogsDbConnector::readDuplicates(int eventId)
+{
+    LOGS_QDEBUG_2( "logs [ENG] -> LogsDbConnector::readDuplicates(), id", eventId )
+    if ( !mReader ){
+        return -1;
+    }
+    qDeleteAll(mDuplicatedEvents);
+    mDuplicatedEvents.clear();
+    return mReader->readDuplicates(eventId);
+}
+
+// ----------------------------------------------------------------------------
+// LogsDbConnector::takeDuplicates
+// ----------------------------------------------------------------------------
+//
+QList<LogsEvent*> LogsDbConnector::takeDuplicates()
+{
+    LOGS_QDEBUG( "logs [ENG] -> LogsDbConnector::takeDuplicates()" )
+    QList<LogsEvent*> duplicates = mDuplicatedEvents;
+    mDuplicatedEvents.clear();
+    LOGS_QDEBUG( "logs [ENG] <- LogsDbConnector::takeDuplicates()" )
+    return duplicates;
+}
+        
+// ----------------------------------------------------------------------------
 // LogsDbConnector::handleTemporaryError
 // ----------------------------------------------------------------------------
 //
@@ -413,6 +440,20 @@ void LogsDbConnector::eventModifyingCompleted()
     }
     
     LOGS_QDEBUG( "logs [ENG] <- LogsDbConnector::eventModifyingCompleted()" )
+}
+
+// ----------------------------------------------------------------------------
+// LogsDbConnector::duplicatesReadingCompleted
+// ----------------------------------------------------------------------------
+//
+void LogsDbConnector::duplicatesReadingCompleted(QList<LogsEvent*> duplicates)
+{
+    LOGS_QDEBUG( "logs [ENG] -> LogsDbConnector::duplicatesReadingCompleted()" )
+    qDeleteAll( mDuplicatedEvents );
+    mDuplicatedEvents.clear();
+    mDuplicatedEvents = duplicates;
+    emit duplicatesRead();
+    LOGS_QDEBUG( "logs [ENG] <- LogsDbConnector::duplicatesReadingCompleted()" )
 }
 
 // ----------------------------------------------------------------------------

@@ -37,13 +37,22 @@ int main(int argc, char *argv[])
     LogsMainWindow window;
     
     QString lang = QLocale::system().name();
-    QString path = "c:/epoc32/data/Z/resource/qt/translations/";
-    
-    //TODO: put correct path path to translation file & check filename
-    QTranslator translator;
-    LOGS_QDEBUG("logs [UI] translation filename dialer_" + lang + ".qm");
-
+    QString path = "z:/resource/qt/translations/";
+    //Load common translator
+    QTranslator commontranslator;
     bool returncode = false;
+    LOGS_QDEBUG("logs [UI] loading common strings translator");
+    returncode = commontranslator.load( path + "common_" + lang + ".qm");
+    if (returncode==false) {
+    	LOGS_QDEBUG("logs [UI] unable to open file: " + path + "common_" + lang + ".qm");
+    } else {
+    app.installTranslator(&commontranslator);
+    }
+    
+    //Load application-specific translator
+    QTranslator translator;
+    LOGS_QDEBUG("logs [UI] loading application strings translator");
+    LOGS_QDEBUG("logs [UI] translation filename dialer_" + lang + ".qm");
     returncode = translator.load( path + "dialer_" + lang + ".qm");
     if (returncode==false) {
     	LOGS_QDEBUG("logs [UI] .qm file not found from "+path);

@@ -57,6 +57,7 @@ void UT_LogsComponentRepository::testConstructor()
     QVERIFY( !mRepository->mDetailsView );
     QVERIFY( !mRepository->mMatchesView );
     QVERIFY( !mRepository->mDialpad );
+    QVERIFY( !mRepository->mDialpadKeyHandler );
     QVERIFY( mRepository->mModel );
 }
 
@@ -107,14 +108,17 @@ void UT_LogsComponentRepository::testMatchesView()
 
 void UT_LogsComponentRepository::testDialpad()
 {
-    //first call, dialer created as a result of the call
+    //first call, dialpad and dialpadkeyhandler created as a result of the call
     QVERIFY( !mRepository->mDialpad );
+    QVERIFY( !mRepository->mDialpadKeyHandler );
     Dialpad* dialpad = mRepository->dialpad();
     QVERIFY( dialpad );
     QVERIFY( dialpad == mRepository->mDialpad );
-    
+    QVERIFY( mRepository->mDialpadKeyHandler );
+    DialpadKeyHandler* prevKeyHandler = mRepository->mDialpadKeyHandler;
     //all the next calls, return the same instance of the dialer
     QVERIFY( dialpad == mRepository->dialpad() );
+    QVERIFY( prevKeyHandler == mRepository->mDialpadKeyHandler );
 }
 
 void UT_LogsComponentRepository::testLoadSection()
@@ -126,7 +130,9 @@ void UT_LogsComponentRepository::testLoadSection()
     QVERIFY( mRepository->loadSection(LogsDetailsViewId, "dummy") );
 
     //loading of existing section is ok
+    mRepository->matchesView();
     QVERIFY( mRepository->loadSection(LogsMatchesViewId, "default") );    
+    mRepository->recentCallsView();
     QVERIFY( mRepository->loadSection(LogsRecentViewId, "default") );
 }
 

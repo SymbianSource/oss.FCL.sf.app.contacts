@@ -21,7 +21,7 @@
 #include <hbinputeditorinterface.h>
 #include <hbinputstandardfilters.h>
 
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntmainwindow.h"
 
 #include "cnteditordataviewitem.h"
@@ -30,7 +30,7 @@
 void TestCntEditorDataViewItem::initTestCase()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::noView);
     mTestView = new CntDetailEditorTestView(mViewManager, 0);
     mWindow->addView(mTestView);
     mWindow->setCurrentView(mTestView);
@@ -298,8 +298,7 @@ void TestCntEditorDataViewItem::indexChanged()
 
 void TestCntEditorDataViewItem::cleanupTestCase()
 {
-    delete mWindow;
-    mWindow = 0;
+    mWindow->deleteLater();
     delete mViewManager;
     mViewManager = 0;
 }

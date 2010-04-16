@@ -21,18 +21,13 @@
 #include <QObject>
 #include <hbdialog.h>
 
-class QStringListModel;
+class QStandardItemModel;
 class HbListView;
 
 class CntDetailPopup : public HbDialog
 {
     Q_OBJECT
-
 public:
-    CntDetailPopup(QStringList excludeList, QGraphicsItem *parent = 0);
-    ~CntDetailPopup();
-
-    QString selectedDetail();
     static QString selectDetail(QStringList excludeList);
 
 #ifdef PBK_UNIT_TEST
@@ -47,9 +42,21 @@ public:
 #else
 private:
 #endif
-    QStringListModel    *mListModel;
+    CntDetailPopup(QStringList excludeList, QGraphicsItem *parent = 0);
+    ~CntDetailPopup();
+
+    QString selectedDetail();
+    void addListItem(QString label, QString id1, QString id2 = "");
+
+#ifdef PBK_UNIT_TEST
+public:
+#else
+private:
+#endif
+    QStandardItemModel  *mListModel;
     HbListView          *mListView;
     QString              mSelectedDetail;
+    QStringList          mExcludeList;
 };
 
 #endif // CNTDETAILPOPUP_H

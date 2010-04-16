@@ -1,0 +1,15 @@
+EXPORTS
+	_ZN10SimUtility10getSimInfoERi @ 1 NONAME
+	_ZN10SimUtility11qt_metacallEN11QMetaObject4CallEiPPv @ 2 NONAME
+	_ZN10SimUtility11qt_metacastEPKc @ 3 NONAME
+	_ZN10SimUtility16staticMetaObjectE @ 4 NONAME DATA 16
+	_ZN10SimUtility19getStaticMetaObjectEv @ 5 NONAME
+	_ZN10SimUtilityC1ENS_9StoreTypeERiP7QObject @ 6 NONAME
+	_ZN10SimUtilityC2ENS_9StoreTypeERiP7QObject @ 7 NONAME
+	_ZN10SimUtilityD0Ev @ 8 NONAME
+	_ZN10SimUtilityD1Ev @ 9 NONAME
+	_ZN10SimUtilityD2Ev @ 10 NONAME
+	_ZNK10SimUtility10metaObjectEv @ 11 NONAME
+	_ZTI10SimUtility @ 12 NONAME
+	_ZTV10SimUtility @ 13 NONAME
+

@@ -299,6 +299,26 @@ void UT_LogsModel::testGetDecorationData()
     mModel->getDecorationData(*event, icons);
     QVERIFY(icons.count() == 1);    
     LOGS_TEST_CMP_ICONS(icons.at(0), mModel->mIcons.value( logsMissedVoiceCallIconId ));
+    
+    icons.clear();
+    event->setDirection(LogsEvent::DirMissed);
+    event->setEventType(LogsEvent::TypeVideoCall);
+    event->setIsRead(false);	
+    mModel->getDecorationData(*event, icons);
+    QVERIFY(icons.count() == 1);
+    LOGS_TEST_CMP_ICONS(icons.at(0), mModel->mIcons.value( logsMissedVideoCallUnseenIconId ));
+    
+    icons.clear();
+    event->setEventType(LogsEvent::TypeVoIPCall);
+    mModel->getDecorationData(*event, icons);
+    QVERIFY(icons.count() == 1);
+    LOGS_TEST_CMP_ICONS(icons.at(0), mModel->mIcons.value( logsMissedVoipCallUnseenIconId ));
+    
+    icons.clear();
+    event->setEventType(LogsEvent::TypeVoiceCall);
+    mModel->getDecorationData(*event, icons);
+    QVERIFY(icons.count() == 1);    
+    LOGS_TEST_CMP_ICONS(icons.at(0), mModel->mIcons.value( logsMissedVoiceCallUnseenIconId ));
 }
 
 void UT_LogsModel::testIconName()
@@ -339,11 +359,25 @@ void UT_LogsModel::testIconName()
     QVERIFY( LogsModel::directionIconName(event) == "" );
     QVERIFY( LogsModel::directionIconName(event) == "" );
     event.setEventType( LogsEvent::TypeVoiceCall );
+    event.setIsRead(true);
     QVERIFY( LogsModel::directionIconName(event) == logsMissedVoiceCallIconId );
     event.setEventType( LogsEvent::TypeVoIPCall );
     QVERIFY( LogsModel::directionIconName(event) == logsMissedVoipCallIconId );
     event.setEventType( LogsEvent::TypeVideoCall );
     QVERIFY( LogsModel::directionIconName(event) == logsMissedVideoCallIconId );
+    
+    event.setDirection(LogsEvent::DirMissed);
+    event.setEventType( LogsEvent::TypeUndefined );
+    QVERIFY( LogsModel::directionIconName(event) == "" );
+    QVERIFY( LogsModel::directionIconName(event) == "" );
+    event.setEventType( LogsEvent::TypeVoiceCall );
+    event.setIsRead(false);
+    QVERIFY( LogsModel::directionIconName(event) == logsMissedVoiceCallUnseenIconId );
+    event.setEventType( LogsEvent::TypeVoIPCall );
+    QVERIFY( LogsModel::directionIconName(event) == logsMissedVoipCallUnseenIconId );
+    event.setEventType( LogsEvent::TypeVideoCall );
+    QVERIFY( LogsModel::directionIconName(event) == logsMissedVideoCallUnseenIconId );
+    
 }
 
 void UT_LogsModel::testGetCallerId()

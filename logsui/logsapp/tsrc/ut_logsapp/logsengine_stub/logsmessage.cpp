@@ -20,6 +20,7 @@
 #include "logsmessage.h"
 //SYSTEM
 
+bool logsTestMessageSent = false;
 
 // -----------------------------------------------------------------------------
 //
@@ -57,5 +58,28 @@ bool LogsMessage::sendMessage()
 
 }
 
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+//
+bool LogsMessage::sendMessageToNumber(
+            const QString& number, const QString& displayName, unsigned int contactId)
+{
+    Q_UNUSED(number);
+    Q_UNUSED(displayName);
+    Q_UNUSED(contactId);
+    logsTestMessageSent = true;
+}
+
+bool LogsMessage::isMessageSent()
+{
+    return logsTestMessageSent;
+}
+
+void LogsMessage::resetTestData()
+{
+    logsTestMessageSent = false;
+}
+    
 // End of file
 

@@ -20,7 +20,7 @@
 #include <qtcontacts.h>
 #include <hbtoolbar.h>
 #include "cntgroupactionsview.h"
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntmainwindow.h"
 #include "hbstubs_helper.h"
 #include <QGraphicsLinearLayout>
@@ -36,8 +36,10 @@ void TestCntGroupActionsView::initTestCase()
 void TestCntGroupActionsView::createClasses()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::noView);
     mGroupActionsView = new CntGroupActionsView(mViewManager);
+    mWindow->addView(mGroupActionsView);
+    mWindow->setCurrentView(mGroupActionsView);
     
     // check that we have a view
     QVERIFY(mWindow != 0);
@@ -47,9 +49,7 @@ void TestCntGroupActionsView::createClasses()
 
 void TestCntGroupActionsView::aboutToCloseView()
 {
-    
-      mGroupActionsView->aboutToCloseView();
-      QVERIFY(static_cast<CntBaseView*>(mWindow->currentView())->viewId() == CntViewParameters::collectionView);
+   
 }
 
 void TestCntGroupActionsView::editGroup()
@@ -68,119 +68,21 @@ void TestCntGroupActionsView::editGroup()
     QVERIFY(static_cast<CntBaseView*>(mWindow->currentView())->viewId() == CntViewParameters::groupEditorView);
 }
 
-void TestCntGroupActionsView::groupMembers()
-{
-    // create a group
-    QContact firstGroup;
-    firstGroup.setType(QContactType::TypeGroup);
-    QContactName firstGroupName;
-    firstGroupName.setCustomLabel("groupname");
-    firstGroup.saveDetail(&firstGroupName);
-    mGroupActionsView->contactManager()->saveContact(&firstGroup);
-    
-    mGroupActionsView->mGroupContact = &firstGroup;
-    
-    //call group members
-    mGroupActionsView->groupMembers();
-    
-    QVERIFY(static_cast<CntBaseView*>(mWindow->currentView())->viewId() == CntViewParameters::groupMemberView);
-   
-}
-
-void TestCntGroupActionsView::openNamesView()
-{
-    mGroupActionsView->openNamesView();
-    QVERIFY(static_cast<CntBaseView*>(mWindow->currentView())->viewId() == CntViewParameters::namesView);
-}
-
-    
-    
-void TestCntGroupActionsView::manageMembers()
-{
-    // create a group
-    QContact firstGroup;
-    firstGroup.setType(QContactType::TypeGroup);
-    QContactName firstGroupName;
-    firstGroupName.setCustomLabel("groupname");
-    firstGroup.saveDetail(&firstGroupName);
-    mGroupActionsView->contactManager()->saveContact(&firstGroup);
-    
-    mGroupActionsView->mGroupContact = &firstGroup;
-    
-    //call group members
-    mGroupActionsView->groupMembers();
-    
-    QVERIFY(static_cast<CntBaseView*>(mWindow->currentView())->viewId() == CntViewParameters::groupMemberView);
-   
-}
-
-void TestCntGroupActionsView::editGroupDetails()
-{
-    // create a group
-    QContact firstGroup;
-    firstGroup.setType(QContactType::TypeGroup);
-    QContactName firstGroupName;
-    firstGroupName.setCustomLabel("groupname");
-    firstGroup.saveDetail(&firstGroupName);
-    mGroupActionsView->contactManager()->saveContact(&firstGroup);
-    
-    mGroupActionsView->mGroupContact = &firstGroup;
-
-    mGroupActionsView->editGroup();
-    QVERIFY(static_cast<CntBaseView*>(mWindow->currentView())->viewId() == CntViewParameters::groupEditorView);
-}
-
-void TestCntGroupActionsView::deleteGroup()
-{
-
-    // create a group
-    QContact firstGroup;
-    firstGroup.setType(QContactType::TypeGroup);
-    QContactName firstGroupName;
-    firstGroupName.setCustomLabel("groupname");
-    firstGroup.saveDetail(&firstGroupName);
-    mGroupActionsView->contactManager()->saveContact(&firstGroup);
-    mGroupActionsView->mGroupContact = &firstGroup;
-    
-    // create and save contact to the group
-    QContact firstContact;
-    firstContact.setType(QContactType::TypeContact);
-    mGroupActionsView->contactManager()->saveContact(&firstContact);
-    
-    QContactRelationship relationship;
-    relationship.setRelationshipType(QContactRelationship::HasMember);
-    relationship.setFirst(firstGroup.id());
-    relationship.setSecond(firstContact.id());
-    mGroupActionsView->contactManager()->saveRelationship(&relationship);
-    
-    // delete the group
-    mGroupActionsView->deleteGroup();
-    
-    // do a group filter and check if group is there
-    QContactDetailFilter groupFilter;
-    groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
-    groupFilter.setValue(QString(QLatin1String(QContactType::TypeGroup)));
-
-    QList<QContactLocalId> groupContactIds = mGroupActionsView->contactManager()->contacts(groupFilter);
-    int count = groupContactIds.count();
-        
-    QVERIFY(groupContactIds.count() != 0);
-    
-}
-    
-void TestCntGroupActionsView::openCollections()
-{
-    mGroupActionsView->openCollections();
-    QVERIFY(static_cast<CntBaseView*>(mWindow->currentView())->viewId() == CntViewParameters::collectionView);
-} 
-
-
 
 void TestCntGroupActionsView::addActionsToToolBar()
 {
     HbStubHelper::reset();
     mGroupActionsView->addActionsToToolBar();
-    QVERIFY(HbStubHelper::widgetActionsCount() == 3);
+    QVERIFY(HbStubHelper::widgetActionsCount() == 0);
+}
+
+void TestCntGroupActionsView::addMenuItems()
+{
+    
+    HbStubHelper::reset();
+    mGroupActionsView->addMenuItems();
+    
+    QVERIFY(HbStubHelper::widgetActionsCount() == 1);
 }
 
 
@@ -195,7 +97,6 @@ void TestCntGroupActionsView::activateView()
     mGroupActionsView->activateView(viewParameters);
     
     QVERIFY(mGroupActionsView->mGroupContact != 0);
-    QVERIFY(mGroupActionsView->mHeadingItem != 0);
     QVERIFY(mGroupActionsView->mDataContainer != 0);
     QVERIFY(mGroupActionsView->mScrollArea != 0);
     QVERIFY(mGroupActionsView->mContainerWidget != 0);
@@ -217,7 +118,6 @@ void TestCntGroupActionsView::activateView()
     mGroupActionsView->activateView(newViewParameters);
     
     QVERIFY(mGroupActionsView->mGroupContact != 0);
-    QVERIFY(mGroupActionsView->mHeadingItem != 0);
     QVERIFY(mGroupActionsView->mDataContainer != 0);
     QVERIFY(mGroupActionsView->mScrollArea != 0);
     QVERIFY(mGroupActionsView->mContainerWidget != 0);
@@ -232,8 +132,10 @@ void TestCntGroupActionsView::cleanupTestCase()
 {
     delete mViewManager;
     mViewManager = 0;
-    delete mWindow;
-    mWindow = 0;
+    mWindow ->deleteLater();
+    //mWindow = 0;
+    delete mGroupActionsView;
+    mGroupActionsView = 0;
 }
 
 // EOF

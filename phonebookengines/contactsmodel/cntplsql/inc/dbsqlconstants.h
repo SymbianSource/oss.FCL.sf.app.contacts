@@ -21,12 +21,14 @@
 #include <cntdef.hrh>
 
 const TInt KInitialValue = -1;
-const TInt KNumOfTables = 5;
+
+// TODO: update this to handle all 10 predictive search tables
+const TInt KNumOfTables = 14;
 const TInt KNumColInPrefTable = 6;
 const TInt KNumColInContactTable = 16;
 const TInt KNumColInGroupTable = 3;
 const TInt KNumColInCommTable = 5;
-const TInt KNumColInPredSearchTable = 4;
+const TInt KNumColInPredSearchTable = 7;
 const TInt KNumColInPresenceTable = 5;
 
 // tables in the contact database 
@@ -34,7 +36,16 @@ _LIT(KSqlContactTableName,"contact");
 _LIT(KSqlContactGroupTableName,"groups");
 _LIT(KSqlContactPrefTableName,"preferences");
 _LIT(KSqlContactCommAddrTableName,"comm_addr");
-_LIT(KSqlContactPredSearchTableName,"predictivesearch");
+_LIT(KSqlContactPredSearchTable0,"predictivesearch0");
+_LIT(KSqlContactPredSearchTable1,"predictivesearch1");
+_LIT(KSqlContactPredSearchTable2,"predictivesearch2");
+_LIT(KSqlContactPredSearchTable3,"predictivesearch3");
+_LIT(KSqlContactPredSearchTable4,"predictivesearch4");
+_LIT(KSqlContactPredSearchTable5,"predictivesearch5");
+_LIT(KSqlContactPredSearchTable6,"predictivesearch6");
+_LIT(KSqlContactPredSearchTable7,"predictivesearch7");
+_LIT(KSqlContactPredSearchTable8,"predictivesearch8");
+_LIT(KSqlContactPredSearchTable9,"predictivesearch9");
 _LIT(KSqlContactPresenceTableName, "presence");
 
 enum TDatabaseTables
@@ -43,7 +54,16 @@ enum TDatabaseTables
 	EContactTableName,
 	EContactGroupTableName,
 	EContactCommAddressTableName,
-	KContactPredSearchTableName
+	KContactPredSearchTable0Name,
+	KContactPredSearchTable1Name,
+	KContactPredSearchTable2Name,
+	KContactPredSearchTable3Name,
+	KContactPredSearchTable4Name,
+	KContactPredSearchTable5Name,
+	KContactPredSearchTable6Name,
+	KContactPredSearchTable7Name,
+	KContactPredSearchTable8Name,
+	KContactPredSearchTable9Name
 	};
 
 // columns for contact table
@@ -147,69 +167,169 @@ _LIT(KPreferencesCreateStmnt,  "CREATE TABLE preferences (preference_id INTEGER 
 
 // predictive search table
 // columns
-_LIT(KPredSearchFirstNameAsNumber, "first_name_as_number");
-_LIT(KPredSearchLastNameAsNumber, "last_name_as_number");
-_LIT(KPredSearchCompanyNameAsNumber, "company_name_as_number");
 _LIT(KPredSearchContactId, "contact_id");
-// Do not store names. They can be looked up from contact table.
-// Do not store phone number. It can be searched from comm-address table.
+_LIT(KPredSearchNameAsNumber, "nbr");
+_LIT(KPredSearchNameAsNumber2, "nbr2");
+_LIT(KPredSearchNameAsNumber3, "nbr3");
+_LIT(KPredSearchNameAsNumber4, "nbr4");
+_LIT(KPredSearchFirstName, "first_name");
+_LIT(KPredSearchLastName, "last_name");
 
 // parameters
-_LIT(KPredSearchFirstNameAsNumberParam, ":first_name_as_number");
-_LIT(KPredSearchLastNameAsNumberParam, ":last_name_as_number");
-_LIT(KPredSearchCompanyNameAsNumberParam, ":company_name_as_number");
 _LIT(KPredSearchContactIdParam, ":contact_id");
+_LIT(KPredSearchNameAsNumberParam, ":nbr");
+_LIT(KPredSearchNameAsNumber2Param, ":nbr2");
+_LIT(KPredSearchNameAsNumber3Param, ":nbr3");
+_LIT(KPredSearchNameAsNumber4Param, ":nbr4");
+_LIT(KPredSearchFirstNameParam, ":first_name");
+_LIT(KPredSearchLastNameParam, ":last_name");
 
 // create statements
-_LIT(KPredSearchCreateStmnt,
-"CREATE TABLE predictivesearch (first_name_as_number VARCHAR(255) NULL,\
- last_name_as_number VARCHAR(255) NULL,\
- company_name_as_number VARCHAR(255) NULL, contact_id INTEGER);");
- 
-// create table index
-_LIT(KPredSearchCreateIndex,
-"CREATE INDEX index_last_name_as_number \
-on predictivesearch (last_name_as_number, first_name_as_number );");
- 
-_LIT(KPredSearchCreateView1,
-"CREATE VIEW view1 AS SELECT contact_id, last_name_as_number, first_name_as_number  FROM predictivesearch \
-WHERE (first_name_as_number LIKE \"%% 1%%\") OR (last_name_as_number LIKE \"%% 1%%\")");
+_LIT(KPredSearchCreateTable0Stmnt,
+"CREATE TABLE predictivesearch0 (contact_id INTEGER PRIMARY KEY,\
+ nbr BIGINT NULL, nbr2 BIGINT NULL, nbr3 BIGINT NULL, nbr4 BIGINT NULL,\
+ first_name CHAR(16) NULL, last_name CHAR(16) NULL);");
+_LIT(KPredSearchCreateTable1Stmnt,
+"CREATE TABLE predictivesearch1 (contact_id INTEGER PRIMARY KEY,\
+ nbr BIGINT NULL, nbr2 BIGINT NULL, nbr3 BIGINT NULL, nbr4 BIGINT NULL,\
+ first_name CHAR(16) NULL, last_name CHAR(16) NULL);");
+_LIT(KPredSearchCreateTable2Stmnt,
+"CREATE TABLE predictivesearch2 (contact_id INTEGER PRIMARY KEY,\
+ nbr BIGINT NULL, nbr2 BIGINT NULL, nbr3 BIGINT NULL, nbr4 BIGINT NULL,\
+ first_name CHAR(16) NULL, last_name CHAR(16) NULL);");
+_LIT(KPredSearchCreateTable3Stmnt,
+"CREATE TABLE predictivesearch3 (contact_id INTEGER PRIMARY KEY,\
+ nbr BIGINT NULL, nbr2 BIGINT NULL, nbr3 BIGINT NULL, nbr4 BIGINT NULL,\
+ first_name CHAR(16) NULL, last_name CHAR(16) NULL);");
+_LIT(KPredSearchCreateTable4Stmnt,
+"CREATE TABLE predictivesearch4 (contact_id INTEGER PRIMARY KEY,\
+ nbr BIGINT NULL, nbr2 BIGINT NULL, nbr3 BIGINT NULL, nbr4 BIGINT NULL,\
+ first_name CHAR(16) NULL, last_name CHAR(16) NULL);");
+_LIT(KPredSearchCreateTable5Stmnt,
+"CREATE TABLE predictivesearch5 (contact_id INTEGER PRIMARY KEY,\
+ nbr BIGINT NULL, nbr2 BIGINT NULL, nbr3 BIGINT NULL, nbr4 BIGINT NULL,\
+ first_name CHAR(16) NULL, last_name CHAR(16) NULL);");
+_LIT(KPredSearchCreateTable6Stmnt,
+"CREATE TABLE predictivesearch6 (contact_id INTEGER PRIMARY KEY,\
+ nbr BIGINT NULL, nbr2 BIGINT NULL, nbr3 BIGINT NULL, nbr4 BIGINT NULL,\
+ first_name CHAR(16) NULL, last_name CHAR(16) NULL);");
+_LIT(KPredSearchCreateTable7Stmnt,
+"CREATE TABLE predictivesearch7 (contact_id INTEGER PRIMARY KEY,\
+ nbr BIGINT NULL, nbr2 BIGINT NULL, nbr3 BIGINT NULL, nbr4 BIGINT NULL,\
+ first_name CHAR(16) NULL, last_name CHAR(16) NULL);");
+_LIT(KPredSearchCreateTable8Stmnt,
+"CREATE TABLE predictivesearch8 (contact_id INTEGER PRIMARY KEY,\
+ nbr BIGINT NULL, nbr2 BIGINT NULL, nbr3 BIGINT NULL, nbr4 BIGINT NULL,\
+ first_name CHAR(16) NULL, last_name CHAR(16) NULL);");
+_LIT(KPredSearchCreateTable9Stmnt,
+"CREATE TABLE predictivesearch9 (contact_id INTEGER PRIMARY KEY,\
+ nbr BIGINT NULL, nbr2 BIGINT NULL, nbr3 BIGINT NULL, nbr4 BIGINT NULL,\
+ first_name CHAR(16) NULL, last_name CHAR(16) NULL);");
 
-_LIT(KPredSearchCreateView2,
-"CREATE VIEW view2 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
-WHERE (first_name_as_number LIKE \"%% 2%%\") OR (last_name_as_number LIKE \"%% 2%%\")");
 
-_LIT(KPredSearchCreateView3,
-"CREATE VIEW view3 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
-WHERE (first_name_as_number LIKE \"%% 3%%\") OR (last_name_as_number LIKE \"%% 3%%\")");
+// create table indexes
+_LIT(KPredSearchCreateNbrIndexTable0, "CREATE INDEX index0_nbr on predictivesearch0 (nbr);");
+_LIT(KPredSearchCreateNbr2IndexTable0, "CREATE INDEX index0_nbr2 on predictivesearch0 (nbr2);");
+_LIT(KPredSearchCreateNbr3IndexTable0, "CREATE INDEX index0_nbr3 on predictivesearch0 (nbr3);");
+_LIT(KPredSearchCreateNbr4IndexTable0, "CREATE INDEX index0_nbr4 on predictivesearch0 (nbr4);");
 
-_LIT(KPredSearchCreateView4,
-"CREATE VIEW view4 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
-WHERE (first_name_as_number LIKE \"%% 4%%\") OR (last_name_as_number LIKE \"%% 4%%\")");
+_LIT(KPredSearchCreateNbrIndexTable1, "CREATE INDEX index1_nbr on predictivesearch1 (nbr);");
+_LIT(KPredSearchCreateNbr2IndexTable1, "CREATE INDEX index1_nbr2 on predictivesearch1 (nbr2);");
+_LIT(KPredSearchCreateNbr3IndexTable1, "CREATE INDEX index1_nbr3 on predictivesearch1 (nbr3);");
+_LIT(KPredSearchCreateNbr4IndexTable1, "CREATE INDEX index1_nbr4 on predictivesearch1 (nbr4);");
 
-_LIT(KPredSearchCreateView5,
-"CREATE VIEW view5 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
-WHERE (first_name_as_number LIKE \"%% 5%%\") OR (last_name_as_number LIKE \"%% 5%%\")");
+_LIT(KPredSearchCreateNbrIndexTable2, "CREATE INDEX index2_nbr on predictivesearch2 (nbr);");
+_LIT(KPredSearchCreateNbr2IndexTable2, "CREATE INDEX index2_nbr2 on predictivesearch2 (nbr2);");
+_LIT(KPredSearchCreateNbr3IndexTable2, "CREATE INDEX index2_nbr3 on predictivesearch2 (nbr3);");
+_LIT(KPredSearchCreateNbr4IndexTable2, "CREATE INDEX index2_nbr4 on predictivesearch2 (nbr4);");
 
-_LIT(KPredSearchCreateView6,
-"CREATE VIEW view6 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
-WHERE (first_name_as_number LIKE \"%% 6%%\") OR (last_name_as_number LIKE \"%% 6%%\")");
+_LIT(KPredSearchCreateNbrIndexTable3, "CREATE INDEX index3_nbr on predictivesearch3 (nbr);");
+_LIT(KPredSearchCreateNbr2IndexTable3, "CREATE INDEX index3_nbr2 on predictivesearch3 (nbr2);");
+_LIT(KPredSearchCreateNbr3IndexTable3, "CREATE INDEX index3_nbr3 on predictivesearch3 (nbr3);");
+_LIT(KPredSearchCreateNbr4IndexTable3, "CREATE INDEX index3_nbr4 on predictivesearch3 (nbr4);");
 
-_LIT(KPredSearchCreateView7,
-"CREATE VIEW view7 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
-WHERE (first_name_as_number LIKE \"%% 7%%\") OR (last_name_as_number LIKE \"%% 7%%\")");
+_LIT(KPredSearchCreateNbrIndexTable4, "CREATE INDEX index4_nbr on predictivesearch4 (nbr);");
+_LIT(KPredSearchCreateNbr2IndexTable4, "CREATE INDEX index4_nbr2 on predictivesearch4 (nbr2);");
+_LIT(KPredSearchCreateNbr3IndexTable4, "CREATE INDEX index4_nbr3 on predictivesearch4 (nbr3);");
+_LIT(KPredSearchCreateNbr4IndexTable4, "CREATE INDEX index4_nbr4 on predictivesearch4 (nbr4);");
 
-_LIT(KPredSearchCreateView8,
-"CREATE VIEW view8 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
-WHERE (first_name_as_number LIKE \"%% 8%%\") OR (last_name_as_number LIKE \"%% 8%%\")");
+_LIT(KPredSearchCreateNbrIndexTable5, "CREATE INDEX index5_nbr on predictivesearch5 (nbr);");
+_LIT(KPredSearchCreateNbr2IndexTable5, "CREATE INDEX index5_nbr2 on predictivesearch5 (nbr2);");
+_LIT(KPredSearchCreateNbr3IndexTable5, "CREATE INDEX index5_nbr3 on predictivesearch5 (nbr3);");
+_LIT(KPredSearchCreateNbr4IndexTable5, "CREATE INDEX index5_nbr4 on predictivesearch5 (nbr4);");
 
-_LIT(KPredSearchCreateView9,
-"CREATE VIEW view9 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
-WHERE (first_name_as_number LIKE \"%% 9%%\") OR (last_name_as_number LIKE \"%% 9%%\")");
+_LIT(KPredSearchCreateNbrIndexTable6, "CREATE INDEX index6_nbr on predictivesearch6 (nbr);");
+_LIT(KPredSearchCreateNbr2IndexTable6, "CREATE INDEX index6_nbr2 on predictivesearch6 (nbr2);");
+_LIT(KPredSearchCreateNbr3IndexTable6, "CREATE INDEX index6_nbr3 on predictivesearch6 (nbr3);");
+_LIT(KPredSearchCreateNbr4IndexTable6, "CREATE INDEX index6_nbr4 on predictivesearch6 (nbr4);");
 
-_LIT(KPredSearchCreateView0,
-"CREATE VIEW view0 AS SELECT contact_id, last_name_as_number, first_name_as_number FROM predictivesearch \
-WHERE (first_name_as_number LIKE \"%% 0%%\") OR (last_name_as_number LIKE \"%% 0%%\")");
+_LIT(KPredSearchCreateNbrIndexTable7, "CREATE INDEX index7_nbr on predictivesearch7 (nbr);");
+_LIT(KPredSearchCreateNbr2IndexTable7, "CREATE INDEX index7_nbr2 on predictivesearch7 (nbr2);");
+_LIT(KPredSearchCreateNbr3IndexTable7, "CREATE INDEX index7_nbr3 on predictivesearch7 (nbr3);");
+_LIT(KPredSearchCreateNbr4IndexTable7, "CREATE INDEX index7_nbr4 on predictivesearch7 (nbr4);");
+
+_LIT(KPredSearchCreateNbrIndexTable8, "CREATE INDEX index8_nbr on predictivesearch8 (nbr);");
+_LIT(KPredSearchCreateNbr2IndexTable8, "CREATE INDEX index8_nbr2 on predictivesearch8 (nbr2);");
+_LIT(KPredSearchCreateNbr3IndexTable8, "CREATE INDEX index8_nbr3 on predictivesearch8 (nbr3);");
+_LIT(KPredSearchCreateNbr4IndexTable8, "CREATE INDEX index8_nbr4 on predictivesearch8 (nbr4);");
+
+_LIT(KPredSearchCreateNbrIndexTable9, "CREATE INDEX index9_nbr on predictivesearch9 (nbr);");
+_LIT(KPredSearchCreateNbr2IndexTable9, "CREATE INDEX index9_nbr2 on predictivesearch9 (nbr2);");
+_LIT(KPredSearchCreateNbr3IndexTable9, "CREATE INDEX index9_nbr3 on predictivesearch9 (nbr3);");
+_LIT(KPredSearchCreateNbr4IndexTable9, "CREATE INDEX index9_nbr4 on predictivesearch9 (nbr4);");
+
+// create table indexes for readable names for ordering results alphabetically
+_LIT(KPredSearchCreateFNIndexInTable0,
+"CREATE INDEX index_last_name0 on predictivesearch0 (last_name);");
+_LIT(KPredSearchCreateLNIndexInTable0,
+"CREATE INDEX index_first_name0 on predictivesearch0 (first_name);");
+
+_LIT(KPredSearchCreateFNIndexInTable1,
+"CREATE INDEX index_last_name1 on predictivesearch1 (last_name);");
+_LIT(KPredSearchCreateLNIndexInTable1,
+"CREATE INDEX index_first_name1 on predictivesearch1 (first_name);");
+
+_LIT(KPredSearchCreateFNIndexInTable2,
+"CREATE INDEX index_last_name2 on predictivesearch2 (last_name);");
+_LIT(KPredSearchCreateLNIndexInTable2,
+"CREATE INDEX index_first_name2 on predictivesearch2 (first_name);");
+
+_LIT(KPredSearchCreateFNIndexInTable3,
+"CREATE INDEX index_last_name3 on predictivesearch3 (last_name);");
+_LIT(KPredSearchCreateLNIndexInTable3,
+"CREATE INDEX index_first_name3 on predictivesearch3 (first_name);");
+
+_LIT(KPredSearchCreateFNIndexInTable4,
+"CREATE INDEX index_last_name4 on predictivesearch4 (last_name);");
+_LIT(KPredSearchCreateLNIndexInTable4,
+"CREATE INDEX index_first_name4 on predictivesearch4 (first_name);");
+
+_LIT(KPredSearchCreateFNIndexInTable5,
+"CREATE INDEX index_last_name5 on predictivesearch5 (last_name);");
+_LIT(KPredSearchCreateLNIndexInTable5,
+"CREATE INDEX index_first_name5 on predictivesearch5 (first_name);");
+
+_LIT(KPredSearchCreateFNIndexInTable6,
+"CREATE INDEX index_last_name6 on predictivesearch6 (last_name);");
+_LIT(KPredSearchCreateLNIndexInTable6,
+"CREATE INDEX index_first_name6 on predictivesearch6 (first_name);");
+
+_LIT(KPredSearchCreateFNIndexInTable7,
+"CREATE INDEX index_last_name7 on predictivesearch7 (last_name);");
+_LIT(KPredSearchCreateLNIndexInTable7,
+"CREATE INDEX index_first_name7 on predictivesearch7 (first_name);");
+
+_LIT(KPredSearchCreateFNIndexInTable8,
+"CREATE INDEX index_last_name8 on predictivesearch8 (last_name);");
+_LIT(KPredSearchCreateLNIndexInTable8,
+"CREATE INDEX index_first_name8 on predictivesearch8 (first_name);");
+
+_LIT(KPredSearchCreateFNIndexInTable9,
+"CREATE INDEX index_last_name9 on predictivesearch9 (last_name);");
+_LIT(KPredSearchCreateLNIndexInTable9,
+"CREATE INDEX index_first_name9 on predictivesearch9 (first_name);");
+
+
 
 _LIT(KPresenceContactId, "contact_id");
 _LIT(KPresenceAccountUri, "account_uri");

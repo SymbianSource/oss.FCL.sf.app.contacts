@@ -28,13 +28,19 @@
 int main(int argc, char *argv[]) 
 {
     bool promptOnExit(true);
+    bool useQApplication(true);
     for (int i=0; i<argc; i++) {
         if (QString(argv[i]) == "-noprompt")
             promptOnExit = false;
+        else if (QString(argv[i]) == "-noqapp")
+            useQApplication = false;
     }
     printf("Running tests...\n");
     
-    QApplication app(argc, argv);
+    QApplication* app = 0;
+    if ( useQApplication ) 
+        app = new QApplication(argc, argv);
+    
     TestResultXmlParser parser;
     
     UT_LogsCntFinder ut_logsCntFinder;
@@ -62,6 +68,7 @@ int main(int argc, char *argv[])
         printf("Press any key...\n");
         getchar(); 
     }
+    delete app;
     return 0;   
 }
 

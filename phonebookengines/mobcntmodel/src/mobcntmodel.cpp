@@ -112,13 +112,13 @@ QVariant MobCntModel::data(const QModelIndex &index, int role) const
         }
         else {
             // define fields we are interested in
-            /*QStringList definitionRestrictions;
+            QStringList definitionRestrictions;
             definitionRestrictions.append(QContactName::DefinitionName);
             definitionRestrictions.append(QContactAvatar::DefinitionName);
             definitionRestrictions.append(QContactPhoneNumber::DefinitionName);
-            definitionRestrictions.append(QContactOrganization::DefinitionName);*/
+            definitionRestrictions.append(QContactOrganization::DefinitionName);
             
-            d->currentContact = d->m_contactManager->contact(d->contactIds[row]/*, definitionRestrictions*/);
+            d->currentContact = d->m_contactManager->contact(d->contactIds[row], definitionRestrictions);
         }
         d->currentRow = row;
     }
@@ -229,8 +229,10 @@ void MobCntModel::setFilterAndSortOrder(const QContactFilter& contactFilter,
     
     //refresh model
     updateContactIdsArray();
-    
-    emit layoutChanged();
+
+    beginResetModel();
+    reset();
+    endResetModel();
 }
 
 /*!
@@ -266,17 +268,30 @@ void MobCntModel::showMyCard(bool enabled)
     }
     d->showMyCard = enabled;
     d->currentRow = -1;
-    emit layoutChanged();
+
+    beginResetModel();
+    reset();
+    endResetModel();
 }
 
 /*!
- * Rerurns MyCard status: shown or not.
+ * Returns MyCard status: shown or not.
  *
  * \return true if MyCard is shown, false otherwise.
  */
 bool MobCntModel::myCardStatus() const
 {
     return d->showMyCard;
+}
+
+/*!
+ * Returns MyCard id.
+ *
+ * \return MyCard id.
+ */
+QContactLocalId MobCntModel::myCardId() const
+{
+    return d->mMyCardId;
 }
 
 /*!
@@ -292,7 +307,7 @@ int MobCntModel::doConstruct()
     connect(d->m_contactManager, SIGNAL(contactsAdded(const QList<QContactLocalId>&)), this, SLOT(handleAdded(const QList<QContactLocalId>&)));
     connect(d->m_contactManager, SIGNAL(contactsChanged(const QList<QContactLocalId>&)), this, SLOT(handleChanged(const QList<QContactLocalId>&)));
     connect(d->m_contactManager, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), this, SLOT(handleRemoved(const QList<QContactLocalId>&)));
-    //connect(d->m_contactManager, SIGNAL(relationshipsAdded(const QList<QContactLocalId>&)), this, SLOT(handleAdded(const QList<QContactLocalId>&)));
+    connect(d->m_contactManager, SIGNAL(relationshipsAdded(const QList<QContactLocalId>&)), this, SLOT(handleAdded(const QList<QContactLocalId>&)));
     connect(d->m_contactManager, SIGNAL(relationshipsRemoved(const QList<QContactLocalId>&)), this, SLOT(handleRemoved(const QList<QContactLocalId>&)));
     connect(d->m_contactManager, SIGNAL(selfContactIdChanged(const QContactLocalId&, const QContactLocalId&)), this, SLOT(handleMyCardChanged(const QContactLocalId&, const QContactLocalId&)));
     
@@ -322,7 +337,7 @@ int MobCntModel::initializeData()
  */
 void MobCntModel::updateContactIdsArray()
 {
-    d->contactIds = d->m_contactManager->contacts(d->filter,
+    d->contactIds = d->m_contactManager->contactIds(d->filter,
             d->sortOrders);
     //find MyCard contact and move it to the first position
     QContactLocalId myCardId = d->mMyCardId;

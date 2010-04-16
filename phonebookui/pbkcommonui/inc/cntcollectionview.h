@@ -18,55 +18,58 @@
 #ifndef CNTCOLLECTIONVIEW_H
 #define CNTCOLLECTIONVIEW_H
 
-#include "cntbaselistview.h"
-#include "cntcollectionlistmodel.h"
+#include <QObject>
+#include <hbdocumentloader.h>
 
-class QStringListModel;
+#include "cntabstractview.h"
+#include "cntviewparameters.h"
 
-class CntCollectionView : public CntBaseListView
+class HbAction;
+class HbView;
+class HbListView;
+class CntCollectionListModel;
+class QModelIndex;
+class HbAbstractViewItem;
+
+class CntCollectionView : public QObject, public CntAbstractView
 {
     Q_OBJECT
-
-public slots:
-
-    void aboutToCloseView();
-    void onListViewActivated(const QModelIndex &index);
-    void onLongPressed(HbAbstractViewItem *item, const QPointF &coords);
-    void handleExecutedCommand(QString command, QContact contact);
-    void newGroup();
-    void addMenuItems();
-    void reorderGroup();
-    void deleteGroups();
-    void disconnectAll();
-
+    friend class TestCntCollectionView;
+    
 public:
-    CntCollectionView(CntViewManager *viewManager, QGraphicsItem *parent = 0);
+    CntCollectionView();
     ~CntCollectionView();
-
+    
+public: // From CntAbstractView
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters& aArgs );
+    void deactivate();
+    bool isDefault() const { return false; }
+    HbView* view() const { return mView; }
     CntViewParameters::ViewId viewId() const { return CntViewParameters::collectionView; }
 
-#ifdef PBK_UNIT_TEST
-public:
-#else
-protected:
-#endif
-    void addActionsToToolBar();
-    void setDataModel();
+private slots:
+    void showPreviousView();
+    void openGroup(const QModelIndex &index);
+    void showContextMenu(HbAbstractViewItem *item, const QPointF &coords);
+    void newGroup();
     void refreshDataModel();
+    void reorderGroup();
+    void deleteGroup(QContact group);
+    void deleteGroups();
+    void disconnectAll();
+    
 
-#ifdef PBK_UNIT_TEST
-public:
-#else
 private:
-#endif
-    QList<QContactLocalId>   mContactsLocalIdList;
-    CntCollectionListModel * mModel;
-    QList<QContactId>        mContactIdList;
-    //Option menu item
-    HbAction         *mReorderAction; 
-    HbAction         *mDeleteGroupAction; 
-    HbAction         *mDisconnectAllAction;
-    HbMenu           *mOptionsMenu;
+    HbView*                 mView; // own
+    HbAction*               mSoftkey; // owned by view
+    CntAbstractViewManager* mViewManager;
+    HbDocumentLoader        mDocumentLoader;
+    CntCollectionListModel* mModel; // own
+    HbListView*             mListView; // owned by layout
+    HbAction*               mNamesAction; // owned by view
+    HbAction*               mRefreshAction; // owned by view
+    HbAction*               mNewGroupAction; // owned by view
+    HbAction*               mDeleteGroupsAction; // owned by view
 };
 
 #endif // CNTCOLLECTIONVIEW_H

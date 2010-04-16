@@ -18,6 +18,8 @@
 TEMPLATE = app
 TARGET = 
 
+TARGET.EPOCSTACKSIZE =	0x40000
+TARGET.EPOCHEAPSIZE = 0x020000 0x1500000
 QT += testlib sql xml
 CONFIG += hb
 HB += hbcore hbwidgets hbtools hbfeedback
@@ -38,7 +40,7 @@ INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 # Input
 HEADERS += inc/testrunner.h
 HEADERS += inc/t_cntactions.h
-HEADERS += inc/t_cntaddresseditorview.h
+HEADERS += inc/t_addresseditor.h
 HEADERS += inc/t_cntbasedetaileditorview.h
 HEADERS += inc/t_cntbaselistview.h
 HEADERS += inc/t_cntbaseselectionview.h
@@ -46,20 +48,20 @@ HEADERS += inc/t_cntbaseview.h
 HEADERS += inc/t_cntcollectionlistmodel.h
 HEADERS += inc/t_cntcollectionview.h
 HEADERS += inc/t_cntcommands.h
-HEADERS += inc/t_cntcompanyeditorview.h
+HEADERS += inc/t_companyeditor.h
 HEADERS += inc/t_cntcontactcarddatacontainer.h
 HEADERS += inc/t_cntcontactcarddetailitem.h
 HEADERS += inc/t_cntcontactcardheadingitem.h
 HEADERS += inc/t_cntcontactcardview.h
-HEADERS += inc/t_cntdateeditorview.h
+HEADERS += inc/t_dateeditor.h
 HEADERS += inc/t_cntdetailpopup.h
 HEADERS += inc/t_cnteditordatamodelitem.h
 HEADERS += inc/t_cnteditordataviewitem.h
 HEADERS += inc/t_cnteditviewdetailitem.h
 HEADERS += inc/t_cnteditviewheadingitem.h
-HEADERS += inc/t_cntemaileditorview.h
-HEADERS += inc/t_cntfamilydetaileditorview.h
-HEADERS += inc/t_cntfavoritesselectionview.h
+HEADERS += inc/t_emaileditor.h
+HEADERS += inc/t_familyeditor.h
+HEADERS += inc/t_cntfavoritesmemberview.h
 HEADERS += inc/t_cntfavoritesview.h
 HEADERS += inc/t_cntgroupeditorview.h
 HEADERS += inc/t_cntgroupactionsview.h
@@ -69,18 +71,30 @@ HEADERS += inc/t_cntmainwindow.h
 HEADERS += inc/t_cntmodelprovider.h
 HEADERS += inc/t_cntmycardselectionview.h
 HEADERS += inc/t_cntmycardview.h
-HEADERS += inc/t_cntnameseditorview.h
-HEADERS += inc/t_cntnamesview.h
-HEADERS += inc/t_cntnoteeditorview.h
+HEADERS += inc/t_nameeditor.h
+HEADERS += inc/t_noteeditor.h
 HEADERS += inc/t_cntonlineaccounteditorview.h
-HEADERS += inc/t_cntphonenumbereditorview.h
+HEADERS += inc/t_numbereditor.h
 HEADERS += inc/t_cntsnapshotwidget.h
-HEADERS += inc/t_cnturleditorview.h
+HEADERS += inc/t_urleditor.h
 HEADERS += inc/t_cntviewmanager.h
 HEADERS += inc/t_cntviewparameters.h
 HEADERS += inc/t_cntcommhistoryview.h
 HEADERS += inc/t_cntgroupselectionpopup.h
-HEADERS += ../../inc/cntactions.h \
+HEADERS += inc/t_cntgroupdeletepopupmodel.h
+HEADERS += inc/t_cntnavigator.h
+HEADERS += inc/t_namelist.h
+HEADERS += inc/t_cntgroupdeletepopup.h
+HEADERS += \
+    ../../inc/cntviewnavigator.h \
+    ../../inc/cntnamesview_p.h \
+	../../inc/cntabstractviewmanager.h \
+	../../inc/cntabstractview.h \
+	../../inc/cntabstractviewfactory.h \
+	../../inc/cntdefaultviewmanager.h \
+	../../inc/cntactionmenubuilder.h \
+	../../inc/cntaction.h \
+	../../inc/cntactions.h \
     ../../inc/cntbaselistview.h \
     ../../inc/cntbaseview.h \
     ../../inc/cntbasedetaileditorview.h \
@@ -91,18 +105,9 @@ HEADERS += ../../inc/cntactions.h \
     ../../inc/cntdetailpopup.h \
     ../../inc/cnteditordataviewitem.h \
     ../../inc/cnteditordatamodelitem.h \
-    ../../inc/cntemaileditorview.h \
-    ../../inc/cntnameseditorview.h \
-    ../../inc/cnturleditorview.h \
-    ../../inc/cntcompanyeditorview.h \
-    ../../inc/cntphonenumbereditorview.h \
-    ../../inc/cntaddresseditorview.h \
     ../../inc/cntonlineaccounteditorview.h \
-    ../../inc/cntnoteeditorview.h \
-    ../../inc/cntfamilydetaileditorview.h \
-    ../../inc/cntdateeditorview.h \
     ../../inc/cntimageeditorview.h \
-    ../../inc/cntfavoritesselectionview.h \
+    ../../inc/cntfavoritesmemberview.h \
     ../../inc/cntfavoritesview.h \
     ../../inc/cntmainwindow.h \
     ../../inc/cntmodelprovider.h \
@@ -127,12 +132,36 @@ HEADERS += ../../inc/cntactions.h \
     ../../inc/cnthistoryview.h \
     ../../inc/cnthistoryviewitem.h \
     ../../inc/cnthistoryviewitemwidget.h \
-    ../../inc/cntgroupselectionpopup.h
+    ../../inc/cntgroupselectionpopup.h \
+    ../../inc/cntgroupdeletepopupmodel.h \
+    ../../inc/cntgroupdeletepopup.h \
+    ../../inc/cntdetailconst.h \
+    ../../inc/cntdetaileditormodel.h \
+    ../../inc/cnteditorfactory.h \
+    ../../inc/cntdetaileditor.h \
+    ../../inc/cntphonenumberviewitem.h \
+    ../../inc/cntphonenumbermodel.h \
+    ../../inc/cntdetailmodelitem.h \
+    ../../inc/cntemaileditormodel.h \
+    ../../inc/cntemaileditorviewitem.h \
+    ../../inc/cntaddressmodel.h \
+    ../../inc/cntaddressviewitem.h \
+    ../../inc/cnturleditormodel.h \
+    ../../inc/cnturleditorviewitem.h \
+    ../../inc/cntnameeditormodel.h \
+    ../../inc/cntnoteeditormodel.h \
+    ../../inc/cntnoteeditorviewitem.h \
+    ../../inc/cntdateeditormodel.h \
+    ../../inc/cntdateeditorviewitem.h \
+    ../../inc/cntcompanyeditormodel.h \
+    ../../inc/cntfamilyeditormodel.h \
+    ../../inc/qlocationpickeritem_temp.h \
+    ../../inc/cntdetailviewitem.h
 
 SOURCES += src/testrunner.cpp
 SOURCES += src/main.cpp
 SOURCES += src/t_cntactions.cpp
-SOURCES += src/t_cntaddresseditorview.cpp
+SOURCES += src/t_addresseditor.cpp
 SOURCES += src/t_cntbasedetaileditorview.cpp
 SOURCES += src/t_cntbaselistview.cpp
 SOURCES += src/t_cntbaseselectionview.cpp
@@ -140,20 +169,20 @@ SOURCES += src/t_cntbaseview.cpp
 SOURCES += src/t_cntcollectionlistmodel.cpp
 SOURCES += src/t_cntcollectionview.cpp
 SOURCES += src/t_cntcommands.cpp
-SOURCES += src/t_cntcompanyeditorview.cpp
+SOURCES += src/t_companyeditor.cpp
 SOURCES += src/t_cntcontactcarddatacontainer.cpp
 SOURCES += src/t_cntcontactcarddetailitem.cpp
 SOURCES += src/t_cntcontactcardheadingitem.cpp
 SOURCES += src/t_cntcontactcardview.cpp
-SOURCES += src/t_cntdateeditorview.cpp
+SOURCES += src/t_dateeditor.cpp
 SOURCES += src/t_cntdetailpopup.cpp
 SOURCES += src/t_cnteditordatamodelitem.cpp
 SOURCES += src/t_cnteditordataviewitem.cpp
 SOURCES += src/t_cnteditviewdetailitem.cpp
 SOURCES += src/t_cnteditviewheadingitem.cpp
-SOURCES += src/t_cntemaileditorview.cpp
-SOURCES += src/t_cntfamilydetaileditorview.cpp
-SOURCES += src/t_cntfavoritesselectionview.cpp
+SOURCES += src/t_emaileditor.cpp
+SOURCES += src/t_familyeditor.cpp
+SOURCES += src/t_cntfavoritesmemberview.cpp
 SOURCES += src/t_cntfavoritesview.cpp
 SOURCES += src/t_cntgroupactionsview.cpp
 SOURCES += src/t_cntgroupeditorview.cpp
@@ -163,18 +192,28 @@ SOURCES += src/t_cntmainwindow.cpp
 SOURCES += src/t_cntmodelprovider.cpp
 SOURCES += src/t_cntmycardselectionview.cpp
 SOURCES += src/t_cntmycardview.cpp
-SOURCES += src/t_cntnameseditorview.cpp
-SOURCES += src/t_cntnamesview.cpp
-SOURCES += src/t_cntnoteeditorview.cpp
+SOURCES += src/t_nameeditor.cpp
+SOURCES += src/t_noteeditor.cpp
 SOURCES += src/t_cntonlineaccounteditorview.cpp
-SOURCES += src/t_cntphonenumbereditorview.cpp
+SOURCES += src/t_numbereditor.cpp
 SOURCES += src/t_cntsnapshotwidget.cpp
-SOURCES += src/t_cnturleditorview.cpp
+SOURCES += src/t_urleditor.cpp
 SOURCES += src/t_cntviewmanager.cpp
 SOURCES += src/t_cntviewparameters.cpp
 SOURCES += src/t_cntcommhistoryview.cpp
 SOURCES += src/t_cntgroupselectionpopup.cpp
-SOURCES += ../../src/cntactions.cpp \
+SOURCES += src/t_cntgroupdeletepopupmodel.cpp
+SOURCES += src/t_cntnavigator.cpp
+SOURCES += src/t_namelist.cpp
+SOURCES += src/t_cntgroupdeletepopup.cpp
+SOURCES += \
+    ../../src/cntviewnavigator.cpp \
+	../../src/cntdefaultviewfactory.cpp \
+	../../src/cntnamesview_p.cpp \
+	../../src/cntdefaultviewmanager.cpp \
+	../../src/cntactionmenubuilder.cpp \
+	../../src/cntaction.cpp \
+	../../src/cntactions.cpp \
     ../../src/cntbaselistview.cpp \
     ../../src/cntbaseview.cpp \
     ../../src/cntbasedetaileditorview.cpp \
@@ -185,18 +224,9 @@ SOURCES += ../../src/cntactions.cpp \
     ../../src/cntdetailpopup.cpp \
     ../../src/cnteditordataviewitem.cpp \
     ../../src/cnteditordatamodelitem.cpp \
-    ../../src/cntemaileditorview.cpp \
-    ../../src/cntnameseditorview.cpp \
-    ../../src/cnturleditorview.cpp \
-    ../../src/cntcompanyeditorview.cpp \
-    ../../src/cntphonenumbereditorview.cpp \
-    ../../src/cntaddresseditorview.cpp \
     ../../src/cntonlineaccounteditorview.cpp \
-    ../../src/cntnoteeditorview.cpp \
-    ../../src/cntfamilydetaileditorview.cpp \
-    ../../src/cntdateeditorview.cpp \
     ../../src/cntimageeditorview.cpp \
-    ../../src/cntfavoritesselectionview.cpp \
+    ../../src/cntfavoritesmemberview.cpp \
     ../../src/cntfavoritesview.cpp \
     ../../src/cntmainwindow.cpp \
     ../../src/cntmodelprovider.cpp \
@@ -220,7 +250,28 @@ SOURCES += ../../src/cntactions.cpp \
     ../../src/cnthistoryview.cpp \
     ../../src/cnthistoryviewitem.cpp \
     ../../src/cnthistoryviewitemwidget.cpp \
-    ../../src/cntgroupselectionpopup.cpp
+    ../../src/cntgroupselectionpopup.cpp \
+    ../../src/cntgroupdeletepopupmodel.cpp \
+    ../../src/cntgroupdeletepopup.cpp \
+    ../../src/cntaddressmodel.cpp \
+    ../../src/cntaddressviewitem.cpp \
+    ../../src/cntcompanyeditormodel.cpp \
+    ../../src/cntdateeditormodel.cpp \
+    ../../src/cntdateeditorviewitem.cpp \
+    ../../src/cntdetaileditor.cpp \
+    ../../src/cntdetailmodelitem.cpp \
+    ../../src/cnteditorfactory.cpp \
+    ../../src/cntemaileditormodel.cpp \
+    ../../src/cntemaileditorviewitem.cpp \
+    ../../src/cntfamilyeditormodel.cpp \
+    ../../src/cntnameeditormodel.cpp \
+    ../../src/cntnoteeditormodel.cpp \
+    ../../src/cntnoteeditorviewitem.cpp \
+    ../../src/cntphonenumbermodel.cpp \
+    ../../src/cntphonenumberviewitem.cpp \
+    ../../src/cnturleditormodel.cpp \
+    ../../src/cnturleditorviewitem.cpp
+    
 SOURCES += ./stubs/hbstubs.cpp
 SOURCES += ./stubs/qthighway_stub.cpp
 
@@ -232,5 +283,6 @@ LIBS+= -lxqservice \
        -lQtContacts \
        -lmobcntmodel \
        -lthumbnailmanagerqt \
-       -lmobhistorymodel
+       -lmobhistorymodel \
+       -lcntmaptileservice
 

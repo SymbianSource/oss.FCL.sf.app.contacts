@@ -33,16 +33,19 @@ class Dialpad : public HbWidget
 
 public:
     explicit Dialpad();
+    explicit Dialpad(const HbMainWindow& mainWindow);
+    
     virtual ~Dialpad();
-
     
     HbLineEdit& editor() const;
     
+    bool isOpen() const {return mIsOpen;}
+    
 public slots:
 
-    void openDialpad() { setVisible(true); }
+    void openDialpad() { mIsOpen = true; }
 
-    void closeDialpad() { setVisible(false); }
+    void closeDialpad() { mIsOpen = false; }
 
     void setCallButtonEnabled(bool enabled);
     
@@ -52,6 +55,7 @@ signals:
 public:
     HbLineEdit* mLineEdit; 
     bool mIsCallButtonEnabled;
+    bool mIsOpen;
 };
 
 #endif // DIALPAD_H

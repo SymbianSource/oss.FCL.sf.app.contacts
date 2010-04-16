@@ -21,7 +21,7 @@
 #include <QObject>
 #include "hbstubs_helper.h"
 
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntmainwindow.h"
 #include <hbmenu.h>
 #include <hbgroupbox.h>
@@ -36,7 +36,7 @@ void TestCntBaseDetailEditorView::initTestCase()
 void TestCntBaseDetailEditorView::createClasses()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::noView);
     mBaseDetailEditorView = new CntBaseDetailEditorTestView(mViewManager, 0);
     mWindow->addView(mBaseDetailEditorView);
     mWindow->setCurrentView(mBaseDetailEditorView);
@@ -83,7 +83,7 @@ void TestCntBaseDetailEditorView::header()
 	
 void TestCntBaseDetailEditorView::activateView()
 {
-    CntViewParameters params(CntViewParameters::namesView, CntViewParameters::collectionView); // these don't matter..
+    CntViewParameters params(CntViewParameters::namesView); // this doesnt' matter..
 	QContact contact;
     params.setSelectedContact(contact);
     params.setSelectedAction("dummy");
@@ -100,8 +100,7 @@ void TestCntBaseDetailEditorView::activateView()
 
 void TestCntBaseDetailEditorView::cleanupTestCase()
 {
-    delete mWindow;
-    mWindow = 0;
+    mWindow->deleteLater();
     delete mViewManager;
     mViewManager = 0;
 }

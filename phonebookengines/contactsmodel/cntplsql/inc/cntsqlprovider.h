@@ -86,6 +86,8 @@ public:
 	// aTableName New table name, ownership is transferred
 	void SetTableName(HBufC* aTableName);
 
+	void ClearSqlString();
+
 protected:
 	void ConstructL(const TDesC& aTableName);
 	

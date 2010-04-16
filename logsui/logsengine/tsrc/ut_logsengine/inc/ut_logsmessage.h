@@ -48,6 +48,7 @@ private slots: //test methods
     void testConstructor();
     void testIsMessagingAllowed();
     void testSendMessage();
+    void testSendMessageToNumber();
     
 private:
  

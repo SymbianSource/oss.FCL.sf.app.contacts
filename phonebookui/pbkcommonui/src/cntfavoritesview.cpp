@@ -16,74 +16,109 @@
 */
 
 #include "cntfavoritesview.h"
+#include "cntgroupselectionpopup.h"
+#include "qtpbkglobal.h"
+#include <hbpushbutton.h>
+#include <hbaction.h>
+#include <hbview.h>
+#include <hbmainwindow.h>
 
-/*!
-\class CntFavoritesView
-\brief
+const char *CNT_FAVORITE_UI_XML = ":/xml/contacts_favorite.docml";
 
-This is the namesview class that shows list of contacts for the user. View contains banner for OVI and a listview that shows actual contacts.
-There is also toolbar and menu for navigating between different views. Instance of this class is created by our viewmanager but view itself is
-owned by the mainwindow which will also delete it in the end.
-
-*/
-
-/*!
-Constructor, initialize member variables.
-\a viewManager is the parent that creates this view. \a parent is a pointer to parent QGraphicsItem (by default this is 0)
-
-*/
-CntFavoritesView::CntFavoritesView(CntViewManager *viewManager, QGraphicsItem *parent)
-    : CntBaseListView(viewManager, parent)
-
+CntFavoritesView::CntFavoritesView() :
+    mContact(0),
+    mView(0),
+    mSoftkey(0),
+    mViewManager(0)
 {
-setBannerName(hbTrId("txt_phob_subtitle_favorites"));
-}
+    bool ok = false;
+    mDocumentLoader.load(CNT_FAVORITE_UI_XML, &ok);
 
+    if (ok)
+    {
+        mView = static_cast<HbView*>(mDocumentLoader.findWidget(QString("favoritesView")));
+    }
+    else
+    {
+        qFatal("Unable to read :/xml/contacts_favorite.docml");
+    }
+    
+    //back button
+    mSoftkey = new HbAction(Hb::BackNaviAction, mView);
+    connect(mSoftkey, SIGNAL(triggered()), this, SLOT(showPreviousView()));
+}
 /*!
 Destructor
 */
 CntFavoritesView::~CntFavoritesView()
 {
-
-}
-
-void CntFavoritesView::openFetch()
-{
-    CntViewParameters viewParameters(CntViewParameters::collectionFavoritesSelectionView);
-    viewManager()->onActivateView(viewParameters);
-}
-
-void CntFavoritesView::openNamesList()
-{
-    CntViewParameters viewParameters(CntViewParameters::namesView);
-    viewManager()->onActivateView(viewParameters);
-}
-
-void CntFavoritesView::aboutToCloseView()
-{
-    CntViewParameters viewParameters(CntViewParameters::collectionView);
-    viewManager()->onActivateView(viewParameters);
-}
-
-/*!
-Add actions also to toolbar
-*/
-void CntFavoritesView::addActionsToToolBar()
-{
-    //Add Action to the toolbar
-    actions()->clearActionList();
-    actions()->actionList() << actions()->baseAction("cnt:nameslist") << actions()->baseAction("cnt:collections")
-        << actions()->baseAction("cnt:addfavorites");
-    actions()->addActionsToToolBar(toolBar());
+    mView->deleteLater();
     
-    connect(actions()->baseAction("cnt:nameslist"), SIGNAL(triggered()),
-            this, SLOT(openNamesList()));
+    delete mContact;
+    mContact = 0;
+}
 
-    connect(actions()->baseAction("cnt:collections"), SIGNAL(triggered()),
-            this, SLOT(aboutToCloseView()));
+void CntFavoritesView::activate( CntAbstractViewManager* aMgr, const CntViewParameters& aArgs )
+{
+    if (mView->navigationAction() != mSoftkey)
+        mView->setNavigationAction(mSoftkey);
+    
+    HbMainWindow* window = mView->mainWindow();
+    connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
+    setOrientation(window->orientation());
+    
+    mContact = new QContact(aArgs.selectedContact());
+    mViewManager = aMgr;
 
-    connect(actions()->baseAction("cnt:addfavorites"), SIGNAL(triggered()),
-            this, SLOT(openFetch()));
+    HbPushButton *addButton = static_cast<HbPushButton*>(mDocumentLoader.findWidget(QString("cnt_button_add")));
+    connect(addButton, SIGNAL(clicked()), this, SLOT(openSelectionPopup()));
+}
+
+void CntFavoritesView::deactivate()
+{
+
+}
+
+void CntFavoritesView::openSelectionPopup()
+{
+   // call a dialog to display the contacts
+   CntGroupSelectionPopup *groupSelectionPopup = new CntGroupSelectionPopup(mViewManager->contactManager(SYMBIAN_BACKEND), mContact);
+   groupSelectionPopup->populateListOfContact();
+   HbAction* action = groupSelectionPopup->exec();
+   
+   if (action == groupSelectionPopup->primaryAction())
+   {
+       groupSelectionPopup->saveOldGroup();
+       delete groupSelectionPopup;
+       CntViewParameters viewParameters(CntViewParameters::FavoritesMemberView);
+       viewParameters.setSelectedContact(*mContact);
+       mViewManager->changeView(viewParameters);
+   }
+   else if (action == groupSelectionPopup->secondaryAction())
+   {
+       delete groupSelectionPopup;
+       showPreviousView();
+   }
+}
+
+void CntFavoritesView::setOrientation(Qt::Orientation orientation)
+{
+    if (orientation == Qt::Vertical) 
+    {
+        // reading "portrait" section
+        mDocumentLoader.load(CNT_FAVORITE_UI_XML, "portrait");
+    } 
+    else 
+    {
+        // reading "landscape" section
+        mDocumentLoader.load(CNT_FAVORITE_UI_XML, "landscape");
+    }
+}
+
+void CntFavoritesView::showPreviousView()
+{
+    CntViewParameters args;
+    mViewManager->back(args);
 }
 
 // end of file

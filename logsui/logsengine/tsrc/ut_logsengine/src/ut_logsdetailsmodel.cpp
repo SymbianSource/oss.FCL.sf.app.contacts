@@ -23,7 +23,9 @@
 #include "logsmessage.h"
 #include "logseventdata.h"
 #include "qtcontacts_stubs_helper.h"
+#include "logsdbconnector_stub_helper.h"
 #include <hblineedit.h>
+#include <hbglobal.h>
 #include <QtTest/QtTest>
 
 Q_DECLARE_METATYPE(LogsCall *)
@@ -196,16 +198,6 @@ void UT_LogsDetailsModel::testgetRemoteUri()
     QVERIFY( mModel->getRemoteUri(*mModel->mEvent) == QString("test@1.2.3.4") );
 }
 
-void UT_LogsDetailsModel::testgetLocalUri()
-{
-    LogsEvent event;
-    QVERIFY( mModel->getLocalUri(event) == QString("") );
-    LogsEventData* eventData = new LogsEventData;
-    eventData->mLocalUrl = "test@1.2.3.4";
-    mModel->mEvent->setLogsEventData( eventData );
-    QVERIFY( mModel->getLocalUri(*mModel->mEvent) == QString("test@1.2.3.4") );
-}
-
 void UT_LogsDetailsModel::testInitTextsAndIcons()
 {
     //No VoIP call,no remote url or local url and contactname
@@ -218,8 +210,8 @@ void UT_LogsDetailsModel::testInitTextsAndIcons()
     event.setEventType( testDetailsEventType );
     event.setDuration( testDetailsDuration );
     LogsDetailsModel* model = new LogsDetailsModel(*mDbConnector, event);
-    QVERIFY(model->mDetailItemsCount == 5);
-    QVERIFY(model->mDetailIcons.count() == model->mDetailItemsCount);
+    QVERIFY(model->mDetailIcons.count() == 5);
+    QVERIFY(model->mDetailTexts.count() == 5);
     delete model;
     model = 0;
     
@@ -232,8 +224,8 @@ void UT_LogsDetailsModel::testInitTextsAndIcons()
     event.setEventType( testDetailsEventType );
     event.setDuration( testDetailsDuration );
     model = new LogsDetailsModel(*mDbConnector, event);
-    QVERIFY(model->mDetailItemsCount == 4);
-    QVERIFY(model->mDetailIcons.count() == model->mDetailItemsCount);
+    QVERIFY(model->mDetailIcons.count() == 4);
+    QVERIFY(model->mDetailTexts.count() == 4);
     delete model;
     model = 0;
     
@@ -249,8 +241,8 @@ void UT_LogsDetailsModel::testInitTextsAndIcons()
     eventData->mRemoteUrl = "tester@100.200.300.400";
     event.setLogsEventData( eventData );
     model = new LogsDetailsModel(*mDbConnector, event);
-    QVERIFY(model->mDetailItemsCount == 4);
-    QVERIFY(model->mDetailIcons.count() == model->mDetailItemsCount);
+    QVERIFY(model->mDetailIcons.count() == 4);
+    QVERIFY(model->mDetailTexts.count() == 4);
     delete model;
     model = 0;
     
@@ -266,63 +258,11 @@ void UT_LogsDetailsModel::testInitTextsAndIcons()
     eventData->mRemoteUrl = "tester@100.200.300.400";
     event.setLogsEventData( eventData );
     model = new LogsDetailsModel(*mDbConnector, event);
-    QVERIFY(model->mDetailItemsCount == 5);
-    QVERIFY(model->mDetailIcons.count() == model->mDetailItemsCount);
+    QVERIFY(model->mDetailIcons.count() == 5);
+    QVERIFY(model->mDetailTexts.count() == 5);
     delete model;
     model = 0;
-    
-    //VoIP call,only local url, no contact name
-    testDetailsDateAndTime.setTime_t( 3000 );
-    event.setRemoteParty( testEmpty );
-    event.setNumber( testEmpty );
-    event.setTime( testDetailsDateAndTime );
-    event.setDirection( testDetailsDirection );
-    event.setEventType( testDetailsEventType );
-    event.setDuration( testDetailsDuration );
-    eventData = new LogsEventData;
-    eventData->mLocalUrl = "caller@100.200.300.400";
-    event.setLogsEventData( eventData );
-    model = new LogsDetailsModel(*mDbConnector, event);
-    QVERIFY(model->mDetailItemsCount == 5);
-    QVERIFY(model->mDetailIcons.count() == model->mDetailItemsCount);
-    delete model;
-    model = 0;
-    
-    //VoIP call,only local url, contact name
-    testDetailsDateAndTime.setTime_t( 3000 );
-    event.setRemoteParty( testDetailsRemoteParty );
-    event.setNumber( testEmpty );
-    event.setTime( testDetailsDateAndTime );
-    event.setDirection( testDetailsDirection );
-    event.setEventType( testDetailsEventType );
-    event.setDuration( testDetailsDuration );
-    eventData = new LogsEventData;
-    eventData->mLocalUrl = "caller@100.200.300.400";
-    event.setLogsEventData( eventData );
-    model = new LogsDetailsModel(*mDbConnector, event);
-    QVERIFY(model->mDetailItemsCount == 5);
-    QVERIFY(model->mDetailIcons.count() == model->mDetailItemsCount);
-    delete model;
-    model = 0;
-    
-    //VoIP call,remote uri and local uri, no contact name
-    testDetailsDateAndTime.setTime_t( 3000 );
-    event.setRemoteParty( testEmpty );
-    event.setNumber( testEmpty );
-    event.setTime( testDetailsDateAndTime );
-    event.setDirection( testDetailsDirection );
-    event.setEventType( testDetailsEventType );
-    event.setDuration( testDetailsDuration );
-    eventData = new LogsEventData;
-    eventData->mRemoteUrl = "tester@100.200.300.400";
-    eventData->mLocalUrl = "caller@100.200.300.400";
-    event.setLogsEventData( eventData );
-    model = new LogsDetailsModel(*mDbConnector, event);
-    QVERIFY(model->mDetailItemsCount == 5);
-    QVERIFY(model->mDetailIcons.count() == model->mDetailItemsCount);
-    delete model;
-    model = 0;
-    
+
     //VoIP call,remote uri and local uri, contact name
     testDetailsDateAndTime.setTime_t( 3000 );
     event.setRemoteParty( testDetailsRemoteParty );
@@ -336,17 +276,86 @@ void UT_LogsDetailsModel::testInitTextsAndIcons()
     eventData->mLocalUrl = "caller@100.200.300.400";
     event.setLogsEventData( eventData );
     model = new LogsDetailsModel(*mDbConnector, event);
-    QVERIFY(model->mDetailItemsCount == 6);
-    QVERIFY(model->mDetailIcons.count() == model->mDetailItemsCount);
+    QVERIFY(model->mDetailIcons.count() == 5);
+    QVERIFY(model->mDetailTexts.count() == 5);
     delete model;
     model = 0;
+    
+    // Missed call, duration is not shown
+    // No VoIP call,no remote url or local url and contactname
+    event.setRemoteParty( testDetailsRemoteParty );
+    event.setNumber( testDetailsRemoteNum );
+    event.setTime( testDetailsDateAndTime );
+    event.setEventType( testDetailsEventType );
+    event.setDirection( LogsEvent::DirMissed );
+    model = new LogsDetailsModel(*mDbConnector, event);
+    QVERIFY(model->mDetailIcons.count() == 4);
+    QVERIFY(model->mDetailTexts.count() == 4);
+    delete model;
+    model = 0;
+}
+
+void UT_LogsDetailsModel::testInitUnseenMissed()
+{
+    LogsDbConnectorStubHelper::reset();
+    testDetailsDateAndTime.setTime_t( 3000 );
+    QString dateAndTimeRowHeading;
+    
+    // No duplicates
+    LogsEvent event;
+    event.setRemoteParty( testDetailsRemoteParty );
+    event.setNumber( testDetailsRemoteNum );
+    event.setTime( testDetailsDateAndTime );
+    event.setDirection( LogsEvent::DirMissed );
+    event.setEventType( testDetailsEventType );
+    event.setDuration( testDetailsDuration );
+    LogsDetailsModel* model = new LogsDetailsModel(*mDbConnector, event);
+    QVERIFY(model->mDetailIcons.count() == 4);
+    QVERIFY(model->mDetailTexts.count() == 4);
+    QVERIFY(LogsDbConnectorStubHelper::lastCalledFunction().isEmpty());
+    dateAndTimeRowHeading = model->mDetailTexts.at(1).at(0);
+    delete model;
+    model = 0;
+    
+    // Already read
+    event.setIsRead(true);
+    model = new LogsDetailsModel(*mDbConnector, event);
+    QVERIFY(model->mDetailIcons.count() == 4);
+    QVERIFY(model->mDetailTexts.count() == 4);
+    QVERIFY(LogsDbConnectorStubHelper::lastCalledFunction().isEmpty());
+    delete model;
+    model = 0;
+    
+    // Not read and duplicates exist
+    event.setIsRead(false);
+    event.setDuplicates(3);
+    model = new LogsDetailsModel(*mDbConnector, event);
+    QVERIFY(model->mDetailIcons.count() == 4);
+    QVERIFY(model->mDetailTexts.count() == 4);
+    QVERIFY(LogsDbConnectorStubHelper::lastCalledFunction() == "readDuplicates" );
+    
+    // Reading duplicates completes
+    QSignalSpy spy( model, SIGNAL(modelReset()) );
+    LogsEvent* dup1 = new LogsEvent;
+    model->mDbConnector->mDuplicatedEvents.append(dup1);
+    LogsEvent* dup2 = new LogsEvent;
+    model->mDbConnector->mDuplicatedEvents.append(dup2);
+    model->duplicatesRead();
+    QVERIFY(model->mDetailIcons.count() == 6);
+    QVERIFY(model->mDetailTexts.count() == 6);
+    // When having multiple date and time items, first item has different heading than others
+    QVERIFY( model->mDetailTexts.at(1).at(0) != dateAndTimeRowHeading );
+    QVERIFY( model->mDetailTexts.at(5).at(0) == dateAndTimeRowHeading );
+    delete model;
+    model = 0;
+    
 }
 
 void UT_LogsDetailsModel::testGetHeaderData()
 {
     // No name or number
     LogsEvent event;
-    QVERIFY( mModel->getHeaderData(event) == QString("No number") );
+    QVERIFY( mModel->getHeaderData(event) == hbTrId("txt_dial_dblist_call_id_val_unknown_number") );
 
     // No name
     QString num("+12345555");

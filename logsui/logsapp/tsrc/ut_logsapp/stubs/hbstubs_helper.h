@@ -29,6 +29,7 @@ class HbStubHelper
         static bool menuShown();
         static bool singleShotTimerActive();
         static bool quitCalled();
+        static void setGestureState(int state);
 };
 
 #endif

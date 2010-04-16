@@ -20,7 +20,7 @@
 #include <qtcontacts.h>
 
 #include "cntnameseditorview.h"
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntmainwindow.h"
 #include "t_cntnameseditorview.h"
 
@@ -34,7 +34,7 @@ void TestCntNamesEditorView::initTestCase()
 void TestCntNamesEditorView::createClasses()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::noView);
     mNamesEditorView = new CntNamesEditorView(mViewManager, 0);
     mWindow->addView(mNamesEditorView);
     mWindow->setCurrentView(mNamesEditorView);
@@ -141,8 +141,7 @@ void TestCntNamesEditorView::initializeFormData()
 
 void TestCntNamesEditorView::cleanupTestCase()
 {
-    delete mWindow;
-    mWindow = 0;
+    mWindow->deleteLater();
     delete mViewManager;
     mViewManager = 0;
     delete mNamesEditorView;

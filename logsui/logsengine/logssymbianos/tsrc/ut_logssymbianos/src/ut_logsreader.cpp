@@ -127,6 +127,25 @@ void UT_LogsReader::testMarkEventSeen()
     QVERIFY( mReader->markEventSeen(1) == 0 );
 }
 
+void UT_LogsReader::testReadDuplicates()
+{
+    QVERIFY( !mReader->mLogViewRecent );
+    QVERIFY( !mReader->mDuplicatesView );
+    QVERIFY( mReader->readDuplicates(1) == 0 );
+    QVERIFY( mReader->IsActive() );
+    QVERIFY( mReader->mLogViewRecent );
+    QVERIFY( mReader->mDuplicatesView );
+    QVERIFY( mReader->mCurrentStateMachine == &mReader->mDuplicateReadingStates );
+    QVERIFY( mReader->mDuplicateReadingStates.count() > 0 );
+    
+    //starting second time is ok
+    QVERIFY( mReader->readDuplicates(1) == 0 );
+    
+    //starting when reading is in progress is not allowed
+    mReader->mCurrentStateMachine = &mReader->mReadStates;
+    QVERIFY( mReader->readDuplicates(1) != 0 );
+}
+
 void UT_LogsReader::testRunL()
 {
     mReader->start();
@@ -281,4 +300,13 @@ void UT_LogsReader::temporaryErrorOccurred(int err)
 void UT_LogsReader::eventModifyingCompleted()
 {
 
+}
+
+// ----------------------------------------------------------------------------
+// From LogsReaderObserver
+// ----------------------------------------------------------------------------
+//
+void UT_LogsReader::duplicatesReadingCompleted(QList<LogsEvent*> duplicates)
+{
+    qDeleteAll(duplicates);
 }

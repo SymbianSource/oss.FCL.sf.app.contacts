@@ -17,10 +17,10 @@
 
 #include <QListIterator>
 
-#include <QContactDetailFilter.h>
-#include <QContactPhoneNumber.h>
-#include <QContactName.h>
-#include <QContactManager.h>
+#include <qcontactdetailfilter.h>
+#include <qcontactphonenumber.h>
+#include <qcontactname.h>
+#include <qcontactmanager.h>
 #include <qcontactavatar.h>
 #include <QVector>
 
@@ -28,6 +28,7 @@
 #include "logspredictivetranslator.h"
 #include "logslogger.h"
 
+const int MaxPredSearchPatternLen = 15;
 
 
 // -----------------------------------------------------------------------------
@@ -223,10 +224,8 @@ void LogsCntEntry::doSetText( const QString& text, LogsCntTextList& textlist )
     while( iter.hasNext() ) {
         LogsCntText txt;
         txt.mText = iter.next();
-        if ( type() == EntryTypeHistory  ) {
-            txt.mTranslatedText = 
-                LogsPredictiveTranslator::instance()->translate( txt.mText );
-        }
+        txt.mTranslatedText = 
+            LogsPredictiveTranslator::instance()->translate( txt.mText );
         textlist.append( txt );
     }
     if ( textlist.count() == 0 ) {
@@ -435,6 +434,7 @@ LogsCntEntry::EntryType LogsCntEntry::type() const
 // -----------------------------------------------------------------------------
 //
 LogsCntFinder::LogsCntFinder()
+    : mCachedCounter(0)
 {
     LOGS_QDEBUG( "logs [FINDER] -> LogsCntFinder::LogsCntFinder()" )
     
@@ -451,6 +451,7 @@ LogsCntFinder::LogsCntFinder()
 // -----------------------------------------------------------------------------
 //
 LogsCntFinder::LogsCntFinder(QContactManager& contactManager)
+    : mCachedCounter(0)
 {
     LOGS_QDEBUG( "logs [FINDER] -> LogsCntFinder::LogsCntFinder(), cntmgr from client" )
     
@@ -484,13 +485,32 @@ void LogsCntFinder::predictiveSearchQuery( const QString& pattern )
     LOGS_QDEBUG( "logs [FINDER] -> LogsCntFinder::predictiveSearchQuery()" )
     LOGS_QDEBUG_2( "logs [FINDER] pattern= ", pattern )
     
-    mCurrentPredictivePattern = pattern;
+    bool canUseCacheQuery = 
+            pattern.length() > 1 && 
+            pattern.length() - mCurrentPredictivePattern.length() > 0;
+    bool areAllResultsCached = resultsCount() > 0 && 
+                               mCachedCounter == resultsCount();
+
+    LOGS_QDEBUG_2( "logs [FINDER] canUseCacheQuery= ", canUseCacheQuery )
+    LOGS_QDEBUG_2( "logs [FINDER] areAllResultsCached= ", areAllResultsCached )
+    LOGS_QDEBUG_2( "logs [FINDER] cachedCounter= ", mCachedCounter )
     
-    if ( !mCurrentPredictivePattern.isEmpty() ) {
+    mCurrentPredictivePattern = pattern.left(MaxPredSearchPatternLen);
+    
+    if ( mCurrentPredictivePattern.isEmpty() ) {
         qDeleteAll( mResults );
         mResults.clear();
+        mCachedCounter = 0;
+    } else if ( areAllResultsCached &&
+                canUseCacheQuery ) { 
+        doPredictiveCacheQuery();
+    } else {        
+        mCachedCounter = 0;
+        LogsCntEntryList recentResults = mResults;
+        mResults.clear();
         doPredictiveHistoryQuery();
-        doPredictiveContactQuery();
+        doPredictiveContactQuery( recentResults );
+        qDeleteAll( recentResults );
     }
     emit queryReady();
  
@@ -511,8 +531,7 @@ void LogsCntFinder::doPredictiveHistoryQuery()
         LogsCntEntry* e = iter.next();
         if ( e->match( mCurrentPredictivePattern ) ) {
             LogsCntEntry* entry = new LogsCntEntry( *e );
-            entry->setHighlights( mCurrentPredictivePattern );
-            mResults.append( entry );
+            addResult( entry );
         }
     }
         
@@ -523,27 +542,95 @@ void LogsCntFinder::doPredictiveHistoryQuery()
 // LogsCntFinder::doPredictiveContactQuery
 // -----------------------------------------------------------------------------
 //
-void LogsCntFinder::doPredictiveContactQuery()
+void LogsCntFinder::doPredictiveContactQuery( LogsCntEntryList& recentResults )
 {
     LOGS_QDEBUG( "logs [FINDER] -> LogsCntFinder::doPredictiveContactQuery()" )
     QContactDetailFilter df;
     df.setDetailDefinitionName( QContactName::DefinitionName );
-    //unofficial 
-    //df.setMatchFlags( QContactFilter::MatchPredictiveSearch );
     df.setMatchFlags( QContactFilter::MatchKeypadCollation );
     df.setValue( mCurrentPredictivePattern );
     QList<QContactLocalId> cntIds;
-    LOGS_QDEBUG( "logs [FINDER] about to call contacts manager)" )
+    LOGS_QDEBUG( "logs [FINDER] about to call contacts manager" )
     
-    cntIds = mContactManager->contacts( df );
-    LOGS_QDEBUG_2( "logs [FINDER] number of matched contacts=", cntIds.count() )
+    cntIds = mContactManager->contactIds( df );
+    LOGS_QDEBUG_2( "logs [FINDER] number of matched contacts =", cntIds.count() )
     int index = 0;
     while( index < cntIds.count() ) {
-      LogsCntEntry* entry = new LogsCntEntry( cntIds.at( index++ ) );
-      mResults.append( entry );
+        addResult( cntIds.at( index++ ), recentResults );
     }
     LOGS_QDEBUG( "logs [FINDER] <- LogsCntFinder::doPredictiveContactQuery()" )
     
+}
+
+// -----------------------------------------------------------------------------
+// LogsCntFinder::doPredictiveCacheQuery()
+// -----------------------------------------------------------------------------
+//
+void LogsCntFinder::doPredictiveCacheQuery()
+{
+    LOGS_QDEBUG( "logs [FINDER] -> LogsCntFinder::doPredictiveCacheQuery()" )
+    QMutableListIterator<LogsCntEntry*> iter(mResults);
+    while( iter.hasNext() ) {
+        LogsCntEntry* entry = iter.next();
+        if ( !entry->match( mCurrentPredictivePattern ) ) {
+            mCachedCounter = 
+                    entry->isCached() ? mCachedCounter-1 : mCachedCounter;
+            iter.remove();
+            delete entry;
+        } else {
+            entry->setHighlights( mCurrentPredictivePattern );
+        }
+    }
+    LOGS_QDEBUG( "logs [FINDER] <- LogsCntFinder::doPredictiveCacheQuery()" )
+    
+}
+
+// -----------------------------------------------------------------------------
+// LogsCntFinder::addResult()
+// -----------------------------------------------------------------------------
+//
+void LogsCntFinder::addResult( quint32 cntId, LogsCntEntryList& recentResults )
+{
+    QMutableListIterator<LogsCntEntry*> iter(recentResults);
+    bool reused = false;
+    while( iter.hasNext() && !reused ) {
+        LogsCntEntry* entry = iter.next();
+        if ( entry->contactId() == cntId ) {
+            LOGS_QDEBUG_4( "logs [FINDER] LogsCntFinder::addResult() - \
+re-using entry. contact id ", cntId, "cached=", entry->isCached() );
+            iter.remove();
+            addResult( entry );
+            reused = true;
+        }
+    }
+    
+    if ( !reused ) {
+        LogsCntEntry* entry = new LogsCntEntry( cntId );
+        addResult( entry );
+    }
+}
+
+
+// -----------------------------------------------------------------------------
+// LogsCntFinder::addResult()
+// -----------------------------------------------------------------------------
+//
+void LogsCntFinder::addResult( LogsCntEntry* entry )
+{
+    updateResult( entry );
+    mResults.append( entry );
+}
+
+// -----------------------------------------------------------------------------
+// LogsCntFinder::updateResult()
+// -----------------------------------------------------------------------------
+//
+void LogsCntFinder::updateResult( LogsCntEntry* entry )
+{
+    if ( entry->isCached() ) {
+        entry->setHighlights( mCurrentPredictivePattern );
+        mCachedCounter++;
+    }
 }
 
 
@@ -567,24 +654,23 @@ const LogsCntEntry& LogsCntFinder::resultAt( int index )
     
     LogsCntEntry* entry = mResults.at( index );
     if ( !entry->isCached() ) {
-      LOGS_QDEBUG_2( "logs [FINDER] caching from DB cid=", entry->contactId() )
-      QContact contact = mContactManager->contact( entry->contactId() );
-      QContactName contactName = contact.detail( QContactName::DefinitionName );
-      entry->setFirstName( contactName.value( QContactName::FieldFirst ) );
-      entry->setLastName( contactName.value( QContactName::FieldLast ) );
-      QContactPhoneNumber contactPhoneNumber = 
+        LOGS_QDEBUG_2( "logs [FINDER] caching from DB cid=", entry->contactId() )
+        QContact contact = mContactManager->contact( entry->contactId() );
+        QContactName contactName = contact.detail( QContactName::DefinitionName );
+        entry->setFirstName( contactName.value( QContactName::FieldFirst ) );
+        entry->setLastName( contactName.value( QContactName::FieldLast ) );
+        QContactPhoneNumber contactPhoneNumber = 
               contact.detail( QContactPhoneNumber::DefinitionName );
-      entry->setPhoneNumber( 
+        entry->setPhoneNumber( 
               contactPhoneNumber.value( QContactPhoneNumber::FieldNumber ) );
-      
-      entry->setHighlights( mCurrentPredictivePattern );  
-      QContactAvatar contactAvatar = contact.detail<QContactAvatar>();  
-      if (contactAvatar.subType().compare(
-      	QLatin1String(QContactAvatar::SubTypeImage)) == 0 && 
+        QContactAvatar contactAvatar = contact.detail<QContactAvatar>();  
+        if (contactAvatar.subType().compare(
+        QLatin1String(QContactAvatar::SubTypeImage)) == 0 && 
                !contactAvatar.avatar().isEmpty()) {
-               	  entry->setAvatarPath(contactAvatar.avatar());
+                  entry->setAvatarPath(contactAvatar.avatar());
               } 
-
+        
+        updateResult( entry );      
     }
     LOGS_QDEBUG( "logs [FINDER] <- LogsCntFinder::resultAt()" )
     return *entry;

@@ -17,7 +17,7 @@
 */
 
 
-#include "CntSortPluginUid.h"
+#include "cntsortpluginuid.h"
 #include <platform_paths.hrh>
 #include <data_caging_paths.hrh>
 
@@ -37,7 +37,7 @@ APP_LAYER_SYSTEMINCLUDE
 // Symbian uses #include <ecom.h> in cntviewsortplugin.h
 SYSTEMINCLUDE   /epoc32/include/ecom
 
-START RESOURCE  101f85a9.RSS
+START RESOURCE  101f85a9.rss
 TARGET          cntsortplugin
 TARGETPATH      resource/plugins
 END

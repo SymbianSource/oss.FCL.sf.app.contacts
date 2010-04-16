@@ -39,12 +39,10 @@
 **
 ****************************************************************************/
 
-#include <QDebug>
-
 #include "qcontactmanagerengine.h"
 
 #include "qcontactdetaildefinition.h"
-#include "qcontactdetaildefinitionfield.h"
+#include "qcontactdetailfielddefinition.h"
 #include "qcontactdetails.h"
 #include "qcontactsortorder.h"
 #include "qcontactfilters.h"
@@ -56,7 +54,7 @@
 #include "qcontactrequests_p.h"
 
 #include "qcontact_p.h"
-
+#include "qcontactdetail_p.h"
 QTM_BEGIN_NAMESPACE
 
 /*!
@@ -79,119 +77,119 @@ QTM_BEGIN_NAMESPACE
  */
 
 /*!
- * \fn QContactManagerEngine::QContactManagerEngine()
- *
- * A default, empty constructor.
+  \fn QContactManagerEngine::QContactManagerEngine()
+
+  A default, empty constructor.
  */
 
 /*!
- * \fn QContactManagerEngine::deref()
- *
- * Notifies the engine that it is no longer required.  If this
- * engine can not be shared between managers, it is safe for the
- * engine to delete itself in this function.
- *
- * If the engine implementation can be shared, this function can use a
- * reference count and track lifetime that way.  The factory that
- * returns an instance of this engine should increment the reference
- * count in this case.
+  \fn QContactManagerEngine::deref()
+
+  Notifies the engine that it is no longer required.  If this
+  engine can not be shared between managers, it is safe for the
+  engine to delete itself in this function.
+
+  If the engine implementation can be shared, this function can use a
+  reference count and track lifetime that way.  The factory that
+  returns an instance of this engine should increment the reference
+  count in this case.
  */
 
 /*!
- * \fn QContactManagerEngine::dataChanged()
- *
- * This signal is emitted some time after changes occur to the data managed by this
- * engine, and the engine is unable to determine which changes occurred, or if the
- * engine considers the changes to be radical enough to require clients to reload all data.
- *
- * If this signal is emitted, no other signals may be emitted for the associated changes.
- *
- * As it is possible that other processes (or other devices) may have caused the
- * changes, the timing can not be determined.
- *
- * \sa contactsAdded(), contactsChanged(), contactsRemoved()
+  \fn QContactManagerEngine::dataChanged()
+
+  This signal is emitted some time after changes occur to the data managed by this
+  engine, and the engine is unable to determine which changes occurred, or if the
+  engine considers the changes to be radical enough to require clients to reload all data.
+
+  If this signal is emitted, no other signals may be emitted for the associated changes.
+
+  As it is possible that other processes (or other devices) may have caused the
+  changes, the timing can not be determined.
+
+  \sa contactsAdded(), contactsChanged(), contactsRemoved()
  */
 
 /*!
- * \fn QContactManagerEngine::contactsAdded(const QList<QContactLocalId>& contactIds);
- *
- * This signal is emitted some time after a set of contacts has been added to
- * this engine where the \l dataChanged() signal was not emitted for those changes.
- * As it is possible that other processes (or other devices) may
- * have added the contacts, the timing cannot be determined.
- *
- * The list of ids of contacts added is given by \a contactIds.  There may be one or more
- * ids in the list.
- *
- * \sa dataChanged()
+  \fn QContactManagerEngine::contactsAdded(const QList<QContactLocalId>& contactIds);
+
+  This signal is emitted some time after a set of contacts has been added to
+  this engine where the \l dataChanged() signal was not emitted for those changes.
+  As it is possible that other processes (or other devices) may
+  have added the contacts, the timing cannot be determined.
+
+  The list of ids of contacts added is given by \a contactIds.  There may be one or more
+  ids in the list.
+
+  \sa dataChanged()
  */
 
 /*!
- * \fn QContactManagerEngine::contactsChanged(const QList<QContactLocalId>& contactIds);
- *
- * This signal is emitted some time after a set of contacts has been modified in
- * this engine where the \l dataChanged() signal was not emitted for those changes.
- * As it is possible that other processes (or other devices) may
- * have modified the contacts, the timing cannot be determined.
- *
- * The list of ids of changed contacts is given by \a contactIds.  There may be one or more
- * ids in the list.
- *
- * \sa dataChanged()
+  \fn QContactManagerEngine::contactsChanged(const QList<QContactLocalId>& contactIds);
+
+  This signal is emitted some time after a set of contacts has been modified in
+  this engine where the \l dataChanged() signal was not emitted for those changes.
+  As it is possible that other processes (or other devices) may
+  have modified the contacts, the timing cannot be determined.
+
+  The list of ids of changed contacts is given by \a contactIds.  There may be one or more
+  ids in the list.
+
+  \sa dataChanged()
  */
 
 /*!
- * \fn QContactManagerEngine::contactsRemoved(const QList<QContactLocalId>& contactIds);
- *
- * This signal is emitted some time after a set of contacts has been removed from
- * this engine where the \l dataChanged() signal was not emitted for those changes.
- * As it is possible that other processes (or other devices) may
- * have removed the contacts, the timing cannot be determined.
- *
- * The list of ids of removed contacts is given by \a contactIds.  There may be one or more
- * ids in the list.
- *
- * \sa dataChanged()
+  \fn QContactManagerEngine::contactsRemoved(const QList<QContactLocalId>& contactIds);
+
+  This signal is emitted some time after a set of contacts has been removed from
+  this engine where the \l dataChanged() signal was not emitted for those changes.
+  As it is possible that other processes (or other devices) may
+  have removed the contacts, the timing cannot be determined.
+
+  The list of ids of removed contacts is given by \a contactIds.  There may be one or more
+  ids in the list.
+
+  \sa dataChanged()
  */
 
 /*!
- * \fn QContactManagerEngine::relationshipsAdded(const QList<QContactLocalId>& affectedContactIds);
- *
- * This signal is emitted some time after a set of contacts has been added to
- * this engine where the \l dataChanged() signal was not emitted for those changes.
- * As it is possible that other processes (or other devices) may
- * have added the contacts, the timing cannot be determined.
- *
- * The list of ids of affected contacts is given by \a affectedContactIds.  There may be one or more
- * ids in the list.
- *
- * \sa dataChanged()
+  \fn QContactManagerEngine::relationshipsAdded(const QList<QContactLocalId>& affectedContactIds);
+
+  This signal is emitted some time after a set of contacts has been added to
+  this engine where the \l dataChanged() signal was not emitted for those changes.
+  As it is possible that other processes (or other devices) may
+  have added the contacts, the timing cannot be determined.
+
+  The list of ids of affected contacts is given by \a affectedContactIds.  There may be one or more
+  ids in the list.
+
+  \sa dataChanged()
  */
 
 /*!
- * \fn QContactManagerEngine::relationshipsRemoved(const QList<QContactLocalId>& affectedContactIds);
- *
- * This signal is emitted some time after a set of relationships has been removed from
- * this engine where the \l dataChanged() signal was not emitted for those changes.
- * As it is possible that other processes (or other devices) may
- * have removed the relationships, the timing cannot be determined.
- *
- * The list of ids of affected contacts is given by \a affectedContactIds.  There may be one or more
- * ids in the list.
- *
- * \sa dataChanged()
+  \fn QContactManagerEngine::relationshipsRemoved(const QList<QContactLocalId>& affectedContactIds);
+
+  This signal is emitted some time after a set of relationships has been removed from
+  this engine where the \l dataChanged() signal was not emitted for those changes.
+  As it is possible that other processes (or other devices) may
+  have removed the relationships, the timing cannot be determined.
+
+  The list of ids of affected contacts is given by \a affectedContactIds.  There may be one or more
+  ids in the list.
+
+  \sa dataChanged()
  */
 
 /*!
- * \fn QContactManagerEngine::selfContactIdChanged(const QContactLocalId& oldId, const QContactLocalId& newId)
- *
- * This signal is emitted at some point after the id of the self-contact is changed from \a oldId to \a newId in the manager.
- * If the \a newId is the invalid, zero id, then the self contact was deleted or no self contact exists.
- * This signal must not be emitted if the dataChanged() signal was previously emitted for this change.
- * As it is possible that other processes (or other devices) may
- * have removed or changed the self contact, the timing cannot be determined.
- *
- * \sa dataChanged()
+  \fn QContactManagerEngine::selfContactIdChanged(const QContactLocalId& oldId, const QContactLocalId& newId)
+
+  This signal is emitted at some point after the id of the self-contact is changed from \a oldId to \a newId in the manager.
+  If the \a newId is the invalid, zero id, then the self contact was deleted or no self contact exists.
+  This signal must not be emitted if the dataChanged() signal was previously emitted for this change.
+  As it is possible that other processes (or other devices) may
+  have removed or changed the self contact, the timing cannot be determined.
+
+  \sa dataChanged()
  */
 
 /*! Returns the manager name for this QContactManagerEngine */
@@ -201,9 +199,9 @@ QString QContactManagerEngine::managerName() const
 }
 
 /*!
- * Returns the parameters with which this engine was constructed.  Note that
- * the engine may have discarded unused or invalid parameters at the time of
- * construction, and these will not be returned.
+  Returns the parameters with which this engine was constructed.  Note that
+  the engine may have discarded unused or invalid parameters at the time of
+  construction, and these will not be returned.
  */
 QMap<QString, QString> QContactManagerEngine::managerParameters() const
 {
@@ -211,8 +209,8 @@ QMap<QString, QString> QContactManagerEngine::managerParameters() const
 }
 
 /*!
- * Returns the unique URI of this manager, which is built from the manager name and the parameters
- * used to construct it.
+  Returns the unique URI of this manager, which is built from the manager name and the parameters
+  used to construct it.
  */
 QString QContactManagerEngine::managerUri() const
 {
@@ -220,9 +218,13 @@ QString QContactManagerEngine::managerUri() const
 }
 
 /*!
- * Return the list of contact ids present in this engine, sorted according to the given \a sortOrders.
- *
- * Any errors encountered should be stored to \a error.
+  \internal
+
+  Return the list of contact ids present in this engine, sorted according to the given \a sortOrders.
+
+  Any errors encountered should be stored to \a error.
+
+  This function is obsolete; use contactIds() instead.
  */
 QList<QContactLocalId> QContactManagerEngine::contacts(const QList<QContactSortOrder>& sortOrders, QContactManager::Error& error) const
 {
@@ -232,10 +234,13 @@ QList<QContactLocalId> QContactManagerEngine::contacts(const QList<QContactSortO
 }
 
 /*!
- * Returns a list of the ids of contacts that match the supplied \a filter, sorted according to the given \a sortOrders.
- * Any error that occurs will be stored in \a error.
- *
- * The default implementation will retrieve all contacts and test them with testFilter.
+  \internal
+  Returns a list of the ids of contacts that match the supplied \a filter, sorted according to the given \a sortOrders.
+  Any error that occurs will be stored in \a error.
+
+  The default implementation will retrieve all contacts and test them with testFilter.
+
+  This function is obsolete; use contactIds() instead.
  */
 QList<QContactLocalId> QContactManagerEngine::contacts(const QContactFilter& filter, const QList<QContactSortOrder>& sortOrders, QContactManager::Error& error) const
 {
@@ -243,7 +248,7 @@ QList<QContactLocalId> QContactManagerEngine::contacts(const QContactFilter& fil
     QList<QContactLocalId> ret;
 
     /* Retrieve each contact.. . . */
-    const QList<QContactLocalId>& all = contacts(sortOrders, error);
+    const QList<QContactLocalId>& all = contactIds(sortOrders, error);
     if (error != QContactManager::NoError)
         return ret;
 
@@ -251,7 +256,7 @@ QList<QContactLocalId> QContactManagerEngine::contacts(const QContactFilter& fil
         return all;
 
     for (int j = 0; j < all.count(); j++) {
-        if (testFilter(filter, contact(all.at(j), error)))
+        if (testFilter(filter, contact(all.at(j), QStringList(), error)))
             ret << all.at(j);
     }
 
@@ -259,9 +264,13 @@ QList<QContactLocalId> QContactManagerEngine::contacts(const QContactFilter& fil
 }
 
 /*!
- * Returns the contact in the database identified by \a contactId
- *
- * Any errors encountered should be stored to \a error.
+  \internal
+
+  Returns the contact in the database identified by \a contactId
+
+  Any errors encountered should be stored to \a error.
+
+  This function is obsolete; use the contact() function which takes an optional set of details to restrict the returned contact to, instead.
  */
 QContact QContactManagerEngine::contact(const QContactLocalId& contactId, QContactManager::Error& error) const
 {
@@ -271,15 +280,125 @@ QContact QContactManagerEngine::contact(const QContactLocalId& contactId, QConta
 }
 
 /*!
- * Sets the id of the "self" contact to the given \a contactId.
- * Returns true if the "self" contact id was set successfully.
- * If the given \a contactId does not identify a contact
- * stored in this manager, the \a error will be set to
- * \c QContactManager::DoesNotExistError and the function will
- * return false; if the backend does not support the
- * concept of a "self" contact, the \a error will be set to
- * \c QContactManager::NotSupportedError and the function will
- * return false.
+  Returns a list of contact ids sorted according to the given list of \a sortOrders.
+  Depending on the backend, this operation may involve retrieving all the contacts.
+  Any error which occurs will be saved in \a error.
+ */
+QList<QContactLocalId> QContactManagerEngine::contactIds(const QList<QContactSortOrder>& sortOrders, QContactManager::Error& error) const
+{
+    Q_UNUSED(sortOrders);
+    error = QContactManager::NotSupportedError;
+    return QList<QContactLocalId>();
+}
+
+/*!
+  Returns a list of contact ids that match the given \a filter, sorted according to the given list of \a sortOrders.
+  Depending on the backend, this filtering operation may involve retrieving all the contacts.
+  Any error which occurs will be saved in \a error.
+ */
+QList<QContactLocalId> QContactManagerEngine::contactIds(const QContactFilter& filter, const QList<QContactSortOrder>& sortOrders, QContactManager::Error& error) const
+{
+    /* Slow way */
+    QList<QContactLocalId> ret;
+
+    /* If the filter matches all ids, then return the list of all ids */
+    if (filter.type() == QContactFilter::DefaultFilter) {
+        const QList<QContactLocalId>& allIds = contactIds(sortOrders, error);
+        if (error != QContactManager::NoError)
+            return ret;
+        return allIds;
+    }
+
+    /* Otherwise, retrieve all contacts, test and return matching */
+    const QList<QContact>& all = contacts(sortOrders, QStringList(), error);
+
+    if (error != QContactManager::NoError)
+        return ret;
+
+    for (int j = 0; j < all.count(); j++) {
+        if (testFilter(filter, all.at(j)))
+            ret << all.at(j).localId();
+    }
+
+    return ret;
+}
+
+/*!
+  Returns the list of contacts stored in the manager sorted according to the given list of \a sortOrders.
+  If the given list of detail definition names \a definitionRestrictions is empty, each contact returned will include
+  all of the details which are stored in it, otherwise only those details which are of a definition whose name is included
+  in the \a definitionRestrictions list will be included.
+  Any error which occurs will be saved in \a error.
+ */
+QList<QContact> QContactManagerEngine::contacts(const QList<QContactSortOrder>& sortOrders, const QStringList& definitionRestrictions, QContactManager::Error& error) const
+{
+    Q_UNUSED(sortOrders);
+    Q_UNUSED(definitionRestrictions);
+    error = QContactManager::NotSupportedError;
+    return QList<QContact>();
+}
+
+/*!
+  Returns a list of contacs that match the given \a filter, sorted according to the given list of \a sortOrders.
+  Depending on the backend, this filtering operation may involve retrieving all the contacts.
+  If the given list of detail definition names \a definitionRestrictions is empty, each contact returned will include
+  all of the details which are stored in it, otherwise only those details which are of a definition whose name is included
+  in the \a definitionRestrictions list will be included.
+  Any error which occurs will be saved in \a error.
+ */
+QList<QContact> QContactManagerEngine::contacts(const QContactFilter& filter, const QList<QContactSortOrder>& sortOrders, const QStringList& definitionRestrictions, QContactManager::Error& error) const
+{
+    /* Slow way */
+    QList<QContact> ret;
+
+    /* Retrieve each contact.. . . */
+    const QList<QContact>& all = contacts(sortOrders, definitionRestrictions, error);
+    if (error != QContactManager::NoError)
+        return ret;
+
+    if (filter.type() == QContactFilter::DefaultFilter)
+        return all;
+
+    for (int j = 0; j < all.count(); j++) {
+        if (testFilter(filter, all.at(j))) {
+            ret << all.at(j);
+        }
+    }
+
+    return ret;
+}
+
+/*!
+  Returns the contact in the database identified by \a contactId.
+  If the list of detail definition names \a definitionRestrictions given is non-empty,
+  the contact returned will contain at least those details which are of a definition whose name is
+  contained in the \a definitionRestrictions list.
+  Note that the returned contact may also contain other details, but this function guarantees that
+  all details whose definition name is included in the given list of definition names \a definitionRestrictions
+  will be included in the returned contact.
+
+  The default implementation returns the entire contact.
+
+  Any errors encountered should be stored to \a error.
+ */
+QContact QContactManagerEngine::contact(const QContactLocalId& contactId, const QStringList& definitionRestrictions, QContactManager::Error& error) const
+{
+    Q_UNUSED(contactId);
+    Q_UNUSED(definitionRestrictions);
+    error = QContactManager::NotSupportedError;
+    return QContact();
+}
+
+/*!
+  Sets the id of the "self" contact to the given \a contactId.
+  Returns true if the "self" contact id was set successfully.
+  If the given \a contactId does not identify a contact
+  stored in this manager, the \a error will be set to
+  \c QContactManager::DoesNotExistError and the function will
+  return false; if the backend does not support the
+  concept of a "self" contact, the \a error will be set to
+  \c QContactManager::NotSupportedError and the function will
+  return false.
  */
 bool QContactManagerEngine::setSelfContactId(const QContactLocalId& contactId, QContactManager::Error& error)
 {
@@ -289,11 +408,11 @@ bool QContactManagerEngine::setSelfContactId(const QContactLocalId& contactId, Q
 }
 
 /*!
- * Returns the id of the "self" contact which has previously been set.
- * If no "self" contact has been set, or if the self contact was removed
- * from the manager after being set, or if the backend does not support
- * the concept of a "self" contact, an invalid id will be returned
- * and the \a error will be set to \c QContactManager::DoesNotExistError.
+  Returns the id of the "self" contact which has previously been set.
+  If no "self" contact has been set, or if the self contact was removed
+  from the manager after being set, or if the backend does not support
+  the concept of a "self" contact, an invalid id will be returned
+  and the \a error will be set to \c QContactManager::DoesNotExistError.
  */
 QContactLocalId QContactManagerEngine::selfContactId(QContactManager::Error& error) const
 {
@@ -302,11 +421,11 @@ QContactLocalId QContactManagerEngine::selfContactId(QContactManager::Error& err
 }
 
 /*!
- * Returns a list of relationships of the given \a relationshipType in which the contact identified by the given \a participantId participates in the given \a role.
- * If \a participantId is the default-constructed id, \a role is ignored and all relationships of the given \a relationshipType are returned.
- * If \a relationshipType is empty, relationships of any type are returned.
- * If no relationships of the given \a relationshipType in which the contact identified by the given \a participantId is involved in the given \a role exists,
- * \a error is set to QContactManager::DoesNotExistError.
+  Returns a list of relationships of the given \a relationshipType in which the contact identified by the given \a participantId participates in the given \a role.
+  If \a participantId is the default-constructed id, \a role is ignored and all relationships of the given \a relationshipType are returned.
+  If \a relationshipType is empty, relationships of any type are returned.
+  If no relationships of the given \a relationshipType in which the contact identified by the given \a participantId is involved in the given \a role exists,
+  \a error is set to QContactManager::DoesNotExistError.
  */
 QList<QContactRelationship> QContactManagerEngine::relationships(const QString& relationshipType, const QContactId& participantId, QContactRelationshipFilter::Role role, QContactManager::Error& error) const
 {
@@ -318,20 +437,20 @@ QList<QContactRelationship> QContactManagerEngine::relationships(const QString& 
 }
 
 /*!
- * Saves the given \a relationship in the database.  If the relationship already exists in the database, this function will
- * return \c false and the \a error will be set to \c QContactManager::AlreadyExistsError.
- * If the relationship is saved successfully, this function will return \c true and \a error will be set
- * to \c QContactManager::NoError.  Note that relationships cannot be updated directly using this function; in order
- * to update a relationship, you must remove the old relationship, make the required modifications, and then save it.
- *
- * The given relationship is invalid if it is circular (one of the destination contacts is also the source contact), or
- * if it references a non-existent local contact (either source or destination).  If the given \a relationship is invalid,
- * the function will return \c false and the \a error will be set to \c QContactManager::InvalidRelationshipError.
- * If the given \a relationship could not be saved in the database (due to backend limitations)
- * the function will return \c false and \a error will be set to \c QContactManager::NotSupportedError.
- *
- * If any destination contact manager URI is not set in the \a relationship, these will be
- * automatically set to the URI of this manager, before the relationship is saved.
+  Saves the given \a relationship in the database.  If the relationship already exists in the database, this function will
+  return \c false and the \a error will be set to \c QContactManager::AlreadyExistsError.
+  If the relationship is saved successfully, this function will return \c true and \a error will be set
+  to \c QContactManager::NoError.  Note that relationships cannot be updated directly using this function; in order
+  to update a relationship, you must remove the old relationship, make the required modifications, and then save it.
+
+  The given relationship is invalid if it is circular (one of the destination contacts is also the source contact), or
+  if it references a non-existent local contact (either source or destination).  If the given \a relationship is invalid,
+  the function will return \c false and the \a error will be set to \c QContactManager::InvalidRelationshipError.
+  If the given \a relationship could not be saved in the database (due to backend limitations)
+  the function will return \c false and \a error will be set to \c QContactManager::NotSupportedError.
+
+  If any destination contact manager URI is not set in the \a relationship, these will be
+  automatically set to the URI of this manager, before the relationship is saved.
  */
 bool QContactManagerEngine::saveRelationship(QContactRelationship* relationship, QContactManager::Error& error)
 {
@@ -341,7 +460,7 @@ bool QContactManagerEngine::saveRelationship(QContactRelationship* relationship,
 }
 
 /*!
- * Saves the given \a relationships in the database and returns a list of error codes.  Any error which occurs will be saved in \a error.
+  Saves the given \a relationships in the database and returns a list of error codes.  Any error which occurs will be saved in \a error.
  */
 QList<QContactManager::Error> QContactManagerEngine::saveRelationships(QList<QContactRelationship>* relationships, QContactManager::Error& error)
 {
@@ -351,12 +470,12 @@ QList<QContactManager::Error> QContactManagerEngine::saveRelationships(QList<QCo
 }
 
 /*!
- * Removes the given \a relationship from the manager.  If the relationship exists in the manager, the relationship
- * will be removed, the \a error will be set to \c QContactManager::NoError and this function will return true.  If no such
- * relationship exists in the manager, the \a error will be set to \c QContactManager::DoesNotExistError and this function
- * will return false.
- *
- * The priority of the relationship is ignored when determining existence of the relationship.
+  Removes the given \a relationship from the manager.  If the relationship exists in the manager, the relationship
+  will be removed, the \a error will be set to \c QContactManager::NoError and this function will return true.  If no such
+  relationship exists in the manager, the \a error will be set to \c QContactManager::DoesNotExistError and this function
+  will return false.
+
+  The priority of the relationship is ignored when determining existence of the relationship.
  */
 bool QContactManagerEngine::removeRelationship(const QContactRelationship& relationship, QContactManager::Error& error)
 {
@@ -366,7 +485,7 @@ bool QContactManagerEngine::removeRelationship(const QContactRelationship& relat
 }
 
 /*!
- * Removes the given \a relationships from the database and returns a list of error codes.  Any error which occurs will be saved in \a error.
+  Removes the given \a relationships from the database and returns a list of error codes.  Any error which occurs will be saved in \a error.
  */
 QList<QContactManager::Error> QContactManagerEngine::removeRelationships(const QList<QContactRelationship>& relationships, QContactManager::Error& error)
 {
@@ -376,11 +495,22 @@ QList<QContactManager::Error> QContactManagerEngine::removeRelationships(const Q
 }
 
 /*!
- * Synthesizes the display label of the given \a contact in a platform specific manner.
- * Any error that occurs will be stored in \a error.
- * Returns the synthesized display label.
+  \internal
+  Synthesizes the display label of the given \a contact in a platform specific manner.
+  Any error that occurs will be stored in \a error.
+  Returns the synthesized display label.
  */
 QString QContactManagerEngine::synthesizeDisplayLabel(const QContact& contact, QContactManager::Error& error) const
+{
+    return synthesizedDisplayLabel(contact, error);
+}
+
+/*!
+  Synthesizes the display label of the given \a contact in a platform specific manner.
+  Any error that occurs will be stored in \a error.
+  Returns the synthesized display label.
+ */
+QString QContactManagerEngine::synthesizedDisplayLabel(const QContact& contact, QContactManager::Error& error) const
 {
     // synthesize the display name from the name of the contact, or, failing that, the organisation of the contact.
     error = QContactManager::NoError;
@@ -402,22 +532,22 @@ QString QContactManagerEngine::synthesizeDisplayLabel(const QContact& contact, Q
            result += name.value(QContactName::FieldPrefix);
         }
 
-        if (!name.value(QContactName::FieldFirst).trimmed().isEmpty()) {
+        if (!name.value(QContactName::FieldFirstName).trimmed().isEmpty()) {
             if (!result.isEmpty())
                 result += space;
-            result += name.value(QContactName::FieldFirst);
+            result += name.value(QContactName::FieldFirstName);
         }
 
-        if (!name.value(QContactName::FieldMiddle).trimmed().isEmpty()) {
+        if (!name.value(QContactName::FieldMiddleName).trimmed().isEmpty()) {
             if (!result.isEmpty())
                 result += space;
-            result += name.value(QContactName::FieldMiddle);
+            result += name.value(QContactName::FieldMiddleName);
         }
 
-        if (!name.value(QContactName::FieldLast).trimmed().isEmpty()) {
+        if (!name.value(QContactName::FieldLastName).trimmed().isEmpty()) {
             if (!result.isEmpty())
                 result += space;
-            result += name.value(QContactName::FieldLast);
+            result += name.value(QContactName::FieldLastName);
         }
 
         if (!name.value(QContactName::FieldSuffix).trimmed().isEmpty()) {
@@ -445,20 +575,21 @@ QString QContactManagerEngine::synthesizeDisplayLabel(const QContact& contact, Q
 }
 
 /*!
- * Returns a copy of the given contact \a contact with its display label set to \a displayLabel.
- * This function does not touch the database in any way, and is purely a convenience to allow engine implementations to set the display label.
+  Returns a copy of the given contact \a contact with its display label set to \a displayLabel.
+  This function does not touch the database in any way, and is purely a convenience to allow engine implementations to set the display label.
  */
 QContact QContactManagerEngine::setContactDisplayLabel(const QString& displayLabel, const QContact& contact) const
 {
     QContact retn = contact;
     QContactDisplayLabel dl;
     dl.setValue(QContactDisplayLabel::FieldLabel, displayLabel);
+    setDetailAccessConstraints(&dl, QContactDetail::Irremovable);
     retn.d->m_details.replace(0, dl);
     return retn;
 }
 
 /*!
- * Returns true if the given \a feature is supported by this engine for contacts of the given \a contactType
+  Returns true if the given \a feature is supported by this engine for contacts of the given \a contactType
  */
 bool QContactManagerEngine::hasFeature(QContactManager::ManagerFeature feature, const QString& contactType) const
 {
@@ -468,9 +599,10 @@ bool QContactManagerEngine::hasFeature(QContactManager::ManagerFeature feature, 
 }
 
 /*!
- * Returns a whether the supplied \a filter can be implemented
- * natively by this engine.  If not, the base class implementation
- * will emulate the functionality.
+  \internal
+  Returns a whether the supplied \a filter can be implemented
+  natively by this engine.  If not, the base class implementation
+  will emulate the functionality.
  */
 bool QContactManagerEngine::filterSupported(const QContactFilter& filter) const
 {
@@ -479,7 +611,18 @@ bool QContactManagerEngine::filterSupported(const QContactFilter& filter) const
 }
 
 /*!
- * Returns the list of data types supported by this engine.
+  Returns a whether the supplied \a filter can be implemented
+  natively by this engine.  If not, the base class implementation
+  will emulate the functionality.
+ */
+bool QContactManagerEngine::isFilterSupported(const QContactFilter& filter) const
+{
+    Q_UNUSED(filter);
+    return false;
+}
+
+/*!
+  Returns the list of data types supported by this engine.
  */
 QList<QVariant::Type> QContactManagerEngine::supportedDataTypes() const
 {
@@ -487,7 +630,7 @@ QList<QVariant::Type> QContactManagerEngine::supportedDataTypes() const
 }
 
 /*!
- * Returns the list of relationship types supported by this engine for contacts whose type is the given \a contactType.
+  Returns the list of relationship types supported by this engine for contacts whose type is the given \a contactType.
  */
 QStringList QContactManagerEngine::supportedRelationshipTypes(const QString& contactType) const
 {
@@ -496,10 +639,10 @@ QStringList QContactManagerEngine::supportedRelationshipTypes(const QString& con
 }
 
 /*!
- * Returns the list of contact types which are supported by this engine.
- * This is a convenience function, equivalent to retrieving the allowable values
- * for the \c QContactType::FieldType field of the QContactType definition
- * which is valid in this engine.
+  Returns the list of contact types which are supported by this engine.
+  This is a convenience function, equivalent to retrieving the allowable values
+  for the \c QContactType::FieldType field of the QContactType definition
+  which is valid in this engine.
  */
 QStringList QContactManagerEngine::supportedContactTypes() const
 {
@@ -511,21 +654,31 @@ QStringList QContactManagerEngine::supportedContactTypes() const
     return retn;
 }
 
-/*! 
- * Returns the version number of the QTContacts API 
+/*!
+  \internal
+  Returns the version number of the QtContacts API
  */ 
-int QContactManagerEngine::version() 
+int QContactManagerEngine::version()
 { 
     return QTCONTACTS_VERSION; 
 } 
  
-/*! 
- * Returns the engine backend implementation version number 
+/*!
+  \internal
+  Returns the engine backend implementation version number
  */ 
-int QContactManagerEngine::implementationVersion() const 
-{ 
+int QContactManagerEngine::implementationVersion() const
+{
     return 0;
 } 
+
+/*!
+  Returns the engine backend implementation version number
+ */
+int QContactManagerEngine::managerVersion() const
+{
+    return 0;
+}
   
 
 /*! Returns the base schema definitions */
@@ -539,8 +692,8 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     QMap<QString, QContactDetailDefinition> retn;
 
     // local variables for reuse
-    QMap<QString, QContactDetailDefinitionField> fields;
-    QContactDetailDefinitionField f;
+    QMap<QString, QContactDetailFieldDefinition> fields;
+    QContactDetailFieldDefinition f;
     QContactDetailDefinition d;
     QVariantList contexts;
     contexts << QString(QLatin1String(QContactDetail::ContextHome)) << QString(QLatin1String(QContactDetail::ContextWork)) << QString(QLatin1String(QContactDetail::ContextOther));
@@ -557,7 +710,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(true);
-    d.setAccessConstraint(QContactDetailDefinition::CreateOnly);
     retn.insert(d.name(), d);
 
     // timestamp
@@ -572,7 +724,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(true);
-    d.setAccessConstraint(QContactDetailDefinition::ReadOnly);
     retn.insert(d.name(), d);
 
     // type
@@ -585,7 +736,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactType::FieldType, f); // note: NO CONTEXT!!
     d.setFields(fields);
     d.setUnique(true);
-    d.setAccessConstraint(QContactDetailDefinition::CreateOnly);
     retn.insert(d.name(), d);
 
     // guid
@@ -599,7 +749,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(false);
-    d.setAccessConstraint(QContactDetailDefinition::CreateOnly);
     retn.insert(d.name(), d);
 
     // display label
@@ -610,7 +759,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDisplayLabel::FieldLabel, f);
     d.setFields(fields);
     d.setUnique(true);
-    d.setAccessConstraint(QContactDetailDefinition::ReadOnly);
     retn.insert(d.name(), d);
 
     // email address
@@ -624,7 +772,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(false);
-    d.setAccessConstraint(QContactDetailDefinition::NoConstraint);
     retn.insert(d.name(), d);
 
     // organisation
@@ -642,7 +789,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(false);
-    d.setAccessConstraint(QContactDetailDefinition::NoConstraint);
     retn.insert(d.name(), d);
 
     // phone number
@@ -672,7 +818,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(false);
-    d.setAccessConstraint(QContactDetailDefinition::NoConstraint);
     retn.insert(d.name(), d);
 
     // anniversary
@@ -701,7 +846,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(false);
-    d.setAccessConstraint(QContactDetailDefinition::NoConstraint);
     retn.insert(d.name(), d);
 
     // birthday
@@ -715,7 +859,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(true);
-    d.setAccessConstraint(QContactDetailDefinition::NoConstraint);
     retn.insert(d.name(), d);
 
     // nickname
@@ -729,7 +872,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(false);
-    d.setAccessConstraint(QContactDetailDefinition::NoConstraint);
     retn.insert(d.name(), d);
 
     // note
@@ -743,7 +885,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(false);
-    d.setAccessConstraint(QContactDetailDefinition::NoConstraint);
     retn.insert(d.name(), d);
 
     // url
@@ -763,7 +904,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(false);
-    d.setAccessConstraint(QContactDetailDefinition::NoConstraint);
     retn.insert(d.name(), d);
 
     // gender
@@ -777,7 +917,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(false);
-    d.setAccessConstraint(QContactDetailDefinition::NoConstraint);
     retn.insert(d.name(), d);
 
     // online account
@@ -786,8 +925,11 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     f.setAllowableValues(QVariantList());
     f.setDataType(QVariant::String);
     fields.insert(QContactOnlineAccount::FieldAccountUri, f);
+    f.setDataType(QVariant::StringList);
+    fields.insert(QContactOnlineAccount::FieldCapabilities, f);
+    f.setDataType(QVariant::String);
+    fields.insert(QContactOnlineAccount::FieldAccountUri, f);
     fields.insert(QContactOnlineAccount::FieldServiceProvider, f);
-    f.setAccessConstraint(QContactDetailDefinitionField::ReadOnly);
     fields.insert(QContactOnlineAccount::FieldNickname, f);
     fields.insert(QContactOnlineAccount::FieldStatusMessage, f);
     QVariantList presenceValues;
@@ -801,14 +943,12 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     f.setAllowableValues(presenceValues);
     fields.insert(QContactOnlineAccount::FieldPresence, f);
     f.setDataType(QVariant::StringList);
-    f.setAccessConstraint(QContactDetailDefinitionField::NoConstraint);
     f.setAllowableValues(contexts);
     fields.insert(QContactDetail::FieldContext, f);
     f.setAllowableValues(QVariantList()); // allow any subtypes!
     fields.insert(QContactOnlineAccount::FieldSubTypes, f);
     d.setFields(fields);
     d.setUnique(false);
-    d.setAccessConstraint(QContactDetailDefinition::NoConstraint);
     retn.insert(d.name(), d);
 
     // avatar
@@ -834,7 +974,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(false);
-    d.setAccessConstraint(QContactDetailDefinition::NoConstraint);
     retn.insert(d.name(), d);
 
     // geolocation
@@ -858,7 +997,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(false);
-    d.setAccessConstraint(QContactDetailDefinition::NoConstraint);
     retn.insert(d.name(), d);
 
     // street address
@@ -885,7 +1023,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(false);
-    d.setAccessConstraint(QContactDetailDefinition::NoConstraint);
     retn.insert(d.name(), d);
 
     // name
@@ -894,9 +1031,9 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     f.setDataType(QVariant::String);
     f.setAllowableValues(QVariantList());
     fields.insert(QContactName::FieldPrefix, f);
-    fields.insert(QContactName::FieldFirst, f);
-    fields.insert(QContactName::FieldMiddle, f);
-    fields.insert(QContactName::FieldLast, f);
+    fields.insert(QContactName::FieldFirstName, f);
+    fields.insert(QContactName::FieldMiddleName, f);
+    fields.insert(QContactName::FieldLastName, f);
     fields.insert(QContactName::FieldSuffix, f);
     fields.insert(QContactName::FieldCustomLabel, f);
     f.setDataType(QVariant::StringList);
@@ -904,7 +1041,6 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
     fields.insert(QContactDetail::FieldContext, f);
     d.setFields(fields);
     d.setUnique(false);
-    d.setAccessConstraint(QContactDetailDefinition::NoConstraint);
     retn.insert(d.name(), d);
 
     // in the default schema, we have two contact types: TypeContact, TypeGroup.
@@ -918,47 +1054,47 @@ QMap<QString, QMap<QString, QContactDetailDefinition> > QContactManagerEngine::s
 
 
 /*!
- * Adds the given \a contact to the database if \a contact has a
- * default-constructed id, or an id with the manager URI set to the URI of
- * this manager and a local id of zero.
- *
- * If the manager URI of the id of the \a contact is neither empty nor equal to the URI of
- * this manager, or local id of the \a contact is non-zero but does not exist in the
- * manager, the operation will fail and \a error will be set to
- * \c QContactManager::DoesNotExistError.
- *
- * Alternatively, the function will update the existing contact in the database if \a contact
- * has a non-zero id and currently exists in the database.
- *
- * If the \a contact contains one or more details whose definitions have
- * not yet been saved with the manager, the operation will fail and \a error will be
- * set to \c QContactManager::UnsupportedError.
- *
- * If the \a contact has had its relationships reordered, the manager
- * will check to make sure that every relationship that the contact is currently
- * involved in is included in the reordered list, and that no relationships which
- * either do not involve the contact, or have not been saved in the manager are
- * included in the list.  If these conditions are not met, the function will
- * return \c false and \a error will be set to \c QContactManager::InvalidRelationshipError.
- *
- * The engine must automatically synthesize the display label of the contact when it is saved,
- * by either using the built in \l synthesizeDisplayLabel() function or overriding it, and
- * then calling \l setContactDisplayLabel().
- *
- * Returns false on failure, or true on
- * success.  On successful save of a contact with an id of zero, its
- * id will be set to a new, valid id with the manager URI set to the URI of
- * this manager, and the local id set to a new, valid local id.
- *
- * This function is called by the contacts framework in both the
- * single contact save and batch contact save, if the saveContacts
- * function is not overridden.
- *
- * The backend must emit the appropriate signals to inform clients of changes
- * to the database resulting from this operation.
- *
- * Any errors encountered during this operation should be stored to
- * \a error.
+  Adds the given \a contact to the database if \a contact has a
+  default-constructed id, or an id with the manager URI set to the URI of
+  this manager and a local id of zero.
+
+  If the manager URI of the id of the \a contact is neither empty nor equal to the URI of
+  this manager, or local id of the \a contact is non-zero but does not exist in the
+  manager, the operation will fail and \a error will be set to
+  \c QContactManager::DoesNotExistError.
+
+  Alternatively, the function will update the existing contact in the database if \a contact
+  has a non-zero id and currently exists in the database.
+
+  If the \a contact contains one or more details whose definitions have
+  not yet been saved with the manager, the operation will fail and \a error will be
+  set to \c QContactManager::UnsupportedError.
+
+  If the \a contact has had its relationships reordered, the manager
+  will check to make sure that every relationship that the contact is currently
+  involved in is included in the reordered list, and that no relationships which
+  either do not involve the contact, or have not been saved in the manager are
+  included in the list.  If these conditions are not met, the function will
+  return \c false and \a error will be set to \c QContactManager::InvalidRelationshipError.
+
+  The engine must automatically synthesize the display label of the contact when it is saved,
+  by either using the built in \l synthesizedDisplayLabel() function or overriding it, and
+  then calling \l setContactDisplayLabel().
+
+  Returns false on failure, or true on
+  success.  On successful save of a contact with an id of zero, its
+  id will be set to a new, valid id with the manager URI set to the URI of
+  this manager, and the local id set to a new, valid local id.
+
+  This function is called by the contacts framework in both the
+  single contact save and batch contact save, if the saveContacts
+  function is not overridden.
+
+  The backend must emit the appropriate signals to inform clients of changes
+  to the database resulting from this operation.
+
+  Any errors encountered during this operation should be stored to
+  \a error.
  */
 bool QContactManagerEngine::saveContact(QContact* contact, QContactManager::Error& error)
 {
@@ -968,20 +1104,20 @@ bool QContactManagerEngine::saveContact(QContact* contact, QContactManager::Erro
 }
 
 /*!
- * Checks that the given contact \a contact does not have details which
- * don't conform to a valid definition, violate uniqueness constraints,
- * or contain values for nonexistent fields, and that the values contained are
- * of the correct type for each field, and are allowable values for that field.
- *
- * Note that this function is unable to ensure that the access constraints
- * (such as CreateOnly and ReadOnly) are observed; backend specific code
- * must be written if you wish to enforce these constraints.
- *
- * Returns true if the \a contact is valid according to the definitions for
- * its details, otherwise returns false.
- *
- * Any errors encountered during this operation should be stored to
- * \a error.
+  Checks that the given contact \a contact does not have details which
+  don't conform to a valid definition, violate uniqueness constraints,
+  or contain values for nonexistent fields, and that the values contained are
+  of the correct type for each field, and are allowable values for that field.
+
+  Note that this function is unable to ensure that the access constraints
+  (such as CreateOnly and ReadOnly) are observed; backend specific code
+  must be written if you wish to enforce these constraints.
+
+  Returns true if the \a contact is valid according to the definitions for
+  its details, otherwise returns false.
+
+  Any errors encountered during this operation should be stored to
+  \a error.
  */
 bool QContactManagerEngine::validateContact(const QContact& contact, QContactManager::Error& error) const
 {
@@ -990,7 +1126,7 @@ bool QContactManagerEngine::validateContact(const QContact& contact, QContactMan
     // check that each detail conforms to its definition as supported by this manager.
     for (int i=0; i < contact.details().count(); i++) {
         const QContactDetail& d = contact.details().at(i);
-        QVariantMap values = d.values();
+        QVariantMap values = d.variantValues();
         QContactDetailDefinition def = detailDefinition(d.definitionName(), contact.type(), error);
         // check that the definition is supported
         if (error != QContactManager::NoError) {
@@ -1016,18 +1152,13 @@ bool QContactManagerEngine::validateContact(const QContact& contact, QContactMan
                 return false; // value for nonexistent field.
             }
 
-            QContactDetailDefinitionField field = def.fields().value(key);
+            QContactDetailFieldDefinition field = def.fields().value(key);
             // check that the type of each value corresponds to the allowable field type
-            if (field.dataType() != values.value(key).type()) {
+            if (static_cast<int>(field.dataType()) != values.value(key).userType()) {
                 error = QContactManager::InvalidDetailError;
                 return false; // type doesn't match.
             }
 
-            // check that the field is not read only
-            if (field.accessConstraint() == QContactDetailDefinitionField::ReadOnly) {
-                error = QContactManager::InvalidDetailError;
-                return false; // attempting to write to a read-only field of a detail.
-            }
             // check that the value is allowable
             // if the allowable values is an empty list, any are allowed.
             if (!field.allowableValues().isEmpty()) {
@@ -1054,19 +1185,16 @@ bool QContactManagerEngine::validateContact(const QContact& contact, QContactMan
 
 
 /*!
- * Checks that the given detail definition \a definition seems valid,
- * with a correct id, defined fields, and any specified value types
- * are supported by this engine.  This function is called before
- * trying to save a definition.
- *
- * Note that a ReadOnly definition will fail validation, since
- * they are intended to be provided by an engine directly.
- *
- * Returns true if the \a definition seems valid, otherwise returns
- * false.
- *
- * Any errors encountered during this operation should be stored to
- * \a error.
+  Checks that the given detail definition \a definition seems valid,
+  with a correct id, defined fields, and any specified value types
+  are supported by this engine.  This function is called before
+  trying to save a definition.
+
+  Returns true if the \a definition seems valid, otherwise returns
+  false.
+
+  Any errors encountered during this operation should be stored to
+  \a error.
  */
 bool QContactManagerEngine::validateDefinition(const QContactDetailDefinition& definition, QContactManager::Error& error) const
 {
@@ -1080,14 +1208,9 @@ bool QContactManagerEngine::validateDefinition(const QContactDetailDefinition& d
         return false;
     }
 
-    if (definition.accessConstraint() == QContactDetailDefinition::ReadOnly) {
-        error = QContactManager::BadArgumentError;
-        return false;
-    }
-
     // Check each field now
     QList<QVariant::Type> types = supportedDataTypes();
-    QMapIterator<QString, QContactDetailDefinitionField> it(definition.fields());
+    QMapIterator<QString, QContactDetailFieldDefinition> it(definition.fields());
     while(it.hasNext()) {
         it.next();
         if (it.key().isEmpty()) {
@@ -1113,16 +1236,16 @@ bool QContactManagerEngine::validateDefinition(const QContactDetailDefinition& d
 }
 
 /*!
- * Remove the contact identified by \a contactId from the database,
- * and removes the contact from any relationships in which it was involved.
- * Returns true if the contact was removed successfully, otherwise
- * returns false.
- *
- * The backend must emit the appropriate signals to inform clients of changes
- * to the database resulting from this operation.
- *
- * Any errors encountered during this operation should be stored to
- * \a error.
+  Remove the contact identified by \a contactId from the database,
+  and removes the contact from any relationships in which it was involved.
+  Returns true if the contact was removed successfully, otherwise
+  returns false.
+
+  The backend must emit the appropriate signals to inform clients of changes
+  to the database resulting from this operation.
+
+  Any errors encountered during this operation should be stored to
+  \a error.
  */
 bool QContactManagerEngine::removeContact(const QContactLocalId& contactId, QContactManager::Error& error)
 {
@@ -1132,10 +1255,10 @@ bool QContactManagerEngine::removeContact(const QContactLocalId& contactId, QCon
 }
 
 /*!
- * Returns the registered detail definitions which are valid for contacts whose type is of the given \a contactType in this engine.
- *
- * Any errors encountered during this operation should be stored to
- * \a error.
+  Returns the registered detail definitions which are valid for contacts whose type is of the given \a contactType in this engine.
+
+  Any errors encountered during this operation should be stored to
+  \a error.
  */
 QMap<QString, QContactDetailDefinition> QContactManagerEngine::detailDefinitions(const QString& contactType, QContactManager::Error& error) const
 {
@@ -1145,12 +1268,12 @@ QMap<QString, QContactDetailDefinition> QContactManagerEngine::detailDefinitions
 }
 
 /*!
- * Returns the definition identified by the given \a definitionName that
- * is valid for contacts whose type is of the given \a contactType in this store, or a default-constructed QContactDetailDefinition
- * if no such definition exists
- *
- * Any errors encountered during this operation should be stored to
- * \a error.
+  Returns the definition identified by the given \a definitionName that
+  is valid for contacts whose type is of the given \a contactType in this store, or a default-constructed QContactDetailDefinition
+  if no such definition exists
+
+  Any errors encountered during this operation should be stored to
+  \a error.
  */
 QContactDetailDefinition QContactManagerEngine::detailDefinition(const QString& definitionName, const QString& contactType, QContactManager::Error& error) const
 {
@@ -1167,15 +1290,15 @@ QContactDetailDefinition QContactManagerEngine::detailDefinition(const QString& 
 }
 
 /*!
- * Persists the given definition \a def in the database, which is valid for contacts whose type is the given \a contactType.
- *
- * Returns true if the definition was saved successfully, and otherwise returns false.
- *
- * The backend must emit the appropriate signals to inform clients of changes
- * to the database resulting from this operation.
- *
- * Any errors encountered during this operation should be stored to
- * \a error.
+  Persists the given definition \a def in the database, which is valid for contacts whose type is the given \a contactType.
+
+  Returns true if the definition was saved successfully, and otherwise returns false.
+
+  The backend must emit the appropriate signals to inform clients of changes
+  to the database resulting from this operation.
+
+  Any errors encountered during this operation should be stored to
+  \a error.
  */
 bool QContactManagerEngine::saveDetailDefinition(const QContactDetailDefinition& def, const QString& contactType, QContactManager::Error& error)
 {
@@ -1186,15 +1309,15 @@ bool QContactManagerEngine::saveDetailDefinition(const QContactDetailDefinition&
 }
 
 /*!
- * Removes the definition identified by the given \a definitionName from the database, where it was valid for contacts whose type was the given \a contactType.
- *
- * Returns true if the definition was removed successfully, otherwise returns false.
- *
- * The backend must emit the appropriate signals to inform clients of changes
- * to the database resulting from this operation.
- *
- * Any errors encountered during this operation should be stored to
- * \a error.
+  Removes the definition identified by the given \a definitionName from the database, where it was valid for contacts whose type was the given \a contactType.
+
+  Returns true if the definition was removed successfully, otherwise returns false.
+
+  The backend must emit the appropriate signals to inform clients of changes
+  to the database resulting from this operation.
+
+  Any errors encountered during this operation should be stored to
+  \a error.
  */
 bool QContactManagerEngine::removeDetailDefinition(const QString& definitionName, const QString& contactType, QContactManager::Error& error)
 {
@@ -1205,24 +1328,45 @@ bool QContactManagerEngine::removeDetailDefinition(const QString& definitionName
 }
 
 /*!
- * Adds the list of contacts given by \a contacts to the database.
- * Returns a list of the error codes corresponding to the contacts in
- * the \a contacts.  The \l QContactManager::error() function will
- * only return \c QContactManager::NoError if all contacts were saved
- * successfully.
- *
- * For each newly saved contact that was successful, the uid of the contact
- * in the list will be updated with the new value.  If a failure occurs
- * when saving a new contact, the id will be cleared.  If a failure occurs
- * when updating a contact that already exists, then TODO.
- *
- * The backend must emit the appropriate signals to inform clients of changes
- * to the database resulting from this operation.
- *
- * Any errors encountered during this operation should be stored to
- * \a error.
- *
- * \sa QContactManager::saveContact()
+  Sets the access constraints of \a detail to the supplied \a constraints.
+
+  This function is provided to allow engine implementations to report the
+  access constraints of retrieved details, without generally allowing the
+  access constraints to be modified after retrieval.
+
+  Application code should not call this function, since validation of the
+  detail will happen in the engine in any case.
+ */
+void QContactManagerEngine::setDetailAccessConstraints(QContactDetail *detail, QContactDetail::AccessConstraints constraints) const
+{
+    if (detail) {
+        QContactDetailPrivate::setAccessConstraints(detail, constraints);
+    }
+}
+
+/*!
+  \internal
+
+  Adds the list of contacts given by \a contacts to the database.
+  Returns a list of the error codes corresponding to the contacts in
+  the \a contacts.  The \l QContactManager::error() function will
+  only return \c QContactManager::NoError if all contacts were saved
+  successfully.
+
+  For each newly saved contact that was successful, the uid of the contact
+  in the list will be updated with the new value.  If a failure occurs
+  when saving a new contact, the id will be cleared.  If a failure occurs
+  when updating a contact that already exists, then TODO.
+
+  The backend must emit the appropriate signals to inform clients of changes
+  to the database resulting from this operation.
+
+  Any errors encountered during this operation should be stored to
+  \a error.
+
+  This function was deprecated in week 1 and will be removed after the transition period has elapsed.
+
+  \sa QContactManager::saveContact()
  */
 QList<QContactManager::Error> QContactManagerEngine::saveContacts(QList<QContact>* contacts, QContactManager::Error& error)
 {
@@ -1249,26 +1393,76 @@ QList<QContactManager::Error> QContactManagerEngine::saveContacts(QList<QContact
 }
 
 /*!
- * Remove the list of contacts identified in \a contactIds.
- * Returns a list of the error codes corresponding to the contact ids in
- * the \a contactIds.  The \l QContactManager::error() function will
- * only return \c QContactManager::NoError if all contacts were removed
- * successfully.
- *
- * For each contact that was removed succesfully, the corresponding
- * id in the list will be retained but set to zero.  The id of contacts
- * that were not successfully removed will be left alone.
- *
- * Any contact that was removed successfully will have been removed from
- * any relationships in which it was involved.
- *
- * The backend must emit the appropriate signals to inform clients of changes
- * to the database resulting from this operation.
- *
- * Any errors encountered during this operation should be stored to
- * \a error.
- *
- * \sa QContactManager::removeContact()
+  Adds the list of contacts given by \a contacts list to the database.
+  Returns true if the contacts were saved successfully, otherwise false.
+
+  The manager might populate \a errorMap (the map of indices of the \a contacts list to
+  the error which occurred when saving the contact at that index) for
+  every index for which the contact could not be saved, if it is able.
+  The \l QContactManager::error() function will only return \c QContactManager::NoError
+  if all contacts were saved successfully.
+
+  For each newly saved contact that was successful, the id of the contact
+  in the \a contacts list will be updated with the new value.  If a failure occurs
+  when saving a new contact, the id will be cleared.
+
+  Any errors encountered during this operation should be stored to
+  \a error.
+
+  \sa QContactManager::saveContact()
+ */
+bool QContactManagerEngine::saveContacts(QList<QContact>* contacts, QMap<int, QContactManager::Error>* errorMap, QContactManager::Error& error)
+{
+    if(errorMap) {
+        errorMap->clear();
+    }
+
+    if (!contacts) {
+        error = QContactManager::BadArgumentError;
+        return false;
+    }
+
+    QContactManager::Error functionError = QContactManager::NoError;
+    for (int i = 0; i < contacts->count(); i++) {
+        QContact current = contacts->at(i);
+        if (!saveContact(&current, error)) {
+            functionError = error;
+            if (errorMap) {
+                errorMap->insert(i, functionError);
+            }
+        } else {
+            (*contacts)[i] = current;
+        }
+    }
+
+    error = functionError;
+    return (functionError == QContactManager::NoError);
+}
+
+/*!
+  \internal
+  Remove the list of contacts identified in \a contactIds.
+  Returns a list of the error codes corresponding to the contact ids in
+  the \a contactIds.  The \l QContactManager::error() function will
+  only return \c QContactManager::NoError if all contacts were removed
+  successfully.
+
+  For each contact that was removed succesfully, the corresponding
+  id in the list will be retained but set to zero.  The id of contacts
+  that were not successfully removed will be left alone.
+
+  Any contact that was removed successfully will have been removed from
+  any relationships in which it was involved.
+
+  The backend must emit the appropriate signals to inform clients of changes
+  to the database resulting from this operation.
+
+  Any errors encountered during this operation should be stored to
+  \a error.
+
+  This function was deprecated in week 1 and will be removed after the transition period has elapsed.
+
+  \sa QContactManager::removeContact()
  */
 QList<QContactManager::Error> QContactManagerEngine::removeContacts(QList<QContactLocalId>* contactIds, QContactManager::Error& error)
 {
@@ -1296,17 +1490,69 @@ QList<QContactManager::Error> QContactManagerEngine::removeContacts(QList<QConta
 }
 
 /*!
- * Compares \a first against \a second.  If the types are
- * strings (QVariant::String), the \a sensitivity argument controls
- * case sensitivity when comparing.
- *
- * Returns:
- * <0 if \a first is less than \a second
- *  0 if \a first is equal to \a second
- * >0 if \a first is greater than \a second.
- *
- * The results are undefined if the variants are different types, or
- * cannot be compared.
+  Remove every contact whose id is contained in the list of contacts ids
+  \a contactIds.  Returns true if all contacts were removed successfully,
+  otherwise false.
+
+  The manager might populate \a errorMap (the map of indices of the \a contactIds list to
+  the error which occurred when saving the contact at that index) for every
+  index for which the contact could not be removed, if it is able.
+  The \l QContactManager::error() function will
+  only return \c QContactManager::NoError if all contacts were removed
+  successfully.
+
+  For each contact that was removed succesfully, the corresponding
+  id in the \a contactIds list will be retained but set to zero.  The id of contacts
+  that were not successfully removed will be left alone.
+
+  Any contact that was removed successfully will have the relationships
+  in which it was involved removed also.
+
+  Any errors encountered during this operation should be stored to
+  \a error.
+
+  \sa QContactManager::removeContact()
+ */
+bool QContactManagerEngine::removeContacts(QList<QContactLocalId>* contactIds, QMap<int, QContactManager::Error>* errorMap, QContactManager::Error& error)
+{
+    if(errorMap) {
+        errorMap->clear();
+    }
+
+    if (!contactIds) {
+        error = QContactManager::BadArgumentError;
+        return false;
+    }
+
+    QContactManager::Error functionError = QContactManager::NoError;
+    for (int i = 0; i < contactIds->count(); i++) {
+        QContactLocalId current = contactIds->at(i);
+        if (!removeContact(current, error)) {
+            functionError = error;
+            if (errorMap) {
+                errorMap->insert(i, functionError);
+            }
+        } else {
+            (*contactIds)[i] = 0;
+        }
+    }
+
+    error = functionError;
+    return (functionError == QContactManager::NoError);
+}
+
+/*!
+  Compares \a first against \a second.  If the types are
+  strings (QVariant::String), the \a sensitivity argument controls
+  case sensitivity when comparing.
+
+  Returns:
+  <0 if \a first is less than \a second
+   0 if \a first is equal to \a second
+  >0 if \a first is greater than \a second.
+
+  The results are undefined if the variants are different types, or
+  cannot be compared.
  */
 int QContactManagerEngine::compareVariant(const QVariant& first, const QVariant& second, Qt::CaseSensitivity sensitivity)
 {
@@ -1358,9 +1604,9 @@ int QContactManagerEngine::compareVariant(const QVariant& first, const QVariant&
 }
 
 /*!
- * Returns true if the supplied contact \a contact matches the supplied filter \a filter.
- *
- * This function will test each condition in the filter, possibly recursing.
+  Returns true if the supplied contact \a contact matches the supplied filter \a filter.
+
+  This function will test each condition in the filter, possibly recursing.
  */
 bool QContactManagerEngine::testFilter(const QContactFilter &filter, const QContact &contact)
 {
@@ -1406,7 +1652,7 @@ bool QContactManagerEngine::testFilter(const QContactFilter &filter, const QCont
                         const QContactDetail& detail = details.at(j);
 
                         /* Check that the field is present and has a non-empty value */
-                        if (detail.values().contains(cdf.detailFieldName()) && !detail.value(cdf.detailFieldName()).isEmpty())
+                        if (detail.variantValues().contains(cdf.detailFieldName()) && !detail.value(cdf.detailFieldName()).isEmpty())
                             return true;
                     }
                     return false;
@@ -1440,7 +1686,7 @@ bool QContactManagerEngine::testFilter(const QContactFilter &filter, const QCont
                 } else {
                     /* Nope, testing the values as a variant */
                     /* Value equality test */
-                    for(int j=0; j < details.count(); j++) {
+                    for(int j = 0; j < details.count(); j++) {
                         const QContactDetail& detail = details.at(j);
                         const QVariant& var = detail.variantValue(cdf.detailFieldName());
                         if (!var.isNull() && compareVariant(var, cdf.value(), cs) == 0)
@@ -1470,7 +1716,7 @@ bool QContactManagerEngine::testFilter(const QContactFilter &filter, const QCont
                 if (!cdf.minValue().isValid() && !cdf.maxValue().isValid()) {
                     for(int j=0; j < details.count(); j++) {
                         const QContactDetail& detail = details.at(j);
-                        if (detail.values().contains(cdf.detailFieldName()))
+                        if (detail.variantValues().contains(cdf.detailFieldName()))
                             return true;
                     }
                     return false;
@@ -1549,7 +1795,7 @@ bool QContactManagerEngine::testFilter(const QContactFilter &filter, const QCont
 
                 // first, retrieve contact uris
                 QContactId contactUri = contact.id();
-                QContactId participant = rf.otherParticipantId();
+                QContactId relatedContactId = rf.relatedContactId();
 
                 // get the relationships in which this contact is involved.
                 QList<QContactRelationship> allRelationships;
@@ -1565,19 +1811,19 @@ bool QContactManagerEngine::testFilter(const QContactFilter &filter, const QCont
                 // now check to see if we have a match.
                 foreach (const QContactRelationship& rel, allRelationships) {
                     // perform the matching.
-                    if (rf.role() == QContactRelationshipFilter::First) {
+                    if (rf.relatedContactRole() == QContactRelationshipFilter::Second) { // this is the role of the related contact; ie, to match, contact.id() must be the first in the relationship.
                         if ((rf.relationshipType().isEmpty() || rel.relationshipType() == rf.relationshipType())
-                                && CONTACT_IDS_MATCH(rel.first(), contact.id()) && CONTACT_IDS_MATCH(participant, rel.second())) {
+                                && CONTACT_IDS_MATCH(rel.first(), contact.id()) && CONTACT_IDS_MATCH(relatedContactId, rel.second())) {
                             return true;
                         }
-                    } else if (rf.role() == QContactRelationshipFilter::Second) {
+                    } else if (rf.relatedContactRole() == QContactRelationshipFilter::First) { // this is the role of the related contact; ie, to match, contact.id() must be the second in the relationship.
                         if ((rf.relationshipType().isEmpty() || rel.relationshipType() == rf.relationshipType())
-                                && CONTACT_IDS_MATCH(rel.second(), contact.id()) && CONTACT_IDS_MATCH(participant, rel.first())) {
+                                && CONTACT_IDS_MATCH(rel.second(), contact.id()) && CONTACT_IDS_MATCH(relatedContactId, rel.first())) {
                             return true;
                         }
                     } else { // QContactRelationshipFilter::Either
                         if ((rf.relationshipType().isEmpty() || rel.relationshipType() == rf.relationshipType())
-                                && ((CONTACT_IDS_MATCH(participant, rel.first()) && !CONTACT_IDS_MATCH(contactUri, participant)) || (CONTACT_IDS_MATCH(participant, rel.second()) && !CONTACT_IDS_MATCH(contactUri, participant)))) {
+                                && ((CONTACT_IDS_MATCH(relatedContactId, rel.first()) && !CONTACT_IDS_MATCH(contactUri, relatedContactId)) || (CONTACT_IDS_MATCH(relatedContactId, rel.second()) && !CONTACT_IDS_MATCH(contactUri, relatedContactId)))) {
                             return true;
                         }
                     }
@@ -1674,13 +1920,13 @@ bool QContactManagerEngine::testFilter(const QContactFilter &filter, const QCont
 }
 
 /*!
- * Given a QContactFilter \a filter retrieved from a QContactAction,
- * check that it is valid and cannot cause infinite recursion.
- *
- * In particular, a filter from a QContactAction cannot contain
- * any instances of a QContactActionFilter.
- *
- * Returns true if \a filter seems ok, or false otherwise.
+  Given a QContactFilter \a filter retrieved from a QContactAction,
+  check that it is valid and cannot cause infinite recursion.
+
+  In particular, a filter from a QContactAction cannot contain
+  any instances of a QContactActionFilter.
+
+  Returns true if \a filter seems ok, or false otherwise.
  */
 
 bool QContactManagerEngine::validateActionFilter(const QContactFilter& filter)
@@ -1702,7 +1948,7 @@ bool QContactManagerEngine::validateActionFilter(const QContactFilter& filter)
 }
 
 /*!
- * Sets the cached relationships in the given \a contact to \a relationships
+  Sets the cached relationships in the given \a contact to \a relationships
  */
 void QContactManagerEngine::setContactRelationships(QContact* contact, const QList<QContactRelationship>& relationships)
 {
@@ -1712,9 +1958,9 @@ void QContactManagerEngine::setContactRelationships(QContact* contact, const QLi
 
 
 /*!
- * Compares two contacts (\a a and \a b) using the given list of \a sortOrders.  Returns a negative number if \a a should appear
- * before \a b according to the sort order, a positive number if \a a should appear after \a b according to the sort order,
- * and zero if the two are unable to be sorted.
+  Compares two contacts (\a a and \a b) using the given list of \a sortOrders.  Returns a negative number if \a a should appear
+  before \a b according to the sort order, a positive number if \a a should appear after \a b according to the sort order,
+  and zero if the two are unable to be sorted.
  */
 int QContactManagerEngine::compareContact(const QContact& a, const QContact& b, const QList<QContactSortOrder>& sortOrders)
 {
@@ -1747,10 +1993,10 @@ int QContactManagerEngine::compareContact(const QContact& a, const QContact& b, 
 
 
 /*!
- * Performs insertion sort of the contact \a toAdd into the \a sorted list, according to the provided \a sortOrders list.
- * The first QContactSortOrder in the list has the highest priority; if the contact \a toAdd is deemed equal to another
- * in the \a sorted list, the second QContactSortOrder in the list is used (and so on until either the contact is inserted
- * or there are no more sort order objects in the list).
+  Performs insertion sort of the contact \a toAdd into the \a sorted list, according to the provided \a sortOrders list.
+  The first QContactSortOrder in the list has the highest priority; if the contact \a toAdd is deemed equal to another
+  in the \a sorted list, the second QContactSortOrder in the list is used (and so on until either the contact is inserted
+  or there are no more sort order objects in the list).
  */
 void QContactManagerEngine::addSorted(QList<QContact>* sorted, const QContact& toAdd, const QList<QContactSortOrder>& sortOrders)
 {
@@ -1789,7 +2035,7 @@ QList<QContactLocalId> QContactManagerEngine::sortContacts(const QList<QContact>
 }
 
 /*!
- * Notifies the manager engine that the given request \a req has been destroyed
+  Notifies the manager engine that the given request \a req has been destroyed
  */
 void QContactManagerEngine::requestDestroyed(QContactAbstractRequest* req)
 {
@@ -1797,11 +2043,11 @@ void QContactManagerEngine::requestDestroyed(QContactAbstractRequest* req)
 }
 
 /*!
- * Asks the manager engine to begin the given request \a req which
- * is currently in a (re)startable state.
- * Returns true if the request was started successfully, else returns false.
- *
- * \sa QContactAbstractRequest::start()
+  Asks the manager engine to begin the given request \a req which
+  is currently in a (re)startable state.
+  Returns true if the request was started successfully, else returns false.
+
+  \sa QContactAbstractRequest::start()
  */
 bool QContactManagerEngine::startRequest(QContactAbstractRequest* req)
 {
@@ -1810,12 +2056,12 @@ bool QContactManagerEngine::startRequest(QContactAbstractRequest* req)
 }
 
 /*!
- * Asks the manager engine to cancel the given request \a req which was
- * previously started and is currently in a cancellable state.
- * Returns true if cancellation of the request was started successfully,
- * otherwise returns false.
- *
- * \sa startRequest(), QContactAbstractRequest::cancel()
+  Asks the manager engine to cancel the given request \a req which was
+  previously started and is currently in a cancellable state.
+  Returns true if cancellation of the request was started successfully,
+  otherwise returns false.
+
+  \sa startRequest(), QContactAbstractRequest::cancel()
  */
 bool QContactManagerEngine::cancelRequest(QContactAbstractRequest* req)
 {
@@ -1824,12 +2070,13 @@ bool QContactManagerEngine::cancelRequest(QContactAbstractRequest* req)
 }
 
 /*!
- * Blocks until the manager engine has completed some part (or all) of the given request \a req
- * which was previously started, or until \a msecs milliseconds have passed.
- * Returns true if some progress was reported, and false if the request was not in the
- * \c QContactAbstractRequest::Active state or no progress could be reported.
- *
- * \sa startRequest()
+  \internal
+  Blocks until the manager engine has completed some part (or all) of the given request \a req
+  which was previously started, or until \a msecs milliseconds have passed.
+  Returns true if some progress was reported, and false if the request was not in the
+  \c QContactAbstractRequest::Active state or no progress could be reported.
+
+  \sa startRequest()
  */
 bool QContactManagerEngine::waitForRequestProgress(QContactAbstractRequest* req, int msecs)
 {
@@ -1839,12 +2086,12 @@ bool QContactManagerEngine::waitForRequestProgress(QContactAbstractRequest* req,
 }
 
 /*!
- * Blocks until the manager engine has completed the given request \a req
- * which was previously started, or until \a msecs milliseconds have passed.
- * Returns true if the request was completed, and false if the request was not in the
- * \c QContactAbstractRequest::Active state or no progress could be reported.
- *
- * \sa startRequest()
+  Blocks until the manager engine has completed the given request \a req
+  which was previously started, or until \a msecs milliseconds have passed.
+  Returns true if the request was completed, and false if the request was not in the
+  \c QContactAbstractRequest::Active state or no progress could be reported.
+
+  \sa startRequest()
  */
 bool QContactManagerEngine::waitForRequestFinished(QContactAbstractRequest* req, int msecs)
 {
@@ -1854,27 +2101,158 @@ bool QContactManagerEngine::waitForRequestFinished(QContactAbstractRequest* req,
 }
 
 /*!
- * Updates the given asynchronous request \a req by setting the overall operation \a error, any individual \a errors that occurred during the operation, and the new \a status of the request.  It then causes the progress signal to be emitted by the request, with the \a appendOnly flag set (if required) to indicate result ordering stability.
+  \internal
+  This function takes a QContactAbstractRequest::Status parameter and hence has been deprecated.
+  Use the related function of similar signature which takes a QContactAbstractRequest::State parameter instead.
+
+  Updates the request \a req with the error information \a error and \a errors.
+  The request state will be updated to \a status.  If the sorting of the results remains unchanged, \a appendOnly will be set to true.
  */
 void QContactManagerEngine::updateRequestStatus(QContactAbstractRequest* req, QContactManager::Error error, QList<QContactManager::Error>& errors, QContactAbstractRequest::Status status, bool appendOnly)
 {
-    // convenience function that simply sets the operation error and status
-    req->d_ptr->m_error = error;
-    req->d_ptr->m_errors = errors;
-    req->d_ptr->m_status = status;
+    Q_UNUSED(error);
+    Q_UNUSED(errors);
+    Q_UNUSED(appendOnly);
+    updateRequestState(req, static_cast<QContactAbstractRequest::State>(status));
+}
 
+
+/*!
+  \internal
+  This function takes a QContactAbstractRequest::Status parameter and hence has been deprecated.
+  Use the related function of similar signature which takes a QContactAbstractRequest::State parameter instead.
+
+  Updates the request \a req with the result \a result and error information \a error and \a errors.
+  The request state will be updated to \a status.  If the sorting of the results remains unchanged, \a appendOnly will be set to true.
+ */
+void QContactManagerEngine::updateRequest(QContactAbstractRequest* req, const QList<QContactLocalId>& result, QContactManager::Error error, const QList<QContactManager::Error>& errors, QContactAbstractRequest::Status status, bool appendOnly)
+{
+    Q_UNUSED(errors);
+    Q_UNUSED(appendOnly);
+    updateContactLocalIdFetchRequest(qobject_cast<QContactLocalIdFetchRequest*>(req), result, error);
+    updateRequestState(req, static_cast<QContactAbstractRequest::State>(status));
+}
+
+
+/*!
+  \internal
+  This function takes a QContactAbstractRequest::Status parameter and hence has been deprecated.
+  Use the related function of similar signature which takes a QContactAbstractRequest::State parameter instead.
+
+  Updates the request \a req with the result \a result and error information \a error and \a errors.
+  The request state will be updated to \a status.  If the sorting of the results remains unchanged, \a appendOnly will be set to true.
+ */
+void QContactManagerEngine::updateRequest(QContactAbstractRequest* req, const QList<QContact>& result, QContactManager::Error error, const QList<QContactManager::Error>& errors, QContactAbstractRequest::Status status, bool appendOnly)
+{
+    Q_UNUSED(errors);
+    Q_UNUSED(appendOnly);
+    if (req->type() == QContactAbstractRequest::ContactFetchRequest) {
+        updateContactFetchRequest(qobject_cast<QContactFetchRequest*>(req), result, error);
+        updateRequestState(req, static_cast<QContactAbstractRequest::State>(status));
+    } else { // contact save request
+        QMap<int, QContactManager::Error> errorMap;
+        for (int i = 0; i < errors.size(); i++) {
+            if (errors.at(i) != QContactManager::NoError) {
+                errorMap.insert(i, errors.at(i));
+            }
+        }
+        updateContactSaveRequest(qobject_cast<QContactSaveRequest*>(req), result, error, errorMap);
+        updateRequestState(req, static_cast<QContactAbstractRequest::State>(status));
+    }
+}
+
+
+/*!
+  \internal
+  This function takes a QContactAbstractRequest::Status parameter and hence has been deprecated.
+  Use the related function of similar signature which takes a QContactAbstractRequest::State parameter instead.
+
+  Updates the request \a req with the result \a result and error information \a error and \a errors.
+  The request state will be updated to \a status.
+ */
+void QContactManagerEngine::updateRequest(QContactAbstractRequest* req, const QList<QContactDetailDefinition>& result, QContactManager::Error error, const QList<QContactManager::Error>& errors, QContactAbstractRequest::Status status)
+{
+    QMap<int, QContactManager::Error> errorMap;
+    for (int i = 0; i < errors.size(); i++) {
+        if (errors.at(i) != QContactManager::NoError) {
+            errorMap.insert(i, errors.at(i));
+        }
+    }
+    updateDefinitionSaveRequest(qobject_cast<QContactDetailDefinitionSaveRequest*>(req), result, error, errorMap);
+    updateRequestState(req, static_cast<QContactAbstractRequest::State>(status));
+}
+
+
+/*!
+  \internal
+  This function takes a QContactAbstractRequest::Status parameter and hence has been deprecated.
+  Use the related function of similar signature which takes a QContactAbstractRequest::State parameter instead.
+
+  Updates the request \a req with the result \a result and error information \a error and \a errors.
+  The request state will be updated to \a status.  If the sorting of the results remains unchanged, \a appendOnly will be set to true.
+ */
+void QContactManagerEngine::updateRequest(QContactAbstractRequest* req, const QMap<QString, QContactDetailDefinition>& result, QContactManager::Error error, const QList<QContactManager::Error>& errors, QContactAbstractRequest::Status status, bool appendOnly)
+{
+    Q_UNUSED(appendOnly);
+    QMap<int, QContactManager::Error> errorMap;
+    for (int i = 0; i < errors.size(); i++) {
+        if (errors.at(i) != QContactManager::NoError) {
+            errorMap.insert(i, errors.at(i));
+        }
+    }
+    updateDefinitionFetchRequest(qobject_cast<QContactDetailDefinitionFetchRequest*>(req), result, error, errorMap);
+    updateRequestState(req, static_cast<QContactAbstractRequest::State>(status));
+}
+
+
+/*!
+  \internal
+  This function has been entirely deprecated and has no effect.  It was deprecated in week 1 and will be removed once the transition period has elapsed.
+
+  Updates the request \a req with the result \a result and error information \a error and \a errors.
+  The request state will be updated to \a status.  If the sorting of the results remains unchanged, \a appendOnly will be set to true.
+ */
+void QContactManagerEngine::updateRequest(QContactAbstractRequest* req, const QList<QContactRelationship>& result, QContactManager::Error error, const QList<QContactManager::Error>& errors, QContactAbstractRequest::Status status, bool appendOnly)
+{
+    Q_UNUSED(errors);
+    Q_UNUSED(appendOnly);
+    if (req->type() == QContactAbstractRequest::RelationshipFetchRequest) {
+        updateRelationshipFetchRequest(qobject_cast<QContactRelationshipFetchRequest*>(req), result, error);
+        updateRequestState(req, static_cast<QContactAbstractRequest::State>(status));
+    } else { // relationship save request
+        QMap<int, QContactManager::Error> errorMap;
+        for (int i = 0; i < errors.size(); i++) {
+            if (errors.at(i) != QContactManager::NoError) {
+                errorMap.insert(i, errors.at(i));
+            }
+        }
+        updateRelationshipSaveRequest(qobject_cast<QContactRelationshipSaveRequest*>(req), result, error, errorMap);
+        updateRequestState(req, static_cast<QContactAbstractRequest::State>(status));
+    }
+}
+
+/*!
+  Updates the given asynchronous request \a req by setting the new \a state
+  of the request.  It then causes the stateChanged() signal to be emitted by the request.
+ */
+void QContactManagerEngine::updateRequestState(QContactAbstractRequest* req, QContactAbstractRequest::State state)
+{
+    req->d_ptr->m_state = state;
+    emit req->stateChanged(state);
+
+    /* XXX TODO - remove this entire block once deprecation period has elapsed. */
     switch (req->type()) {
         case QContactAbstractRequest::ContactFetchRequest:
         {
             QContactFetchRequest* r = static_cast<QContactFetchRequest*>(req);
-            emit r->progress(r, appendOnly);
+            emit r->progress(r, false);
         }
         break;
 
         case QContactAbstractRequest::ContactLocalIdFetchRequest:
         {
             QContactLocalIdFetchRequest* r = static_cast<QContactLocalIdFetchRequest*>(req);
-            emit r->progress(r, appendOnly);
+            emit r->progress(r, false);
         }
         break;
 
@@ -1895,7 +2273,7 @@ void QContactManagerEngine::updateRequestStatus(QContactAbstractRequest* req, QC
         case QContactAbstractRequest::DetailDefinitionFetchRequest:
         {
             QContactDetailDefinitionFetchRequest* r = static_cast<QContactDetailDefinitionFetchRequest*>(req);
-            emit r->progress(r, appendOnly);
+            emit r->progress(r, false);
         }
         break;
 
@@ -1916,7 +2294,7 @@ void QContactManagerEngine::updateRequestStatus(QContactAbstractRequest* req, QC
         case QContactAbstractRequest::RelationshipFetchRequest:
         {
             QContactRelationshipFetchRequest* r = static_cast<QContactRelationshipFetchRequest*>(req);
-            emit r->progress(r, appendOnly);
+            emit r->progress(r, false);
         }
         break;
 
@@ -1940,114 +2318,156 @@ void QContactManagerEngine::updateRequestStatus(QContactAbstractRequest* req, QC
 }
 
 /*!
- * Updates the given asynchronous request \a req by setting its \a result, the overall operation \a error, any individual \a errors that occurred during the operation, and the new \a status of the request.  It then causes the progress signal to be emitted by the request, with the \a appendOnly flag set (if required) to indicate result ordering stability.  If the request is of a type which does not return a list of unique ids as a result, this function will return without doing anything.
+  Updates the given QContactLocalIdFetchRequest \a req with the latest results \a result, and operation error \a error.
+  It then causes the request to emit its resultsAvailable() signal to notify clients of the request progress.
  */
-void QContactManagerEngine::updateRequest(QContactAbstractRequest* req, const QList<QContactLocalId>& result, QContactManager::Error error, const QList<QContactManager::Error>& errors, QContactAbstractRequest::Status status, bool appendOnly)
+void QContactManagerEngine::updateContactLocalIdFetchRequest(QContactLocalIdFetchRequest* req, const QList<QContactLocalId>& result, QContactManager::Error error)
 {
-    if (req->type() == QContactAbstractRequest::ContactLocalIdFetchRequest) {
-        req->d_ptr->m_error = error;
-        req->d_ptr->m_errors = errors;
-        req->d_ptr->m_status = status;
-        QContactLocalIdFetchRequestPrivate* rd = static_cast<QContactLocalIdFetchRequestPrivate*>(req->d_ptr);
-        rd->m_ids = result;
-        QContactLocalIdFetchRequest* r = static_cast<QContactLocalIdFetchRequest*>(req);
-        emit r->progress(r, appendOnly);
-    }
+    QContactLocalIdFetchRequestPrivate* rd = static_cast<QContactLocalIdFetchRequestPrivate*>(req->d_ptr);
+    req->d_ptr->m_error = error;
+    rd->m_ids = result;
+    emit req->resultsAvailable();
+
+    // deprecated signal - to be removed after the transition period has elapsed:
+    emit req->progress(req, false);
 }
 
 /*!
- * Updates the given asynchronous request \a req by setting its \a result, the overall operation \a error, any individual \a errors that occurred during the operation, and the new \a status of the request.  It then causes the progress signal to be emitted by the request, with the \a appendOnly flag set (if required) to indicate result ordering stability. If the request is of a type which does not return a list of contacts as a result, this function will return without doing anything.
+  Updates the given QContactFetchRequest \a req with the latest results \a result, and operation error \a error.
+  It then causes the request to emit its resultsAvailable() signal to notify clients of the request progress.
  */
-void QContactManagerEngine::updateRequest(QContactAbstractRequest* req, const QList<QContact>& result, QContactManager::Error error, const QList<QContactManager::Error>& errors, QContactAbstractRequest::Status status, bool appendOnly)
+void QContactManagerEngine::updateContactFetchRequest(QContactFetchRequest* req, const QList<QContact>& result, QContactManager::Error error)
 {
-    switch (req->type()) {
-        case QContactAbstractRequest::ContactFetchRequest:
-        {
-            req->d_ptr->m_error = error;
-            req->d_ptr->m_errors = errors;
-            req->d_ptr->m_status = status;
-            QContactFetchRequestPrivate* rd = static_cast<QContactFetchRequestPrivate*>(req->d_ptr);
-            rd->m_contacts = result;
-            QContactFetchRequest* r = static_cast<QContactFetchRequest*>(req);
-            emit r->progress(r, appendOnly);
-        }
-        break;
+    QContactFetchRequestPrivate* rd = static_cast<QContactFetchRequestPrivate*>(req->d_ptr);
+    req->d_ptr->m_error = error;
+    rd->m_contacts = result;
+    emit req->resultsAvailable();
 
-        case QContactAbstractRequest::ContactSaveRequest:
-        {
-            req->d_ptr->m_error = error;
-            req->d_ptr->m_errors = errors;
-            req->d_ptr->m_status = status;
-            QContactSaveRequestPrivate* rd = static_cast<QContactSaveRequestPrivate*>(req->d_ptr);
-            rd->m_contacts = result;
-            QContactSaveRequest* r = static_cast<QContactSaveRequest*>(req);
-            emit r->progress(r);
-        }
-        break;
-
-        default:
-        {
-            // this request type does not have a list of contacts to update...
-            return;
-        }
-    }
+    // deprecated signal - to be removed after the transition period has elapsed:
+    emit req->progress(req, false);
 }
 
 /*!
- * Updates the given asynchronous request \a req by setting its \a result, the overall operation \a error, any individual \a errors that occurred during the operation, and the new \a status of the request.  It then causes the progress signal to be emitted by the request.  If the request is of a type which does not return a list of detail definition as a result, this function will return without doing anything.
+  Updates the given QContactRemoveRequest \a req with the operation error \a error, and map of input index to individual error \a errorMap.
+  It then causes the request to emit its resultsAvailable() signal to notify clients of the request progress.
  */
-void QContactManagerEngine::updateRequest(QContactAbstractRequest* req, const QList<QContactDetailDefinition>& result, QContactManager::Error error, const QList<QContactManager::Error>& errors, QContactAbstractRequest::Status status)
+void QContactManagerEngine::updateContactRemoveRequest(QContactRemoveRequest* req, QContactManager::Error error, const QMap<int, QContactManager::Error>& errorMap)
 {
-    if (req->type() == QContactAbstractRequest::DetailDefinitionSaveRequest) {
-        req->d_ptr->m_error = error;
-        req->d_ptr->m_errors = errors;
-        req->d_ptr->m_status = status;
-        QContactDetailDefinitionSaveRequestPrivate* rd = static_cast<QContactDetailDefinitionSaveRequestPrivate*>(req->d_ptr);
-        rd->m_definitions = result;
-        QContactDetailDefinitionSaveRequest* r = static_cast<QContactDetailDefinitionSaveRequest*>(req);
-        emit r->progress(r);
-    }
+    QContactRemoveRequestPrivate* rd = static_cast<QContactRemoveRequestPrivate*>(req->d_ptr);
+    req->d_ptr->m_error = error;
+    rd->m_errors = errorMap;
+    emit req->resultsAvailable();
 }
 
 /*!
- * Updates the given asynchronous request \a req by setting its \a result, the overall operation \a error, any individual \a errors that occurred during the operation, and the new \a status of the request.  It then causes the progress signal to be emitted by the request, with the \a appendOnly flag set (if required) to indicate result ordering stability.  If the request is of a type which does not return a map of string to detail definition as a result, this function will return without doing anything.
+  Updates the given QContactSaveRequest \a req with the latest results \a result, operation error \a error, and map of input index to individual error \a errorMap.
+  It then causes the request to emit its resultsAvailable() signal to notify clients of the request progress.
  */
-void QContactManagerEngine::updateRequest(QContactAbstractRequest* req, const QMap<QString, QContactDetailDefinition>& result, QContactManager::Error error, const QList<QContactManager::Error>& errors, QContactAbstractRequest::Status status, bool appendOnly)
+void QContactManagerEngine::updateContactSaveRequest(QContactSaveRequest* req, const QList<QContact>& result, QContactManager::Error error, const QMap<int, QContactManager::Error>& errorMap)
 {
-    if (req->type() == QContactAbstractRequest::DetailDefinitionFetchRequest) {
-        req->d_ptr->m_error = error;
-        req->d_ptr->m_errors = errors;
-        req->d_ptr->m_status = status;
-        QContactDetailDefinitionFetchRequestPrivate* rd = static_cast<QContactDetailDefinitionFetchRequestPrivate*>(req->d_ptr);
-        rd->m_definitions = result;
-        QContactDetailDefinitionFetchRequest* r = static_cast<QContactDetailDefinitionFetchRequest*>(req);
-        emit r->progress(r, appendOnly);
-    }
+    QContactSaveRequestPrivate* rd = static_cast<QContactSaveRequestPrivate*>(req->d_ptr);
+    req->d_ptr->m_error = error;
+    rd->m_errors = errorMap;
+    rd->m_contacts = result;
+    emit req->resultsAvailable();
+
+    // deprecated signal - to be removed after the transition period has elapsed:
+    emit req->progress(req);
 }
 
 /*!
- * Updates the given asynchronous request \a req by setting its \a result, the overall operation \a error, any individual \a errors that occurred during the operation, and the new \a status of the request.  It then causes the progress signal to be emitted by the request, with the \a appendOnly flag set (if required) to indicate result ordering stability.  If the request is of a type which does not return a list of contact relationships as a result, this function will return without doing anything.
+  Updates the given QContactDetailDefinitionSaveRequest \a req with the latest results \a result, operation error \a error, and map of input index to individual error \a errorMap.
+  It then causes the request to emit its resultsAvailable() signal to notify clients of the request progress.
  */
-void QContactManagerEngine::updateRequest(QContactAbstractRequest* req, const QList<QContactRelationship>& result, QContactManager::Error error, const QList<QContactManager::Error>& errors, QContactAbstractRequest::Status status, bool appendOnly)
+void QContactManagerEngine::updateDefinitionSaveRequest(QContactDetailDefinitionSaveRequest* req, const QList<QContactDetailDefinition>& result, QContactManager::Error error, const QMap<int, QContactManager::Error>& errorMap)
 {
-    if (req->type() == QContactAbstractRequest::RelationshipSaveRequest) {
-        req->d_ptr->m_error = error;
-        req->d_ptr->m_errors = errors;
-        req->d_ptr->m_status = status;
-        QContactRelationshipSaveRequestPrivate* rd = static_cast<QContactRelationshipSaveRequestPrivate*>(req->d_ptr);
-        rd->m_relationships = result;
-        QContactRelationshipSaveRequest* r = static_cast<QContactRelationshipSaveRequest*>(req);
-        emit r->progress(r);
-    } else if (req->type() == QContactAbstractRequest::RelationshipFetchRequest) {
-        req->d_ptr->m_error = error;
-        req->d_ptr->m_errors = errors;
-        req->d_ptr->m_status = status;
-        QContactRelationshipFetchRequestPrivate* rd = static_cast<QContactRelationshipFetchRequestPrivate*>(req->d_ptr);
-        rd->m_relationships = result;
-        QContactRelationshipFetchRequest* r = static_cast<QContactRelationshipFetchRequest*>(req);
-        emit r->progress(r, appendOnly);
-    }
+    QContactDetailDefinitionSaveRequestPrivate* rd = static_cast<QContactDetailDefinitionSaveRequestPrivate*>(req->d_ptr);
+    req->d_ptr->m_error = error;
+    rd->m_errors = errorMap;
+    rd->m_definitions = result;
+    emit req->resultsAvailable();
+
+    // deprecated signal - to be removed after the transition period has elapsed:
+    emit req->progress(req);
 }
+
+/*!
+  Updates the given QContactDetailDefinitionRemoveRequest \a req with the operation error \a error, and map of input index to individual error \a errorMap.
+  It then causes the request to emit its resultsAvailable() signal to notify clients of the request progress.
+ */
+void QContactManagerEngine::updateDefinitionRemoveRequest(QContactDetailDefinitionRemoveRequest* req, QContactManager::Error error, const QMap<int, QContactManager::Error>& errorMap)
+{
+    QContactDetailDefinitionRemoveRequestPrivate* rd = static_cast<QContactDetailDefinitionRemoveRequestPrivate*>(req->d_ptr);
+    req->d_ptr->m_error = error;
+    rd->m_errors = errorMap;
+    emit req->resultsAvailable();
+
+    // deprecated signal - to be removed after the transition period has elapsed:
+    emit req->progress(req);
+}
+
+/*!
+  Updates the given QContactDetailDefinitionFetchRequest \a req with the latest results \a result, operation error \a error, and map of input index to individual error \a errorMap.
+  It then causes the request to emit its resultsAvailable() signal to notify clients of the request progress.
+ */
+void QContactManagerEngine::updateDefinitionFetchRequest(QContactDetailDefinitionFetchRequest* req, const QMap<QString, QContactDetailDefinition>& result, QContactManager::Error error, const QMap<int, QContactManager::Error>& errorMap)
+{
+    QContactDetailDefinitionFetchRequestPrivate* rd = static_cast<QContactDetailDefinitionFetchRequestPrivate*>(req->d_ptr);
+    req->d_ptr->m_error = error;
+    rd->m_errors = errorMap;
+    rd->m_definitions = result;
+    emit req->resultsAvailable();
+
+    // deprecated signal - to be removed after the transition period has elapsed:
+    emit req->progress(req, false);
+}
+
+/*!
+  Updates the given QContactRelationshipSaveRequest \a req with the latest results \a result, operation error \a error, and map of input index to individual error \a errorMap.
+  It then causes the request to emit its resultsAvailable() signal to notify clients of the request progress.
+ */
+void QContactManagerEngine::updateRelationshipSaveRequest(QContactRelationshipSaveRequest* req, const QList<QContactRelationship>& result, QContactManager::Error error, const QMap<int, QContactManager::Error>& errorMap)
+{
+    QContactRelationshipSaveRequestPrivate* rd = static_cast<QContactRelationshipSaveRequestPrivate*>(req->d_ptr);
+    req->d_ptr->m_error = error;
+    rd->m_errors = errorMap;
+    rd->m_relationships = result;
+    emit req->resultsAvailable();
+
+    // deprecated signal - to be removed after the transition period has elapsed:
+    emit req->progress(req);
+}
+
+/*!
+  Updates the given QContactRelationshipRemoveRequest \a req with the operation error \a error, and map of input index to individual error \a errorMap.
+  It then causes the request to emit its resultsAvailable() signal to notify clients of the request progress.
+ */
+void QContactManagerEngine::updateRelationshipRemoveRequest(QContactRelationshipRemoveRequest* req, QContactManager::Error error, const QMap<int, QContactManager::Error>& errorMap)
+{
+    QContactRelationshipRemoveRequestPrivate* rd = static_cast<QContactRelationshipRemoveRequestPrivate*>(req->d_ptr);
+    req->d_ptr->m_error = error;
+    rd->m_errors = errorMap;
+    emit req->resultsAvailable();
+
+    // deprecated signal - to be removed after the transition period has elapsed:
+    emit req->progress(req);
+}
+
+/*!
+  Updates the given QContactRelationshipFetchRequest \a req with the latest results \a result, and operation error \a error.
+  It then causes the request to emit its resultsAvailable() signal to notify clients of the request progress.
+ */
+void QContactManagerEngine::updateRelationshipFetchRequest(QContactRelationshipFetchRequest* req, const QList<QContactRelationship>& result, QContactManager::Error error)
+{
+    QContactRelationshipFetchRequestPrivate* rd = static_cast<QContactRelationshipFetchRequestPrivate*>(req->d_ptr);
+    req->d_ptr->m_error = error;
+    rd->m_relationships = result;
+    emit req->resultsAvailable();
+
+    // deprecated signal - to be removed after the transition period has elapsed:
+    emit req->progress(req, false);
+}
+
 
 #include "moc_qcontactmanagerengine.cpp"
 

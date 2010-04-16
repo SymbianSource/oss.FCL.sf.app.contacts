@@ -43,9 +43,15 @@ public slots:
      * @return true if sent succesfully
      */
     bool sendMessage();
+    static bool sendMessageToNumber(
+            const QString& number, const QString& displayName = QString(), unsigned int contactId = 0);
         
 private: //data 
     LogsEvent mEvent;
+
+public: // test helpers
+    static bool isMessageSent();
+    static void resetTestData();
     
 private:
     friend class UT_LogsMessage;

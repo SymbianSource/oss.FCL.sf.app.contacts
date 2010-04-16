@@ -48,12 +48,21 @@ public slots:
     void setPreferredAction(const QString &aAction, const QContactDetail &aDetail);
     void thumbnailReady(const QPixmap& pixmap, void *data, int id, int error);
 	void keyPressEvent(QKeyEvent *event);
+    void doChangeImage();
+    void doRemoveImage();
+    void drawMenu(const QPointF &aCoords);
 	
+#ifdef PBK_UNIT_TEST
+public slots:
+#else
 private slots:
+#endif
     void sendBusinessCard();
     void addToGroup();
     void deleteContact();
     void handleExecutedCommand(QString command, QContact contact);
+    void setAsFavorite();
+    void removeFromFavorite();
 
 public:
     CntContactCardView(CntViewManager *viewManager, QGraphicsItem *parent = 0);
@@ -65,6 +74,9 @@ public:
 signals:
     void preferredUpdated();
 
+private:
+    void doViewImage();
+
 #ifdef PBK_UNIT_TEST
 public:
 #else
@@ -73,6 +85,8 @@ private:
     void resizeEvent(QGraphicsSceneResizeEvent *event);
     virtual void addActionsToToolBar();
     virtual void addMenuItems();
+    
+    bool isFavoriteGroupCreated();
 
 #ifdef PBK_UNIT_TEST
 public:
@@ -88,8 +102,11 @@ protected:
     CntContactCardHeadingItem   *mHeadingItem;
     ThumbnailManager            *mThumbnailManager;
     QContact                    *mGroupContact;
+    QContactAvatar              *mAvatar;
     bool                         mIsGroupMember;
+    bool                         mIsHandlingMenu;
     QMap<QString, CntContactCardDetailItem*> mPreferredItems;
+    int                         mFavoriteGroupId;
 };
 
 #endif // CNTCOMMLAUNCHERVIEW_H

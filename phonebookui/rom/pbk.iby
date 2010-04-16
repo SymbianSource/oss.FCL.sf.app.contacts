@@ -25,11 +25,14 @@
 
 // Engine
 file=ABI_DIR\BUILD_DIR\qtcontacts.dll                   SHARED_LIB_DIR\qtcontacts.dll UNPAGED
+file=ABI_DIR\BUILD_DIR\qtversit.dll                   	SHARED_LIB_DIR\qtversit.dll UNPAGED
 file=ABI_DIR\BUILD_DIR\mobcntmodel.dll                  SHARED_LIB_DIR\mobcntmodel.dll UNPAGED
 file=ABI_DIR\BUILD_DIR\mobhistorymodel.dll              SHARED_LIB_DIR\mobhistorymodel.dll UNPAGED
 file=ABI_DIR\BUILD_DIR\mobapicontactspluginsymbian.dll  SHARED_LIB_DIR\mobapicontactspluginsymbian.dll UNPAGED
 file=ABI_DIR\BUILD_DIR\mobapicontactspluginsymbiansim.dll  SHARED_LIB_DIR\mobapicontactspluginsymbiansim.dll UNPAGED
 file=ABI_DIR\BUILD_DIR\mobcntactionsplugin.dll          SHARED_LIB_DIR\mobcntactionsplugin.dll UNPAGED
+file=ABI_DIR\BUILD_DIR\cntmaptileservice.dll            SHARED_LIB_DIR\cntmaptileservice.dll UNPAGED
+file=ABI_DIR\BUILD_DIR\simutility.dll            				SHARED_LIB_DIR\simutility.dll UNPAGED
 
 // UI
 file=ABI_DIR\BUILD_DIR\pbkcommonui.dll                	SHARED_LIB_DIR\pbkcommonui.dll UNPAGED

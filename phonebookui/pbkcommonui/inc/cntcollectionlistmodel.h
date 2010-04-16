@@ -51,6 +51,8 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
     void removeGroup(int localId);
+    bool isFavoriteGroupCreated();
+    int favoriteGroupId();
     
 #ifdef PBK_UNIT_TEST
 public:
@@ -64,6 +66,7 @@ private:
 private:
     QSharedDataPointer<CntCollectionListData>  mDataPointer;
     QContactManager                           *mContactManager;
+    int                                        mFavoriteGroupId;
     
 };
 

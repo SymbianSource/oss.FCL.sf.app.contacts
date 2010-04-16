@@ -60,7 +60,7 @@ void CntServiceContactFetchView::aboutToCloseView()
         CntServicesContact servicesContact;
 
         //get the name
-        servicesContact.mDisplayName = contactManager()->synthesizeDisplayLabel(contact);
+        servicesContact.mDisplayName = contactManager()->synthesizedDisplayLabel(contact);
 
         //get the phonenumber
         QList<QContactPhoneNumber> phonenumbers = contact.details<QContactPhoneNumber>();
@@ -90,6 +90,20 @@ void CntServiceContactFetchView::aboutToCloseView()
     mServiceHandler->completeFetch(serviceList);
 }
 
+void CntServiceContactFetchView::activateView(const CntViewParameters &aArgs)
+{
+    // Set action filter
+    QMap<int,QVariant> map = aArgs.parameters();
+    QString filter = map.value(CntViewParameters::Filter).toString();
+    QString action = map.value(CntViewParameters::Action).toString();
+    setActionFilter(action, filter);
+    
+    // Set title of the view.
+    QString title = map.value(CntViewParameters::Title).toString();
+    setTitle(title);
+    
+    CntBaseSelectionView::activateView(aArgs);
+}
 
 void CntServiceContactFetchView::setActionFilter(QString action, QString filter)
 {

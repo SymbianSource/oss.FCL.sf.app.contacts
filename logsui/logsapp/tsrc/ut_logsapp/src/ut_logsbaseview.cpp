@@ -76,7 +76,6 @@ void UT_LogsBaseView::testConstructor()
     QVERIFY( !mBaseView->mMessage );
     QVERIFY( !mBaseView->mContact );
     QVERIFY( !mBaseView->mCallTypeMapper );
-    QVERIFY( !mBaseView->mForceDialpadOpened );
 }
 
 void UT_LogsBaseView::testActivated()
@@ -87,32 +86,14 @@ void UT_LogsBaseView::testActivated()
     QVERIFY( !mBaseView->mShowFilterMenu );
     QVERIFY( mBaseView->mActionMap.count() == 4 );
 
-    mBaseView->clearSoftKey();
     mBaseView->activated(true, QVariant());
-    QVERIFY( mBaseView->mDialpad->isVisible() );
+    QVERIFY( mBaseView->mDialpad->isOpen() );
 }
 
 void UT_LogsBaseView::testDeactivated()
 {
     mBaseView->deactivated(); // NOP
 }
-
-void UT_LogsBaseView::testActivateSoftKey()
-{
-    QVERIFY( !hbInstance->allMainWindows().isEmpty() );
-    mBaseView->activateSoftKey();
-    QVERIFY( mBaseView->mSoftKeyBackAction == 
-            hbInstance->allMainWindows().at(0)->softKeyAction(Hb::SecondarySoftKey) );
-}
-
-void UT_LogsBaseView::testClearSoftKey()
-{
-    QVERIFY( !hbInstance->allMainWindows().isEmpty() );
-    mBaseView->clearSoftKey();
-    QVERIFY( mBaseView->mSoftKeyBackAction != 
-            hbInstance->allMainWindows().at(0)->softKeyAction(Hb::SecondarySoftKey) );
-}
-
 
 void UT_LogsBaseView::testShowFilterMenu()
 {
@@ -133,23 +114,22 @@ void UT_LogsBaseView::testShowFilterMenu()
 
 void  UT_LogsBaseView::testOpenDialpad()
 {
-    QVERIFY( !mBaseView->mDialpad->isVisible() );
-    mBaseView->mDialpad->openDialpad();
-    QVERIFY( mBaseView->mDialpad->isVisible() );    
+    QVERIFY( !mBaseView->mDialpad->isOpen() );
+    mBaseView->openDialpad();
+    QVERIFY( mBaseView->mDialpad->isOpen() );    
 }
 
 void  UT_LogsBaseView::testSetDialpadPostion()
 {
     QPointF pos = mBaseView->mDialpad->pos();
-    HbMainWindow* window = hbInstance->allMainWindows().at(0);
-    QVERIFY(window);
+    HbMainWindow& window = mBaseView->mViewManager.mainWindow();
     
-    window->setOrientation( Qt::Horizontal );
+    window.setOrientation( Qt::Horizontal );
     mBaseView->setDialpadPosition();
     QVERIFY( pos != mBaseView->mDialpad->pos() );
     pos = mBaseView->mDialpad->pos();
     
-    window->setOrientation( Qt::Vertical );
+    window.setOrientation( Qt::Vertical );
     mBaseView->setDialpadPosition();
     QVERIFY( pos != mBaseView->mDialpad->pos() );
 }
@@ -229,14 +209,18 @@ void UT_LogsBaseView::testInitiateCall()
 void UT_LogsBaseView::testShowListItemMenu()
 {
     HbStubHelper::reset();
+
+    mBaseView->mDialpad->openDialpad();
     //menu doen't have any actions
     HbListViewItem* item = new HbListViewItem();
     mBaseView->showListItemMenu( item, QPointF() );
     QVERIFY( HbStubHelper::widgetActionsCount() == 0 );
     QVERIFY( !HbStubHelper::menuShown() );
+    //check that dialpad has closed
+    QVERIFY( !mBaseView->mDialpad->isVisible() );
     
     //menu has actions and can be executed should be tested in derived class
-}
+ }
 
 void UT_LogsBaseView::testPopulateListItemMenu()
 {
@@ -252,6 +236,16 @@ void UT_LogsBaseView::testPopulateListItemMenu()
     mBaseView->mContact = new LogsContact();
     mBaseView->populateListItemMenu(menu);
     QVERIFY( HbStubHelper::widgetActionsCount() == 5 );
+}
+
+void UT_LogsBaseView::testSaveContact()
+{
+    //no contact, no actions
+    mBaseView->saveContact();
+    
+    //contact exists, popup would be shown
+    mBaseView->mContact = new LogsContact();
+    mBaseView->saveContact();    
 }
 
 void UT_LogsBaseView::testUpdateCall()
@@ -335,64 +329,53 @@ void UT_LogsBaseView::testUpdateListLayoutName()
     QVERIFY( list.layoutName() == logsListLandscapeLayout );
     
     //landscape with dialpad
-    mBaseView->mDialpad->setVisible(true);
+    mBaseView->mDialpad->openDialpad();
     mBaseView->updateListLayoutName(list);
     QVERIFY( list.layoutName() == logsListLandscapeDialpadLayout );
     
     //landscape with dialpad, ignoreDialpad is true
     mBaseView->updateListLayoutName(list, true);
-    QVERIFY( list.layoutName() == logsListLandscapeLayout );    
+    QVERIFY( list.layoutName() == logsListDefaultLayout );
+
+    //landscape without dialpad, ignoreDialpad is true
+    mBaseView->mDialpad->closeDialpad();
+    mBaseView->updateListLayoutName(list, true);
+    QVERIFY( list.layoutName() == logsListLandscapeLayout );
 }
 
 void UT_LogsBaseView::testUpdateListSize()
 {
-    QString currentSection("dummy");
+    mBaseView->mLayoutSectionName = "dummy";
     
     //default section is loaded
     mBaseView->mViewManager.mainWindow().setOrientation( Qt::Vertical );
-    mBaseView->mDialpad->setVisible(false);
-    mBaseView->updateListSize(currentSection);
-    QVERIFY( currentSection == logsViewDefaultSection );
+    mBaseView->mDialpad->closeDialpad();
+    mBaseView->updateListSize();
+    QVERIFY( mBaseView->mLayoutSectionName == logsViewDefaultSection );
     
     //same section again, not loaded
-    mBaseView->updateListSize(currentSection);
-    QVERIFY( currentSection == logsViewDefaultSection );
+    mBaseView->updateListSize();
+    QVERIFY( mBaseView->mLayoutSectionName == logsViewDefaultSection );
 
     //portrait with dialpad
-    mBaseView->mDialpad->setVisible(true);
-    mBaseView->updateListSize(currentSection);
-    QVERIFY( currentSection == logsViewPortraitDialpadSection );
+    mBaseView->mDialpad->openDialpad();
+    mBaseView->updateListSize();
+    QVERIFY( mBaseView->mLayoutSectionName == logsViewPortraitDialpadSection );
     
     //landscape with dialpad
     mBaseView->mViewManager.mainWindow().setOrientation( Qt::Horizontal );
-    mBaseView->updateListSize(currentSection);
-    QVERIFY( currentSection == logsViewLandscapeDialpadSection );
-}
-
-void UT_LogsBaseView::testHandleAboutToChangeOrientation()
-{
-    mBaseView->mDialpad->openDialpad();
-    QVERIFY( mBaseView->mDialpad->isVisible() );
-    QVERIFY( !mBaseView->mForceDialpadOpened );
-    mBaseView->handleAboutToChangeOrientation();
-    QVERIFY( !mBaseView->mDialpad->isVisible() );
-    QVERIFY( mBaseView->mForceDialpadOpened );    
+    mBaseView->updateListSize();
+    QVERIFY( mBaseView->mLayoutSectionName == logsViewLandscapeDialpadSection );
 }
 
 void UT_LogsBaseView::testHandleOrientationChanged()
 {
-    //dialpad won't be opened after orientation change
-    QVERIFY( !mBaseView->mForceDialpadOpened );
-    QVERIFY( !mBaseView->mDialpad->isVisible() );
+    //dialpad position recalculated
+    QPointF pos;
+    mBaseView->mDialpad->setPos(pos);    
+    mBaseView->mViewManager.mainWindow().setOrientation( Qt::Horizontal );
     mBaseView->handleOrientationChanged();
-    QVERIFY( !mBaseView->mForceDialpadOpened );
-    QVERIFY( !mBaseView->mDialpad->isVisible() );
-    
-    //dialpad will be opened after orientation change
-    mBaseView->mForceDialpadOpened = true;
-    mBaseView->handleOrientationChanged();
-    QVERIFY( !mBaseView->mForceDialpadOpened );
-    QVERIFY( mBaseView->mDialpad->isVisible() );    
+    QVERIFY( pos != mBaseView->mDialpad->pos() );
 }
 
 void UT_LogsBaseView::testHandleExit()

@@ -21,7 +21,7 @@
 #include <hblistview.h>
 #include <QGraphicsLinearLayout>
 
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntmainwindow.h"
 
 #include "t_cntbaseselectionview.h"
@@ -36,7 +36,7 @@ void TestCntBaseSelectionView::initTestCase()
 void TestCntBaseSelectionView::createClasses()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::noView);
     mSelectionView = new CntBaseSelectionTestView(mViewManager, 0);
     mWindow->addView(mSelectionView);
     mWindow->setCurrentView(mSelectionView);
@@ -110,8 +110,7 @@ void TestCntBaseSelectionView::selectionModel()
 
 void TestCntBaseSelectionView::cleanupTestCase()
 {
-    delete mWindow;
-    mWindow = 0;
+    mWindow->deleteLater();
     delete mViewManager;
     mViewManager = 0;
 }

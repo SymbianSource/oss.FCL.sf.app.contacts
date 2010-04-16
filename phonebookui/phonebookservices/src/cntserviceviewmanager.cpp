@@ -31,7 +31,7 @@
 Constructor
 */
 CntServiceViewManager::CntServiceViewManager(CntMainWindow *mainWindow, CntViewParameters::ViewId defaultView, CntServiceHandler *aHandler):
-    CntViewManager(mainWindow, defaultView),
+    CntDefaultViewManager(mainWindow, defaultView),
     mServiceHandler(aHandler)
 {
     connect(mServiceHandler, SIGNAL(launchFetch(const QString&, const QString&, const QString&)), 
@@ -56,16 +56,13 @@ Launch fetch service view
 */
 void CntServiceViewManager::launchFetch(const QString &title, const QString &action, const QString &filter)
 {
-    CntBaseView *view = getView(CntViewParameters::serviceContactFetchView);
-    if (view)
-    {
-        //add view to main window
-        addViewToWindow(view);
-        view->setTitle(title);
-        static_cast<CntServiceContactFetchView*>(view)->setActionFilter(action, filter);
-        CntViewParameters viewParameters(CntViewParameters::noView);
-        view->activateView(viewParameters);
-    }
+    CntViewParameters params(CntViewParameters::serviceContactFetchView);
+    QMap<int,QVariant> map;
+    map.insert(CntViewParameters::Action, QVariant(action));
+    map.insert(CntViewParameters::Filter, QVariant(filter));
+    map.insert(CntViewParameters::Title, QVariant(title));
+    params.setParameters(map);
+    changeView(params);
 }
 
 /*!
@@ -73,15 +70,9 @@ Launch editor service view
 */
 void CntServiceViewManager::launchEditor(QContact contact)
 {
-    CntBaseView *view = getView(CntViewParameters::serviceEditView);
-    if (view)
-    {
-        //add view to main window
-        addViewToWindow(view);
-        CntViewParameters viewParameters(CntViewParameters::noView);
-        viewParameters.setSelectedContact(contact);   
-        view->activateView(viewParameters);
-    }
+    CntViewParameters params(CntViewParameters::serviceEditView);
+    params.setSelectedContact(contact);
+    changeView(params);
 }
 
 /*!
@@ -89,15 +80,9 @@ Launch contact selection service view (update existing contact with detail)
 */
 void CntServiceViewManager::launchContactSelection(QContactDetail detail)
 {
-    CntBaseView *view = getView(CntViewParameters::serviceContactSelectionView);
-    if (view)
-    {
-        //add view to main window
-        addViewToWindow(view);
-        CntViewParameters viewParameters(CntViewParameters::noView);
-        viewParameters.setSelectedDetail(detail);   
-        view->activateView(viewParameters);
-    }
+    CntViewParameters params(CntViewParameters::serviceContactSelectionView);
+    params.setSelectedDetail(detail);
+    changeView(params);
 }
 
 /*!
@@ -105,15 +90,9 @@ Launch contact card service view
 */
 void CntServiceViewManager::launchContactCard(QContact contact)
 {
-    CntBaseView *view = getView(CntViewParameters::serviceContactCardView);
-    if (view)
-    {
-        //add view to main window
-        addViewToWindow(view);
-        CntViewParameters viewParameters(CntViewParameters::noView);
-        viewParameters.setSelectedContact(contact);   
-        view->activateView(viewParameters);
-    }
+    CntViewParameters params(CntViewParameters::serviceContactCardView);
+    params.setSelectedContact(contact);
+    changeView(params);
 }
 
 /*!
@@ -121,24 +100,20 @@ Launch assign (temporary) contact card service view
 */
 void CntServiceViewManager::launchAssignContactCard(QContact contact, QContactDetail detail)
 {
-    CntBaseView *view = getView(CntViewParameters::serviceAssignContactCardView);
-    if (view)
-    {
-        //add view to main window
-        addViewToWindow(view);
-        CntViewParameters viewParameters(CntViewParameters::noView);
-        viewParameters.setSelectedContact(contact);   
-        viewParameters.setSelectedDetail(detail);
-        view->activateView(viewParameters);
-    }
+    CntViewParameters params(CntViewParameters::serviceAssignContactCardView);
+    params.setSelectedContact(contact);   
+    params.setSelectedDetail(detail);
+    changeView(params);
 }
 
 /*!
 Create a view based on ID. \Return pointer to new object if success, 0 if not.
 */
-CntBaseView *CntServiceViewManager::getView(CntViewParameters::ViewId id)
+CntBaseView *CntServiceViewManager::getView(const CntViewParameters &aArgs)
 {
     CntBaseView* view(0);
+	
+	CntViewParameters::ViewId id = aArgs.nextViewId();
 
     switch (id)
     {
@@ -180,7 +155,7 @@ CntBaseView *CntServiceViewManager::getView(CntViewParameters::ViewId id)
         }
     default:
         {
-        view = CntViewManager::getView(id);
+        view = CntDefaultViewManager::getView( aArgs );
         break;
         }
     }

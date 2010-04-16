@@ -20,7 +20,6 @@ TEMPLATE = lib
 TARGET = logscntfinder
 CONFIG += dll
 CONFIG += hb
-HB = hbcore hbinput 
 
 INCLUDEPATH += ./
 INCLUDEPATH += ./inc

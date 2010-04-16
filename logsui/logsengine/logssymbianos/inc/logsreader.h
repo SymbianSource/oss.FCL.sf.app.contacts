@@ -107,6 +107,13 @@ class LogsReader : public CActive,
          * @return 0 if removing started succesfully
          */
         int markEventSeen(int eventId);
+        
+        /**
+         * Starts reading duplicates of the event
+         * @param eventId
+         * @return 0 if removing started succesfully
+         */
+        int readDuplicates(int eventId);
 
     protected: // From CActive
 
@@ -145,14 +152,16 @@ class LogsReader : public CActive,
         inline TRequestStatus& reqStatus();
         inline LogsReaderObserver& observer();
         inline QHash<QString, ContactCacheEntry>& contactCache();
-        inline int modifyingEventId();
+        inline int currentEventId();
         inline CLogClient& logClient();
         inline bool isRecentView();
+        inline QList<LogsEvent*>& duplicatedEvents();
         
     private:
 
         void startL();
         void markEventSeenL(int eventId);
+        void readDuplicatesL(int eventId);
         
         /**
          * Cancel all outstanding requests if possible. In case of deleting is
@@ -161,11 +170,13 @@ class LogsReader : public CActive,
         void cancelCurrentRequestL();
         LogsReaderStateBase& currentState();
         void initializeReadStates();
-        void initializeDeleteStates();
+        void initializeModifyingStates();
+        void initializeDuplicateReadingStates();
         void handleViewChange( int totalChangeCount = 1 );
         void handleError(int error);
         void createLogViewL();
         LogsReaderStateFiltering* createFilteringState();
+        void prepareReadingL();
         
     private: // data
         
@@ -183,12 +194,14 @@ class LogsReader : public CActive,
         int mIndex;
         QList<LogsReaderStateBase*> mReadStates;
         QList<LogsReaderStateBase*> mModifyingStates;
+        QList<LogsReaderStateBase*> mDuplicateReadingStates;
         int mCurrentStateIndex;
         QList<LogsReaderStateBase*>* mCurrentStateMachine;
         
         QHash<QString, ContactCacheEntry> mContactCache;
+        QList<LogsEvent*> mDuplicatedEvents;
 
-        int mModifyingEventId;
+        int mCurrentEventId;
     };
 
 #endif      // LOGSREADER_H

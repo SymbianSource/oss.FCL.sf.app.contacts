@@ -30,6 +30,14 @@ VENDORID 		0x70000001
 
 APP_LAYER_SYSTEMINCLUDE
 
+// These two SYSTEMINCLUDES are needed as QT headers are used
+SYSTEMINCLUDE		/epoc32/include/mw/QtCore
+SYSTEMINCLUDE		/epoc32/include/stdapis/stlportv5
+
+// Orbit
+SYSTEMINCLUDE		/epoc32/include/mw/hb/hbcore
+SYSTEMINCLUDE		/epoc32/include/mw/hb/hbinput
+
 USERINCLUDE	 		../src //for cntstd.h 
 USERINCLUDE	 		../cntsrv/inc //for persistencelayer.h
 USERINCLUDE	 		../cntplsql/inc 

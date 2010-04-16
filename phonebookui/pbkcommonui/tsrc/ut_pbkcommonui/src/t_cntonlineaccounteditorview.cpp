@@ -21,7 +21,7 @@
 #include <qtcontacts.h>
 
 #include "cntonlineaccounteditorview.h"
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntmainwindow.h"
 #include "t_cntonlineaccounteditorview.h"
 
@@ -35,7 +35,7 @@ void TestCntOnlineAccountEditorView::initTestCase()
 void TestCntOnlineAccountEditorView::createClasses()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::noView);
     mOnlineAccountEditorView = new CntOnlineAccountEditorView(mViewManager, 0);
     mWindow->addView(mOnlineAccountEditorView);
     mWindow->setCurrentView(mOnlineAccountEditorView);
@@ -161,8 +161,7 @@ void TestCntOnlineAccountEditorView::addDetail()
 
 void TestCntOnlineAccountEditorView::cleanupTestCase()
 {
-    delete mWindow;
-    mWindow = 0;
+    mWindow->deleteLater();
     delete mViewManager;
     mViewManager = 0;
     delete mOnlineAccountEditorView;

@@ -24,6 +24,7 @@ class LogsRecentCallsView;
 class LogsDetailsView;
 class LogsMatchesView;
 class Dialpad;
+class DialpadKeyHandler;
 class LogsAbstractViewManager;
 class LogsModel;
 
@@ -80,6 +81,7 @@ private:
     QObjectList mMatchesViewComponents;
     
     Dialpad* mDialpad;
+    DialpadKeyHandler* mDialpadKeyHandler;
     LogsModel*  mModel;
 };
 

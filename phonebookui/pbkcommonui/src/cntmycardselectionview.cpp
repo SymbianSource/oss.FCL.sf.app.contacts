@@ -24,6 +24,10 @@ Constructor, initialize member variables.
 CntMyCardSelectionView::CntMyCardSelectionView(CntViewManager *viewManager, QGraphicsItem *parent, HbAbstractItemView::SelectionMode newMode)
     : CntBaseSelectionView(viewManager, parent, newMode)
 {
+    QContactDetailFilter contactsFilter;
+    contactsFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
+    contactsFilter.setValue(QString(QLatin1String(QContactType::TypeContact)));
+    contactModel()->setFilterAndSortOrder(contactsFilter);
     contactModel()->showMyCard(false);
 }
 
@@ -40,7 +44,8 @@ Set selection to mycard
 */
 void CntMyCardSelectionView::aboutToCloseView()
 {
-    viewManager()->onActivatePreviousView();
+    CntViewParameters args;
+    viewManager()->back( args );
 }
 
 
@@ -53,7 +58,7 @@ void CntMyCardSelectionView::onListViewActivated(const QModelIndex& index)
     {  
         QContact contact = contactModel()->contact(index);
         contactManager()->setSelfContactId(contact.localId());
-        viewManager()->onActivateView(CntViewParameters::namesView);
+        viewManager()->changeView(CntViewParameters::namesView);
     }
 }
     

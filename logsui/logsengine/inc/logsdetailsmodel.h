@@ -20,6 +20,7 @@
 
 #include <logsexport.h>
 #include <logsabstractmodel.h>
+#include <QList>
 #include "logsengdefs.h"
 
 class LogsEvent;
@@ -59,6 +60,7 @@ protected: // From LogsAbstractModel
 private slots:
 
     void contactActionCompleted(bool modified);
+    void duplicatesRead();
     
 private:
     
@@ -67,20 +69,20 @@ private:
     QString getCallerId(const LogsEvent& event) const;
     QString getHeaderData(const LogsEvent& event) const;
     QString getRemoteUri(const LogsEvent& event) const;
-    QString getLocalUri(const LogsEvent& event) const;
     bool isAddress(QString value) const;
     bool isOutgoingCall() const;
     QString getHeaderValue(QString value,bool isremote) const;
     void initContent();
     void initTexts();
     void initIcons();
+    void addDateAndTimeTextRow(const LogsEvent& event, bool firstOfMultipleDates = false);
     
 private: //data 
     
     LogsEvent* mEvent;
-    int mDetailItemsCount;
-    QMap<int, HbIcon*> mDetailIcons;
-    QMap<int, QStringList> mDetailTexts;
+    QList<HbIcon*> mDetailIcons;
+    QList<QStringList> mDetailTexts;
+    QList<LogsEvent*> mDuplicates;
     
 private:
         

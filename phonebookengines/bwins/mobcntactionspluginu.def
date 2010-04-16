@@ -1,20 +1,20 @@
 EXPORTS
 	qt_plugin_instance @ 1 NONAME
 	qt_plugin_query_verification_data @ 2 NONAME
-	??0MobCntActionFactory@@QAE@XZ @ 3 NONAME ; MobCntActionFactory::MobCntActionFactory(void)
-	?trUtf8@MobCntActionFactory@@SA?AVQString@@PBD0@Z @ 4 NONAME ; class QString MobCntActionFactory::trUtf8(char const *, char const *)
-	?qt_metacast@MobCntActionFactory@@UAEPAXPBD@Z @ 5 NONAME ; void * MobCntActionFactory::qt_metacast(char const *)
-	?tr@MobCntActionFactory@@SA?AVQString@@PBD0@Z @ 6 NONAME ; class QString MobCntActionFactory::tr(char const *, char const *)
-	?getStaticMetaObject@MobCntActionFactory@@SAABUQMetaObject@@XZ @ 7 NONAME ; struct QMetaObject const & MobCntActionFactory::getStaticMetaObject(void)
-	??_EMobCntActionFactory@@UAE@I@Z @ 8 NONAME ; MobCntActionFactory::~MobCntActionFactory(unsigned int)
-	?metaObject@MobCntActionFactory@@UBEPBUQMetaObject@@XZ @ 9 NONAME ; struct QMetaObject const * MobCntActionFactory::metaObject(void) const
-	?actionMetadata@MobCntActionFactory@@UBE?AV?$QMap@VQString@@VQVariant@@@@ABVQContactActionDescriptor@@@Z @ 10 NONAME ; class QMap<class QString, class QVariant> MobCntActionFactory::actionMetadata(class QContactActionDescriptor const &) const
-	?qt_metacall@MobCntActionFactory@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 11 NONAME ; int MobCntActionFactory::qt_metacall(enum QMetaObject::Call, int, void * *)
-	??1MobCntActionFactory@@UAE@XZ @ 12 NONAME ; MobCntActionFactory::~MobCntActionFactory(void)
-	?actionDescriptors@MobCntActionFactory@@UBE?AV?$QList@VQContactActionDescriptor@@@@XZ @ 13 NONAME ; class QList<class QContactActionDescriptor> MobCntActionFactory::actionDescriptors(void) const
-	?tr@MobCntActionFactory@@SA?AVQString@@PBD0H@Z @ 14 NONAME ; class QString MobCntActionFactory::tr(char const *, char const *, int)
-	?trUtf8@MobCntActionFactory@@SA?AVQString@@PBD0H@Z @ 15 NONAME ; class QString MobCntActionFactory::trUtf8(char const *, char const *, int)
-	?name@MobCntActionFactory@@UBE?AVQString@@XZ @ 16 NONAME ; class QString MobCntActionFactory::name(void) const
-	?instance@MobCntActionFactory@@UBEPAVQContactAction@@ABVQContactActionDescriptor@@@Z @ 17 NONAME ; class QContactAction * MobCntActionFactory::instance(class QContactActionDescriptor const &) const
+	?metaObject@MobCntActionFactory@@UBEPBUQMetaObject@@XZ @ 3 NONAME ; struct QMetaObject const * MobCntActionFactory::metaObject(void) const
+	??0MobCntActionFactory@@QAE@XZ @ 4 NONAME ; MobCntActionFactory::MobCntActionFactory(void)
+	?trUtf8@MobCntActionFactory@@SA?AVQString@@PBD0@Z @ 5 NONAME ; class QString MobCntActionFactory::trUtf8(char const *, char const *)
+	?qt_metacall@MobCntActionFactory@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 6 NONAME ; int MobCntActionFactory::qt_metacall(enum QMetaObject::Call, int, void * *)
+	??1MobCntActionFactory@@UAE@XZ @ 7 NONAME ; MobCntActionFactory::~MobCntActionFactory(void)
+	?qt_metacast@MobCntActionFactory@@UAEPAXPBD@Z @ 8 NONAME ; void * MobCntActionFactory::qt_metacast(char const *)
+	?instance@MobCntActionFactory@@UBEPAVQContactAction@QtMobility@@ABVQContactActionDescriptor@3@@Z @ 9 NONAME ; class QtMobility::QContactAction * MobCntActionFactory::instance(class QtMobility::QContactActionDescriptor const &) const
+	?actionMetadata@MobCntActionFactory@@UBE?AV?$QMap@VQString@@VQVariant@@@@ABVQContactActionDescriptor@QtMobility@@@Z @ 10 NONAME ; class QMap<class QString, class QVariant> MobCntActionFactory::actionMetadata(class QtMobility::QContactActionDescriptor const &) const
+	?tr@MobCntActionFactory@@SA?AVQString@@PBD0@Z @ 11 NONAME ; class QString MobCntActionFactory::tr(char const *, char const *)
+	?tr@MobCntActionFactory@@SA?AVQString@@PBD0H@Z @ 12 NONAME ; class QString MobCntActionFactory::tr(char const *, char const *, int)
+	?trUtf8@MobCntActionFactory@@SA?AVQString@@PBD0H@Z @ 13 NONAME ; class QString MobCntActionFactory::trUtf8(char const *, char const *, int)
+	?getStaticMetaObject@MobCntActionFactory@@SAABUQMetaObject@@XZ @ 14 NONAME ; struct QMetaObject const & MobCntActionFactory::getStaticMetaObject(void)
+	?name@MobCntActionFactory@@UBE?AVQString@@XZ @ 15 NONAME ; class QString MobCntActionFactory::name(void) const
+	??_EMobCntActionFactory@@UAE@I@Z @ 16 NONAME ; MobCntActionFactory::~MobCntActionFactory(unsigned int)
+	?actionDescriptors@MobCntActionFactory@@UBE?AV?$QList@VQContactActionDescriptor@QtMobility@@@@XZ @ 17 NONAME ; class QList<class QtMobility::QContactActionDescriptor> MobCntActionFactory::actionDescriptors(void) const
 	?staticMetaObject@MobCntActionFactory@@2UQMetaObject@@B @ 18 NONAME ; struct QMetaObject const MobCntActionFactory::staticMetaObject
 

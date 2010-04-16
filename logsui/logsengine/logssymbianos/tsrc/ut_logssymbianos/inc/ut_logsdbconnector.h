@@ -51,6 +51,7 @@ private slots: //test methods
     void testClearList();
     void testClearEvents();
     void testMarkEventsSeen();
+    void testReadDuplicates();
     void testStart();
     void testReadCompleted();
     void testErrorOccurred();

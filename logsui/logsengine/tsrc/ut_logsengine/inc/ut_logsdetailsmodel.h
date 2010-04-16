@@ -52,8 +52,8 @@ private slots: //test methods
     void testData();
     void testHeaderData();
     void testgetRemoteUri();
-    void testgetLocalUri();
     void testInitTextsAndIcons();
+    void testInitUnseenMissed();
     void testGetHeaderData();
     void testGetCallerId();
 	void testgetNumberToClipboard();

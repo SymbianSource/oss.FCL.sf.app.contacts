@@ -20,7 +20,7 @@
 #include <qtcontacts.h>
 
 #include "cntgroupeditorview.h"
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntmainwindow.h"
 #include "t_cntgroupeditorview.h"
 
@@ -34,7 +34,7 @@ void TestCntGroupEditorView::initTestCase()
 void TestCntGroupEditorView::createClasses()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::noView);
     mGroupEditorView = new CntGroupEditorView(mViewManager, 0);
     mWindow->addView(mGroupEditorView);
     mWindow->setCurrentView(mGroupEditorView);
@@ -58,8 +58,7 @@ void TestCntGroupEditorView::aboutToCloseView()
     // empty detail isn't saved
     mGroupEditorView->aboutToCloseView();
     qDebug() << mGroupEditorView->mContact->details<QContactName>().count();
-    QVERIFY(mGroupEditorView->mContact->details<QContactName>().count() == 1);
-    
+    QVERIFY(mGroupEditorView->mContact->details<QContactName>().count() == 0);
     
     // Group name
     groupName->setCustomLabel("Group Name");
@@ -87,6 +86,7 @@ void TestCntGroupEditorView::initializeForm()
     
     //Check count is 2
     QVERIFY(mGroupEditorView->formModel()->rowCount(QModelIndex()) == 2);
+    
     delete mGroupEditorView;
     mGroupEditorView = 0;
 }    
@@ -109,13 +109,12 @@ void TestCntGroupEditorView::initializeFormData()
     
     mGroupEditorView->initializeForm();
     QVERIFY(mGroupEditorView->formModel()->rowCount(QModelIndex()) == 2);
-    
 }
 
 void TestCntGroupEditorView::cleanupTestCase()
 {
-    delete mWindow;
-    mWindow = 0;
+     mWindow->deleteLater();
+    //mWindow = 0;
     delete mViewManager;
     mViewManager = 0;
     delete mGroupEditorView;

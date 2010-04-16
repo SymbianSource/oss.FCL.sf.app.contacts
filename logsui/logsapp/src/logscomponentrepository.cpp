@@ -21,10 +21,12 @@
 #include "logsdetailsview.h"
 #include "logslogger.h"
 #include "logsmodel.h"
+#include "logsabstractviewmanager.h"
 
 //SYSTEM
 #include <QObject>
 #include <dialpad.h>
+#include <dialpadkeyhandler.h>
 #include <hbtoolbar.h>
 
 // -----------------------------------------------------------------------------
@@ -37,7 +39,8 @@ LogsComponentRepository::LogsComponentRepository(LogsAbstractViewManager& viewMa
       mRecentCallsView(0),
       mDetailsView(0),
       mMatchesView(0),
-      mDialpad(0)
+      mDialpad(0),
+      mDialpadKeyHandler(0)
 {
     mModel = new LogsModel();
 }
@@ -52,6 +55,7 @@ LogsComponentRepository::~LogsComponentRepository()
     mRecentViewComponents.clear();
     mDetailsViewComponents.clear();
     mMatchesViewComponents.clear();
+    delete mDialpadKeyHandler;
     delete mDialpad;
     delete mModel;
     
@@ -159,7 +163,9 @@ LogsMatchesView* LogsComponentRepository::matchesView()
 Dialpad* LogsComponentRepository::dialpad()
 {
     if ( !mDialpad ) {
-        mDialpad = new Dialpad;
+        mDialpad = new Dialpad(mViewManager.mainWindow());
+        mDialpadKeyHandler = 
+            new DialpadKeyHandler(mDialpad, mViewManager.mainWindow());
     }
     return mDialpad;
 }

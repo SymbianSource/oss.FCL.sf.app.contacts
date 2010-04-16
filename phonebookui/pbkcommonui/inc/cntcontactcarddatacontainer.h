@@ -89,6 +89,7 @@ private:
     int                         mSeparatorIndex;
     CntCommands*                mCommands;
     CntStringMapper             mStringMapper;
+    bool mLocationFeatureEnabled;
 
 };
 

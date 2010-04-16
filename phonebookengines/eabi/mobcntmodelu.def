@@ -34,4 +34,5 @@ EXPORTS
 	_ZNK11MobCntModel8rowCountERK11QModelIndex @ 33 NONAME
 	_ZTI11MobCntModel @ 34 NONAME
 	_ZTV11MobCntModel @ 35 NONAME
+	_ZNK11MobCntModel8myCardIdEv @ 36 NONAME
 

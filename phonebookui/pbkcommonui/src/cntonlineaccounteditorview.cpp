@@ -58,34 +58,29 @@ QStandardItemModel *CntOnlineAccountEditorView::itemModel()
     QStandardItem *internet = new QStandardItem;
     internet->setText(hbTrId("Internet call"));
     internet->setData(internetSubType, Qt::UserRole);
-    internet->setData(":/icons/qgn_prop_nrtyp_voip.svg", Qt::UserRole+2);
     internet->setData(CNT_ONLINEACCOUNT_EDITOR_MAXLENGTH, Qt::UserRole+3);
     fieldModel->appendRow(internet);
     QStandardItem *internethome = new QStandardItem;
     internethome->setText(hbTrId("Internet call (home)"));
     internethome->setData(internetSubType, Qt::UserRole);
     internethome->setData(contextHome, Qt::UserRole+1);
-    internethome->setData(":/icons/qgn_prop_nrtyp_voip.svg", Qt::UserRole+2);
     internethome->setData(CNT_ONLINEACCOUNT_EDITOR_MAXLENGTH, Qt::UserRole+3);
     fieldModel->appendRow(internethome);
     QStandardItem *internetwork = new QStandardItem;
     internetwork->setText(hbTrId("Internet call (work)"));
     internetwork->setData(internetSubType, Qt::UserRole);
     internetwork->setData(contextWork, Qt::UserRole+1);
-    internetwork->setData(":/icons/qgn_prop_nrtyp_voip.svg", Qt::UserRole+2);
     internetwork->setData(CNT_ONLINEACCOUNT_EDITOR_MAXLENGTH, Qt::UserRole+3);
     fieldModel->appendRow(internetwork);
     
     QStandardItem *sip = new QStandardItem;
     sip->setText(hbTrId("SIP"));
     sip->setData(sipSubType, Qt::UserRole);
-    sip->setData(":/icons/qgn_prop_nrtyp_sip.svg", Qt::UserRole+2);
     sip->setData(CNT_ONLINEACCOUNT_EDITOR_MAXLENGTH, Qt::UserRole+3);
     fieldModel->appendRow(sip);
     QStandardItem *shareVideo = new QStandardItem;
     shareVideo->setText(hbTrId("Share Video"));
     shareVideo->setData(shareVideoSubType, Qt::UserRole);
-    shareVideo->setData(":/icons/qgn_prop_nrtyp_swis.svg", Qt::UserRole+2);
     shareVideo->setData(CNT_ONLINEACCOUNT_EDITOR_MAXLENGTH, Qt::UserRole+3);
     fieldModel->appendRow(shareVideo);
     

@@ -39,7 +39,7 @@ public:
         mStringMap.insert(QContactPhoneNumber::SubTypeAssistant, hbTrId("Assistant number"));
         mStringMap.insert(QContactPhoneNumber::SubTypeCar, hbTrId("Car phone"));
         mStringMap.insert(QContactPhoneNumber::SubTypeMobile, hbTrId("Mobile"));
-        mStringMap.insert(QContactPhoneNumber::SubTypeLandline, hbTrId("Landline"));
+        mStringMap.insert(QContactPhoneNumber::SubTypeLandline, hbTrId("Phone"));
         mStringMap.insert(QContactPhoneNumber::SubTypeDtmfMenu, hbTrId("DTMF"));
         mStringMap.insert(QContactPhoneNumber::SubTypeFacsimile, hbTrId("Fax"));
         mStringMap.insert(QContactPhoneNumber::SubTypePager, hbTrId("Pager number"));
@@ -72,37 +72,37 @@ public:
         mStringMap.insert(QContactDetail::ContextWork, hbTrId("(work)"));
 
         // init mapping of editor icons
-        mEditorIconMap.insert(QContactPhoneNumber::DefinitionName, ":/icons/qtg_small_mobile.svg");
-        mEditorIconMap.insert(QContactPhoneNumber::SubTypeAssistant, ":/icons/qtg_small_assistant.svg");
-        mEditorIconMap.insert(QContactPhoneNumber::SubTypeCar, ":/icons/qtg_small_car.svg");
-        mEditorIconMap.insert(QContactPhoneNumber::SubTypeMobile, ":/icons/qtg_small_mobile.svg");
-        mEditorIconMap.insert(QContactPhoneNumber::SubTypeLandline, ":/icons/qtg_small_landline.svg");
-        mEditorIconMap.insert(QContactPhoneNumber::SubTypeDtmfMenu, ":/icons/qgn_prop_empty.svg");
-        mEditorIconMap.insert(QContactPhoneNumber::SubTypeFacsimile, ":/icons/qtg_small_fax.svg");
-        mEditorIconMap.insert(QContactPhoneNumber::SubTypePager, ":/icons/qtg_small_pager.svg");
+        mEditorIconMap.insert(QContactPhoneNumber::DefinitionName, "qtg_small_mobile");
+        mEditorIconMap.insert(QContactPhoneNumber::SubTypeAssistant, "qtg_small_assistant");
+        mEditorIconMap.insert(QContactPhoneNumber::SubTypeCar, "qtg_small_car");
+        mEditorIconMap.insert(QContactPhoneNumber::SubTypeMobile, "qtg_small_mobile");
+        mEditorIconMap.insert(QContactPhoneNumber::SubTypeLandline, "qtg_small_landline");
+        mEditorIconMap.insert(QContactPhoneNumber::SubTypeDtmfMenu, "qgn_prop_empty");
+        mEditorIconMap.insert(QContactPhoneNumber::SubTypeFacsimile, "qtg_small_fax");
+        mEditorIconMap.insert(QContactPhoneNumber::SubTypePager, "qtg_small_pagerg");
 
-        mEditorIconMap.insert(QContactEmailAddress::DefinitionName, ":/icons/qtg_small_email.svg");
+        mEditorIconMap.insert(QContactEmailAddress::DefinitionName, "qtg_small_email");
 
-        mEditorIconMap.insert(QContactAddress::DefinitionName, ":/icons/qtg_small_location.svg");
+        mEditorIconMap.insert(QContactAddress::DefinitionName, "qtg_small_location");
 
-        mEditorIconMap.insert(QContactOnlineAccount::DefinitionName, ":/icons/qtg_small_internet.svg");
-        mEditorIconMap.insert(QContactOnlineAccount::SubTypeSipVoip, ":/icons/qtg_small_internet.svg");
-        mEditorIconMap.insert(QContactOnlineAccount::SubTypeSip, ":/icons/qtg_small_internet.svg");
-        mEditorIconMap.insert(QContactOnlineAccount::SubTypeVideoShare, ":/icons/qtg_small_internet.svg");
+        mEditorIconMap.insert(QContactOnlineAccount::DefinitionName, "qtg_small_internet");
+        mEditorIconMap.insert(QContactOnlineAccount::SubTypeSipVoip, "qtg_small_internet");
+        mEditorIconMap.insert(QContactOnlineAccount::SubTypeSip, "qtg_small_internet");
+        mEditorIconMap.insert(QContactOnlineAccount::SubTypeVideoShare, "qtg_small_internet");
 
-        mEditorIconMap.insert(QContactUrl::DefinitionName, ":/icons/qgn_prop_empty.svg");
+        mEditorIconMap.insert(QContactUrl::DefinitionName, "qtg_small_url_address.svg");
 
         // init mapping of contact card icons
-        mLauncherIconMap.insert(QContactPhoneNumber::DefinitionName, ":/icons/qtg_large_call_mobile.svg");
-        mLauncherIconMap.insert(QContactPhoneNumber::SubTypeMobile, ":/icons/qtg_large_call_mobile.svg");
-        mLauncherIconMap.insert(QContactPhoneNumber::SubTypeLandline, ":/icons/qtg_large_call_landline.svg");
-        mLauncherIconMap.insert(QContactPhoneNumber::SubTypeFacsimile, ":/icons/qtg_large_call_fax.svg");
-        mLauncherIconMap.insert(QContactPhoneNumber::SubTypePager, ":/icons/qtg_large_call_pager.svg");
-        mLauncherIconMap.insert(QContactPhoneNumber::SubTypeCar, ":/icons/qtg_large_call_car.svg");
-        mLauncherIconMap.insert(QContactPhoneNumber::SubTypeAssistant, ":/icons/qtg_large_call_assistant.svg");
-        mLauncherIconMap.insert(QContactPhoneNumber::SubTypeDtmfMenu, ":/icons/qtg_large_call_group.svg");
+        mLauncherIconMap.insert(QContactPhoneNumber::DefinitionName, "qtg_large_call_mobile");
+        mLauncherIconMap.insert(QContactPhoneNumber::SubTypeMobile, "qtg_large_call_mobile");
+        mLauncherIconMap.insert(QContactPhoneNumber::SubTypeLandline, "qtg_large_call_landline");
+        mLauncherIconMap.insert(QContactPhoneNumber::SubTypeFacsimile, "qtg_large_call_fax");
+        mLauncherIconMap.insert(QContactPhoneNumber::SubTypePager, "qtg_large_call_pager");
+        mLauncherIconMap.insert(QContactPhoneNumber::SubTypeCar, "qtg_large_call_car");
+        mLauncherIconMap.insert(QContactPhoneNumber::SubTypeAssistant, "qtg_large_call_assistant");
+        mLauncherIconMap.insert(QContactPhoneNumber::SubTypeDtmfMenu, "qtg_large_call_group");
 
-        mLauncherIconMap.insert(QContactEmailAddress::DefinitionName, ":/icons/qtg_large_email.svg");
+        mLauncherIconMap.insert(QContactEmailAddress::DefinitionName, "qtg_large_email");
     }
 
     QString getMappedDetail(const QString &string) { return mStringMap.value(string); }

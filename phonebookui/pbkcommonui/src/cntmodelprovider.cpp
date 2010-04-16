@@ -102,10 +102,12 @@ MobCntModel *CntModelProvider::contactModel()
         QList<QContactSortOrder> sortOrders;
         QContactSortOrder sortOrderFirstName;
         sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName, QContactName::FieldFirst);
+        sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
         sortOrders.append(sortOrderFirstName);
 
         QContactSortOrder sortOrderLastName;
         sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName, QContactName::FieldLast);
+        sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
         sortOrders.append(sortOrderLastName);
 
         mContactModel=new MobCntModel(contactManager(), QContactFilter(), sortOrders);

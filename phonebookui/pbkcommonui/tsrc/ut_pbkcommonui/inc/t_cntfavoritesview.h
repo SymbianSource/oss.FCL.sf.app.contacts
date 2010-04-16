@@ -28,16 +28,12 @@ class TestCntFavoritesView: public QObject
 private slots:
 
     void initTestCase();
-    void createClasses();
+    void init();
+    void cleanup();
 
-    void openFetch();
     void openNamesList();
     void aboutToCloseView();
-
-    void addActionsToToolBar();
-
-    // these two are actually already covered with tests above
-    void cleanupTestCase();
+    void activateView();
 
 private:
 

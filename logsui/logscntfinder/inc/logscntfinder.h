@@ -187,10 +187,16 @@ signals:
 private:
 
     void doPredictiveHistoryQuery();
-    void doPredictiveContactQuery();
+    void doPredictiveContactQuery( LogsCntEntryList& recentResults );
+    void doPredictiveCacheQuery();
     
     LogsCntEntry* doGetEntry( const LogsCntEntryList& list, 
                               const LogsCntEntryHandle& handle ) const;
+    
+    void addResult( quint32 cntId, LogsCntEntryList& recentResults );
+    void addResult( LogsCntEntry* entry );
+    void updateResult( LogsCntEntry* entry );
+    
     
     
 private:
@@ -199,6 +205,7 @@ private:
     LogsCntEntryList mResults;
     QContactManager* mContactManager;
     LogsCntEntryList mHistoryEvents;
+    int mCachedCounter;
     
     friend class UT_LogsCntFinder;
     

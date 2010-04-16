@@ -56,21 +56,18 @@ QStandardItemModel *CntEmailEditorView::itemModel()
     QStandardItem *email = new QStandardItem;
     email->setText(hbTrId("txt_phob_dblist_email"));
     email->setData(emailField, Qt::UserRole);
-    email->setData(":/icons/qgn_prop_nrtyp_email.svg", Qt::UserRole+2);
     email->setData(CNT_EMAIL_EDITOR_MAXLENGTH, Qt::UserRole+3);
     fieldModel->appendRow(email);
     QStandardItem *emailhome = new QStandardItem;
     emailhome->setText(hbTrId("txt_phob_dblist_email_home"));
     emailhome->setData(emailField, Qt::UserRole);
     emailhome->setData(contextHome, Qt::UserRole+1);
-    emailhome->setData(":/icons/qgn_prop_nrtyp_email.svg", Qt::UserRole+2);
     emailhome->setData(CNT_EMAIL_EDITOR_MAXLENGTH, Qt::UserRole+3);
     fieldModel->appendRow(emailhome);
     QStandardItem *emailwork = new QStandardItem;
     emailwork->setText(hbTrId("txt_phob_dblist_email_work"));
     emailwork->setData(emailField, Qt::UserRole);
     emailwork->setData(contextWork, Qt::UserRole+1);
-    emailwork->setData(":/icons/qgn_prop_nrtyp_email.svg", Qt::UserRole+2);
     emailwork->setData(CNT_EMAIL_EDITOR_MAXLENGTH, Qt::UserRole+3);
     fieldModel->appendRow(emailwork);
     

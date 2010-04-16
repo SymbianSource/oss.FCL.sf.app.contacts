@@ -45,8 +45,9 @@ public:
 public: 
  		
     explicit LogsContact(LogsEvent& event, LogsDbConnector& dbConnector);
-    explicit LogsContact(
-        unsigned int contactId, const QString& number, LogsDbConnector& dbConnector);
+    explicit LogsContact(const QString& number, 
+                         LogsDbConnector& dbConnector,
+                         unsigned int contactId = 0);
     LOGSENGINE_EXPORT ~LogsContact();
  	
     /**
@@ -61,18 +62,26 @@ public slots:
     /**
      * Launch phonebook view for modification of the contact. Will proceed 
      * only if allowedRequestType() is TypeLogsContactOpen, otherwise returns false.
-     * Emits openCompeted() signal, when contact modifications are done.
+     * Emits openCompleted() signal, when contact modifications are done.
      * @return true if opening was called successfully
      */
     LOGSENGINE_EXPORT bool open();
     
     /**
      * Launch phonebook view for creation of a new contact. 
-     * Emits openCompeted() signal, when contact saving is done.
-     * @return true if saving was called successfully
+     * Emits saveCompleted() signal, when contact saving is done.
+     * @return true if adding was called successfully
      */
-    LOGSENGINE_EXPORT bool save();    
+    LOGSENGINE_EXPORT bool addNew();
+    
+    /**
+     * Launch phonebook view for updating of existing contact. 
+     * Emits saveCompeted() signal, when contact saving is done.
+     * @return true if updating was called successfully
+     */
+    LOGSENGINE_EXPORT bool updateExisting();   
 
+    
 signals:
 
     /**
@@ -107,8 +116,11 @@ private:
      */
     bool isContactInPhonebook();
     
-    bool requestFetchService( QString message, const QList<QVariant> &arguments,
-            bool sync = false );
+    bool save(QString message);
+    
+    bool requestFetchService(QString message,
+                             const QList<QVariant> &arguments,
+                             bool sync = false );
     
     
 private: //data 

@@ -19,10 +19,14 @@
 #define CNTGROUPSELECTIONPOPUP_H
 
 #include <QObject>
+#include <QGraphicsLinearLayout>
 #include <hbdialog.h>
 #include <hblistview.h>
 #include "qmobilityglobal.h"
 
+class HbListView;
+class HbSearchPanel;
+class HbTextItem;
 class HbListView;
 class MobCntModel;
 
@@ -38,31 +42,35 @@ class CntGroupSelectionPopup : public HbDialog
     Q_OBJECT
 
 public:
-    CntGroupSelectionPopup(QContactManager *manager,MobCntModel *model, QContact *contact,QGraphicsItem *parent = 0 );
+    CntGroupSelectionPopup(QContactManager *manager, QContact *contact, QGraphicsItem *parent = 0);
     ~CntGroupSelectionPopup();
 
     void saveNewGroup();
     void saveOldGroup();
     void populateListOfContact();
-    void populateListOfGroup();
-    void deleteGroup();
-  
+    
 #ifdef PBK_UNIT_TEST
 public slots:
 #else
 private slots:
 #endif
-  
+
+void closeFind();
+void setFilter(const QString &filterString);
+
 #ifdef PBK_UNIT_TEST
 public:
 #else
 private:
 #endif
-    HbListView          *mListView;
-    QContactManager     *mContactManager;
-    MobCntModel         *mCntModel;
-    QContact            *mContact;
-   
+    HbListView              *mListView;
+    HbSearchPanel           *mSearchPanel;
+    HbTextItem              *mEmptyListLabel;
+    QContactManager         *mContactManager;
+    MobCntModel             *mCntModel;
+    QContact                *mContact;
+    QGraphicsWidget         *mContainerWidget;
+    QGraphicsLinearLayout   *mContainerLayout;  
 };
 
 #endif // CNTGROUPSELECTIONPOPUP_H

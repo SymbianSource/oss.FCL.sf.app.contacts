@@ -132,6 +132,29 @@ bool LogsDbConnector::markEventsSeen(const QList<int>& ids)
 }
 
 // ----------------------------------------------------------------------------
+// LogsDbConnector::readDuplicates
+// ----------------------------------------------------------------------------
+//
+int LogsDbConnector::readDuplicates(int eventId)
+{
+    Q_UNUSED(eventId);
+    logsLastCalledFunction = "readDuplicates";
+    return 0;
+}
+    
+// ----------------------------------------------------------------------------
+// LogsDbConnector::takeDuplicates
+// ----------------------------------------------------------------------------
+//
+QList<LogsEvent*> LogsDbConnector::takeDuplicates()
+{
+    QList<LogsEvent*> events;
+    events = mDuplicatedEvents;
+    mDuplicatedEvents.clear();
+    return events;
+}
+
+// ----------------------------------------------------------------------------
 // LogsDbConnector::readCompleted
 // ----------------------------------------------------------------------------
 //
@@ -181,6 +204,15 @@ void LogsDbConnector::temporaryErrorOccurred(int err)
 void LogsDbConnector::eventModifyingCompleted()
 {
 
+}
+
+// ----------------------------------------------------------------------------
+// LogsDbConnector::duplicatesReadingCompleted
+// ----------------------------------------------------------------------------
+//
+void LogsDbConnector::duplicatesReadingCompleted(QList<LogsEvent*> duplicates)
+{
+    Q_UNUSED(duplicates);
 }
 
 // ----------------------------------------------------------------------------

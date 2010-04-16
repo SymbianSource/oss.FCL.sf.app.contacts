@@ -16,6 +16,7 @@
 */
 
 #include "cntcontactcarddatacontainer.h"
+#include <cntmaptileservice.h> //For fetching maptile
 
 #include <qtcontacts.h>
 #include <hbicon.h>
@@ -106,7 +107,7 @@ void CntContactCardDataContainer::initializeData()
            //data
            dataList.append(number.number());
            //icon
-           dataList.append(":/icons/qtg_large_message.svg");
+           dataList.append("qtg_large_message");
            //detail
            QContactDetail detail(number);
            QVariant var;
@@ -141,7 +142,7 @@ void CntContactCardDataContainer::initializeData()
                 //data
                 dataList.append(email.emailAddress());
                 //icon
-                dataList.append(":/icons/qtg_large_email.svg");
+                dataList.append("qtg_large_email");
                 //detail
                 QContactDetail detail(email);
                 QVariant var;
@@ -170,7 +171,7 @@ void CntContactCardDataContainer::initializeGroupData()
     //data
     callDataList.append(confCallNumber.number());
     //icon
-    callDataList.append(":/icons/qtg_large_call_group.svg");
+    callDataList.append("qtg_large_call_group");
     //detail
     QContactDetail detail(confCallNumber);
     QVariant var;
@@ -189,7 +190,7 @@ void CntContactCardDataContainer::initializeGroupData()
     //data
     messageDataList.append(confCallNumber.number());
     //icon
-    messageDataList.append(":/icons/qtg_large_message.svg");
+    messageDataList.append("qtg_large_message");
     //detail
     QContactDetail messageDetail(confCallNumber);
     QVariant messageVar;
@@ -205,7 +206,7 @@ void CntContactCardDataContainer::initializeGroupData()
     //data
     emailDataList.append(confCallNumber.number());
     //icon
-    emailDataList.append(":/icons/qtg_large_email.svg");
+    emailDataList.append("qtg_large_email");
     //detail
     QContactDetail emailDetail(confCallNumber);
     QVariant emailVar;
@@ -220,10 +221,15 @@ Initialize contact details which not include actions.
 */
 void CntContactCardDataContainer::initializeDetailsData()
 {
+    QString contextHome(QContactAddress::ContextHome.operator QString());
+    QString contextWork(QContactAddress::ContextWork.operator QString());
+    CntMapTileService::ContactAddressType sourceAddressType;  
+    mLocationFeatureEnabled = CntMapTileService::isLocationFeatureEnabled() ;
     //address
     QList<QContactAddress> addressDetails = mContact->details<QContactAddress>();
     for (int i = 0; i < addressDetails.count(); i++)
     {
+        sourceAddressType = CntMapTileService::AddressPreference;
         QVariantList addressList;
         //no action
         addressList.append(QString());
@@ -233,7 +239,16 @@ void CntContactCardDataContainer::initializeDetailsData()
         }
         else
         {
-            addressList.append(hbTrId("Address (%1):").arg(addressDetails[i].contexts().at(0)));
+            if ( addressDetails[i].contexts().at(0) == contextHome )
+            {
+                sourceAddressType = CntMapTileService::AddressHome;
+                addressList.append(hbTrId("txt_phob_formlabel_address_home"));
+            }
+            else if (addressDetails[i].contexts().at(0) == contextWork)
+            {
+                sourceAddressType = CntMapTileService::AddressWork;
+                addressList.append(hbTrId("txt_phob_formlabel_address_work"));
+            }
         }
         QStringList address;
         
@@ -260,6 +275,27 @@ void CntContactCardDataContainer::initializeDetailsData()
         addressList.append(var);
         addSeparator(rowCount());
         mDataPointer->mDataList.insert(rowCount(), addressList);
+        //Check whether location feature enabled
+        if (mLocationFeatureEnabled)
+        {
+            TUint32 contactId = mContact->id().localId();
+         
+            //Get the maptile image path
+            QString imageFile = CntMapTileService::getMapTileImage(contactId, sourceAddressType);
+        
+		    if ( !imageFile.isNull() )
+		    {   
+		        //Insert the imagepath in data container
+		        QVariantList maptileImage;
+                maptileImage.append(QString());
+                maptileImage.append(QString(" "));
+                maptileImage.append(QString(" "));
+    
+                maptileImage.append( imageFile );
+                addSeparator(rowCount());
+                mDataPointer->mDataList.insert(rowCount(), maptileImage);
+		    }
+        }
     } 
     
     //birthday
@@ -311,7 +347,7 @@ void CntContactCardDataContainer::initializeDetailsData()
             QVariantList dataList;
             //no action
             dataList.append(QString());
-            dataList.append(hbTrId("Ringtone:"));
+            dataList.append(hbTrId("txt_phob_formlabel_ringing_tone"));
             dataList.append(ringtoneDetails[i].avatar());
             //no icon
             dataList.append(QString());

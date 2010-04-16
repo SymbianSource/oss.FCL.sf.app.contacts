@@ -50,7 +50,8 @@ private slots: //test methods
     void testConstructor();
 	void testAllowedRequestType();
 	void testOpen();
-	void testSave();
+	void testAddNew();
+	void testUpdateExisting();
 	void testIsContactInPhonebook();
     void testIsContactRequestAllowed();
 	void testHandleRequestCompeted();

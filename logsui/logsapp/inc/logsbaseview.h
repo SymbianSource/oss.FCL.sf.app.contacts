@@ -70,6 +70,7 @@ signals:
 protected slots:
 
     virtual void handleBackSoftkey();
+    virtual void dialpadOpened();
     virtual void dialpadClosed();
     virtual void dialpadEditorTextChanged();
     virtual void updateEmptyListWidgetsVisibility();
@@ -87,11 +88,11 @@ protected slots:
     void initiateCallback(const QModelIndex &listIndex);
     void initiateCall(int callType);
     void createMessage();
+    void saveContact();
     void updateEmptyListLabelVisibility();
     void showCallDetails();
     void deleteEvent();
 
-    void handleAboutToChangeOrientation();
     void handleOrientationChanged();
     
 protected:
@@ -116,9 +117,8 @@ protected:
     void updateListLayoutName( HbListView& list, bool ignoreDialpad = false );
     /**
      * Loads appropriate section from *.docml to resize list widget
-     * @param name of currently loaded section, will be updated after the call 
      */
-    void updateListSize( QString& currentSection );
+    void updateListSize();
   
 protected:
     
@@ -146,12 +146,8 @@ protected:
     void deactivateEmptyListIndicator(QAbstractItemModel* model);
     
     void addViewSwitchingEffects();
+    void toggleActionAvailability( HbAction* action, bool available );
 	
-private:
-    
-    void clearSoftKey();
-    void activateSoftKey();
-       
 protected:
     
     LogsAppViewId mViewId;
@@ -166,7 +162,6 @@ protected:
     QMap<LogsServices::LogsView, QString>   mActionMap;
     
     bool mInitialized;
-    bool mForceDialpadOpened;
     
     LogsCall* mCall;       //owned
     LogsMessage* mMessage; //owned
@@ -174,6 +169,7 @@ protected:
     LogsDetailsModel* mDetailsModel; //owned
     
     QSignalMapper* mCallTypeMapper;
+    QString mLayoutSectionName;
 };
 
 

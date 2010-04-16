@@ -37,12 +37,14 @@ const char logsDetailsViewMenuId[] = "logs_details_view_menu";
 const char logsShowFilterMenuId[] = "logs_show_filter_menu";
 const char logsLabelEmptyListId[] = "logs_label_empty_list";
 const char logsToolbarId[] = "logs_toolbar";
+const char logsButtonAddToContactsId[] = "logs_button_addtocontacts";
 
 //action ids
+const char logsCommonVideoCallMenuActionId[] = "logs_act_video_call";
+const char logsCommonMessageMenuActionId[] = "logs_act_create_message";
+
 const char logsDetailsViewVoiceCallMenuActionId[] = "logs_act_voice_call";
-const char logsDetailsViewVideoCallMenuActionId[] = "logs_act_video_call";
 const char logsDetailsViewInternetCallMenuActionId[] = "logs_act_internet_call";
-const char logsDetailsMessageMenuActionId[] = "logs_act_create_message";
 const char logsDetailsAddToContactsMenuActionId[] = "logs_act_add_to_contacts";
 const char logsDetailsOpenContactMenuActionId[] = "logs_act_open_contact";
 const char logsRecentViewClearListMenuActionId[] = "logs_act_clear_list";

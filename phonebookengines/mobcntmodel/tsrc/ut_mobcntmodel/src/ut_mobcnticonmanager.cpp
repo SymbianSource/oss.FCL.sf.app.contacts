@@ -20,14 +20,14 @@
 #include <QDebug>
 #include <QIcon>
 #include <QSignalSpy>
-
+#include <e32cmn.h> //KNullDesC
 #include "mobcnticonmanager.h"
 #include "ut_mobcnticonmanager.h"
 
 const int WAIT_TIME1 = 500;
 const int WAIT_TIME2 = 900;
-const QString path1 = "c:\\data\\images\\designer.png";
-const QString path2 = "c:\\data\\images\\monkey_on_64x64.png";
+const QString path1 = "c:\\data\\images\\image1.png";
+const QString path2 = "c:\\data\\images\\image2.png";
 const QString path3 = "e:\\images\\non.jpeg";
 
 void TestMobCntIconManager::initTestCase()

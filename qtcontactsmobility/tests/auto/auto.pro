@@ -10,7 +10,8 @@ contains(mobility_modules,serviceframework) {
            qservicefilter \
            qservicemanager \
            qabstractsecuritysession \
-           qservicecontext
+           qservicecontext \
+           icheck
 
 # servicedatabase is not compiled into the serviceframework library on symbian,
 # special handling is needed
@@ -69,7 +70,8 @@ contains(mobility_modules,systeminfo) {
 }
 
 contains(mobility_modules,contacts) {
-    SUBDIRS +=  qcontact \                      #Contacts
+    #Contacts
+    SUBDIRS +=  qcontact \
             qcontactactions \
             qcontactasync \
             qcontactdetail \
@@ -80,6 +82,19 @@ contains(mobility_modules,contacts) {
             qcontactmanagerplugins \
             qcontactmanagerfiltering \
             qcontactrelationship
+
+    SUBDIRS +=  qcontact_deprecated \
+            qcontactactions_deprecated \
+            qcontactasync_deprecated \
+            qcontactdetail_deprecated \
+            qcontactdetaildefinition_deprecated \
+            qcontactdetails_deprecated \
+            qcontactfilter_deprecated \
+            qcontactmanager_deprecated \
+            qcontactmanagerplugins_deprecated \
+            qcontactmanagerfiltering_deprecated \
+            qcontactrelationship_deprecated
+
 }
 
 contains(mobility_modules,versit) {
@@ -87,6 +102,7 @@ contains(mobility_modules,versit) {
     SUBDIRS += \
             qvcard21writer \
             qvcard30writer \
+            qversit \
             qversitcontactexporter \
             qversitcontactimporter \
             qversitdocument \
@@ -112,14 +128,25 @@ contains(mobility_modules,multimedia) {
         qmediaserviceprovider \
         qmediacontent \
         qradiotuner \
-        qvideowidget
+        qvideowidget \
+        qmediatimerange
 
     contains(QT_CONFIG, multimedia) {
         SUBDIRS += \
                 qgraphicsvideoitem \
                 qpaintervideosurface
 
-}
+    }
+
+    symbian: {
+        #symbian spesific autotests
+        SUBDIRS += symbian 
+        SUBDIRS -= \
+                qcamera \
+                qmediaplayer \
+                qradiotuner \
+                qmediaobject
+    }
 }
 #Messaging
 contains(mobility_modules,messaging) {

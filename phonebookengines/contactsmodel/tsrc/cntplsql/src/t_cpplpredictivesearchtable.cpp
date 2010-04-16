@@ -26,6 +26,8 @@
 // Database file
 _LIT(KDBFile, "c:\\unittest.db");
 
+_LIT(KDBFileWithoutPredSearch, "c:\\contacts_without_pred_search_tables.db");
+
 const TContactItemId KTestContactId = 20;
 const TContactItemId KTestContactId2 = 85;
 const TContactItemId KTestContactId3 = 7001;
@@ -33,7 +35,12 @@ const TContactItemId KTestContactId4 = 56030;
 
 _LIT(KTestFirstName, "123");
 _LIT(KTestLastName, "45678");
-_LIT(KTestCompanyName, "90");
+
+// Must have same value as KMaxDigits in cpplpredictivesearchtable.cpp
+const TInt KMaxDigits = 15;
+
+// Must have same value as KConversionError in cpplpredictivesearchtable.cpp
+const quint64 KConversionError = 0xeeeeeeeeeeeeeee;
     
 
 // -----------------------------------------------------------------------------
@@ -117,6 +124,14 @@ void UT_CPplPredictiveSearchTable::Teardown()
 
 // TEST CASES
 
+// Dummy case to see if the first case always results a resource leak
+void UT_CPplPredictiveSearchTable::UT_DummyL()
+    {
+    // The first test case that writes to tables, seems to cause resource leak
+    // if the DB file did not have predictive search tables already.
+    AddContactL(KTestFirstName, KNullDesC, KTestContactId);
+    }
+
 // -----------------------------------------------------------------------------
 // UT_CPplPredictiveSearchTable::UT_CreateInDbLL
 // -----------------------------------------------------------------------------
@@ -125,7 +140,7 @@ void UT_CPplPredictiveSearchTable::UT_CreateInDbLL()
     {
     CheckItemCountL(); // all empty
 
-    AddContactL(KTestFirstName, KTestLastName, KTestCompanyName, KTestContactId);
+    AddContactL(KTestFirstName, KTestLastName, KTestContactId);
 
     CheckItemCountL(0, 1, 0, 0, 1); // table 1 and 4 have one entry
     }
@@ -136,27 +151,40 @@ void UT_CPplPredictiveSearchTable::UT_CreateInDbLL()
 //
 void UT_CPplPredictiveSearchTable::UT_CreateInDbManyContactsL()
     {
-	AddContactL(_L(" 1 22 333 4"), _L("  505 6768"), _L("7 8 9"), KTestContactId);
-	CheckItemCountL(0, 1, 1, 1, 1, 1, 1);
+	AddContactL(_L(" 1 22 333 4"), _L("  505 6768"), KTestContactId);
+	// Only 4 tokens are stored: first two LN and first two FN. 
+	CheckItemCountL(0, 1, 1, 0, 0, 1, 1);
 
-	AddContactL(_L(" 1 22 333 4"), _L("777  505 6768"), _L("123"), KTestContactId2);
-	CheckItemCountL(0, 2, 2, 2, 2, 2, 2, 1);
+	
+	AddContactL(_L(" 1 22 333 4"), _L("777  505 6768"), KTestContactId2);
+	// Adds contact to tables 1 2 7 5
+	CheckItemCountL(0, 2, 2, 0, 0, 2, 1, 1);
 
-	AddContactL(_L(" 1 22 333 4"), _L("  5 6"), KNullDesC, KTestContactId3);
-	CheckItemCountL(0, 3, 3, 3, 3, 3, 3, 1);
+	
+	AddContactL(_L(" 1 22 333 4"), _L("  5 6"), KTestContactId3);
+	// Adds contact to tables 1 2 5 6
+	CheckItemCountL(0, 3, 3, 0, 0, 3, 2, 1);
 
-	AddContactL(_L("858585"), _L("88"), KNullDesC, KTestContactId4);
-	CheckItemCountL(0, 3, 3, 3, 3, 3, 3, 1, 1);
+	
+	AddContactL(_L("858585"), _L("88"), KTestContactId4);
+	// Adds contact to table 8
+	CheckItemCountL(0, 3, 3, 0, 0, 3, 2, 1, 1);
 
+	
 	TContactItemId id = KTestContactId4;
-	AddContactL(KNullDesC, KNullDesC, _L("1 2 3 4 5 6"), ++id);
-	CheckItemCountL(0, 3, 3, 3, 3, 3, 3, 1, 1);
+	AddContactL(KNullDesC, KNullDesC, ++id);
+	// Contact is not added to any table
+	CheckItemCountL(0, 3, 3, 0, 0, 3, 2, 1, 1);
 
-	AddContactL(_L("1 1 1 1 1 1 1"), KNullDesC, _L("1 2 3 4 5 6"), ++id);
-	CheckItemCountL(0, 4, 3, 3, 3, 3, 3, 1, 1);
+	
+	AddContactL(_L("1 1 1 1 1 1 1"), KNullDesC, ++id);
+	// Adds contact to table 1
+	CheckItemCountL(0, 4, 3, 0, 0, 3, 2, 1, 1);
 
-	AddContactL(KNullDesC, _L("  22 22 2 2 222222"), KNullDesC, ++id);
-	CheckItemCountL(0, 4, 4, 3, 3, 3, 3, 1, 1);
+	
+	AddContactL(KNullDesC, _L("  22 22 2 2 222222"), ++id);
+	// Adds contact to table 2
+	CheckItemCountL(0, 4, 4, 0, 0, 3, 2, 1, 1);
 	}
 
 // -----------------------------------------------------------------------------
@@ -169,7 +197,7 @@ void UT_CPplPredictiveSearchTable::UT_UpdateLL()
     _LIT(KTestUpdatedName, "0581");
     
     // Add one contact to DB
-    AddContactL(KTestFirstName, KTestLastName, KTestCompanyName, KTestContactId);
+    AddContactL(KTestFirstName, KTestLastName, KTestContactId);
     
     // Update some field
     TInt id = KUidContactCardValue;
@@ -210,7 +238,7 @@ void UT_CPplPredictiveSearchTable::UT_UpdateLL()
     }
 
 // -----------------------------------------------------------------------------
-// UT_CPplPredictiveSearchTable::UT_UpdateLL
+// UT_CPplPredictiveSearchTable::UT_UpdateLBothFieldsL
 // Update an existing contact
 // -----------------------------------------------------------------------------
 //
@@ -218,11 +246,11 @@ void UT_CPplPredictiveSearchTable::UT_UpdateLBothFieldsL()
     {
     _LIT(KTestUpdatedFirstName, "777");
     _LIT(KTestUpdatedLastName, "012345");
-       
+
     // Add some contacts
-    AddContactL(KTestFirstName, KTestLastName, KTestCompanyName, KTestContactId);
-    AddContactL(_L("9876"), _L("888"), KTestCompanyName, KTestContactId2);
-    AddContactL(_L("5050"), _L("2"), KTestCompanyName, KTestContactId3);
+    AddContactL(KTestFirstName, KTestLastName, KTestContactId);
+    AddContactL(_L("9876"), _L("888"), KTestContactId2);
+    AddContactL(_L("5050"), _L("2"), KTestContactId3);
     CheckItemCountL(0, 1, 1, 0, 1, 1, 0, 0, 1, 1);
 
     // Update FN and LN of second contact
@@ -272,9 +300,9 @@ void UT_CPplPredictiveSearchTable::UT_UpdateLBothFieldsL()
 void UT_CPplPredictiveSearchTable::UT_SearchL()
     {
     // Create some contacts
-    AddContactL(_L("123704"), _L("39"), KNullDesC, KTestContactId);
-    AddContactL(_L("908"), KNullDesC, _L("00588"), KTestContactId2);
-    AddContactL(KNullDesC, _L("967"), _L("2345"), KTestContactId3);
+    AddContactL(_L("123704"), _L("39"), KTestContactId);
+    AddContactL(_L("908"), KNullDesC, KTestContactId2);
+    AddContactL(KNullDesC, _L("967"), KTestContactId3);
     // Tables 0 and 2 are empty, since company name is not used
     CheckItemCountL(0, 1, 0, 1, 0, 0, 0, 0, 0, 2); 
     
@@ -309,10 +337,16 @@ void UT_CPplPredictiveSearchTable::UT_SearchL()
 void UT_CPplPredictiveSearchTable::UT_SearchWithSpacesL()
     {
     // Create some contacts
-    AddContactL(_L(" 8075 4702 380"), _L(" 470 038"), _L(" 0804 08"), KTestContactId);
-    AddContactL(_L(" 0 00"), _L(" 38 038  470"), KNullDesC, KTestContactId2);
-    AddContactL(KNullDesC, _L(" 123 47  "), KNullDesC, KTestContactId3);
-    CheckItemCountL(2, 1, 0, 2, 3, 0, 0, 0, 1, 0);
+    
+    // Goes to tables 8, 4 and 0
+    AddContactL(_L(" 8075 4702 380"), _L(" 470 038"), KTestContactId);
+    
+    // Goes to tables 0 and 4
+    AddContactL(_L(" 0 00"), _L(" 470 038  38"), KTestContactId2);
+    
+    // Goes to table 1 and 4
+    AddContactL(KNullDesC, _L(" 123 47  "), KTestContactId3);
+    CheckItemCountL(2, 1, 0, 0, 3, 0, 0, 0, 1, 0);
     
     // No matches
     RArray<TContactItemId> results = DoPredictiveSearchL(_L("2"));
@@ -399,7 +433,7 @@ void UT_CPplPredictiveSearchTable::UT_SearchWithSpacesL()
 //
 void UT_CPplPredictiveSearchTable::UT_DeleteLL()
     {
-    AddContactL(KTestFirstName, KTestLastName, KTestCompanyName, KTestContactId);
+    AddContactL(KTestFirstName, KTestLastName, KTestContactId);
     CheckItemCountL(0, 1, 0, 0, 1, 0, 0, 0, 0, 0);
     
     TInt id = KUidContactCardValue;
@@ -407,18 +441,6 @@ void UT_CPplPredictiveSearchTable::UT_DeleteLL()
     uid.iUid = id;
     CContactItem* contact = CContactItem::NewLC(uid);
     contact->SetId(KTestContactId);
-
-    // Set FN & LN as they are needed to determine affected tables
-    CContactItemField* field =
-        CContactItemField::NewL(KStorageTypeText, KUidContactFieldGivenName);
-    CContactTextField* textfield = field->TextStorage();
-    textfield->SetTextL(KTestFirstName);
-    contact->AddFieldL(*field); // Takes ownership
-    field = NULL;
-        
-    field = CContactItemField::NewL(KStorageTypeText, KUidContactFieldFamilyName);
-    field->TextStorage()->SetTextL(KTestLastName);
-    contact->AddFieldL(*field); // Takes ownership
 
     TBool lowDiskErrorOccurred(EFalse);
     iTable->DeleteL(*contact, lowDiskErrorOccurred);
@@ -436,12 +458,17 @@ void UT_CPplPredictiveSearchTable::UT_DeleteContactsL()
     _LIT(KTestFN, "7 8 ");
     _LIT(KTestLN, "  4  56  1  ");
     TContactItemId contactId = KTestContactId4 + 1;
-    AddContactL(KTestFirstName, KTestLastName, KTestCompanyName, KTestContactId);
-    AddContactL(KTestFirstName, KTestLastName, KTestCompanyName, KTestContactId2);
-    AddContactL(KNullDesC, KTestLastName, KTestCompanyName, KTestContactId3);
-    AddContactL(KNullDesC, KNullDesC, KTestCompanyName, KTestContactId4);
-    AddContactL(KTestFN, KTestLN, KTestCompanyName, contactId);
-    CheckItemCountL(0, 3, 0, 0, 4, 1, 0, 1, 1, 0);    
+	// Goes to tables 1 and 4
+    AddContactL(KTestFirstName, KTestLastName, KTestContactId);
+	// Goes to tables 1 and 4
+    AddContactL(KTestFirstName, KTestLastName, KTestContactId2);
+	// Goes to table 4
+    AddContactL(KNullDesC, KTestLastName, KTestContactId3);
+	// This contact does not go into any table
+    AddContactL(KNullDesC, KNullDesC, KTestContactId4);
+	// Goes to tables 4, 5, 7 and 8 
+    AddContactL(KTestFN, KTestLN, contactId);
+    CheckItemCountL(0, 2, 0, 0, 4, 1, 0, 1, 1, 0);
     
     TInt id = KUidContactCardValue;
     TUid uid;
@@ -449,88 +476,47 @@ void UT_CPplPredictiveSearchTable::UT_DeleteContactsL()
     CContactItem* contact = CContactItem::NewLC(uid);
     contact->SetId(KTestContactId3);
 
-    CContactItemField* field =
-        CContactItemField::NewL(KStorageTypeText, KUidContactFieldGivenName);
-    field->TextStorage()->SetTextL(KNullDesC);
-    contact->AddFieldL(*field); // Takes ownership
-    field = NULL;
-        
-    field = CContactItemField::NewL(KStorageTypeText, KUidContactFieldFamilyName);
-    field->TextStorage()->SetTextL(KTestLastName);
-    contact->AddFieldL(*field); // Takes ownership
-
     TBool lowDiskErrorOccurred(EFalse);
     iTable->DeleteL(*contact, lowDiskErrorOccurred);
     CleanupStack::PopAndDestroy(contact);
     contact = NULL;
-    CheckItemCountL(0, 3, 0, 0, 3, 1, 0, 1, 1, 0);
+    // Contact was removed from table 1
+    CheckItemCountL(0, 2, 0, 0, 3, 1, 0, 1, 1, 0);
     
     
     contact = CContactItem::NewLC(uid);
     contact->SetId(KTestContactId4);
-    field = CContactItemField::NewL(KStorageTypeText, KUidContactFieldGivenName);
-    field->TextStorage()->SetTextL(KNullDesC);
-    contact->AddFieldL(*field); // Takes ownership
-    field = NULL;
-        
-    field = CContactItemField::NewL(KStorageTypeText, KUidContactFieldFamilyName);
-    field->TextStorage()->SetTextL(KNullDesC);
-    contact->AddFieldL(*field); // Takes ownership
-
 
     iTable->DeleteL(*contact, lowDiskErrorOccurred);
     CleanupStack::PopAndDestroy(contact);
     contact = NULL;
-    CheckItemCountL(0, 3, 0, 0, 3, 1, 0, 1, 1, 0);
+    // This contact was not in any table in the first place, so no changes
+    CheckItemCountL(0, 2, 0, 0, 3, 1, 0, 1, 1, 0);
     
     
     contact = CContactItem::NewLC(uid);
     contact->SetId(KTestContactId);
-    field = CContactItemField::NewL(KStorageTypeText, KUidContactFieldGivenName);
-    field->TextStorage()->SetTextL(KTestFirstName);
-    contact->AddFieldL(*field); // Takes ownership
-    field = NULL;
-        
-    field = CContactItemField::NewL(KStorageTypeText, KUidContactFieldFamilyName);
-    field->TextStorage()->SetTextL(KTestLastName);
-    contact->AddFieldL(*field); // Takes ownership
-
     
     iTable->DeleteL(*contact, lowDiskErrorOccurred);
     CleanupStack::PopAndDestroy(contact);
     contact = NULL;
-    CheckItemCountL(0, 2, 0, 0, 2, 1, 0, 1, 1, 0);
-    
+    // Contact was removed from tables 1 and 4
+    CheckItemCountL(0, 1, 0, 0, 2, 1, 0, 1, 1, 0);
+
     
     contact = CContactItem::NewLC(uid);
     contact->SetId(KTestContactId2);
-    field = CContactItemField::NewL(KStorageTypeText, KUidContactFieldGivenName);
-    field->TextStorage()->SetTextL(KTestFirstName);
-    contact->AddFieldL(*field); // Takes ownership
-    field = NULL;
-        
-    field = CContactItemField::NewL(KStorageTypeText, KUidContactFieldFamilyName);
-    field->TextStorage()->SetTextL(KTestLastName);
-    contact->AddFieldL(*field); // Takes ownership
-
     
     iTable->DeleteL(*contact, lowDiskErrorOccurred);
     CleanupStack::PopAndDestroy(contact);
     contact = NULL;
-    CheckItemCountL(0, 1, 0, 0, 1, 1, 0, 1, 1, 0);
+    
+    // Contact was removed from tables 1 and 4
+    CheckItemCountL(0, 0, 0, 0, 1, 1, 0, 1, 1, 0);
     
     
     contact = CContactItem::NewLC(uid);
     contact->SetId(contactId);
-    field = CContactItemField::NewL(KStorageTypeText, KUidContactFieldGivenName);
-    field->TextStorage()->SetTextL(KTestFN);
-    contact->AddFieldL(*field); // Takes ownership
-    field = NULL;
-        
-    field = CContactItemField::NewL(KStorageTypeText, KUidContactFieldFamilyName);
-    field->TextStorage()->SetTextL(KTestLN);
-    contact->AddFieldL(*field); // Takes ownership
-
     
     iTable->DeleteL(*contact, lowDiskErrorOccurred);
     CleanupStack::PopAndDestroy(contact);
@@ -544,7 +530,7 @@ void UT_CPplPredictiveSearchTable::UT_DeleteContactsL()
 //
 void UT_CPplPredictiveSearchTable::UT_DeleteNonexistingContactL()
     {
-    AddContactL(KTestFirstName, KTestLastName, KTestCompanyName, KTestContactId);
+    AddContactL(KTestFirstName, KTestLastName, KTestContactId);
     CheckItemCountL(0, 1, 0, 0, 1, 0, 0, 0, 0, 0);
     
     TInt id = KUidContactCardValue;
@@ -570,37 +556,16 @@ void UT_CPplPredictiveSearchTable::UT_CheckIfTableExistsL()
     // Delete DB that was created in setup()
     iDB.Close(); // Must close DB before it can be deleted
     RSqlDatabase::Delete(KDBFile);
-	delete iTable;
-	iTable = NULL;
 
     // Create DB, but do not create pred search table in it
     iDB.Create(KDBFile);
-    iTable = CPplPredictiveSearchTable::NewL(iDB);
 
-	// SQLite does not have SHOW TABLES command, so try to search from
-    // predictive search table.
-    _LIT(KCheckIfTableExistsFormat, "SELECT %S FROM %S;");
-    TInt bufSize = KCheckIfTableExistsFormat().Length() +
-                   KPredSearchContactId().Length() +
-                   KSqlContactPredSearchTable0().Length();
-    HBufC* sqlStatement = HBufC::NewLC(bufSize);
-    sqlStatement->Des().AppendFormat(KCheckIfTableExistsFormat,
-        &KPredSearchContactId,
-        &KSqlContactPredSearchTable0);
+    TInt err = CPplContactItemManager_DoesPredSearchTableExistL();
+    EUNIT_ASSERT_EQUALS(-311, err);
 
-    RSqlStatement stmnt;
-    CleanupClosePushL(stmnt);
-    // If table does not exist, leaves with -311
-    // If table exists, does not leave
-    TRAPD(err, stmnt.PrepareL(iDB, *sqlStatement));
-	EUNIT_ASSERT_EQUALS(-311, err);
     
-    CleanupStack::PopAndDestroy(&stmnt);
-    CleanupStack::PopAndDestroy(sqlStatement);
-    
-    // Delete iTable here, otherwise it is treated as a resource leak
-    delete iTable;
-    iTable = NULL;
+    iDB.Close(); // Must close DB before it can be deleted
+    RSqlDatabase::Delete(KDBFile);
     }
 
 // -----------------------------------------------------------------------------
@@ -610,24 +575,13 @@ void UT_CPplPredictiveSearchTable::UT_CheckIfTableExistsL()
 //
 void UT_CPplPredictiveSearchTable::UT_CheckIfTableExists2L()
     {
-    _LIT(KCheckIfTableExistsFormat, "SELECT %S FROM %S;");
-    TInt bufSize = KCheckIfTableExistsFormat().Length() +
-                   KPredSearchContactId().Length() +
-                   KSqlContactPredSearchTable0().Length();
-    HBufC* sqlStatement = HBufC::NewLC(bufSize);
-    sqlStatement->Des().AppendFormat(KCheckIfTableExistsFormat,
-        &KPredSearchContactId,
-        &KSqlContactPredSearchTable0);
-
-    RSqlStatement stmnt;
-    CleanupClosePushL(stmnt);
-    // If table exists, does not leave
-    TRAPD(err, stmnt.PrepareL(iDB, *sqlStatement));
+	TInt err = CPplContactItemManager_DoesPredSearchTableExistL();
 	EUNIT_ASSERT_EQUALS(KErrNone, err);
-    
-    CleanupStack::PopAndDestroy(&stmnt);
-    CleanupStack::PopAndDestroy(sqlStatement);
     }
+
+// IMPORTANT NOTE:
+// If this case fails, make sure KDBFileWithoutPredSearch file exists, and it
+// does not contain the predictive search tables.
 
 /* Create DB and other tables, except pred search table. Add some contacts to DB
    but do not write them to (non-existing) pred search table.
@@ -636,9 +590,7 @@ void UT_CPplPredictiveSearchTable::UT_CheckIfTableExists2L()
    tables.
    Close database and open it, to see that pred search tables are created. */
 void UT_CPplPredictiveSearchTable::UT_SynchronizeTableL()
-    {
-/////// This test case is not ready /////////
-    
+    {    
     // Delete DB that was created in setup()
     iDB.Close(); // Must close DB before it can be deleted
     RSqlDatabase::Delete(KDBFile);
@@ -647,31 +599,181 @@ void UT_CPplPredictiveSearchTable::UT_SynchronizeTableL()
 	iTable = NULL;
     iTable = CPplPredictiveSearchTable::NewL(iDB);
 
-    // Create DB and create other tables except pred search table
-    iDB.Create(KDBFile);
-    
-    
-    // would it be easier to write to contacts table directly using RSqlStatement
-    // instead of using CPplContactTable?
-    
-    // Create contacts table
-    User::LeaveIfError(iDB.Exec(KContactCreateStmnt));
-    
-    //TODO: write new entries to contact table
-    // or maybe create db using emulator's phonebook etc
+    // Open the generated DB that does not have predictive search tables in it.
+    iDB.Open(KDBFileWithoutPredSearch);
 
-    //iContactTable = CPplContactTable::NewL(iDB, iContactProperties);
+///////// copied from CPplContactItemManager::SynchronizePredSearchTableL ////////
+    iTable->CreateTableL();
+    _LIT(KSelectAllContactsFormat, "SELECT %S,%S,%S FROM %S;");
+    TInt bufSize = KSelectAllContactsFormat().Length() +
+                   KContactId().Length() +
+                   KContactFirstName().Length() +
+                   KContactCompanyName().Length() +
+                   KSqlContactTableName().Length();
+    HBufC* sqlStatement = HBufC::NewLC(bufSize);
+    sqlStatement->Des().AppendFormat(KSelectAllContactsFormat,
+        &KContactId,
+        &KContactFirstName,
+        &KContactLastName,
+        &KSqlContactTableName);
+
+    RSqlStatement stmnt;
+    CleanupClosePushL(stmnt);
+    stmnt.PrepareL(iDB, *sqlStatement);
+
+    const TInt KContactIdIndex = 0;
+    const TInt KFirstNameIndex = 1;
+    const TInt KLastNameIndex = 2;
+    TInt err(KErrNone);
+    while ((err = stmnt.Next()) == KSqlAtRow)
+        {
+        TInt id = KUidContactCardValue;
+        TUid uid;
+        uid.iUid = id;
+        CContactItem* contact = CContactItem::NewLC(uid);
+        contact->SetId(stmnt.ColumnInt(KContactIdIndex));
+
+        // If first name exists, write it to contact item
+        TPtrC firstName;
+        if (stmnt.ColumnText(KFirstNameIndex, firstName) == KErrNone)
+            {
+            CContactItemField* field =
+                CContactItemField::NewLC(KStorageTypeText, KUidContactFieldGivenName);
+            CContactTextField* textfield = field->TextStorage();
+            textfield->SetTextL(firstName);
+            contact->AddFieldL(*field); // Takes ownership
+            CleanupStack::Pop(field);
+            }
+
+        TPtrC lastName;
+        if (stmnt.ColumnText(KLastNameIndex, lastName) == KErrNone)
+            {
+            CContactItemField* field =
+                CContactItemField::NewLC(KStorageTypeText, KUidContactFieldFamilyName);
+            CContactTextField* textfield = field->TextStorage();
+            textfield->SetTextL(lastName);
+            contact->AddFieldL(*field); // Takes ownership
+            CleanupStack::Pop(field);
+            }
+        iTable->CreateInDbL(*contact);
+        CleanupStack::PopAndDestroy(contact);
+        }
+
+    // Leave if we didn't complete going through the results properly
+    if (err != KSqlAtEnd)
+        {
+        User::Leave(err);
+        }
+    CleanupStack::PopAndDestroy(&stmnt);
+    CleanupStack::PopAndDestroy(sqlStatement);    
+///////// end - copied from CPplContactItemManager::SynchronizePredSearchTableL //////////
     
-//    iContactTable->CreateTableL();  
-     
-	// Delete iTable here, otherwise it is treated as a resource leak
+
     delete iTable;
     iTable = NULL;
+	iDB.Close(); // Must close DB before it can be deleted
+	
+	// This test case leaks 2 heap cells. Perhaps because pred.search tables
+	// are created to DB file?
     }
+
+void UT_CPplPredictiveSearchTable::UT_DeleteTablesL()
+	{
+	// Delete tables
+	CPplContactItemManager_DeletePredSearchTablesL();
+
+
+	// Check tables have been deleted
+	TInt err = CPplContactItemManager_DoesPredSearchTableExistL();
+	EUNIT_ASSERT_EQUALS(-311, err);
+
+
+	// Try to delete tables when they do not exist
+	CPplContactItemManager_DeletePredSearchTablesL();
+	}
+
+void UT_CPplPredictiveSearchTable::UT_TokenizeNamesL()
+    {
+    _LIT(KFirstNames, "99 12345 234567 987 99");
+    _LIT(KLastNames, "12355 987 402");
+    HBufC* fn = KFirstNames().AllocLC();
+    HBufC* ln = KLastNames().AllocLC();
+
+    // This constant must have same value as declared in cpplpredictivesearchtable.cpp
+    const TInt KMaxTokens = 4; 
+    QStringList tokens = iTable->GetNumericTokens(fn, ln);
+    EUNIT_ASSERT_EQUALS(KMaxTokens, tokens.count());
+    tokens.clear();
+        
+    tokens = iTable->GetNumericTokens(NULL, ln);
+    EUNIT_ASSERT_EQUALS(3, tokens.count());
+    tokens.clear();
+    
+    tokens = iTable->GetNumericTokens(fn, NULL);
+    EUNIT_ASSERT_EQUALS(4, tokens.count());
+    tokens.clear();
+
+    tokens = iTable->GetNumericTokens(NULL, NULL);
+    EUNIT_ASSERT_EQUALS(0, tokens.count());
+    tokens.clear();
+    
+    CleanupStack::PopAndDestroy(ln);
+    CleanupStack::PopAndDestroy(fn);
+    }
+    
+// Write contacts with and without FN & LN.
+void UT_CPplPredictiveSearchTable::UT_WriteToDbL()
+    {
+	// Just FN
+	AddContactL(KTestFirstName, KNullDesC, KTestContactId);
+	// Just LN
+	AddContactL(KNullDesC, KTestLastName, KTestContactId2);
+	// Both FN and LN
+	AddContactL(KTestFirstName, KTestLastName, KTestContactId3);
+	// Neither FN and LN
+	AddContactL(KNullDesC, KNullDesC, KTestContactId4);
+	
+	// Long names
+	_LIT(KTooLongName, "abcdefghijklmnopqrstuwvxyz aabbccddeeffgghhiijjkkllmm");
+	AddContactL(KTooLongName, KTestLastName, KTestContactId4 + 1);
+    AddContactL(KTestFirstName, KTooLongName, KTestContactId4 + 2);
+    }
+
+void UT_CPplPredictiveSearchTable::UT_ConvertToHexL()
+	{
+	// Basic case
+	EUNIT_ASSERT_EQUALS(0x4458aaaaaaaaaaa, iTable->ConvertToHex("4458"));
+
+	// Trailing zeros
+	EUNIT_ASSERT_EQUALS(0x12345678900aaaa, iTable->ConvertToHex("12345678900"));
+
+	// Leading zeros
+	EUNIT_ASSERT_EQUALS(0x00123456789aaaa, iTable->ConvertToHex("00123456789"));
+
+	// Just zeros
+	EUNIT_ASSERT_EQUALS(0x00000aaaaaaaaaa, iTable->ConvertToHex("00000"));
+	EUNIT_ASSERT_EQUALS(0x00000000000000a, iTable->ConvertToHex("00000000000000"));
+	EUNIT_ASSERT_EQUALS(0x000000000000000, iTable->ConvertToHex("000000000000000"));
+	EUNIT_ASSERT_EQUALS(0x0aaaaaaaaaaaaaa, iTable->ConvertToHex("0"));
+
+	// Zeros in the middle
+	EUNIT_ASSERT_EQUALS(0x12300450008000a, iTable->ConvertToHex("12300450008000"));
+
+	// Empty string
+	EUNIT_ASSERT_EQUALS(0xaaaaaaaaaaaaaaa, iTable->ConvertToHex(""));
+	
+	// Unmapped characters
+	EUNIT_ASSERT_EQUALS(0x123aaaaaaaaaaaa, iTable->ConvertToHex("123??45??67"));
+	EUNIT_ASSERT_EQUALS(0x00aaaaaaaaaaaaa, iTable->ConvertToHex("00?1234567"));
+	EUNIT_ASSERT_EQUALS(0xaaaaaaaaaaaaaaa, iTable->ConvertToHex("?1234567"));
+	EUNIT_ASSERT_EQUALS(0xaaaaaaaaaaaaaaa, iTable->ConvertToHex("???"));
+	
+	// Too many digits
+	EUNIT_ASSERT_EQUALS(KConversionError, iTable->ConvertToHex("12345678901234567890"));
+	}
 
 void UT_CPplPredictiveSearchTable::AddContactL(const TDesC& aFirstName,
                                                const TDesC& aLastName,
-                                               const TDesC& aCompanyName,
                                                TContactItemId aContactId)
     {
     TInt id = KUidContactCardValue; // Defined by macro, so lacks type
@@ -696,15 +798,7 @@ void UT_CPplPredictiveSearchTable::AddContactL(const TDesC& aFirstName,
         field->TextStorage()->SetTextL(aLastName);
         contact->AddFieldL(*field); // Takes ownership
         }
-    
-    if (aCompanyName.Length() > 0)
-        {
-        CContactItemField* field =
-            CContactItemField::NewL(KStorageTypeText, KUidContactFieldCompanyName);
-        field->TextStorage()->SetTextL(aCompanyName);
-        contact->AddFieldL(*field); // Takes ownership
-        }
-   
+
     contact->SetId(aContactId);
     
     iTable->CreateInDbL(*contact);
@@ -741,7 +835,7 @@ void UT_CPplPredictiveSearchTable::CheckItemCountL(
     
     for (TInt i = 0; i < KTableCount; ++i)
         {
-        HBufC* s = HBufC::NewLC(KCountSelect().Length() + 
+        HBufC* s = HBufC::NewLC(KCountSelect().Length() +
             // All table names are same length
             KSqlContactPredSearchTable0().Length());
         TPtr ptr = s->Des();
@@ -765,6 +859,12 @@ void UT_CPplPredictiveSearchTable::CheckItemCountL(
     EUNIT_ASSERT_EQUALS(aCountInTable9, rowCounts[9]);
     }
 
+// There is only need to search from one table (unless search string begins
+// with a zero).
+// E.g. if search string is "102", the results are both in tables 1 and 2
+// and it does not matter to which one the search is made.
+// E.g. "0102", search from table 0 (for exact match "0102",and from 
+// table 1 or 2 (for something that begins with 1 and 2)
 RArray<TContactItemId>
 UT_CPplPredictiveSearchTable::DoPredictiveSearchL(const TDesC& aSearchString)
     {
@@ -774,185 +874,54 @@ UT_CPplPredictiveSearchTable::DoPredictiveSearchL(const TDesC& aSearchString)
 		return foundContactIds;
 		}
 
-    // There is only need to search from one table (unless search string begins
-    // with a zero).
-    // E.g. if search string is "102", the results are both in tables 1 and 2
-    // and it does not matter to which one the search is made.
-    // E.g. "0102", search from table 0 (for exact match "0102",and from 
-    // table 1 or 2 (for something that begins with 1 and 2)
-    
-    // NOTE: a single SELECT can search from multiple tables
-    // Find the table(s) to search from
-    const TPtrC& tableName = DetermineTableName(aSearchString);
-    
-//TODO: continue, add support for zero in the beginning (search also from table0)
-// and zero in the middle (add the 3rd OR-block to WHERE part)
-
-
-    // Searching contact id by the numeric representation of names.
-    // SELECT contact_id
-    // FROM predictivesearch
-    // WHERE (first_name_as_number LIKE :first_name_as_number) OR
-    //  (last_name_as_number LIKE :last_name_as_number);
-    //
-    // Even though the company name is still stored in the table, it is not
-    // used for searching.
-    //
-    // The parameter values be like "% <search-string>%"
-//TODO: update the SELECT to support zero (e.g. "102")
-    _LIT(KConditionLikeFormat, "(%S LIKE %S) OR (%S LIKE %S)");
-    // Size required by condition clause
-    const TInt KWhereLikeClauseSize(KConditionLikeFormat().Size() +
-        KPredSearchFirstNameAsNumber().Size() +
-        KPredSearchFirstNameAsNumberParam().Size() +
-        KPredSearchLastNameAsNumber().Size() +
-        KPredSearchLastNameAsNumberParam().Size());
-    HBufC* whereLikeClause = HBufC::NewLC(KWhereLikeClauseSize);
-    whereLikeClause->Des().AppendFormat(KConditionLikeFormat,
-        &KPredSearchFirstNameAsNumber,
-        &KPredSearchFirstNameAsNumberParam,
-        &KPredSearchLastNameAsNumber,
-        &KPredSearchLastNameAsNumberParam);
-
-    TCntSqlStatementType selectType(ESelect, tableName);
-    CCntSqlStatement* selectStmnt = TSqlProvider::GetSqlStatementL(selectType);
-    CleanupStack::PushL(selectStmnt);
-
-    // Add parameters for SELECT
-    selectStmnt->SetParamL(KPredSearchContactId, KNullDesC);
-    const TInt KContactIdIndex(selectStmnt->ParameterIndex(KPredSearchContactId));
-
-    // Condition contains parameters for WHERE
-    selectStmnt->SetConditionL(*whereLikeClause);
-    CleanupStack::Pop(selectStmnt);
-    CleanupStack::PopAndDestroy(whereLikeClause);
-    CleanupStack::PushL(selectStmnt);
-
-
-    RSqlStatement stmnt;
-    CleanupClosePushL(stmnt);
-    stmnt.PrepareL(iDB, selectStmnt->SqlStringL()); //TODO:leaves if e.g. table is "predsearch0,predsearch5"
-    CleanupStack::Pop(&stmnt);
-    CleanupStack::PopAndDestroy(selectStmnt);
-    CleanupClosePushL(stmnt);
-    
-    _LIT(KWildCard, "%");
-    _LIT(KSeparator, " ");
-    // Space required for prefix (% ) and postfix (%) ("% <search-string>%")
-    const TInt KAdditionalSizeNeeded = 3;
-    HBufC* pattern = HBufC::NewLC(aSearchString.Length() + KAdditionalSizeNeeded);
-    TPtr searchPattern = pattern->Des();
-    searchPattern.Append(KWildCard);
-    searchPattern.Append(KSeparator);
-    searchPattern.Append(aSearchString);
-    searchPattern.Append(KWildCard);
-    
-    // These could be hardcoded for more speed (values 0, 1)
-    const TInt KFirstNameIndex = stmnt.ParameterIndex(KPredSearchFirstNameAsNumberParam);
-    User::LeaveIfError(stmnt.BindText(KFirstNameIndex, *pattern));
-    const TInt KLastNameIndex = stmnt.ParameterIndex(KPredSearchLastNameAsNumberParam);
-    User::LeaveIfError(stmnt.BindText(KLastNameIndex, *pattern));
-    CleanupStack::PopAndDestroy(pattern);
-
-
-    // Fetch the list of any matching contact ids
-    TInt err(KErrNone);
-    while ((err = stmnt.Next() ) == KSqlAtRow)
-        {
-        foundContactIds.AppendL(stmnt.ColumnInt(KContactIdIndex));
-        }
-
-    // Leave if we didn't complete going through the results properly
-    if (err != KSqlAtEnd)
-        {
-        User::Leave(err);
-        }
-    CleanupStack::PopAndDestroy(&stmnt);
-    return foundContactIds;
-
-#if 0 // old code, used for 1 table implementation
-	// Searching contact id by the numeric representation of names.
-	// SELECT contact_id
-	// FROM predictivesearch
-	// WHERE (first_name_as_number LIKE :first_name_as_number) OR
-	//	(last_name_as_number LIKE :last_name_as_number);
-	//
-	// Even though the company name is still stored in the table, it is not
-	// used for searching.
-	//
-	// The parameter values be like "% <search-string>%"
-	_LIT(KConditionLikeFormat, "(%S LIKE %S) OR (%S LIKE %S)");
-	// Size required by condition clause
-	const TInt KWhereLikeClauseSize(KConditionLikeFormat().Size() +
-		KPredSearchFirstNameAsNumber().Size() +
-		KPredSearchFirstNameAsNumberParam().Size() +
-		KPredSearchLastNameAsNumber().Size() +
-		KPredSearchLastNameAsNumberParam().Size());
-	HBufC* whereLikeClause = HBufC::NewLC(KWhereLikeClauseSize);
-	whereLikeClause->Des().AppendFormat(KConditionLikeFormat,
-		&KPredSearchFirstNameAsNumber,
-		&KPredSearchFirstNameAsNumberParam,
-		&KPredSearchLastNameAsNumber,
-		&KPredSearchLastNameAsNumberParam);
-
-	TCntSqlStatementType selectType( ESelect,
-	    KSqlContactPredSearchTableName );
-	CCntSqlStatement* selectStmnt = TSqlProvider::GetSqlStatementL(selectType);
-	CleanupStack::PushL(selectStmnt);
-
-	// Add parameters for SELECT
-	selectStmnt->SetParamL(KPredSearchContactId, KNullDesC);
-	const TInt KContactIdIndex(selectStmnt->ParameterIndex(KPredSearchContactId));
-
-	// Condition contains parameters for WHERE
-	selectStmnt->SetConditionL(*whereLikeClause);
-	CleanupStack::Pop(selectStmnt);
-	CleanupStack::PopAndDestroy(whereLikeClause);
-	CleanupStack::PushL(selectStmnt);
-
-
-    RSqlStatement stmnt;
-    CleanupClosePushL(stmnt);
-	stmnt.PrepareL(iDB, selectStmnt->SqlStringL());
-	CleanupStack::Pop(&stmnt);
-	CleanupStack::PopAndDestroy(selectStmnt);
+	const TPtrC& tableName = DetermineTableName(aSearchString);
+	HBufC* select(NULL);
+	if (aSearchString.Length() == 1)
+		{
+		// No need to use "WHERE.." or "ORDER BY first_name ASC"
+		_LIT(KSearchOneDigitFormat, "SELECT contact_id FROM %S");
+		select = HBufC::NewLC(KSearchOneDigitFormat().Length() +
+							  KSqlContactPredSearchTable0().Length());
+		select->Des().AppendFormat(KSearchOneDigitFormat, &tableName);
+		}
+	else
+		{
+		// This does not yet support zero in the middle
+		TInt64 lowerLimit = LowerLimitL(aSearchString) - 1;
+		TInt64 upperLimit = UpperLimitL(aSearchString) + 1;
+		// Write limits as decimal numbers
+		_LIT(KSearchFormat, "SELECT contact_id FROM %S WHERE \
+(nbr>%ld AND nbr<%ld) OR (nbr2>%ld AND nbr2<%ld) OR (nbr3>%ld AND nbr3<%ld) OR (nbr4>%ld AND nbr4<%ld);");
+		TInt KNbrColumns = 4;
+		TInt KSpaceForLimits = KNbrColumns * 2 * (KMaxDigits + 2); // Two extra for decimal representation of max 15 hex digits
+		select = HBufC::NewLC(KSearchFormat().Length() +
+							  KSqlContactPredSearchTable0().Length() +
+							  KSpaceForLimits);
+		select->Des().AppendFormat(KSearchFormat, &tableName,
+								   lowerLimit, upperLimit,
+								   lowerLimit, upperLimit,
+								   lowerLimit, upperLimit,
+								   lowerLimit, upperLimit);
+		}
+	RSqlStatement stmnt;
 	CleanupClosePushL(stmnt);
-    
-    _LIT(KWildCard, "%");
-    _LIT(KSeparator, " ");
-    // Space required for prefix (% ) and postfix (%) ("% <search-string>%")
-    const TInt KAdditionalSizeNeeded = 3;
-    HBufC* pattern = HBufC::NewLC(aSearchString.Length() + KAdditionalSizeNeeded);
-    TPtr searchPattern = pattern->Des();
-    searchPattern.Append(KWildCard);
-    searchPattern.Append(KSeparator);
-    searchPattern.Append(aSearchString);
-    searchPattern.Append(KWildCard);
-    
-    // These could be hardcoded for more speed (values 0, 1)
-    const TInt KFirstNameIndex = stmnt.ParameterIndex(KPredSearchFirstNameAsNumberParam);
-    User::LeaveIfError(stmnt.BindText(KFirstNameIndex, *pattern));
-    const TInt KLastNameIndex = stmnt.ParameterIndex(KPredSearchLastNameAsNumberParam);
-    User::LeaveIfError(stmnt.BindText(KLastNameIndex, *pattern));
-    CleanupStack::PopAndDestroy(pattern);
+	stmnt.PrepareL(iDB, *select);
 
-
-    // Fetch the list of any matching contact ids
+	// Fetch the list of any matching contact ids
+	const TInt KContactIdIndex(0);
 	TInt err(KErrNone);
-    RArray<TContactItemId> foundContactIds;
-    while ((err = stmnt.Next() ) == KSqlAtRow)
-        {
-        foundContactIds.AppendL(stmnt.ColumnInt(KContactIdIndex));
-        }
+	while ((err = stmnt.Next()) == KSqlAtRow)
+		{
+		foundContactIds.AppendL(stmnt.ColumnInt(KContactIdIndex));
+		}
 
-    // Leave if we didn't complete going through the results properly
-    if (err != KSqlAtEnd)
-        {
-        User::Leave(err);
-        }
-    CleanupStack::PopAndDestroy(&stmnt);
-    return foundContactIds;
-#endif
+	if (err != KSqlAtEnd)
+		{
+		User::Leave(err);
+		}
+	CleanupStack::PopAndDestroy(&stmnt);
+	CleanupStack::PopAndDestroy(select);
+	return foundContactIds;
     }
 
 const TDesC& UT_CPplPredictiveSearchTable::DetermineTableName(
@@ -985,6 +954,95 @@ const TDesC& UT_CPplPredictiveSearchTable::DetermineTableName(
 		}
 	}
 
+TInt64 UT_CPplPredictiveSearchTable::LowerLimitL(const TDesC& aString) const
+	{
+	return ConvertToNbrL(aString, '0');
+	}
+
+TInt64 UT_CPplPredictiveSearchTable::UpperLimitL(const TDesC& aString) const
+	{
+	return ConvertToNbrL(aString, 'a');
+	}
+
+TInt64 UT_CPplPredictiveSearchTable::ConvertToNbrL(const TDesC& aString,
+												   TChar aPadChar) const
+	{
+	HBufC* nbrBuffer = HBufC::NewLC(KMaxDigits);
+	TPtrC p = aString.Left(KMaxDigits);
+	TPtr nbrPtr = nbrBuffer->Des();
+	nbrPtr.Append(p);
+	// Append pad chars until length is KMaxDigits
+	while (nbrPtr.Length() < KMaxDigits)
+		{
+		nbrPtr.Append(aPadChar);
+		}	
+    RDebug::Print(_L("CPplPredictiveSearchTable::ConvertToNbrL padded '%S'"), nbrBuffer);
+    
+	TLex16 lex(*nbrBuffer);
+	TInt64 nbrValue(0);
+	User::LeaveIfError(lex.Val(nbrValue, EHex));
+	CleanupStack::PopAndDestroy(nbrBuffer);
+
+	RDebug::Print(_L("CPplPredictiveSearchTable::ConvertToNbrL result 0x%lx"), nbrValue);        
+	return nbrValue;
+	}
+
+// This function has code copied from CPplContactItemManager::DoesPredSearchTableExistL
+TInt UT_CPplPredictiveSearchTable::CPplContactItemManager_DoesPredSearchTableExistL()
+	{
+	// SQLite does not have SHOW TABLES command, so try to search from
+    // predictive search table.
+    _LIT(KCheckIfTableExistsFormat, "SELECT %S FROM %S;");
+    TInt bufSize = KCheckIfTableExistsFormat().Length() +
+                   KPredSearchContactId().Length() +
+                   KSqlContactPredSearchTable0().Length();
+    HBufC* sqlStatement = HBufC::NewLC(bufSize);
+    sqlStatement->Des().AppendFormat(KCheckIfTableExistsFormat,
+        &KPredSearchContactId,
+        &KSqlContactPredSearchTable0);
+
+    RSqlStatement stmnt;
+    CleanupClosePushL(stmnt);
+    // If table does not exist, leaves with -311
+    // If table exists, does not leave
+    TRAPD(err, stmnt.PrepareL(iDB, *sqlStatement));    
+    CleanupStack::PopAndDestroy(&stmnt);
+    CleanupStack::PopAndDestroy(sqlStatement);
+	return err;
+	}
+
+// This function has code copied from CPplContactItemManager::DeletePredSearchTablesL
+void UT_CPplPredictiveSearchTable::CPplContactItemManager_DeletePredSearchTablesL()
+	{
+	const TInt KTableCount = 10;
+    const TDesC* KTableNames[KTableCount] =
+        {
+        &KSqlContactPredSearchTable0,
+        &KSqlContactPredSearchTable1,
+        &KSqlContactPredSearchTable2,
+        &KSqlContactPredSearchTable3,
+        &KSqlContactPredSearchTable4,
+        &KSqlContactPredSearchTable5,
+        &KSqlContactPredSearchTable6,
+        &KSqlContactPredSearchTable7,
+        &KSqlContactPredSearchTable8,
+        &KSqlContactPredSearchTable9
+        };
+
+	// IF EXISTS suppresses error that would occur if table does not exist
+	_LIT(KDropTable, "DROP TABLE IF EXISTS %S;");
+    for (TInt i = 0; i < KTableCount; ++i)
+        {
+        HBufC* dropTableCommand = HBufC::NewLC(KDropTable().Length() +
+            // All table names are of same length
+            KTableNames[i]->Length());
+        TPtr ptr = dropTableCommand->Des();
+        ptr.Format(KDropTable, KTableNames[i]);
+
+		User::LeaveIfError(iDB.Exec(*dropTableCommand));
+        CleanupStack::PopAndDestroy(dropTableCommand);
+        }
+	}
 
 //  TEST TABLE
 
@@ -992,7 +1050,14 @@ EUNIT_BEGIN_TEST_TABLE(
     UT_CPplPredictiveSearchTable,
     "UT_CPplPredictiveSearchTable",
     "UNIT" )
-    
+
+EUNIT_TEST(
+    "CreateInDbL - dummy case to check resource leak",
+    "UT_CPplPredictiveSearchTable",
+    "",
+    "FUNCTIONALITY",
+    SetupL, UT_DummyL, Teardown )
+        
 EUNIT_TEST(
     "CreateInDbL - test",
     "UT_CPplPredictiveSearchTable",
@@ -1076,6 +1141,34 @@ EUNIT_TEST(
     "",
     "FUNCTIONALITY",
     SetupL, UT_SynchronizeTableL, Teardown )
+
+EUNIT_TEST(
+    "Delete predictive search tables",
+    "UT_CPplPredictiveSearchTable",
+    "CPplContactItemManager::DeletePredSearchTablesL",
+    "FUNCTIONALITY",
+    SetupL, UT_DeleteTablesL, Teardown )
+
+EUNIT_TEST(
+    "Tokenize names",
+    "UT_CPplPredictiveSearchTable",
+    "TokenizeNames",
+    "FUNCTIONALITY",
+    SetupL, UT_TokenizeNamesL, Teardown )
+
+EUNIT_TEST(
+    "Write to table",
+    "UT_CPplPredictiveSearchTable",
+    "WriteToDbL",
+    "FUNCTIONALITY",
+    SetupL, UT_WriteToDbL, Teardown )
+
+EUNIT_TEST(
+    "ConvertToHexL",
+    "UT_CPplPredictiveSearchTable",
+    "ConvertToHexL",
+    "FUNCTIONALITY",
+    SetupL, UT_ConvertToHexL, Teardown )
 
 EUNIT_END_TEST_TABLE
 

@@ -55,8 +55,9 @@ LogsContact::LogsContact(LogsEvent& event, LogsDbConnector& dbConnector)
 //
 // -----------------------------------------------------------------------------
 //
-LogsContact::LogsContact(
-    unsigned int contactId, const QString& number, LogsDbConnector& dbConnector)
+LogsContact::LogsContact(const QString& number, 
+                         LogsDbConnector& dbConnector,
+                         unsigned int contactId)
   :  QObject(), 
      mDbConnector(dbConnector),
      mService(0),
@@ -69,7 +70,7 @@ LogsContact::LogsContact(
 }
 
 // -----------------------------------------------------------------------------
-// LogsContact::~LogsContact
+//
 // -----------------------------------------------------------------------------
 //
 LogsContact::~LogsContact()
@@ -79,7 +80,7 @@ LogsContact::~LogsContact()
 }
     
 // ----------------------------------------------------------------------------
-// LogsContact::allowedRequestType
+//
 // ----------------------------------------------------------------------------
 //
 LogsContact::RequestType LogsContact::allowedRequestType()
@@ -96,7 +97,7 @@ LogsContact::RequestType LogsContact::allowedRequestType()
 }
 
 // ----------------------------------------------------------------------------
-// LogsContact::isContactRequestAllowed
+// 
 // ----------------------------------------------------------------------------
 //
 bool LogsContact::isContactRequestAllowed()
@@ -105,7 +106,7 @@ bool LogsContact::isContactRequestAllowed()
 }
 
 // ----------------------------------------------------------------------------
-// LogsContact::open
+//
 // ----------------------------------------------------------------------------
 //
 bool LogsContact::open()
@@ -125,15 +126,41 @@ bool LogsContact::open()
 }
 
 // ----------------------------------------------------------------------------
-// LogsContact::save
+//
 // ----------------------------------------------------------------------------
 //
-bool LogsContact::save()
+bool LogsContact::addNew()
 {
     LOGS_QDEBUG( "logs [ENG] -> LogsContact::save()" )
-    bool ret = false;
+            
+    bool ret = save("editCreateNew(QString,QString)");
     
-    QList<QVariant> arguments;    
+    LOGS_QDEBUG_2( "logs [ENG] <- LogsContact::save(): ", ret )
+    return ret;
+}
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+//
+bool LogsContact::updateExisting()
+{
+    LOGS_QDEBUG( "logs [ENG] -> LogsContact::updateExisting()" )
+    
+    bool ret = save("editUpdateExisting(QString,QString)");
+    
+    LOGS_QDEBUG( "logs [ENG] <- LogsContact::updateExisting()" )
+    return ret;
+}
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+//
+bool LogsContact::save(QString message)
+{
+    QList<QVariant> arguments;
+ 
     if ( !mNumber.isEmpty() ) {
         if ( mSaveAsOnlineAccount ){
             QString type = QContactOnlineAccount::DefinitionName;
@@ -143,21 +170,22 @@ bool LogsContact::save()
             arguments.append( QVariant(type) );
         }     
         arguments.append( QVariant(mNumber) );
-    } else {
-        LOGS_QDEBUG( "logs [ENG]  !No Caller ID, not saving the contact..")
-        //no Caller ID available, doesn't make sense to save anything
     }
-
+    
+    bool ret(false);
+    
     if ( arguments.count() == 2 ) {
         mCurrentRequest = TypeLogsContactSave;
-        ret = requestFetchService( "editCreateNew(QString,QString)", arguments );
+        ret = requestFetchService( message, arguments );
+    } else {
+        LOGS_QDEBUG( "logs [ENG]  !No Caller ID, not saving the contact..")
     }
-    LOGS_QDEBUG_2( "logs [ENG] <- LogsContact::save(): ", ret )
+    
     return ret;
 }
 
 // ----------------------------------------------------------------------------
-// LogsContact::requestFetchService
+//
 // ----------------------------------------------------------------------------
 //
 bool LogsContact::requestFetchService( QString message, 
@@ -168,8 +196,8 @@ bool LogsContact::requestFetchService( QString message,
     delete mService;
     mService = 0;
     mService = new XQServiceRequest(service, message, sync);
-    connect( mService, SIGNAL( requestCompleted(QVariant) ), this, 
-            SLOT( handleRequestCompleted(QVariant) ) );
+    connect(mService, SIGNAL(requestCompleted(QVariant)), this, 
+            SLOT(handleRequestCompleted(QVariant)));
 
     mService->setArguments(arguments);
 
@@ -178,7 +206,6 @@ bool LogsContact::requestFetchService( QString message,
 }
 
 // ----------------------------------------------------------------------------
-// LogsContact::handleRequestCompleted
 // Phonebookservices define following return values:
 // - contact wasn't modified (-2)
 // - was deleted (-1)
@@ -213,7 +240,7 @@ void LogsContact::handleRequestCompleted(const QVariant& result)
 }
 
 // ----------------------------------------------------------------------------
-// LogsContact::contact
+//
 // ----------------------------------------------------------------------------
 //
 QContact LogsContact::contact()
@@ -226,7 +253,7 @@ QContact LogsContact::contact()
 }
 
 // ----------------------------------------------------------------------------
-// LogsContact::isContactInPhonebook
+//
 // ----------------------------------------------------------------------------
 //
 bool LogsContact::isContactInPhonebook()

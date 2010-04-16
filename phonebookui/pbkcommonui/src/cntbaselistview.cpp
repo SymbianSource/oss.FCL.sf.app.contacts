@@ -357,13 +357,13 @@ void CntBaseListView::onListViewActivated(const QModelIndex &index)
     {
         CntViewParameters viewParameters(CntViewParameters::myCardView);
         viewParameters.setSelectedContact(contactModel()->contact(index));
-        viewManager()->onActivateView(viewParameters);
+        viewManager()->changeView(viewParameters);
     }
     else
     {
         CntViewParameters viewParameters(CntViewParameters::commLauncherView);
         viewParameters.setSelectedContact(contactModel()->contact(index));
-        viewManager()->onActivateView(viewParameters);
+        viewManager()->changeView(viewParameters);
     }
 }
 

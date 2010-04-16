@@ -25,14 +25,13 @@ CntBaseView::CntBaseView(CntViewManager *viewManager, QGraphicsItem *parent) :
     mViewManager(viewManager),
     mActions(0),
     mCommands(0),
-    mSoftKeyBackAction(new HbAction(Hb::BackAction, this))
+    mSoftKeyBackAction(new HbAction(Hb::BackNaviAction, this))
 {
     mModelProvider=CntModelProvider::instance();
     setTitle(hbTrId("txt_phob_title_contacts"));
     connect(mViewManager->mainWindow(), SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(keyPressEvent(QKeyEvent*)));
     connect(mViewManager->mainWindow(), SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
     
-    mSoftKeyBackAction->setText(hbTrId("Back"));
     connect(mSoftKeyBackAction, SIGNAL(triggered()), this, SLOT(aboutToCloseView()));
 }
 
@@ -52,7 +51,6 @@ CntViewManager* CntBaseView::viewManager()
 {
     return mViewManager;
 }
-
 
 /*!
 \return pointer to MobCntModel
@@ -79,10 +77,8 @@ CntCommands *CntBaseView::commands()
 
 void CntBaseView::addSoftkeyAction()
 {
-    HbAction *action = viewManager()->mainWindow()->softKeyAction(Hb::SecondarySoftKey);
-    viewManager()->mainWindow()->removeSoftKeyAction(Hb::SecondarySoftKey, action);
-
-    viewManager()->mainWindow()->addSoftKeyAction(Hb::SecondarySoftKey, mSoftKeyBackAction);
+    if (navigationAction() != mSoftKeyBackAction)
+        setNavigationAction(mSoftKeyBackAction);
 }
 
 void CntBaseView::keyPressEvent(QKeyEvent *event)

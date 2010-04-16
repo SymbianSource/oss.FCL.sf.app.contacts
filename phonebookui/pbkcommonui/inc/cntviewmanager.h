@@ -21,10 +21,12 @@
 #include "cntviewparameters.h"
 #include "qtpbkglobal.h"
 
+#include "cntabstractviewmanager.h"
 #include <QObject>
 
 class CntMainWindow;
 class CntBaseView;
+class CntEditorFactory;
 
 class QTPBK_EXPORT CntViewManager : public QObject
 {
@@ -33,36 +35,38 @@ class QTPBK_EXPORT CntViewManager : public QObject
 public:
     CntViewManager(CntMainWindow *mainWindow=0, CntViewParameters::ViewId defaultView = CntViewParameters::namesView);
     ~CntViewManager();
-
-public slots:
-    void onActivateView(int aViewId);
-    void onActivateView(const CntViewParameters &viewParameters);
-    void onActivatePreviousView();
-
+    
+public:
+    virtual void changeView( const CntViewParameters& aViewParams ) = 0;    // New, implemented in DefaultViewManager
+    virtual void back(const CntViewParameters& aArgs) = 0;                  // New, implemented in DefaultViewManager
+    virtual bool isDepracatedView( CntViewParameters::ViewId) = 0;          // New, implemented in DefaultViewManager
+    
 public:
     void setDefaultView(CntViewParameters::ViewId defaultView);
-    void setPreviousViewParameters(const CntBaseView *currentView, const CntViewParameters &previousViewParameters);
     CntMainWindow* mainWindow();
-    CntViewParameters &previousViewParameters();
+
+ /*
+#ifdef PBK_UNIT_TEST
+public:
+#else
+protected:
+#endif
+*/
+public:
+    void removeDepracatedCurrentView(); // New
+    void addViewToWindow(CntBaseView *view);
+    void removeViewFromWindow(CntBaseView *view);
+    virtual CntBaseView *getView(const CntViewParameters &aArgs);
 
 #ifdef PBK_UNIT_TEST
 public:
 #else
 protected:
 #endif
-    void addViewToWindow(CntBaseView *view);
-    void removeViewFromWindow(CntBaseView *view);
-    virtual CntBaseView *getView(CntViewParameters::ViewId id);
-
-#ifdef PBK_UNIT_TEST
-public:
-#else
-private:
-#endif
     CntMainWindow             *mMainWindow;
-    CntBaseView               *mDefaultView;
-    CntViewParameters::ViewId  mDefaultViewId;
-    CntViewParameters          mPreviousViewParameters;
+    CntBaseView               *mDefaultView;   // own
+    CntEditorFactory          *mEditorFactory; // own
+    CntViewParameters::ViewId  mCurrentViewId;
 };
 
 #endif // CNTVIEWMANAGER_H

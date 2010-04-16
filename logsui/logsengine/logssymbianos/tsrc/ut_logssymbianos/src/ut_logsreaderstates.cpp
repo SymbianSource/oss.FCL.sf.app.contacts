@@ -73,6 +73,9 @@ void UT_LogsReaderStates::cleanup()
         delete mEvents.takeFirst();
     }
     mContactCache.clear();
+    qDeleteAll(mDuplicatedEvents);
+    mDuplicatedEvents.clear();
+    
 }
 
 void UT_LogsReaderStates::reset()
@@ -82,6 +85,7 @@ void UT_LogsReaderStates::reset()
     mReadCompleted = false;
     mModifyCompleted = false;
     mReadCount = 0;
+    mDuplicatesReadingCompletedCount = 0;
 }
 
 void UT_LogsReaderStates::testStateBase()
@@ -113,7 +117,7 @@ void UT_LogsReaderStates::testStateBase()
     logEvent->SetId( 100 );
     LogsEvent* logsEvent = new LogsEvent;
     int index( 0 );
-    QVERIFY( state.constructAndInsertEventL(*logEvent, logsEvent, index ) );
+    QVERIFY( state.constructAndInsertEventL(*logEvent, logsEvent, index, mEvents ) );
     logsEvent = 0;
     QVERIFY( mEvents.count() == 1 );
     QVERIFY( mEvents.at(0)->number() == "1234" );
@@ -123,7 +127,7 @@ void UT_LogsReaderStates::testStateBase()
     logEvent->SetNumber( _L("2234") );
     logEvent->SetId( 101 );
     logsEvent = new LogsEvent;
-    QVERIFY( state.constructAndInsertEventL(*logEvent, logsEvent, index ) );
+    QVERIFY( state.constructAndInsertEventL(*logEvent, logsEvent, index, mEvents ) );
     logsEvent = 0;
     QVERIFY( mEvents.count() == 2 );
     QVERIFY( mEvents.at(1)->number() == "2234" );
@@ -135,7 +139,7 @@ void UT_LogsReaderStates::testStateBase()
     logEvent->SetNumber( _L("") );
     logEvent->SetId( 102 );
     logsEvent = new LogsEvent;
-    QVERIFY( !state.constructAndInsertEventL(*logEvent, logsEvent, index ) );
+    QVERIFY( !state.constructAndInsertEventL(*logEvent, logsEvent, index, mEvents ) );
     QVERIFY( mEvents.count() == 2 );
     QVERIFY( index == 2 );
     
@@ -414,10 +418,8 @@ void UT_LogsReaderStates::testStateSearchingEvent()
 {
     // Searching starts ok
     LogsReaderStateSearchingEvent state(*this);
-    state.mUpdatingEvent = true;
-    mModifyingEventId = 10;
+    mCurrentEventId = 10;
     QVERIFY( state.enterL() );
-    QVERIFY( !state.mUpdatingEvent );
     
     // Searching doesn't start ok as no items in view
     LogClientStubsHelper::setViewCount(0);
@@ -425,26 +427,18 @@ void UT_LogsReaderStates::testStateSearchingEvent()
       
     // Searching event continues
     mIndex = 0;
-    mModifyingEventId = -1;
+    mCurrentEventId = -1;
     const_cast<CLogEvent&>( mLogView->Event() ).SetId( 100 );
     LogClientStubsHelper::setViewCount(2);
-    state.mUpdatingEvent = false;
     QVERIFY( state.continueL() );
 
     // Last event handled, no target event found, entering next state
     mIndex = 2;
     QVERIFY( !state.continueL() );
     
-    // Target event found, updating event
+     // Target event found, entering next state
     mIndex = 0;
-    mModifyingEventId = 100;
-    QVERIFY( state.continueL() );
-    QVERIFY( state.mUpdatingEvent );
-    QVERIFY( mLogView->Event().Flags() & KLogEventRead );
-
-    // Event updated, entering next state
-    LogsReaderStateBase state2(*this);
-    state.setNextState(state2);
+    mCurrentEventId = 100;
     QVERIFY( !state.continueL() );
 }
 
@@ -458,14 +452,94 @@ void UT_LogsReaderStates::testStateFindingDuplicates()
     // Duplicates cannot be searched for some reason
     LogClientStubsHelper::reset();
     LogClientStubsHelper::setStubAsyncCallPossible(false);
-    QVERIFY( !(LogClientStubsHelper::stubViewFlags() & KLogEventRead) );
     QVERIFY( !state.enterL() );
-    QVERIFY( !(LogClientStubsHelper::stubViewFlags() & KLogEventRead) );
     LogClientStubsHelper::setStubAsyncCallPossible(true);
     
-    // Duplicates found, read flag for view is set, no next state to enter
+    // Duplicates can be searched
+    QVERIFY( state.enterL() );
+    
+    // Searching completes, no next state to enter
+    QVERIFY( !state.continueL() );
+}
+
+void UT_LogsReaderStates::testStateMarkingDuplicates()
+{
+    // Marking does not start as no matching event in view
+    LogsReaderStateMarkingDuplicates state(*this);
+    mCurrentEventId = 5;
+    const_cast<CLogEvent&>( mLogView->Event() ).SetId( 100 );
+    QVERIFY( !state.enterL() );
+    QVERIFY( !state.mGettingDuplicates );
+    QVERIFY( !(mLogView->Event().Flags() & KLogEventRead) );
+    
+    // Marking can start ok
+    mCurrentEventId = 100;
+    QVERIFY( state.enterL() );
+    QVERIFY( !state.mGettingDuplicates );
+    QVERIFY( mLogView->Event().Flags() & KLogEventRead );
+    
+    // Duplicates cannot be searched for some reason
+    LogClientStubsHelper::reset();
+    LogClientStubsHelper::setStubAsyncCallPossible(false);
+    QVERIFY( !(LogClientStubsHelper::stubViewFlags() & KLogEventRead) );
+    QVERIFY( !state.continueL() );
+    QVERIFY( !(LogClientStubsHelper::stubViewFlags() & KLogEventRead) );
+    QVERIFY( !state.mGettingDuplicates );
+    LogClientStubsHelper::setStubAsyncCallPossible(true);
+    
+    // Duplicates searching starts ok
+    QVERIFY( state.continueL() );
+    QVERIFY( !(LogClientStubsHelper::stubViewFlags() & KLogEventRead) );
+    QVERIFY( state.mGettingDuplicates );
+    
+    // Duplicates searching completes, view flags are set, no next state to enter
     QVERIFY( !state.continueL() );
     QVERIFY( LogClientStubsHelper::stubViewFlags() & KLogEventRead );
+}
+
+void UT_LogsReaderStates::testStateReadingDuplicates()
+{
+    // Duplicates view empty, cannot start
+    LogClientStubsHelper::setViewCount(0);
+    LogsReaderStateReadingDuplicates state(*this);
+    
+    QVERIFY( !state.enterL() );
+    
+    // Starting ok
+    LogClientStubsHelper::setViewCount(2);
+    const_cast<CLogEvent&>( mDuplicatesView->Event() ).SetNumber( _L("12345") );
+    const_cast<CLogEvent&>( mDuplicatesView->Event() ).SetId( 100 );
+
+    QVERIFY( state.enterL() );
+    QVERIFY( mDuplicatedEvents.count() == 0 );
+    
+    // Continue reading as more events in view
+    QVERIFY( state.continueL() );
+    QVERIFY( mDuplicatedEvents.count() == 1 );
+    
+    // Don't continue reading as no more events in view
+    LogClientStubsHelper::setStubAsyncCallPossible(false);
+    QVERIFY( !state.continueL() );
+    QVERIFY( mDuplicatedEvents.count() == 2 );
+    
+}
+
+void UT_LogsReaderStates::testStateReadingDuplicatesDone()
+{
+    LogsReaderStateReadingDuplicatesDone state(*this);
+    
+    // No duplicates was found
+    QVERIFY( !state.enterL() );
+    QVERIFY( mDuplicatesReadingCompletedCount == 0 );
+    
+    // Duplicates were found, ownership transferred to observer
+    LogsEvent* event = new LogsEvent;
+    mDuplicatedEvents.append(event);
+    LogsEvent* event2 = new LogsEvent;
+    mDuplicatedEvents.append(event2);
+    QVERIFY( !state.enterL() );
+    QVERIFY( mDuplicatesReadingCompletedCount == 2 );
+    QVERIFY( mDuplicatedEvents.count() == 0 );
 }
 
 void UT_LogsReaderStates::testStateModifyingDone()
@@ -475,7 +549,7 @@ void UT_LogsReaderStates::testStateModifyingDone()
     // Modified event not found for some reason
     LogsEvent* logsEvent = new LogsEvent;
     logsEvent->setIsInView(true);
-    mModifyingEventId = 100;
+    mCurrentEventId = 100;
     mEvents.append( logsEvent );
     QVERIFY( !mModifyCompleted );
     QVERIFY( !state.enterL() );
@@ -546,9 +620,9 @@ QHash<QString, ContactCacheEntry>& UT_LogsReaderStates::contactCache()
     return mContactCache;
 }
 
-int UT_LogsReaderStates::modifyingEventId()
+int UT_LogsReaderStates::currentEventId()
 {
-    return mModifyingEventId;
+    return mCurrentEventId;
 }
 
 CLogClient& UT_LogsReaderStates::logClient()
@@ -559,6 +633,11 @@ CLogClient& UT_LogsReaderStates::logClient()
 bool UT_LogsReaderStates::isRecentView()
 {
     return mIsRecentView;
+}
+
+QList<LogsEvent*>& UT_LogsReaderStates::duplicatedEvents()
+{
+    return mDuplicatedEvents;
 }
 
 // ----------------------------------------------------------------------------
@@ -581,4 +660,10 @@ void UT_LogsReaderStates::temporaryErrorOccurred(int err)
 void UT_LogsReaderStates::eventModifyingCompleted()
 {
     mModifyCompleted = true;
+}
+
+void UT_LogsReaderStates::duplicatesReadingCompleted(QList<LogsEvent*> duplicates)
+{
+    mDuplicatesReadingCompletedCount = duplicates.count();
+    qDeleteAll(duplicates);
 }

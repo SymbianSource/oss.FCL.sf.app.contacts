@@ -19,7 +19,7 @@
 
 
 #include "cntmainwindow.h"
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntviewparameters.h"
  #include <QCoreApplication>
 
@@ -28,7 +28,7 @@ CntMainWindow::CntMainWindow(QWidget *parent, CntViewParameters::ViewId defaultV
 {
     if (defaultView != CntViewParameters::noView)
     {
-        mViewManager = new CntViewManager(this,defaultView);
+        mViewManager = new CntDefaultViewManager(this,defaultView);
     }
 }
 

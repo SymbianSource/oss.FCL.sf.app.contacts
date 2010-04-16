@@ -1539,6 +1539,7 @@ void CViewContact::CopyL(const CViewContact& aContact)
         }    
         
 	iContactType = aContact.iContactType;
+	SetContactTypeUid( aContact.ContactTypeUid() );
 	iExtension->HintBitField() = aContact.iExtension->HintBitField();
 	HBufC* fieldText = aContact.iExtension->FieldText().AllocL();
 	iExtension->SetFieldText(fieldText);

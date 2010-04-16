@@ -23,6 +23,8 @@
 #include "logsmodel.h"
 #include "logsmatchesmodel.h"
 #include "logscall.h"
+#include "logscontact.h"
+#include "logsmessage.h"
 
 //SYSTEM
 #include <hblistview.h>
@@ -31,6 +33,7 @@
 #include <hblineedit.h>
 #include <hbabstractviewitem.h>
 #include <hblistviewitem.h>
+#include <hbpushbutton.h>
 
 Q_DECLARE_METATYPE(LogsMatchesModel*)
 
@@ -42,7 +45,8 @@ LogsMatchesView::LogsMatchesView(
     LogsComponentRepository& repository, LogsAbstractViewManager& viewManager )
     : LogsBaseView(LogsMatchesViewId, repository, viewManager),
       mListView(0),
-      mModel(0)
+      mModel(0),
+      mAddToContactsButton(0)
 {
     LOGS_QDEBUG( "logs [UI] <-> LogsMatchesView::LogsMatchesView()" );
 }
@@ -100,6 +104,10 @@ void LogsMatchesView::initView()
     LogsBaseView::initView();
     
     initListWidget();
+
+    mAddToContactsButton = qobject_cast<HbPushButton*>(
+            mRepository.findWidget( logsButtonAddToContactsId ) );
+
     LOGS_QDEBUG( "logs [UI] <- LogsMatchesView::initView()" );
 }
 
@@ -112,7 +120,6 @@ QAbstractItemModel* LogsMatchesView::model() const
     return mModel;
 }
 
-
 // -----------------------------------------------------------------------------
 // 
 // -----------------------------------------------------------------------------
@@ -121,12 +128,50 @@ void LogsMatchesView::callKeyPressed()
 {
     LOGS_QDEBUG( "logs [UI] -> LogsMatchesView::callKeyPressed()" );
     
-    if ( mDialpad->editor().text().length() > 0 ){
-        // Call to inputted number
-        LogsCall::callToNumber( LogsCall::TypeLogsVoiceCall, mDialpad->editor().text() );
-    }
+    callToCurrentNum( LogsCall::TypeLogsVoiceCall );
     
     LOGS_QDEBUG( "logs [UI] <- LogsMatchesView::callKeyPressed()" );
+}
+
+// -----------------------------------------------------------------------------
+// 
+// -----------------------------------------------------------------------------
+//
+void LogsMatchesView::videoCallToCurrentNum()
+{
+    callToCurrentNum( LogsCall::TypeLogsVideoCall );
+}
+
+// -----------------------------------------------------------------------------
+// 
+// -----------------------------------------------------------------------------
+//
+void LogsMatchesView::sendMessageToCurrentNum()
+{
+    LOGS_QDEBUG( "logs [UI] -> LogsMatchesView::sendMessageToCurrentNum()" );
+    if ( mDialpad->editor().text().length() > 0 ){
+        // Message to inputted number
+        LogsMessage::sendMessageToNumber( mDialpad->editor().text() );
+    }
+    LOGS_QDEBUG( "logs [UI] <- LogsMatchesView::sendMessageToCurrentNum()" );
+}
+
+// -----------------------------------------------------------------------------
+// 
+// -----------------------------------------------------------------------------
+//
+void LogsMatchesView::saveNumberInDialpadToContacts()
+{
+    if (mDialpad->editor().text().length() > 0){
+        delete mContact;
+        mContact = 0;
+        mContact = mModel->createContact(mDialpad->editor().text());
+        // Simulate text change in order to do new matching after saving
+        // number in dialpad
+        connect(mContact, SIGNAL(saveCompleted(bool)),
+                this, SLOT(dialpadEditorTextChanged()));
+        this->saveContact();
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -144,13 +189,13 @@ void LogsMatchesView::initListWidget()
     mListView->setFrictionEnabled(true);
     mListView->listItemPrototype()->setTextFormat(Qt::RichText);
     
-    connect( mListView, SIGNAL(activated(const QModelIndex)),
-             this, SLOT(initiateCallback(const QModelIndex)) );
-
-    connect( mListView,
-             SIGNAL(longPressed(HbAbstractViewItem*, const QPointF&)),
-             this,
-             SLOT(showListItemMenu(HbAbstractViewItem*, const QPointF&)) );
+    connect(mListView, SIGNAL(activated(const QModelIndex)),
+            this, SLOT(initiateCallback(const QModelIndex)));
+    
+    connect(mListView,
+            SIGNAL(longPressed(HbAbstractViewItem*, const QPointF&)),
+            this,
+            SLOT(showListItemMenu(HbAbstractViewItem*, const QPointF&)));
    
     LOGS_QDEBUG( "logs [UI] <- LogsMatchesView::initListWidget() " );
 }
@@ -189,6 +234,7 @@ void LogsMatchesView::updateModel(LogsMatchesModel* model)
 void LogsMatchesView::dialpadEditorTextChanged()
 {
     updateCallButton();
+    updateMenu();
     
     QString pattern = mDialpad->editor().text();
     if ( pattern.isEmpty() ){
@@ -199,6 +245,15 @@ void LogsMatchesView::dialpadEditorTextChanged()
     }
 }
 
+// -----------------------------------------------------------------------------
+// LogsMatchesView::dialpadOpened
+// -----------------------------------------------------------------------------
+//
+void LogsMatchesView::dialpadOpened()
+{
+    LogsBaseView::dialpadOpened();
+    updateAddContactButton();
+}
 
 // -----------------------------------------------------------------------------
 // LogsMatchesView::dialpadClosed
@@ -206,7 +261,10 @@ void LogsMatchesView::dialpadEditorTextChanged()
 //
 void LogsMatchesView::dialpadClosed()
 {
+    LOGS_QDEBUG( "logs [UI] -> LogsMatchesView::dialpadClosed()" );
     updateWidgetsSizeAndLayout();
+    updateAddContactButton();
+    LOGS_QDEBUG( "logs [UI] <- LogsMatchesView::dialpadClosed()" );
 }
 
 // -----------------------------------------------------------------------------
@@ -217,8 +275,65 @@ void LogsMatchesView::updateWidgetsSizeAndLayout()
 {
     LOGS_QDEBUG( "logs [UI] -> LogsMatchesView::updateWidgetsSizeAndLayout()" );
     if ( mListView ) {
+        updateMenu();
         updateListLayoutName(*mListView);
-        updateListSize(mLayoutSectionName);
+        updateListSize();
     }
     LOGS_QDEBUG( "logs [UI] <- LogsMatchesView::updateWidgetsSizeAndLayout()" );
+}
+
+// -----------------------------------------------------------------------------
+// LogsMatchesView::updateEmptyListWidgetsVisibility
+// -----------------------------------------------------------------------------
+//
+void LogsMatchesView::updateEmptyListWidgetsVisibility()
+{
+    updateEmptyListLabelVisibility();
+    updateAddContactButton();
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
+void LogsMatchesView::updateMenu()
+{
+    LOGS_QDEBUG( "logs [UI] -> LogsMatchesView::updateMenu()" );
+    HbAction* videoCallAction = qobject_cast<HbAction*>( 
+            mRepository.findObject( logsCommonVideoCallMenuActionId ) );
+    HbAction* sendMessageAction = qobject_cast<HbAction*>( 
+            mRepository.findObject( logsCommonMessageMenuActionId ) );
+    
+    bool visible( mDialpad->isOpen() && !mDialpad->editor().text().isEmpty() );
+    
+    toggleActionAvailability( videoCallAction, visible );
+    toggleActionAvailability( sendMessageAction, visible );
+    LOGS_QDEBUG( "logs [UI] <- LogsMatchesView::updateMenu()" );
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
+void LogsMatchesView::callToCurrentNum( LogsCall::CallType callType )
+{
+    if ( mDialpad->editor().text().length() > 0 ){
+        // Call to inputted number
+        LogsCall::callToNumber( callType, mDialpad->editor().text() );
+    }
+}
+
+// -----------------------------------------------------------------------------
+// LogsMatchesView::updateAddContactButton
+// -----------------------------------------------------------------------------
+//
+void LogsMatchesView::updateAddContactButton()
+{
+    if (mAddToContactsButton) {
+        LOGS_QDEBUG( "logs [UI] <-> LogsMatchesView::updateAddContactButton()" );
+        bool matchesFound(model() && (model()->rowCount() > 0));
+        mAddToContactsButton->setVisible(!matchesFound
+                                         && mDialpad->isOpen() 
+                                         && !mDialpad->editor().text().isEmpty());
+    }
 }

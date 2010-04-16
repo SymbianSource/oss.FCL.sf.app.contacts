@@ -64,6 +64,10 @@ public: // From LogsAbstractViewManager
     virtual HbMainWindow& mainWindow();
     virtual void exitApplication();
     
+private slots:
+
+    void handleOrientationChanged();
+    
 private:
     
     void initViews();

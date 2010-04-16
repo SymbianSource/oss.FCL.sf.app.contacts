@@ -32,6 +32,7 @@
 #include <hbaction.h>
 #include <hblabel.h>
 
+
 const char *CNT_GROUPACTIONVIEW_XML = ":/xml/contacts_cc.docml";
 
 /*!
@@ -46,7 +47,7 @@ CntGroupActionsView::CntGroupActionsView(CntViewManager *viewManager, QGraphicsI
     mContainerLayout(0),
     mDataContainer(0),
     mHeadingItem(0),
-    mThumbnailManager(0)
+    mBanner(0)
 {
     bool ok = false;
     ok = loadDocument(CNT_GROUPACTIONVIEW_XML);
@@ -61,13 +62,6 @@ CntGroupActionsView::CntGroupActionsView(CntViewManager *viewManager, QGraphicsI
            qFatal("Unable to read :/xml/contacts_cc.docml");
        }
 
-       mThumbnailManager = new ThumbnailManager(this);
-       mThumbnailManager->setMode(ThumbnailManager::Default);
-       mThumbnailManager->setQualityPreference(ThumbnailManager::OptimizeForQuality);
-       mThumbnailManager->setThumbnailSize(ThumbnailManager::ThumbnailMedium);
-       
-       connect(mThumbnailManager, SIGNAL(thumbnailReady(QPixmap, void*, int, int)),
-           this, SLOT(thumbnailReady(QPixmap, void*, int, int)));
 }
 
 /*!
@@ -80,61 +74,12 @@ CntGroupActionsView::~CntGroupActionsView()
 }
 
 
-void CntGroupActionsView::thumbnailReady(const QPixmap& pixmap, void *data, int id, int error)
-{
-    Q_UNUSED(data);
-    Q_UNUSED(id);
-    Q_UNUSED(error);
-    QIcon qicon(pixmap);
-    HbIcon icon(qicon);
-    mHeadingItem->setIcon(icon);
-}
-/*!
-Add actions also to toolbar
-*/
-void CntGroupActionsView::addActionsToToolBar()
-{
-    //Add Action to the toolbar
-    actions()->clearActionList();
-    actions()->actionList() << actions()->baseAction("cnt:editgroup") << actions()->baseAction("cnt:deletegroup")
-        << actions()->baseAction("cnt:groupmembers");
-    actions()->addActionsToToolBar(toolBar());
-
-    connect(actions()->baseAction("cnt:editgroup"), SIGNAL(triggered()),
-            this, SLOT(editGroupDetails()));
-    connect(actions()->baseAction("cnt:deletegroup"), SIGNAL(triggered()),
-       this, SLOT(deleteGroup()));    
-    connect(actions()->baseAction("cnt:groupmembers"), SIGNAL(triggered()),
-            this, SLOT(groupMembers()));
-
-}
-
-
 void CntGroupActionsView::editGroup()
 {
     CntViewParameters viewParameters(CntViewParameters::groupEditorView);
     viewParameters.setSelectedAction("EditGroupMembers");
     viewParameters.setSelectedContact(*mGroupContact);
-    viewManager()->onActivateView(viewParameters);
-}
-
-void CntGroupActionsView::groupMembers()
-{
-    CntViewParameters viewParameters(CntViewParameters::groupMemberView);
-    viewParameters.setSelectedContact(*mGroupContact);
-    viewManager()->onActivateView(viewParameters);
-}
-
-void CntGroupActionsView::openNamesView()
-{
-    CntViewParameters viewParameters(CntViewParameters::namesView);
-    viewManager()->onActivateView(viewParameters);
-}
-
-void CntGroupActionsView::openCollections()
-{
-    CntViewParameters viewParameters(CntViewParameters::collectionView);
-    viewManager()->onActivateView(viewParameters);
+    viewManager()->changeView(viewParameters);
 }
 
 /*!
@@ -150,7 +95,9 @@ Activates a previous view
 */
 void CntGroupActionsView::aboutToCloseView()
 {
-   viewManager()->onActivateView(CntViewParameters::collectionView);
+    CntViewParameters args;
+    args.setSelectedContact(*mGroupContact);
+    viewManager()->back( args );
 }
 
 void CntGroupActionsView::resizeEvent(QGraphicsSceneResizeEvent *event)
@@ -162,7 +109,10 @@ void CntGroupActionsView::resizeEvent(QGraphicsSceneResizeEvent *event)
     CntBaseView::resizeEvent(event);
 }
 
-
+void CntGroupActionsView::addActionsToToolBar()
+{
+    
+}
 /*
 Activates a default view and setup name label texts
 */
@@ -175,25 +125,15 @@ void CntGroupActionsView::activateView(const CntViewParameters &viewParameters)
     QGraphicsWidget *c = findWidget(QString("content"));
     QGraphicsLinearLayout* l = static_cast<QGraphicsLinearLayout*>(c->layout());
 
-    mHeadingItem = new CntContactCardHeadingItem(c);
-    mHeadingItem->setGroupDetails(mGroupContact);
-
-    l->insertItem(0, mHeadingItem);
+    QContactName groupContactName = mGroupContact->detail( QContactName::DefinitionName );
+    QString groupName(groupContactName.value( QContactName::FieldCustomLabel ));
+       
+    mBanner = new HbGroupBox(this);
+    l->insertItem(0, mBanner);
+    mBanner->setHeading(groupName);
     
-    // avatar
-    QList<QContactAvatar> details = mGroupContact->details<QContactAvatar>();
-    if (details.count() > 0)
-    {
-        for (int i = 0;i < details.count();i++)
-        {
-            if (details.at(i).subType() == QContactAvatar::SubTypeImage)
-            {
-                mThumbnailManager->getThumbnail(details.at(i).avatar());
-                break;
-            }
-        }
-    }
     
+       
     // data
     mDataContainer = new CntContactCardDataContainer(mGroupContact);
 
@@ -286,95 +226,18 @@ void CntGroupActionsView::activateView(const CntViewParameters &viewParameters)
 
 }
 
-
-void CntGroupActionsView::doConferenceCall()
-{
-
-}
-
-void CntGroupActionsView::sendGroupMessage()
-{
-
-}
-
-void CntGroupActionsView::sendGroupEmail()
-{
-
-}
-
 /*!
 Add actions to menu
 */
 void CntGroupActionsView::addMenuItems()
 {
     actions()->clearActionList();
-    actions()->actionList() << actions()->baseAction("cnt:placegrouptohs");
+    actions()->actionList() << actions()->baseAction("cnt:editgroupdetails");
     actions()->addActionsToMenu(menu());
 
-    connect(actions()->baseAction("cnt:placegrouptohs"), SIGNAL(triggered()),
-            this, SLOT (placeGroupToHs()));
-
+    connect(actions()->baseAction("cnt:editgroupdetails"), SIGNAL(triggered()),
+            this, SLOT (editGroup()));
 }
 
 
-void CntGroupActionsView::manageMembers()
-{
- /*   CntViewParameters viewParameters(CntViewParameters::groupMemberSelectionView);
-    viewParameters.setSelectedAction("EditGroupMembers");
-    viewParameters.setSelectedContact(*mGroupContact);
-    viewManager()->onActivateView(viewParameters);
-*/
-}
 
-void CntGroupActionsView::editGroupDetails()
-{
-    CntViewParameters viewParameters(CntViewParameters::groupEditorView);
-    viewParameters.setSelectedAction("EditGroupDetails");
-    viewParameters.setSelectedContact(*mGroupContact);
-    viewManager()->onActivateView(viewParameters);
-}
-
-void CntGroupActionsView::placeGroupToHs()
-{
-// wait for specs
-}
-
-void CntGroupActionsView::deleteGroup()
-{
-    // the delete command
-     HbDialog popup;
-
-     // Set dismiss policy that determines what tap events will cause the dialog
-     // to be dismissed
-     popup.setDismissPolicy(HbDialog::NoDismiss);
-     
-     QContactName groupContactName = mGroupContact->detail( QContactName::DefinitionName );
-     QString groupName(groupContactName.value( QContactName::FieldCustomLabel ));
-     // Set the label as heading widget
-     popup.setHeadingWidget(new HbLabel(hbTrId("Delete %1 group?").arg(groupName))); 
-
-     // Set a label widget as content widget in the dialog
-     popup.setContentWidget(new HbLabel(tr("Only group will be removed, contacts can be found frim All contacts list")));
-
-     // Sets the primary action and secondary action
-     popup.setPrimaryAction(new HbAction(hbTrId("txt_phob_button_delete"),&popup));
-     popup.setSecondaryAction(new HbAction(hbTrId("txt_common_button_cancel"),&popup));
-
-     popup.setTimeout(0) ;
-     HbAction* action = popup.exec();
-     if (action == popup.primaryAction())
-     {
-         contactManager()->removeContact(mGroupContact->localId());
-         CntViewParameters viewParameters(CntViewParameters::collectionView);
-         viewParameters.setSelectedAction("EditGroupDetails");
-         viewParameters.setSelectedContact(*mGroupContact);
-         viewManager()->onActivateView(viewParameters);
-     }
-}
-
-void CntGroupActionsView::onItemActivated()
-{
-// to be implemented
-}
-
-// end of file

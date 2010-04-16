@@ -18,6 +18,7 @@
 #include "logsmessage.h"
 #include "logsevent.h"
 #include "logseventdata.h"
+#include "qthighway_stub_helper.h"
 
 #include <QtTest/QtTest>
 
@@ -50,12 +51,12 @@ void UT_LogsMessage::testConstructor()
 {
     QVERIFY( mLogsMessage );
     
-    LogsMessage messageWithoutEvent( 2, "1234" );
+    LogsMessage messageWithoutEvent( 2, "1234", "firstname" );
     QVERIFY( messageWithoutEvent.mContactId == 2 );
     QVERIFY( messageWithoutEvent.mNumber == "1234" );
     QVERIFY( messageWithoutEvent.mIsAllowed );
     
-    LogsMessage messageWithoutEvent2( 2, "" );
+    LogsMessage messageWithoutEvent2( 2, "","" );
     QVERIFY( messageWithoutEvent2.mContactId == 0 );
     QVERIFY( messageWithoutEvent2.mNumber == "" );
     QVERIFY( !messageWithoutEvent2.mIsAllowed );
@@ -76,6 +77,26 @@ void UT_LogsMessage::testIsMessagingAllowed()
 
 void UT_LogsMessage::testSendMessage()
 {
-    QVERIFY( !mLogsMessage->sendMessage() );
+    QtHighwayStubHelper::reset();
+    QVERIFY( mLogsMessage->sendMessage() );
+    QVERIFY( QtHighwayStubHelper::service() == "com.nokia.services.hbserviceprovider.conversationview" );
+    QVERIFY( QtHighwayStubHelper::message() == "send(QString,qint32,QString)" );
+    
+}
+
+void UT_LogsMessage::testSendMessageToNumber()
+{
+    QtHighwayStubHelper::reset();
+    QVERIFY( mLogsMessage->sendMessageToNumber( "1234567" ) );
+    QVERIFY( QtHighwayStubHelper::service() == "com.nokia.services.hbserviceprovider.conversationview" );
+    QVERIFY( QtHighwayStubHelper::message() == "send(QString,qint32,QString)" );
+    QtHighwayStubHelper::reset();
+    QVERIFY( mLogsMessage->sendMessageToNumber( "1234567", "name" ) );
+    QVERIFY( QtHighwayStubHelper::service() == "com.nokia.services.hbserviceprovider.conversationview" );
+    QVERIFY( QtHighwayStubHelper::message() == "send(QString,qint32,QString)" );
+    QtHighwayStubHelper::reset();
+    QVERIFY( mLogsMessage->sendMessageToNumber( "4234567", "namef", 3 ) );
+    QVERIFY( QtHighwayStubHelper::service() == "com.nokia.services.hbserviceprovider.conversationview" );
+    QVERIFY( QtHighwayStubHelper::message() == "send(QString,qint32,QString)" );
 }
 

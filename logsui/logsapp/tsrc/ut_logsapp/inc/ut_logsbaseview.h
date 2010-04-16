@@ -53,8 +53,6 @@ private slots: //test methods
     void testConstructor();
     void testActivated();
     void testDeactivated();
-    void testActivateSoftKey();
-    void testClearSoftKey();
     void testShowFilterMenu();
     void testOpenDialpad();
     void testSetDialpadPostion();
@@ -67,6 +65,7 @@ private slots: //test methods
     void testInitiateCallback();
     void testShowListItemMenu();
     void testPopulateListItemMenu();
+    void testSaveContact();
     void testUpdateCall();
     void testUpdateMessage();
     void testUpdateContact();
@@ -75,7 +74,6 @@ private slots: //test methods
     void testUpdateEmptyListLabelVisibility();
     void testUpdateListLayoutName();
     void testUpdateListSize();
-    void testHandleAboutToChangeOrientation();
     void testHandleOrientationChanged();
     void testHandleExit();
     void testIsExitAllowed();

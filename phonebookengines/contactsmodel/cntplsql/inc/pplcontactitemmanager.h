@@ -37,6 +37,7 @@
 
 class CPplTableBase;
 class CPplPreferencesPersistor;
+class CPplPredictiveSearchTable;
 
 /**
 The CPplContactItemManager implements the MLplPersistenceBroker.
@@ -77,7 +78,8 @@ public:
     TInt CardTemplatePrefIdL() const;
     void SetCardTemplatePrefIdL(TInt aCardTemplatePrefId);
 	void SynchronizePredSearchTableL();
-    
+	void RecreatePredSearchTablesL();
+
 private:
 	CPplContactItemManager(RSqlDatabase& aDatabase, MLplTransactionManager& aTransactionManager, CLplContactProperties&  aContactProperties, RPplIccContactStore& aIccContactStore);
 	void ConstructL();
@@ -90,7 +92,9 @@ private:
 	void DeleteInLowDiskConditionL(CPplTableBase* aTable, CContactItem* aContactItem);
 
 	TBool DoesPredSearchTableExistL() const;
-	
+	void CreatePredSearchTablesL();
+	void DeletePredSearchTablesL();
+
 private:
 	RSqlDatabase&				iDatabase;				// CPplContactItemManager does not own the RSqlDatabase object
 	MLplTransactionManager& 	iTransactionManager;
@@ -100,7 +104,7 @@ private:
 	CPplTableBase* 				iContactTable;
 	CPplTableBase* 				iGroupTable;	
 	CPplTableBase* 				iCommAddrTable;
-	CPplTableBase* 				iPredSearchTable;
+	CPplPredictiveSearchTable*   	iPredSearchTable;
 	CPplTableBase*              iPresenceTable;
 	CPplPreferencesPersistor*	iPreferencePersistor;
 	RPplIccContactStore&        iIccContactStore;

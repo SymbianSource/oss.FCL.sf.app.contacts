@@ -35,6 +35,9 @@ public:
     }
 
     ~QContactData() {}
+    
+    QContactId m_id;
+    
 };
 
 class QtMobility::QContactDetailPrivate : public QSharedData
@@ -63,7 +66,7 @@ QContactManager::~QContactManager()
 
 }
 
-QList<QContactLocalId> QContactManager::contacts(
+QList<QContactLocalId> QContactManager::contactIds(
         const QContactFilter& filter, 
         const QList<QContactSortOrder>& /*sortOrders*/) const
 {
@@ -73,14 +76,20 @@ QList<QContactLocalId> QContactManager::contacts(
     int digits = df.value().toString().length();        
     QList<QContactLocalId> list;
     for( int i=0;i<10-digits;i++) {
-        list.append( 1000+i );
+        list.append( 1+i );
     }
     return list;
 }
 
-QContact QContactManager::contact(const QContactLocalId& /*contactId*/) const
+QContact QContactManager::contact( 
+    const QContactLocalId& contactId, 
+    const QStringList& definitionRestrictions ) const
 {
     QContact contact;
+    QContactId id;
+    id.setLocalId(contactId  );
+
+    contact.setId( id );
     return contact;
 }
 
@@ -138,16 +147,25 @@ QContactDetail QContact::detail(const QString& definitionId) const
 {
     if ( definitionId == QContactName::DefinitionName ){
         QContactName name;
+        QContactLocalId id = localId();
+        QString first = QString("first%1").arg( id );        
+        name.setValue(QContactName::FieldFirst, first );
+        QString last = QString("last%1").arg( id );        
+        name.setValue(QContactName::FieldLast, last );
         return name;
     }
     if ( definitionId == QContactPhoneNumber::DefinitionName ){
         QContactPhoneNumber number;
+        QString n( "555789987" );
+        number.setValue(QContactPhoneNumber::FieldNumber, n );
         return number;
     }
-if ( definitionId == QContactAvatar::DefinitionName){
+    if ( definitionId == QContactAvatar::DefinitionName){
         QContactAvatar avatar;
         avatar.setSubType(QContactAvatar::SubTypeImage);
-        avatar.setAvatar("c:\\data\\images\\logstest1.jpg");  
+        avatar.setAvatar("c:\\data\\images\\logstest1.jpg");
+        QString a( "Avatar" );
+        avatar.setValue( QContactAvatar::FieldAvatar, a );
         return avatar;
     }
     QContactDetail detail;
@@ -195,20 +213,5 @@ QVariant QContactDetail::variantValue(const QString& key) const
     return val;
 }
 
-QString QContactDetail::value(const QString& key) const
-{
-    if ( key == QContactName::FieldFirst ){
-        return QString( "first" );
-    } else if ( key == QContactName::FieldLast ) {
-        return QString( "last" );
-    } else if ( key == QContactPhoneNumber::FieldNumber ) {
-        return QString( "555789987" );
-    }
-    else if ( key == QContactAvatar::FieldAvatar){
-        return QString( "Avatar" );
-    }
-    
-    return QString("");
-}
 
 

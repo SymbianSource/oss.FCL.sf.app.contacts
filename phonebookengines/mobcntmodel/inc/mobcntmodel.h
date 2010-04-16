@@ -70,6 +70,7 @@ public:
                                const QList<QContactSortOrder>& contactSortOrders = QList<QContactSortOrder>());
 	void showMyCard(bool enabled);
 	bool myCardStatus() const;
+	QContactLocalId myCardId() const;
 	
 private:
 	// Construction helpers

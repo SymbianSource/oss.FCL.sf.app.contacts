@@ -65,7 +65,10 @@ LogsCall::LogsCall(LogsEvent& event)
 // Stub constructor
 // -----------------------------------------------------------------------------
 //
-LogsCall::LogsCall()
+LogsCall::LogsCall() :
+    mDefaultCall( TypeLogsCallNotAvailable ),
+    mEventType(LogsEvent::TypeVoiceCall),
+    mTestLastCallType(-1)
     {
     }
 

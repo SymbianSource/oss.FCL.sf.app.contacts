@@ -109,8 +109,21 @@ QList<QContactLocalId> QContactManager::contacts(
     return list;
 }
 
-QContact QContactManager::contact(const QContactLocalId& contactId) const
+QList<QContactLocalId> QContactManager::contactIds(
+        const QContactFilter& filter, const QList<QContactSortOrder>& sortOrders) const
 {
+    Q_UNUSED(filter)
+    Q_UNUSED(sortOrders)
+    QList<QContactLocalId> list;
+    if ( QString("11112222").endsWith(logsTestNumber) ){
+        list.append( logsTestContactId );
+    }
+    return list;
+}
+
+QContact QContactManager::contact(const QContactLocalId& contactId, const QStringList& definitionRestrictions) const
+{
+		Q_UNUSED(definitionRestrictions)
     QContact contact;
     if ( contactId == logsTestContactId ) {
         logsTestContactLocalId = logsTestContactId;

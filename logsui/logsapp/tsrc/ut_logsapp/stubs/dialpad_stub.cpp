@@ -23,6 +23,16 @@ Dialpad::Dialpad()
     mLineEdit = new HbLineEdit();
     setVisible(false);
     mIsCallButtonEnabled = false;
+    mIsOpen = false;
+}
+
+Dialpad::Dialpad(const HbMainWindow& mainWindow)
+{
+    Q_UNUSED(mainWindow);
+    mLineEdit = new HbLineEdit();
+    setVisible(false);
+    mIsCallButtonEnabled = false;
+    mIsOpen = false;    
 }
 
 Dialpad::~Dialpad()

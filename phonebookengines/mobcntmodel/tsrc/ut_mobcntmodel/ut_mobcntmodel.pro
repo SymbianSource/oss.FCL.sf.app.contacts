@@ -52,6 +52,9 @@ SOURCES += ../../src/mobcntmodel.cpp \
            ../../src/mobcnticonmanager.cpp
 
 RESOURCES += ../../resources/mobcntmodel.qrc
+
+BLD_INF_RULES.prj_exports += "image1.png /epoc32/winscw/c/data/images/"
+BLD_INF_RULES.prj_exports += "image2.png /epoc32/winscw/c/data/images/"
     
 LIBS += -lQtContacts \
         -lhbcore \

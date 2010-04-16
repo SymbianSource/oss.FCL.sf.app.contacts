@@ -32,6 +32,10 @@ private slots:
    
     void activateView();     
     void addActionsToToolBar();
+    void addMenuItems();
+    void setAsFavorite();
+    void removeFromFavorite();
+    void isFavoriteGroupCreated();
 
     void cleanupTestCase();
 

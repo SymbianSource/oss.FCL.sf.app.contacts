@@ -34,11 +34,13 @@ INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 INCLUDEPATH += ../../
 INCLUDEPATH += ../../inc
 INCLUDEPATH += ../../../inc
+INCLUDEPATH += ../../../tsrc/qtestutils/inc
 
 # Input
-    HEADERS += inc\st_logscntfinder.h 
+HEADERS += inc\st_logscntfinder.h 
             
-    SOURCES += src\st_logscntfinder.cpp   
+SOURCES += src\st_logscntfinder.cpp   
+SOURCES += ../../../tsrc/qtestutils/src/testresultxmlparser.cpp
 
 symbian: {
     TARGET.UID2 = 0x100039CE

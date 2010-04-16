@@ -28,7 +28,7 @@
 
 //SYSTEM
 #include <hbaction.h>
-#include <hbinstance.h>
+#include <hbmainwindow.h>
 #include <hbmessagebox.h>
 #include <hbtoolbar.h>
 #include <hbmenu.h>
@@ -40,6 +40,9 @@
 #include <xqservicerequest.h>
 #include <hblabel.h>
 #include <hblistview.h>
+#include <QGraphicsLinearLayout>
+#include <hbpushbutton.h>
+
 
 Q_DECLARE_METATYPE(LogsCall*)
 Q_DECLARE_METATYPE(LogsMessage*)
@@ -49,7 +52,7 @@ Q_DECLARE_METATYPE(LogsDetailsModel*)
 const int contextMenuTimeout = 5000000; //5 secs
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::LogsBaseView
+// 
 // -----------------------------------------------------------------------------
 //
 LogsBaseView::LogsBaseView( 
@@ -63,7 +66,6 @@ LogsBaseView::LogsBaseView(
       mShowFilterMenu(0),
       mEmptyListLabel(0),
       mInitialized(false),
-      mForceDialpadOpened(false),
       mCall(0),
       mMessage(0),
       mContact(0),
@@ -72,40 +74,34 @@ LogsBaseView::LogsBaseView(
 {
     LOGS_QDEBUG( "logs [UI] -> LogsBaseView::LogsBaseView()" );
     
-    mSoftKeyBackAction = new HbAction(Hb::BackAction, this);
-    connect( mSoftKeyBackAction, SIGNAL( triggered() ), this, 
-            SLOT( handleBackSoftkey() ) );
+    mSoftKeyBackAction = new HbAction(Hb::BackNaviAction, this);
+    connect(mSoftKeyBackAction, SIGNAL(triggered()), this, 
+            SLOT(handleBackSoftkey()));
 
     mDialpad =  mRepository.dialpad();
     
-    //mDialpad->setDismissPolicy(Dialpad::NoDismiss);
-
     LOGS_QDEBUG( "logs [UI] <- LogsBaseView::LogsBaseView()" );
 }
     
 // -----------------------------------------------------------------------------
-// LogsBaseView::~LogsBaseView
+//
 // -----------------------------------------------------------------------------
 //
 LogsBaseView::~LogsBaseView()
 {
     LOGS_QDEBUG( "logs [UI] -> LogsBaseView::~LogsBaseView()" );
 
-    clearSoftKey();    
-    delete mSoftKeyBackAction;
-    
     delete mCall;
     delete mMessage;
     delete mContact;
-    delete mDetailsModel;
-    
+    delete mDetailsModel;    
     delete mCallTypeMapper;
 
     LOGS_QDEBUG( "logs [UI] <- LogsBaseView::~LogsBaseView()" );
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::viewId
+//
 // -----------------------------------------------------------------------------
 //
 LogsAppViewId LogsBaseView::viewId() const
@@ -114,7 +110,7 @@ LogsAppViewId LogsBaseView::viewId() const
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::isExitAllowed
+//
 // -----------------------------------------------------------------------------
 //
 bool LogsBaseView::isExitAllowed()
@@ -123,7 +119,7 @@ bool LogsBaseView::isExitAllowed()
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::activated
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::activated(bool showDialer, QVariant args)
@@ -133,24 +129,22 @@ void LogsBaseView::activated(bool showDialer, QVariant args)
     //we have to set object tree of the repository to the current view
     mRepository.setObjectTreeToView( mViewId );
 
-    if ( !mInitialized ) {
+    if (!mInitialized) {
         initView();
     }
         
     connect( mDialpad, SIGNAL( aboutToClose() ), this, 
             SLOT( dialpadClosed() ), Qt::QueuedConnection );
+    connect( mDialpad, SIGNAL( aboutToOpen() ), this, 
+            SLOT( dialpadOpened() ), Qt::QueuedConnection );
     connect( &mDialpad->editor(), SIGNAL( contentsChanged() ), this,
             SLOT( dialpadEditorTextChanged() ) );
-    
-    connect( &mViewManager.mainWindow(), SIGNAL(aboutToChangeOrientation()),
-            this, SLOT(handleAboutToChangeOrientation()) );
-    
-    connect( &mViewManager.mainWindow(), SIGNAL(orientationChanged(Qt::Orientation)),
-            this, SLOT(handleOrientationChanged()) );
 
-    activateSoftKey();
+    if ( navigationAction() != mSoftKeyBackAction ) {
+        setNavigationAction(mSoftKeyBackAction);
+    }
     
-    if ( showDialer && !mDialpad->isVisible() ) {
+    if (showDialer && !mDialpad->isOpen()) {
         openDialpad();
     }
     
@@ -159,7 +153,7 @@ void LogsBaseView::activated(bool showDialer, QVariant args)
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::deactivated
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::deactivated()
@@ -167,18 +161,14 @@ void LogsBaseView::deactivated()
     LOGS_QDEBUG( "logs [UI] <-> LogsBaseView::deactivated()" );
     disconnect( mDialpad, SIGNAL( aboutToClose() ), this, 
             SLOT( dialpadClosed() ) );
+    disconnect( mDialpad, SIGNAL( aboutToOpen() ), this, 
+            SLOT( dialpadOpened() ) );
     disconnect( &mDialpad->editor(), SIGNAL( contentsChanged() ), this,
             SLOT( dialpadEditorTextChanged() ) );
-
-    disconnect( &mViewManager.mainWindow(), SIGNAL(aboutToChangeOrientation()),
-            this, SLOT(handleAboutToChangeOrientation()) );
-    disconnect( &mViewManager.mainWindow(), SIGNAL(orientationChanged(Qt::Orientation)),
-            this, SLOT(handleOrientationChanged()) );
-    clearSoftKey();
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::notSupported
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::notSupported()
@@ -190,13 +180,15 @@ void LogsBaseView::notSupported()
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::handleBackSoftkey
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::handleBackSoftkey()
 {
+    LOGS_QDEBUG( "logs [UI] -> LogsBaseView::handleBackSoftkey()" );
     //mViewManager.activatePreviousView();
     mViewManager.activateView( LogsRecentViewId, false, QVariant() );
+    LOGS_QDEBUG( "logs [UI] <- LogsBaseView::handleBackSoftkey()" );
 }
 
 // -----------------------------------------------------------------------------
@@ -245,7 +237,7 @@ QAbstractItemModel* LogsBaseView::model() const
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::handleExit
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::handleExit()
@@ -256,7 +248,7 @@ void LogsBaseView::handleExit()
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::showFilterMenu
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::showFilterMenu()
@@ -270,10 +262,9 @@ void LogsBaseView::showFilterMenu()
         QPointF pos( toolbarGeometry.bottomRight().x(),
                      toolbarGeometry.topRight().y() ); 
                      
-        if ( !hbInstance->allMainWindows().isEmpty() ){
-            pos.setX(toolbarGeometry.bottomRight().x());
-            pos.setY(toolbarGeometry.topRight().y());
-        }
+        pos.setX(toolbarGeometry.bottomRight().x());
+        pos.setY(toolbarGeometry.topRight().y());
+
         mShowFilterMenu->setPreferredPos(pos,HbPopup::BottomRightCorner);
         LOGS_QDEBUG_2("logs [UI]    menupos:", pos)
         mShowFilterMenu->exec();
@@ -282,7 +273,7 @@ void LogsBaseView::showFilterMenu()
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::openDialpad
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::openDialpad()
@@ -291,12 +282,11 @@ void LogsBaseView::openDialpad()
     updateCallButton();
     setDialpadPosition();
     mDialpad->openDialpad();
-    updateWidgetsSizeAndLayout();
     LOGS_QDEBUG( "logs [UI] <- LogsBaseView::openDialpad()" );
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::openContactsApp
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::openContactsApp()
@@ -313,7 +303,7 @@ void LogsBaseView::openContactsApp()
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::setDialpadPosition
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::setDialpadPosition()
@@ -334,12 +324,23 @@ void LogsBaseView::setDialpadPosition()
         mDialpad->setPos(QPointF(0, screenHeight/2.25));
         mDialpad->setPreferredSize(screenRect.width(),
                                    screenHeight-screenHeight/2.25);        
-    }       
+    }
     LOGS_QDEBUG( "logs [UI] <- LogsBaseView::setDialpadPosition()" );
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::dialpadClosed
+//
+// -----------------------------------------------------------------------------
+//
+void LogsBaseView::dialpadOpened()
+{
+    LOGS_QDEBUG( "logs [UI] -> LogsBaseView::dialpadOpened()" );
+    updateWidgetsSizeAndLayout();
+    LOGS_QDEBUG( "logs [UI] <- LogsBaseView::dialpadOpened()" );
+}
+
+// -----------------------------------------------------------------------------
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::dialpadClosed()
@@ -351,7 +352,7 @@ void LogsBaseView::dialpadClosed()
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::dialpadEditorTextChanged
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::dialpadEditorTextChanged()
@@ -366,7 +367,7 @@ void LogsBaseView::dialpadEditorTextChanged()
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::changeFilter
+// 
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::changeFilter(HbAction* action)
@@ -380,7 +381,7 @@ void LogsBaseView::changeFilter(HbAction* action)
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::showListItemMenu
+// 
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::showListItemMenu(
@@ -392,14 +393,17 @@ void LogsBaseView::showListItemMenu(
 
     updateListItemData(item->modelIndex());    
     populateListItemMenu(itemContextMenu);
-    
+
+    if (mDialpad->isOpen()) {
+        mDialpad->closeDialpad();
+    }    
     if (itemContextMenu.actions().count() > 0) {
         itemContextMenu.exec(coords);
     }
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::populateListItemMenu
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::populateListItemMenu(HbMenu& menu)
@@ -409,32 +413,38 @@ void LogsBaseView::populateListItemMenu(HbMenu& menu)
 
     if (mCall) {
         mCallTypeMapper = new QSignalMapper();
-        foreach(LogsCall::CallType callType, mCall->allowedCallTypes()){
-            if (callType != mCall->defaultCallType()) {
-                HbAction* callAction = new HbAction;
-                if (callType == LogsCall::TypeLogsVoiceCall){
-                    callAction->setText(tr("Voice call"));
-                }
-                else if (callType == LogsCall::TypeLogsVideoCall){
-                    callAction->setText(tr("Video call"));
-                }
-                else if (callType == LogsCall::TypeLogsVoIPCall){
-                    callAction->setText(tr("VoIP call"));
-                }
                 
-                connect(callAction, SIGNAL(triggered()),
-                        mCallTypeMapper, SLOT( map()) );
-                mCallTypeMapper->setMapping(callAction, callType);
-                 
-                menu.addAction(callAction);
+        foreach(LogsCall::CallType callType, mCall->allowedCallTypes()){
+            HbAction* callAction = new HbAction;
+            if (callType == LogsCall::TypeLogsVoiceCall){
+                callAction->setText(hbTrId("txt_common_menu_voice_call"));
             }
-        }
+            else if (callType == LogsCall::TypeLogsVideoCall){
+                callAction->setText(hbTrId("txt_common_menu_video_call"));
+            }
+            else if (callType == LogsCall::TypeLogsVoIPCall){
+                callAction->setText(hbTrId("txt_common_menu_internet_call"));
+            }
+            
+            connect(callAction, SIGNAL(triggered()),
+                    mCallTypeMapper, SLOT( map()) );
+            mCallTypeMapper->setMapping(callAction, callType);
+            
+            // Default call type must be the first item in context menu
+            if (callType != mCall->defaultCallType() ||
+                menu.actions().count() == 0){
+                menu.addAction(callAction);
+            } else {   
+                menu.insertAction(menu.actions().at(0), callAction);
+            }           
+        }    
         connect(mCallTypeMapper, SIGNAL(mapped(int)),
                 this, SLOT( initiateCall(int)) );
     }
+    
     if (mMessage) {
         HbAction* messageAction = new HbAction;
-        messageAction->setText(tr("Create message"));
+        messageAction->setText(hbTrId("txt_common_menu_create_message"));
         menu.addAction(messageAction);
         QObject::connect( messageAction, SIGNAL(triggered()), 
                           this, SLOT( createMessage() ) );
@@ -443,27 +453,27 @@ void LogsBaseView::populateListItemMenu(HbMenu& menu)
         HbAction* contactAction = new HbAction;
         if (mContact->allowedRequestType() ==
                 LogsContact::TypeLogsContactOpen) {
-            contactAction->setText(tr("Open contact"));
+            contactAction->setText(hbTrId("txt_dialer_ui_menu_open_contact"));
             QObject::connect( contactAction, SIGNAL(triggered()), 
                               mContact, SLOT(open()) );
         }
         else {
-            contactAction->setText(tr("Add to contacts"));
+            contactAction->setText(hbTrId("txt_common_menu_add_to_contacts"));
             QObject::connect( contactAction, SIGNAL(triggered()), 
-                              mContact, SLOT(save()) );
+                              this, SLOT(saveContact()) );
         
         }
         menu.addAction(contactAction);
     }    
     if (mDetailsModel) {
         HbAction* callDetailsAction = new HbAction;
-        callDetailsAction->setText(tr("Call details"));
+        callDetailsAction->setText(hbTrId("txt_dialer_ui_menu_call_details"));
         menu.addAction(callDetailsAction);
         QObject::connect(callDetailsAction, SIGNAL(triggered()), 
                          this, SLOT(showCallDetails()));
         
         HbAction* deleteAction = new HbAction;
-        deleteAction->setText(tr("Delete"));
+        deleteAction->setText(hbTrId("txt_common_menu_delete"));
         menu.addAction(deleteAction);
         QObject::connect(deleteAction, SIGNAL(triggered()), 
                          this, SLOT(deleteEvent()));
@@ -471,7 +481,7 @@ void LogsBaseView::populateListItemMenu(HbMenu& menu)
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::updateListItemData
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::updateListItemData(const QModelIndex& listIndex)
@@ -525,13 +535,64 @@ void LogsBaseView::initiateCall(int callType)
 //
 void LogsBaseView::createMessage()
 {
-    //TODO:  replace following 'Not supported' -popup
-    //       code with real message sending implementation
-    notSupported();
+    LOGS_QDEBUG( "logs [UI] -> LogsBaseView::createMessage()" );
+    if (mMessage) {
+        mMessage->sendMessage();
+    }
+    LOGS_QDEBUG( "logs [UI] -> LogsBaseView::createMessage()" );   
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::updateCall
+//
+// -----------------------------------------------------------------------------
+//
+void LogsBaseView::saveContact()
+{
+    LOGS_QDEBUG( "logs [UI] -> LogsBaseView::saveContact()" ); 
+    
+    if (mContact){
+        HbDialog* popup = new HbDialog();
+        popup->setDismissPolicy(HbDialog::NoDismiss);
+        popup->setHeadingWidget(
+                new HbLabel(hbTrId("txt_dial_title_add_to_contacts"), popup));
+        popup->setAttribute(Qt::WA_DeleteOnClose);
+        popup->setTimeout( HbPopup::NoTimeout );
+        popup->setSecondaryAction(
+                new HbAction(hbTrId("txt_dial_button_cancel"), popup));
+
+        HbWidget* buttonWidget = new HbWidget(popup);
+        QGraphicsLinearLayout* layout = new QGraphicsLinearLayout(Qt::Vertical);
+        
+        HbPushButton* addButton = new HbPushButton(buttonWidget);
+        addButton->setOrientation(Qt::Horizontal);
+        addButton->setText(hbTrId("txt_dial_list_save_as_a_new_contact"));
+        HbIcon plusIcon("qtg_mono_plus");
+        addButton->setIcon(plusIcon);
+        connect(addButton, SIGNAL(clicked()), popup, SLOT(close()));
+        connect(addButton, SIGNAL(clicked()), mContact, SLOT(addNew()));
+        
+        HbPushButton* updateButton = new HbPushButton(buttonWidget);
+        updateButton->setOrientation(Qt::Horizontal);
+        updateButton->setText(hbTrId("txt_dial_list_update_existing_contact"));
+        updateButton->setIcon(plusIcon);
+        connect(updateButton, SIGNAL(clicked()), popup, SLOT(close()));
+        connect(updateButton, SIGNAL(clicked()),
+                mContact, SLOT(updateExisting()));
+        
+        layout->addItem(addButton);
+        layout->addItem(updateButton);
+        
+        buttonWidget->setLayout(layout);
+        popup->setContentWidget(buttonWidget);
+
+        popup->exec();
+    }
+    
+    LOGS_QDEBUG( "logs [UI] <- LogsBaseView::saveContact()" );
+}
+
+// -----------------------------------------------------------------------------
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::updateCall(const QModelIndex &listIndex)
@@ -545,7 +606,7 @@ void LogsBaseView::updateCall(const QModelIndex &listIndex)
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::updateMessage
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::updateMessage(const QModelIndex &listIndex)
@@ -559,7 +620,7 @@ void LogsBaseView::updateMessage(const QModelIndex &listIndex)
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::updateContact
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::updateContact(const QModelIndex &listIndex)
@@ -573,7 +634,7 @@ void LogsBaseView::updateContact(const QModelIndex &listIndex)
 }
 
 // -----------------------------------------------------------------------------
-// LogsBaseView::updateDetailsModel
+//
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::updateDetailsModel(const QModelIndex &listIndex)
@@ -584,32 +645,6 @@ void LogsBaseView::updateDetailsModel(const QModelIndex &listIndex)
         mDetailsModel = qVariantValue<LogsDetailsModel*>( model()->data( 
                 listIndex, LogsAbstractModel::RoleDetailsModel ) );    
     }
-}
-
-// -----------------------------------------------------------------------------
-// LogsBaseView::clearSoftKey
-// -----------------------------------------------------------------------------
-//
-void LogsBaseView::clearSoftKey()
-{
-    LOGS_QDEBUG( "logs [UI] -> LogsBaseView::clearSoftKey()" );
-    if ( !hbInstance->allMainWindows().isEmpty() ){
-        hbInstance->allMainWindows().at(0)->removeSoftKeyAction( 
-            Hb::SecondarySoftKey, mSoftKeyBackAction );  
-    }
-    LOGS_QDEBUG( "logs [UI] <- LogsBaseView::clearSoftKey()" );
-}
-
-// -----------------------------------------------------------------------------
-// LogsBaseView::activateSoftKey
-// -----------------------------------------------------------------------------
-//
-void LogsBaseView::activateSoftKey()
-{
-    if ( !hbInstance->allMainWindows().isEmpty() ){
-        hbInstance->allMainWindows().at(0)->addSoftKeyAction( 
-            Hb::SecondarySoftKey, mSoftKeyBackAction );
-    }    
 }
 
 // -----------------------------------------------------------------------------
@@ -729,7 +764,7 @@ void LogsBaseView::deleteEvent()
 // -----------------------------------------------------------------------------
 //
 void LogsBaseView::updateWidgetsSizeAndLayout()
-{    
+{
 }
 
 // -----------------------------------------------------------------------------
@@ -741,9 +776,13 @@ void LogsBaseView::updateListLayoutName( HbListView& listView, bool ignoreDialpa
     LOGS_QDEBUG( "logs [UI] -> LogsBaseView::updateListLayoutName()" );
     QString newLayout( logsListDefaultLayout  );
     Qt::Orientation orientation = mViewManager.mainWindow().orientation();    
-    if ( orientation == Qt::Horizontal ) {
-        if ( mDialpad->isVisible() && !ignoreDialpad ) {
-            newLayout = QString( logsListLandscapeDialpadLayout );
+    if (orientation == Qt::Horizontal) {
+        if (mDialpad->isOpen()) {
+            if (ignoreDialpad) {
+                newLayout = QString( logsListDefaultLayout );
+            } else {
+                newLayout = QString( logsListLandscapeDialpadLayout );
+            }
         } else {
             newLayout = QString( logsListLandscapeLayout );
         }
@@ -751,10 +790,11 @@ void LogsBaseView::updateListLayoutName( HbListView& listView, bool ignoreDialpa
         newLayout = QString( logsListDefaultLayout );
     }
     
-    if ( newLayout != listView.layoutName() ) {
+    if (newLayout != listView.layoutName()) {
         LOGS_QDEBUG_2( "logs [UI]  setting new list layout name: ", newLayout );
         listView.setLayoutName( newLayout );
     }
+    
     LOGS_QDEBUG( "logs [UI] <- LogsBaseView::updateListLayoutName()" );
 }
 
@@ -762,14 +802,14 @@ void LogsBaseView::updateListLayoutName( HbListView& listView, bool ignoreDialpa
 // Loads appropriate section from *.docml to resize list widget
 // -----------------------------------------------------------------------------
 //
-void LogsBaseView::updateListSize( QString& currentSection )
+void LogsBaseView::updateListSize()
 {
     LOGS_QDEBUG( "logs [UI] -> LogsBaseView::updateListSize()" );
     QString newSection( logsViewDefaultSection );
     Qt::Orientation orientation = mViewManager.mainWindow().orientation();
 
-    if ( mDialpad->isVisible() ) {
-        if ( orientation == Qt::Horizontal ) {
+    if (mDialpad->isOpen()) {
+        if (orientation == Qt::Horizontal) {
             newSection = QString( logsViewLandscapeDialpadSection );
         } else {
             newSection = QString( logsViewPortraitDialpadSection );
@@ -778,35 +818,13 @@ void LogsBaseView::updateListSize( QString& currentSection )
         newSection = QString( logsViewDefaultSection );
     }
     
-    if ( newSection != currentSection ) {
-        currentSection = newSection;
+    if (newSection != mLayoutSectionName) {
+        mLayoutSectionName = newSection;
+        LOGS_QDEBUG_2( "logs [UI]  loading new section: ", newSection );
         mRepository.loadSection( viewId(), newSection );
     }
+    
     LOGS_QDEBUG( "logs [UI] <- LogsBaseView::updateListSize()" );
-}
-
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-//
-void LogsBaseView::handleAboutToChangeOrientation()
-{
-    LOGS_QDEBUG( "logs [UI] -> LogsBaseView::handleAboutToChangeOrientation()" );
-    //we close dialpad until orientation switching is done,
-    //otherwise dialpad widget is visible on top of orientation switch effect
-    if ( mDialpad->isVisible() ) {
-        mForceDialpadOpened = true;
-        //temporary disconnect from the aboutToClose signal, since we don't want to 
-        //do widgets size and layout update now, it will be done once orientation
-        //switch is finnished
-        disconnect( mDialpad, SIGNAL( aboutToClose() ), this, 
-                SLOT( dialpadClosed() ) );
-        mDialpad->closeDialpad();
-        connect( mDialpad, SIGNAL( aboutToClose() ), this, 
-                SLOT( dialpadClosed() ), Qt::QueuedConnection );
-    }
-    LOGS_QDEBUG( "logs [UI] <- LogsBaseView::handleAboutToChangeOrientation()" );
 }
 
 // -----------------------------------------------------------------------------
@@ -815,13 +833,19 @@ void LogsBaseView::handleAboutToChangeOrientation()
 //
 void LogsBaseView::handleOrientationChanged()
 {
-    LOGS_QDEBUG( "logs [UI] -> LogsBaseView::handleOrientationChanged()" );
-    //view switching animation is over, now we have to reopen dialpad, if needed
-    if ( mForceDialpadOpened ) {
-        setDialpadPosition();
-        mDialpad->openDialpad();
+    LOGS_QDEBUG( "logs [UI] -> LogsBaseView::handleOrientationChanged()!" );
+    setDialpadPosition();
+    updateWidgetsSizeAndLayout();    
+    LOGS_QDEBUG( "logs [UI] <- LogsBaseView::handleOrientationChanged()");
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
+void LogsBaseView::toggleActionAvailability( HbAction* action, bool available )
+{
+    if ( action ){
+        action->setVisible( available );
     }
-    mForceDialpadOpened = false;
-    updateWidgetsSizeAndLayout();
-    LOGS_QDEBUG( "logs [UI] <- LogsBaseView::handleOrientationChanged()" );
 }

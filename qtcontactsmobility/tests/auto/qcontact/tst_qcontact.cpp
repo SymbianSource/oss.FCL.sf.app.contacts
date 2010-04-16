@@ -172,6 +172,7 @@ void tst_QContact::details()
     QVERIFY(p == p3);
 
     // now we want to add multiple details of the same type, and test that retrieval works correctly.
+    p2 = QContactPhoneNumber();
     p2.setNumber("22222");
     p2.setValue("nonexistent-field", QVariant("22222-2"));
     c.saveDetail(&p);
@@ -333,7 +334,7 @@ void tst_QContact::details()
     four.setNumber("");
     c.saveDetail(&four);
     QVERIFY(c.details(QContactPhoneNumber::DefinitionName).count() == 2);
-    QVERIFY(!four.values().isEmpty()); // an empty qstring is not invalid; make sure it exists in the detail.
+    QVERIFY(!four.variantValues().isEmpty()); // an empty qstring is not invalid; make sure it exists in the detail.
 
     // ensure that clearing a contact's details works correctly
     QContactName nameDetail;
@@ -599,7 +600,7 @@ void tst_QContact::displayName()
     /*
      * The display label is not updated until you save the contact!
      */
-    QString synth = cm.synthesizeDisplayLabel(d);
+    QString synth = cm.synthesizedDisplayLabel(d);
     QVERIFY(d.displayLabel().isEmpty());
     //QVERIFY(synth == name.customLabel()); // XXX Perhaps not guaranteed, depends on backend synth rules.
 

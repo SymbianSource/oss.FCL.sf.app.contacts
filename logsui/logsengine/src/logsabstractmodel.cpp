@@ -160,11 +160,27 @@ QString LogsAbstractModel::directionIconName(const LogsEvent& event)
         }
     } else  if ( event.direction() == LogsEvent::DirMissed ) {
         if ( event.eventType() == LogsEvent::TypeVoiceCall ) {
-            direction = logsMissedVoiceCallIconId;
+        	if (!event.isRead()){
+        		direction = logsMissedVoiceCallUnseenIconId;
+        	}
+        	else {
+        		direction = logsMissedVoiceCallIconId;
+        	}
+            
         } else if ( event.eventType() == LogsEvent::TypeVideoCall ) {
-            direction = logsMissedVideoCallIconId;
+        	if (!event.isRead()){
+        		direction = logsMissedVideoCallUnseenIconId;
+        	}
+        	else {
+        		direction = logsMissedVideoCallIconId;
+        	}
         } else if ( event.eventType() == LogsEvent::TypeVoIPCall ) {
-            direction = logsMissedVoipCallIconId;
+        	if (!event.isRead()){
+        		direction = logsMissedVoipCallUnseenIconId;
+        	}
+        	else {
+        		direction = logsMissedVoipCallIconId;
+        	}
         }
     }    
     

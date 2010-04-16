@@ -46,7 +46,7 @@ database).
 class NONSHARED CCntPplViewManager : public CBase, public MLplViewIteratorManager
 	{
 public:
-	static CCntPplViewManager* NewL(CPplContactsFile& aContactsFile, const CContactTemplate& aSystemTemplate);
+	static CCntPplViewManager* NewL(CPplContactsFile& aContactsFile, const CLplContactProperties& aContactProperties);
 	~CCntPplViewManager();
 	
 	//Methods defined in MLplViewIteratorManager
@@ -63,14 +63,14 @@ public:
 
 private:
 	void ConstructL();
-	CCntPplViewManager(CPplContactsFile& aContactsFile, const CContactTemplate& aSystemTemplate);
+	CCntPplViewManager(CPplContactsFile& aContactsFile, const CLplContactProperties& aContactProperties);
 	
 	TInt FindViewSessionIndexById(TInt aViewId) const;
 	CCntPplViewSession* FindViewSessionByIdL(TInt aViewId) const;
 	
 private:
 	CPplContactsFile& iContactsFile;
-	const CContactTemplate& iSystemTemplate;
+	const CLplContactProperties& iContactProperties;
 	
 	TInt  iNextViewId;
 	RPointerArray<CCntPplViewSession> iViewSessions;
@@ -81,7 +81,7 @@ private:
 class NONSHARED CCntPplViewSession : public CTimer
 	{
 public:	
-	static CCntPplViewSession* NewL(CPplContactsFile& aContactsFile, const CContactTemplate& aSystemTemplate, CCntSqlStatement& aSelectAllFields, TInt aViewId, const CContactTextDef& aTextDef, TContactViewPreferences aViewPrefs);
+	static CCntPplViewSession* NewL(CPplContactsFile& aContactsFile, const CLplContactProperties& aContactProperties, CCntSqlStatement& aSelectAllFields, TInt aViewId, const CContactTextDef& aTextDef, TContactViewPreferences aViewPrefs);
 	~CCntPplViewSession();
 	
 	void ChangeSortOrderL(const CContactTextDef& aTextDef);
@@ -97,7 +97,7 @@ public:
 	
 private:
 	void ConstructL(const CContactTextDef& aTextDef);
-	CCntPplViewSession(CPplContactsFile& aContactsFile, const CContactTemplate& aSystemTemplate, CCntSqlStatement& aSelectAllFields, TInt aViewId, TContactViewPreferences aViewPrefs);
+	CCntPplViewSession(CPplContactsFile& aContactsFile, const CLplContactProperties& aContactProperties, CCntSqlStatement& aSelectAllFields, TInt aViewId, TContactViewPreferences aViewPrefs);
 	
 	CViewContact* CreateViewItemL(RSqlStatement& aSqlStmt, const CCntSqlStatement& aCntSqlStmt, const TContactViewPreferences& aViewPrefs);
 	void  FillViewItemL(CViewContact& aViewContact, RSqlStatement& aSqlStmt, const TContactViewPreferences& aViewPrefs);
@@ -115,7 +115,7 @@ private:
     void CleanupCachedPrepareStatement();
 private:
 	const TInt 				iViewId;
-	const CContactTemplate& iSystemTemplate;
+	const CLplContactProperties& iContactProperties;
 	
 	CPplContactsFile& 		iContactsFile;
 	CCntSqlStatement&       iSqlSmtSelectAllFieldsById;

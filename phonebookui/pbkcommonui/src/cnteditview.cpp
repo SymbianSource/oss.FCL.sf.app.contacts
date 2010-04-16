@@ -74,10 +74,12 @@ void CntEditView::thumbnailReady(const QPixmap& pixmap, void *data, int id, int 
 {
     Q_UNUSED(data);
     Q_UNUSED(id);
-    Q_UNUSED(error);
-    QIcon qicon(pixmap);
-    HbIcon icon(qicon);
-    mHeadingItem->setIcon(icon);
+    if (!error)
+    {
+        QIcon qicon(pixmap);
+        HbIcon icon(qicon);
+        mHeadingItem->setIcon(icon);
+    }
 }
 
 /*!
@@ -85,13 +87,12 @@ Activates a previous view
 */
 void CntEditView::aboutToCloseView()
 {   
+    CntViewParameters viewParameters;
     if (contact() && contact()->localId() == contactManager()->selfContactId()
         && contactManager()->selfContactId() != 0 && contact()->details().count() <= 4)
     {
         //delete empty mycard
         contactManager()->removeContact(contact()->localId());
-        CntViewParameters viewParameters(CntViewParameters::namesView);
-        viewManager()->onActivateView(viewParameters);
     }
 
     // save contact if there is one and it's not empty
@@ -99,7 +100,6 @@ void CntEditView::aboutToCloseView()
     {
         bool isSaved = contactManager()->saveContact(contact());
 		
-        CntViewParameters viewParameters(CntViewParameters::namesView);
         if (isSaved)
         {
             viewParameters.setSelectedContact(*contact());
@@ -109,13 +109,8 @@ void CntEditView::aboutToCloseView()
         {
             viewParameters.setSelectedAction("failed");
         }
-        viewManager()->onActivateView(viewParameters);
     }
-    else
-    {
-        CntViewParameters viewParameters(CntViewParameters::namesView);
-        viewManager()->onActivateView(viewParameters);
-    }
+    viewManager()->back(viewParameters);
 }
 
 void CntEditView::resizeEvent(QGraphicsSceneResizeEvent *event)
@@ -171,8 +166,9 @@ void CntEditView::activateView(const CntViewParameters &aViewParameters)
     connect(commands(), SIGNAL(commandExecuted(QString, QContact)), 
             this, SLOT(handleExecutedCommand(QString, QContact)));
 
-    // You can't delete a contact which hasn't been saved yet, now can you?
-    if (mContact->localId() == 0)
+    // You can't delete a contact or my card contact which hasn't been saved yet, now can you?
+    if (contact() && contact()->localId() == contactManager()->selfContactId()
+        && contactManager()->selfContactId() != 0 && contact()->details().count() <= 4 || mContact->localId()== 0)
     {
         menu()->removeAction(actions()->baseAction("cnt:deletecontact"));
     }
@@ -498,7 +494,7 @@ void CntEditView::onItemActivated()
     viewParameters.setSelectedContact(*contact());
     if (viewParameters.nextViewId() != CntViewParameters::noView)
     {
-        viewManager()->onActivateView(viewParameters);
+        viewManager()->changeView(viewParameters);
     }
 }
 
@@ -517,7 +513,7 @@ void CntEditView::addDetail()
     viewParameters.setSelectedContact(*contact());
     if (viewParameters.nextViewId() != CntViewParameters::noView)
     {
-        viewManager()->onActivateView(viewParameters);
+        viewManager()->changeView(viewParameters);
     }
 }
 
@@ -721,7 +717,7 @@ Cancel all changes made and return to names view
 void CntEditView::discardAllChanges()
 {
     CntViewParameters viewParameters(CntViewParameters::namesView);
-    viewManager()->onActivateView(viewParameters);
+    viewManager()->back(viewParameters);
 }
 
 /*!
@@ -739,37 +735,37 @@ void CntEditView::addField()
 {
     QString detail = CntDetailPopup::selectDetail(mExcludeList);
     
-    if (detail == hbTrId("txt_phob_formlabel_note"))
+    if (detail == QContactNote::DefinitionName)
     {
         CntViewParameters viewParameters(CntViewParameters::noteEditorView);
         viewParameters.setSelectedContact(*contact());
-        viewManager()->onActivateView(viewParameters);
+        viewManager()->changeView(viewParameters);
     }
-    else if (detail == hbTrId("txt_phob_formlabel_personal_ringing_tone"))
+    else if (detail == QContactAvatar::SubTypeAudioRingtone)
     {
         // launch ringtone selection service
     }
-    else if (detail == hbTrId("txt_phob_formlabel_date"))
+    else if (detail == QContactAnniversary::DefinitionName)
     {
         CntViewParameters viewParameters(CntViewParameters::dateEditorView);
         viewParameters.setSelectedContact(*contact());
-        viewManager()->onActivateView(viewParameters);
+        viewManager()->changeView(viewParameters);
     }
-    else if (detail == hbTrId("txt_phob_formlabel_company_details"))
+    else if (detail == QContactOrganization::DefinitionName)
     {
         CntViewParameters viewParameters(CntViewParameters::companyEditorView);
         viewParameters.setSelectedContact(*contact());
         viewParameters.setSelectedAction("company");
-        viewManager()->onActivateView(viewParameters);
+        viewManager()->changeView(viewParameters);
     }
-    else if (detail == hbTrId("txt_phob_formlabel_family"))
+    else if (detail == QContactFamily::FieldSpouse)
     {
         CntViewParameters viewParameters(CntViewParameters::familyDetailEditorView);
         viewParameters.setSelectedContact(*contact());
         viewParameters.setSelectedAction("spouse");
-        viewManager()->onActivateView(viewParameters);
+        viewManager()->changeView(viewParameters);
     }
-    else if (detail == hbTrId("Synchronization"))
+    else if (detail == "some-synch-id") // TODO: change to real synch id when backend done
     {
         // Synchronization detail editor view to be done (lacks engine support)
     }
@@ -782,7 +778,7 @@ void CntEditView::openNameEditor()
 {
     CntViewParameters viewParameters(CntViewParameters::namesEditorView);
     viewParameters.setSelectedContact(*contact());
-    viewManager()->onActivateView(viewParameters);
+    viewManager()->changeView(viewParameters);
 }
 
 /*!
@@ -792,7 +788,7 @@ void CntEditView::openImageEditor()
 {
     CntViewParameters viewParameters(CntViewParameters::imageEditorView);
     viewParameters.setSelectedContact(*contact());
-    viewManager()->onActivateView(viewParameters);
+    viewManager()->changeView(viewParameters);
 }
 
 /*
@@ -807,7 +803,7 @@ int CntEditView::handleExecutedCommand(QString aCommand, const QContact &aContac
         CntViewParameters viewParameters(CntViewParameters::namesView);
         viewParameters.setSelectedContact(*contact());
         viewParameters.setSelectedAction("delete");
-        viewManager()->onActivateView(viewParameters);
+        viewManager()->changeView(viewParameters);
         result=0;
     }
     return result;
@@ -844,7 +840,7 @@ CntViewParameters CntEditView::prepareToEditContact(const QString &aViewType, co
     // open online account editor
     else if (aViewType == QContactOnlineAccount::DefinitionName)
     {
-        viewParameters.setNextViewId(CntViewParameters::onlineAccountEditorView);
+        viewParameters.setNextViewId(CntViewParameters::phoneNumberEditorView);
     }
     // open URL editor
     else if (aViewType == QContactUrl::DefinitionName)

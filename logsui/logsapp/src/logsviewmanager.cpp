@@ -41,7 +41,12 @@ LogsViewManager::LogsViewManager(
     QObject( 0 ), mMainWindow( mainWindow ), mService( service )
 {
     LOGS_QDEBUG( "logs [UI] -> LogsViewManager::LogsViewManager()" );
-    
+
+    //It is important that we always handle orientation change first, before
+    //dialpad widget. If connection is moved to a view, then it's not guarantied.
+    connect( &mainWindow, SIGNAL(orientationChanged(Qt::Orientation)),
+            this, SLOT(handleOrientationChanged()) );
+
     mComponentsRepository = new LogsComponentRepository(*this);
     initViews();
     
@@ -253,4 +258,16 @@ bool LogsViewManager::doActivateView(
     LOGS_QDEBUG( "logs [UI] <- LogsViewManager::doActivateView()" );
     
     return activated;
+}
+
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
+void LogsViewManager::handleOrientationChanged()
+{
+    LOGS_QDEBUG( "logs [UI] -> LogsViewManager::handleOrientationChanged()" );
+    QMetaObject::invokeMethod(mMainWindow.currentView(), "handleOrientationChanged");
+    LOGS_QDEBUG( "logs [UI] <- LogsViewManager::handleOrientationChanged()" );
 }

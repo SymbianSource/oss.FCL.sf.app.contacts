@@ -26,6 +26,7 @@
 class LogsEvent;
 class LogsDbConnector;
 class HbIcon;
+class LogsContact;
 
 /**
  * Model for log event details.
@@ -44,6 +45,11 @@ public: // The exported API
     ~LogsMatchesModel();
     void logsMatches( const QString& pattern );
     
+    /**
+     * Factory method for creating a new contact object. Transfers ownership.
+     */
+    LogsContact* createContact(const QString& number);
+        
 public: // From QAbstractItemModel
     
     virtual int rowCount(const QModelIndex &parent) const;

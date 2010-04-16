@@ -1,0 +1,31 @@
+EXPORTS
+	_ZN15MobHistoryModel11findIndicesERK5QListIiE @ 1 NONAME
+	_ZN15MobHistoryModel11qt_metacallEN11QMetaObject4CallEiPPv @ 2 NONAME
+	_ZN15MobHistoryModel11qt_metacastEPKc @ 3 NONAME
+	_ZN15MobHistoryModel12clearHistoryEv @ 4 NONAME
+	_ZN15MobHistoryModel12readLogEventEP9LogsEventR11HistoryItem @ 5 NONAME
+	_ZN15MobHistoryModel13markAllAsSeenEv @ 6 NONAME
+	_ZN15MobHistoryModel14sortAndRefreshEN2Qt9SortOrderE @ 7 NONAME
+	_ZN15MobHistoryModel15clearedCallLogsEi @ 8 NONAME
+	_ZN15MobHistoryModel15initializeModelEv @ 9 NONAME
+	_ZN15MobHistoryModel15logsDataChangedERK11QModelIndexS2_ @ 10 NONAME
+	_ZN15MobHistoryModel15logsRowsRemovedERK11QModelIndexii @ 11 NONAME
+	_ZN15MobHistoryModel16logsRowsInsertedERK11QModelIndexii @ 12 NONAME
+	_ZN15MobHistoryModel16markingCompletedEi @ 13 NONAME
+	_ZN15MobHistoryModel16staticMetaObjectE @ 14 NONAME DATA 16
+	_ZN15MobHistoryModel19getStaticMetaObjectEv @ 15 NONAME
+	_ZN15MobHistoryModel19initializeLogsModelEv @ 16 NONAME
+	_ZN15MobHistoryModel4sortEiN2Qt9SortOrderE @ 17 NONAME
+	_ZN15MobHistoryModelC1EjPN10QtMobility15QContactManagerEP7QObject @ 18 NONAME
+	_ZN15MobHistoryModelC2EjPN10QtMobility15QContactManagerEP7QObject @ 19 NONAME
+	_ZN15MobHistoryModelD0Ev @ 20 NONAME
+	_ZN15MobHistoryModelD1Ev @ 21 NONAME
+	_ZN15MobHistoryModelD2Ev @ 22 NONAME
+	_ZNK15MobHistoryModel10metaObjectEv @ 23 NONAME
+	_ZNK15MobHistoryModel15displayRoleDataERK11HistoryItem @ 24 NONAME
+	_ZNK15MobHistoryModel16validateRowIndexEi @ 25 NONAME
+	_ZNK15MobHistoryModel4dataERK11QModelIndexi @ 26 NONAME
+	_ZNK15MobHistoryModel8rowCountERK11QModelIndex @ 27 NONAME
+	_ZTI15MobHistoryModel @ 28 NONAME
+	_ZTV15MobHistoryModel @ 29 NONAME
+

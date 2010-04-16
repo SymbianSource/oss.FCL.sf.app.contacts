@@ -18,47 +18,33 @@
 #ifndef CNTNAMESVIEW_H
 #define CNTNAMESVIEW_H
 
-#include "cntbaselistview.h"
+#include "cntabstractview.h"
+#include <QObject>
 
-class HbSearchPanel;
-class HbTextItem;
+class CntViewParameters;
+class HbView;
+class CntNamesViewPrivate;
 
-class CntNamesView : public CntBaseListView
+class CntNamesView : public QObject, public CntAbstractView
 {
     Q_OBJECT
-
+    
 public:
-    CntNamesView(CntViewManager *viewManager, QGraphicsItem *parent = 0);
+    CntNamesView();
     ~CntNamesView();
-
-public slots:
-    void aboutToCloseView();
-    void handleExecutedCommand(QString command, QContact contact);
-    void showFind();
-    void closeFind();
-    void setFilter(const QString &filterString);
-    void openCollections();
-
-public:
-    CntViewParameters::ViewId viewId() const { return CntViewParameters::namesView; }
-    void activateView(const CntViewParameters &viewParameters);
-    void deActivateView();
-
-#ifdef PBK_UNIT_TEST
-public:
-#else
-protected:
-#endif
-    void addMenuItems();
-    void addActionsToToolBar();
-
-#ifdef PBK_UNIT_TEST
-public:
-#else
+   
+public: // From CntAbstractView
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters& aArgs );
+    void deactivate();
+    HbView* view() const;
+    
+    bool isDefault() const;
+    CntViewParameters::ViewId viewId() const;
+  
 private:
-#endif
-    HbSearchPanel *mSearchPanel;
-    HbTextItem    *mEmptyListLabel;
+    CntNamesViewPrivate* const d_ptr;
+    Q_DECLARE_PRIVATE_D(d_ptr, CntNamesView)
+    Q_DISABLE_COPY(CntNamesView)    
 };
 
 #endif // CNTNAMESVIEW_H

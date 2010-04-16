@@ -131,7 +131,7 @@ bool LogsReaderStateBase::updateAndInsertEventL(
 // ----------------------------------------------------------------------------
 //
 bool LogsReaderStateBase::constructAndInsertEventL(
-    const CLogEvent& source, LogsEvent* dest, int& eventIndex)
+    const CLogEvent& source, LogsEvent* dest, int& eventIndex, QList<LogsEvent*>& events)
 {
     Q_ASSERT( dest );
     dest->initializeEventL( source, mContext.strings() );
@@ -141,7 +141,7 @@ bool LogsReaderStateBase::constructAndInsertEventL(
         return false;
     } 
     dest->setIndex(eventIndex);
-    mContext.events().insert(eventIndex, dest);
+    events.insert(eventIndex, dest);
     eventIndex++;
     return true;
 }
@@ -389,7 +389,8 @@ bool LogsReaderStateReading::continueL()
         else {
             // Create new entry
             event = new LogsEvent;
-            inserted = constructAndInsertEventL( sourceEvent, event, mEventIndex );
+            inserted = constructAndInsertEventL( 
+                    sourceEvent, event, mEventIndex, mContext.events() );
         }
         
         if ( inserted  ){
@@ -566,7 +567,6 @@ LogsReaderStateSearchingEvent::LogsReaderStateSearchingEvent(
 bool LogsReaderStateSearchingEvent::enterL()
 {
     LOGS_QDEBUG( "logs [ENG] -> LogsReaderStateSearchingEvent::enterL" );
-    mUpdatingEvent = false;
     if ( viewCountL() > 0 && mContext.logView().FirstL( mContext.reqStatus() ) ){
         return true;
     }    
@@ -582,18 +582,10 @@ bool LogsReaderStateSearchingEvent::continueL()
 {
     LOGS_QDEBUG( "logs [ENG] -> LogsReaderStateSearchingEvent::continueL" );
     int& index = mContext.index();
-    if ( !mUpdatingEvent ) {
-        if ( event().Id() == mContext.modifyingEventId() ) {
-            // Mark event read
-            event().SetFlags( event().Flags() | KLogEventRead ); 
-            mContext.logClient().ChangeEvent(event(), mContext.reqStatus());
-            mUpdatingEvent = true;
-            return true;
-        } else {
-            index++;            
-            if ( index < viewCountL() ){
-                return mContext.logView().NextL( mContext.reqStatus() );
-            }
+    if ( event().Id() != mContext.currentEventId() ) {
+        index++;            
+        if ( index < viewCountL() ){
+            return mContext.logView().NextL( mContext.reqStatus() );
         }
     }
     
@@ -606,8 +598,18 @@ bool LogsReaderStateSearchingEvent::continueL()
 //
 LogsReaderStateFindingDuplicates::LogsReaderStateFindingDuplicates(
     LogsReaderStateContext& context ) 
- : LogsReaderStateBase(context)
+ : LogsReaderStateBase(context),
+   mDuplicateFilter(0)
 {
+}
+
+// ----------------------------------------------------------------------------
+// LogsReaderStateFindingDuplicates::~LogsReaderStateFindingDuplicates
+// ----------------------------------------------------------------------------
+//
+LogsReaderStateFindingDuplicates::~LogsReaderStateFindingDuplicates()
+{
+    delete mDuplicateFilter;
 }
 
 // ----------------------------------------------------------------------------
@@ -617,12 +619,20 @@ LogsReaderStateFindingDuplicates::LogsReaderStateFindingDuplicates(
 bool LogsReaderStateFindingDuplicates::enterL()
 {
     LOGS_QDEBUG( "logs [ENG] -> LogsReaderStateFindingDuplicates::enterL" );
-    if ( duplicatesL() ) {
+    
+    if ( !mDuplicateFilter ){
+        // Interested only about duplicates which are not marked as read
+        mDuplicateFilter = CLogFilter::NewL();
+        mDuplicateFilter->SetFlags(KLogEventRead);
+        mDuplicateFilter->SetNullFields(ELogFlagsField);
+    }
+    
+    if ( duplicatesL(mDuplicateFilter) ) {
         LOGS_QDEBUG( "logs [ENG] duplicates exist!");
         return true;
     }
     
-    // Not possible to continue with deletion
+    // Not possible to continue with finding
     return enterNextStateL();
 }
 
@@ -632,13 +642,112 @@ bool LogsReaderStateFindingDuplicates::enterL()
 //
 bool LogsReaderStateFindingDuplicates::continueL()
 {
-    LOGS_QDEBUG( "logs [ENG] -> LogsReaderStateFindingDuplicates::continueL" );
+    LOGS_QDEBUG( "logs [ENG] <-> LogsReaderStateFindingDuplicates::continueL" );
+    
+    return enterNextStateL();
+}
 
-    // Mark duplicate events read
-    mContext.duplicatesView().SetFlagsL(
-            mContext.duplicatesView().Event().Flags() | KLogEventRead ); 
 
-    LOGS_QDEBUG( "logs [ENG] <- LogsReaderStateFindingDuplicates::continueL" );
+// ----------------------------------------------------------------------------
+// LogsReaderStateMarkingDuplicates::LogsReaderStateMarkingDuplicates
+// ----------------------------------------------------------------------------
+//
+LogsReaderStateMarkingDuplicates::LogsReaderStateMarkingDuplicates(
+    LogsReaderStateContext& context ) 
+ : LogsReaderStateBase(context)
+{
+}
+    
+// ----------------------------------------------------------------------------
+// LogsReaderStateMarkingDuplicates::enterL
+// ----------------------------------------------------------------------------
+//
+bool LogsReaderStateMarkingDuplicates::enterL()
+{
+    LOGS_QDEBUG( "logs [ENG] -> LogsReaderStateMarkingDuplicates::enterL" );
+    
+    mGettingDuplicates = false;
+    if ( event().Id() == mContext.currentEventId() ) {
+        // Mark event read
+        event().SetFlags( event().Flags() | KLogEventRead ); 
+        mContext.logClient().ChangeEvent(event(), mContext.reqStatus());
+        return true;
+    }
+    
+    // Not possible to continue with marking
+    return enterNextStateL();
+}
+
+// ----------------------------------------------------------------------------
+// LogsReaderStateMarkingDuplicates::continueL
+// ----------------------------------------------------------------------------
+//
+bool LogsReaderStateMarkingDuplicates::continueL()
+{
+    LOGS_QDEBUG( "logs [ENG] -> LogsReaderStateMarkingDuplicates::continueL" );
+
+    if ( !mGettingDuplicates ){
+        if ( duplicatesL() ) {
+            LOGS_QDEBUG( "logs [ENG] duplicates exist!");
+            mGettingDuplicates = true;
+            return true;
+        }
+    } else {
+        // Mark duplicate events read
+        mContext.duplicatesView().SetFlagsL(
+                mContext.duplicatesView().Event().Flags() | KLogEventRead ); 
+    }
+
+    LOGS_QDEBUG( "logs [ENG] <- LogsReaderStateMarkingDuplicates::continueL" );
+    
+    return enterNextStateL();
+}
+
+// ----------------------------------------------------------------------------
+// LogsReaderStateReadingDuplicates::LogsReaderStateReadingDuplicates
+// ----------------------------------------------------------------------------
+//
+LogsReaderStateReadingDuplicates::LogsReaderStateReadingDuplicates(
+    LogsReaderStateContext& context ) 
+ : LogsReaderStateBase(context)
+{
+}
+
+// ----------------------------------------------------------------------------
+// LogsReaderStateReadingDuplicates::enterL
+// ----------------------------------------------------------------------------
+//
+bool LogsReaderStateReadingDuplicates::enterL()
+{
+    LOGS_QDEBUG( "logs [ENG] -> LogsReaderStateReadingDuplicates::enterL" );
+    if ( mContext.duplicatesView().CountL() > 0 && 
+         mContext.duplicatesView().FirstL(mContext.reqStatus()) ){
+         LOGS_QDEBUG( "logs [ENG] duplicates exist!");
+         return true;
+    }
+    
+    // Not possible to continue with deletion
+    return enterNextStateL();
+}
+
+// ----------------------------------------------------------------------------
+// LogsReaderStateReadingDuplicates::continueL
+// ----------------------------------------------------------------------------
+//
+bool LogsReaderStateReadingDuplicates::continueL()
+{
+    LOGS_QDEBUG( "logs [ENG] -> LogsReaderStateReadingDuplicates::continueL" );
+
+    int nextIndex = mContext.duplicatedEvents().count();
+    const CLogEvent& sourceEvent = mContext.duplicatesView().Event();
+    LogsEvent* event = new LogsEvent;
+    constructAndInsertEventL( 
+            sourceEvent, event, nextIndex, mContext.duplicatedEvents() );
+    if ( mContext.duplicatesView().NextL(mContext.reqStatus()) ) {
+        return true;
+    } 
+
+    LOGS_QDEBUG( "logs [ENG] <- LogsReaderStateReadingDuplicates::continueL" );
     
     return enterNextStateL();
 }
@@ -661,7 +770,7 @@ bool LogsReaderStateModifyingDone::enterL()
 {
     LOGS_QDEBUG( "logs [ENG] -> LogsReaderStateModifyingDone::enterL" );
     
-    LogsEvent* modifiedEvent = eventById(mContext.modifyingEventId());
+    LogsEvent* modifiedEvent = eventById(mContext.currentEventId());
     if ( modifiedEvent ){
         // Update modified event to know that it has been marked. Real
         // update of the event happens soon when db notifies the change.
@@ -670,6 +779,33 @@ bool LogsReaderStateModifyingDone::enterL()
     mContext.observer().eventModifyingCompleted();
 
     LOGS_QDEBUG( "logs [ENG] <- LogsReaderStateModifyingDone::enterL" );
+    
+    return false;
+}
+
+// ----------------------------------------------------------------------------
+// LogsReaderStateReadingDuplicatesDone::LogsReaderStateReadingDuplicatesDone
+// ----------------------------------------------------------------------------
+//
+LogsReaderStateReadingDuplicatesDone::LogsReaderStateReadingDuplicatesDone(
+    LogsReaderStateContext& context) : LogsReaderStateBase(context)
+{
+
+}
+    
+// ----------------------------------------------------------------------------
+// LogsReaderStateReadingDuplicatesDone::enterL
+// ----------------------------------------------------------------------------
+//
+bool LogsReaderStateReadingDuplicatesDone::enterL()
+{
+    LOGS_QDEBUG( "logs [ENG] -> LogsReaderStateReadingDuplicatesDone::enterL" );
+    
+    QList<LogsEvent*> duplicates = mContext.duplicatedEvents();
+    mContext.duplicatedEvents().clear();
+    mContext.observer().duplicatesReadingCompleted(duplicates);
+
+    LOGS_QDEBUG( "logs [ENG] <- LogsReaderStateReadingDuplicatesDone::enterL" );
     
     return false;
 }

@@ -1,5 +1,5 @@
 <hbwidget version="0.1" type="listviewitem">
-
+    
 <!-- logs-landscape -->    
     <!--
         Required items: 
@@ -56,9 +56,6 @@
             text-1: center aligned with icon-1 center
     -->
     <layout name="logs-landscape-dialpad" type="mesh">
-      <meshitem src="selection-icon" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-left)" />
-      <meshitem src="selection-icon" srcEdge="CENTERV" dst="icon-1" dstEdge="CENTERV" />
-
       <meshitem src="icon-1" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-left)"/>
       <meshitem src="icon-1" srcEdge="TOP" dst="" dstEdge="TOP" spacing="0.0un"/>
       <meshitem src="icon-1" srcEdge="RIGHT" dst="text-1" dstEdge="LEFT" spacing="var(hb-param-margin-gene-middle-horizontal)" />

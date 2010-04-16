@@ -37,6 +37,8 @@
 
 #include <sqldb.h>
 #include <e32hashtab.h>
+#include <QList>
+#include <QStringList>
 
 class CPcsKeyMap;
 
@@ -321,14 +323,51 @@ public: // From CPplTableBase
 private:
 	void ConstructL();
 	CPplPredictiveSearchTable(RSqlDatabase& aDatabase);
-	void WriteToDbL(const CContactItem& aItem, CCntSqlStatement* aStatement);
-	HBufC* ConvertToNumericRepresentationLC( const TDesC& aString /*, key map */ );
+	void WriteToDbL(const CContactItem& aItem);
+
+	// aFirstNameAsNbr OUT: Pointer to first name converted to numbers,
+	//				  		pushed to cleanupstack. Ownership is transferred.
+	// aLastNameAsNbr OUT: Pointer to last name converted to numbers,
+	//				       pushed to cleanupstack. Ownership is transferred.
+	// aFirstName OUT: Pointer to the first N characters of first name,
+	//			  	   pushed to cleanupstack. Ownership is transferred.
+	// aLastName OUT: Pointer to the first N characters of last name,
+	//			  	  pushed to cleanupstack. Ownership is transferred.
+	void GetFieldsLC(const CContactItem& aItem,
+					 HBufC** aFirstNameAsNbr,
+					 HBufC** aLastNameAsNbr,
+					 HBufC** aFirstName,
+					 HBufC** aLastName) const;
+
+	// aFirstName ownership is not transferred
+	// aLastName ownership is not transferred
+	QList<TChar> DetermineTables(HBufC* aFirstName, HBufC* aLastName) const;
+	QList<TChar> DetermineTables(QStringList aTokens) const;
+
+	// aString ownership is not transferred
+	void AddBeginningCharacters(HBufC* aString, QList<TChar>& aTables) const;
+
+	// aString ownership is not transferred
+	void AddTokens(HBufC* aString, QStringList& aTokens) const;
+
+	TBool IsValidChar(TInt aChar) const;
+	TBool IsValidChar(QChar aChar) const;
+
+	// aFirstName ownership is not transferred
+	// aLastName ownership is not transferred
+	QStringList GetNumericTokens(HBufC* aFirstName, HBufC* aLastName) const;
+	void GetNextToken(QStringList& aSource, QStringList& aDestination) const;
+	void DeleteFromAllTablesL(TContactItemId aContactId,
+							  TBool& aLowDiskErrorOccurred) const;
+
+	// Return next table's name, ownership is transferred
+	HBufC* GetTableNameL(QList<TChar>& aTables) const;
+
+	quint64 ConvertToHex(QString aToken) const;
 
 private:
 	// Owned
 	CCntSqlStatement* iInsertStmnt;
-	// Owned
-	CCntSqlStatement* iUpdateStmnt;
 	// Owned
 	CCntSqlStatement* iDeleteStmnt;
 	// Owned

@@ -40,7 +40,7 @@ void pt_LogsCntFinder::init()
     
     //qDebug() << "pt_LogsCntFinder::init remove old contacts";
     // Remove all contacts from the database
-    QList<QContactLocalId> cnt_ids = m_manager->contacts();
+    QList<QContactLocalId> cnt_ids = m_manager->contactIds();
     qDebug() << "contacts now in db" << cnt_ids.count();
     if ( cnt_ids.count() == 600 ) {
     			QString f("Jack");
@@ -48,14 +48,14 @@ void pt_LogsCntFinder::init()
           createContact_one_Contact( f,l, QString("03432"));
     	}
 
-	  cnt_ids = m_manager->contacts();
+	  cnt_ids = m_manager->contactIds();
     qDebug() << "contacts now " << cnt_ids.count();
 	  
 	   
     /*if ( cnt_ids.count() != 600 ) {
     qDebug() << "contacts now before delete" << cnt_ids.count();
       m_manager->removeContacts(&cnt_ids);
-      cnt_ids = m_manager->contacts();
+      cnt_ids = m_manager->contactIds();
       qDebug() << "contacts now " << cnt_ids.count();
       
       QVERIFY(0 == cnt_ids.count());
@@ -75,9 +75,9 @@ void pt_LogsCntFinder::init()
 void pt_LogsCntFinder::cleanup()
 {
 		/*m_manager = new QContactManager("symbian");
-		QList<QContactLocalId> cnt_ids = m_manager->contacts();
+		QList<QContactLocalId> cnt_ids = m_manager->contactIds();
 		m_manager->removeContacts(&cnt_ids);
-    cnt_ids = m_manager->contacts();
+    cnt_ids = m_manager->contactIds();
     qDebug() << "contacts now " << cnt_ids.count();
       
     QVERIFY(0 == cnt_ids.count());*/
@@ -110,8 +110,8 @@ void pt_LogsCntFinder::createContacts()
     //QContact empty;
     //m_manager->saveContact(&empty);
     /*
-    QList<QContactLocalId> cnt_ids = m_manager->contacts();
-    cnt_ids = m_manager->contacts();
+    QList<QContactLocalId> cnt_ids = m_manager->contactIds();
+    cnt_ids = m_manager->contactIds();
     int j = cnt_ids.count();
     QVERIFY( j == 900 );
     */
@@ -238,6 +238,32 @@ void pt_LogsCntFinder::testExtendedQuery()
     t.start();
     m_finder->predictiveSearchQuery( QString("52205") );
     qDebug() << "-- 52205 query ended --"; 
+    qDebug("  Time elapsed:%d ms", t.elapsed());
+    results = m_finder->resultsCount();
+    qDebug() << "found " << results << " matches:";
+    
+    qDebug() << "-- 205 query starts --";
+    t.start();
+    m_finder->predictiveSearchQuery( QString("205") );
+    qDebug() << "-- 205 query ended --"; 
+    qDebug("  Time elapsed:%d ms", t.elapsed());
+    results = m_finder->resultsCount();
+    qDebug() << "found " << results << " matches:";
+    
+    qDebug() << "-- 34096 query starts --";
+    t.start();
+    m_finder->predictiveSearchQuery( QString("34096") );
+    qDebug() << "-- 34096 query ended --"; 
+    qDebug("  Time elapsed:%d ms", t.elapsed());
+    results = m_finder->resultsCount();
+    qDebug() << "found " << results << " matches:";
+    
+    qDebug() << "<=pt_LogsCntFinder::testPredictiveQuery";
+    
+    qDebug() << "-- 30966 query starts --";
+    t.start();
+    m_finder->predictiveSearchQuery( QString("30966") );
+    qDebug() << "-- 30966 query ended --"; 
     qDebug("  Time elapsed:%d ms", t.elapsed());
     results = m_finder->resultsCount();
     qDebug() << "found " << results << " matches:";

@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 #include <QObject>
-#include <QStringListModel>
+#include <QStandardItemModel>
 #include <qtcontacts.h>
 #include <hblistview.h>
 
@@ -62,7 +62,7 @@ void TestCntDetailPopup::initTestCase()
 void TestCntDetailPopup::listItemSelected()
 {
     // take the first item
-    QModelIndex index = mPopup->mListModel->index(0);
+    QModelIndex index = mPopup->mListModel->index(0,0);
 
     mPopup->listItemSelected(index);
     QVERIFY(!mPopup->selectedDetail().isEmpty());

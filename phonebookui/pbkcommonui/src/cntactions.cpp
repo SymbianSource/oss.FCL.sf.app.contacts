@@ -55,7 +55,6 @@ HbAction *CntActions::baseAction(const QString& aName)
     if (baseAction)
     {
         mStringActionMap.insert(aName, baseAction);
-        baseAction->setParent(this);
     }
 
     return baseAction;

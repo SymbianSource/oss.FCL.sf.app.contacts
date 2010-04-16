@@ -18,11 +18,11 @@
 // INCLUDE FILES
 
 #include <QObject>
-#include <QContactManager.h>
-#include <QContactDetailFilter.h>
-#include <QContactPhoneNumber.h>
-#include <QContactName.h>
-#include <QContactOnlineAccount.h>
+#include <qcontactmanager.h>
+#include <qcontactdetailfilter.h>
+#include <qcontactphonenumber.h>
+#include <qcontactname.h>
+#include <qcontactonlineaccount.h>
 #include <hbglobal.h>
 #include "logsevent.h"
 #include "logseventparser.h"
@@ -186,11 +186,11 @@ QString LogsEvent::directionAsString() const
 {
     QString dir;
     if ( mDirection == DirIn ) {
-        dir = QObject::tr("Incoming call");
+        dir = hbTrId("txt_dialer_ui_dblist_call_direction_val_received");
     } else if ( mDirection == DirOut ) {
-        dir = QObject::tr("Outgoing call");
+        dir = hbTrId("txt_dialer_ui_dblist_call_direction_val_dialled");
     } else if ( mDirection == DirMissed ) {
-        dir = QObject::tr("Missed call");
+        dir = hbTrId("txt_dialer_ui_dblist_call_direction_val_missed");
     } else {
         dir = QObject::tr("Direction unknown");
     }
@@ -527,7 +527,7 @@ QString LogsEvent::updateRemotePartyFromContacts(QContactManager& manager)
     LOGS_QDEBUG_2( "logs [ENG]    Try to find contact for num:", phoneFilter.value().toString() )
     
     QString contactNameStr;
-    QList<QContactLocalId> matchingContacts = manager.contacts(phoneFilter);
+    QList<QContactLocalId> matchingContacts = manager.contactIds(phoneFilter);
     LOGS_QDEBUG_2( "logs [ENG]    Number of matches:", matchingContacts.size() )
     if (matchingContacts.size() == 1) {
         // If multiple matches, don't dare to use any

@@ -20,8 +20,8 @@
 
 #include "cntbaselistview.h"
 
-class HbSearchPanel;
-class HbTextItem;
+class CntContactCardHeadingItem;
+class ThumbnailManager;
 
 class CntGroupMemberView : public CntBaseListView
 {
@@ -40,17 +40,12 @@ public slots:
     void addMenuItems();
     void addActionsToToolBar();
     void groupActions();
-    void callNamesList();
-
     void manageMembers();
     void editGroup();
-    void placeGroupToHs();
     void deleteGroup();
     void removeFromGroup(const QModelIndex &index);
-    void viewDetailsOfGroupContact(const QModelIndex &index);
-    void find();
-    void closeFind();
-    void setFilter(const QString &filterString);
+    void editContact(const QModelIndex &index);
+    void thumbnailReady(const QPixmap& pixmap, void *data, int id, int error);
     
 
 public:
@@ -65,10 +60,10 @@ private:
 
     bool                         mNoGroupContactsPresent;
     QContact                    *mGroupContact;
-    HbSearchPanel               *mSearchPanel;
-    HbTextItem                  *mEmptyListLabel;
     QList<QContactLocalId>       mLocalIdList;
     QList<QContactLocalId>       mFilteredLocalIdList;
+    CntContactCardHeadingItem   *mHeadingItem;
+    ThumbnailManager            *mThumbnailManager;
 };
 
 #endif // CNTGROUPMEMBERVIEW_H

@@ -57,6 +57,7 @@ HEADERS += ../../inc/logseffecthandler.h
 HEADERS += inc/ut_logsservicehandler.h
 HEADERS += logsengine_stub/logscontact.h
 HEADERS += ./stubs/dialpad.h
+HEADERS += ./stubs/dialpadkeyhandler.h
 
 SOURCES += src/main.cpp 
 SOURCES += src/ut_logsmainwindow.cpp
@@ -90,6 +91,7 @@ SOURCES += ../../../tsrc/qtestutils/src/testresultxmlparser.cpp
 SOURCES += ./stubs/hbstubs.cpp
 SOURCES += ./stubs/qthighway_stub.cpp
 SOURCES += ./stubs/dialpad_stub.cpp
+SOURCES += ./stubs/dialpadkeyhandler_stub.cpp
 
 symbian: {
     TARGET.UID2 = 0x100039CE

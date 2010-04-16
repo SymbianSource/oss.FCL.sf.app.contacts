@@ -21,7 +21,7 @@
 #include <QObject>
 #include <QGraphicsLinearLayout>
 
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntmainwindow.h"
 
 #include "hbstubs_helper.h"
@@ -36,7 +36,7 @@ void TestCntBaseListView::initTestCase()
 void TestCntBaseListView::createClasses()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::noView);
     mBaseListView = new CntBaseListTestView(mViewManager, 0);
     mWindow->addView(mBaseListView);
     mWindow->setCurrentView(mBaseListView);
@@ -286,10 +286,11 @@ void TestCntBaseListView::clearDataModelFilter()
 
 void TestCntBaseListView::cleanupTestCase()
 {
+delete mBaseListView;
+mBaseListView = 0;
     delete mViewManager;
     mViewManager = 0;
-    delete mWindow;
-    mWindow = 0;
+    mWindow->deleteLater();
 }
 
 // EOF

@@ -35,9 +35,6 @@ void TestCntMainWindow::create()
     mWindow = new CntMainWindow();
     QVERIFY(mWindow != 0);
     QVERIFY(mWindow->mViewManager != 0);
-    delete mWindow;
-    mWindow = 0;
-
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
     QVERIFY(mWindow != 0);
     QVERIFY(mWindow->mViewManager == 0);
@@ -65,8 +62,7 @@ void TestCntMainWindow::keyPressEvent()
 
 void TestCntMainWindow::cleanupTestCase()
 {
-    delete mWindow;
-    mWindow = 0;
+    mWindow->deleteLater();
 }
 
 // EOF

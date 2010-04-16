@@ -20,6 +20,7 @@
 #include "logsdbconnector.h"
 #include "logscall.h"
 #include "logsdetailsmodel.h"
+#include "logscontact.h"
 
 Q_DECLARE_METATYPE(LogsCall*)
 Q_DECLARE_METATYPE(LogsDetailsModel*)
@@ -88,6 +89,15 @@ void LogsMatchesModel::logsMatches( const QString& pattern )
 {
     Q_UNUSED(pattern);
     mLastCall = QString("logsMatches");
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
+LogsContact* LogsMatchesModel::createContact(const QString& number)
+{
+    return new LogsContact(number);
 }
 
 // -----------------------------------------------------------------------------

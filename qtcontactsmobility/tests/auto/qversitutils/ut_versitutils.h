@@ -45,28 +45,15 @@
 #include <QObject>
 #include <qmobilityglobal.h>
 
+class QTextCodec;
+
 class UT_VersitUtils : public QObject
 {
      Q_OBJECT
 
 private slots:
-
-    void testCountLeadingWhiteSpaces();
-    void testFindHardLineBreakInQuotedPrintable();
-    void testParamName();
-    void testParamValue();
-    void testExtractPart();
-    void testExtractParts();
-    void testFold();
-    void testUnfold();
-    void testQuotedPrintableEncode();
-    void testDecodeQuotedPrintable();
     void testBackSlashEscape();
     void testRemoveBackSlashEscaping();
-    void testExtractPropertyGroupsAndName();
-    void testExtractPropertyValue();
-    void testExtractVCard21PropertyParams();
-    void testExtractVCard30PropertyParams();
 };
 
 #endif // UT_VERSITUTILS_H

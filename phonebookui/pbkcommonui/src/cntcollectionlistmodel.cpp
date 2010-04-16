@@ -20,13 +20,15 @@
 #include <QIcon>
 #include <qtcontacts.h>
 #include <hbglobal.h>
+#include <hbiconitem.h>
 
 /*!
 Constructor
 */
 CntCollectionListModel::CntCollectionListModel(QContactManager *manager, QObject *parent)
     : QAbstractListModel(parent),
-    mContactManager(manager)
+    mContactManager(manager),
+    mFavoriteGroupId(-1)
 {
     mDataPointer = new CntCollectionListData();
     doConstruct();
@@ -63,8 +65,8 @@ QVariant CntCollectionListModel::data(const QModelIndex &index, int role) const
     else if (role == Qt::DecorationRole)
     {
         QVariantList icons;
-        QIcon itemIcon(values[1].toString());
-        icons.append(itemIcon);
+        HbIcon icon(values[1].toString());
+        icons.append(icon);
         return QVariant(icons);
     }
     
@@ -134,16 +136,60 @@ Initialize static groups
 */
 void CntCollectionListModel::initializeStaticGroups()
 {
+    
     QVariantList dataList;
     QStringList displayList;
     displayList.append(hbTrId("txt_phob_dblist_favorites"));
-    displayList.append(hbTrId("txt_phob_dblist_favorites_val_no_favorites_selecte")); // as this isn't supported yet
+    if(!isFavoriteGroupCreated())
+    {
+        displayList.append(hbTrId("txt_phob_dblist_favorites_val_no_favorites_selecte")); // as this isn't supported yet
+            
+        //Create Fav grp
+        QContact favoriteGroup;
+        favoriteGroup.setType(QContactType::TypeGroup);
+        QContactName favoriteGroupName;
+        favoriteGroupName.setCustomLabel("Favorites");
+        favoriteGroup.saveDetail(&favoriteGroupName);
+        mContactManager->saveContact(&favoriteGroup);
+        mFavoriteGroupId = favoriteGroup.localId();
+    }
+    else
+    {
+        QContact favoriteGroup =  mContactManager->contact(mFavoriteGroupId);
+        QContactRelationshipFilter rFilter;
+        rFilter.setRelationshipType(QContactRelationship::HasMember);
+            rFilter.setRelatedContactRole(QContactRelationshipFilter::First);
+        rFilter.setRelatedContactId(favoriteGroup.id());
+       
+       // group members and their count
+       QList<QContactLocalId> groupMemberIds = mContactManager->contactIds(rFilter);
+
+       if (!groupMemberIds.isEmpty())
+       {
+           QStringList nameList;
+           for(int i = 0;i < groupMemberIds.count();i++)
+           {
+               QContact contact = mContactManager->contact(groupMemberIds.at(i));
+               QString memberName = contact.displayLabel();
+               nameList << memberName;
+               if (nameList.join(", ").length() > 30)
+               {
+                   break;
+               }
+           }
+           QString names = nameList.join(", ");
+           displayList.append(names);
+           displayList.append(hbTrId("(%1)").arg(groupMemberIds.count()));
+       }
+       else
+       {
+       displayList.append(hbTrId("txt_phob_dblist_favorites_val_no_favorites_selecte")); // as this isn't supported yet
+       }
+
+    }
     dataList.append(displayList);
-    
-    dataList.append(":/icons/qtg_large_favourites.svg");
-    
-    dataList.append(-1); // as favorites doesn't really have a contact Id, -1 is used
-    
+    dataList.append("qtg_large_favourites");
+    dataList.append(mFavoriteGroupId); // as favorites doesn't really have a contact Id, -1 is used
     mDataPointer->mDataList.append(dataList);
 }
 
@@ -156,8 +202,7 @@ void CntCollectionListModel::initializeUserGroups()
     groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
     groupFilter.setValue(QString(QLatin1String(QContactType::TypeGroup)));
 
-    QList<QContactLocalId> groupContactIds = mContactManager->contacts(groupFilter);
-    
+    QList<QContactLocalId> groupContactIds = mContactManager->contactIds(groupFilter);
     if (!groupContactIds.isEmpty())
     {
         for(int i = 0;i < groupContactIds.count();i++)
@@ -170,55 +215,91 @@ void CntCollectionListModel::initializeUserGroups()
             QContact contact = mContactManager->contact(groupContactIds.at(i));
             QContactName contactName = contact.detail<QContactName>();
             QString groupName = contactName.customLabel();
-            
-            if (groupName.isNull())
+            if(groupContactIds.at(i) != mFavoriteGroupId )
             {
-                QString unnamed(hbTrId("Unnamed"));
-                displayList.append(unnamed);
-            }
-            else
-            {
-                displayList.append(groupName);
-            }
-            
-            QContactRelationshipFilter rFilter;
-            rFilter.setRelationshipType(QContactRelationship::HasMember);
-            rFilter.setRole(QContactRelationshipFilter::Second);
-            rFilter.setOtherParticipantId(contact.id());
-            
-            // group members and their count
-            QList<QContactLocalId> groupMemberIds = mContactManager->contacts(rFilter);
-            
-            if (!groupMemberIds.isEmpty())
-            {
-                QStringList nameList;
-                for(int i = 0;i < groupMemberIds.count();i++)
-                {
-                    QContact contact = mContactManager->contact(groupMemberIds.at(i));
-                    QString memberName = contact.displayLabel();
-                    nameList << memberName;
-                    if (nameList.join(", ").length() > 30)
+                if (groupName.isNull())
                     {
-                        break;
+                    QString unnamed(hbTrId("Unnamed"));
+                    displayList.append(unnamed);
                     }
+                else
+                    {
+                    displayList.append(groupName);
+                    }    
+                
+                QContactRelationshipFilter rFilter;
+                rFilter.setRelationshipType(QContactRelationship::HasMember);
+                rFilter.setRelatedContactRole(QContactRelationshipFilter::First);
+                rFilter.setRelatedContactId(contact.id());
+                
+                // group members and their count
+                QList<QContactLocalId> groupMemberIds = mContactManager->contactIds(rFilter);
+                
+                if (!groupMemberIds.isEmpty())
+                {
+                    QStringList nameList;
+                    for(int i = 0;i < groupMemberIds.count();i++)
+                    {
+                        QContact contact = mContactManager->contact(groupMemberIds.at(i));
+                        QString memberName = contact.displayLabel();
+                        nameList << memberName;
+                        if (nameList.join(", ").length() > 30)
+                        {
+                            break;
+                        }
+                    }
+                    QString names = nameList.join(", ");
+                    displayList.append(names);
+                    displayList.append(hbTrId("(%1)").arg(groupMemberIds.count()));
                 }
-                QString names = nameList.join(", ");
-                displayList.append(names);
-                displayList.append(hbTrId("(%1)").arg(groupMemberIds.count()));
+                else
+                {
+                    displayList.append(hbTrId("No members selected"));
+                }
+                dataList.append(displayList);
+                
+                // icon, default for now always
+                dataList.append("qtg_large_custom");
+                
+                // contact Id for identification
+                dataList.append(groupContactIds.at(i));
+                
+                mDataPointer->mDataList.append(dataList);
             }
-            else
-            {
-                displayList.append(hbTrId("No members selected"));
-            }
-            dataList.append(displayList);
-            
-            // icon, default for now always
-            dataList.append(":/icons/qtg_large_custom.svg");
-            
-            // contact Id for identification
-            dataList.append(groupContactIds.at(i));
-            
-            mDataPointer->mDataList.append(dataList);
         }
     }
 }
+
+
+bool CntCollectionListModel::isFavoriteGroupCreated()
+{
+    bool favoriteGroupCreated = false;
+    QContactDetailFilter groupFilter;
+    groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
+    groupFilter.setValue(QString(QLatin1String(QContactType::TypeGroup)));
+
+    QList<QContactLocalId> groupContactIds = mContactManager->contactIds(groupFilter);
+    
+    if (!groupContactIds.isEmpty())
+    {
+        for(int i = 0;i < groupContactIds.count();i++)
+        {
+            QContact contact = mContactManager->contact(groupContactIds.at(i));
+            QContactName contactName = contact.detail<QContactName>();
+            QString groupName = contactName.customLabel();
+            if(groupName.compare("Favorites") == 0)
+            {
+                favoriteGroupCreated = true;
+                mFavoriteGroupId = groupContactIds.at(i);
+                break;
+            }
+        }
+    }
+    return favoriteGroupCreated;
+}
+
+int CntCollectionListModel::favoriteGroupId()
+{
+    return mFavoriteGroupId;
+}
+

@@ -52,6 +52,9 @@
 #define __QTPBK_WRITE_TO_PERF_LOG_END(p) WriteToPerfLog(p,100);
 #define __QTPBK_WRITE_TO_PERF_FILE() WriteToFile();
 
+const QString SYMBIAN_BACKEND     = "symbian";
+const QString SIM_BACKEND         = "symbiansim";
+
 //
 // undef this to remove performance logging
 //

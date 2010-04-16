@@ -21,7 +21,7 @@
 
 #include "cntcommands.h"
 #include "t_cntcommands.h"
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntbaseview.h"
 #include "cntmainwindow.h"
 
@@ -30,7 +30,7 @@
 void TestCntCommands::initTestCase()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::namesView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::namesView);
     mManager = new QContactManager("symbian");
     mSimManager = new QContactManager("symbiansim");
     mCommands = new CntCommands(*mViewManager, mManager, mSimManager);
@@ -107,9 +107,8 @@ void TestCntCommands::cleanupTestCase()
 {
     delete mViewManager;
     mViewManager = 0;
-    delete mWindow;
-    mWindow = 0;
-    delete mCommands;
+    // ORBIT BUG - so deleting main window removed
+    mWindow->deleteLater();
     mCommands = 0;
     delete mManager;
     mManager = 0;

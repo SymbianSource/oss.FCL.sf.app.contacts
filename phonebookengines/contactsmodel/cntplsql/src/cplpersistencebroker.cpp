@@ -236,7 +236,7 @@ MLplViewIteratorManager& CLplPersistenceLayerFactory::GetViewIteratorManagerL()
 	{
 	if(iManager == NULL)
 		{
-		iManager = CCntPplViewManager::NewL(iContactsFile, iContactProperties.SystemTemplateL());
+		iManager = CCntPplViewManager::NewL(iContactsFile, iContactProperties);
 		}
 	return *iManager;
 	}

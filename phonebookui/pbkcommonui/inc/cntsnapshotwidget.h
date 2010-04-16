@@ -19,7 +19,7 @@
 #define CNTSNAPSHOTWIDGET_H
 
 
-#include <qtglobal>
+#include <QtGlobal>
 #include <hbwidget.h>
 
 

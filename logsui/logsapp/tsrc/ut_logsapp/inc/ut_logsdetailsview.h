@@ -52,6 +52,7 @@ private slots: //test methods
      
     void testConstructor();
     void testActivated();
+    void testDeactivated();
     void testHandleBackSoftkey();
     void testCallKeyPressed();
     void testInitiateVoiceCall();

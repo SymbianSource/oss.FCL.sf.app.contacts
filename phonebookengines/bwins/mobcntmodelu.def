@@ -33,4 +33,5 @@ EXPORTS
 	?findIndexes@MobCntModel@@AAE?AV?$QList@V?$QList@H@@@@ABV?$QList@I@@@Z @ 32 NONAME ; class QList<class QList<int> > MobCntModel::findIndexes(class QList<unsigned int> const &)
 	?contactManager@MobCntModel@@QBEAAVQContactManager@QtMobility@@XZ @ 33 NONAME ; class QtMobility::QContactManager & MobCntModel::contactManager(void) const
 	?updateContactIcon@MobCntModel@@QAEXH@Z @ 34 NONAME ; void MobCntModel::updateContactIcon(int)
+	?myCardId@MobCntModel@@QBEIXZ @ 35 NONAME ; unsigned int MobCntModel::myCardId(void) const
 

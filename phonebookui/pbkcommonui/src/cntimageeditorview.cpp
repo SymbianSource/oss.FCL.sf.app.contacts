@@ -17,18 +17,19 @@
 
 #include "cntimageeditorview.h"
 
-#include <QGraphicsLinearLayout>
-#include <qtcontacts.h>
-#include <hbdocumentloader.h>
-#include <hbabstractviewitem.h>
-#include <hbscrollarea.h>
 #include <hblabel.h>
-#include <hbpushbutton.h>
 #include <xqaiwrequest.h>
 #include <thumbnailmanager_qt.h>
+#include <hbaction.h>
+#include <hbview.h>
+#include <hbmainwindow.h>
+#include <hblistview.h>
+#include <hblistviewitem.h>
+#include <hbframebackground.h>
+
+#include <QStandardItemModel>
 
 const char *CNT_IMAGE_XML = ":/xml/contacts_if.docml";
-const int BUTTON_HEIGHT = 50;
 
 #define FETCHER_SERVICE "com.nokia.services.media"
 #define FETCHER_INTERFACE "image"
@@ -37,28 +38,40 @@ const int BUTTON_HEIGHT = 50;
 /*!
 Constructor
 */
-CntImageEditorView::CntImageEditorView(CntViewManager *viewManager, QGraphicsItem *parent) :
-        CntBaseView(viewManager, parent),
+CntImageEditorView::CntImageEditorView() :
         mContact(0),
         mAvatar(0),
         mImageLabel(0),
-        mScrollArea(0),
         mRequest(0),
         mThumbnailManager(0),
-        mContainerWidget(0)
+        mView(0),
+        mSoftkey(0),
+        mRemoveImage(0),
+        mViewManager(0),
+        mListView(0),
+        mModel(0)
 {
     bool ok = false;
-    ok = loadDocument(CNT_IMAGE_XML);
+    mDocumentLoader.load(CNT_IMAGE_XML, &ok);
 
     if (ok)
     {
-        QGraphicsWidget *content = findWidget(QString("content"));
-        setWidget(content);
+        mView = static_cast<HbView*>(mDocumentLoader.findWidget(QString("view")));
     }
     else
     {
         qFatal("Unable to read :/xml/contacts_if.docml");
     }
+    
+    //back button
+    mSoftkey = new HbAction(Hb::BackNaviAction, mView);
+    connect(mSoftkey, SIGNAL(triggered()), this, SLOT(showPreviousView()));
+    
+    // menu action
+    mRemoveImage = static_cast<HbAction*>(mDocumentLoader.findObject("cnt:removeimage"));
+    connect(mRemoveImage, SIGNAL(triggered()), this, SLOT(removeImage()));
+
+    // thumbnail manager
     mThumbnailManager = new ThumbnailManager(this);
     mThumbnailManager->setMode(ThumbnailManager::Default);
     mThumbnailManager->setQualityPreference(ThumbnailManager::OptimizeForQuality);
@@ -68,61 +81,42 @@ CntImageEditorView::CntImageEditorView(CntViewManager *viewManager, QGraphicsIte
         this, SLOT(thumbnailReady(QPixmap, void*, int, int)) );
 }
 
-void CntImageEditorView::thumbnailReady(const QPixmap& pixmap, void *data, int id, int error)
-{
-    Q_UNUSED(data);
-    Q_UNUSED(id);
-    Q_UNUSED(error);
-    QIcon qicon(pixmap);
-    HbIcon icon(qicon);
-	mImageLabel->clear();
-	mImageLabel->setIcon(icon);
-}
-
 /*!
 Destructor
 */
 CntImageEditorView::~CntImageEditorView()
 {
-    delete mImageLabel;
+    mView->deleteLater();
+
     delete mAvatar;
+    mAvatar = 0;
     delete mContact;
-	delete mRequest;
-}
-
-void CntImageEditorView::resizeEvent(QGraphicsSceneResizeEvent *event)
-{
-    if (mScrollArea)
-    {
-        mContainerWidget->resize(mScrollArea->size().width(), 0);
-    }
-    CntBaseView::resizeEvent(event);
+    mContact = 0;
+    delete mRequest;
+    mRequest = 0;
+    delete mRemoveImage;
+    mRemoveImage = 0;
+    delete mModel;
+    mModel = 0;
 }
 
 /*!
-Called when user closes the view
+Called when activating the view
 */
-void CntImageEditorView::aboutToCloseView()
+void CntImageEditorView::activate( CntAbstractViewManager* aMgr, const CntViewParameters& aArgs )
 {
-    mContact->saveDetail(mAvatar);
-
-    if (mAvatar->avatar().isEmpty())
-    {
-        mContact->removeDetail(mAvatar);
-    }
-    viewManager()->previousViewParameters().setSelectedContact(*mContact);
-    viewManager()->onActivatePreviousView();
-}
-
-/*!
-Called when activating the view (create image label and scroll area with buttons)
-*/
-void CntImageEditorView::activateView(const CntViewParameters &viewParameters)
-{
-    mContact = new QContact(viewParameters.selectedContact());
+    if (mView->navigationAction() != mSoftkey)
+        mView->setNavigationAction(mSoftkey);
+    
+    HbMainWindow* window = mView->mainWindow();
+    connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
+    setOrientation(window->orientation());    
+    
+    mContact = new QContact(aArgs.selectedContact());
+    mViewManager = aMgr;
 
     // set the correct image if the contact already has an image set
-    mImageLabel = static_cast<HbLabel*>(findWidget(QString("image")));
+    mImageLabel = static_cast<HbLabel*>(mDocumentLoader.findWidget(QString("cnt_image_label")));
     QList<QContactAvatar> details = mContact->details<QContactAvatar>();
 
     if (details.count() > 0)
@@ -141,37 +135,43 @@ void CntImageEditorView::activateView(const CntViewParameters &viewParameters)
     {
         mAvatar = new QContactAvatar();
         mAvatar->setSubType(QContactAvatar::SubTypeImage);
+        mRemoveImage->setEnabled(false);
     }
+    
+    // set up the list
+    mListView = static_cast<HbListView*>(mDocumentLoader.findWidget(QString("cnt_listview")));
+    
+    connect(mListView, SIGNAL(activated(const QModelIndex&)), this,
+        SLOT(listViewActivated(const QModelIndex&)));
+    
+    HbFrameBackground frame;
+    frame.setFrameGraphicsName("qtg_fr_list_normal");
+    frame.setFrameType(HbFrameDrawer::NinePieces);
+    mListView->itemPrototypes().first()->setDefaultFrame(frame);
+    
+    mListView->listItemPrototype()->setGraphicsSize(HbListViewItem::LargeIcon);
+    
+    mModel = new QStandardItemModel();
+    populateModel(mModel);
+    mListView->setModel(mModel);
+}
 
-    QGraphicsWidget *w = findWidget(QString("content"));
-    static_cast<QGraphicsLinearLayout*>(w->layout())->setAlignment(mImageLabel, Qt::AlignCenter);
+void CntImageEditorView::deactivate()
+{
 
-    // construct listview and the model for it
-    mScrollArea = static_cast<HbScrollArea*>(findWidget(QString("scrollArea")));
+}
 
-    mContainerWidget = new HbWidget();
-    QGraphicsLinearLayout *buttonLayout = new QGraphicsLinearLayout(Qt::Vertical);
-    buttonLayout->setContentsMargins(0, 0, 0, 0);
-
-    HbPushButton *newPhoto = new HbPushButton(HbIcon(":/icons/qgn_indi_ai_nt_camera.svg"),
-                                              hbTrId("txt_phob_list_take_a_new_photo"), Qt::Horizontal);
-    newPhoto->setPreferredHeight(BUTTON_HEIGHT);
-    newPhoto->setPreferredWidth(300);
-    newPhoto->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-    connect(newPhoto, SIGNAL(clicked()), this, SLOT(openCamera()));
-    buttonLayout->addItem(newPhoto);
-
-    HbPushButton *gallery = new HbPushButton(HbIcon(":/icons/qgn_prop_tutor_gallery.svg"),
-                                              hbTrId("Choose from Gallery"), Qt::Horizontal);
-    gallery->setPreferredHeight(BUTTON_HEIGHT);
-    gallery->setPreferredWidth(300);
-    gallery->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-    connect(gallery, SIGNAL(clicked()), this, SLOT(openGallery()));
-    buttonLayout->addItem(gallery);
-
-    mContainerWidget->setLayout(buttonLayout);
-    mContainerWidget->setPreferredWidth(mScrollArea->size().width());
-    mScrollArea->setContentWidget(mContainerWidget);
+void CntImageEditorView::populateModel(QStandardItemModel *model)
+{
+    QStandardItem *newPhoto = new QStandardItem();
+    newPhoto->setText(hbTrId("txt_phob_list_take_a_new_photo"));
+    newPhoto->setData(HbIcon("qtg_large_camera"), Qt::DecorationRole);
+    model->appendRow(newPhoto);
+    
+    QStandardItem *fromGallery = new QStandardItem();
+    fromGallery->setText(hbTrId("txt_phob_list_chooce_from_gallery"));
+    fromGallery->setData(HbIcon("qtg_large_photos"), Qt::DecorationRole);
+    model->appendRow(fromGallery);
 }
 
 /*!
@@ -194,9 +194,36 @@ void CntImageEditorView::openGallery()
     }
 
     mRequest = mAppManager.create(FETCHER_SERVICE, FETCHER_INTERFACE, FETCHER_OPERATION, false);
+    if ( mRequest ) 
+    {
+        connect(mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(handleImageChange(const QVariant&)));
+        mRequest->send();
+    }
+}
 
-    connect(mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(handleImageChange(const QVariant&)));
-    mRequest->send();
+/*!
+Called when user closes the view
+*/
+void CntImageEditorView::showPreviousView()
+{
+    mContact->saveDetail(mAvatar);
+
+    if (mAvatar->avatar().isEmpty())
+    {
+        mContact->removeDetail(mAvatar);
+    }
+    
+    CntViewParameters args;
+    args.setSelectedContact( *mContact );
+    mViewManager->back( args );
+}
+
+void CntImageEditorView::removeImage()
+{
+    mAvatar->setAvatar(QString());
+    mImageLabel->clear();
+    mImageLabel->setIcon(HbIcon("qtg_large_avatar"));
+    mRemoveImage->setEnabled(false);
 }
 
 /*!
@@ -208,5 +235,55 @@ void CntImageEditorView::handleImageChange(const QVariant &value)
     {
         mAvatar->setAvatar(value.toString());
         mThumbnailManager->getThumbnail(value.toString());
+        mRemoveImage->setEnabled(true);
+    }
+}
+
+void CntImageEditorView::thumbnailReady(const QPixmap& pixmap, void *data, int id, int error)
+{
+    Q_UNUSED(data);
+    Q_UNUSED(id);
+    if (!error)
+    {
+        QIcon qicon(pixmap);
+        HbIcon icon(qicon);
+        mImageLabel->clear();
+        mImageLabel->setIcon(icon);
+    }
+}
+
+void CntImageEditorView::setOrientation(Qt::Orientation orientation)
+{
+    if (orientation == Qt::Vertical) 
+    {
+        // reading "portrait" section
+        mDocumentLoader.load(CNT_IMAGE_XML, "portrait");
+    } 
+    else 
+    {
+        // reading "landscape" section
+        mDocumentLoader.load(CNT_IMAGE_XML, "landscape");
+    }
+}
+
+/*!
+Figure out which item was selected according to row number
+*/
+void CntImageEditorView::listViewActivated(const QModelIndex &index)
+{
+    if (index.isValid())
+    {
+        int row = index.row();
+        switch(row)
+        {
+        case 0: // first item is always "take photo"
+            openCamera();
+            break;
+        case 1: // and the second one is always "choose from gallery"
+            openGallery();
+            break;
+        default:
+            break;
+        }
     }
 }

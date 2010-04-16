@@ -3,13 +3,36 @@ HbListViewItem[layoutName="logsLandscape"]{
 }
 
 HbListViewItem[layoutName="logsLandscapeDialpad"]{
-    layout:logs-landscape-dialpad;
+    layout:logs-landscape;
 }
 
 HbListViewItem::text-1[layoutName="logsLandscape"]{
-	pref-width: 30.0un;
+	fixed-width: 40.0un;
+	text-height: var(hb-param-text-height-primary);
 }
 
 HbListViewItem::text-2[layoutName="logsLandscape"]{
-	pref-width: 30.0un;
+	
+	fixed-width: 40.0un;
+	text-height: var(hb-param-text-height-secondary);
+}
+
+HbListViewItem::text-1[layoutName="logsLandscapeDialpad"]{
+	fixed-width: 38.0un;
+	text-height: var(hb-param-text-height-primary);
+}
+
+HbListViewItem::text-2[layoutName="logsLandscapeDialpad"]{
+	fixed-width: 0.0un;
+	text-height: 0.0un;
+}
+
+HbListViewItem::text-1[layoutName="default"]{
+	fixed-width: 40.0un;
+	text-height: var(hb-param-text-height-primary);
+}
+
+HbListViewItem::text-2[layoutName="default"]{
+	fixed-width: 40.0un;
+	text-height: var(hb-param-text-height-secondary);
 }

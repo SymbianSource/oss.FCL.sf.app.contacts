@@ -13,6 +13,11 @@
     <meshitem src="background" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" />
     <meshitem src="background" srcEdge="LEFT" dst="" dstEdge="LEFT" />
     <meshitem src="background" srcEdge="RIGHT" dst="" dstEdge="RIGHT" />
+
+    <meshitem src="pictureArea" srcEdge="TOP" dst="" dstEdge="TOP" />
+    <meshitem src="pictureArea" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" />
+    <meshitem src="pictureArea" srcEdge="LEFT" dst="" dstEdge="LEFT" />
+    <meshitem src="pictureArea" srcEdge="RIGHT" dst="icon" dstEdge="RIGHT" />
   </layout>
   
   <layout name="layout_two_rows" type="mesh">
@@ -45,6 +50,11 @@
     <meshitem src="background" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" />
     <meshitem src="background" srcEdge="LEFT" dst="" dstEdge="LEFT" />
     <meshitem src="background" srcEdge="RIGHT" dst="" dstEdge="RIGHT" />
+
+    <meshitem src="pictureArea" srcEdge="TOP" dst="" dstEdge="TOP" />
+    <meshitem src="pictureArea" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" />
+    <meshitem src="pictureArea" srcEdge="LEFT" dst="" dstEdge="LEFT" />
+    <meshitem src="pictureArea" srcEdge="RIGHT" dst="icon" dstEdge="RIGHT" />
   </layout>
   
   <layout name="layout_three_rows" type="mesh">
@@ -76,5 +86,10 @@
     <meshitem src="background" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" />
     <meshitem src="background" srcEdge="LEFT" dst="" dstEdge="LEFT" />
     <meshitem src="background" srcEdge="RIGHT" dst="" dstEdge="RIGHT" />
+
+    <meshitem src="pictureArea" srcEdge="TOP" dst="" dstEdge="TOP" />
+    <meshitem src="pictureArea" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" />
+    <meshitem src="pictureArea" srcEdge="LEFT" dst="" dstEdge="LEFT" />
+    <meshitem src="pictureArea" srcEdge="RIGHT" dst="icon" dstEdge="RIGHT" />
   </layout>
 </hbwidget>

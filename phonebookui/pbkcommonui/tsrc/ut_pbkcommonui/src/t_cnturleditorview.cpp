@@ -21,7 +21,7 @@
 #include <qtcontacts.h>
 
 #include "cnturleditorview.h"
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntmainwindow.h"
 #include "t_cnturleditorview.h"
 
@@ -35,7 +35,7 @@ void TestCntUrlEditorView::initTestCase()
 void TestCntUrlEditorView::createClasses()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::noView);
     mUrlEditorView = new CntUrlEditorView(mViewManager, 0);
     mWindow->addView(mUrlEditorView);
     mWindow->setCurrentView(mUrlEditorView);
@@ -154,8 +154,7 @@ void TestCntUrlEditorView::addDetail()
 
 void TestCntUrlEditorView::cleanupTestCase()
 {
-    delete mWindow;
-    mWindow = 0;
+    mWindow->deleteLater();
     delete mViewManager;
     mViewManager = 0;
     delete mUrlEditorView;

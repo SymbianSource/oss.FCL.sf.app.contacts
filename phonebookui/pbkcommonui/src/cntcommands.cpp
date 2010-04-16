@@ -81,11 +81,12 @@ void CntCommands::importFromSim()
 {
     int copied(0);
     int failed(0);
-    QList<QContactLocalId> contactIds = mContactSimManager->contacts();
+    QList<QContactLocalId> contactIds = mContactSimManager->contactIds();
     if (contactIds.count() == 0) {
         HbMessageBox::information("Nothing to copy: SIM card is empty or not accessible.");
         return;
     }
+    
     foreach(QContactLocalId id, contactIds) {
         QContact contact = mContactSimManager->contact(id);
         if (contact.localId() > 0) {
@@ -94,6 +95,16 @@ void CntCommands::importFromSim()
             contactId->setLocalId(0);
             contactId->setManagerUri(QString());
             contact.setId(*contactId);
+
+            // custom label contains name information, save it to the first name 
+            QList<QContactDetail> names = contact.details(QContactName::DefinitionName);
+            if (names.count() > 0) {
+                QContactName name = static_cast<QContactName>(names.at(0));
+                name.setFirstName(name.customLabel());
+                name.setCustomLabel(QString());
+                contact.saveDetail(&name);
+            }
+            
             if (mContactManager->saveContact(&contact)) {
                 copied++;
             }
@@ -110,6 +121,7 @@ void CntCommands::importFromSim()
     resultMessage.append(" contact copied, ");
     resultMessage.append(QString().setNum(failed));
     resultMessage.append(" failed.");
+    
     HbMessageBox::information(resultMessage);
 }
 
@@ -119,9 +131,9 @@ void CntCommands::importFromSim()
 void CntCommands::editContact(QContact contact)
 {
     CntViewParameters viewParameters(CntViewParameters::editView);
-    viewParameters.setPreviousViewId(mViewManager.previousViewParameters().previousViewId());
+    //viewParameters.setPreviousViewId(mViewManager.previousViewParameters().previousViewId());
     viewParameters.setSelectedContact(contact);
-    mViewManager.onActivateView(viewParameters);
+    mViewManager.changeView(viewParameters);
 }
 
 /*!
@@ -129,7 +141,7 @@ void CntCommands::editContact(QContact contact)
 */
 void CntCommands::deleteContact(QContact contact)
 {
-    QString name = mContactManager->synthesizeDisplayLabel(contact);
+    QString name = mContactManager->synthesizedDisplayLabel(contact);
 
     HbMessageBox *note = new HbMessageBox(hbTrId("txt_phob_info_delete_1").arg(name), HbMessageBox::MessageTypeQuestion);
     note->setPrimaryAction(new HbAction(hbTrId("txt_phob_button_delete"), note));
@@ -151,7 +163,7 @@ void CntCommands::openContact(QContact contact)
     CntViewParameters viewParameters(CntViewParameters::commLauncherView);
     viewParameters.setSelectedContact(contact);
 
-    mViewManager.onActivateView(viewParameters);
+    mViewManager.changeView(viewParameters);
 }
 
 /*!
@@ -161,7 +173,7 @@ void CntCommands::viewHistory(QContact contact)
 {
     CntViewParameters viewParameters(CntViewParameters::historyView);
     viewParameters.setSelectedContact(contact);
-    mViewManager.onActivateView(viewParameters);
+    mViewManager.changeView(viewParameters);
 }
 
 /*!

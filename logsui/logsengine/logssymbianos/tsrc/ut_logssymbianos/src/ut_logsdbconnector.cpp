@@ -117,20 +117,20 @@ void UT_LogsDbConnector::testMarkEventsSeen()
     events.append(1);
     QVERIFY( mDbConnector->markEventsSeen(events) );
     QVERIFY( mDbConnector->mEventsSeen.count() == 2 );
-    QVERIFY( mDbConnector->mReader->mModifyingEventId == 0 ); // Started modifying
+    QVERIFY( mDbConnector->mReader->mCurrentEventId == 0 ); // Started modifying
     
     // Trying to clear missed again, id is appended to mark list, old modifying process in ongoing
     // and is not interrupted
     events.append(2);
     QVERIFY( !mDbConnector->markEventsSeen(events) );
     QVERIFY( mDbConnector->mEventsSeen.count() == 3 );
-    QVERIFY( mDbConnector->mReader->mModifyingEventId == 0 ); // Modifying still previous
+    QVERIFY( mDbConnector->mReader->mCurrentEventId == 0 ); // Modifying still previous
     
     // Completed previous modifying, next one in queue is modified
     mDbConnector->mReader->Cancel();
     mDbConnector->eventModifyingCompleted();
     QVERIFY( mDbConnector->mEventsSeen.count() == 2 );
-    QVERIFY( mDbConnector->mReader->mModifyingEventId == 1 ); // Started modifying next one
+    QVERIFY( mDbConnector->mReader->mCurrentEventId == 1 ); // Started modifying next one
     QVERIFY( spy.count() == 0 ); // Not yet totally completed
     
     // Last pending gets completed
@@ -147,6 +147,37 @@ void UT_LogsDbConnector::testMarkEventsSeen()
     mDbConnector->mEventsSeen.append(2);
     QVERIFY( !mDbConnector->markEventsSeen(events) );
     QVERIFY( mDbConnector->mEventsSeen.count() == 3 );
+}
+
+void UT_LogsDbConnector::testReadDuplicates()
+{
+    QSignalSpy spy( mDbConnector, SIGNAL(duplicatesRead()) );
+    
+    // Not ready
+    QVERIFY( mDbConnector->readDuplicates(2) != 0 );
+    
+    // Previous results are cleared when starting ok
+    LogsEvent* event = new LogsEvent;
+    mDbConnector->mDuplicatedEvents.append(event);
+    mDbConnector->init();
+    mDbConnector->readDuplicates(2);
+    QVERIFY( mDbConnector->mDuplicatedEvents.count() == 0 );
+    
+    // Completes
+    LogsEvent* event2 = new LogsEvent;
+    LogsEvent* event3 = new LogsEvent;
+    QList<LogsEvent*> duplicates;
+    duplicates.append(event2);
+    duplicates.append(event3);
+    mDbConnector->duplicatesReadingCompleted(duplicates);
+    QVERIFY( mDbConnector->mDuplicatedEvents.count() == 2 );
+    QVERIFY( spy.count() == 1 );
+    
+    // Client reads those events
+    QList<LogsEvent*> takenEvents = mDbConnector->takeDuplicates();
+    QVERIFY( mDbConnector->mDuplicatedEvents.count() == 0 );
+    QVERIFY( takenEvents.count() == 2 );
+    
 }
 
 void UT_LogsDbConnector::testStart()

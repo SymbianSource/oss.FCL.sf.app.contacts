@@ -20,7 +20,7 @@
 #include <qtcontacts.h>
 
 #include "cntphonenumbereditorview.h"
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntmainwindow.h"
 #include "t_cntphonenumbereditorview.h"
 
@@ -34,7 +34,7 @@ void TestCntPhoneNumberEditorView::initTestCase()
 void TestCntPhoneNumberEditorView::createClasses()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::noView);
     mPhoneNumberEditorView = new CntPhoneNumberEditorView(mViewManager, 0);
     mWindow->addView(mPhoneNumberEditorView);
     mWindow->setCurrentView(mPhoneNumberEditorView);
@@ -157,8 +157,7 @@ void TestCntPhoneNumberEditorView::addDetail()
 
 void TestCntPhoneNumberEditorView::cleanupTestCase()
 {
-    delete mWindow;
-    mWindow = 0;
+    mWindow->deleteLater();
     delete mViewManager;
     mViewManager = 0;
     delete mPhoneNumberEditorView;

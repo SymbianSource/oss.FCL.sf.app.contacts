@@ -107,8 +107,7 @@ void TestCntFamilyDetailEditorView::initializeFormData()
 
 void TestCntFamilyDetailEditorView::cleanupTestCase()
 {
-    delete mWindow;
-    mWindow = 0;
+    mWindow->deleteLater();
     delete mViewManager;
     mViewManager = 0;
     delete mFamilyDetailEditorView;

@@ -18,9 +18,11 @@
 #define LOGSMATCHESVIEW_H
 
 #include "logsbaseview.h"
+#include "logscall.h"
 
 class HbListView;
 class HbAction;
+class HbPushButton;
 class LogsComponentRepository;
 class LogsAbstractViewManager;
 class LogsMatchesModel;
@@ -46,13 +48,17 @@ public: // From LogsBaseView
 public slots:
     
     void callKeyPressed();
-  
+    void saveNumberInDialpadToContacts();
+    void videoCallToCurrentNum();
+    void sendMessageToCurrentNum();
     
 protected slots: //from LogsBaseView
     
     virtual void dialpadEditorTextChanged();
+    virtual void dialpadOpened();
     virtual void dialpadClosed();
     virtual void updateWidgetsSizeAndLayout();
+    virtual void updateEmptyListWidgetsVisibility();
 
 private: //from LogsBaseView
     
@@ -63,12 +69,15 @@ private:
     
     void initListWidget();
     void updateModel(LogsMatchesModel* model);
-            
+    void updateMenu();
+    void callToCurrentNum( LogsCall::CallType callType );
+    void updateAddContactButton();
+    
 private:
     
     HbListView* mListView;    //not owned
     LogsMatchesModel* mModel; //owned
-    QString mLayoutSectionName;
+    HbPushButton* mAddToContactsButton; // not owned
 };
 
 #endif // LOGSMATCHESVIEW_H

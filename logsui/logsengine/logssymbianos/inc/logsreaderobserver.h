@@ -19,8 +19,10 @@
 #define LOGSREADEROBSERVER_H
 
 // INCLUDES
+#include <QList>
 
 // FORWARD DECLARATION
+class LogsEvent;
 
 // CLASS DECLARATION
 
@@ -50,7 +52,16 @@ class LogsReaderObserver
          */
         virtual void temporaryErrorOccurred(int err) = 0;
         
+        /**
+         * Reader has completed modifying the event.
+         */
         virtual void eventModifyingCompleted() = 0;
+        
+        /**
+         * Duplicate reading has completed
+         * @param duplicates, list of read duplicates, onwership is transferred
+         */
+        virtual void duplicatesReadingCompleted(QList<LogsEvent*> duplicates) = 0;
     };
 
 #endif      // LOGSREADER_H

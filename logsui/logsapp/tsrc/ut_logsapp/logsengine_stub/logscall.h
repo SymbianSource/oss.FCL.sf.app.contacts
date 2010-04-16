@@ -39,7 +39,7 @@ public:
     
     enum CallType {
         TypeLogsCallNotAvailable = 0,
-        TypeLogsVoiceCall = 0,
+        TypeLogsVoiceCall,
  	   	TypeLogsVideoCall,
  	    TypeLogsVoIPCall
  	};

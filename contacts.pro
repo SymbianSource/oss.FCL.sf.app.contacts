@@ -15,11 +15,5 @@
 #
 
 TEMPLATE = subdirs
-SUBDIRS += phonebookengines/cntfindplugin 
-SUBDIRS += phonebookengines/cntsortplugin 
-SUBDIRS += phonebookengines/contactsmodel 
-SUBDIRS += qtcontactsmobility
-SUBDIRS += logsui
-SUBDIRS += phonebookengines
-SUBDIRS += phonebookui 
+SUBDIRS = phonebookengines logsui phonebookui
 CONFIG += ordered

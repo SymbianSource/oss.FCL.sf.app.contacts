@@ -54,6 +54,7 @@ void UT_LogsCntFinder::testConstructor()
     QVERIFY( finder.mResults.count() == 0 );
     QVERIFY( finder.mHistoryEvents.count() == 0 );
     QVERIFY( finder.mContactManager );
+    QVERIFY( finder.mCachedCounter == 0 );
     
 }
 
@@ -78,7 +79,8 @@ void UT_LogsCntFinder::testPredictiveSearchQuery()
     pattern = QString("");
     mFinder->predictiveSearchQuery( pattern );
     QCOMPARE( spy.count(), 3 );
-    QVERIFY( mFinder->mResults[ 0 ] == e );
+    QVERIFY( mFinder->resultsCount() == 0 );
+    QVERIFY( mFinder->mCachedCounter == 0 );
     
 //---
     
@@ -125,7 +127,134 @@ void UT_LogsCntFinder::testPredictiveSearchQuery()
     QVERIFY( mFinder->resultAt( 0 ).firstName()[0].highlights() == 1 );
     QVERIFY( mFinder->resultAt( 0 ).lastName()[0].highlights() == 0 );
     QVERIFY( mFinder->resultAt( 0 ).avatarPath() == QString("c:\\data\\images\\logstest1.jpg") );
+ 
+    //
+    // -- reuse results: do not create new entry, if there is already 
+    //    entry with same cid as in cid list (from db).
+    //
+    qDeleteAll( mFinder->mResults );
+    mFinder->mResults.clear();
+    qDeleteAll( mFinder->mHistoryEvents );
+    mFinder->mHistoryEvents.clear();
     
+    pattern = QString("3");
+    mFinder->predictiveSearchQuery( pattern );
+    QCOMPARE( spy.count(), 5 );
+    QVERIFY( mFinder->resultsCount() );
+    QVERIFY( !mFinder->mResults[0]->isCached() );
+    const LogsCntEntry* firstE = &mFinder->resultAt( 0 );
+    QVERIFY( firstE->isCached());
+    QVERIFY( firstE->firstName()[0].highlights() == 1 );
+    
+    pattern = QString("34");
+    mFinder->predictiveSearchQuery( pattern );
+    QCOMPARE( spy.count(), 6 );
+    QVERIFY( mFinder->resultsCount() );
+    QVERIFY( &mFinder->resultAt( 0 ) == firstE );
+    QVERIFY( firstE->firstName()[0].highlights() == 2 );
+    
+    entry1 = new LogsCntEntry( *handle1,0 );
+    entry1->setFirstName( QString("First Beam") );
+    mFinder->insertEntry( 0, entry1 );
+
+    pattern = QString("3");
+    mFinder->predictiveSearchQuery( pattern );
+    QCOMPARE( spy.count(), 7 );
+    QVERIFY( mFinder->resultsCount() );
+    const LogsCntEntry* firstHe = &mFinder->resultAt( 0 );
+    QVERIFY( firstHe != entry1 );
+    QVERIFY( firstHe->firstName()[0].text() == entry1->firstName()[0].text() );
+    QVERIFY( &mFinder->resultAt( 1 ) == firstE );
+    QVERIFY( firstE->firstName()[0].highlights() == 1 );
+    
+    //
+    // -- reuse results: do search on results, if all are cached
+    //
+    qDeleteAll( mFinder->mResults );
+    mFinder->mResults.clear();
+    qDeleteAll( mFinder->mHistoryEvents );
+    mFinder->mHistoryEvents.clear();
+    mFinder->mCachedCounter = 0;
+
+    pattern = QString("3");
+    mFinder->predictiveSearchQuery( pattern );
+    QCOMPARE( spy.count(), 8 );
+    QVERIFY( mFinder->resultsCount() );
+    QVERIFY( mFinder->mCachedCounter == 0 );
+    
+    for( int i=0;i<mFinder->resultsCount();i++) {
+        mFinder->resultAt( i ); 
+    }
+    QVERIFY( mFinder->mCachedCounter == mFinder->resultsCount() );
+    
+    //stub gives always 10+ results regardless pattern,
+    //thus, if stub is not used, there should be only one
+    //match. The match was found from cache.
+    pattern = QString("347781");//first1 cache
+    mFinder->predictiveSearchQuery( pattern );
+    QCOMPARE( spy.count(), 9 );
+    QVERIFY( mFinder->resultsCount() == 2 ); //first1 and first10
+    QVERIFY( mFinder->mCachedCounter == 2 );
+    QVERIFY( mFinder->mResults[0]->isCached() );
+    QVERIFY( mFinder->resultAt( 0 ).type() == LogsCntEntry::EntryTypeContact );
+    QVERIFY( mFinder->resultAt( 0 ).firstName()[0].text() == QString("first1") );
+    QVERIFY( mFinder->resultAt( 0 ).firstName()[0].highlights() == 6 );
+    QVERIFY( mFinder->resultAt( 1 ).firstName()[0].text() == QString("first10") );
+    QVERIFY( mFinder->resultAt( 1 ).firstName()[0].highlights() == 6 );
+
+    
+    pattern = QString("3477810");//first10 cache
+    mFinder->predictiveSearchQuery( pattern );
+    QCOMPARE( spy.count(), 10 );
+    QVERIFY( mFinder->resultsCount() == 1 ); //first10
+    QVERIFY( mFinder->mCachedCounter == 1 );
+    QVERIFY( mFinder->mResults[0]->isCached() );
+    QVERIFY( mFinder->resultAt( 0 ).type() == LogsCntEntry::EntryTypeContact );
+    QVERIFY( mFinder->resultAt( 0 ).firstName()[0].text() == QString("first10") );
+    QVERIFY( mFinder->resultAt( 0 ).firstName()[0].highlights() == 7 );
+
+    pattern = QString("34778104");//missmatch cache
+    mFinder->predictiveSearchQuery( pattern );
+    QCOMPARE( spy.count(), 11 );
+    QVERIFY( mFinder->resultsCount() == 0 );
+    QVERIFY( mFinder->mCachedCounter == 0 );
+    
+    pattern = QString("3477810");//first10 must go to db
+    mFinder->predictiveSearchQuery( pattern );
+    QCOMPARE( spy.count(), 12 );
+    QVERIFY( mFinder->resultsCount() );
+    QVERIFY( mFinder->mCachedCounter == 0 );//reuse cached cids
+    
+
+    entry1 = new LogsCntEntry( *handle1,0 );
+    entry1->setFirstName( QString("First Beam") );
+    mFinder->insertEntry( 0, entry1 );
+    
+    pattern = QString("34778");//first must go to db
+    mFinder->predictiveSearchQuery( pattern );
+    QCOMPARE( spy.count(), 13 );
+    QVERIFY( mFinder->resultsCount() > 1 );
+    QVERIFY( mFinder->mCachedCounter == 1 );//history event, which is result
+    QVERIFY( mFinder->mResults[0]->isCached() );//history event is always cached
+    QVERIFY( !mFinder->mResults[1]->isCached() );//was not cached
+
+    QVERIFY( mFinder->resultAt( 0 ).firstName()[0].highlights() == 5 );
+    QVERIFY( mFinder->resultAt( 1 ).firstName()[0].highlights() == 5 );
+    
+    pattern = QString("123456789112345"); //15 digits query
+    mFinder->predictiveSearchQuery( pattern );
+    QCOMPARE( spy.count(), 14 );
+    QCOMPARE( mFinder->mCurrentPredictivePattern.length(), 15 );
+    
+    pattern = QString("1234567891123456"); //16 digits query
+    mFinder->predictiveSearchQuery( pattern );
+    QCOMPARE( spy.count(), 15 );
+    QCOMPARE( mFinder->mCurrentPredictivePattern.length(), 15 );
+    
+    pattern = QString("12345678911234567891"); //20 digits query
+    mFinder->predictiveSearchQuery( pattern );
+    QCOMPARE( spy.count(), 16 );
+    QCOMPARE( mFinder->mCurrentPredictivePattern.length(), 15 );
 }
 
 void UT_LogsCntFinder::testResultAt()
@@ -136,8 +265,8 @@ void UT_LogsCntFinder::testResultAt()
     QVERIFY( mFinder->resultsCount() > 0 );
     
     const LogsCntEntry& e = mFinder->resultAt( 0 );
-    QVERIFY( e.firstName()[0].text() == QString("first") );//stub
-    QVERIFY( e.lastName()[0].text() == QString("last") );//stub
+    QVERIFY( e.firstName()[0].text() == QString("first1") );//stub
+    QVERIFY( e.lastName()[0].text() == QString("last1") );//stub
     QVERIFY( e.speedDial() == QString("") );
     QVERIFY( e.phoneNumber().text() == QString("555789987") );//stub
     QVERIFY( e.phoneNumber().highlights() == 1 );

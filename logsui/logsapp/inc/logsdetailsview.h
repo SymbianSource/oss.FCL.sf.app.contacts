@@ -42,6 +42,7 @@ public:
 public: // From LogsBaseView
     
     virtual void activated(bool showDialer, QVariant args);
+    virtual void deactivated();
 
 public slots:
     
@@ -70,7 +71,6 @@ private:
     
     void initListWidget();
     void updateMenu();
-    void toggleActionAvailability( HbAction* action, bool available );
 
 private:
     

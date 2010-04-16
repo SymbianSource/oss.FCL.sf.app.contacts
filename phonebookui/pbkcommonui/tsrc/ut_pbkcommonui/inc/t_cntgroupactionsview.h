@@ -31,15 +31,9 @@ private slots:
     void createClasses();
     void aboutToCloseView();
     void addActionsToToolBar();
-    void deleteGroup();
-    void groupMembers();
-    void openNamesView();
-    void openCollections();
+    void addMenuItems();
     void editGroup();
     void activateView();
-    void manageMembers();
-    void editGroupDetails();
-    
     void cleanupTestCase();
 
 private:

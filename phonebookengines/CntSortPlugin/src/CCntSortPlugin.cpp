@@ -20,7 +20,7 @@
 // INCLUDE FILES
 #include "ccntsortplugin.h"
 
-#include <sortutil.h>
+#include <SortUtil.h>
 #include <cntdef.h>
 
 #include "csortkeyarray.h"

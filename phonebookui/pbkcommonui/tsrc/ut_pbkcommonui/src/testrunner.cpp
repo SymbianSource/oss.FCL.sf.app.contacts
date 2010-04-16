@@ -78,6 +78,30 @@ void TestRunner::printResults()
         printf("All passed.\n\n");
     }
     fflush(stdout);
+    
+    //To write in file
+    QFile file("C:\\TestResult.txt");
+    if(file.open(QIODevice::WriteOnly)) 
+    {
+        QTextStream ts( &file );
+        ts << "Tests executed: " << mTestCount << "\n";
+        if (mErrors.count() > 0)
+        {
+            ts <<"Failures : " << mErrors.count() << "\n";
+            foreach(QString error, mErrors)
+                {
+                    ts << error.toUtf8().data();
+                }
+            ts << "\n";
+        }
+        else
+        {
+            ts<< "All passed.\n\n";
+        }
+        
+        ts << endl;
+        file.close();
+    } 
 }
 
 void TestRunner::parse(const QString& fileName)

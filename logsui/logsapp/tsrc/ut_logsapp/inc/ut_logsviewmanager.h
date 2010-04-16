@@ -53,6 +53,7 @@ private slots: //test methods
     void testExitApplication();
     void testAppFocusGained();
     void testStartingWithService();
+    void testHandleOrientationChanged();
     
 private:
  

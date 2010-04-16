@@ -56,21 +56,18 @@ QStandardItemModel *CntUrlEditorView::itemModel()
     QStandardItem *url = new QStandardItem;
     url->setText(hbTrId("txt_phob_dblist_url"));
     url->setData(urlField, Qt::UserRole);
-    url->setData(":/icons/qgn_prop_nrtyp_url.svg", Qt::UserRole+2);
     url->setData(CNT_URL_EDITOR_MAXLENGTH, Qt::UserRole+3);
     fieldModel->appendRow(url);
     QStandardItem *urlhome = new QStandardItem;
     urlhome->setText(hbTrId("txt_phob_dblist_url_home"));
     urlhome->setData(urlField, Qt::UserRole);
     urlhome->setData(contextHome, Qt::UserRole+1);
-    urlhome->setData(":/icons/qgn_prop_nrtyp_url.svg", Qt::UserRole+2);
     urlhome->setData(CNT_URL_EDITOR_MAXLENGTH, Qt::UserRole+3);
     fieldModel->appendRow(urlhome);
     QStandardItem *urlwork = new QStandardItem;
     urlwork->setText(hbTrId("txt_phob_dblist_url_work"));
     urlwork->setData(urlField, Qt::UserRole);
     urlwork->setData(contextWork, Qt::UserRole+1);
-    urlwork->setData(":/icons/qgn_prop_nrtyp_url.svg", Qt::UserRole+2);
     urlwork->setData(CNT_URL_EDITOR_MAXLENGTH, Qt::UserRole+3);
     fieldModel->appendRow(urlwork);
     

@@ -19,6 +19,7 @@
 
 #include "logsfilter.h"
 #include "logsbaseview.h"
+#include <QGesture>
 
 class HbListView;
 class HbLabel;
@@ -26,7 +27,6 @@ class LogsComponentRepository;
 class LogsModel;
 class HbAbstractViewItem;
 class LogsAbstractViewManager;
-class HbGestureSceneFilter;
 class LogsEffectHandler;
 class HbGroupBox;
 class LogsMatchesModel;
@@ -71,9 +71,8 @@ private slots:
 
     void clearList();
     void updateView(LogsServices::LogsView view);
-    void initializeGestures(HbGestureSceneFilter* filter);
-    void leftFlick(int value);
-    void rightFlick(int value);
+    void leftFlick();
+    void rightFlick();
     void dissappearByFadingComplete();
     void dissappearByMovingComplete();
     bool markMissedCallsSeen();
@@ -95,7 +94,12 @@ private:
     void changeView(LogsServices::LogsView view, bool rollOver = false);
     void updateMenu();
     void handleMissedCallsMarking();
-        
+    
+    //from HbWidget
+    void gestureEvent(QGestureEvent *event);
+    
+    QSwipeGesture::SwipeDirection swipeAngleToDirection(int angle, int delta); 
+    
 private:
     
     HbGroupBox* mViewName;   //not owned
@@ -104,7 +108,6 @@ private:
     
     QMap<LogsBaseView::LogsViewMap, QString>   mTitleMap;
     QMap<LogsServices::LogsView, LogsBaseView::LogsViewMap>   mConversionMap;	
-    QString mLayoutSectionName;
     
     LogsModel* mModel;
 

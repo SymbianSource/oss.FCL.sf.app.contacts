@@ -35,6 +35,7 @@ private slots:
     void initializeData();
     void addSeparator();
     void initializeDetailsData();
+    void initializeDetailsDataWithMaptile();
     void actionDetails();
     void supportsDetail();
     void cleanupTestCase();

@@ -40,11 +40,15 @@ public:
 
     CntViewParameters::ViewId viewId() const { return CntViewParameters::historyView; }
     void activateView(const CntViewParameters &viewParameters);
+    void addMenuItems();
 
 public slots:
     void aboutToCloseView();
     void updateScrollingPosition();
-
+    void clearHistory();
+    void longPressed(HbAbstractViewItem *item, const QPointF &coords);
+    void pressed(const QModelIndex &index);
+    
 #ifdef PBK_UNIT_TEST
 public:
 #else

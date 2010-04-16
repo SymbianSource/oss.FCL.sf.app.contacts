@@ -34,15 +34,27 @@ Q_DECLARE_METATYPE(LogsDetailsModel *)
 Q_DECLARE_METATYPE(LogsMessage *)
 Q_DECLARE_METATYPE(LogsContact *)
 
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::initTestCase()
 {
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::cleanupTestCase()
 {
 }
 
-
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::init()
 {
     mModel = new LogsModel();
@@ -50,6 +62,10 @@ void UT_LogsMatchesModel::init()
     mMatchesModel = mModel->logsMatchesModel();
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::cleanup()
 {
     delete mMatchesModel;
@@ -58,11 +74,19 @@ void UT_LogsMatchesModel::cleanup()
     mModel = 0;
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::testConstructor()
 {
     QVERIFY( mMatchesModel );
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::testRowCount()
 {
     QVERIFY( mMatchesModel->rowCount(QModelIndex()) == 0 );
@@ -72,6 +96,10 @@ void UT_LogsMatchesModel::testRowCount()
     QVERIFY( mMatchesModel->rowCount(QModelIndex()) == 1 );
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::testData()
 {
     QVERIFY( mModel->data(QModelIndex(), Qt::DisplayRole).isNull() );
@@ -167,6 +195,10 @@ void UT_LogsMatchesModel::testData()
     delete detailsModel;
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::testDataAdded()
 {
     // One event added
@@ -194,6 +226,10 @@ void UT_LogsMatchesModel::testDataAdded()
     QVERIFY( mMatchesModel->mPrevSearchPattern.isEmpty() ); // Must be emptied, otherwise requery would not occur
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::testDataUpdated()
 {
     // Nothing to update
@@ -213,6 +249,10 @@ void UT_LogsMatchesModel::testDataUpdated()
     QVERIFY( mMatchesModel->mPrevSearchPattern.isEmpty() ); // Must be emptied, otherwise requery would not occur
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::testDataRemoved()
 {
     // Nothing to remove
@@ -232,6 +272,10 @@ void UT_LogsMatchesModel::testDataRemoved()
     QVERIFY( mMatchesModel->mPrevSearchPattern.isEmpty() ); // Must be emptied, otherwise requery would not occur
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::testLogsMatches()
 {
     // Query ready when no matching search events
@@ -302,6 +346,23 @@ void UT_LogsMatchesModel::testLogsMatches()
     QVERIFY( mMatchesModel->mLogsCntFinder->mCurrentPredictivePattern.isEmpty() );
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
+void UT_LogsMatchesModel::testCreateContactWithNumber()
+{
+    LogsContact* contact = 0;
+    contact = mMatchesModel->createContact("123");
+    QVERIFY(contact);
+    QVERIFY(contact->isContactRequestAllowed()); 
+    delete contact;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::testCreateCall()
 {
     // With event
@@ -331,6 +392,10 @@ void UT_LogsMatchesModel::testCreateCall()
     
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::testCreateMessage()
 {
     // With event
@@ -358,6 +423,10 @@ void UT_LogsMatchesModel::testCreateMessage()
     delete message;
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::testCreateContact()
 {
     // With event
@@ -381,6 +450,10 @@ void UT_LogsMatchesModel::testCreateContact()
     delete contact;
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::testUpdateSearchEntry()
 {
     // Remote name exists
@@ -430,6 +503,10 @@ void UT_LogsMatchesModel::testUpdateSearchEntry()
     QVERIFY( entry5.phoneNumber().text() == "" );
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::testGetFormattedCallerId()
 {
     // Entry is not initialized, caller Id is empty
@@ -450,6 +527,10 @@ void UT_LogsMatchesModel::testGetFormattedCallerId()
     QVERIFY( callerId == "number" );
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+//
 void UT_LogsMatchesModel::testGetFormattedContactInfo()
 {
     QString name;

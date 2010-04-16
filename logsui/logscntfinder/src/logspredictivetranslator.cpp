@@ -18,7 +18,7 @@
 #include <QLocale>
 #include <hbinputkeymapfactory.h>
 #include <hbinputkeymap.h>
-#include <hbInputsettingproxy.h>
+#include <hbinputsettingproxy.h>
 
 #include "logspredictivetranslator.h"
 #include "logslogger.h"
@@ -87,8 +87,16 @@ LogsPredictiveTranslator::~LogsPredictiveTranslator()
 //
 const QChar LogsPredictiveTranslator::translate( const QChar character ) const
 {
-    return mKeyMap->keyForCharacter( HbKeyboardVirtual12Key, 
-                                     character )->keycode;
+    const HbMappedKey* mappedKey = mKeyMap->keyForCharacter( HbKeyboardVirtual12Key, 
+                                     character );
+    if (!mappedKey) {
+        QString decomposed = character.decomposition();
+        if (decomposed.isEmpty()) {
+            return character;
+        }
+        return translate (decomposed.at(0));
+    }
+    return mappedKey->keycode;
 }
 
 

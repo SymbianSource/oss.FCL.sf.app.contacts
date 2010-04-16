@@ -23,6 +23,8 @@
 
 #include "logsevent.h"
 
+class XQServiceRequest;
+
 /**
  * LogsMessage can be used to send message.
  */
@@ -33,8 +35,11 @@ class LogsMessage : public QObject
 public: 
  		
     explicit LogsMessage(LogsEvent& aEvent);
-    explicit LogsMessage(unsigned int contactId, const QString& number);
+    explicit LogsMessage(unsigned int contactId, const QString& number, const QString& displayName);
     LOGSENGINE_EXPORT ~LogsMessage();
+    
+    LOGSENGINE_EXPORT static bool sendMessageToNumber(
+            const QString& number, const QString& displayName = QString(), unsigned int contactId = 0);
     
     bool isMessagingAllowed();
     
@@ -45,13 +50,23 @@ public slots:
      * @return true if sent succesfully
      */
     LOGSENGINE_EXPORT bool sendMessage();
-        
+    
+protected slots:
+    void requestCompleted(const QVariant& value);
+    void requestError(int err);    
+
+private:
+    static bool doSendMessageToNumber(
+            XQServiceRequest& request, const QString& number, 
+            const QString& displayName, unsigned int contactId);
+    
 private: //data 
     
     bool mIsAllowed;
     QString mNumber;
     unsigned int mContactId;
-    
+    QString mDisplayName;
+    XQServiceRequest* mService;
 private:
     friend class UT_LogsMessage;
     

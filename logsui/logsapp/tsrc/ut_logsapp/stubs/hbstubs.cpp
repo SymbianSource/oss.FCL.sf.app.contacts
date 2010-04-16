@@ -24,6 +24,7 @@
 #include <hbapplication.h>
 #include <QCoreApplication>
 #include <QTimer>
+#include <QGesture>
 
 int actionCount = 0;
 Qt::Orientation windowOrientation = Qt::Vertical;
@@ -35,6 +36,7 @@ HbAction* testSoftkeyAction = 0;
 QString selectedActionString = "none";
 bool testSingleShotTimer = false;
 bool testQuitCalled = false;
+Qt::GestureState testState = Qt::NoGesture;
 
 void HbStubHelper::reset()
 {
@@ -62,6 +64,17 @@ bool HbStubHelper::singleShotTimerActive()
 bool HbStubHelper::quitCalled()
 {
     return testQuitCalled;
+}
+
+void HbStubHelper::setGestureState(int state)
+{
+    testState = static_cast<Qt::GestureState> (state);
+}
+
+
+Qt::GestureState QGesture::state() const
+{
+    return testState;
 }
 
 // -----------------------------------------------------------------------------
@@ -128,8 +141,9 @@ HbMainWindow::~HbMainWindow()
     testWindow = 0;
 }
     
-void HbMainWindow::setOrientation(Qt::Orientation orientation)
+void HbMainWindow::setOrientation(Qt::Orientation orientation, bool animate)
 {
+		Q_UNUSED(animate)
     windowOrientation = orientation; 
 }
 
@@ -169,9 +183,10 @@ HbView *HbMainWindow::addView(QGraphicsWidget *widget)
     testViewCount++;
 }
 
-void HbMainWindow::setCurrentView(HbView *view, bool animate)
+void HbMainWindow::setCurrentView(HbView *view, bool animate, Hb::ViewSwitchFlags flags)
 {
     Q_UNUSED(animate)
+    Q_UNUSED(flags)
     testView = view;
 }
 
@@ -216,7 +231,7 @@ void HbMessageBox::setText(const QString &string)
     
     if (string == "Ok") {
     	selectedActionString = "primary";
-    	} else if (string == "Cancel") {
+    } else if (string == "Cancel") {
     	selectedActionString = "secondary";
     }
    
@@ -225,10 +240,10 @@ void HbMessageBox::setText(const QString &string)
 
 HbAction *HbDialog::exec()
 {
-   if (selectedActionString == "primary")	{
-   	  return primaryAction();
-   	} else {
-   	return 0;
+    if (selectedActionString == "primary")	{
+        return primaryAction();
+    } else {
+        return 0;
     }
 }
 

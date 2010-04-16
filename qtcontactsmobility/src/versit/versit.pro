@@ -24,10 +24,14 @@ PUBLIC_HEADERS +=  \
     qversitreader.h \
     qversitwriter.h \
     qversitcontactexporter.h \
-    qversitcontactimporter.h
+    qversitcontactimporter.h \
+    qversitresourcehandler.h
 
 # Private Headers
-PRIVATE_HEADERS += qversitdocument_p.h \
+PRIVATE_HEADERS += \
+    qversitdefaultresourcehandler_p.h \
+    qversitdocument_p.h \
+    qversitdocumentwriter_p.h \
     qversitproperty_p.h \
     qversitreader_p.h \
     qversitwriter_p.h \
@@ -35,11 +39,13 @@ PRIVATE_HEADERS += qversitdocument_p.h \
     qvcard30writer_p.h \
     qversitcontactexporter_p.h \
     qversitcontactimporter_p.h \
-    qversitdefs.h \
+    qversitdefs_p.h \
     versitutils_p.h
 
 # Implementation
 SOURCES += qversitdocument.cpp \
+    qversitdocument_p.cpp \
+    qversitdocumentwriter_p.cpp \
     qversitproperty.cpp \
     qversitreader.cpp \
     qversitreader_p.cpp \
@@ -51,6 +57,7 @@ SOURCES += qversitdocument.cpp \
     qversitcontactexporter_p.cpp \
     qversitcontactimporter.cpp \
     qversitcontactimporter_p.cpp \
+    qversitresourcehandler.cpp \
     versitutils.cpp
 
 HEADERS += \
@@ -60,13 +67,9 @@ HEADERS += \
 qtAddLibrary(QtContacts)
 
 symbian { 
+    TARGET.UID3 = 0x2002BFBF
     TARGET.EPOCALLOWDLLDATA = 1
-    TARGET.CAPABILITY = ALL \
-        -TCB
-    deploy.path = $$EPOCROOT
-    exportheaders.sources = $$PUBLIC_HEADERS
-    exportheaders.path = epoc32/include/app
-    DEPLOYMENT += exportheaders
+    TARGET.CAPABILITY = ALL -TCB
     
     defFiles = \
         "$${LITERAL_HASH}ifdef WINSCW" \
@@ -76,9 +79,10 @@ symbian {
         "$${LITERAL_HASH}endif "
     MMP_RULES += defFiles
     
-    # This is for new exporting system coming in garden
-    for(header, exportheaders.sources):BLD_INF_RULES.prj_exports += "$$header $$deploy.path$$exportheaders.path/$$basename(header)"
+    VERSIT_DEPLOYMENT.sources = QtVersit.dll
+    VERSIT_DEPLOYMENT.path = \sys\bin
+    DEPLOYMENT += VERSIT_DEPLOYMENT
 }
 
+CONFIG += app
 include(../../features/deploy.pri)
-

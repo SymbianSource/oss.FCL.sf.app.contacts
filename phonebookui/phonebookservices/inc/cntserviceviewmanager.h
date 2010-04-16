@@ -19,14 +19,14 @@
 #define CNTSERVICEVIEWMANAGER_H
 
 #include "cntviewparameters.h"
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 
 #include <QObject>
 
 class CntBaseView;
 class CntServiceHandler;
 
-class CntServiceViewManager : public CntViewManager
+class CntServiceViewManager : public CntDefaultViewManager
 {
     Q_OBJECT
 
@@ -43,7 +43,7 @@ public slots:
     void launchAssignContactCard(QContact contact, QContactDetail detail);
 
 private:
-    CntBaseView *getView(CntViewParameters::ViewId id);
+    CntBaseView *getView(const CntViewParameters &aArgs);
     
 private:
     CntServiceHandler *mServiceHandler;

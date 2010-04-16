@@ -21,7 +21,7 @@
 #include <qtcontacts.h>
 
 #include "cntcompanyeditorview.h"
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntmainwindow.h"
 #include "t_cntcompanyeditorview.h"
 
@@ -35,7 +35,7 @@ void TestCntCompanyEditorView::initTestCase()
 void TestCntCompanyEditorView::createClasses()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::noView);
     mCompanyEditorView = new CntCompanyEditorView(mViewManager, 0);
     mWindow->addView(mCompanyEditorView);
     mWindow->setCurrentView(mCompanyEditorView);
@@ -127,9 +127,7 @@ void TestCntCompanyEditorView::initializeFormData()
 
 void TestCntCompanyEditorView::cleanupTestCase()
 {
-    delete mWindow;
-    mWindow = 0;
-    delete mViewManager;
+    mWindow->deleteLater();
     mViewManager = 0;
     delete mCompanyEditorView;
     mCompanyEditorView = 0;

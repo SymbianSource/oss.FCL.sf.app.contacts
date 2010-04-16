@@ -155,7 +155,7 @@ void CntEditViewHeadingItem::setDetails(const QContact* contact)
     icon.clear();
 
     // icon label shows default icon first
-    icon = HbIcon(":/icons/qtg_large_avatar.svg");
+    icon = HbIcon("qtg_large_avatar");
 
     QContactName name = contact->detail<QContactName>();
 
@@ -164,17 +164,17 @@ void CntEditViewHeadingItem::setDetails(const QContact* contact)
     {
         nameList << name.prefix();
     }
-    if (!name.first().isEmpty())
+    if (!name.firstName().isEmpty())
     {
-        nameList << name.first();
+        nameList << name.firstName();
     }
-    if (!name.middle().isEmpty())
+    if (!name.middleName().isEmpty())
     {
-        nameList << name.middle();
+        nameList << name.middleName();
     }
-    if (!name.last().isEmpty())
+    if (!name.lastName().isEmpty())
     {
-        nameList << name.last();
+        nameList << name.lastName();
     }
     if (!name.suffix().isEmpty())
     {

@@ -16,6 +16,7 @@
 */
 
 #include "cntviewparameters.h"
+#include <QDebug>
 
 CntViewParameters::CntViewParameters(CntViewParameters::ViewId activateView, CntViewParameters::ViewId previousViewId) :
     mActivateViewId(activateView),
@@ -31,13 +32,14 @@ CntViewParameters::CntViewParameters( const CntViewParameters &viewParameters )
     mContact        = viewParameters.selectedContact();
     mDetail         = viewParameters.selectedDetail();
     mGroupContact   = viewParameters.selectedGroupContact();
+    mParams         = viewParameters.parameters();
 }
 
 CntViewParameters::~CntViewParameters()
 {
 }
 
-void CntViewParameters::setNextViewId(const ViewId activateViewId)
+void CntViewParameters::setNextViewId(const CntViewParameters::ViewId& activateViewId)
 {
     mActivateViewId = activateViewId;
 }
@@ -95,4 +97,14 @@ void CntViewParameters::setSelectedGroupContact(const QContact &contact)
 QContact CntViewParameters::selectedGroupContact() const
 {
     return mGroupContact;
+}
+
+void CntViewParameters::setParameters(const QMap<int,QVariant>& aMap)
+{
+    mParams = aMap;
+}
+
+QMap<int,QVariant> CntViewParameters::parameters() const
+{
+    return mParams;
 }

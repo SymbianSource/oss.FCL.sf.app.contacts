@@ -26,6 +26,7 @@ class LogsEvent;
 class LogsDbConnector;
 class LogsCntFinder;
 class LogsCntEntry;
+class LogsContact;
 class LogsMatchesModelItemContainer;
 class LogsThumbIconManager;
 typedef QObject LogsCntEntryHandle;
@@ -40,12 +41,18 @@ class LogsMatchesModel : public LogsAbstractModel
     
 public:
     
-    explicit LogsMatchesModel( LogsAbstractModel& parentModel, LogsDbConnector& dbConnector );
+    explicit LogsMatchesModel( LogsAbstractModel& parentModel,
+                               LogsDbConnector& dbConnector );
     
 public: // The exported API
   
     LOGSENGINE_EXPORT ~LogsMatchesModel();
-    LOGSENGINE_EXPORT void logsMatches( const QString& pattern );
+    LOGSENGINE_EXPORT void logsMatches(const QString& pattern);
+    
+    /**
+     * Factory method for creating a new contact object. Transfers ownership.
+     */
+    LOGSENGINE_EXPORT LogsContact* createContact(const QString& number);
     
 public: // From QAbstractItemModel
     
@@ -112,6 +119,7 @@ public:
     void setContact(unsigned int contactId);
     unsigned int contact() const;
     QString number() const;
+    QString contactName() const;
     bool isNull() const;
     bool isEventMatch() const;
     QStringList texts();

@@ -22,15 +22,15 @@
 #include <qtcontacts.h>
 #include <hbdocumentloader.h>
 #include <hbscrollarea.h>
-
+#include <hblabel.h>
 #include <hbmenu.h>
 #include <hbgroupbox.h>
 #include <thumbnailmanager_qt.h>
-
 #include "cntcontactcarddatacontainer.h"
 #include "cntcontactcarddetailitem.h"
 #include "cntcontactcardheadingitem.h"
 #include "cntmainwindow.h"
+#include <cntmaptileservice.h>  //For maptile processing
 #include "cntcommands.h"
 
 const char *CNT_COMMLAUNCERVIEW_XML = ":/xml/contacts_cc.docml";
@@ -50,7 +50,10 @@ CntContactCardView::CntContactCardView(CntViewManager *viewManager, QGraphicsIte
     mHeadingItem(0),
     mThumbnailManager(0),
     mGroupContact(0),
-    mIsGroupMember(false)
+    mAvatar(0),
+    mIsGroupMember(false),
+    mIsHandlingMenu(false),
+    mFavoriteGroupId(-1)
 {
     bool ok = false;
     ok = loadDocument(CNT_COMMLAUNCERVIEW_XML);
@@ -80,18 +83,28 @@ Destructor
 CntContactCardView::~CntContactCardView()
 {
     delete mContact;
+    mContact = 0;
+    
     delete mDataContainer;
+    mDataContainer = 0;
+    
     delete mGroupContact;
+    mGroupContact = 0;
+    
+    delete mAvatar;
+    mAvatar = 0;
 }
 
 void CntContactCardView::thumbnailReady(const QPixmap& pixmap, void *data, int id, int error)
 {
     Q_UNUSED(data);
     Q_UNUSED(id);
-    Q_UNUSED(error);
-    QIcon qicon(pixmap);
-    HbIcon icon(qicon);
-    mHeadingItem->setIcon(icon);
+    if (!error)
+	{
+		QIcon qicon(pixmap);
+		HbIcon icon(qicon);
+		mHeadingItem->setIcon(icon);
+	}
 }
 
 /*!
@@ -101,7 +114,8 @@ void CntContactCardView::addMenuItems()
 {
     actions()->clearActionList();
     actions()->actionList() << actions()->baseAction("cnt:sendbusinesscard") << actions()->baseAction("cnt:editcontact") <<
-                actions()->baseAction("cnt:addtogroup") << actions()->baseAction("cnt:deletecontact");
+                actions()->baseAction("cnt:addtogroup") << actions()->baseAction("cnt:deletecontact") << 
+                actions()->baseAction("cnt:setasfavorite") << actions()->baseAction("cnt:removefromfavorite");
         actions()->addActionsToMenu(menu());
         
     connect(actions()->baseAction("cnt:sendbusinesscard"), SIGNAL(triggered()),
@@ -115,12 +129,15 @@ void CntContactCardView::addMenuItems()
 
     connect(actions()->baseAction("cnt:deletecontact"), SIGNAL(triggered()),
             this, SLOT (deleteContact()));
+    connect(actions()->baseAction("cnt:setasfavorite"), SIGNAL(triggered()),
+            this, SLOT (setAsFavorite()));
+    connect(actions()->baseAction("cnt:removefromfavorite"), SIGNAL(triggered()),
+            this, SLOT (removeFromFavorite()));
     
     // to be enabled after implementation
     actions()->baseAction("cnt:sendbusinesscard")->setEnabled(false);
     actions()->baseAction("cnt:addtogroup")->setEnabled(false);
-
-}
+    }
 
 /*!
 Add actions also to toolbar
@@ -145,7 +162,7 @@ void CntContactCardView::editContact()
 {
     CntViewParameters viewParameters(CntViewParameters::editView);
     viewParameters.setSelectedContact(*mContact);
-    viewManager()->onActivateView(viewParameters);
+    viewManager()->changeView(viewParameters);
 }
 
 void CntContactCardView::sendBusinessCard()
@@ -156,6 +173,49 @@ void CntContactCardView::addToGroup()
 {
 }
 
+void CntContactCardView::setAsFavorite()
+{
+    QContact favoriteGroup;
+    if (!isFavoriteGroupCreated() )
+        {
+        //Create Fav grp
+        favoriteGroup.setType(QContactType::TypeGroup);
+        QContactName favoriteGroupName;
+        favoriteGroupName.setCustomLabel("Favorites");
+        favoriteGroup.saveDetail(&favoriteGroupName);
+        contactManager()->saveContact(&favoriteGroup);
+        mFavoriteGroupId = favoriteGroup.localId();
+        }
+    else
+        {
+        favoriteGroup = contactManager()->contact(mFavoriteGroupId);
+        }
+    
+    // new contact added to the favorite group
+    QContactRelationship relationship;
+    relationship.setRelationshipType(QContactRelationship::HasMember);
+    relationship.setFirst(favoriteGroup.id());
+    relationship.setSecond(mContact->id());
+    // save relationship
+    contactManager()->saveRelationship(&relationship);
+    
+    menu()->removeAction(actions()->baseAction("cnt:setasfavorite"));
+    menu()->addAction(actions()->baseAction("cnt:removefromfavorite"));
+}
+
+
+void CntContactCardView::removeFromFavorite()
+    {
+    QContact favoriteGroup = contactManager()->contact(mFavoriteGroupId);
+    QContactRelationship relationship;
+    relationship.setRelationshipType(QContactRelationship::HasMember);
+    relationship.setFirst(favoriteGroup.id());
+    relationship.setSecond(mContact->id());
+    contactManager()->removeRelationship(relationship);
+   
+    menu()->removeAction(actions()->baseAction("cnt:removefromfavorite"));
+    menu()->addAction(actions()->baseAction("cnt:setasfavorite"));
+    }
 /*!
 Delete contact
 */
@@ -185,11 +245,13 @@ void CntContactCardView::aboutToCloseView()
     {
         CntViewParameters viewParameters(CntViewParameters::groupMemberView);
         viewParameters.setSelectedContact(*mGroupContact);
-        viewManager()->onActivateView(viewParameters);
+        viewManager()->changeView(viewParameters);
     }
     else
     {
-        viewManager()->onActivateView(CntViewParameters::namesView);
+        //viewManager()->onActivateView(CntViewParameters::namesView);
+        CntViewParameters viewParameters;
+        viewManager()->back( viewParameters );
     }
     
 }
@@ -208,7 +270,7 @@ void CntContactCardView::handleExecutedCommand(QString command, QContact /*conta
     if (command == "delete")
     {
         CntViewParameters viewParameters(CntViewParameters::namesView);
-        viewManager()->onActivateView(viewParameters);
+        viewManager()->changeView(viewParameters);
     }
 }
 
@@ -232,6 +294,8 @@ void CntContactCardView::activateView(const CntViewParameters &viewParameters)
 
     mHeadingItem = new CntContactCardHeadingItem(c);
     mHeadingItem->setDetails(mContact);
+    
+    connect(mHeadingItem, SIGNAL(passLongPressed(const QPointF&)), this, SLOT(drawMenu(const QPointF&)));
 
     l->insertItem(0, mHeadingItem);
 
@@ -243,7 +307,8 @@ void CntContactCardView::activateView(const CntViewParameters &viewParameters)
         {
             if (details.at(i).subType() == QContactAvatar::SubTypeImage)
             {
-                mThumbnailManager->getThumbnail(details.at(i).avatar());
+                mAvatar = new QContactAvatar(details.at(i));
+                mThumbnailManager->getThumbnail(mAvatar->avatar());
                 break;
             }
         }
@@ -363,37 +428,141 @@ void CntContactCardView::activateView(const CntViewParameters &viewParameters)
         {
             CntContactCardDetailItem* item = new CntContactCardDetailItem(index, mContainerWidget, false);
 
+            //Display the maptile image
             HbIcon icon("");
+            QIcon mapTileIcon;
             QString text;
             QString valueText;
+            
+            QPainter painter;
+            QPixmap baloon( ":/icons/pin.png" );
+            int maptileWidth = 0;
+            int maptileHeight = 0;
+               
 
-            QVariant displayRole = mDataContainer->data(index, Qt::DisplayRole);
-            QStringList stringList;
-            if (displayRole.canConvert<QString>())
+            QVariant decorationRole = mDataContainer->data( index, Qt::DecorationRole );
+            if ( decorationRole.canConvert<HbIcon>())
             {
-                stringList.append(displayRole.toString());
-            }
-            else if (displayRole.canConvert<QStringList>())
+                //Get the maptile image
+               icon = decorationRole.value<HbIcon>();
+               QPixmap map (icon.pixmap());
+               
+               maptileWidth = map.width();
+               maptileHeight = map.height();
+                           
+               //Display pin image in the center of maptile image
+               painter.begin( &map );
+               painter.drawPixmap( (map.width()/2), 
+                               ((map.height()/2)-(baloon.height())), baloon );
+               painter.end();
+               mapTileIcon.addPixmap( map );
+            }  
+            else if (decorationRole.canConvert< QList<QVariant> >())
             {
-                stringList = displayRole.toStringList();
-            }
-
-            for (int j = 0; j < stringList.count(); j++)
-            {
-                if (j==0)
+                QVariantList variantList;
+                variantList = decorationRole.toList();
+                for (int j = 0; j < variantList.count(); j++)
                 {
-                    text = stringList.at(0);
-                }
-                else if (j==1)
-                {
-                    valueText = stringList.at(1);
+                    if (j==0 && variantList.at(0).canConvert<HbIcon>())
+                    {
+                        icon = variantList.at(0).value<HbIcon>();
+                        QPixmap map (icon.pixmap());
+                        
+                        maptileWidth = map.width();
+                        maptileHeight = map.height();
+              
+                                   
+                        //Display pin image in the center of maptile image
+                        painter.begin( &map );
+                        painter.drawPixmap( (map.width()/2), 
+                                       ((map.height()/2)-(baloon.height())), baloon );
+                        painter.end();
+                        mapTileIcon.addPixmap( map );
+                    }
                 }
             }
-
+            else
+            {
+                QVariant displayRole = mDataContainer->data(index, Qt::DisplayRole);
+                QStringList stringList;
+                if (displayRole.canConvert<QString>())
+                {
+                    stringList.append(displayRole.toString());
+                }
+                else if (displayRole.canConvert<QStringList>())
+                {
+                    stringList = displayRole.toStringList();
+                }
+                
+                for (int j = 0; j < stringList.count(); j++)
+                {
+                    if (j==0)
+                    {
+                        text = stringList.at(0);
+                    }
+                    else if (j==1)
+                    {
+                        valueText = stringList.at(1);
+                    }
+                }
+            }
+            //Display maptile image if it is available
+            HbIcon mapIcon( mapTileIcon );
+            if ( !mapIcon.isNull() )
+            { 
+                HbLabel* iconLabel=new HbLabel(this);
+                iconLabel->setIcon( mapIcon );
+                iconLabel->setPreferredSize( maptileWidth, maptileHeight );
+                mContainerLayout->addItem( iconLabel );
+            } 
+            else
+            {    
             item->setDetails(icon, text, valueText);
             mContainerLayout->addItem(item);
+			}
         }
     }
+    
+    bool setAsFavorite = false;
+    if(isFavoriteGroupCreated())
+        {
+        QContact favoriteGroup = contactManager()->contact(mFavoriteGroupId);
+        // Use relationship filter to get list of contacts in the relationship (if any)
+        QContactRelationshipFilter filter;
+        filter.setRelationshipType(QContactRelationship::HasMember);
+        filter.setRelatedContactRole(QContactRelationshipFilter::First); 
+        filter.setRelatedContactId(favoriteGroup.id());
+    
+        QList<QContactLocalId> mContactsList = contactManager()->contactIds(filter);
+        int count = mContactsList.count();
+        if (count)
+            {
+            for (int i = 0 ; i < count ; i++)
+                {
+                if (mContactsList.at(i) == mContact->localId()  )
+                    {
+                    setAsFavorite = true;
+                    }
+                }
+            }
+        }
+    
+    if(setAsFavorite)
+    {
+        menu()->removeAction(actions()->baseAction("cnt:setasfavorite"));
+    }
+    else
+    {
+        menu()->removeAction(actions()->baseAction("cnt:removefromfavorite"));
+    }
+}
+
+/*!
+Called after user selects to view the icon image.
+*/
+void CntContactCardView::doViewImage()
+{
+    // TODO Image viewer not implemented yet in QtHighway. Pending implementation
 }
 
 /*!
@@ -502,6 +671,92 @@ void CntContactCardView::keyPressEvent(QKeyEvent *event)
     {
         CntBaseView::keyPressEvent(event);
     }
+}
+
+/*!
+Called after the user clicked "Change Image" from popup menu after 
+longpressing the image in this view.
+*/
+void CntContactCardView::doChangeImage()
+{
+    CntViewParameters viewParameters(CntViewParameters::imageEditorView);
+    viewParameters.setSelectedContact(*mContact);
+    viewManager()->changeView(viewParameters);
+}
+
+/*!
+Called after the user clicked "Remove Image" from popup menu after 
+longpressing the image in this view.
+*/
+void CntContactCardView::doRemoveImage()
+{
+    if (mAvatar) {
+        bool success = mContact->removeDetail(mAvatar);
+        if (success) { 
+            contactManager()->saveContact(mContact);
+        }
+    }
+}
+
+void CntContactCardView::drawMenu(const QPointF &aCoords)
+{
+    if (mIsHandlingMenu) return;
+    
+    // To avoid re-drawing the menu and causing a crash due to 
+    // multiple emitted signals, set state that we are handling the signal
+    mIsHandlingMenu = true;
+    
+    HbMenu *menu = new HbMenu();
+    HbAction *viewAction = menu->addAction(hbTrId("View"));
+    HbAction *changeImageAction = menu->addAction(hbTrId("Change Image"));
+    HbAction *removeAction = menu->addAction(hbTrId("Remove Image"));
+    
+    menu->addSeparator();
+
+    HbAction *selectedAction = menu->exec(aCoords);
+
+    if (selectedAction) {
+        if (selectedAction == viewAction) {
+            doViewImage();
+        }
+        else if (selectedAction == changeImageAction) {
+            doChangeImage();
+        }
+        else if (selectedAction == removeAction) {
+            doRemoveImage();
+        }
+    }
+
+    mIsHandlingMenu = false;
+    
+    menu->deleteLater();
+}
+
+bool CntContactCardView::isFavoriteGroupCreated()
+{
+    bool favoriteGroupCreated = false;
+    QContactDetailFilter groupFilter;
+    groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
+    groupFilter.setValue(QString(QLatin1String(QContactType::TypeGroup)));
+
+    QList<QContactLocalId> groupContactIds = contactManager()->contactIds(groupFilter);
+    
+    if (!groupContactIds.isEmpty())
+    {
+        for(int i = 0;i < groupContactIds.count();i++)
+        {
+            QContact contact = contactManager()->contact(groupContactIds.at(i));
+            QContactName contactName = contact.detail<QContactName>();
+            QString groupName = contactName.customLabel();
+            if(groupName.compare("Favorites") == 0)
+            {
+                favoriteGroupCreated = true;
+                mFavoriteGroupId = groupContactIds.at(i);
+                break;
+            }
+        }
+    }
+    return favoriteGroupCreated;
 }
 
 // end of file

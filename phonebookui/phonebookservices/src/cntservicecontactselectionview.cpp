@@ -38,7 +38,7 @@ void CntServiceContactSelectionView::onListViewActivated(const QModelIndex &aInd
     QContact contact = contactModel()->contact(aIndex);
     contact.saveDetail(&mDetail);
     viewParameters.setSelectedContact(contact);   
-    viewManager()->onActivateView(viewParameters);
+    viewManager()->changeView(viewParameters);
 }
 
 void CntServiceContactSelectionView::aboutToCloseView()
@@ -60,6 +60,8 @@ void CntServiceContactSelectionView::activateView(const CntViewParameters &viewP
         contactModel()->showMyCard(false);
     }
     mDetail = viewParameters.selectedDetail();
+    
+    CntBaseSelectionView::activateView(viewParameters);
 }
 
 // EOF

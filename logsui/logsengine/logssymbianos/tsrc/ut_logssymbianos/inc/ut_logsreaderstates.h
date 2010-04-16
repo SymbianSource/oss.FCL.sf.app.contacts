@@ -64,6 +64,9 @@ private slots: //test methods
     void testStateDone();
     void testStateSearchingEvent();
     void testStateFindingDuplicates();
+    void testStateMarkingDuplicates();
+    void testStateReadingDuplicates();
+    void testStateReadingDuplicatesDone();
     void testStateModifyingDone();
 
 protected: // From LogsReaderStateContext
@@ -77,9 +80,10 @@ protected: // From LogsReaderStateContext
       TRequestStatus& reqStatus();
       LogsReaderObserver& observer();
       QHash<QString, ContactCacheEntry>& contactCache();
-      int modifyingEventId();
+      int currentEventId();
       CLogClient& logClient();
       bool isRecentView();
+      QList<LogsEvent*>& duplicatedEvents();
       
 
 protected: // From LogsReaderObserver
@@ -88,6 +92,7 @@ protected: // From LogsReaderObserver
       void errorOccurred(int err);
       void temporaryErrorOccurred(int err);
       void eventModifyingCompleted();
+      void duplicatesReadingCompleted(QList<LogsEvent*> duplicates);
 
           
 private:
@@ -113,10 +118,12 @@ private:
       bool mReadCompleted;
       bool mModifyCompleted;
       int mReadCount;
+      int mDuplicatesReadingCompletedCount;
       
       QHash<QString, ContactCacheEntry> mContactCache;
       
-      int mModifyingEventId;
+      int mCurrentEventId;
+      QList<LogsEvent*> mDuplicatedEvents;
 };
 
 

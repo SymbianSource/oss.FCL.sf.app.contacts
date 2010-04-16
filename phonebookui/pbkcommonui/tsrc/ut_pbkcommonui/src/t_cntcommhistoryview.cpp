@@ -20,7 +20,7 @@
 #include <qtcontacts.h>
 
 #include "cnthistoryview.h"
-#include "cntviewmanager.h"
+#include "cntdefaultviewmanager.h"
 #include "cntmainwindow.h"
 #include "mobhistorymodel.h"
 
@@ -37,7 +37,7 @@ void TestCntCommHistoryView::initTestCase()
 void TestCntCommHistoryView::createClasses()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::noView);
     mHistoryView = new CntHistoryView(mViewManager,0);
     
     QVERIFY(mHistoryView->findWidget("content") != 0);
@@ -49,7 +49,7 @@ void TestCntCommHistoryView::createClasses()
 void TestCntCommHistoryView::aboutToCloseView()
 {
     mWindow = new CntMainWindow(0, CntViewParameters::commLauncherView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::commLauncherView);
+    mViewManager = new CntDefaultViewManager(mWindow, CntViewParameters::commLauncherView);
     mHistoryView = new CntHistoryView(mViewManager,0);
 
     mWindow->addView(mHistoryView);
@@ -59,7 +59,12 @@ void TestCntCommHistoryView::aboutToCloseView()
     mHistoryView->mContact = c;
     mHistoryView->aboutToCloseView();
     QVERIFY(static_cast<CntBaseView*>(mWindow->currentView())->viewId() == CntViewParameters::commLauncherView);
-    delete c;
+    //delete c;
+
+    mWindow->deleteLater();
+    mViewManager = 0;
+    delete mHistoryView;
+    mHistoryView = 0;
 }
 
 void TestCntCommHistoryView::activateView()
@@ -99,8 +104,7 @@ void TestCntCommHistoryView::activateView()
 
 void TestCntCommHistoryView::cleanupTestCase()
 {
-    delete mWindow;
-    mWindow = 0;
+    mWindow->deleteLater();
     delete mViewManager;
     mViewManager = 0;
     delete mHistoryView;

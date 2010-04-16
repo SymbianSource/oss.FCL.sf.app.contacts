@@ -19,9 +19,13 @@
 #define CNTHEADINGWIDGET_H
 
 #include <QObject>
-#include <hbwidget.h>
 #include <qmobilityglobal.h>
+#include <hbwidget.h>
+#include <hbgesturefilter.h>
+#include <hbgesture.h>
 
+
+class HbTouchArea;
 class HbIconItem;
 class HbTextItem;
 class HbFrameItem;
@@ -55,6 +59,21 @@ public:
     void setIcon(const HbIcon newIcon);
     void setGroupDetails(const QContact* contact);
 
+signals:
+    void clicked();
+    void passLongPressed(const QPointF &point);
+    
+public slots:
+    void processLongPress(const QPointF &point);
+
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+private:
+    void initGesture();
+    
 #ifdef PBK_UNIT_TEST
 public:
 #else
@@ -83,7 +102,10 @@ private:
     HbTextItem              *mSecondaryText;
     HbMarqueeItem           *mMarqueeItem;
     HbFrameItem             *mFrameItem;
-
+    HbGestureSceneFilter    *mGestureFilter;
+    HbGesture               *mGestureLongpressed;
+    HbTouchArea             *mPictureArea;
+    
     QString                 firstLineText;
     QString                 primaryText;
     QString                 secondLineText;

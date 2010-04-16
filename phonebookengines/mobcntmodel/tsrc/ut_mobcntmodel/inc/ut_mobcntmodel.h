@@ -17,8 +17,14 @@
 
 #include <QtTest/QtTest>
 #include <QObject>
+#include <qtcontacts.h>
 
+QTM_BEGIN_NAMESPACE
 class QContactManager;
+QTM_END_NAMESPACE
+
+QTM_USE_NAMESPACE
+
 class MobCntModel;
 
 class TestMobCntModel : public QObject

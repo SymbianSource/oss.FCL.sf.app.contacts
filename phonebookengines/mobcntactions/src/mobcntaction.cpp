@@ -41,6 +41,11 @@ QVariantMap MobCntAction::metadata() const
     return QVariantMap();
 }
 
+QVariantMap MobCntAction::metaData() const
+{
+    return QVariantMap();
+}
+
 QContactFilter MobCntAction::contactFilter(const QVariant& value) const
 {
     Q_UNUSED(value);

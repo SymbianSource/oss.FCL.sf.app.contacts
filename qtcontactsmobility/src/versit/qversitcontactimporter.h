@@ -43,6 +43,7 @@
 #define QVERSITCONTACTIMPORTER_H
 
 #include "qmobilityglobal.h"
+#include "qversitresourcehandler.h"
 
 #include <qcontact.h>
 
@@ -51,8 +52,23 @@
 QTM_BEGIN_NAMESPACE
 
 class QVersitDocument;
-class QVersitProperty;
 class QVersitContactImporterPrivate;
+class QVersitProperty;
+
+class Q_VERSIT_EXPORT QVersitContactImporterPropertyHandler
+{
+public:
+    virtual ~QVersitContactImporterPropertyHandler() {}
+    virtual bool preProcessProperty(const QVersitDocument& document,
+                                    const QVersitProperty& property,
+                                    int contactIndex,
+                                    QContact* contact) = 0;
+    virtual bool postProcessProperty(const QVersitDocument& document,
+                                     const QVersitProperty& property,
+                                     bool alreadyProcessed,
+                                     int contactIndex,
+                                     QContact* contact) = 0;
+};
 
 class Q_VERSIT_EXPORT QVersitContactImporter
 {
@@ -60,15 +76,23 @@ public:
     QVersitContactImporter();
     ~QVersitContactImporter();
 
-    void setImagePath(const QString& path);
-    QString imagePath() const;
-    
-    void setAudioClipPath(const QString& path);
-    QString audioClipPath() const;
+    // XXX We need some way of importing/exporting groups and "self-contact" from vCard.
+    QList<QContact> importContacts(const QList<QVersitDocument>& documents);
 
-    QContact importContact(const QVersitDocument& versitDocument);
-    QList<QVersitProperty> unknownVersitProperties();
+    void setPropertyHandler(QVersitContactImporterPropertyHandler* handler);
+    QVersitContactImporterPropertyHandler* propertyHandler() const;
     
+    void setResourceHandler(QVersitResourceHandler* handler);
+    QVersitResourceHandler* resourceHandler() const;
+
+    // Deprecated
+    void Q_DECL_DEPRECATED setImagePath(const QString& path);
+    QString Q_DECL_DEPRECATED imagePath() const;
+    void Q_DECL_DEPRECATED setAudioClipPath(const QString& path);
+    QString Q_DECL_DEPRECATED audioClipPath() const;
+    QContact Q_DECL_DEPRECATED importContact(const QVersitDocument& versitDocument);
+    QList<QVersitProperty> Q_DECL_DEPRECATED unknownVersitProperties();
+
 private:
     QVersitContactImporterPrivate* d;
 };

@@ -16,73 +16,101 @@
 */
 
 #include "cntmycardview.h"
+#include "qtpbkglobal.h"
 #include <hbpushbutton.h>
+#include <hbaction.h>
+#include <hbview.h>
+#include <hbmainwindow.h>
 
 const char *CNT_MYCARD_UI_XML = ":/xml/contacts_mc.docml";
 
-CntMyCardView::CntMyCardView(CntViewManager *viewManager, QGraphicsItem *parent) : CntBaseView(viewManager, parent), mContact(0)
-{   
+CntMyCardView::CntMyCardView() :
+    mContact(0),
+    mViewManager(0),
+    mView(0),
+    mSoftkey(0)
+{
     bool ok = false;
-    ok=loadDocument(CNT_MYCARD_UI_XML);
+    mDocumentLoader.load(CNT_MYCARD_UI_XML, &ok);
 
     if (ok)
     {
-    
-        QGraphicsWidget *w = findWidget(QString("view"));
-        setWidget(w);
+        mView = static_cast<HbView*>(mDocumentLoader.findWidget(QString("view")));
     }
     else
     {
         qFatal("Unable to read :/xml/contacts_mc.docml");
     }
+
+    //back button
+    mSoftkey = new HbAction(Hb::BackNaviAction, mView);
+    connect(mSoftkey, SIGNAL(triggered()), this, SLOT(showPreviousView()));
 }
 
 CntMyCardView::~CntMyCardView()
 {
+    mView->deleteLater();
+    
     delete mContact;
+    mContact = 0;
 }
 
 /*!
 Activates a previous view
 */
-void CntMyCardView::aboutToCloseView()
+void CntMyCardView::showPreviousView()
 {
-    viewManager()->onActivateView(CntViewParameters::namesView);
+	CntViewParameters args;
+    mViewManager->back(args);
 }
 
 /*
 Activates a default view
 */
-void CntMyCardView::activateView(const CntViewParameters &aViewParameters)
+void CntMyCardView::activate(CntAbstractViewManager* aMgr, const CntViewParameters& aArgs)
 {
-    mContact = new QContact(aViewParameters.selectedContact());
+    if (mView->navigationAction() != mSoftkey)
+        mView->setNavigationAction(mSoftkey);
     
-    HbPushButton *newButton = static_cast<HbPushButton*>(findWidget(QString("cnt_button_new")));
+    HbMainWindow* window = mView->mainWindow();
+    connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
+    setOrientation(window->orientation());
+    
+    mContact = new QContact(aArgs.selectedContact());
+    mViewManager = aMgr;
+    
+    HbPushButton *newButton = static_cast<HbPushButton*>(mDocumentLoader.findWidget(QString("cnt_button_new")));
     connect(newButton, SIGNAL(clicked()), this, SLOT(openNameEditor()));
 
-    HbPushButton *chooseButton = static_cast<HbPushButton*>(findWidget(QString("cnt_button_choose")));
+    HbPushButton *chooseButton = static_cast<HbPushButton*>(mDocumentLoader.findWidget(QString("cnt_button_choose")));
     connect(chooseButton, SIGNAL(clicked()), this, SLOT(openMyCardSelectionView()));
 
     QContactDetailFilter filter;
     filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
     filter.setValue(QLatin1String(QContactType::TypeContact));
-    if (contactManager()->contacts(filter).isEmpty())
+
+    if (mViewManager->contactManager( SYMBIAN_BACKEND )->contactIds(filter).isEmpty())
     {
         chooseButton->setEnabled(false);
     }
 }
 
+void CntMyCardView::deactivate()
+{
+
+}
+
 void CntMyCardView::setOrientation(Qt::Orientation orientation)
 {
-    if( orientation == Qt::Vertical ) 
+    if (orientation == Qt::Vertical) 
     {
         // reading "portrait" section
-        loadDocument(CNT_MYCARD_UI_XML, "portrait");
+        mDocumentLoader.load(CNT_MYCARD_UI_XML, "portrait");
     } 
     else 
     {
         // reading "landscape" section
-        loadDocument(CNT_MYCARD_UI_XML, "landscape");
+        mDocumentLoader.load(CNT_MYCARD_UI_XML, "landscape");
     }
 }
 
@@ -92,12 +120,13 @@ Opens the name detail editor view
 void CntMyCardView::openNameEditor()
 {
     //create a new my card contact
-    contactManager()->saveContact(mContact);
-    contactManager()->setSelfContactId(mContact->localId());
+    QContactManager* mgr = mViewManager->contactManager( SYMBIAN_BACKEND );
+    mgr->saveContact(mContact);
+    mgr->setSelfContactId(mContact->localId());
     //open the contact editor
     CntViewParameters viewParameters(CntViewParameters::editView);
     viewParameters.setSelectedContact(*mContact);
-    viewManager()->onActivateView(viewParameters);
+    mViewManager->changeView(viewParameters);
 }
 
 /*!
@@ -106,7 +135,7 @@ Opens the my card selection view
 void CntMyCardView::openMyCardSelectionView()
 {
     CntViewParameters viewParameters(CntViewParameters::myCardSelectionView);
-    viewManager()->onActivateView(viewParameters);
+    mViewManager->changeView(viewParameters);
 }
 
 // EOF

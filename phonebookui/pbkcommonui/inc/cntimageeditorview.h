@@ -19,13 +19,19 @@
 #define CNTIMAGEEDITORVIEW_H
 
 #include <QObject>
-#include "cntbaseview.h"
+#include <hbdocumentloader.h>
 #include <xqappmgr.h>
 
+#include "cntabstractview.h"
+#include "cntviewparameters.h"
+
 class HbLabel;
-class HbScrollArea;
+class HbListView;
 class XQAiwRequest;
 class ThumbnailManager;
+class HbAction;
+class QStandardItemModel;
+class QModelIndex;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -34,40 +40,52 @@ QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
 
-class CntImageEditorView : public CntBaseView
+class CntImageEditorView : public QObject, public CntAbstractView
 {
     Q_OBJECT
 
 public:
-    CntImageEditorView(CntViewManager *viewManager, QGraphicsItem *parent = 0);
+    CntImageEditorView();
     ~CntImageEditorView();
-
+    
+public: // From CntAbstractView
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters& aArgs );
+    void deactivate();
+    bool isDefault() const { return false; }
+    HbView* view() const { return mView; }
     CntViewParameters::ViewId viewId() const { return CntViewParameters::imageEditorView; }
-    void activateView(const CntViewParameters &viewParameters);
-
-public slots:
-    void aboutToCloseView();
+    
+private:
+    void populateModel(QStandardItemModel *model);
     void openCamera();
     void openGallery();
+
+private slots:
+    void showPreviousView();
+    void removeImage();
     void handleImageChange(const QVariant &value);
     void thumbnailReady( const QPixmap& pixmap, void *data, int id, int error );
-
-protected:
-    void resizeEvent(QGraphicsSceneResizeEvent *event);
+    void setOrientation(Qt::Orientation orientation);
+    void listViewActivated(const QModelIndex &index);
 
 #ifdef PBK_UNIT_TEST
 public:
 #else
 private:
 #endif
-    QContact             *mContact;
-    QContactAvatar       *mAvatar;
-    HbLabel              *mImageLabel;
-    HbScrollArea         *mScrollArea;
-    XQAiwRequest         *mRequest;
-    XQApplicationManager  mAppManager;
-    ThumbnailManager     *mThumbnailManager;
-    HbWidget             *mContainerWidget;
+    QContact                *mContact; // own
+    QContactAvatar          *mAvatar; // own
+    HbLabel                 *mImageLabel; // owned by layout
+    XQAiwRequest            *mRequest; // own
+    XQApplicationManager     mAppManager;
+    ThumbnailManager        *mThumbnailManager; // own
+    HbView                  *mView; // own
+    HbAction                *mSoftkey; // owned by view
+    HbAction                *mRemoveImage; // own
+    CntAbstractViewManager  *mViewManager;
+    HbDocumentLoader         mDocumentLoader;
+    HbListView              *mListView; // owned by layout
+    QStandardItemModel      *mModel; // own
 };
 
 #endif // CNTIMAGEEDITORVIEW_H

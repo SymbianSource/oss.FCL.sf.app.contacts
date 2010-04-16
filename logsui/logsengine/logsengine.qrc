@@ -9,12 +9,15 @@
     <file>themes/icons/hbdefault/scalable/qtg_large_avatar.svg</file>
     <file>themes/icons/hbdefault/scalable/qtg_large_dialled_voice_call.svg</file>
     <file>themes/icons/hbdefault/scalable/qtg_large_missed_voice_call.svg</file>
+    <file>themes/icons/hbdefault/scalable/qtg_large_missed_voice_call_unseen.svg</file>
     <file>themes/icons/hbdefault/scalable/qtg_large_received_voice_call.svg</file>
     <file>themes/icons/hbdefault/scalable/qtg_large_video_dialled_call.svg</file>
     <file>themes/icons/hbdefault/scalable/qtg_large_video_missed_call.svg</file>
+    <file>themes/icons/hbdefault/scalable/qtg_large_missed_video_call_unseen.svg</file>
     <file>themes/icons/hbdefault/scalable/qtg_large_video_received_call.svg</file>
     <file>themes/icons/hbdefault/scalable/qtg_large_voip_dialled_call.svg</file>
     <file>themes/icons/hbdefault/scalable/qtg_large_voip_missed_call.svg</file>
+    <file>themes/icons/hbdefault/scalable/qtg_large_missed_voip_call_unseen.svg</file>
     <file>themes/icons/hbdefault/scalable/qtg_large_voip_received_call.svg</file>
   </qresource>
 </RCC>

@@ -127,12 +127,31 @@ void UT_LogsPredictiveTranslator::testTranslate()
     QVERIFY( mTranslator->translate( QString( "Sierra" ) ) == QString( "743772" ) );
     QVERIFY( mTranslator->translate( QString( "Tanga" ) ) == QString( "82642" ) );
     QVERIFY( mTranslator->translate( QString( "Uniform" ) ) == QString( "8643676" ) );
+    QVERIFY( mTranslator->translate( QString( "Vârlan" ) ) == QString( "827526" ) );
     QVERIFY( mTranslator->translate( QString( "Victor" ) ) == QString( "842867" ) );
     QVERIFY( mTranslator->translate( QString( "Whiskey" ) ) == QString( "9447539" ) );
     QVERIFY( mTranslator->translate( QString( "Xray" ) ) == QString( "9729" ) );
     QVERIFY( mTranslator->translate( QString( "Yankee" ) ) == QString( "926533" ) );
     QVERIFY( mTranslator->translate( QString( "Zulu" ) ) == QString( "9858" ) );
     QVERIFY( mTranslator->translate( QString( "1234567890" ) ) == QString( "1234567890" ) );
+    
+    QString uni;
+    uni.append(QChar(0x0219));
+    uni.append(QChar(0x4E0F));
+    QString result("7");
+    result.append(QChar(0x4E0F));
+    QCOMPARE(mTranslator->translate(uni), result);
+}
+
+void UT_LogsPredictiveTranslator::testTranslateChar()
+{
+    // Romanian unicode character "sh"
+    QChar rom(0x0219);
+    QCOMPARE( mTranslator->translate( rom ), QChar('7') );
+    
+    // Chinese unicode character
+    QChar chn(0x4E0F);
+    QCOMPARE( mTranslator->translate( chn ), chn );
 }
 
 

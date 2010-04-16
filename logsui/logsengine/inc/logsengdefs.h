@@ -37,14 +37,17 @@ const char logsThumbUnknownId[] = "qtg_large_avatar";
 
 const char logsDialledVoiceCallIconId[] = "qtg_large_dialled_voice_call";
 const char logsMissedVoiceCallIconId[] = "qtg_large_missed_voice_call";
+const char logsMissedVoiceCallUnseenIconId[] = "qtg_large_missed_voice_call_unseen";
 const char logsReceivedVoiceCallIconId[] = "qtg_large_received_voice_call";
 
 const char logsDialledVideoCallIconId[] = "qtg_large_video_dialled_call";
 const char logsMissedVideoCallIconId[] = "qtg_large_video_missed_call";
+const char logsMissedVideoCallUnseenIconId[] = "qtg_large_missed_video_call_unseen";
 const char logsReceivedVideoCallIconId[] = "qtg_large_video_received_call";
 
 const char logsDialledVoipCallIconId[] = "qtg_large_voip_dialled_call";
 const char logsMissedVoipCallIconId[] = "qtg_large_voip_missed_call";
+const char logsMissedVoipCallUnseenIconId[] = "qtg_large_missed_voip_call_unseen";
 const char logsReceivedVoipCallIconId[] = "qtg_large_voip_received_call";
 
 

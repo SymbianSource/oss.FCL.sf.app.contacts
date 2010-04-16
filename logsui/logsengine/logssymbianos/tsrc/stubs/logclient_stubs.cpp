@@ -250,9 +250,11 @@ TBool CLogView::FirstL(TRequestStatus& aStatus)
 
 TBool CLogView::NextL(TRequestStatus& aStatus)
 {
-    aStatus = KRequestPending;
-    User::RequestComplete( &aStatus, KErrNone );
-    return ETrue;
+    if ( stubAsyncCallPossible ){
+        aStatus = KRequestPending;
+        User::RequestComplete( &aStatus, KErrNone );
+    }
+    return stubAsyncCallPossible;
 }
 
 TInt CLogView::CountL()

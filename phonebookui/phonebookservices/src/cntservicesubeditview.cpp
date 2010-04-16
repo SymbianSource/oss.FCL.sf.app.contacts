@@ -42,9 +42,9 @@ void CntServiceSubEditView::aboutToCloseView()
         contactManager()->saveContact(contact());
     }
     
-    CntViewParameters viewParameters(CntViewParameters::serviceContactCardView);
+    CntViewParameters viewParameters;//(CntViewParameters::serviceContactCardView);
     viewParameters.setSelectedContact(*contact());   
-    viewManager()->onActivateView(viewParameters);
+    viewManager()->back(viewParameters);
 }
 
 /*!
@@ -53,9 +53,9 @@ Cancel all changes made and return to comm launcher view
 void CntServiceSubEditView::discardAllChanges()
 {
     QContact oldContact = contactManager()->contact(contact()->localId());
-    CntViewParameters viewParameters(CntViewParameters::serviceContactCardView);
+    CntViewParameters viewParameters;//(CntViewParameters::serviceContactCardView);
     viewParameters.setSelectedContact(oldContact);   
-    viewManager()->onActivateView(viewParameters);
+    viewManager()->back(viewParameters);
 }
 
 /*

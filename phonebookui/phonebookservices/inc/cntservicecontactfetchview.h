@@ -41,6 +41,7 @@ public:
     void setActionFilter(QString action, QString filter);
     void addMenuItems();
     CntViewParameters::ViewId viewId() const { return CntViewParameters::serviceContactFetchView; }
+    void activateView(const CntViewParameters &viewParameters);
 
 private:
     CntServiceHandler *mServiceHandler;

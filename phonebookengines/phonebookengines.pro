@@ -22,9 +22,14 @@
 
 TEMPLATE = subdirs
 
+SUBDIRS += cntfindplugin 
+SUBDIRS += contactsmodel
+SUBDIRS += cntsortplugin
+SUBDIRS += ../qtcontactsmobility
 SUBDIRS += mobcntmodel 
 SUBDIRS += mobcntactions 
-SUBDIRS += mobhistorymodel
+SUBDIRS += cntmaptileservice
+SUBDIRS += simutility
 	
 #SUBDIRS += mobcntmodel/tsrc/mt_mobcntmodel
 

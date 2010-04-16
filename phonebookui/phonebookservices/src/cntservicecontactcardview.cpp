@@ -45,7 +45,7 @@ void CntServiceContactCardView::editContact()
 {
     CntViewParameters viewParameters(CntViewParameters::serviceSubEditView);
     viewParameters.setSelectedContact(*mContact);   
-    viewManager()->onActivateView(viewParameters);
+    viewManager()->changeView(viewParameters);
 }
 
 /*!

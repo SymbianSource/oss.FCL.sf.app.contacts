@@ -19,6 +19,7 @@
 #define CNTVIEWPARAMETERS_H
 
 #include <qtcontacts.h>
+#include <QMap>
 #include "qtpbkglobal.h"
 
 QTM_USE_NAMESPACE
@@ -39,7 +40,7 @@ public:
         serviceContactSelectionView,
         collectionView,
         collectionFavoritesView,
-        collectionFavoritesSelectionView,
+        FavoritesMemberView,
         editView,
         serviceEditView,
         serviceSubEditView,
@@ -60,6 +61,13 @@ public:
         groupActionsView,
         historyView
         };
+public:
+    enum ParamId
+        {
+        Action,
+        Filter,
+        Title
+        };
 
 public:
     CntViewParameters(CntViewParameters::ViewId activateView = CntViewParameters::noView,
@@ -71,7 +79,7 @@ public:
 
 public:
     //view to be activated
-    void setNextViewId(const CntViewParameters::ViewId activateViewId);
+    void setNextViewId(const CntViewParameters::ViewId& activateViewId);
     CntViewParameters::ViewId nextViewId() const;
 
     //view to be called when user clicks on back in the activated view
@@ -93,6 +101,9 @@ public:
     //selected group contact
     void setSelectedGroupContact(const QContact &contact);
     QContact selectedGroupContact() const;
+    
+    void setParameters(const QMap<int,QVariant>& aMap);
+    QMap<int,QVariant> parameters() const;
 
 private:
     CntViewParameters::ViewId   mActivateViewId;
@@ -102,6 +113,7 @@ private:
     QContactDetail              mDetail;
     QString                     mAction;
     QContact                    mGroupContact;
+    QMap<int,QVariant>          mParams;
 
 };
 #endif //CNTVIEWPARAMETERS_H

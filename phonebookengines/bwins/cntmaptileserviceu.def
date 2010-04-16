@@ -1,0 +1,4 @@
+EXPORTS
+	?getMapTileImage@CntMapTileService@@SA?AVQString@@HW4ContactAddressType@1@@Z @ 1 NONAME ; class QString CntMapTileService::getMapTileImage(int, enum CntMapTileService::ContactAddressType)
+	?isLocationFeatureEnabled@CntMapTileService@@SA_NXZ @ 2 NONAME ; bool CntMapTileService::isLocationFeatureEnabled(void)
+

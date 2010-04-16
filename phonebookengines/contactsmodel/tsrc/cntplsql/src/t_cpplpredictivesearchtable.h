@@ -60,6 +60,7 @@ NONSHARABLE_CLASS( UT_CPplPredictiveSearchTable ): public CEUnitTestSuiteClass
 
     private: // Test functions
 
+		void UT_DummyL();
         void UT_CreateInDbLL();
         void UT_CreateInDbManyContactsL();
         void UT_UpdateLL();
@@ -70,9 +71,13 @@ NONSHARABLE_CLASS( UT_CPplPredictiveSearchTable ): public CEUnitTestSuiteClass
         void UT_DeleteContactsL();
         void UT_DeleteNonexistingContactL();
         void UT_CheckIfTableExistsL();
-		void UT_CheckIfTableExists2L();
+        void UT_CheckIfTableExists2L();
         void UT_SynchronizeTableL();
-
+		void UT_DeleteTablesL();
+        void UT_TokenizeNamesL();
+		void UT_WriteToDbL();
+		void UT_ConvertToHexL();
+        
     private: // New functions
 
         void CheckItemCountL(
@@ -92,7 +97,6 @@ NONSHARABLE_CLASS( UT_CPplPredictiveSearchTable ): public CEUnitTestSuiteClass
          */
         void AddContactL(const TDesC& aFirstName,
                          const TDesC& aLastName,
-                         const TDesC& aCompanyName,
                          TContactItemId aContactId);
         
         /**
@@ -102,8 +106,13 @@ NONSHARABLE_CLASS( UT_CPplPredictiveSearchTable ): public CEUnitTestSuiteClass
         RArray<TContactItemId> DoPredictiveSearchL(const TDesC& aSearchString);
 
         const TDesC& DetermineTableName(const TDesC& aSearchString);
-        
-        const TDesC& MultipleTables(const TDesC& aSearchString);
+
+		TInt64 LowerLimitL(const TDesC& aString) const;
+		TInt64 UpperLimitL(const TDesC& aString) const;
+		TInt64 ConvertToNbrL(const TDesC& aString, TChar aPadChar) const;
+
+		TInt CPplContactItemManager_DoesPredSearchTableExistL();
+		void CPplContactItemManager_DeletePredSearchTablesL();
 
     private:    // Data
 

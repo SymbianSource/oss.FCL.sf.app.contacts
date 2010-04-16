@@ -50,7 +50,7 @@ LogsReader::LogsReader(
    mIndex(0),
    mCurrentStateIndex(0),
    mCurrentStateMachine(0),
-   mModifyingEventId(-1)
+   mCurrentEventId(-1)
 {
     LOGS_QDEBUG( "logs [ENG] -> LogsReader::LogsReader()" )
     
@@ -71,15 +71,13 @@ LogsReader::~LogsReader()
     LOGS_QDEBUG( "logs [ENG] -> LogsReader::~LogsReader()" )
     
     Cancel();
-    while ( !mReadStates.isEmpty() ){
-        delete mReadStates.takeFirst();
-    }
-    while ( !mModifyingStates.isEmpty() ){
-        delete mModifyingStates.takeFirst();
-    }
+    qDeleteAll( mReadStates );
+    qDeleteAll( mModifyingStates );
+    qDeleteAll( mDuplicateReadingStates );
     delete mLogViewRecent;
     delete mLogViewEvent;
     delete mDuplicatesView;
+    qDeleteAll( mDuplicatedEvents );
     
     LOGS_QDEBUG( "logs [ENG] <- LogsReader::~LogsReader()" )
 }
@@ -144,6 +142,18 @@ int LogsReader::markEventSeen(int eventId)
 }
 
 // ----------------------------------------------------------------------------
+// LogsReader::readDuplicates
+// ----------------------------------------------------------------------------
+//
+int LogsReader::readDuplicates(int eventId)
+{
+    LOGS_QDEBUG_2( "logs [ENG] -> LogsReader::readDuplicates(), ids: ", eventId )
+    TRAPD( err, readDuplicatesL(eventId) );
+    LOGS_QDEBUG_2( "logs [ENG] <- LogsReader::readDuplicates(), err:", err )
+    return err;
+}
+
+// ----------------------------------------------------------------------------
 // LogsReader::RunL
 // ----------------------------------------------------------------------------
 //
@@ -193,15 +203,7 @@ void LogsReader::DoCancel()
 //
 void LogsReader::startL()
 {
-    cancelCurrentRequestL();
-
-    createLogViewL();
-    
-    if ( !mDuplicatesView ){
-        mDuplicatesView = CLogViewDuplicate::NewL( mLogClient, *this );
-    }
-    
-    mIndex = 0;
+    prepareReadingL();
     
     initializeReadStates();
     
@@ -216,17 +218,30 @@ void LogsReader::startL()
 //
 void LogsReader::markEventSeenL(int eventId)
 {
-    cancelCurrentRequestL();
+    prepareReadingL();
     
-    createLogViewL();
-    if ( !mDuplicatesView ){
-        mDuplicatesView = CLogViewDuplicate::NewL( mLogClient, *this );
+    mCurrentEventId = eventId;   
+    initializeModifyingStates();
+    
+    if ( currentState().enterL() ){
+        SetActive();
     }
+}
+
+// ----------------------------------------------------------------------------
+// LogsReader::readDuplicatesL
+// ----------------------------------------------------------------------------
+//
+void LogsReader::readDuplicatesL(int eventId)
+{
+    if ( IsActive() && mCurrentStateMachine != &mDuplicateReadingStates ){
+        LOGS_QDEBUG( "logs [ENG] <-> LogsReader::readDuplicatesL(), cannot interrupt" )
+        User::Leave(KErrInUse);
+    }
+    prepareReadingL();
     
-    mModifyingEventId = eventId;
-    mIndex = 0;
-    
-    initializeDeleteStates();
+    mCurrentEventId = eventId;
+    initializeDuplicateReadingStates();
     
     if ( currentState().enterL() ){
         SetActive();
@@ -241,7 +256,8 @@ void LogsReader::cancelCurrentRequestL()
 {
     LOGS_QDEBUG( "logs [ENG] -> LogsReader::cancelCurrentRequestL()" )
     if ( IsActive() ) {
-        if (mCurrentStateMachine == &mReadStates){
+        if (mCurrentStateMachine == &mReadStates || 
+            mCurrentStateMachine == &mDuplicateReadingStates){
             LOGS_QDEBUG( "logs [ENG] reading is in progress, cancelling" )
             Cancel();
         } else if (mCurrentStateMachine == &mModifyingStates) {
@@ -447,12 +463,12 @@ QHash<QString, ContactCacheEntry>& LogsReader::contactCache()
 }
 
 // ----------------------------------------------------------------------------
-// LogsReader::modifyingEventId
+// LogsReader::currentEventId
 // ----------------------------------------------------------------------------
 //
-int LogsReader::modifyingEventId()
+int LogsReader::currentEventId()
 {
-    return mModifyingEventId;
+    return mCurrentEventId;
 }
 
 // ----------------------------------------------------------------------------
@@ -474,6 +490,15 @@ bool LogsReader::isRecentView()
 }
 
 // ----------------------------------------------------------------------------
+// LogsReader::duplicatedEvents
+// ----------------------------------------------------------------------------
+//
+QList<LogsEvent*>& LogsReader::duplicatedEvents()
+{
+    return mDuplicatedEvents;
+}
+
+// ----------------------------------------------------------------------------
 // LogsReader::currentState
 // ----------------------------------------------------------------------------
 //
@@ -483,7 +508,7 @@ LogsReaderStateBase& LogsReader::currentState()
 }
 
 // ----------------------------------------------------------------------------
-// LogsReader::initializeStates
+// LogsReader::initializeReadStates
 // ----------------------------------------------------------------------------
 //
 void LogsReader::initializeReadStates()
@@ -507,17 +532,47 @@ void LogsReader::initializeReadStates()
 }
 
 // ----------------------------------------------------------------------------
-// LogsReader::initializeDeleteStates
+// LogsReader::initializeDuplicateReadingStates
 // ----------------------------------------------------------------------------
 //
-void LogsReader::initializeDeleteStates()
+void LogsReader::initializeDuplicateReadingStates()
+{
+    if ( mDuplicateReadingStates.count() == 0 ){
+        LogsReaderStateFiltering* filtering = createFilteringState();
+        LogsReaderStateSearchingEvent* searching = 
+                    new LogsReaderStateSearchingEvent(*this);
+        LogsReaderStateFindingDuplicates* findingDuplicates = 
+                    new LogsReaderStateFindingDuplicates(*this);
+        LogsReaderStateReadingDuplicates* readingDuplicates = 
+                    new LogsReaderStateReadingDuplicates(*this);
+        LogsReaderStateReadingDuplicatesDone* done = 
+                    new LogsReaderStateReadingDuplicatesDone(*this);
+        filtering->setNextState(*searching);
+        searching->setNextState(*findingDuplicates);
+        findingDuplicates->setNextState(*readingDuplicates);
+        readingDuplicates->setNextState(*done);
+        mDuplicateReadingStates.append(filtering);
+        mDuplicateReadingStates.append(searching); 
+        mDuplicateReadingStates.append(findingDuplicates); 
+        mDuplicateReadingStates.append(readingDuplicates);
+        mDuplicateReadingStates.append(done);        
+    }
+    mCurrentStateMachine = &mDuplicateReadingStates;
+    setCurrentState(*mDuplicateReadingStates.at(0)); 
+}
+
+// ----------------------------------------------------------------------------
+// LogsReader::initializeModifyingStates
+// ----------------------------------------------------------------------------
+//
+void LogsReader::initializeModifyingStates()
 {
     if ( mModifyingStates.count() == 0 ){
         LogsReaderStateFiltering* filtering = createFilteringState();
         LogsReaderStateSearchingEvent* searching = 
                     new LogsReaderStateSearchingEvent(*this);
-        LogsReaderStateFindingDuplicates* duplicates = 
-                    new LogsReaderStateFindingDuplicates(*this);
+        LogsReaderStateMarkingDuplicates* duplicates = 
+                    new LogsReaderStateMarkingDuplicates(*this);
         LogsReaderStateModifyingDone* done = new LogsReaderStateModifyingDone(*this);
         filtering->setNextState(*searching);
         searching->setNextState(*duplicates);
@@ -590,3 +645,20 @@ LogsReaderStateFiltering* LogsReader::createFilteringState()
     }
     return filtering;
 }
+
+// ----------------------------------------------------------------------------
+// LogsReader::prepareReadingL
+// ----------------------------------------------------------------------------
+//
+void LogsReader::prepareReadingL()
+{
+    cancelCurrentRequestL();
+
+    createLogViewL();
+    
+    if ( !mDuplicatesView ){
+        mDuplicatesView = CLogViewDuplicate::NewL( mLogClient, *this );
+    }   
+    mIndex = 0;
+}
+

@@ -18,30 +18,51 @@
 #ifndef CNTFAVORITESVIEW_H
 #define CNTFAVORITESVIEW_H
 
-#include "cntbaselistview.h"
+#include <QObject>
+#include <hbdocumentloader.h>
 
-class CntFavoritesView : public CntBaseListView
+#include "cntabstractview.h"
+#include "cntviewparameters.h"
+
+class HbAction;
+class HbView;
+
+QTM_BEGIN_NAMESPACE
+class QContact;
+QTM_END_NAMESPACE
+
+QTM_USE_NAMESPACE
+
+class CntFavoritesView : public QObject, public CntAbstractView
 {
     Q_OBJECT
-
-public slots:
-    void aboutToCloseView();
-    void openFetch();
-    void openNamesList();
-
+    
 public:
-    CntFavoritesView(CntViewManager *viewManager, QGraphicsItem *parent = 0);
+    CntFavoritesView();
     ~CntFavoritesView();
-
-public://from baseview
+    
+public: // From CntAbstractView
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters& aArgs );
+    void deactivate();
+    bool isDefault() const { return false; }
+    HbView* view() const { return mView; }
     CntViewParameters::ViewId viewId() const { return CntViewParameters::collectionFavoritesView; }
 
+private slots:
+    void showPreviousView();
+    void openSelectionPopup();
+    void setOrientation(Qt::Orientation orientation);
+    
 #ifdef PBK_UNIT_TEST
 public:
 #else
-protected:
+private:
 #endif
-    void addActionsToToolBar();
+    QContact* mContact; // own
+    HbView* mView; // own
+    HbAction* mSoftkey;
+    CntAbstractViewManager* mViewManager;
+    HbDocumentLoader mDocumentLoader;
 
 };
 

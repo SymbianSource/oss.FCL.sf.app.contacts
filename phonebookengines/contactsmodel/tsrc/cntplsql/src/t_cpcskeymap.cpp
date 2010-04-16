@@ -52,6 +52,8 @@ UT_CPcsKeyMap* UT_CPcsKeyMap::NewLC()
 //
 UT_CPcsKeyMap::~UT_CPcsKeyMap()
     {
+    delete iKeyMap;
+    iKeyMap = NULL;
     }
 
 // -----------------------------------------------------------------------------
@@ -71,6 +73,11 @@ void UT_CPcsKeyMap::ConstructL()
     // The ConstructL from the base class CEUnitTestSuiteClass must be called.
     // It generates the test case table.
     CEUnitTestSuiteClass::ConstructL();
+    
+    
+    // When instantiating keymap was moved from UT_CPcsKeyMap::ConstructL() to
+    // here, it removed a resource leak.
+    iKeyMap = CPcsKeyMap::NewL();
     }
 
 // -----------------------------------------------------------------------------
@@ -78,8 +85,7 @@ void UT_CPcsKeyMap::ConstructL()
 // -----------------------------------------------------------------------------
 //
 void UT_CPcsKeyMap::SetupL()
-    {    
-	iKeyMap = CPcsKeyMap::NewL();
+    {
     }
     
 // -----------------------------------------------------------------------------
@@ -88,8 +94,6 @@ void UT_CPcsKeyMap::SetupL()
 //
 void UT_CPcsKeyMap::Teardown()
     {
-    delete iKeyMap;
-	iKeyMap = NULL;
     }
 
 
@@ -100,16 +104,14 @@ void UT_CPcsKeyMap::Teardown()
 // -----------------------------------------------------------------------------
 //
 void UT_CPcsKeyMap::UT_NewLL()
-    {    
-#if 0 //remove this line
+    {
+    const TInt KAmountOfKeys = 10; // Must have same value as in cpcskeymap.cpp
     // Each numeric key has been mapped
-    const TInt KAmountOfNumericKeys = 10; // keys 0-9
-    EUNIT_ASSERT_EQUALS( KAmountOfNumericKeys, iKeyMap->iKeyMapping.count() );
-    for (TInt i = 0; i < KAmountOfNumericKeys; ++i)
+    EUNIT_ASSERT_EQUALS( KAmountOfKeys, iKeyMap->iKeyMapping.count() );
+    for (TInt i = 0; i < KAmountOfKeys; ++i)
         {
         EUNIT_ASSERT( iKeyMap->iKeyMapping[i].length() > 0 );
         }
-#endif
     }
 
 // -----------------------------------------------------------------------------
@@ -142,6 +144,14 @@ void UT_CPcsKeyMap::UT_GetNumericKeyStringL()
     CleanupStack::PushL( numericBuf );
     EUNIT_ASSERT_EQUALS( *numericBuf, KNumericWithSpaces );
     CleanupStack::PopAndDestroy( numericBuf );
+    
+    
+    _LIT( KAlphaLongString, "adg   1230 0zbzb0 0 e56e101at 00  " );
+    _LIT( KNumericLongString, "2340001230009292000035631012800000" );
+    numericBuf = iKeyMap->GetNumericKeyStringL( KAlphaLongString, ETrue );
+    CleanupStack::PushL( numericBuf );
+    EUNIT_ASSERT_EQUALS( *numericBuf, KNumericLongString );
+    CleanupStack::PopAndDestroy( numericBuf );
 	}
 
 // -----------------------------------------------------------------------------
@@ -151,7 +161,7 @@ void UT_CPcsKeyMap::UT_GetNumericKeyStringL()
 void UT_CPcsKeyMap::UT_GetNumericKeyStringSeparatorL()
     {
     _LIT( KAlpha, "abjqmca" );
-    _LIT( KNumeric, " 2257622" ); // Space at beginning
+    _LIT( KNumeric, "2257622" );
     HBufC* numericBuf = iKeyMap->GetNumericKeyStringL( KAlpha, EFalse );
     CleanupStack::PushL( numericBuf );
     EUNIT_ASSERT_EQUALS( *numericBuf, KNumeric );
@@ -160,7 +170,7 @@ void UT_CPcsKeyMap::UT_GetNumericKeyStringSeparatorL()
 
 
     _LIT( KAlphaOneChar, "m" );
-    _LIT( KNumericOneChar, " 6" );
+    _LIT( KNumericOneChar, "6" );
     numericBuf = iKeyMap->GetNumericKeyStringL( KAlphaOneChar, EFalse );
     CleanupStack::PushL( numericBuf );
     EUNIT_ASSERT_EQUALS( *numericBuf, KNumericOneChar );
@@ -169,10 +179,18 @@ void UT_CPcsKeyMap::UT_GetNumericKeyStringSeparatorL()
     
 
     _LIT( KAlphaWithSpaces, " kjh gfdsa qwert " );
-    _LIT( KNumericWithSpaces, "  554 43372 79378 " ); // two spaces at beginning
+    _LIT( KNumericWithSpaces, " 554 43372 79378 " ); // The leading space remains
     numericBuf = iKeyMap->GetNumericKeyStringL( KAlphaWithSpaces, EFalse );
     CleanupStack::PushL( numericBuf );
     EUNIT_ASSERT_EQUALS( *numericBuf, KNumericWithSpaces );
+    CleanupStack::PopAndDestroy( numericBuf );
+    
+
+    _LIT( KAlphaLongString, "adg   1230 0zbzb0 0 e56e101at 00  " );
+    _LIT( KNumericLongString, "234   1230 092920 0 356310128 00  " );  
+    numericBuf = iKeyMap->GetNumericKeyStringL( KAlphaLongString, EFalse );
+    CleanupStack::PushL( numericBuf );
+    EUNIT_ASSERT_EQUALS( *numericBuf, KNumericLongString );
     CleanupStack::PopAndDestroy( numericBuf );
     }
 
@@ -183,8 +201,8 @@ void UT_CPcsKeyMap::UT_GetNumericKeyStringSeparatorL()
 //
 void UT_CPcsKeyMap::UT_GetNumericKeyStringWithNumbersL()
     {
-    _LIT( KAlpha, "11" );
-    _LIT( KNumeric, " 11" ); // Space at beginning
+    _LIT( KAlpha, "11098" );
+    _LIT( KNumeric, "11098" );
     HBufC* numericBuf = iKeyMap->GetNumericKeyStringL( KAlpha, EFalse );
     CleanupStack::PushL( numericBuf );
     EUNIT_ASSERT_EQUALS( *numericBuf, KNumeric );
@@ -199,11 +217,12 @@ void UT_CPcsKeyMap::UT_GetNumericKeyStringWithNumbersL()
 void UT_CPcsKeyMap::UT_GetNumericKeyStringWithSpecialCharactersL()
     {
     _LIT( KAlpha, " +g-[5]t" );
-#if 1 // if hardcoded keymap is used
-    _LIT( KNumeric, "  +4-[5]8" ); // Extra space at beginning
+#if defined(USE_ORBIT_KEYMAP)
+	// Orbit keymap code is used
+    _LIT( KNumeric, " 141[5]8" );
 #else
-    // if real Orbit keymap code is used
-    _LIT( KNumeric, "  141[5]8" ); // Extra space at beginning
+	// Hardcoded keymap is used
+    _LIT( KNumeric, " +4-[5]8" );
 #endif
     HBufC* numericBuf = iKeyMap->GetNumericKeyStringL( KAlpha, EFalse );
     CleanupStack::PushL( numericBuf );

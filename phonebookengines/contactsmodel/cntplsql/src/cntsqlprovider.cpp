@@ -301,11 +301,8 @@ SQL condition setter, Set condition for a sql statement (to be used in where cla
 void CCntSqlStatement::SetConditionL(const TDesC& aCondition)
 	{
 	ClearCondition();
-		
-	iCondition = aCondition.AllocL();	
-	iProcessed = EFalse;
-	delete iSqlString;
-	iSqlString = NULL;
+	iCondition = aCondition.AllocL();
+	ClearSqlString();
 	}
 
 /**		
@@ -317,9 +314,7 @@ void CCntSqlStatement::ClearCondition()
 		{
 		delete iCondition;	
 		iCondition = NULL;
-    	iProcessed = EFalse;
-    	delete iSqlString;
-    	iSqlString = NULL;
+		ClearSqlString();
 		} 
 	}
 
@@ -334,12 +329,10 @@ void CCntSqlStatement::Reset()
 	delete iCondition;	
 	iCondition = NULL;
 	
-	delete iSqlString;
-	iSqlString = NULL;
+	ClearSqlString();
 		
 	iParams->Reset();
-	iValues->Reset();	
-	iProcessed = EFalse;
+	iValues->Reset();
 	}
 
 /**
@@ -393,10 +386,15 @@ void CCntSqlStatement::SetTableName(HBufC* aTableName)
     iTableName = aTableName;
     
 	// Table name changes, so SQL statement must be re-generated
-    iProcessed = EFalse;
+	ClearSqlString();
+    }
+
+void CCntSqlStatement::ClearSqlString()
+	{
+	iProcessed = EFalse;
 	delete iSqlString;
 	iSqlString = NULL;
-    }
+	}
 
 /**
 Creates a concrete CCntSqlUpdate object (used to retrieve sql update statements)

@@ -44,11 +44,11 @@ private slots:
     void addActionsToToolBar();
     void deleteGroup();
     void removeFromGroup();
-    
+    void groupActions();
+    void addMenuItems();
+    void editContact();
     void onLongPressed();
     void onListViewActivated();
-    void viewDetailsOfGroupContact();
-    void callNamesList();
     void editGroup();
     void activateView();
 

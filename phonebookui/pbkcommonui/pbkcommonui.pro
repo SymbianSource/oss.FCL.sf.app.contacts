@@ -21,7 +21,7 @@ TARGET = pbkcommonui
 
 CONFIG += dll
 CONFIG += hb
-HB += hbcore hbwidgets hbtools hbfeedback
+HB += hbfeedback
 QT += sql
 
 DEPENDPATH += .
@@ -29,6 +29,7 @@ INCLUDEPATH += .
 INCLUDEPATH += ../inc
 
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
+INCLUDEPATH += $$MW_LAYER_SYSTEMINCLUDE
 
 MOC_DIR = moc
 
@@ -42,7 +43,15 @@ symbian: {
 }
 
 # Input
-HEADERS += inc/cntactions.h \
+HEADERS += \
+	inc/cntviewnavigator.h \
+	inc/cntabstractviewmanager.h \
+	inc/cntabstractview.h \
+	inc/cntabstractviewfactory.h \
+	inc/cntdefaultviewmanager.h \
+	inc/cntactionmenubuilder.h \
+	inc/cntaction.h \
+	inc/cntactions.h \
     inc/cntbaselistview.h \
     inc/cntbaseview.h \
     inc/cntbasedetaileditorview.h \
@@ -53,22 +62,14 @@ HEADERS += inc/cntactions.h \
     inc/cntdetailpopup.h \
     inc/cnteditordataviewitem.h \
     inc/cnteditordatamodelitem.h \
-    inc/cntemaileditorview.h \
-    inc/cntnameseditorview.h \
-    inc/cnturleditorview.h \
-    inc/cntcompanyeditorview.h \
-    inc/cntphonenumbereditorview.h \
-    inc/cntaddresseditorview.h \
     inc/cntonlineaccounteditorview.h \
-    inc/cntnoteeditorview.h \
-    inc/cntfamilydetaileditorview.h \
-    inc/cntdateeditorview.h \
     inc/cntimageeditorview.h \
-    inc/cntfavoritesselectionview.h \
+    inc/cntfavoritesmemberview.h \
     inc/cntfavoritesview.h \
     inc/cntmainwindow.h \
     inc/cntmodelprovider.h \
     inc/cntnamesview.h \
+    inc/cntnamesview_p.h \
     inc/cntviewmanager.h \
     inc/cntviewparameters.h \
     inc/cntcontactcardheadingitem.h \
@@ -89,9 +90,38 @@ HEADERS += inc/cntactions.h \
     inc/cnthistoryview.h \
     inc/cnthistoryviewitem.h \
     inc/cnthistoryviewitemwidget.h \
-    inc/cntgroupselectionpopup.h 
+    inc/cntgroupselectionpopup.h \
+    inc/cntgroupdeletepopupmodel.h \
+    inc/cntdetailconst.h \
+    inc/cntdetaileditormodel.h \
+    inc/cnteditorfactory.h \
+    inc/cntdetaileditor.h \
+    inc/cntphonenumberviewitem.h \
+    inc/cntphonenumbermodel.h \
+    inc/cntdetailmodelitem.h \
+    inc/cntemaileditormodel.h \
+    inc/cntemaileditorviewitem.h \
+    inc/cntaddressmodel.h \
+    inc/cntaddressviewitem.h \
+    inc/cnturleditormodel.h \
+    inc/cnturleditorviewitem.h \
+    inc/cntnameeditormodel.h \
+    inc/cntnoteeditormodel.h \
+    inc/cntnoteeditorviewitem.h \
+    inc/cntdateeditormodel.h \
+    inc/cntdateeditorviewitem.h \
+    inc/cntcompanyeditormodel.h \
+    inc/cntfamilyeditormodel.h \
+    inc/cntdetailviewitem.h \
+    inc/cntgroupdeletepopup.h 
     
-SOURCES += src/cntactions.cpp \
+SOURCES += \
+	src/cntviewnavigator.cpp \
+	src/cntdefaultviewfactory.cpp \
+	src/cntdefaultviewmanager.cpp \
+	src/cntactionmenubuilder.cpp \
+	src/cntaction.cpp \
+	src/cntactions.cpp \
     src/cntbaselistview.cpp \
     src/cntbaseview.cpp \
     src/cntbasedetaileditorview.cpp \
@@ -102,22 +132,14 @@ SOURCES += src/cntactions.cpp \
     src/cntdetailpopup.cpp \
     src/cnteditordataviewitem.cpp \
     src/cnteditordatamodelitem.cpp \
-    src/cntemaileditorview.cpp \
-    src/cntnameseditorview.cpp \
-    src/cnturleditorview.cpp \
-    src/cntcompanyeditorview.cpp \
-    src/cntphonenumbereditorview.cpp \
-    src/cntaddresseditorview.cpp \
     src/cntonlineaccounteditorview.cpp \
-    src/cntnoteeditorview.cpp \
-    src/cntfamilydetaileditorview.cpp \
-    src/cntdateeditorview.cpp \
     src/cntimageeditorview.cpp \
-    src/cntfavoritesselectionview.cpp \
+    src/cntfavoritesmemberview.cpp \
     src/cntfavoritesview.cpp \
     src/cntmainwindow.cpp \
     src/cntmodelprovider.cpp \
     src/cntnamesview.cpp \
+    src/cntnamesview_p.cpp \
     src/cntviewmanager.cpp \
     src/cntviewparameters.cpp \
     src/cntcontactcarddetailitem.cpp \
@@ -137,7 +159,27 @@ SOURCES += src/cntactions.cpp \
     src/cnthistoryview.cpp \
     src/cnthistoryviewitem.cpp \
     src/cnthistoryviewitemwidget.cpp \
-    src/cntgroupselectionpopup.cpp
+    src/cntgroupselectionpopup.cpp \
+    src/cntgroupdeletepopupmodel.cpp \
+    src/cntaddressmodel.cpp \
+    src/cntaddressviewitem.cpp \
+    src/cntcompanyeditormodel.cpp \
+    src/cntdateeditormodel.cpp \
+    src/cntdateeditorviewitem.cpp \
+    src/cntdetaileditor.cpp \
+    src/cntdetailmodelitem.cpp \
+    src/cnteditorfactory.cpp \
+    src/cntemaileditormodel.cpp \
+    src/cntemaileditorviewitem.cpp \
+    src/cntfamilyeditormodel.cpp \
+    src/cntnameeditormodel.cpp \
+    src/cntnoteeditormodel.cpp \
+    src/cntnoteeditorviewitem.cpp \
+    src/cntphonenumbermodel.cpp \
+    src/cntphonenumberviewitem.cpp \
+    src/cnturleditormodel.cpp \
+    src/cnturleditorviewitem.cpp \
+    src/cntgroupdeletepopup.cpp
     
 RESOURCES += resources\pbkcommonui.qrc
 
@@ -146,7 +188,8 @@ LIBS+= -lhbcore \
        -lQtContacts \
        -lmobcntmodel \
        -lthumbnailmanagerqt \
-       -lmobhistorymodel
+       -lmobhistorymodel \
+       -lcntmaptileservice
 
 # capability
 TARGET.CAPABILITY = CAP_GENERAL_DLL

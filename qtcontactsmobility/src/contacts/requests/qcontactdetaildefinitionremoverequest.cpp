@@ -49,15 +49,22 @@ QTM_BEGIN_NAMESPACE
   \brief The QContactDetailDefinitionRemoveRequest class allows a client to
   asynchronously request that certain detail definitions be removed from
   a contacts store.
+
+  For a QContactDetailDefinitionRemoveRequest, the resultsUpdated() signal will be emitted when
+  the individual item errors (which may be retrieved by calling errorMap()) are updated, or if the overall
+  operation error (which may be retrieved by calling error()) is updated.
   
   \ingroup contacts-requests
  */
 
 /*!
- * \fn QContactDetailDefinitionRemoveRequest::progress(QContactDetailDefinitionRemoveRequest* self)
- * This signal is emitted when some progress has been made on the request, causing either a change of
- * status or an update of results, or both.  It identifies which request the signal originated from
- * by including a pointer to \a self.
+  \fn QContactDetailDefinitionRemoveRequest::progress(QContactDetailDefinitionRemoveRequest* self)
+  \internal
+  This signal is emitted when some progress has been made on the request, causing either a change of
+  status or an update of results, or both.  It identifies which request the signal originated from
+  by including a pointer to \a self.
+  This signal is deprecated and will be removed once the transition period has elapsed.
+  Use the signals emitted by the base class, combined with \l QObject::sender(), instead.
  */
 
 /*! Constructs a new detail definition remove request */
@@ -71,25 +78,55 @@ QContactDetailDefinitionRemoveRequest::~QContactDetailDefinitionRemoveRequest()
 {
 }
 
-/*! Sets the names of the detail definitions to remove from the manager to be \a names */
+/*!
+  \internal
+  Sets the names of the detail definitions to remove from the manager to be \a names
+ */
 void QContactDetailDefinitionRemoveRequest::setNames(const QStringList& names)
 {
     Q_D(QContactDetailDefinitionRemoveRequest);
     d->m_names = names;
 }
 
-/*! Returns the list of names of the detail definitions that will be removed from the manager */
+/*!
+  \internal
+  Returns the list of names of the detail definitions that will be removed from the manager
+ */
 QStringList QContactDetailDefinitionRemoveRequest::names() const
 {
     Q_D(const QContactDetailDefinitionRemoveRequest);
     return d->m_names;
 }
 
-/*! Sets the type of contact for which detail definitions should be removed to \a contactType */
+/*!
+  \internal
+  Sets the type of detail defintions to remove to \a contactType,
+
+  Do not use this.  Use \l setDefinitionNames() instead.
+*/
 void QContactDetailDefinitionRemoveRequest::setContactType(const QString& contactType)
 {
     Q_D(QContactDetailDefinitionRemoveRequest);
     d->m_contactType = contactType;
+}
+
+/*!
+  Sets the type of contact for which detail definitions should be removed to \a contactType, and the names of the detail definitions to remove from the manager to \a names.
+  Managers may store different definitions which are valid for different contact types, and so attempting to remove definitions with certain names may fail if no such
+  definitions exist for contacts of the given contact type, or if \a contactType is empty.
+ */
+void QContactDetailDefinitionRemoveRequest::setDefinitionNames(const QString& contactType, const QStringList& names)
+{
+    Q_D(QContactDetailDefinitionRemoveRequest);
+    d->m_contactType = contactType;
+    d->m_names = names;
+}
+
+/*! Returns the list of names of the detail definitions that will be removed from the manager */
+QStringList QContactDetailDefinitionRemoveRequest::definitionNames() const
+{
+    Q_D(const QContactDetailDefinitionRemoveRequest);
+    return d->m_names;
 }
 
 /*! Returns the type of contact for which detail definitions will be removed */
@@ -97,6 +134,13 @@ QString QContactDetailDefinitionRemoveRequest::contactType() const
 {
     Q_D(const QContactDetailDefinitionRemoveRequest);
     return d->m_contactType;
+}
+
+/*! Returns the map of input name list indices to errors which occurred */
+QMap<int, QContactManager::Error> QContactDetailDefinitionRemoveRequest::errorMap() const
+{
+    Q_D(const QContactDetailDefinitionRemoveRequest);
+    return d->m_errors;
 }
 
 #include "moc_qcontactdetaildefinitionremoverequest.cpp"

@@ -83,7 +83,7 @@ void LogsDetailsView::activated(bool showDialer, QVariant args)
     mDetailsModel = model;
     
     if (mViewName){
-        mViewName->setTitleText(mDetailsModel->headerData(0, Qt::Vertical).toString());
+        mViewName->setHeading(mDetailsModel->headerData(0, Qt::Vertical).toString());
     }
     
     if ( mListView ){
@@ -93,6 +93,21 @@ void LogsDetailsView::activated(bool showDialer, QVariant args)
     updateMenu();
     
     LOGS_QDEBUG( "logs [UI] <- LogsDetailsView::activated()" );
+}
+
+// -----------------------------------------------------------------------------
+// LogsDetailsView::deactivated
+// -----------------------------------------------------------------------------
+//
+void LogsDetailsView::deactivated()
+{
+    //base class handling first
+    LogsBaseView::deactivated();
+    if ( mListView ){
+        mListView->setModel( 0 );
+    }
+    delete mDetailsModel;
+    mDetailsModel = 0;
 }
 
 // -----------------------------------------------------------------------------
@@ -147,7 +162,7 @@ void LogsDetailsView::addToContacts()
         QObject::connect(mContact, SIGNAL(saveCompleted(bool)),
                          this, SLOT(contactActionCompleted(bool)), 
                          Qt::QueuedConnection);
-        mContact->save();
+        this->saveContact();
     }
     LOGS_QDEBUG( "logs [UI] <- LogsDetailsView::addToContacts()" );
 }
@@ -181,7 +196,7 @@ void LogsDetailsView::contactActionCompleted(bool modified)
     if (modified){
         updateMenu();
         if (mViewName){
-            mViewName->setTitleText(
+            mViewName->setHeading(
                     mDetailsModel->headerData(0, Qt::Vertical).toString());
         }
     }
@@ -286,11 +301,11 @@ void LogsDetailsView::updateMenu()
     HbAction* voiceCallAction = qobject_cast<HbAction*>( 
             mRepository.findObject( logsDetailsViewVoiceCallMenuActionId ) );
     HbAction* videoCallAction = qobject_cast<HbAction*>( 
-            mRepository.findObject( logsDetailsViewVideoCallMenuActionId ) );
+            mRepository.findObject( logsCommonVideoCallMenuActionId ) );
     HbAction* internetCallAction = qobject_cast<HbAction*>( 
             mRepository.findObject( logsDetailsViewInternetCallMenuActionId ) );
     HbAction* messageAction = qobject_cast<HbAction*>( 
-            mRepository.findObject( logsDetailsMessageMenuActionId ) );
+            mRepository.findObject( logsCommonMessageMenuActionId ) );
     HbAction* addToContactsAction = qobject_cast<HbAction*>( 
             mRepository.findObject( logsDetailsAddToContactsMenuActionId ) );
     HbAction* openContactAction = qobject_cast<HbAction*>( 
@@ -331,17 +346,6 @@ void LogsDetailsView::updateMenu()
 }
 
 // -----------------------------------------------------------------------------
-// LogsDetailsView::toggleActionAvailability
-// -----------------------------------------------------------------------------
-//
-void LogsDetailsView::toggleActionAvailability( HbAction* action, bool available )
-{
-    if ( action ){
-        action->setVisible( available );
-    }
-}
-
-// -----------------------------------------------------------------------------
 // LogsDetailsView::updateWidgetsSizeAndLayout
 // -----------------------------------------------------------------------------
 //
@@ -350,6 +354,7 @@ void LogsDetailsView::updateWidgetsSizeAndLayout()
     LOGS_QDEBUG( "logs [UI] -> LogsDetailsView::updateWidgetsSizeAndLayout()" );
     if ( mListView ) {
         updateListLayoutName(*mListView, true);
+        updateListSize();
     }
     LOGS_QDEBUG( "logs [UI] <- LogsDetailsView::updateWidgetsSizeAndLayout()" );
 }

@@ -1,0 +1,4 @@
+EXPORTS
+	_ZN17CntMapTileService15getMapTileImageEiNS_18ContactAddressTypeE @ 1 NONAME
+	_ZN17CntMapTileService24isLocationFeatureEnabledEv @ 2 NONAME
+

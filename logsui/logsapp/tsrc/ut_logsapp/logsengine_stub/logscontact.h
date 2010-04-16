@@ -21,7 +21,7 @@
 #include <logsexport.h>
 
 //forward declarations
-
+class LogsDbConnector;
 
 /**
  * LogsContact can be used to modify or create a contact in phonebook
@@ -41,6 +41,7 @@ public:
         
     //explicit LogsContact(LogsEvent& event, LogsDbConnector& dbConnector);
     explicit LogsContact(); // Stub constructor
+    explicit LogsContact(const QString& number); // Stub constructor
     ~LogsContact();
     
     /**
@@ -60,14 +61,22 @@ public slots:
     
     /**
      * Launch phonebook view for creation of a new contact. 
-     * Emits openCompeted() signal, when contact saving is done.
+     * Emits openCompleted() signal, when contact saving is done.
      * @return true if saving was called successfully
      */
-    bool save();        
+    bool addNew();
     
-private: //data 
+    /**
+     * Launch phonebook view for creation of a new contact. 
+     * Emits openCompleted() signal, when contact saving is done.
+     * @return true if saving was called successfully
+     */
+    bool updateExisting();
+    
+public: //stub data 
     
     //LogsEvent& mEvent;
+    QString mNumber;
     
 };
                   

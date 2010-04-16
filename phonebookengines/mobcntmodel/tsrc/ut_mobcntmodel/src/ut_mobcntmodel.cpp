@@ -26,8 +26,9 @@ void TestMobCntModel::initTestCase()
 {
     //let's have clean database before running tests 
     mManager = new QContactManager("symbian");
-    QList<QContactLocalId> ids = mManager->contacts();
-    mManager->removeContacts(&ids);
+    QList<QContactLocalId> ids = mManager->contactIds();
+    QMap<int, QContactManager::Error> errorMapInit;
+    mManager->removeContacts(&ids, &errorMapInit);
 }
 
 void TestMobCntModel::create()
@@ -44,6 +45,7 @@ void TestMobCntModel::create()
     
     mCntModel = new MobCntModel(mManager);
     QVERIFY(mCntModel != 0);
+    QCOMPARE(mCntModel->rowCount(),1);
     QVERIFY(mCntModel->rowCount() == 1);
     QVERIFY(mCntModel->mIconManager);
     QVERIFY(!mCntModel->d->ownedContactManager);
@@ -155,13 +157,15 @@ void TestMobCntModel::data()
 void TestMobCntModel::rowCount()
 {
     // we should have 2 contacts in the model saved from the last test case
+    QCOMPARE(mCntModel->rowCount(),2);
     QVERIFY(mCntModel->rowCount() == 2);
 }
 
 void TestMobCntModel::contact()
 {
-    QList<QContactLocalId> ids = mManager->contacts();
-    mManager->removeContacts(&ids);
+    QList<QContactLocalId> ids = mManager->contactIds();
+    QMap<int, QContactManager::Error> errorMapContact;
+    mManager->removeContacts(&ids,&errorMapContact);
     QTest::qWait(1000);
     
     QModelIndex modelIndex = mCntModel->index(0, 0);
@@ -268,17 +272,17 @@ void TestMobCntModel::myCard()
     c.saveDetail(&name);
     QVERIFY(mManager->saveContact(&c));
     
-    QSignalSpy spy(mCntModel, SIGNAL(layoutChanged()));
+    QSignalSpy spy(mCntModel, SIGNAL(modelReset()));
     
     QVERIFY(mCntModel->myCardStatus());
     
     mCntModel->showMyCard(false);
     QVERIFY(!mCntModel->myCardStatus());
-    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.count(), 2);
     
     mCntModel->showMyCard(true);
     QVERIFY(mCntModel->myCardStatus());
-    QCOMPARE(spy.count(), 2);
+    QCOMPARE(spy.count(), 4);
     
     mManager->setSelfContactId(c.localId());
     QTest::qWait(1000);
@@ -286,14 +290,14 @@ void TestMobCntModel::myCard()
     
     mCntModel->showMyCard(false);
     QVERIFY(!mCntModel->myCardStatus());
-    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.count(), 2);
     
     mCntModel->showMyCard(true);
     QVERIFY(mCntModel->myCardStatus());
-    QCOMPARE(spy.count(), 2);
+    QCOMPARE(spy.count(), 4);
     mCntModel->showMyCard(true);
     QVERIFY(mCntModel->myCardStatus());
-    QCOMPARE(spy.count(), 2);
+    QCOMPARE(spy.count(), 4);
 }
 
 void TestMobCntModel::rowId()
@@ -360,8 +364,9 @@ void TestMobCntModel::updateContactIcon()
 
 void TestMobCntModel::handleAdded()
 {
-    QList<QContactLocalId> ids = mManager->contacts();
-    mManager->removeContacts(&ids);
+    QList<QContactLocalId> ids = mManager->contactIds();
+    QMap<int, QContactManager::Error> errorMapHandleAdded;
+    mManager->removeContacts(&ids,&errorMapHandleAdded);
     QTest::qWait(1000);
 
     QSignalSpy spy(mCntModel, SIGNAL(rowsAboutToBeInserted(const QModelIndex&, int, int)));
@@ -378,8 +383,9 @@ void TestMobCntModel::handleAdded()
 
 void TestMobCntModel::handleChanged()
 {
-    QList<QContactLocalId> ids = mManager->contacts();
-    mManager->removeContacts(&ids);
+    QList<QContactLocalId> ids = mManager->contactIds();
+    QMap<int, QContactManager::Error> errorMapHandleChanged;
+    mManager->removeContacts(&ids,&errorMapHandleChanged);
     QTest::qWait(1000);
     
     QContact c;
@@ -402,8 +408,9 @@ void TestMobCntModel::handleRemoved()
 {
     QSignalSpy spy(mCntModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex&, int, int)));
     
-    QList<QContactLocalId> ids = mManager->contacts();
-    mManager->removeContacts(&ids);
+    QList<QContactLocalId> ids = mManager->contactIds();
+    QMap<int, QContactManager::Error> errorMapHandle;
+    mManager->removeContacts(&ids,&errorMapHandle);
     QTest::qWait(1000);
     
     QCOMPARE(spy.count(), 1);
@@ -435,8 +442,9 @@ void TestMobCntModel::cleanupTestCase()
     mCntModel = 0;
     
     //let's have clean database after running tests
-    QList<QContactLocalId> ids = mManager->contacts();
-    mManager->removeContacts(&ids);
+    QList<QContactLocalId> ids = mManager->contactIds();
+    QMap<int, QContactManager::Error> errorMap;
+    mManager->removeContacts(&ids, &errorMap);
     delete mManager;
 }
 

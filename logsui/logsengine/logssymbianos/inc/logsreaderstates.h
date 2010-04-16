@@ -97,10 +97,11 @@ class LogsReaderStateBase {
          * @param source event 
          * @param dest event, ownership is transferred
          * @param index, increased if event was added
+         * @param events, event is possibly added to this list
          * @return true if dest event was inserted, false if discarded and deleted
          */
         bool constructAndInsertEventL(
-                const CLogEvent& source, LogsEvent* dest, int &eventIndex );
+                const CLogEvent& source, LogsEvent* dest, int &eventIndex, QList<LogsEvent*>& events );
         
         /**
          * Fill already used dest event with source event data and insert
@@ -258,12 +259,10 @@ class LogsReaderStateSearchingEvent : public LogsReaderStateBase
     public: // From LogsReaderStateBase
         virtual bool enterL();
         virtual bool continueL();
-    protected:
-        bool mUpdatingEvent;
 };
 
 /**
- * Finding duplicatates event state
+ * Finding duplicate events state
  */
 class LogsReaderStateFindingDuplicates : public LogsReaderStateBase 
 {
@@ -271,11 +270,49 @@ class LogsReaderStateFindingDuplicates : public LogsReaderStateBase
     
     public:
         LogsReaderStateFindingDuplicates(LogsReaderStateContext& context);
-        virtual ~LogsReaderStateFindingDuplicates(){}
+        virtual ~LogsReaderStateFindingDuplicates();
+
+    public: // From LogsReaderStateBase
+        virtual bool enterL();  
+        virtual bool continueL();
+        
+    protected:
+        CLogFilter* mDuplicateFilter;
+};
+
+/**
+ * Marking duplicate events state
+ */
+class LogsReaderStateMarkingDuplicates : public LogsReaderStateBase 
+{
+    friend class UT_LogsReaderStates;
+    
+    public:
+        LogsReaderStateMarkingDuplicates(LogsReaderStateContext& context);
+        virtual ~LogsReaderStateMarkingDuplicates(){}
 
     public: // From LogsReaderStateBase
         virtual bool enterL();
-        virtual bool continueL();        
+        virtual bool continueL(); 
+        
+    protected:
+        bool mGettingDuplicates;
+};
+
+/**
+ * Marking duplicate events state
+ */
+class LogsReaderStateReadingDuplicates : public LogsReaderStateBase 
+{
+    friend class UT_LogsReaderStates;
+    
+    public:
+        LogsReaderStateReadingDuplicates(LogsReaderStateContext& context);
+        virtual ~LogsReaderStateReadingDuplicates(){}
+
+    public: // From LogsReaderStateBase
+        virtual bool enterL();   
+        virtual bool continueL();
 };
 
 /**
@@ -288,6 +325,21 @@ class LogsReaderStateModifyingDone : public LogsReaderStateBase
     public:
         LogsReaderStateModifyingDone(LogsReaderStateContext& context);
         virtual ~LogsReaderStateModifyingDone(){}
+
+    public: // From LogsReaderStateBase
+        virtual bool enterL();
+};
+
+/**
+ * Reading duplicates done state
+ */
+class LogsReaderStateReadingDuplicatesDone : public LogsReaderStateBase 
+{
+    friend class UT_LogsReaderStates;
+    
+    public:
+        LogsReaderStateReadingDuplicatesDone(LogsReaderStateContext& context);
+        virtual ~LogsReaderStateReadingDuplicatesDone(){}
 
     public: // From LogsReaderStateBase
         virtual bool enterL();

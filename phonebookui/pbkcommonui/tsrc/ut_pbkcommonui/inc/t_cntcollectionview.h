@@ -17,35 +17,28 @@
 
 #include <QObject>
 
-class CntMainWindow;
-class CntViewManager;
+class TestViewManager;
 class CntCollectionView;
 
 class TestCntCollectionView: public QObject
 {
-     Q_OBJECT
+    Q_OBJECT
 
 private slots:
 
-    void initTestCase();
-    void createClasses();
-
-    void aboutToCloseView();
+    void init();
+    void cleanup();
     
-    void handleExecutedCommand();
-
-    void addActionsToToolBar();
-    void setDataModel();
-    
-    void onLongPressed();
-    void onListViewActivated();
-
-    void cleanupTestCase();
+    void testActivate();
+    void testShowPreviousView();
+    void testOpenEmptyFavoritesGroup();
+    void testOpenUserGroup();
+    void testShowContextMenu();
+    void testRefreshDataModel();
+   
 
 private:
-
-    CntMainWindow *mWindow;
-    CntViewManager *mViewManager;
+    TestViewManager   *mViewManager;
     CntCollectionView *mCollectionView;
 
  };

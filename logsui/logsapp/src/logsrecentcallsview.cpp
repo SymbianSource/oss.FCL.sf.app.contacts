@@ -36,16 +36,16 @@
 #include <hbaction.h>
 #include <hbtoolbar.h>
 #include <dialpad.h>
-#include <hbgesturefilter.h>
-#include <hbgesture.h>
 #include <hblineedit.h>
 #include <hbgroupbox.h>
-#include <QTimer>
 #include <hbmessagebox.h>
+#include <hbmainwindow.h>
+#include <QTimer>
 
 Q_DECLARE_METATYPE(LogsMatchesModel*)
 
 const int logsMissedCallsMarkingDelayMs = 1000;
+const int logsSwipeAngleDelta = 30; // angle is from 0 to 360
 
 // -----------------------------------------------------------------------------
 // LogsRecentCallsView::LogsRecentCallsView
@@ -263,7 +263,7 @@ void LogsRecentCallsView::clearList()
        HbAction *selected = note->exec();
 
        if (selected == note->primaryAction()){ 
-        mModel->clearList( mFilter->clearType() );
+           mModel->clearList( mFilter->clearType() );
        }
        delete note;
     }
@@ -317,10 +317,10 @@ void  LogsRecentCallsView::handleBackSoftkey()
 //
 void LogsRecentCallsView::addStringsToMap()
 {
- 	mTitleMap.insert(LogsBaseView::ViewAll, tr("Recent calls"));
- 	mTitleMap.insert(LogsBaseView::ViewCalled, tr("Dialled calls"));
- 	mTitleMap.insert(LogsBaseView::ViewReceived, tr("Received calls"));
-    mTitleMap.insert(LogsBaseView::ViewMissed, tr("Missed calls"));
+    mTitleMap.insert(LogsBaseView::ViewAll, hbTrId("txt_dialer_subhead_recent_calls"));
+    mTitleMap.insert(LogsBaseView::ViewCalled, hbTrId("txt_dialer_subhead_dialled_calls"));
+    mTitleMap.insert(LogsBaseView::ViewReceived, hbTrId("txt_dial_subhead_received_calls"));
+    mTitleMap.insert(LogsBaseView::ViewMissed, hbTrId("txt_dialer_subhead_missed_calls"));
 }
 
 // -----------------------------------------------------------------------------
@@ -338,9 +338,6 @@ void LogsRecentCallsView::initListWidget()
      // Optimize memory usage, list reserves only memory for visible items
     mListView->setItemRecycling(true);
     
-    // Optimizes speed as we know that list items have always the same size
-    mListView->setUniformItemSizes(true); 
-    
     connect(mListView, SIGNAL(activated(const QModelIndex)),
             this, SLOT(initiateCallback(const QModelIndex)));
     connect(mListView,
@@ -348,16 +345,12 @@ void LogsRecentCallsView::initListWidget()
             this,
             SLOT(showListItemMenu(HbAbstractViewItem*, const QPointF&)));
     
-    connect(mListView,SIGNAL(gestureSceneFilterChanged(HbGestureSceneFilter*)),
-            this,SLOT(initializeGestures(HbGestureSceneFilter*)));
-    
-    // Need to set scrolling style back and forth to force
-    // gestureSceneFilterChanged signal inside which we can
-    // add additional gestures.
-    mListView->setScrollingStyle(HbScrollArea::Pan);
     mListView->setScrollingStyle(HbScrollArea::PanOrFlick); 
+    mListView->setFrictionEnabled(true);
     
     mListViewX = mListView->pos().x();
+    
+    grabGesture(Qt::SwipeGesture);
 
     LOGS_QDEBUG( "logs [UI] <- LogsRecentCallsView::initListWidget() " );
 }
@@ -401,7 +394,7 @@ void LogsRecentCallsView::updateFilter(LogsFilter::FilterType type)
 void LogsRecentCallsView::updateViewName()
 {
     if ( mViewName ) {
-       mViewName->setTitleText( mTitleMap.value(mConversionMap.value(mCurrentView))); 
+        mViewName->setHeading( mTitleMap.value(mConversionMap.value(mCurrentView))); 
     }
 }
 
@@ -449,39 +442,69 @@ LogsFilter::FilterType LogsRecentCallsView::getFilter(LogsServices::LogsView vie
 }
 
 // -----------------------------------------------------------------------------
-// LogsRecentCallsView::initializeGestures
-// Gestures are added a bit ackwardly as scene (of list) needs to be present
-// at gesture addition phase and we need to add gestures each time list 
-// changes its gesture filter.
+// LogsRecentCallsView::gestureEvent
 // -----------------------------------------------------------------------------
 //
-void LogsRecentCallsView::initializeGestures(HbGestureSceneFilter* filter)
+void LogsRecentCallsView::gestureEvent(QGestureEvent *event)
 {
-    LOGS_QDEBUG( "logs [UI] -> LogsRecentCallsView::initializeGestures()" );
-    if (filter && mListView){
-        LOGS_QDEBUG( "logs [UI] Adding flick gestures" );
-        HbGesture* gesture = new HbGesture(HbGesture::left, 50);
-        filter->addGesture(gesture);
-        QObject::connect(gesture, SIGNAL(triggered(int)), this, SLOT(leftFlick(int)));
-        
-        gesture = new HbGesture(HbGesture::right, 50);
-        filter->addGesture(gesture);
-        QObject::connect(gesture, SIGNAL(triggered(int)), this, SLOT(rightFlick(int)));
-        
-        mListView->installSceneEventFilter(filter);
+    LOGS_QDEBUG( "logs [UI] -> LogsRecentCallsView::gestureEvent()" );
+    QGesture* gesture = event->gesture(Qt::SwipeGesture);
+    if (gesture) {
+        QSwipeGesture* swipe = static_cast<QSwipeGesture *>(gesture);
+        if (swipe->state() == Qt::GestureFinished) {
+            QSwipeGesture::SwipeDirection direction = swipeAngleToDirection(
+                    swipe->swipeAngle(), logsSwipeAngleDelta);
+            if (mViewManager.mainWindow().orientation() == Qt::Vertical) {
+                if (direction == QSwipeGesture::Left) {
+                    leftFlick();
+                    event->accept(Qt::SwipeGesture);
+                } else if (direction == QSwipeGesture::Right) {
+                    rightFlick();
+                    event->accept(Qt::SwipeGesture);
+                }
+            } else {
+                if (direction == QSwipeGesture::Down) {
+                    rightFlick();
+                    event->accept(Qt::SwipeGesture);
+                } else if (direction == QSwipeGesture::Up) {
+                    leftFlick();
+                    event->accept(Qt::SwipeGesture);
+                }
+            }
+        }
     }
-    LOGS_QDEBUG( "logs [UI] <- LogsRecentCallsView::initializeGestures()" );
 }
 
+// -----------------------------------------------------------------------------
+// LogsRecentCallsView::swipeAngleToDirection
+// -----------------------------------------------------------------------------
+//
+QSwipeGesture::SwipeDirection LogsRecentCallsView::swipeAngleToDirection(
+        int angle, int delta)
+{
+    QSwipeGesture::SwipeDirection direction(QSwipeGesture::NoDirection);
+    if ((angle > 90-delta) && (angle < 90+delta)) {
+        direction = QSwipeGesture::Up;
+    } else if ((angle > 270-delta) && (angle < 270+delta)) {
+        direction = QSwipeGesture::Down;
+    } else if (((angle >= 0) && (angle < delta)) 
+            || ((angle > 360-delta) && (angle <= 360))) {
+        direction = QSwipeGesture::Right;
+    } else if ((angle > 180-delta) && (angle < 180+delta)) {
+        direction = QSwipeGesture::Left;
+    }
+    LOGS_QDEBUG_4( "logs [UI] LogsRecentCallsView::swipeAngleToDirection() angle: ",
+            angle, " direction: ", direction );
+    return direction;    
+}
 
 // -----------------------------------------------------------------------------
 // LogsRecentCallsView::leftFlick
 // -----------------------------------------------------------------------------
 //
-void LogsRecentCallsView::leftFlick(int value)
+void LogsRecentCallsView::leftFlick()
 {
     LOGS_QDEBUG( "logs [UI] -> LogsRecentCallsView::leftFlick()" );
-    Q_UNUSED(value);
 	if ( mConversionMap.value(mCurrentView) + 1 < mTitleMap.count() ){
     	LogsBaseView::LogsViewMap viewmap = 
             static_cast<LogsBaseView::LogsViewMap>(mConversionMap.value(mCurrentView) +1);
@@ -497,10 +520,9 @@ void LogsRecentCallsView::leftFlick(int value)
 // LogsRecentCallsView::rightFlick
 // -----------------------------------------------------------------------------
 //
-void LogsRecentCallsView::rightFlick(int value)
+void LogsRecentCallsView::rightFlick()
 {
     LOGS_QDEBUG( "logs [UI] -> LogsRecentCallsView::rightFlick()" );
-    Q_UNUSED(value);
     if ( mConversionMap.value(mCurrentView) > 0 ){
     	LogsBaseView::LogsViewMap viewmap = 
             static_cast<LogsBaseView::LogsViewMap>(mConversionMap.value(mCurrentView) - 1);
@@ -552,7 +574,7 @@ void LogsRecentCallsView::dissappearByFadingComplete()
 
     // Previous view name has dissappeared by fading, set new view name 
     // as it is brought visible by effect
-    mViewName->setTitleText( mTitleMap.value(mConversionMap.value(mAppearingView)) );
+    mViewName->setHeading( mTitleMap.value(mConversionMap.value(mAppearingView)) );
     
     LOGS_QDEBUG( "logs [UI] <- LogsRecentCallsView::dissappearByFadingComplete()" )
 }
@@ -566,7 +588,7 @@ void LogsRecentCallsView::dissappearByMovingComplete()
     LOGS_QDEBUG( "logs [UI] -> LogsRecentCallsView::dissappearByMovingComplete()" )
     
     updateView( mAppearingView );
-
+    
     LOGS_QDEBUG( "logs [UI] <- LogsRecentCallsView::dissappearByMovingComplete()" )
 }
 
@@ -606,7 +628,7 @@ void LogsRecentCallsView::updateWidgetsSizeAndLayout()
     LOGS_QDEBUG( "logs [UI] -> LogsRecentCallsView::updateWidgetsSizeAndLayout()" );
     if ( mListView ) {
         updateListLayoutName(*mListView);
-        updateListSize(mLayoutSectionName);
+        updateListSize();
     }
     LOGS_QDEBUG( "logs [UI] <- LogsRecentCallsView::updateWidgetsSizeAndLayout()" );
 }

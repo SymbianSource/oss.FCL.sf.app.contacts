@@ -18,158 +18,117 @@
 #include <QtTest/QtTest>
 #include <QObject>
 #include <qtcontacts.h>
-#include <hbtoolbar.h>
+#include <hblistview.h>
+#include <hbview.h>
+#include <hbaction.h>
 
 #include "cntcollectionview.h"
-#include "cntviewmanager.h"
+#include "cntcollectionlistmodel.h"
 #include "cntmainwindow.h"
 
 #include "hbstubs_helper.h"
 
 #include "t_cntcollectionview.h"
 
-void TestCntCollectionView::initTestCase()
+void TestCntCollectionView::init()
 {
-    mWindow = 0;
-    mViewManager = 0;
-    mCollectionView = 0;
-}
-
-void TestCntCollectionView::createClasses()
-{
-    mWindow = new CntMainWindow(0, CntViewParameters::noView);
-    mViewManager = new CntViewManager(mWindow, CntViewParameters::noView);
-    mCollectionView = new CntCollectionView(mViewManager);
-    mWindow->addView(mCollectionView);
-    mWindow->setCurrentView(mCollectionView);
-
-    // check that we have a view
-    QVERIFY(mWindow != 0);
-    QVERIFY(mViewManager != 0);
+    mViewManager = new TestViewManager();
+    mCollectionView = new CntCollectionView();
+    
     QVERIFY(mCollectionView != 0);
+    
+    CntViewParameters args( CntViewParameters::collectionView );
+    mCollectionView->activate( mViewManager, args );
 }
 
-void TestCntCollectionView::aboutToCloseView()
+void TestCntCollectionView::cleanup()
 {
-    mCollectionView->aboutToCloseView();
-    QVERIFY(static_cast<CntBaseView*>(mWindow->currentView())->viewId() == CntViewParameters::namesView);
-}
-
-void TestCntCollectionView::handleExecutedCommand()
-{
-    delete mCollectionView;
-    mCollectionView = 0;
-    
-    mCollectionView = new CntCollectionView(mViewManager, 0);
-    mWindow->addView(mCollectionView);
-    mWindow->setCurrentView(mCollectionView);
-    
-    QList<QContactLocalId> ids = mCollectionView->contactManager()->contacts();
-    mCollectionView->contactManager()->removeContacts(&ids);
-    
-    QContact firstGroup;
-    firstGroup.setType(QContactType::TypeGroup);
-    QContactName firstGroupName;
-    firstGroupName.setCustomLabel("groupname");
-    firstGroup.saveDetail(&firstGroupName);
-    mCollectionView->contactManager()->saveContact(&firstGroup);
-    mCollectionView->setDataModel();
-    
-    mCollectionView->handleExecutedCommand("dummy", QContact());
-    QVERIFY(mCollectionView->listView()->model()->rowCount() == 2);
-    
-    QContactDetailFilter groupFilter;
-    groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
-    groupFilter.setValue(QString(QLatin1String(QContactType::TypeGroup)));
-
-    QList<QContactLocalId> groupContactIds = mCollectionView->contactManager()->contacts(groupFilter);
-    mCollectionView->handleExecutedCommand("delete", mCollectionView->contactManager()->contact(groupContactIds.at(0)));
-    QVERIFY(mCollectionView->listView()->model()->rowCount() == 1);
-}
-
-void TestCntCollectionView::addActionsToToolBar()
-{   
-    HbStubHelper::reset();
-    mCollectionView->addActionsToToolBar();
-    QVERIFY(HbStubHelper::widgetActionsCount() == 4);
-}
-
-void TestCntCollectionView::setDataModel()
-{
-    mWindow->removeView(mCollectionView);
-    delete mCollectionView;
-    mCollectionView = 0;
-    
-    mCollectionView = new CntCollectionView(mViewManager, 0);
-    mWindow->addView(mCollectionView);
-    mWindow->setCurrentView(mCollectionView);
-    
-    mCollectionView->setDataModel();
-    QVERIFY(mCollectionView->listView()->model() != 0);
-}
-
-void TestCntCollectionView::onLongPressed()
-{
-    mWindow->removeView(mCollectionView);
-    delete mCollectionView;
-    mCollectionView = 0;
-    
-    mCollectionView = new CntCollectionView(mViewManager, 0);
-    mWindow->addView(mCollectionView);
-    mWindow->setCurrentView(mCollectionView);
-    
-    QList<QContactLocalId> ids = mCollectionView->contactManager()->contacts();
-    mCollectionView->contactManager()->removeContacts(&ids);
-    
-    QContact firstGroup;
-    firstGroup.setType(QContactType::TypeGroup);
-    QContactName firstGroupName;
-    firstGroupName.setCustomLabel("groupname");
-    firstGroup.saveDetail(&firstGroupName);
-    mCollectionView->contactManager()->saveContact(&firstGroup);
-    mCollectionView->setDataModel();
-    
-    QModelIndex favIndex = mCollectionView->listView()->model()->index(0, 0);
-    
-    HbStubHelper::reset();
-    mCollectionView->onLongPressed(mCollectionView->listView()->itemByIndex(favIndex), QPointF());
-    QVERIFY(HbStubHelper::widgetActionsCount() == 2);
-    
-    QModelIndex userGroupIndex = mCollectionView->listView()->model()->index(1, 0);
-    
-    HbStubHelper::reset();
-    mCollectionView->onLongPressed(mCollectionView->listView()->itemByIndex(userGroupIndex), QPointF());
-    QVERIFY(HbStubHelper::widgetActionsCount() == 3);
-}
-
-void TestCntCollectionView::onListViewActivated()
-{
-    QModelIndex favIndex = mCollectionView->listView()->model()->index(0, 0);
-    
-    mCollectionView->onListViewActivated(favIndex);
-    QVERIFY(static_cast<CntBaseView*>(mWindow->currentView())->viewId() == CntViewParameters::collectionFavoritesView);
-    
-    delete mCollectionView;
-    mCollectionView = 0;
-    
-    mCollectionView = new CntCollectionView(mViewManager, 0);
-    mWindow->addView(mCollectionView);
-    mWindow->setCurrentView(mCollectionView);
-    
-    mCollectionView->setDataModel();
-    
-    QModelIndex userGroupIndex = mCollectionView->listView()->model()->index(1, 0);
-    
-    mCollectionView->onListViewActivated(userGroupIndex);
-    QVERIFY(static_cast<CntBaseView*>(mWindow->currentView())->viewId() == CntViewParameters::groupActionsView);
-}
-
-void TestCntCollectionView::cleanupTestCase()
-{
+    mCollectionView->deactivate();
     delete mViewManager;
     mViewManager = 0;
-    delete mWindow;
-    mWindow = 0;
+    delete mCollectionView;
+    mCollectionView = 0;
+}
+
+void TestCntCollectionView::testActivate()
+{
+    // activate already called in init()
+    QVERIFY(mCollectionView->mListView->model() != 0);
+    QVERIFY(mCollectionView->mView != 0);
+    QVERIFY(mCollectionView->mView->navigationAction() == mCollectionView->mSoftkey);
+    QVERIFY(!mCollectionView->mDeleteGroupsAction->isEnabled());
+    
+    QContact group;
+    group.setType(QContactType::TypeGroup);
+    QContactName groupName;
+    groupName.setCustomLabel("group");
+    group.saveDetail(&groupName);
+    mViewManager->contactManager("symbiam")->saveContact(&group);
+    
+    mCollectionView->mDeleteGroupsAction->setEnabled(true);
+    CntViewParameters args( CntViewParameters::collectionView );
+    mCollectionView->activate( mViewManager, args );
+    
+    QVERIFY(mCollectionView->mDeleteGroupsAction->isEnabled());
+    QVERIFY(mCollectionView->mView->navigationAction() == mCollectionView->mSoftkey);
+}
+
+void TestCntCollectionView::testShowPreviousView()
+{
+    mCollectionView->showPreviousView();
+}
+
+void TestCntCollectionView::testOpenEmptyFavoritesGroup()
+{
+    QModelIndex favIndex = mCollectionView->mListView->model()->index(0, 0);
+    
+    mCollectionView->openGroup(favIndex);
+}
+
+void TestCntCollectionView::testOpenUserGroup()
+{
+    QContact firstGroup;
+    firstGroup.setType(QContactType::TypeGroup);
+    QContactName firstGroupName;
+    firstGroupName.setCustomLabel("groupname");
+    firstGroup.saveDetail(&firstGroupName);
+    
+    mViewManager->contactManager("symbiam")->saveContact(&firstGroup);
+    mCollectionView->refreshDataModel();
+    
+    QModelIndex userGroupIndex = mCollectionView->mListView->model()->index(1, 0);
+    
+    mCollectionView->openGroup(userGroupIndex);
+}
+
+void TestCntCollectionView::testShowContextMenu()
+{
+    QContact firstGroup;
+    firstGroup.setType(QContactType::TypeGroup);
+    QContactName firstGroupName;
+    firstGroupName.setCustomLabel("groupname");
+    firstGroup.saveDetail(&firstGroupName);
+    
+    mViewManager->contactManager("symbiam")->saveContact(&firstGroup);
+    mCollectionView->refreshDataModel();
+    
+    QModelIndex favIndex = mCollectionView->mListView->model()->index(0, 0);
+    
+    HbStubHelper::reset();
+    mCollectionView->showContextMenu(mCollectionView->mListView->itemByIndex(favIndex), QPointF());
+    QVERIFY(HbStubHelper::widgetActionsCount() == 1);
+    
+    QModelIndex userGroupIndex = mCollectionView->mListView->model()->index(1, 0);
+    
+    HbStubHelper::reset();
+    mCollectionView->showContextMenu(mCollectionView->mListView->itemByIndex(userGroupIndex), QPointF());
+    QVERIFY(HbStubHelper::widgetActionsCount() == 2);
+}
+
+void TestCntCollectionView::testRefreshDataModel()
+{
+    mCollectionView->refreshDataModel();
+    QVERIFY(mCollectionView->mListView->model() == mCollectionView->mModel);
 }
 
 // EOF

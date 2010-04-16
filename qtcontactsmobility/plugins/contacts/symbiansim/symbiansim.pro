@@ -7,18 +7,13 @@
 TEMPLATE = lib
 CONFIG += plugin
 TARGET = $$qtLibraryTarget(mobapicontactspluginsymbiansim)
+
 include(../../../common.pri)
+include(symbiansim_defines.pri)
+
 symbian: { 
     load(data_caging_paths)
     
-    defFiles = \
-        "$${LITERAL_HASH}ifdef WINSCW" \
-        "DEFFILE bwins/$${TARGET}.def" \
-        "$${LITERAL_HASH}elif defined EABI" \
-        "DEFFILE eabi/$${TARGET}.def" \
-        "$${LITERAL_HASH}endif "
-    MMP_RULES += defFiles
-        
     TARGET.CAPABILITY = ALL -TCB
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.UID3 = 0x2002AC85
@@ -31,36 +26,33 @@ symbian: {
     INCLUDEPATH += $$SOURCE_DIR/contacts/details
     INCLUDEPATH += $$SOURCE_DIR/contacts/filters
     INCLUDEPATH += $$SOURCE_DIR/contacts/requests
-
-    HEADERS += \
-        $$PUBLIC_HEADERS \
-        inc/cntsymbiansimengine.h
-      
-    SOURCES += \
-        src/cntsymbiansimengine.cpp
-
+    HEADERS += $$PUBLIC_HEADERS \
+        inc/cntsymbiansimengine.h \
+        inc/cntsimstore.h \
+        inc/cntsimstoreprivate.h \
+        inc/cntabstractsimrequest.h \
+        inc/cntsimcontactfetchrequest.h \
+        inc/cntsimcontactlocalidfetchrequest.h \
+        inc/cntsimcontactremoverequest.h \
+        inc/cntsimcontactsaverequest.h \
+        inc/cntsimdetaildefinitionfetchrequest.h
+        
+    SOURCES += src/cntsymbiansimengine.cpp \
+        src/cntsimstore.cpp \
+        src/cntsimstoreprivate.cpp \
+        src/cntabstractsimrequest.cpp \
+        src/cntsimcontactfetchrequest.cpp \
+        src/cntsimcontactlocalidfetchrequest.cpp \
+        src/cntsimcontactremoverequest.cpp \
+        src/cntsimcontactsaverequest.cpp \
+        src/cntsimdetaildefinitionfetchrequest.cpp
+        
     CONFIG += mobility
     MOBILITY = contacts
-    
-    qtAddLibrary(QtContacts)
 
     LIBS += -lcntmodel \
             -lflogger \
             -lefsrv
-
-    # Uncomment this to use Etel test server (instead of real Etel APIs)
-    #DEFINES += SYMBIANSIM_BACKEND_USE_ETEL_TESTSERVER
-
-    # add either real or test libraries for Etel
-    contains(DEFINES, SYMBIANSIM_BACKEND_USE_ETEL_TESTSERVER): {
-        message("Using Etel Test Server (not real Etel)")
-        INCLUDEPATH +=$${EPOCROOT}epoc32/include/internal
-        LIBS += -leteltestserverclient
-    } else {
-        message("Using real Etel APIs")
-        LIBS += -letel \
-                -letelmm
-    }
 
     target.path = /sys/bin
     INSTALLS += target

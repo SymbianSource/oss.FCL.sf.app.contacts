@@ -18,6 +18,7 @@
 #ifndef HBSTUB_HELPER_H
 #define HBSTUB_HELPER_H
 
+#include "cntabstractviewmanager.h"
 /**
 *
 *
@@ -30,4 +31,17 @@ class HbStubHelper
         static bool notificationDialogOpened();
 };
 
+class TestViewManager : public CntAbstractViewManager
+{
+public:
+    TestViewManager();
+    ~TestViewManager();
+public:
+    void changeView( const CntViewParameters& aArgs );
+    void back( const CntViewParameters& aArgs );
+    QContactManager* contactManager(const QString& aType);
+    
+private:
+    QContactManager* mManager;
+};
 #endif

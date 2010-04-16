@@ -127,7 +127,7 @@ void TestCntContactCardDataContainer::initializeData()
     
     QVariantList values1 = mDataContainer->mDataPointer->mDataList.value(1);
     QVERIFY(values1[0].toString().compare("message") == 0);
-    QVERIFY(values1[1].toString().compare("send message", Qt::CaseInsensitive) == 0);
+    QVERIFY(values1[1].toString().compare(hbTrId("txt_phob_menu_send_message"), Qt::CaseInsensitive) == 0);
     QVERIFY(values1[2].toString().compare("1234567890") == 0);
     
     QVariantList values2 = mDataContainer->mDataPointer->mDataList.value(2);
@@ -223,7 +223,6 @@ void TestCntContactCardDataContainer::initializeDetailsData()
     day->setDate(QDate(1,1,1));
     contact->saveDetail(day);
     QContactAddress* address = new QContactAddress();
-    address->setContexts("h");
     address->setPostOfficeBox("1");
     address->setStreet("s");
     address->setPostcode("12345");
@@ -235,26 +234,36 @@ void TestCntContactCardDataContainer::initializeDetailsData()
     //calls also mDataContainer->initializeDetailsData()
     createClass(contact);
     
-    QVERIFY(mDataContainer->mDataPointer->mDataList.count() == 4);
+    //If location feature enabled , datalist will have additional item( maptile image ) 
+    if ( mDataContainer->mLocationFeatureEnabled )
+    {
+        //TODO: check this after location integration is in the build!
+        QVERIFY(mDataContainer->mDataPointer->mDataList.count() == 4 );
+    }
+    else
+    {
+        QVERIFY(mDataContainer->mDataPointer->mDataList.count() == 4);
+    }
+    
     QVERIFY(mDataContainer->mDataPointer->mDataList.count() == mDataContainer->rowCount() );
     
     //separator
     QVariantList values = mDataContainer->mDataPointer->mDataList.value(0);
-    QVERIFY(values[0].toString().compare("Details") == 0);
+    QVERIFY(values[0].toString().compare(hbTrId("txt_phob_subtitle_details")) == 0);
 
     QVariantList values1 = mDataContainer->mDataPointer->mDataList.value(1);
     QVERIFY(values1[0].toString().compare("") == 0);
-    QVERIFY(values1[1].toString().compare("Address (h):") == 0);
+    QVERIFY(values1[1].toString().compare(hbTrId("txt_phob_formlabel_address")) == 0);
     QVERIFY(values1[2].toString().compare("1 s 12345 l r c") == 0);
     
     QVariantList values2 = mDataContainer->mDataPointer->mDataList.value(2);
     QVERIFY(values2[0].toString().compare("") == 0);
-    QVERIFY(values2[1].toString().compare("Birthday:") == 0);
+    QVERIFY(values2[1].toString().compare(hbTrId("txt_phob_formlabel_birthday")) == 0);
     QVERIFY(values2[2].toString().compare(day->date().toString("dd MMMM yyyy")) == 0);
     
     QVariantList values3 = mDataContainer->mDataPointer->mDataList.value(3);
     QVERIFY(values3[0].toString().compare("") == 0);
-    QVERIFY(values3[1].toString().compare("Note:") == 0);
+    QVERIFY(values3[1].toString().compare(hbTrId("txt_phob_formlabel_note2")) == 0);
     QVERIFY(values3[2].toString().compare(note->note()) == 0);
          
     delete contact;
@@ -273,13 +282,66 @@ void TestCntContactCardDataContainer::initializeDetailsData()
     //calls also mDataContainer->initializeDetailsData()
     createClass(contact);
     
-    QVERIFY(mDataContainer->mDataPointer->mDataList.count() == 2);
+    //If location feature enabled , datalist will have additional item( maptile image ) 
+    if ( mDataContainer->mLocationFeatureEnabled )
+    {
+        //TODO: check this after location integration is in the build!
+        QVERIFY(mDataContainer->mDataPointer->mDataList.count() == 2 );
+    }
+    else
+    {
+        QVERIFY(mDataContainer->mDataPointer->mDataList.count() == 2);
+    }
     QVERIFY(mDataContainer->mDataPointer->mDataList.count() == mDataContainer->rowCount());
     
     values = mDataContainer->mDataPointer->mDataList.value(1);
     QVERIFY(values[0].toString().compare("") == 0);
-    QVERIFY(values[1].toString().compare("Address:") == 0);
+    QVERIFY(values[1].toString().compare(hbTrId("txt_phob_formlabel_address")) == 0);
     QVERIFY(values[2].toString().compare("sweden") == 0);
+    
+    delete contact;
+    delete address;   
+}
+
+void TestCntContactCardDataContainer::initializeDetailsDataWithMaptile()
+{
+    QContact* contact = new QContact();
+    
+    //Set the contact Id
+    QContactId contactId ;
+    contactId.setLocalId( 2222 );
+    
+    QContactAddress* address = new QContactAddress();
+    address->setLocality("Helsinki");
+    address->setCountry("Finland");
+    contact->saveDetail(address);
+    
+    //calls also mDataContainer->initialsizeDetailsData()
+    createClass(contact);
+    
+    QVariantList values;
+    
+    //If location feature enabled , datalist will have additional item( maptile image ) 
+    if ( mDataContainer->mLocationFeatureEnabled )
+    {
+        //TODO: check this after location integration is in the build!
+        QVERIFY(mDataContainer->mDataPointer->mDataList.count() == 2);
+        /*
+        values = mDataContainer->mDataPointer->mDataList.value(2);
+        QVERIFY(values[0].toString().compare("22223.png") == 0);
+        */
+    }
+    else
+    {
+        QVERIFY(mDataContainer->mDataPointer->mDataList.count() == 2);
+    }
+    
+    QVERIFY(mDataContainer->mDataPointer->mDataList.count() == mDataContainer->rowCount());
+    
+    values = mDataContainer->mDataPointer->mDataList.value(1);
+    QVERIFY(values[0].toString().compare("") == 0);
+    QVERIFY(values[1].toString().compare(hbTrId("txt_phob_formlabel_address")) == 0);
+    QVERIFY(values[2].toString().compare("Helsinki Finland") == 0);
     
     delete contact;
     delete address;   

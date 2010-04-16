@@ -109,10 +109,10 @@ class LogsReaderStateContext {
         virtual QHash<QString, ContactCacheEntry>& contactCache() = 0;
         
         /**
-         * Get ID of the event to be modified
+         * Get ID of the event to be handled
          * @return ID of the event
          */
-        virtual int modifyingEventId() = 0;
+        virtual int currentEventId() = 0;
         
         /**
          * Get log client
@@ -125,6 +125,12 @@ class LogsReaderStateContext {
          * @return true if recent view
          */
         virtual bool isRecentView() = 0;
+        
+        /**
+         * Get event container for duplicated events
+         * @return duplicated events
+         */
+        virtual QList<LogsEvent*>& duplicatedEvents() = 0;
 };
 
 
