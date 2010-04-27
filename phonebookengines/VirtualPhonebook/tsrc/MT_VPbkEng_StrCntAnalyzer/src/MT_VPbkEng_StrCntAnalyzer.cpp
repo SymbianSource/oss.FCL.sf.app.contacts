@@ -497,10 +497,59 @@ const TCaseInfoInternal& CMT_VPbkEng_StrCntAnalyzer::Case (
         // declaration in front of the method name, e.g. 
         // CMT_VPbkEng_StrCntAnalyzer::PrintTest. Otherwise the compiler
         // gives errors.
-#include "MT_VPbkEng_StrCntAnalyzertesttable.cpp"                                
-        // Example how to use OOM functionality
-        //OOM_ENTRY( "Loop test with OOM", CMT_VPbkEng_StrCntAnalyzer::LoopTest, ETrue, 2, 3),
-        //OOM_FUNCENTRY( CMT_VPbkEng_StrCntAnalyzer::PrintTest, ETrue, 1, 3 ),
+        //Commented for raptor build
+        //#include "MT_VPbkEng_StrCntAnalyzertesttable.cpp"    
+
+        ENTRY("HasFieldL","CMT_VPbkEng_StrCntAnalyzer",
+        	CMT_VPbkEng_StrCntAnalyzer::Setup,
+        	CMT_VPbkEng_StrCntAnalyzer::TestHasField,
+        	CMT_VPbkEng_StrCntAnalyzer::Teardown),
+        
+        ENTRY("HasFieldL CommAction","CMT_VPbkEng_StrCntAnalyzer",
+        	CMT_VPbkEng_StrCntAnalyzer::Setup,
+        	CMT_VPbkEng_StrCntAnalyzer::TestHasFieldCA,
+        	CMT_VPbkEng_StrCntAnalyzer::Teardown),
+        
+        ENTRY("IsFieldTypeSupportedL","CMT_VPbkEng_StrCntAnalyzer",
+        	CMT_VPbkEng_StrCntAnalyzer::Setup,
+        	CMT_VPbkEng_StrCntAnalyzer::TestIsFieldTypeSupported,
+        	CMT_VPbkEng_StrCntAnalyzer::Teardown),
+        
+        ENTRY("IsFieldTypeSupportedL CommAction","CMT_VPbkEng_StrCntAnalyzer",
+        	CMT_VPbkEng_StrCntAnalyzer::Setup,
+        	CMT_VPbkEng_StrCntAnalyzer::TestIsFieldTypeSupportedCA,
+        	CMT_VPbkEng_StrCntAnalyzer::Teardown),
+        
+        ENTRY("IsFieldTypeIncludedL true","CMT_VPbkEng_StrCntAnalyzer",
+        	CMT_VPbkEng_StrCntAnalyzer::Setup,
+        	CMT_VPbkEng_StrCntAnalyzer::TestIsFieldTypeIncludedTL,
+        	CMT_VPbkEng_StrCntAnalyzer::Teardown),
+        
+        ENTRY("IsFieldTypeIncludedL false","CMT_VPbkEng_StrCntAnalyzer",
+        	CMT_VPbkEng_StrCntAnalyzer::Setup,
+        	CMT_VPbkEng_StrCntAnalyzer::TestIsFieldTypeIncludedFL,
+        	CMT_VPbkEng_StrCntAnalyzer::Teardown),
+        
+        ENTRY("IsFieldTypeIncludedL false","CMT_VPbkEng_StrCntAnalyzer",
+        	CMT_VPbkEng_StrCntAnalyzer::Setup,
+        	CMT_VPbkEng_StrCntAnalyzer::TestIsFieldTypeIncludedFLCA,
+        	CMT_VPbkEng_StrCntAnalyzer::Teardown),
+        
+        ENTRY("IsFieldTypeIncludedL2 true","CMT_VPbkEng_StrCntAnalyzer",
+        	CMT_VPbkEng_StrCntAnalyzer::Setup,
+        	CMT_VPbkEng_StrCntAnalyzer::TestIsFieldTypeIncludedTL2,
+        	CMT_VPbkEng_StrCntAnalyzer::Teardown),
+        
+        ENTRY("IsFieldTypeIncludedL2 flase","CMT_VPbkEng_StrCntAnalyzer",
+        	CMT_VPbkEng_StrCntAnalyzer::Setup,
+        	CMT_VPbkEng_StrCntAnalyzer::TestIsFieldTypeIncludedFL2,
+        	CMT_VPbkEng_StrCntAnalyzer::Teardown),
+        
+        ENTRY("IsFieldTypeIncludedL2 flase","CMT_VPbkEng_StrCntAnalyzer",
+        	CMT_VPbkEng_StrCntAnalyzer::Setup,
+        	CMT_VPbkEng_StrCntAnalyzer::TestIsFieldTypeIncludedFL2CA,
+        	CMT_VPbkEng_StrCntAnalyzer::Teardown),
+        
         };
 
     // Verify that case number is valid

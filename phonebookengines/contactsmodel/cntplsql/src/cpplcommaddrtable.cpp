@@ -694,79 +694,154 @@ match digits are specified.
 @return Array of contact IDs which are candidate matches.
 */
 CContactIdArray* CPplCommAddrTable::MatchPhoneNumberL(const TDesC& aNumber, const TInt aMatchLengthFromRight)
-	{
-	CContactIdArray* phoneMatchArray = CContactIdArray::NewLC();
+    {
+    CContactIdArray* phoneMatchArray = CContactIdArray::NewLC();
 
-	TInt numLowerDigits = aMatchLengthFromRight;
-	TInt numUpperDigits = 0;
+    TInt numLowerDigits = aMatchLengthFromRight;
+    TInt numUpperDigits = 0;
 
-	if(numLowerDigits > KLowerSevenDigits)
-		{
-		// New style matching.
-		numLowerDigits = KLowerSevenDigits;
-		numUpperDigits = aMatchLengthFromRight - KLowerSevenDigits;
-		}
+    if(numLowerDigits > KLowerSevenDigits)
+        {
+        // New style matching.
+        numLowerDigits = KLowerSevenDigits;
+        numUpperDigits = aMatchLengthFromRight - KLowerSevenDigits;
+        }
 
-	TMatch phoneDigits = CreatePaddedPhoneDigitsL(aNumber, numLowerDigits, numUpperDigits);
+    TMatch phoneDigits = CreatePaddedPhoneDigitsL(aNumber, numLowerDigits, numUpperDigits);
 
-	if (phoneDigits.iNumLowerDigits + phoneDigits.iNumUpperDigits > 0)
-		{
-		// build statement
-		RSqlStatement stmnt;
-		CleanupClosePushL(stmnt);
-		stmnt.PrepareL(iDatabase, iMatchSelectStmnt->SqlStringL() );
+    if (phoneDigits.iNumLowerDigits + phoneDigits.iNumUpperDigits > 0)
+        {
+        // build statement
+        RSqlStatement stmnt;
+        CleanupClosePushL(stmnt);
+        stmnt.PrepareL(iDatabase, iMatchSelectStmnt->SqlStringL() );
 
-		const TInt KValueParamIndex(KFirstParam);			// first parameter in query...
-		const TInt KTypeParamIndex(KValueParamIndex + 1);	// ...and the second.
+        const TInt KValueParamIndex(KFirstParam);           // first parameter in query...
+        const TInt KTypeParamIndex(KValueParamIndex + 1);   // ...and the second.
 
-    	User::LeaveIfError(stmnt.BindInt(KValueParamIndex, phoneDigits.iLowerSevenDigits ));
-    	User::LeaveIfError(stmnt.BindInt(KTypeParamIndex, EPhoneNumber ));
+        User::LeaveIfError(stmnt.BindInt(KValueParamIndex, phoneDigits.iLowerSevenDigits ));
+        User::LeaveIfError(stmnt.BindInt(KTypeParamIndex, EPhoneNumber ));
 
-		// fetch the list of any matching contact ids
-		TInt err(KErrNone);
-		const TInt KContactIdIdx(iMatchSelectStmnt->ParameterIndex(KCommAddrContactId() ) );
-		const TInt KExtraValueIdx(iMatchSelectStmnt->ParameterIndex(KCommAddrExtraValue() ) );
-		while ((err = stmnt.Next() ) == KSqlAtRow)
-			{
-			if (aMatchLengthFromRight <= KLowerSevenDigits)
-				{
-				// Matching 7 or less digits...we've already matched.
-				phoneMatchArray->AddL(stmnt.ColumnInt(KContactIdIdx) );
-				}
-			else
-				{
-				// Check the upper digits...
-				TInt32 storedUpperDigits(0);
-				TPtrC extValString = stmnt.ColumnTextL(KExtraValueIdx);
-				User::LeaveIfError(TLex(extValString).Val(storedUpperDigits) );
+        // fetch the list of any matching contact ids
+        TInt err(KErrNone);
+        const TInt KContactIdIdx(iMatchSelectStmnt->ParameterIndex(KCommAddrContactId() ) );
+        const TInt KExtraValueIdx(iMatchSelectStmnt->ParameterIndex(KCommAddrExtraValue() ) );
+        while ((err = stmnt.Next() ) == KSqlAtRow)
+            {
+            if (aMatchLengthFromRight <= KLowerSevenDigits)
+                {
+                // Matching 7 or less digits...we've already matched.
+                phoneMatchArray->AddL(stmnt.ColumnInt(KContactIdIdx) );
+                }
+            else
+                {
+                // Check the upper digits...
+                TInt32 storedUpperDigits(0);
+                TPtrC extValString = stmnt.ColumnTextL(KExtraValueIdx);
+                User::LeaveIfError(TLex(extValString).Val(storedUpperDigits) );
 
-				const TInt KDigitsToRemove = KMaxPhoneMatchLength - KLowerSevenDigits - phoneDigits.iNumUpperDigits;
-				for(TInt i = 0; i < KDigitsToRemove; ++i)
-					{
-					// repeatedly divide by 10 to lop off the appropriate number of digits from the right
-					storedUpperDigits /= 10;
-					}
+                const TInt KDigitsToRemove = KMaxPhoneMatchLength - KLowerSevenDigits - phoneDigits.iNumUpperDigits;
+                for(TInt i = 0; i < KDigitsToRemove; ++i)
+                    {
+                    // repeatedly divide by 10 to lop off the appropriate number of digits from the right
+                    storedUpperDigits /= 10;
+                    }
 
-				storedUpperDigits = TMatch::PadOutPhoneMatchNumber(storedUpperDigits, KDigitsToRemove);
+                storedUpperDigits = TMatch::PadOutPhoneMatchNumber(storedUpperDigits, KDigitsToRemove);
 
-				if (phoneDigits.iUpperDigits == storedUpperDigits)
-					{
-					phoneMatchArray->AddL(stmnt.ColumnInt(KContactIdIdx) );
-					}
-				}
-			}
+                if (phoneDigits.iUpperDigits == storedUpperDigits)
+                    {
+                    phoneMatchArray->AddL(stmnt.ColumnInt(KContactIdIdx) );
+                    }
+                }
+            }
 
-		// leave if we didn't complete going through the results properly
-		if(err != KSqlAtEnd)
-			{
-			User::Leave(err);
-			}
-		CleanupStack::PopAndDestroy(&stmnt);
-		}
+        // leave if we didn't complete going through the results properly
+        if(err != KSqlAtEnd)
+            {
+            User::Leave(err);
+            }
+        CleanupStack::PopAndDestroy(&stmnt);
+        }
 
-	CleanupStack::Pop(phoneMatchArray);
-	return phoneMatchArray;
-	}
+    CleanupStack::Pop(phoneMatchArray);
+    return phoneMatchArray;
+    }
+
+/**
+Returns an array of contact item IDs for all the contact items which may contain
+the specified telephone number in a telephone, fax or SMS type field.
+
+This is improved version of MatchPhoneNumberL method.
+The number is compared starting from the right side of the number and 
+the method returns an array of candidate matches.  
+Punctuation (e.g. spaces) and other alphabetic characters are ignored
+when comparing. Leading zeros are removed. Digits are compared up to 
+the lenght of shorter number.
+
+@param aNumber Phone number string.
+@return Array of contact IDs which are candidate matches.
+*/
+CContactIdArray* CPplCommAddrTable::BestMatchingPhoneNumberL(const TDesC& aNumber)
+    {
+    const TInt KUpperMaxLength = KMaxPhoneMatchLength - KLowerSevenDigits;
+
+    CContactIdArray* phoneMatchArray = CContactIdArray::NewLC();
+
+    TMatch phoneDigits = CreatePaddedPhoneDigitsL(aNumber, KLowerSevenDigits, KUpperMaxLength);
+
+    if (phoneDigits.iNumLowerDigits + phoneDigits.iNumUpperDigits > 0)
+        {
+        // build statement
+        RSqlStatement stmnt;
+        CleanupClosePushL(stmnt);
+        stmnt.PrepareL(iDatabase, iMatchSelectStmnt->SqlStringL());
+
+        const TInt KValueParamIndex(KFirstParam); // first parameter in query...
+        const TInt KTypeParamIndex(KValueParamIndex + 1); // ...and the second.
+
+        User::LeaveIfError(stmnt.BindInt(KValueParamIndex,
+                phoneDigits.iLowerSevenDigits));
+        User::LeaveIfError(stmnt.BindInt(KTypeParamIndex, EPhoneNumber));
+
+        // fetch the list of any matching contact ids
+        TInt err(KErrNone);
+        const TInt KContactIdIdx(iMatchSelectStmnt->ParameterIndex( KCommAddrContactId()));
+        const TInt KExtraValueIdx(iMatchSelectStmnt->ParameterIndex(KCommAddrExtraValue()));
+        while ((err = stmnt.Next()) == KSqlAtRow)
+            {
+            // Check the upper digits...
+            TInt32 number = phoneDigits.iUpperDigits;
+            TPtrC extValString = stmnt.ColumnTextL(KExtraValueIdx);
+            TInt32 storedUpperDigits;
+            User::LeaveIfError(TLex(extValString).Val(storedUpperDigits));
+            TInt32 stored = storedUpperDigits;
+
+            while ( (number != 0) && (stored != 0) &&
+                    (number % 10 == 0 || stored % 10 == 0) )
+                {
+                number /= 10;
+                stored /= 10;
+                }
+
+            if ( (phoneDigits.iUpperDigits == 0) || (storedUpperDigits == 0) ||
+                 (number == stored) )
+                {
+                phoneMatchArray->AddL(stmnt.ColumnInt(KContactIdIdx));
+                }
+            }
+
+        // leave if we didn't complete going through the results properly
+        if (err != KSqlAtEnd)
+            {
+            User::Leave(err);
+            }
+        CleanupStack::PopAndDestroy(&stmnt);
+        }
+
+    CleanupStack::Pop(phoneMatchArray);
+    return phoneMatchArray;
+    }
 
 
 /**
@@ -894,7 +969,6 @@ CPplCommAddrTable::TMatch CPplCommAddrTable::CreatePaddedPhoneDigitsL(const TDes
 
 	return phoneNumber;
 	}
-
 
 /**
 CPplCommAddrTable::TMatch constructor.

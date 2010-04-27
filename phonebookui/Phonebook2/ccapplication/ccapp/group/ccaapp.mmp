@@ -66,6 +66,8 @@ USERINCLUDE     ../../inc
 USERINCLUDE     ../sis
 USERINCLUDE     ../../../inc
 USERINCLUDE     ../../../../../ccservices/cmsservices/cmsengine/inc
+USERINCLUDE     ../../ccacommlauncherplugin/inc
+USERINCLUDE     ../../ccadetailsviewplugin/inc
 
 LIBRARY         euser.lib
 LIBRARY         apparc.lib

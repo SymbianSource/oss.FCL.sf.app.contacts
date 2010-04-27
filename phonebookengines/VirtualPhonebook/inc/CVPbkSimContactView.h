@@ -173,6 +173,12 @@ class CVPbkSimContactView :
                 const TViewContact& aRight );
         static TInt IdleSortCallback( TAny* aThis );
         
+    public:
+        TBool IsMatch( 
+               const RVPbkSimFieldTypeArray& aSortOrder,
+               TVPbkSimViewConstructionPolicy aConstructionPolicy,
+               const TDesC& aViewName );
+        
     private: // Data
         /// Own: The name of view that is given by the client
         HBufC* iViewName;

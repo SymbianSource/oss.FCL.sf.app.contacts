@@ -534,10 +534,49 @@ const TCaseInfoInternal& CUT_AddFavoritiesVisibility::Case (
         // declaration in front of the method name, e.g. 
         // CUT_AddFavoritiesVisibility::PrintTest. Otherwise the compiler
         // gives errors.
-        #include "UT_AddFavoritiesVisibilitytesttable.cpp"                                
-        // Example how to use OOM functionality
-        //OOM_ENTRY( "Loop test with OOM", CUT_AddFavoritiesVisibility::LoopTest, ETrue, 2, 3),
-        //OOM_FUNCENTRY( CUT_AddFavoritiesVisibility::PrintTest, ETrue, 1, 3 ),
+        //Removed for raptor build
+        //#include "UT_AddFavoritiesVisibilitytesttable.cpp"                                
+
+        ENTRY("AlwaysON","CUT_AddFavoritiesVisibility",
+        	CUT_AddFavoritiesVisibility::SetupAlwaysON,
+        	CUT_AddFavoritiesVisibility::TestAlwaysOnL,
+        	CUT_AddFavoritiesVisibility::Teardown),
+        
+        ENTRY("AlwaysOFF","CUT_AddFavoritiesVisibility",
+        	CUT_AddFavoritiesVisibility::SetupAlwaysOFF,
+        	CUT_AddFavoritiesVisibility::TestAlwaysOFFL,
+        	CUT_AddFavoritiesVisibility::Teardown),
+        
+        ENTRY("FirstTimeUse","CUT_AddFavoritiesVisibility",
+        	CUT_AddFavoritiesVisibility::SetupFirstTimeUse,
+        	CUT_AddFavoritiesVisibility::TestFirstTimeUseL,
+        	CUT_AddFavoritiesVisibility::Teardown),
+        
+        ENTRY("TCPromotionMinus1","CUT_AddFavoritiesVisibility",
+        	CUT_AddFavoritiesVisibility::SetupTCPromotionMinus1,
+        	CUT_AddFavoritiesVisibility::TestAlwaysOFFL,
+        	CUT_AddFavoritiesVisibility::Teardown),
+        
+        ENTRY("TCPromotionMinus5000","CUT_AddFavoritiesVisibility",
+        	CUT_AddFavoritiesVisibility::SetupTCPromotionMinus5000,
+        	CUT_AddFavoritiesVisibility::TestAlwaysOFFL,
+        	CUT_AddFavoritiesVisibility::Teardown),
+        
+        ENTRY("TCPromotion3","CUT_AddFavoritiesVisibility",
+        	CUT_AddFavoritiesVisibility::SetupTCPromotion3,
+        	CUT_AddFavoritiesVisibility::TestAlwaysOFFL,
+        	CUT_AddFavoritiesVisibility::Teardown),
+        
+        ENTRY("TCPromotion9999","CUT_AddFavoritiesVisibility",
+        	CUT_AddFavoritiesVisibility::SetupTCPromotion9999,
+        	CUT_AddFavoritiesVisibility::TestAlwaysOFFL,
+        	CUT_AddFavoritiesVisibility::Teardown),
+        
+        ENTRY("TestLeaveInClientCallback","CUT_AddFavoritiesVisibility",
+        	CUT_AddFavoritiesVisibility::SetupAlwaysON,
+        	CUT_AddFavoritiesVisibility::TestLeaveInClientCallbackL,
+        	CUT_AddFavoritiesVisibility::Teardown),
+        
         };
 
     // Verify that case number is valid

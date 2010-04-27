@@ -242,6 +242,17 @@ public:
 
 
 /**
+ * This interface defines a function to close the resource 
+ * which is running and depends on RSqlDatabase.
+ */
+class MLplSqlDatabaseObserver
+    {
+public:
+    virtual void OnCloseL() = 0;
+    };
+ 
+
+/**
 This interface provides a simplified way of querying the database.  The result
 of the query is typically an array of the contact IDs satisfying the given
 criteria.  For example, IDs of all the contacts changed since the given date.

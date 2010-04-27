@@ -1077,9 +1077,21 @@ void CPbk2ThumbnailManager::ContactViewUnavailable(
 void CPbk2ThumbnailManager::ContactAddedToView(
     MVPbkContactViewBase& /*aView*/, 
     TInt aIndex, 
-    const MVPbkContactLink& /*aContactLink*/ )
+    const MVPbkContactLink& aContactLink )
     {
-    iContactThumbnails.Insert( NULL, aIndex );
+    CPbk2TmItem* item = NULL;
+    TRAPD( err,
+        {
+        item = CPbk2TmItem::NewL( aContactLink.CloneLC(), aIndex );
+        CleanupStack::Pop();
+        });
+    if( KErrNone == err )
+        {
+        // set default icon index
+        item->SetIconArrayIndexAndId( iDefaultIconIndex, iDefaultIconId );
+        item->SetHasThumbnail( ETrue );
+        iContactThumbnails.Insert( item, aIndex );
+        }
     ResetIndexes();
     }
 

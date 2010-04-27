@@ -52,12 +52,6 @@ RESOURCE MENU_PANE r_pbk2_contacteditor_menupane
             },
         MENU_ITEM
             {
-	    command = EPbk2ExtensionAssignFromMapSelect;
-            txt = qtn_cca_opt_select;
-            flags = EEikMenuItemDimmed;
-	    },
-        MENU_ITEM
-            {
             command = EPbk2CmdEditorAddImage;
             txt = qtn_phob_opt_add_image;
             },

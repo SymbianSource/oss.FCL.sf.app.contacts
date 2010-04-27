@@ -836,7 +836,7 @@ void CViewSubSession::GetSortOrderL(const RMessage2& aMessage) const
 CNamedViewSubSession* CNamedViewSubSession::NewL(CViewManager& aViewManager,const RMessage2& aMessage)
 	{
 	CNamedViewSubSession* self=new(ELeave) CNamedViewSubSession(aViewManager);
-	CleanupStack::PushL(self);
+	CleanupClosePushL(*self); // CObject: Close will call the destructor.
 	self->ConstructL(aMessage);
 	CleanupStack::Pop(); // self.
 	return self;

@@ -180,6 +180,13 @@ class CPmapCmd : public CBase,
         		TVPbkFieldTypeParameter aAddressType );
         
         /**
+         * Sets CPosLandmark object with land mark name.
+         *
+         * @param  aLandmark        object have geocoordinates.
+         */
+        void SetLandmarkNameL(CPosLandmark& aLandmark);
+        
+        /**
          * Fills CPosLandmark object with Contact geocoordinates.
          *
          * @param  aLandmark 		object have geocoordinates.

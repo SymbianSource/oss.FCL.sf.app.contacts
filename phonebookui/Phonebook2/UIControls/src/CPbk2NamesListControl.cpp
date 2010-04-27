@@ -853,6 +853,9 @@ void CPbk2HandleMassUpdate::HandleMassUpdateDone()
     HandleMassUpdateResetCounters();
     iListBox.SetCurrentItemIndex(0);
     iListBox.SetTopItemIndex(0);
+
+    //Update the items of listbox in NameListView
+    iListBox.DrawDeferred();
     }
 
 ///////////////////////// End of helper classes /////////////////////////////
@@ -893,8 +896,8 @@ CPbk2NamesListControl::CPbk2NamesListControl
                 iContainer( aContainer ),
                 iNameFormatter( aNameFormatter ),
                 iStoreProperties( aStoreProperties ),
-                iThumbManager( aThumbManager ),
-                iAllowPointerEvents( ETrue )
+                iAllowPointerEvents( ETrue ),                
+                iThumbManager( aThumbManager )
     {
     }
 
@@ -1482,6 +1485,8 @@ void CPbk2NamesListControl::HandlePointerEventL(
     {
     if( !iAllowPointerEvents )
         {
+		//Passing event to listbox needed even if iCurrentState would be skipped (fix for ou1cimx1#316139)
+        iListBox->HandlePointerEventL( aPointerEvent ); 
         return;
         }
     if ( AknLayoutUtils::PenEnabled() )

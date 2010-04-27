@@ -23,6 +23,8 @@
 #include <MPbk2ContactNameFormatter.h>
 #include <Pbk2GroupUIRes.rsg>
 #include <Pbk2PresentationUtils.h>
+#include <CPbk2AppUiBase.h>
+#include <MPbk2StartupMonitor.h>
 
 // Virtual Phonebook
 #include <MVPbkContactGroup.h>
@@ -74,6 +76,7 @@ void StripCharacters( TDes& aText)
 //
 CPguGroupNameQueryDlg::~CPguGroupNameQueryDlg()
     {
+    iCoeEnv->RemoveForegroundObserver( *this );
     delete iOriginalName;
     }
 
@@ -93,6 +96,7 @@ inline void CPguGroupNameQueryDlg::ConstructL
         {
         UpdateGroupTitleL();
         }
+    iCoeEnv->AddForegroundObserverL( *this );
     }
 
 // --------------------------------------------------------------------------
@@ -207,6 +211,41 @@ TBool CPguGroupNameQueryDlg::ContainsL( const TDesC& aText )
         }
 
     return ret;
+    }
+
+// --------------------------------------------------------------------------
+// CPguGroupNameQueryDlg::HandleLosingForeground
+// --------------------------------------------------------------------------
+//
+void CPguGroupNameQueryDlg::HandleLosingForeground() 
+    {           
+    }
+
+// --------------------------------------------------------------------------
+// CPguGroupNameQueryDlg::HandleGainingForeground
+// --------------------------------------------------------------------------
+//
+void CPguGroupNameQueryDlg::HandleGainingForeground() 
+    {
+    MPbk2AppUi* pbk2AppUI = NULL;
+    pbk2AppUI = Phonebook2::Pbk2AppUi();
+    
+    if ( pbk2AppUI && pbk2AppUI->Pbk2StartupMonitor() )
+        {
+        TAny* extension = pbk2AppUI->Pbk2StartupMonitor()
+                ->StartupMonitorExtension( KPbk2StartupMonitorExtensionUid );
+
+        if( extension )
+            {
+            MPbk2StartupMonitorExtension* startupMonitorExtension =
+                    static_cast<MPbk2StartupMonitorExtension*>( extension );
+
+            if( startupMonitorExtension )
+                {
+                startupMonitorExtension->DisableMonitoring();
+                }
+            }
+        }
     }
 
 // End of File

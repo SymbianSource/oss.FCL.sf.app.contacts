@@ -246,6 +246,13 @@ void CPbk2CommAddressSelectPhase::LaunchServicePhaseL()
     iState = EMainContactRetrieving;
     iContactRetrieved = ETrue;
     RetrieveContactL();
+    
+    CPbk2ServerAppAppUi& appUi = static_cast<CPbk2ServerAppAppUi&>
+        ( *CEikonEnv::Static()->EikAppUi() );
+
+    // Change layout back to regular
+    appUi.ChangeStatuspaneLayoutL(
+        CPbk2ServerAppAppUi::EStatusPaneLayoutUsual );
     }
 
 // --------------------------------------------------------------------------

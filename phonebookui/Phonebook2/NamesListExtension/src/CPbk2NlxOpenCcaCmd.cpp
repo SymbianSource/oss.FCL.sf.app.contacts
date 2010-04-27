@@ -187,7 +187,7 @@ void CPbk2NlxOpenCcaCmd::RunL()
         {
         LaunchCcaL();   //Sync
         }
-    if ( iState == ERunning )
+    else if ( iState == ERunning )
         {
         if ( iUiControl )
             {

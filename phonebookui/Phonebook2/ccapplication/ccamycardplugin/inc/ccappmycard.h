@@ -177,6 +177,13 @@ public: // New methods
      */
     void ForceCreateMyCard();
     
+    /*
+    * Returns information about header control blocking
+    * 
+    * @return ETrue if the header control events are blocked, EFalse otherwise 
+    */
+    TBool HeaderControlBlocked();
+    
 private: // from MVPbkContactStoreObserver
      void StoreReady(MVPbkContactStore& aContactStore);
      void StoreUnavailable(MVPbkContactStore& aContactStore, 
@@ -307,7 +314,7 @@ private: // data
 	/// Force editor flag
 	TBool iForceCreateMyCard;
 	// Flag for editor state
-	TBool iDialogIsRunning;
+	TBool iDialogIsRunning;	
 	};
 
 #endif // CCAPPMYCARD_H

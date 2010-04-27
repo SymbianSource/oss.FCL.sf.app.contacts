@@ -56,6 +56,7 @@ class TPbk2IconId;
 class MVPbkContactAttribute;
 class CAiwServiceHandler;
 class MRefreshObserver;
+class TXspIconHelper;
 
 const TInt KArraySize =9;
 //for the timebeing..
@@ -509,7 +510,7 @@ private:
         * @return   the matching index, -1 if not found.
         */
       
-      	TInt FindIconIndex( TInt aId) const;
+      	TInt FindIconIndex( TInt aId, MVPbkStoreContactField* aField );
 
 
 		/**
@@ -616,6 +617,7 @@ private:
         AiwContactAssign::TAiwContactAttributeAssignDataV1 aData);
     
     	TInt SetIconArrayL(CArrayPtrFlat<CGulIcon>* aArray);
+    	TInt CreateIndexIconsL( CArrayPtrFlat<CGulIcon>* aArray );
     	void InitializeArray();
     	void CreateFieldIconsL(CArrayPtrFlat<CGulIcon>* aArray);
     	
@@ -624,7 +626,9 @@ private:
     	
     	void SetSpeedDialIndexL(MVPbkStoreContact* aContact);
     	void Wait();
+        void WaitFetchMail();
     	void Release();
+        void ReleaseFetchMail();
     	
     	void SetDetails(TInt aIndex);
     	
@@ -686,6 +690,7 @@ private:
     
     TBool iRetrieveComplete;
     TBool iOperationComplete;
+    TBool iFetchmailComplete;
     TBool iFetchAll;
     TBool iUpdateFlag;
     TBool iFetchmail;
@@ -694,6 +699,7 @@ private:
 	CArrayFixFlat<TSpdiaIndexDataVPbk>* iSdmArray;  // owned by this
 	CPbk2ImageManager* aImageManager;
 	CActiveSchedulerWait *iWait;
+    CActiveSchedulerWait *iWaitFetchmail;
 	CAknQueryDialog* iQueryDialog;       
 	CRepository*  ivmbxvariation;
 	CRepository* ivmbxkey2;
@@ -713,6 +719,9 @@ private:
     TBool iCancelFlag;
 
     CAknQueryDialog* iRemoveConfirmQueryDialog;
+    
+    RArray<TXspIconHelper> ixspIconInfoArray;
+    
 };
 
 

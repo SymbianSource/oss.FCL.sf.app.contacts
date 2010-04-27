@@ -26,6 +26,11 @@
 #include <MVPbkViewContact.h>
 #include <MVPbkContactLink.h>
 #include <CVPbkContactManager.h>
+#include <cbsfactory.h>
+#include <contactpresencebrandids.h> 
+#include <mbsaccess.h>
+#include <spsettings.h>
+#include <spproperty.h>
 
 //ECE
 #include "CPbk2UIExtensionInformation.h"
@@ -189,13 +194,114 @@ CGulIcon* CPbk2EcePresenceEngine::CreateIconCopyLC( const TPbk2IconId& aIconId )
         Panic( ENlxPanicNoIcons ) );
     __ASSERT_ALWAYS( iconInfo->Bitmap() && iconInfo->BitmapMask(),
     	User::Leave( KErrGeneral ) );
-    CFbsBitmap* newBitmap = CloneBitmapL( *iconInfo->Bitmap() );
-    CFbsBitmap* newBitmapMask = CloneBitmapL( *iconInfo->BitmapMask() );
+    
+    CFbsBitmap* newBitmap = NULL;
+    CFbsBitmap* newBitmapMask = NULL;
+    
+    TLanguage brandingLang = FindBrandLanguageIdL(iconInfo->BrandId());
+    
+    TLanguage userLang = User::Language();
+    TLanguage defaultLang = ELangInternationalEnglish;
+    CBSFactory* brandingFactory = CBSFactory::NewL(KCPBrandDefaultId, KCPBrandAppId );
+    CleanupStack::PushL( brandingFactory );
+  
+    ////
+    //Search for BrandPackage using PhoneLanguage
+    //PhoneLanguage gets the Highest Priority
+    TRAPD( err, GetBitmapFromBrandingServerL( userLang, newBitmap, newBitmapMask, *brandingFactory, iconInfo->BrandId(), iconInfo->ElementId() ) );
+    
+    if ( err && ( userLang != brandingLang ) ) 
+        {
+        //The next priority goes to BrandLanguage set in the SpSettings/service table
+        //during provisioning
+        //Search for BrandPackage using this BrandLanguage  
+        TRAP( err, GetBitmapFromBrandingServerL( brandingLang, newBitmap, newBitmapMask, *brandingFactory, iconInfo->BrandId(), iconInfo->ElementId()));
+        }
+    
+    if ( err && ( brandingLang != defaultLang ) && ( userLang != defaultLang ) ) 
+        {
+        //The least priority goes to the default language which is ELangInternationalEnglish        
+        //Search for BrandPackage using this ELangInternationalEnglish
+        GetBitmapFromBrandingServerL( defaultLang, newBitmap, newBitmapMask, *brandingFactory, iconInfo->BrandId(), iconInfo->ElementId() ) ;        
+        }      
+    ////
+    CleanupStack::PopAndDestroy( brandingFactory );
     CGulIcon* gulIcon = CGulIcon::NewL( newBitmap, newBitmapMask );
     CleanupStack::PushL( gulIcon );
     return gulIcon;
     }
 
+void CPbk2EcePresenceEngine::GetBitmapFromBrandingServerL(
+                    TLanguage aLanguageId, 
+                    CFbsBitmap*& aBrandedBitmap, 
+                    CFbsBitmap*& aBrandedMask,
+                    CBSFactory& aBSFactory,
+                    const TDesC8& aBrandId, 
+                    const TDesC8& aElementId)
+    {   
+    MBSAccess*  brandingAccess = aBSFactory.CreateAccessLC( 
+            aBrandId, aLanguageId );    
+    
+     if ( aBrandId.Length() )
+         {
+         brandingAccess->GetBitmapL( aElementId, aBrandedBitmap, aBrandedMask );        
+         }
+   
+    CleanupStack::PopAndDestroy();  //access    
+    }
+
+
+TLanguage CPbk2EcePresenceEngine::FindBrandLanguageIdL( const TDesC8& aBrandId )
+    {
+    const TInt KMaxBufLength = 512; 
+    CSPSettings* spSettings = CSPSettings::NewLC();
+    RIdArray idArray;
+    CleanupClosePushL(idArray);
+    User::LeaveIfError(spSettings->FindServiceIdsL(idArray));
+    CSPProperty* prop = CSPProperty::NewLC();    
+    HBufC* brandID = HBufC::NewLC(KMaxBufLength);
+    TLanguage servLang = ELangInternationalEnglish;
+    TInt serviceCount = idArray.Count();
+    
+    //The challenge here is to find the ServiceTable entry using BrandId.
+    //Iterate thro each service id and find the BrandId
+    //for each service and check whether it matches to out Input BrandId.
+    //if it matches we have found the service, and now
+    //get the brandlanguage.
+    //Note : The problem with this logic is that it works only
+    //       if all the services brandid is unique. 
+    //       If not GOD needs to help us. 
+    //       This logic is a temporary one untill 
+    //       one of our CR for Changing the Interface, so that you
+    //       get the BrandLanguage as part of the StartGetIconInfoL
+    //       is approved. 
+    //
+    for (TInt index=0; index<serviceCount; index++)
+        {    
+        if ( KErrNone == spSettings->FindPropertyL( idArray[index], EPropertyBrandId, *prop ) )
+            {
+            TPtr des = brandID->Des();            
+            if ( KErrNone == prop->GetValue( des ) )
+                {                
+                TBuf8 <KMaxBufLength> brandIdFromSpSettings;
+                brandIdFromSpSettings.Copy(des);
+                if ( KErrNone == brandIdFromSpSettings.Compare( aBrandId ) )
+                    {
+                    if( KErrNone == spSettings->FindPropertyL( 
+                                    idArray[index], EPropertyBrandLanguage, *prop) )
+                        {                        
+                        prop->GetValue( ( TInt& )servLang );
+                        }                           
+                    break;
+                    }
+                }
+            }
+        }        
+    
+    CleanupStack::PopAndDestroy( 4 ); //brandID, prop, idArray, spSettings
+    
+    return servLang;
+    }
 
 void CPbk2EcePresenceEngine::ReceiveIconInfoL(
     const TDesC8& aPackedLink, const TDesC8& aBrandId, const TDesC8& aElementId )
@@ -429,7 +535,7 @@ void CPbk2EcePresenceEngine::CleanUpExtraIcons()
 CFbsBitmap* CPbk2EcePresenceEngine::CloneBitmapL( const CFbsBitmap& aOriginalBitmap )
     {
     CFbsBitmap* newBitmap = new (ELeave) CFbsBitmap;
-    newBitmap->Duplicate(aOriginalBitmap.Handle());   
+    newBitmap->Duplicate(aOriginalBitmap.Handle());
     return newBitmap;
     }
 void CPbk2EcePresenceEngine::PresenceSubscribeError( 

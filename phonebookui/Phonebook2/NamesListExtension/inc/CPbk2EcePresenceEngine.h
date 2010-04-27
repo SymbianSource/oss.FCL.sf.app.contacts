@@ -35,6 +35,8 @@
 class CVPbkContactManager;
 class MVPbkContactLink;
 class MContactPresence;
+class CFbsBitmap;
+class CBSFactory;
 
 // CLASS DECLARATION
 
@@ -99,6 +101,31 @@ NONSHARABLE_CLASS(CPbk2EcePresenceEngine) :
          * @exception Panics if called when icon is not available. See GetIconIdForContactL().
          */
         CGulIcon* CreateIconCopyLC( const TPbk2IconId& aIconId );
+        
+        /**
+         * Gets the bitmap and mask for the element from the Branding Server
+         * @param aLanguageId - Language for which Brand is requested        
+         * @param aBrandedBitmap - Ptr to the Bitmap Ownership is transferred to the caller
+         * @param aBrandedMask - Ptr to the BitmapMask Ownership is transferred to the caller
+         * @param aBSFactory - interface for  access brandingserver 
+         * @param aBrandId - brandingId,
+         * @param aElementId - elementId
+         */
+         void GetBitmapFromBrandingServerL(
+                             TLanguage aLanguageId, 
+                             CFbsBitmap*& aBrandedBitmap, 
+                             CFbsBitmap*& aBrandedMask,
+                             CBSFactory& aBSFactory,
+                             const TDesC8& aBrandId, 
+                             const TDesC8& aElementId) ;
+         
+         /**
+         * Loops thro the ServiceTable/SpSettings and finds the
+         * BrandLanguage associated to the BrandId (aBrandId)
+         * @param aBrandId - BrandId mentioned in the ServiceTable
+         * @return TLanguage - Returns the matched Language Id, else 47(ELangInternationalEnglish)
+         */
+         TLanguage CPbk2EcePresenceEngine::FindBrandLanguageIdL( const TDesC8& aBrandId );
 
 
     private: // from MContactPresenceObs

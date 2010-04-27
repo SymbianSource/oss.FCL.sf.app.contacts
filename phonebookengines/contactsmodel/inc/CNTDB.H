@@ -83,6 +83,15 @@ Maximum number of fields that can be set as filterable fields by licensees.
 */
 const TInt KMaxCustomFilterableFields=4;
 
+/** 
+Enables searching for best matching strategy: 
+Leading zeros are removed then shorter number must be substring of second one.
+@see CContactDatabase::MatchPhoneNumberL
+@publishedAll
+@released
+*/
+const TInt KBestMatchingPhoneNumbers=0;
+
 #ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
 
 /** @internalComponent */
@@ -863,6 +872,7 @@ public:
 
 	//New Phone Matching function, takes a number as a TDesc& and will match from the right of the string
 	//by the the number defined
+	//use KBestMatchingPhoneNumbers as second parameter to enable best matching number strategy
 	IMPORT_C CContactIdArray* MatchPhoneNumberL(const TDesC& aNumber, TInt aMatchLengthFromRight);
 
 

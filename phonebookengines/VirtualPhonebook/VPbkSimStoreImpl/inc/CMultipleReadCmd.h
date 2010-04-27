@@ -124,7 +124,7 @@ NONSHARABLE_CLASS(CMultipleReadCmd) : public CActive,
         /**
         * C++ constructor.
         */
-        CMultipleReadCmd::CMultipleReadCmd( CBasicStore& aBasicStore, 
+        CMultipleReadCmd( CBasicStore& aBasicStore, 
                 TInt& aIndexToRead );
             
         /**

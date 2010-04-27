@@ -761,8 +761,8 @@ void CRemoteStore::OpenL( MVPbkSimStoreObserver& aObserver )
         CVPbkAsyncObjectCallback<MVPbkSimStoreObserver>* callback =
                 VPbkEngUtils::CreateAsyncObjectCallbackLC(
                     *this, 
-                    CRemoteStore::DoOpenL, 
-                    CRemoteStore::DoOpenError, 
+                    &CRemoteStore::DoOpenL, 
+                    &CRemoteStore::DoOpenError, 
                     aObserver);
         iAsyncOpenOp->CallbackL( callback );
         CleanupStack::Pop( callback );

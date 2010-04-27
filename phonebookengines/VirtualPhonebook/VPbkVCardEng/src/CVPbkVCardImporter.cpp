@@ -43,6 +43,8 @@
 #include <VPbkStoreUriLiterals.h>
 _LIT8( KPropXSelf, "X-SELF" );
 _LIT8( KPropXCategories, "X-CATEGORIES");
+_LIT8( KPropXIMPP, "X-IMPP");
+_LIT(KColon, ":");
 
 CVPbkVCardImporter* CVPbkVCardImporter::NewL(
             RPointerArray<MVPbkStoreContact>& aImportedContacts,
@@ -203,6 +205,19 @@ void CVPbkVCardImporter::SetObserver(
     iObserver = &aObserver;
     }
 
+CParserProperty* CVPbkVCardImporter::GetCurrentProperty()
+    {
+    // Get current property from parser array
+    CParserProperty* property = NULL;
+    TInt elementCount = iParser->ArrayOfProperties( EFalse )->Count();
+    if ( iArrayElementIndex < elementCount ) 
+        {        
+        property = 
+            iParser->ArrayOfProperties( EFalse )->At( iArrayElementIndex );
+        }
+    return property;
+    }
+
 CParserProperty* CVPbkVCardImporter::NextProperty()
     {
     // Get next property from parser array
@@ -331,7 +346,19 @@ TBool CVPbkVCardImporter::SaveDataL( CVPbkVCardContactFieldData& aData )
          aData.Uid() == TUid::Uid( KVersitPropertyCDesCArrayUid ) )
         {
         const TDesC& value = converter.GetDesCData( aData );
-        SaveL( aData, value );
+        TInt pos = value.Find(KColon);
+        if( 0 == pos && 0 == GetCurrentProperty()->Name().Compare(KPropXIMPP()) )
+            {
+            // If the service name is NULL and it's a IMPP field, don't save the data.
+            // e.g.:
+            // (1) If the value is YAHOO:peterpan@yahoo.com, YAHOO is the service name
+            // (2) If the value is :peterpan@yahoo.com, the service name is NULL
+            isSaved = EFalse;
+            }
+        else
+            {
+            SaveL( aData, value );
+            }
         }
     else if ( aData.Uid() == TUid::Uid( KVersitPropertyBinaryUid ) )
         {

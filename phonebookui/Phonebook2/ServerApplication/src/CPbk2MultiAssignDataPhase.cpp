@@ -294,7 +294,29 @@ void CPbk2MultiAssignDataPhase::ContactOperationFailed
         ( TContactOp /*aOpCode*/, TInt aErrorCode, TBool /*aErrorNotified*/ )
     {
     // Locking the contact failed
-    iObserver.PhaseError( *this, aErrorCode );
+     if ( KErrInUse == aErrorCode )
+        {
+        CCoeEnv::Static()->HandleError( aErrorCode );
+        }
+
+     // If the contact operation failed, the iStoreContact is expected to be deleted,
+     // otherwise it will lead to memory leak.
+    if ( iStoreContact )
+        {
+        delete iStoreContact;
+        iStoreContact = NULL;
+        }
+
+    // if iContactsProcessed > 0, the note (how many contacts had been processed) needs to be shown.
+    if ( (iContactLinks->Count() > 0) || (iContactsProcessed > 0) )
+        {
+        ContinueL();
+        }
+    else
+        {
+        iObserver.PhaseError( *this, aErrorCode );	
+        }
+
     }
 
 // --------------------------------------------------------------------------

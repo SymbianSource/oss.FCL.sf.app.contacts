@@ -155,13 +155,6 @@ CPbkxRclSearchResultDlg::~CPbkxRclSearchResultDlg()
     CCoeEnv::Static()->RemoveForegroundObserver( *this );
     ResetStatusPane();
     
-    if ( iTitlePane != NULL )
-          {
-          // set title pane back to what it was, ownership of 
-          // iTitlePaneText is transferred to title pane
-          iTitlePane->SetText( iOriginalTitleText );
-          }
-    
     iNaviText.Close();
     delete iAddRecipientIcon;
 
@@ -171,8 +164,21 @@ CPbkxRclSearchResultDlg::~CPbkxRclSearchResultDlg()
      	delete iActionMenu;
     	iActionMenu = NULL;
     	}    
-    
+
+    // Sanity check and make sure some other view hasn't already 
+    // changed the title text. If not - change back to original.
+    if (iOriginalTitleText && iTitleText && iTitlePane &&
+        iTitlePane->Text()->Compare( iTitleText->Des() ) == 0)
+        {
+        // Restore orginal title. Ownership transferred.
+        iTitlePane->SetText( iOriginalTitleText, ETrue); 
+        }
+    else
+        {
+        delete iOriginalTitleText;
+        }
     delete iIdleNote;
+    delete iTitleText;
     }
 
 // ---------------------------------------------------------------------------
@@ -679,12 +685,17 @@ void CPbkxRclSearchResultDlg::SetupStatusPaneL()
     FUNC_LOG;
     CAknAppUi* appUi = static_cast<CAknAppUi*>( CCoeEnv::Static()->AppUi() );
     CEikStatusPane* statusPane = appUi->StatusPane();
-    iNaviPane = reinterpret_cast<CAknNavigationControlContainer*>(
-        statusPane->ControlL( TUid::Uid( EEikStatusPaneUidNavi ) ) );
     
-    iNaviDecorator = iNaviPane->CreateNavigationLabelL( iNaviText );
+    // add the navigation decorators only if the usual statuspane layout is used
+    if ( statusPane->CurrentLayoutResId() == R_AVKON_STATUS_PANE_LAYOUT_USUAL_EXT )
+        {
+        iNaviPane = reinterpret_cast<CAknNavigationControlContainer*>(
+                statusPane->ControlL( TUid::Uid( EEikStatusPaneUidNavi ) ) );
+
+        iNaviDecorator = iNaviPane->CreateNavigationLabelL( iNaviText );
     
-    iNaviPane->PushL( *iNaviDecorator );
+        iNaviPane->PushL( *iNaviDecorator );
+        }
     
     // setup title pane
     iTitlePane = reinterpret_cast<CAknTitlePane*>(
@@ -705,9 +716,9 @@ void CPbkxRclSearchResultDlg::SetupStatusPaneL()
 void CPbkxRclSearchResultDlg::SetTitlePaneTextL()
     {
     // Update title pane text   
-    HBufC* titleText  = StringLoader::LoadLC( R_QTN_RCL_TITLE_SERVER_CONTACTS ); 
-    iTitlePane->SetTextL(titleText->Des());   
-    CleanupStack::PopAndDestroy(titleText);
+    iTitleText  = StringLoader::LoadL( R_QTN_RCL_TITLE_SERVER_CONTACTS ); 
+    iTitlePane->SetTextL(iTitleText->Des());   
+  
     }
 
 
@@ -720,8 +731,11 @@ void CPbkxRclSearchResultDlg::UpdateStatusPaneL()
     FUNC_LOG;
     
     ResetStatusPane();
-    iNaviDecorator = iNaviPane->CreateNavigationLabelL( iNaviText );
-    iNaviPane->PushL( *iNaviDecorator );
+    if (iNaviPane )
+        {
+        iNaviDecorator = iNaviPane->CreateNavigationLabelL( iNaviText );
+        iNaviPane->PushL( *iNaviDecorator );
+        }
    
     SetTitlePaneTextL();  
     }

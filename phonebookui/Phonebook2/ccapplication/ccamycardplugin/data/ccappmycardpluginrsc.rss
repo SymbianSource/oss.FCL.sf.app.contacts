@@ -90,7 +90,7 @@ RESOURCE MENU_PANE r_ccamycard_menupane
             { 
             command = ECCAppMyCardCmdEdit;
             txt = qtn_phob_opt_entry_edit;
-            },         
+            },  
         MENU_ITEM 
             { 
             command = ECCappMyCardCmdSendVCard;
@@ -100,7 +100,13 @@ RESOURCE MENU_PANE r_ccamycard_menupane
             { 
             command = ECCappMyCardCmdDelete;
             txt = qtn_phob_my_card_clear;
-            }, 	        	        	
+            }, 	 
+        MENU_ITEM 
+            { 
+            command = ECCAppMyCardCmdStylusCopyDetailCmd;
+            txt = qtn_cca_options_copy_detail;
+            flags = EEikMenuItemSpecific;
+            },  
         MENU_ITEM 
             { 
             command = EAknCmdHelp;
@@ -1713,17 +1719,5 @@ RESOURCE STYLUS_POPUP_MENU r_mycard_contact_image_stylus_menu
         };
     }
 
-// ---------------------------------------------------------------------------
-// r_mycard_contact_copy_detail_stylus_menu
-// ---------------------------------------------------------------------------
-//
-RESOURCE STYLUS_POPUP_MENU r_mycard_contact_copy_detail_stylus_menu
-    {
-    items =
-        {
-        STYLUS_POPUP_MENU_ITEM { txt = qtn_cca_options_copy_detail; 
-                             command = ECCAppMyCardCmdStylusCopyDetailCmd; }        
-        };
-    }
 
 //End of File

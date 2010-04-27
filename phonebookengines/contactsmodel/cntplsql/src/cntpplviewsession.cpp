@@ -47,7 +47,9 @@ CCntPplViewSession::CCntPplViewSession(CPplContactsFile& aContactsFile, const CL
 	iContactProperties(aContactProperties),
     iContactsFile(aContactsFile),
 	iSqlSmtSelectAllFieldsById(aSelectAllFields),
-	iViewPrefs(aViewPrefs)
+	iViewPrefs(aViewPrefs),
+	iRSqlStatementReady(EFalse),
+	iCachedSqlStatementReady(EFalse)
 	{
 	CActiveScheduler::Add(this);
 	}
@@ -59,18 +61,18 @@ CCntPplViewSession destructor.
 CCntPplViewSession::~CCntPplViewSession()
 	{
 	Deque();
-	
-	if(iRSqlStatement)
-		{
-		iRSqlStatement->Close();
-		delete iRSqlStatement;
-		}
-	
-	if(iCachedSqlStatement)
-		{
-		iCachedSqlStatement->Close();
-		delete iCachedSqlStatement;
-		}
+	iContactsFile.RemoveSqlDBObserverL( *this );
+    if ( iRSqlStatementReady )
+        {
+        iRSqlStatement.Close();
+        iRSqlStatementReady = EFalse;
+        }
+
+    if ( iCachedSqlStatementReady )
+        {
+        iCachedSqlStatement.Close();
+        iCachedSqlStatementReady = EFalse;
+        }
 	
 	delete iCntSqlStatement;
 	delete iTextDef;
@@ -85,7 +87,8 @@ void CCntPplViewSession::ConstructL(const CContactTextDef& aTextDef)
 	//Constructing iCntSqlStatement, iTextDef, and iIsFastAccessFieldsOnly
 	//by simply call ChangeSortOrderL
 	CTimer::ConstructL();
-	ChangeSortOrderL(aTextDef);
+    iContactsFile.AddSqlDBObserverL( *this );
+    ChangeSortOrderL( aTextDef );
 	}	
 
 	
@@ -165,20 +168,17 @@ void CCntPplViewSession::BeginIterateL()
 		User::Leave(KErrInUse);
 		}
 	
-	if(iRSqlStatement)
-		{
-		iRSqlStatement->Close();
-		delete iRSqlStatement;
-		iRSqlStatement = NULL;
-		}
-	
-	//Create a new sqlstatment to start a iteration	
-	iRSqlStatement = new (ELeave) RSqlStatement();
-	
+	if ( iRSqlStatementReady )
+        {
+        iRSqlStatement.Close();
+        iRSqlStatementReady = EFalse;
+        }
+		
 	// we don't need condition for iterating database.
 	iCntSqlStatement->ClearCondition();
 	
-	iRSqlStatement->PrepareL(iContactsFile.NamedDatabase(), iCntSqlStatement->SqlStringL());
+	iRSqlStatement.PrepareL(iContactsFile.NamedDatabase(), iCntSqlStatement->SqlStringL());
+	iRSqlStatementReady = ETrue;
 	}
 
 	
@@ -186,14 +186,13 @@ void CCntPplViewSession::BeginIterateL()
 Stop iteration by releasing iteration sql statement.
 */
 void CCntPplViewSession::EndIterate()
-	{
-	if(iRSqlStatement)
-		{
-		iRSqlStatement->Close();
-		delete iRSqlStatement;
-		iRSqlStatement = NULL;
-		}
-	}
+    {
+    if ( iRSqlStatementReady )
+        {
+        iRSqlStatement.Close();
+        iRSqlStatementReady = EFalse;
+        }
+    }
 
 	
 /**
@@ -203,13 +202,13 @@ Get next view contact object from iterating sql statement.
 */
 CViewContact* CCntPplViewSession::NextItemL(TContactViewPreferences aViewPrefs)
 	{
-	if(!iRSqlStatement)
+	if(!iRSqlStatementReady)
 		{
 		//Iteration has not started
 		BeginIterateL();	
 		}
 	
-	return CreateViewItemL(*iRSqlStatement, *iCntSqlStatement, aViewPrefs);
+	return CreateViewItemL(iRSqlStatement, *iCntSqlStatement, aViewPrefs);
 	}
 
 	
@@ -250,24 +249,24 @@ CViewContact* CCntPplViewSession::doItemAtL(TContactItemId aContactId)
     	User::Leave(KErrInUse);
     	}
     
-	if(!iCachedSqlStatement)
+	if ( !iCachedSqlStatementReady )
 		{
 		//iCacheSqlStatement is just for ItemAt while iRSqlStatement is used for iteration 
 		//and maintained by BeginIterateL and EndIterateL.
     	iCntSqlStatement->SetConditionL(KSelectCondition_SearchForContactId()); 
 		
 		//Create a new sqlstatment and cache its Prepare statement.	
-		iCachedSqlStatement = new (ELeave) RSqlStatement();
-		iCachedSqlStatement->PrepareL(iContactsFile.NamedDatabase(),  iCntSqlStatement->SqlStringL());
+		iCachedSqlStatement.PrepareL(iContactsFile.NamedDatabase(),  iCntSqlStatement->SqlStringL());
+		iCachedSqlStatementReady = ETrue;
 		}
 		
-	User::LeaveIfError(iCachedSqlStatement->BindInt(KFirstIndex, aContactId)); //Bind item id into the condition.	
+	User::LeaveIfError(iCachedSqlStatement.BindInt(KFirstIndex, aContactId)); //Bind item id into the condition.	
 
-	CViewContact* viewContact = CreateViewItemL(*iCachedSqlStatement, *iCntSqlStatement, iViewPrefs);
+	CViewContact* viewContact = CreateViewItemL(iCachedSqlStatement, *iCntSqlStatement, iViewPrefs);
 	
 	// Adding this to the cleanup stack, because coverity recons that "iCachedSqlStatement->Reset();" can leave, and it's probably right
 	CleanupStack::PushL(viewContact);
-	iCachedSqlStatement->Reset();
+	iCachedSqlStatement.Reset();
 
 	// Pop it back off the cleanup stack, and hand over ownership
 	CleanupStack::Pop(viewContact);
@@ -280,12 +279,11 @@ Clean up the cached prepare statement.
 */
 void CCntPplViewSession::CleanupCachedPrepareStatement()
     {
-	if(iCachedSqlStatement)
-		{
-		iCachedSqlStatement->Close();
-		delete iCachedSqlStatement;
-		iCachedSqlStatement = NULL;
-		}
+    if ( iCachedSqlStatementReady )
+        {
+        iCachedSqlStatement.Close();
+        iCachedSqlStatementReady = EFalse;
+        }
     }
 
 /**
@@ -293,9 +291,9 @@ CTimer callback funtion, the cached Prepare statement would be de-cached if Item
 during the time interval defined by KCachedPrepareTimeOut.
 */
 void CCntPplViewSession::RunL()
-	{
-	CleanupCachedPrepareStatement();
-	}
+    {
+    CleanupCachedPrepareStatement();
+    }
 	
 	
 /**
@@ -727,3 +725,25 @@ TBool CCntPplViewSession::ContactCorrectType(TUid aContactTypeUid, TContactViewP
     }
 
 	
+/**
+ * Close the resource which is running and depends on RSqlDatabase 
+ * that will be closed in CPplContactsFile.
+ */
+void CCntPplViewSession::OnCloseL()
+    {
+
+    if ( iRSqlStatementReady )
+        {
+        iRSqlStatement.Close();
+        iRSqlStatementReady = EFalse;
+        }
+
+    if ( iCachedSqlStatementReady )
+        {
+        iCachedSqlStatement.Close();
+        iCachedSqlStatementReady = EFalse;
+        }
+
+    }
+
+

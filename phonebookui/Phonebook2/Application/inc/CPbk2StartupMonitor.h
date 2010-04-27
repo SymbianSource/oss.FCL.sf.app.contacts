@@ -44,6 +44,7 @@ class CVPbkContactManager;
  */
 class CPbk2StartupMonitor : public CBase,
                             public MPbk2StartupMonitor,
+                            public MPbk2StartupMonitorExtension,
                             private MVPbkContactStoreObserver,
                             private MVPbkContactViewObserver
     {
@@ -94,6 +95,14 @@ class CPbk2StartupMonitor : public CBase,
         void NotifyViewActivationL(
                 TUid aViewId,
                 MVPbkContactViewBase& aContactView );
+        TAny* StartupMonitorExtension( TUid aExtensionUid );
+        
+    public: // From MPbk2StartupMonitorExtension
+        
+        /**
+         * Disables next wait note launch.
+         */
+        void DisableMonitoring();
 
     private: // From MVPbkContactStoreObserver
         void StoreReady(

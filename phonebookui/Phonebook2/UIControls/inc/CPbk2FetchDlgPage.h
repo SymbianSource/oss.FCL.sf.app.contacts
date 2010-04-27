@@ -23,7 +23,6 @@
 #include <e32base.h>
 #include "MPbk2FetchDlgPage.h"
 #include "MPbk2ControlObserver.h"
-#include "MPbk2StoreConfigurationObserver.h"
 
 // FORWARD DECLARATIONS
 class CPbk2NamesListControl;
@@ -39,8 +38,7 @@ class CPbk2StoreConfiguration;
  */
 NONSHARABLE_CLASS(CPbk2FetchDlgPage) : public CBase,
                                        public MPbk2FetchDlgPage,
-                                       private MPbk2ControlObserver,
-                                       private MPbk2StoreConfigurationObserver
+                                       private MPbk2ControlObserver
     {
     public: // Constructors and destructor
 
@@ -81,9 +79,6 @@ NONSHARABLE_CLASS(CPbk2FetchDlgPage) : public CBase,
         void HandleControlEventL(
                 MPbk2ContactUiControl& aControl,
                 const TPbk2ControlEvent& aEvent );
-    private: // From MPbk2StoreConfigurationObserver
-        void ConfigurationChanged();
-        void ConfigurationChangedComplete();
 
     private: // Implementation
         CPbk2FetchDlgPage(
@@ -108,7 +103,6 @@ NONSHARABLE_CLASS(CPbk2FetchDlgPage) : public CBase,
         CPbk2NamesListControl* iControl;
         /// Ref: Contact view
         MVPbkContactViewBase* iContactView;
-        CPbk2StoreConfiguration* iStoreConfiguration;
         /// Own: Control id
         TInt iControlId;
         /// Own: Flag indicating is the control ready

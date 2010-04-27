@@ -159,7 +159,6 @@ MPbk2Command* CPmapUIExtensionPlugin::CreatePbk2CommandForIdL
     {
     switch(aCommandId)
     	{
-    	case EPbk2ExtensionAssignFromMapSelect:
     	case EPbk2ExtensionAssignFromMap:
     	case EPbk2ExtensionShowOnMap:
     		return CPmapCmd::NewL( aUiControl, aCommandId );

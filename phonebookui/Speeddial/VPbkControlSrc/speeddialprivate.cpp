@@ -101,6 +101,9 @@
 #include <AiwContactAssignDataTypes.h>
 
 #include "SpdiaContainer.h"
+#include <MPbk2FieldPropertyArray2.h>
+#include <MPbk2FieldProperty2.h>
+#include <MPbk2FieldProperty.h>
 
 // LOCAL CONSTANTS AND MACROS
 //This order is based on 'Standard field ids' (PbkFields.hrh)
@@ -149,7 +152,34 @@ _LIT(KDesTab, "\t");
 _LIT(KDesTab2, "\t\t");
 
 
+class TXspIconHelper
+    {
 
+    public:    
+    	TXspIconHelper( TInt aIndex, const TDesC& aLable);
+    	TInt IconIndex() const;
+    	TDesC& LableText();
+    private:
+    	TInt iIndex;
+    	TBuf<50> iLableText;
+    	      
+    };
+
+TXspIconHelper::TXspIconHelper(TInt aIndex, const TDesC& aLable):
+    iIndex (aIndex),
+    iLableText (aLable)
+	{
+	}
+
+inline TInt TXspIconHelper::IconIndex() const 
+	{
+	return iIndex;
+	}
+
+inline TDesC& TXspIconHelper::LableText() 
+	{
+	return iLableText;
+	}
 
 // ---------------------------------------------------------
 // CSpeedDialPrivate::NewL()
@@ -266,6 +296,7 @@ _LIT(KDesTab2, "\t\t");
 		iServiceHandler->AttachL( R_SPEEDDIAL_EMAIL_SELECTION_INTEREST );
 		iServiceHandler->AttachL( R_SPDIA_SINGLE_ASSIGN_INTEREST );
 		iWait = new( ELeave )CActiveSchedulerWait();
+        iWaitFetchmail = new( ELeave )CActiveSchedulerWait();
 		
 		
 		iError = KErrNone;
@@ -461,6 +492,8 @@ void CSpeedDialPrivate::InitBmpArray()
         delete iRemoveConfirmQueryDialog;
         iRemoveConfirmQueryDialog = NULL;
         }
+		
+    ixspIconInfoArray.Close();    
     }
        
 // ---------------------------------------------------------
@@ -539,17 +572,29 @@ void CSpeedDialPrivate::InitializeArray()
 		
 		MPbk2FieldPropertyArray* aPropertyArray = Pbk2FieldPropertiesFactory::CreateLC(*fieldTypeList,&iContactManager->FsSession() );
 		
-		for(count =0; count < aPropertyArray->Count(); ++ count)
+		ixspIconInfoArray.Reset();
+		const TInt arrayCount = aPropertyArray->Count();
+		for(count =0; count < arrayCount; ++ count)
 		{
 		   icon = pbk2IconFactory->CreateIconL(aPropertyArray->At(count).IconId());
-		   aArray->AppendL(icon);		   
-		}
-		
+		   aArray->AppendL(icon);
+		   
+		   // Append xSP icon info to helper array
+		   if ( aPropertyArray->At(count).FieldType().FieldTypeResId() == R_VPBK_FIELD_TYPE_IMPP )
+			   {
+			   const MPbk2FieldProperty& property = aPropertyArray->At(count);
+			   MPbk2FieldProperty2* property2 = reinterpret_cast<MPbk2FieldProperty2*>
+			           ( const_cast<MPbk2FieldProperty&> ( property ).FieldPropertyExtension(
+			                KMPbk2FieldPropertyExtension2Uid ) );
+			           			   
+			   TXspIconHelper helper( aArray->Count()-1, property2->XSpName() );		   
+			   ixspIconInfoArray.AppendL( helper );
+			   }
+		}		
 		CleanupStack::PopAndDestroy(aPropertyArray);
 		
 		delete fieldTypeList;
 		delete pbk2IconFactory;
-		
 		
 	}
 // ---------------------------------------------------------
@@ -1031,11 +1076,6 @@ EXPORT_C void CSpeedDialPrivate::ReloadIconArray()
 // ---------------------------------------------------------
 TInt CSpeedDialPrivate::SetIconArrayL(CArrayPtrFlat<CGulIcon>* aArray)
     {
-	CFbsBitmap* bitmap,*mask;
-	bitmap = NULL;
-	mask= NULL;
-	MAknsSkinInstance* skinInstance = AknsUtils::SkinInstance();
- 
     if ( aArray != NULL )
         {
         aArray->ResetAndDestroy();
@@ -1045,45 +1085,62 @@ TInt CSpeedDialPrivate::SetIconArrayL(CArrayPtrFlat<CGulIcon>* aArray)
         return 0;
         }
 
-	TInt existThumb(0);
-    for (TInt index(0); index < iSdmArray->Count(); index++)
-        {
-		if(index == 0)
-		{
-		 TUid uidVmbx;
-		 uidVmbx.iUid =KVmbxUid;
-		 AknsUtils::CreateAppIconLC( skinInstance,uidVmbx, EAknsAppIconTypeContext,bitmap ,mask);		
-		 CleanupStack::Pop(2);
-		}
-		else
-		{
-		 	if(User::Language() == ELangHindi)
-		 	{
-		 		AknsUtils::CreateIconL(skinInstance, (*iDialSkinBmp)[index],bitmap,mask,iBmpPath,iDialHindiBmp[index],  iDialHindiBmpMask[index] );	
-		 	}
-		 	else
-		 	 {
-		 	 	AknsUtils::CreateIconL(skinInstance, (*iDialSkinBmp)[index],bitmap,mask,iBmpPath,iDialBmp[index],  iDialBmpMask[index] );	
-		 	 }
-		}
-		CGulIcon* icon = CGulIcon::NewL(bitmap,mask);
-        CleanupStack::PushL(icon);
-        aArray->AppendL(icon);
+    CreateIndexIconsL( aArray );
+    CreateFieldIconsL( aArray );     
 
-        if (CreateIndexIconL(index,
-            (*iSdmArray)[index], existThumb > 0? EFalse: ETrue))
+	TInt existThumb = 0;
+	const TInt count = iSdmArray->Count();
+    for (TInt index(0); index < count; index++)
+        {
+        if (CreateIndexIconL(index, (*iSdmArray)[index], existThumb > 0? EFalse: ETrue))
             {
             ++existThumb;
             }
-        CleanupStack::Pop(); // icon
         }
-
-		CreateFieldIconsL(aArray);
 
     return existThumb;
     }
-	
-	
+
+// ---------------------------------------------------------
+// CSpeedDialPrivate::CreateIndexIconsL
+//
+// ---------------------------------------------------------
+TInt CSpeedDialPrivate::CreateIndexIconsL( CArrayPtrFlat<CGulIcon>* aArray )
+	{
+	CFbsBitmap* bitmap,*mask;
+	bitmap = NULL;
+	mask= NULL;
+	MAknsSkinInstance* skinInstance = AknsUtils::SkinInstance();
+
+    for (TInt index(0); index < iSdmArray->Count(); index++)
+        {
+		if(index == 0)
+		    {
+		    TUid uidVmbx;
+		    uidVmbx.iUid =KVmbxUid;
+		    AknsUtils::CreateAppIconLC( skinInstance,uidVmbx, EAknsAppIconTypeContext,bitmap ,mask);		
+		    CleanupStack::Pop(2);
+		    }
+		else
+		   {
+		 	if(User::Language() == ELangHindi)
+		 	    {
+		 		AknsUtils::CreateIconL(skinInstance, (*iDialSkinBmp)[index],bitmap,mask,iBmpPath,iDialHindiBmp[index],  iDialHindiBmpMask[index] );	
+		 	    }
+		 	else
+		 	    {
+		 	 	AknsUtils::CreateIconL(skinInstance, (*iDialSkinBmp)[index],bitmap,mask,iBmpPath,iDialBmp[index],  iDialBmpMask[index] );	
+		 	    }
+		    }
+		
+		CGulIcon* icon = CGulIcon::NewL(bitmap,mask);
+	    CleanupStack::PushL(icon);
+	    aArray->AppendL(icon);
+	    CleanupStack::Pop(); // icon
+        }
+    
+	}
+
 // ---------------------------------------------------------
 // CSpeedDialPrivate::VoiceMailTypeL	
 //
@@ -1465,7 +1522,7 @@ void CSpeedDialPrivate::SetDetails(TInt aIndex)
 			
 			//Push
             const MVPbkFieldType* fieldType = field->BestMatchingFieldType();
-            TInt iconindex = FindIconIndex(fieldType->FieldTypeResId());
+            TInt iconindex = FindIconIndex(fieldType->FieldTypeResId(), field );
             (*iSdmArray)[aIndex].SetIconIndex(iconindex);
     
             //No need to fetch thumbnail now...will be updated while grid is
@@ -1631,11 +1688,11 @@ EXPORT_C HBufC* CSpeedDialPrivate::EMail( MVPbkStoreContact* aContact )
                 outParamList, 0, this);
                 }
                     );
-        iOperationComplete = EFalse;
+        iFetchmailComplete = EFalse;
         // Wait till the contact is selected
-        while ( !iOperationComplete )
+        while ( !iFetchmailComplete )
         {
-            Wait();
+        WaitFetchMail();
         }
         iFetchmail = EFalse;
         return iMail;
@@ -2550,15 +2607,33 @@ TInt CSpeedDialPrivate::HandleNotifyL(
                 iMail = HBufC::NewL(length);
                 iMail->Des().Append(paramMail->Value().AsDes());
             	}            
-	            iOperationComplete = ETrue;
-	    		Release();
-	  
+
+            if( iFetchmail )
+                {
+                iFetchmailComplete = ETrue;
+                ReleaseFetchMail();
+                }
+            else
+                {
+                iOperationComplete = ETrue;
+                Release();
+                }  
+
             }
         else if (aEventId == KAiwEventCanceled)
             {
             	iError = KErrCancel;    
-	            iOperationComplete = ETrue;
-	    		Release();
+
+                if( iFetchmail )
+                    {
+                    iFetchmailComplete = ETrue;
+                    ReleaseFetchMail();
+                    }
+                else
+                    {
+                    iOperationComplete = ETrue;
+                    Release();
+	                }
             }
          else if (aEventId == KAiwEventError)
          	{
@@ -2995,7 +3070,7 @@ TBool CSpeedDialPrivate::CreateIndexIconL(TInt aIndex,
 		{
 			fieldId = field->BestMatchingFieldType()->FieldTypeResId();
 		}
-	    aSdmData.SetIconIndex(FindIconIndex(fieldId));     
+	    aSdmData.SetIconIndex(FindIconIndex(fieldId, field ));     
 	   
 		// check for the functionality, why he is checking has thumbnail before adding
 		
@@ -3042,16 +3117,36 @@ void CSpeedDialPrivate::ChangeIndexDataL(
 // ---------------------------------------------------------
 //
 
-TInt CSpeedDialPrivate::FindIconIndex(TInt aId) const
+TInt CSpeedDialPrivate::FindIconIndex( TInt aId, MVPbkStoreContactField* aField ) //const
     {
     TInt index(KNullIndexData);
-    for (TInt n(0); index == KNullIndexData && n < (sizeof KFieldIds/sizeof KFieldIds[0]); ++n)
-        {
-       if ((TUint)aId == KFieldIds[n] )
+    
+	// If impp field, find xSP icon info from helper
+    if ( aField && ( aId == R_VPBK_FIELD_TYPE_IMPP ) )
+    	{
+    	TPtrC scheme = MVPbkContactFieldUriData::Cast( aField->FieldData()).Scheme();
+    	           	
+    	const TInt count = ixspIconInfoArray.Count(); 
+    	for ( TInt i=0; i < count; i++ )
+    		{
+    		if ( !scheme.CompareF( ixspIconInfoArray[i].LableText() ) )
+    			{
+    			index = ixspIconInfoArray[i].IconIndex();
+    			break;
+    			}
+    		}
+    	}
+    // If not impp field, calculate icon index as below
+    else
+    	{
+        for (TInt n(0); index == KNullIndexData && n < (sizeof KFieldIds/sizeof KFieldIds[0]); ++n)
             {
-            index = n + iSdmCount;
+            if ((TUint)aId == KFieldIds[n] )
+               {
+               index = n + iSdmCount;
+               }
             }
-        }
+    	}
     return index;
     }
     
@@ -3417,6 +3512,32 @@ void CSpeedDialPrivate::Wait()
     	iWait->Start();
 
 }
+
+// ---------------------------------------------------------
+// CSpeedDialPrivate::WaitFetchMail
+//
+// ---------------------------------------------------------
+//
+void CSpeedDialPrivate::WaitFetchMail()
+    {
+    if ( !( iWaitFetchmail->IsStarted() ) )
+        {
+        iWaitFetchmail->Start();
+        }
+    }
+
+// ---------------------------------------------------------
+// CSpeedDialPrivate::ReleaseFetchMail
+//
+// ---------------------------------------------------------
+//
+void CSpeedDialPrivate::ReleaseFetchMail()
+    {
+    if ( iWaitFetchmail->IsStarted() )
+        {
+        iWaitFetchmail->AsyncStop();
+        }
+    }
 
 // ---------------------------------------------------------
 // CSpeedDialPrivate::Cancel

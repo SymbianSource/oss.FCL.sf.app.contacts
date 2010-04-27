@@ -621,33 +621,35 @@ void CLogsBaseView::StateChangedL( MLogsStateHolder* aHolder )
             event = CurrentModel()->At( EventListCurrent() );    
             eventData = event->LogsEventData();
             
-            // When log event is for VOIP, it needs to check if the contact link is valid.
-            // If it's invalid, refresh menubar in order to avoid "voice" and "video" items.
-            // Can't avoid flicking in this case, however, it's so rare to repro.
-            if ( eventData && eventData->VoIP() && SipUriAvailable( event ) ) 
+            if ( eventData )
                 {
                 TPtrC8 ptrContactLink( KNullDesC8 );
-
                 if ( KErrNone == eventData->GetContactLink( ptrContactLink ) )
-                    {   
+                    {
                     CLogsCntLinkChecker* contactCheckerPtr = Engine()->CntLinkCheckerL();
-                                         
                     if ( !contactCheckerPtr->IsCntLinkValidSync( ptrContactLink ) )
                         {
                         iIsCheckedCntLinkInvaild = ETrue;
-                        if ( MenuBar()->IsDisplayed() )
+                        }
+                    }
+                // When log event is for VOIP, it needs to check if the contact link is valid.
+                // If it's invalid, refresh menubar in order to avoid "voice" and "video" items.
+                // Can't avoid flicking in this case, however, it's so rare to repro.
+                if ( eventData->VoIP() && SipUriAvailable( event ) 
+                       && iIsCheckedCntLinkInvaild )
+                    {
+                    if ( MenuBar()->IsDisplayed() )
+                        {
+                        MenuBar()->StopDisplayingMenuBar();
+        
+                        if ( CurrentMenuType() == CEikMenuBar::EMenuContext )
                             {
-                            MenuBar()->StopDisplayingMenuBar();
-            
-                            if ( CurrentMenuType() == CEikMenuBar::EMenuContext )
-                                {
-                                MenuBar()->TryDisplayContextMenuBarL();
-                                }
-                                else
-                                {
-                                MenuBar()->TryDisplayMenuBarL();
-                                }               
-                            }   
+                            MenuBar()->TryDisplayContextMenuBarL();
+                            }
+                            else
+                            {
+                            MenuBar()->TryDisplayMenuBarL();
+                            }
                         }
                     }
                 }
@@ -1740,6 +1742,11 @@ void CLogsBaseView::DynInitAiwCallUiMenuPaneL(
             contactCheckerPtr->ConfigureL( readerConfig );
             CleanupStack::PopAndDestroy();      //readerConfig
             contactCheckerPtr->StartL();
+            
+            if ( !MenuBar()->ItemSpecificCommandsEnabled() )
+                {
+                iIsCheckedCntLinkInvaild = !contactCheckerPtr->IsCntLinkValidSync( tempPtr );
+                }
             }
         }
     
@@ -2259,7 +2266,7 @@ void CLogsBaseView::CmdPrependCallL(
         
         //Refresh contents in MLogsEventGetter. Otherwise it contains wrong data of last 
         //event read from db done in background during execution of RunLD()
-        //aEvent = CurrentModel()->At( iEventListCurrent );
+        aEvent = CurrentModel()->At( iEventListCurrent );
         
         switch( queryAction )
         	{

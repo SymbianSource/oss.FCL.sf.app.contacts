@@ -124,6 +124,29 @@ class MPbk2StartupMonitor
                 {}
     };
 
+/// Use this UID to access startup monitor extension 2.
+//  Used as a parameter to StartupMonitorExtension() method.
+const TUid KPbk2StartupMonitorExtensionUid = { 1 };
+
+/**
+ * This class is an extension to MPbk2StartupMonitor.
+ *
+ * @see MPbk2StartupMonitor
+ *
+ */
+class MPbk2StartupMonitorExtension
+    {
+    protected:  // Destructor
+        virtual ~MPbk2StartupMonitorExtension() { }
+
+    public:
+
+        /**
+         * Disable monitoring.
+         */
+        virtual void DisableMonitoring() = 0;
+    };
+
 #endif // MPBK2STARTUPMONITOR_H
 
 // End of File

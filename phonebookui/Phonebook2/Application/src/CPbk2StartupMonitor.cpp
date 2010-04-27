@@ -108,6 +108,11 @@ class CPbk2StartupMonitor::CPbk2StartupWaiter :
          */
         void Restart();
         
+        /**
+         * Disables wait note if waiter is started.
+         */
+        void DisableWaitNote();
+        
     private: // From CTimer
         void RunL();
         TInt RunError(
@@ -126,6 +131,9 @@ class CPbk2StartupMonitor::CPbk2StartupWaiter :
         MPbk2ProcessDecorator* iDecorator;
         /// Is decorator launched
         TBool iStarted;
+        /// Own: There are exception that even if monitor is started
+        /// wait note should not be displayed.
+        TBool iDisplayWaitNote;
     };
 
 // --------------------------------------------------------------------------
@@ -165,6 +173,7 @@ inline void CPbk2StartupMonitor::CPbk2StartupWaiter::ConstructL()
     // the start up monitor.
     // Wait KOneSecond and then launch the wait note without delay.
     After( TTimeIntervalMicroSeconds32( KOneSecond ) );
+    iDisplayWaitNote = ETrue;
     }
 
 // --------------------------------------------------------------------------
@@ -193,6 +202,7 @@ void CPbk2StartupMonitor::CPbk2StartupWaiter::Stop()
         {
         iDecorator->ProcessStopped();
         }
+    iDisplayWaitNote = ETrue;
     }
 
 // --------------------------------------------------------------------------
@@ -203,6 +213,15 @@ void CPbk2StartupMonitor::CPbk2StartupWaiter::Restart()
     {
     Cancel();
     After( TTimeIntervalMicroSeconds32( KOneSecond ) );
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2StartupMonitor::CPbk2StartupWaiter::DisableWaitNote
+// --------------------------------------------------------------------------
+//
+void CPbk2StartupMonitor::CPbk2StartupWaiter::DisableWaitNote()
+    {
+    iDisplayWaitNote = EFalse;
     }
 
 // --------------------------------------------------------------------------
@@ -218,12 +237,13 @@ void CPbk2StartupMonitor::CPbk2StartupWaiter::RunL()
 				( R_QTN_FDN_READING_MEMORY_WAIT_NOTE, EFalse );
 		iDecorator->SetObserver(*this);
     	}
-    if( !iStarted ) // don't start twice
+    if( !iStarted && iDisplayWaitNote ) // don't start twice
     	{
 		const TInt dummy = 0; // wait note doesn't care about amount
 		iDecorator->ProcessStartedL(dummy);
 		iStarted = ETrue;
     	}
+    iDisplayWaitNote = ETrue;
     }
 
 // --------------------------------------------------------------------------
@@ -234,6 +254,7 @@ TInt CPbk2StartupMonitor::CPbk2StartupWaiter::RunError( TInt aError )
     {
     CCoeEnv::Static()->HandleError(aError);
     iStarted = EFalse;
+    iDisplayWaitNote = ETrue;
     if (iDecorator)
         {
         iDecorator->ProcessStopped();
@@ -832,6 +853,28 @@ TBool CPbk2StartupMonitor::IsNativePhoneBookView( TUid aActiveViewId )
         }
     
     return nativePhoneBookView;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2StartupMonitor::Extension
+// --------------------------------------------------------------------------
+//
+TAny* CPbk2StartupMonitor::StartupMonitorExtension( TUid aExtensionUid )
+    {
+    if( aExtensionUid == KPbk2StartupMonitorExtensionUid )
+        {
+        return static_cast<MPbk2StartupMonitorExtension*>( this );
+        }
+    return NULL;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2StartupMonitor::DisableWaitNote
+// --------------------------------------------------------------------------
+//
+void  CPbk2StartupMonitor::DisableMonitoring()
+    {
+    iWaiter->DisableWaitNote();
     }
 
 // End of File

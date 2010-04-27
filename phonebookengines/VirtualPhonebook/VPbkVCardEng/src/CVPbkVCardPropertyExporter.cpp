@@ -732,29 +732,32 @@ void CVPbkVCardPropertyExporter::AddRevL()
     {
     MVPbkStoreContact* tempContact = const_cast<MVPbkStoreContact*>(iContact);
     if( tempContact )
-        {	
+        {
         MVPbkStoreContact2* tempContact2 = 	reinterpret_cast<MVPbkStoreContact2*>
             (tempContact->StoreContactExtension (KMVPbkStoreContactExtension2Uid) );	    
         if(tempContact2)
             {
             MVPbkStoreContactProperties* propreties = tempContact2->PropertiesL();
-            CleanupDeletePushL(propreties);
-            
-            // Convert the last_modified field defined in Contact Model database 
-            // to REV (Revision) field in vCard Specification 2.1
-            CParserPropertyValueDateTime* valueDateTime = 
-            		CreateDateTimePropertyL(
-                		propreties->LastModifiedL(), 
-                		TVersitDateTime::EIsUTC ); 
-            CleanupStack::PopAndDestroy(propreties);
-            
-            CleanupStack::PushL(valueDateTime);
-            CParserProperty* property = 
-            		CParserGroupedProperty::NewL(*valueDateTime, KREV, NULL, NULL);	
-            
-            CleanupStack::PushL( property );            
-            iParser->AddPropertyL(property); //takes ownership
-            CleanupStack::Pop(2);//valueDateTime and property
+            if( propreties )
+                {
+                CleanupDeletePushL(propreties);
+
+                // Convert the last_modified field defined in Contact Model database 
+                // to REV (Revision) field in vCard Specification 2.1
+                CParserPropertyValueDateTime* valueDateTime =
+                        CreateDateTimePropertyL(
+                            propreties->LastModifiedL(),
+                            TVersitDateTime::EIsUTC );
+                CleanupStack::PopAndDestroy(propreties);
+                
+                CleanupStack::PushL(valueDateTime);
+                CParserProperty* property =
+                        CParserGroupedProperty::NewL(*valueDateTime, KREV, NULL, NULL);
+                
+                CleanupStack::PushL( property );
+                iParser->AddPropertyL(property); //takes ownership
+                CleanupStack::Pop(2);//valueDateTime and property
+                }
             }
         }
     }	

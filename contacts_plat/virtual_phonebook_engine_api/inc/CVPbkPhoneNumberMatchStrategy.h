@@ -119,6 +119,8 @@ class CVPbkPhoneNumberMatchStrategy : public CBase
 
             public: // data
                 ///Own: Maximum number of digits used in matching
+                // Set KBestMatchingPhoneNumbers from CNTDB.H 
+                // to use best matching strategy
                 TInt iMaxMatchDigits;
                 ///Ref: Array of contact store URIs to define match priority
                 const CVPbkContactStoreUriArray& iUriPriorities;

@@ -69,6 +69,7 @@
 #include "Pbk2IconId.hrh"
 #include <Pbk2UID.h>
 #include <pbk2mapcommands.hrh>
+#include <MPbk2StartupMonitor.h>
 
 // Virtual Phonebook
 #include <CVPbkContactManager.h>
@@ -237,6 +238,7 @@ CPbk2ContactEditorDlgImpl::~CPbk2ContactEditorDlgImpl()
     if (iNaviContainer)
         {
         iNaviContainer->Pop();
+        TRAP_IGNORE(RestorePrevNaviDecoratorL());        
         }
 
     delete iStoreContact;
@@ -937,6 +939,7 @@ void CPbk2ContactEditorDlgImpl::ProcessCommandL(TInt aCommandId)
                             if (iNaviContainer)
                                 {
                                 iNaviContainer->Pop();
+                                RestorePrevNaviDecoratorL();
                                 iNaviContainer = NULL;
                                 }
     
@@ -965,6 +968,7 @@ void CPbk2ContactEditorDlgImpl::ProcessCommandL(TInt aCommandId)
                             if (iNaviContainer)
                                 {
                                 iNaviContainer->Pop();
+                                RestorePrevNaviDecoratorL();
                                 iNaviContainer = NULL;
                                 }
     
@@ -1544,7 +1548,6 @@ void CPbk2ContactEditorDlgImpl::DynInitAddressL(TInt /*aResourceId*/,
             IdOfFocusControl());
     if (iParams.iActiveView == TPbk2ContactEditorParams::EEditorView)
         {
-        DimItem(aMenuPane, EPbk2ExtensionAssignFromMapSelect);
         DimItem(aMenuPane, EPbk2ExtensionAssignFromMap);
         if (current && current->ContactEditorUIField()
                 && Pbk2AddressTools::MapCtrlTypeToAddress(
@@ -1561,12 +1564,6 @@ void CPbk2ContactEditorDlgImpl::DynInitAddressL(TInt /*aResourceId*/,
         }
     else
         {
-        if (!current || !current->ContactEditorUIField()
-                || current->ContactEditorUIField()->UIField()->CtrlType()
-                        != EPbk2FieldCtrlTypeExtAssignFromMapsEditor)
-            {
-            DimItem(aMenuPane, EPbk2ExtensionAssignFromMapSelect);
-            }
         DimItem(aMenuPane, EPbk2CmdAddItem);
         DimItem(aMenuPane, EPbk2CmdEditorOpen);
         DimItem(aMenuPane, EPbk2CmdDeleteItem); 
@@ -1640,6 +1637,7 @@ TBool CPbk2ContactEditorDlgImpl::OkToExitL(TInt aKeycode)
             if (iNaviContainer)
                 {
                  iNaviContainer->Pop();
+                 RestorePrevNaviDecoratorL();
                  iNaviContainer = NULL;
                  }
             MakeVisible( EFalse );
@@ -2484,6 +2482,9 @@ inline void CPbk2ContactEditorDlgImpl::ConstructNaviPaneL()
         iNaviContainer
                 = static_cast<CAknNavigationControlContainer *> (statusPane->ControlL(
                         TUid::Uid(EEikStatusPaneUidNavi)));
+        
+        iPrevNaviDecorator =  iNaviContainer->Top();        
+        
         iNaviContainer->PushDefaultL(ETrue);
         }
     }
@@ -3425,6 +3426,44 @@ void CPbk2ContactEditorDlgImpl::HandleLosingForeground()
 //
 void CPbk2ContactEditorDlgImpl::HandleGainingForeground() 
     {
+    /*
+     * iAppServices is provided to enable editor use outside from pbk2 context
+     * no need to disable startup monitor in that case
+     */
+    if( !iAppServices )
+        {
+        MPbk2AppUi* pbk2AppUI = NULL;
+        pbk2AppUI = Phonebook2::Pbk2AppUi();
+        
+        if ( pbk2AppUI && pbk2AppUI->Pbk2StartupMonitor() )
+            {
+            TAny* extension = pbk2AppUI->Pbk2StartupMonitor()
+                    ->StartupMonitorExtension( KPbk2StartupMonitorExtensionUid );
+    
+            if( extension )
+                {
+                MPbk2StartupMonitorExtension* startupMonitorExtension =
+                        static_cast<MPbk2StartupMonitorExtension*>( extension );
+    
+                if( startupMonitorExtension )
+                    {
+                    startupMonitorExtension->DisableMonitoring();
+                    }
+                }
+            }
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ContactEditorDlgImpl::RestorePrevNaviDecoratorL
+// --------------------------------------------------------------------------
+//
+void CPbk2ContactEditorDlgImpl::RestorePrevNaviDecoratorL() 
+    {
+    if ( iNaviContainer && iPrevNaviDecorator ) 
+        {                                  
+        iNaviContainer->PushL(*iPrevNaviDecorator);        
+        }
     }
 
 

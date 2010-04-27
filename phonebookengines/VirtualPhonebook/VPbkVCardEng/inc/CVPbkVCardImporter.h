@@ -119,6 +119,7 @@ NONSHARABLE_CLASS( CVPbkVCardImporter ):
             
         void IssueRequest();
         CParserProperty* NextProperty();
+        CParserProperty* GetCurrentProperty();
         void ParseNextL();
         TInt FindContactFieldL( 
                 MVPbkStoreContact* aContact, 

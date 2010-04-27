@@ -120,8 +120,6 @@ CCCAppMyCardContainer::~CCCAppMyCardContainer()
     delete iFactoryExtensionNotifier;
     delete iViewLauncher;
     delete iImageSelectionPopup;
-    delete iLongTapDetector; 
-    delete iDetailsPopup;
     }
 
 // ----------------------------------------------------------------------------
@@ -231,7 +229,6 @@ void CCCAppMyCardContainer::ConstructL()
     TCallBack callBack( CCCAppMyCardContainer::CheckExtensionFactoryL, this );
     iFactoryExtensionNotifier->ObserveExtensionFactoryL( callBack );
     
-    iLongTapDetector = CAknLongTapDetector::NewL( this );
     CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCardContainer::ConstructL()"));
     }
 
@@ -382,10 +379,7 @@ void CCCAppMyCardContainer::SizeChanged()
     
 	delete iImageSelectionPopup;
 	iImageSelectionPopup = NULL;
-	
-	delete iDetailsPopup;
-	iDetailsPopup = NULL;
-	
+
 	if( !iImageLoader )
 	    {
         if( !iModel.IsEmpty() )
@@ -620,13 +614,6 @@ void CCCAppMyCardContainer::HandleListBoxEventL(
         case EEventItemDoubleClicked:
         case EEventItemSingleClicked:
             {
-            // Don't open the editor if stylusMenu opened using longTap 
-            if( iLongTapHandled ) 
-                {
-                iLongTapHandled = EFalse;
-                return;
-                }
-            
             // start the editor and pass tapped field index
             iPlugin.EditL( FocusedFieldIndex() );
             break;
@@ -1087,6 +1074,11 @@ void CCCAppMyCardContainer::SetNameForHeaderControlL()
 //
 void CCCAppMyCardContainer::MyCardHeaderControlClickL( TPoint aPos )
 {
+    if( iPlugin.MyCard().HeaderControlBlocked() )
+        {
+        return;
+        }
+            
     if ( !iImageSelectionPopup )
         {
         iImageSelectionPopup = CAknStylusPopUpMenu::NewL( &iPlugin, aPos );
@@ -1126,54 +1118,12 @@ void CCCAppMyCardContainer::MyCardHeaderControlClickL( TPoint aPos )
 }
  
 // ----------------------------------------------------------------------------
-// CCCAppMyCardContainer::HandleLongTapEventL()
-// ----------------------------------------------------------------------------
-//
-void CCCAppMyCardContainer::HandleLongTapEventL( const TPoint& /*aPenEventLocation*/, 
-                                    const TPoint& /*aPenEventScreenLocation*/ )
-    {       
-    if( iDetailsPopup )
-        {
-        iLongTapHandled = ETrue;
-        iDetailsPopup->ShowMenu();
-        }
-    }
- 
-// ----------------------------------------------------------------------------
 // CCCAppCommLauncherContainer::HandlePointerEventL()
 // ----------------------------------------------------------------------------
 //
 void CCCAppMyCardContainer::HandlePointerEventL(
     const TPointerEvent& aPointerEvent )
     {               
-    TInt index;
-    TPoint pos = aPointerEvent.iPosition;
-    
-    if ( iListBox->View()->XYPosToItemIndex( aPointerEvent.iPosition, index ) )
-       {
-       iLongTapDetector->PointerEventL( aPointerEvent );
-         
-       if ( aPointerEvent.iType == TPointerEvent::EButton1Down )
-           {
-           // Pressed Down Effect
-           iListBox->View()->ItemDrawer()->SetFlags(
-                   CListItemDrawer::EPressedDownState );
-           }
-       }
-
-   if ( !iDetailsPopup )
-      {
-      iDetailsPopup = CAknStylusPopUpMenu::NewL( &iPlugin, aPointerEvent.iPosition ); 
-      TInt resourceReaderId = R_MYCARD_CONTACT_COPY_DETAIL_STYLUS_MENU; 
-      TResourceReader reader;
-      iCoeEnv->CreateResourceReaderLC( reader , resourceReaderId );
-      iDetailsPopup->ConstructFromResourceL( reader );
-      CleanupStack::PopAndDestroy(); // reader
-      }
-      
-    PosToScreenCoordinates( this, pos );    
-    iDetailsPopup->SetPosition( pos, CAknStylusPopUpMenu::EPositionTypeRightBottom );      
-   
     CCoeControl::HandlePointerEventL( aPointerEvent );              
     }
 

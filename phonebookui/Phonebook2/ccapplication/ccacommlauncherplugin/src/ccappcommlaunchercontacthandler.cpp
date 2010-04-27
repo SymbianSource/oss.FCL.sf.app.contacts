@@ -376,24 +376,26 @@ TBool CCCAppCommLauncherContactHandler::ContactFieldTypeAndContactActionMatch(
                 CCACOMMLAUNCHER_ROMARRAY_SIZE( KCCAppCommLauncherVoiceCallGroup )); 
             break;
         case VPbkFieldTypeSelectorFactory::EUniEditorSelector: 
-        	 TInt flags = 0;
-        	 CRepository* key = CRepository::NewL(TUid::Uid(KCRUidPhonebook));
-        	 TInt err = key->Get(KPhonebookLocalVariationFlags, flags);
+            {
+            TInt flags = 0;
+            CRepository* key = CRepository::NewL( TUid::Uid( KCRUidPhonebook ) );
+            TInt err = key->Get( KPhonebookLocalVariationFlags, flags );
         	            
-        	 if ( flags & EVPbkLVShowEmailInSendMsg)
-        		 {
-        		 isMatch = FieldArrayAndContactActionMatch( 
-        		          aContactField, KCCAppCommLauncherMessageEmailGroup, 
-        		          CCACOMMLAUNCHER_ROMARRAY_SIZE( KCCAppCommLauncherMessageEmailGroup ));
-        		 }
-        	 else
-        		 {       	
-        		 isMatch = FieldArrayAndContactActionMatch( 
-        				 aContactField, KCCAppCommLauncherMessageGroup, 
-        				 CCACOMMLAUNCHER_ROMARRAY_SIZE( KCCAppCommLauncherMessageGroup )); 
-        		 }
-        	 delete key;
-        	 break;
+            if ( flags & EVPbkLVShowEmailInSendMsg )
+                {
+                isMatch = FieldArrayAndContactActionMatch( 
+                    aContactField, KCCAppCommLauncherMessageEmailGroup, 
+                    CCACOMMLAUNCHER_ROMARRAY_SIZE( KCCAppCommLauncherMessageEmailGroup ) );
+                }
+            else
+                {       	
+                isMatch = FieldArrayAndContactActionMatch( 
+                    aContactField, KCCAppCommLauncherMessageGroup, 
+                    CCACOMMLAUNCHER_ROMARRAY_SIZE( KCCAppCommLauncherMessageGroup ) ); 
+                }
+            delete key;
+            }
+            break;
         case VPbkFieldTypeSelectorFactory::EEmailEditorSelector:        
             isMatch = FieldArrayAndContactActionMatch( 
                 aContactField, KCCAppCommLauncherEmailGroup, 

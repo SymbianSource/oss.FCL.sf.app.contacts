@@ -371,6 +371,7 @@ class CPbk2ContactEditorDlgImpl : public CAknForm,
                 CPbk2ContactEditorArrayItem* aCurrentField,
                 const TKeyEvent& aKeyEvent, 
                 TEventCode aType );
+        void RestorePrevNaviDecoratorL();
 
     private: // Data structures
 
@@ -464,6 +465,10 @@ class CPbk2ContactEditorDlgImpl : public CAknForm,
         /// Ref: A pointer to stack variable in CloseDialog() for knowing
         /// if the destructor has already been called
         TBool* iDestroyedPtr;
+        /// Ref: Holds the TopMost NaviDecorator before pushing 
+        /// the empty one on to the top.
+        /// Doesnt Own.
+        CAknNavigationDecorator* iPrevNaviDecorator;
     };
 
 #endif // CPBK2CONTACTEDITORDLGIMPL_H

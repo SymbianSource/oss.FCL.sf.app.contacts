@@ -227,7 +227,7 @@ class CLogsEngine : public CBase,
          *
          * @return strings used by Log database
 		 */
-        IMPORT_C TLogsEventStrings CLogsEngine::LogDbStrings();
+        IMPORT_C TLogsEventStrings LogDbStrings();
         
 		/**
 		 * Returns reference to CLogClient. 

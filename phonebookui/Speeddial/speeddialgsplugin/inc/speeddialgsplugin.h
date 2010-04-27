@@ -128,7 +128,7 @@ class CSpeeddialGsPlugin : public CGSPluginInterface,
         */
         CSpeeddialGsPlugin();
         
-        void CSpeeddialGsPlugin::LaunchEasAppL();
+        void LaunchEasAppL();
 
     protected:
         /**

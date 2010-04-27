@@ -1136,4 +1136,40 @@ TInt CVPbkSimContactView::IdleSortCallback( TAny* aThis )
     // Don't continue idle i.e return false value
     return 0;
     }
+
+// --------------------------------------------------------------------------
+// CVPbkSimContactView::IsMatch
+// --------------------------------------------------------------------------
+//
+TBool CVPbkSimContactView::IsMatch( 
+       const RVPbkSimFieldTypeArray& aSortOrder,
+       TVPbkSimViewConstructionPolicy aConstructionPolicy,
+       const TDesC& aViewName )
+    {
+    TBool result = EFalse;
+    if ( ( iViewName->CompareC( aViewName ) == 0 ) && 
+           ( aConstructionPolicy == iConstructionPolicy ) )
+       {
+       if ( EVPbkUnsortedSimView == aConstructionPolicy )
+           {
+           result = ETrue;
+           }
+       else if ( iSortOrder.Count() == aSortOrder.Count() )
+           {
+           result = ETrue;
+           for ( TInt i=0; i<aSortOrder.Count(); i++ )
+              {
+              if ( aSortOrder[i] != iSortOrder[i] )
+                  {
+                  result = EFalse;
+                  break;
+                  }
+              }
+           }
+       }
+    
+    return result;
+    }
+
+
 //  End of File  

@@ -59,7 +59,6 @@ class CCCAppMyCardContainer :
     public MPbk2ContactUiControl,
     public MCCAStatusControlObserver,
     public MMyCardHeaderControlObserver,
-    public MAknLongTapDetectorCallBack,
     public MPbk2ClipListBoxText
     {
 public: // constructor and destructor
@@ -150,16 +149,6 @@ public: // Functions from base classes
      * From MMyCardHeaderControlObserver
      */
     void MyCardHeaderControlClickL( TPoint aPos );
-    
-    /**
-     * Default callback function for CAknLongTapDetector member object.
-     * Base class implementation does nothing
-     * 
-     * @param aPenEventLocation Long tap event location relative to parent control.
-     * @param aPenEventScreenLocation Long tap event location relative to screen.
-     */
-    void HandleLongTapEventL( const TPoint& aPenEventLocation, 
-        const TPoint& aPenEventScreenLocation );
     
     /**
     * From CoeControl
@@ -348,23 +337,6 @@ private: // Data
 
 	TInt iNameOrder;
 	
-	/**
-     * iLongTapDetector
-     * Own.
-     */
-    CAknLongTapDetector* iLongTapDetector;  
-    
-    /** 
-      * Contact detail selection stylus popup menu 
-      * Own. 
-      */  
-    CAknStylusPopUpMenu* iDetailsPopup;
-    
-    /*
-     * Flag for checking if Stylys opened 
-     */
-    TBool iLongTapHandled;    
-    
     /**
      * Not own. Listbox's icon array
      */

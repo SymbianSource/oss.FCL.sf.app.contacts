@@ -202,10 +202,6 @@ void CPmapCmd::ConstructL()
     
     User::LeaveIfNull(iContact);
     
-    if( iCommandId == EPbk2ExtensionAssignFromMapSelect )
-    	{
-    	iCommandId = EPbk2ExtensionAssignFromMap;
-    	}
     
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
         ("CPmapCmd::ConstructL end"));        
@@ -581,10 +577,10 @@ void CPmapCmd::EditorShowOnMapsL( TVPbkFieldTypeParameter aAddressType )
     CPosLandmark* landmark = CPosLandmark::NewL();
     CleanupStack::PushL( landmark );
 
-    if ( !FillGeoLandmarkL( *landmark, aAddressType ) )
-        {
-        FillLandmarkL( *landmark, aAddressType );
-        }
+    FillGeoLandmarkL( *landmark, aAddressType );
+    FillLandmarkL( *landmark, aAddressType );
+    SetLandmarkNameL(*landmark);
+                
     TLocality locality;
     if ( landmark->NumOfAvailablePositionFields() > 0
         || landmark->GetPosition( locality ) == KErrNone )
@@ -886,6 +882,75 @@ void CPmapCmd::FillLandmarkL(CPosLandmark& aLandmark, TVPbkFieldTypeParameter aA
 			}
 		}
 	}
+
+void CPmapCmd::SetLandmarkNameL(CPosLandmark& aLandmark)
+    {
+    _LIT(KComma, ",");
+    _LIT(KSpace, " ");
+    
+    TInt length = 0; 
+    TPtrC street;
+    if( aLandmark.IsPositionFieldAvailable( EPositionFieldStreet ) )
+        {
+        aLandmark.GetPositionField( EPositionFieldStreet, street );
+        length += street.Length();
+        }
+    
+    TPtrC city;
+    if( aLandmark.IsPositionFieldAvailable( EPositionFieldCity ) )
+        {
+        aLandmark.GetPositionField( EPositionFieldCity, city );
+        if( length )
+            {
+            length += KComma().Length() + KSpace().Length();
+            }
+        length += city.Length();
+        }   
+    
+    TPtrC country;
+    if( aLandmark.IsPositionFieldAvailable( EPositionFieldCountry ) )
+        {
+        aLandmark.GetPositionField( EPositionFieldCountry, country );
+        if( length )
+            {
+            length += KComma().Length() + KSpace().Length();
+            }
+        length += country.Length();
+        }   
+    
+    RBuf newAddr;
+    newAddr.CreateL( length );
+    CleanupClosePushL( newAddr );
+    
+    if( street.Length() )
+        {
+        newAddr += street;
+        }
+    
+    if( city.Length() )
+        {
+        if( newAddr.Length() > 0 )
+            {
+            newAddr += KComma();
+            newAddr += KSpace();
+            }
+        newAddr += city;
+        }
+    
+    if( country.Length() )
+        {
+        if( newAddr.Length() > 0 )
+            {
+            newAddr += KComma();
+            newAddr += KSpace();
+            }
+        newAddr += country;
+        }
+    if(length)
+        aLandmark.SetLandmarkNameL(newAddr);
+    
+    CleanupStack::PopAndDestroy( &newAddr );
+    }
 
 // --------------------------------------------------------------------------
 // CPmapCmd::FillGeoLandmarkL

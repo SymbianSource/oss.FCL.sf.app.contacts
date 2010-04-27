@@ -155,7 +155,6 @@ void CPmapContactEditorExtension::DynInitMenuPaneL
     	if ( CPmapCmd::CheckViewProviderL() )
     		{
     		aMenuPane->SetItemDimmed( EPbk2ExtensionAssignFromMap, EFalse );
-    		aMenuPane->SetItemDimmed( EPbk2ExtensionAssignFromMapSelect, EFalse );
     		}
     	}
     }
@@ -177,7 +176,6 @@ TBool CPmapContactEditorExtension::ProcessCommandL
             return ETrue;
             }
         case EPbk2ExtensionAssignFromMap:
-        case EPbk2ExtensionAssignFromMapSelect:
         	{
         	MPbk2Command* cmd = CPmapCmd::NewL( iEditorControl, iContact, aCommandId );
         	// Execute the command

@@ -18,7 +18,10 @@
 
 // INCLUDE FILES
 #include "ccappheaders.h"
+#include "ccappcommlauncherpluginuids.hrh"
+#include "ccappdetailsviewpluginuids.hrh"
 #include <aknlayoutscalable_avkon.cdl.h>
+
 
 // ======== MEMBER FUNCTIONS ========
 
@@ -190,7 +193,7 @@ void CCCAppStatusPaneHandler::AddBitmapsL( TInt aPlugin )
     CCCAppPluginData* data = iView.PluginLoader().PluginAt( aPlugin );
     //Bitmaps provided
 
-    if( !iView.PluginLoader().PluginAt( aPlugin )->iPluginBitmap )  
+    if( !data->iPluginBitmap )  
         {
         CAknIcon* icon = CAknIcon::NewL();
         CleanupStack::PushL( icon );        
@@ -198,10 +201,7 @@ void CCCAppStatusPaneHandler::AddBitmapsL( TInt aPlugin )
                   CCCAppViewPluginBase::ECCAppTabIcon, *icon );
         data->iPluginBitmap = icon->Bitmap();
         data->iPluginBitmapMask = icon->Mask();
-
-        // Disable compression to check icon color scheme later
-        AknIconUtils::DisableCompression( data->iPluginBitmap );
-
+                
         //Calculate preferred size for icons   
         TRect mainPane;
         AknLayoutUtils::LayoutMetricsRect(
@@ -214,6 +214,7 @@ void CCCAppStatusPaneHandler::AddBitmapsL( TInt aPlugin )
 
         AknIconUtils::SetSize( data->iPluginBitmap, size );         
         AknIconUtils::SetSize( data->iPluginBitmapMask, size );
+
         icon->SetBitmap( NULL );
         icon->SetMask( NULL );
         CleanupStack::PopAndDestroy( icon );        
@@ -231,7 +232,7 @@ void CCCAppStatusPaneHandler::AddTabL( TInt aPlugin )
     {
     CCCAppPluginData* data = iView.PluginLoader().PluginAt( aPlugin );
 
-    if(iTabGroupRef && iView.PluginLoader().PluginAt( aPlugin )->PluginVisibility() == 1) 
+    if(iTabGroupRef && data->PluginVisibility() == 1) 
         {
         if(data->iPluginBitmap)
             {
@@ -244,10 +245,15 @@ void CCCAppStatusPaneHandler::AddTabL( TInt aPlugin )
             bmp->Duplicate(data->iPluginBitmap->Handle());   
             bmpMask->Duplicate(data->iPluginBitmapMask->Handle());
             iTabGroupRef->AddTabL( aPlugin, bmp, bmpMask );
-            CleanupStack::Pop(2); //bmp, bmpmask    
-
-            SEpocBitmapHeader header = bmp->Header();
-            if ( SEpocBitmapHeader::ENoColor != header.iColor )
+            CleanupStack::Pop(2); //bmp, bmpmask                
+            
+            // CCA-Launcher and Details-View icons are GrayScale, but are detected as with color.
+            // They shall display dark on clear background and clear on dark background.
+            // SetTabMultiColorMode disables color inversion therefore it does not have to be
+            // called for those tabs.
+            TUid pluginUid = data->Plugin().Id();
+            if (pluginUid != TUid::Uid(KCCACommLauncherPluginImplmentationUid) &&
+                pluginUid != TUid::Uid(KCCADetailsViewPluginImplmentationUid))
                 {
                 iTabGroupRef->SetTabMultiColorMode( aPlugin, ETrue );
                 }

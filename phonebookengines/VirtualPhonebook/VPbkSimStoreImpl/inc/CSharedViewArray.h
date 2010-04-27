@@ -98,7 +98,10 @@ NONSHARABLE_CLASS(CSharedViewArray) : public CBase
         */
         CSharedViewArray( TViewDestructionPolicy aDestructionPolicy );
         /// Returns the owner or NULL
-        CSharedViewOwner* FindOwner( const TDesC& aViewName );
+        CSharedViewOwner* FindOwner( 
+               const RVPbkSimFieldTypeArray& aSortOrder,
+               TVPbkSimViewConstructionPolicy aConstructionPolicy,
+               const TDesC& aViewName );
         
     private:    // Data
         /// Own: defines how views are destroyed

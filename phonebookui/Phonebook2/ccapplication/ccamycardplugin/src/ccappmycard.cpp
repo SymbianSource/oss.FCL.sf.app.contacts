@@ -375,6 +375,15 @@ void CCCAppMyCard::ForceCreateMyCard()
     }
 
 // ---------------------------------------------------------------------------
+// CCCAppMyCard::HeaderControlBlocked
+// ---------------------------------------------------------------------------
+//
+TBool CCCAppMyCard::HeaderControlBlocked()
+    {
+    return iDialogIsRunning;
+    }
+
+// ---------------------------------------------------------------------------
 // CCCAppMyCard::NotifyObservers
 // ---------------------------------------------------------------------------
 //
@@ -574,7 +583,7 @@ TInt CCCAppMyCard::CreateMyCardContact( TAny* aPtr )
 	CCCAppMyCard* self = static_cast<CCCAppMyCard*>( aPtr );
 	TRAPD( err, self->LaunchContactEditorL( TPbk2ContactEditorParams::ENewContact | 
         TPbk2ContactEditorParams::EOwnContact ) );
-	
+			
 	if( err != KErrNone )
         {        
         self->iPlugin.HandleError( err );
@@ -800,7 +809,7 @@ void CCCAppMyCard::ContactOperationCompleted( TContactOpResult aResult )
     	{
     	TRAPD( err, LaunchContactEditorL( TPbk2ContactEditorParams::EModified | 
             TPbk2ContactEditorParams::EOwnContact) );
-    	
+    	    	    	
     	if( err == KLeaveExit )
     	    {                                                                           
             iCloseCallBack->Call();

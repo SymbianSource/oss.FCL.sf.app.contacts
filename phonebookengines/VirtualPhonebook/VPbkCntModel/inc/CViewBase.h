@@ -49,7 +49,7 @@ NONSHARABLE_CLASS( CViewBase ): public CBase,
                                 public MParentViewForFiltering,
                                 public MVPbkContactViewFiltering,
                                 public MVPbkContactStoreObserver,
-                                protected MContactViewObserver,
+                                public MContactViewObserver,
                                 protected MCustomContactViewObserver
     {
     public: // Destructor

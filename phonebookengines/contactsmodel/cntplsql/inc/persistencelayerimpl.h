@@ -75,6 +75,9 @@ public: // MLplContactsFile interface.
 	inline TBool IsTransactionActive() const;
 
 	void NotifyObserver() const;
+	
+    void AddSqlDBObserverL( MLplSqlDatabaseObserver& aSqlDatabaseObserver );
+    void RemoveSqlDBObserverL( MLplSqlDatabaseObserver& aSqlDatabaseObserver );
 
 private: // General methods used to implement all interfaces.
 	CPplContactsFile(CLplContactProperties& aProps, MContactDbObserver* aObserver);
@@ -102,6 +105,9 @@ private: // Member variables used by several interfaces.
 	
 	RPplIccContactStore iIccContactStore; //owned
 	HBufC8* iConfigureStr;
+	
+	// The array of observers which are monitoring RSqlDatabase.
+    RPointerArray<MLplSqlDatabaseObserver> iSqlDatabaseObservers;
 	};
 
 

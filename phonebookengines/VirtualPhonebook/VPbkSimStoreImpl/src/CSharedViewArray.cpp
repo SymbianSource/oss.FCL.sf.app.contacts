@@ -67,7 +67,7 @@ CViewHandle* CSharedViewArray::CreateNewHandleL(
         TVPbkSimViewConstructionPolicy aConstructionPolicy, 
         MVPbkSimCntStore& aParentStore, const TDesC& aViewName )
     {
-    CSharedViewOwner* viewOwner = FindOwner( aViewName );
+    CSharedViewOwner* viewOwner = FindOwner( aSortOrder, aConstructionPolicy, aViewName );
     
     if ( !viewOwner )
         {
@@ -90,7 +90,14 @@ CViewHandle* CSharedViewArray::CreateNewHandleL(
 //        
 void CSharedViewArray::RemoveHandle( CViewHandle& aHandle )
     {
-    CSharedViewOwner* viewOwner = FindOwner( aHandle.SharedView().Name() );
+    CSharedViewOwner* viewOwner = NULL;
+    for ( TInt i=0; i<iSharedViews.Count()&&!viewOwner; i++ )
+        {
+       if ( &iSharedViews[i]->View() == &aHandle.SharedView() )
+            {
+            viewOwner = iSharedViews[i];
+            }
+        }
     if ( viewOwner )
         {
         viewOwner->RemoveHandle( aHandle );
@@ -108,13 +115,16 @@ void CSharedViewArray::RemoveHandle( CViewHandle& aHandle )
 // CSharedViewArray::FindOwner
 // -----------------------------------------------------------------------------
 //        
-CSharedViewOwner* CSharedViewArray::FindOwner( const TDesC& aViewName )
+CSharedViewOwner* CSharedViewArray::FindOwner( 
+       const RVPbkSimFieldTypeArray& aSortOrder,
+       TVPbkSimViewConstructionPolicy aConstructionPolicy,
+       const TDesC& aViewName )
     {
     CSharedViewOwner* viewOwner = NULL;
     const TInt count = iSharedViews.Count();
     for ( TInt i = 0; i < count && !viewOwner; ++i )
         {
-        if ( iSharedViews[i]->View().Name().CompareC( aViewName ) == 0 )
+        if ( iSharedViews[i]->View().IsMatch( aSortOrder, aConstructionPolicy, aViewName ) )
             {
             viewOwner = iSharedViews[i];
             }

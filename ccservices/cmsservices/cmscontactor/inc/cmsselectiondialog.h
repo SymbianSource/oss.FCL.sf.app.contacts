@@ -56,7 +56,7 @@ public:
 	 * @param aFocusIndex Focused item.
 	 * @return selected field item.
 	 */
-	const CCmsContactFieldItem* CCMSSelectionDialog::ExecuteLD
+	const CCmsContactFieldItem* ExecuteLD
 	( TInt aCbaResourceId, const TDesC& aHeading,
 			TInt aFocusIndex );
 
@@ -83,7 +83,7 @@ private: // Implementation
 	 * @since S60 v5.0
 	 * @return listbox model.
 	 */
-	MDesCArray* CCMSSelectionDialog::CreateListItemsL( );
+	MDesCArray* CreateListItemsL( );
 
 	/**
 	 * Helper function for making correct model data for listbox.

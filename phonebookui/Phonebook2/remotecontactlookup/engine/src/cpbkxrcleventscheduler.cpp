@@ -15,7 +15,7 @@
 *
 */
 
-
+#include <coemain.h> // For EActivePriorityClockTimer
 #include "emailtrace.h"
 #include "cpbkxrcleventscheduler.h"
 
@@ -42,7 +42,7 @@ CPbkxRclEventScheduler* CPbkxRclEventScheduler::NewL( MPbkxRclEventHandler& aHan
 // ---------------------------------------------------------------------------
 //
 CPbkxRclEventScheduler::CPbkxRclEventScheduler( MPbkxRclEventHandler& aHandler ) :
-    CActive( EPriorityStandard ), iEventHandler( aHandler )
+    CActive( EActivePriorityClockTimer /* EPriorityStandard*/), iEventHandler( aHandler )
     {
     FUNC_LOG;
     }

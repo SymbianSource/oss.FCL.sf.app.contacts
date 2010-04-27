@@ -109,9 +109,19 @@ VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector
     return selector;
     }
 
-CVPbkFieldTypeSelector* BuildFilterL(
+/**
+ * Builds contact view filter based on selected address select type.
+ *
+ * @param aType                 Address select type.
+ * @param aFieldTypeList        Master field type list.
+ * @param aShowEmailInSendMsg   Indicates whether email fields are valid
+ *                              for message sending purposes (UniEditor).
+ * @return  Contact view filter.
+ */
+CVPbkFieldTypeSelector* BuildViewFilterL(
         TAiwAddressSelectType aType,
-        const MVPbkFieldTypeList& aFieldTypeList )
+        const MVPbkFieldTypeList& aFieldTypeList,
+        TBool aShowEmailInSendMsg )
     {
     CVPbkFieldTypeSelector* selector = NULL;
     
@@ -119,10 +129,21 @@ CVPbkFieldTypeSelector* BuildFilterL(
         {
         case EAiwMMSSelect:
             {
-            selector = VPbkFieldTypeSelectorFactory::
-                BuildContactActionTypeSelectorL(
-                    VPbkFieldTypeSelectorFactory::EUniEditorSelector,
+            // Do not use VPbkFieldTypeSelectorFactory's EUniEditorSelector
+            // filter here, as it's performance is not good.
+            // For view filtering needs, we need to use a fast filter.
+            if ( aShowEmailInSendMsg )
+                {
+                selector = VPbkFieldTypeSelectorFactory::BuildFieldTypeSelectorL
+                    ( VPbkFieldTypeSelectorFactory::EMmsAddressSelector,
                     aFieldTypeList );
+                }
+            else
+                {
+                selector = VPbkFieldTypeSelectorFactory::BuildFieldTypeSelectorL
+                    ( VPbkFieldTypeSelectorFactory::EPhoneNumberSelector,
+                    aFieldTypeList );
+                }
             break;
             }
         case EAiwEMailSelect:
@@ -147,10 +168,12 @@ CVPbkFieldTypeSelector* BuildFilterL(
                 BuildContactActionTypeSelectorL(
                     VPbkFieldTypeSelectorFactory::EVOIPCallSelector,
                     aFieldTypeList );
-            }
-        break;
-        default:
             break;
+            }
+        default:
+            {
+            break;
+            }
         }
     
     return selector;
@@ -268,8 +291,10 @@ inline void CPbk2ItemFetcher::ConstructL( const RMessage2& aMessage )
     // filter specified by client
     else
         {
-        iContactViewFilter = BuildFilterL( iAddressSelectType,
-                appUi.ApplicationServices().ContactManager().FieldTypes() );
+        iContactViewFilter = BuildViewFilterL( iAddressSelectType,
+                appUi.ApplicationServices().ContactManager().FieldTypes(),
+                appUi.ApplicationServices().LocallyVariatedFeatureEnabled
+                ( EVPbkLVShowEmailInSendMsg ) );
         
         // Filter specified by client
         if ( iContactViewFilter == NULL )

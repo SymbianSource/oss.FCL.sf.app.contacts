@@ -441,8 +441,11 @@ private: // data
     ///ETrue - if the more than max results note needs to be shown
     TBool iMoreThanMaxResults;
     
-    // Original title pane text. Owned.
+    // Title pane text. Owned.
+    HBufC* iTitleText;
+    // Original title pane text (of the caller view). Owned.
     HBufC* iOriginalTitleText;
+   
     // Pointer reference to title pane. Not owned.
     CAknTitlePane* iTitlePane;
     

@@ -238,7 +238,7 @@ LOCAL_C void TestCallingAmericaL()
 	TESTVALUE(CheckPhoneMatchL(_L("(+1) 0755 345 3644 644"),14),1);
 	TESTVALUE(CheckPhoneMatchL(_L("(+1) 0755 345 3644 644"),15),1);
 	TESTVALUE(CheckPhoneMatchL(_L("(+1) 0755 345 3644 644"),16),1);
-
+    TESTVALUE(CheckPhoneMatchL(_L("(+1) 0755 345 3644 644"), KBestMatchingPhoneNumbers),1);
 	}
 
 
@@ -259,6 +259,7 @@ LOCAL_C void Test3L()
 	TESTVALUE(CheckPhoneMatchL(_L("123 4567"),13),2);
 	TESTVALUE(CheckPhoneMatchL(_L("123 4567"),14),2);
 	TESTVALUE(CheckPhoneMatchL(_L("123 4567"),15),2);
+	TESTVALUE(CheckPhoneMatchL(_L("123 4567"), KBestMatchingPhoneNumbers),2);
 	}
 
 LOCAL_C void Test4L()
@@ -277,6 +278,7 @@ LOCAL_C void Test4L()
 	TESTVALUE(CheckPhoneMatchL(_L("6543 123 456700"),13),1);
 	TESTVALUE(CheckPhoneMatchL(_L("6543 123 456700"),14),1);
 	TESTVALUE(CheckPhoneMatchL(_L("6543 123 456700"),15),1);
+	TESTVALUE(CheckPhoneMatchL(_L("6543 123 456700"), KBestMatchingPhoneNumbers),1);
 	}
 
 
@@ -296,6 +298,7 @@ LOCAL_C void Test5L()
 	TESTVALUE(CheckPhoneMatchL(_L("00 44 1234 56789"),13),0);
 	TESTVALUE(CheckPhoneMatchL(_L("00 44 1234 56789"),14),0);
 	TESTVALUE(CheckPhoneMatchL(_L("00 44 1234 56789"),15),0);
+    TESTVALUE(CheckPhoneMatchL(_L("00 44 1234 56789"), KBestMatchingPhoneNumbers),1);
 	}
 
 /**
@@ -689,6 +692,120 @@ void TestMatchWithContactAfterEditL()
 	TESTVALUE(CheckPhoneMatchL(	KEditedTelNo(), 10),1);
 	}
 
+LOCAL_C void TestBestMatchingStrategyL()
+    {
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("34567"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("358401234567"),KBestMatchingPhoneNumbers),0);
+    TESTVALUE(CheckPhoneMatchL(_L("34567"), KBestMatchingPhoneNumbers),1);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("358401234567"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("358401234567"),KBestMatchingPhoneNumbers),1);
+    TESTVALUE(CheckPhoneMatchL(_L("34567"), KBestMatchingPhoneNumbers),0);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("3560 0123456"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("0000 0123456"),KBestMatchingPhoneNumbers),1);
+    // false positive?
+    TESTVALUE(CheckPhoneMatchL(_L("123456"), KBestMatchingPhoneNumbers),1);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("1234567"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("358401234567"),KBestMatchingPhoneNumbers),1);
+    TESTVALUE(CheckPhoneMatchL(_L("34567"), KBestMatchingPhoneNumbers),0);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("0000 0123456"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("0123456"),KBestMatchingPhoneNumbers),1);
+    TESTVALUE(CheckPhoneMatchL(_L("123456"), KBestMatchingPhoneNumbers),1);
+    TESTVALUE(CheckPhoneMatchL(_L("3456"), KBestMatchingPhoneNumbers),0);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("020 7700 9001"),KNullDesC);
+    CreateContactL(KCntName,KCntSurname,_L("20 7700 90012"),KNullDesC);
+    CreateContactL(KCntName,KCntSurname,_L("020 7700 9081"),KNullDesC);
+    CreateContactL(KCntName,KCntSurname,_L("120 7700 9081"),KNullDesC);
+    CreateContactL(KCntName,KCntSurname,_L("9120 7700 9081"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("020 7700 9001"), KBestMatchingPhoneNumbers),1);
+    TESTVALUE(CheckPhoneMatchL(_L("20 7700 90012"), KBestMatchingPhoneNumbers),1);
+    TESTVALUE(CheckPhoneMatchL(_L("020 7700 9081"), KBestMatchingPhoneNumbers),3);
+    TESTVALUE(CheckPhoneMatchL(_L("120 7700 9081"), KBestMatchingPhoneNumbers),3);
+    TESTVALUE(CheckPhoneMatchL(_L("9120 7700 9081"), KBestMatchingPhoneNumbers),3);
+    TESTVALUE(CheckPhoneMatchL(_L("20 7700 9081"), KBestMatchingPhoneNumbers),3);
+
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("9999 9990 0999 999"),KNullDesC);
+    CreateContactL(KCntName,KCntSurname,_L("9000 0000 0000 000"),KNullDesC);
+    CreateContactL(KCntName,KCntSurname,_L("0000 0000 0000 000"),KNullDesC);
+    CreateContactL(KCntName,KCntSurname,_L("0000 0000 0000 009"),KNullDesC);
+    CreateContactL(KCntName,KCntSurname,_L("9 9000 000"),KNullDesC);
+    CreateContactL(KCntName,KCntSurname,_L("9000 000"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("9999 9990 0999 999"), KBestMatchingPhoneNumbers),1);
+    TESTVALUE(CheckPhoneMatchL(_L("9000 0000 0000 000"), KBestMatchingPhoneNumbers),2);
+    TESTVALUE(CheckPhoneMatchL(_L("0000 0000 0000 000"), KBestMatchingPhoneNumbers),2);
+    TESTVALUE(CheckPhoneMatchL(_L("0000 0000 0000 009"), KBestMatchingPhoneNumbers),1);
+    TESTVALUE(CheckPhoneMatchL(_L("9 9000 000"), KBestMatchingPhoneNumbers),2);
+    TESTVALUE(CheckPhoneMatchL(_L("9000 000"), KBestMatchingPhoneNumbers),2);
+    TESTVALUE(CheckPhoneMatchL(_L("0000 000"), KBestMatchingPhoneNumbers),2);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("443049607"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("358443049607"), KBestMatchingPhoneNumbers),1);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("0443049607"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("358443049607"), KBestMatchingPhoneNumbers),1);
+
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("358443049607"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("443049607"), KBestMatchingPhoneNumbers),1);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("358443049607"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("0443049607"), KBestMatchingPhoneNumbers),1);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("358443049607"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("3049607"), KBestMatchingPhoneNumbers),1);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("358443049607"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("03049607"), KBestMatchingPhoneNumbers),1);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("443049607"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("0443049607"), KBestMatchingPhoneNumbers),1);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("0443049607"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("443049607"), KBestMatchingPhoneNumbers),1);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("3049607"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("358443049607"), KBestMatchingPhoneNumbers),1);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("03049607"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("358443049607"), KBestMatchingPhoneNumbers),1);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("03049607"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("0358443049607"), KBestMatchingPhoneNumbers),1);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("4443049607"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("3584443049607"), KBestMatchingPhoneNumbers),1);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("584443049607"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("4443049607"), KBestMatchingPhoneNumbers),1);
+    
+    CreateContactL(KCntName,KCntSurname,_L("401234567"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("2041234567"), KBestMatchingPhoneNumbers),0);
+    
+    }
+
 /**
 
 @SYMTestCaseID     PIM-T-CNTMATCH-0001
@@ -714,7 +831,7 @@ LOCAL_C void DoTestsL()
 	TestMatchWithNumberGreaterThanKCntMaxTextFieldLength();
 	TestMatchWithContactWithMultipleNumbersL();
 	TestMatchWithContactAfterEditL();
-
+	TestBestMatchingStrategyL();
 	CntTest->CloseDatabase();
 	CntTest->DeleteDatabaseL();
     }

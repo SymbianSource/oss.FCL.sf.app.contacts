@@ -32,7 +32,8 @@ class MPbk2ContactNameFormatter;
  * Phonebook 2 group name query dialog.
  * Responsible for quering group name.
  */
-class CPguGroupNameQueryDlg : public CAknTextQueryDialog
+class CPguGroupNameQueryDlg : public CAknTextQueryDialog,
+                                public MCoeForegroundObserver
     {
     public:  // Constructors and destructor
 
@@ -59,7 +60,11 @@ class CPguGroupNameQueryDlg : public CAknTextQueryDialog
     public: // From CAknTextQueryDialog
         TBool OkToExitL(
                 TInt aButtonId );
-
+        
+    private: // From MCoeForegroundObserver
+        void HandleGainingForeground();
+        void HandleLosingForeground();
+        
     private: // Implementation
         CPguGroupNameQueryDlg(
                 TDes& aDataText,

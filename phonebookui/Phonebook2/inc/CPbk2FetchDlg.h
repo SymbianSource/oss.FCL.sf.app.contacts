@@ -25,6 +25,8 @@
 #include "MPbk2FetchResultsObserver.h"
 #include <MPbk2DialogEliminator.h>
 #include <babitflags.h>
+#include "MPbk2StoreConfigurationObserver.h"
+#include "CPbk2StoreConfiguration.h"
 
 //  FORWARD DECLARATIONS
 class CVPbkContactLinkArray;
@@ -36,6 +38,7 @@ class MVPbkViewContact;
 class MPbk2ExitCallback;
 class CPbk2FetchResults;
 class CPbk2NamesListControl;
+class CPbk2StoreConfiguration;
 
 // CLASS DECLARATIONS
 
@@ -49,7 +52,8 @@ class CPbk2NamesListControl;
 class CPbk2FetchDlg : public CAknDialog,
                       public MPbk2FetchDlg,
                       public MPbk2DialogEliminator,
-                      private MPbk2FetchResultsObserver
+                      private MPbk2FetchResultsObserver,
+                      private MPbk2StoreConfigurationObserver
     {
     public: // Data structures
 
@@ -200,6 +204,10 @@ class CPbk2FetchDlg : public CAknDialog,
         void SelectContactL(
                 const MVPbkContactLink& aLink,
                 TBool aSelected );
+        
+    private: // From MPbk2StoreConfigurationObserver
+    	void ConfigurationChanged();
+    	void ConfigurationChangedComplete();
 
     private: // From MPbk2ControlObserver
         void HandleControlEventL(
@@ -282,6 +290,8 @@ class CPbk2FetchDlg : public CAknDialog,
         MPbk2FetchDlgPages* iPages;
         /// Own: Current CBA command set
         TInt iCbaCommandSet;
+        /// Own: Detect store status.  
+        CPbk2StoreConfiguration* iStoreConfiguration;
         /// Ref: Observer
         MPbk2FetchDlgObserver& iObserver;
         /// Own: Exit handling

@@ -41,6 +41,9 @@
 #include "CPbk2NamesListControl.h"
 #include <CPbk2AppUiBase.h>
 #include <MPbk2KeyEventHandler.h>
+#include <MPbk2AppUi.h>
+#include <MPbk2ApplicationServices.h>
+#include <MPbk2ContactViewSupplier.h>
 
 // Virtual Phonebook
 #include <CVPbkContactLinkArray.h>
@@ -165,6 +168,11 @@ CPbk2FetchDlg::~CPbk2FetchDlg()
         {
         *iSelfPtr = NULL;
         }
+        
+    if ( iStoreConfiguration )
+        {
+        iStoreConfiguration->RemoveObserver( *this );
+        }
 
     RemoveCommandFromMSK();
     delete iTabSkinDelay;
@@ -219,6 +227,10 @@ inline void CPbk2FetchDlg::ConstructL()
     // in the current resolution/orientation. 
     // So if either one returns EFalse, then MSK is not shown.
     iMSKEnabled = (AknLayoutUtils::MSKEnabled() && Layout_Meta_Data::IsMSKEnabled());
+    
+    // Add the store observer.
+    iStoreConfiguration = &Phonebook2::Pbk2AppUi()->ApplicationServices().StoreConfiguration();
+    iStoreConfiguration->AddObserverL( *this );
     }
 
 // --------------------------------------------------------------------------
@@ -1316,4 +1328,27 @@ void CPbk2FetchDlg::ExitApplication( TInt aCommandId )
         }
     }
 
+
+// --------------------------------------------------------------------------
+// CPbk2FetchDlg::ConfigurationChanged
+// --------------------------------------------------------------------------
+//
+void CPbk2FetchDlg::ConfigurationChanged()
+    {
+    // Do nothing.
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2FetchDlg::ConfigurationChangedComplete
+// --------------------------------------------------------------------------
+//
+void CPbk2FetchDlg::ConfigurationChangedComplete()
+    {
+    // When changing the setting in phonebook.
+    // Fetch dialog will exit and return back to the last view.
+    // For example:
+    // Speeddial: back to its main view.
+    // Message:   back to its editor view.
+    TryExitL( EAknSoftkeyBack );
+    }
 // End of File

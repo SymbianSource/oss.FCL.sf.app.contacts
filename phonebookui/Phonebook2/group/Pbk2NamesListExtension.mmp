@@ -91,7 +91,7 @@ LIBRARY efsrv.lib ecom.lib
 
 // Dependencies to S60 components
 LIBRARY Avkon.lib FeatMgr.lib sendui.lib CdlEngine.lib
-LIBRARY eikctl.lib eikdlg.lib eikcore.lib eikcoctl.lib
+LIBRARY eikctl.lib eikdlg.lib eikcore.lib eikcoctl.lib bsclient.lib serviceprovidersettings.lib
 
 //CCA
 LIBRARY ccaclient.lib

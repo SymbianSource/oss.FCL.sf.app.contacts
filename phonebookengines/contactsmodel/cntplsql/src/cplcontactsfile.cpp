@@ -105,6 +105,7 @@ CPplContactsFile::~CPplContactsFile()
   	Close();
 	delete iItemManager;
 	delete iConfigureStr;
+	iSqlDatabaseObservers.Reset();
 	}
 
 
@@ -340,7 +341,13 @@ CDesCArray* CPplContactsFile::ListL(TDriveUnit* aDriveUnit)
 Close the database.
 */
 void CPplContactsFile::Close(TBool aNotify)
-	{	 		
+	{	 	
+	// Close the resource which depends on iDatabase before it will be closed.
+    for (TInt i = 0; i < iSqlDatabaseObservers.Count(); i++ )
+        {
+        iSqlDatabaseObservers[i]->OnCloseL();
+        }
+
   	iDatabase.Close(); 
   	iFileIsOpen = EFalse;
   
@@ -436,4 +443,37 @@ TBool CPplContactsFile::DatabaseExistsL(const TDesC& aFileName)
 	LocalFsL();
 	return BaflUtils::FileExists(iLocalFs, fileName);
 	}
+
+
+/**
+ * Add an observer for monitoring RSqlDatabase.
+ * 
+ * @param  aSqlDatabaseObserver The observer for monitoring RSqlDatabase.
+ * 
+ * @return None 
+ */
+void CPplContactsFile::AddSqlDBObserverL(
+    MLplSqlDatabaseObserver& aSqlDatabaseObserver )
+    {
+    iSqlDatabaseObservers.AppendL( &aSqlDatabaseObserver );
+    }
+
+
+/**
+ * Remove an RSqlDatabase observer.
+ * 
+ * @param  aSqlDatabaseObserver The observer is to be removed.
+ * 
+ * @return None
+ */
+void CPplContactsFile::RemoveSqlDBObserverL(
+    MLplSqlDatabaseObserver& aSqlDatabaseObserver )
+    {
+    TInt id = iSqlDatabaseObservers.Find( &aSqlDatabaseObserver );
+    if ( id != KErrNotFound )
+        {
+        iSqlDatabaseObservers.Remove( id );
+        }
+    }
+
 

@@ -77,7 +77,8 @@ private:
 	CCntSqlStatement* 		iSelectFullFieldsStmt;
 	};
 
-class NONSHARED CCntPplViewSession : public CTimer
+class NONSHARED CCntPplViewSession: public CTimer,
+    public MLplSqlDatabaseObserver
 	{
 public:	
 	static CCntPplViewSession* NewL(CPplContactsFile& aContactsFile, const CLplContactProperties& aContactProperties, CCntSqlStatement& aSelectAllFields, TInt aViewId, const CContactTextDef& aTextDef, TContactViewPreferences aViewPrefs);
@@ -93,6 +94,9 @@ public:
 	TInt ViewId() const;
 	
 	static void  TextFieldL(RSqlStatement& aSqlStatement, const CCntSqlStatement& aCntSqlStmt, const CContactTemplate& aSystemTemplate, TFieldType aFieldType, TDes& aText);
+	
+	// From MLplSqlDatabaseObserver
+    void OnCloseL(); 
 	
 private:
 	void ConstructL(const CContactTextDef& aTextDef);
@@ -121,11 +125,13 @@ private:
 	
 	TContactViewPreferences iViewPrefs;
 	
-	CContactTextDef*		iTextDef;			
-	CCntSqlStatement*		iCntSqlStatement;
-	RSqlStatement*			iRSqlStatement;
-	RSqlStatement*			iCachedSqlStatement;
-	TBool 					iIsFastAccessFieldsOnly;
+	CContactTextDef*        iTextDef;
+    CCntSqlStatement*       iCntSqlStatement;
+    RSqlStatement           iRSqlStatement;
+    TBool                   iRSqlStatementReady;
+    RSqlStatement           iCachedSqlStatement;
+    TBool                   iCachedSqlStatementReady;
+    TBool                   iIsFastAccessFieldsOnly;
 	};
 	
 	

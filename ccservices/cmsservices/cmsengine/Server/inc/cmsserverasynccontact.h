@@ -218,7 +218,7 @@ NONSHARABLE_CLASS( CCmsServerAsyncContact ) : public CActive
         * @return TCmsDefaultAttributeTypes CMS's default type.
         */
         CCmsContactFieldItem::TCmsDefaultAttributeTypes
-            CCmsServerAsyncContact::MatchTypesToInternalEnum(
+            MatchTypesToInternalEnum(
                 TVPbkDefaultType aDefaultType );
         
         /**

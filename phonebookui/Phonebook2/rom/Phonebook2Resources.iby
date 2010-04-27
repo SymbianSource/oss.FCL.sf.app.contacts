@@ -61,7 +61,6 @@ data=DATAZ_\resource\Pbk2MMCUIRes.rsc                   resource\Pbk2MMCUIRes.rs
 // Map Framework related resources
 
 data=DATAZ_\resource\Pbk2MapUIRes.rsc                   resource\Pbk2MapUIRes.rsc
-data=DATAZ_\resource\Pbk2MapUI.rsc                      resource\Pbk2MapUI.rsc
 
 
 data=ZRESOURCE\ExtensionManagerRes.rsc		RESOURCE_FILES_DIR\ExtensionManagerRes.rsc

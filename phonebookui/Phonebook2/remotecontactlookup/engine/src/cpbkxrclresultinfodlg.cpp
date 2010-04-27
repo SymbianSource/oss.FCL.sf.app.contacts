@@ -594,12 +594,16 @@ void CPbkxRclResultInfoDlg::SetupStatusPaneL()
     
     //Set NullString to the the NaviPane Decorator
     //The simplest way of doin things. 
-    iNaviPane = reinterpret_cast<CAknNavigationControlContainer*>(
+    //Add the navigation decorators only if the usual statuspane layout is used
+    if ( statusPane->CurrentLayoutResId() == R_AVKON_STATUS_PANE_LAYOUT_USUAL_EXT )
+        {
+        iNaviPane = reinterpret_cast<CAknNavigationControlContainer*>(
             statusPane->ControlL( TUid::Uid( EEikStatusPaneUidNavi ) ) );
     
-    iNaviDecorator = iNaviPane->CreateNavigationLabelL( KNullDesC );
+        iNaviDecorator = iNaviPane->CreateNavigationLabelL( KNullDesC );
     
-    iNaviPane->PushL( *iNaviDecorator );          
+        iNaviPane->PushL( *iNaviDecorator );  
+        }
     }
 
 // ---------------------------------------------------------------------------
