@@ -23,73 +23,43 @@
 
 #include "cntstringmapper.h"
 
-class QStringList;
-class CntCommands;
-
-Q_DECLARE_METATYPE(QContactDetail)
-
-class CntContactCardContainerData : public QSharedData
-{
-public:
-    CntContactCardContainerData() { }
-    ~CntContactCardContainerData() { }
-
-public:
-    QList<QVariantList> mDataList;
-};
+class CntContactCardDataItem;
 
 class CntContactCardDataContainer: public QObject
 {
     Q_OBJECT    
 
 public:
-    enum CntCommLaucherDataId
-    {
-        action = 0,
-        text = 1,
-        valueText = 2,
-        icon = 3,
-        detail = 4
-    };
-
-public:
     CntContactCardDataContainer(QContact* contact, QObject *parent = 0);
     virtual ~CntContactCardDataContainer();
 
 public:
-    QVariant data(int index, int role = Qt::DisplayRole) const;
-    int rowCount() const;
-
-public slots:
-    void preferredUpdated();
-
-public:
+    CntContactCardDataItem* dataItem(int index) const;
+    int itemCount() const;
     int separatorIndex() { return mSeparatorIndex; }
-
+    
 #ifdef PBK_UNIT_TEST
 public:
 #else
 private:    
 #endif  
-    void initializeData();
+    void initializeActionsData();
     void initializeGroupData();
     void initializeDetailsData();
     QList<QContactDetail> actionDetails(const QString &actionName, const QContact &contact);
     bool supportsDetail(const QString &actionName, const QContactDetail &contactDetail);
     void addSeparator(int index);
-
-        
+   
 #ifdef PBK_UNIT_TEST
 public:
 #else
 private:    
 #endif       
-    QContact*                   mContact;
-    QSharedDataPointer<CntContactCardContainerData>  mDataPointer;
-    int                         mSeparatorIndex;
-    CntCommands*                mCommands;
-    CntStringMapper             mStringMapper;
-    bool mLocationFeatureEnabled;
+    QContact*                       mContact;
+    QList<CntContactCardDataItem*>  mDataItemList;
+    int                             mSeparatorIndex;
+    CntStringMapper                 mStringMapper;
+    bool                            mLocationFeatureEnabled;
 
 };
 

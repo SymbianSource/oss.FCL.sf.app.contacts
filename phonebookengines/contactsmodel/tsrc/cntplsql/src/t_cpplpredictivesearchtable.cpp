@@ -22,6 +22,12 @@
 
 //  SYSTEM INCLUDES
 #include <digia/eunit/eunitmacros.h>
+#include <f32file.h> // added for setup2L() 
+
+// Used to create HbKeymapFactory singleton to get rid of resource leak
+#include <QLocale>
+#include <hbinputkeymapfactory.h>
+
 
 // Database file
 _LIT(KDBFile, "c:\\unittest.db");
@@ -72,6 +78,11 @@ UT_CPplPredictiveSearchTable* UT_CPplPredictiveSearchTable::NewLC()
 //
 UT_CPplPredictiveSearchTable::~UT_CPplPredictiveSearchTable()
     {
+    delete iTable;
+    iTable = NULL;
+    
+    iDB.Close(); // Must close DB before it can be deleted
+    RSqlDatabase::Delete(KDBFile);
     }
 
 // -----------------------------------------------------------------------------
@@ -91,10 +102,26 @@ void UT_CPplPredictiveSearchTable::ConstructL()
     // The ConstructL from the base class CEUnitTestSuiteClass must be called.
     // It generates the test case table.
     CEUnitTestSuiteClass::ConstructL();
+    
+#if defined(USE_ORBIT_KEYMAP)
+    // Create singleton outside actual test cases so that it is not treated as
+    // resource leak, since it can't be deleted.
+    HbKeymapFactory::instance();
+#else
+    // If Orbit keymap is not used, EUnit shows there is a resource leak in the
+    // first test case of UT_CPplPredictiveSearchTable that writes something to
+    // the database.
+    // To get rid of the resource leak, the following code is here to create DB,
+    // and one contact, delete it, delete DB. 
+    SetupL();
+    UT_DeleteLL(); // Adds and deletes 1 contact
+    Teardown();
+#endif
     }
     
 // -----------------------------------------------------------------------------
 // UT_CPplPredictiveSearchTable::SetupL
+// Must start with an empty DB file for each test case
 // -----------------------------------------------------------------------------
 //
 void UT_CPplPredictiveSearchTable::SetupL()
@@ -105,9 +132,34 @@ void UT_CPplPredictiveSearchTable::SetupL()
 	iDB.Create(KDBFile);
 
 	iTable = CPplPredictiveSearchTable::NewL(iDB);
+	// Create (empty) predictive search tables to DB
 	iTable->CreateTableL();
-    }
+	}
     
+// -----------------------------------------------------------------------------
+// UT_CPplPredictiveSearchTable::Setup2L
+// For synchronize tables test case
+// -----------------------------------------------------------------------------
+//
+void UT_CPplPredictiveSearchTable::Setup2L()
+    {
+    // Copy an existing DB file that does not contain predictive search tables
+    // to a DB file that will be used in test.
+    RFs fs;
+    User::LeaveIfError(fs.Connect());
+    CFileMan* fm = CFileMan::NewL(fs);
+    CleanupStack::PushL(fm);
+    
+    _LIT(KSourceFile, "c:\\Copy of contacts_without_pred_search_tables.db");
+    User::LeaveIfError(fm->Copy(KSourceFile, KDBFileWithoutPredSearch));
+    CleanupStack::PopAndDestroy(fm);
+    fs.Close();
+    
+    
+    User::LeaveIfError(iDB.Open(KDBFileWithoutPredSearch));
+    iTable = CPplPredictiveSearchTable::NewL(iDB);
+    }
+
 // -----------------------------------------------------------------------------
 // UT_CPplPredictiveSearchTable::Teardown
 // -----------------------------------------------------------------------------
@@ -116,7 +168,7 @@ void UT_CPplPredictiveSearchTable::Teardown()
     {
     delete iTable;
 	iTable = NULL;
-	
+
 	iDB.Close(); // Must close DB before it can be deleted
 	RSqlDatabase::Delete(KDBFile);
     }
@@ -126,7 +178,7 @@ void UT_CPplPredictiveSearchTable::Teardown()
 
 // Dummy case to see if the first case always results a resource leak
 void UT_CPplPredictiveSearchTable::UT_DummyL()
-    {
+    {    
     // The first test case that writes to tables, seems to cause resource leak
     // if the DB file did not have predictive search tables already.
     AddContactL(KTestFirstName, KNullDesC, KTestContactId);
@@ -139,9 +191,7 @@ void UT_CPplPredictiveSearchTable::UT_DummyL()
 void UT_CPplPredictiveSearchTable::UT_CreateInDbLL()
     {
     CheckItemCountL(); // all empty
-
     AddContactL(KTestFirstName, KTestLastName, KTestContactId);
-
     CheckItemCountL(0, 1, 0, 0, 1); // table 1 and 4 have one entry
     }
 
@@ -198,7 +248,7 @@ void UT_CPplPredictiveSearchTable::UT_UpdateLL()
     
     // Add one contact to DB
     AddContactL(KTestFirstName, KTestLastName, KTestContactId);
-    
+
     // Update some field
     TInt id = KUidContactCardValue;
     TUid uid;
@@ -216,8 +266,8 @@ void UT_CPplPredictiveSearchTable::UT_UpdateLL()
     field = CContactItemField::NewL(KStorageTypeText, KUidContactFieldFamilyName);
     field->TextStorage()->SetTextL(KTestLastName);  
     contact->AddFieldL(*field); // Takes ownership
-    
-    contact->SetId(KTestContactId);
+
+	contact->SetId(KTestContactId);
 
     iTable->UpdateL(*contact);
     CleanupStack::PopAndDestroy(contact);
@@ -246,13 +296,13 @@ void UT_CPplPredictiveSearchTable::UT_UpdateLBothFieldsL()
     {
     _LIT(KTestUpdatedFirstName, "777");
     _LIT(KTestUpdatedLastName, "012345");
-
+    
     // Add some contacts
     AddContactL(KTestFirstName, KTestLastName, KTestContactId);
     AddContactL(_L("9876"), _L("888"), KTestContactId2);
     AddContactL(_L("5050"), _L("2"), KTestContactId3);
     CheckItemCountL(0, 1, 1, 0, 1, 1, 0, 0, 1, 1);
-
+    
     // Update FN and LN of second contact
     TInt id = KUidContactCardValue;
     TUid uid;
@@ -270,9 +320,9 @@ void UT_CPplPredictiveSearchTable::UT_UpdateLBothFieldsL()
     field = CContactItemField::NewL(KStorageTypeText, KUidContactFieldFamilyName);
     field->TextStorage()->SetTextL(KTestUpdatedLastName);  
     contact->AddFieldL(*field); // Takes ownership
-    
+
     contact->SetId(KTestContactId2);
-    
+
     iTable->UpdateL(*contact);
     CleanupStack::PopAndDestroy(contact);
     
@@ -579,9 +629,13 @@ void UT_CPplPredictiveSearchTable::UT_CheckIfTableExists2L()
 	EUNIT_ASSERT_EQUALS(KErrNone, err);
     }
 
+
 // IMPORTANT NOTE:
-// If this case fails, make sure KDBFileWithoutPredSearch file exists, and it
-// does not contain the predictive search tables.
+// If this case fails or a resource leak is reported on it, make sure
+// KDBFileWithoutPredSearch file exists, and it does not contain the predictive
+// search tables!
+// If Orbit keymap is used, this test case leaks resources,
+// otherwise it does not leak.
 
 /* Create DB and other tables, except pred search table. Add some contacts to DB
    but do not write them to (non-existing) pred search table.
@@ -590,18 +644,7 @@ void UT_CPplPredictiveSearchTable::UT_CheckIfTableExists2L()
    tables.
    Close database and open it, to see that pred search tables are created. */
 void UT_CPplPredictiveSearchTable::UT_SynchronizeTableL()
-    {    
-    // Delete DB that was created in setup()
-    iDB.Close(); // Must close DB before it can be deleted
-    RSqlDatabase::Delete(KDBFile);
-
-	delete iTable;
-	iTable = NULL;
-    iTable = CPplPredictiveSearchTable::NewL(iDB);
-
-    // Open the generated DB that does not have predictive search tables in it.
-    iDB.Open(KDBFileWithoutPredSearch);
-
+    {
 ///////// copied from CPplContactItemManager::SynchronizePredSearchTableL ////////
     iTable->CreateTableL();
     _LIT(KSelectAllContactsFormat, "SELECT %S,%S,%S FROM %S;");
@@ -672,9 +715,8 @@ void UT_CPplPredictiveSearchTable::UT_SynchronizeTableL()
     delete iTable;
     iTable = NULL;
 	iDB.Close(); // Must close DB before it can be deleted
-	
-	// This test case leaks 2 heap cells. Perhaps because pred.search tables
-	// are created to DB file?
+
+	RSqlDatabase::Delete(KDBFileWithoutPredSearch);
     }
 
 void UT_CPplPredictiveSearchTable::UT_DeleteTablesL()
@@ -724,6 +766,9 @@ void UT_CPplPredictiveSearchTable::UT_TokenizeNamesL()
 // Write contacts with and without FN & LN.
 void UT_CPplPredictiveSearchTable::UT_WriteToDbL()
     {
+	const TContactItemId KTestContactId5 = 1024;
+	const TContactItemId KTestContactId6 = 1025;
+
 	// Just FN
 	AddContactL(KTestFirstName, KNullDesC, KTestContactId);
 	// Just LN
@@ -735,8 +780,8 @@ void UT_CPplPredictiveSearchTable::UT_WriteToDbL()
 	
 	// Long names
 	_LIT(KTooLongName, "abcdefghijklmnopqrstuwvxyz aabbccddeeffgghhiijjkkllmm");
-	AddContactL(KTooLongName, KTestLastName, KTestContactId4 + 1);
-    AddContactL(KTestFirstName, KTooLongName, KTestContactId4 + 2);
+	AddContactL(KTooLongName, KTestLastName, KTestContactId5);
+    AddContactL(KTestFirstName, KTooLongName, KTestContactId6);
     }
 
 void UT_CPplPredictiveSearchTable::UT_ConvertToHexL()
@@ -787,16 +832,20 @@ void UT_CPplPredictiveSearchTable::AddContactL(const TDesC& aFirstName,
         CContactItemField* field =
             CContactItemField::NewL(KStorageTypeText, KUidContactFieldGivenName);
         CContactTextField* textfield = field->TextStorage();
+        CleanupStack::PushL(field);
         textfield->SetTextL(aFirstName);
         contact->AddFieldL(*field); // Takes ownership
+        CleanupStack::Pop(field);
         }
     
     if (aLastName.Length() > 0)
         {
         CContactItemField* field =
             CContactItemField::NewL(KStorageTypeText, KUidContactFieldFamilyName);
+        CleanupStack::PushL(field);
         field->TextStorage()->SetTextL(aLastName);
         contact->AddFieldL(*field); // Takes ownership
+        CleanupStack::Pop(field);
         }
 
     contact->SetId(aContactId);
@@ -976,14 +1025,14 @@ TInt64 UT_CPplPredictiveSearchTable::ConvertToNbrL(const TDesC& aString,
 		{
 		nbrPtr.Append(aPadChar);
 		}	
-    RDebug::Print(_L("CPplPredictiveSearchTable::ConvertToNbrL padded '%S'"), nbrBuffer);
+//    RDebug::Print(_L("UT_CPplPredictiveSearchTable::ConvertToNbrL padded '%S'"), nbrBuffer);
     
 	TLex16 lex(*nbrBuffer);
 	TInt64 nbrValue(0);
 	User::LeaveIfError(lex.Val(nbrValue, EHex));
 	CleanupStack::PopAndDestroy(nbrBuffer);
 
-	RDebug::Print(_L("CPplPredictiveSearchTable::ConvertToNbrL result 0x%lx"), nbrValue);        
+//	RDebug::Print(_L("UT_CPplPredictiveSearchTable::ConvertToNbrL result 0x%lx"), nbrValue);        
 	return nbrValue;
 	}
 
@@ -1043,6 +1092,7 @@ void UT_CPplPredictiveSearchTable::CPplContactItemManager_DeletePredSearchTables
         CleanupStack::PopAndDestroy(dropTableCommand);
         }
 	}
+
 
 //  TEST TABLE
 
@@ -1140,7 +1190,7 @@ EUNIT_TEST(
     "UT_CPplPredictiveSearchTable",
     "",
     "FUNCTIONALITY",
-    SetupL, UT_SynchronizeTableL, Teardown )
+    Setup2L, UT_SynchronizeTableL, Teardown )
 
 EUNIT_TEST(
     "Delete predictive search tables",

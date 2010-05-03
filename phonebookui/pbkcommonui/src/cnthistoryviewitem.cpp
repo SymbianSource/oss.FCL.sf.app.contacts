@@ -17,7 +17,7 @@
 
 #include "cnthistoryviewitem.h"
 
-#include <mobhistorymodel.h>
+#include <cnthistorymodel.h>
 
 //---------------------------------------------------------------
 // HbListViewItem::HbListViewItem
@@ -25,8 +25,7 @@
 //---------------------------------------------------------------
 CntHistoryViewItem::CntHistoryViewItem(QGraphicsItem* parent)
 : HbAbstractViewItem(parent),
-mLayout(0),
-itemWidget(0)
+itemWidget(NULL)
 {
 }
 
@@ -53,32 +52,55 @@ void CntHistoryViewItem::polish(HbStyleParameters& /*params*/)
 //---------------------------------------------------------------
 void CntHistoryViewItem::updateChildItems()
 {
-    //Create whole item layout
-    if (!mLayout) {
-        mLayout = new QGraphicsLinearLayout(this);
-        mLayout->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-        mLayout->setOrientation(Qt::Horizontal);
-        mLayout->setContentsMargins(0,0,0,0);
-    }
-
-    //Create item widget 
-    if(!itemWidget)
-        {
-        itemWidget = new CntHistoryViewItemWidget(this);
-        mLayout->addItem(itemWidget);
-        }
-    
-    //Update item widget content
     QStringList data = modelIndex().data(Qt::DisplayRole).toStringList();
     QString iconName = modelIndex().data(Qt::DecorationRole).toString();
     bool incoming = false;
+    bool newMessage = false;
     bool status = false;
-    if (modelIndex().data(MobHistoryModel::DirectionRole).toInt(&status) == 0) {
+    if (modelIndex().data(CntHistoryModel::DirectionRole).toInt(&status) == CntHistoryModel::Incoming) {
         incoming = true;
     }
- 
-    itemWidget->setDetails(data.at(0), data.at(1), data.at(2), iconName, incoming);
-
-    setLayout(mLayout);
+    // This indication applies to smses only
+    if (modelIndex().data(CntHistoryModel::ItemTypeRole).toInt(&status) == CntHistoryModel::Message && 
+        modelIndex().data(CntHistoryModel::SeenStatusRole).toInt(&status) == CntHistoryModel::Unseen) {
+        newMessage = true;
+    }
+    
+    QGraphicsLinearLayout* currentLayout = static_cast<QGraphicsLinearLayout*>(layout());
+    
+    if (currentLayout == NULL) {
+    
+        currentLayout = new QGraphicsLinearLayout(this);
+        currentLayout->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+        currentLayout->setOrientation(Qt::Horizontal);
+        currentLayout->setContentsMargins(0,0,0,0);
+            
+        //Create item widget 
+        itemWidget = new CntHistoryViewItemWidget(this);
+        currentLayout->addItem(itemWidget);
+    
+        //Update item widget contents
+        itemWidget->setDetails(data.at(0), data.at(1), data.at(2), iconName, incoming, newMessage);
+    
+        setLayout(currentLayout);
+    
+    } else {
+        // Find the itemWidget item from the layout and remove it
+        int i = 0;
+        while( itemWidget != static_cast<CntHistoryViewItemWidget*>(currentLayout->itemAt(i)) ) {
+            i++;
+        }
+        currentLayout->removeAt(i);
+        delete itemWidget;
+        
+        //Create new item widget 
+        itemWidget = new CntHistoryViewItemWidget(this);
+        currentLayout->addItem(itemWidget);
+    
+        //Update item widget contents
+        itemWidget->setDetails(data.at(0), data.at(1), data.at(2), iconName, incoming, newMessage);
+    
+        updateGeometry();
+    }
 }
 // EOF

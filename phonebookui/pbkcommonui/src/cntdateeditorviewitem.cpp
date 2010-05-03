@@ -36,7 +36,8 @@
 #include <QPointer>
 
 CntDateEditorViewItem::CntDateEditorViewItem( QGraphicsItem* aParent ) : 
-CntDetailViewItem( aParent )
+CntDetailViewItem( aParent ),
+mButton(NULL)
     {
     mLocale = QLocale::system();
     }

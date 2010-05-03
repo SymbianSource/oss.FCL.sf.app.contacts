@@ -19,10 +19,15 @@
 #include "cntdetailmodelitem.h"
 #include <hbdataformmodel.h>
 #include <hbabstractitemview.h>
+#include <hblabel.h>
+#include <hbmainwindow.h>
 #include <qcontactnote.h>
+#include <qgraphicslinearlayout>
 
 CntNoteEditorViewItem::CntNoteEditorViewItem( QGraphicsItem* aParent ) :
-CntDetailViewItem(aParent)
+CntDetailViewItem(aParent),
+mEdit(NULL),
+mLayout(NULL)
     {
     }
 
@@ -49,14 +54,21 @@ HbWidget* CntNoteEditorViewItem::createCustomWidget()
     HbDataFormModel* model = static_cast<HbDataFormModel*>(itemView()->model());
     CntDetailModelItem* item = static_cast<CntDetailModelItem*>( model->itemFromIndex(modelIndex()) );
     QContactNote detail = item->detail();
-        
+
+    mLayout = new QGraphicsLinearLayout(Qt::Vertical);
+    HbWidget* widget = new HbWidget();
+    
     mEdit = new HbLineEdit();
     connect( mEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)) );
-    
     mEdit->setMaxLength( CNT_NOTE_EDITOR_MAXLENGTH );
     mEdit->setMinRows( CNT_NOTE_EDITOR_MIN_ROWCOUNT );
     mEdit->setText( detail.note() );
+
+    HbLabel* label = new HbLabel(hbTrId("Note"));
+    mLayout->addItem(label);
+    mLayout->addItem(mEdit);
+    widget->setLayout( mLayout );
     
-    return mEdit;
+    return widget;
     }
 // End of File

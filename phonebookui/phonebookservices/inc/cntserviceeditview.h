@@ -20,7 +20,6 @@
 
 #include <QObject>
 #include "cnteditview.h"
-#include "cntviewparameters.h"
 
 class CntServiceHandler;
 
@@ -31,16 +30,20 @@ Q_OBJECT
 
 public:
 
-    CntServiceEditView(CntServiceHandler *aServiceHandler, CntViewManager *aViewManager, QGraphicsItem *aParent = 0);
+    CntServiceEditView(CntServiceHandler *aServiceHandler );
     ~CntServiceEditView();
 
-    CntViewParameters::ViewId viewId() const { return CntViewParameters::serviceEditView; }
+    int viewId() const { return serviceEditView; }
 
-public slots:
-
-    void aboutToCloseView();
-    int handleExecutedCommand(QString aCommand, const QContact &aContact);
-    void discardAllChanges();
+private slots:
+    void doContactUpdated();
+    void doContactRemoved();
+    void doChangesDiscarded();
+    
+//public slots:
+//    void aboutToCloseView();
+//    int handleExecutedCommand(QString aCommand, const QContact &aContact);
+//    void discardAllChanges();
 
 private:
     CntServiceHandler *mServiceHandler;

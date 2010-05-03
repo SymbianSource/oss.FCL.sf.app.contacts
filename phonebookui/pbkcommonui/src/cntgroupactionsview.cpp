@@ -17,51 +17,48 @@
 
 #include "cntgroupactionsview.h"
 
-#include <QGraphicsLinearLayout>
-#include <qtcontacts.h>
-#include <hbdocumentloader.h>
-#include <QGraphicsSceneResizeEvent>
-#include <hbscrollarea.h>
-#include <hbgroupbox.h>
-#include <thumbnailmanager_qt.h>
-#include "cntcontactcarddatacontainer.h"
-#include "cntcontactcarddetailitem.h"
-#include "cntcontactcardheadingitem.h"
-#include "cntcommands.h"
-#include <hbdialog.h>
+#include <hblistview.h>
+#include <hbmenu.h>
+#include <hbaction.h>
+#include <hblistview.h>
+#include <hblistviewitem.h>
+#include <hbview.h>
 #include <hbaction.h>
 #include <hblabel.h>
+#include <hbicon.h>
+#include <hbgroupbox.h>
+#include <mobcntmodel.h>
+#include <hbframebackground.h>
 
+#include <QStandardItemModel>
 
-const char *CNT_GROUPACTIONVIEW_XML = ":/xml/contacts_cc.docml";
+const char *CNT_GROUPACTIONSVIEW_XML = ":/xml/contacts_groupactions.docml";
 
-/*!
-Constructor, initialize member variables.
-\a viewManager is the parent that creates this view. \a parent is a pointer to parent QGraphicsItem (by default this is 0)
-*/
-CntGroupActionsView::CntGroupActionsView(CntViewManager *viewManager, QGraphicsItem *parent) :
-    CntBaseView(viewManager, parent),
-    mGroupContact(0),
-    mScrollArea(0),
-    mContainerWidget(0),
-    mContainerLayout(0),
-    mDataContainer(0),
-    mHeadingItem(0),
-    mBanner(0)
+CntGroupActionsView::CntGroupActionsView() :
+mGroupContact(NULL),
+mModel(NULL),
+mViewManager(NULL),
+mListView(NULL)
 {
     bool ok = false;
-    ok = loadDocument(CNT_GROUPACTIONVIEW_XML);
-
+    mDocumentLoader.load(CNT_GROUPACTIONSVIEW_XML, &ok);
+  
     if (ok)
-       {
-           QGraphicsWidget *content = findWidget(QString("content"));
-           setWidget(content);
-       }
-       else
-       {
-           qFatal("Unable to read :/xml/contacts_cc.docml");
-       }
-
+    {
+        mView = static_cast<HbView*>(mDocumentLoader.findWidget(QString("view")));
+    }
+    else
+    {
+        qFatal("Unable to read :/xml/contacts_groupactions.docml");
+    }
+    
+    //back button
+    mSoftkey = new HbAction(Hb::BackNaviAction, mView);
+    connect(mSoftkey, SIGNAL(triggered()), this, SLOT(showPreviousView()));
+    
+    // menu actions
+    mEditGrpDetailAction = static_cast<HbAction*>(mDocumentLoader.findObject("cnt:editgroupdetail"));
+    connect(mEditGrpDetailAction, SIGNAL(triggered()), this, SLOT(editGroup()));
 }
 
 /*!
@@ -69,175 +66,107 @@ Destructor
 */
 CntGroupActionsView::~CntGroupActionsView()
 {
+    mView->deleteLater();
+    
+    delete mEditGrpDetailAction; 
+    mEditGrpDetailAction = NULL;
+    
     delete mGroupContact;
-    delete mDataContainer;
+    mGroupContact = NULL;
+    
+    delete mModel;
+    mModel = NULL;
 }
 
 
 void CntGroupActionsView::editGroup()
 {
-    CntViewParameters viewParameters(CntViewParameters::groupEditorView);
-    viewParameters.setSelectedAction("EditGroupMembers");
-    viewParameters.setSelectedContact(*mGroupContact);
-    viewManager()->changeView(viewParameters);
+    CntViewParameters viewParameters;
+    viewParameters.insert(EViewId, groupEditorView);
+    QVariant var;
+    var.setValue(*mGroupContact);
+    viewParameters.insert(ESelectedContact, var);
+    mViewManager->changeView(viewParameters);
+
 }
 
-/*!
-Launch contact editor 
-*/
-void CntGroupActionsView::editContact()
-{
-    commands()->editContact(*mGroupContact);
-}
 
 /*!
 Activates a previous view
 */
-void CntGroupActionsView::aboutToCloseView()
+void CntGroupActionsView::showPreviousView()
 {
-    CntViewParameters args;
-    args.setSelectedContact(*mGroupContact);
-    viewManager()->back( args );
+    CntViewParameters viewParameters;
+    QVariant var;
+    var.setValue(*mGroupContact);
+    viewParameters.insert(ESelectedContact, var);
+    mViewManager->back(viewParameters);
 }
 
-void CntGroupActionsView::resizeEvent(QGraphicsSceneResizeEvent *event)
-{
-    if (mScrollArea)
-    {
-        mContainerWidget->resize(mScrollArea->size().width(), 0);
-    }
-    CntBaseView::resizeEvent(event);
-}
-
-void CntGroupActionsView::addActionsToToolBar()
+void CntGroupActionsView::deactivate()
 {
     
 }
+
 /*
 Activates a default view and setup name label texts
 */
-void CntGroupActionsView::activateView(const CntViewParameters &viewParameters)
-{	
-    QContact contact = viewParameters.selectedContact();
-    mGroupContact = new QContact(contact);
-
-    // add heading widget to the content
-    QGraphicsWidget *c = findWidget(QString("content"));
-    QGraphicsLinearLayout* l = static_cast<QGraphicsLinearLayout*>(c->layout());
+void CntGroupActionsView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
+{
+    if (mView->navigationAction() != mSoftkey)
+        mView->setNavigationAction(mSoftkey);   
+    
+    mGroupContact = new QContact(aArgs.value(ESelectedContact).value<QContact>());
+    mViewManager = aMgr;
 
     QContactName groupContactName = mGroupContact->detail( QContactName::DefinitionName );
     QString groupName(groupContactName.value( QContactName::FieldCustomLabel ));
-       
-    mBanner = new HbGroupBox(this);
-    l->insertItem(0, mBanner);
-    mBanner->setHeading(groupName);
     
     
-       
-    // data
-    mDataContainer = new CntContactCardDataContainer(mGroupContact);
-
-    mScrollArea = static_cast<HbScrollArea*>(findWidget(QString("scrollArea")));
-    mScrollArea->setScrollDirections(Qt::Vertical);
-
-    mContainerWidget = new QGraphicsWidget(mScrollArea);
-    mContainerWidget->setPreferredWidth(mScrollArea->size().width());
-    mScrollArea->setContentWidget(mContainerWidget);
-
-    mContainerLayout = new QGraphicsLinearLayout(Qt::Vertical);
-    mContainerLayout->setContentsMargins(0, 0, 0, 0);
-    mContainerLayout->setSpacing(0);
-    mContainerWidget->setLayout(mContainerLayout); 
+    //group box
+    HbGroupBox* groupBox = static_cast<HbGroupBox *>(mDocumentLoader.findWidget(QString("groupBox")));
+    groupBox->setHeading(groupName);
     
-    for (int index = 0; index < mDataContainer->rowCount(); index++)
-    {
-       // communication methods
-       if (mDataContainer->separatorIndex() == -1 || index < mDataContainer->separatorIndex())
-       { 
-           CntContactCardDetailItem* item = new CntContactCardDetailItem(index, mContainerWidget);
-
-           connect(item, SIGNAL(clicked()), this, SLOT(onItemActivated()));
-           
-           HbIcon icon("");
-           QString text;
-           QString valueText;
-
-           // DecorationRole
-           QVariant decorationRole = mDataContainer->data(index, Qt::DecorationRole);
-           QVariantList variantList;
-           if (decorationRole.isValid())
-           {
-               if (decorationRole.canConvert<HbIcon>())
-               {
-                   icon = decorationRole.value<HbIcon>();
-               }
-               else if (decorationRole.canConvert< QList<QVariant> >())
-               {
-                   variantList = decorationRole.toList();
-                   for (int j = 0; j < variantList.count(); j++)
-                   {
-                       if (j==0 && variantList.at(0).canConvert<HbIcon>())
-                       {
-                           icon = variantList.at(0).value<HbIcon>();
-                       }
-                   }
-               }
-           }
-
-           // DisplayRole
-           QVariant displayRole = mDataContainer->data(index, Qt::DisplayRole);
-           QStringList stringList;
-           if (displayRole.isValid())
-           {
-               if (displayRole.canConvert<QString>())
-               {
-                   stringList.append(displayRole.toString());
-               }
-               else if (displayRole.canConvert<QStringList>())
-               {
-                   stringList = displayRole.toStringList();
-               }
-           }
-
-           for (int j = 0; j < stringList.count(); j++)
-           {
-               if (j==0)
-               {
-                   text = stringList.at(0);
-               }
-               else if (j==1)
-               {
-                   valueText = stringList.at(1);
-               }
-           }
-           QString confCall("Conference Call");
-           if(text==confCall) // conference call
-               {
-               item->setDetails(icon, text, valueText);
-               }
-           else
-               {
-               item->setDetails(icon, text); // for group Email and Message, we dont need any Value text
-               }
-           mContainerLayout->addItem(item);
-       }
-   }
-
-
+    // create list & model
+    mListView = static_cast<HbListView*> (mDocumentLoader.findWidget("listView"));
+    mListView->setUniformItemSizes(true);
+    
+    HbFrameBackground frame;
+    frame.setFrameGraphicsName("qtg_fr_list_parent_normal");
+    frame.setFrameType(HbFrameDrawer::NinePieces);
+    mListView->itemPrototypes().first()->setDefaultFrame(frame);
+    
+    mListView->listItemPrototype()->setGraphicsSize(HbListViewItem::LargeIcon);
+    
+    
+    mModel = new QStandardItemModel();
+    
+    QContactPhoneNumber confCallNumber = mGroupContact->detail<QContactPhoneNumber>();
+    if(!confCallNumber.number().isEmpty())
+        {
+        populatelist(hbTrId("txt_phob_dblist_conference_call"), HbIcon("qtg_large_call_group"),confCallNumber.number());
+        }
+      
+    populatelist(hbTrId("txt_phob_dblist_send_message"),HbIcon("qtg_large_message_group"),hbTrId("txt_phob_dblist_send_message_val_members"));
+    populatelist(hbTrId("txt_phob_dblist_email"),HbIcon("qtg_large_email_group"),hbTrId("txt_phob_dblist_send_message_val_members"));
+    
+    mListView->setModel(mModel);
+    mListView->setSelectionMode(HbAbstractItemView::NoSelection);
+    
 }
 
-/*!
-Add actions to menu
-*/
-void CntGroupActionsView::addMenuItems()
+void CntGroupActionsView:: populatelist(QString primaryText,HbIcon icon,QString secondaryText)
 {
-    actions()->clearActionList();
-    actions()->actionList() << actions()->baseAction("cnt:editgroupdetails");
-    actions()->addActionsToMenu(menu());
-
-    connect(actions()->baseAction("cnt:editgroupdetails"), SIGNAL(triggered()),
-            this, SLOT (editGroup()));
+    QList<QStandardItem*> items;
+    QStandardItem *labelItem = new QStandardItem();
+    
+    QStringList textList;
+   
+    textList << primaryText << secondaryText;
+    
+    labelItem->setData(textList, Qt::DisplayRole);
+    labelItem->setData(icon, Qt::DecorationRole);
+    
+    items << labelItem ;
+    mModel->appendRow(items);
 }
-
-
-

@@ -19,7 +19,11 @@
     <meshitem src="frame" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-left)"/>
     <meshitem src="frame" srcEdge="TOP" dst="" dstEdge="TOP"/>
     <meshitem src="frame" srcEdge="RIGHT" dst="icon" dstEdge="LEFT" spacing="var(hb-param-margin-gene-middle-horizontal)"/>
-    <meshitem src="frame" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM"/>  
+    <meshitem src="frame" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM"/>
+
+    <meshitem src="newItem" srcEdge="LEFT" dst="frame" dstEdge="LEFT"/>
+    <meshitem src="newItem" srcEdge="TOP" dst="frame" dstEdge="TOP"/>
+    <meshitem src="newItem" srcEdge="BOTTOM" dst="frame" dstEdge="BOTTOM"/>
   </layout>
   
   <layout name="layout_outgoing_title_bodytext_timestamp" type="mesh">
@@ -28,7 +32,7 @@
     
     <meshitem src="title" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="expr(var(hb-param-margin-gene-right)+1.0un)"/>
     <meshitem src="title" srcEdge="TOP"  dst="" dstEdge="TOP" spacing="-var(hb-param-margin-gene-top)"/>
-		<meshitem src="title" srcEdge="LEFT" dst="icon" dstEdge="RIGHT" spacing="expr(-var(hb-param-margin-gene-left)-var(hb-param-margin-gene-middle-horizontal))"/>
+    <meshitem src="title" srcEdge="LEFT" dst="icon" dstEdge="RIGHT" spacing="expr(-var(hb-param-margin-gene-left)-var(hb-param-margin-gene-middle-horizontal))"/>
 
     <meshitem src="bodyText" srcEdge="RIGHT" dst="title" dstEdge="RIGHT"/>
     <meshitem src="bodyText" srcEdge="TOP" dst="title" dstEdge="BOTTOM" spacing="-var(hb-param-margin-gene-middle-vertical)"/>
@@ -61,7 +65,11 @@
     <meshitem src="frame" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-left)"/>
     <meshitem src="frame" srcEdge="TOP" dst="" dstEdge="TOP"/>
     <meshitem src="frame" srcEdge="RIGHT" dst="icon" dstEdge="LEFT" spacing="var(hb-param-margin-gene-middle-horizontal)"/>
-    <meshitem src="frame" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM"/>   
+    <meshitem src="frame" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM"/>
+
+    <meshitem src="newItem" srcEdge="LEFT" dst="frame" dstEdge="LEFT"/>
+    <meshitem src="newItem" srcEdge="TOP" dst="frame" dstEdge="TOP"/>
+    <meshitem src="newItem" srcEdge="BOTTOM" dst="frame" dstEdge="BOTTOM"/>
   </layout>
   
   <layout name="layout_outgoing_bodytext_timestamp" type="mesh">
@@ -99,7 +107,7 @@
     <meshitem src="frame" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-left)"/>
     <meshitem src="frame" srcEdge="TOP" dst="" dstEdge="TOP"/>
     <meshitem src="frame" srcEdge="RIGHT" dst="icon" dstEdge="LEFT" spacing="var(hb-param-margin-gene-middle-horizontal)"/>
-    <meshitem src="frame" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM"/>   
+    <meshitem src="frame" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM"/>
   </layout>
   
   <layout name="layout_outgoing_title_timestamp" type="mesh">

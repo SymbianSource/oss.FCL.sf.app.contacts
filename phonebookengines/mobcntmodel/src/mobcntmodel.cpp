@@ -22,6 +22,7 @@
 #include <QSet>
 #include <QTimerEvent>
 
+#include <hbindexfeedback.h>
 #include <hbframebackground.h>
 #include <hbframedrawer.h>
 
@@ -46,10 +47,10 @@ MobCntModel::MobCntModel(const QContactFilter& contactFilter,
     d = new MobCntModelData(contactFilter, contactSortOrders, showMyCard);
     d->m_contactManager = new QContactManager;
     d->ownedContactManager = true;
+    d->mMyCardId = d->m_contactManager->selfContactId();
     if (doConstruct() != QContactManager::NoError) {
         throw("exception");
     }
-	d->mMyCardId = d->m_contactManager->selfContactId();
 }
 
 /*!
@@ -69,16 +70,15 @@ MobCntModel::MobCntModel(QContactManager* manager,
 {
     mIconManager = new MobCntIconManager();
     connect(mIconManager, SIGNAL(contactIconReady(int)), this, SLOT(updateContactIcon(int)));
-    
+
     mDefaultIcon = QIcon(":/icons/qtg_large_avatar.svg");
 
     d = new MobCntModelData(contactFilter, contactSortOrders, showMyCard);
     d->m_contactManager = manager;
+    d->mMyCardId = d->m_contactManager->selfContactId();
     if (doConstruct() != QContactManager::NoError) {
         throw("exception");
     }
-	d->mMyCardId = d->m_contactManager->selfContactId();
-	
 }
 
 MobCntModel::~MobCntModel()
@@ -126,6 +126,9 @@ QVariant MobCntModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole) {
         return dataForDisplayRole(row);
     }
+    else if (role == Hb::IndexFeedbackRole) {
+        return dataForDisplayRole(row).toStringList().at(0).toUpper();
+    }
 	else if (role == Qt::BackgroundRole) {
 	    if (d->mMyCardId == d->contactIds[row] ||
 	        dummyMyCardId == d->contactIds[row]) {
@@ -136,9 +139,8 @@ QVariant MobCntModel::data(const QModelIndex &index, int role) const
 	    QContactAvatar contactAvatar = d->currentContact.detail<QContactAvatar>();
 	    QList<QVariant> icons;
 	    
-	    if(contactAvatar.subType().compare(QLatin1String(QContactAvatar::SubTypeImage)) == 0 
-	            && !contactAvatar.avatar().isEmpty()) {
-            QIcon icon = mIconManager->contactIcon(contactAvatar.avatar(), row);
+	    if(!contactAvatar.imageUrl().isEmpty()) {
+            QIcon icon = mIconManager->contactIcon(contactAvatar.imageUrl().toString(), row);
             if (icon.isNull()) {
                 icons.append(mDefaultIcon);
             }
@@ -310,7 +312,7 @@ int MobCntModel::doConstruct()
     connect(d->m_contactManager, SIGNAL(relationshipsAdded(const QList<QContactLocalId>&)), this, SLOT(handleAdded(const QList<QContactLocalId>&)));
     connect(d->m_contactManager, SIGNAL(relationshipsRemoved(const QList<QContactLocalId>&)), this, SLOT(handleRemoved(const QList<QContactLocalId>&)));
     connect(d->m_contactManager, SIGNAL(selfContactIdChanged(const QContactLocalId&, const QContactLocalId&)), this, SLOT(handleMyCardChanged(const QContactLocalId&, const QContactLocalId&)));
-    
+
     return error;
 }
 
@@ -474,6 +476,7 @@ void MobCntModel::handleChanged(const QList<QContactLocalId>& contactIds)
 
     updateContactIdsArray();
     QList< QList<int> > indexSequences = findIndexes(contactIds);
+
     for (int i = (indexSequences.count() - 1);i >= 0; i--)
     {
         QModelIndex top = index(indexSequences.at(i).first());
@@ -489,30 +492,35 @@ void MobCntModel::handleChanged(const QList<QContactLocalId>& contactIds)
  */
 void MobCntModel::handleRemoved(const QList<QContactLocalId>& contactIds)
 {
-    //invalidate cached contact
-    d->currentRow = -1;
-    
     QList< QList<int> > indexSequences = findIndexes(contactIds);
+
+    // invalidate cached contact
+    d->currentRow = -1;
+    // if myCard has been removed, set myCard id to zero
+    if (contactIds.contains(d->mMyCardId))
+        d->mMyCardId = 0;
+
     updateContactIdsArray();
     
     for (int i = (indexSequences.count() - 1);i >= 0; i--)
     {
-        if (indexSequences.at(i).first() == 0 && d->showMyCard && indexSequences.at(i).count() == 1)
-        {
-            // only myCard was deleted, do nothing
-        }
-        else if (indexSequences.at(i).first() == 0 && d->showMyCard && indexSequences.at(i).count() > 1)
-        {
+        if (indexSequences.at(i).first() == 0 && d->showMyCard) {
+            // handle removed for MyCard
+            d->mMyCardId = 0;
+            QModelIndex index = createIndex(0, 0);
+            emit dataChanged(index, index);
+
             // handle removed for other contacts deleted besides myCard
-            beginRemoveRows(QModelIndex(), indexSequences.at(i).first() + 1, indexSequences.at(i).last());
-            endRemoveRows();
+            if (indexSequences.at(i).count() > 1) {
+                beginRemoveRows(QModelIndex(), indexSequences.at(i).first() + 1, indexSequences.at(i).last());
+                endRemoveRows();
+            }
         }
         else
         {
             beginRemoveRows(QModelIndex(), indexSequences.at(i).first(), indexSequences.at(i).last());
             endRemoveRows();
         }
-
     }
 }
 
@@ -524,11 +532,22 @@ void MobCntModel::handleRemoved(const QList<QContactLocalId>& contactIds)
  */
 void MobCntModel::handleMyCardChanged(const QContactLocalId& /*oldId*/, const QContactLocalId& newId)
 {
+    int row = rowId(newId);
+
     //invalidate cached contact
     d->currentRow = -1;
     d->mMyCardId = newId;
 
     updateContactIdsArray();
+
+    // if the new mycard was taken from an existing contact,
+    // notify views that that row was removed
+    if (row > 0) {
+        beginRemoveRows(QModelIndex(), row, row);
+        endRemoveRows();
+    }
+
+    // notify views that mycard was updated
     QModelIndex index = createIndex(rowId(newId), 0);
     emit dataChanged(index, index);
 }
@@ -551,7 +570,7 @@ QList< QList<int> > MobCntModel::findIndexes(const QList<QContactLocalId>& conta
         
         if (currIndex >= 0)
         {
-            if (prevIndex+1 != currIndex)
+            if (prevIndex+1 != currIndex && !currSequence.isEmpty())
             {
                 sequences.append(currSequence);
                 currSequence.clear();

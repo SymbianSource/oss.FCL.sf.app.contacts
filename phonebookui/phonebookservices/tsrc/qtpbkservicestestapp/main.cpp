@@ -67,6 +67,12 @@ int main(int argc, char *argv[])
     HbPushButton *button9 = new HbPushButton("Update contact with online account");
     QObject::connect(button9, SIGNAL(pressed()), service, SLOT(launchUpdateEditorOnlineAccount()));
 
+    HbPushButton *button10 = new HbPushButton("Launch single fetch");
+    QObject::connect(button10, SIGNAL(pressed()), service, SLOT(launchSingleFetch()));
+    	
+    HbPushButton *button11 = new HbPushButton("Launch editor with vCard");
+    QObject::connect(button11, SIGNAL(pressed()), service, SLOT(launchEditorVCard()));
+
     mainLayout->addItem(button1);
     mainLayout->addItem(button2);
     mainLayout->addItem(button3);
@@ -76,6 +82,9 @@ int main(int argc, char *argv[])
     mainLayout->addItem(button7);
     mainLayout->addItem(button8);
     mainLayout->addItem(button9);
+    mainLayout->addItem(button10);
+    mainLayout->addItem(button11);
+    
     
     view->setLayout(mainLayout);
 

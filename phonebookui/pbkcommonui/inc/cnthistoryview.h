@@ -19,10 +19,14 @@
 #define CNTHISTORYVIEW_H
 
 #include <QObject>
-#include "cntbaseview.h"
+#include <cntabstractview.h>
 
 class HbListView;
-class MobHistoryModel;
+class CntHistoryModel;
+class HbView;
+class QModelIndex;
+class HbAction;
+class HbDocumentLoader;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -30,34 +34,41 @@ QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
 
-class CntHistoryView : public CntBaseView
+class CntHistoryView : public QObject, public CntAbstractView
 {
     Q_OBJECT
-
-public:
-    CntHistoryView(CntViewManager *viewManager, QGraphicsItem *parent = 0);
+    
+public: // From CntAbstractView
+    CntHistoryView();
     ~CntHistoryView();
-
-    CntViewParameters::ViewId viewId() const { return CntViewParameters::historyView; }
-    void activateView(const CntViewParameters &viewParameters);
-    void addMenuItems();
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void deactivate();
+    bool isDefault() const{ return false; }
+    HbView* view() const { return mView; }
+    int viewId() const { return historyView; }
 
 public slots:
-    void aboutToCloseView();
     void updateScrollingPosition();
     void clearHistory();
-    void longPressed(HbAbstractViewItem *item, const QPointF &coords);
-    void pressed(const QModelIndex &index);
+    void itemActivated(const QModelIndex &index);
+    void showPreviousView();
+    
+    
+private:
+    HbDocumentLoader* docLoader();
     
 #ifdef PBK_UNIT_TEST
 public:
 #else
 private:
 #endif    
-    HbListView*             mHistoryListView;
-    MobHistoryModel*        mHistoryModel;
-    QContact*               mContact;
-    bool                    mIsMyCard;
+    HbListView*                 mHistoryListView; // not own
+    CntHistoryModel*            mHistoryModel; // own
+    HbView*                     mView; // not own
+    HbDocumentLoader*           mDocumentLoader; // own
+    CntAbstractViewManager*     mViewMgr; // not own
+    HbAction*                   mBackKey; // own
+    QContact*                   mContact; // own
     
 };
 

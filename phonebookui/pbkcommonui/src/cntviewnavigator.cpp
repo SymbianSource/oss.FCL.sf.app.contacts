@@ -15,10 +15,12 @@
 *
 */
 #include "cntviewnavigator.h"
+#include <cntviewparams.h>
 #include <QDebug>
 
-CntViewNavigator::CntViewNavigator( QObject* aParent ) : QObject( aParent ),
-iTop( CntViewParameters::noView )
+CntViewNavigator::CntViewNavigator( QObject* aParent ) : 
+    QObject( aParent ),
+    iTop( noView )
 {
 }
 
@@ -26,22 +28,36 @@ CntViewNavigator::~CntViewNavigator()
 {   
 }
 
-void CntViewNavigator::next( const CntViewParameters::ViewId& aId )
+void CntViewNavigator::next( const int& aId, QFlags<Hb::ViewSwitchFlag> &flags )
 {
+    if ( !iViewStack.isEmpty() )
+    {
+        int top = iViewStack.top();
+        
+        // If any special effects are defined for the current (top) view and associated with the next view
+        if ( iEffects.contains( top ) && iEffects.value( top ) == aId ) 
+        {
+            flags = Hb::ViewSwitchUseNormalAnim | Hb::ViewSwitchUseAltEvent;
+        }
+        else
+        {
+            flags = Hb::ViewSwitchUseNormalAnim;
+        }
+    }
     iViewStack.push( aId );
 }
 
-const CntViewParameters::ViewId& CntViewNavigator::back()
+const int& CntViewNavigator::back( QFlags<Hb::ViewSwitchFlag> &flags )
 {
-    qDebug() << "CntViewParameters::back() - IN";
-    iTop = CntViewParameters::noView;
+    qDebug() << "CntViewNavigator::back() - IN";
+    iTop = noView;
     // Check if exception is set for current view item. Exception
     // means that instead of one step back, we go back until that 
     // execption value is located. So all items that are jumped over,
     // their history will be eared.
     if ( !iViewStack.isEmpty() ) 
     {
-        CntViewParameters::ViewId top = iViewStack.top();
+        int top = iViewStack.top();
         
         // If any exception defined for the current (top) view
         if ( iExceptions.contains( top ) ) 
@@ -66,21 +82,44 @@ const CntViewParameters::ViewId& CntViewNavigator::back()
                 iTop = iViewStack.top();
             }
         }
+        
+        // If any special effects are defined for the current (top) view and associated with the previous view
+        if ( iEffects.contains( top ) && iEffects.value( top ) == iTop ) 
+        {
+            flags = Hb::ViewSwitchUseBackAnim | Hb::ViewSwitchUseAltEvent;
+        }
+        else
+        {
+            flags = Hb::ViewSwitchUseBackAnim;
+        }
     } 
-    qDebug() << "CntViewParameters::back() - OUT";
+    qDebug() << "CntViewNavigator::back() - OUT";
     return iTop;
 }
 
-void CntViewNavigator::addException( const CntViewParameters::ViewId& aCurrent, const CntViewParameters::ViewId& aBack )
+void CntViewNavigator::addException( const int& aCurrent, const int& aBack )
 {
     iExceptions.insert( aCurrent, aBack );
 }
 
-void CntViewNavigator::removeException( const CntViewParameters::ViewId& aCurrent )
+void CntViewNavigator::removeException( const int& aCurrent )
 {
     if ( iExceptions.contains(aCurrent) )
     {
         iExceptions.remove( aCurrent );
+    }
+}
+
+void CntViewNavigator::addEffect( const int& aCurrent, const int& aBack )
+{
+    iEffects.insert( aCurrent, aBack );
+}
+
+void CntViewNavigator::removeEffect( const int& aCurrent )
+{
+    if ( iEffects.contains(aCurrent) )
+    {
+        iEffects.remove( aCurrent );
     }
 }
     

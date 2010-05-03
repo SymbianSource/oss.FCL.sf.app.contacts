@@ -28,19 +28,21 @@
 #include <hbstyleloader.h>
 #include <hbtoucharea.h>
 #include <hbaction.h>
+#include <hbmainwindow.h>
 
 CntContactCardHeadingItem::CntContactCardHeadingItem(QGraphicsItem *parent) :
     HbWidget(parent),
-    mIcon(0),
-    mFirstLineText(0),
-    mPrimaryText(0),
-    mSecondLineText(0),
-    mSecondaryText(0),
-    mMarqueeItem(0),
-    mFrameItem(0),
-    mGestureFilter(0),
-    mGestureLongpressed(0),
-    mPictureArea(0)
+    mIcon(NULL),
+    mSecondaryIcon(NULL),
+    mFirstLineText(NULL),
+    mPrimaryText(NULL),
+    mSecondLineText(NULL),
+    mSecondaryText(NULL),
+    mMarqueeItem(NULL),
+    mFrameItem(NULL),
+    mGestureFilter(NULL),
+    mGestureLongpressed(NULL),
+    mPictureArea(NULL)
 {
 
 }
@@ -54,7 +56,7 @@ void CntContactCardHeadingItem::createPrimitives()
 {
     if (!icon.isNull())
     {
-        if (!mIcon)
+        if (!mIcon && mainWindow()->orientation() != Qt::Horizontal)
         {
             mIcon = new HbIconItem(this);
             mIcon->setIcon(icon);
@@ -69,6 +71,24 @@ void CntContactCardHeadingItem::createPrimitives()
         }
         mIcon = 0;
     }
+    
+    if (!secondaryIcon.isNull())
+        {
+            if (!mSecondaryIcon)
+            {
+                mSecondaryIcon = new HbIconItem(this);
+                mSecondaryIcon->setIcon(secondaryIcon);
+                style()->setItemName(mSecondaryIcon, "secondary_icon");
+            }
+        }
+        else
+        {
+            if (mSecondaryIcon)
+            {
+                delete mSecondaryIcon;
+            }
+            mSecondaryIcon = 0;
+        }
 
     if (!firstLineText.isNull())
     {
@@ -172,24 +192,27 @@ void CntContactCardHeadingItem::createPrimitives()
     if (!mFrameItem)
     {
         mFrameItem = new HbFrameItem(this);
-        mFrameItem->frameDrawer().setFrameGraphicsName("qtg_fr_groupbox");
+        mFrameItem->frameDrawer().setFrameGraphicsName("qtg_fr_list_parent_normal");
         mFrameItem->frameDrawer().setFrameType(HbFrameDrawer::NinePieces);
         mFrameItem->setZValue(-2);
         style()->setItemName(mFrameItem, "background");
     }
     
-
-    if (!mPictureArea) {
+    if (!mPictureArea) 
+    {
         mPictureArea = new HbTouchArea(this);
         style()->setItemName(mPictureArea, "pictureArea");
-        }
+    }
 
-    initGesture();
+    if ( mainWindow()->orientation() != Qt::Horizontal)
+    {
+        initGesture();
+    }
 }
 
 void CntContactCardHeadingItem::setIcon(const HbIcon newIcon)
 {
-    if (newIcon != icon)
+    if (newIcon != icon && mainWindow()->orientation() != Qt::Horizontal)
     {
         icon = newIcon;
         createPrimitives();
@@ -198,12 +221,33 @@ void CntContactCardHeadingItem::setIcon(const HbIcon newIcon)
     }
 }
 
+void CntContactCardHeadingItem::setSecondaryIcon(bool favoriteContact)
+{
+    secondaryIcon.clear();
+
+    if (favoriteContact)
+    {
+        secondaryIcon = HbIcon("qtg_small_favorite");
+        createPrimitives();
+        mSecondaryIcon->setIcon(secondaryIcon);
+    }
+    else
+    {
+        createPrimitives();
+    }
+    repolish();
+
+}
+
 void CntContactCardHeadingItem::recreatePrimitives()
 {
     HbWidget::recreatePrimitives();
 
     delete mIcon;
     mIcon = 0;
+    
+    delete mSecondaryIcon;
+    mSecondaryIcon = 0;
 
     delete mFirstLineText;
     mFirstLineText = 0;
@@ -242,10 +286,12 @@ bool CntContactCardHeadingItem::isNickName(const QContact* contact)
 
 bool CntContactCardHeadingItem::isCompanyName(const QContact* contact)
 {
-    return (!(contact->detail<QContactOrganization>().title().isNull()) || !(contact->detail<QContactOrganization>().name().isNull()));
+    return (!(contact->detail<QContactOrganization>().title().isNull()) 
+        || !(contact->detail<QContactOrganization>().name().isNull())
+        || !(contact->detail<QContactOrganization>().department().isEmpty()));
 }
 
-void CntContactCardHeadingItem::setDetails(const QContact* contact)
+void CntContactCardHeadingItem::setDetails(const QContact* contact, bool isMyCard)
 {
     primaryText.clear();
     firstLineText.clear();
@@ -254,7 +300,14 @@ void CntContactCardHeadingItem::setDetails(const QContact* contact)
     tinyMarqueeText.clear();
 
     // icon label
-    icon = HbIcon("qtg_large_avatar");
+    if (isMyCard)
+    {
+        icon = HbIcon("qtg_large_mycard");
+    }
+    else
+    {
+        icon = HbIcon("qtg_large_avatar");
+    }
 
     QContactName name = contact->detail<QContactName>();
 
@@ -267,7 +320,7 @@ void CntContactCardHeadingItem::setDetails(const QContact* contact)
         firstLineText = nameList.join(" ").trimmed();
         if (firstLineText.isEmpty())
         {
-            firstLineText = hbTrId("Unnamed");
+            firstLineText = hbTrId("txt_phob_list_unnamed");
         }
     }
     else
@@ -278,7 +331,7 @@ void CntContactCardHeadingItem::setDetails(const QContact* contact)
         primaryText = nameList.join(" ").trimmed();
         if (primaryText.isEmpty())
         {
-            primaryText = hbTrId("Unnamed");
+            primaryText = hbTrId("txt_phob_list_unnamed");
         }
         
         /*
@@ -328,7 +381,7 @@ void CntContactCardHeadingItem::setGroupDetails(const QContact* contact)
     
     if (primaryText.isEmpty())
     {
-        primaryText = hbTrId("Unnamed");
+        primaryText = hbTrId("txt_phob_list_unnamed");
     }
        
     recreatePrimitives();
@@ -368,9 +421,34 @@ void CntContactCardHeadingItem::initGesture()
     mGestureFilter->addGesture(mGestureLongpressed);
     mGestureFilter->setLongpressAnimation(true);
     
-    installSceneEventFilter(mGestureFilter);
+    mIcon->installSceneEventFilter(mGestureFilter);
     connect(mGestureLongpressed, SIGNAL(longPress(QPointF)), this, SLOT(processLongPress(QPointF)));    
 }
+
+QVariant CntContactCardHeadingItem::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    if (change == QGraphicsItem::ItemSceneHasChanged)
+    {
+        HbMainWindow *window = mainWindow();
+        if (window)
+        {
+            connect(window, SIGNAL(orientationChanged(Qt::Orientation)), 
+                this, SLOT(orientationChanged(Qt::Orientation)));
+        }
+        else
+        {
+            QObject::disconnect(this, SLOT(orientationChanged(Qt::Orientation)));
+        }
+    }
+    return HbWidget::itemChange(change, value);
+}
+
+void CntContactCardHeadingItem::orientationChanged(Qt::Orientation)
+{
+    recreatePrimitives();
+    repolish();
+}
+
 
 // EOF
 

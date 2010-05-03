@@ -18,13 +18,18 @@
 #include "cntservicemainwindow.h"
 #include "cntservicehandler.h"
 #include "cntserviceviewmanager.h"
+#include "cntviewnavigator.h"
 
 CntServiceMainWindow::CntServiceMainWindow(CntServiceHandler *handler, QWidget *parent):
-    CntMainWindow(parent,CntViewParameters::noView),
+    CntMainWindow(parent, noView),
     mServiceHandler(handler),
     mServiceViewManager(0)
 {   
-    mServiceViewManager = new CntServiceViewManager(this, CntViewParameters::noView, mServiceHandler);
+    CntViewNavigator* navigator = new CntViewNavigator( this );
+    navigator->addException( serviceEditView, noView );
+
+    mServiceViewManager = new CntServiceViewManager(this, mServiceHandler);
+    mServiceViewManager->setViewNavigator( navigator );
 }
 
 CntServiceMainWindow::~CntServiceMainWindow()

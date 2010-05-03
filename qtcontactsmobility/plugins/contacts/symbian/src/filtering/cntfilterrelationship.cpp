@@ -40,14 +40,13 @@
 ****************************************************************************/
 
 #include "cntfilterrelationship.h"
-#include "qcontactrelationshipfilter.h"
 #include "cnttransformcontact.h"
 
 QTM_USE_NAMESPACE
 
-
-
-CntFilterRelationship::CntFilterRelationship(CContactDatabase& contactDatabase,CntSymbianSrvConnection &cntServer,CntDbInfo& dbInfo) 
+CntFilterRelationship::CntFilterRelationship( CContactDatabase& contactDatabase,
+                                              CntSymbianSrvConnection &cntServer,
+                                              CntDbInfo& dbInfo) 
                                         : m_contactdatabase(contactDatabase),
                                           m_srvConnection(cntServer),
                                           m_dbInfo(dbInfo)
@@ -64,23 +63,23 @@ QList<QContactLocalId> CntFilterRelationship::contacts(
         const QContactFilter &filter,
         const QList<QContactSortOrder> &sortOrders,
         bool &filterSupportedflag,
-        QContactManager::Error &error)  
+        QContactManager::Error *error)
 {
-    Q_UNUSED(sortOrders);
     Q_UNUSED(filterSupportedflag);
     //Check if any invalid filter is passed 
-    if(!filterSupported(filter) )
-        {
-        error =  QContactManager::NotSupportedError;
+    if (!filterSupported(filter)) {
+        *error =  QContactManager::NotSupportedError;
         return QList<QContactLocalId>();
         }
     QList<QContactLocalId> idList;
-    QString sqlQuery;
-    createSelectQuery(filter,sqlQuery,error);
-    //fetch the contacts
-    if(error == QContactManager::NoError )
+    QString sqlQuery, sortQuery;
+
+    createSelectQuery(filter, sqlQuery, error);
+    sortQuery = m_dbInfo.getSortQuery(sortOrders, sqlQuery, error);
+
+    if(*error == QContactManager::NoError )
         {
-        idList =  m_srvConnection.searchContacts(sqlQuery, error);
+        idList =  m_srvConnection.searchContacts(sortQuery, error);
         }
     return idList;
 }
@@ -89,11 +88,9 @@ QList<QContactLocalId> CntFilterRelationship::contacts(
 bool CntFilterRelationship::filterSupported(const QContactFilter& filter) 
 {
     bool result = false;
-    if(QContactFilter::RelationshipFilter == filter.type())
-    {
+    if (QContactFilter::RelationshipFilter == filter.type()) {
         QContactRelationshipFilter relationfilter(filter);
-        if(relationfilter.relationshipType() == QContactRelationship::HasMember)
-        {
+        if(relationfilter.relationshipType() == QContactRelationship::HasMember) {
             result = true;
         }
     }
@@ -103,38 +100,37 @@ bool CntFilterRelationship::filterSupported(const QContactFilter& filter)
 
 void CntFilterRelationship::createSelectQuery(const QContactFilter& filter,
                               QString& sqlQuery,
-                              QContactManager::Error& error)
+                              QContactManager::Error* error)
 
 {
-    if(!filterSupported(filter))
-    {
-      error = QContactManager::NotSupportedError;
+    if (!filterSupported(filter)) {
+      *error = QContactManager::NotSupportedError;
       return;
     }
         
     QContactRelationshipFilter relationfilter(filter);
     QContactId  id_to_search = relationfilter.relatedContactId();
 
-    if(relationfilter.relatedContactRole() == QContactRelationshipFilter::First )
+    if(relationfilter.relatedContactRole() == QContactRelationship::First )
     {
         sqlQuery = QString("SELECT DISTINCT contact_group_member_id FROM  groups WHERE contact_group_id = %1").arg(id_to_search.localId());
     }
-    else if(relationfilter.relatedContactRole() == QContactRelationshipFilter::Second )
+    else if(relationfilter.relatedContactRole() == QContactRelationship::Second )
     {
         sqlQuery = QString("SELECT DISTINCT contact_group_id FROM  groups WHERE contact_group_member_id = %1").arg(id_to_search.localId());
     }
-    else if(relationfilter.relatedContactRole() == QContactRelationshipFilter::Either )
+    else if(relationfilter.relatedContactRole() == QContactRelationship::Either )
     {
         sqlQuery = QString("SELECT contact_group_member_id FROM  groups WHERE contact_group_id = %1").arg(id_to_search.localId());
                + " union " + 
-               QString("SELECT DISTINCT  contact_group_id FROM  groups WHERE contact_group_id = %1").arg(id_to_search.localId());
+               QString("SELECT DISTINCT contact_group_id FROM  groups WHERE contact_group_id = %1").arg(id_to_search.localId());
     }
 }
 
 
 void CntFilterRelationship::getSqlquery( const QContactRelationshipFilter& relationfilter,
                                                QString& sqlquery ,
-                                               QContactManager::Error& error) const
+                                               QContactManager::Error* error) const
 {
     Q_UNUSED(relationfilter);
     Q_UNUSED(sqlquery);

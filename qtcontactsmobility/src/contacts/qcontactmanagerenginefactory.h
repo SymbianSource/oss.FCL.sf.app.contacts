@@ -55,19 +55,17 @@ class QContactManagerEngine;
 class Q_CONTACTS_EXPORT QContactManagerEngineFactory
 {
 public:
-
-    // deprecated - removed entirely week 1.
-    int Q_DECL_DEPRECATED version() const;
-
     // engine factory functions
     virtual QList<int> supportedImplementationVersions() const;
     virtual ~QContactManagerEngineFactory();
-    virtual QContactManagerEngine* engine(const QMap<QString, QString>& parameters, QContactManager::Error& error) = 0;
+    virtual QContactManagerEngine* engine(const QMap<QString, QString>& parameters, QContactManager::Error* error) = 0;
     virtual QString managerName() const = 0;
 };
 QTM_END_NAMESPACE
 
+QT_BEGIN_NAMESPACE
 #define QT_CONTACTS_BACKEND_INTERFACE "com.nokia.qt.mobility.contacts.enginefactory/1.0"
 Q_DECLARE_INTERFACE(QtMobility::QContactManagerEngineFactory, QT_CONTACTS_BACKEND_INTERFACE);
+QT_END_NAMESPACE
 
 #endif

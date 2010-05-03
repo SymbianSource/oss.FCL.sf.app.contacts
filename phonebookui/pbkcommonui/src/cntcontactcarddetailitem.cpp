@@ -16,6 +16,7 @@
 */
 
 #include "cntcontactcarddetailitem.h"
+#include "cntcontactcarddataitem.h"
 #include <hbiconitem.h>
 #include <hbtextitem.h>
 #include <hbrichtextitem.h>
@@ -30,15 +31,14 @@
 
 CntContactCardDetailItem::CntContactCardDetailItem(int index, QGraphicsItem *parent, bool isFocusable) :
     HbWidget(parent),
-    mIcon(0),
-    mFirstLineText(0),
-    mPrimaryText(0),
-    mSecondLineText(0),
-    mFrameItem(0),
-    mFocusItem(0),
+    mIcon(NULL),
+    mFirstLineText(NULL),
+    mSecondLineText(NULL),
+    mFrameItem(NULL),
+    mFocusItem(NULL),
     mHasFocus(false),
-    mGestureFilter(0),
-    mGestureLongpressed(0),
+    mGestureFilter(NULL),
+    mGestureLongpressed(NULL),
     mIndex(index),
     mIsFocusable(isFocusable),
     mValueTextElideMode(Qt::ElideRight),
@@ -79,19 +79,8 @@ void CntContactCardDetailItem::createPrimitives()
 
     if (!text.isNull())
     {
-        mFirstLineText = new HbRichTextItem(this);
-        if (mIsUnderline)
-        {
-            QString temp = text;
-            temp.prepend("<u>");
-            temp.append("</u>");
-            mFirstLineText->setText(temp);
-        }
-        else
-        {    
-            mFirstLineText->setText(text);
-        }
-        
+        mFirstLineText = new HbTextItem(this);
+        mFirstLineText->setText(text);        
         mFirstLineText->setTextWrapping(Hb::TextWordWrap);
         style()->setItemName(mFirstLineText, "text");    
     }
@@ -102,26 +91,6 @@ void CntContactCardDetailItem::createPrimitives()
             delete mFirstLineText;
         }
         mFirstLineText = 0;
-    }
-    
-    if (!primaryText.isNull())
-    {
-        if (!mPrimaryText)
-        {
-            mPrimaryText = new HbTextItem(this);
-            mPrimaryText->setText(primaryText);
-            mPrimaryText->setMaximumLines(2);
-            mPrimaryText->setTextWrapping(Hb::TextWordWrap);
-            style()->setItemName(mPrimaryText, "primaryText");
-        }
-    }
-    else
-    {
-        if (mPrimaryText)
-        {
-            delete mPrimaryText;
-        }
-        mPrimaryText = 0;
     }
     
     if (!valueText.isNull())
@@ -172,9 +141,6 @@ void CntContactCardDetailItem::recreatePrimitives()
 
     delete mFirstLineText;
     mFirstLineText = 0;
-    
-    delete mPrimaryText;
-    mPrimaryText = 0;
 
     delete mSecondLineText;
     mSecondLineText = 0;
@@ -254,57 +220,21 @@ void CntContactCardDetailItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event
     event->accept();
 }
 
-void CntContactCardDetailItem::setDetails(const HbIcon detailIcon, const QString& detailText, const QString& detailValueText, Qt::TextElideMode valueTextElideMode, bool underLine)
+void CntContactCardDetailItem::setDetails(CntContactCardDataItem* aDataItem)
 {
     text.clear();
     valueText.clear();
     icon.clear();
-    mValueTextElideMode = valueTextElideMode;
-    mIsUnderline = underLine;
+    mValueTextElideMode = aDataItem->elideMode();
 
-    if (!detailIcon.isNull())
-        icon = detailIcon;
-    if (!detailText.isEmpty())
-        text = detailText;
-    if (!detailValueText.isEmpty())
-        valueText = detailValueText;
+    if (!aDataItem->icon().isNull())
+        icon = aDataItem->icon();
+    if (!aDataItem->titleText().isEmpty())
+        text = aDataItem->titleText();
+    if (!aDataItem->valueText().isEmpty())
+        valueText = aDataItem->valueText();
 
     recreatePrimitives();
-}
-
-void CntContactCardDetailItem::setDetails(const HbIcon detailIcon, const QString& detailText)
-{
-    primaryText.clear();
-    icon.clear();
-
-    if (!detailIcon.isNull())
-        icon = detailIcon;
-    if (!detailText.isEmpty())
-        primaryText = detailText;
-    
-    recreatePrimitives();
-}
-
-void CntContactCardDetailItem::setUnderLine(bool underLine)
-{
-    if (mIsUnderline != underLine)
-    {
-        QString temp;
-        mIsUnderline = underLine; 
-        createPrimitives();
-        if (underLine)
-        {
-            temp = text;
-            temp.prepend("<u>");
-            temp.append("</u>");
-        }
-        else
-        {
-            temp = text;
-        }
-        mFirstLineText->setText(temp);
-        repolish();
-    }   
 }
 
 int CntContactCardDetailItem::index()

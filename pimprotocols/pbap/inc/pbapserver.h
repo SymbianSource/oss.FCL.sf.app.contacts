@@ -1,4 +1,4 @@
-// Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+// Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 // All rights reserved.
 // This component and the accompanying materials are made available
 // under the terms of "Eclipse Public License v1.0"
@@ -36,6 +36,7 @@ class CPbapContactDbViews;
 class RFs;
 class CPbapLogWrapper;
 class CPbapAuthPasswordGetter;
+class CPbapVCardExporterUtil;
 
 
 const TUint KPbapServerShutdownDelay = 5000000;
@@ -149,7 +150,8 @@ private:
 	virtual MPbapErrorReporter& ErrorReporter();
 	virtual CPbapContactDbViews& ContactDbViews();
 	virtual CPbapLogWrapper& LogClient() const;
-
+	virtual CPbapVCardExporterUtil& ExporterUtil();
+	
 private:
 	// from MPbapExporter
 	virtual void StartExport();

@@ -36,9 +36,9 @@
 CntAddressViewItem::CntAddressViewItem(QGraphicsItem* aParent) :
     /*CntDetailViewItem(aParent),*/
     HbDataFormViewItem(aParent),
-    mRequest(0),
-    mAppManager(0), 
-    mSenderButton(0)
+    mRequest(NULL),
+    mAppManager(NULL), 
+    mSenderButton(NULL)
 {
 }
 
@@ -64,7 +64,6 @@ HbWidget* CntAddressViewItem::createCustomWidget()
     HbStyleLoader::registerFilePath(":/style/cntlocationbutton.hbpushbutton.widgetml");
     HbDataForm* form = static_cast<HbDataForm*> (itemView());
     HbDataFormModel* model = static_cast<HbDataFormModel*> (form->model());
-    HbDataFormModelItem* item = model->itemFromIndex(modelIndex());
 
     HbPushButton* mLocationButton = new HbPushButton(this);
     mLocationButton->setObjectName("cntlocationbutton");

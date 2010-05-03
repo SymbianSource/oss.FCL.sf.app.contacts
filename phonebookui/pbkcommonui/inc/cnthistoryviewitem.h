@@ -50,17 +50,11 @@ public:
     void polish(HbStyleParameters& params);
     
     /*
-     * Overriden method to draw the custom item int he list view
+     * Overriden method to draw the custom item in the list view
      */
     void updateChildItems();
     
 private:
-    
-    /*
-     * Layout for the item (text fields and icon)
-     * Not owned
-     */
-    QGraphicsLinearLayout* mLayout;
     
     /*
      * Custom widget containing text fields and icon

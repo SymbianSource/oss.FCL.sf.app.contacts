@@ -19,8 +19,8 @@
 #define CNTVIEWNAVIGATOR_H_
 #include <QObject>
 #include <QStack>
-#include "cntviewparameters.h"
-
+#include <hbnamespace.h>
+#include "qtpbkglobal.h"
 /*!
  * Navigator keeps track on view history, the path that user has
  * gone throug. If back() is called, one step back view id
@@ -33,7 +33,7 @@
  * Navigator is implemented as stack of view ids.
  *
  */
-class CntViewNavigator : public QObject
+class QTPBK_EXPORT CntViewNavigator : public QObject
 {
     Q_OBJECT
     
@@ -45,23 +45,30 @@ public:
     /*!
      * Next view puts the given id as current view
      */
-    void next( const CntViewParameters::ViewId& aId );
+    void next( const int& aId, QFlags<Hb::ViewSwitchFlag> &flags );
     
     /*!
      * Back view returns the previous view
      */
-    const CntViewParameters::ViewId& back();
+    const int& back( QFlags<Hb::ViewSwitchFlag> &flags );
     
     /*!
      * Add exceptions to next/back mechanism. Function will use the aBack argument
      * for previous view when aCurrent is the active view.
      */
-    void addException( const CntViewParameters::ViewId& aCurrent, const CntViewParameters::ViewId& aBack );
-    void removeException( const CntViewParameters::ViewId& aCurrent );
+    void addException( const int& aCurrent, const int& aBack );
+    void removeException( const int& aCurrent );
+    
+    /*!
+     * Add special view switching effects for some of the views. 
+     */
+    void addEffect( const int& aCurrent, const int& aBack );
+    void removeEffect( const int& aCurrent );
     
 private:
-    QStack<CntViewParameters::ViewId> iViewStack;
-    QMap< CntViewParameters::ViewId, CntViewParameters::ViewId> iExceptions;
-    CntViewParameters::ViewId iTop;
+    QStack<int> iViewStack;
+    QMap< int, int > iExceptions;
+    QMap< int, int > iEffects;
+    int iTop;
 };
 #endif /* CNTVIEWNAVIGATOR_H_ */

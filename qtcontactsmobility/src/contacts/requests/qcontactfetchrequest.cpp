@@ -57,17 +57,6 @@ QTM_BEGIN_NAMESPACE
   \ingroup contacts-requests
  */
 
-/*!
-  \fn QContactFetchRequest::progress(QContactFetchRequest* self, bool appendOnly)
-  \internal
-  This signal is emitted when some progress has been made on the request, causing either a change of
-  status or an update of results, or both.  It identifies which request the signal originated from
-  by including a pointer to \a self, and contains an \a appendOnly flag which signifies whether or not the total
-  ordering of the results have been maintained since the last progress signal was emitted.
-  This signal is deprecated and will be removed once the transition period has elapsed.
-  Use the signals emitted by the base class, combined with \l QObject::sender(), instead.
- */
-
 /*! Constructs a new contact fetch request */
 QContactFetchRequest::QContactFetchRequest()
     : QContactAbstractRequest(new QContactFetchRequestPrivate)
@@ -93,13 +82,32 @@ void QContactFetchRequest::setSorting(const QList<QContactSortOrder>& sorting)
     d->m_sorting = sorting;
 }
 
-/*! Sets the list of allowable detail definition names to \a definitionNames.  Any contacts retrieved
-    by the request will have any details whose definition name is not on the restricted list
-    removed prior to being returned. */
-void QContactFetchRequest::setDefinitionRestrictions(const QStringList& definitionNames)
+/*!
+  Sets the fetch hint which may be used by the backend to optimize contact retrieval
+  to \a fetchHint.  A client should not make changes to a contact which has been retrieved
+  using a fetch hint other than the default fetch hint.  Doing so will result in information
+  loss when saving the contact back to the manager (as the "new" restricted contact will
+  replace the previously saved contact in the backend).
+  \sa QContactFetchHint
+ */
+void QContactFetchRequest::setFetchHint(const QContactFetchHint &fetchHint)
 {
     Q_D(QContactFetchRequest);
-    d->m_definitionRestrictions = definitionNames;
+    d->m_fetchHint = fetchHint;
+}
+
+/*!
+  \deprecated
+  Sets the list of allowable detail definition names to \a definitionNames.  Any contacts retrieved
+  by the request will have any details whose definition name is not on the restricted list
+  removed prior to being returned.
+  This function is deprecated and will be removed after the transition period has been elapsed.  Use setFetchHint() instead.
+ */
+void QContactFetchRequest::setDefinitionRestrictions(const QStringList& definitionNames)
+{
+    //Q_D(QContactFetchRequest);
+    Q_UNUSED(definitionNames);
+    qWarning("QContactFetchRequest::setDefinitionRestrictions() This function is deprecated and will be removed once the transition period has elapsed.  Use setFetchHint() instead!");
 }
 
 /*! Returns the filter that will be used to select contacts to be returned */
@@ -116,11 +124,30 @@ QList<QContactSortOrder> QContactFetchRequest::sorting() const
     return d->m_sorting;
 }
 
-/*! Returns the list of definition names which define which details contacts in the result list will be limited to */
-QStringList QContactFetchRequest::definitionRestrictions() const
+/*!
+  Returns the fetch hint which may be used by the backend to optimize contact retrieval.
+  A client should not make changes to a contact which has been retrieved
+  using a fetch hint other than the default fetch hint.  Doing so will result in information
+  loss when saving the contact back to the manager (as the "new" restricted contact will
+  replace the previously saved contact in the backend).
+  \sa QContactFetchHint
+ */
+QContactFetchHint QContactFetchRequest::fetchHint() const
 {
     Q_D(const QContactFetchRequest);
-    return d->m_definitionRestrictions;
+    return d->m_fetchHint;
+}
+
+/*!
+  \deprecated
+  Returns the list of definition names which define which details contacts in the result list will be limited to.
+  This function is deprecated and will be removed after the transition period has been elapsed.  Use fetchHint() instead.
+ */
+QStringList QContactFetchRequest::definitionRestrictions() const
+{
+    //Q_D(const QContactFetchRequest);
+    qWarning("QContactFetchRequest::definitionRestrictions() This function is deprecated and will be removed once the transition period has elapsed.  Use fetchHint() instead!");
+    return QStringList();
 }
 
 /*! Returns the list of contacts retrieved by this request */

@@ -32,11 +32,13 @@ class testPbkServices : public QObject
 
 public slots:
     void launchFetch();
+    void launchSingleFetch();
     void launchSmsFilteredFetch();
     void launchEmailFilteredFetch();
     void launchEditorNumber();
     void launchEditorEmail();
     void launchEditorOnlineAccount();
+    void launchEditorVCard();
     void launchUpdateEditorNumber();
     void launchUpdateEditorEmail();
     void launchUpdateEditorOnlineAccount();

@@ -17,31 +17,34 @@
 
 #include "cntservicecontactfetchview.h"
 
-#include "cntservicescontact.h"
+#include <cntservicescontact.h>
+#include <mobcntmodel.h>
 #include "cntservicehandler.h"
 
 #include <hbmenu.h>
+#include <hbview.h>
+#include <hblistview.h>
+#include <hbdocumentloader.h>
+#include <hbaction.h>
 
-CntServiceContactFetchView::CntServiceContactFetchView(CntServiceHandler *aServiceHandler, CntViewManager *aViewManager, QGraphicsItem *aParent):
-    CntBaseSelectionView(aViewManager,aParent),
-    mServiceHandler(aServiceHandler)
+#include <QCoreApplication>
+
+CntServiceContactFetchView::CntServiceContactFetchView(CntServiceHandler *aServiceHandler):
+CntBaseSelectionView(),
+mServiceHandler(aServiceHandler)
 {
-
+    HbAction* cancel = static_cast<HbAction*>( mDocument->findObject( "cnt:cancel" ) );
+    mView->menu()->addAction( cancel );
+    
+    connect(cancel,  SIGNAL(triggered()), this, SLOT(cancelFetch()) );
+    connect( this, SIGNAL(viewClosed()), this, SLOT(aboutToCloseView()) );
+    connect( this, SIGNAL(viewOpened(const CntViewParameters)), this, SLOT(aboutToOpenView(const CntViewParameters)) );
 }
 
 CntServiceContactFetchView::~CntServiceContactFetchView()
 {
 }
 
-void CntServiceContactFetchView::addMenuItems()
-{
-    actions()->clearActionList();
-    actions()->actionList() << actions()->baseAction("cnt:cancel");
-    actions()->addActionsToMenu(menu());
-    
-    connect(actions()->baseAction("cnt:cancel"), SIGNAL(triggered()),
-            this, SLOT (cancelFetch()));
-}
 
 void CntServiceContactFetchView::cancelFetch()
 {
@@ -53,14 +56,15 @@ void CntServiceContactFetchView::cancelFetch()
 void CntServiceContactFetchView::aboutToCloseView()
 {
     CntServicesContactList serviceList;
-    QModelIndexList temp = selectionModel()->selection().indexes();
+    QContactManager* mgr = mMgr->contactManager(SYMBIAN_BACKEND);
+    QModelIndexList temp = mListView->selectionModel()->selection().indexes();
     for(int i = 0; i < temp.count(); i++ )
     {
-        QContact contact = contactModel()->contact(temp.at(i));
+        QContact contact = mListModel->contact(temp.at(i));
         CntServicesContact servicesContact;
 
         //get the name
-        servicesContact.mDisplayName = contactManager()->synthesizedDisplayLabel(contact);
+        servicesContact.mDisplayName = mgr->synthesizedDisplayLabel(contact);
 
         //get the phonenumber
         QList<QContactPhoneNumber> phonenumbers = contact.details<QContactPhoneNumber>();
@@ -90,57 +94,47 @@ void CntServiceContactFetchView::aboutToCloseView()
     mServiceHandler->completeFetch(serviceList);
 }
 
-void CntServiceContactFetchView::activateView(const CntViewParameters &aArgs)
+void CntServiceContactFetchView::aboutToOpenView(const CntViewParameters aArgs)
 {
-    // Set action filter
-    QMap<int,QVariant> map = aArgs.parameters();
-    QString filter = map.value(CntViewParameters::Filter).toString();
-    QString action = map.value(CntViewParameters::Action).toString();
-    setActionFilter(action, filter);
-    
     // Set title of the view.
-    QString title = map.value(CntViewParameters::Title).toString();
-    setTitle(title);
+    QString title = aArgs.value(CntServiceHandler::ETitle).toString();
+    mView->setTitle(title);
     
-    CntBaseSelectionView::activateView(aArgs);
-}
-
-void CntServiceContactFetchView::setActionFilter(QString action, QString filter)
-{
-    Q_UNUSED(filter);
-    
+    // Set action filter
+    QString filter = aArgs.value(CntServiceHandler::EFilter).toString();
+    QString action = aArgs.value(ESelectedAction).toString();
     if (action == KCntActionSms)
-    {
-        QContactActionFilter actionFilter;
-        actionFilter.setActionName("message");
-        contactModel()->setFilterAndSortOrder(actionFilter);
-    }
-    else if (action == KCntActionCall)
-    {
-        QContactActionFilter actionFilter;
-        actionFilter.setActionName("call");
-        contactModel()->setFilterAndSortOrder(actionFilter);
-    }
-    else if (action == KCntActionEmail)
-    {
-        QContactActionFilter actionFilter;
-        actionFilter.setActionName("email");
-        contactModel()->setFilterAndSortOrder(actionFilter);
-    }
-    else
-    {
-        QContactDetailFilter filter;
-        filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
-        QString typeContact = QContactType::TypeContact;
-        filter.setValue(typeContact);
-        contactModel()->setFilterAndSortOrder(filter);
-    }
+        {
+            QContactActionFilter actionFilter;
+            actionFilter.setActionName("message");
+            mListModel->setFilterAndSortOrder(actionFilter);
+        }
+        else if (action == KCntActionCall)
+        {
+            QContactActionFilter actionFilter;
+            actionFilter.setActionName("call");
+            mListModel->setFilterAndSortOrder(actionFilter);
+        }
+        else if (action == KCntActionEmail)
+        {
+            QContactActionFilter actionFilter;
+            actionFilter.setActionName("email");
+            mListModel->setFilterAndSortOrder(actionFilter);
+        }
+        else
+        {
+            QContactDetailFilter filter;
+            filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
+            QString typeContact = QContactType::TypeContact;
+            filter.setValue(typeContact);
+            mListModel->setFilterAndSortOrder(filter);
+        }
 
-    // hide my card if it's not set
-    if (contactManager()->selfContactId() == 0)
-    {
-        contactModel()->showMyCard(false);
-    }
+        // hide my card if it's not set
+        if ( mListModel->myCardId() == 0 )
+        {
+            mListModel->showMyCard( false );
+        }
 }
 
 // EOF

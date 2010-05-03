@@ -19,80 +19,38 @@
 #define CNTEDITVIEW__H
 
 #include <QObject>
-#include "cntbaseview.h"
-#include "cntviewparameters.h"
+#include <cntabstractview.h>
 #include "qtpbkglobal.h"
 
-class HbScrollArea;
-class QGraphicsLinearLayout;
-class HbGroupBox;
-class CntEditViewHeadingItem;
-class ThumbnailManager;
+class CntEditViewPrivate;
+class CntAbstractViewManager;
+class HbView;
 
-class QTPBK_EXPORT CntEditView : public CntBaseView
+class QTPBK_EXPORT CntEditView : public QObject, public CntAbstractView
 { 
     Q_OBJECT
 
-public slots:
-
-    virtual void aboutToCloseView();
-    virtual void discardAllChanges();
-    virtual int handleExecutedCommand(QString aCommand, const QContact &aContact);
-    void thumbnailReady( const QPixmap& pixmap, void *data, int id, int error );
-
-    void addField();
-    void deleteContact();
-
-    void openNameEditor();
-    void openImageEditor();
-
-    void onLongPressed(const QPointF &point);
-    void onItemActivated();
-    void addDetail();
-    void deleteDetail();
-
 public:
-
-    CntEditView(CntViewManager *aViewManager, QGraphicsItem *aParent = 0);
+    CntEditView();
     ~CntEditView();
-
-    CntViewParameters::ViewId viewId() const { return CntViewParameters::editView; }
-    void activateView(const CntViewParameters &aViewParameters);
-    void addActionsToToolBar();
-    void addMenuItems();
-    CntViewParameters prepareToEditContact(const QString &aViewType, const QString &aAction);
-
-    void prepareItems();
     
-#ifdef PBK_UNIT_TEST
+signals:
+    void contactUpdated();
+    void contactRemoved();
+    void changesDiscarded();
+    
+    
 public:
-#else
-protected:
-#endif
-    QContact *contact();
-    void setContact(QContact* aContact);
-    void resizeEvent(QGraphicsSceneResizeEvent *event);
-
-#ifdef PBK_UNIT_TEST
-public:
-#else
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void deactivate();
+    bool isDefault() const;
+    HbView* view() const;
+    int viewId() const;
+    
 private:
-#endif
-    void createItem(const QContactDetail &detail, const QString &type = QString(), int position = -1);
-        
-protected:
-
-    HbScrollArea            *mScrollArea;
-    QGraphicsWidget         *mContainerWidget;
-    QGraphicsLinearLayout   *mContainerLayout;
-    QContact                *mContact;
-    HbGroupBox              *mDetailItem;
-    ThumbnailManager        *mThumbnailManager;
-    CntEditViewHeadingItem  *mHeadingItem;
-    int                      mDetailItemIndex;
-    int                      mAddressItemIndex;
-    QStringList              mExcludeList;
-
+    CntEditViewPrivate* const d_ptr;
+    Q_DECLARE_PRIVATE_D(d_ptr, CntEditView)
+    Q_DISABLE_COPY(CntEditView)   
 };
 #endif //CNTEDITVIEW__H
 // EOF

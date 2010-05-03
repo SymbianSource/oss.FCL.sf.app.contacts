@@ -22,29 +22,35 @@
 #include <hbaction.h>
 #include <qtcontacts.h>
 #include <hblistview.h>
+#include <hblistviewitem.h>
 #include <QStandardItemModel>
 
 QTM_USE_NAMESPACE
 
-CntDetailPopup::CntDetailPopup(QStringList excludeList, QGraphicsItem *parent):
+CntDetailPopup::CntDetailPopup(QGraphicsItem *parent):
     HbDialog(parent),
-    mListModel(0),
-    mListView(0),
-    mExcludeList(excludeList)
+    mListModel(NULL),
+    mListView(NULL)
 {
     mListView = new HbListView(this);
-    mListModel = new QStandardItemModel();
+    mListModel = new QStandardItemModel(this);
 
-    addListItem(hbTrId("txt_phob_formlabel_note"), QContactNote::DefinitionName);
-    addListItem(hbTrId("txt_phob_formlabel_personal_ringing_tone"), QContactAvatar::SubTypeAudioRingtone);
-    addListItem(hbTrId("txt_phob_formlabel_date"), QContactAnniversary::DefinitionName, QContactBirthday::DefinitionName);
-    addListItem(hbTrId("txt_phob_formlabel_company_details"), QContactOrganization::DefinitionName, QContactOrganization::FieldAssistantName);
-    addListItem(hbTrId("txt_phob_formlabel_family"), QContactFamily::FieldSpouse, QContactFamily::FieldChildren);
-    addListItem("Synchronization", "some-synch-id");        // TODO: change to real synch id when backend done
-
+    addListItem("qtg_small_mobile", hbTrId("txt_phob_list_number"), phoneNumberEditorView );
+    addListItem("qtg_small_email", hbTrId("txt_phob_list_email"), emailEditorView );
+    addListItem("qtg_small_url_address", hbTrId("txt_phob_list_url"), urlEditorView);
+    addListItem("qtg_small_location", hbTrId("txt_phob_list_address"), addressEditorView );
+    addListItem("qtg_small_note", hbTrId("txt_phob_formlabel_note"), noteEditorView);
+    addListItem("qtg_small_sound", hbTrId("txt_phob_formlabel_personal_ringing_tone"), noView );
+    addListItem("qtg_small_calendar", hbTrId("txt_phob_formlabel_date"), dateEditorView);
+    addListItem("qtg_small_company_details", hbTrId("txt_phob_formlabel_company_details"), companyEditorView);
+    addListItem("qtg_small_family", hbTrId("txt_phob_formlabel_family"), familyDetailEditorView);
+    
     mListView->setModel(mListModel);
     mListView->setSelectionMode(HbAbstractItemView::NoSelection);
-
+    // ownership of prototype is not transferred
+    HbListViewItem* prototype = mListView->listItemPrototype();
+    prototype->setGraphicsSize( HbListViewItem::SmallIcon );
+    
     HbGroupBox *headingLabel = new HbGroupBox();
     HbLabel *label = new HbLabel(hbTrId("txt_phob_title_add_field"));    
     headingLabel->setContentWidget(label);
@@ -75,9 +81,9 @@ QString CntDetailPopup::selectedDetail()
     return mSelectedDetail;
 }
 
-QString CntDetailPopup::selectDetail(QStringList excludeList)
+int CntDetailPopup::selectDetail()
 {
-    CntDetailPopup *popup = new CntDetailPopup(excludeList);
+    CntDetailPopup *popup = new CntDetailPopup();
     QString result;
 
     HbAction *action = popup->exec();
@@ -88,17 +94,15 @@ QString CntDetailPopup::selectDetail(QStringList excludeList)
     }
     delete popup;
 
-    return result;
+    return result.toInt();
 }
 
-void CntDetailPopup::addListItem(QString label, QString id1, QString id2)
+void CntDetailPopup::addListItem(QString aIcon, QString label, int aId )
 {
-    if (mExcludeList.contains(id1) || mExcludeList.contains(id2))
-        return;
-
     QList<QStandardItem*> items;
-    QStandardItem *labelItem = new QStandardItem(label);
-    QStandardItem *idItem = new QStandardItem(id1);
+    QStandardItem *labelItem = new QStandardItem(HbIcon(aIcon).qicon(), label);
+    QString id;
+    QStandardItem *idItem = new QStandardItem( id.number(aId) );
 
     items << labelItem << idItem;
     mListModel->appendRow(items);

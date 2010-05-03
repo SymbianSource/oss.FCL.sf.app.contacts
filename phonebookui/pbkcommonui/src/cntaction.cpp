@@ -17,7 +17,8 @@
 #include "cntaction.h"
 
 CntAction::CntAction( QString aAction ) : QObject(),
-mAction( aAction )
+mAction( aAction ),
+mContactAction( NULL )
     {
     }
 
@@ -32,19 +33,19 @@ void CntAction::execute( QContact aContact, QContactDetail aDetail )
     mContactAction = QContactAction::action( all.first() );
     if ( mContactAction )
         {
-        connect(mContactAction, SIGNAL(progress(QContactAction::Status, const QVariantMap&)),
-                this, SLOT(progress(QContactAction::Status, const QVariantMap&)));
+        connect(mContactAction, SIGNAL(progress(QContactAction::State, const QVariantMap&)),
+                this, SLOT(progress(QContactAction::State, const QVariantMap&)));
         mContactAction->invokeAction( aContact, aDetail );
         }
     }
     
-void CntAction::progress( QContactAction::Status status, const QVariantMap& result )
+void CntAction::progress( QContactAction::State status, const QVariantMap& result )
     {
     Q_UNUSED(result);
     switch(status)
        {
-       case QContactAction::Finished:
-       case QContactAction::FinishedWithError:
+       case QContactAction::FinishedState:
+       case QContactAction::FinishedWithErrorState:
            emit actionExecuted( this );
            break;
        default:

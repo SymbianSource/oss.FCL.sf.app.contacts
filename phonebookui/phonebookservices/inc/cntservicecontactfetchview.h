@@ -21,7 +21,6 @@
 #include <QObject>
 
 #include "cntbaseselectionview.h"
-#include "cntviewparameters.h"
 
 class CntServiceHandler;
 
@@ -30,18 +29,15 @@ class CntServiceContactFetchView : public CntBaseSelectionView
     Q_OBJECT
 
 public:
-    CntServiceContactFetchView(CntServiceHandler *aServiceHandler, CntViewManager *aViewManager, QGraphicsItem *aParent = 0);
+    CntServiceContactFetchView( CntServiceHandler *aServiceHandler );
     ~CntServiceContactFetchView();
 
+    int viewId() const { return serviceContactFetchView; }
+    
 public slots:
+    void aboutToOpenView(const CntViewParameters viewParameters);
     void aboutToCloseView();
     void cancelFetch();
-
-public:
-    void setActionFilter(QString action, QString filter);
-    void addMenuItems();
-    CntViewParameters::ViewId viewId() const { return CntViewParameters::serviceContactFetchView; }
-    void activateView(const CntViewParameters &viewParameters);
 
 private:
     CntServiceHandler *mServiceHandler;

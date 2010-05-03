@@ -45,6 +45,7 @@
 #include "qversitproperty.h"
 #include "qmobilityglobal.h"
 
+#include <qcontactmanagerengine.h>
 #include <qcontact.h>
 #include <qcontactdetail.h>
 #include <qcontactname.h>
@@ -65,6 +66,8 @@
 #include <qcontactonlineaccount.h>
 #include <qcontactfamily.h>
 #include <qcontactdisplaylabel.h>
+#include <qcontactthumbnail.h>
+#include <qcontactringtone.h>
 
 #include <QHash>
 #include <QFile>
@@ -122,63 +125,88 @@ QVersitContactImporterPrivate::~QVersitContactImporterPrivate()
 /*!
  * Generates a QContact from \a versitDocument.
  */
-QContact QVersitContactImporterPrivate::importContact(
-     const QVersitDocument& document, int contactIndex)
+bool QVersitContactImporterPrivate::importContact(
+        const QVersitDocument& document, int contactIndex, QContact* contact,
+        QVersitContactImporter::Error* error)
 {
-    QContact contact;
+    if (document.type() != QVersitDocument::VCard21Type
+        && document.type() != QVersitDocument::VCard30Type) {
+        *error = QVersitContactImporter::InvalidDocumentError;
+        return false;
+    }
     const QList<QVersitProperty> properties = document.properties();
-    foreach (QVersitProperty property, properties) {
-        if (mPropertyHandler
-            && mPropertyHandler->preProcessProperty(document, property, contactIndex, &contact))
-            continue;
-
-        QPair<QString,QString> detailDefinition =
-            mDetailMappings.value(property.name());
-        QString detailDefinitionName = detailDefinition.first;
-        bool success = false;
-        bool known = true;
-        if (detailDefinitionName == QContactAddress::DefinitionName) {
-            success = createAddress(property, &contact);
-        } else if (detailDefinitionName == QContactName::DefinitionName) {
-            success = createName(property, &contact);
-        } else if (detailDefinitionName == QContactBirthday::DefinitionName) {
-            success = createBirthday(property, &contact);
-        } else if (detailDefinitionName == QContactGeolocation::DefinitionName){
-            success = createGeoLocation(property, &contact);
-        } else if (detailDefinitionName == QContactOrganization::DefinitionName) {
-            success = createOrganization(property, &contact);
-        } else if (detailDefinitionName == QContactNickname::DefinitionName) {
-            success = createNicknames(property, &contact);
-        } else if (detailDefinitionName == QContactAvatar::DefinitionName) {
-            success = createAvatar(property,detailDefinition.second, &contact);
-        } else if (detailDefinitionName == QContactTimestamp::DefinitionName) {
-            success = createTimeStamp(property, &contact);
-        } else if (detailDefinitionName == QContactPhoneNumber::DefinitionName) {
-            success = createPhone(property, &contact);
-        } else if (detailDefinitionName == QContactAnniversary::DefinitionName) {
-            success = createAnniversary(property, &contact);
-        } else if (detailDefinitionName == QContactFamily::DefinitionName) {
-            success = createFamily(property, &contact);
-        } else if (detailDefinitionName == QContactOnlineAccount::DefinitionName) {
-            success = createOnlineAccount(property, &contact);
-        } else if (detailDefinitionName == QContactDisplayLabel::DefinitionName) {
-            // This actually sets the QContactName's customLabel field (not QContactDisplayLabel)
-            success = createLabel(property, &contact);
-        } else {
-            known = false;
-        }
-
-        if (mPropertyHandler)
-            success = mPropertyHandler->postProcessProperty(
-                    document, property, success, contactIndex, &contact) || success;
-        if (!known && !success)
-            createNameValueDetail(property, &contact);
+    if (properties.size() == 0) {
+        *error = QVersitContactImporter::EmptyDocumentError;
+        return false;
     }
 
-    contact.setType(QContactType::TypeContact);
-    return contact;
+    // First, do the properties with PREF set so they appear first in the contact details
+    foreach (const QVersitProperty& property, properties) {
+        if (property.parameters().contains(QLatin1String("TYPE"), QLatin1String("PREF")))
+            importProperty(document, property, contactIndex, contact);
+    }
+    // ... then, do the rest of the properties.
+    foreach (const QVersitProperty& property, properties) {
+        if (!property.parameters().contains(QLatin1String("TYPE"), QLatin1String("PREF")))
+            importProperty(document, property, contactIndex, contact);
+    }
+
+    contact->setType(QContactType::TypeContact);
+    QContactManagerEngine::setContactDisplayLabel(contact, QVersitContactImporterPrivate::synthesizedDisplayLabel(*contact));
+    return true;
 }
 
+void QVersitContactImporterPrivate::importProperty(
+        const QVersitDocument& document, const QVersitProperty& property, int contactIndex,
+        QContact* contact) const
+{
+    if (mPropertyHandler
+        && mPropertyHandler->preProcessProperty(document, property, contactIndex, contact))
+        return;
+
+    QPair<QString,QString> detailDefinition =
+        mDetailMappings.value(property.name());
+    QString detailDefinitionName = detailDefinition.first;
+    bool success = false;
+    if (detailDefinitionName == QContactAddress::DefinitionName) {
+        success = createAddress(property, contact);
+    } else if (detailDefinitionName == QContactName::DefinitionName) {
+        success = createName(property, contact);
+    } else if (detailDefinitionName == QContactBirthday::DefinitionName) {
+        success = createBirthday(property, contact);
+    } else if (detailDefinitionName == QContactGeoLocation::DefinitionName){
+        success = createGeoLocation(property, contact);
+    } else if (detailDefinitionName == QContactOrganization::DefinitionName) {
+        success = createOrganization(property, contact);
+    } else if (detailDefinitionName == QContactNickname::DefinitionName) {
+        success = createNicknames(property, contact);
+    } else if (detailDefinitionName == QContactRingtone::DefinitionName) {
+        success = createRingtone(property, contact);
+    } else if (detailDefinitionName == QContactThumbnail::DefinitionName) {
+        success = createThumbnail(property, contact);
+    } else if (detailDefinitionName == QContactTimestamp::DefinitionName) {
+        success = createTimeStamp(property, contact);
+    } else if (detailDefinitionName == QContactPhoneNumber::DefinitionName) {
+        success = createPhone(property, contact);
+    } else if (detailDefinitionName == QContactAnniversary::DefinitionName) {
+        success = createAnniversary(property, contact);
+    } else if (detailDefinitionName == QContactFamily::DefinitionName) {
+        success = createFamily(property, contact);
+    } else if (detailDefinitionName == QContactOnlineAccount::DefinitionName) {
+        success = createOnlineAccount(property, contact);
+    } else if (detailDefinitionName == QContactTag::DefinitionName) {
+        success = createTags(property, contact);
+    } else if (detailDefinitionName == QContactDisplayLabel::DefinitionName) {
+        // This actually sets the QContactName's customLabel field (not QContactDisplayLabel)
+        success = createCustomLabel(property, contact);
+    } else {
+        // Look up mDetailMappings for a simple mapping from property to detail.
+        success = createNameValueDetail(property, contact);
+    }
+
+    if (mPropertyHandler)
+        mPropertyHandler->postProcessProperty(document, property, success, contactIndex, contact);
+}
 /*!
  * Creates a QContactName from \a property
  */
@@ -189,14 +217,18 @@ bool QVersitContactImporterPrivate::createName(
     QContactDetail detail = contact->detail(QContactName::DefinitionName);
     if (!detail.isEmpty()) {
         // If multiple name properties exist,
-        // discard all except the first occurence
-        if (!detail.value(QContactName::FieldFirst).isEmpty())
+        // discard all except the first occurrence
+        if (!detail.value(QContactName::FieldFirstName).isEmpty())
             return false;
         else
             name = QContactName(static_cast<QContactName>(detail));
     }
 
-    QStringList values = property.value().split(QLatin1Char(';'));
+    QVariant variant = property.variantValue();
+    if (property.valueType() != QVersitProperty::CompoundType
+            || variant.type() != QVariant::StringList)
+        return false;
+    QStringList values = variant.toStringList();
     name.setLastName(takeFirst(values));
     name.setFirstName(takeFirst(values));
     name.setMiddleName(takeFirst(values));
@@ -228,19 +260,23 @@ bool QVersitContactImporterPrivate::createAddress(
     const QVersitProperty& property, QContact* contact) const
 {
     QContactAddress address;
-    
-    QStringList addressParts = property.value().split(QLatin1Char(';'));
+
+    QVariant variant = property.variantValue();
+    if (property.valueType() != QVersitProperty::CompoundType
+            || variant.type() != QVariant::StringList)
+        return false;
+    QStringList addressParts = variant.toStringList();
     address.setPostOfficeBox(takeFirst(addressParts));
     // There is no setter for the Extended Address in QContactAddress:
     if (!addressParts.isEmpty())
-        addressParts.removeFirst(); 
+        addressParts.removeFirst();
     address.setStreet(takeFirst(addressParts));
     address.setLocality(takeFirst(addressParts));
     address.setRegion(takeFirst(addressParts));
     address.setPostcode(takeFirst(addressParts));
     address.setCountry(takeFirst(addressParts));
     address.setSubTypes(extractSubTypes(property));
-    
+
     saveDetailWithContext(contact, &address, extractContexts(property));
     return true;
 }
@@ -256,7 +292,7 @@ bool QVersitContactImporterPrivate::createOrganization(
         mDetailMappings.value(property.name());
     QString fieldName = detailNameAndFieldName.second;
     QList<QContactOrganization> organizations = contact->details<QContactOrganization>();
-    foreach(QContactOrganization current, organizations) {
+    foreach(const QContactOrganization& current, organizations) {
         if (current.value(fieldName).length() == 0) {
             organization = current;
             break;
@@ -268,7 +304,7 @@ bool QVersitContactImporterPrivate::createOrganization(
         organization.setTitle(property.value());
     } else if (fieldName == QContactOrganization::FieldRole) {
         organization.setRole(property.value());
-    } else if (fieldName == QContactOrganization::FieldLogo) {
+    } else if (fieldName == QContactOrganization::FieldLogoUrl) {
         setOrganizationLogo(organization, property);
     } else if (fieldName == QContactOrganization::FieldAssistantName) {
         organization.setAssistantName(property.value());
@@ -286,16 +322,12 @@ bool QVersitContactImporterPrivate::createOrganization(
 void QVersitContactImporterPrivate::setOrganizationNames(
     QContactOrganization& organization, const QVersitProperty& property) const
 {
-    QString value = property.value();
-    int firstSemicolon = value.indexOf(QLatin1Char(';'));
-    if (firstSemicolon >= 0) {
-        organization.setName(value.left(firstSemicolon));
-        QString departmentsStr(value.mid(firstSemicolon+1));
-        QStringList departments =
-            departmentsStr.split(QLatin1Char(';'), QString::SkipEmptyParts);
-        organization.setDepartment(departments);
-    } else {
-        organization.setName(value);
+    QVariant variant = property.variantValue();
+    if (property.valueType() == QVersitProperty::CompoundType
+        && variant.type() == QVariant::StringList) {
+        QStringList values = variant.toStringList();
+        organization.setName(takeFirst(values));
+        organization.setDepartment(values);
     }
 }
 
@@ -309,7 +341,7 @@ void QVersitContactImporterPrivate::setOrganizationLogo(
     QByteArray data;
     saveDataFromProperty(property, &location, &data);
     if (!location.isEmpty())
-        org.setLogo(location);
+        org.setLogoUrl(QUrl(location));
 }
 
 /*!
@@ -369,12 +401,36 @@ bool QVersitContactImporterPrivate::createBirthday(
 bool QVersitContactImporterPrivate::createNicknames(
     const QVersitProperty& property, QContact* contact) const
 {
-    QStringList values = property.value().split(QLatin1Char(','), QString::SkipEmptyParts);
+    QVariant variant = property.variantValue();
+    if (property.valueType() != QVersitProperty::ListType
+            || variant.type() != QVariant::StringList)
+        return false;
+    QStringList values = variant.toStringList();
     QStringList contexts = extractContexts(property);
-    foreach(QString value, values) {
+    foreach(const QString& value, values) {
         QContactNickname nickName;
         nickName.setNickname(value);
-        saveDetailWithContext(contact, &nickName, extractContexts(property));
+        saveDetailWithContext(contact, &nickName, contexts);
+    }
+    return true;
+}
+
+/*!
+ * Creates QContactTags from \a property and adds them to \a contact
+ */
+bool QVersitContactImporterPrivate::createTags(
+    const QVersitProperty& property, QContact* contact) const
+{
+    QVariant variant = property.variantValue();
+    if (property.valueType() != QVersitProperty::ListType
+            || variant.type() != QVariant::StringList)
+        return false;
+    QStringList values = variant.toStringList();
+    QStringList contexts = extractContexts(property);
+    foreach(const QString& value, values) {
+        QContactTag tag;
+        tag.setTag(value);
+        saveDetailWithContext(contact, &tag, contexts);
     }
     return true;
 }
@@ -384,7 +440,7 @@ bool QVersitContactImporterPrivate::createNicknames(
  */
 bool QVersitContactImporterPrivate::createOnlineAccount(
     const QVersitProperty& property, QContact* contact) const
-{    
+{
     QContactOnlineAccount onlineAccount;
     onlineAccount.setAccountUri(property.value());
     if (property.name() == QLatin1String("X-SIP")) {
@@ -394,7 +450,8 @@ bool QVersitContactImporterPrivate::createOnlineAccount(
         onlineAccount.setSubTypes(subTypes);
     }
     else if (property.name() == QLatin1String("X-IMPP") ||
-             property.name() == QLatin1String("IMPP")) {
+             property.name() == QLatin1String("IMPP") ||
+             property.name() == QLatin1String("X-JABBER")) {
         onlineAccount.setSubTypes(QContactOnlineAccount::SubTypeImpp);
     }
     else {
@@ -405,39 +462,64 @@ bool QVersitContactImporterPrivate::createOnlineAccount(
     return true;
 }
 
-/*!
- * Creates a QContactAvatar from \a property
- */
-bool QVersitContactImporterPrivate::createAvatar(
-    const QVersitProperty& property, const QString& subType, QContact* contact) const
+bool QVersitContactImporterPrivate::createRingtone(const QVersitProperty &property,
+                                                   QContact *contact) const
 {
     QString location;
     QByteArray data;
-    if (!(saveDataFromProperty(property, &location, &data)))
-        return false;
-
-    QContactAvatar avatar;
-    if (!location.isEmpty())
-        avatar.setAvatar(location);
-    if (subType == QContactAvatar::SubTypeImage && !data.isEmpty()) {
-        QPixmap pixmap;
-        if (pixmap.loadFromData(data))
-            avatar.setPixmap(pixmap);
+    if (saveDataFromProperty(property, &location, &data) && !location.isEmpty()) {
+        QContactRingtone ringtone;
+        ringtone.setAudioRingtoneUrl(location);
+        saveDetailWithContext(contact, &ringtone, extractContexts(property));
+        return true;
     }
-    avatar.setSubType(subType);
-
-    saveDetailWithContext(contact, &avatar, extractContexts(property));
-    return true;
+    return false;
 }
 
 /*!
- * Creates a QContactGeolocation from \a property
+ * Creates a QContactAvatar from \a property
+ */
+bool QVersitContactImporterPrivate::createThumbnail(
+    const QVersitProperty& property, QContact* contact) const
+{
+    QString location;
+    QByteArray data;
+    bool success = false;
+
+    if (saveDataFromProperty(property, &location, &data) && !location.isEmpty()) {
+        QContactAvatar avatar;
+        avatar.setImageUrl(location);
+        saveDetailWithContext(contact, &avatar, extractContexts(property));
+        success = true;
+    }
+    if (!data.isEmpty()) {
+        QImage image;
+        if (image.loadFromData(data)) {
+            QContactThumbnail thumbnail = contact->detail<QContactThumbnail>();
+            // In the case of multiple thumbnails, pick the smallest one.
+            if (thumbnail.isEmpty() || image.byteCount() < thumbnail.thumbnail().byteCount()) {
+                thumbnail.setThumbnail(image);
+            }
+            saveDetailWithContext(contact, &thumbnail, extractContexts(property));
+            success = true;
+        }
+    }
+
+    return success;
+}
+
+/*!
+ * Creates a QContactGeoLocation from \a property
  */
 bool QVersitContactImporterPrivate::createGeoLocation(
     const QVersitProperty& property, QContact* contact) const
 {
     QContactGeoLocation geo;
-    QStringList values = property.value().split(QLatin1Char(','));
+    QVariant variant = property.variantValue();
+    if (property.valueType() != QVersitProperty::CompoundType
+            || variant.type() != QVariant::StringList)
+        return false;
+    QStringList values = variant.toStringList();
     geo.setLongitude(takeFirst(values).toDouble());
     geo.setLatitude(takeFirst(values).toDouble());
 
@@ -456,7 +538,12 @@ bool QVersitContactImporterPrivate::createFamily(
     if (property.name() == QLatin1String("X-SPOUSE")) {
         family.setSpouse(val);
     } else if (property.name() == QLatin1String("X-CHILDREN")) {
-        family.setChildren(val.split(QLatin1String(",")));
+        QVariant variant = property.variantValue();
+        if (property.valueType() != QVersitProperty::ListType
+                || variant.type() != QVariant::StringList)
+            return false;
+        QStringList values = variant.toStringList();
+        family.setChildren(values);
     }
 
     saveDetailWithContext(contact, &family, extractContexts(property));
@@ -484,7 +571,7 @@ bool QVersitContactImporterPrivate::createNameValueDetail(
 /*!
  * Creates a simple name-value contact detail.
  */
-bool QVersitContactImporterPrivate::createLabel(
+bool QVersitContactImporterPrivate::createCustomLabel(
     const QVersitProperty& property, QContact* contact) const
 {
     QContactName name;
@@ -504,11 +591,11 @@ bool QVersitContactImporterPrivate::createLabel(
  */
 QStringList QVersitContactImporterPrivate::extractContexts(
     const QVersitProperty& property) const
-{   
-    QStringList types = 
+{
+    QStringList types =
         property.parameters().values(QLatin1String("TYPE"));
     QStringList contexts;
-    foreach (QString type, types) {   
+    foreach (const QString& type, types) {
         QString value = mContextMappings.value(type);
         if (value.length() > 0)
             contexts.append(value);
@@ -522,10 +609,10 @@ QStringList QVersitContactImporterPrivate::extractContexts(
 QStringList QVersitContactImporterPrivate::extractSubTypes(
     const QVersitProperty& property) const
 {
-    QStringList types = 
+    QStringList types =
         property.parameters().values(QLatin1String("TYPE"));
     QStringList subTypes;
-    foreach (QString type, types) {
+    foreach (const QString& type, types) {
         QString subType = mSubTypeMappings.value(type);
         if (subType.length() > 0)
             subTypes += subType;
@@ -606,4 +693,67 @@ void QVersitContactImporterPrivate::saveDetailWithContext(
     if (!contexts.isEmpty())
         detail->setContexts(contexts);
     contact->saveDetail(detail);
+}
+
+/*! Synthesize the display label from the name of the contact, or, failing that, the nickname of
+the contact, or failing that, the organisation of the contact.
+Returns the synthesized display label.
+ */
+QString QVersitContactImporterPrivate::synthesizedDisplayLabel(const QContact& contact)
+{
+    /* XXX This is copied and modified from QContactManagerEngine.  This should be made a public
+       static function in QCME and called here */
+    QList<QContactName> allNames = contact.details<QContactName>();
+
+    const QLatin1String space(" ");
+
+    // synthesize the display label from the name.
+    foreach (const QContactName& name, allNames) {
+        if (!name.customLabel().isEmpty()) {
+            // default behaviour is to allow the user to define a custom display label.
+            return name.customLabel();
+        }
+
+        QString result;
+        if (!name.value(QContactName::FieldPrefix).trimmed().isEmpty()) {
+           result += name.value(QContactName::FieldPrefix);
+        }
+        if (!name.value(QContactName::FieldFirstName).trimmed().isEmpty()) {
+            if (!result.isEmpty())
+                result += space;
+            result += name.value(QContactName::FieldFirstName);
+        }
+        if (!name.value(QContactName::FieldMiddleName).trimmed().isEmpty()) {
+            if (!result.isEmpty())
+                result += space;
+            result += name.value(QContactName::FieldMiddleName);
+        }
+        if (!name.value(QContactName::FieldLastName).trimmed().isEmpty()) {
+            if (!result.isEmpty())
+                result += space;
+            result += name.value(QContactName::FieldLastName);
+        }
+        if (!name.value(QContactName::FieldSuffix).trimmed().isEmpty()) {
+            if (!result.isEmpty())
+                result += space;
+            result += name.value(QContactName::FieldSuffix);
+        }
+        if (!result.isEmpty())
+            return result;
+    }
+
+    QList<QContactNickname> allNicknames = contact.details<QContactNickname>();
+    foreach (const QContactNickname& nickname, allNicknames) {
+        if (!nickname.nickname().isEmpty())
+            return nickname.nickname();
+    }
+
+    /* Well, we had no non empty names. if we have orgs, fall back to those */
+    QList<QContactOrganization> allOrgs = contact.details<QContactOrganization>();
+    foreach (const QContactOrganization& org, allOrgs) {
+        if (!org.name().isEmpty())
+            return org.name();
+    }
+
+    return QString();
 }

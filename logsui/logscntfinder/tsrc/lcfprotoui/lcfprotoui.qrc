@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/xml" >
-        <file alias="lcfSearchResultsView.xml" >resources/lcfSearchResultsView.xml</file>
-    </qresource>
-</RCC>

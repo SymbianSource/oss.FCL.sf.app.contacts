@@ -22,8 +22,7 @@
 #include <hbdocumentloader.h>
 #include <xqappmgr.h>
 
-#include "cntabstractview.h"
-#include "cntviewparameters.h"
+#include <cntabstractview.h>
 
 class HbLabel;
 class HbListView;
@@ -49,18 +48,26 @@ public:
     ~CntImageEditorView();
     
 public: // From CntAbstractView
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters& aArgs );
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
     void deactivate();
     bool isDefault() const { return false; }
     HbView* view() const { return mView; }
-    CntViewParameters::ViewId viewId() const { return CntViewParameters::imageEditorView; }
+    int viewId() const { return imageEditorView; }
     
+#ifdef PBK_UNIT_TEST
+public:
+#else
 private:
+#endif
     void populateModel(QStandardItemModel *model);
     void openCamera();
     void openGallery();
 
+#ifdef PBK_UNIT_TEST
+public slots:
+#else
 private slots:
+#endif
     void showPreviousView();
     void removeImage();
     void handleImageChange(const QVariant &value);

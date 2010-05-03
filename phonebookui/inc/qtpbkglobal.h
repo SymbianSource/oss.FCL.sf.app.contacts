@@ -52,9 +52,11 @@
 #define __QTPBK_WRITE_TO_PERF_LOG_END(p) WriteToPerfLog(p,100);
 #define __QTPBK_WRITE_TO_PERF_FILE() WriteToFile();
 
-const QString SYMBIAN_BACKEND     = "symbian";
-const QString SIM_BACKEND         = "symbiansim";
-
+// Format: qtcontacts:<managerid>:<key>=<value>&<key>=<value>
+const QString SYMBIAN_BACKEND     = "qtcontacts:symbian:";
+const QString SIM_BACKEND         = "qtcontacts:symbiansim:";
+const QString SIM_BACKEND_ADN     = "qtcontacts:symbiansim:store=ADN";
+const QString SIM_BACKEND_SDN     = "qtcontacts:symbiansim:store=SDN";
 //
 // undef this to remove performance logging
 //

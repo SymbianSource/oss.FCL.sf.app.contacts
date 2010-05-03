@@ -339,13 +339,7 @@ private:
 					 HBufC** aFirstName,
 					 HBufC** aLastName) const;
 
-	// aFirstName ownership is not transferred
-	// aLastName ownership is not transferred
-	QList<TChar> DetermineTables(HBufC* aFirstName, HBufC* aLastName) const;
 	QList<TChar> DetermineTables(QStringList aTokens) const;
-
-	// aString ownership is not transferred
-	void AddBeginningCharacters(HBufC* aString, QList<TChar>& aTables) const;
 
 	// aString ownership is not transferred
 	void AddTokens(HBufC* aString, QStringList& aTokens) const;
@@ -359,6 +353,8 @@ private:
 	void GetNextToken(QStringList& aSource, QStringList& aDestination) const;
 	void DeleteFromAllTablesL(TContactItemId aContactId,
 							  TBool& aLowDiskErrorOccurred) const;
+
+	QList<TChar> FillTableList() const;
 
 	// Return next table's name, ownership is transferred
 	HBufC* GetTableNameL(QList<TChar>& aTables) const;

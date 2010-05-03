@@ -56,6 +56,7 @@ NONSHARABLE_CLASS( UT_CPplPredictiveSearchTable ): public CEUnitTestSuiteClass
     private: // Test case setup and teardown
 
         void SetupL();
+        void Setup2L();
         void Teardown();
 
     private: // Test functions

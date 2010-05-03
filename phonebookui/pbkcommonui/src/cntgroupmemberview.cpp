@@ -16,23 +16,29 @@
 */
 
 #include "cntgroupmemberview.h"
-#include "qtpbkglobal.h"
-#include "cntcommands.h"
-#include <hbnotificationdialog.h>
-#include <hbmenu.h>
-
-#include <QStringListModel>
-#include <QMap>
-#include <hbpushbutton.h>
-#include <QGraphicsLinearLayout>
-#include <hbdocumentloader.h>
-#include <hblistview.h>
-#include <hblabel.h>
-#include <hblistviewitem.h>
-#include <hbtoolbar.h>
-#include <thumbnailmanager_qt.h>
 #include "cntcontactcardheadingitem.h"
 #include "cntgroupselectionpopup.h"
+#include "qtpbkglobal.h"
+#include "cntimagelabel.h"
+#include <hbnotificationdialog.h>
+#include <hbmenu.h>
+#include <hblistview.h>
+#include <hblistviewitem.h>
+#include <hbframebackground.h>
+#include <hbview.h>
+#include <hbaction.h>
+#include <hblabel.h>
+#include <thumbnailmanager_qt.h>
+#include <mobcntmodel.h>
+#include <hbmainwindow.h>
+
+
+#include <QGraphicsLinearLayout>
+
+#include <hbdocumentloader.h>
+#include "cntdocumentloader.h"
+
+const char *CNT_GROUPMEMBERVIEW_XML = ":/xml/contacts_groupmembers.docml";
 
 /*!
 \class CntGroupMemberView
@@ -49,13 +55,53 @@ Constructor, initialize member variables.
 \a viewManager is the parent that creates this view. \a parent is a pointer to parent QGraphicsItem (by default this is 0)
 
 */
-CntGroupMemberView::CntGroupMemberView(CntViewManager *viewManager, QGraphicsItem *parent)
-    : CntBaseListView(viewManager, parent),
-    mNoGroupContactsPresent(0),
-    mGroupContact(0),
-    mHeadingItem(0),
-    mThumbnailManager(0)
+CntGroupMemberView::CntGroupMemberView() :
+    mGroupContact(NULL),
+    mViewManager(NULL),
+    mHeadingItem(NULL),
+    mModel(NULL),
+    mListView(NULL),
+    mImageLabel(NULL)    
 {
+
+    mDocument = new CntDocumentLoader;
+    
+    bool ok;
+    mDocument->load( CNT_GROUPMEMBERVIEW_XML, &ok );
+    if ( !ok ){
+        qFatal( "Unable to load %S", CNT_GROUPMEMBERVIEW_XML );
+    }
+
+    mView = static_cast<HbView*>( mDocument->findWidget("view") );
+    
+    //back button
+    mSoftkey = new HbAction(Hb::BackNaviAction, mView);
+    connect(mSoftkey, SIGNAL(triggered()), this, SLOT(showPreviousView()));
+    
+    mImageLabel = static_cast<CntImageLabel*>(mDocument->findWidget("editViewImage"));
+    connect( mImageLabel, SIGNAL(iconClicked()), this, SLOT(openImageEditor()) );
+    
+    mListView = static_cast<HbListView*>( mDocument->findWidget("listView") );
+    connect(mListView, SIGNAL(longPressed(HbAbstractViewItem*,QPointF)), this,
+        SLOT(showContextMenu(HbAbstractViewItem*,QPointF)));
+    connect(mListView, SIGNAL(activated (const QModelIndex&)), this,
+        SLOT(showContactView(const QModelIndex&)));
+    
+    mHeadingItem = static_cast<CntContactCardHeadingItem*>( mDocument->findWidget("editViewHeading") );
+
+    // menu actions
+    mEditGroupAction = static_cast<HbAction*>( mDocument->findObject("cnt:editgroupdetails"));
+    connect(mEditGroupAction, SIGNAL(triggered()), this, SLOT(editGroup()));
+    
+    // toolbar actions
+    mManageAction = static_cast<HbAction*>( mDocument->findObject("cnt:managemembers"));
+    connect(mManageAction, SIGNAL(triggered()), this, SLOT(manageMembers()));
+    mDeleteAction = static_cast<HbAction*>( mDocument->findObject("cnt:deletegroup"));
+    connect(mDeleteAction, SIGNAL(triggered()), this, SLOT(deleteGroup()));
+    mShowActionsAction = static_cast<HbAction*>( mDocument->findObject("cnt:groupactions"));
+    connect(mShowActionsAction, SIGNAL(triggered()), this, SLOT(openGroupActions()));
+    
+    // thumbnail manager
     mThumbnailManager = new ThumbnailManager(this);
     mThumbnailManager->setMode(ThumbnailManager::Default);
     mThumbnailManager->setQualityPreference(ThumbnailManager::OptimizeForQuality);
@@ -70,56 +116,129 @@ Destructor
 */
 CntGroupMemberView::~CntGroupMemberView()
 {
+    mView->deleteLater();
+    
     delete mGroupContact;
+    mGroupContact = 0;
+    
+    delete mModel;
+    mModel = 0;
 }
 
-void CntGroupMemberView::aboutToCloseView()
+void CntGroupMemberView::setOrientation(Qt::Orientation orientation)
 {
-    CntViewParameters viewParameters;//(CntViewParameters::groupActionsView);
-    viewParameters.setSelectedContact(*mGroupContact);
-    viewManager()->back(viewParameters);
+    if (orientation == Qt::Vertical) 
+    {
+        // reading "portrait" section
+        mDocument->load( CNT_GROUPMEMBERVIEW_XML, "portrait" );
+    } 
+    else 
+    {
+        // reading "landscape" section
+        mDocument->load( CNT_GROUPMEMBERVIEW_XML, "landscape" );
+    }
 }
 
-/*!
-Add actions also to toolbar
-*/
-void CntGroupMemberView::addActionsToToolBar()
+void CntGroupMemberView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
 {
-    actions()->clearActionList();
-       
-           
+    mViewManager = aMgr;
+    
+    if (mView->navigationAction() != mSoftkey)
+        {
+        mView->setNavigationAction(mSoftkey);   
+        }
         
-   
+    QVariant contact = aArgs.value( ESelectedContact );
+    mGroupContact = new QContact( contact.value<QContact>() );
     
-    actions()->clearActionList();
-        actions()->actionList() << actions()->baseAction("cnt:managemembers") << actions()->baseAction("cnt:deletegroup")
-            << actions()->baseAction("cnt:groupactions");
-        actions()->addActionsToToolBar(toolBar());
-
-        connect(actions()->baseAction("cnt:managemembers"), SIGNAL(triggered()),
-                    this, SLOT(manageMembers()));
-        connect(actions()->baseAction("cnt:deletegroup"), SIGNAL(triggered()),
-           this, SLOT(deleteGroup()));    
-        connect(actions()->baseAction("cnt:groupactions"), SIGNAL(triggered()),
-                this, SLOT(groupActions()));
+    HbMainWindow* window = mView->mainWindow();
+    if ( window )
+    {
+        connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
+        setOrientation(window->orientation());
+    }
     
- }
+    mHeadingItem->setGroupDetails(mGroupContact);
 
-void CntGroupMemberView::groupActions()
-{
-    CntViewParameters viewParameters(CntViewParameters::groupActionsView);
-    viewParameters.setSelectedContact(*mGroupContact);
-    viewManager()->changeView(viewParameters);
+    // avatar
+    QList<QContactAvatar> details = mGroupContact->details<QContactAvatar>();
+    for (int i = 0;i < details.count();i++)
+    {
+        if (details.at(i).imageUrl().isValid())
+            {
+            mThumbnailManager->getThumbnail(details.at(i).imageUrl().toString());
+            break;
+            }
+    }
+    
+    // create list & model
+    mListView->setFrictionEnabled(true);
+    mListView->setScrollingStyle(HbScrollArea::PanOrFlick);
+    mListView->setUniformItemSizes(true);
+    mListView->listItemPrototype()->setGraphicsSize(HbListViewItem::Thumbnail);
+
+    HbFrameBackground frame;
+    frame.setFrameGraphicsName("qtg_fr_list_normal");
+    frame.setFrameType(HbFrameDrawer::NinePieces);
+    mListView->itemPrototypes().first()->setDefaultFrame(frame);
+    
+    QContactRelationshipFilter rFilter;
+    rFilter.setRelationshipType(QContactRelationship::HasMember);
+    rFilter.setRelatedContactRole(QContactRelationship::First);
+    rFilter.setRelatedContactId(mGroupContact->id());
+    
+    QContactSortOrder sortOrderFirstName;
+    sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,
+        QContactName::FieldFirst);
+    sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
+
+    QContactSortOrder sortOrderLastName;
+    sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,
+        QContactName::FieldLast);
+    sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
+
+    QList<QContactSortOrder> sortOrders;
+    sortOrders.append(sortOrderFirstName);
+    sortOrders.append(sortOrderLastName);
+
+    mModel = new MobCntModel(mViewManager->contactManager(SYMBIAN_BACKEND), rFilter, sortOrders, false);
+    mListView->setModel(mModel);
+    
+    if (aArgs.value(ESelectedAction).toString() == "save")
+    {
+        QString name = mViewManager->contactManager(SYMBIAN_BACKEND)->synthesizedDisplayLabel(*mGroupContact);
+        HbNotificationDialog::launchDialog(hbTrId("Group \"%1\" saved").arg(name));
+    }
 }
 
+void CntGroupMemberView::deactivate()
+{
+    
+}
+
+void CntGroupMemberView::showPreviousView()
+{
+    CntViewParameters viewParameters;
+    mViewManager->back(viewParameters);
+}
+
+void CntGroupMemberView::openGroupActions()
+{
+    CntViewParameters viewParameters;
+    viewParameters.insert(EViewId, groupActionsView);
+    QVariant var;
+    var.setValue(*mGroupContact);
+    viewParameters.insert(ESelectedContact, var);
+    mViewManager->changeView(viewParameters);
+}
 
 void CntGroupMemberView::manageMembers()
 {
     // save the group here
-    CntGroupSelectionPopup *groupSelectionPopup = new CntGroupSelectionPopup(contactManager(), mGroupContact);
-    listView()->setModel(0);
+    CntGroupSelectionPopup *groupSelectionPopup = 
+        new CntGroupSelectionPopup(mViewManager->contactManager(SYMBIAN_BACKEND), mGroupContact);
+    mListView->setModel(0);
     groupSelectionPopup->populateListOfContact();
-
     
     HbAction* action = groupSelectionPopup->exec();
     if (action == groupSelectionPopup->primaryAction())
@@ -127,29 +246,17 @@ void CntGroupMemberView::manageMembers()
         groupSelectionPopup->saveOldGroup();
     }
     delete groupSelectionPopup;
-    listView()->setModel(contactModel());
-}
-/*!
-Add actions to menu
-*/
-void CntGroupMemberView::addMenuItems()
-{
-    actions()->clearActionList();
-    actions()->actionList() << actions()->baseAction("cnt:editgroupdetails");
-    actions()->addActionsToMenu(menu());
-
-    connect(actions()->baseAction("cnt:editgroupdetails"), SIGNAL(triggered()),
-            this, SLOT (editGroup()));
-       
-
+    mListView->setModel(mModel);
 }
 
 void CntGroupMemberView::editGroup()
 {
-    CntViewParameters viewParameters(CntViewParameters::groupEditorView);
-    viewParameters.setSelectedAction("EditGroupDetails");
-    viewParameters.setSelectedContact(*mGroupContact);
-    viewManager()->changeView(viewParameters);
+    CntViewParameters viewParameters;
+    viewParameters.insert(EViewId, groupEditorView);
+    QVariant var;
+    var.setValue(*mGroupContact);
+    viewParameters.insert(ESelectedContact, var);
+    mViewManager->changeView(viewParameters);
 }
 
 void CntGroupMemberView::deleteGroup()
@@ -157,51 +264,46 @@ void CntGroupMemberView::deleteGroup()
     // the delete command
      HbDialog popup;
 
-     // Set dismiss policy that determines what tap events will cause the dialog
-     // to be dismissed
+     // disable dismissing & timout
      popup.setDismissPolicy(HbDialog::NoDismiss);
+     popup.setTimeout(HbDialog::NoTimeout);
      
-     QContactName groupContactName = mGroupContact->detail( QContactName::DefinitionName );
-     QString groupName(groupContactName.value( QContactName::FieldCustomLabel ));
-     // Set the label as heading widget
-     popup.setHeadingWidget(new HbLabel(hbTrId("Delete %1 group?").arg(groupName))); 
+     QString groupName = mGroupContact->displayLabel();
+     HbLabel *headingLabel = new HbLabel(hbTrId("Delete %1 group?").arg(groupName), &popup);
+     headingLabel->setFontSpec(HbFontSpec(HbFontSpec::Primary));
+     popup.setHeadingWidget(headingLabel);
 
      // Set a label widget as content widget in the dialog
-     HbLabel *label = new HbLabel;
+     HbLabel *label = new HbLabel(&popup);
      label->setPlainText("Only group will be removed, contacts can be found from All contacts list");
      label->setTextWrapping(Hb::TextWordWrap);
+     label->setElideMode(Qt::ElideNone);
+     label->setFontSpec(HbFontSpec(HbFontSpec::Secondary));
      popup.setContentWidget(label);
      
      // Sets the primary action and secondary action
      popup.setPrimaryAction(new HbAction(hbTrId("txt_phob_button_delete"),&popup));
      popup.setSecondaryAction(new HbAction(hbTrId("txt_common_button_cancel"),&popup));
 
-     popup.setTimeout(0) ;
      HbAction* action = popup.exec();
      if (action == popup.primaryAction())
      {
-         contactManager()->removeContact(mGroupContact->localId());
-         CntViewParameters viewParameters(CntViewParameters::collectionView);
-         viewParameters.setSelectedAction("EditGroupDetails");
-         viewParameters.setSelectedContact(*mGroupContact);
-         viewManager()->changeView(viewParameters);
+         mViewManager->contactManager(SYMBIAN_BACKEND)->removeContact(mGroupContact->localId());
+         showPreviousView();
      }
 }
 
 /*!
 Called when a list item is longpressed
 */
-void CntGroupMemberView::onLongPressed (HbAbstractViewItem *aItem, const QPointF &aCoords)
+void CntGroupMemberView::showContextMenu(HbAbstractViewItem *aItem, const QPointF &aCoords)
 {
     QModelIndex index = aItem->modelIndex();
-    QVariant variant = index.data(Qt::UserRole+1);
-    const QMap<QString, QVariant> map = variant.toMap();
 
     HbMenu *menu = new HbMenu();
     HbAction *removeFromGroupAction = 0;
     HbAction *openContactAction = 0;
     HbAction *editContactAction = 0;
-    QString action = map.value("action").toString();
 
     openContactAction = menu->addAction(hbTrId("txt_common_menu_open"));
     editContactAction = menu->addAction(hbTrId("txt_common_menu_edit"));
@@ -222,52 +324,49 @@ void CntGroupMemberView::onLongPressed (HbAbstractViewItem *aItem, const QPointF
         }
         else if (selectedAction == openContactAction)
         {
-            onListViewActivated(index);
+            showContactView(index);
         }
-       
     }
     menu->deleteLater();
-}
-
-void CntGroupMemberView::editContact(const QModelIndex &index)
-{
-    QContact selectedContact = contactModel()->contact(index);
-    CntViewParameters viewParameters(CntViewParameters::editView);
-    viewParameters.setSelectedContact(selectedContact);
-    viewManager()->changeView(viewParameters);
-}
-
-void CntGroupMemberView::removeFromGroup(const QModelIndex &index)
-{
-    // get contact id using index
-    QContact selectedContact = contactModel()->contact(index);
-    QContactRelationship relationship;
-    relationship.setRelationshipType(QContactRelationship::HasMember);
-    relationship.setFirst(mGroupContact->id());
-    relationship.setSecond(selectedContact.id());
-    contactManager()->removeRelationship(relationship);
 }
 
 /*!
 Called after user clicked on the listview.
 */
-void CntGroupMemberView::onListViewActivated(const QModelIndex &index)
+void CntGroupMemberView::showContactView(const QModelIndex &index)
 {
-    CntViewParameters viewParameters(CntViewParameters::commLauncherView);
-    viewParameters.setSelectedContact(contactModel()->contact(index));
-    viewParameters.setSelectedGroupContact(*mGroupContact);
-    viewParameters.setSelectedAction("FromGroupMemberView");
-    viewManager()->changeView(viewParameters);
+    CntViewParameters viewParameters;
+    viewParameters.insert(EViewId, commLauncherView);
+    QVariant var;
+    var.setValue(mModel->contact(index));
+    viewParameters.insert(ESelectedContact, var);
+    QVariant varGroup;
+    varGroup.setValue(*mGroupContact);
+    viewParameters.insert(ESelectedGroupContact, varGroup);
+    viewParameters.insert(ESelectedAction, "FromGroupMemberView");
+    mViewManager->changeView(viewParameters);
         
 }
 
-void CntGroupMemberView::handleExecutedCommand(QString command, QContact /*contact*/)
+void CntGroupMemberView::removeFromGroup(const QModelIndex &index)
 {
-    if (command == "delete")
-    {
-        CntViewParameters viewParameters(CntViewParameters::collectionView);
-        viewManager()->changeView(viewParameters);
-    }
+    // get contact id using index
+    QContact selectedContact = mModel->contact(index);
+    QContactRelationship relationship;
+    relationship.setRelationshipType(QContactRelationship::HasMember);
+    relationship.setFirst(mGroupContact->id());
+    relationship.setSecond(selectedContact.id());
+    mViewManager->contactManager(SYMBIAN_BACKEND)->removeRelationship(relationship);
+}
+
+void CntGroupMemberView::editContact(const QModelIndex &index)
+{
+    CntViewParameters viewParameters;
+    viewParameters.insert(EViewId, editView);
+    QVariant var;
+    var.setValue(mModel->contact(index));
+    viewParameters.insert(ESelectedContact, var);
+    mViewManager->changeView(viewParameters);
 }
 
 void CntGroupMemberView::thumbnailReady(const QPixmap& pixmap, void *data, int id, int error)
@@ -275,62 +374,29 @@ void CntGroupMemberView::thumbnailReady(const QPixmap& pixmap, void *data, int i
     Q_UNUSED(data);
     Q_UNUSED(id);
     Q_UNUSED(error);
-    QIcon qicon(pixmap);
-    HbIcon icon(qicon);
-    mHeadingItem->setIcon(icon);
+    if (!error)
+    {
+        QIcon qicon(pixmap);
+        HbIcon icon(qicon);
+        mHeadingItem->setIcon(icon);
+        
+        mImageLabel->clear();
+        mImageLabel->setIcon(icon);
+    }
 }
 
-void CntGroupMemberView::activateView(const CntViewParameters &viewParameters)
+void CntGroupMemberView::openImageEditor()
 {
-    QContact contact = viewParameters.selectedContact();
-    mGroupContact = new QContact(contact);
-    
-    //QContactName groupContactName = mGroupContact->detail( QContactName::DefinitionName );
-  // QString groupName(groupContactName.value( QContactName::FieldCustomLabel ));
-  
-    //setBannerName(groupName);
-    
-    // add heading widget to the content
-    QGraphicsWidget *c = findWidget(QString("container"));
-    QGraphicsLinearLayout* l = static_cast<QGraphicsLinearLayout*>(c->layout());
-
-    mHeadingItem = new CntContactCardHeadingItem(c);
-    mHeadingItem->setGroupDetails(mGroupContact);
-
-    l->insertItem(0, mHeadingItem);
-    
-    // avatar
-    QList<QContactAvatar> details = mGroupContact->details<QContactAvatar>();
-    if (details.count() > 0)
-    {
-        for (int i = 0;i < details.count();i++)
-        {
-            if (details.at(i).subType() == QContactAvatar::SubTypeImage)
-            {
-                mThumbnailManager->getThumbnail(details.at(i).avatar());
-                break;
-            }
-        }
-    }
-    
-    // display group members
-    QContactRelationshipFilter rFilter;
-    rFilter.setRelationshipType(QContactRelationship::HasMember);
-    rFilter.setRelatedContactRole(QContactRelationshipFilter::First);
-    rFilter.setRelatedContactId(mGroupContact->id());
-    
-    mLocalIdList = contactManager()->contactIds(rFilter);
-    
-    contactModel()->setFilterAndSortOrder(rFilter);
-
-    contactModel()->showMyCard(false);
-    if (viewParameters.selectedAction() == "save")
-    {
-        QString name = contactManager()->synthesizedDisplayLabel(viewParameters.selectedContact());
-        HbNotificationDialog::launchDialog(hbTrId("Group \"%1\" saved").arg(name));
-    }
-    
-    CntBaseListView::activateView(viewParameters);
+    QVariant var;
+    var.setValue(*mGroupContact);
+                
+    CntViewParameters viewParameters;
+    viewParameters.insert(ESelectedContact, var);
+    viewParameters.insert(EViewId, imageEditorView );
+        
+    mViewManager->changeView( viewParameters );
 }
+
+
 
 // end of file

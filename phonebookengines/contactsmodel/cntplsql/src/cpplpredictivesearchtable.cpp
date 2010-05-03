@@ -75,6 +75,7 @@ CPplPredictiveSearchTable::NewLC(RSqlDatabase& aDatabase)
 	return self;
 	}
 
+
 /**
 Destructor
 */
@@ -242,8 +243,8 @@ void CPplPredictiveSearchTable::ConstructL()
 	RDebug::Print(_L("CPplPredictiveSearchTable::ConstructL"));
 
 	// Using dummy table names here
-	TCntSqlStatementType insertType( EInsert, KSqlContactPredSearchTable0 );
-	TCntSqlStatementType deleteType( EDelete, KSqlContactPredSearchTable0 );
+	TCntSqlStatementType insertType(EInsert, KSqlContactPredSearchTable0);
+	TCntSqlStatementType deleteType(EDelete, KSqlContactPredSearchTable0);
 
 	// Insert new record
 	// INSERT INTO predictivesearchX (X=0..9)
@@ -251,20 +252,20 @@ void CPplPredictiveSearchTable::ConstructL()
 	//   VALUES (contact_id value, nbr value, nbr2 value, nbr3 value, nbr4 value,
 	//			 first_name value, last_name value);
 	iInsertStmnt = TSqlProvider::GetSqlStatementL(insertType);
-	iInsertStmnt->SetParamL( KPredSearchContactId,
-	                         KPredSearchContactIdParam );
-	iInsertStmnt->SetParamL( KPredSearchNameAsNumber,
-							 KPredSearchNameAsNumberParam );
-	iInsertStmnt->SetParamL( KPredSearchNameAsNumber2,
-							 KPredSearchNameAsNumber2Param );
-	iInsertStmnt->SetParamL( KPredSearchNameAsNumber3,
-							 KPredSearchNameAsNumber3Param );
-	iInsertStmnt->SetParamL( KPredSearchNameAsNumber4,
-							 KPredSearchNameAsNumber4Param );
-	iInsertStmnt->SetParamL( KPredSearchFirstName,
-							 KPredSearchFirstNameParam );
-	iInsertStmnt->SetParamL( KPredSearchLastName,
-							 KPredSearchLastNameParam );
+	iInsertStmnt->SetParamL(KPredSearchContactId,
+	                        KPredSearchContactIdParam);
+	iInsertStmnt->SetParamL(KPredSearchNameAsNumber,
+							KPredSearchNameAsNumberParam);
+	iInsertStmnt->SetParamL(KPredSearchNameAsNumber2,
+							KPredSearchNameAsNumber2Param);
+	iInsertStmnt->SetParamL(KPredSearchNameAsNumber3,
+							KPredSearchNameAsNumber3Param);
+	iInsertStmnt->SetParamL(KPredSearchNameAsNumber4,
+							KPredSearchNameAsNumber4Param);
+	iInsertStmnt->SetParamL(KPredSearchFirstName,
+							KPredSearchFirstNameParam);
+	iInsertStmnt->SetParamL(KPredSearchLastName,
+							KPredSearchLastNameParam);
 
 	const TInt KWhereContactIdBufSize(
 		KWhereStringEqualsStringFormatText().Size() +
@@ -312,8 +313,13 @@ void CPplPredictiveSearchTable::WriteToDbL(const CContactItem& aItem)
     HBufC* lastName(NULL);  // owned
 	GetFieldsLC(aItem, &firstNameAsNbr, &lastNameAsNbr, &firstName, &lastName);
 
-	QStringList numericTokens = GetNumericTokens(firstNameAsNbr, lastNameAsNbr);
-	QList<TChar> tables = DetermineTables(numericTokens);
+	QStringList numericTokens;
+	QList<TChar> tables;
+	QT_TRYCATCH_LEAVING({
+		numericTokens = GetNumericTokens(firstNameAsNbr, lastNameAsNbr);
+		tables = DetermineTables(numericTokens);
+	});
+
 	HBufC* tableName(NULL);
 	while ((tableName = GetTableNameL(tables)) != NULL)
 		{
@@ -332,7 +338,8 @@ void CPplPredictiveSearchTable::WriteToDbL(const CContactItem& aItem)
 			&KPredSearchNameAsNumber4Param};
 		for (TInt i = 0; i < numericTokens.count(); ++i)
 			{
-			quint64 hex = ConvertToHex(numericTokens[i]);
+			quint64 hex(0);
+			QT_TRYCATCH_LEAVING(hex = ConvertToHex(numericTokens[i]));
 			if (hex == KConversionError)
 				{
 				User::Leave(KErrArgument);
@@ -347,30 +354,31 @@ void CPplPredictiveSearchTable::WriteToDbL(const CContactItem& aItem)
 
 		if (firstName)
 			{
-			User::LeaveIfError( stmnt.BindText(
-				User::LeaveIfError( stmnt.ParameterIndex( KPredSearchFirstNameParam ) ),
-				*firstName ) );
+			User::LeaveIfError(stmnt.BindText(
+				User::LeaveIfError(stmnt.ParameterIndex(KPredSearchFirstNameParam)),
+				*firstName));
 			}
 		if (lastName)
 			{
-			User::LeaveIfError( stmnt.BindText(
-				User::LeaveIfError( stmnt.ParameterIndex( KPredSearchLastNameParam ) ),
-				*lastName ) );
+			User::LeaveIfError(stmnt.BindText(
+				User::LeaveIfError(stmnt.ParameterIndex(KPredSearchLastNameParam)),
+				*lastName));
 			}
 
 		RDebug::Print(_L("CPplPredictiveSearchTable::WriteToDbL execute SQL statement"));
 		// Execute the SQL statement
-		User::LeaveIfError( stmnt.Exec() );
-		CleanupStack::PopAndDestroy( &stmnt );
+		User::LeaveIfError(stmnt.Exec());
+		CleanupStack::PopAndDestroy(&stmnt);
 		}
 
-	CleanupStack::PopAndDestroy( lastNameAsNbr );
-	CleanupStack::PopAndDestroy( lastName );
-	CleanupStack::PopAndDestroy( firstNameAsNbr );
-	CleanupStack::PopAndDestroy( firstName );
+	CleanupStack::PopAndDestroy(lastNameAsNbr);
+	CleanupStack::PopAndDestroy(lastName);
+	CleanupStack::PopAndDestroy(firstNameAsNbr);
+	CleanupStack::PopAndDestroy(firstName);
 
 	RDebug::Print(_L("CPplPredictiveSearchTable::WriteToDbL ends"));
 	}
+
 
 void CPplPredictiveSearchTable::GetFieldsLC(const CContactItem& aItem,
 											HBufC** aFirstNameAsNbr,
@@ -433,24 +441,6 @@ void CPplPredictiveSearchTable::GetFieldsLC(const CContactItem& aItem,
 	    *aLastName ? *aLastName: &KNullDesC);
 	}
 
-// Find out which tables the contact belongs to.
-// e.g. FN(first name)="123 456", LN(last name)=" 89 15" -> belongs to tables 1,4 and 8
-QList<TChar>
-CPplPredictiveSearchTable::DetermineTables(HBufC* aFirstName,
-										   HBufC* aLastName) const
-	{
-	RDebug::Print(_L("CPplPredictiveSearchTable::DetermineTables FN='%S',LN='%S'"),
-		aFirstName ? aFirstName : &KNullDesC,
-		aLastName ? aLastName : &KNullDesC);
-
-	QList<TChar> tables;
-	AddBeginningCharacters(aFirstName, tables);
-	AddBeginningCharacters(aLastName, tables);
-
-    RDebug::Print(_L("CPplPredictiveSearchTable::DetermineTables belongs to %d tables"),
-                  tables.count());
-	return tables;
-	}
 
 QList<TChar> CPplPredictiveSearchTable::DetermineTables(QStringList aTokens) const
 	{
@@ -468,35 +458,6 @@ QList<TChar> CPplPredictiveSearchTable::DetermineTables(QStringList aTokens) con
 	return tables;
 	}
 
-// Ignore spaces when inspecting the first digits of (sub)strings within FN/LN.
-// If FN and LN don't begin with any of digit (meaning the first char in the
-// original name did not map into any digit, but was written as is, the contact
-// is not added to any of the 10 tables).
-void CPplPredictiveSearchTable::AddBeginningCharacters(HBufC* aString,
-													   QList<TChar>& aTables) const
-	{
-	if (aString)
-		{
-		QString s((QChar*)aString->Ptr(), aString->Length());
-#if defined(USE_ORBIT_KEYMAP)
-		QStringList subStrings = s.split(iKeyMap->Separator(), QString::SkipEmptyParts);
-#else
-		QStringList subStrings = s.split(' ', QString::SkipEmptyParts);
-#endif
-	
-		for (TInt i = subStrings.count() - 1; i >= 0; --i)
-			{
-			if (subStrings[i].length() > 0)
-				{
-				TChar ch(subStrings[i][0].unicode());
-				if (IsValidChar(ch) && !aTables.contains(ch))
-					{
-					aTables.append(ch);
-					}
-				}
-			}
-		}
-	}
 
 // Ignore tokens beginning with something else than '0'..'9'.
 // Keep duplicate tokens to support e.g. search "202" when both FN and LN are "23".
@@ -523,15 +484,18 @@ CPplPredictiveSearchTable::AddTokens(HBufC* aString, QStringList& aTokens) const
 		}
 	}
 
+
 TBool CPplPredictiveSearchTable::IsValidChar(TInt aChar) const
 	{
 	return (aChar >= '0' && aChar <= '9');
 	}
 
+
 TBool CPplPredictiveSearchTable::IsValidChar(QChar aChar) const
 	{
 	return (aChar >= '0' && aChar <= '9');
 	}
+
 
 // 1. get first token of LN
 // 2. get first token of FN
@@ -565,6 +529,7 @@ QStringList CPplPredictiveSearchTable::GetNumericTokens(HBufC* aFirstName,
 	return tokens;
 	}
 
+
 void CPplPredictiveSearchTable::GetNextToken(QStringList& aSource,
 											 QStringList& aDestination) const
 	{
@@ -576,17 +541,13 @@ void CPplPredictiveSearchTable::GetNextToken(QStringList& aSource,
 		}
 	}
 
+
 void
 CPplPredictiveSearchTable::DeleteFromAllTablesL(TContactItemId aContactId,
 											    TBool& aLowDiskErrorOccurred) const
 	{
 	QList<TChar> tables;
-	const TInt KLargestKey = '9';
-	for (TInt i = '0'; i <= KLargestKey; ++i)
-		{
-		TChar ch = i;
-		tables << ch;
-		}
+	QT_TRYCATCH_LEAVING(tables = FillTableList());
 
 	HBufC* tableName(NULL);
 	while ((tableName = GetTableNameL(tables)) != NULL)
@@ -626,6 +587,20 @@ CPplPredictiveSearchTable::DeleteFromAllTablesL(TContactItemId aContactId,
 		}
 	}
 
+
+QList<TChar> CPplPredictiveSearchTable::FillTableList() const
+	{
+	QList<TChar> tables;
+	const TInt KLargestKey = '9';
+	for (TInt i = '0'; i <= KLargestKey; ++i)
+		{
+		TChar ch = i;
+		tables << ch;
+		}
+	return tables;
+	}
+
+
 HBufC* CPplPredictiveSearchTable::GetTableNameL(QList<TChar>& aTables) const
 	{
 	HBufC* tableName(NULL);
@@ -644,6 +619,7 @@ HBufC* CPplPredictiveSearchTable::GetTableNameL(QList<TChar>& aTables) const
         }
 	return tableName;
 	}
+
 
 // E.g. aToken = "01230" -> append 'a' until has KMaxDigits characters
 // -> "01230aaaaaaaaaa" -> convert to hexadecimal number -> 0x01230aaaaaaaaaa.

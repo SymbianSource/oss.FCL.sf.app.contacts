@@ -21,7 +21,7 @@
 #include <hbdataformviewitem.h>
 #include <QObject>
 #include "cntdetaileditormodel.h"
-#include "cntviewparameters.h"
+#include <cntviewparams.h>
 #include <qtcontacts.h>
 #include "qtpbkglobal.h"
 
@@ -31,38 +31,17 @@ QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
 
-class CntBaseView;
-class CntViewManager;
+class CntAbstractView;
+class CntDetailEditor;
 
 class CntEditorFactory : public QObject 
     {
     Q_OBJECT
     
 public:
-    // ownership of aViewMgr is not transferred
-    CntEditorFactory( CntViewManager* aViewMgr, QObject* aParent = 0 );
+    CntEditorFactory( QObject* aParent = 0 );
     virtual ~CntEditorFactory();
     
-public:
-    virtual CntBaseView* createNameEditorView( QContact aContact ); // ownership transferred
-    virtual CntBaseView* createNumberEditorView( QContact aContact ); // ownership transferred
-    virtual CntBaseView* createEmailEditorView( QContact aContact ); // ownership transferred
-    virtual CntBaseView* createAddressEditorView( QContact aContact ); // ownership transferred
-    virtual CntBaseView* createUrlEditorView( QContact aContact ); // ownership transferred
-    virtual CntBaseView* createNoteEditorView( QContact aContact ); // ownership transferred
-    virtual CntBaseView* createDateEditorView( QContact aContact ); // ownership transferred
-    virtual CntBaseView* createCompanyEditorView( QContact aContact ); // ownership transferred
-    virtual CntBaseView* createFamilyEditorView( QContact aContact ); // ownership transferred
-    
-protected:
-    virtual CntBaseView* createEditor( 
-        CntViewParameters::ViewId aId,
-        CntDetailEditorModel* aModel, 
-        HbDataFormViewItem* aProto, 
-        QString aTitle, 
-        QString aInsert=QString() );
-    
-protected:
-    CntViewManager* iViewMgr; // not owned
+    void setupEditorView(CntDetailEditor &aEditor, QContact &aContact);
     };
 #endif /* CNTEDITORFACTORY_H_ */

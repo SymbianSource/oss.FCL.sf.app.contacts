@@ -1,10 +1,7 @@
-include(../pathconfig.pri)
-include($$QT_MOBILITY_BUILD_TREE/config.pri)
+include(../staticconfig.pri)
 
 TEMPLATE = subdirs
-
-# Not for MCL..
-exists(global):SUBDIRS += global
+SUBDIRS += global
 
 contains(mobility_modules,serviceframework) {
     SUBDIRS += serviceframework
@@ -37,8 +34,8 @@ versit.subdir=versit
 versit.target=sub-versit
 versit.depends=contacts
 
-contains(mobility_modules,messaging) {
-    contains(qmf_enabled, yes)|wince*|win32|symbian|maemo6 {
+contains(qmf_enabled, yes)|wince*|win32|symbian|maemo5 {
+    contains(mobility_modules,messaging) {
         !win32-g++:SUBDIRS += messaging
     }
 }

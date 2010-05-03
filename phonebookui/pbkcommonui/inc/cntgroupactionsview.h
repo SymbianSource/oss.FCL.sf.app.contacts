@@ -18,14 +18,18 @@
 #ifndef CNTGROUPACTIONSVIEW_H
 #define CNTGROUPACTIONSVIEW_H
 
-#include <QObject>
-#include "cntbaseview.h"
-#include "qtpbkglobal.h"
+#include <hbdocumentloader.h>
 
-class QModelIndex;
-class QGraphicsWidget;
+#include "cntabstractview.h"
+
+class CntAbstractViewManager;
+class HbView;
+class HbIcon;
+class HbAction;
 class HbListView;
-class HbLabel;
+class HbAbstractViewItem;
+class QModelIndex;
+class QStandardItemModel;
 
 
 QTM_BEGIN_NAMESPACE
@@ -34,61 +38,53 @@ QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
 
-class QGraphicsWidget;
-class HbScrollArea;
-class QGraphicsLinearLayout;
-class CntContactCardDataContainer;
-class CntContactCardHeadingItem;
-class HbGroupBox;
-
-class CntGroupActionsView : public CntBaseView
+class CntGroupActionsView : public QObject, public CntAbstractView
 {
     Q_OBJECT
 
-public slots:
-
-    virtual void aboutToCloseView();
-    virtual void editContact();
-    void editGroup();
-    void addMenuItems();
-       
-
+public: // From CntAbstractView
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void deactivate();
+    bool isDefault() const { return false; }
+    HbView* view() const { return mView; }
+    int viewId() const { return groupActionsView; }
+    
 public:
-    CntGroupActionsView(CntViewManager *viewManager, QGraphicsItem *parent = 0);
+    CntGroupActionsView();
     ~CntGroupActionsView();
-
-    CntViewParameters::ViewId viewId() const { return CntViewParameters::groupActionsView; }
-    virtual void activateView(const CntViewParameters &viewParameters);
-
-signals:
-    void preferredUpdated();
+    
+#ifdef PBK_UNIT_TEST
+public slots:
+#else
+private slots:
+#endif    
+    
+    void showPreviousView();
+    void editGroup();
 
 #ifdef PBK_UNIT_TEST
 public:
 #else
 private:
-#endif
-    void resizeEvent(QGraphicsSceneResizeEvent *event);
-       
+#endif      
+    void populatelist(QString label,HbIcon icon, QString secondaryText);
+   
 #ifdef PBK_UNIT_TEST
 public:
 #else
-protected:    
-#endif        
-    virtual void addActionsToToolBar();
-        
-#ifdef PBK_UNIT_TEST
-public:
-#else
-protected:    
+private:
 #endif
-    QContact                    *mGroupContact;
-    HbScrollArea                *mScrollArea;
-    QGraphicsWidget             *mContainerWidget;
-    QGraphicsLinearLayout       *mContainerLayout;
-    CntContactCardDataContainer *mDataContainer;
-    CntContactCardHeadingItem   *mHeadingItem;
-    HbGroupBox                  *mBanner;
+    
+    QContact*                   mGroupContact;
+    HbAction*                   mEditGrpDetailAction; 
+    QStandardItemModel*         mModel; // own
+    CntAbstractViewManager*     mViewManager;
+    HbDocumentLoader            mDocumentLoader;
+    HbView*                     mView; // own
+
+    HbAction*                   mSoftkey; // owned by view
+    HbListView*                 mListView; // owned by layout
+
 };
 
 #endif // CNTGROUPACTIONSVIEW_H

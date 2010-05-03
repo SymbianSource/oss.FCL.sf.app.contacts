@@ -46,15 +46,16 @@
 
 #include <QStringList>
 #include <QTextCodec>
+#include <QBuffer>
 
 QTM_USE_NAMESPACE
 
 /*!
   \class QVersitWriter
-  \preliminary 
+  \preliminary
   \brief The QVersitWriter class writes Versit documents such as vCards to a device.
   \ingroup versit
- 
+
   QVersitWriter converts a QVersitDocument into its textual representation.
   QVersitWriter supports writing to an abstract I/O device
   which can be for example a file or a memory buffer.
@@ -107,12 +108,28 @@ QTM_USE_NAMESPACE
 /*! Constructs a new writer. */
 QVersitWriter::QVersitWriter() : d(new QVersitWriterPrivate)
 {
-    connect(d, SIGNAL(stateChanged(QVersitWriter::State)),
-            this, SIGNAL(stateChanged(QVersitWriter::State)), Qt::DirectConnection);
+    d->init(this);
 }
 
-/*! 
- * Frees the memory used by the writer. 
+/*! Constructs a new writer that writes to \a outputDevice. */
+QVersitWriter::QVersitWriter(QIODevice *outputDevice) : d(new QVersitWriterPrivate)
+{
+    d->init(this);
+    d->mIoDevice = outputDevice;
+}
+
+/*! Constructs a new writer that appends to \a outputBytes. */
+QVersitWriter::QVersitWriter(QByteArray *outputBytes) : d(new QVersitWriterPrivate)
+{
+    d->init(this);
+    d->mOutputBytes.reset(new QBuffer);
+    d->mOutputBytes->setBuffer(outputBytes);
+    d->mOutputBytes->open(QIODevice::WriteOnly);
+    d->mIoDevice = d->mOutputBytes.data();
+}
+
+/*!
+ * Frees the memory used by the writer.
  * Waits until a pending asynchronous writing has been completed.
  */
 QVersitWriter::~QVersitWriter()
@@ -123,18 +140,23 @@ QVersitWriter::~QVersitWriter()
 
 /*!
  * Sets the device used for writing to \a device.
+ * Does not take ownership of the device.
  */
 void QVersitWriter::setDevice(QIODevice* device)
 {
+    d->mOutputBytes.reset(0);
     d->mIoDevice = device;
 }
 
 /*!
- * Returns the device used for writing.
+ * Returns the device used for writing, or 0 if no device has been set.
  */
 QIODevice* QVersitWriter::device() const
 {
-    return d->mIoDevice;
+    if (d->mOutputBytes.isNull())
+        return d->mIoDevice;
+    else
+        return 0;
 }
 
 /*!
@@ -154,6 +176,22 @@ void QVersitWriter::setDefaultCodec(QTextCodec *codec)
 QTextCodec* QVersitWriter::defaultCodec() const
 {
     return d->mDefaultCodec;
+}
+
+/*!
+ * Returns the state of the writer.
+ */
+QVersitWriter::State QVersitWriter::state() const
+{
+    return d->state();
+}
+
+/*!
+ * Returns the error encountered by the last operation.
+ */
+QVersitWriter::Error QVersitWriter::error() const
+{
+    return d->error();
 }
 
 /*!
@@ -204,50 +242,6 @@ bool QVersitWriter::waitForFinished(int msec)
     } else {
         return false;
     }
-}
-
-/*!
- * Returns the state of the writer.
- */
-QVersitWriter::State QVersitWriter::state() const
-{
-    return d->state();
-}
-
-/*!
- * Returns the error encountered by the last operation.
- */
-QVersitWriter::Error QVersitWriter::error() const
-{
-    return d->error();
-}
-
-
-/*! \internal */
-void QVersitWriter::setVersitDocument(const QVersitDocument& versitDocument)
-{
-    QList<QVersitDocument> documents;
-    documents.append(versitDocument);
-    d->mInput = documents;
-}
-
-/*! \internal */
-QVersitDocument QVersitWriter::versitDocument() const
-{
-    return QVersitDocument();
-}
-
-/*! \internal */
-bool QVersitWriter::startWriting()
-{
-    return startWriting(d->mInput);
-}
-
-/*! \internal */
-bool QVersitWriter::writeAll()
-{
-    startWriting(d->mInput);
-    return waitForFinished();
 }
 
 #include "moc_qversitwriter.cpp"

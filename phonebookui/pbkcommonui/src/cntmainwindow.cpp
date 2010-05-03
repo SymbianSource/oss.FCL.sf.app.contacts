@@ -20,25 +20,35 @@
 
 #include "cntmainwindow.h"
 #include "cntdefaultviewmanager.h"
-#include "cntviewparameters.h"
- #include <QCoreApplication>
+#include "cntviewnavigator.h"
+#include <QCoreApplication>
 
-CntMainWindow::CntMainWindow(QWidget *parent, CntViewParameters::ViewId defaultView)
-    : HbMainWindow(parent),mViewManager(0)
+CntMainWindow::CntMainWindow(QWidget *parent, int defaultView)
+    : HbMainWindow(parent),
+    mViewManager(NULL)
 {
-    if (defaultView != CntViewParameters::noView)
+    if (defaultView != noView)
     {
-        mViewManager = new CntDefaultViewManager(this,defaultView);
+        CntViewNavigator* navigator = new CntViewNavigator(this);
+        navigator->addException( editView, namesView );
+        navigator->addException( FavoritesMemberView, collectionView );
+        navigator->addEffect( groupMemberView, groupActionsView );
+        navigator->addEffect( groupActionsView, groupMemberView );
+        navigator->addEffect( commLauncherView, historyView );
+        navigator->addEffect( historyView, commLauncherView );
+                
+        mViewManager = new CntDefaultViewManager( this );
+        mViewManager->setViewNavigator( navigator );
+        
+        //activate the view
+        CntViewParameters viewParameters;
+        viewParameters.insert(EViewId, defaultView);
+        mViewManager->changeView( viewParameters );
     }
 }
 
 CntMainWindow::~CntMainWindow()
 {
-    // TODO: Remove
-    // This is done because the HbMainWindow bug in wk04 platform. Next release, this must be removed.
-    // Another fix is in main.cpp (tsrc) where TestCntBaseSelectionView test was removed due KERN-EXEC 3.
-    // The KERN-EXEC 3 is caused by the following QCoreApplication::processEvents. Don't know why.
-    QCoreApplication::processEvents(); 
     delete mViewManager;
     mViewManager=0;
 }

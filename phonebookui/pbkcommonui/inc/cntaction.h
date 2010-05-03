@@ -39,11 +39,10 @@ signals:
     void actionExecuted( CntAction* aAction );
     
 private slots:
-    void progress( QContactAction::Status status, const QVariantMap& result );
+    void progress( QContactAction::State status, const QVariantMap& result );
     
 private:
     QString mAction;
     QContactAction* mContactAction;
-    QContactActionDescriptor mDescriptor;
     };
 #endif /* CNTACTION_H_ */

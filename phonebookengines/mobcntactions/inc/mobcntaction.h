@@ -45,12 +45,15 @@ public:
 
 public: //QContactAction
 	QContactActionDescriptor actionDescriptor() const;
-    QVariantMap metadata() const;
     QVariantMap metaData() const;
     QContactFilter contactFilter(const QVariant& value) const;
-    bool supportsDetail(const QContactDetail& detail) const;
-    QVariantMap result() const;
-    void invokeAction(const QContact& contact, const QContactDetail& detail = QContactDetail());
+    
+    bool isDetailSupported(const QContactDetail &detail, const QContact &contact = QContact()) const;
+    QList<QContactDetail> supportedDetails(const QContact& contact) const;
+    
+    bool invokeAction(const QContact& contact, const QContactDetail& detail = QContactDetail(), const QVariantMap& parameters = QVariantMap());
+    QContactAction::State state() const;
+    QVariantMap results() const;
 
 public:
 	virtual void resetAction();
@@ -74,6 +77,7 @@ protected:
 	QVariantMap m_result; 		//result returned to client
 	QContact m_contact;    		//contact passed to invokeAction
 	QContactDetail m_detail; 	//detail passed to invokeAction
+	QContactAction::State m_state;
 };
 
 #endif //MOBCNTACTION_H

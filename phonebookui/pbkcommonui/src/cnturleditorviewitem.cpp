@@ -21,37 +21,46 @@
 #include <qstandarditemmodel.h>
 #include <qcontacturl.h>
 #include <hbdataformmodel.h>
+#include <hbmainwindow.h>
 #include <hbabstractitemview.h>
 #include <hbinputeditorinterface.h>
 #include <hbinputstandardfilters.h>
 
 CntUrlEditorViewItem::CntUrlEditorViewItem( QGraphicsItem* aParent ) :
-CntDetailViewItem( aParent )
-    {
+CntDetailViewItem( aParent ),
+mBox(NULL),
+mEdit(NULL),
+mLayout(NULL)
+{
     
-    }
+}
 
 CntUrlEditorViewItem::~CntUrlEditorViewItem()
-    {
-    
-    }
+{
+}
     
 HbAbstractViewItem* CntUrlEditorViewItem::createItem()
-    {
+{
     return new CntUrlEditorViewItem(*this);
-    }
+}
 
 HbWidget* CntUrlEditorViewItem::createCustomWidget()
-    {
-    QGraphicsLinearLayout* layout = new QGraphicsLinearLayout(Qt::Vertical);
+{
+    connect(itemView()->mainWindow(), SIGNAL(orientationChanged(Qt::Orientation)),
+            this, SLOT(changeOrientation(Qt::Orientation)));
+    
+    mLayout = new QGraphicsLinearLayout(itemView()->mainWindow()->orientation());
     HbWidget* widget = new HbWidget();
     mBox = new HbComboBox();
     mEdit = new HbLineEdit();
     mEdit->setMaxLength( CNT_URL_EDITOR_MAXLENGTH );
     
-    widget->setLayout( layout );
-    layout->addItem( mBox );
-    layout->addItem( mEdit );
+    widget->setLayout( mLayout );
+    mLayout->addItem( mBox );
+    mLayout->addItem( mEdit );
+
+    mLayout->setStretchFactor(mBox, 2);
+    mLayout->setStretchFactor(mEdit, 2);
         
     connect( mBox, SIGNAL(currentIndexChanged(int)), this, SLOT(indexChanged(int)) );
     connect( mEdit, SIGNAL(textChanged(QString)),this, SLOT(textChanged(QString)) );
@@ -68,10 +77,10 @@ HbWidget* CntUrlEditorViewItem::createCustomWidget()
     mEdit->setText( detail.url() );
     
     return widget;
-    }
+}
     
 void CntUrlEditorViewItem::indexChanged( int aIndex )
-    {
+{
     QString context = mBox->itemData( aIndex, DetailContext ).toString();
     HbDataFormModel* model = static_cast<HbDataFormModel*>(itemView()->model());
     CntDetailModelItem* item = static_cast<CntDetailModelItem*>( model->itemFromIndex(modelIndex()) );
@@ -85,20 +94,25 @@ void CntUrlEditorViewItem::indexChanged( int aIndex )
     url.setContexts( contextList );
     
     item->setDetail( url );
-    }
+}
 
 void CntUrlEditorViewItem::textChanged( QString aText )
-    {
+{
     HbDataFormModel* model = static_cast<HbDataFormModel*>(itemView()->model());
     CntDetailModelItem* item = static_cast<CntDetailModelItem*>( model->itemFromIndex(modelIndex()) );
         
     QContactUrl url = item->detail();
     url.setUrl( aText );
     item->setDetail( url );
-    }
+}
+
+void CntUrlEditorViewItem::changeOrientation(Qt::Orientation aOrient)
+{
+    mLayout->setOrientation(aOrient);
+}
 
 void CntUrlEditorViewItem::constructSubTypeModel( QStringList aContext )
-    {
+{
     QStandardItemModel* model = new QStandardItemModel();
             
     QString contextHome = QContactDetail::ContextHome;
@@ -137,6 +151,6 @@ void CntUrlEditorViewItem::constructSubTypeModel( QStringList aContext )
             break;
             }
         }
-    }
+}
 
 // End of File

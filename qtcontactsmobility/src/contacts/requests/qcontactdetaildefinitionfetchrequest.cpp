@@ -57,17 +57,6 @@ QTM_BEGIN_NAMESPACE
   \ingroup contacts-requests
  */
 
-/*!
-  \fn QContactDetailDefinitionFetchRequest::progress(QContactDetailDefinitionFetchRequest* self, bool appendOnly)
-  \internal
-  This signal is emitted when some progress has been made on the request, causing either a change of
-  status or an update of results, or both.  It identifies which request the signal originated from
-  by including a pointer to \a self, and contains an \a appendOnly flag which signifies whether or not the total
-  ordering of the results have been maintained since the last progress signal was emitted.
-  This signal is deprecated and will be removed once the transition period has elapsed.
-  Use the signals emitted by the base class, combined with \l QObject::sender(), instead.
- */
-
 /*! Constructs a new detail definition fetch request */
 QContactDetailDefinitionFetchRequest::QContactDetailDefinitionFetchRequest()
     : QContactAbstractRequest(new QContactDetailDefinitionFetchRequestPrivate)
@@ -77,26 +66,6 @@ QContactDetailDefinitionFetchRequest::QContactDetailDefinitionFetchRequest()
 /*! Cleans up the memory in use by this detail definition fetch request */
 QContactDetailDefinitionFetchRequest::~QContactDetailDefinitionFetchRequest()
 {
-}
-
-/*!
-  \internal
-  Sets the names of the detail definitions to retrieve to \a names
- */
-void QContactDetailDefinitionFetchRequest::setNames(const QStringList& names)
-{
-    Q_D(QContactDetailDefinitionFetchRequest);
-    d->m_names = names;
-}
-
-/*!
-  \internal
-  Returns the list of names of the detail definitions that will be retrieved
- */
-QStringList QContactDetailDefinitionFetchRequest::names() const
-{
-    Q_D(const QContactDetailDefinitionFetchRequest);
-    return d->m_names;
 }
 
 /*! Sets the names of the detail definitions to retrieve to \a names */

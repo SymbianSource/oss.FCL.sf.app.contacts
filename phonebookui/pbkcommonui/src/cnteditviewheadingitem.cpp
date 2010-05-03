@@ -25,16 +25,17 @@
 #include <hbframeitem.h>
 #include <hbtoucharea.h>
 #include <hbinstantfeedback.h>
+#include <hbmainwindow.h>
 
 #include <QGraphicsSceneMouseEvent>
 
 CntEditViewHeadingItem::CntEditViewHeadingItem(QGraphicsItem *parent) :
     HbWidget(parent),
-    mIcon(0),
-    mLabel(0),
-    mSecondLabel(0),
-    mFrameItem(0),
-    mIconTouchArea(0),
+    mIcon(NULL),
+    mLabel(NULL),
+    mSecondLabel(NULL),
+    mFrameItem(NULL),
+    mIconTouchArea(NULL),
     mIconFocused(false),
     mTextFocused(false)
 {
@@ -50,7 +51,7 @@ void CntEditViewHeadingItem::createPrimitives()
 {
     if (!icon.isNull())
     {
-        if (!mIcon)
+        if (!mIcon && mainWindow()->orientation() != Qt::Horizontal)
         {
             mIcon = new HbIconItem(this);
             mIcon->setIcon(icon);
@@ -63,7 +64,7 @@ void CntEditViewHeadingItem::createPrimitives()
         {
             delete mIcon;
         }
-        mIcon = 0;
+        mIcon = NULL;
     }
 
     if (!text.isNull())
@@ -83,7 +84,7 @@ void CntEditViewHeadingItem::createPrimitives()
         {
             delete mLabel;
         }
-        mLabel = 0;
+        mLabel = NULL;
     }
 
     if (!second_text.isNull())
@@ -101,7 +102,7 @@ void CntEditViewHeadingItem::createPrimitives()
         {
             delete mSecondLabel;
         }
-        mSecondLabel = 0;
+        mSecondLabel = NULL;
     }
 
     if (!mFrameItem)
@@ -125,19 +126,19 @@ void CntEditViewHeadingItem::recreatePrimitives()
     HbWidget::recreatePrimitives();
 
     delete mIcon;
-    mIcon = 0;
+    mIcon = NULL;
 
     delete mLabel;
-    mLabel = 0;
+    mLabel = NULL;
 
     delete mSecondLabel;
-    mSecondLabel = 0;
+    mSecondLabel = NULL;
 
     delete mFrameItem;
-    mFrameItem = 0;
+    mFrameItem = NULL;
 
     delete mIconTouchArea;
-    mIconTouchArea = 0;
+    mIconTouchArea = NULL;
 
     createPrimitives();
 }
@@ -197,11 +198,15 @@ void CntEditViewHeadingItem::setDetails(const QContact* contact)
 
 void CntEditViewHeadingItem::setIcon(const HbIcon newIcon)
 {
-    if (newIcon != icon)
+    if (newIcon != icon )
     {
         icon = newIcon;
+        if (mIcon != NULL)
+        {
+            delete mIcon;
+            mIcon = NULL;
+        }
         createPrimitives();
-        mIcon->setIcon(icon);
         repolish();
     }
 }
@@ -248,4 +253,28 @@ void CntEditViewHeadingItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         emit textClicked();
     }
     event->accept();
+}
+
+QVariant CntEditViewHeadingItem::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    if (change == QGraphicsItem::ItemSceneHasChanged)
+    {
+        HbMainWindow *window = mainWindow();
+        if (window)
+        {
+            connect(window, SIGNAL(orientationChanged(Qt::Orientation)), 
+                this, SLOT(orientationChanged(Qt::Orientation)));
+        }
+        else
+        {
+            QObject::disconnect(this, SLOT(orientationChanged(Qt::Orientation)));
+        }
+    }
+    return HbWidget::itemChange(change, value);
+}
+
+void CntEditViewHeadingItem::orientationChanged(Qt::Orientation)
+{
+    recreatePrimitives();
+    repolish();
 }

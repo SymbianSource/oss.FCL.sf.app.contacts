@@ -21,9 +21,9 @@
 
 CntAddressModel::CntAddressModel( QContact* aContact ):
 CntDetailEditorModel( aContact ),
-mAddress(0),
-mAddressHome(0),
-mAddressWork(0)
+mAddress(NULL),
+mAddressHome(NULL),
+mAddressWork(NULL)
     {
     HbDataFormModelItem* address = appendDataFormGroup(qtTrId("Address"), invisibleRootItem());
     HbDataFormModelItem* addressHome = appendDataFormGroup(qtTrId("Address (home)"), invisibleRootItem());

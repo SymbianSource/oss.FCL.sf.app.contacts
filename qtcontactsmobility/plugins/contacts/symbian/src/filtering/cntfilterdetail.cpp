@@ -42,7 +42,6 @@
 #include <centralrepository.h>
 
 #include "cntfilterdetail.h"
-#include "cnttransformcontact.h"
 #include "cntfilterdetaildisplaylabel.h" //todo rename class to follow naming pattern CntFilterDetailDisplayLabel
 #include "cntsqlsearch.h"
 
@@ -74,25 +73,25 @@ QList<QContactLocalId> CntFilterDetail::contacts(
         const QContactFilter &filter,
         const QList<QContactSortOrder> &sortOrders,
         bool &filterSupportedflag,
-        QContactManager::Error &error)  
+        QContactManager::Error* error)
 {
-    Q_UNUSED(sortOrders);
     Q_UNUSED(filterSupportedflag);
     //Check if any invalid filter is passed 
     if(!filterSupported(filter) )
         {
-        error =  QContactManager::NotSupportedError;
+        *error =  QContactManager::NotSupportedError;
         return QList<QContactLocalId>();
         }
     QList<QContactLocalId> idList;
     QContactDetailFilter detailFilter(filter);
     QString sqlQuery;
     //Check for phonenumber. Special handling needed
-    if(detailFilter.detailDefinitionName() == QContactPhoneNumber::DefinitionName )
+    if( (detailFilter.detailDefinitionName() == QContactPhoneNumber::DefinitionName ) &&
+            (detailFilter.detailFieldName() != QContactPhoneNumber::FieldSubTypes))
     {
         //Handle phonenumber ...
-    
         idList = HandlePhonenumberDetailFilter(filter);
+        
     }
     else if (detailFilter.matchFlags() == QContactFilter::MatchKeypadCollation) 
     {
@@ -104,10 +103,12 @@ QList<QContactLocalId> CntFilterDetail::contacts(
     else 
     {
         createSelectQuery(filter,sqlQuery,error);
-        if(error == QContactManager::NoError)
+        QString sortQuery = m_dbInfo.getSortQuery(sortOrders, sqlQuery, error);
+        
+        if(*error == QContactManager::NoError)
             {
             //fetch the contacts
-            idList =  m_srvConnection.searchContacts(sqlQuery, error);
+            idList =  m_srvConnection.searchContacts(sortQuery, error);
             }
     }
     
@@ -131,12 +132,12 @@ bool CntFilterDetail::filterSupported(const QContactFilter& filter)
 
 void CntFilterDetail::createSelectQuery(const QContactFilter& filter,
                               QString& sqlQuery,
-                              QContactManager::Error& error)
+                              QContactManager::Error* error)
 
 {
       if(!filterSupported(filter) )
       {
-          error = QContactManager::NotSupportedError;
+          *error = QContactManager::NotSupportedError;
           return;
       }
       QContactDetailFilter detailFilter(filter);
@@ -173,7 +174,7 @@ void CntFilterDetail::createSelectQuery(const QContactFilter& filter,
            QString sqlWhereClause;
            getTableNameWhereClause(detailFilter,tableName,sqlWhereClause,error);
            //Create the sql query
-           sqlQuery += "SELECT DISTINCT contact_id FROM  " + tableName + " WHERE " + sqlWhereClause;
+           sqlQuery += "SELECT DISTINCT contact_id FROM " + tableName + " WHERE " + sqlWhereClause;
        }
 }
 
@@ -183,7 +184,7 @@ void CntFilterDetail::createSelectQuery(const QContactFilter& filter,
  */
 void CntFilterDetail::updateForMatchFlag( const QContactDetailFilter& filter,
                                           QString& fieldToUpdate ,
-                                          QContactManager::Error& error) const
+                                          QContactManager::Error* error) const
 {
     // Modify the filed depending on the query
     switch(filter.matchFlags())
@@ -194,7 +195,7 @@ void CntFilterDetail::updateForMatchFlag( const QContactDetailFilter& filter,
                 // " ='xyz'"
                 fieldToUpdate = " ='"
                                + filter.value().toString() + '\'';
-                error = QContactManager::NoError;
+                *error = QContactManager::NoError;
                 break;
                 }
             case QContactFilter::MatchContains:
@@ -202,7 +203,7 @@ void CntFilterDetail::updateForMatchFlag( const QContactDetailFilter& filter,
                 // Pattern for MatchContains:
                 // " LIKE '%xyz%'"
                 fieldToUpdate = " LIKE '%" + filter.value().toString() + "%'" ;
-                error = QContactManager::NoError;
+                *error = QContactManager::NoError;
                 break;
                 }
             case QContactFilter::MatchStartsWith:
@@ -210,7 +211,7 @@ void CntFilterDetail::updateForMatchFlag( const QContactDetailFilter& filter,
                 // Pattern for MatchStartsWith:
                 // " LIKE 'xyz%'"
                 fieldToUpdate = " LIKE '" +  filter.value().toString() + "%'"  ;
-                error = QContactManager::NoError;
+                *error = QContactManager::NoError;
                 break;
                 }
             case QContactFilter::MatchEndsWith:
@@ -218,22 +219,22 @@ void CntFilterDetail::updateForMatchFlag( const QContactDetailFilter& filter,
                 // Pattern for MatchEndsWith:
                 // " LIKE '%xyz'"
                 fieldToUpdate = " LIKE '%" + filter.value().toString() + '\'' ;
-                error = QContactManager::NoError;
+                *error = QContactManager::NoError;
                 break;
                 }
             case QContactFilter::MatchFixedString:
                 {
-                error = QContactManager::NotSupportedError;
+                *error = QContactManager::NotSupportedError;
                 break;
                 }
             case QContactFilter::MatchCaseSensitive:
                 {
-                error = QContactManager::NotSupportedError;
+                *error = QContactManager::NotSupportedError;
                 break;
                 }
             default:
                 {
-                error = QContactManager::NotSupportedError;
+                *error = QContactManager::NotSupportedError;
                 break;
                 }
         }
@@ -243,45 +244,43 @@ void CntFilterDetail::updateForMatchFlag( const QContactDetailFilter& filter,
 void CntFilterDetail::getTableNameWhereClause( const QContactDetailFilter& detailfilter,
                                                QString& tableName,
                                                QString& sqlWhereClause ,
-                                               QContactManager::Error& error) const
+                                               QContactManager::Error* error) const
 {
     //Get the table name and the column name
-    bool isSubType;
     QString columnName;
+    bool isSubType;
 
-    //Get the field id for the detail field name
-    CntTransformContact transformContact;
-    quint32 fieldId  = transformContact.GetIdForDetailL(detailfilter, isSubType);
-    m_dbInfo.getDbTableAndColumnName(fieldId,tableName,columnName);
+    m_dbInfo.getDbTableAndColumnName(detailfilter.detailDefinitionName(), detailfilter.detailFieldName(), tableName, columnName, isSubType);
 
-    //return if tableName is empty
-    if(tableName.isEmpty()){
-        error = QContactManager::NotSupportedError;
+    // return if tableName is empty
+    if(tableName.isEmpty())
+        {
+        *error = QContactManager::NotSupportedError;
         return;
-    }
+        }
 
     //check columnName
-    if(columnName.isEmpty()) {
-        error = QContactManager::NotSupportedError;
+    if(columnName.isEmpty())
+        {
+        *error = QContactManager::NotSupportedError;
         return;
-    }
-    else if(isSubType) {
+        }
+    else if (isSubType) 
+        {
         sqlWhereClause += columnName;
         sqlWhereClause += " NOT NULL ";
-    }
-    else {
-
+        }
+    else 
+        {
         sqlWhereClause += ' ' + columnName + ' ';
         QString fieldToUpdate;
         //Update the value depending on the match flag
         updateForMatchFlag(detailfilter,fieldToUpdate,error);
         sqlWhereClause +=  fieldToUpdate;
-    }
-
-   
+        }
 }
 
-QList<QContactLocalId>  CntFilterDetail::HandlePredictiveSearchFilter(const QContactFilter& filter,QContactManager::Error& error)
+QList<QContactLocalId>  CntFilterDetail::HandlePredictiveSearchFilter(const QContactFilter& filter,QContactManager::Error* error)
     {
     
     QString sqlQuery;

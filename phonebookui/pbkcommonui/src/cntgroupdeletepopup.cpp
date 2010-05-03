@@ -88,5 +88,5 @@ void CntGroupDeletePopup::deleteGroup()
     }
     
     QMap<int, QContactManager::Error> errors;
-    bool result = mContactManager->removeContacts(&selectionList, &errors);
+    bool result = mContactManager->removeContacts(selectionList, &errors);
 }

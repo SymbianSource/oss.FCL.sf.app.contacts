@@ -18,10 +18,11 @@
 #ifndef CNTSERVICEVIEWMANAGER_H
 #define CNTSERVICEVIEWMANAGER_H
 
-#include "cntviewparameters.h"
 #include "cntdefaultviewmanager.h"
+#include <cntservicescontact.h>
 
 #include <QObject>
+#include <hbmainwindow.h>
 
 class CntBaseView;
 class CntServiceHandler;
@@ -31,20 +32,17 @@ class CntServiceViewManager : public CntDefaultViewManager
     Q_OBJECT
 
 public:
-    CntServiceViewManager(CntMainWindow *mainWindow, CntViewParameters::ViewId defaultView, 
-            CntServiceHandler *aHandler);
+    CntServiceViewManager(HbMainWindow *mainWindow, CntServiceHandler *aHandler);
     ~CntServiceViewManager();
     
 public slots:
-    void launchFetch(const QString &title, const QString &action, const QString &filter);
+    void handleFetch(const QString &title, const QString &action, const QString &filter);
+    void launchFetch(const QString &title, const QString &action, const QString &filter, const QString &mode = KCntMultiSelectionMode);
     void launchEditor(QContact contact);
     void launchContactSelection(QContactDetail detail);
     void launchContactCard(QContact contact);
     void launchAssignContactCard(QContact contact, QContactDetail detail);
 
-private:
-    CntBaseView *getView(const CntViewParameters &aArgs);
-    
 private:
     CntServiceHandler *mServiceHandler;
 };

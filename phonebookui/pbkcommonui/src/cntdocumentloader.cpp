@@ -20,6 +20,8 @@
 #include <hbdocumentloader.h>
 #include "cntdocumentloader.h"
 #include "cnteditviewheadingitem.h"
+#include "cntcontactcardheadingitem.h"
+#include "cntimagelabel.h"
 
 CntDocumentLoader::CntDocumentLoader()
 {
@@ -40,6 +42,22 @@ QObject *CntDocumentLoader::createObject(const QString &type, const QString &nam
         {
             result->setObjectName(name);
         }
+    }
+    else if (type == "CntContactCardHeadingItem")
+    {
+        result = new CntContactCardHeadingItem();
+        if (result) 
+        {
+            result->setObjectName(name);
+        }
+    }
+    else if (type == "CntImageLabel")
+    {
+       result = new CntImageLabel();
+       if (result)
+       {
+           result->setObjectName(name);
+       }
     }
     else
     {

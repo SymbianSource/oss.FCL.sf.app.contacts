@@ -38,9 +38,10 @@
 
 CntPhoneNumberViewItem::CntPhoneNumberViewItem( QGraphicsItem* aParent ) : 
 CntDetailViewItem( aParent ),
-mBox(0),
-mEdit(0),
-mFilter( 0 )
+mBox(NULL),
+mEdit(NULL),
+mFilter(NULL),
+mLayout(NULL)
     {
     }
 
@@ -103,17 +104,29 @@ void CntPhoneNumberViewItem::textChanged( QString aText )
         }
     }
 
+void CntPhoneNumberViewItem::changeOrientation(Qt::Orientation aOrient)
+{
+    if (mLayout) {
+        mLayout->setOrientation(aOrient);
+    }
+}
+
 HbWidget* CntPhoneNumberViewItem::createCustomWidget()
     {
-    QGraphicsLinearLayout* layout = new QGraphicsLinearLayout( itemView()->mainWindow()->orientation() );
+    connect(itemView()->mainWindow(), SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(changeOrientation(Qt::Orientation)));
+    mLayout = new QGraphicsLinearLayout( itemView()->mainWindow()->orientation() );
     HbWidget* widget = new HbWidget();
     mBox = new HbComboBox();
     mEdit = new HbLineEdit();
     mFilter = new HbEditorInterface( mEdit );
         
-    widget->setLayout( layout );
-    layout->addItem( mBox );
-    layout->addItem( mEdit );
+    widget->setLayout( mLayout );
+
+    mLayout->addItem( mBox );
+    mLayout->addItem( mEdit );
+    
+    mLayout->setStretchFactor(mBox, 2);
+    mLayout->setStretchFactor(mEdit, 2);
     
     connect( mBox, SIGNAL(currentIndexChanged(int)), this, SLOT(indexChanged(int)) );
     connect( mEdit, SIGNAL(textChanged(QString)),this, SLOT(textChanged(QString)) );

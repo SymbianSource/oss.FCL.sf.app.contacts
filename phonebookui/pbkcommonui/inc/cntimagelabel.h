@@ -1,0 +1,40 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*
+*/
+
+#ifndef CNTIMAGELABEL_H
+#define CNTIMAGELABEL_H
+
+#include <QObject>
+#include <hblabel.h>
+
+class CntImageLabel : public HbLabel
+{
+    Q_OBJECT
+
+public:
+    CntImageLabel(QGraphicsItem *parent = 0);
+    ~CntImageLabel();
+
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    
+signals:
+    void iconClicked();
+};
+
+#endif // CNTEDITVIEWHEADINGITEM_H

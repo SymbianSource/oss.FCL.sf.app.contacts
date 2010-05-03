@@ -21,6 +21,9 @@
 #include <QSharedData>
 #include <QAbstractListModel>
 #include <qmobilityglobal.h>
+#include <cntuigroupsupplier.h>
+
+class CntExtensionManager;
 
 QTM_BEGIN_NAMESPACE
 class QContactManager;
@@ -36,6 +39,7 @@ public:
 
 public:
     QList<QVariantList> mDataList;
+    QMap<int, CntUiGroupSupplier*> mExtensions; // row, plugin
 };
 
 class CntCollectionListModel : public QAbstractListModel
@@ -43,7 +47,7 @@ class CntCollectionListModel : public QAbstractListModel
     Q_OBJECT
     
 public:
-    CntCollectionListModel(QContactManager *manager, QObject *parent = 0);
+    CntCollectionListModel(QContactManager *manager, CntExtensionManager &extensionManager, QObject *parent = 0);
     ~CntCollectionListModel();
     
 public:
@@ -53,6 +57,9 @@ public:
     void removeGroup(int localId);
     bool isFavoriteGroupCreated();
     int favoriteGroupId();
+    bool isExtensionGroup(const QModelIndex &index);
+    CntViewParameters extensionGroupActivated(int row);
+    CntViewParameters extensionGroupLongPressed(int row, const QPointF& coords);
     
 #ifdef PBK_UNIT_TEST
 public:
@@ -61,9 +68,11 @@ private:
 #endif
     void doConstruct();
     void initializeStaticGroups();
+    void initializeExtensions();
     void initializeUserGroups();
     
 private:
+    CntExtensionManager&                       mExtensionManager;
     QSharedDataPointer<CntCollectionListData>  mDataPointer;
     QContactManager                           *mContactManager;
     int                                        mFavoriteGroupId;

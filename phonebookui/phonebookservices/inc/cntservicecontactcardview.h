@@ -20,7 +20,6 @@
 
 #include <QObject>
 #include "cntcontactcardview.h"
-#include "cntviewparameters.h"
 
 class CntServiceHandler;
 
@@ -28,16 +27,15 @@ class CntServiceContactCardView : public CntContactCardView
 {
     Q_OBJECT
 
-public slots:
+private slots:
 
-    void aboutToCloseView();
-    void editContact();
+    void doShowPreviousView();
 
 public:
-    CntServiceContactCardView(CntServiceHandler *aServiceHandler, CntViewManager *viewManager, QGraphicsItem *parent = 0);
+    CntServiceContactCardView(CntServiceHandler *aServiceHandler);
     ~CntServiceContactCardView();
 
-    CntViewParameters::ViewId viewId() const { return CntViewParameters::serviceContactCardView; }
+    int viewId() const { return serviceContactCardView; }
     
 private:
     CntServiceHandler *mServiceHandler;

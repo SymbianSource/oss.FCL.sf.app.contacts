@@ -53,8 +53,7 @@ SOURCES += src/main.cpp
 SOURCES += src/cntappservicehandler.cpp
 
 # capability
-TARGET.CAPABILITY = ALL \
-    -TCB
+TARGET.CAPABILITY = CAP_APPLICATION
 
 TRANSLATIONS = contacts.ts
     

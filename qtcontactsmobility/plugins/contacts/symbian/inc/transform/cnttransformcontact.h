@@ -75,7 +75,7 @@ public:
 	        CContactItem &contactItem) const;
 	QList<TUid> supportedSortingFieldTypes( QString detailDefinitionName, QString detailFieldName );
     TUint32 GetIdForDetailL(const QContactDetailFilter& detailFilter,bool& isSubtype) const;
-    void detailDefinitions(QMap<QString, QContactDetailDefinition>& defaultSchema, const QString& contactType, QContactManager::Error& error) const;
+    void detailDefinitions(QMap<QString, QContactDetailDefinition>& defaultSchema, const QString& contactType, QContactManager::Error* error) const;
     QContactDetail *transformGuidItemFieldL(const CContactItem &contactItem, const CContactDatabase &contactDatabase) const;
     QContactDetail *transformTimestampItemFieldL(const CContactItem &contactItem, const CContactDatabase &contactDatabase) const;
 private:
@@ -97,6 +97,8 @@ private:
 		Geolocation,
 		Note,
 		Family,
+        Ringtone,
+        Thumbnail,
 		Empty
 	};
 
@@ -105,7 +107,8 @@ private:
 	QContactDetail *transformItemField(const CContactItemField& field, const QContact &contact) const;
 	void transformPreferredDetailL(const QContact& contact, const QContactDetail& detail, QList<CContactItemField*> &fieldList) const;
 	void transformPreferredDetail(const CContactItemField& field, const QContactDetail& detail, QContact& contact) const;
-
+	void resetTransformObjects() const;
+	
 private:
 	QMap<ContactData, CntTransformContactData*> m_transformContactData;
 };

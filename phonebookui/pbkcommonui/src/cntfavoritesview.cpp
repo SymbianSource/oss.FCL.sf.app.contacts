@@ -26,10 +26,10 @@
 const char *CNT_FAVORITE_UI_XML = ":/xml/contacts_favorite.docml";
 
 CntFavoritesView::CntFavoritesView() :
-    mContact(0),
-    mView(0),
-    mSoftkey(0),
-    mViewManager(0)
+    mContact(NULL),
+    mView(NULL),
+    mSoftkey(NULL),
+    mViewManager(NULL)
 {
     bool ok = false;
     mDocumentLoader.load(CNT_FAVORITE_UI_XML, &ok);
@@ -58,7 +58,7 @@ CntFavoritesView::~CntFavoritesView()
     mContact = 0;
 }
 
-void CntFavoritesView::activate( CntAbstractViewManager* aMgr, const CntViewParameters& aArgs )
+void CntFavoritesView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
 {
     if (mView->navigationAction() != mSoftkey)
         mView->setNavigationAction(mSoftkey);
@@ -67,7 +67,7 @@ void CntFavoritesView::activate( CntAbstractViewManager* aMgr, const CntViewPara
     connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
     setOrientation(window->orientation());
     
-    mContact = new QContact(aArgs.selectedContact());
+    mContact = new QContact(aArgs.value(ESelectedContact).value<QContact>());
     mViewManager = aMgr;
 
     HbPushButton *addButton = static_cast<HbPushButton*>(mDocumentLoader.findWidget(QString("cnt_button_add")));
@@ -90,8 +90,12 @@ void CntFavoritesView::openSelectionPopup()
    {
        groupSelectionPopup->saveOldGroup();
        delete groupSelectionPopup;
-       CntViewParameters viewParameters(CntViewParameters::FavoritesMemberView);
-       viewParameters.setSelectedContact(*mContact);
+       
+       CntViewParameters viewParameters;
+       viewParameters.insert(EViewId, FavoritesMemberView);
+       QVariant var;
+       var.setValue(*mContact);
+       viewParameters.insert(ESelectedContact, var);
        mViewManager->changeView(viewParameters);
    }
    else if (action == groupSelectionPopup->secondaryAction())

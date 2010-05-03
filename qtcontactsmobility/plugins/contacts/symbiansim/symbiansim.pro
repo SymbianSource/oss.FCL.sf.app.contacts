@@ -28,8 +28,10 @@ symbian: {
     INCLUDEPATH += $$SOURCE_DIR/contacts/requests
     HEADERS += $$PUBLIC_HEADERS \
         inc/cntsymbiansimengine.h \
+        inc/cntsymbiansimtransformerror.h \
         inc/cntsimstore.h \
         inc/cntsimstoreprivate.h \
+        inc/cntsimstoreeventlistener.h \
         inc/cntabstractsimrequest.h \
         inc/cntsimcontactfetchrequest.h \
         inc/cntsimcontactlocalidfetchrequest.h \
@@ -38,8 +40,10 @@ symbian: {
         inc/cntsimdetaildefinitionfetchrequest.h
         
     SOURCES += src/cntsymbiansimengine.cpp \
+        src/cntsymbiansimtransformerror.cpp \
         src/cntsimstore.cpp \
         src/cntsimstoreprivate.cpp \
+        src/cntsimstoreeventlistener.cpp \
         src/cntabstractsimrequest.cpp \
         src/cntsimcontactfetchrequest.cpp \
         src/cntsimcontactlocalidfetchrequest.cpp \

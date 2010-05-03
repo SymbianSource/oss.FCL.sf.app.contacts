@@ -21,8 +21,7 @@
 #include <QObject>
 #include <hbdocumentloader.h>
 
-#include "cntabstractview.h"
-#include "cntviewparameters.h"
+#include <cntabstractview.h>
 
 class CntAbstractViewManager;
 class HbView;
@@ -44,13 +43,17 @@ public:
     ~CntMyCardView();
 
 public: // From CntAbstractView
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters& aArgs );
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
     void deactivate();
     bool isDefault() const { return false; }
     HbView* view() const { return mView; }
-    CntViewParameters::ViewId viewId() const { return CntViewParameters::myCardView; }
+    int viewId() const { return myCardView; }
     
+#ifdef PBK_UNIT_TEST
+public slots:
+#else
 private slots:
+#endif
     void showPreviousView();
     void openNameEditor();
     void openMyCardSelectionView(); 

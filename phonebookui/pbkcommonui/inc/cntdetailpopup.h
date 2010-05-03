@@ -20,6 +20,7 @@
 
 #include <QObject>
 #include <hbdialog.h>
+#include <cntviewparams.h>
 
 class QStandardItemModel;
 class HbListView;
@@ -28,7 +29,7 @@ class CntDetailPopup : public HbDialog
 {
     Q_OBJECT
 public:
-    static QString selectDetail(QStringList excludeList);
+    static int selectDetail();
 
 #ifdef PBK_UNIT_TEST
 public slots:
@@ -42,11 +43,11 @@ public:
 #else
 private:
 #endif
-    CntDetailPopup(QStringList excludeList, QGraphicsItem *parent = 0);
+    CntDetailPopup(QGraphicsItem *parent = 0);
     ~CntDetailPopup();
 
     QString selectedDetail();
-    void addListItem(QString label, QString id1, QString id2 = "");
+    void addListItem(QString aIcon, QString label, int aId);
 
 #ifdef PBK_UNIT_TEST
 public:
@@ -56,7 +57,6 @@ private:
     QStandardItemModel  *mListModel;
     HbListView          *mListView;
     QString              mSelectedDetail;
-    QStringList          mExcludeList;
 };
 
 #endif // CNTDETAILPOPUP_H

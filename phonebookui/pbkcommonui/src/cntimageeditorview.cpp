@@ -16,6 +16,7 @@
 */
 
 #include "cntimageeditorview.h"
+#include "cntimageutility.h"
 
 #include <hblabel.h>
 #include <xqaiwrequest.h>
@@ -39,17 +40,13 @@ const char *CNT_IMAGE_XML = ":/xml/contacts_if.docml";
 Constructor
 */
 CntImageEditorView::CntImageEditorView() :
-        mContact(0),
-        mAvatar(0),
-        mImageLabel(0),
-        mRequest(0),
-        mThumbnailManager(0),
-        mView(0),
-        mSoftkey(0),
-        mRemoveImage(0),
-        mViewManager(0),
-        mListView(0),
-        mModel(0)
+        mContact(NULL),
+        mAvatar(NULL),
+        mImageLabel(NULL),
+        mRequest(NULL),
+        mViewManager(NULL),
+        mListView(NULL),
+        mModel(NULL)
 {
     bool ok = false;
     mDocumentLoader.load(CNT_IMAGE_XML, &ok);
@@ -76,7 +73,7 @@ CntImageEditorView::CntImageEditorView() :
     mThumbnailManager->setMode(ThumbnailManager::Default);
     mThumbnailManager->setQualityPreference(ThumbnailManager::OptimizeForQuality);
     mThumbnailManager->setThumbnailSize(ThumbnailManager::ThumbnailLarge);
-	
+    
     connect( mThumbnailManager, SIGNAL(thumbnailReady(QPixmap, void*, int, int)),
         this, SLOT(thumbnailReady(QPixmap, void*, int, int)) );
 }
@@ -103,7 +100,7 @@ CntImageEditorView::~CntImageEditorView()
 /*!
 Called when activating the view
 */
-void CntImageEditorView::activate( CntAbstractViewManager* aMgr, const CntViewParameters& aArgs )
+void CntImageEditorView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
 {
     if (mView->navigationAction() != mSoftkey)
         mView->setNavigationAction(mSoftkey);
@@ -112,31 +109,29 @@ void CntImageEditorView::activate( CntAbstractViewManager* aMgr, const CntViewPa
     connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
     setOrientation(window->orientation());    
     
-    mContact = new QContact(aArgs.selectedContact());
+    mContact = new QContact(aArgs.value(ESelectedContact).value<QContact>());
     mViewManager = aMgr;
 
     // set the correct image if the contact already has an image set
     mImageLabel = static_cast<HbLabel*>(mDocumentLoader.findWidget(QString("cnt_image_label")));
     QList<QContactAvatar> details = mContact->details<QContactAvatar>();
-
     if (details.count() > 0)
-    {
-        for (int i = 0;i < details.count();i++)
         {
-            if (details.at(i).subType() == QContactAvatar::SubTypeImage)
+        for (int i = 0;i < details.count();i++)
             {
-                mAvatar = new QContactAvatar(details.at(i));
-                mThumbnailManager->getThumbnail(mAvatar->avatar());
-                break;
+                if (details.at(i).imageUrl().isValid())
+                    {
+                    mAvatar = new QContactAvatar(details.at(i));
+                    mThumbnailManager->getThumbnail(mAvatar->imageUrl().toString());
+                    break;
+                    }
             }
         }
-    }
     else
-    {
+        {
         mAvatar = new QContactAvatar();
-        mAvatar->setSubType(QContactAvatar::SubTypeImage);
         mRemoveImage->setEnabled(false);
-    }
+        }
     
     // set up the list
     mListView = static_cast<HbListView*>(mDocumentLoader.findWidget(QString("cnt_listview")));
@@ -150,6 +145,7 @@ void CntImageEditorView::activate( CntAbstractViewManager* aMgr, const CntViewPa
     mListView->itemPrototypes().first()->setDefaultFrame(frame);
     
     mListView->listItemPrototype()->setGraphicsSize(HbListViewItem::LargeIcon);
+    mListView->setUniformItemSizes(true);
     
     mModel = new QStandardItemModel();
     populateModel(mModel);
@@ -192,7 +188,7 @@ void CntImageEditorView::openGallery()
         delete mRequest;
         mRequest = 0;
     }
-
+    
     mRequest = mAppManager.create(FETCHER_SERVICE, FETCHER_INTERFACE, FETCHER_OPERATION, false);
     if ( mRequest ) 
     {
@@ -208,22 +204,30 @@ void CntImageEditorView::showPreviousView()
 {
     mContact->saveDetail(mAvatar);
 
-    if (mAvatar->avatar().isEmpty())
+    if ( mAvatar->imageUrl().isEmpty())
     {
         mContact->removeDetail(mAvatar);
     }
     
     CntViewParameters args;
-    args.setSelectedContact( *mContact );
+    QVariant var;
+    var.setValue(*mContact);
+    args.insert(ESelectedContact, var);
     mViewManager->back( args );
 }
 
 void CntImageEditorView::removeImage()
 {
-    mAvatar->setAvatar(QString());
-    mImageLabel->clear();
-    mImageLabel->setIcon(HbIcon("qtg_large_avatar"));
-    mRemoveImage->setEnabled(false);
+    int err;
+    CntImageUtility imageUtility;
+    if(!mAvatar->imageUrl().isEmpty()
+       && imageUtility.removeImage(mAvatar->imageUrl().toString(),err))
+    {
+        mAvatar->setImageUrl(QUrl());
+        mImageLabel->clear();
+        mImageLabel->setIcon(HbIcon("qtg_large_avatar"));
+        mRemoveImage->setEnabled(false);
+    }
 }
 
 /*!
@@ -231,11 +235,22 @@ Set the selected image as new QContactAvatar::SubTypeImage
 */
 void CntImageEditorView::handleImageChange(const QVariant &value)
 {
-    if (value.canConvert<QString>())
+    if(value.canConvert<QString>())
     {
-        mAvatar->setAvatar(value.toString());
-        mThumbnailManager->getThumbnail(value.toString());
-        mRemoveImage->setEnabled(true);
+        CntImageUtility imageUtility;
+        int err;
+        QString imagepath;
+        
+        if(imageUtility.createImage(value.toString(),imagepath,err))
+        {
+            // If image exists, delete
+            if(!mAvatar->imageUrl().isEmpty())
+                imageUtility.removeImage(mAvatar->imageUrl().toString(),err);
+            
+            mAvatar->setImageUrl(QUrl(imagepath));
+            mThumbnailManager->getThumbnail(imagepath);
+            mRemoveImage->setEnabled(true);
+        }
     }
 }
 

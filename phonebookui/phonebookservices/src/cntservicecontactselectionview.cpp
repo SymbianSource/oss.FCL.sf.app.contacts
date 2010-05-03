@@ -17,14 +17,19 @@
 
 #include "cntservicecontactselectionview.h"
 
+#include <QCoreApplication>
+#include <QModelIndex>
 #include "cntservicehandler.h"
+#include <hblistview.h>
+#include <mobcntmodel.h>
 
-CntServiceContactSelectionView::CntServiceContactSelectionView(CntServiceHandler *aServiceHandler, CntViewManager *aViewManager, 
-        QGraphicsItem *aParent, HbAbstractItemView::SelectionMode newMode):
-    CntBaseSelectionView(aViewManager, aParent, newMode),
-    mServiceHandler(aServiceHandler)
+CntServiceContactSelectionView::CntServiceContactSelectionView(CntServiceHandler *aServiceHandler):
+CntBaseSelectionView(),
+mServiceHandler(aServiceHandler)
 {
-
+    connect(mListView, SIGNAL(activated(const QModelIndex&)), this, SLOT(onListViewActivated(const QModelIndex&)));
+    connect( this, SIGNAL(viewClosed()), this, SLOT(aboutToCloseView()) );
+    connect( this, SIGNAL(viewOpened(const CntViewParameters)), this, SLOT(aboutToOpenView(const CntViewParameters)) );
 }
 
 CntServiceContactSelectionView::~CntServiceContactSelectionView()
@@ -34,11 +39,15 @@ CntServiceContactSelectionView::~CntServiceContactSelectionView()
 
 void CntServiceContactSelectionView::onListViewActivated(const QModelIndex &aIndex)
 {
-    CntViewParameters viewParameters(CntViewParameters::serviceEditView);
-    QContact contact = contactModel()->contact(aIndex);
+    QContact contact = mListModel->contact(aIndex);
     contact.saveDetail(&mDetail);
-    viewParameters.setSelectedContact(contact);   
-    viewManager()->changeView(viewParameters);
+    
+    CntViewParameters params;
+    params.insert(EViewId, serviceEditView);
+    QVariant var;
+    var.setValue(contact);
+    params.insert(ESelectedContact, var);
+    mMgr->changeView(params);
 }
 
 void CntServiceContactSelectionView::aboutToCloseView()
@@ -47,21 +56,19 @@ void CntServiceContactSelectionView::aboutToCloseView()
     mServiceHandler->completeEdit(0);
 }
 
-void CntServiceContactSelectionView::activateView(const CntViewParameters &viewParameters)
+void CntServiceContactSelectionView::aboutToOpenView(const CntViewParameters viewParameters)
 {
     QContactDetailFilter filter;
     filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
     QString typeContact = QContactType::TypeContact;
     filter.setValue(typeContact);
-    contactModel()->setFilterAndSortOrder(filter);
+    mListModel->setFilterAndSortOrder(filter);
     // hide my card if it's not set
-    if (contactManager()->selfContactId() == 0)
+    if (mListModel->myCardId() == 0)
     {
-        contactModel()->showMyCard(false);
+        mListModel->showMyCard(false);
     }
-    mDetail = viewParameters.selectedDetail();
-    
-    CntBaseSelectionView::activateView(viewParameters);
+    mDetail = viewParameters.value(ESelectedDetail).value<QContactDetail>();
 }
 
 // EOF

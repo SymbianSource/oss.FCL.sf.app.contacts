@@ -55,7 +55,7 @@ QTM_USE_NAMESPACE
   \brief The QVersitContactExporterDetailHandler class is an interface for clients wishing to
   implement custom export behaviour for certain contact details.
   \ingroup versit
- 
+
   \sa QVersitContactExporter
  */
 
@@ -69,7 +69,7 @@ QTM_USE_NAMESPACE
  * Process \a detail and update \a document with the corresponding QVersitProperty(s).
  * \a contact provides the context within which the detail was found.
  *
- * Returns true if the detail has been handled and requires no furthur processing, false otherwise.
+ * Returns true if the detail has been handled and requires no further processing, false otherwise.
  *
  * This function is called on every QContactDetail encountered during an export.  Supply this
  * function and return true to implement custom export behaviour.
@@ -110,8 +110,30 @@ QTM_USE_NAMESPACE
  * An example usage of QVersitContactExporter
  * \snippet ../../doc/src/snippets/qtversitdocsample/qtversitdocsample.cpp Export example
  *
+ * \section1 Exporting group relationships
+ * The exporter does not handle QContactRelationships at all.
+ *
+ * Some managers use the \l{QContactRelationship::HasMember}{HasMember} QContactRelationship along
+ * with contacts of type \l{QContactType::TypeGroup}{TypeGroup} to indicate categorization of
+ * contacts.  In vCard, categorization is represented by the CATEGORIES property, which has
+ * semantics most similar to the QContactTag detail.  For contact manager backends that supports
+ * groups but not QContactTag, if the categorization information needs to be retained through
+ * CATEGORIES vCard properties, extra work can be done to convert from group relationships to
+ * QContactTag before passing the contact list to the exporter.  Below is some example code that
+ * does this translation.
+ *
+ * \snippet ../../doc/src/snippets/qtversitdocsample/qtversitdocsample.cpp Export relationship example
+ *
  * \sa QVersitDocument, QVersitProperty, QVersitContactExporterDetailHandler, QVersitResourceHandler
  */
+
+/*!
+  \enum QVersitContactExporter::Error
+  This enum specifies an error that occurred during the most recent call to exportContacts()
+  \value NoError The most recent operation was successful
+  \value EmptyContactError One of the contacts was empty
+  \value NoNameError One of the contacts has no QContactName field
+  */
 
 /*!
  * Constructs a new contact exporter
@@ -132,24 +154,61 @@ QVersitContactExporter::~QVersitContactExporter()
 /*!
  * Converts \a contacts into a list of corresponding QVersitDocuments, using the format given by
  * \a versitType.
+ * Returns true on success.  If any of the contacts could not be exported, false is returned and
+ * errors() will return a list describing the errors that occurred.  The successfully exported
+ * documents will still be available via documents().
  */
-QList<QVersitDocument> QVersitContactExporter::exportContacts(
+bool QVersitContactExporter::exportContacts(
     const QList<QContact>& contacts,
     QVersitDocument::VersitType versitType)
 {
-    QList<QVersitDocument> list;
-    foreach (QContact contact, contacts) {
+    int contactIndex = 0;
+    d->mDocuments.clear();
+    d->mErrors.clear();
+    bool ok = true;
+    foreach (const QContact& contact, contacts) {
         QVersitDocument versitDocument;
         versitDocument.setType(versitType);
-        d->exportContact(contact, versitDocument);
-        list.append(versitDocument);
+        QVersitContactExporter::Error error;
+        if (d->exportContact(contact, versitDocument, &error)) {
+            d->mDocuments.append(versitDocument);
+        } else {
+            d->mErrors.insert(contactIndex, error);
+            ok = false;
+        }
+        contactIndex++;
     }
 
-    return list;
+    return ok;
+}
+
+/*!
+ * Returns the documents exported in the most recent call to exportContacts().
+ *
+ * \sa exportContacts()
+ */
+QList<QVersitDocument> QVersitContactExporter::documents() const
+{
+    return d->mDocuments;
+}
+
+/*!
+ * Returns the map of errors encountered in the most recent call to exportContacts().  The key is
+ * the index into the input list of contacts and the value is the error that occurred on that
+ * contact.
+ *
+ * \sa exportContacts()
+ */
+QMap<int, QVersitContactExporter::Error> QVersitContactExporter::errors() const
+{
+    return d->mErrors;
 }
 
 /*!
  * Sets \a handler to be the handler for processing QContactDetails, or 0 to have no handler.
+ *
+ * Does not take ownership of the handler.  The client should ensure the handler remains valid for
+ * the lifetime of the exporter.
  */
 void QVersitContactExporter::setDetailHandler(QVersitContactExporterDetailHandler* handler)
 {
@@ -166,6 +225,9 @@ QVersitContactExporterDetailHandler* QVersitContactExporter::detailHandler() con
 
 /*!
  * Sets \a handler to be the handler to load files with, or 0 to have no handler.
+ *
+ * Does not take ownership of the handler.  The client should ensure the handler remains valid for
+ * the lifetime of the exporter.
  */
 void QVersitContactExporter::setResourceHandler(QVersitResourceHandler* handler)
 {
@@ -180,17 +242,15 @@ QVersitResourceHandler* QVersitContactExporter::resourceHandler() const
     return d->mResourceHandler;
 }
 
-/*! \internal */
-QVersitDocument QVersitContactExporter::exportContact(const QContact& contact,
-                                                      QVersitDocument::VersitType versitType)
-{
-    QList<QContact> list;
-    list.append(contact);
-    return exportContacts(list, versitType).first();
-}
+// Deprecated:
 
-/*! \internal */
-QList<QContactDetail> QVersitContactExporter::unknownContactDetails()
+/*!
+  \deprecated
+
+  Use the version of the function returning a bool, instead.
+*/
+QList<QVersitDocument> QVersitContactExporter::exportContacts(const QList<QContact>& contacts)
 {
-    return QList<QContactDetail>();
+    exportContacts(contacts, QVersitDocument::VCard30Type);
+    return documents();
 }

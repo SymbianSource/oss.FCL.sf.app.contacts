@@ -10,6 +10,18 @@ CntEditViewHeadingItem[icon][!text][second_text]{
     layout:customLayoutNoText;
 }
 
+CntEditViewHeadingItem[text][second_text]:landscape{
+    layout:customLayout-landscape;
+}
+
+CntEditViewHeadingItem[text][!second_text]:landscape{
+    layout:customLayoutNoSecondText-landscape;
+}
+
+CntEditViewHeadingItem[!text][second_text]:landscape{
+    layout:customLayoutNoText-landscape;
+}
+
 CntEditViewHeadingItem::icon{
     fixed-width:var(hb-param-graphic-size-primary-large);
     fixed-height:var(hb-param-graphic-size-primary-large);

@@ -25,10 +25,8 @@
 const char *CNT_MYCARD_UI_XML = ":/xml/contacts_mc.docml";
 
 CntMyCardView::CntMyCardView() :
-    mContact(0),
-    mViewManager(0),
-    mView(0),
-    mSoftkey(0)
+    mContact(NULL),
+    mViewManager(NULL)
 {
     bool ok = false;
     mDocumentLoader.load(CNT_MYCARD_UI_XML, &ok);
@@ -67,7 +65,7 @@ void CntMyCardView::showPreviousView()
 /*
 Activates a default view
 */
-void CntMyCardView::activate(CntAbstractViewManager* aMgr, const CntViewParameters& aArgs)
+void CntMyCardView::activate(CntAbstractViewManager* aMgr, const CntViewParameters aArgs)
 {
     if (mView->navigationAction() != mSoftkey)
         mView->setNavigationAction(mSoftkey);
@@ -76,7 +74,7 @@ void CntMyCardView::activate(CntAbstractViewManager* aMgr, const CntViewParamete
     connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
     setOrientation(window->orientation());
     
-    mContact = new QContact(aArgs.selectedContact());
+    mContact = new QContact(aArgs.value(ESelectedContact).value<QContact>());
     mViewManager = aMgr;
     
     HbPushButton *newButton = static_cast<HbPushButton*>(mDocumentLoader.findWidget(QString("cnt_button_new")));
@@ -124,8 +122,11 @@ void CntMyCardView::openNameEditor()
     mgr->saveContact(mContact);
     mgr->setSelfContactId(mContact->localId());
     //open the contact editor
-    CntViewParameters viewParameters(CntViewParameters::editView);
-    viewParameters.setSelectedContact(*mContact);
+    CntViewParameters viewParameters;
+    viewParameters.insert(EViewId, editView);
+    QVariant var;
+    var.setValue(*mContact);
+    viewParameters.insert(ESelectedContact, var);
     mViewManager->changeView(viewParameters);
 }
 
@@ -134,7 +135,8 @@ Opens the my card selection view
 */
 void CntMyCardView::openMyCardSelectionView()
 {
-    CntViewParameters viewParameters(CntViewParameters::myCardSelectionView);
+    CntViewParameters viewParameters;
+    viewParameters.insert(EViewId, myCardSelectionView);
     mViewManager->changeView(viewParameters);
 }
 

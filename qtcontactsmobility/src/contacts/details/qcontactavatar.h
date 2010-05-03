@@ -43,13 +43,11 @@
 #define QCONTACTAVATAR_H
 
 #include <QString>
-#include <QPixmap>
+#include <QUrl>
+
 #include "qtcontactsglobal.h"
 #include "qcontactdetail.h"
 #include "qcontact.h"
-
-class QPixmap;
-class QSize;
 
 QTM_BEGIN_NAMESPACE
 
@@ -58,41 +56,52 @@ class Q_CONTACTS_EXPORT QContactAvatar : public QContactDetail
 {
 public:
 #ifdef Q_QDOC
-    const char* DefinitionName;
-    const char* FieldAvatar;
-    const char* FieldAvatarPixmap;
-    const char* FieldSubType;
-    const char* SubTypeImage;
-    const char* SubTypeVideo;
-    const char* SubTypeTexturedMesh;
-    const char* SubTypeAudioRingtone;
-    const char* SubTypeVideoRingtone;
+    static const QLatin1Constant DefinitionName;
+    static const QLatin1Constant FieldImageUrl;
+    static const QLatin1Constant FieldVideoUrl;
+
+    // deprecated keys:
+    static const QLatin1Constant FieldAvatar;
+    static const QLatin1Constant FieldAvatarPixmap;
+    static const QLatin1Constant FieldSubType;
+    static const QLatin1Constant SubTypeImage;
+    static const QLatin1Constant SubTypeVideo;
+    static const QLatin1Constant SubTypeAudioRingtone;
+    static const QLatin1Constant SubTypeVideoRingtone;
+    static const QLatin1Constant SubTypeTexturedMesh;
 #else
     Q_DECLARE_CUSTOM_CONTACT_DETAIL(QContactAvatar, "Avatar")
-    Q_DECLARE_LATIN1_LITERAL(FieldAvatar, "Avatar");
-    Q_DECLARE_LATIN1_LITERAL(FieldAvatarPixmap, "AvatarPixmap");
-    Q_DECLARE_LATIN1_LITERAL(FieldSubType, "SubType");
-    Q_DECLARE_LATIN1_LITERAL(SubTypeImage, "Image");
-    Q_DECLARE_LATIN1_LITERAL(SubTypeVideo, "Video");
-    Q_DECLARE_LATIN1_LITERAL(SubTypeTexturedMesh, "TexturedMesh");
-    Q_DECLARE_LATIN1_LITERAL(SubTypeAudioRingtone, "AudioRingtone");
-    Q_DECLARE_LATIN1_LITERAL(SubTypeVideoRingtone, "VideoRingtone");
+    Q_DECLARE_LATIN1_CONSTANT(FieldImageUrl, "ImageUrl");
+    Q_DECLARE_LATIN1_CONSTANT(FieldVideoUrl, "VideoUrl");
+    // MeshUri, VibetoneUri, Audio(theme)Uri, ...?
+
+    // deprecated keys:
+    Q_DECLARE_LATIN1_CONSTANT(FieldAvatar, "Avatar");
+    Q_DECLARE_LATIN1_CONSTANT(FieldAvatarPixmap, "AvatarPixmap");
+    Q_DECLARE_LATIN1_CONSTANT(FieldSubType, "SubType");
+    Q_DECLARE_LATIN1_CONSTANT(SubTypeImage, "Image");
+    Q_DECLARE_LATIN1_CONSTANT(SubTypeVideo, "Video");
+    Q_DECLARE_LATIN1_CONSTANT(SubTypeAudioRingtone, "AudioRingtone");
+    Q_DECLARE_LATIN1_CONSTANT(SubTypeVideoRingtone, "VideoRingtone");
+    Q_DECLARE_LATIN1_CONSTANT(SubTypeTexturedMesh, "TexturedMesh");
 #endif
 
-    void setAvatar(const QString& avatarPath) {setValue(FieldAvatar, avatarPath);}
-    QString avatar() const {return value(FieldAvatar);}
-    QPixmap pixmap() const {return value<QPixmap>(QContactAvatar::FieldAvatarPixmap);}
-    bool setPixmap(const QPixmap& pixmap)
-    {
-        setSubType(SubTypeImage);
-        return setValue(FieldAvatarPixmap, QVariant::fromValue(pixmap));
-    }
-    
-    void setSubType(const QString& subType) {setValue(FieldSubType, subType);}
-    QString subType() const {return value(FieldSubType);}
+    void setImageUrl(const QUrl& imageUrl) {setValue(FieldImageUrl, imageUrl);}
+    QUrl imageUrl() const {return value<QUrl>(FieldImageUrl);}
+
+    void setVideoUrl(const QUrl& videoUrl) {setValue(FieldVideoUrl, videoUrl);}
+    QUrl videoUrl() const {return value<QUrl>(FieldVideoUrl);}
+
+
+    // old, deprecated API: to be removed after the transition period has elapsed.
+    QString Q_DECL_DEPRECATED avatar() const;
+    bool Q_DECL_DEPRECATED setAvatar(const QString& avatar);
+    QPixmap Q_DECL_DEPRECATED pixmap() const;
+    bool Q_DECL_DEPRECATED setPixmap(const QPixmap& pixmap);
+    QString Q_DECL_DEPRECATED subType() const;
+    void Q_DECL_DEPRECATED setSubType(const QString& subtype);
 };
 
 QTM_END_NAMESPACE
 
 #endif
-

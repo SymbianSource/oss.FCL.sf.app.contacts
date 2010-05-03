@@ -70,11 +70,19 @@ public:
 class Q_VERSIT_EXPORT QVersitContactExporter
 {
 public:
+    enum Error {
+        NoError = 0,
+        EmptyContactError,
+        NoNameError
+    };
+
     QVersitContactExporter();
     ~QVersitContactExporter();
 
-    QList<QVersitDocument> exportContacts(const QList<QContact>& contacts,
-        QVersitDocument::VersitType versitType=QVersitDocument::VCard30Type);
+    bool exportContacts(const QList<QContact>& contacts,
+        QVersitDocument::VersitType versitType);
+    QList<QVersitDocument> documents() const;
+    QMap<int, Error> errors() const;
 
     void setDetailHandler(QVersitContactExporterDetailHandler* handler);
     QVersitContactExporterDetailHandler* detailHandler() const;
@@ -82,14 +90,10 @@ public:
     void setResourceHandler(QVersitResourceHandler* handler);
     QVersitResourceHandler* resourceHandler() const;
 
-    // Deprecated:
-    QVersitDocument Q_DECL_DEPRECATED exportContact(
-        const QContact& contact,
-        QVersitDocument::VersitType versitType=QVersitDocument::VCard30Type);
-    QList<QContactDetail> Q_DECL_DEPRECATED unknownContactDetails();
+    QList<QVersitDocument> Q_DECL_DEPRECATED exportContacts(const QList<QContact>& contacts);
 
 private:
-    QVersitContactExporterPrivate* d;    
+    QVersitContactExporterPrivate* d;
 };
 
 QTM_END_NAMESPACE

@@ -21,8 +21,7 @@
 #include <QObject>
 #include <hbdocumentloader.h>
 
-#include "cntabstractview.h"
-#include "cntviewparameters.h"
+#include <cntabstractview.h>
 
 class HbAction;
 class HbView;
@@ -30,6 +29,7 @@ class HbListView;
 class CntCollectionListModel;
 class QModelIndex;
 class HbAbstractViewItem;
+class CntExtensionManager;
 
 class CntCollectionView : public QObject, public CntAbstractView
 {
@@ -37,15 +37,15 @@ class CntCollectionView : public QObject, public CntAbstractView
     friend class TestCntCollectionView;
     
 public:
-    CntCollectionView();
+    CntCollectionView(CntExtensionManager &extensionManager);
     ~CntCollectionView();
     
 public: // From CntAbstractView
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters& aArgs );
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
     void deactivate();
     bool isDefault() const { return false; }
     HbView* view() const { return mView; }
-    CntViewParameters::ViewId viewId() const { return CntViewParameters::collectionView; }
+    int viewId() const { return collectionView; }
 
 private slots:
     void showPreviousView();
@@ -53,13 +53,12 @@ private slots:
     void showContextMenu(HbAbstractViewItem *item, const QPointF &coords);
     void newGroup();
     void refreshDataModel();
-    void reorderGroup();
     void deleteGroup(QContact group);
     void deleteGroups();
-    void disconnectAll();
     
 
 private:
+    CntExtensionManager&    mExtensionManager;
     HbView*                 mView; // own
     HbAction*               mSoftkey; // owned by view
     CntAbstractViewManager* mViewManager;
@@ -67,7 +66,8 @@ private:
     CntCollectionListModel* mModel; // own
     HbListView*             mListView; // owned by layout
     HbAction*               mNamesAction; // owned by view
-    HbAction*               mRefreshAction; // owned by view
+    HbAction*               mFindAction; // owned by view
+    HbAction*               mExtensionAction; // owned by view
     HbAction*               mNewGroupAction; // owned by view
     HbAction*               mDeleteGroupsAction; // owned by view
 };

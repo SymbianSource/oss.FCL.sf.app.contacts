@@ -17,80 +17,99 @@
 
 #include "cntdefaultviewmanager.h"
 #include "cntabstractviewfactory.h"
-#include "cntabstractview.h"
+#include <cntabstractview.h>
 #include "cntmainwindow.h"
 #include <hbview.h>
-//#include "cntmodelprovider.h"
+#include <hbmainwindow.h>
 #include <qtcontacts.h>
 #include "cntviewnavigator.h"
-#include "cntbaseview.h"
+#include <simutility.h>
 
-CntDefaultViewManager::CntDefaultViewManager(CntMainWindow* aWindow,
-    CntViewParameters::ViewId defaultView) :
-    CntViewManager(aWindow, defaultView), 
-    mCurrent(0),
-    mArgs( 0 )
-{
-    mFactory = new CntDefaultViewFactory();
-    
-    QContactManager* manager = new QContactManager(SIM_BACKEND);
-    mBackends.append( manager );
-   
-    mNavigator = new CntViewNavigator(this);
-    mNavigator->addException( CntViewParameters::editView, CntViewParameters::namesView );
-    mNavigator->addException( CntViewParameters::FavoritesMemberView, CntViewParameters::collectionView );
+CntDefaultViewManager::CntDefaultViewManager( HbMainWindow* aWindow ) : QObject(),
+    mFactory(NULL),
+    mCurrent(NULL),
+    mOldView(NULL),
+    mNavigator(NULL),
+    mMainWindow( aWindow )
 
-    if (defaultView != CntViewParameters::noView) {
-        //activate the view
-        CntViewParameters viewParameters(defaultView, defaultView);
-        changeView(viewParameters);
+{    
+    setViewFactory(new CntDefaultViewFactory());
+    setViewNavigator(new CntViewNavigator(this));
+
+#ifndef __WINS__
+    int error = -1;
+    SimUtility simUtility = SimUtility(SimUtility::AdnStore, error);
+    if (error == 0) 
+    {
+        SimUtility::AvailableStores store = simUtility.getAvailableStores(error);
+        if (error == 0 && store.AdnStorePresent)
+        {
+            QContactManager* manager = QContactManager::fromUri(SIM_BACKEND_ADN);
+            mBackends.append( manager );
+        }
     }
+#endif
 }
 
 CntDefaultViewManager::~CntDefaultViewManager()
 {
+    qDeleteAll(mDefaults.values());
     delete mFactory;
-    delete mArgs;
 }
 
-void CntDefaultViewManager::back(const CntViewParameters& aArgs)
+void CntDefaultViewManager::setViewFactory( CntAbstractViewFactory* aFactory ) 
 {
-    if ( mArgs ) 
+    if ( aFactory )
     {
-        delete mArgs;
-        mArgs = NULL;
-    }
-    mArgs = new CntViewParameters( mNavigator->back() );
-    mArgs->setSelectedAction(aArgs.selectedAction());
-    mArgs->setSelectedContact(aArgs.selectedContact());
-    mArgs->setSelectedDetail(aArgs.selectedDetail());
-    mArgs->setParameters(aArgs.parameters());
-    mArgs->setSelectedGroupContact(aArgs.selectedGroupContact());
-
-    removeCurrentView();
-    if (mArgs->nextViewId() != CntViewParameters::noView) {
-        switchView( *mArgs );
+        mFactory = aFactory;
     }
 }
 
-void CntDefaultViewManager::changeView(const CntViewParameters& aArgs)
+void CntDefaultViewManager::setViewNavigator( CntViewNavigator* aNavigator )
 {
-    removeCurrentView();
+    if ( aNavigator )
+    {
+        mNavigator = aNavigator;
+    }
+}
+
+void CntDefaultViewManager::back(const CntViewParameters aArgs)
+{
+    mArgs.clear();
     
-    mNavigator->next( aArgs.nextViewId() );
-    switchView(aArgs);
+    QFlags<Hb::ViewSwitchFlag> flags;
+    int back = mNavigator->back( flags );
+    
+    mArgs.insert(EViewId, back );
+    mArgs.insert(ESelectedAction, aArgs.value(ESelectedAction));
+    mArgs.insert(ESelectedContact, aArgs.value(ESelectedContact));
+    mArgs.insert(ESelectedGroupContact, aArgs.value(ESelectedGroupContact));
+    mArgs.insert(ESelectedDetail, aArgs.value(ESelectedDetail));
+
+    if (mArgs.value(EViewId).toInt() != noView)
+    {
+        switchView( mArgs, flags );
+    }
+}
+
+void CntDefaultViewManager::changeView(const CntViewParameters aArgs)
+{
+    QFlags<Hb::ViewSwitchFlag> flags;
+    mNavigator->next(aArgs.value(EViewId).toInt(), flags);
+    switchView(aArgs, flags);
 }
 
 QContactManager* CntDefaultViewManager::contactManager( const QString& aType )
 {
     foreach ( QContactManager* mgr, mBackends ) 
     {
-        if ( aType.compare(mgr->managerName(), Qt::CaseInsensitive) == 0 )
+        QString uri = mgr->managerUri();
+        if ( aType.compare(uri, Qt::CaseInsensitive) == 0 )
         {
             return mgr;
         }
     }
-    QContactManager* manager = new QContactManager( aType );
+    QContactManager* manager = QContactManager::fromUri( aType );
     if ( manager )
     {
         mBackends.append( manager );
@@ -99,76 +118,40 @@ QContactManager* CntDefaultViewManager::contactManager( const QString& aType )
     return manager;
 }
 
-bool CntDefaultViewManager::isDepracatedView(CntViewParameters::ViewId aId)
-{
-    switch (aId) 
-    {
-    case CntViewParameters::commLauncherView:return true;
-    case CntViewParameters::serviceContactCardView:return true;
-    case CntViewParameters::serviceAssignContactCardView:return true;
-    case CntViewParameters::myCardSelectionView:return true;
-    case CntViewParameters::serviceContactSelectionView:return true;
-    case CntViewParameters::FavoritesMemberView:return true;
-    case CntViewParameters::editView:return true;
-    case CntViewParameters::serviceEditView:return true;
-    case CntViewParameters::serviceSubEditView:return true;
-    case CntViewParameters::emailEditorView:return true;
-    case CntViewParameters::namesEditorView:return true;
-    case CntViewParameters::urlEditorView:return true;
-    case CntViewParameters::companyEditorView:return true;
-    case CntViewParameters::phoneNumberEditorView:return true;
-    case CntViewParameters::onlineAccountEditorView:return true;
-    case CntViewParameters::noteEditorView:return true;
-    case CntViewParameters::familyDetailEditorView:return true;
-    case CntViewParameters::addressEditorView:return true;
-    case CntViewParameters::dateEditorView:return true;
-    case CntViewParameters::serviceContactFetchView:return true;
-    case CntViewParameters::groupEditorView:return true;
-    case CntViewParameters::groupMemberView:return true;
-    case CntViewParameters::groupActionsView:return true;
-    case CntViewParameters::historyView:return true;
-    default:
-        return false;
-    }
-}
-
 void CntDefaultViewManager::removeCurrentView()
 {
-    if (mCurrent == NULL) {
-        removeDepracatedCurrentView();
-        return;
+    if (mOldView) 
+    {
+        connect(mMainWindow, SIGNAL(viewReady()), this, SLOT(deleteOldView()));
     }
-
-    if (mCurrent) {
-        mCurrent->deactivate();
-        mMainWindow->removeView(mCurrent->view());
-        
-        if (!mCurrent->isDefault()) {
-            delete mCurrent;
-            mCurrent = NULL;
-        }
+    else
+    {
+        mMainWindow->setInteractive( true );
     }
 }
 
-void CntDefaultViewManager::switchView(const CntViewParameters& aArgs)
+void CntDefaultViewManager::deleteOldView()
 {
-    CntViewParameters::ViewId id = aArgs.nextViewId();
-    if (isDepracatedView(id))
+    if (mOldView && !mOldView->view()->isVisible())
     {
-        // current view might not be deleted if it was a "default" view
-        // Still, needs to be nulled out so it won't be deactivated unnecessarily
-        mCurrent = NULL;
-           
-        CntBaseView *newView = getView( aArgs );
-
-        if (newView) {        
-            mCurrentViewId = newView->viewId();
-            addViewToWindow(newView);
-            newView->activateView(aArgs);
-        }
+        disconnect(mMainWindow, SIGNAL(viewReady()), this, SLOT(deleteOldView()));
+        mOldView->deactivate();
+        mMainWindow->removeView(mOldView->view());
         
+        if (!mOldView->isDefault())
+        {
+            delete mOldView;
+            mOldView = NULL;
+        }
+        mMainWindow->setInteractive(true);
     }
-    else
+}
+
+void CntDefaultViewManager::switchView(const CntViewParameters aArgs, QFlags<Hb::ViewSwitchFlag> flags)
+{
+    mMainWindow->setInteractive(false);
+    int id = aArgs.value(EViewId).toInt();
+    if ( id != noView )
     {
         CntAbstractView* nextView(NULL);
         if (mDefaults.contains(id))
@@ -177,18 +160,21 @@ void CntDefaultViewManager::switchView(const CntViewParameters& aArgs)
         }
         else
         {
-            nextView = mFactory->createView((int) id);
+            nextView = mFactory->createView( id );
             if (nextView->isDefault())
             {
                 mDefaults.insert(id, nextView);
             }
         }
-
-        mCurrent = nextView;
         
+        mOldView = mCurrent;
+        mCurrent = nextView;
+            
         mMainWindow->addView(mCurrent->view());
-        mMainWindow->setCurrentView(mCurrent->view());
+        mMainWindow->setCurrentView(mCurrent->view(), true, flags);
         mCurrent->activate(this, aArgs);
+        
+        removeCurrentView();
     }
 }
 // End of File

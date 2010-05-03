@@ -57,16 +57,6 @@ QTM_BEGIN_NAMESPACE
   \ingroup contacts-requests
  */
 
-/*!
-  \fn QContactDetailDefinitionRemoveRequest::progress(QContactDetailDefinitionRemoveRequest* self)
-  \internal
-  This signal is emitted when some progress has been made on the request, causing either a change of
-  status or an update of results, or both.  It identifies which request the signal originated from
-  by including a pointer to \a self.
-  This signal is deprecated and will be removed once the transition period has elapsed.
-  Use the signals emitted by the base class, combined with \l QObject::sender(), instead.
- */
-
 /*! Constructs a new detail definition remove request */
 QContactDetailDefinitionRemoveRequest::QContactDetailDefinitionRemoveRequest()
     : QContactAbstractRequest(new QContactDetailDefinitionRemoveRequestPrivate)
@@ -76,38 +66,6 @@ QContactDetailDefinitionRemoveRequest::QContactDetailDefinitionRemoveRequest()
 /*! Cleans up the memory in use by this detail definition remove request */
 QContactDetailDefinitionRemoveRequest::~QContactDetailDefinitionRemoveRequest()
 {
-}
-
-/*!
-  \internal
-  Sets the names of the detail definitions to remove from the manager to be \a names
- */
-void QContactDetailDefinitionRemoveRequest::setNames(const QStringList& names)
-{
-    Q_D(QContactDetailDefinitionRemoveRequest);
-    d->m_names = names;
-}
-
-/*!
-  \internal
-  Returns the list of names of the detail definitions that will be removed from the manager
- */
-QStringList QContactDetailDefinitionRemoveRequest::names() const
-{
-    Q_D(const QContactDetailDefinitionRemoveRequest);
-    return d->m_names;
-}
-
-/*!
-  \internal
-  Sets the type of detail defintions to remove to \a contactType,
-
-  Do not use this.  Use \l setDefinitionNames() instead.
-*/
-void QContactDetailDefinitionRemoveRequest::setContactType(const QString& contactType)
-{
-    Q_D(QContactDetailDefinitionRemoveRequest);
-    d->m_contactType = contactType;
 }
 
 /*!

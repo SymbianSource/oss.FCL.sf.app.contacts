@@ -25,8 +25,8 @@ PUBLIC_HEADERS += \
     qcontactchangeset.h \
     qcontactdetail.h \
     qcontactdetaildefinition.h \
-    qcontactdetaildefinitionfield.h \
     qcontactdetailfielddefinition.h \
+    qcontactfetchhint.h \
     qcontactfilter.h \
     qcontactid.h \
     qcontactmanager.h \
@@ -46,6 +46,7 @@ PRIVATE_HEADERS += \
     qcontactdetail_p.h \
     qcontactdetaildefinition_p.h \
     qcontactdetailfielddefinition_p.h \
+    qcontactfetchhint_p.h \
     qcontactfilter_p.h \
     qcontactid_p.h \
     qcontactmanager_p.h \
@@ -62,6 +63,7 @@ SOURCES += \
     qcontactdetail.cpp \
     qcontactdetaildefinition.cpp \
     qcontactdetailfielddefinition.cpp \
+    qcontactfetchhint.cpp \
     qcontactfilter.cpp \
     qcontactid.cpp \
     qcontactmanager_p.cpp \
@@ -75,8 +77,21 @@ HEADERS += \
     $$PUBLIC_HEADERS \
     $$PRIVATE_HEADERS
 
-maemo {
+maemo5 {
+    isEmpty(CONTACTS_DEFAULT_ENGINE): CONTACTS_DEFAULT_ENGINE=maemo5
+}
+
+maemo6 {
     isEmpty(CONTACTS_DEFAULT_ENGINE): CONTACTS_DEFAULT_ENGINE=tracker
+}
+
+maemo5|maemo6 {
+    CONFIG += create_pc create_prl
+    QMAKE_PKGCONFIG_DESCRIPTION = Qt Mobility - Contacts API
+    pkgconfig.path = $$QT_MOBILITY_LIB/pkgconfig
+    pkgconfig.files = QtContacts.pc
+
+    INSTALLS += pkgconfig
 }
 
 wince* {
@@ -86,31 +101,28 @@ wince* {
 symbian {
     isEmpty(CONTACTS_DEFAULT_ENGINE): CONTACTS_DEFAULT_ENGINE=symbian
 
-    load(data_caging_paths)
-    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
-    
     TARGET.EPOCALLOWDLLDATA = 1
-    TARGET.CAPABILITY = ALL -TCB
+    TARGET.CAPABILITY = CAP_GENERAL_DLL
     TARGET.UID3 = 0x2002AC7A
 
     LIBS += -lefsrv
+    
+    defFiles = \
+        "$${LITERAL_HASH}ifdef WINSCW" \
+        "DEFFILE ../s60installs/bwins/$${TARGET}.def" \
+        "$${LITERAL_HASH}elif defined EABI" \
+        "DEFFILE ../s60installs/eabi/$${TARGET}.def" \
+        "$${LITERAL_HASH}endif "
+    MMP_RULES += defFiles
 
     ### Contacts
     # Main library
-    defFiles = \
-        "$${LITERAL_HASH}ifdef WINSCW" \
-        "DEFFILE bwins/$${TARGET}.def" \
-        "$${LITERAL_HASH}elif defined EABI" \
-        "DEFFILE eabi/$${TARGET}.def" \
-        "$${LITERAL_HASH}endif "
-    MMP_RULES += defFiles
-    
     CONTACTS_DEPLOYMENT.sources = QtContacts.dll
     CONTACTS_DEPLOYMENT.path = \sys\bin
     DEPLOYMENT += CONTACTS_DEPLOYMENT
 }
 
-!isEmpty(CONTACTS_DEFAULT_ENGINE): DEFINES += Q_CONTACTS_DEFAULT_ENGINE=CONTACTS_DEFAULT_ENGINE
+!isEmpty(CONTACTS_DEFAULT_ENGINE): DEFINES += Q_CONTACTS_DEFAULT_ENGINE=$$CONTACTS_DEFAULT_ENGINE
 
 CONFIG += app
 include(../../features/deploy.pri)

@@ -18,27 +18,51 @@
 #ifndef CNTBASESELECTIONVIEW_H
 #define CNTBASESELECTIONVIEW_H
 
-#include "cntbaseview.h"
+#include "cntabstractviewmanager.h"
+#include "cntabstractview.h"
 #include "qtpbkglobal.h"
-#include <hbabstractviewitem.h>
-#include <hbabstractitemview.h>
 
 class HbListView;
-class QGraphicsLinearLayout;
-class QItemSelectionModel;
+class HbView;
+class HbDocumentLoader;
+class HbAction;
 
-class QTPBK_EXPORT CntBaseSelectionView : public CntBaseView
+class MobCntModel;
+
+class QTPBK_EXPORT CntBaseSelectionView : public QObject, public CntAbstractView
 {
     Q_OBJECT
 
 public:
-    CntBaseSelectionView(CntViewManager *viewManager, QGraphicsItem *parent = 0, HbAbstractItemView::SelectionMode newMode = HbAbstractItemView::MultiSelection);
+    CntBaseSelectionView();
     ~CntBaseSelectionView();
 
+signals:
+    void viewOpened( const CntViewParameters aArgs );
+    void viewClosed();
+    
 public:
-
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void deactivate();
+    bool isDefault() const;
+    HbView* view() const;
+    
+    virtual int viewId() const = 0;
+    
+private slots:
+    void closeView();
+    
+protected:
+    HbDocumentLoader* mDocument;
+    HbListView* mListView;
+    HbView* mView;
+    HbAction* mSoftkey;
+    CntAbstractViewManager* mMgr;
+    MobCntModel* mListModel;
+/*        
+public:
     virtual void setupView();
-    virtual void activateView(const CntViewParameters &viewParameters);
+    virtual void activateView(const CntViewParameters viewParameters);
     void addItemsToLayout();
     
 public slots:
@@ -61,7 +85,7 @@ public:
 protected:
 #endif
     HbAbstractItemView::SelectionMode   mSelectionMode;
-
+*/
 };
 
 #endif /* CNTBASESELECTIONVIEW_H */

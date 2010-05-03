@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<service name="com.nokia.services.logsservices"  filepath="must-not-be-empty" >
-  <description>Logs services</description>
-  <interface name="starter" version="1.0" capabilities="">
-    <description>Starter interface</description>
-  </interface>
-</service>

@@ -21,23 +21,21 @@
 #include <hbgroupbox.h>
 #include <hbaction.h>
 #include <hbsearchpanel.h>
+#include <hblistviewitem.h>
 #include <hbtextitem.h>
 #include <qtcontacts.h>
 #include <QStringListModel>
 #include <QGraphicsWidget>
 #include <mobcntmodel.h>
+#include <hbmainwindow.h>
 
 
 CntGroupSelectionPopup::CntGroupSelectionPopup(QContactManager *manager, QContact *contact, QGraphicsItem *parent):
     HbDialog(parent),
-    mListView(0),
-    mSearchPanel(0),
-    mEmptyListLabel(0),
+    mListView(NULL),
+    mEmptyListLabel(NULL),
     mContactManager(manager),
-    mCntModel(0),
-    mContact(contact),
-    mContainerWidget(0),
-    mContainerLayout(0)
+    mContact(contact)
 {
     QList<QContactSortOrder> sortOrders;
     QContactSortOrder sortOrderFirstName;
@@ -60,7 +58,7 @@ CntGroupSelectionPopup::CntGroupSelectionPopup(QContactManager *manager, QContac
     mContainerLayout->setContentsMargins(0, 0, 0, 0);
     mContainerLayout->setSpacing(0);
     
-    mContainerWidget = new QGraphicsWidget;
+    mContainerWidget = new HbWidget();
  }
 
 CntGroupSelectionPopup::~CntGroupSelectionPopup()
@@ -68,9 +66,6 @@ CntGroupSelectionPopup::~CntGroupSelectionPopup()
     delete mContainerWidget;
     mContainerWidget = 0;
     
-    delete mEmptyListLabel;
-    mEmptyListLabel = 0;
-
     delete mCntModel;
     mCntModel = 0;
 }
@@ -95,7 +90,7 @@ void CntGroupSelectionPopup::populateListOfContact()
     mCntModel->showMyCard(false);
     
     rFilter.setRelationshipType(QContactRelationship::HasMember);
-    rFilter.setRelatedContactRole(QContactRelationshipFilter::First);
+    rFilter.setRelatedContactRole(QContactRelationship::First);
     rFilter.setRelatedContactId(mContact->id());   
     QList<QContactLocalId> contactsLocalIdList = mContactManager->contactIds(rFilter);
     int countContacts = contactsLocalIdList.count();
@@ -107,6 +102,8 @@ void CntGroupSelectionPopup::populateListOfContact()
     mListView->setSelectionMode(HbAbstractItemView::MultiSelection);
     mListView->setFrictionEnabled(true);
     mListView->setScrollingStyle(HbScrollArea::PanOrFlick);
+    HbListViewItem *prototype = mListView->listItemPrototype();
+    prototype->setGraphicsSize(HbListViewItem::Thumbnail);
     
     for (int i=0; i < countContacts; i++ )
     {
@@ -116,13 +113,31 @@ void CntGroupSelectionPopup::populateListOfContact()
         mListView->selectionModel()->select(contactIndex, QItemSelectionModel::Select);
     }
     
-    setTimeout(0);
+    setTimeout(HbPopup::NoTimeout);
+    setDismissPolicy(HbPopup::NoDismiss);
     setModal(true);
      
     // Note that the layout takes ownership of the item(s) it contains.
-    mContainerLayout->addItem(mListView);
+    if (!mCntModel->rowCount())
+    {
+        mListView->setVisible(false);
+        if (mEmptyListLabel == 0)
+        {
+            mEmptyListLabel = new HbTextItem(hbTrId("(no matching contacts)"));
+            mEmptyListLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+            mEmptyListLabel->setFontSpec(HbFontSpec(HbFontSpec::Primary));
+            mEmptyListLabel->setAlignment(Qt::AlignCenter);
+            mContainerLayout->insertItem(0, mEmptyListLabel);
+        }
+    }
+    else
+    {
+        mContainerLayout->addItem(mListView);
+    }
     mContainerLayout->addItem(mSearchPanel);
     mContainerWidget->setLayout(mContainerLayout);
+    mContainerWidget->setPreferredHeight(mainWindow()->size().height());
+    mContainerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     setContentWidget(mContainerWidget);
     
@@ -159,7 +174,7 @@ void CntGroupSelectionPopup::saveOldGroup()
     // Use relationship filter to get list of contacts in the relationship (if any)
     QContactRelationshipFilter rFilter;
     rFilter.setRelationshipType(QContactRelationship::HasMember);
-    rFilter.setRelatedContactRole(QContactRelationshipFilter::First);
+    rFilter.setRelatedContactRole(QContactRelationship::First);
     rFilter.setRelatedContactId(mContact->id());
 
     QList<QContactLocalId> contactsLocalIdList = mContactManager->contactIds(rFilter);
@@ -210,8 +225,9 @@ void CntGroupSelectionPopup::saveOldGroup()
         }
     }
     // save & remove relationships
-    mContactManager->removeRelationships(removedRelationships);
-    mContactManager->saveRelationships(&addedRelationships);
+    QMap<int, QContactManager::Error> errors;
+    mContactManager->removeRelationships(removedRelationships, &errors);
+    mContactManager->saveRelationships(&addedRelationships, &errors);
 }
 
 void CntGroupSelectionPopup::closeFind()
@@ -241,7 +257,7 @@ void CntGroupSelectionPopup::setFilter(const QString &filterString)
     // find matches and existing members
     QContactRelationshipFilter relationFilter;
     relationFilter.setRelationshipType(QContactRelationship::HasMember);
-    relationFilter.setRelatedContactRole(QContactRelationshipFilter::First);
+    relationFilter.setRelatedContactRole(QContactRelationship::First);
     relationFilter.setRelatedContactId(mContact->id());
         
     QContactDetailFilter detailfilter;
@@ -266,18 +282,30 @@ void CntGroupSelectionPopup::setFilter(const QString &filterString)
         mListView->selectionModel()->select(contactIndex, QItemSelectionModel::Select);
     }
 
-    if (!mCntModel->rowCount()) {
-        if (mEmptyListLabel == 0) {
+    if (!mCntModel->rowCount())
+    {
+        if (mEmptyListLabel == 0)
+        {
+            mListView->setVisible(false);
+            mContainerLayout->removeItem(mListView);
+            
             mEmptyListLabel = new HbTextItem(hbTrId("(no matching contacts)"));
             mEmptyListLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
             mEmptyListLabel->setFontSpec(HbFontSpec(HbFontSpec::Primary));
             mEmptyListLabel->setAlignment(Qt::AlignCenter);
-            mContainerLayout->insertItem(1, mEmptyListLabel);
+            mContainerLayout->insertItem(0, mEmptyListLabel);
         }
     }
-    else {
-        mContainerLayout->removeItem(mEmptyListLabel);
-        delete mEmptyListLabel;
-        mEmptyListLabel = 0;
+    else
+    {
+        if (mEmptyListLabel != 0)
+        {
+            mListView->setVisible(true);
+            mContainerLayout->insertItem(0, mListView);
+
+            mContainerLayout->removeItem(mEmptyListLabel);
+            delete mEmptyListLabel;
+            mEmptyListLabel = 0;
+        }
     }
 }

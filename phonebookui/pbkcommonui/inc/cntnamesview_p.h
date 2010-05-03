@@ -37,14 +37,15 @@ class HbDocumentLoader;
 class HbSearchPanel;
 class HbStaticVkbHost;
 class QGraphicsLinearLayout;
+class CntExtensionManager;
 
 class CntNamesViewPrivate : public QObject
     {
     Q_OBJECT
-    Q_DECLARE_PUBLIC(CntNamesView);
+    Q_DECLARE_PUBLIC(CntNamesView)
     
 public:
-    CntNamesViewPrivate();
+    CntNamesViewPrivate(CntExtensionManager &extensionManager);
     virtual ~CntNamesViewPrivate();
 
 public slots:
@@ -57,6 +58,8 @@ public slots:
     
     void handleKeypadOpen();
     void handleKeypadClose();
+    
+    void handleExtensionAction();
     
     void createNewContact();
     void showPreviousView();
@@ -73,7 +76,7 @@ public slots:
         
 public:
     bool isFinderVisible();
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters& aArgs );
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
     void deactivate();
     void scrollTo(const QContact &aContact);
     
@@ -89,6 +92,7 @@ public: // lazy initializations
     HbDocumentLoader* document();
 
 private:
+    CntExtensionManager&        mExtensionManager;
     CntAbstractViewManager*     mViewManager;
     MobCntModel*                mListModel;
     HbView*                     mView;
@@ -103,6 +107,6 @@ private:
     CntActionMenuBuilder*       mMenuBuilder; // own
     
     bool mIsDefault;
-    CntViewParameters::ViewId mId;
+    int mId;
     };
 #endif /* CNTABSTRACTLISTVIEW_H_ */

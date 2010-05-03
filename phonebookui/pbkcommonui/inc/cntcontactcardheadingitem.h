@@ -46,6 +46,7 @@ class CntContactCardHeadingItem : public HbWidget
     Q_PROPERTY( QString secondary_text READ getSecondaryText )
     Q_PROPERTY( QString marquee_item READ getTinyMarqueeText )
     Q_PROPERTY( HbIcon icon READ getIcon )
+    Q_PROPERTY( HbIcon secondary_icon READ getSecondaryIcon )
 
 public:
     CntContactCardHeadingItem(QGraphicsItem *parent = 0);
@@ -55,9 +56,10 @@ public:
     void createPrimitives();
     void recreatePrimitives();
     void updatePrimitives();
-    void setDetails(const QContact* contact);
+    void setDetails(const QContact* contact, bool isMyCard);
     void setIcon(const HbIcon newIcon);
     void setGroupDetails(const QContact* contact);
+    void setSecondaryIcon(bool favoriteContact);
 
 signals:
     void clicked();
@@ -70,6 +72,10 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    
+private slots:
+    void orientationChanged(Qt::Orientation);
 
 private:
     void initGesture();
@@ -89,6 +95,7 @@ private:
     QString getTinyMarqueeText() const { return tinyMarqueeText; }
 
     HbIcon getIcon() const { return icon; }
+    HbIcon getSecondaryIcon() const { return secondaryIcon; }
 
 #ifdef PBK_UNIT_TEST
 public:
@@ -96,6 +103,7 @@ public:
 private:
 #endif
     HbIconItem              *mIcon;
+    HbIconItem              *mSecondaryIcon;
     HbTextItem              *mFirstLineText;
     HbTextItem              *mPrimaryText;
     HbTextItem              *mSecondLineText;
@@ -112,6 +120,7 @@ private:
     QString                 secondaryText;
     QString                 tinyMarqueeText;
     HbIcon                  icon;
+    HbIcon                  secondaryIcon;
 };
 
 #endif // CNTHEADINGWIDGET_H

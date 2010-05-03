@@ -21,8 +21,8 @@
 #include <QObject>
 
 #include "cntbaseselectionview.h"
-#include "cntviewparameters.h"
 
+class QModelIndex;
 class CntServiceHandler;
 
 class CntServiceContactSelectionView : public CntBaseSelectionView
@@ -30,18 +30,16 @@ class CntServiceContactSelectionView : public CntBaseSelectionView
     Q_OBJECT
 
 public:
-    CntServiceContactSelectionView(CntServiceHandler *aServiceHandler, CntViewManager *aViewManager, 
-            QGraphicsItem *aParent = 0, HbAbstractItemView::SelectionMode newMode = HbAbstractItemView::NoSelection);
+    CntServiceContactSelectionView(CntServiceHandler *aServiceHandler);
     ~CntServiceContactSelectionView();
 
+    int viewId() const { return serviceContactSelectionView; }
+    
 public slots:
     void onListViewActivated(const QModelIndex &aIndex);
+    void aboutToOpenView(const CntViewParameters viewParameters);
     void aboutToCloseView();
-
-public:
-    void activateView(const CntViewParameters &viewParameters);
-    CntViewParameters::ViewId viewId() const { return CntViewParameters::serviceContactSelectionView; }
-
+        
 private:
     CntServiceHandler *mServiceHandler;
     QContactDetail     mDetail;

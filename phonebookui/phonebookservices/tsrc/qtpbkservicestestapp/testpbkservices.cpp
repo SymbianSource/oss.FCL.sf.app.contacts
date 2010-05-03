@@ -100,6 +100,24 @@ void testPbkServices::launchEditorOnlineAccount()
     bool res=mSndEdit->send(retValue);
 }
 
+void testPbkServices::launchEditorVCard()
+{
+    if (mSndEdit)
+        {
+        delete mSndEdit;
+        mSndEdit=0;
+        }
+
+    mSndEdit = new XQServiceRequest("com.nokia.services.phonebookservices.Fetch", "editCreateNew(QString)", false);
+    connect(mSndEdit, SIGNAL(requestCompleted(QVariant)), this, SLOT(onEditCompleted(QVariant)));
+
+    QString filename("C:\\data\\Others\\testvcard.vcf");
+    *mSndEdit << filename;
+
+    QVariant retValue;
+    bool res=mSndEdit->send(retValue);
+}
+
 void testPbkServices::launchUpdateEditorNumber()
 {
     if (mSndEdit)
@@ -197,6 +215,26 @@ void testPbkServices::launchFetch()
     QVariant retValue;
     bool res=mSndFetch->send(retValue);
 
+}
+
+void testPbkServices::launchSingleFetch()
+{
+    if (mSndFetch)
+        {
+        delete mSndFetch;
+        mSndFetch=0;
+        }
+
+    mSndFetch = new XQServiceRequest("com.nokia.services.phonebookservices.Fetch", "Dofetch(QString,QString,QString,QString)",false);
+    connect(mSndFetch, SIGNAL(requestCompleted(QVariant)), this, SLOT(onRequestCompleted(QVariant)));
+
+    *mSndFetch << "Single-fetching";
+    *mSndFetch << KCntActionAll;
+    *mSndFetch << KCntFilterDisplayAll;
+    *mSndFetch << KCntSingleSelectionMode;
+
+    QVariant retValue;
+    bool res=mSndFetch->send(retValue);
 }
 
 void testPbkServices::launchSmsFilteredFetch()

@@ -1,20 +1,25 @@
-include($$QT_MOBILITY_BUILD_TREE/config.pri)
+include(../staticconfig.pri)
 
 TEMPLATE = subdirs
 
 #ServiceFramework examples
 contains(mobility_modules,serviceframework) {
     SUBDIRS += filemanagerplugin \
-            bluetoothtransferplugin \
-            servicebrowser
+               bluetoothtransferplugin \
+               notesmanagerplugin \
+               servicebrowser
+
+    !symbian:SUBDIRS+= servicenotesmanager/sfw-notes
+    
+    contains(QT_CONFIG, declarative) {
+        SUBDIRS += servicenotesmanager/declarative-sfw-notes \
+                   declarative-sfw-dialer
+    }
 }
 
 #BearerManagement examples
 contains(mobility_modules,bearer) {
     SUBDIRS += bearermonitor bearercloud
-    contains(QT_CONFIG, declarative) {
-        SUBDIRS += declarative
-    }
 }
 
 #Location examples
@@ -34,7 +39,7 @@ contains(mobility_modules,location) {
 #Contacts examples
 contains(mobility_modules,contacts) {
     SUBDIRS += samplephonebook
-    contains(QT_CONFIG, declarative) {
+    contains(mobility_modules,versit):contains(QT_CONFIG, declarative) {
         SUBDIRS += qmlcontacts
     }
 }
@@ -58,31 +63,24 @@ contains(mobility_modules,multimedia) {
     SUBDIRS += \
         radio \
         player \
-        cameracapture \
         slideshow \
-        streamplayer \
         audiorecorder
-
-    contains (QT_CONFIG, declarative) {
-        SUBDIRS += \
-            declarativemusic \
-            declarativevideo
-    }
 }
 
+
 #Messaging examples
-contains(mobility_modules,messaging) {
-    contains(qmf_enabled,yes)|wince*|win32|symbian|maemo6 {
+contains(qmf_enabled,yes)|wince*|win32|symbian|maemo5 {
+    contains(mobility_modules,messaging) {
         !win32-g++ {
-            SUBDIRS += \
+	    SUBDIRS += \
                 querymessages \
                 writemessage \
                 serviceactions
 
-            contains(mobility_modules,contacts) {
-                SUBDIRS += keepintouch
-            }
-        }
+                contains(mobility_modules,contacts) {
+                    SUBDIRS += keepintouch
+                }
+         }
     }
 }
 

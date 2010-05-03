@@ -16,6 +16,9 @@
 */
 
 #include "cntcollectionlistmodel.h"
+#include "cntextensionmanager.h"
+#include <cntuiextensionfactory.h>
+#include <cntuigroupsupplier.h>
 
 #include <QIcon>
 #include <qtcontacts.h>
@@ -25,8 +28,9 @@
 /*!
 Constructor
 */
-CntCollectionListModel::CntCollectionListModel(QContactManager *manager, QObject *parent)
+CntCollectionListModel::CntCollectionListModel(QContactManager *manager, CntExtensionManager &extensionManager, QObject *parent)
     : QAbstractListModel(parent),
+    mExtensionManager(extensionManager),
     mContactManager(manager),
     mFavoriteGroupId(-1)
 {
@@ -65,8 +69,11 @@ QVariant CntCollectionListModel::data(const QModelIndex &index, int role) const
     else if (role == Qt::DecorationRole)
     {
         QVariantList icons;
-        HbIcon icon(values[1].toString());
-        icons.append(icon);
+        for (int i = 0;i < values[1].toStringList().count();i++)
+        {
+            HbIcon icon(values[1].toStringList().at(i));
+            icons.append(icon);
+        }
         return QVariant(icons);
     }
     
@@ -102,6 +109,22 @@ bool CntCollectionListModel::removeRows(int row, int count, const QModelIndex &p
     
     beginRemoveRows(parent, row, row);
     mDataPointer->mDataList.removeAt(row);
+    if (mDataPointer->mExtensions.remove(row) > 0)
+    {
+        // if extension group was deleted, refresh the indices of extension group map
+        QList<int> keyList = mDataPointer->mExtensions.keys();
+        qSort(keyList);
+        
+        for (int i = 0;i < keyList.count();i++)
+        {
+            if (keyList.at(i) > row)
+            {
+                CntUiGroupSupplier* groupSupplier = mDataPointer->mExtensions.take(keyList.at(i));
+                mDataPointer->mExtensions.insert(keyList.at(i) - 1, groupSupplier);
+            }
+        }
+    }
+
     endRemoveRows();
 
     return true;
@@ -128,6 +151,7 @@ Initialize the data, both static (favorites, online) and user defined groups
 void CntCollectionListModel::doConstruct()
 {
     initializeStaticGroups();
+    initializeExtensions();
     initializeUserGroups();
 }
 
@@ -158,11 +182,25 @@ void CntCollectionListModel::initializeStaticGroups()
         QContact favoriteGroup =  mContactManager->contact(mFavoriteGroupId);
         QContactRelationshipFilter rFilter;
         rFilter.setRelationshipType(QContactRelationship::HasMember);
-            rFilter.setRelatedContactRole(QContactRelationshipFilter::First);
+        rFilter.setRelatedContactRole(QContactRelationship::First);
         rFilter.setRelatedContactId(favoriteGroup.id());
        
-       // group members and their count
-       QList<QContactLocalId> groupMemberIds = mContactManager->contactIds(rFilter);
+        QContactSortOrder sortOrderFirstName;
+        sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,
+            QContactName::FieldFirst);
+        sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
+
+        QContactSortOrder sortOrderLastName;
+        sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,
+            QContactName::FieldLast);
+        sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
+
+        QList<QContactSortOrder> sortOrders;
+        sortOrders.append(sortOrderFirstName);
+        sortOrders.append(sortOrderLastName);
+
+        // group members and their count
+       QList<QContactLocalId> groupMemberIds = mContactManager->contactIds(rFilter, sortOrders);
 
        if (!groupMemberIds.isEmpty())
        {
@@ -188,9 +226,49 @@ void CntCollectionListModel::initializeStaticGroups()
 
     }
     dataList.append(displayList);
-    dataList.append("qtg_large_favourites");
+    dataList.append(QStringList("qtg_large_favourites"));
     dataList.append(mFavoriteGroupId); // as favorites doesn't really have a contact Id, -1 is used
     mDataPointer->mDataList.append(dataList);
+}
+
+/*!
+Initialize extension groups
+*/
+void CntCollectionListModel::initializeExtensions()
+{
+    for(int i = 0;i < mExtensionManager.pluginCount();i++)
+    {
+        CntUiGroupSupplier* groupSupplier = mExtensionManager.pluginAt(i)->groupSupplier();
+        if (groupSupplier)
+        {
+            for(int j = 0;j < groupSupplier->groupCount();j++)
+            {
+                const CntUiExtensionGroup& group = groupSupplier->groupAt(j);
+
+                QVariantList dataList;
+                
+                QStringList displayList;
+                displayList.append(group.name());
+                displayList.append(group.extraText());
+                if (group.memberCount() > 0)
+                {
+                    displayList.append(hbTrId("(%1)").arg(group.memberCount()));
+                }
+                dataList.append(displayList);
+                
+                QStringList decorationList;
+                decorationList.append(group.groupIcon());
+                decorationList.append(group.extraIcon());
+                dataList.append(decorationList);
+                
+                dataList.append(group.serviceId());
+                dataList.append(true); // for checking if this is from an extension
+                
+                mDataPointer->mExtensions.insert(rowCount(), groupSupplier);
+                mDataPointer->mDataList.append(dataList);
+            }
+        }
+    }
 }
 
 /*!
@@ -202,7 +280,15 @@ void CntCollectionListModel::initializeUserGroups()
     groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
     groupFilter.setValue(QString(QLatin1String(QContactType::TypeGroup)));
 
-    QList<QContactLocalId> groupContactIds = mContactManager->contactIds(groupFilter);
+    QContactSortOrder sortOrderGroupName;
+    sortOrderGroupName.setDetailDefinitionName(QContactName::DefinitionName,
+        QContactName::FieldCustomLabel);
+    sortOrderGroupName.setCaseSensitivity(Qt::CaseInsensitive);
+
+    QList<QContactSortOrder> groupsOrder;
+    groupsOrder.append(sortOrderGroupName);
+
+    QList<QContactLocalId> groupContactIds = mContactManager->contactIds(groupFilter, groupsOrder);
     if (!groupContactIds.isEmpty())
     {
         for(int i = 0;i < groupContactIds.count();i++)
@@ -229,11 +315,25 @@ void CntCollectionListModel::initializeUserGroups()
                 
                 QContactRelationshipFilter rFilter;
                 rFilter.setRelationshipType(QContactRelationship::HasMember);
-                rFilter.setRelatedContactRole(QContactRelationshipFilter::First);
+                rFilter.setRelatedContactRole(QContactRelationship::First);
                 rFilter.setRelatedContactId(contact.id());
                 
+                QContactSortOrder sortOrderFirstName;
+                sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,
+                    QContactName::FieldFirst);
+                sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
+
+                QContactSortOrder sortOrderLastName;
+                sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,
+                    QContactName::FieldLast);
+                sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
+
+                QList<QContactSortOrder> sortOrders;
+                sortOrders.append(sortOrderFirstName);
+                sortOrders.append(sortOrderLastName);
+
                 // group members and their count
-                QList<QContactLocalId> groupMemberIds = mContactManager->contactIds(rFilter);
+                QList<QContactLocalId> groupMemberIds = mContactManager->contactIds(rFilter, sortOrders);
                 
                 if (!groupMemberIds.isEmpty())
                 {
@@ -259,7 +359,7 @@ void CntCollectionListModel::initializeUserGroups()
                 dataList.append(displayList);
                 
                 // icon, default for now always
-                dataList.append("qtg_large_custom");
+                dataList.append(QStringList("qtg_large_custom"));
                 
                 // contact Id for identification
                 dataList.append(groupContactIds.at(i));
@@ -301,5 +401,53 @@ bool CntCollectionListModel::isFavoriteGroupCreated()
 int CntCollectionListModel::favoriteGroupId()
 {
     return mFavoriteGroupId;
+}
+
+bool CntCollectionListModel::isExtensionGroup(const QModelIndex &index)
+{
+    int row = index.row();
+    if (row < 0)
+    {
+        return false;
+    }
+    
+    QVariantList values = mDataPointer->mDataList.at(row);
+    
+    if(values.count() > 3)
+    {
+        return true;
+    }
+    
+    return false;
+}
+
+CntViewParameters CntCollectionListModel::extensionGroupActivated(int row)
+{
+    CntViewParameters params;
+    for(int i = 0;i < mDataPointer->mExtensions.value(row)->groupCount();i++)
+    {
+        const CntUiExtensionGroup& group = mDataPointer->mExtensions.value(row)->groupAt(i);
+        if (group.serviceId() == mDataPointer->mDataList.at(row)[2].toInt())
+        {
+            group.activated(params);
+            break;
+        }
+    }
+    return params;
+}
+
+CntViewParameters CntCollectionListModel::extensionGroupLongPressed(int row, const QPointF& coords)
+{
+    CntViewParameters params;
+    for(int i = 0;i < mDataPointer->mExtensions.value(row)->groupCount();i++)
+    {
+        const CntUiExtensionGroup& group = mDataPointer->mExtensions.value(row)->groupAt(i);
+        if (group.serviceId() == mDataPointer->mDataList.at(row)[2].toInt())
+        {
+            group.longPressed(coords, params);
+            break;
+        }
+    }
+    return params;
 }
 

@@ -18,29 +18,38 @@
 #define CNTABSTRACTVIEWFACTORY_H_
 
 #include <QObject>
+#include "qtpbkglobal.h"
+
 class CntAbstractView;
 class HbMainWindow;
+class CntExtensionManager;
 
-class CntAbstractViewFactory : public QObject
-    {
-    Q_OBJECT
-    
+class CntAbstractViewFactory
+{
+
 public:
     virtual ~CntAbstractViewFactory() {}
     virtual CntAbstractView* createView( int aViewId ) = 0;
-    };
+};
 
 /*!
  * Default implementation of the view factory
  * 
  */
-class CntDefaultViewFactory : public CntAbstractViewFactory
-    {
+class QTPBK_EXPORT CntDefaultViewFactory : public CntAbstractViewFactory
+{
+    
 public:
     CntDefaultViewFactory();
     ~CntDefaultViewFactory();
-    
+
 public:
     CntAbstractView* createView( int aId );
-    };
+    
+private:
+    CntAbstractView* createPluginView( int aId );
+
+private:
+    CntExtensionManager *mExtensionManager;
+};
 #endif /* CNTABSTRACTVIEWFACTORY_H_ */

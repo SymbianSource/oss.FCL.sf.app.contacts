@@ -48,6 +48,7 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 signals:
     void iconClicked();
@@ -64,6 +65,9 @@ public:
     HbIcon getIcon() const { return icon; }
     
     void setIcon(const HbIcon newIcon);
+
+private slots:
+    void orientationChanged(Qt::Orientation);
 
 #ifdef PBK_UNIT_TEST
 public:

@@ -14,8 +14,8 @@
 * Description:
 *
 */
+
 #include "cnteditorfactory.h"
-#include "cntviewmanager.h"
 #include "cntnameeditormodel.h"
 #include "cntphonenumbermodel.h"
 #include "cntphonenumberviewitem.h"
@@ -32,9 +32,12 @@
 #include "cntcompanyeditormodel.h"
 #include "cntfamilyeditormodel.h"
 #include "cntdetaileditor.h"
+#include "cntgroupeditormodel.h"
+#include "cntabstractview.h"
+#include "cntdetaileditor.h"
 
-CntEditorFactory::CntEditorFactory(CntViewManager* aMgr, QObject* aParent) :
-    QObject(aParent), iViewMgr(aMgr)
+CntEditorFactory::CntEditorFactory( QObject* aParent ) :
+    QObject(aParent)
 {
 }
 
@@ -42,93 +45,91 @@ CntEditorFactory::~CntEditorFactory()
 {
 }
 
-CntBaseView* CntEditorFactory::createNameEditorView(QContact aContact)
+/*!
+The View's Id should have been set before calling this function.
+*/
+void CntEditorFactory::setupEditorView(CntDetailEditor &aEditor, QContact &aContact)
 {
-    return createEditor(CntViewParameters::namesEditorView,
-        new CntNameEditorModel(new QContact(aContact)), 
-        NULL, 
-        qtTrId("Edit contact name"));
-}
-
-CntBaseView* CntEditorFactory::createNumberEditorView(QContact aContact)
-{
-    return createEditor( CntViewParameters::phoneNumberEditorView,
-        new CntPhoneNumberModel(new QContact(aContact)),
-        new CntPhoneNumberViewItem(), 
-        qtTrId("Edit phone number"),
-        qtTrId("Add number"));
-}
-
-CntBaseView* CntEditorFactory::createEmailEditorView(QContact aContact)
-{
-    return createEditor(CntViewParameters::emailEditorView,
-        new CntEmailEditorModel(new QContact(aContact)),
-        new CntEmailEditorViewItem(), 
-        qtTrId("Edit email details"),
-        qtTrId("Add email"));
-}
-
-CntBaseView* CntEditorFactory::createAddressEditorView(QContact aContact)
-{
-    return createEditor(CntViewParameters::addressEditorView,
-        new CntAddressModel(new QContact(aContact)), 
-        new CntAddressViewItem(),
-        qtTrId("Edit address details"));
-}
-
-CntBaseView* CntEditorFactory::createUrlEditorView(QContact aContact)
-{
-    return createEditor(CntViewParameters::urlEditorView,
-        new CntUrlEditorModel(new QContact(aContact)), 
-        new CntUrlEditorViewItem(),
-        qtTrId("Edit URL details"),
-        qtTrId("Add URL"));
-}
-
-CntBaseView* CntEditorFactory::createNoteEditorView(QContact aContact)
-{
-    return createEditor(CntViewParameters::noteEditorView,
-        new CntNoteEditorModel(new QContact(aContact)),
-        new CntNoteEditorViewItem(), 
-        qtTrId("Edit note details"),
-        qtTrId("Add note"));
-}
-
-CntBaseView* CntEditorFactory::createDateEditorView(QContact aContact)
-{
-    return createEditor(CntViewParameters::dateEditorView,
-        new CntDateEditorModel(new QContact(aContact)),
-        new CntDateEditorViewItem(), 
-        qtTrId("Edit date details"));
-}
-
-CntBaseView* CntEditorFactory::createCompanyEditorView(QContact aContact)
-{
-    return createEditor(CntViewParameters::companyEditorView,
-        new CntCompanyEditorModel(new QContact(aContact)), 
-        NULL, 
-        qtTrId("Edit company details"));
-}
-
-CntBaseView* CntEditorFactory::createFamilyEditorView(QContact aContact)
-{
-    return createEditor(CntViewParameters::familyDetailEditorView,
-        new CntFamilyEditorModel(new QContact(aContact)), 
-        NULL, 
-        qtTrId("Edit family details"));
-}
-
-CntBaseView* CntEditorFactory::createEditor(
-    CntViewParameters::ViewId aId, CntDetailEditorModel* aModel,
-    HbDataFormViewItem* aProto, QString aTitle, QString aInsert )
-{
-    CntDetailEditor* editor = new CntDetailEditor(iViewMgr);
-    editor->setViewId( aId );
-    editor->setHeader(aTitle);
-    editor->setDetails(aModel, aProto);
-    if ( aInsert.length() > 0 )
+    int viewId = aEditor.viewId();
+    
+    switch ( viewId )
     {
-        editor->setInsertAction( aInsert );
+    case emailEditorView: 
+    {
+        aEditor.setDetails(new CntEmailEditorModel(new QContact(aContact)), new CntEmailEditorViewItem);
+        aEditor.setHeader(hbTrId("txt_phob_subtitle_edit_email_address"));
+        aEditor.setInsertAction(hbTrId("txt_phob_list_add_email_address"));
+        break;
     }
-    return editor;
+        
+    case namesEditorView:
+    {
+        aEditor.setDetails(new CntNameEditorModel(new QContact(aContact)), NULL);
+        aEditor.setHeader(hbTrId("txt_phob_subtitle_edit_contact_name"));
+        break;
+    }
+
+    case urlEditorView:
+    {
+        aEditor.setDetails(new CntUrlEditorModel(new QContact(aContact)), new CntUrlEditorViewItem);
+        aEditor.setHeader(hbTrId("txt_phob_subtitle_edit_web_address"));
+        aEditor.setInsertAction(hbTrId("txt_phob_list_add_url_address"));
+        break;
+    }
+    
+    case companyEditorView:
+    {
+        aEditor.setDetails(new CntCompanyEditorModel(new QContact(aContact)), NULL);
+        aEditor.setHeader(hbTrId("txt_phob_subtitle_edit_company_details"));
+        break;
+    }
+    
+    case phoneNumberEditorView:
+    {
+        aEditor.setDetails(new CntPhoneNumberModel(new QContact(aContact)), new CntPhoneNumberViewItem);
+        aEditor.setHeader(hbTrId("txt_phob_subtitle_edit_phone_number"));
+        aEditor.setInsertAction(hbTrId("txt_phob_opt_add_number"));
+        break;
+    }
+    
+    case noteEditorView:
+    {
+        aEditor.setDetails(new CntNoteEditorModel(new QContact(aContact)), new CntNoteEditorViewItem);
+        aEditor.setHeader(hbTrId("Edit note details"));
+        aEditor.setInsertAction(hbTrId("Add note"));
+        break;
+    }
+
+    case familyDetailEditorView:
+    {
+        aEditor.setDetails(new CntFamilyEditorModel(new QContact(aContact)), NULL);
+        aEditor.setHeader(hbTrId("txt_phob_subtitle_edit_family_details"));
+        break;
+    }
+
+    case addressEditorView:
+    {
+        aEditor.setDetails(new CntAddressModel(new QContact(aContact)), NULL);
+        aEditor.setHeader(hbTrId("txt_phob_subtitle_edit_address_details"));
+        break;
+    }
+
+    case dateEditorView:
+    {
+        aEditor.setDetails(new CntDateEditorModel(new QContact(aContact)), new CntDateEditorViewItem);
+        aEditor.setHeader(hbTrId("txt_phob_subtitle_edit_date"));
+        break;
+    }
+        
+    case groupEditorView:
+    {
+        aEditor.setDetails(new CntGroupEditorModel(new QContact(aContact)), NULL);
+        aEditor.setHeader(hbTrId("txt_phob_subtitle_edit_group_details"));
+        break;
+    }
+
+    default:
+       break;
+    }
 }
+// End of File

@@ -69,7 +69,7 @@ private:
     QContactManager         *mContactManager;
     MobCntModel             *mCntModel;
     QContact                *mContact;
-    QGraphicsWidget         *mContainerWidget;
+    HbWidget                *mContainerWidget;
     QGraphicsLinearLayout   *mContainerLayout;  
 };
 

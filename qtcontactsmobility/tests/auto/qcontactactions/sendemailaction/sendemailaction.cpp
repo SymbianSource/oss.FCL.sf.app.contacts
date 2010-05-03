@@ -110,11 +110,6 @@ QContactActionDescriptor QContactSendEmailAction::actionDescriptor() const
     return ret;
 }
 
-QVariantMap QContactSendEmailAction::metadata() const
-{
-    return QVariantMap();
-}
-
 QVariantMap QContactSendEmailAction::metaData() const
 {
     return QVariantMap();
@@ -128,19 +123,25 @@ QContactFilter QContactSendEmailAction::contactFilter(const QVariant& value) con
     return retn;
 }
 
-bool QContactSendEmailAction::supportsDetail(const QContactDetail& detail) const
+bool QContactSendEmailAction::isDetailSupported(const QContactDetail &detail, const QContact &) const
 {
     return (detail.definitionName() == QContactEmailAddress::DefinitionName);
 }
 
-void QContactSendEmailAction::invokeAction(const QContact& contact, const QContactDetail& detail)
+QList<QContactDetail> QContactSendEmailAction::supportedDetails(const QContact& contact) const
+{
+    return contact.details(QContactEmailAddress::DefinitionName);
+}
+
+bool QContactSendEmailAction::invokeAction(const QContact& contact, const QContactDetail& detail, const QVariantMap& )
 {
     Q_UNUSED(contact);
     Q_UNUSED(detail);
     QTimer::singleShot(1, this, SLOT(performAction()));
+    return true;
 }
 
-QVariantMap QContactSendEmailAction::result() const
+QVariantMap QContactSendEmailAction::results() const
 {
     return QVariantMap();
 }
@@ -148,5 +149,5 @@ QVariantMap QContactSendEmailAction::result() const
 void QContactSendEmailAction::performAction()
 {
     QMessageBox::information(0, "SendEmail Action", "This example action exists as an example of how the action interface may be implemented; it does not offer the advertised functionality.");
-    emit progress(QContactAction::Finished, QVariantMap());
+    emit stateChanged(QContactAction::FinishedState);
 }

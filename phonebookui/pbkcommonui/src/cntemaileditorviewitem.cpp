@@ -19,6 +19,7 @@
 #include "cntdetailconst.h"
 
 #include <qcontactdetail.h>
+#include <qgraphicslinearlayout.h>
 #include <qcontactemailaddress.h>
 #include <qgraphicslinearlayout.h>
 #include <hbwidget.h>
@@ -33,9 +34,11 @@
 #include <QStandardItemModel>
 
 CntEmailEditorViewItem::CntEmailEditorViewItem( QGraphicsItem* aParent ) :
-CntDetailViewItem( aParent )
+CntDetailViewItem( aParent ),
+mBox(NULL),
+mEdit(NULL),
+mLayout(NULL)
     {
-    
     }
 
 CntEmailEditorViewItem::~CntEmailEditorViewItem()
@@ -50,17 +53,21 @@ HbAbstractViewItem* CntEmailEditorViewItem::createItem()
 
 HbWidget* CntEmailEditorViewItem::createCustomWidget()
     {
-    QGraphicsLinearLayout* layout = new QGraphicsLinearLayout( itemView()->mainWindow()->orientation() );
+    connect(itemView()->mainWindow(), SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(changeOrientation(Qt::Orientation)));
+    mLayout = new QGraphicsLinearLayout( itemView()->mainWindow()->orientation() );
     HbWidget* widget = new HbWidget();
     mBox = new HbComboBox();
     mEdit = new HbLineEdit();
     mEdit->setMaxLength( CNT_EMAIL_EDITOR_MAXLENGTH );
     mEdit->setInputMethodHints(Qt::ImhPreferLowercase);
     
-    widget->setLayout( layout );
-    layout->addItem( mBox );
-    layout->addItem( mEdit );
+    widget->setLayout( mLayout );
+    mLayout->addItem( mBox );
+    mLayout->addItem( mEdit );
         
+    mLayout->setStretchFactor(mBox, 2);
+    mLayout->setStretchFactor(mEdit, 2);
+    
     connect( mBox, SIGNAL(currentIndexChanged(int)), this, SLOT(indexChanged(int)) );
     connect( mEdit, SIGNAL(textChanged(QString)),this, SLOT(textChanged(QString)) );
         
@@ -106,6 +113,13 @@ void CntEmailEditorViewItem::textChanged( QString aText )
     QContactEmailAddress address = item->detail();
     address.setEmailAddress( aText );
     item->setDetail( address );
+    }
+
+void CntEmailEditorViewItem::changeOrientation(Qt::Orientation aOrient)
+    {
+        if (mLayout) {
+            mLayout->setOrientation(aOrient);
+        }
     }
 
 void CntEmailEditorViewItem::constructSubTypeModel( QStringList aContext )

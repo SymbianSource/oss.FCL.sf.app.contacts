@@ -17,12 +17,12 @@
 #ifndef CNTDEFAULTVIEWMANAGER_H_
 #define CNTDEFAULTVIEWMANAGER_H_
 
-#include "cntviewmanager.h"
-#include "cntabstractviewmanager.h"
+#include <cntabstractviewmanager.h>
+#include <hbnamespace.h>
+#include "qtpbkglobal.h"
 
-//class CntModelProvider;
-class MobCntModel;
-class CntDefaultViewFactory;
+class HbMainWindow;
+class CntAbstractViewFactory;
 class CntAbstractView;
 class CntViewNavigator;
 
@@ -32,32 +32,39 @@ QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
 
-class QTPBK_EXPORT CntDefaultViewManager : public CntViewManager, public CntAbstractViewManager
-    {
+class QTPBK_EXPORT CntDefaultViewManager : public QObject, public CntAbstractViewManager
+{
+    Q_OBJECT
+    
 public:
-    CntDefaultViewManager( CntMainWindow* aWindow, CntViewParameters::ViewId defaultView );
+    CntDefaultViewManager( HbMainWindow* aWindow );
     ~CntDefaultViewManager();
     
+    // ownership transferred
+    void setViewFactory( CntAbstractViewFactory* aFactory );
+    void setViewNavigator( CntViewNavigator* aNavigator );
+    
 public: // From CntAbstractViewManager
-    void changeView( const CntViewParameters& aArgs );
-    void back( const CntViewParameters& aArgs );
+    void changeView( const CntViewParameters aArgs );
+    void back( const CntViewParameters aArgs );
     QContactManager* contactManager( const QString& aType );
     
-public: // From CntViewManager
-    bool isDepracatedView( CntViewParameters::ViewId aViewId );
-    
-private:
+private slots:
     void removeCurrentView();
-    void switchView( const CntViewParameters& aArgs );
+    void deleteOldView();
+    void switchView( const CntViewParameters aArgs, QFlags<Hb::ViewSwitchFlag> flags );
     
 private:
-    CntDefaultViewFactory* mFactory;
-    CntAbstractView* mCurrent;
-    QMap<CntViewParameters::ViewId, CntAbstractView*> mDefaults;
-    CntViewNavigator* mNavigator;
-    CntViewParameters* mArgs;
+    CntAbstractViewFactory*      mFactory;
+    CntAbstractView*             mCurrent;
+    CntAbstractView*             mOldView;
+    QMap<int, CntAbstractView*>  mDefaults;
+    CntViewNavigator*            mNavigator;
+    CntViewParameters            mArgs;
     
-    //CntModelProvider* mModelProvider;
-    QList<QContactManager*> mBackends;
-    };
+    QList<QContactManager*>      mBackends;
+    HbMainWindow*                mMainWindow;
+    
+    friend class TestCntDefaultViewManager;
+};
 #endif /* CNTDEFAULTVIEWMANAGER_H_ */

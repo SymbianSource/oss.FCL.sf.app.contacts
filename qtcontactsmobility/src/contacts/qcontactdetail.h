@@ -74,19 +74,19 @@ public:
 
     // Predefined attribute names and values
 #ifdef Q_QDOC
-    const char* FieldContext;
-    const char* ContextHome;
-    const char* ContextWork;
-    const char* ContextOther;
-    const char* FieldDetailUri;
-    const char* FieldLinkedDetailUris;
+    static const QLatin1Constant FieldContext;
+    static const QLatin1Constant ContextHome;
+    static const QLatin1Constant ContextWork;
+    static const QLatin1Constant ContextOther;
+    static const QLatin1Constant FieldDetailUri;
+    static const QLatin1Constant FieldLinkedDetailUris;
 #else
-    Q_DECLARE_LATIN1_LITERAL(FieldContext, "Context");
-    Q_DECLARE_LATIN1_LITERAL(ContextHome, "Home");
-    Q_DECLARE_LATIN1_LITERAL(ContextWork, "Work");
-    Q_DECLARE_LATIN1_LITERAL(ContextOther, "Other");
-    Q_DECLARE_LATIN1_LITERAL(FieldDetailUri, "DetailUri");
-    Q_DECLARE_LATIN1_LITERAL(FieldLinkedDetailUris, "LinkedDetailUris");
+    Q_DECLARE_LATIN1_CONSTANT(FieldContext, "Context");
+    Q_DECLARE_LATIN1_CONSTANT(ContextHome, "Home");
+    Q_DECLARE_LATIN1_CONSTANT(ContextWork, "Work");
+    Q_DECLARE_LATIN1_CONSTANT(ContextOther, "Other");
+    Q_DECLARE_LATIN1_CONSTANT(FieldDetailUri, "DetailUri");
+    Q_DECLARE_LATIN1_CONSTANT(FieldLinkedDetailUris, "LinkedDetailUris");
 #endif
 
     bool operator==(const QContactDetail& other) const;
@@ -98,16 +98,15 @@ public:
     int key() const;
     void resetKey();
 
-    void setPreferredActions(const QList<QContactActionDescriptor>& preferredActions);
-    QList<QContactActionDescriptor> preferredActions() const;
+    void Q_DECL_DEPRECATED setPreferredActions(const QList<QContactActionDescriptor>& preferredActions);
+    QList<QContactActionDescriptor> Q_DECL_DEPRECATED preferredActions() const;
 
-    QVariantMap Q_DECL_DEPRECATED values() const; // deprecated
     QString value(const QString& key) const;
     bool setValue(const QString& key, const QVariant& value);
     bool removeValue(const QString& key);
     bool hasValue(const QString& key) const;
 
-    QVariantMap variantValues() const; // replaces deprecated values() fn.
+    QVariantMap variantValues() const;
     QVariant variantValue(const QString& key) const;
     template <typename T> T value(const QString& key) const
     {
@@ -166,6 +165,11 @@ private:
     QSharedDataPointer<QContactDetailPrivate> d;
 };
 
+Q_CONTACTS_EXPORT uint qHash(const QContactDetail& key);
+#ifndef QT_NO_DEBUG_STREAM
+Q_CONTACTS_EXPORT QDebug operator<<(QDebug dbg, const QContactDetail& detail);
+#endif
+
 Q_DECLARE_OPERATORS_FOR_FLAGS(QContactDetail::AccessConstraints);
 
 #define Q_DECLARE_CUSTOM_CONTACT_DETAIL(className, definitionNameString) \
@@ -173,10 +177,10 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(QContactDetail::AccessConstraints);
     className(const QContactDetail& field) : QContactDetail(field, DefinitionName) {} \
     className& operator=(const QContactDetail& other) {assign(other, DefinitionName); return *this;} \
     \
-    Q_DECLARE_LATIN1_LITERAL(DefinitionName, definitionNameString);
+    Q_DECLARE_LATIN1_CONSTANT(DefinitionName, definitionNameString);
 
 #define Q_IMPLEMENT_CUSTOM_CONTACT_DETAIL(className, definitionNameString) \
-    Q_DEFINE_LATIN1_LITERAL(className::DefinitionName, definitionNameString)
+    Q_DEFINE_LATIN1_CONSTANT(className::DefinitionName, definitionNameString)
 
 QTM_END_NAMESPACE
 

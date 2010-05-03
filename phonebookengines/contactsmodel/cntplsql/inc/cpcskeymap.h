@@ -90,7 +90,7 @@ NONSHARABLE_CLASS(CPcsKeyMap) : public CBase
 		/**
 		 * Construct mappings between keys and characters.
 		 */
-		void ContructKeyboardMappingsL();
+		TBool ContructKeyboardMappings();
 
 		/**
          * Returns a list of languages installed on the phone.
@@ -111,8 +111,6 @@ NONSHARABLE_CLASS(CPcsKeyMap) : public CBase
         TInt KeyIdToNumber(TInt aKeyId) const;
         
         TChar ArrayIndexToNumberChar(TInt aArrayIndex) const;
-
-		const HbKeymap* GetKeymap(HbInputLanguage aLanguage) const;
 #else // #if defined(USE_ORBIT_KEYMAP)
 		TChar GetNumericValueForChar(TChar input) const;
 #endif // #if defined(USE_ORBIT_KEYMAP)

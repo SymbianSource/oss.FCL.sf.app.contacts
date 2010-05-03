@@ -19,6 +19,8 @@ DEPENDPATH += . \
 
 INCLUDEPATH +=  ../pbkcommonui/inc \
                 ../inc
+                
+INCLUDEPATH += ../../phonebookengines/cntimageutility/inc
 
 INCLUDEPATH += . \
     inc
@@ -31,13 +33,13 @@ MOC_DIR = moc
 HEADERS += inc/cntservicemainwindow.h \
            inc/cntserviceviewmanager.h \
            inc/cntservicehandler.h \
-           inc/cntservicescontact.h \
            inc/cntservicecontactfetchview.h \
            inc/cntservicecontactselectionview.h \
            inc/cntserviceeditview.h \
            inc/cntservicecontactcardview.h \
            inc/cntservicesubeditview.h \
-           inc/cntserviceassigncontactcardview.h
+           inc/cntserviceassigncontactcardview.h \
+           inc/cntserviceviewfactory.h 
 
 SOURCES += src/main.cpp \
            src/cntservicemainwindow.cpp \
@@ -48,11 +50,11 @@ SOURCES += src/main.cpp \
            src/cntserviceeditview.cpp \
            src/cntservicecontactcardview.cpp \
            src/cntservicesubeditview.cpp \
-           src/cntserviceassigncontactcardview.cpp
+           src/cntserviceassigncontactcardview.cpp \
+           src/cntserviceviewfactory.cpp
 
 # capability
-TARGET.CAPABILITY = ALL \
-    -TCB
+TARGET.CAPABILITY = CAP_APPLICATION
 
 TRANSLATIONS = contacts.ts
 
@@ -63,20 +65,10 @@ LIBS += -lxqservice \
         -lhbcore \
         -lqtcontacts \
         -lmobcntmodel \
-        -lpbkcommonui
+        -lpbkcommonui \
+        -lqtversit \
+        -lcntimageutility
 
 SERVICE.FILE = service_conf.xml
 SERVICE.OPTIONS = embeddable
 SERVICE.OPTIONS += hidden
-
-# export the header file
-CNT_SERVICES_PUBLIC_HEADERS += cntservicescontact.h
-
-symbian {
-    deploy.path = /
-    headers.sources = $$CNT_SERVICES_PUBLIC_HEADERS
-    headers.path = epoc32/include
-    DEPLOYMENT += exportheaders
-
-    for(header, headers.sources):BLD_INF_RULES.prj_exports += "./inc/$$header $$deploy.path$$headers.path/$$basename(header)"
-}

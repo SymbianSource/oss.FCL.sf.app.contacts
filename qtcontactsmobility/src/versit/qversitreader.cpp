@@ -47,6 +47,7 @@
 
 #include <QTextCodec>
 #include <QMutexLocker>
+#include <QBuffer>
 
 QTM_USE_NAMESPACE
 
@@ -55,7 +56,7 @@ QTM_USE_NAMESPACE
   \preliminary
   \brief The QVersitReader class reads Versit documents such as vCards from a device.
   \ingroup versit
- 
+
   QVersitReader concatenation of Versit documents such as vCards
   from a text stream and returns a list of QVersitDocument instances.
   QVersitReader supports reading from an abstract I/O device
@@ -63,7 +64,7 @@ QTM_USE_NAMESPACE
   The reading can be done asynchronously, and the
   waitForFinished() function can be used to make a blocking
   read.
- 
+
   \sa QVersitDocument
  */
 
@@ -95,14 +96,6 @@ QTM_USE_NAMESPACE
  */
 
 /*!
- * \fn QVersitReader::resultsAvailable(QList<QVersitDocument>& results)
- * \deprecated
- * The signal is emitted by the reader as it reads from the device when it has made more Versit
- * documents available.
- * \a results is the complete list of documents read so far.
- */
-
-/*!
  * \fn QVersitReader::resultsAvailable()
  * The signal is emitted by the reader as it reads from the device when it has made more Versit
  * documents available.
@@ -111,16 +104,28 @@ QTM_USE_NAMESPACE
 /*! Constructs a new reader. */
 QVersitReader::QVersitReader() : d(new QVersitReaderPrivate)
 {
-    connect(d, SIGNAL(stateChanged(QVersitReader::State)),
-            this, SIGNAL(stateChanged(QVersitReader::State)),Qt::DirectConnection);
-    connect(d, SIGNAL(resultsAvailable(QList<QVersitDocument>&)),
-            this, SIGNAL(resultsAvailable(QList<QVersitDocument>&)), Qt::DirectConnection);
-    connect(d, SIGNAL(resultsAvailable(QList<QVersitDocument>&)),
-            this, SIGNAL(resultsAvailable()), Qt::DirectConnection);
+    d->init(this);
 }
-    
-/*! 
- * Frees the memory used by the reader. 
+
+/*! Constructs a new reader that reads from \a inputDevice. */
+QVersitReader::QVersitReader(QIODevice *inputDevice) : d(new QVersitReaderPrivate)
+{
+    d->init(this);
+    d->mIoDevice = inputDevice;
+}
+
+/*! Constructs a new reader that reads from \a inputData. */
+QVersitReader::QVersitReader(const QByteArray &inputData) : d(new QVersitReaderPrivate)
+{
+    d->init(this);
+    d->mInputBytes.reset(new QBuffer);
+    d->mInputBytes->setData(inputData);
+    d->mInputBytes->open(QIODevice::ReadOnly);
+    d->mIoDevice = d->mInputBytes.data();
+}
+
+/*!
+ * Frees the memory used by the reader.
  * Waits until a pending asynchronous reading has been completed.
  */
 QVersitReader::~QVersitReader()
@@ -131,18 +136,37 @@ QVersitReader::~QVersitReader()
 
 /*!
  * Sets the device used for reading the input to be the given \a device.
+ * Does not take ownership of the device.  This overrides any byte array input source set with
+ * setData().
  */
 void QVersitReader::setDevice(QIODevice* device)
 {
+    d->mInputBytes.reset(0);
     d->mIoDevice = device;
 }
 
 /*!
- * Returns the device used for reading input.
+ * Returns the device used for reading input, or 0 if no device has been set (or if the input source
+ * was set with setData().
  */
 QIODevice* QVersitReader::device() const
 {
-    return d->mIoDevice;
+    if (d->mInputBytes.isNull())
+        return d->mIoDevice;
+    else
+        return 0;
+}
+
+/*!
+ * Sets the data to read from to the byte array input source, \a inputData.
+ * This overrides any device set with setDevice().
+ */
+void QVersitReader::setData(const QByteArray &inputData)
+{
+    if (d->mInputBytes.isNull())
+        d->mInputBytes.reset(new QBuffer);
+    d->mInputBytes->setData(inputData);
+    d->mIoDevice = d->mInputBytes.data();
 }
 
 /*!
@@ -164,6 +188,22 @@ void QVersitReader::setDefaultCodec(QTextCodec *codec)
 QTextCodec* QVersitReader::defaultCodec() const
 {
     return d->mDefaultCodec;
+}
+
+/*!
+ * Returns the state of the reader.
+ */
+QVersitReader::State QVersitReader::state() const
+{
+    return d->state();
+}
+
+/*!
+ * Returns the error encountered by the last operation.
+ */
+QVersitReader::Error QVersitReader::error() const
+{
+    return d->error();
 }
 
 /*!
@@ -223,35 +263,6 @@ QList<QVersitDocument> QVersitReader::results() const
 {
     QMutexLocker locker(&d->mMutex);
     return d->mVersitDocuments;
-}
-
-/*!
- * Returns the state of the reader.
- */
-QVersitReader::State QVersitReader::state() const
-{
-    return d->state();
-}
-
-/*!
- * Returns the error encountered by the last operation.
- */
-QVersitReader::Error QVersitReader::error() const
-{
-    return d->error();
-}
-
-/*! \internal */
-bool QVersitReader::readAll()
-{
-    startReading();
-    return waitForFinished();
-}
-
-/*! \internal */
-QList<QVersitDocument> QVersitReader::result() const
-{
-    return results();
 }
 
 #include "moc_qversitreader.cpp"

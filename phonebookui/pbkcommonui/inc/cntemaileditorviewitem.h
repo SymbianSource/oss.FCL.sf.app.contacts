@@ -24,6 +24,7 @@ class HbWidget;
 class HbAbstractViewItem;
 class HbComboBox;
 class HbLineEdit;
+class QGraphicsLinearLayout;
 
 class CntEmailEditorViewItem : public CntDetailViewItem
     {
@@ -40,6 +41,7 @@ public:
 public slots:
     void indexChanged( int aIndex );    // HbComboBox index changed
     void textChanged( QString aText );  // HbLineEdit text changed
+    void changeOrientation(Qt::Orientation aOrient);
     
 private:
     void constructSubTypeModel( QStringList aContext );
@@ -49,7 +51,8 @@ public:
 #else
 private:
 #endif
-    HbComboBox* mBox;
-    HbLineEdit* mEdit;
+    HbComboBox*             mBox;
+    HbLineEdit*             mEdit;
+    QGraphicsLinearLayout*  mLayout;
     };
 #endif /* CNTEMAILEDITORVIEWITEM_H_ */

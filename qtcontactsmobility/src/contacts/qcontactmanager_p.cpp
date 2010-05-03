@@ -141,7 +141,7 @@ void QContactManagerData::createEngine(const QString& managerName, const QMap<QS
                 if (implementationVersion == -1 ||//no given implementation version required
                         versions.isEmpty() || //the manager engine factory does not report any version
                         versions.contains(implementationVersion)) {
-                    m_engine = f->engine(parameters, m_error);
+                    m_engine = f->engine(parameters, &m_error);
                     found = true;
                     break;
                 }
@@ -167,7 +167,7 @@ void QContactManagerData::createEngine(const QString& managerName, const QMap<QS
         if (!m_engine) {
             if (m_error == QContactManager::NoError)
                 m_error = QContactManager::DoesNotExistError;
-            m_engine = new QContactInvalidEngine(); // XXX share
+            m_engine = new QContactInvalidEngine();
         }
     }
 }
@@ -176,6 +176,10 @@ void QContactManagerData::createEngine(const QString& managerName, const QMap<QS
 void QContactManagerData::loadStaticFactories()
 {
     if (!m_discoveredStatic) {
+#if !defined QT_NO_DEBUG
+        const bool showDebug = qgetenv("QT_DEBUG_PLUGINS").toInt() > 0;
+#endif
+
         m_discoveredStatic = true;
 
         /* Clean stuff up at the end */
@@ -188,7 +192,10 @@ void QContactManagerData::loadStaticFactories()
             QContactActionFactory *g = qobject_cast<QContactActionFactory*>(staticPlugins.at(i));
             if (f) {
                 QString name = f->managerName();
-                qDebug() << "Static: found an engine plugin" << f << "with name" << name;
+#if !defined QT_NO_DEBUG
+                if (showDebug)
+                    qDebug() << "Static: found an engine plugin" << f << "with name" << name;
+#endif
                 if (name != QLatin1String("memory") && name != QLatin1String("invalid") && !name.isEmpty()) {
                     // we also need to ensure that we haven't already loaded this factory.
                     if (m_engines.keys().contains(name)) {
@@ -203,8 +210,10 @@ void QContactManagerData::loadStaticFactories()
 
             if (g) {
                 QString name = g->name();
-                qDebug() << "Static: found an action factory" << g << "with name" << name;
-
+#if !defined QT_NO_DEBUG
+                if (showDebug)
+                    qDebug() << "Static: found an action factory" << g << "with name" << name;
+#endif
                 if (m_actionfactories.contains(g)) {
                     qWarning() << "Static contacts plugin" << name << "has the same name as currently loaded plugin; ignored";
                 } else {
@@ -225,9 +234,71 @@ void QContactManagerData::loadStaticFactories()
     }
 }
 
+class DirChecker
+{
+public:
+    DirChecker();
+    ~DirChecker();
+    bool checkDir(const QDir& dir);
+
+private:
+#if defined(Q_OS_SYMBIAN)
+    RFs rfs;
+#endif
+};
+
+#if defined(Q_OS_SYMBIAN)
+DirChecker::DirChecker()
+{
+    qt_symbian_throwIfError(rfs.Connect());
+}
+
+bool DirChecker::checkDir(const QDir& dir)
+{
+    bool pathFound = false;
+    // In Symbian, going cdUp() in a c:/private/<uid3>/ will result in *platsec* error at fileserver (requires AllFiles capability)
+    // Also, trying to cd() to a nonexistent directory causes *platsec* error. This does not cause functional harm, but should
+    // nevertheless be changed to use native Symbian methods to avoid unnecessary platsec warnings (as per qpluginloader.cpp).
+    // Use native Symbian code to check for directory existence, because checking
+    // for files from under non-existent protected dir like E:/private/<uid> using
+    // QDir::exists causes platform security violations on most apps.
+    QString nativePath = QDir::toNativeSeparators(dir.absolutePath());
+    TPtrC ptr = TPtrC16(static_cast<const TUint16*>(nativePath.utf16()), nativePath.length());
+    TUint attributes;
+    TInt err = rfs.Att(ptr, attributes);
+    if (err == KErrNone) {
+        // yes, the directory exists.
+        pathFound = true;
+    }
+    return pathFound;
+}
+
+DirChecker::~DirChecker()
+{
+    rfs.Close();
+}
+#else
+DirChecker::DirChecker()
+{
+}
+
+DirChecker::~DirChecker()
+{
+}
+
+bool DirChecker::checkDir(const QDir &dir)
+{
+    return dir.exists();
+}
+#endif
+
 /* Plugin loader */
 void QContactManagerData::loadFactories()
 {
+#if !defined QT_NO_DEBUG
+    const bool showDebug = qgetenv("QT_DEBUG_PLUGINS").toInt() > 0;
+#endif
+
     // Always do this..
     loadStaticFactories();
 
@@ -242,7 +313,12 @@ void QContactManagerData::loadFactories()
         QSet<QString> processed;
 
         paths << QApplication::applicationDirPath() << QApplication::libraryPaths();
-        qDebug() << "Plugin paths:" << paths;
+#if !defined QT_NO_DEBUG
+        if (showDebug)
+            qDebug() << "Plugin paths:" << paths;
+#endif
+
+        DirChecker dirChecker;
 
         /* Enumerate our plugin paths */
         for (int i=0; i < paths.count(); i++) {
@@ -250,7 +326,7 @@ void QContactManagerData::loadFactories()
                 continue;
             processed.insert(paths.at(i));
             QDir pluginsDir(paths.at(i));
-            if (!pluginsDir.exists())
+            if (!dirChecker.checkDir(pluginsDir))
                 continue;
 
 #if defined(Q_OS_WIN)
@@ -264,41 +340,20 @@ void QContactManagerData::loadFactories()
             }
 #endif
 
-#if defined(Q_OS_SYMBIAN)
-            // In Symbian, going cdUp() in a c:/private/<uid3>/ will result in *platsec* error at fileserver (requires AllFiles capability)
-            // Also, trying to cd() to a nonexistent directory causes *platsec* error. This does not cause functional harm, but should
-            // nevertheless be changed to use native Symbian methods to avoid unnecessary platsec warnings (as per qpluginloader.cpp).
-            RFs rfs;
-            qt_symbian_throwIfError(rfs.Connect());
-            bool pluginPathFound = false;
-            QStringList directories;
-            directories << QString("plugins/contacts") << QString("contacts") << QString("../plugins/contacts");
-            foreach (const QString& dirName, directories) {
-                QString testDirPath = pluginsDir.path() + "/" + dirName;
-                testDirPath = QDir::cleanPath(testDirPath);
-                // Use native Symbian code to check for directory existence, because checking
-                // for files from under non-existent protected dir like E:/private/<uid> using
-                // QDir::exists causes platform security violations on most apps.
-                QString nativePath = QDir::toNativeSeparators(testDirPath);
-                TPtrC ptr = TPtrC16(static_cast<const TUint16*>(nativePath.utf16()), nativePath.length());
-                TUint attributes;
-                TInt err = rfs.Att(ptr, attributes);
-                if (err == KErrNone) {
-                    // yes, the directory exists.
-                    pluginsDir.cd(testDirPath);
-                    pluginPathFound = true;
-                    break;
-                }
-            }
-            rfs.Close();
-            if (pluginPathFound) {
-#else
-            if (pluginsDir.cd(QLatin1String("plugins/contacts")) || pluginsDir.cd(QLatin1String("contacts")) || (pluginsDir.cdUp() && pluginsDir.cd(QLatin1String("plugins/contacts")))) {
-#endif
+            QString subdir(QLatin1String("plugins/contacts"));
+            if (pluginsDir.path().endsWith(QLatin1String("/plugins"))
+                || pluginsDir.path().endsWith(QLatin1String("/plugins/")))
+                subdir = QLatin1String("contacts");
+
+            if (dirChecker.checkDir(QDir(pluginsDir.path() + QLatin1Char('/') + subdir))) {
+                pluginsDir.cd(subdir);
                 const QStringList& files = pluginsDir.entryList(QDir::Files);
-                qDebug() << "Looking for plugins in" << pluginsDir.path() << files;
+#if !defined QT_NO_DEBUG
+                if (showDebug)
+                    qDebug() << "Looking for contacts plugins in" << pluginsDir.path() << files;
+#endif
                 for (int j=0; j < files.count(); j++) {
-                    plugins << pluginsDir.absoluteFilePath(files.at(j));
+                    plugins <<  pluginsDir.absoluteFilePath(files.at(j));
                 }
             }
         }
@@ -311,8 +366,10 @@ void QContactManagerData::loadFactories()
 
             if (f) {
                 QString name = f->managerName();
-                qDebug() << "Dynamic: found an engine plugin" << f << "with name" << name;
-
+#if !defined QT_NO_DEBUG
+                if (showDebug)
+                    qDebug() << "Dynamic: found a contact engine plugin" << f << "with name" << name;
+#endif
                 if (name != QLatin1String("memory") && name != QLatin1String("invalid") && !name.isEmpty()) {
                     // we also need to ensure that we haven't already loaded this factory.
                     if (m_engines.keys().contains(name)) {
@@ -327,8 +384,10 @@ void QContactManagerData::loadFactories()
 
             if (g) {
                 QString name = g->name();
-                qDebug() << "Dynamic: found an action factory" << g << "with name" << name;
-
+#if !defined QT_NO_DEBUG
+                if (showDebug)
+                    qDebug() << "Dynamic: found a contact action factory" << g << "with name" << name;
+#endif
                 // we also need to ensure that we haven't already loaded this factory.
                 if (m_actionfactories.contains(g)) {
                     qWarning() << "Contacts plugin" << plugins.at(i) << "has the same name as currently loaded plugin" << name << "; ignored";
@@ -348,12 +407,14 @@ void QContactManagerData::loadFactories()
             }
 
             /* Debugging */
-            if (!f && !g) {
+#if !defined QT_NO_DEBUG
+            if (showDebug && !f && !g) {
                 qDebug() << "Unknown plugin:" << qpl.errorString();
                 if (qpl.instance()) {
                     qDebug() << "[qobject:" << qpl.instance() << "]";
                 }
             }
+#endif
         }
         
         QStringList engineNames;
@@ -364,8 +425,12 @@ void QContactManagerData::loadFactories()
             }
             engineNames << QString::fromAscii("%1[%2]").arg(f->managerName()).arg(versions.join(QString::fromAscii(",")));
         }
-        qDebug() << "Found engines:" << engineNames;
-        qDebug() << "Found actions:" << m_actionmap.keys();
+#if !defined QT_NO_DEBUG
+        if (showDebug) {
+            qDebug() << "Found engines:" << engineNames;
+            qDebug() << "Found actions:" << m_actionmap.keys();
+        }
+#endif
     }
 }
 

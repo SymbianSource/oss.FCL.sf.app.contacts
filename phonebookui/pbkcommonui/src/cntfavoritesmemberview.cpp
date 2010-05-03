@@ -17,36 +17,46 @@
 
 #include "cntfavoritesmemberview.h"
 #include "cntgroupselectionpopup.h"
+#include "qtpbkglobal.h"
 
 #include <hblistview.h>
-#include <hbtoolbar.h>
 #include <hbmenu.h>
 #include <hbaction.h>
+#include <hblistview.h>
+#include <hblistviewitem.h>
+#include <hbview.h>
+#include <hbaction.h>
+#include <hblabel.h>
+#include <mobcntmodel.h>
+#include <hbframebackground.h>
 
 const char *CNT_FAVORITESMEMBERVIEW_XML = ":/xml/contacts_favmember.docml";
 
-/*!
-Constructor, initialize member variables.
-\a viewManager is the parent that creates this view. \a parent is a pointer to parent QGraphicsItem (by default this is 0)
-*/
-CntFavoritesMemberView::CntFavoritesMemberView(CntViewManager *viewManager, QGraphicsItem *parent)
-:CntBaseView(viewManager, parent),
-mManageFavoritesAction(0), 
-mFavoritesMenu(0),
-mFavoriteListView(0)
+CntFavoritesMemberView::CntFavoritesMemberView() :
+mContact(NULL),
+mModel(NULL),
+mFavoriteListView(NULL), 
+mViewManager(NULL)
 {
     bool ok = false;
-    ok = loadDocument(CNT_FAVORITESMEMBERVIEW_XML);
-    
+    mDocumentLoader.load(CNT_FAVORITESMEMBERVIEW_XML, &ok);
+  
     if (ok)
     {
-        QGraphicsWidget *content = findWidget(QString("content"));
-        setWidget(content);
+        mView = static_cast<HbView*>(mDocumentLoader.findWidget(QString("view")));
     }
     else
     {
         qFatal("Unable to read :/xml/contacts_favmember.docml");
     }
+    
+    //back button
+    mSoftkey = new HbAction(Hb::BackNaviAction, mView);
+    connect(mSoftkey, SIGNAL(triggered()), this, SLOT(showPreviousView()));
+    
+    // menu actions
+    mManageFavoritesAction = static_cast<HbAction*>(mDocumentLoader.findObject("cnt:manageFavorite"));
+    connect(mManageFavoritesAction, SIGNAL(triggered()), this, SLOT(manageFavorites()));
 }
 
 /*!
@@ -54,44 +64,83 @@ Destructor
 */
 CntFavoritesMemberView::~CntFavoritesMemberView()
 {
-delete mManageFavoritesAction; 
-delete mFavoritesMenu;
-delete mContact;
+    mView->deleteLater();
+
+    delete mManageFavoritesAction; 
+    mManageFavoritesAction = 0;
+
+    delete mContact;
+    mContact = 0;
+
+    delete mModel;
+    mModel = 0;
 }
 
-/*!
-Save selections
-*/
-void CntFavoritesMemberView::aboutToCloseView()
+void CntFavoritesMemberView::showPreviousView()
 {
     CntViewParameters viewParameters;
-    viewManager()->back(viewParameters);
+    mViewManager->back(viewParameters);
 }
 
-void CntFavoritesMemberView::activateView(const CntViewParameters &viewParameters)
+void CntFavoritesMemberView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
 {
-    //group box
-    HbGroupBox* groupBox = static_cast<HbGroupBox *>(findWidget(QString("groupBox")));
-    mContact = new QContact(viewParameters.selectedContact());
+    if (mView->navigationAction() != mSoftkey)
+        mView->setNavigationAction(mSoftkey);   
+    
+    mContact = new QContact(aArgs.value(ESelectedContact).value<QContact>());
+    mViewManager = aMgr;
 
-    mFavoriteListView = static_cast<HbListView*>(findWidget(QString("cnt_listview_favorites")));
+    mFavoriteListView = static_cast<HbListView*> (mDocumentLoader.findWidget("listView"));
+    mFavoriteListView->setUniformItemSizes(true);
     connect(mFavoriteListView, SIGNAL(longPressed(HbAbstractViewItem *, const QPointF &)),
                       this,  SLOT(onLongPressed(HbAbstractViewItem *, const QPointF &)));
     
-    QContactRelationshipFilter rFilter;
-    rFilter.setRelationshipType(QContactRelationship::HasMember);
-    rFilter.setRelatedContactRole(QContactRelationshipFilter::First);
-    rFilter.setRelatedContactId(mContact->id());
-           
-    contactModel()->setFilterAndSortOrder(rFilter);
-    contactModel()->showMyCard(false);
-    mFavoriteListView->setModel(contactModel());
+    HbFrameBackground frame;
+    frame.setFrameGraphicsName("qtg_fr_list_normal");
+    frame.setFrameType(HbFrameDrawer::NinePieces);
+    mFavoriteListView->itemPrototypes().first()->setDefaultFrame(frame);
+
+    mFavoriteListView->listItemPrototype()->setGraphicsSize(HbListViewItem::Thumbnail);
+
+    if (!mModel)
+    {
+        QContactRelationshipFilter rFilter;
+        rFilter.setRelationshipType(QContactRelationship::HasMember);
+        rFilter.setRelatedContactRole(QContactRelationship::First);
+        rFilter.setRelatedContactId(mContact->id());
+
+        QContactSortOrder sortOrderFirstName;
+        sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,
+            QContactName::FieldFirst);
+        sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
+
+        QContactSortOrder sortOrderLastName;
+        sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,
+            QContactName::FieldLast);
+        sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
+
+        QList<QContactSortOrder> sortOrders;
+        sortOrders.append(sortOrderFirstName);
+        sortOrders.append(sortOrderLastName);
+
+        mModel = new MobCntModel(mViewManager->contactManager(SYMBIAN_BACKEND), rFilter, sortOrders, false);
     }
+
+    mFavoriteListView->setModel(mModel);
+
+    connect(mFavoriteListView, SIGNAL(activated (const QModelIndex&)), this,
+            SLOT(openContact(const QModelIndex&)));
+}
+
+void CntFavoritesMemberView::deactivate()
+{
+    
+}
 
 void CntFavoritesMemberView::manageFavorites()
 {
     // call a dialog to display the contacts
-    CntGroupSelectionPopup *groupSelectionPopup = new CntGroupSelectionPopup(contactManager(), mContact);
+    CntGroupSelectionPopup *groupSelectionPopup = new CntGroupSelectionPopup(mViewManager->contactManager(SYMBIAN_BACKEND), mContact);
     mFavoriteListView->setModel(0);
     groupSelectionPopup->populateListOfContact();
 
@@ -102,23 +151,9 @@ void CntFavoritesMemberView::manageFavorites()
     }
     delete groupSelectionPopup;
 	
-    mFavoriteListView->setModel(contactModel());
+    mFavoriteListView->setModel(mModel);
 }
 
-/*!
-Add actions also to toolbar
-*/
-void CntFavoritesMemberView::addMenuItems()
-{
-mManageFavoritesAction = new HbAction(hbTrId("Manage favorites"));
-mFavoritesMenu = new HbMenu();
-mFavoritesMenu->addAction(mManageFavoritesAction);
-
-connect(mManageFavoritesAction, SIGNAL(triggered()),
-        this, SLOT (manageFavorites()));
-
-setMenu(mFavoritesMenu);
-}
 
 /*!
 Called when a list item is longpressed
@@ -126,7 +161,7 @@ Called when a list item is longpressed
 void CntFavoritesMemberView::onLongPressed (HbAbstractViewItem *aItem, const QPointF &aCoords)
 {
     QModelIndex index = aItem->modelIndex();
-  QVariant variant = index.data(Qt::UserRole+1);
+    QVariant variant = index.data(Qt::UserRole+1);
     const QMap<QString, QVariant> map = variant.toMap();
 
     HbMenu *menu = new HbMenu();
@@ -169,18 +204,30 @@ void CntFavoritesMemberView::onLongPressed (HbAbstractViewItem *aItem, const QPo
 
 void CntFavoritesMemberView::openContact(const QModelIndex &index)
 {
-    QContact selectedContact = contactModel()->contact(index);
-    CntViewParameters viewParameters(CntViewParameters::commLauncherView);
-    viewParameters.setSelectedContact(selectedContact);
-    viewManager()->changeView(viewParameters);  
+    QContact selectedContact = mModel->contact(index);
+    
+    CntViewParameters viewParameters;
+    viewParameters.insert(EViewId, commLauncherView);
+    QVariant var;
+    var.setValue(selectedContact);
+    viewParameters.insert(ESelectedContact, var);
+    QVariant varGroup;
+    varGroup.setValue(*mContact);
+    viewParameters.insert(ESelectedGroupContact, varGroup);
+    viewParameters.insert(ESelectedAction, "FromGroupMemberView");
+    mViewManager->changeView(viewParameters);
 }
 
 void CntFavoritesMemberView::editContact(const QModelIndex &index)
 {
-    QContact selectedContact = contactModel()->contact(index);
-    CntViewParameters viewParameters(CntViewParameters::editView);
-    viewParameters.setSelectedContact(selectedContact);
-    viewManager()->changeView(viewParameters);
+    QContact selectedContact = mModel->contact(index);
+    
+    CntViewParameters viewParameters;
+    viewParameters.insert(EViewId, editView);
+    QVariant var;
+    var.setValue(selectedContact);
+    viewParameters.insert(ESelectedContact, var);
+    mViewManager->changeView(viewParameters);
 }
 
 /*!
@@ -189,11 +236,11 @@ Called after user clicked on the listview.
 void CntFavoritesMemberView::removeFromFavorites(const QModelIndex &index)
 {
     // get contact id using index
-        QContact selectedContact = contactModel()->contact(index);
+        QContact selectedContact = mModel->contact(index);
         QContactRelationship relationship;
         relationship.setRelationshipType(QContactRelationship::HasMember);
         relationship.setFirst(mContact->id());
         relationship.setSecond(selectedContact.id());
-        contactManager()->removeRelationship(relationship);
+        mViewManager->contactManager(SYMBIAN_BACKEND)->removeRelationship(relationship);
 }
 

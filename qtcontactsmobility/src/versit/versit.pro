@@ -64,24 +64,28 @@ HEADERS += \
     $$PUBLIC_HEADERS \
     $$PRIVATE_HEADERS
 
-qtAddLibrary(QtContacts)
-
 symbian { 
     TARGET.UID3 = 0x2002BFBF
     TARGET.EPOCALLOWDLLDATA = 1
-    TARGET.CAPABILITY = ALL -TCB
-    
+    TARGET.CAPABILITY = ALL \
+        -TCB
+        
     defFiles = \
         "$${LITERAL_HASH}ifdef WINSCW" \
-        "DEFFILE bwins/$${TARGET}.def" \
+        "DEFFILE ../s60installs/bwins/$${TARGET}.def" \
         "$${LITERAL_HASH}elif defined EABI" \
-        "DEFFILE eabi/$${TARGET}.def" \
+        "DEFFILE ../s60installs/eabi/$${TARGET}.def" \
         "$${LITERAL_HASH}endif "
     MMP_RULES += defFiles
-    
-    VERSIT_DEPLOYMENT.sources = QtVersit.dll
-    VERSIT_DEPLOYMENT.path = \sys\bin
-    DEPLOYMENT += VERSIT_DEPLOYMENT
+}
+
+maemo5|maemo6 {
+    CONFIG += create_pc create_prl
+    QMAKE_PKGCONFIG_DESCRIPTION = Qt Mobility - Versit API
+    pkgconfig.path = $$QT_MOBILITY_LIB/pkgconfig
+    pkgconfig.files = QtVersit.pc
+
+    INSTALLS += pkgconfig
 }
 
 CONFIG += app

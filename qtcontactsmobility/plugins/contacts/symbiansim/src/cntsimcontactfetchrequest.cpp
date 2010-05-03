@@ -43,14 +43,11 @@
 #include "cntsymbiansimengine.h"
 #include "cntsimstore.h"
 #include <qcontactfetchrequest.h>
+#include <qcontactlocalidfilter.h>
 
 CntSimContactFetchRequest::CntSimContactFetchRequest(CntSymbianSimEngine *engine, QContactFetchRequest *req)
-    :CntAbstractSimRequest(engine),
-     m_req(req)
+    :CntAbstractSimRequest(engine, req)
 {
-    connect( simStore(), SIGNAL(getInfoComplete(RMobilePhoneBookStore::TMobilePhoneBookInfoV5, QContactManager::Error)),
-        this, SLOT(getInfoComplete(RMobilePhoneBookStore::TMobilePhoneBookInfoV5, QContactManager::Error)), Qt::QueuedConnection );
-    
     connect( simStore(), SIGNAL(readComplete(QList<QContact>, QContactManager::Error)),
         this, SLOT(readComplete(QList<QContact>, QContactManager::Error)), Qt::QueuedConnection );
 }
@@ -60,52 +57,61 @@ CntSimContactFetchRequest::~CntSimContactFetchRequest()
     cancel();
 }
 
-bool CntSimContactFetchRequest::start()
+void CntSimContactFetchRequest::run()
 {
-    QContactManager::Error error = simStore()->getInfo();
-    if (error) {
-        QContactManagerEngine::updateRequestState(m_req, QContactAbstractRequest::FinishedState);    
-        QContactManagerEngine::updateContactFetchRequest(m_req, QList<QContact>(), error);
-        return false;
-    }
-    QContactManagerEngine::updateRequestState(m_req, QContactAbstractRequest::ActiveState);
-    return true; 
-}
+    QContactFetchRequest *r = req<QContactFetchRequest>();
+    
+    if (!r->isActive())
+        return;
+    
+    // Get filter
+    QContactLocalIdFilter lidFilter;
+    if (r->filter().type() == QContactFilter::LocalIdFilter) {
+        lidFilter = static_cast<QContactLocalIdFilter>(r->filter());
+    }        
 
-bool CntSimContactFetchRequest::cancel()
-{
-    if (m_req->isActive()) {
-        simStore()->cancel();
-        QContactManagerEngine::updateRequestState(m_req, QContactAbstractRequest::CanceledState);
-        return true;
-    }
-    return false;
-}
+    // Fetch all contacts and filter the results.
+    // Contacts are fetched starting from index 1, all slots are read
+    // since slots may be not filled in a sequence.
+    int index = 1;
+    int numSlots = simStore()->storeInfo().iTotalEntries;
+    
+    if (lidFilter.ids().count() == 1) {
+        // Optimization for performance. Fetch a single contact from store.
+        // This is mainly for CntSymbianSimEngine::contact().
+        index = lidFilter.ids().at(0);
+        numSlots = 1;
+    } 
 
-void CntSimContactFetchRequest::getInfoComplete(RMobilePhoneBookStore::TMobilePhoneBookInfoV5 info, QContactManager::Error error)
-{
-    if (error == QContactManager::NoError) {
-        //contacts are fetched starting from index 1, all slots should be checked
-        //since slots may be not filled in a sequence.
-        error = simStore()->read(1, info.iTotalEntries);
-    }
-
-    if (error) {
-        QContactManagerEngine::updateRequestState(m_req, QContactAbstractRequest::FinishedState);    
-        QContactManagerEngine::updateContactFetchRequest(m_req, QList<QContact>(), error);
+    QContactManager::Error error = QContactManager::NoError;    
+    if (!simStore()->read(index, numSlots, &error)) {
+        QContactManagerEngine::updateContactFetchRequest(r, QList<QContact>(), error, QContactAbstractRequest::FinishedState);
     }
 }
 
 void CntSimContactFetchRequest::readComplete(QList<QContact> contacts, QContactManager::Error error)    
 {
+    QContactFetchRequest *r = req<QContactFetchRequest>();
+    
+    if (!r->isActive())
+        return;
+    
+    // Sometimes the sim store will return server busy error. All we can do is
+    // wait and try again. The error seems to occur if we try to read from the
+    // store right after writing some contacts to it.  
+    // This was observed with S60 5.0 HW (Tube).
+    if (simStore()->lastAsyncError() == KErrServerBusy) {
+        if (waitAndRetry())
+            return;
+    }
+    
     // Filter & sort results
     QList<QContact> filteredAndSorted;
     for (int i=0; i<contacts.count(); i++) {
-        if (QContactManagerEngine::testFilter(m_req->filter(), contacts.at(i)))
-            QContactManagerEngine::addSorted(&filteredAndSorted, contacts.at(i), m_req->sorting());
+        if (QContactManagerEngine::testFilter(r->filter(), contacts.at(i)))
+            QContactManagerEngine::addSorted(&filteredAndSorted, contacts.at(i), r->sorting());
     }
 
     // Complete the request
-    QContactManagerEngine::updateRequestState(m_req, QContactAbstractRequest::FinishedState);    
-    QContactManagerEngine::updateContactFetchRequest(m_req, filteredAndSorted, error);
+    QContactManagerEngine::updateContactFetchRequest(r, filteredAndSorted, error, QContactAbstractRequest::FinishedState);
 }

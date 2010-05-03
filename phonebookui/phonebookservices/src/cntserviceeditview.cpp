@@ -16,64 +16,83 @@
 */
 
 #include "cntserviceeditview.h"
-
 #include "cntservicehandler.h"
+#include <QCoreApplication>
 
-CntServiceEditView::CntServiceEditView(CntServiceHandler *aServiceHandler, CntViewManager *aViewManager, QGraphicsItem *aParent) : 
-    CntEditView(aViewManager, aParent),
-    mServiceHandler(aServiceHandler)
+CntServiceEditView::CntServiceEditView(CntServiceHandler *aServiceHandler ) : CntEditView(),
+mServiceHandler(aServiceHandler)
 {   
-
+    connect( this, SIGNAL(contactUpdated()), this, SLOT(doContactUpdated()) );
+    connect( this, SIGNAL(contactRemoved()), this, SLOT(doContactRemoved()) );
+    connect( this, SIGNAL(changesDiscarded()), this, SLOT(doChangesDiscarded()) );
 }
 
 CntServiceEditView::~CntServiceEditView()
 {
-
 }
 
-/*!
-Saves the contact
-*/
-void CntServiceEditView::aboutToCloseView()
+void CntServiceEditView::doContactUpdated()
 {
-    int result = 0;
-    // save contact if there is one
-    if (contact())
-    {
-        bool isSaved = contactManager()->saveContact(contact());
-        if (isSaved)
-        {
-            result = 1;
-        }
-    }
-    
     connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
-    mServiceHandler->completeEdit(result);
+    mServiceHandler->completeEdit(1);
 }
 
-/*!
-Cancel all changes made and return to the application editor was opened from
-*/
-void CntServiceEditView::discardAllChanges()
+void CntServiceEditView::doContactRemoved()
+{
+    connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
+    mServiceHandler->completeEdit(-1);
+}
+
+void CntServiceEditView::doChangesDiscarded()
 {
     connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
     mServiceHandler->completeEdit(0);
 }
 
-/*
-Handle signals emitted from CntCommands, only used for delete command for now.
-*/
-int CntServiceEditView::handleExecutedCommand(QString aCommand, const QContact &aContact)
-{
-    Q_UNUSED(aContact);
-    int result=-1;
-    if (aCommand == "delete")
-    {
-        connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
-        mServiceHandler->completeEdit(result);
-        result = 0;
-    }
-    return result;
-}
+//
+///*!
+//Saves the contact
+//*/
+//void CntServiceEditView::aboutToCloseView()
+//{
+//    int result = 0;
+//    // save contact if there is one
+//    if (contact() && !contact()->isEmpty())
+//    {
+//        bool isSaved = contactManager()->saveContact(contact());
+//        if (isSaved)
+//        {
+//            result = 1;
+//        }
+//    }
+//    
+//    connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
+//    mServiceHandler->completeEdit(result);
+//}
+//
+///*!
+//Cancel all changes made and return to the application editor was opened from
+//*/
+//void CntServiceEditView::discardAllChanges()
+//{
+//    connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
+//    mServiceHandler->completeEdit(0);
+//}
+//
+///*
+//Handle signals emitted from CntCommands, only used for delete command for now.
+//*/
+//int CntServiceEditView::handleExecutedCommand(QString aCommand, const QContact &aContact)
+//{
+//    Q_UNUSED(aContact);
+//    int result=-1;
+//    if (aCommand == "delete")
+//    {
+//        connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
+//        mServiceHandler->completeEdit(result);
+//        result = 0;
+//    }
+//    return result;
+//}
 
 // EOF

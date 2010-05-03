@@ -22,16 +22,16 @@
 #include <QKeyEvent>
 
 #include "qtpbkglobal.h"
-#include "cntviewparameters.h"
+#include <cntviewparams.h>
 
-class CntViewManager;
+class CntDefaultViewManager;
 
 class QTPBK_EXPORT CntMainWindow : public HbMainWindow
 {
     Q_OBJECT
 
 public:
-    CntMainWindow(QWidget *parent=0,CntViewParameters::ViewId defaultView = CntViewParameters::namesView);
+    CntMainWindow(QWidget *parent=0, int defaultView = namesView);
     virtual ~CntMainWindow();
 
     void keyPressEvent(QKeyEvent *event);
@@ -49,7 +49,7 @@ public:
 #else
 protected:
 #endif
-    CntViewManager        *mViewManager;
+    CntDefaultViewManager        *mViewManager;
 
 };
 

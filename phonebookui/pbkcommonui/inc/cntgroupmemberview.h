@@ -18,52 +18,78 @@
 #ifndef CNTGROUPMEMBERVIEW_H
 #define CNTGROUPMEMBERVIEW_H
 
-#include "cntbaselistview.h"
+#include <QObject>
+#include <hbdocumentloader.h>
 
+#include <cntabstractview.h>
+
+class MobCntModel;
+class CntAbstractViewManager;
 class CntContactCardHeadingItem;
+class HbView;
+class HbAction;
+class HbListView;
+class HbAbstractViewItem;
 class ThumbnailManager;
+class QModelIndex;
+class CntImageLabel;
+class HbDocumentLoader;
 
-class CntGroupMemberView : public CntBaseListView
+QTM_BEGIN_NAMESPACE
+class QContact;
+QTM_END_NAMESPACE
+
+QTM_USE_NAMESPACE
+
+class CntGroupMemberView : public QObject, public CntAbstractView
 {
+    friend class TestCntGroupMemberView;
     Q_OBJECT
 
-
 public:
-    CntGroupMemberView(CntViewManager *viewManager, QGraphicsItem *parent = 0);
+    CntGroupMemberView();
     ~CntGroupMemberView();
+    
+public: // From CntAbstractView
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void deactivate();
+    bool isDefault() const { return false; }
+    HbView* view() const { return mView; }
+    int viewId() const { return groupMemberView; }
 
 public slots:
-    void aboutToCloseView();
-    void onLongPressed (HbAbstractViewItem *item, const QPointF &coords);
-    void onListViewActivated(const QModelIndex &index);
-    void handleExecutedCommand(QString command, QContact contact);
-    void addMenuItems();
-    void addActionsToToolBar();
-    void groupActions();
+    void setOrientation(Qt::Orientation orientation);
+
+
+private slots:
+    void showPreviousView();
+    void openGroupActions();
     void manageMembers();
     void editGroup();
     void deleteGroup();
+    void showContextMenu(HbAbstractViewItem *item, const QPointF &coords);
+    void showContactView(const QModelIndex &index);
     void removeFromGroup(const QModelIndex &index);
     void editContact(const QModelIndex &index);
     void thumbnailReady(const QPixmap& pixmap, void *data, int id, int error);
+    void openImageEditor();
     
-
-public:
-    CntViewParameters::ViewId viewId() const { return CntViewParameters::groupMemberView; }
-    void activateView(const CntViewParameters &viewParameters);
-
-#ifdef PBK_UNIT_TEST
-public:
-#else
 private:
-#endif
-
-    bool                         mNoGroupContactsPresent;
-    QContact                    *mGroupContact;
-    QList<QContactLocalId>       mLocalIdList;
-    QList<QContactLocalId>       mFilteredLocalIdList;
-    CntContactCardHeadingItem   *mHeadingItem;
-    ThumbnailManager            *mThumbnailManager;
+    QContact*                   mGroupContact; // own
+    CntAbstractViewManager*     mViewManager;
+    HbDocumentLoader            mDocumentLoader;
+    HbView*                     mView; // own
+    HbAction*                   mSoftkey; // owned by view
+    CntContactCardHeadingItem*  mHeadingItem; // owned by layout
+    ThumbnailManager*           mThumbnailManager; // own
+    HbAction*                   mManageAction; // owned by view
+    HbAction*                   mDeleteAction; // owned by view
+    HbAction*                   mShowActionsAction; // owned by view
+    HbAction*                   mEditGroupAction; // owned by view
+    MobCntModel*                mModel; // own
+    CntImageLabel*              mImageLabel;
+    HbListView*                 mListView; // owned by layout
+    HbDocumentLoader*           mDocument;
 };
 
 #endif // CNTGROUPMEMBERVIEW_H

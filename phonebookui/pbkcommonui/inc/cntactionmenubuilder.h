@@ -56,7 +56,12 @@ private slots:
     void emitSmsContact();
     void emitMailContact();
     
+#ifdef PBK_UNIT_TEST
+public:
+#else
 private:
+#endif
+    
     void createCallAction( HbMenu& aMenu, QContact& aContact );
     void createSmsAction( HbMenu& aMenu, QContact& aContact );
     void createEmailAction( HbMenu& aMenu, QContact& aContact );

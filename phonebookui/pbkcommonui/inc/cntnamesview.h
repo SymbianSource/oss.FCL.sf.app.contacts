@@ -18,28 +18,28 @@
 #ifndef CNTNAMESVIEW_H
 #define CNTNAMESVIEW_H
 
-#include "cntabstractview.h"
+#include <cntabstractview.h>
 #include <QObject>
 
-class CntViewParameters;
 class HbView;
 class CntNamesViewPrivate;
+class CntExtensionManager;
 
 class CntNamesView : public QObject, public CntAbstractView
 {
     Q_OBJECT
     
 public:
-    CntNamesView();
+    CntNamesView(CntExtensionManager &extensionManager);
     ~CntNamesView();
    
 public: // From CntAbstractView
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters& aArgs );
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
     void deactivate();
     HbView* view() const;
     
     bool isDefault() const;
-    CntViewParameters::ViewId viewId() const;
+    int viewId() const;
   
 private:
     CntNamesViewPrivate* const d_ptr;

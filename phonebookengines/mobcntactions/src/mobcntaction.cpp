@@ -36,11 +36,6 @@ MobCntAction::~MobCntAction()
 {
 }
 
-QVariantMap MobCntAction::metadata() const
-{
-    return QVariantMap();
-}
-
 QVariantMap MobCntAction::metaData() const
 {
     return QVariantMap();
@@ -96,9 +91,14 @@ QContactFilter MobCntAction::contactFilter(const QVariant& value) const
 }
 
 //virtual function, common code for call, videocall and message actions
-bool MobCntAction::supportsDetail(const QContactDetail& detail) const
+bool MobCntAction::isDetailSupported(const QContactDetail &detail, const QContact &/*contact*/) const
 {
     return (detail.definitionName() == QContactPhoneNumber::DefinitionName);
+}
+
+QList<QContactDetail> MobCntAction::supportedDetails(const QContact& /*contact*/) const
+{
+    return QList<QContactDetail>();
 }
 
 QContactActionDescriptor MobCntAction::actionDescriptor() const
@@ -111,17 +111,24 @@ QContactActionDescriptor MobCntAction::actionDescriptor() const
 }
 
 
-QVariantMap MobCntAction::result() const
-{
-	return m_result;
-}
-
-void MobCntAction::invokeAction(const QContact& contact, const QContactDetail& detail)
+bool MobCntAction::invokeAction(const QContact& contact, const QContactDetail& detail, const QVariantMap& /*parameters*/)
 {
 	m_contact = contact;
 	m_detail  = detail;
 	
 	QTimer::singleShot(1, this, SLOT(performAction()));
+	m_state = QContactAction::ActiveState;
+	return true;
+}
+
+QContactAction::State MobCntAction::state() const
+{
+    return m_state;
+}
+
+QVariantMap MobCntAction::results() const
+{
+    return m_result;
 }
 
 //Clears the action data, is called after the result has been emitted to contact (emitResult function)
@@ -198,17 +205,17 @@ void MobCntAction::emitResult(int errorCode, const QVariant &retValue)
 	m_result.insert("Error", QVariant(errorCode));
 	m_result.insert("ReturnValue", retValue);
 	
-	QContactAction::Status status;
-	
 	if (errorCode == 0){
-		status = QContactAction::Finished;
+		m_state = QContactAction::FinishedState;
 	}
 	
 	else{
-		status = QContactAction::FinishedWithError;
+		m_state = QContactAction::FinishedWithErrorState;
 	}
 	
-	emit progress(status, m_result);
+	//emit progress(state, m_result);
+	emit stateChanged(m_state);
+	emit resultsAvailable();
 
 	resetAction(); //reset values in the action
 }

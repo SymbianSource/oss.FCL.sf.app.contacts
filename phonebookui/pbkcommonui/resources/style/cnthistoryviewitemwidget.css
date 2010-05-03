@@ -47,3 +47,10 @@ CntHistoryViewItemWidget::icon{
 CntHistoryViewItemWidget::frame{
 	border-width: var(hb-param-background-list-main);
 }
+
+CntHistoryViewItemWidget::newItem{
+  left:-0.25un;
+  top:-1.0un;
+  bottom:0.5un;
+  size-policy:fixed preferred;
+}

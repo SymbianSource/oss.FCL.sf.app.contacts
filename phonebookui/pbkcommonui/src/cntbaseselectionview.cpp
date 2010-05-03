@@ -17,18 +17,108 @@
 
 #include "cntbaseselectionview.h"
 
+#include <hbview.h>
 #include <hblistview.h>
-#include <hblistviewitem.h>
-#include <QGraphicsLinearLayout>
-#include <hbframebackground.h>
+#include <hbdocumentloader.h>
+#include <hbaction.h>
+#include <mobcntmodel.h>
 
 const char *CNT_SELECTION_LISTVIEW_UI_XML = ":/xml/contacts_list.docml";
 
-CntBaseSelectionView::CntBaseSelectionView(CntViewManager *viewManager, QGraphicsItem *parent, HbAbstractItemView::SelectionMode newMode)
+CntBaseSelectionView::CntBaseSelectionView() : QObject()
+{
+    mDocument = new HbDocumentLoader();
+    
+    bool ok;
+    mDocument->load( CNT_SELECTION_LISTVIEW_UI_XML, &ok );
+    if ( !ok )
+    {
+        qFatal( "Unable to load %S", CNT_SELECTION_LISTVIEW_UI_XML );
+    }
+    mView = static_cast<HbView*>( mDocument->findWidget("view") );
+    mListView = static_cast<HbListView*>( mDocument->findWidget("listView") );
+    
+    mSoftkey = new HbAction(Hb::BackNaviAction, mView);
+    connect( mSoftkey, SIGNAL(triggered()), this, SLOT(closeView()) );
+}
+
+CntBaseSelectionView::~CntBaseSelectionView()
+{
+    delete mDocument;
+}
+
+void CntBaseSelectionView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
+{
+    mMgr = aMgr;
+    
+    if ( mView->navigationAction() != mSoftkey)
+        mView->setNavigationAction(mSoftkey);
+    
+    HbMainWindow* window = mView->mainWindow();
+    if ( window )
+    {
+        //connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
+        //setOrientation(window->orientation());
+    }
+    
+    QContactSortOrder sortOrderFirstName;
+    sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,QContactName::FieldFirst);
+    sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
+
+    QContactSortOrder sortOrderLastName;
+    sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,QContactName::FieldLast);
+    sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
+
+    QList<QContactSortOrder> sortOrders;
+    sortOrders.append(sortOrderFirstName);
+    sortOrders.append(sortOrderLastName);
+    
+    QContactDetailFilter filter;
+    filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
+    QString typeContact = QContactType::TypeContact;
+    filter.setValue(typeContact);
+
+    mListModel = new MobCntModel(mMgr->contactManager(SYMBIAN_BACKEND), filter, sortOrders);
+    mListModel->showMyCard( false );
+    
+    mListView->setModel( mListModel );
+    
+    if ( aArgs.contains(ESelectionMode) ) {
+        mListView->setSelectionMode( static_cast<HbAbstractItemView::SelectionMode>(aArgs.value(ESelectionMode).toInt()) );
+    }
+    
+    emit viewOpened( aArgs );
+}
+
+void CntBaseSelectionView::deactivate()
+{
+}
+
+bool CntBaseSelectionView::isDefault() const
+{
+    return false;
+}
+
+HbView* CntBaseSelectionView::view() const
+{
+    return mView;
+}
+
+void CntBaseSelectionView::closeView()
+{
+    emit viewClosed();
+    
+    CntViewParameters args;
+    mMgr->back( args );
+}
+
+    
+/*
+CntBaseSelectionView::CntBaseSelectionView()
     : CntBaseView(viewManager, parent),
-    mListView(0),
-    mListLayout(0),
-    mSelectionMode(newMode)
+    mListView(NULL),
+    mListLayout(NULL),
+    mSelectionMode(HbAbstractItemView::NoSelection)
 {
     bool ok = false;
     ok = loadDocument(CNT_SELECTION_LISTVIEW_UI_XML);
@@ -49,33 +139,28 @@ void CntBaseSelectionView::setupView()
 }
 
 
-void CntBaseSelectionView::activateView(const CntViewParameters &viewParameters)
+void CntBaseSelectionView::activateView(const CntViewParameters viewParameters)
 {
-    Q_UNUSED(viewParameters)
     listView()->setModel(contactModel());
+    
+    if (viewParameters.contains(ESelectionMode)) {
+        mSelectionMode = static_cast<HbAbstractItemView::SelectionMode>(viewParameters.value(ESelectionMode).toInt());
+    }    
+    listView()->setSelectionMode(mSelectionMode);
 }
 
-/*!
-Adds created controls to the layout
-*/
 void CntBaseSelectionView::addItemsToLayout()
 {
     listView();
     setWidget(findWidget(QString("container")));
 }
 
-/*!
-\return pointer to listLayout component
-*/
 QGraphicsLinearLayout *CntBaseSelectionView::listLayout()
 {
     QGraphicsWidget *w = findWidget(QString("container"));
     return static_cast<QGraphicsLinearLayout*>(w->layout());
 }
 
-/*!
-\return pointer to HbListView component
-*/
 HbListView *CntBaseSelectionView::listView()
 {
     if (mListView==0)
@@ -108,5 +193,5 @@ QItemSelectionModel* CntBaseSelectionView::selectionModel()
 {
     return listView()->selectionModel();
 }
-
+*/
 // EOF

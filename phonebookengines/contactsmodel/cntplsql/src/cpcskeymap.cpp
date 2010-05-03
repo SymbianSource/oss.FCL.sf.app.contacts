@@ -18,6 +18,11 @@
 #include "cpcskeymap.h"
 
 #if defined(USE_ORBIT_KEYMAP)
+
+// If defined, only the currently used language's keymap is used
+#define USE_ONLY_DEFAULT_LANG_KEYMAP
+
+
 #include <QLocale>
 #include <hbinputlanguage.h>
 #include <hbinputkeymap.h>
@@ -147,7 +152,7 @@ QChar CPcsKeyMap::Separator() const
 // ----------------------------------------------------------------------------
 CPcsKeyMap::CPcsKeyMap() :
     iKeyMapping() 
-	{    
+	{
     for (TInt i = 0; i < KAmountOfKeys; ++i)
         {
         iKeyMapping << QString("");
@@ -159,24 +164,43 @@ CPcsKeyMap::CPcsKeyMap() :
 // ----------------------------------------------------------------------------
 void CPcsKeyMap::ConstructL()
 	{
-	ContructKeyboardMappingsL();
+	TBool ok(EFalse);
+	TInt err(KErrNone);
+	QT_TRYCATCH_ERROR(err, ok = ContructKeyboardMappings());
+    if (err != KErrNone)
+        {
+        PRINT1(_L("ContructKeyboardMappings threw exception, err=%d"), err);
+        User::Leave(err);
+        }
+	if (!ok)
+        {
+        PRINT(_L("ContructKeyboardMappings returns error"));
+        User::Leave(KErrGeneral);
+        }
 	}
 
 // ----------------------------------------------------------------------------
-// CPcsKeyMap::ContructKeyboardMappingsL
+// CPcsKeyMap::ContructKeyboardMappings
 // Fetch keymap for every language/country pair present.
 // 10.1 only has virtual 12 key ITU-T keyboard
 // ----------------------------------------------------------------------------
-void CPcsKeyMap::ContructKeyboardMappingsL()
+TBool CPcsKeyMap::ContructKeyboardMappings()
 	{
-    PRINT( _L("Enter CPcsKeyMap::ContructKeyboardMappingsL") );
+    PRINT( _L("Enter CPcsKeyMap::ContructKeyboardMappings") );
 
 #if defined(_DEBUG)
     TInt count(0);
 #endif
-	QList<HbInputLanguage> languages = AvailableLanguages();
 
-	// Calling HbKeymapFactory::keymap() causes no memory exception after
+    TInt err(KErrNone);
+    QList<HbInputLanguage> languages;
+#if defined(USE_ONLY_DEFAULT_LANG_KEYMAP)
+	HbInputLanguage inputLanguage(QLocale::system().language()); 
+	languages << inputLanguage;
+#else
+    languages = AvailableLanguages();
+#endif
+	// Calling HbKeymapFactory::keymap() causes "no memory" exception after
 	// ~20 different language/variant combinations in emulator.
 	// In text shell all languages can be handled successfully.
 	// In device, already the first call to HbKeymapFactory::keymap()
@@ -191,19 +215,15 @@ void CPcsKeyMap::ContructKeyboardMappingsL()
 
 	for (TInt lang = 0; lang < handleMaxLanguages; ++lang)
 		{
-        PRINT1( _L("handle language %d"), languages[lang].language() ); // test
+//        PRINT1( _L("handle language %d"), languages[lang].language() ); // test
 		if (IsLanguageSupported(languages[lang].language()))
 			{
 			PRINT2(_L("Constructing keymap for lang=%d,var=%d"),
 				   languages[lang].language(),
 				   languages[lang].variant());
-#if 0
 			const HbKeymap* keymap =
-               HbKeymapFactory::instance()->keymap(languages[lang].language(),
-												   languages[lang].variant());
-#else
-			const HbKeymap* keymap = GetKeymap(languages[lang]);
-#endif
+				HbKeymapFactory::instance()->keymap(languages[lang].language(),
+                                                    languages[lang].variant());
 			if (keymap)
 			    {
 				for (TInt key = EKey1; key <= EKey0; ++key) 
@@ -213,7 +233,7 @@ void CPcsKeyMap::ContructKeyboardMappingsL()
                     if (!mappedKey)
                         {
                         PRINT1(_L("Mapped key not found, key(%d)"), KeyIdToNumber(key));
-                        User::Leave(KErrNotFound);
+                        return EFalse;
                         }
                     // Get both upper and lowercase letters
                     const QString lowerCase = mappedKey->characters(HbModifierNone); // e.g. "abc2.."
@@ -244,14 +264,15 @@ void CPcsKeyMap::ContructKeyboardMappingsL()
 			    }
 			else
                 {
-                PRINT(_L("CPcsKeyMap: keymap not found"));
+                PRINT(_L("CPcsKeyMap::ContructKeyboardMapping keymap not found"));
                 }
 			}
 		}
 
 #if defined(_DEBUG)
-    PRINT1( _L("End CPcsKeyMap::ContructKeyboardMappingsL key map has %d chars"), count );
+    PRINT1( _L("End CPcsKeyMap::ContructKeyboardMappings keymap has %d chars"), count );
 #endif
+	return ETrue;
 	}
 
 // ----------------------------------------------------------------------------
@@ -263,23 +284,26 @@ QList<HbInputLanguage> CPcsKeyMap::AvailableLanguages() const
     {
     PRINT( _L("Enter CPcsKeyMap::AvailableLanguages") );
 
-    QLocale locale;
-    QLocale::Language currentLanguage = locale.language();
+	QList<HbInputLanguage> languages = HbKeymapFactory::availableLanguages();
+
+#if 0 // This code would make sure the default language is at the beginning of
+	  // list of available languages. But since there is resource leak, the code
+	  // is currently commented out until the leak is fixed.
+	QLocale::Language currentLanguage = QLocale::system().language();
     if (!IsLanguageSupported(currentLanguage))
         {
         PRINT( _L("current lang not supported, use english") ); //test
         currentLanguage = QLocale::English;
         }
-    HbInputLanguage defaultLanguage(currentLanguage);
-
-    QList<HbInputLanguage> languages = HbKeymapFactory::availableLanguages();
+    HbInputLanguage defaultLanguage(currentLanguage);    
     if (languages.contains(defaultLanguage))
         {
         PRINT( _L("remove default lang") ); //test
         languages.removeOne(defaultLanguage);
         }
     PRINT( _L("insert default lang as first lang") ); //test
-    languages.insert(0, defaultLanguage);
+    languages.prepend(defaultLanguage); // THIS LEAKS RESOURCES!
+#endif
 
     PRINT1( _L("End CPcsKeyMap::AvailableLanguages found %d languages"),
             languages.count() );
@@ -359,25 +383,6 @@ TChar CPcsKeyMap::ArrayIndexToNumberChar(TInt aArrayIndex) const
 		}
 	return aArrayIndex + '1';
 	}
-
-const HbKeymap* CPcsKeyMap::GetKeymap(HbInputLanguage aLanguage) const
-    {
-    PRINT(_L("CPcsKeyMap::GetKeymap"));
-
-    const HbKeymap* keymap(NULL);
-    TInt err(KErrNone);
-    // Catches C++ exception and converts it to Symbian error code
-    QT_TRYCATCH_ERROR(err, keymap = HbKeymapFactory::instance()->keymap(aLanguage.language(),
-                                                                        aLanguage.variant()));
-    if (err != KErrNone)
-        {
-        // In emulator, trying to get the 20th keymap results KErrNoMemory 
-        PRINT1(_L("factory->keymap threw exception, err=%d"), err);
-        return NULL;
-        }
-    PRINT(_L("CPcsKeyMap::GetKeymap got keymap"));
-    return keymap;
-    }
 #else // #if defined(USE_ORBIT_KEYMAP)
 CPcsKeyMap::CPcsKeyMap()
 	{

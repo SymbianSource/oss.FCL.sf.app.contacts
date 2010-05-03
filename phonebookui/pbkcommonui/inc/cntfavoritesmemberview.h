@@ -18,31 +18,49 @@
 #ifndef CNTFAVORITESMEMBERVIEW_H
 #define CNTFAVORITESMEMBERVIEW_H
 
-#include "cntbaselistview.h"
+#include <hbdocumentloader.h>
+
+#include <cntabstractview.h>
+
+class MobCntModel;
+class CntAbstractViewManager;
+class HbView;
+class HbAction;
+class HbListView;
+class HbAbstractViewItem;
+class QModelIndex;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
 QTM_END_NAMESPACE
 
-class CntFavoritesMemberView : public CntBaseView
+class CntFavoritesMemberView : public QObject, public CntAbstractView
 {
     Q_OBJECT
 
+public: // From CntAbstractView
+    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void deactivate();
+    bool isDefault() const { return false; }
+    HbView* view() const { return mView; }
+    int viewId() const { return FavoritesMemberView; }
+    
 public:
-    CntFavoritesMemberView(CntViewManager *viewManager, QGraphicsItem *parent=0);
+    CntFavoritesMemberView();
     ~CntFavoritesMemberView();
 
-    CntViewParameters::ViewId viewId() const { return CntViewParameters::FavoritesMemberView; }
-    void activateView(const CntViewParameters &viewParameters);
-    void addMenuItems();
- 
+#ifdef PBK_UNIT_TEST
 public slots:
-    void aboutToCloseView();
+#else
+private slots:
+#endif
+
     void manageFavorites();
     void onLongPressed (HbAbstractViewItem *item, const QPointF &coords);
     void openContact(const QModelIndex &index);
     void editContact(const QModelIndex &index);
     void removeFromFavorites(const QModelIndex &index);
+    void showPreviousView();
     
 #ifdef PBK_UNIT_TEST
 public:
@@ -50,10 +68,15 @@ public:
 private:
 #endif
 
-    QContact* mContact;
-    HbAction         *mManageFavoritesAction; 
-    HbMenu        *mFavoritesMenu;
-    HbListView*        mFavoriteListView; 
+    QContact*                   mContact;
+    HbAction*                   mManageFavoritesAction; 
+    MobCntModel*                mModel; // own
+    HbListView*                 mFavoriteListView; 
+    CntAbstractViewManager*     mViewManager;
+    HbDocumentLoader            mDocumentLoader;
+    HbView*                     mView; // own
+
+    HbAction*                   mSoftkey; // owned by view
 
 };
 

@@ -33,9 +33,12 @@ INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 INCLUDEPATH += inc
 
 HEADERS += inc/simutilityglobal.h \
+           inc/asyncworker.h \
            inc/simutility.h
 
-SOURCES += src/simutility.cpp
+SOURCES += src/simutility.cpp \
+           src/asyncworker.cpp
 
 LIBS += -letel \
-        -letelmm
+        -letelmm \
+        -lsecui

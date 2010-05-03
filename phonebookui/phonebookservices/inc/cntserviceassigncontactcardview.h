@@ -22,11 +22,12 @@
 #include <qmobilityglobal.h>
 
 #include "cntcontactcardview.h"
-#include "cntviewparameters.h"
 
 class CntServiceHandler;
+class CntAbstractViewManager;
 
 QTM_BEGIN_NAMESPACE
+class QContact;
 class QContactDetail;
 QTM_END_NAMESPACE
 
@@ -38,22 +39,24 @@ class CntServiceAssignContactCardView : public CntContactCardView
 
 public slots:
 
-    void aboutToCloseView();
+    void doCloseView();
     void addActionsToToolBar();
     void addToContacts();
     void saveNew();
     void updateExisting();
+    void doViewActivated(QContact contact, QContactDetail detail);
 
 public:
-    CntServiceAssignContactCardView(CntServiceHandler *aServiceHandler, CntViewManager *viewManager, QGraphicsItem *parent = 0);
+    CntServiceAssignContactCardView(CntServiceHandler *aServiceHandler);
     ~CntServiceAssignContactCardView();
 
-    CntViewParameters::ViewId viewId() const { return CntViewParameters::serviceAssignContactCardView; }
-    void activateView(const CntViewParameters &viewParameters);
+    int viewId() const { return serviceAssignContactCardView; }
     
 private:
-    CntServiceHandler *mServiceHandler;
-    QContactDetail     mDetail;
+    CntServiceHandler       *mServiceHandler;
+    CntAbstractViewManager  *mViewManager;
+    QContact                mContact;
+    QContactDetail          mDetail;
    
 };
 

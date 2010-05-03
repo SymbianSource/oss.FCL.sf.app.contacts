@@ -1,7 +1,6 @@
 TEMPLATE = subdirs
 
-include(../../pathconfig.pri)
-include($$QT_MOBILITY_BUILD_TREE/config.pri)
+include(../../staticconfig.pri)
 
 contains(mobility_modules,serviceframework) {
     SUBDIRS += databasemanager \                #service framework
@@ -44,15 +43,15 @@ contains(mobility_modules,publishsubscribe) {
     SUBDIRS += qvaluespace \                           #Publish and Subscribe
            qvaluespacepublisher \
            qvaluespacesubscriber \
-	   qcrmlparser
+           qcrmlparser
 
     unix|win32 {
-        !symbian:!maemo6: SUBDIRS+= \
+        !symbian:!maemo6:!maemo5: SUBDIRS+= \
             qsystemreadwritelock \
             qsystemreadwritelock_oop
     }
 
-    unix:!symbian:!maemo6: {
+    unix:!symbian:!maemo6:!maemo5 {
         SUBDIRS+= \
                qpacket \
                qmallocpool \
@@ -81,20 +80,8 @@ contains(mobility_modules,contacts) {
             qcontactmanager \
             qcontactmanagerplugins \
             qcontactmanagerfiltering \
-            qcontactrelationship
-
-    SUBDIRS +=  qcontact_deprecated \
-            qcontactactions_deprecated \
-            qcontactasync_deprecated \
-            qcontactdetail_deprecated \
-            qcontactdetaildefinition_deprecated \
-            qcontactdetails_deprecated \
-            qcontactfilter_deprecated \
-            qcontactmanager_deprecated \
-            qcontactmanagerplugins_deprecated \
-            qcontactmanagerfiltering_deprecated \
-            qcontactrelationship_deprecated
-
+            qcontactrelationship \
+            qlatin1constant
 }
 
 contains(mobility_modules,versit) {
@@ -108,14 +95,13 @@ contains(mobility_modules,versit) {
             qversitdocument \
             qversitproperty \
             qversitreader \
-            qversitutils \
             qversitwriter
 }
 
 contains(mobility_modules,multimedia) {
     SUBDIRS += \             #Multimedia
         qaudiocapturesource \
-        qcamera \
+        qgraphicsvideoitem \
         qmediaimageviewer \
         qmediaobject \
         qmediaplayer \
@@ -128,29 +114,23 @@ contains(mobility_modules,multimedia) {
         qmediaserviceprovider \
         qmediacontent \
         qradiotuner \
+        qpaintervideosurface \
         qvideowidget \
         qmediatimerange
-
-    contains(QT_CONFIG, multimedia) {
-        SUBDIRS += \
-                qgraphicsvideoitem \
-                qpaintervideosurface
-
-    }
 
     symbian: {
         #symbian spesific autotests
         SUBDIRS += symbian 
         SUBDIRS -= \
-                qcamera \
-                qmediaplayer \
-                qradiotuner \
-                qmediaobject
+                qmediaplayer_s60 \
+                qradiotuner_s60 \
+                qmediaobject_s60 \
+                qmediarecorder_s60
     }
 }
 #Messaging
 contains(mobility_modules,messaging) {
-    contains(qmf_enabled,yes)|wince*|win32|symbian|maemo6 {
+    contains(qmf_enabled,yes)|wince*|win32|symbian|maemo5 {
     !win32-g++:SUBDIRS += \
         qmessagestore \
         qmessagestorekeys \

@@ -1,3 +1,0 @@
-EXPORTS
-	?start@LogsServices@@SAHW4LogsView@1@_N@Z @ 1 NONAME ; int LogsServices::start(enum LogsServices::LogsView, bool)
-

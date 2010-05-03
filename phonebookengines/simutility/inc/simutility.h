@@ -20,7 +20,11 @@
 #include <qglobal.h>
 #include <QObject>
 #include <etelmm.h>
+#include <secuisecuritysettings.h> 
+#include <secui.h>
+
 #include "simutilityglobal.h"
+#include "asyncworker.h"
 
 /*!
  * SimUtility provides additional functionality for SIM contacts
@@ -30,6 +34,13 @@ class SIMUTILITYLIB_EXPORT SimUtility : public QObject
 {
     Q_OBJECT
 
+private:
+    enum ActiveRequest {
+         ENoActiveRequest = 0,
+         EGetInfo,
+         EGetAvailableStores
+    };
+    
 public:
     enum StoreType {
         AdnStore = 0,
@@ -69,11 +80,43 @@ public:
         };
     };
     
+    struct AvailableStores {
+        bool AdnStorePresent;
+        bool SdnStorePresent;
+        bool FdnStorePresent;
+        
+        AvailableStores() {
+            AdnStorePresent = false;
+            SdnStorePresent = false;
+            FdnStorePresent = false;
+        };
+    };
+    
 public:
 	SimUtility(StoreType type, int& error, QObject *parent = 0);
 	~SimUtility();
 	
+	//sync requests
 	SimInfo getSimInfo(int& error);
+	AvailableStores getAvailableStores(int& error);
+	bool verifyPin2Code();
+	bool isFdnActive();
+	int setFdnStatus(bool activated);
+
+	//async request
+	bool startGetSimInfo();
+	bool startGetAvailableStores();
+	
+public:
+    void RequestCompleted(int error);
+	
+signals:
+    void simInfoReady(SimUtility::SimInfo& simInfo, int error);
+    void availableStoresReady(SimUtility::AvailableStores& availableStores, int error);
+	
+private: 
+    void ParseServiceTable(AvailableStores* availableStores) const;
+    bool isSimInserted() const;
 
 private:
     RTelServer m_etelServer;
@@ -81,6 +124,13 @@ private:
     RMobilePhoneBookStore m_etelStore;
     RMobilePhoneBookStore::TMobilePhoneBookInfoV5 m_etelStoreInfo;
     RMobilePhoneBookStore::TMobilePhoneBookInfoV5Pckg m_etelStoreInfoPckg;
+    RMobilePhone::TMobilePhoneServiceTableV1 m_serviceTable;
+    RMobilePhone::TMobilePhoneServiceTableV1Pckg m_serviceTablePckg;
+    RMobilePhone::TMobilePhoneServiceTable m_serviceTableType;
+
+    AsyncWorker* m_asyncWorker;
+    int m_activeRequest;
+    CSecuritySettings* m_securitySettings;
 };
 
 #endif

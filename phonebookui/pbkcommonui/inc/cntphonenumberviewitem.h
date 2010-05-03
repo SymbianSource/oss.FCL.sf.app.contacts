@@ -26,6 +26,7 @@ class HbAbstractViewItem;
 class HbComboBox;
 class HbLineEdit;
 class CntDetailModelItem;
+class QGraphicsLinearLayout;
 
 class CntPhoneNumberViewItem : public CntDetailViewItem
     {
@@ -42,6 +43,7 @@ public:
 public slots:
     void indexChanged( int aIndex );    // HbComboBox index changed
     void textChanged( QString aText );  // HbLineEdit text changed
+    void changeOrientation(Qt::Orientation aOrient);
     
 private:
     void constructSubtypeModel( QString aSubType, QStringList aContext );
@@ -53,8 +55,9 @@ public:
 #else
 private:
 #endif
-    HbComboBox* mBox;
-    HbLineEdit* mEdit;
-    HbEditorInterface* mFilter;
+    HbComboBox*             mBox;
+    HbLineEdit*             mEdit;
+    HbEditorInterface*      mFilter;
+    QGraphicsLinearLayout*  mLayout;
     };
 #endif /* CNTPHONENUMBERVIEWITEM_H_ */

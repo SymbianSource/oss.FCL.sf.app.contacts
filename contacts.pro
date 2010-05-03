@@ -15,5 +15,5 @@
 #
 
 TEMPLATE = subdirs
-SUBDIRS = phonebookengines logsui phonebookui
+SUBDIRS = phonebookengines phonebookui
 CONFIG += ordered

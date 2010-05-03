@@ -24,14 +24,18 @@
 
 #define INCOMING_EVENT_FRAME "qtg_fr_convlist_received_normal"
 #define OUTGOING_EVENT_FRAME "qtg_fr_convlist_sent_normal"
+#define NEW_EVENT_FRAME "qtg_fr_list_new_item"
 
 CntHistoryViewItemWidget::CntHistoryViewItemWidget(QGraphicsItem *parent) :
     HbWidget(parent),
-    mIconLabel(0),
-    mTitleLabel(0),
-    mBodyTextLabel(0),
-    mTimeStampLabel(0),
-    mFrameLabel(0)
+    mIconLabel(NULL),
+    mTitleLabel(NULL),
+    mBodyTextLabel(NULL),
+    mTimeStampLabel(NULL),
+    mFrameLabel(NULL),
+    mNewItemLabel(NULL),
+    mIncoming(false),
+    mNewMessage(false)
 {
 }
 
@@ -43,15 +47,20 @@ void CntHistoryViewItemWidget::createPrimitives()
 {
     //create frame first so it's painted below text labels
     if (!mFrameLabel) {
-        HbFrameDrawer* frameDrawer = 0;
+        HbFrameDrawer* frameDrawer = NULL;
         if (mIncoming) {
             frameDrawer = new HbFrameDrawer(INCOMING_EVENT_FRAME, HbFrameDrawer::NinePieces);
-            }
-        else {
+        } else {
             frameDrawer = new HbFrameDrawer(OUTGOING_EVENT_FRAME, HbFrameDrawer::NinePieces);
         }
         mFrameLabel = new HbFrameItem(frameDrawer, this);
         style()->setItemName(mFrameLabel, "frame");
+    }
+    
+    if (mNewMessage && !mNewItemLabel) {
+        HbFrameDrawer* frameDrawer = new HbFrameDrawer(NEW_EVENT_FRAME, HbFrameDrawer::ThreePiecesVertical);
+        mNewItemLabel = new HbFrameItem(frameDrawer, this);
+        style()->setItemName(mNewItemLabel, "newItem");
     }
 
     //create icon
@@ -61,12 +70,11 @@ void CntHistoryViewItemWidget::createPrimitives()
             mIconLabel->setIcon(mIcon);
             style()->setItemName(mIconLabel, "icon");
         }
-    }
-    else {
+    } else {
         if (mIconLabel) {
             delete mIconLabel;
         }
-        mIconLabel = 0;
+        mIconLabel = NULL;
     }
 
     //create title
@@ -77,12 +85,11 @@ void CntHistoryViewItemWidget::createPrimitives()
             mTitleLabel->setTextWrapping(Hb::TextWordWrap);
             style()->setItemName(mTitleLabel, "title");
         }
-    }
-    else {
+    } else {
         if (mTitleLabel) {
             delete mTitleLabel;
         }
-        mTitleLabel = 0;
+        mTitleLabel = NULL;
     }
 
     //create body text
@@ -92,12 +99,11 @@ void CntHistoryViewItemWidget::createPrimitives()
             mBodyTextLabel->setText(mBodyText);
             style()->setItemName(mBodyTextLabel, "bodyText");
         }
-    }
-    else {
+    } else {
         if (mBodyTextLabel) {
             delete mBodyTextLabel;
         }
-        mBodyTextLabel = 0;
+        mBodyTextLabel = NULL;
     }
 
     //create timestamp
@@ -107,12 +113,11 @@ void CntHistoryViewItemWidget::createPrimitives()
             mTimeStampLabel->setText(mTimeStamp);
             style()->setItemName(mTimeStampLabel, "timeStamp");
         }
-    }
-    else {
+    } else {
         if (mTimeStampLabel) {
             delete mTimeStampLabel;
         }
-        mTimeStampLabel = 0;
+        mTimeStampLabel = NULL;
     }
 }
 
@@ -121,16 +126,16 @@ void CntHistoryViewItemWidget::recreatePrimitives()
     HbWidget::recreatePrimitives();
 
     delete mIconLabel;
-    mIconLabel = 0;
+    mIconLabel = NULL;
 
     delete mTitleLabel;
-    mTitleLabel = 0;
+    mTitleLabel = NULL;
 
     delete mBodyTextLabel;
-    mBodyTextLabel = 0;
+    mBodyTextLabel = NULL;
 
     delete mTimeStampLabel;
-    mTimeStampLabel = 0;
+    mTimeStampLabel = NULL;
     
     createPrimitives();
 }
@@ -142,7 +147,7 @@ void CntHistoryViewItemWidget::updatePrimitives()
 }
 
 void CntHistoryViewItemWidget::setDetails(QString title, QString bodyText,
-        QString timeStamp, QString iconName, bool incoming)
+        QString timeStamp, QString iconName, bool incoming, bool newMessage)
 {
     mIcon.clear();    
     mTitle.clear();
@@ -154,6 +159,7 @@ void CntHistoryViewItemWidget::setDetails(QString title, QString bodyText,
     mBodyText = bodyText; 
     mTimeStamp = timeStamp;
     mIncoming = incoming;
+    mNewMessage = newMessage;
 
     recreatePrimitives();
 }

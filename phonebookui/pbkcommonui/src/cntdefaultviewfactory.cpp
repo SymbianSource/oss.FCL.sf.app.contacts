@@ -16,70 +16,113 @@
 */
 
 #include "cntabstractviewfactory.h"
-#include "cntviewparameters.h"
+#include "cntdetaileditor.h"
 #include "cntmainwindow.h"
-
+#include <cntviewparams.h>
+#include <cntviewsupplier.h>
+#include <cntuiextensionfactory.h>
+#include <hbstyleloader.h>
 // views
 #include "cntnamesview.h"
 #include "cntmycardview.h"
 #include "cntfavoritesview.h"
 #include "cntimageeditorview.h"
 #include "cntcollectionview.h"
+#include "cntgroupmemberview.h"
+#include "cntfavoritesmemberview.h"
+#include "cntcontactcardview.h"
+#include "cntgroupactionsview.h"
+#include "cnthistoryview.h"
+#include "cnteditview.h"
+#include "cntmycardselectionview.h"
+#include "cntextensionmanager.h"
 
-CntDefaultViewFactory::CntDefaultViewFactory( )
+CntDefaultViewFactory::CntDefaultViewFactory():
+    mExtensionManager(NULL)
 {
+    mExtensionManager = new CntExtensionManager();
+    HbStyleLoader::registerFilePath( ":/style" );
 }
 
 CntDefaultViewFactory::~CntDefaultViewFactory()
 {
+    delete mExtensionManager;
 }
 
 CntAbstractView* CntDefaultViewFactory::createView( int aId )
 {
     switch ( aId )
     {
-    case CntViewParameters::namesView:
-    case CntViewParameters::defaultView:
-        return new CntNamesView();
-    case CntViewParameters::noView:
-    case CntViewParameters::commLauncherView:
-    case CntViewParameters::serviceContactCardView:
-    case CntViewParameters::serviceAssignContactCardView:
+    case namesView:
+        return new CntNamesView(*mExtensionManager);
+    case noView:
+    case commLauncherView:
+        return new CntContactCardView();
+    case serviceContactCardView:
+    case serviceAssignContactCardView:
         break;
-    case CntViewParameters::myCardView:
+    case myCardView:
         return new CntMyCardView();
-    case CntViewParameters::myCardSelectionView:
-    case CntViewParameters::serviceContactSelectionView:
+    case myCardSelectionView:
+        return new CntMyCardSelectionView();
+    case serviceContactSelectionView:
         break;
-    case CntViewParameters::collectionView:
-        return new CntCollectionView();
-    case CntViewParameters::collectionFavoritesView:
+    case collectionView:
+        return new CntCollectionView(*mExtensionManager);
+    case collectionFavoritesView:
         return new CntFavoritesView();
-    case CntViewParameters::FavoritesMemberView:
-    case CntViewParameters::editView:
-    case CntViewParameters::serviceEditView:
-    case CntViewParameters::serviceSubEditView:
-    case CntViewParameters::emailEditorView:
-    case CntViewParameters::namesEditorView:
-    case CntViewParameters::urlEditorView:
-    case CntViewParameters::companyEditorView:
-    case CntViewParameters::phoneNumberEditorView:
-    case CntViewParameters::onlineAccountEditorView:
-    case CntViewParameters::noteEditorView:
-    case CntViewParameters::familyDetailEditorView:
-    case CntViewParameters::addressEditorView:
-    case CntViewParameters::dateEditorView:
+    case FavoritesMemberView:
+        return new CntFavoritesMemberView();
+    case editView:
+		return new CntEditView();
+    case onlineAccountEditorView:
+    case serviceEditView:
+    case serviceSubEditView:
         break;
-    case CntViewParameters::imageEditorView:
+  
+    case emailEditorView:
+    case namesEditorView:
+    case urlEditorView:
+    case companyEditorView:
+    case phoneNumberEditorView:
+    case noteEditorView:
+    case familyDetailEditorView:
+    case addressEditorView:
+    case dateEditorView:
+    case groupEditorView:
+        return new CntDetailEditor(aId);
+
+    case imageEditorView:
         return new CntImageEditorView();
-    case CntViewParameters::serviceContactFetchView:
-    case CntViewParameters::groupEditorView:
-    case CntViewParameters::groupMemberView:
-    case CntViewParameters::groupActionsView:
-    case CntViewParameters::historyView:
+    case serviceContactFetchView:
         break;
+    case groupMemberView:
+        return new CntGroupMemberView();
+    case groupActionsView:
+        return new CntGroupActionsView();
+    case historyView:
+        return new CntHistoryView();
     default:
-        break;
+       return createPluginView(aId);
+    }
+    return NULL;
+}
+
+CntAbstractView* CntDefaultViewFactory::createPluginView( int aId )
+{
+    for(int i = 0;i < mExtensionManager->pluginCount();i++)
+    {
+        CntViewSupplier* viewSupplier = mExtensionManager->pluginAt(i)->viewSupplier();
+        if (viewSupplier)
+        {
+            for(int j = 0;j < viewSupplier->viewCount();j++)
+            {
+                if (viewSupplier->viewIdAt(j) == aId)
+                {
+                    return viewSupplier->viewAt(j);
+                }
+            }
+        }
     }
     return NULL;
 }

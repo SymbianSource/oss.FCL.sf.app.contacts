@@ -21,7 +21,9 @@
 
 // SYSTEM INCLUDES
 #include <digia/eunit/eunitmacros.h>
-
+#if defined(USE_ORBIT_KEYMAP)
+#include <hbinputkeymapfactory.h>
+#endif
 
 // -----------------------------------------------------------------------------
 // UT_CPcsKeyMap::NewL
@@ -75,8 +77,7 @@ void UT_CPcsKeyMap::ConstructL()
     CEUnitTestSuiteClass::ConstructL();
     
     
-    // When instantiating keymap was moved from UT_CPcsKeyMap::ConstructL() to
-    // here, it removed a resource leak.
+    // When instantiating keymap was moved to here, it removed a resource leak.
     iKeyMap = CPcsKeyMap::NewL();
     }
 
@@ -86,6 +87,11 @@ void UT_CPcsKeyMap::ConstructL()
 //
 void UT_CPcsKeyMap::SetupL()
     {
+#if defined(USE_ORBIT_KEYMAP)
+    // Create singleton outside actual test cases so that it is not treated as
+    // resource leak, since it can't be deleted.
+    HbKeymapFactory::instance();
+#endif
     }
     
 // -----------------------------------------------------------------------------
@@ -105,13 +111,16 @@ void UT_CPcsKeyMap::Teardown()
 //
 void UT_CPcsKeyMap::UT_NewLL()
     {
+#if defined(USE_ORBIT_KEYMAP)
     const TInt KAmountOfKeys = 10; // Must have same value as in cpcskeymap.cpp
+
     // Each numeric key has been mapped
     EUNIT_ASSERT_EQUALS( KAmountOfKeys, iKeyMap->iKeyMapping.count() );
     for (TInt i = 0; i < KAmountOfKeys; ++i)
         {
-        EUNIT_ASSERT( iKeyMap->iKeyMapping[i].length() > 0 );
+        EUNIT_ASSERT( iKeyMap->iKeyMapping.at(i).length() > 0 );
         }
+#endif
     }
 
 // -----------------------------------------------------------------------------

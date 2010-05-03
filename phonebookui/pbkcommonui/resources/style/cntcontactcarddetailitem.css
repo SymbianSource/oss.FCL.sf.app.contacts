@@ -1,8 +1,3 @@
-CntContactCardDetailItem[icon][primaryText][!text][!valueText]{
-    layout:customLayoutOneRow;
-}
-
-
 CntContactCardDetailItem{
     layout:customLayout;
 }
@@ -13,12 +8,6 @@ CntContactCardDetailItem::icon{
 }
 
 CntContactCardDetailItem::text{
-    text-height:var(hb-param-text-height-primary);
-    font-variant:primary;
-    text-align:left;
-}
-
-CntContactCardDetailItem::primaryText{
     text-height:var(hb-param-text-height-primary);
     font-variant:primary;
     text-align:left;

@@ -20,8 +20,16 @@
 
 #include <QObject>
 #include <hbwidget.h>
-#include <qcontactdetails.h>
+#include <qcontactdetail.h>
 #include "cntstringmapper.h"
+#include <cnteditviewitem.h>
+
+#include <qtcontacts.h>
+
+QTM_BEGIN_NAMESPACE
+class QContactDetail;
+QTM_END_NAMESPACE
+QTM_USE_NAMESPACE
 
 class HbIconItem;
 class HbTextItem;
@@ -30,64 +38,30 @@ class HbFrameItem;
 class HbGestureSceneFilter;
 class HbGesture;
 
-class CntEditViewDetailItem : public HbWidget
+
+class CntEditViewDetailItem : public QObject, public CntEditViewItem
 {
     Q_OBJECT
-    Q_PROPERTY( QString text READ getText )
-    Q_PROPERTY( QString valueText READ getValueText )
-    Q_PROPERTY( HbIcon icon READ getIcon )
 
 public:
-    CntEditViewDetailItem(QGraphicsItem *parent = 0);
+    CntEditViewDetailItem( QContactDetail aDetail, QString aField, int aEditorView );
+    CntEditViewDetailItem( QContactDetail aDetail, QStringList aField, int aEditorView );
     ~CntEditViewDetailItem();
-
-protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
-public:
-    void initGesture();
-    void createPrimitives();
-    void recreatePrimitives();
-    void updatePrimitives();
-    void setDetail(const QContactDetail &detail, const QString &type = QString());
-    QContactDetail detail();
-    QString fieldType();
-
-    QString getText() const { return text; }
-    QString getValueText() const { return valueText; }
-    HbIcon getIcon() const { return icon; }
-
-public slots:
-    void onLongPress(const QPointF &point);
-
-signals:
-    void clicked();
-    void longPressed(const QPointF &point);
-
-#ifdef PBK_UNIT_TEST
-public:
-#else
+    
+    void addText( QString aText );
+    void addIcon( HbIcon aIcon );
+    
+public:// From CntEditViewItem
+    QVariant data(int role) const;
+    void activated();
+    void longPressed(const QPointF &coords);
+    
 private:
-#endif
-    HbIconItem              *mIcon;
-    HbTextItem              *mLabel;
-    HbTextItem              *mContent;
-    QContactDetail           mDetail;
-    QString                  mType;
-    HbFrameItem             *mFrameItem;
-    HbFrameItem             *mFocusItem;
-    bool                     mHasFocus;
-    HbGestureSceneFilter    *mGestureFilter;
-    HbGesture               *mGestureLongpressed;
-    CntStringMapper          mStringMapper;
-
-    QString                  text;
-    QString                  valueText;
-    HbIcon                   icon;
-
+    QStringList mTextList;
+    QVariantList mIconList;
+    QContactDetail mDetail;
+    QStringList mField;
+    int mEditorViewId;
 };
-
 #endif // CNTEDITVIEWDETAILITEM_H
 

@@ -16,38 +16,19 @@
 */
 
 #include "cntmycardselectionview.h"
+#include <QModelIndex>
+#include <mobcntmodel.h>
+#include <hblistview.h>
+#include <qcontact.h>
 
-/*!
-Constructor, initialize member variables.
-\a viewManager is the parent that creates this view. \a parent is a pointer to parent QGraphicsItem (by default this is 0)
-*/
-CntMyCardSelectionView::CntMyCardSelectionView(CntViewManager *viewManager, QGraphicsItem *parent, HbAbstractItemView::SelectionMode newMode)
-    : CntBaseSelectionView(viewManager, parent, newMode)
+CntMyCardSelectionView::CntMyCardSelectionView() : CntBaseSelectionView()
 {
-    QContactDetailFilter contactsFilter;
-    contactsFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
-    contactsFilter.setValue(QString(QLatin1String(QContactType::TypeContact)));
-    contactModel()->setFilterAndSortOrder(contactsFilter);
-    contactModel()->showMyCard(false);
+    connect(mListView, SIGNAL(activated(const QModelIndex&)), this, SLOT(onListViewActivated(const QModelIndex&)));
 }
 
-/*!
-Destructor
-*/
 CntMyCardSelectionView::~CntMyCardSelectionView()
 {
-    
 }
-
-/*!
-Set selection to mycard
-*/
-void CntMyCardSelectionView::aboutToCloseView()
-{
-    CntViewParameters args;
-    viewManager()->back( args );
-}
-
 
 /*!
 Set index to mycard
@@ -56,11 +37,37 @@ void CntMyCardSelectionView::onListViewActivated(const QModelIndex& index)
 {
     if (index.isValid())
     {  
-        QContact contact = contactModel()->contact(index);
-        contactManager()->setSelfContactId(contact.localId());
-        viewManager()->changeView(CntViewParameters::namesView);
+        QContact contact = mListModel->contact(index);
+        QContactManager* mgr = mMgr->contactManager(SYMBIAN_BACKEND);
+        mgr->setSelfContactId(contact.localId());
+        
+        removeFromGroup(&contact);
+        
+        CntViewParameters params;
+        params.insert(EViewId, namesView);
+        mMgr->changeView(params);
     }
 }
     
+void CntMyCardSelectionView::removeFromGroup(const QContact* aContact)
+{
+    QContactDetailFilter groupFilter;
+    groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
+    groupFilter.setValue(QLatin1String(QContactType::TypeGroup));
 
+    QContactManager* mgr = mMgr->contactManager(SYMBIAN_BACKEND);
+    QList<QContactLocalId> groupContactIds = mgr->contactIds(groupFilter);
+    if (!groupContactIds.isEmpty())
+    {
+        for(int i = 0;i < groupContactIds.count();i++)
+        {
+            QContact groupContact = mgr->contact(groupContactIds.at(i));
+            QContactRelationship relationship;
+            relationship.setRelationshipType(QContactRelationship::HasMember);
+            relationship.setFirst(groupContact.id());
+            relationship.setSecond(aContact->id());
+            mgr->removeRelationship(relationship);  
+         }
+    }
+}
 

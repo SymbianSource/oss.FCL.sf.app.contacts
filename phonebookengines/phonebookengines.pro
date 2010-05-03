@@ -30,6 +30,7 @@ SUBDIRS += mobcntmodel
 SUBDIRS += mobcntactions 
 SUBDIRS += cntmaptileservice
 SUBDIRS += simutility
+SUBDIRS += cntimageutility
 	
 #SUBDIRS += mobcntmodel/tsrc/mt_mobcntmodel
 

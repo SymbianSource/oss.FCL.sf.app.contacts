@@ -31,7 +31,7 @@ CntDetailEditorModel( aContact )
     HbDataFormModelItem* root = invisibleRootItem();
     foreach ( QContactNote note, noteList )
         {
-        CntDetailModelItem* item = new CntDetailModelItem( note, qtTrId("Note") );
+        CntDetailModelItem* item = new CntDetailModelItem(note);
         appendDataFormItem( item, root );
         }
     }
@@ -43,7 +43,7 @@ CntNoteEditorModel::~CntNoteEditorModel()
 void CntNoteEditorModel::insertDetailField()
 {
     QContactNote emptyNote;
-    appendDataFormItem( new CntDetailModelItem(emptyNote, qtTrId("Note")), invisibleRootItem() );
+    appendDataFormItem( new CntDetailModelItem(emptyNote), invisibleRootItem() );
 }
 
 void CntNoteEditorModel::saveContactDetails()

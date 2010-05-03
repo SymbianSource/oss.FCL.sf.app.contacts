@@ -51,7 +51,9 @@
 #include <QByteArray>
 #include <QSharedDataPointer>
 
+QT_BEGIN_NAMESPACE
 class QVariant;
+QT_END_NAMESPACE
 
 QTM_BEGIN_NAMESPACE
 class QVersitPropertyPrivate;
@@ -59,10 +61,18 @@ class QVersitPropertyPrivate;
 class Q_VERSIT_EXPORT QVersitProperty
 {
 public:
+    enum ValueType {
+        PlainType,
+        CompoundType,
+        ListType,
+        BinaryType,
+        VersitDocumentType
+    };
+
     QVersitProperty();
     QVersitProperty(const QVersitProperty& other);
     ~QVersitProperty();
-    
+
     QVersitProperty& operator=(const QVersitProperty& other);
     bool operator==(const QVersitProperty& other) const;
     bool operator!=(const QVersitProperty& other) const;
@@ -88,18 +98,21 @@ public:
     }
     QString value() const;
 
+    void setValueType(ValueType type);
+    ValueType valueType() const;
+
     bool isEmpty() const;
     void clear();
 
-    // Deprecated:
-    void Q_DECL_DEPRECATED addParameter(const QString& name, const QString& value);
-    void Q_DECL_DEPRECATED setEmbeddedDocument(const QVersitDocument& document);
-    QVersitDocument Q_DECL_DEPRECATED embeddedDocument() const;
-
 private:
-    
+
     QSharedDataPointer<QVersitPropertyPrivate> d;
 };
+
+Q_VERSIT_EXPORT uint qHash(const QVersitProperty& key);
+#ifndef QT_NO_DEBUG_STREAM
+Q_VERSIT_EXPORT QDebug operator<<(QDebug dbg, const QVersitProperty& property);
+#endif
 
 QTM_END_NAMESPACE
 

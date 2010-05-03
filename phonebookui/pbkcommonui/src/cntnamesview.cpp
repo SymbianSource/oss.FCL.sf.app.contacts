@@ -17,12 +17,11 @@
 
 #include "cntnamesview.h"
 #include "cntnamesview_p.h"
-#include "cntviewparameters.h"
 
 #include <hbview.h>
 
-CntNamesView::CntNamesView() : 
-d_ptr( new CntNamesViewPrivate() )
+CntNamesView::CntNamesView(CntExtensionManager &extensionManager) : 
+d_ptr( new CntNamesViewPrivate(extensionManager) )
 {
     Q_D(CntNamesView);
     d->q_ptr = this;
@@ -37,7 +36,7 @@ CntNamesView::~CntNamesView()
     delete d;
 }
 
-void CntNamesView::activate(CntAbstractViewManager* aMgr, const CntViewParameters& aArgs)
+void CntNamesView::activate(CntAbstractViewManager* aMgr, const CntViewParameters aArgs)
 {
     Q_D(CntNamesView);
     d->activate( aMgr, aArgs );
@@ -60,8 +59,8 @@ bool CntNamesView::isDefault() const
     Q_D(const CntNamesView);
     return d->mIsDefault; 
 }
-CntViewParameters::ViewId CntNamesView::viewId() const 
-{ 
+int CntNamesView::viewId() const 
+{
     Q_D(const CntNamesView);
     return d->mId; 
 }

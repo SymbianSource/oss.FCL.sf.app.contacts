@@ -20,13 +20,19 @@
 
 #include "cntbaseselectionview.h"
 
+class QModelIndex;
+
 class CntMyCardSelectionView : public CntBaseSelectionView
 {
+    Q_OBJECT
 public:
-    CntMyCardSelectionView(CntViewManager *viewManager, QGraphicsItem *parent=0, HbAbstractItemView::SelectionMode newMode=HbAbstractItemView::NoSelection);
+    CntMyCardSelectionView();
     ~CntMyCardSelectionView();
 
-public slots:
+public:
+    int viewId() const { return myCardSelectionView; }
+    
+private slots:
     void onListViewActivated(const QModelIndex& index);
     
 #ifdef PBK_UNIT_TEST
@@ -34,8 +40,7 @@ public:
 #else
 private:
 #endif
-    void aboutToCloseView();
-    CntViewParameters::ViewId viewId() const { return CntViewParameters::myCardSelectionView; }
+    void removeFromGroup(const QContact* contact);
 };
 
 #endif /* CNTMYCARDSELECTIONVIEW_H */

@@ -20,6 +20,7 @@
 
 #include "cntdetailviewitem.h"
 #include <hbabstractviewitem.h>
+#include <qgraphicslinearlayout.h>
 #include <hbwidget.h>
 #include <hbtextitem.h>
 #include <hblineedit.h>
@@ -45,7 +46,7 @@ public:
 private:
 #endif
     HbLineEdit* mEdit;
-    
+    QGraphicsLinearLayout* mLayout;
     };
 
 #endif /* CNTNOTEEDITORVIEWITEM_H_ */

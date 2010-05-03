@@ -40,7 +40,7 @@ public:
     void createPrimitives();
     void recreatePrimitives();
     void updatePrimitives();
-    void setDetails(QString title, QString bodyText, QString timeStamp, QString iconName, bool incoming);
+    void setDetails(QString title, QString bodyText, QString timeStamp, QString iconName, bool incoming, bool newMessage);
 
     bool isTitleExist() const { return !mTitle.isNull(); }
     bool isBodyTextExist() const { return !mBodyText.isNull(); }
@@ -53,12 +53,14 @@ private:
     HbTextItem              *mBodyTextLabel;
     HbTextItem              *mTimeStampLabel;
     HbFrameItem             *mFrameLabel;
+    HbFrameItem             *mNewItemLabel;
 
     QString                 mTitle;
     QString                 mBodyText;
     QString                 mTimeStamp;
     HbIcon                  mIcon;
     bool                    mIncoming;
+    bool                    mNewMessage;
 };
 
 #endif // CNTHISTORYVIEWITEMWIDGET_H

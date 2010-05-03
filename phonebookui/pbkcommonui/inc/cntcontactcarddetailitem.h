@@ -28,12 +28,12 @@ class QGraphicsGridLayout;
 class HbFrameItem;
 class HbGestureSceneFilter;
 class HbGesture;
+class CntContactCardDataItem;
 
 class CntContactCardDetailItem : public HbWidget
 {
     Q_OBJECT
     Q_PROPERTY( QString text READ getText )
-    Q_PROPERTY( QString primaryText READ getPrimaryText )
     Q_PROPERTY( QString valueText READ getValueText )
     Q_PROPERTY( HbIcon icon READ getIcon )
 
@@ -51,10 +51,8 @@ public:
     void createPrimitives();
     void recreatePrimitives();
     void updatePrimitives();
-    void setDetails(const HbIcon aIcon, const QString& aText, const QString& aValueText, Qt::TextElideMode valueTextElideMode = Qt::ElideRight, bool underLine = false);
-    void setDetails(const HbIcon detailIcon, const QString& detailText);
+    void setDetails(CntContactCardDataItem* aDataItem);
     int index();
-    void setUnderLine(bool underLine);
 
 public slots:
     void onLongPress(const QPointF &point);
@@ -65,7 +63,6 @@ signals:
     
 private:
     QString getText() const { return text; }
-    QString getPrimaryText() const { return primaryText; }
     QString getValueText() const { return valueText; }
     HbIcon getIcon() const { return icon; }
 
@@ -75,8 +72,7 @@ public:
 private:
 #endif
     HbIconItem              *mIcon;
-    HbRichTextItem          *mFirstLineText;
-    HbTextItem              *mPrimaryText;
+    HbTextItem              *mFirstLineText;
     HbTextItem              *mSecondLineText;
     HbFrameItem             *mFrameItem;
     HbFrameItem             *mFocusItem;
@@ -89,7 +85,6 @@ private:
     bool                    mIsUnderline;
 
     QString                 text;
-    QString                 primaryText;
     QString                 valueText;
     HbIcon                  icon;
 };
