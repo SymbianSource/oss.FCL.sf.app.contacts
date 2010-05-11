@@ -23,7 +23,7 @@
 
 // INCLUDES
 #include <e32base.h>
-#include <mvpbkfieldtype.h>
+#include <MVPbkFieldType.h>
 
 // CLASS DECLARATIONS
 

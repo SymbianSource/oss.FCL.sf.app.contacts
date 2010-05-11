@@ -20,7 +20,7 @@
 
 // INCLUDES
 #include <e32std.h>
-#include <mvpbkbasecontactfield.h>
+#include <MVPbkBaseContactField.h>
 
 // CONSTANTS
 /// A constant that indicates that the store doesn't set limits

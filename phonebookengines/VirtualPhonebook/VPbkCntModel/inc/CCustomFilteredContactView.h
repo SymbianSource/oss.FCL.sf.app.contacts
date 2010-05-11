@@ -97,6 +97,7 @@ NONSHARABLE_CLASS( CCustomFilteredContactView ): public CViewBase,
     private: // From MVPbkContactSelector
         TBool IsContactIncluded(
                 const MVPbkBaseContact& aContact );
+        TAny* ContactSelectorExtension( TUid aExtensionUid);
 
     private: // From MContactViewObserver
         void HandleContactViewEvent(

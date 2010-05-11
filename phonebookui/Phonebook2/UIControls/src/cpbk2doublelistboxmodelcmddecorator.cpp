@@ -80,8 +80,7 @@ CPbk2DoubleListboxModelCmdDecorator::~CPbk2DoubleListboxModelCmdDecorator()
 void CPbk2DoubleListboxModelCmdDecorator::ConstructL()
     {
     CPbk2ListboxModelCmdDecorator::ConstructL();
-    iElement = CPbk2ContactViewDoubleListboxDataElement::NewLC();
-    CleanupStack::Pop( iElement ); // member
+    iElement = CPbk2ContactViewDoubleListboxDataElement::NewL();
     }
 
 // --------------------------------------------------------------------------

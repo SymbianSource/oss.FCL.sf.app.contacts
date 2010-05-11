@@ -21,7 +21,7 @@
 
 // INCLUDES
 #include <e32base.h>
-#include <mvpbkstorecontactfield.h>
+#include <MVPbkStoreContactField.h>
 
 // FORWARD DECLARATIONS
 class MVPbkStoreContactFieldCollection;

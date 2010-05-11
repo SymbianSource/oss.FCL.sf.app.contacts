@@ -87,7 +87,16 @@ NONSHARABLE_CLASS(CPbk2JapaneseContactNameFormatter)
              {
              return NULL;
              }
-
+         
+    public: // From MPbk2ContactNameFormatter3
+        
+        CVPbkBaseContactFieldTypeListIterator* TitleWithCompanyNameFieldsLC(
+                CVPbkFieldTypeRefsList& /*aFieldTypeList*/,
+                const MVPbkBaseContactFieldCollection& /*aContactFields */)
+             {
+             return NULL;
+             }
+         
     private: // Implementation
         CPbk2JapaneseContactNameFormatter(
             const MVPbkFieldTypeList& aMasterFieldTypeList,

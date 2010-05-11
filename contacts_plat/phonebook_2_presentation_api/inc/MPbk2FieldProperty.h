@@ -21,7 +21,7 @@
 
 // INCLUDE FILES
 #include <e32def.h>
-#include <pbk2fieldproperty.hrh>
+#include <Pbk2FieldProperty.hrh>
 
 // FORWARD DECLARATIONS
 class MVPbkFieldType;

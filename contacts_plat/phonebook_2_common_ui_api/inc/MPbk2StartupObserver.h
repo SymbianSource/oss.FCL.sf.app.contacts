@@ -21,7 +21,7 @@
 
 // INCLUDES
 #include <e32def.h>
-#include <mpbk2startupmonitor.h>
+#include <MPbk2StartupMonitor.h>
 
 // CLASS DECLARATION
 

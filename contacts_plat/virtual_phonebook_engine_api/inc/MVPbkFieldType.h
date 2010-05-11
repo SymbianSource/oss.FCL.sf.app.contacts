@@ -22,7 +22,7 @@
 
 // INCLUDES
 #include <e32std.h>
-#include <vpbkfieldtype.hrh>
+#include <VPbkFieldType.hrh>
 
 // FORWARD DECLARATIONS
 class TVPbkFieldVersitProperty;

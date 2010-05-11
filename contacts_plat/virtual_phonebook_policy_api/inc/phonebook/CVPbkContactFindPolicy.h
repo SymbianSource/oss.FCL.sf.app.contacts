@@ -23,8 +23,8 @@
 
 #include <e32std.h>
 #include <ecom/ecom.h>
-#include <vpbkpolicyuid.h>
-#include <mvpbkcontactfindpolicy.h>
+#include <VPbkPolicyUid.h>
+#include <MVPbkContactFindPolicy.h>
 
 // FORWARD DECLARATIONS
 class MVPbkFieldTypeList;

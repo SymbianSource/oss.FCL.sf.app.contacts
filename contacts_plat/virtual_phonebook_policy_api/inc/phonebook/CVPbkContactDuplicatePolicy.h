@@ -22,8 +22,8 @@
 // INCLUDES
 #include <e32base.h>
 #include <ecom/ecom.h>
-#include <mvpbkcontactduplicatepolicy.h>
-#include <vpbkpolicyuid.h>
+#include <MVPbkContactDuplicatePolicy.h>
+#include <VPbkPolicyUid.h>
 
 // FORWARD DECLARATIONS
 class CVPbkContactManager;

@@ -119,7 +119,7 @@ NONSHARABLE_CLASS(CPbk2ContactViewListBoxModel) :
                 CPbk2ContactViewListBoxModel::TParams& aParams );
         void ConstructL(CPbk2StorePropertyArray* aStoreProperties,
                 MPbk2ContactUiControlExtension* aUiExtension);
-        void FormatBufferL(
+        virtual void FormatBufferL(
                 const TInt aIndex ) const;
         void FormatEmptyBuffer() const;
         virtual void FormatBufferForContactL(

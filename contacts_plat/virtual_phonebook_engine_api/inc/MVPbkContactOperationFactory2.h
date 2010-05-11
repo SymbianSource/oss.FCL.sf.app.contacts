@@ -23,7 +23,7 @@
 // INCLUDES
 #include <e32cmn.h>
 #include <bamdesca.h>
-#include <BADESCA.H> 
+#include <badesca.h> 
 // FORWARD DECLARATIONS
 class MVPbkContactOperation;
 class MVPbkContactLink;

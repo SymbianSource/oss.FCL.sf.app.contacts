@@ -21,7 +21,7 @@
 
 // INCLUDES
 #include <e32std.h>
-#include <mvpbkcontactobserver.h>
+#include <MVPbkContactObserver.h>
 
 // CLASS DECLARATION
 

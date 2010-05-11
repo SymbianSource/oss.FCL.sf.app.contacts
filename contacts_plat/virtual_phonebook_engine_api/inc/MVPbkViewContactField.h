@@ -22,7 +22,7 @@
 
 // INCLUDES
 #include <e32std.h>
-#include <mvpbkbasecontactfield.h>
+#include <MVPbkBaseContactField.h>
 
 // CLASS DECLARATIONS
 

@@ -21,8 +21,8 @@
 
 // INCLUDE FILES
 #include <e32base.h>
-#include <mvpbkcontactfindobserver.h>
-#include <mvpbkcontactstorelist.h>
+#include <MVPbkContactFindObserver.h>
+#include <MVPbkContactStoreList.h>
 
 // FORWARD DECLARATIONS
 class CVPbkContactManager;

@@ -21,8 +21,8 @@
 
 // INCLUDES
 #include <e32def.h>
-#include <mvpbkobjecthierarchy.h>
-#include <mvpbkcontactoperationfactory.h>
+#include <MVPbkObjectHierarchy.h>
+#include <MVPbkContactOperationFactory.h>
 
 // FORWARD DECLARATIONS
 class CVPbkContactViewDefinition;

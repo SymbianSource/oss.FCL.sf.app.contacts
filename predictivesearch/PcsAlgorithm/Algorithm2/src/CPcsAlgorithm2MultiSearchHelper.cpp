@@ -224,6 +224,9 @@ void CPcsAlgorithm2MultiSearchHelper::SearchMatchSeqMultiL(RPointerArray<CPsQuer
                                                            RArray<TPsMatchLocation>& aMatchLocation)
     {
     PRINT ( _L("Enter CPcsAlgorithm2MultiSearchHelper::SearchMatchSeqMultiL") );
+    CleanupResetAndDestroyPushL( aMatchSet );
+    CleanupClosePushL( aMatchLocation );
+    
     RPointerArray<HBufC> queryList;
     ConvertQueryToListL(aPsQuery, queryList);
 
@@ -350,6 +353,9 @@ void CPcsAlgorithm2MultiSearchHelper::SearchMatchSeqMultiL(RPointerArray<CPsQuer
     // Free the query list
     queryList.ResetAndDestroy();
     tempqueryList.Reset();
+    
+    CleanupStack::Pop();
+    CleanupStack::Pop( &aMatchSet );
 
     PRINT ( _L("End CPcsAlgorithm2MultiSearchHelper::SearchMatchSeqMultiL") );
     }

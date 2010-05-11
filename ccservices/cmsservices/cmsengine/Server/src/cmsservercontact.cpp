@@ -103,7 +103,7 @@ void CCmsServerContact::ConstructL()
 CCmsServerContact::~CCmsServerContact()
     {
     PRINT( _L( "Start CCmsServerContact::~CCmsServerContact()" ) );
-    
+          
     iCmsServer.PhonebookProxyHandle().RemoveObserver( this );
         
     if ( iPresenceNotifySubscribed && iContactLink ) 
@@ -117,12 +117,16 @@ CCmsServerContact::~CCmsServerContact()
             iChatHandler->UnsubscribeBrandingForContact( iContactLink, this );            
             }        
         }
+    delete iContact;
+    iContact = NULL;
+    
+    iCmsServer.PhonebookProxyHandle().SetContact( iContact );
+    
     delete iStoreUri;
     delete iChatHandler;
     delete iVoipHandler;
     delete iXSPContactHandler;
-    delete iContactLink;
-    delete iContact;
+    delete iContactLink;    
     delete iCachedField8;
     delete iAsyncContact;
     delete iCachedField16;
@@ -227,6 +231,7 @@ void CCmsServerContact::OfferContactEventL( TCmsPhonebookEvent aEventType,
             PRINT( _L( "CCmsServerContact::OfferContactEventL():  Contact deleted, invalidate this subsession" ) );
             delete iContact;
             iContact = NULL;
+            iCmsServer.PhonebookProxyHandle().SetContact( iContact );
             iContactDeleted = ETrue;
             }
         else
@@ -642,6 +647,8 @@ void CCmsServerContact::ContactReadyL( TInt aError, MVPbkStoreContact* aContact 
         CreateContactLinkArrayL(); 
         uri.Set( aContact->ParentStore().StoreProperties().Uri().UriDes() );
         ParseContactStore( uri );
+        
+        iCmsServer.PhonebookProxyHandle().SetContact( iContact );      
         }
     }
 

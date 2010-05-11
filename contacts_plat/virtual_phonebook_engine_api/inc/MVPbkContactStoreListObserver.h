@@ -22,7 +22,7 @@
 
 
 // INCLUDES
-#include <mvpbkcontactstoreobserver.h>
+#include <MVPbkContactStoreObserver.h>
 
 // CLASS DECLARATIONS
 

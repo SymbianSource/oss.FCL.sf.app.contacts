@@ -843,12 +843,6 @@ void CPbk2ContactEditorDlgImpl::PostLayoutDynInitL()
 //
 void CPbk2ContactEditorDlgImpl::SetInitialCurrentLine()
     {
-    TRAPD( err, ActivateFirstPageL() );
-    if(err)
-        {
-        return;
-        }
-
     TInt focusedIndex = 0;
     if ( iParams.iFocusedContactField )
         {
@@ -3379,31 +3373,36 @@ void CPbk2ContactEditorDlgImpl::CheckCurrentFieldTextL(
 		TEventCode aType )
     {
     MPbk2ContactEditorField* editorField = aCurrentField->ContactEditorField();
-    MVPbkStoreContactField& contactField = editorField->ContactField();
-    TVPbkFieldStorageType dataType = contactField.FieldData().DataType();
-    
-    if ( EVPbkFieldStorageTypeText == dataType )
+    if ( editorField )
         {
-        const MVPbkContactFieldTextData& textData = 
-            MVPbkContactFieldTextData::Cast(contactField.FieldData());
-        TInt maxSize = textData.MaxLength();
+        MVPbkStoreContactField& contactField = editorField->ContactField();
+        TVPbkFieldStorageType dataType = contactField.FieldData().DataType();
         
-        if ( KVPbkUnlimitedFieldLength != maxSize &&
-                IsCheckPointEvent( aKeyEvent, aType ) )
+        if ( EVPbkFieldStorageTypeText == dataType )
             {
-            CEikEdwin* ctrl = editorField->Control();
-            HBufC* textBuf = ctrl->GetTextInHBufL();
+            const MVPbkContactFieldTextData& textData = 
+                MVPbkContactFieldTextData::Cast(contactField.FieldData());
+            TInt maxSize = textData.MaxLength();
             
-            if ( textBuf )
+            if ( KVPbkUnlimitedFieldLength != maxSize &&
+                    IsCheckPointEvent( aKeyEvent, aType ) )
                 {
-                TInt maxLen = maxSize;
-                if ( IsUnicodeL( *textBuf ) )
+                CEikEdwin* ctrl = editorField->Control();
+                HBufC* textBuf = ctrl->GetTextInHBufL();
+                
+                if ( textBuf )
                     {
-                    maxLen = maxSize / KTwoBytes - KExtraByte;
-                    }
-                if ( ctrl->MaxLength() != maxLen && textBuf->Length() <= maxLen )
-                    {
-                    ctrl->SetMaxLength( maxLen );
+                    CleanupStack::PushL( textBuf );
+                    TInt maxLen = maxSize;
+                    if ( IsUnicodeL( *textBuf ) )
+                        {
+                        maxLen = maxSize / KTwoBytes - KExtraByte;
+                        }
+                    if ( ctrl->MaxLength() != maxLen && textBuf->Length() <= maxLen )
+                        {
+                        ctrl->SetMaxLength( maxLen );
+                        }
+                    CleanupStack::PopAndDestroy( textBuf );
                     }
                 }
             }

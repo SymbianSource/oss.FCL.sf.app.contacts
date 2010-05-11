@@ -202,4 +202,5 @@ EXPORTS
 	_ZN16Pbk2AddressTools22IsAddressPreviewEmptyLER17MVPbkStoreContact17TPbk2FieldGroupId @ 201 NONAME
 	_ZN16Pbk2AddressTools32MapVPbkFieldTypeToAddressGroupIdEPK14MVPbkFieldType @ 202 NONAME
 	_ZN21CPbk2NamesListControl26MassUpdateSkipProgressNoteEi @ 203 NONAME
+	_ZN21CPbk2NamesListControl13SetOpeningCcaEi @ 204 NONAME
 

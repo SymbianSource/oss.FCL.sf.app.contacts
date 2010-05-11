@@ -24,7 +24,7 @@
 
 // INCLUDE FILES
 #include <e32base.h>
-#include <vpbkpublicuid.h>
+#include <VPbkPublicUid.h>
 #include <ecom/ecom.h>
 
 // FORWARD DECLARATIONS

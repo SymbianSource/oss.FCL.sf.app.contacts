@@ -568,7 +568,7 @@ void CPmapCmd::FinishProcess()
 //
 void CPmapCmd::EditorShowOnMapsL( TVPbkFieldTypeParameter aAddressType )
     {
-    CMnMapView* mapview = CMnMapView::NewL( *iMapViewProvider );
+    CMnMapView* mapview = CMnMapView::NewChainedL( *iMapViewProvider );
     CleanupStack::PushL( mapview );
 
     RPointerArray<CPosLandmark> landmarks;

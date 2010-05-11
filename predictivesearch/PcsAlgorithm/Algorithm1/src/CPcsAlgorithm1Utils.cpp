@@ -41,6 +41,7 @@ _LIT(KGroupIdUri, "cntdb://c:contacts.gdb?id=");
 void CPcsAlgorithm1Utils::FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR_ARRAY>& aSearchResultsArr, 
 												     RPointerArray<CPsData>& aSearchResults)
 {
+    CleanupClosePushL( aSearchResults );
 	TInt maxIndex = 0;
     TInt maxValue = aSearchResultsArr[maxIndex]->Count();
     TLinearOrder<CPsData> rule( CPcsAlgorithm1Utils::CompareDataBySortOrderL );
@@ -74,6 +75,7 @@ void CPcsAlgorithm1Utils::FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR
     		}
     	}
     }
+    CleanupStack::Pop();
 }
 
 // ----------------------------------------------------------------------------
@@ -330,6 +332,8 @@ TUint8 CPcsAlgorithm1Utils::FilterDataFieldsL(const RArray<TInt>& aRequiredDataF
 void CPcsAlgorithm1Utils::AppendMatchToSeqL( 
         RPointerArray<TDesC>& aMatchSeq, const TDesC& aMatch )
     {
+    CleanupResetAndDestroyPushL( aMatchSeq );
+    
     HBufC* seq = aMatch.AllocLC();
     seq->Des().UpperCase();
     TIdentityRelation<TDesC> rule(CompareExact);
@@ -342,6 +346,7 @@ void CPcsAlgorithm1Utils::AppendMatchToSeqL(
         {
         CleanupStack::PopAndDestroy( seq );
         }
+    CleanupStack::Pop( &aMatchSeq );
     }
 
 // End of File

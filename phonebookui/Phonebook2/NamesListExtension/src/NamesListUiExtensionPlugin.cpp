@@ -734,14 +734,9 @@ void CNamesListUIExtensionPlugin::StoreReady( MVPbkContactStore& aContactStore )
 // --------------------------------------------------------------------------
 //
 void CNamesListUIExtensionPlugin::StoreUnavailable
-        ( MVPbkContactStore& aContactStore, TInt /*aReason*/ )
+        ( MVPbkContactStore& /*aContactStore*/, TInt /*aReason*/ )
     {
-    if ( aContactStore.StoreProperties().Name().UriDes().Compare
-            ( VPbkContactStoreUris::DefaultCntDbUri() ) && iLocalStore )
-        {
-        iLocalStore->Close( *this );
-        iLocalStore = NULL;
-        }
+
     }
 
 // --------------------------------------------------------------------------
@@ -767,15 +762,7 @@ void CNamesListUIExtensionPlugin::HandleStoreEventL(
                {
                iLocalStoreContactsCount--;
                break;
-               }
-               
-           case TVPbkContactStoreEvent::EStoreBackupRestoreCompleted:
-           case TVPbkContactStoreEvent::EUnknownChanges:
-               {
-               iLocalStoreContactsCount = iLocalStore->StoreInfo().NumberOfContactsL();
-               break;
-               }
-               
+               }             
            default:
                break;
            }

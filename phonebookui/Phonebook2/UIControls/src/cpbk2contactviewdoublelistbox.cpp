@@ -44,7 +44,7 @@ CPbk2ContactViewDoubleListBox::CPbk2ContactViewDoubleListBox(
     CCoeControl& aContainer,
     MPbk2ContactUiControlExtension* aUiExtension,
     CPbk2PredictiveSearchFilter& aSearchFilter,
-    MVPbkContactViewBase& aView,
+    MPbk2FilteredViewStack& aView,
     CPbk2ThumbnailManager& aThumbManager ) :
     CPbk2ContactViewListBox( aContainer, aUiExtension, aSearchFilter ),
     iView( aView  ),
@@ -73,7 +73,7 @@ CPbk2ContactViewDoubleListBox* CPbk2ContactViewDoubleListBox::NewL(
     CCoeControl& aContainer,
     TResourceReader& aResourceReader,
     const CVPbkContactManager& aManager, 
-    MVPbkContactViewBase& aView,
+    MPbk2FilteredViewStack& aView,
     MPbk2ContactNameFormatter& aNameFormatter,
     CPbk2StorePropertyArray& aStoreProperties,
     MPbk2ContactUiControlExtension* aUiExtension,
@@ -100,7 +100,7 @@ void CPbk2ContactViewDoubleListBox::ConstructL(
         CCoeControl& aContainer, 
         TResourceReader& aResourceReader,
         const CVPbkContactManager& aManager, 
-        MVPbkContactViewBase& aView,
+        MPbk2FilteredViewStack& aView,
         MPbk2ContactNameFormatter& aNameFormatter,
         CPbk2StorePropertyArray& aStoreProperties )
     {
@@ -124,7 +124,8 @@ void CPbk2ContactViewDoubleListBox::ConstructL(
 CPbk2ContactViewListBoxModel* CPbk2ContactViewDoubleListBox::DoCreateModelL( 
         		CPbk2ContactViewListBoxModel::TParams params )
 	{
-	return CPbk2ContactViewDoubleListBoxModel::NewL( params, iThumbManager );
+	return CPbk2ContactViewDoubleListBoxModel::NewL( 
+	        params, iThumbManager, iView );
 	}
 
 

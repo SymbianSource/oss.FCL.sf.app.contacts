@@ -22,11 +22,11 @@
 
 // INCLUDES
 #include <e32base.h>
-#include <mvpbkbasecontact.h>
-#include <mvpbkviewcontact.h>
+#include <MVPbkBaseContact.h>
+#include <MVPbkViewContact.h>
 
 // Includes needed for covariant return types
-#include <mvpbkstorecontactfieldcollection.h>
+#include <MVPbkStoreContactFieldCollection.h>
 
 // FORWARD DECLARATIONS
 class MVPbkContactStore;

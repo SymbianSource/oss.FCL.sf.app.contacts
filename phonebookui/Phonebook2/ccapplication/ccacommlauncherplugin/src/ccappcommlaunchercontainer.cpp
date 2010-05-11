@@ -645,7 +645,7 @@ void CCCAppCommLauncherContainer::ContactFieldFetchedNotifyL(
     // Forwarding to listbox-model
     iModel->ContactFieldFetchedNotifyL(aContactField);
     
-    if( iStatusControl )
+    if( iStatusControl && iStatusControl->IsVisible() )
        	{
 		SetDefaultStatusTextL();
        	}
@@ -673,7 +673,7 @@ void CCCAppCommLauncherContainer::ContactFieldFetchingCompletedL()
     
     iMdlRowCount = mdlCount;
     
-    if( iStatusControl )
+    if( iStatusControl && iStatusControl->IsVisible() )
     	{
 		SetDefaultStatusTextL();
     	}

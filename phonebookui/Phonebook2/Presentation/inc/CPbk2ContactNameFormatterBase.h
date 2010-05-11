@@ -24,6 +24,7 @@
 #include <e32base.h>
 #include <MPbk2ContactNameFormatter.h>
 #include <MPbk2ContactNameFormatter2.h>
+#include <MPbk2ContactNameFormatter3.h>
 
 #include "TPbk2SortOrderFieldMapper.h"
 
@@ -44,7 +45,8 @@ class TResourceReader;
 NONSHARABLE_CLASS( CPbk2ContactNameFormatterBase )
         :   public CBase,
             public MPbk2ContactNameFormatter,
-            public MPbk2ContactNameFormatter2
+            public MPbk2ContactNameFormatter2,
+            public MPbk2ContactNameFormatter3
     {
     public:  // Constructors and destructor
 
@@ -91,7 +93,10 @@ NONSHARABLE_CLASS( CPbk2ContactNameFormatterBase )
             const MVPbkBaseContactFieldCollection& aContactFields,
             TUint32 aFormattingFlags ) = 0;
         
-
+    public: // from MPbk2ContactNameFormatter3
+       virtual CVPbkBaseContactFieldTypeListIterator* TitleWithCompanyNameFieldsLC(
+               CVPbkFieldTypeRefsList& aFieldTypeList,
+               const MVPbkBaseContactFieldCollection& aContactFields ) = 0;
 
     protected:  // New functions
 

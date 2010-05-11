@@ -58,7 +58,7 @@ public: // Constructors and destructor
             CCoeControl& aContainer,
             TResourceReader& aResourceReader,
             const CVPbkContactManager& aManager,
-            MVPbkContactViewBase& aView,
+            MPbk2FilteredViewStack& aView,
             MPbk2ContactNameFormatter& aNameFormatter,
             CPbk2StorePropertyArray& aStoreProperties,
             MPbk2ContactUiControlExtension* aUiExtension,
@@ -91,7 +91,7 @@ protected: // Implementation
         CCoeControl& aContainer,
         MPbk2ContactUiControlExtension* aUiExtension,
         CPbk2PredictiveSearchFilter& aSearchFilter,	
-        MVPbkContactViewBase& aView,
+        MPbk2FilteredViewStack& aView,
         CPbk2ThumbnailManager& aThumbManager );
     
     /*
@@ -101,7 +101,7 @@ protected: // Implementation
 		CCoeControl& aContainer, 
 		TResourceReader& aResourceReader,
 		const CVPbkContactManager& aManager, 
-		MVPbkContactViewBase& aView,
+		MPbk2FilteredViewStack& aView,
 		MPbk2ContactNameFormatter& aNameFormatter,
 		CPbk2StorePropertyArray& aStoreProperties );
     
@@ -121,7 +121,7 @@ protected: // Implementation
 
 private:	//data
 	//REF: View
-	MVPbkContactViewBase& iView;
+    MPbk2FilteredViewStack& iView;
 	//REF:	thumbnail manager
 	CPbk2ThumbnailManager& iThumbManager;
 };

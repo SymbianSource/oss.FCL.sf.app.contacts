@@ -35,6 +35,8 @@ _LIT(KGroupIdUri, "cntdb://c:contacts.gdb?id=");
 void CPcsAlgorithm2Utils::FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR_ARRAY>& aSearchResultsArr,
                                                      RPointerArray<CPsData>& SearchResults)
     {
+    CleanupClosePushL( SearchResults );
+    
     TInt maxIndex = 0;
     TInt maxValue = aSearchResultsArr[maxIndex]->Count();
     TLinearOrder<CPsData> rule(CPcsAlgorithm2Utils::CompareDataBySortOrder);
@@ -68,6 +70,7 @@ void CPcsAlgorithm2Utils::FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR
                 }
             }
         }
+    CleanupStack::Pop();
     }
 
 // ----------------------------------------------------------------------------

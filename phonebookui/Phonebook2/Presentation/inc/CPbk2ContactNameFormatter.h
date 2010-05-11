@@ -92,6 +92,12 @@ NONSHARABLE_CLASS(CPbk2ContactNameFormatter)
         HBufC* GetContactTitleWithCompanyNameL(
             const MVPbkBaseContactFieldCollection& aContactFields,
             TUint32 aFormattingFlags );
+        
+    public: // From MPbk2ContactNameFormatter3
+        CVPbkBaseContactFieldTypeListIterator* TitleWithCompanyNameFieldsLC(
+                CVPbkFieldTypeRefsList& aFieldTypeList,
+                const MVPbkBaseContactFieldCollection& aContactFields );
+    
     private:
          
         void GetContactTitleWithCompanyName(
@@ -103,7 +109,11 @@ NONSHARABLE_CLASS(CPbk2ContactNameFormatter)
                     const TUint32 aFormattingFlags );
       
         TBool IsCompanyNameField();
-
+        
+        void TitleFieldsL( CVPbkFieldTypeRefsList& aFieldTypeList,
+                const MVPbkBaseContactFieldCollection& aContactFields, 
+                const TInt aStartingPosition, const TInt aEndingPosition );
+        
     protected: // Implementation
         CPbk2ContactNameFormatter(
             const MVPbkFieldTypeList& aMasterFieldTypeList,

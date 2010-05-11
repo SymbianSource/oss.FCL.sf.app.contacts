@@ -26,6 +26,8 @@
 class CPbk2ThumbnailManager;
 class MPbk2ContactUiControlDoubleListboxExtension;
 class CPbk2ContactViewDoubleListboxDataElement;
+class CDataElementCache;
+class MPbk2FilteredViewStack;
 
 // CLASS DECLARATION
 
@@ -45,7 +47,8 @@ public:  // Constructors and destructor
      */
      static CPbk2ContactViewDoubleListBoxModel* NewL(
             CPbk2ContactViewListBoxModel::TParams& aParams,
-            CPbk2ThumbnailManager& aThumbManager );
+            CPbk2ThumbnailManager& aThumbManager,
+            MPbk2FilteredViewStack& aFilteredViewStack );
 
     /**
      * Destructor.
@@ -61,7 +64,8 @@ protected:
      */
     CPbk2ContactViewDoubleListBoxModel(
         CPbk2ContactViewListBoxModel::TParams& aParams,
-        CPbk2ThumbnailManager& aThumbManager );
+        CPbk2ThumbnailManager& aThumbManager,
+        MPbk2FilteredViewStack& aFilteredViewStack );
 
 protected: // new 
     
@@ -87,15 +91,27 @@ protected: // new
      * 
      * @param aIconId 	Id of the icon in icon array
      */
-    void AppendIconIndexIfFound(  const TPbk2IconId& aIconId ) const;
-        
-public: // From CPbk2ContactViewListBoxModel
+    void AppendIconIndexIfFound( const TPbk2IconId& aIconId ) const;
+
+    void FormatBufferForElementDataL(
+        CPbk2ContactViewDoubleListboxDataElement& aDataElement, 
+        TInt aIndex ) const;
+
+    void AppendThumbnailL( 
+            CPbk2ContactViewDoubleListboxDataElement& aDataElement, 
+            TInt aIndex ) const;
     
+    void FetchDataFromExtension(
+            CPbk2ContactViewDoubleListboxDataElement& aDataElement,
+            TInt aIndex ) const;
+    
+public: // From CPbk2ContactViewListBoxModel
+    void FormatBufferL( 
+            const TInt aIndex ) const;    
     /// See CPbk2ContactViewListBoxModel
     void FormatBufferForContactL(
         const MVPbkViewContact& aViewContact, 
         TInt aIndex ) const;
-    
 private:	//data
 	
 	//REF:	thumbnail manager
@@ -104,6 +120,11 @@ private:	//data
 	/// Ref
 	MPbk2ContactUiControlDoubleListboxExtension* iDoubleListExtensionPoint;
 	
+	/// Own:
+	CDataElementCache* iDataElementCache;
+	
+	/// Ref
+	MPbk2FilteredViewStack& iFilteredViewStack;
     };
 
 #endif // CPBK2CONTACTVIEWDOUBLELISTBOXMODEL_H

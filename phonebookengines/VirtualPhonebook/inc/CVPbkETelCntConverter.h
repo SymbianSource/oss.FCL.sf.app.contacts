@@ -147,6 +147,22 @@ class CVPbkETelCntConverter : public CBase
         TInt iMinContactLength;
     };
 
+// CleanupStack helpers for item owning RPointerArrays
+template <class T>
+class CleanupResetAndDestroy
+    {
+public:
+    inline static void PushL(T& aRef)
+        { CleanupStack::PushL(TCleanupItem(&ResetAndDestroy,&aRef)); }
+private:
+    inline static void ResetAndDestroy(TAny *aPtr)
+        { static_cast<T*>(aPtr)->ResetAndDestroy(); }
+    };
+
+template <class T>
+inline void CleanupResetAndDestroyPushL(T& aRef)
+    { CleanupResetAndDestroy<T>::PushL(aRef); }
+
 #endif      // CVPBKETELCNTCONVERTER_H
             
 // End of File

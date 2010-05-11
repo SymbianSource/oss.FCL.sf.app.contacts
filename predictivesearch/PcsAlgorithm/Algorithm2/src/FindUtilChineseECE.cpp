@@ -70,6 +70,28 @@ _LIT(KTab, "\t");
 _LIT(KPanicReason, "Abnormal input parameters!");
 
 const TInt KLitLineFeed(8233);
+
+// CleanupStack helpers for item owning RPointerArrays
+template <class T>
+class CleanupResetAndDestroy
+    {
+public:
+    inline static void PushL( T& aRef )
+        { 
+        CleanupStack::PushL( TCleanupItem( &ResetAndDestroy, &aRef ) ); 
+        }
+private:
+    inline static void ResetAndDestroy( TAny *aPtr )
+        { 
+        static_cast<T*>( aPtr )->ResetAndDestroy();
+        }
+    };
+
+template <class T>
+inline void CleanupResetAndDestroyPushL( T& aRef )
+    { 
+    CleanupResetAndDestroy<T>::PushL( aRef );
+    }
 // ======== MEMBER FUNCTIONS ========
 
 // ---------------------------------------------------------
@@ -1055,6 +1077,7 @@ void CFindUtilChineseECE::SplitItemStringL(RPointerArray<STRINGINFO>& aStringInf
 void CFindUtilChineseECE::InsertStrInforArrayL(RPointerArray<STRINGINFO>& aStringInfoArr, 
     TDes &aSegmentStr, const TBool aChinese)
     {
+    CleanupResetAndDestroyPushL( aStringInfoArr );
     if (aSegmentStr.Length() <= 0)
         {
         return;
@@ -1069,6 +1092,7 @@ void CFindUtilChineseECE::InsertStrInforArrayL(RPointerArray<STRINGINFO>& aStrin
 
     aStringInfoArr.AppendL(strInfo);
     aSegmentStr.Zero();
+    CleanupStack::Pop( &aStringInfoArr );
     }
 
 // ---------------------------------------------------------

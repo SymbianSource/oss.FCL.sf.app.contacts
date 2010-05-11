@@ -30,7 +30,8 @@
 /**
  */
 class CPbk2NonTopContactSelector : public CBase,
-                                   public MVPbkContactSelector
+                                   public MVPbkContactSelector,
+                                   public MVPbkOptimizedSelector
     {
     public:
 
@@ -43,12 +44,17 @@ class CPbk2NonTopContactSelector : public CBase,
 
         TBool IsContactIncluded(
             const MVPbkBaseContact& aContact );
-    
+       
+        TAny* ContactSelectorExtension(
+            TUid aExtensionUid); 
+			
+    private: // From MVPbkOptimizedSelector
+        TBool Continue() const;
+        
     private:
         CPbk2NonTopContactSelector();
-        void ConstructL();
     private:
-        TBool iMyCardSupported;
+        TBool iContinue;
     };
 
 

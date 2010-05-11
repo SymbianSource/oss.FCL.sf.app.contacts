@@ -24,7 +24,7 @@
 // INCLUDES
 #include <e32cmn.h>
 #include <e32std.h>
-#include <vpbkfieldtype.hrh>
+#include <VPbkFieldType.hrh>
 
 // CONSTANTS
 

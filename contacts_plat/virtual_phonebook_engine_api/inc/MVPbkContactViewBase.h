@@ -21,7 +21,7 @@
 
 // INCLUDES
 #include <e32cmn.h>
-#include <vpbkcontactview.hrh>
+#include <VPbkContactView.hrh>
 #include <bamdesca.h>
 
 // FORWARD DECLARATIONS

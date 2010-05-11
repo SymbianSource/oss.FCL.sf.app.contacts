@@ -434,6 +434,11 @@ void CVPbkFilteredContactView::BuildViewMappingL()
 
     iContactMapping.Reset();
 
+    MVPbkOptimizedSelector* optimizedSelector = 
+        static_cast<MVPbkOptimizedSelector*>( 
+            iContactSelector.ContactSelectorExtension( 
+                KVPbkOptimizedSelectorExtensionUid ) );
+				
     const TInt count = iBaseView.ContactCountL();
     for (TInt i = 0; i < count; ++i)
         {
@@ -441,6 +446,17 @@ void CVPbkFilteredContactView::BuildViewMappingL()
             {
             iContactMapping.AppendL(i);
             }
+
+        if( optimizedSelector && !optimizedSelector->Continue() )
+            {
+            // we doesn't need use selector anymore -> include rest of contacts 
+            for (TInt j = i+1; j < count; ++j )
+                {
+                iContactMapping.AppendL(j);
+                }
+            break;
+            }
+
         }
 
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
@@ -617,6 +633,13 @@ void CVPbkFilteredContactView::ContactRemovedFromView(
 //
 TInt CVPbkFilteredContactView::UpdateViewMappingAfterAddingL( TInt aBaseIndex )
 	{
+    // protect against ghost contacts. Can happen if last of the contacts is
+    // deleted or changed into own card immediately after creation.
+    if ( iBaseView.ContactCountL() <= aBaseIndex )
+        {
+        return KErrNotFound;
+        }
+
 	// first update the mapping for all elements which > aBaseIndex
 	TInt filteredIndex;
 	// find first elemnt which >= aBaseIndex

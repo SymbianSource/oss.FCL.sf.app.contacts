@@ -427,7 +427,10 @@ void CPbk2ContactViewListBox::SetListCommands(
     const RPointerArray<MPbk2UiControlCmdItem>* aCommands )
     {
     iListboxModelDecorator->SetListCommands( aCommands );
-    iColumnData->SetListCommands( aCommands );
+    if( iColumnData )
+        {
+        iColumnData->SetListCommands( aCommands );
+        }
     }
 
 // --------------------------------------------------------------------------
@@ -520,7 +523,7 @@ void CPbk2ContactViewListBox::CreateListBoxModelL
     model->SetUnnamedText( iResourceData.iUnnamedText );
     iModel = model;
 
-    if(FeatureManager::FeatureSupported(KFeatureIdFfContactsPredictiveSearch))
+    if( iColumnData )
         {
         iColumnData->SetDataModel( iModel );
         }
@@ -589,18 +592,26 @@ void CPbk2ContactViewListBox::Draw( const TRect& aRect ) const
 //
 void CPbk2ContactViewListBox::CreateItemDrawerL()
     {
-    CPbk2ContactViewCustomListBoxData* columnData =
-                    CPbk2ContactViewCustomListBoxData::NewL( iSearchFilter );
-
-    CleanupStack::PushL( columnData );
-
-    iItemDrawer=new(ELeave) CPbk2ContactViewCustomListBoxItemDrawer(
-            static_cast<MTextListBoxModel*>(Model()), iCoeEnv->NormalFont(),
-            columnData);
-    CleanupStack::Pop( columnData );
-
-    //Ownership has been transferred to iItemDrawer
-    iColumnData = columnData;
+    // Use custom drawer only if predictive search is enabled
+    if( FeatureManager::FeatureSupported(KFeatureIdFfContactsPredictiveSearch) )
+        {
+        CPbk2ContactViewCustomListBoxData* columnData =
+                        CPbk2ContactViewCustomListBoxData::NewL( iSearchFilter );
+    
+        CleanupStack::PushL( columnData );
+    
+        iItemDrawer=new(ELeave) CPbk2ContactViewCustomListBoxItemDrawer(
+                static_cast<MTextListBoxModel*>(Model()), iCoeEnv->NormalFont(),
+                columnData);
+        CleanupStack::Pop( columnData );
+    
+        //Ownership has been transferred to iItemDrawer
+        iColumnData = columnData;
+        }
+    else
+        {
+        CAknSingleGraphicStyleListBox::CreateItemDrawerL();
+        }
     }
 
 // --------------------------------------------------------------------------

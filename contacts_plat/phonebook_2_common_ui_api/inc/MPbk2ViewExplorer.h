@@ -21,7 +21,7 @@
 
 // INCLUDES
 #include <e32base.h>
-#include <pbk2viewid.hrh>
+#include <Pbk2ViewId.hrh>
 #include <vwsdef.h> // TVwsViewId
 
 // FORWARD DECLARATIONS

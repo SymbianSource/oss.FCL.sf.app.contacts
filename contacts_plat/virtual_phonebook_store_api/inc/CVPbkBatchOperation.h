@@ -23,8 +23,8 @@
 #define CVPBKBATCHOPERATION_H
 
 // INCLUDE FILES
-#include <cvpbkmulticontactoperationbase.h>
-#include <mvpbkbatchoperationobserver.h>
+#include <CVPbkMultiContactOperationBase.h>
+#include <MVPbkBatchOperationObserver.h>
 
 // CLASS DECLARATION
 

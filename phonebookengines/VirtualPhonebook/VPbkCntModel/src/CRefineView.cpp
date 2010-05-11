@@ -76,6 +76,7 @@ CRefineView* CRefineView::NewLC(
 void CRefineView::MatchL( 
         RPointerArray<CCntModelViewContact>& aMatchedContacts )
     {
+    CleanupClosePushL( aMatchedContacts ); 
     if ( iIdleUpdate )
         {
         iIdleUpdate->Cancel();
@@ -98,6 +99,7 @@ void CRefineView::MatchL(
             aMatchedContacts.AppendL( nativeContact );
             }
         }    
+    CleanupStack::Pop();
     }
 
 // --------------------------------------------------------------------------

@@ -1210,21 +1210,24 @@ void CPbk2MergeContactsCmd::OperationComplete( MVPbkContactOperationBase& aOpera
 //
 void CPbk2MergeContactsCmd::SetTitlePaneL( TBool aCustom )
     {
-    CEikStatusPane* statusPane = iAvkonAppUi->StatusPane();
-    if ( statusPane && statusPane->PaneCapabilities( TUid::Uid( EEikStatusPaneUidTitle ) ).IsPresent() )
+    if ( iAvkonAppUi )
         {
-        CAknTitlePane* titlePane = static_cast<CAknTitlePane*>
-            ( statusPane->ControlL ( TUid::Uid( EEikStatusPaneUidTitle ) ) );
+        CEikStatusPane* statusPane = iAvkonAppUi->StatusPane();
+        if ( statusPane && statusPane->PaneCapabilities( TUid::Uid( EEikStatusPaneUidTitle ) ).IsPresent() )
+            {
+            CAknTitlePane* titlePane = static_cast<CAknTitlePane*>
+                ( statusPane->ControlL ( TUid::Uid( EEikStatusPaneUidTitle ) ) );
         
-        if ( aCustom )
-            {
-            HBufC* title = StringLoader::LoadLC( R_QTN_PHOB_TITLE_MERGE_CONTACTS );
-            titlePane->SetTextL( *title );
-            CleanupStack::PopAndDestroy( title );  
-            }
-        else
-            {
-            titlePane->SetTextToDefaultL();
+            if ( aCustom )
+                {
+                HBufC* title = StringLoader::LoadLC( R_QTN_PHOB_TITLE_MERGE_CONTACTS );
+                titlePane->SetTextL( *title );
+                CleanupStack::PopAndDestroy( title );  
+                }
+            else
+                {
+                titlePane->SetTextToDefaultL();
+                }
             }
         }
     }

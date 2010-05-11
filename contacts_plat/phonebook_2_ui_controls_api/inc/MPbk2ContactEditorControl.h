@@ -20,7 +20,7 @@
 #define MPBK2CONTACTEDITORCONTROL_H
 
 // INCLUDES
-#include <pbk2fieldproperty.hrh>    // TPbk2FieldCtrlType
+#include <Pbk2FieldProperty.hrh>    // TPbk2FieldCtrlType
 
 // FORWARD DECLATIONS
 class MPbk2ContactEditorField;

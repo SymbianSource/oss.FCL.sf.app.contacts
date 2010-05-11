@@ -138,6 +138,7 @@ void CxSPContactManager::UnmapContactL( TUint32 aId, const MVPbkContactLink& aPb
 void CxSPContactManager::GetMappedPbkContactsL( TUint32 aId, TInt32 axSPContactId,
         							RPointerArray<MVPbkContactLink>& aPbkContactLinks ) const
 	{
+	CleanupClosePushL( aPbkContactLinks );
 	TInt count = iContactMap.Count();
 	for( TInt i = 0; i < count; i++ )
 		{
@@ -147,12 +148,14 @@ void CxSPContactManager::GetMappedPbkContactsL( TUint32 aId, TInt32 axSPContactI
 			User::LeaveIfError( aPbkContactLinks.Append( map->iPbkContactLink ) );
 			}
 		}
+	CleanupStack::Pop();
 	}		
 
 void CxSPContactManager::GetMappedxSPContactsL( TUint32 aId, 
 												const MVPbkContactLink& aPbkContactLink,
         										RArray<TInt32>& axSPContactIds ) const
 	{
+	CleanupClosePushL( axSPContactIds );
 	const TInt count = iContactMap.Count();
 	for( TInt i = 0; i < count; i++ )
 		{
@@ -165,6 +168,7 @@ void CxSPContactManager::GetMappedxSPContactsL( TUint32 aId,
 				}
 			}			
 		}
+	CleanupStack::Pop();
 	}        										
 	
 void CxSPContactManager::ViewActivatedL( const TVwsViewId& aPrevViewId,

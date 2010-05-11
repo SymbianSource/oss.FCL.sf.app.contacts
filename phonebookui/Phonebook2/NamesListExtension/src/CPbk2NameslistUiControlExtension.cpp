@@ -271,49 +271,46 @@ void CPbk2NameslistUiControlExtension::ContactPresenceChanged(
 // -----------------------------------------------------------------------------
 //
 void CPbk2NameslistUiControlExtension::FormatDataL(
-        const MVPbkViewContact& aViewContact,
+        const MVPbkContactLink& aContactLink,
         MPbk2DoubleListboxDataElement& aDataElement )
     {
-    MVPbkContactLink* link = aViewContact.CreateLinkLC();
-    if( link )
+    HBufC* txt = NULL;
+    TPbk2IconId iconId;
+    CSpbContentProvider::TSpbContentType type = CSpbContentProvider::ETypeNone;
+    
+    iContentProvider.GetContentL( 
+            *(const_cast<MVPbkContactLink*>(&aContactLink)), txt, iconId, type );
+
+    // select proper element type based on content type
+    MPbk2DoubleListboxDataElement::TTextDataType elemType = 
+        MPbk2DoubleListboxDataElement::ETypeGenericText;
+    if( type == CSpbContentProvider::ETypePhoneNumber )
         {
-        HBufC* txt = NULL;
-        TPbk2IconId iconId;
-        CSpbContentProvider::TSpbContentType type = CSpbContentProvider::ETypeNone; 
-        iContentProvider.GetContentL( *link, txt, iconId, type );
-
-        // select proper element type based on content type
-        MPbk2DoubleListboxDataElement::TTextDataType elemType = 
-            MPbk2DoubleListboxDataElement::ETypeGenericText;
-        if( type == CSpbContentProvider::ETypePhoneNumber )
-            {
-            elemType = MPbk2DoubleListboxDataElement::ETypePhoneNumber;
-            }
-        else if( type == CSpbContentProvider::ETypePhoneNumberMultiple && txt )
-            {
-            // if we get multiple phone numbers from content provider, then
-            // the string only contains the count (as text). We need to format
-            // that into proper UI text.
-            TInt num = 0;
-            TLex16 lex( *txt );
-            TInt err = lex.Val( num );
-            if( !err )
-                {
-                delete txt;
-                txt = StringLoader::LoadL( R_QTN_PHOB_N_NUMBERS, num );
-                }
-            else
-                {
-                // in case of convert error
-                txt->Des().Zero();
-                }
-            }
-        
-        aDataElement.SetText(
-            MPbk2DoubleListboxDataElement::EStatusText, txt, elemType );
-
-        CleanupStack::PopAndDestroy();  // link
+        elemType = MPbk2DoubleListboxDataElement::ETypePhoneNumber;
         }
+    else if( type == CSpbContentProvider::ETypePhoneNumberMultiple && txt )
+        {
+        // if we get multiple phone numbers from content provider, then
+        // the string only contains the count (as text). We need to format
+        // that into proper UI text.
+        TInt num = 0;
+        TLex16 lex( *txt );
+        TInt err = lex.Val( num );
+        if( !err )
+            {
+            delete txt;
+            txt = StringLoader::LoadL( R_QTN_PHOB_N_NUMBERS, num );
+            }
+        else
+            {
+            // in case of convert error
+            txt->Des().Zero();
+            }
+        }
+    
+    aDataElement.SetText(
+        MPbk2DoubleListboxDataElement::EStatusText, txt, elemType );
+
     }
 
 // -----------------------------------------------------------------------------

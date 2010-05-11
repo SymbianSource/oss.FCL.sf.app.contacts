@@ -20,8 +20,8 @@
 #define MPBK2CONTACTEDITOREXTENSION_H
 
 // INCLUDES
-#include <mpbk2uireleasable.h>
-#include <mpbk2contacteditoreventobserver.h>
+#include <MPbk2UiReleasable.h>
+#include <MPbk2ContactEditorEventObserver.h>
 
 //  FORWARD DECLARATIONS
 class MVPbkStoreContactField;

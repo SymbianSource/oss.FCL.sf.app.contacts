@@ -92,11 +92,6 @@ class CPbk2AppUi : public CPbk2AppUiBase<CAknViewAppUi>,
         void ExitL();
 
         /**
-         * Forces exit.
-         */
-        void Exit();
-
-        /**
          * Activates Phonebook view.
          *
          * @param aViewId       Id of the view to activate.

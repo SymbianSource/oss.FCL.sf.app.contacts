@@ -41,6 +41,7 @@
 
 #include "cmsfindlinkedcontact.h"
 #include <MVPbkContactLink.h>
+#include <MVPbkStoreContact.h>
 
 // CONSTANTS
 const TInt KArrayGranularity = 2;
@@ -111,7 +112,8 @@ CCmsPhonebookProxy::~CCmsPhonebookProxy()
         iStoreConfiguration = NULL;
         }
     iObserverArray.Close();
-    ixSPStoresArray.Reset();
+    ixSPStoresArray.Reset();           
+    iReadyStores.ResetAndDestroy();
     delete iSetDefault;
     }
 
@@ -122,7 +124,7 @@ CCmsPhonebookProxy::~CCmsPhonebookProxy()
 //
 TBool CCmsPhonebookProxy::StoreOpenStatus()
     {
-    if(iAtLeastOneStoreReady && iOpenComplete)
+    if( iAtLeastOneStoreReady && iOpenComplete && iCurrentContactStoreReady )
         {
         return ETrue;
         }
@@ -138,8 +140,11 @@ TBool CCmsPhonebookProxy::StoreOpenStatus()
 void CCmsPhonebookProxy::InitStoresL()
     {
     PRINT ( _L("Start CCmsPhonebookProxy::InitStoresL()") );
+    
     if( !iOpenComplete )
         {
+        iCurrentContactStoreReady = EFalse;
+        iReadyStores.ResetAndDestroy();                        
         iStoreList->OpenAllL( *this );
         }
     PRINT ( _L("End CCmsPhonebookProxy::InitStoresL()") );
@@ -414,6 +419,47 @@ void CCmsPhonebookProxy::SetVoiceCallDefaultL( MVPbkStoreContact* aContact )
 	}
 
 // ----------------------------------------------------------
+// CCmsPhonebookProxy::SetContact
+//
+// ----------------------------------------------------------
+//
+void CCmsPhonebookProxy::SetContact( MVPbkStoreContact* aContact )
+    {
+    iContact = aContact;
+    
+    if( !iCurrentContactStoreReady  && iContact )
+        {
+        for( TInt x=0; x<iReadyStores.Count(); x++ )
+            {
+            if( iReadyStores[x]->Des().CompareC(  
+                    iContact->ContactStore().StoreProperties().Uri().UriDes() ) == 0 )
+                {
+            
+                iCurrentContactStoreReady = ETrue;
+                iCmsPhonebookOperationsObserver.StoreOpenComplete();
+                break;
+                }                                        
+            }
+        }
+    // Check in case the contact has changed
+    else if( iCurrentContactStoreReady  && iContact )
+        {
+        iCurrentContactStoreReady = EFalse;
+    
+        for( TInt x=0; x<iReadyStores.Count(); x++ )
+            {
+            if( iReadyStores[x]->Des().Compare(  
+                    iContact->ContactStore().StoreProperties().Uri().UriDes() ) == 0 )
+                {
+                // Contact found from ready stores
+                iCurrentContactStoreReady = ETrue;                
+                break;
+                }                                        
+            }
+        }
+    }
+
+// ----------------------------------------------------------
 // CCmsPhonebookProxy::ExternalStoresIntalled
 //
 // ----------------------------------------------------------
@@ -442,9 +488,10 @@ void CCmsPhonebookProxy::OpenComplete()
     {
     PRINT( _L("Start CCmsPhonebookProxy::OpenComplete()" ) );
     iOpenComplete = ETrue;
-    if ( iAtLeastOneStoreReady )
-        {
+    if ( iAtLeastOneStoreReady && !iCurrentContactStoreReady )
+        {        
         iCmsPhonebookOperationsObserver.StoreOpenComplete();
+        iCurrentContactStoreReady = ETrue;        
         }
     PRINT( _L("End CCmsPhonebookProxy::OpenComplete()" ) );
     }
@@ -518,6 +565,7 @@ void CCmsPhonebookProxy::CompleteContactRequestL( TInt aError, MVPbkStoreContact
 //
 void CCmsPhonebookProxy::StoreReady( MVPbkContactStore& aContactStore )
     {
+    
     PRINT1( _L( "CCmsPhonebookProxy::StoreReady(): Store: %S" ), (&aContactStore.StoreProperties().Uri().UriDes()) );
     //Set iAtLeastOneStoreReady to ETrue to indicate that
     //at least one store is available
@@ -526,6 +574,20 @@ void CCmsPhonebookProxy::StoreReady( MVPbkContactStore& aContactStore )
     if( aContactStore.StoreProperties().Uri().UriDes().Compare( DefaultCntDbUri() ) == 0 )
         {
         iContactStore = &aContactStore;
+        }
+        
+    TRAP_IGNORE(
+        {
+        HBufC* buf = aContactStore.StoreProperties().Uri().UriDes().AllocLC();        
+        iReadyStores.AppendL( buf );
+        CleanupStack::Pop( buf );
+        } );
+    
+    if( iContact && iContact->ContactStore().StoreProperties().Uri().UriDes().Compare(
+    aContactStore.StoreProperties().Uri().UriDes() ) == 0 && !iCurrentContactStoreReady )
+        {
+        iCurrentContactStoreReady = ETrue;
+        iCmsPhonebookOperationsObserver.StoreOpenComplete();        
         }
     }
 
@@ -604,7 +666,7 @@ void CCmsPhonebookProxy::CreateConfigurationL()
 
     // Support all contact stores, not only those defined by phonebook2 setting
     iUriList = iStoreConfiguration->SupportedStoreConfigurationL();
-
+    
     ixSPStoresArray.Reset();
     FindXSPStoresL( ixSPStoresArray );
 
@@ -746,7 +808,7 @@ void CCmsPhonebookProxy::VPbkSingleContactOperationFailed(
 
     ResetData();
     CompleteContactRequestL( aError, NULL );
-    iCmsPhonebookOperationsObserver.CmsSingleContactOperationComplete( aError );
+    iCmsPhonebookOperationsObserver.CmsSingleContactOperationComplete( aError );    
     }
 
 

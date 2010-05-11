@@ -111,7 +111,7 @@ public:	// new functions
 	 * Returns icon index from Pbk2IconArray for double listbox index. 
 	 * If icon is not set, default icon index is returned
 	 */
-	TInt GetPbkIconIndexL( TInt aListboxIndex, const MVPbkBaseContact& aContactLink );
+	TInt GetPbkIconIndexL( TInt aListboxIndex, const MVPbkContactLink& aContactLink );
 	
 	/*
 	 * Setter for default icon ID

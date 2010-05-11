@@ -151,6 +151,11 @@ class CSpdiaContainer : public CCoeControl,
         * Set status pane to the normal status.
         */
         void SetStatusPaneL();
+        
+        /**
+        * Check whether the view note is displaying when making speeddial to background.
+        */
+        CSpdiaNoteDialog* GetViewDialogStatus();
 
     public: // Functions from CCoeControl classes
         /**

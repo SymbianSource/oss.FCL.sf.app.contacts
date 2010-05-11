@@ -97,7 +97,7 @@ NONSHARABLE_CLASS(CPbk2NameslistUiControlExtension) :
 
     private: // From MPbk2ContactUiControlDoubleListboxExtension
         void FormatDataL(
-                const MVPbkViewContact& aViewContact, 
+                const MVPbkContactLink& aContactLink, 
                 MPbk2DoubleListboxDataElement& aDataElement );
         void SetCommandItemUpdater(
             MPbk2CommandItemUpdater* aCommandUpdater );

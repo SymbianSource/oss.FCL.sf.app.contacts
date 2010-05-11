@@ -293,12 +293,6 @@ void CPbk2MultiAssignDataPhase::ContactOperationCompleted
 void CPbk2MultiAssignDataPhase::ContactOperationFailed
         ( TContactOp /*aOpCode*/, TInt aErrorCode, TBool /*aErrorNotified*/ )
     {
-    // Locking the contact failed
-     if ( KErrInUse == aErrorCode )
-        {
-        CCoeEnv::Static()->HandleError( aErrorCode );
-        }
-
      // If the contact operation failed, the iStoreContact is expected to be deleted,
      // otherwise it will lead to memory leak.
     if ( iStoreContact )

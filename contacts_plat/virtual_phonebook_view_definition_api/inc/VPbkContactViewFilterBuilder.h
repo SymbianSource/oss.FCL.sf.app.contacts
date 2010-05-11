@@ -21,7 +21,7 @@
 
 //  INCLUDES
 #include <e32base.h>
-#include <vpbkcontactview.hrh>
+#include <VPbkContactView.hrh>
 
 // FORWARD DECLARATIONS
 class CVPbkFieldTypeSelector;

@@ -19,8 +19,8 @@
 #define CCAPPVIEWPLUGINAKNVIEW_H
 
 #ifndef __CCAPPUTILUNITTESTMODE
-#include <AknView.h>
-#include <coneresloader.h>
+#include <aknview.h>
+#include <ConeResLoader.h>
 #endif //__CCAPPUTILUNITTESTMODE
 
 class CCCAppViewPluginAknContainer;

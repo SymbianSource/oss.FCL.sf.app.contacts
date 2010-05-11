@@ -187,6 +187,11 @@ NONSHARABLE_CLASS( CCmsPhonebookProxy ) : public CBase,
         * Set default attribute for voice call
         */
         void SetVoiceCallDefaultL( MVPbkStoreContact* aContact );
+        
+        /**
+         * Set contact
+         */
+        void SetContact( MVPbkStoreContact* aContact );
 
     public:
         
@@ -323,7 +328,14 @@ NONSHARABLE_CLASS( CCmsPhonebookProxy ) : public CBase,
         /// Array to keep a list of installed xSP stores. Owned.
         CDesCArrayFlat                          ixSPStoresArray;
         /// Default setting handle
-        CmsSetVoiceCallDefault*                 iSetDefault;
+        CmsSetVoiceCallDefault*                 iSetDefault;        
+        // Current contact, not Owned
+        MVPbkStoreContact* iContact; 
+        // ETrue, if the current activated contact store ready
+        TBool iCurrentContactStoreReady;
+        // Completed stores
+        RPointerArray<HBufC> iReadyStores;
+        
     };
 
 #endif  //__CMSPHONEBOOKPROXY__

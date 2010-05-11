@@ -1743,10 +1743,11 @@ void CLogsBaseView::DynInitAiwCallUiMenuPaneL(
             CleanupStack::PopAndDestroy();      //readerConfig
             contactCheckerPtr->StartL();
             
-            if ( !MenuBar()->ItemSpecificCommandsEnabled() )
-                {
-                iIsCheckedCntLinkInvaild = !contactCheckerPtr->IsCntLinkValidSync( tempPtr );
-                }
+            //if ( !MenuBar()->ItemSpecificCommandsEnabled() )
+            //    {
+            //    iIsCheckedCntLinkInvaild = !contactCheckerPtr->IsCntLinkValidSync( tempPtr );
+            //    }
+
             }
         }
     
@@ -2891,7 +2892,7 @@ void CLogsBaseView::CmdShowMyAddressL( const MLogsEventGetter* aEvent )
 TInt CLogsBaseView::HandleNotifyL(
     TInt aCmdId, 
     TInt aEventId,
-    CAiwGenericParamList& /* aEventParamList */,
+    CAiwGenericParamList& aEventParamList,
     const CAiwGenericParamList& /* aInParamList */ )
     {
     //Only EGenericParamContactLinkArray available in aEventParamList so we use iNumberInPbkProcessing instead
@@ -2908,6 +2909,10 @@ TInt CLogsBaseView::HandleNotifyL(
             // If selecting Options->Exit KAiwEventError will result but the contact may have 
             // still been created so start updater
             case KAiwEventError:
+            	{
+            	TInt aError = aEventParamList[0].Value().AsTInt32();
+            	iCoeEnv->HandleError( aError );
+            	}
             case KAiwEventCompleted: // Asynch req completed. Right softkey "Done" selected for contact editor 
                 {
                 //Enable UI for db-originated changes (however focus needs to be kept unchanged)

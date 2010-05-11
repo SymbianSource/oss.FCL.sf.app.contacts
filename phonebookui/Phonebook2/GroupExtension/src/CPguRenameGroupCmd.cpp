@@ -213,9 +213,10 @@ void CPguRenameGroupCmd::DoCancel()
 // --------------------------------------------------------------------------
 //
 TInt CPguRenameGroupCmd::RunError( TInt aError )
-    {
-    CCoeEnv::Static()->HandleError( aError );
-    return KErrNone;
+    {   
+    IssueRequest(EFinishCommand);
+   
+    return aError;
     }
 
 // --------------------------------------------------------------------------

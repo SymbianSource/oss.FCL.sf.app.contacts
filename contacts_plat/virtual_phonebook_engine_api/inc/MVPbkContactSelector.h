@@ -58,6 +58,33 @@ class MVPbkContactSelector
 
     };
 
+// Use this UID to access MVPbkOptimizedSelector extension of the MVPbkContactSelector.
+// Used as a parameter to ContactSelectorExtension() method.
+const TUid KVPbkOptimizedSelectorExtensionUid = { 2 };
+
+/**
+ * This class is an extension to MVPbkContactSelector.
+ * See documentation of MVPbkContactSelector from header MVPbkContactSelector.h
+ *
+ * @see MVPbkContactSelector
+ *
+ */
+class MVPbkOptimizedSelector
+    {
+    protected:  // Destructor
+        virtual ~MVPbkOptimizedSelector() { }
+
+    public:
+
+        /**
+         * Vpbk stop calling MVPbkContactSelector::IsContactIncluded if this function returns false.
+         * With this function client can optimize selector use in VPbk.
+         */
+         virtual TBool Continue() const = 0;
+
+    };
+
+	
 #endif  // MVPBKCONTACTSELECTOR_H
 
 //End of file

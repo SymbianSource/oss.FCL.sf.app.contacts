@@ -27,7 +27,7 @@
 #include <e32base.h>
 #include <f32file.h>
 #include <bamdesca.h>
-#include <BADESCA.H> 
+#include <badesca.h> 
 
 // FORWARD DECLARATIONS
 class MVPbkFieldTypeList;

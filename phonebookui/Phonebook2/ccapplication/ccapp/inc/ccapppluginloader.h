@@ -21,6 +21,7 @@
 
 #include <e32base.h>
 #include <RPbk2LocalizedResourceFile.h>
+#include <MPbk2StoreConfigurationObserver.h>
 
 class CCCAppView;
 class CCCAppPluginData;
@@ -42,7 +43,9 @@ class CPbk2ApplicationServices;
  *  @lib ccaapp.exe
  *  @since S60 v5.0
  */
-class CCCAppPluginLoader : public CBase
+class CCCAppPluginLoader : 
+    public CBase,
+    public MPbk2StoreConfigurationObserver
     {
 #ifdef __CCAPPUNITTESTMODE
     friend class T_CCCAppPluginLoader;
@@ -178,6 +181,23 @@ public:
     TBool SetPluginVisibility(
         TUid aPlugin,
         TInt aVisibility);
+
+    
+private: 
+
+    /**
+     * Observer for store configuration changes. From MPbk2StoreConfigurationObserver
+     *
+     * @since S60 v9.2
+     */    
+    void ConfigurationChanged();
+
+    /**
+     * Observer for completed store configuration changes. From MPbk2StoreConfigurationObserver
+     *
+     * @since S60 v9.2
+     */    
+    void ConfigurationChangedComplete();            
     
 private:
 

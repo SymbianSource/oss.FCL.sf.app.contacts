@@ -191,7 +191,7 @@ CPcsCache::~CPcsCache()
 void CPcsCache::GetContactsForKeyL(TInt aKeyId, RPointerArray<CPcsPoolElement>& aData)
     {
     PRINT ( _L("Enter CPcsCache::GetContactsForKeyL") );
-
+    CleanupClosePushL( aData );
     RPointerArray<CPcsPoolElement> arr = *keyArr[aKeyId];
     for (int i = 0; i < arr.Count(); i++)
         {
@@ -199,6 +199,7 @@ void CPcsCache::GetContactsForKeyL(TInt aKeyId, RPointerArray<CPcsPoolElement>& 
         aData.AppendL(value);
         }
 
+    CleanupStack::Pop();
     PRINT ( _L("End CPcsCache::GetContactsForKeyL") );
     }
 
@@ -209,13 +210,13 @@ void CPcsCache::GetContactsForKeyL(TInt aKeyId, RPointerArray<CPcsPoolElement>& 
 void CPcsCache::GetAllContentsL(RPointerArray<CPsData>& aData)
     {
     PRINT ( _L("Enter CPcsCache::GetAllContentsL") );
-
+    CleanupClosePushL( aData );
     for (int i = 0; i < masterPool.Count(); i++)
         {
         CPsData* value = masterPool[i];
         aData.AppendL(value);
         }
-
+    CleanupStack::Pop();
     PRINT ( _L("End CPcsCache::GetAllContentsL") );
     }
 

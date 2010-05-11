@@ -410,6 +410,7 @@ void  CPcsAlgorithm1MultiSearchHelper::ConvertQueryToListL(RPointerArray<CPsQuer
 {
     PRINT ( _L("Enter CPcsAlgorithm1MultiSearchHelper::ConvertQueryToListL") );
 
+    CleanupResetAndDestroyPushL( aQueryList );
     for ( TInt queryIndex = 0; queryIndex < aSearchQuery.Count(); queryIndex++ )
     {
         TBuf<KPsQueryMaxLen> dataWithKeys;
@@ -419,7 +420,8 @@ void  CPcsAlgorithm1MultiSearchHelper::ConvertQueryToListL(RPointerArray<CPsQuer
         aQueryList.AppendL( dWKToAppend );
         CleanupStack::Pop( dWKToAppend ); // ownership transfered
     }
-
+    
+    CleanupStack::Pop( &aQueryList );
     PRINT ( _L("End CPcsAlgorithm1MultiSearchHelper::ConvertQueryToListL") );
 }
 

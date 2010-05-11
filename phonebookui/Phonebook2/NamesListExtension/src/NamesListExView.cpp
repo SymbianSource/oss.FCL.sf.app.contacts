@@ -413,6 +413,11 @@ void CPbk2NamesListExView::HandleCommandL(TInt aCommandId)
         {
         iCurrentCommandId = aCommandId;
         }
+    
+    if ( EPbk2CmdOpenCca == aCommandId )
+    	{
+        iControl->SetOpeningCca( ETrue );
+    	}
 
     // No command handling in this class, forward to Commands
     if (!iCommandHandler->HandleCommandL( aCommandId, *iControlProxy, &iView ))
@@ -703,7 +708,14 @@ void CPbk2NamesListExView::DoDeactivate()
     {
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
         ("CPbk2NamesListExView(%x)::DoDeactivate()"), this);
-
+    
+    // CCA Connection should be closed when Name List View deactivated
+    if( iCCAConnection )
+        {
+        iCCAConnection->Close();
+        iCCAConnection = NULL;
+        }
+    
     if ( iCommandHandler )
         {
         iCommandHandler->RemoveMenuCommandObserver( *this );
@@ -1320,6 +1332,11 @@ void CPbk2NamesListExView::PostCommandExecutionL
         // after a command is finished.
         iCtrlVisibleStateBeforeLosingForground = ETrue;
 
+        if( EPbk2CmdOpenCca == iCurrentCommandId )
+            {
+            iControl->SetOpeningCca( EFalse );
+            }
+            
         iControl->AllowPointerEvents( ETrue );
         iControl->ShowThumbnail();
 

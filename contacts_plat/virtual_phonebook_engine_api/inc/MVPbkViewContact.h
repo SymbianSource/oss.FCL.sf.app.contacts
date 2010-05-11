@@ -22,7 +22,7 @@
 
 // INCLUDES
 #include <e32def.h>
-#include <mvpbkbasecontact.h>
+#include <MVPbkBaseContact.h>
 
 
 // FORWARD DECLARATIONS

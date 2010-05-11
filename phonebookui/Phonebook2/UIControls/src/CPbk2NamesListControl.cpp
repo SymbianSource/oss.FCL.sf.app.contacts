@@ -876,7 +876,8 @@ EXPORT_C CPbk2NamesListControl::CPbk2NamesListControl
                 iContainer( aContainer ),
                 iNameFormatter( aNameFormatter ),
                 iStoreProperties( aStoreProperties ),
-                iAllowPointerEvents( ETrue )
+                iAllowPointerEvents( ETrue ),
+                iOpeningCca( EFalse )
     {
     }
 
@@ -897,7 +898,8 @@ CPbk2NamesListControl::CPbk2NamesListControl
                 iNameFormatter( aNameFormatter ),
                 iStoreProperties( aStoreProperties ),
                 iAllowPointerEvents( ETrue ),                
-                iThumbManager( aThumbManager )
+                iThumbManager( aThumbManager ),
+                iOpeningCca( EFalse )
     {
     }
 
@@ -2401,14 +2403,33 @@ void CPbk2NamesListControl::HandleContactAddedToBaseView
     // reset too. So, we reset both the find box and the view stack.
     TRAPD( res,
         {
-        // This will reset back to base view
-        iCurrentState->ResetFindL();
+        // This will reset back to base view, however retain original view
+		//when opening CCA
+        if( !iOpeningCca ) 
+            {
+            iCurrentState->ResetFindL(); 
+            }
         });
     HandleError( res );
 
     if( !iCheckMassUpdate->MassUpdateCheckThis() )
         {
-        Reset();
+        // If it is the first time to goto a contat's cca card, then in cca we 
+        // will set a defualt number to that contact by CmsSetVoiceCallDefault.
+        // Then db item changed event is notified to ui layer and names list control 
+        // updated accordingly. But to end user that is not allowed, so use this 
+        // flag to avoid this reset of ui control.
+        if( iOpeningCca )
+            {
+            if( iCurrentState->NamesListState() == EStateEmpty )
+                {
+                SelectAndChangeReadyStateL();
+                }
+            }
+        else
+            {              
+            Reset();
+            }	
         }
 
     // Do not handle contact addition here (DoHandleContactAdditionL),
@@ -2601,6 +2622,15 @@ EXPORT_C void CPbk2NamesListControl::HandleViewForegroundEventL( TBool aForegrou
             }
         }
     }
+
+// ---------------------------------------------------------------------------
+// CPbk2NamesListControl::SetOpeningCca
+// ---------------------------------------------------------------------------
+//
+EXPORT_C void CPbk2NamesListControl::SetOpeningCca( TBool aIsOpening )
+	{
+	iOpeningCca = aIsOpening;
+	}
 
 // ---------------------------------------------------------------------------
 // CPbk2NamesListControlBgTask::CPbk2NamesListControlBgTask

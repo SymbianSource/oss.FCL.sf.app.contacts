@@ -19,8 +19,8 @@
 #ifndef CVPBKCONTACTFINDFROMSTORESOPERATION_H
 #define CVPBKCONTACTFINDFROMSTORESOPERATION_H
 
-#include <cvpbkmulticontactoperationbase.h>
-#include <mvpbkcontactfindfromstoresobserver.h>
+#include <CVPbkMultiContactOperationBase.h>
+#include <MVPbkContactFindFromStoresObserver.h>
 
 
 /**

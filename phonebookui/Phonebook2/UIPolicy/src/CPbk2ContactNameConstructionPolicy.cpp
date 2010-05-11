@@ -22,11 +22,14 @@
 #include <CPbk2SortOrderManager.h>
 #include <Pbk2ContactNameFormatterFactory.h>
 #include <MPbk2ContactNameFormatter.h>
+#include <MPbk2ContactNameFormatter3.h>
 #include <CVPbkContactFieldIterator.h>
 
 // Virtual Phonebook
 #include <CVPbkContactManager.h>
 #include <CVPbkFieldTypeRefsList.h>
+
+#include <featmgr.h>
 
 // --------------------------------------------------------------------------
 // CPbk2ContactNameConstructionPolicy::CPbk2ContactNameConstructionPolicy
@@ -46,6 +49,7 @@ CPbk2ContactNameConstructionPolicy::~CPbk2ContactNameConstructionPolicy()
     {
     delete iSortOrderManager;
     delete iNameFormatter;
+    FeatureManager::UnInitializeLib();
     }
 
 // --------------------------------------------------------------------------
@@ -74,6 +78,7 @@ inline void CPbk2ContactNameConstructionPolicy::ConstructL()
 
     iNameFormatter = Pbk2ContactNameFormatterFactory::CreateL
         ( iMasterFieldTypeList, *iSortOrderManager );
+    FeatureManager::InitializeLibL();
     }
 
 // --------------------------------------------------------------------------
@@ -85,8 +90,18 @@ MVPbkBaseContactFieldIterator*
         ( const MVPbkBaseContactFieldCollection& aFieldCollection,
           CVPbkFieldTypeRefsList& aFieldTypeRefsList )
     {
-    return iNameFormatter->ActualTitleFieldsLC
-        ( aFieldTypeRefsList, aFieldCollection );
+    if( FeatureManager::FeatureSupported( KFeatureIdFfContactsCompanyNames ) )
+        {
+        MPbk2ContactNameFormatter3* nameformatterExtension =
+                reinterpret_cast<MPbk2ContactNameFormatter3*>( iNameFormatter->
+                ContactNameFormatterExtension( MPbk2ContactNameFormatterExtension3Uid ) );
+        
+        if ( nameformatterExtension )
+            {
+            return nameformatterExtension->TitleWithCompanyNameFieldsLC( aFieldTypeRefsList, aFieldCollection );
+            }
+        }
+    return iNameFormatter->ActualTitleFieldsLC( aFieldTypeRefsList, aFieldCollection );
     }
 
 // End of File

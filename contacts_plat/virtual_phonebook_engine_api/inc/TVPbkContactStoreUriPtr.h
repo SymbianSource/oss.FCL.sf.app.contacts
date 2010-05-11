@@ -22,7 +22,7 @@
 
 // INCLUDES
 #include <e32std.h>
-#include <mvpbkstreamable.h>
+#include <MVPbkStreamable.h>
 
 
 // CLASS DECLARATIONS

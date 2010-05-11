@@ -21,7 +21,7 @@
 
 //  INCLUDES
 #include <e32std.h>
-#include <vpbkfieldtype.hrh> // TVPbkDefaultType
+#include <VPbkFieldType.hrh> // TVPbkDefaultType
 
 // CONSTANTS
 namespace VPbkContactFieldDefaultPriorities

@@ -20,8 +20,8 @@
 #define CVPBKCONTACTSTORELIST_H
 
 #include <e32base.h>
-#include <mvpbkcontactstorelist.h>
-#include <mvpbkcontactstoreobserver.h>
+#include <MVPbkContactStoreList.h>
+#include <MVPbkContactStoreObserver.h>
 
 class TVPbkContactStoreUriPtr;
 class CVPbkContactStoreUriArray;

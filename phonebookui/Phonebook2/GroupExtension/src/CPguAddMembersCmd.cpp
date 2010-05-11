@@ -88,7 +88,8 @@ CPguAddMembersCmd::CPguAddMembersCmd
           MPbk2ContactUiControl& aUiControl ) :
             CActive( CActive::EPriorityStandard ),
             iUiControl( &aUiControl ),
-            iGroupLink( aContactGroup )
+            iGroupLink( aContactGroup ),
+            iAddedContactsCount( 0 )
     {
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
             ("CPguAddMembersCmd::CPguAddMembersCmd(0x%x)"), this);
@@ -250,7 +251,15 @@ void CPguAddMembersCmd::DoCancel()
 //
 TInt CPguAddMembersCmd::RunError( TInt aError )
     {
-    if ( aError != KErrNone )
+    if ( iState == EAddingContactsToGroup && aError == KErrInUse &&
+         iEntriesToAdd && iEntriesToAdd->Count() > KOneContact )
+        {    
+        // Incase there was more than just one contact being added, ignore
+        // the KErrInUse error and continue with the remaining contacts
+        iState = EAddingContactsToGroup;
+        IssueRequest();   
+        }
+    else if ( aError != KErrNone )
         {
         FinishCommand( aError );
         }
@@ -743,33 +752,27 @@ void CPguAddMembersCmd::RelocateContactsL()
 // --------------------------------------------------------------------------
 //
 void CPguAddMembersCmd::AddContactsToGroupL()
-    {
-    TInt count = 0;
-    if ( iEntriesToAdd )
-        {
-        count = iEntriesToAdd->Count();
-        }
-
-    for ( TInt i = 0; i < count; ++i )
-        {
-        TRAPD( err, iContactGroup->AddContactL( iEntriesToAdd->At( i ) ) );
+    { 
+    if (iEntriesToAdd && 
+        iAddedContactsCount < iEntriesToAdd->Count() )
+        { 
+        const MVPbkContactLink& contactToAdd = iEntriesToAdd->At( iAddedContactsCount );
+        iAddedContactsCount++; 
+        
+        // If leaves, RunError called
+        iContactGroup->AddContactL( contactToAdd );
+      
         if ( iDecorator )
             {
             iDecorator->ProcessAdvance( 1 );
-            }
-        if ( err == KErrInUse )
-            {
-            if ( iEntriesToAdd->Count() == 1 )      		
-                {
-                User::Leave( err );
-                }
-            }
-        else
-            {
-            User::LeaveIfError( err );
-            }
+            }     
+        iState = EAddingContactsToGroup;
         }
-    iState = ECommitingTransaction;
+    else
+        {
+        iState = ECommitingTransaction;
+        }
+    
     IssueRequest();
     }
 

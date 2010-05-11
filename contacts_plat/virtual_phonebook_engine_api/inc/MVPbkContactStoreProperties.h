@@ -22,7 +22,7 @@
 
 // INCLUDES
 #include <e32cmn.h>
-#include <tvpbkcontactstoreuriptr.h>
+#include <TVPbkContactStoreUriPtr.h>
 
 // FORWARD DECLARATIONS
 class MVPbkFieldTypeList;

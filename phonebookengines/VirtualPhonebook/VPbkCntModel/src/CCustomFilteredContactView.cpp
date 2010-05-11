@@ -172,6 +172,19 @@ TBool CCustomFilteredContactView::IsContactIncluded
     }
 
 // --------------------------------------------------------------------------
+// CCustomFilteredContactView::ContactSelectorExtension
+// --------------------------------------------------------------------------
+//
+TAny* CCustomFilteredContactView::ContactSelectorExtension( TUid aExtensionUid )
+    {
+    if( iContactSelector )
+        {
+        return iContactSelector->ContactSelectorExtension( aExtensionUid );
+        }
+    return NULL;
+    }
+
+// --------------------------------------------------------------------------
 // CCustomFilteredContactView::HandleContactViewEvent
 // --------------------------------------------------------------------------
 //

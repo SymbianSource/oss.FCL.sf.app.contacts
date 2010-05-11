@@ -441,6 +441,8 @@ private: // data
     ///ETrue - if the more than max results note needs to be shown
     TBool iMoreThanMaxResults;
     
+    TBool iFocusableContactPointed;
+    
     // Title pane text. Owned.
     HBufC* iTitleText;
     // Original title pane text (of the caller view). Owned.

@@ -20,8 +20,8 @@
 #define MVPBKCONTACTVIEW_H
 
 // INCLUDES
-#include <mvpbkcontactviewbase.h>
-#include <mvpbkobjecthierarchy.h>
+#include <MVPbkContactViewBase.h>
+#include <MVPbkObjectHierarchy.h>
 
 // CLASS DECLARATIONS
 

@@ -40,7 +40,7 @@ _LIT( KVPbkAllContactsViewName, "AllContacts" );
  */
 const TContactViewPreferences KVPbkDefaultContactViewPrefs =
     static_cast<TContactViewPreferences>
-        ( EContactsOnly | EUnSortedAtEnd | ESingleWhiteSpaceIsEmptyField );
+        ( EContactCardsOnly | EUnSortedAtEnd | ESingleWhiteSpaceIsEmptyField );
 
 /**
  * Virtual Phonebook Cntmodel all groups view remote view name.
@@ -52,7 +52,7 @@ _LIT(KVPbkAllGroupsViewName, "AllGroups");
  */
 const TContactViewPreferences KVPbkDefaultGroupsViewPrefs =
     static_cast<TContactViewPreferences>
-        (EGroupsOnly | EUnSortedAtEnd | ESingleWhiteSpaceIsEmptyField);
+        ( EGroupsOnly | EUnSortedAtEnd | ESingleWhiteSpaceIsEmptyField );
 
 // FUNCTIONS
 

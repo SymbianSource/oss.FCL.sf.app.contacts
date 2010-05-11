@@ -21,7 +21,7 @@
 #define MVPBKCONTACTFIELDDATETIMEDATA_H
 
 // INCLUDES
-#include <mvpbkcontactfielddata.h>
+#include <MVPbkContactFieldData.h>
 
 
 // CLASS DECLARATIONS

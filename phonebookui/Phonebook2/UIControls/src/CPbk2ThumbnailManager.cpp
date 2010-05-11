@@ -414,7 +414,9 @@ TInt CPbk2ThumbnailManager::ThumbnailCount()
 // CPbk2ThumbnailManager::GetPbkIconIndexL()
 // --------------------------------------------------------------------------
 //
-TInt CPbk2ThumbnailManager::GetPbkIconIndexL( TInt aListboxIndex, const MVPbkBaseContact& aContactLink )
+TInt CPbk2ThumbnailManager::GetPbkIconIndexL( 
+        TInt aListboxIndex, 
+        const MVPbkContactLink& aContactLink )
 	{
 	TInt arrIndex = iDefaultIconIndex;
 	
@@ -424,7 +426,7 @@ TInt CPbk2ThumbnailManager::GetPbkIconIndexL( TInt aListboxIndex, const MVPbkBas
 		CPbk2TmItem* item = iContactThumbnails[ aListboxIndex ];
 		if( !item )
 		    {
-            item = CPbk2TmItem::NewL( aContactLink.CreateLinkLC(), aListboxIndex );
+            item = CPbk2TmItem::NewL( aContactLink.CloneLC(), aListboxIndex );
             CleanupStack::Pop(); // link
             // set default icon index
             item->SetIconArrayIndexAndId( iDefaultIconIndex,iDefaultIconId );
@@ -1032,16 +1034,39 @@ void CPbk2ThumbnailManager::DoContactViewReadyL( MVPbkContactViewBase& aView )
         }
     else
         {
-        // there is items in the listbox that are not loaded yet. If there is favorite contacts, 
-        // those are added afterwards to the list. normal items are added first.
-        const TInt itemCount = aView.ContactCountL() - thumbnailCount;
-        for( TInt i = 0; i < itemCount; ++i )
+        // Check if view count has changed
+        if ( aView.ContactCountL() != thumbnailCount )
             {
-            iContactThumbnails.InsertL( NULL, 0 );
-            }
-        if( itemCount > 0 )
-            {
-            ResetIndexes();
+            if( iLoadingQueue.Count() > 0 )
+                {
+                // store item that is currently in processing
+                iInProgressItemToBeRemoved = iLoadingQueue[0];
+                }
+
+            for ( TInt i = thumbnailCount - 1; i >= 0; --i )
+                {
+                CPbk2TmItem* item = iContactThumbnails[i];
+                if ( item )
+                    {
+                    // check that the icon is not a default icon
+                    if( iIconArray && item->GetIconArrayIndex() != iDefaultIconIndex )
+                        {
+                        // inform icon array to remove the icon
+                        iIconArray->RemoveIcon( item->GetIconId() );
+                        }
+
+                    if ( iInProgressItemToBeRemoved == item )
+                        {
+                        // prevent item from being deleted later
+                        iContactThumbnails[i] = NULL;
+                        }
+                    }
+                }
+            
+            // reset and recreate arrays
+            iLoadingQueue.Reset();
+            iPriorityArray.Reset();
+            PreCreateThumbnailArrayL( aView );
             }
         }  
     }

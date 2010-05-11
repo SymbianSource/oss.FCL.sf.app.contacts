@@ -123,6 +123,7 @@ void CRefineView::ContactViewReadyForFiltering(
 //
 void CRefineView::MatchL( RPointerArray<MVPbkSimContact>& aMatchedContacts )
     {
+    CleanupClosePushL( aMatchedContacts );
     const TInt contactCount = iParentView.ContactCountL();
     for ( TInt i = 0; i < contactCount; ++i )
         {
@@ -140,6 +141,7 @@ void CRefineView::MatchL( RPointerArray<MVPbkSimContact>& aMatchedContacts )
             aMatchedContacts.AppendL( nativeContact );
             }
         }    
+    CleanupStack::Pop();
     }
 
 // --------------------------------------------------------------------------
@@ -150,6 +152,7 @@ void CRefineView::DoContactAddedToViewL( MVPbkContactViewBase& aView,
         TInt aIndex, const MVPbkContactLink& /*aContactLink*/,
         RPointerArray<MVPbkSimContact>& aMatchedContacts )
     {
+    CleanupClosePushL( aMatchedContacts );
     if ( &iParentView == &aView && 
          IsMatchL( iParentView.ContactAtL( aIndex )))
         {
@@ -198,7 +201,8 @@ void CRefineView::DoContactAddedToViewL( MVPbkContactViewBase& aView,
             {
             aMatchedContacts.AppendL( nativeContact );
             }
-        }    
+        }   
+    CleanupStack::Pop();
     }
 
 // --------------------------------------------------------------------------

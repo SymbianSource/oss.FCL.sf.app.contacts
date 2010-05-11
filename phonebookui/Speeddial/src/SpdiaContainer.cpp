@@ -379,6 +379,7 @@ void CSpdiaContainer::SetLayoutL()
       
     TRAP_IGNORE( iGrid->ScrollBarFrame()->SetScrollBarVisibilityL(
         CEikScrollBarFrame::EOff, CEikScrollBarFrame::EOff ) );
+    iGrid->ScrollBarFrame()->VerticalScrollBar()->SetRect( TRect( 0,0,0,0 ) );
     CFormattedCellListBoxData* data = iGrid->ItemDrawer()->FormattedCellData();
 
     data->SetTransparentSubCellL( SDM_TN_CIF_TURNED, ETrue );  //5
@@ -1046,6 +1047,17 @@ void CSpdiaContainer::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         return;
         }
 
+    // check if the position is in grid view
+    CAknGridView* gridView = iGrid->GridView();
+    TInt itemIndex = 0;        
+    TRect visibleItemsRect(gridView->ViewRect().iTl, 
+                 TSize(gridView->ItemSize(itemIndex).iWidth * gridView->NumberOfColsInView(), 
+                 gridView->ItemSize(itemIndex).iHeight * gridView->NumberOfRowsInView()));
+    if (!visibleItemsRect.Contains(aPointerEvent.iPosition))
+        {
+        return;
+        }
+
     // Check if touch is enabled or not.
     if ( !AknLayoutUtils::PenEnabled() )
         {
@@ -1148,14 +1160,14 @@ CAknLongTapDetector& CSpdiaContainer::LongTapDetectorL()
 // --------------------------------------------------------------------------
 //    
  void CSpdiaContainer::HandleLongTapEventL(
-        const TPoint& /*aPenEventLocation*/, 
-        const TPoint& aPenEventScreenLocation )
+        const TPoint& aPenEventLocation, 
+        const TPoint& /*aPenEventScreenLocation*/ )
     {
     // Get the Current Data Index
     TInt itemIndex( KErrNotFound );
 
     // Get position when user press screen
-    iGrid->View()->XYPosToItemIndex( aPenEventScreenLocation, itemIndex );
+    iGrid->View()->XYPosToItemIndex( aPenEventLocation, itemIndex );
 
     // Compare two index
     if ( AknLayoutUtils::PenEnabled() && ( itemIndex == iGrid->CurrentDataIndex() ) )
@@ -1202,7 +1214,7 @@ CAknLongTapDetector& CSpdiaContainer::LongTapDetectorL()
              statusPane->SwitchLayoutL( R_AVKON_STATUS_PANE_LAYOUT_USUAL );
              }
 
-         if ( statusPane->IsVisible() )
+         if ( statusPane->IsVisible()&&(!iView->IsShowVmbxDlg()) )
              {
              statusPane->MakeVisible( EFalse );
              }
@@ -1247,5 +1259,15 @@ CAknLongTapDetector& CSpdiaContainer::LongTapDetectorL()
             MiddleSoftKeyL();
             break;
         }
+    }
+ 
+ // --------------------------------------------------------------------------
+ // CSpdiaContainer::GetViewDialogStatus
+ // Check whether the view note is displaying when making speeddial to background.
+ // --------------------------------------------------------------------------
+ // 
+ CSpdiaNoteDialog* CSpdiaContainer::GetViewDialogStatus()
+    {
+    return iDialog;
     }
  // End of File  

@@ -53,7 +53,10 @@ class MPbk2ContactNameFormatter
             /// characters with space character
             EReplaceNonGraphicChars     = 0x0004,
             /// Formatter to retain all original space characters
-            EPreserveAllOriginalSpaces  = 0x0008
+            EPreserveAllOriginalSpaces  = 0x0008,
+            /// Formatter by default uses coma separator
+            /// for separating company name
+            EDisableCompanyNameSeparator  = 0x0010
             };
 
         /**

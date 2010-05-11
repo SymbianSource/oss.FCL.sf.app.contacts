@@ -22,7 +22,7 @@
 
 //  INCLUDES
 #include <e32base.h>
-#include <mvpbkcontactstoreproperties.h>
+#include <MVPbkContactStoreProperties.h>
 
 
 // FORWARD DECLARATION

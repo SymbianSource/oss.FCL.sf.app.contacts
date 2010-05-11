@@ -101,10 +101,11 @@ class CSpdiaGridDlg : public CAknDialog,
         * from CAknDialog
         */ 
         TBool OkToExitL(TInt aButtonId);
+        
         /**
-        * from CAknDialog
-        */ 
-        void HandleDialogPageEventL (TInt);
+        * From CCoeControl,HandlePointerEventL.
+        */
+        void HandlePointerEventL( const TPointerEvent& aPointerEvent );
 
     protected:
         /**
@@ -136,6 +137,8 @@ class CSpdiaGridDlg : public CAknDialog,
         TInt        iCbaID;
         TBool       iNeedUpdate;
         TInt        iPrevIndex;
+        // Grid index in which the button down
+        TInt iButton1DownIndex;
    };
 
 #endif  // SPDIAGRIDDLG_H

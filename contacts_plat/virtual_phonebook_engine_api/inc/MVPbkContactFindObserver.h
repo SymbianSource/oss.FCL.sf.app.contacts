@@ -24,7 +24,7 @@
 #include <e32base.h>
 // included here, instead of forward declared, so that clients
 // don't delete an incomplete class.
-#include <mvpbkcontactlinkarray.h>
+#include <MVPbkContactLinkArray.h>
 
 
 /**

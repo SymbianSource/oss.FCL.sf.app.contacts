@@ -22,7 +22,7 @@
 // INCLUDES
 #include <e32std.h>
 
-#include <vpbkvariant.hrh>    // for TVPbkLocalVariantFlags
+#include <VPbkVariant.hrh>    // for TVPbkLocalVariantFlags
 
 // FORWARD DECLARATIONS
 class CVPbkContactManager;

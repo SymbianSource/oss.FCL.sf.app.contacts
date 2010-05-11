@@ -20,7 +20,7 @@
 #define MPBK2APPUIEXTENSION_H
 
 // INCLUDES
-#include <mpbk2uireleasable.h>
+#include <MPbk2UiReleasable.h>
 
 // FORWARD DECLARATIONS
 class MPbk2StartupMonitor;

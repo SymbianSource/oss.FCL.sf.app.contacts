@@ -24,6 +24,7 @@
 #include <CPbk2IconArray.h>
 #include <MPbk2FieldProperty.h>
 #include <MPbk2ClipListBoxText.h>
+#include <f32file.h>
 
 #include <CVPbkContactManager.h>
 #include <MVPbkContactLink.h>
@@ -423,8 +424,7 @@ TBool CSpbContactDataModelPrivate::IsEmpty()
 TBool CSpbContactDataModelPrivate::IsHiddenField(const MVPbkFieldType* aFieldType)
     {
     TInt resId = aFieldType->FieldTypeResId();
-    return ( resId == R_VPBK_FIELD_TYPE_SYNCCLASS ||
-             resId == R_VPBK_FIELD_TYPE_CALLEROBJIMG );
+    return ( resId == R_VPBK_FIELD_TYPE_SYNCCLASS );
     }
 
 // ---------------------------------------------------------------------------
@@ -454,13 +454,37 @@ void CSpbContactDataModelPrivate::HandleTextTypeFieldL(
         }
     
     TPtrC fieldText = MVPbkContactFieldTextData::Cast(aFieldData).Text();
+    TInt resId = aFieldType.FieldTypeResId();
+    HBufC* defaultText = NULL;
+    if( resId == R_VPBK_FIELD_TYPE_CALLEROBJIMG )
+        {
+        RFs& fs = iCoeEnv.FsSession(); 
+        TEntry entry;
+        if ( fs.Entry( fieldText, entry) == KErrNone )
+           {
+           // get image name
+           TParse parse;
+           parse.Set(fieldText, NULL, NULL);
+           fieldText.Set(parse.Name());
+          
+           }
+        else
+            {
+            // use default image name
+            defaultText = iCoeEnv.AllocReadResourceLC( R_QTN_PHOB_FIELD_THUMBNAIL );
+            fieldText.Set( defaultText->Des() );
+            }
+        }
     TPtr columnBuf( ExpandColumnBufferL( fieldText.Length() ) );
     columnBuf.Zero();
 
     // replace listbox separator characters.
     Pbk2PresentationUtils::AppendAndReplaceChars( columnBuf, fieldText,
             KCharsToReplace, KReplacementChars );
-
+    if( defaultText )
+        {
+        CleanupStack::PopAndDestroy( defaultText );
+        }
     // Replace characters that can not be displayed correctly.
     Pbk2PresentationUtils::ReplaceNonGraphicCharacters( columnBuf, KReplacedChars );
 

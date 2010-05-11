@@ -235,11 +235,13 @@ void CPbk2MergeConflict::GetChosenFieldsL(
         RPointerArray<MVPbkStoreContactField>& aAddressFields )
     {
     __ASSERT_ALWAYS( iFieldFirst && iFieldSecond, Panic( EPbk2NotChosen ) );
+    CleanupClosePushL( aAddressFields );
     
     if ( iChosenField )
         {
         aAddressFields.AppendL( iChosenField );
         }
+    CleanupStack::Pop();
     }
 
 // --------------------------------------------------------------------------
@@ -385,6 +387,7 @@ void CPbk2MergeConflictAddress::GetChosenFieldsL(
     {
     __ASSERT_ALWAYS( iContactChosenAddress, Panic( EPbk2NotChosen ) );
     
+    CleanupClosePushL( aAddressFields );
     CPbk2PresentationContactFieldCollection& fields = iContactChosenAddress->PresentationFields();
     
     for( TInt idx = 0; idx < fields.FieldCount(); idx++ )
@@ -396,5 +399,6 @@ void CPbk2MergeConflictAddress::GetChosenFieldsL(
             aAddressFields.AppendL( &field );
             }
         }
+    CleanupStack::Pop();
     }
 

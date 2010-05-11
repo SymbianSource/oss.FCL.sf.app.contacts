@@ -15,21 +15,20 @@
 *
 */
 
-
 #include "CPbk2NonTopContactSelector.h"
 #include <MVPbkBaseContact.h>
-#include <featmgr.h>
 
 // Virtual Phonebook
 #include <CVPbkTopContactManager.h>
 
 CPbk2NonTopContactSelector* CPbk2NonTopContactSelector::NewL()
     {
-    CPbk2NonTopContactSelector* self = new (ELeave) CPbk2NonTopContactSelector();
-    CleanupStack::PushL( self );
-    self->ConstructL();
-    CleanupStack::Pop( self );
-    return self;
+    return new (ELeave) CPbk2NonTopContactSelector();
+    }
+
+CPbk2NonTopContactSelector::CPbk2NonTopContactSelector()
+: iContinue(ETrue)
+    {
     }
 
 CPbk2NonTopContactSelector::~CPbk2NonTopContactSelector()
@@ -39,41 +38,30 @@ CPbk2NonTopContactSelector::~CPbk2NonTopContactSelector()
 TBool CPbk2NonTopContactSelector::IsContactIncluded(
         const MVPbkBaseContact& aContact )
     {
-    TBool isContactIncluded( !CVPbkTopContactManager::IsTopContact( aContact ) );
-
-    if( iMyCardSupported )
-        {
-        // this is temporary solution to hide own contact from phonebook contacts list,
-        // TODO remove this code when we can hide own contact with contact model
-    
-        MVPbkBaseContact& contact = const_cast<MVPbkBaseContact&>( aContact );
-        TAny* extension = contact.BaseContactExtension( 
-                    KVPbkBaseContactExtension2Uid );
-    
-        if( isContactIncluded && extension )
-            {
-            MVPbkBaseContact2* baseContactExtension =
-                    static_cast<MVPbkBaseContact2*>( extension );
-            TInt error( KErrNone );
-            isContactIncluded =
-                    ( !baseContactExtension->IsOwnContact( error ) );
-            }
-        }
-    
+    TBool isContactIncluded( 
+            !CVPbkTopContactManager::IsTopContact( aContact ) );
+	
+    // Continue until we found first contact that is not top contact
+	// we can stop selector when we found first contact that is not top contact
+	// because top contacts are sorted to top of the contact list.
+    iContinue = !isContactIncluded;
     return isContactIncluded;
+    
     }
 
-
-CPbk2NonTopContactSelector::CPbk2NonTopContactSelector()
+TAny* CPbk2NonTopContactSelector::ContactSelectorExtension( TUid aExtensionUid )
     {
+    if( aExtensionUid == KVPbkOptimizedSelectorExtensionUid )
+        {
+        return static_cast<MVPbkOptimizedSelector*>( this );
+        }
+    return NULL;
     }
 
-void CPbk2NonTopContactSelector::ConstructL()
+TBool CPbk2NonTopContactSelector::Continue() const
     {
-    FeatureManager::InitializeLibL();
-    iMyCardSupported =
-            FeatureManager::FeatureSupported( KFeatureIdffContactsMycard );    
-    FeatureManager::UnInitializeLib();
+    return iContinue;
     }
+
 
 // End of File

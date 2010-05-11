@@ -251,6 +251,12 @@ class CPbk2NamesListControl : public CCoeControl,
          */
         IMPORT_C void MassUpdateSkipProgressNote( TBool aSkip );
         
+        /**
+         * Set the iOpeningCca flag. 
+         * @param aIsOpening - Indicates user is opening cca or not.
+         */
+        IMPORT_C void SetOpeningCca( TBool aIsOpening );
+        
     public: // From CCoeControl
         void MakeVisible(
                 TBool aVisible );
@@ -503,7 +509,8 @@ class CPbk2NamesListControl : public CCoeControl,
         CPbk2NamesListControlBgTask* iBgTask;
         //Own: Mass update checker/handler
         CPbk2HandleMassUpdate* iCheckMassUpdate;
-        
+        //Own: Open Cca is in progress
+        TBool iOpeningCca;        
     };
 
 #endif // CPBK2NAMESLISTCONTROL_H

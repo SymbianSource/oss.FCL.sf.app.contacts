@@ -784,14 +784,12 @@ void CContactStore::ContactDestroyed(CContactItem* aContactItem, TBool aCloseCon
     // Release any lock on contact.
     if (aContactItem)
         {
-        // Check that contact store is open
-        __ASSERT_DEBUG( iContactDb,
-            ContactStorePanic( EPreCond_ContactDestroyed ) );
-
         // Cancel async operation if any
         iAsyncContactOperation->Cancel( aContactItem );
 
-        if ( aCloseContact )
+        //iContactDb may be already null if store configuration changed by
+        //removing the current store from store configuartion
+        if ( aCloseContact && iContactDb)
         	{
 	        // CloseContactL doesn't leave despite its name.
 	        iContactDb->CloseContactL(aContactItem->Id());
@@ -917,6 +915,9 @@ void CContactStore::Close( MVPbkContactStoreObserver& aObserver)
         iDbNotifier = NULL;
         delete iContactDb;
         iContactDb = NULL;
+        // Set iGroupsFetched to false.
+        // Make sure iGroupIds is updated again after store is opened again.
+        iStoreInfo->ResetGroupsFetched();
         }
     }
 

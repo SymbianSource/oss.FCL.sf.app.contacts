@@ -128,7 +128,7 @@ const TUid KPcsPluginInterfaceUid   = { 0x2000B5BD };
 const TUid KPcsAlgorithm1           = { 0x2000B5BE };
 const TUid KPsDataStoreInterfaceUid = { 0x2000B5C0 };
 
-const TInt KLinksToFetchInOneGo = 500;
+const TInt KLinksToFetchInOneGo = 20;
 
 /**
  * Max number of supported languages for Key Map

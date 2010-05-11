@@ -22,8 +22,8 @@
 #define CVPBKCONTACTFINDOPERATION_H
 
 // INCLUDE FILES
-#include <cvpbkmulticontactoperationbase.h>
-#include <mvpbkcontactfindobserver.h>
+#include <CVPbkMultiContactOperationBase.h>
+#include <MVPbkContactFindObserver.h>
 
 class CVPbkContactLinkArray;
 

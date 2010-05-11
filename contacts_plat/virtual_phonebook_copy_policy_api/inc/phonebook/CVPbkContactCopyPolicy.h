@@ -30,7 +30,7 @@
 // INCLUDES
 #include <e32std.h>
 #include <ecom/ecom.h>
-#include <mvpbkcontactcopypolicy.h>
+#include <MVPbkContactCopyPolicy.h>
 
 // FORWARD DECLARATIONS
 class CVPbkContactManager;

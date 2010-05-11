@@ -64,6 +64,7 @@ EXPORT_C HBufC8* TPresenceArrayPacker::PackArrayL( const RPointerArray< MPresenc
 //
 EXPORT_C void TPresenceArrayPacker::UnPackArrayL( RPointerArray< MPresenceBuddyInfo2 >& aBufferArray, const TDesC8& aPack  )
     {
+    CleanupResetAndDestroyPushL( aBufferArray );
 	// No reset
     if ( ! aPack.Length() )
         {
@@ -85,10 +86,10 @@ EXPORT_C void TPresenceArrayPacker::UnPackArrayL( RPointerArray< MPresenceBuddyI
         info = MPresenceBuddyInfo2::NewLC();
         info->InternalizeL( rs );
         aBufferArray.AppendL( info );
-        
+        CleanupStack::Pop();
 		}
-    CleanupStack::Pop( objCount ); // all the objects
     CleanupStack::PopAndDestroy(); // rs    
+    CleanupStack::Pop( &aBufferArray );
     }
 
 

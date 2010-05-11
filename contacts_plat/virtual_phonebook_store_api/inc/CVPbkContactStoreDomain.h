@@ -29,9 +29,9 @@
 
 // INCLUDES
 #include <ecom/ecom.h>
-#include "mvpbkcontactstorelist.h"
-#include "mvpbkcontactoperationfactory.h"
-#include "mvpbkcontactoperationfactory2.h"
+#include "MVPbkContactStoreList.h"
+#include "MVPbkContactOperationFactory.h"
+#include "MVPbkContactOperationFactory2.h"
 
 // FORWARD DECLARATIONS
 class TVPbkContactStoreUriPtr;

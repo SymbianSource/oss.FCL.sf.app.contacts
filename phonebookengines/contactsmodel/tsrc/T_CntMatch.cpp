@@ -801,8 +801,19 @@ LOCAL_C void TestBestMatchingStrategyL()
     CreateContactL(KCntName,KCntSurname,_L("584443049607"),KNullDesC);
     TESTVALUE(CheckPhoneMatchL(_L("4443049607"), KBestMatchingPhoneNumbers),1);
     
+    ResetDatabaseL();
     CreateContactL(KCntName,KCntSurname,_L("401234567"),KNullDesC);
     TESTVALUE(CheckPhoneMatchL(_L("2041234567"), KBestMatchingPhoneNumbers),0);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("0401234567"),KNullDesC);
+    CreateContactL(KCntName,KCntSurname,_L("0501234567"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("0401234567"), KBestMatchingPhoneNumbers),1);
+    
+    ResetDatabaseL();
+    CreateContactL(KCntName,KCntSurname,_L("020421234567"),KNullDesC);
+    CreateContactL(KCntName,KCntSurname,_L("005021234567"),KNullDesC);
+    TESTVALUE(CheckPhoneMatchL(_L("020421234567"), KBestMatchingPhoneNumbers),1);
     
     }
 

@@ -21,9 +21,9 @@
 
 // INCLUDES
 #include <e32base.h>
-#include <mvpbkcontactviewbase.h>
-#include <mvpbkcontactviewobserver.h>
-#include <mvpbkcontactviewfiltering.h>
+#include <MVPbkContactViewBase.h>
+#include <MVPbkContactViewObserver.h>
+#include <MVPbkContactViewFiltering.h>
 
 // FORWARD DECLARATIONS
 namespace VPbkEngUtils { class CVPbkAsyncOperation; }

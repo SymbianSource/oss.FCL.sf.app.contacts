@@ -22,8 +22,8 @@
 
 // INCLUDES
 #include <e32base.h>
-#include <mvpbkstorecontact.h>
-#include <mvpbkstorecontact2.h>
+#include <MVPbkStoreContact.h>
+#include <MVPbkStoreContact2.h>
 
 // FORWARD DECLARATIONS
 class MVPbkContactLinkArray;

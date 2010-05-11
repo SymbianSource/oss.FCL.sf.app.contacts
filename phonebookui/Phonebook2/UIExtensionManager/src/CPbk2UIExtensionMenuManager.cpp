@@ -100,6 +100,7 @@ void CPbk2UIExtensionMenuManager::DynInitMenuPaneL(
 void CPbk2UIExtensionMenuManager::PluginForCommandIdL(
         TInt aCommandId, RArray<TUid>& aPluginUids ) const
     {
+    CleanupClosePushL( aPluginUids );
     const TInt informationCount =
         iExtensionLoader.PluginInformation().Count();
     for ( TInt i = 0; i < informationCount; ++i )
@@ -111,6 +112,7 @@ void CPbk2UIExtensionMenuManager::PluginForCommandIdL(
             aPluginUids.AppendL( pluginInformation->ImplementationUid() );
             }
         }
+    CleanupStack::Pop();
     }
 
 // --------------------------------------------------------------------------

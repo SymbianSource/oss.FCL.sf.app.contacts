@@ -56,7 +56,7 @@ _LIT(KDefaultDbName, "C:Contacts.cdb");
 /// Default contact view preferences
 const TContactViewPreferences KPbkDefaultContactViewPrefs =
     static_cast<TContactViewPreferences>
-        (EContactsOnly | EUnSortedAtEnd | ESingleWhiteSpaceIsEmptyField);
+        ( EContactCardsOnly | EUnSortedAtEnd | ESingleWhiteSpaceIsEmptyField );
 
 #ifdef _DEBUG
 enum TPanicCode

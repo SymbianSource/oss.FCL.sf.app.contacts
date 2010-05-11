@@ -183,6 +183,7 @@ void CFindView::ContactViewReadyForFiltering(
 //
 void CFindView::MatchL( RPointerArray<MVPbkSimContact>& aMatchedContacts )
     {
+    CleanupResetAndDestroyPushL( aMatchedContacts );
     if (iAlwaysIncluded.Count() == 0)
         {
         // No always included contacts. The match can be done using
@@ -232,6 +233,7 @@ void CFindView::MatchL( RPointerArray<MVPbkSimContact>& aMatchedContacts )
     
     // Free the memory
     iSIMMatchedContacts.Reset(); 
+    CleanupStack::Pop( &aMatchedContacts );
     }
         
 // --------------------------------------------------------------------------
@@ -307,6 +309,7 @@ void CFindView::DoContactAddedToViewL(
         const MVPbkContactLink& /*aContactLink*/,
         RPointerArray<MVPbkSimContact>& aMatchedContacts )
     {
+    CleanupResetAndDestroyPushL( aMatchedContacts );
     if ( &iParentView == &aView )
         {
         const CViewContact& viewContact = static_cast<const CViewContact&>(
@@ -363,6 +366,7 @@ void CFindView::DoContactAddedToViewL(
                 }
             }
         }
+    CleanupStack::Pop( &aMatchedContacts );
     }
 
 // --------------------------------------------------------------------------
@@ -407,6 +411,7 @@ void CFindView::ViewFindCompletedL(
 void CFindView::MatchContactL( const CViewContact& aViewContact,
             RPointerArray<MVPbkSimContact>& aMatchedContacts )
     {
+    CleanupResetAndDestroyPushL( aMatchedContacts );
     // aContact matches if it's one of the always included contacts OR
     // (if it's one of Contacts Model matched contacts AND it also
     // passes our own match).
@@ -445,6 +450,7 @@ void CFindView::MatchContactL( const CViewContact& aViewContact,
             CleanupStack::Pop( cnt );
             }
         }
+    CleanupStack::Pop( &aMatchedContacts ); 
     }
 
 // --------------------------------------------------------------------------

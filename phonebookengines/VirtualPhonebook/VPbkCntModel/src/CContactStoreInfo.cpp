@@ -125,6 +125,15 @@ TInt CContactStoreInfo::NumberOfGroupsL() const
         }
     return iStore.NativeDatabase().GroupCount();
     }
+
+// -----------------------------------------------------------------------------
+// CContactStoreInfo::ResetGroupsFetched
+// -----------------------------------------------------------------------------
+//     
+void CContactStoreInfo::ResetGroupsFetched()
+    {
+    iGroupsFetched = EFalse;
+    }
     
 } // namespace VPbkCntModel
 //  End of File  

@@ -1970,20 +1970,6 @@ TBool CSpeedDialPrivate::ShowAssignL( TInt aIndex, MVPbkContactLink*& aContactLi
 
     if ( !CheckSpaceBelowCriticalLevelL() )
         {
-        if ( iGridUsed == EGridNoUse && (*iSdmArray)[aIndex].Contact() == NULL )
-            {
-            iQueryDialog = CAknQueryDialog::NewL(CAknQueryDialog::ENoTone);
-            TBool resDialog(EFalse);
-            TRAPD(error,
-            resDialog = iQueryDialog->ExecuteLD(R_SPDIA_QUERY_ASSIGN) );
-            iQueryDialog = NULL;
-            User::LeaveIfError(error);
-            if (!resDialog)
-                {
-                result = EFalse;
-                } 
-            }
-
         if ( result && (*iSdmArray)[aIndex].Contact() != NULL )
             {
             //if(iGridUsed == EGridNoUse)//because grid will be used if you want to replace or change
@@ -2304,10 +2290,9 @@ void CSpeedDialPrivate::HandleStoreEventL(
 						CreateDataL( *iGrid  );
 						}
 					// If the view number note popped up and the customer delete the image of contact
-					// refresh the note dialog.
+					// Set the update flag.
 					if ( iRefreshObserver && iCurrentIndex == findResult )
 						{
-						iRefreshObserver->RefreshDialog();
 						iUpdateFlag = ETrue;
 						}
 					}
@@ -2853,58 +2838,70 @@ TBool CSpeedDialPrivate::CreateDataL(const CAknGrid& aGrid)
 // ---------------------------------------------------------
 //
 void CSpeedDialPrivate::AppendTextL(const TSpdiaIndexDataVPbk& aSdmData, TPtr& aText)
-{
-    
-    if (aSdmData.Contact() == NULL)
     {
-      aText.Append(KDesTab2);
-      aText.Append(KDesTab2);
-    }
+    if ( aSdmData.Contact() == NULL )
+        {
+        aText.Append( KDesTab2 );
+        aText.Append( KDesTab2 );
+        }
     else
-    {
-	   	// Test application name formatting logic is that take last name and
-	    // first name and combine them using space as a separator. If either of
-	    // them exists use company name. If there are still no name use "Unnamed"
+        {
+        // Test application name formatting logic is that take last name and
+        // first name and combine them using space as a separator. If either of
+        // them exists use company name. If there are still no name use "Unnamed"
 	    
-	    // Get field types from the master field type list
-	    const MVPbkFieldType* lastNameType = 
-	        iContactManager->FieldTypes().Find( R_VPBK_FIELD_TYPE_LASTNAME );
-	    const MVPbkFieldType* firstNameType =
-	        iContactManager->FieldTypes().Find( R_VPBK_FIELD_TYPE_FIRSTNAME );            
-	    const MVPbkFieldType* companyNameType =
-	        iContactManager->FieldTypes().Find( R_VPBK_FIELD_TYPE_COMPANYNAME );
+        // Get field types from the master field type list
+        const MVPbkFieldType* lastNameType = NULL; 
+	      const MVPbkFieldType* firstNameType = NULL;           
+	      const MVPbkFieldType* companyNameType =
+                iContactManager->FieldTypes().Find( R_VPBK_FIELD_TYPE_COMPANYNAME );
 	    
-	    CDesCArrayFlat* bufs = new( ELeave ) CDesCArrayFlat( 2 );
-	    CleanupStack::PushL( bufs );
+        TInt language = User::Language();
 	    
-	    // Non-graphical characters are replaced with space
-	    const TText KReplaceChar = ' ';
+        CDesCArrayFlat* bufs = new( ELeave ) CDesCArrayFlat( 2 );
+        CleanupStack::PushL( bufs );
+	    
+        // Non-graphical characters are replaced with space
+        const TText KReplaceChar = ' ';
 	        
-	    // Contact should have only one last name field
-	    CVPbkBaseContactFieldTypeIterator* itr = 
-	        CVPbkBaseContactFieldTypeIterator::NewLC( *lastNameType, 
-	            aSdmData.Contact()->Fields() );
-	    while ( itr->HasNext() )
-	        {
-	        const MVPbkBaseContactField* field = itr->Next();
-	        // last name field is text data
-	        const MVPbkContactFieldTextData& data = 
-	            MVPbkContactFieldTextData::Cast( field->FieldData() );
-	        HBufC* lastName = data.Text().AllocLC();
+        if ( ( language == ELangTaiwanChinese )
+            || ( language == ELangHongKongChinese )
+            || ( language == ELangPrcChinese ) )
+     		    {
+     		    lastNameType = iContactManager->FieldTypes().Find( R_VPBK_FIELD_TYPE_LASTNAME );
+     		    firstNameType = iContactManager->FieldTypes().Find( R_VPBK_FIELD_TYPE_FIRSTNAME );            
+     		    }
+        else
+            {
+            // Change the display order as first name - last name.
+            lastNameType = iContactManager->FieldTypes().Find( R_VPBK_FIELD_TYPE_FIRSTNAME );
+            firstNameType = iContactManager->FieldTypes().Find( R_VPBK_FIELD_TYPE_LASTNAME );      
+            }
+            
+        // Contact should have only one last name field
+        CVPbkBaseContactFieldTypeIterator* itr = 
+            CVPbkBaseContactFieldTypeIterator::NewLC( *lastNameType, aSdmData.Contact()->Fields() );
+        while ( itr->HasNext() )
+            {
+	          const MVPbkBaseContactField* field = itr->Next();
+	          // last name field is text data
+	          const MVPbkContactFieldTextData& data = 
+	              MVPbkContactFieldTextData::Cast( field->FieldData() );
+	          HBufC* lastName = data.Text().AllocLC();
 	        
-	        TPtr lName(NULL, 0);
-	        lName.Set( lastName->Des() );
-         	ReplaceNonGraphicCharacters( lName, KReplaceChar );
+	          TPtr lName(NULL, 0);
+	          lName.Set( lastName->Des() );
+         	  ReplaceNonGraphicCharacters( lName, KReplaceChar );
          	
-         	const TInt 	len = lName.Length();
-         	if (0 < len)
-         	{
-         		bufs->AppendL( lName);
-         	}
+         	  const TInt 	len = lName.Length();
+         	  if ( 0 < len )
+                {
+                bufs->AppendL( lName);
+                }
 	        
-	        CleanupStack::PopAndDestroy( lastName );
-	        }
-	    CleanupStack::PopAndDestroy( itr );
+            CleanupStack::PopAndDestroy( lastName );
+            }
+        CleanupStack::PopAndDestroy( itr );
 	    
 	    // Contact should have only one first name field
 	    itr = CVPbkBaseContactFieldTypeIterator::NewLC( *firstNameType, 

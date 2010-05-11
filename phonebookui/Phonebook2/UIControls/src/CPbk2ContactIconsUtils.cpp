@@ -96,6 +96,7 @@ EXPORT_C void CPbk2ContactIconsUtils::GetIconIdsForContactL(
         const MVPbkViewContact& aViewContact,
         RArray<TPbk2IconId>& aIconArray ) const
     {
+    CleanupClosePushL( aIconArray );
     aIconArray.Reset();
     
     // get dynamic icons from ui extension
@@ -134,6 +135,7 @@ EXPORT_C void CPbk2ContactIconsUtils::GetIconIdsForContactL(
                 }
             }
         }
+    CleanupStack::Pop();
     }
 
 //  End of File

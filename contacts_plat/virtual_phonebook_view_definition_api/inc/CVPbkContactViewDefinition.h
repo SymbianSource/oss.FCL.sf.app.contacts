@@ -20,7 +20,7 @@
 #define CVPBKCONTACTVIEWDEFINITION_H
 
 #include <e32base.h>
-#include <vpbkcontactview.hrh>
+#include <VPbkContactView.hrh>
 
 class TResourceReader;
 class CVPbkFieldTypeSelector;

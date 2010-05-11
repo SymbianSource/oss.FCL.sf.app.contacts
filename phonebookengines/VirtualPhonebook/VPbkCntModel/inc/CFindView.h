@@ -88,6 +88,7 @@ NONSHARABLE_CLASS( CFindView ): public CFindViewBase
             TInt& aMatchArrayIndex ) const;
         void RemoveFromMatchArrayIfFound( const CViewContact& aContact );
         TInt FindFromMatchArray( const CViewContact& aContact ) const;
+        void HeapSortL(RPointerArray<CCntModelViewContact> aViewContacts);
 
     private: // Data
         /// Own: the find policy
@@ -98,6 +99,21 @@ NONSHARABLE_CLASS( CFindView ): public CFindViewBase
         RPointerArray<CCntModelViewContact> iContactsModelMatchContacts;
     };
 
+// CleanupStack helpers for item owning RPointerArrays
+template <class T>
+class CleanupResetAndDestroy
+    {
+public:
+    inline static void PushL(T& aRef)
+        { CleanupStack::PushL(TCleanupItem(&ResetAndDestroy,&aRef)); }
+private:
+    inline static void ResetAndDestroy(TAny *aPtr)
+        { static_cast<T*>(aPtr)->ResetAndDestroy(); }
+    };
+
+template <class T>
+inline void CleanupResetAndDestroyPushL(T& aRef)
+    { CleanupResetAndDestroy<T>::PushL(aRef); }
 } // namespace VPbkCntModel
 
 #endif // VPBKCNTMODEL_CFINDVIEW_H

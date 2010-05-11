@@ -274,6 +274,7 @@ void CVPbkETelCntConverter::ConvertFromETelToVPbkSimContactsL(
     RPointerArray<CVPbkSimContactBuf>& aResultArray,
     TDes8& aETelContactData, MVPbkSimCntStore& aSimStore ) const
     {
+    CleanupResetAndDestroyPushL( aResultArray );
     iETelBuffer->Set( &aETelContactData );
     User::LeaveIfError( StartRead() );
     
@@ -294,6 +295,7 @@ void CVPbkETelCntConverter::ConvertFromETelToVPbkSimContactsL(
         {
         User::Leave( KErrBadDescriptor );
         }
+    CleanupStack::Pop( &aResultArray );
     }
 
 // -----------------------------------------------------------------------------

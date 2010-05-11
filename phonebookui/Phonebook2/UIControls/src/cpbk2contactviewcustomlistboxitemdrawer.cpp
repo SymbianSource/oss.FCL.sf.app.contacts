@@ -50,6 +50,11 @@
 #include "cpbk2contactviewcustomlistboxitemdrawer.h"
 //End of Code Added for PhoneBook2
 
+//Note:
+//****
+//PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES 
+//Define this Flag once Pbk2 decides to implement the MarkingMode changes that has been implemented for Avkon Lists
+
 //
 //    Class CPbk2ContactViewCustomListBoxItemDrawer
 //
@@ -143,6 +148,7 @@ void CPbk2ContactViewCustomListBoxItemDrawer::SetItemCellSize(
     data->SetItemCellSize( iItemCellSize );
     }
 
+#ifndef RD_TOUCH2
 void CPbk2ContactViewCustomListBoxItemDrawer::DrawCurrentItemRect(const TRect& aRect) const
 //
 //    Draw the item background
@@ -154,6 +160,7 @@ void CPbk2ContactViewCustomListBoxItemDrawer::DrawCurrentItemRect(const TRect& a
     iGc->DrawRect(aRect);
     iGc->CancelClippingRect();
     }
+#endif // !RD_TOUCH2
 
 /**
 * Returns a pointer to the column data. Does not imply transfer of ownership.
@@ -203,6 +210,13 @@ void CPbk2ContactViewCustomListBoxItemDrawer::DrawItemText( TInt aItemIndex,
     TInt pos = -1;
     
     TBool removeicon = (!aItemIsSelected && !ItemMarkReverse()) || (aItemIsSelected && ItemMarkReverse()); 
+#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
+    
+    if ( Flags() & CListItemDrawer::EMarkingModeEnabled )
+        {
+        removeicon = EFalse;
+        }
+#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     if ( Flags() & EDrawMarkSelection && ItemMarkPosition() != -1 && removeicon)
         {
         repl.Set( ItemMarkReplacement() );

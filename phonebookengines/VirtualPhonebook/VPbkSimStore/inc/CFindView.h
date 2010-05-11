@@ -113,6 +113,22 @@ NONSHARABLE_CLASS( CFindView ): public CFindViewBase,
         /// Own: match results (SIM indexes) from native view
         RArray<TInt> iSIMMatchedContacts;
     };
+
+// CleanupStack helpers for item owning RPointerArrays
+template <class T>
+class CleanupResetAndDestroy
+    {
+public:
+    inline static void PushL(T& aRef)
+        { CleanupStack::PushL(TCleanupItem(&ResetAndDestroy,&aRef)); }
+private:
+    inline static void ResetAndDestroy(TAny *aPtr)
+        { static_cast<T*>(aPtr)->ResetAndDestroy(); }
+    };
+
+template <class T>
+inline void CleanupResetAndDestroyPushL(T& aRef)
+    { CleanupResetAndDestroy<T>::PushL(aRef); }
     
 } // namespace VPbkSimStore    
 

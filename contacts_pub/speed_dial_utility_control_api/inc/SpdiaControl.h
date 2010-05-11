@@ -25,7 +25,7 @@
 // INCLUDES
 #include <coecntrl.h>
 #include <TPbkContactItemField.h>
-#include <aknutils.h>
+#include <AknUtils.h>
 #include <MPbkContactDbObserver.h>
 #include <MPbkThumbnailOperationObservers.h>
 

@@ -21,10 +21,10 @@
 
 // INCLUDE FILES
 #include <e32base.h>
-#include <mvpbkcontactattribute.h>
-#include <mvpbkcontactattributemanager.h>
-#include <vpbkpublicuid.h>
-#include <vpbkfieldtype.hrh>
+#include <MVPbkContactAttribute.h>
+#include <MVPbkContactAttributeManager.h>
+#include <VPbkPublicUid.h>
+#include <VPbkFieldType.hrh>
 
 // FORWARD DECLARATIONS
 

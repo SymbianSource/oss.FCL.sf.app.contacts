@@ -457,6 +457,14 @@ void CSpdiaView::HandleForegroundEventL(TBool aForeground)
         LoadCba( iContainer->MenuResourceID() );        
         
         iAIWRunFlag = EFalse;	 
+        
+        // If the view note displays when switching speeddial to background.
+        // Making the note pops up again.
+        if ( iSpeedPrivate->UpdateFlag() && iContainer->GetViewDialogStatus() )
+            {
+            CmdViewNumberL();
+            iSpeedPrivate->SetUpdateFlag( EFalse );
+            }
         }
     else
         {

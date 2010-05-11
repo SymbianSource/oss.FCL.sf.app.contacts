@@ -150,6 +150,10 @@ TInt CPbk2ContactNameFormatter::MaxTitleLengthWithCompanyName(
              (aFormattingFlags, ENameCompanyPart+1, count-1); // zero-based
          }
     
+     if ( !result || aFormattingFlags & MPbk2ContactNameFormatter::EDisableCompanyNameSeparator  )
+         {
+         return result;
+         }
      return result+1; // for seperator ","
     }
 // -----------------------------------------------------------------------------
@@ -190,6 +194,10 @@ TAny* CPbk2ContactNameFormatter::ContactNameFormatterExtension(
            {
            return static_cast<MPbk2ContactNameFormatter2*>( this );
            }
+    if ( aExtensionUid == MPbk2ContactNameFormatterExtension3Uid )
+           {
+           return static_cast<MPbk2ContactNameFormatter3*>( this );
+           }
     return NULL;
     }
 // -----------------------------------------------------------------------------
@@ -217,7 +225,10 @@ void CPbk2ContactNameFormatter::GetContactTitleWithCompanyName(
         //third field is expected to be company name
         if ( IsCompanyNameField() )
             {
-            aTitle.Append(KSeparator);
+            if ( !( aFormattingFlags & MPbk2ContactNameFormatter::EDisableCompanyNameSeparator)  )
+                {
+                aTitle.Append(KSeparator);
+                }
             DoGetContactTitle(aTitle, EPreserveLeadingSpaces,
                     ENameCompanyPart, ENameCompanyPart);
             }
@@ -250,6 +261,23 @@ void CPbk2ContactNameFormatter::GetContactTitleForFind
     }
 
 // -----------------------------------------------------------------------------
+// CPbk2ContactNameFormatter::TitleWithCompanyNameFieldsLC
+// -----------------------------------------------------------------------------
+//
+CVPbkBaseContactFieldTypeListIterator* 
+CPbk2ContactNameFormatter::TitleWithCompanyNameFieldsLC(
+        CVPbkFieldTypeRefsList& aFieldTypeList,
+        const MVPbkBaseContactFieldCollection& aContactFields )
+    {
+    
+    TitleFieldsL( aFieldTypeList, aContactFields, ENameFirstPart, ENameCompanyPart);
+
+    return CVPbkBaseContactFieldTypeListIterator::NewLC(
+            aFieldTypeList,
+            aContactFields);
+    
+    }
+// -----------------------------------------------------------------------------
 // CPbk2ContactNameFormatter::ActualTitleFieldsLC
 // See function CPbk2ContactNameFormatter::GetContactTitle.
 // -----------------------------------------------------------------------------
@@ -259,29 +287,39 @@ CPbk2ContactNameFormatter::ActualTitleFieldsLC(
         CVPbkFieldTypeRefsList& aFieldTypeList,
         const MVPbkBaseContactFieldCollection& aContactFields)
     {
+
+    TitleFieldsL( aFieldTypeList, aContactFields, ENameFirstPart, ENameSecondPart);
+           
+    return CVPbkBaseContactFieldTypeListIterator::NewLC(
+            aFieldTypeList,
+            aContactFields);
+    }
+// -----------------------------------------------------------------------------
+// CPbk2ContactNameFormatter::TitleFieldsL
+// -----------------------------------------------------------------------------
+//	
+void CPbk2ContactNameFormatter::TitleFieldsL( CVPbkFieldTypeRefsList& aFieldTypeList,
+        const MVPbkBaseContactFieldCollection& aContactFields, 
+        const TInt aStartingPosition, const TInt aEndingPosition )
+    {
     aFieldTypeList.Reset();
 
     SetFieldMapper( aContactFields );
     
     DoAppendNonEmptyTitleFieldTypesL(
             aFieldTypeList,
-            ENameFirstPart,
-            ENameSecondPart);
+            aStartingPosition,
+            aEndingPosition);
 
     if( aFieldTypeList.FieldTypeCount() == 0 )
         {
         const TInt count = iFieldMapper.FieldCount();
         DoAppendNonEmptyTitleFieldTypesL(
                 aFieldTypeList,
-                ENameSecondPart+1,
+                aEndingPosition+1,
                 count-1);
         }
-
-    return CVPbkBaseContactFieldTypeListIterator::NewLC(
-            aFieldTypeList,
-            aContactFields);
     }
-
 // -----------------------------------------------------------------------------
 // CPbk2ContactNameFormatter::MaxTitleLength
 // -----------------------------------------------------------------------------

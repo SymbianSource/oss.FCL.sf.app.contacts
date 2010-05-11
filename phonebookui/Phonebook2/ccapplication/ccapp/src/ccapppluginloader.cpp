@@ -23,6 +23,7 @@
 #include <mccapluginfactory.h>
 
 #include <cpbk2applicationservices.h>
+#include <CPbk2StoreConfiguration.h>
 #include <CVPbkContactManager.h>
 #include <MVPbkContactStoreProperties.h>
 #include <VPbkContactStoreUris.h>
@@ -131,6 +132,10 @@ CCCAppPluginLoader::~CCCAppPluginLoader()
     delete iFactoryTempPtr;
     CCA_DP( KCCAppLogFile, CCA_L("<-CCCAppPluginData::~CCCAppPluginLoader"));
     
+    if(iAppServices)
+        {
+        iAppServices->StoreConfiguration().RemoveObserver(*this);
+        }
     Release( iAppServices );
 
     iCommandsResourceFile.Close();
@@ -371,6 +376,7 @@ void CCCAppPluginLoader::PreparePbk2ApplicationServicesL()
         KPbk2RomFileDrive, KDC_RESOURCE_FILES_DIR, KPbk2CommonUiDllResFileName );
 
     iAppServices = CPbk2ApplicationServices::InstanceL();
+    iAppServices->StoreConfiguration().AddObserverL(*this);    
     }
 
 // ---------------------------------------------------------------------------
@@ -768,6 +774,7 @@ TInt CCCAppPluginLoader::PluginVisibility(
 void CCCAppPluginLoader::GetPbksXPExtesionNamesL( RArray<TPtrC>& aPbksXPExtesionNamesArray,
         const TDesC& aNameString)
     {
+    CleanupClosePushL( aPbksXPExtesionNamesArray );
     TLex nameString ( aNameString );
     TChar curChar;
     nameString.Mark();
@@ -787,6 +794,7 @@ void CCCAppPluginLoader::GetPbksXPExtesionNamesL( RArray<TPtrC>& aPbksXPExtesion
             nameString.Inc();
             }
         }
+    CleanupStack::Pop();
     }
 
 // ---------------------------------------------------------------------------
@@ -1124,6 +1132,26 @@ void CCCAppPluginLoader::GetNameValue(
         {
         aDataPtr.Set( TPtrC8() );
         }
+    }
+
+// ----------------------------------------------------------------------------
+// CCCAppPluginLoader::ConfigurationChanged
+// ----------------------------------------------------------------------------
+//
+void CCCAppPluginLoader::ConfigurationChanged()
+    {
+    //Special case. Store configuration changed, e.g. store containing current 
+    //contact removed. So close CCA as current contact may not anymore be available
+    CAknAppUi* appUi = static_cast<CAknAppUi*> (CEikonEnv::Static()->AppUi());
+    TRAP_IGNORE(appUi->HandleCommandL(EAknCmdExit));
+    }
+
+// ----------------------------------------------------------------------------
+// CCCAppPluginLoader::ConfigurationChangedComplete
+// ----------------------------------------------------------------------------
+//
+void CCCAppPluginLoader::ConfigurationChangedComplete()
+    {
     }
 
 // End of File

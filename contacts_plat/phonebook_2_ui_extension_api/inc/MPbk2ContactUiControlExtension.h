@@ -20,8 +20,8 @@
 #define MPBK2CONTACTUICONTROLEXTENSION_H
 
 // INCLUDES
-#include <tpbk2iconid.h>
-#include <mpbk2uireleasable.h>
+#include <TPbk2IconId.h>
+#include <MPbk2UiReleasable.h>
 
 //  FORWARD DECLARATIONS
 class MVPbkViewContact;

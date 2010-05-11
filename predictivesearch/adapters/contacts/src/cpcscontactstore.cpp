@@ -60,11 +60,13 @@
 #include <contactsort.rsg>
 
 // CONSTANTS
+namespace {
 const TInt KSimStoreOffset            = -5000;
+const TInt KTimerInterval             = 100000;   // 100 milliseconds
 
 _LIT(KResourceFileName, "contactsort.rsc");
 _LIT(KPcsViewPrefix,"PCSView_");
-
+}
 // FORWARD DECLARATION
 
 // ============================== MEMBER FUNCTIONS ================================
@@ -318,7 +320,10 @@ void CPcsContactStore::VPbkSingleContactOperationComplete(
 	{
 	    // Fetch next block
 		iNextState = EFetchContactBlock;
-		IssueRequest();
+        // Delay the next fetch since contact fetch is CPU intensive,
+        // this will give other threads a chance to use CPU
+        iTimer.After( iStatus, KTimerInterval); // 100 milliseconds
+        SetActive();
 	}
 	
 }
@@ -344,7 +349,10 @@ void CPcsContactStore::VPbkSingleContactOperationFailed(
 	{
 		// Fetch next block
 		iNextState = EFetchContactBlock;
-		IssueRequest();
+        // Delay the next fetch since contact fetch is CPU intensive,
+        // this will give other threads a chance to use CPU
+		iTimer.After( iStatus, KTimerInterval);   // 100 milliseconds
+        SetActive();
 	}
 	
 	PRINT ( _L("End CPcsContactStore::VPbkSingleContactOperationFailed") );
@@ -815,11 +823,6 @@ void CPcsContactStore::RunL()
 	   	case EFetchContactBlock:
 	   		PRINT ( _L("Issuing the fetch request for next block") );
 			FetchlinksL();
-			
-			// Delay the next fetch since contact fetch is CPU intensive,
-			// this will give other threads a chance to use CPU
-			iTimer.After( timerStatus, 100000); // 100 milliseconds
-			User::WaitForRequest( timerStatus );
 			break;
 	   	
 	   	case EComplete:

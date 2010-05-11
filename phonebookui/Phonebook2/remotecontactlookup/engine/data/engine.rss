@@ -83,15 +83,24 @@ RESOURCE MENU_PANE r_rcl_search_result_dialog_menu_pane
         items =
                 {
         MENU_ITEM { command = ERclCmdSaveToContacts; txt = qtn_rcl_opt_save_contact; flags = EEikMenuItemSpecific;},
+        
+        // Stylus Popup menu items for Call and Send actions (in Options Menu they are submenu items)
+        MENU_ITEM { command = ERclCmdVoiceCall; txt = qtn_rcl_stylus_popup_voice_call; flags = EEikMenuItemSpecific;},
+        MENU_ITEM { command = ERclCmdVideoCall; txt = qtn_rcl_stylus_popup_video_call; flags = EEikMenuItemSpecific;},
+        MENU_ITEM { command = ERclCmdSendMsg; txt = qtn_rcl_stylus_popup_msg; flags = EEikMenuItemSpecific;},
+        MENU_ITEM { command = ERclCmdSendBusinessCard; txt = qtn_rcl_stylus_popup_bcard; flags = EEikMenuItemSpecific;},
+        MENU_ITEM { command = ERclCmdSendEmail; txt = qtn_rcl_stylus_popup_email; flags = EEikMenuItemSpecific;},
+        
 		MENU_ITEM { command = ERclCmdViewDetails; txt = qtn_rcl_opt_details; flags = EEikMenuItemAction; },
-		MENU_ITEM { command = ERclCmdAddAsRecipient; txt = qtn_rcl_opt_add_recipient; flags = EEikMenuItemSpecific;},		
+		MENU_ITEM { command = ERclCmdAddAsRecipient; txt = qtn_rcl_opt_add_recipient; flags = EEikMenuItemAction;},		
 		MENU_ITEM { command = ERclCmdNewSearchPrefilled; txt = qtn_rcl_opt_new_search; },
-		MENU_ITEM { command = ERclCmdCall; cascade = r_rcl_call_menu_pane; txt = qtn_rcl_opt_call; flags = EEikMenuItemSpecific; },
-		MENU_ITEM { command = ERclCmdSend; cascade = r_rcl_send_menu_pane; txt = qtn_rcl_opt_send; flags = EEikMenuItemSpecific; },
+		MENU_ITEM { command = ERclCmdCall; cascade = r_rcl_call_menu_pane; txt = qtn_rcl_opt_call; flags = EEikMenuItemAction; },
+		MENU_ITEM { command = ERclCmdSend; cascade = r_rcl_send_menu_pane; txt = qtn_rcl_opt_send; flags = EEikMenuItemAction; },
 		MENU_ITEM { command = EAknCmdHelp; txt = qtn_options_help; },
 		MENU_ITEM { command = EAknCmdExit; txt = qtn_options_exit; }	
 		};
 	}
+
 
 //
 // ---------------------------------------------------------------------------
@@ -103,9 +112,9 @@ RESOURCE MENU_PANE r_rcl_call_menu_pane
 	{
 	items =
 	       {
-	       MENU_ITEM { command = ERclCmdVoiceCall; txt = qtn_rcl_opt_voice_call; flags = EEikMenuItemSpecific;},
-	       MENU_ITEM { command = ERclCmdVideoCall; txt = qtn_rcl_opt_video_call; flags = EEikMenuItemSpecific;},
-	       MENU_ITEM { command = ERclCmdVoip; txt = qtn_rcl_opt_voip; flags = EEikMenuItemSpecific;}
+	       MENU_ITEM { command = ERclCmdVoiceCall; txt = qtn_rcl_opt_voice_call; flags = EEikMenuItemAction;},
+	       MENU_ITEM { command = ERclCmdVideoCall; txt = qtn_rcl_opt_video_call; flags = EEikMenuItemAction;},
+	       MENU_ITEM { command = ERclCmdVoip; txt = qtn_rcl_opt_voip; flags = EEikMenuItemAction;}
 	       };
 	}
 
@@ -119,11 +128,11 @@ RESOURCE MENU_PANE r_rcl_send_menu_pane
 	{
 	items =
 	        {
-		MENU_ITEM { command = ERclCmdSendMsg; txt = qtn_rcl_opt_msg; flags = EEikMenuItemSpecific;},
-		MENU_ITEM { command = ERclCmdSendBusinessCard; txt = qtn_rcl_opt_bcard; flags = EEikMenuItemSpecific;},
-		MENU_ITEM { command = ERclCmdSendEmail; txt = qtn_rcl_opt_email; flags = EEikMenuItemSpecific;},
-		MENU_ITEM { command = ERclCmdSendMeetingReq; txt = qtn_rcl_opt_mreq; flags = EEikMenuItemSpecific;},		
-		MENU_ITEM { command = ERclCmdSendAudioMsg; txt = qtn_rcl_opt_audio; flags = EEikMenuItemSpecific;}
+		MENU_ITEM { command = ERclCmdSendMsg; txt = qtn_rcl_opt_msg; flags = EEikMenuItemAction;},
+		MENU_ITEM { command = ERclCmdSendBusinessCard; txt = qtn_rcl_opt_bcard; flags = EEikMenuItemAction;},
+		MENU_ITEM { command = ERclCmdSendEmail; txt = qtn_rcl_opt_email; flags = EEikMenuItemAction;},
+		MENU_ITEM { command = ERclCmdSendMeetingReq; txt = qtn_rcl_opt_mreq; flags = EEikMenuItemAction;},		
+		MENU_ITEM { command = ERclCmdSendAudioMsg; txt = qtn_rcl_opt_audio; flags = EEikMenuItemAction;}
 	       	};
 	}
 
@@ -189,12 +198,12 @@ RESOURCE MENU_PANE r_rcl_result_info_dialog_menu_pane
 RESOURCE MENU_PANE r_rcl_result_info_dialog_context_menu_pane
 	{
 	items =
-	        {
-                MENU_ITEM { command = ERclCmdCopyDetail; txt = qtn_rcl_opt_copy_detail; }, 
-	        MENU_ITEM { command = ERclCmdVoiceCall; txt = qtn_rcl_opt_voice_call; },
-	        MENU_ITEM { command = ERclCmdVideoCall; txt = qtn_rcl_opt_video_call; },
-		MENU_ITEM { command = ERclCmdSendMsg; txt = qtn_rcl_opt_msg; },	
-		MENU_ITEM { command = ERclCmdSendEmail; txt = qtn_rcl_opt_email; }					
+        {
+        MENU_ITEM { command = ERclCmdVoiceCall; txt = qtn_rcl_stylus_popup_voice_call; },
+        MENU_ITEM { command = ERclCmdVideoCall; txt = qtn_rcl_stylus_popup_video_call; },
+		MENU_ITEM { command = ERclCmdSendMsg; txt = qtn_rcl_stylus_popup_msg; },	
+		MENU_ITEM { command = ERclCmdSendEmail; txt = qtn_rcl_stylus_popup_email; },
+		MENU_ITEM { command = ERclCmdCopyDetail; txt = qtn_rcl_opt_copy_detail; }			
 		};
 	}
 
@@ -257,7 +266,7 @@ RESOURCE MENU_BAR r_rcl_search_result_dialog_menu_bar
         {
 	titles = 
 	       { 
-	       MENU_TITLE { menu_pane = r_rcl_search_result_dialog_menu_pane; } 
+	       MENU_TITLE { menu_pane = r_rcl_search_result_dialog_menu_pane; }
 	       };
 	}
 

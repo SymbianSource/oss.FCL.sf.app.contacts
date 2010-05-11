@@ -57,6 +57,11 @@ NONSHARABLE_CLASS( CContactStoreInfo ): public CBase,
 
     public: // New functions
         
+        /**
+        * Set iGroupsFetched to false.
+        */
+        void ResetGroupsFetched();
+        
     public: // Functions from base classes
         
         /**

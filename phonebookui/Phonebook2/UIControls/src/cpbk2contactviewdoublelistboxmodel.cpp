@@ -39,6 +39,7 @@
 #include <MVPbkContactViewBase.h>
 #include <MVPbkViewContact.h>
 #include <MVPbkContactLink.h>
+#include <MVPbkContactViewBase.h>
 
 // CONSTANTS
 namespace {
@@ -64,7 +65,260 @@ const TInt KDefaultListFormatting =
 // rest 56 are reserved for icon data
 const TInt KMaxTxtLength = 100;
 
+const TInt KDataElementCacheSize = 20;
 }
+
+/**
+ * Cache for data elements, cache is made to avoid performance problems that 
+ * caused in cases when avkon implementation calls multiple times MdcaPoint function with same index
+ * Cached items must be deleted when there is any change in contact list.
+ */
+NONSHARABLE_CLASS( CDataElementCache ) : 
+        public CBase,
+        public MVPbkContactViewObserver,
+        public MPbk2FilteredViewStackObserver
+    {
+public:
+    static CDataElementCache* NewL(MPbk2FilteredViewStack& aView);
+    ~CDataElementCache();
+
+    void AppendL( CPbk2ContactViewDoubleListboxDataElement* aDataElement );
+    CPbk2ContactViewDoubleListboxDataElement* Element( TInt aListIndex );
+    
+private:    // From MVPbkContactViewObserver
+     void ContactViewReady(
+             MVPbkContactViewBase& aView );
+     void ContactViewUnavailable(
+             MVPbkContactViewBase& aView );
+     void ContactAddedToView(
+             MVPbkContactViewBase& aView,
+             TInt aIndex,
+             const MVPbkContactLink& aContactLink );
+     void ContactRemovedFromView(
+             MVPbkContactViewBase& aView,
+             TInt aIndex,
+             const MVPbkContactLink& aContactLink );
+     void ContactViewError(
+             MVPbkContactViewBase& aView,
+             TInt aError,
+             TBool aErrorNotified );
+
+private:    // From MPbk2FilteredViewStackObserver
+      void TopViewChangedL(
+              MVPbkContactViewBase& aOldView );
+      void TopViewUpdatedL();
+      void BaseViewChangedL();
+      void ViewStackError(
+              TInt aError );
+      void ContactAddedToBaseView( 
+              MVPbkContactViewBase& aBaseView,
+              TInt aIndex,
+              const MVPbkContactLink& aContactLink ); 
+     
+private:
+    inline CDataElementCache( MPbk2FilteredViewStack& aView );
+    inline void ConstructL();
+    inline void Reset();
+
+private:    
+    RPointerArray<CPbk2ContactViewDoubleListboxDataElement> iCache;
+    MPbk2FilteredViewStack& iView;
+    };
+
+// --------------------------------------------------------------------------
+// CDataElementCache::NewL
+// --------------------------------------------------------------------------
+//
+CDataElementCache* CDataElementCache::NewL( MPbk2FilteredViewStack& aView )
+    {
+    CDataElementCache* self = new (ELeave) CDataElementCache(aView);
+    CleanupStack::PushL( self );
+    self->ConstructL();
+    CleanupStack::Pop( self );
+    return self;
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::CDataElementCache
+// --------------------------------------------------------------------------
+//
+inline CDataElementCache::CDataElementCache( MPbk2FilteredViewStack& aView )
+: iCache( KDataElementCacheSize ), 
+  iView( aView )
+    {
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::ConstructL
+// --------------------------------------------------------------------------
+//
+inline void CDataElementCache::ConstructL()
+    {
+    iView.AddObserverL(*this);
+    iView.AddStackObserverL(*this);
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::~CDataElementCache
+// --------------------------------------------------------------------------
+//
+CDataElementCache::~CDataElementCache()
+    {
+    Reset();
+    iView.RemoveObserver(*this);
+    iView.RemoveStackObserver(*this);
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::AppendL
+// --------------------------------------------------------------------------
+//
+void CDataElementCache::AppendL( 
+        CPbk2ContactViewDoubleListboxDataElement* aDataElement )
+    {
+    iCache.InsertL( aDataElement, 0 );
+    const TInt cacheItemCount( iCache.Count() );
+    if( cacheItemCount > KDataElementCacheSize )
+        {
+        delete iCache[cacheItemCount - 1];
+        iCache.Remove(cacheItemCount - 1);
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::Reset
+// --------------------------------------------------------------------------
+//
+inline void CDataElementCache::Reset()
+    {
+    iCache.ResetAndDestroy();
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::Element
+// --------------------------------------------------------------------------
+//
+CPbk2ContactViewDoubleListboxDataElement* 
+CDataElementCache::Element( TInt aListIndex )
+    {
+    const TInt cacheItemCount( iCache.Count() );
+    for( TInt i = 0 ; i < cacheItemCount ; ++i )
+        {
+        CPbk2ContactViewDoubleListboxDataElement* p = iCache[i];
+        if( p->ListIndex() == aListIndex )
+            {
+            return p;
+            }
+        }
+    return NULL;
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::ContactViewReady
+// --------------------------------------------------------------------------
+//
+void CDataElementCache::ContactViewReady(
+        MVPbkContactViewBase& /*aView*/ )
+    {
+    Reset();
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::ContactViewUnavailable
+// --------------------------------------------------------------------------
+//
+void CDataElementCache::ContactViewUnavailable(
+        MVPbkContactViewBase& /*aView*/ )
+    {
+    Reset();
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::ContactAddedToView
+// --------------------------------------------------------------------------
+//
+void CDataElementCache::ContactAddedToView(
+        MVPbkContactViewBase& /*aView*/,
+        TInt /*aIndex*/,
+        const MVPbkContactLink& /*aContactLink*/ )
+    {
+    Reset();
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::ContactRemovedFromView
+// --------------------------------------------------------------------------
+//
+void CDataElementCache::ContactRemovedFromView(
+        MVPbkContactViewBase& /*aView*/,
+        TInt /*aIndex*/,
+        const MVPbkContactLink& /*aContactLink*/ )
+    {
+    Reset();
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::ContactViewError
+// --------------------------------------------------------------------------
+//
+void CDataElementCache::ContactViewError(
+        MVPbkContactViewBase& /*aView*/,
+        TInt /*aError*/,
+        TBool /*aErrorNotified*/ )
+    {
+    Reset();
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::TopViewChangedL
+// --------------------------------------------------------------------------
+//
+void CDataElementCache::TopViewChangedL(
+        MVPbkContactViewBase& /*aOldView*/ )
+    {
+    Reset();
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::TopViewUpdatedL
+// --------------------------------------------------------------------------
+//
+void CDataElementCache::TopViewUpdatedL()
+    {
+    Reset();
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::BaseViewChangedL
+// --------------------------------------------------------------------------
+//
+void CDataElementCache::BaseViewChangedL()
+    {
+    Reset();
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::ViewStackError
+// --------------------------------------------------------------------------
+//
+void CDataElementCache::ViewStackError(
+        TInt /*aError*/ )
+    {
+    Reset();
+    }
+
+// --------------------------------------------------------------------------
+// CDataElementCache::ContactAddedToBaseView
+// --------------------------------------------------------------------------
+//
+void CDataElementCache::ContactAddedToBaseView( 
+        MVPbkContactViewBase& /*aBaseView*/,
+        TInt /*aIndex*/,
+        const MVPbkContactLink& /*aContactLink*/ ) 
+    {
+    Reset();
+    }
+
 
 // --------------------------------------------------------------------------
 // CPbk2ContactViewDoubleListBoxModel::CPbk2ContactViewDoubleListBoxModel
@@ -72,9 +326,11 @@ const TInt KMaxTxtLength = 100;
 //
 CPbk2ContactViewDoubleListBoxModel::CPbk2ContactViewDoubleListBoxModel(
     CPbk2ContactViewListBoxModel::TParams& aParams,
-    CPbk2ThumbnailManager& aThumbManager ) :
+    CPbk2ThumbnailManager& aThumbManager,
+    MPbk2FilteredViewStack& aFilteredViewStack ) :
     CPbk2ContactViewListBoxModel( aParams ),
-    iThumbManager( aThumbManager )
+    iThumbManager( aThumbManager ),
+    iFilteredViewStack( aFilteredViewStack )
     {
     TAny* object = aParams.iUiExtension->ContactUiControlExtensionExtension
             ( TUid::Uid( KPbk2ContactUiControlExtensionExtensionUID ) );
@@ -88,6 +344,7 @@ CPbk2ContactViewDoubleListBoxModel::CPbk2ContactViewDoubleListBoxModel(
 //
 CPbk2ContactViewDoubleListBoxModel::~CPbk2ContactViewDoubleListBoxModel()
     {
+    delete iDataElementCache;
     }
 
 // --------------------------------------------------------------------------
@@ -96,15 +353,100 @@ CPbk2ContactViewDoubleListBoxModel::~CPbk2ContactViewDoubleListBoxModel()
 //
 CPbk2ContactViewDoubleListBoxModel* CPbk2ContactViewDoubleListBoxModel::NewL(
     CPbk2ContactViewListBoxModel::TParams& aParams,
-    CPbk2ThumbnailManager& aThumbManager )
+    CPbk2ThumbnailManager& aThumbManager,
+    MPbk2FilteredViewStack& aFilteredViewStack )
     {
     CPbk2ContactViewDoubleListBoxModel* self =
-        new ( ELeave ) CPbk2ContactViewDoubleListBoxModel( aParams, aThumbManager );
+        new ( ELeave ) CPbk2ContactViewDoubleListBoxModel( 
+                aParams, aThumbManager, aFilteredViewStack );
 
     CleanupStack::PushL(self);
     self->ConstructL( aParams.iStoreProperties, aParams.iUiExtension );
+    self->iDataElementCache = CDataElementCache::NewL( aFilteredViewStack );
     CleanupStack::Pop();
     return self;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ContactViewDoubleListBoxModel::FormatBufferL
+// --------------------------------------------------------------------------
+//
+void CPbk2ContactViewDoubleListBoxModel::FormatBufferL( const TInt aIndex ) const
+    {
+    PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
+        ("CPbk2ContactViewDoubleListBoxModel::FormatBufferL(0x%x,%d), begin"),
+        this);
+    CPbk2ContactViewDoubleListboxDataElement* element = 
+            iDataElementCache->Element( aIndex );
+    if( element )
+        {
+        FormatBufferForElementDataL(*element, aIndex);
+        }
+    else
+        {
+        const MVPbkViewContact& contact = iView->ContactAtL(aIndex);
+        FormatBufferForContactL(contact, aIndex );
+        }
+    
+    PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
+        ("CPbk2ContactViewDoubleListBoxModel::FormatBufferL(0x%x,%d), end"),
+        this);
+    }
+
+
+// --------------------------------------------------------------------------
+// CPbk2ContactViewDoubleListBoxModel::FormatBufferForElementDataL
+// --------------------------------------------------------------------------
+//
+void CPbk2ContactViewDoubleListBoxModel::FetchDataFromExtension(
+        CPbk2ContactViewDoubleListboxDataElement& aDataElement,
+        TInt aIndex ) const
+    {
+    // Get element data from extension
+    // 
+    if( iDoubleListExtensionPoint )
+        {
+        TRAPD( err, 
+            iDoubleListExtensionPoint->FormatDataL( 
+                    *(aDataElement.ContactLink()), aDataElement ) );
+        if( err )
+            {
+            // extension's errors are ignored.  
+            PBK2_DEBUG_PRINT( PBK2_DEBUG_STRING(
+            "CPbk2ContactViewDoubleListBoxModel::FormatBufferForElementDataL format error %d"),
+                err );
+            }
+        }
+
+    // Clip secondary text if it's a phone number 
+    if( MPbk2DoubleListboxDataElement::ETypePhoneNumber == 
+        aDataElement.TextType( MPbk2DoubleListboxDataElement::EStatusText ) && 
+        iClipListBoxText )
+        {
+        TPtr secondary( aDataElement.TextPtr( 
+            MPbk2DoubleListboxDataElement::EStatusText ) );
+        iClipListBoxText->ClipFromBeginning( 
+            secondary, aIndex, KSecondaryTextColumn );
+        }    
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ContactViewDoubleListBoxModel::FormatBufferForElementDataL
+// --------------------------------------------------------------------------
+//
+void CPbk2ContactViewDoubleListBoxModel::FormatBufferForElementDataL(
+    CPbk2ContactViewDoubleListboxDataElement& aDataElement, 
+    TInt aIndex ) const
+    {
+    FetchDataFromExtension(aDataElement, aIndex);
+
+    // start fill the new buffer for the avkon list
+    iBuffer.Zero();
+
+    AppendThumbnailL( aDataElement, aIndex );
+    
+    // Format line buffer based on element's content
+    FormatBufferFromElement( aDataElement );
     }
 
 // --------------------------------------------------------------------------
@@ -112,27 +454,17 @@ CPbk2ContactViewDoubleListBoxModel* CPbk2ContactViewDoubleListBoxModel::NewL(
 // --------------------------------------------------------------------------
 //
 void CPbk2ContactViewDoubleListBoxModel::FormatBufferForContactL(
-    const MVPbkViewContact& aViewContact, TInt aIndex ) const
+    const MVPbkViewContact& aViewContact, 
+    TInt aIndex ) const
     {
-    // Reset buffer
-    iBuffer.Zero();
-    
+    MVPbkContactLink* link = aViewContact.CreateLinkLC();
     CPbk2ContactViewDoubleListboxDataElement* element = 
-        CPbk2ContactViewDoubleListboxDataElement::NewLC();
+        CPbk2ContactViewDoubleListboxDataElement::NewL( link, aIndex );
+    CleanupStack::Pop();    // link
+    CleanupStack::PushL( element );
 
-    // Fill data element cells
-    
-    // (1) Add thumbnail icon
-    //
-    TInt index = iThumbManager.GetPbkIconIndexL( aIndex, aViewContact );
-    if( index != KErrNotFound )
-        {
-        iBuffer.AppendNum( index );
-        }
-    iBuffer.Append( KListColumnSeparator );
-
-    // (2) Add contact name
-    //
+    // get data for element
+    // get user name
     HBufC* name = NULL;
     if( FeatureManager::FeatureSupported( KFeatureIdFfContactsCompanyNames ))
         {
@@ -164,12 +496,8 @@ void CPbk2ContactViewDoubleListBoxModel::FormatBufferForContactL(
         MPbk2DoubleListboxDataElement::ETypeGenericText );
     CleanupStack::Pop( name );
 
-    // (3) Secondary text 
-    // 
-    // => Empty by default
-  
-    // (4) Trailing icon
-    //
+
+    // get icons
     RArray<TPbk2IconId> ids;
     CleanupClosePushL( ids );
     iContactIcons->GetIconIdsForContactL( aViewContact, ids );
@@ -184,33 +512,18 @@ void CPbk2ContactViewDoubleListBoxModel::FormatBufferForContactL(
     CleanupStack::PopAndDestroy( &ids );
 
     // Get element data from extension
-    if( iDoubleListExtensionPoint )
-        {
-        TRAPD( err, 
-            iDoubleListExtensionPoint->FormatDataL( aViewContact, *element ) );
-        if( err )
-            {
-            // extension's errors are ignored.  
-            PBK2_DEBUG_PRINT( PBK2_DEBUG_STRING(
-            "CPbk2ContactViewDoubleListBoxModel::FormatBufferForContactL format error %d"),
-                err );
-            }
-        }
+    FetchDataFromExtension( *element, aIndex );
 
-    // Clip secondary text if it's a phone number 
-    if( MPbk2DoubleListboxDataElement::ETypePhoneNumber == 
-        element->TextType( MPbk2DoubleListboxDataElement::EStatusText ) && iClipListBoxText )
-        {
-        TPtr secondary( element->TextPtr( 
-            MPbk2DoubleListboxDataElement::EStatusText ) );
-        iClipListBoxText->ClipFromBeginning( 
-            secondary, aIndex, KSecondaryTextColumn );
-        }
+    // start format data for the avkon list
+    iBuffer.Zero();
+    
+    AppendThumbnailL( *element, aIndex );
     
     // Format line buffer based on element's content
     FormatBufferFromElement( *element );
     
-    CleanupStack::PopAndDestroy( element ); 
+    iDataElementCache->AppendL( element );
+    CleanupStack::Pop( element ); 
     }
 
 // --------------------------------------------------------------------------
@@ -225,9 +538,6 @@ void CPbk2ContactViewDoubleListBoxModel::FormatBufferFromElement(
     //   [thumbnail icon] \t [contact name] \t [secondary text] \t
     //   [trailing icon]
 
-    // (1) Thumbnail icon
-    // No element support needed for thumbnail at the moment 
-
     // (2) Contact name
     AppendName( aElement.TextPtr( 
             MPbk2DoubleListboxDataElement::EName ).Left( KMaxTxtLength ) );
@@ -240,6 +550,25 @@ void CPbk2ContactViewDoubleListBoxModel::FormatBufferFromElement(
     // (4) Trailing icon
     AppendIconIndexIfFound( 
         aElement.IconId( MPbk2DoubleListboxDataElement::EMainIcon ) );
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ContactViewDoubleListBoxModel::AppendThumbnailL
+// --------------------------------------------------------------------------
+//
+void CPbk2ContactViewDoubleListBoxModel::AppendThumbnailL( 
+        CPbk2ContactViewDoubleListboxDataElement& aDataElement, 
+        TInt aIndex ) const
+    {
+    // (1) Add thumbnail icon
+    //
+    TInt index = iThumbManager.GetPbkIconIndexL( 
+            aIndex, *(aDataElement.ContactLink()) );
+    if( index != KErrNotFound )
+        {
+        iBuffer.AppendNum( index );
+        }
+    iBuffer.Append( KListColumnSeparator );
     }
 
 // --------------------------------------------------------------------------

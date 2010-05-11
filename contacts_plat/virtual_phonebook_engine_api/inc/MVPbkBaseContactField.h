@@ -22,7 +22,7 @@
 // INCLUDES
 #include <e32cmn.h>
 #include <e32std.h>
-#include <mvpbkobjecthierarchy.h>
+#include <MVPbkObjectHierarchy.h>
 
 // FORWARD DECLARATIONS
 class MVPbkBaseContact;

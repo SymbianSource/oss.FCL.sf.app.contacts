@@ -20,8 +20,7 @@
 #define MPBK2CONTACTUICONTROLDOUBLELISTBOXEXTENSION_H
 
 //  FORWARD DECLARATIONS
-class MVPbkStoreContact;
-class MVPbkViewContact;
+class MVPbkContactLink;
 class MPbk2CommandItemUpdater;
 class TPbk2IconId;
 
@@ -90,7 +89,7 @@ class MPbk2ContactUiControlDoubleListboxExtension
          * 
          */
         virtual void FormatDataL(
-                const MVPbkViewContact& aViewContact, 
+                const MVPbkContactLink& aContactLink, 
                 MPbk2DoubleListboxDataElement& aDataElement ) =0;
         
         /**

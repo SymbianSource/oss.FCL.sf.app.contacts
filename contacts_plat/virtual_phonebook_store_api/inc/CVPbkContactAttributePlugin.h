@@ -22,7 +22,7 @@
 
 // INCLUDES FILES
 #include <ecom/ecom.h>
-#include <mvpbkcontactattributemanager.h>
+#include <MVPbkContactAttributeManager.h>
 
 // FORWARD DECLARATIONS
 class CVPbkContactManager;

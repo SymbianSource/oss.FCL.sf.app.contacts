@@ -21,8 +21,8 @@
 #define CVPBKCONTACTVIEWSORTPOLICY_H
 
 #include <ecom/ecom.h>
-#include <vpbkpolicyuid.h>
-#include <mvpbkcontactviewsortpolicy.h>
+#include <VPbkPolicyUid.h>
+#include <MVPbkContactViewSortPolicy.h>
 
 class CVPbkContactManager;
 

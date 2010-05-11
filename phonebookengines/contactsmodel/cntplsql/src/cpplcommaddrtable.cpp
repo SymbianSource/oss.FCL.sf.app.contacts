@@ -817,15 +817,22 @@ CContactIdArray* CPplCommAddrTable::BestMatchingPhoneNumberL(const TDesC& aNumbe
             User::LeaveIfError(TLex(extValString).Val(storedUpperDigits));
             TInt32 stored = storedUpperDigits;
 
-            while ( (number != 0) && (stored != 0) &&
-                    (number % 10 == 0 || stored % 10 == 0) )
+            TBool nonZeroInStoredFound = EFalse;
+            TBool nonZeroInNumberFound = EFalse;
+            while ((number != 0) && (stored != 0))
                 {
+                nonZeroInNumberFound |= (number % 10 != 0);
+                nonZeroInStoredFound |= (stored % 10 != 0);
+                if (nonZeroInStoredFound && nonZeroInNumberFound)
+                    {
+                    break;
+                    }
                 number /= 10;
                 stored /= 10;
                 }
 
-            if ( (phoneDigits.iUpperDigits == 0) || (storedUpperDigits == 0) ||
-                 (number == stored) )
+            if ((phoneDigits.iUpperDigits == 0) || (storedUpperDigits == 0) ||
+                 (number == stored))
                 {
                 phoneMatchArray->AddL(stmnt.ColumnInt(KContactIdIdx));
                 }

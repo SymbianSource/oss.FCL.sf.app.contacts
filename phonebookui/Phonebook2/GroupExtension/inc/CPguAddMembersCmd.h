@@ -211,6 +211,8 @@ class CPguAddMembersCmd : public CActive,
         MVPbkContactLinkArray* iContactsInGroup;
         /// Own: State of the command
         TState iState;
+        /// Own: count of contacts already added to group 
+        TInt iAddedContactsCount;
     };
 
 #endif // CPGUADDMEMBERSCMD_H

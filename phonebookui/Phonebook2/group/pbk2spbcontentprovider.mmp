@@ -66,5 +66,5 @@ LIBRARY         pbk2presentation.lib
 LIBRARY         pbk2commonui.lib
 LIBRARY         presencecacheclient2.lib
 LIBRARY         presencecacheutils.lib
-
+LIBRARY         efsrv.lib 
 // End of File

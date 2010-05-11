@@ -22,8 +22,8 @@
 
 // INCLUDES
 #include <e32std.h>
-#include <vpbkfieldtype.hrh>
-#include <tvpbkfieldtypeparameters.h>
+#include <VPbkFieldType.hrh>
+#include <TVPbkFieldTypeParameters.h>
 
 
 // FORWARD DECLARATIONS

@@ -22,10 +22,10 @@
 
 // INCLUDES
 #include <e32base.h>
-#include <mvpbkcontactfieldselector.h>
-#include <mvpbkfieldtypeselector.h>
-#include <vpbkfieldtype.hrh>
-#include <tvpbkfieldtypeparameters.h>
+#include <MVPbkContactFieldSelector.h>
+#include <MVPbkFieldTypeSelector.h>
+#include <VPbkFieldType.hrh>
+#include <TVPbkFieldTypeParameters.h>
 
 // FORWARD DECLARATIONS
 class TVPbkFieldVersitProperty;

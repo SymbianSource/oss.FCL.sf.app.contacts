@@ -24,8 +24,8 @@
 
 #include <e32std.h>
 #include <ecom/ecom.h>
-#include <vpbkpolicyuid.h>
-#include <mvpbkcontactnameconstructionpolicy.h>
+#include <VPbkPolicyUid.h>
+#include <MVPbkContactNameConstructionPolicy.h>
 
 // FORWARD DECLARATIONS
 class MVPbkFieldTypeList;

@@ -20,8 +20,8 @@
 #ifndef TVPBKFIELDTYPEMAPPING_H
 #define TVPBKFIELDTYPEMAPPING_H
 
-#include <vpbkfieldtype.hrh>
-#include <tvpbkfieldversitproperty.h>
+#include <VPbkFieldType.hrh>
+#include <TVPbkFieldVersitProperty.h>
 
 class MVPbkFieldType;
 class MVPbkFieldTypeList;

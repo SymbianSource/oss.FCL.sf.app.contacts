@@ -83,6 +83,7 @@ CSpdiaGridDlg::CSpdiaGridDlg(TInt& aDial, const CSpdiaControl& aControl): iDial(
     {
     iControl = CONST_CAST(CSpdiaControl*, &aControl);
     iCbaID = R_AVKON_SOFTKEYS_BACK;
+    iButton1DownIndex = 0;
     }
 
 // ----------------------------------------------------
@@ -369,13 +370,11 @@ void CSpdiaGridDlg::HandleResourceChange( TInt aType )
 
         if ( Layout_Meta_Data::IsLandscapeOrientation() )
             {
-            StatusPane->MakeVisible( ETrue );
             AknLayoutUtils::LayoutMetricsRect( AknLayoutUtils::EMainPane,mainPaneRect );
             StatusPane->DrawNow();
             }
         else
             {
-            StatusPane->MakeVisible( EFalse );
             AknLayoutUtils::LayoutMetricsRect( AknLayoutUtils::EMainPane, mainPaneRect );
             AknLayoutUtils::LayoutMetricsRect( AknLayoutUtils::EStatusPane, statusPaneRect );
             mainPaneRect.iTl = statusPaneRect.iTl;
@@ -395,14 +394,27 @@ void CSpdiaGridDlg::HandleResourceChange( TInt aType )
     }
 
 // ---------------------------------------------------------
-// CSpdiaGridDlg::HandleDialogPageEventL()
-// Handles the events on the dialog page (for Touch)
+// CSpdiaGridDlg::HandlePointerEventL()
+// Handle the pointer events on the dialog page, instead of HandleDialogPageEventL.
+// Because HandleDialogPageEventL() can not handle the different pointer events.
+// Only when the index button down is the same with the index button up, assign is right action.
 // ---------------------------------------------------------
-//	
-void CSpdiaGridDlg::HandleDialogPageEventL(TInt /*aEventId*/)
-    {
-    // When clicking on grid, the function will simulate the event 
-    // just like clicking on LSK
-    TryExitL( EAknSoftkeyOk );
-    }
+//
+void CSpdiaGridDlg::HandlePointerEventL( const TPointerEvent& aPointerEvent )
+	{
+	iGrid->HandlePointerEventL( aPointerEvent );
+	if ( aPointerEvent.iType == TPointerEvent::EButton1Down )
+        {
+        iGrid->View()->XYPosToItemIndex( aPointerEvent.iPosition, iButton1DownIndex );
+	    }
+	else if ( aPointerEvent.iType == TPointerEvent::EButton1Up )
+		{
+		TInt button1UpIndex = -1;
+		iGrid->View()->XYPosToItemIndex( aPointerEvent.iPosition, button1UpIndex );
+		if( iButton1DownIndex == button1UpIndex )
+			{
+			TryExitL( EAknSoftkeyOk );
+			}
+		}
+	}
 // End of File

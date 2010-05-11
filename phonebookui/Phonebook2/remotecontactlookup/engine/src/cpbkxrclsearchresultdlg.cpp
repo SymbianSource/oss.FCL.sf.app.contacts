@@ -383,9 +383,18 @@ void CPbkxRclSearchResultDlg::DynInitMenuPaneL(
     CEikMenuPane* aMenuPane )
     {
     FUNC_LOG;
+
     if ( aResourceId == R_RCL_SEARCH_RESULT_DIALOG_MENU_PANE )
         {
-
+        if ( !iFocusableContactPointed ) // dim stylus popup menu
+            {
+            aMenuPane->SetItemDimmed( ERclCmdVoiceCall,ETrue );
+            aMenuPane->SetItemDimmed( ERclCmdVideoCall, ETrue );
+            aMenuPane->SetItemDimmed( ERclCmdSendMsg, ETrue );
+            aMenuPane->SetItemDimmed( ERclCmdSendEmail, ETrue );
+            aMenuPane->SetItemDimmed( ERclCmdSendBusinessCard, ETrue );
+            }
+        
         if ( iContactItems.Count() == 0 )
             {
             // when there are 0 results, only new search option is available
@@ -399,20 +408,34 @@ void CPbkxRclSearchResultDlg::DynInitMenuPaneL(
             {
             if ( !iContactSelectorEnabled )
                 {
-                
+                // dim Options Menu main level items
                 aMenuPane->SetItemDimmed( ERclCmdAddAsRecipient, ETrue );
+                // send menu is always visible, since business card can always be sent
+                aMenuPane->SetItemDimmed( ERclCmdCall, !CallActionsAvailable() );
                 
-                aMenuPane->SetItemDimmed(
-                    ERclCmdCall,
-                    !CallActionsAvailable() );
-                
-                // send menu is always visible, since business card can 
-                // always be sent
+                if ( iFocusableContactPointed ) // dim stylus popup menu items
+                    {
+                    // Call menus
+                    aMenuPane->SetItemDimmed( ERclCmdVoiceCall, !iContactActionService.IsActionEnabled( KFscAtComCallGSM ) );
+                    aMenuPane->SetItemDimmed( ERclCmdVideoCall, !iContactActionService.IsActionEnabled( KFscAtComCallVideo ) );
+                    // Send menus
+                    aMenuPane->SetItemDimmed( ERclCmdSendMsg, !iContactActionService.IsActionEnabled( KFscAtComSendMsg ) );
+                    aMenuPane->SetItemDimmed( ERclCmdSendEmail, !iContactActionService.IsActionEnabled( KFscAtComSendEmail ) );
+                    aMenuPane->SetItemDimmed( ERclCmdSendBusinessCard, !iContactActionService.IsActionEnabled( KFscAtSendBusinessCard ) );
+                    }
                 }
             else
                 {
+                // dim Options Menu main level items
                 aMenuPane->SetItemDimmed( ERclCmdCall, ETrue );
                 aMenuPane->SetItemDimmed( ERclCmdSend, ETrue );
+                
+                // dim stylus popup menu items
+                aMenuPane->SetItemDimmed( ERclCmdVoiceCall,ETrue );
+                aMenuPane->SetItemDimmed( ERclCmdVideoCall, ETrue );
+                aMenuPane->SetItemDimmed( ERclCmdSendMsg, ETrue );
+                aMenuPane->SetItemDimmed( ERclCmdSendEmail, ETrue );
+                aMenuPane->SetItemDimmed( ERclCmdSendBusinessCard, ETrue );
                 }
             
             aMenuPane->SetItemDimmed(
@@ -422,7 +445,6 @@ void CPbkxRclSearchResultDlg::DynInitMenuPaneL(
         }
     else if ( aResourceId == R_RCL_CALL_MENU_PANE )
         {
-        
         aMenuPane->SetItemDimmed( 
             ERclCmdVoiceCall,
             !iContactActionService.IsActionEnabled( KFscAtComCallGSM ) );
@@ -437,7 +459,7 @@ void CPbkxRclSearchResultDlg::DynInitMenuPaneL(
         
         }
     else if ( aResourceId == R_RCL_SEND_MENU_PANE )
-        {       
+        {  
         aMenuPane->SetItemDimmed( 
             ERclCmdSendMsg, 
             !iContactActionService.IsActionEnabled( KFscAtComSendMsg ) );
@@ -459,6 +481,7 @@ void CPbkxRclSearchResultDlg::DynInitMenuPaneL(
             !iContactActionService.IsActionEnabled( KFscAtSendBusinessCard ) );
         
         }
+    iFocusableContactPointed = EFalse;
     }
 
 // ---------------------------------------------------------------------------
@@ -1172,11 +1195,11 @@ void CPbkxRclSearchResultDlg::InfoDlgVisible( TBool aVisible )
                  case TPointerEvent::EButton1Down:
                      {
                      TInt focusIndex;
-                     TBool focusableContactPointed =
+                     iFocusableContactPointed =
                          listBox->View()->XYPosToItemIndex(
                               aPointerEvent.iPosition, focusIndex );
                      
-                     if ( focusableContactPointed && focusIndex > 0)
+                     if ( iFocusableContactPointed )
                          {
                          TInt oldIndex = iSelectedItemIndex;                
                          iSelectedItemIndex = focusIndex;
@@ -1193,6 +1216,11 @@ void CPbkxRclSearchResultDlg::InfoDlgVisible( TBool aVisible )
                      break;
                      }
                  case TPointerEvent::EButton1Up:
+                     {
+                     listBox->HandlePointerEventL( aPointerEvent );
+                     break;
+                     }
+                 default:
                      {
                      listBox->HandlePointerEventL( aPointerEvent );
                      break;

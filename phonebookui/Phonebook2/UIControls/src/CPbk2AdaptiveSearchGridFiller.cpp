@@ -22,13 +22,17 @@
 #include "MVPbkContactViewBase.h"
 #include "MPbk2ContactNameFormatter.h"
 
+#include <MPbk2ContactNameFormatter2.h>
 #include <FindUtil.h>
 #include <badesca.h>
+#include <featmgr.h>
 
 const TInt KMaxAdaptiveGridCacheCount = 10;
 const TInt KAdaptiveSearchKeyMapGranularity = 100;
 const TInt KAdaptiveSearchRefineStep = 10;
-const TInt KContactFormattingFlags = MPbk2ContactNameFormatter::EPreserveLeadingSpaces | MPbk2ContactNameFormatter::EReplaceNonGraphicChars;
+const TInt KContactFormattingFlags = MPbk2ContactNameFormatter::EPreserveLeadingSpaces |
+            MPbk2ContactNameFormatter::EReplaceNonGraphicChars |
+            MPbk2ContactNameFormatter::EDisableCompanyNameSeparator;
 
 
 NONSHARABLE_CLASS(CPbk2AdaptiveGrid) : public CBase
@@ -181,20 +185,42 @@ void CPbk2AdaptiveSearchGridFiller::RunL()
 		{
 		const MVPbkViewContact& contact = iView->ContactAtL( iCounter );
 		const TInt titleLength = iNameFormatter.MaxTitleLength( contact.Fields(), KContactFormattingFlags );
-		HBufC* title = HBufC::NewLC( titleLength );
-		TPtr ptrTitle = title->Des();
-		iNameFormatter.GetContactTitle( contact.Fields(), ptrTitle, KContactFormattingFlags );
-		BuildGridL( ptrTitle, *iSearchString, iKeyMap );
+		HBufC* title = NULL;
+		
+		if( FeatureManager::FeatureSupported( KFeatureIdFfContactsCompanyNames ) )
+            {
+            MPbk2ContactNameFormatter2* nameformatterExtension =
+                    reinterpret_cast<MPbk2ContactNameFormatter2*>( iNameFormatter.
+                    ContactNameFormatterExtension( MPbk2ContactNameFormatterExtension2Uid ) );
+            if ( nameformatterExtension && titleLength )
+                {
+                title = nameformatterExtension->GetContactTitleWithCompanyNameL( contact.Fields(),
+                    KContactFormattingFlags );
+                
+                }
+            }
+        else if ( titleLength )
+            {
+            title = iNameFormatter.GetContactTitleL( contact.Fields(), KContactFormattingFlags );
+            }
+		
+		if ( !title )
+		    {
+		    title = HBufC::NewL( titleLength );
+		    }
+
+        CleanupStack::PushL( title );
+		BuildGridL( *title, *iSearchString, iKeyMap );
 		
 		// check number of spaces in the contact title
-		TInt numberOfSpaces = NumberOfSpacesInString( ptrTitle );
+		TInt numberOfSpaces = NumberOfSpacesInString( *title );
 		if ( numberOfSpaces > maxSpacesNumber )
 		    {
 		    maxSpacesNumber = numberOfSpaces;
 		    }
 		// Check if the contact's title include drgraphs,
 		// if it is, add it to array to save.
-		if ( IsDigraphContactsTitleL( ptrTitle ) )
+		if ( IsDigraphContactsTitleL( *title ) )
 			{			
 			iDigraphContactsTitleArray.AppendL( title );
 			CleanupStack::Pop(); //title

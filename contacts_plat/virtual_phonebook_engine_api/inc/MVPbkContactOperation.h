@@ -20,7 +20,7 @@
 #define MVPBKCONTACTOPERATION_H
 
 // INCLUDES
-#include "mvpbkcontactoperationbase.h"
+#include "MVPbkContactOperationBase.h"
 
 // CLASS DECLARATIONS
 

@@ -90,6 +90,7 @@ void TPbkAddItemManager::AddFieldsToContactL(
         const TPbkAddItemWrapper& aItemWrapper,
         RArray<TInt>& aAddedItemsControlIds)
     {
+    CleanupClosePushL( aAddedItemsControlIds );
     aAddedItemsControlIds.Reset();
 
     for (TInt i = 0; i < aItemWrapper.FieldInfoCount(); ++i)
@@ -102,6 +103,7 @@ void TPbkAddItemManager::AddFieldsToContactL(
             User::LeaveIfError(aAddedItemsControlIds.Append(field.ControlId()));
 			}
         }
+    CleanupStack::Pop();
     }
 
 /**
@@ -113,6 +115,7 @@ void TPbkAddItemManager::CreateAddItemArrayL(
         const CPbkFieldsInfo& aFieldsInfo,
         RArray<TPbkAddItemWrapper>& aAddItems) const
     {
+    CleanupClosePushL( aAddItems );
     aAddItems.Reset();
     const TInt fieldInfoCount = aFieldsInfo.Count();
     
@@ -161,6 +164,7 @@ void TPbkAddItemManager::CreateAddItemArrayL(
             }
         }
     CleanupStack::PopAndDestroy(); // addedGroups
+    CleanupStack::Pop();
     }
 
 // End of File

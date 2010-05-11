@@ -187,6 +187,31 @@
 // r:5.2
 #define qtn_rcl_opt_audio "Audio message"
 
+// d:Header Stylus Popup and Context Specific menu for Voice call command.
+// l:list_single_pane_t1_cp2
+// r:5.2
+#define qtn_rcl_stylus_popup_voice_call "Voice call"
+
+// d:Header Stylus Popup and Context Specific menu for Video call command.
+// l:list_single_pane_t1_cp2
+// r:5.2
+#define qtn_rcl_stylus_popup_video_call "Video call"
+
+// d:Header Stylus Popup and Context Specific menu for Send message command.
+// l:list_single_pane_t1_cp2
+// r:5.2
+#define qtn_rcl_stylus_popup_msg "Send message"
+
+// d:Header Stylus Popup and Context Specific menu for Send email command.
+// l:list_single_pane_t1_cp2
+// r:5.2
+#define qtn_rcl_stylus_popup_email "Send email"
+
+// d:Header Stylus Popup and Context Specific menu for Send business card command.
+// l:list_single_pane_t1_cp2
+// r:5.2
+#define qtn_rcl_stylus_popup_bcard "Send business card"
+
 // d:Softkey text.
 // l:control_pane_t1/opt7
 // r:5.2
@@ -352,7 +377,7 @@
 
 // d:Wait note is displayed when retriving information for saving contact
 // d:to the database takes longer than 1 sec.
-// l:popup_note_window/opt2
+// l:popup_note_wait_window
 // r:5.2
 //
 #define qtn_rcl_saving_wait_note "Saving contact"

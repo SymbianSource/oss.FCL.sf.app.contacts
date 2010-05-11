@@ -174,13 +174,31 @@ CCoeControl* CCCAppCommLauncherHeaderControl::ComponentControl(TInt aIndex)  con
 //
 void CCCAppCommLauncherHeaderControl::SizeChanged()
     {    
-    // No variation anymore in layout for portrait/landscape/statusbutton/
-    // no statusbutton (iStatusButtonVisibility) combinations (options 0,1,2). 
-    // Always use option 0.
-    //const TInt isLandscape = Layout_Meta_Data::IsLandscapeOrientation() ? 1 : 0;
+    const TInt isLandscape = Layout_Meta_Data::IsLandscapeOrientation() ? 1 : 0;
     const TRect rect(Rect());
-    TInt option(0);    
     
+    /**
+     * Option0 (w button, lsc)
+     * Option2 (w/o button, lsc)
+     * Option0 (w button, prt)
+     * Option1 (w/o button, prt)
+     */
+   
+    // (w/o button)
+    TInt option( isLandscape ? 2 : 1 );
+    if( iStatusButtonVisibility )
+        {
+        // (w button)
+        if( isLandscape )
+            {
+            option = 0;
+            }
+        else
+            {
+            option = 0;
+            }
+        }    
+   
     FavoriteIconSizeChanged();
     
     AknLayoutUtils::LayoutImage(
@@ -397,7 +415,7 @@ void CCCAppCommLauncherHeaderControl::ClearL()
 //
 void CCCAppCommLauncherHeaderControl::SetContactStoreL(TCmsContactStore aContactStore)
     {
-    if (!iBitmap && !iMask)
+    if (!iBitmap && !iMask && !iHasContactImage )
         {
         switch (aContactStore)
             {
@@ -698,13 +716,24 @@ void CCCAppCommLauncherHeaderControl::DoChangeImageCmdL()
      {
      //Set the size for the Favorite Icon
      //This code must be in Sync with SizeChanged() code
-
-     // No variation anymore in layout for portrait/landscape/statusbutton/
-     // no statusbutton (iStatusButtonVisibility) combinations (options 0,1,2). 
-     // Always use option 0.
-     //const TInt isLandscape = Layout_Meta_Data::IsLandscapeOrientation() ? 1 : 0;
+     const TInt isLandscape = Layout_Meta_Data::IsLandscapeOrientation() ? 1 : 0;
      const TRect rect(Rect());
-     TInt option( 0 );
+     
+     // (w/o button)
+     TInt option( isLandscape ? 2 : 1 );
+     if( iStatusButtonVisibility )
+         {
+         // (w button)
+         if( isLandscape )
+             {
+             option = 0;
+             }
+         else
+             {
+             option = 0;
+             }
+         }    
+    
      AknLayoutUtils::LayoutImage(
              iFavContactIcon, rect, AknLayoutScalable_Apps::phob2_cc_data_pane_g2(option));
              

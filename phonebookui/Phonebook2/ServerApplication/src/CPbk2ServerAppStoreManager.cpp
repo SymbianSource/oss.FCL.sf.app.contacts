@@ -48,9 +48,6 @@
 // Debugging headers
 #include <Pbk2Debug.h>
 
-#include <featmgr.h>
-
-
 /// Unnamed namespace for local definitions
 namespace {
 
@@ -71,50 +68,6 @@ void CleanupResetAndDestroy( TAny* aObj )
 
 } /// namespace
 
-/**
- * Helper class to filter mycard from phonebooks views
- */
-class CPbk2MyCardFilter : public CBase, 
-                          public MVPbkContactSelector
-    {
-public:
-    CPbk2MyCardFilter();
-    ~CPbk2MyCardFilter();
-protected:  // From MVPbkContactSelector
-    TBool IsContactIncluded(
-                const MVPbkBaseContact& aContact );
-    };
-
-CPbk2MyCardFilter::CPbk2MyCardFilter()
-    {
-    }
-
-CPbk2MyCardFilter::~CPbk2MyCardFilter()
-    {
-    }
-
-TBool CPbk2MyCardFilter::IsContactIncluded(
-                const MVPbkBaseContact& aContact )
-    {
-    TBool isContactIncluded( ETrue );
-    // this is temporary solution to hide own contact from phonebook contacts list,
-    // TODO remove this code when we can hide own contact with contact model
-
-    MVPbkBaseContact& contact = const_cast<MVPbkBaseContact&>( aContact );
-    TAny* extension = contact.BaseContactExtension( 
-                KVPbkBaseContactExtension2Uid );
-
-    if( extension )
-        {
-        MVPbkBaseContact2* baseContactExtension =
-                static_cast<MVPbkBaseContact2*>( extension );
-        TInt error( KErrNone );
-        isContactIncluded =
-                ( !baseContactExtension->IsOwnContact( error ) );
-        }
-    
-    return isContactIncluded;
-    }
 
 // --------------------------------------------------------------------------
 // CPbk2ServerAppStoreManager::CPbk2ServerAppStoreManager
@@ -140,7 +93,6 @@ CPbk2ServerAppStoreManager::~CPbk2ServerAppStoreManager()
     delete iSortOrderAcquirer;
     delete iMonitor;
     delete iFetchView;
-    delete iMyCardFilter;
     }
 
 // --------------------------------------------------------------------------
@@ -220,22 +172,11 @@ MVPbkContactViewBase* CPbk2ServerAppStoreManager::BuildFetchViewL
     CPbk2ContactViewBuilder* viewBuilder = CPbk2ContactViewBuilder::NewLC
         ( iContactManager, aStoreProperties );
 
-    if( !iMyCardFilter )
-        {
-        FeatureManager::InitializeLibL();
-        if( FeatureManager::FeatureSupported( KFeatureIdffContactsMycard ) )
-            {
-            iMyCardFilter = new (ELeave) CPbk2MyCardFilter();
-            }
-        FeatureManager::UnInitializeLib();    
-        }
-
-    
     if ( aViewType == EVPbkContactsView )
         {
         result = viewBuilder->CreateContactViewForStoresLC
             ( aStoreUris, *this, aSortOrderManager.SortOrder(),
-              aViewFilter, aFlags, iMyCardFilter );
+              aViewFilter, aFlags );
         CleanupStack::Pop(); // result
         }
     else if ( aViewType == EVPbkGroupsView )

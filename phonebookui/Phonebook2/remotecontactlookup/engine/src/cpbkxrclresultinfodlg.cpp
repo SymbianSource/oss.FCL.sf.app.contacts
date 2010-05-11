@@ -837,6 +837,10 @@ TPbkContactItemField& CPbkxRclResultInfoDlg::CurrentField() const
                      iVisibleFocusOnList = EFalse; 
                      listBox->HandlePointerEventL( aPointerEvent ); 
                      break;
+                     
+                 default:
+                     listBox->HandlePointerEventL( aPointerEvent );
+                     break;
                  }
              }
          }     

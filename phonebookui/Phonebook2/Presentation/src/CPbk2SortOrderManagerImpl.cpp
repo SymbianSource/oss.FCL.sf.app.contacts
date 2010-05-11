@@ -171,6 +171,8 @@ CPbk2SortOrderManagerImpl* CPbk2SortOrderManagerImpl::NewL(
 //
 inline void CPbk2SortOrderManagerImpl::ConstructL( RFs* aFs )
     {
+    FeatureManager::InitializeLibL();
+    iFeatureManagerInitilized = ETrue;
     iSortOrderSettings = CRepository::NewL(TUid::Uid(KCRUidPhonebook));
 
     // Open resource file for reading language specific default values
@@ -230,8 +232,6 @@ inline void CPbk2SortOrderManagerImpl::ConstructL( RFs* aFs )
         ( *iSortOrderSettings, *this );
     iSortOrderMonitor->ActivateL();
     iSeparatorMonitor->ActivateL();
-    FeatureManager::InitializeLibL();
-    iFeatureManagerInitilized = ETrue;
     }
 
 // --------------------------------------------------------------------------

@@ -23,7 +23,7 @@
 // INCLUDES
 #include <e32cmn.h>
 #include <e32std.h>
-#include <cvpbkcontactlinkarray.h>
+#include <CVPbkContactLinkArray.h>
 
 // FORWARD DECLARATIONS
 class TVPbkContactStoreUriPtr;

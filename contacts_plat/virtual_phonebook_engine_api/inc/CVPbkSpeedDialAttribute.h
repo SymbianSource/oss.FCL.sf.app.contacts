@@ -21,9 +21,9 @@
 
 // INCLUDE FILES
 #include <e32base.h>
-#include <mvpbkcontactattribute.h>
-#include <mvpbkcontactattributemanager.h>
-#include <vpbkpublicuid.h>
+#include <MVPbkContactAttribute.h>
+#include <MVPbkContactAttributeManager.h>
+#include <VPbkPublicUid.h>
 
 // FORWARD DECLARATIONS
 

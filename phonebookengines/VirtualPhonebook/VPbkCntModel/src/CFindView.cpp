@@ -130,6 +130,7 @@ void CFindView::SetAlwaysIncludedContactsL(
 void CFindView::MatchL(
         RPointerArray<CCntModelViewContact>& aMatchedContacts )
     {
+    CleanupClosePushL( aMatchedContacts );
     iContactsModelMatchContacts.ResetAndDestroy();
 
     VPBK_PROFILE_START(VPbkProfile::ECntModelFind);
@@ -163,6 +164,16 @@ void CFindView::MatchL(
         }
     else
         {
+        // Sort the matched contacts again with the CCompareView::CompareFieldsL
+        // compare function. Mark sure the result of binary search is correct in
+        // function FindFromMatchArray().
+        // See defect ou1cimx1#333760 
+        // Title: "Adding contacts (add recipent) issue while creating new message"
+        // Root cause: When contact's first or last name contain blank spaces, 
+        // the comparison result may be different between CCompareView::CompareFieldsL
+        // and CntSortPlugin. e.g. "AB" and "A khan"
+        HeapSortL( iContactsModelMatchContacts );
+		
         // Do it slowly by looping all the parent view contacts.
         const TInt contactCount = iParentView.ContactCountL();
         for ( TInt i = 0; i < contactCount; ++i )
@@ -176,6 +187,7 @@ void CFindView::MatchL(
         }
 
     iContactsModelMatchContacts.ResetAndDestroy();
+    CleanupStack::Pop();
     }
 
 // --------------------------------------------------------------------------
@@ -223,6 +235,7 @@ void CFindView::UpdateFilterL(
 void CFindView::MatchContactL( const CViewContact& aViewContact,
         RPointerArray<CCntModelViewContact>& aMatchedContacts )
     {
+    CleanupResetAndDestroyPushL( aMatchedContacts );
     // aContact matches if it's one of the always included contacts OR
     // if it's one of Contacts Model matched contacts AND it also
     // passes our own match.
@@ -256,6 +269,7 @@ void CFindView::MatchContactL( const CViewContact& aViewContact,
         aMatchedContacts.AppendL( cnt );
         CleanupStack::Pop( cnt );
         }
+    CleanupStack::Pop( &aMatchedContacts );
     }
 
 // --------------------------------------------------------------------------
@@ -304,6 +318,69 @@ TInt CFindView::FindFromMatchArray( const CViewContact& aContact ) const
     return iContactsModelMatchContacts.FindInOrder(
         aContact.NativeContact(),
         TLinearOrder<CCntModelViewContact>( CCompareView::CompareFieldsL ) );
+    }
+
+/** 
+Heap sort the give view contacts array.
+
+This function only be called one time when some contacts be marked and we input
+the first letter to the FindBox for searching.
+
+@param  aContacts the array of view contacts to be sorted.
+@leave  leave errors from CCompareView::CompareFieldsL
+*/
+void CFindView::HeapSortL(RPointerArray<CCntModelViewContact> aContacts)
+    {
+    // HeapSort (copied from RPointerArrayBase)
+    TInt ss = aContacts.Count();
+    if ( ss>1 )
+        {
+        TInt sh = ss>>1;
+        FOREVER
+            {
+            CCntModelViewContact* si;
+            if (sh != 0)
+                {
+                // make heap
+                --sh;
+                si = aContacts[sh];
+                }
+            else
+                {
+                // sort heap
+                --ss;
+                si = aContacts[ss];
+                aContacts[ss] = aContacts[0];
+                if (ss == 1)
+                    {
+                    aContacts[0] = si;
+                    break;
+                    }
+                }
+
+            // sift down
+            TInt ii = sh;
+            TInt jj = sh;
+            FOREVER
+                {
+                jj = (jj+1)<<1;
+                if ((jj >= ss) || (CCompareView::CompareFieldsL(*(aContacts[jj-1]),*(aContacts[jj])) > 0))
+                    {
+                    --jj;
+                    }
+					
+                if ((jj >= ss) || (CCompareView::CompareFieldsL(*(aContacts[jj]),*si) <= 0))
+                    {
+                    break;
+                    }
+					
+                aContacts[ii] = aContacts[jj];
+                ii = jj;
+                } //FOREVER
+				
+            aContacts[ii] = si;
+            } //FOREVER
+        } //if (ss > 1)
     }
 } // namespace VPbkCntModel
 // End of File

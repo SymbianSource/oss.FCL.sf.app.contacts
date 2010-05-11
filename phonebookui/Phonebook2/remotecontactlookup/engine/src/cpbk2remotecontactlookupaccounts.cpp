@@ -137,6 +137,7 @@ EXPORT_C void CPbk2RemoteContactLookupAccounts::LoadProtocolPluginsL()
 EXPORT_C void CPbk2RemoteContactLookupAccounts::GetAllAccountsL(
     RPointerArray<CPbkxRemoteContactLookupProtocolAccount>& aAccounts )
     {
+    CleanupClosePushL( aAccounts );
     if ( iAdapters.Count() == 0 )
         {
         // No plugins were loaded.
@@ -170,6 +171,7 @@ EXPORT_C void CPbk2RemoteContactLookupAccounts::GetAllAccountsL(
             }
         // just let protocolAccountsTmp pass out of scope. It doesn't own anything now.
         }
+    CleanupStack::Pop();
     }
 
 
@@ -179,7 +181,8 @@ EXPORT_C void CPbk2RemoteContactLookupAccounts::GetAccountsL(
     const TUid& aProtocol )
     {
     //TODO Should optimise this.
-
+    CleanupClosePushL( aAccounts );
+    
     RPointerArray<CPbkxRemoteContactLookupProtocolAccount> protocolAccounts;
     TCleanupItem cleanupItemAcc(CleanupResetAndDestroyAccArray, &protocolAccounts);
     CleanupStack::PushL(cleanupItemAcc);
@@ -203,6 +206,7 @@ EXPORT_C void CPbk2RemoteContactLookupAccounts::GetAccountsL(
         protocolAccounts.Remove( j );
         }
     CleanupStack::Pop(); // cleanupItemAcc
+    CleanupStack::Pop();
     }
 
 CPbk2RemoteContactLookupAccounts::CPbk2RemoteContactLookupAccounts()
