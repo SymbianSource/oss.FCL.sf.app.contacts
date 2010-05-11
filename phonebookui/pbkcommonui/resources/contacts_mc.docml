@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hbdocument version="0.9">
+    <widget name="view" type="HbView">
+        <widget name="content" role="HbView:widget" type="HbWidget">
+            <widget name="groupBox" type="HbGroupBox">
+                <string name="heading" locid="txt_phob_subtitle_my_card"/>
+                <bool name="collapsable" value="FALSE"/>
+            </widget>
+            <widget name="cnt_label_text" type="HbLabel">
+                <enums name="textWrapping" value="TextWordWrap"/>
+                <enums name="alignment" value="AlignVCenter|AlignHCenter"/>
+                <contentsmargins bottom="var(hb-param-margin-gene-bottom)" left="var(hb-param-margin-gene-left)" right="var(hb-param-margin-gene-right)" top="0.0un"/>
+                <enums name="elideMode" value="ElideNone"/>
+                <string name="plainText" locid="txt_phob_info_create_own_card_to_share_it_with_fri"/>
+                <fontspec name="fontSpec" role="Primary"/>
+            </widget>
+            <widget name="cnt_button_new" type="HbPushButton">
+                <string name="text" locid="txt_phob_button_create_new"/>
+            </widget>
+            <widget name="cnt_button_choose" type="HbPushButton">
+                <string name="text" locid="txt_phob_button_choose_from_my_contacts"/>
+            </widget>
+        </widget>
+        <string locid="txt_phob_title_contacts" name="title" value="Contacts"/>
+    </widget>
+    <section name="portrait">
+        <widget name="content" role="HbView:widget" type="HbWidget">
+            <layout type="anchor">
+                <anchoritem src="groupBox" srcEdge="LEFT" spacing="0.0un" dst="" dstEdge="LEFT"/>
+                <anchoritem src="groupBox" srcEdge="TOP" spacing="0.0un" dst="" dstEdge="TOP"/>
+                <anchoritem src="groupBox" srcEdge="RIGHT" spacing="0.0un" dst="" dstEdge="RIGHT"/>
+                <anchoritem src="cnt_label_text" srcEdge="LEFT" spacing="0.0un" dst="" dstEdge="LEFT"/>
+                <anchoritem src="cnt_label_text" srcEdge="TOP" spacing="-6.0un" dst="groupBox" dstEdge="BOTTOM"/>
+                <anchoritem src="cnt_label_text" srcEdge="RIGHT" spacing="0.0un" dst="" dstEdge="RIGHT"/>
+                <anchoritem src="cnt_button_choose" srcEdge="LEFT" spacing="-var(hb-param-margin-gene-left)" dst="" dstEdge="LEFT"/>
+                <anchoritem src="cnt_button_choose" srcEdge="TOP" spacing="-var(hb-param-margin-gene-top)" dst="cnt_label_text" dstEdge="BOTTOM"/>
+                <anchoritem src="cnt_button_choose" srcEdge="RIGHT" spacing="var(hb-param-margin-gene-right)" dst="" dstEdge="RIGHT"/>
+                <anchoritem src="cnt_button_new" srcEdge="LEFT" spacing="-var(hb-param-margin-gene-left)" dst="" dstEdge="LEFT"/>
+                <anchoritem src="cnt_button_new" srcEdge="TOP" spacing="-var(hb-param-margin-gene-bottom)" dst="cnt_button_choose" dstEdge="BOTTOM"/>
+                <anchoritem src="cnt_button_new" srcEdge="RIGHT" spacing="var(hb-param-margin-gene-right)" dst="" dstEdge="RIGHT"/>
+            </layout>
+        </widget>
+    </section>
+    <section name="landscape">
+        <widget name="content" role="HbView:widget" type="HbWidget">
+            <layout type="anchor">
+                <anchoritem src="groupBox" srcEdge="LEFT" spacing="0.0un" dst="" dstEdge="LEFT"/>
+                <anchoritem src="groupBox" srcEdge="TOP" spacing="0.0un" dst="" dstEdge="TOP"/>
+                <anchoritem src="groupBox" srcEdge="RIGHT" spacing="0.0un" dst="" dstEdge="RIGHT"/>
+                <anchoritem src="cnt_label_text" srcEdge="LEFT" spacing="0.0un" dst="" dstEdge="LEFT"/>
+                <anchoritem src="cnt_label_text" srcEdge="TOP" spacing="-4.0un" dst="groupBox" dstEdge="BOTTOM"/>
+                <anchoritem src="cnt_label_text" srcEdge="RIGHT" spacing="0.0un" dst="" dstEdge="CENTERH"/>
+                <anchoritem src="cnt_button_choose" srcEdge="LEFT" spacing="-var(hb-param-margin-gene-left)" dst="" dstEdge="CENTERH"/>
+                <anchoritem src="cnt_button_choose" srcEdge="TOP" spacing="-4.0un" dst="groupBox" dstEdge="BOTTOM"/>
+                <anchoritem src="cnt_button_choose" srcEdge="RIGHT" spacing="var(hb-param-margin-gene-right)" dst="" dstEdge="RIGHT"/>
+                <anchoritem src="cnt_button_new" srcEdge="LEFT" spacing="-var(hb-param-margin-gene-left)" dst="" dstEdge="CENTERH"/>
+                <anchoritem src="cnt_button_new" srcEdge="TOP" spacing="-var(hb-param-margin-gene-top)" dst="cnt_button_choose" dstEdge="BOTTOM"/>
+                <anchoritem src="cnt_button_new" srcEdge="RIGHT" spacing="var(hb-param-margin-gene-right)" dst="" dstEdge="RIGHT"/>
+            </layout>
+        </widget>
+    </section>
+    <metadata activeUIState="portrait" display="QHD portrait" unit="un">
+        <uistate name="Common ui state" sections="#common"/>
+        <uistate name="portrait" sections="#common portrait"/>
+        <uistate name="landscape" sections="#common landscape"/>
+    </metadata>
+</hbdocument>
