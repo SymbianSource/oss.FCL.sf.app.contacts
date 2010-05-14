@@ -24,27 +24,36 @@
 #include <QDateTime>
 #include <qcontactmanager.h>
 
-QTM_USE_NAMESPACE
-
+#ifdef PBK_UNIT_TEST
+#include "stub_classes.h"
+#else
 #include <logsevent.h>
 #include <logsmodel.h>
 #include <logscustomfilter.h>
+#endif
 #include <msghistory.h>
+#include <msgitem.h>
 
-class HistoryItem 
+QTM_USE_NAMESPACE
+
+// Constants
+#define MISSED_CALL_ICON "qtg_small_missed_call"
+#define DAILED_CALL_ICON "qtg_small_sent"
+#define RECEIVED_CALL_ICON "qtg_small_received"
+#define MESSAGE_ICON "qtg_small_message"
+const QString DATE_FORMAT("dd/MM");     // Date format.
+const QString TIME_FORMAT("hh:mm");     // Time format.
+
+class HistoryItem
 {   
 public:   
-    HistoryItem() :
-        seenStatus(4)
+    HistoryItem() : flags(0)
     {};
     
     inline const HistoryItem& operator=(const HistoryItem& other)
     {
-        direction = other.direction;
-        seenStatus = other.seenStatus;
-        msgType = other.msgType;
+        flags = other.flags;
         number = other.number;
-        iconPath = other.iconPath;
         title = other.title;
         message = other.message;
         timeStamp = other.timeStamp;
@@ -57,11 +66,8 @@ public:
     }
     
 public:
-    int direction; // 0 - incoming, 1 - outgoing, 2 - missed
-    int seenStatus;    // 3 = unseen, 4 = seen
-    int msgType;    // 5 = call log, 6 = message
-    QString number; 
-    QString iconPath;
+    int flags;
+    QString number;
     QString title;
     QString message;
     QDateTime timeStamp;
@@ -80,7 +86,9 @@ public:
           m_msgHistory(NULL),
           m_contactId(contactId),
           m_contactManager(manager),
-          m_isMarkedAsSeen(false)
+          m_isMyCard(false),
+          m_isMarkedAsSeen(false),
+          m_initLogs(false)
           {}
     ~CntHistoryModelData()
     {
@@ -107,6 +115,7 @@ public:
     QContactManager* m_contactManager;
     bool m_isMyCard;
     bool m_isMarkedAsSeen;
+    bool m_initLogs;
     //this contains merged calls and messages history
     QList<HItemPointer> m_List;
     QMap<int, HItemPointer> m_logsMap;

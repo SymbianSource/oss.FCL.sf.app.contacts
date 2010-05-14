@@ -24,6 +24,7 @@
 
 #include <cnteditviewitem.h>
 #include "cntstringmapper.h"
+#include "cntdetailpopup.h"
 
 class CntExtensionManager;
 class CntEditViewItemSupplier;
@@ -82,8 +83,9 @@ public:
     CntEditViewItem* itemAt( const QModelIndex& aIndex ) const;
     void removeItem( CntEditViewItem* aItem, const QModelIndex& aIndex );
     bool isEmptyItem( CntEditViewItem* aItem );
-    
     void refreshExtensionItems( const QModelIndex& aIndex );
+    void allInUseFields( CntViewIdList& aList );
+    
 private:
     void refresh();
     void loadPluginItems( CntEditViewItemSupplier* aSupplier );

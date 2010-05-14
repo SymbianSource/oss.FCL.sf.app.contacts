@@ -18,12 +18,14 @@
 #include "cntaddressmodel.h"
 #include "cntdetailmodelitem.h"
 #include "cntdetailconst.h"
+#include <cntmaptileservice.h> 
 
 CntAddressModel::CntAddressModel( QContact* aContact ):
 CntDetailEditorModel( aContact ),
 mAddress(NULL),
 mAddressHome(NULL),
-mAddressWork(NULL)
+mAddressWork(NULL),
+mIsLocationPickerEnabled( false )
     {
     HbDataFormModelItem* address = appendDataFormGroup(qtTrId("Address"), invisibleRootItem());
     HbDataFormModelItem* addressHome = appendDataFormGroup(qtTrId("Address (home)"), invisibleRootItem());
@@ -86,8 +88,14 @@ CntAddressModel::~CntAddressModel()
 
 void CntAddressModel::createAddressItems( HbDataFormModelItem* aGroup, QContactAddress* aAddress )
     {
-    // custom item for map button
-    // HbDataFormModelItem* mapButton = new HbDataFormModelItem( HbDataFormModelItem::CustomItemBase );
+	//Show the location picker button only if location feature enabled
+    if( CntMapTileService::isLocationFeatureEnabled() )
+    {
+        // custom item for map button
+        HbDataFormModelItem* mapButton = new HbDataFormModelItem( HbDataFormModelItem::CustomItemBase );
+        appendDataFormItem( mapButton, aGroup );
+        mIsLocationPickerEnabled = true;
+    }
     
     // default items for rest of fields
     HbDataFormModelItem* street = new HbDataFormModelItem( HbDataFormModelItem::TextItem, qtTrId("Street"));
@@ -110,7 +118,6 @@ void CntAddressModel::createAddressItems( HbDataFormModelItem* aGroup, QContactA
     country->setContentWidgetData( "text", aAddress->country() );
     country->setContentWidgetData( "maxLength", CNT_COUNTRY_MAXLENGTH );
     
-    //appendDataFormItem( mapButton, aGroup );
     appendDataFormItem( street, aGroup );
     appendDataFormItem( postal, aGroup );
     appendDataFormItem( city, aGroup );
@@ -155,12 +162,18 @@ void CntAddressModel::saveContactDetails()
 
 void CntAddressModel::saveAddressItems( HbDataFormModelItem* aGroup, QContactAddress* aAddress )
 {
+    int offset = 0;
+    if( CntMapTileService::isLocationFeatureEnabled() )
+    {
+        offset = 1;
+    }
+		
     // first item (0) is the map button
-    aAddress->setStreet( aGroup->childAt( 0 )->contentWidgetData("text").toString().trimmed() );
-    aAddress->setPostcode( aGroup->childAt( 1 )->contentWidgetData("text").toString().trimmed() );
-    aAddress->setLocality( aGroup->childAt( 2 )->contentWidgetData("text").toString().trimmed() );
-    aAddress->setRegion( aGroup->childAt( 3 )->contentWidgetData("text").toString().trimmed() );
-    aAddress->setCountry( aGroup->childAt( 4 )->contentWidgetData("text").toString().trimmed() );
+    aAddress->setStreet( aGroup->childAt( 0 + offset  )->contentWidgetData("text").toString().trimmed() );
+    aAddress->setPostcode( aGroup->childAt( 1 + offset )->contentWidgetData("text").toString().trimmed() );
+    aAddress->setLocality( aGroup->childAt( 2 + offset  )->contentWidgetData("text").toString().trimmed() );
+    aAddress->setRegion( aGroup->childAt( 3 + offset  )->contentWidgetData("text").toString().trimmed() );
+    aAddress->setCountry( aGroup->childAt( 4 + offset  )->contentWidgetData("text").toString().trimmed() );
 }
 
 bool CntAddressModel::isAddressEmpty( QContactAddress* aAddress )

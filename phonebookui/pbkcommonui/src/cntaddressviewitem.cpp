@@ -29,23 +29,18 @@
 #include <hbwidget.h>
 #include <hbtextitem.h>
 
-//#include "qlocationpickeritem_temp.h"
+#include "qlocationpickeritem.h"
 #include <xqaiwrequest.h>
 #include <xqservicerequest.h>
 #include <xqappmgr.h>
 CntAddressViewItem::CntAddressViewItem(QGraphicsItem* aParent) :
     /*CntDetailViewItem(aParent),*/
-    HbDataFormViewItem(aParent),
-    mRequest(NULL),
-    mAppManager(NULL), 
-    mSenderButton(NULL)
+    HbDataFormViewItem(aParent)
 {
 }
 
 CntAddressViewItem::~CntAddressViewItem()
 {
-    delete mRequest;
-    delete mAppManager;
 }
 
 HbAbstractViewItem* CntAddressViewItem::createItem()
@@ -53,52 +48,109 @@ HbAbstractViewItem* CntAddressViewItem::createItem()
     return new CntAddressViewItem(*this);
 }
 
+bool CntAddressViewItem::canSetModelIndex( const QModelIndex &index ) const 
+{ 
+    HbDataFormModelItem::DataItemType itemType = 
+        static_cast<HbDataFormModelItem::DataItemType>( 
+        index.data(HbDataFormModelItem::ItemTypeRole).toInt() ); 
+
+    if( itemType == HbDataFormModelItem::CustomItemBase )       
+    {  
+        return true; 
+    } 
+    else 
+    { 
+        return false; 
+    } 
+
+}
+
 HbWidget* CntAddressViewItem::createCustomWidget()
 {
-    QGraphicsLinearLayout* layout = new QGraphicsLinearLayout(Qt::Horizontal);
-
+    HbDataFormModelItem::DataItemType itemType = static_cast<HbDataFormModelItem::DataItemType>( 
+              modelIndex().data(HbDataFormModelItem::ItemTypeRole).toInt());
+    
     HbWidget* widget = new HbWidget();
-    widget->setLayout(layout);
-
-    HbStyleLoader::registerFilePath(":/style/cntlocationbutton.css");
-    HbStyleLoader::registerFilePath(":/style/cntlocationbutton.hbpushbutton.widgetml");
-    HbDataForm* form = static_cast<HbDataForm*> (itemView());
-    HbDataFormModel* model = static_cast<HbDataFormModel*> (form->model());
-
-    HbPushButton* mLocationButton = new HbPushButton(this);
-    mLocationButton->setObjectName("cntlocationbutton");
-    mLocationButton->setIcon(HbIcon(":/icons/pickerIcon.jpg"));
-    mLocationButton->setText(qtTrId("Select location from map"));
-    mLocationButton->setOrientation(Qt::Horizontal);
-
-    connect(mLocationButton, SIGNAL(clicked()), this, SLOT(launchLocationPicker()));
-
-    layout->addItem(mLocationButton);
+    if( itemType ==  HbDataFormModelItem::CustomItemBase )
+    {
+        QGraphicsLinearLayout* layout = new QGraphicsLinearLayout(Qt::Horizontal);
+        widget->setLayout(layout);
+    
+        HbStyleLoader::registerFilePath(":/style/cntlocationbutton.css");
+        HbStyleLoader::registerFilePath(":/style/cntlocationbutton.hbpushbutton.widgetml");
+        HbDataForm* form = static_cast<HbDataForm*> (itemView());
+        HbDataFormModel* model = static_cast<HbDataFormModel*> (form->model());
+    
+        HbPushButton* mLocationButton = new HbPushButton(this);
+        mLocationButton->setObjectName("cntlocationbutton");
+        mLocationButton->setIcon(HbIcon("qtg_mono_location"));
+        mLocationButton->setText( hbTrId("txt_phob_button_select_location") );
+    
+        connect(mLocationButton, SIGNAL(clicked()), this, SLOT(launchLocationPicker()));
+    
+        layout->addItem(mLocationButton);
+        
+    }
     return widget;
 }
 
 void CntAddressViewItem::launchLocationPicker()
 {
-    mAppManager = new XQApplicationManager();
-    if (mRequest) {
-        delete mRequest;
-        mRequest = 0;
+    XQApplicationManager *appManager = new XQApplicationManager();
+    XQAiwRequest* request = appManager->create("com.nokia.symbian", "ILocationPick", "pick()", true);
+    if( request )
+    {
+        QVariant retValue;
+        if( request->send( retValue ) )
+        {
+            handleLocationChange( retValue );
+        }
+        
+        delete request;
     }
-
-    mSenderButton = sender();
-    mRequest = mAppManager->create("com.nokia.symbian", "ILocationPick", "pick()", false);
-    if (mRequest) {
-        connect(mRequest, SIGNAL(requestOk(const QVariant&)), this,
-            SLOT(handleLocationChange(const QVariant&)));
-        mRequest->send();
-    }
+    delete appManager;
 }
 
 void CntAddressViewItem::handleLocationChange(const QVariant& aValue)
 {
-    Q_UNUSED( aValue );
+    QLocationPickerItem selectedLocation = aValue.value<QLocationPickerItem>();
+    if( selectedLocation.mIsValid )
+    {
+        HbDataForm* form = static_cast<HbDataForm*>(itemView());
+        HbDataFormModel* model = static_cast<HbDataFormModel*>(form->model());
+        HbDataFormModelItem* item = model->itemFromIndex( modelIndex() );
+    
+        QModelIndex nextIndex = modelIndex().sibling( modelIndex().row() + 1 , modelIndex().column() );
+        HbDataFormModelItem* street = model->itemFromIndex( nextIndex );
+        street->setContentWidgetData( "text", selectedLocation.mStreet );
+        street->setContentWidgetData( "maxLength", CNT_STREET_MAXLENGTH );
+
+        nextIndex = modelIndex().sibling( modelIndex().row() + 2 , modelIndex().column() );
+
+        HbDataFormModelItem* postal =  model->itemFromIndex( nextIndex );
+        postal->setContentWidgetData( "text", selectedLocation.mPostalCode );
+        postal->setContentWidgetData( "maxLength", CNT_POSTCODE_MAXLENGTH );
+        
+        nextIndex = modelIndex().sibling( modelIndex().row() + 3 , modelIndex().column() );
+        HbDataFormModelItem* locality =  model->itemFromIndex( nextIndex );
+        locality->setContentWidgetData( "text", selectedLocation.mCity );
+        locality->setContentWidgetData( "maxLength", CNT_LOCALITY_MAXLENGTH );
+        
+        nextIndex = modelIndex().sibling( modelIndex().row() + 4 , modelIndex().column() );
+        HbDataFormModelItem* province =  model->itemFromIndex( nextIndex );
+        province->setContentWidgetData( "text", selectedLocation.mState );
+        province->setContentWidgetData( "maxLength", CNT_REGION_MAXLENGTH );
+        
+        nextIndex = modelIndex().sibling( modelIndex().row() + 5 , modelIndex().column() );
+        HbDataFormModelItem* country =  model->itemFromIndex( nextIndex );
+        country->setContentWidgetData( "text", selectedLocation.mCountry );
+        country->setContentWidgetData( "maxLength", CNT_COUNTRY_MAXLENGTH );
+        
+
+    }
+   
 }
 
-//Q_IMPLEMENT_USER_METATYPE(QLocationPickerItem)
+ Q_IMPLEMENT_USER_METATYPE(QLocationPickerItem)
 
 // End of File

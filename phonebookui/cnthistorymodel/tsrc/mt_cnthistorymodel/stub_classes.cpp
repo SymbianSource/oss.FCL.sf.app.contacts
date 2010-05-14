@@ -15,21 +15,10 @@
 *
 */
 
+#include "cnthistorymodel_p.h"
 #include "stub_classes.h"
 
 Q_DECLARE_METATYPE(LogsEvent *)
-
-namespace {
-    void addModelData(HistoryItem &t, int i)
-    {
-        t.timeStamp = constDateTime.addSecs(5*i);
-        t.message = QString(cc_msg).arg(i);
-        t.direction = i%2 == 0 ? Incoming : Outgoing;
-        t.seenStatus = i%2 == 0 ? Unseen : Seen;
-        t.iconPath = QString(icon_path).arg(i);
-        t.title = QString(cc_msg).arg(i);
-    };
-}
 
 QVariant LogsModel::data(const QModelIndex& index, int role) const
 {
@@ -104,3 +93,12 @@ LogsCustomFilter::LogsCustomFilter()
     beginInsertRows(QModelIndex(), 0, m_events.count());
     endInsertRows();
 }
+
+bool MsgHistory::getMessages(int cntId){}
+
+bool MsgHistory::subscribe(int cntId){}
+
+bool MsgHistory::markRead(int cntId){
+    return true;
+}
+

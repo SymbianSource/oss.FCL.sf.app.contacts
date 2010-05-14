@@ -32,11 +32,6 @@ MobCntEmailAction::~MobCntEmailAction()
 {
 }
 
-bool MobCntEmailAction::supportsDetail(const QContactDetail& detail) const
-{
-    return (detail.definitionName() == QContactEmailAddress::DefinitionName);
-}
-
 QContactFilter MobCntEmailAction::contactFilter(const QVariant& value) const
 {
      Q_UNUSED(value);
@@ -45,6 +40,16 @@ QContactFilter MobCntEmailAction::contactFilter(const QVariant& value) const
     emailFilter.setDetailDefinitionName(QContactEmailAddress::DefinitionName); 
     
     return emailFilter;
+}
+
+bool MobCntEmailAction::isDetailSupported(const QContactDetail &detail, const QContact &/*contact*/) const
+{
+    return (detail.definitionName() == QContactEmailAddress::DefinitionName);
+}
+
+QList<QContactDetail> MobCntEmailAction::supportedDetails(const QContact& contact) const
+{
+    return contact.details(QContactEmailAddress::DefinitionName);
 }
 
 MobCntEmailAction* MobCntEmailAction::clone() const

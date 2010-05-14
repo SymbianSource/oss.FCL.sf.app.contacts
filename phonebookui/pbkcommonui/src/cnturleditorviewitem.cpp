@@ -69,8 +69,7 @@ HbWidget* CntUrlEditorViewItem::createCustomWidget()
     CntDetailModelItem* item = static_cast<CntDetailModelItem*>( model->itemFromIndex(modelIndex()) );
     QContactUrl detail = item->detail();
     
-    HbEditorInterface editorInterface( mEdit );
-    editorInterface.setFilter( HbUrlFilter::instance() );
+    mEdit->setInputMethodHints( Qt::ImhUrlCharactersOnly );
     
     constructSubTypeModel( detail.contexts() );
     

@@ -24,6 +24,7 @@
 #include <cntabstractview.h>
 
 class CntAbstractViewManager;
+class CntFetchContacts;
 class HbView;
 class HbAction;
 
@@ -57,14 +58,16 @@ private slots:
     void showPreviousView();
     void openNameEditor();
     void openMyCardSelectionView(); 
+    void handleMultiCardSelection();
     void setOrientation(Qt::Orientation orientation);
     
 private:  
-    QContact* mContact; // own
-    CntAbstractViewManager* mViewManager;
-    HbDocumentLoader mDocumentLoader;
-    HbView* mView; // own
-    HbAction* mSoftkey;
+    QContact*                 mContact; // own
+    CntAbstractViewManager*   mViewManager;
+    HbDocumentLoader          mDocumentLoader;
+    HbView*                   mView; // own
+    HbAction*                 mSoftkey;
+    CntFetchContacts*         mFetchView;
 };
 
 #endif /* CNTMYCARDVIEW_H_ */

@@ -23,4 +23,6 @@ EXPORTS
 	_ZTI10SimUtility @ 22 NONAME
 	_ZTV10SimUtility @ 23 NONAME
 	_ZNK10SimUtility13isSimInsertedEv @ 24 NONAME
+	_ZN10SimUtility19adnCacheStatusReadyERNS_11CacheStatusEi @ 25 NONAME
+	_ZN10SimUtility20notifyAdnCacheStatusEv @ 26 NONAME
 

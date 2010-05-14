@@ -19,6 +19,8 @@
 
 #include <hbview.h>
 #include <hblistview.h>
+#include <hbindexfeedback.h>
+#include <hbscrollbar.h>
 #include <hbdocumentloader.h>
 #include <hbaction.h>
 #include <mobcntmodel.h>
@@ -37,6 +39,15 @@ CntBaseSelectionView::CntBaseSelectionView() : QObject()
     }
     mView = static_cast<HbView*>( mDocument->findWidget("view") );
     mListView = static_cast<HbListView*>( mDocument->findWidget("listView") );
+
+    mListView->setFrictionEnabled(true);
+    mListView->setScrollingStyle(HbScrollArea::PanWithFollowOn);
+    mListView->verticalScrollBar()->setInteractive(true);
+    mListView->setUniformItemSizes(true);
+
+    HbIndexFeedback *indexFeedback = new HbIndexFeedback(mView);
+    indexFeedback->setIndexFeedbackPolicy(HbIndexFeedback::IndexFeedbackSingleCharacter);
+    indexFeedback->setItemView(mListView);
     
     mSoftkey = new HbAction(Hb::BackNaviAction, mView);
     connect( mSoftkey, SIGNAL(triggered()), this, SLOT(closeView()) );

@@ -82,8 +82,8 @@ void CntSimStorePrivate::ConstructL()
     convertStoreNameL(storeName);
     
     // SDN store is always read only
-    if (m_storeName == KParameterValueSimStoreNameSdn)
-        m_readOnlyAccess = true;
+    //if (m_storeName == KParameterValueSimStoreNameSdn)
+    //    m_readOnlyAccess = true;
 
     // Open etel server
     User::LeaveIfError(m_etelServer.Connect());
@@ -432,7 +432,7 @@ QList<QContact> CntSimStorePrivate::decodeSimContactsL(TDes8& rawData) const
                         QString nameString = QString::fromUtf16(bufPtr.Ptr(), bufPtr.Length());
                         name.setCustomLabel(nameString);
                         if (m_readOnlyAccess)
-                            m_engine.setReadOnlyAccessConstraint(&name);                        
+                            m_engine.setReadOnlyAccessConstraint(&name);   
                         currentContact.saveDetail(&name);
                         QContactManager::Error error(QContactManager::NoError);
                         m_engine.setContactDisplayLabel(&currentContact, m_engine.synthesizedDisplayLabel(currentContact, &error));

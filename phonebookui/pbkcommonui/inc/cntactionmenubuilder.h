@@ -37,7 +37,7 @@ public:
     ~CntActionMenuBuilder();
     
 public:
-    void execActionMenu( QContact& aContact, QPointF aPoint );
+    HbMenu* actionMenu( QContact& aContact );
     
 public:
     HbMenu* buildActionMenu( QContact& aContact );
@@ -63,7 +63,7 @@ private:
 #endif
     
     void createCallAction( HbMenu& aMenu, QContact& aContact );
-    void createSmsAction( HbMenu& aMenu, QContact& aContact );
+    void createMessageAction( HbMenu& aMenu, QContact& aContact );
     void createEmailAction( HbMenu& aMenu, QContact& aContact );
 private:
     QContactLocalId iMyCardId;

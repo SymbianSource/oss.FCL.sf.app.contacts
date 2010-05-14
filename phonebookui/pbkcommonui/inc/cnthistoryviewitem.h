@@ -19,18 +19,20 @@
 #define CNTHISTORYVIEWITEM_H
 
 // INCLUDES
-#include "cnthistoryviewitemwidget.h"
-#include <hbtextitem.h>
-#include <hbiconitem.h>
-#include <hbabstractviewitem.h>
-#include <QGraphicsLinearLayout>
+#include <hblistviewitem.h>
+
+class HbFrameItem;
 
 /**
  * This class represents the item decorator of 
  * the comm history view.  
  */
-class CntHistoryViewItem : public HbAbstractViewItem
-    {    
+class CntHistoryViewItem : public HbListViewItem
+{
+    Q_OBJECT
+    Q_PROPERTY( bool incoming READ getIncoming )
+    Q_PROPERTY( bool newmessage READ isNewMessage )
+    
 public:
     /*
      * Constructor
@@ -38,29 +40,25 @@ public:
      * default set to 0
      */
     CntHistoryViewItem(QGraphicsItem* parent=0);
-    
+
     /*
      * Factory method to the items
      */
     HbAbstractViewItem* createItem();
-    
-    /*
-     * Overriden method to postprocess custom item
-     */
-    void polish(HbStyleParameters& params);
-    
+
     /*
      * Overriden method to draw the custom item in the list view
      */
     void updateChildItems();
     
-private:
+    bool getIncoming() const { return mIncoming; }
+    bool isNewMessage() const { return mNewMessage; }
     
-    /*
-     * Custom widget containing text fields and icon
-     * Not owned
-     */
-    CntHistoryViewItemWidget* itemWidget;
-    };
+private:
+    bool            mIncoming;
+    bool            mNewMessage;
+
+    HbFrameItem*    mNewItem;
+};
 
 #endif // CNTHISTORYVIEWITEM_H

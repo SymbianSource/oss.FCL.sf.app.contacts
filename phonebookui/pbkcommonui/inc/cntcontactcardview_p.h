@@ -71,11 +71,17 @@ private slots:
     void sendBusinessCard();
     void addToGroup();
     void deleteContact();
+    void handleDeleteContact(HbAction *action);
     void setAsFavorite();
     void removeFromFavorite();
     void progress(QContactAction::State status);
     void setOrientation(Qt::Orientation orientation);
     void showPreviousView();
+    void doChangeImage();
+    void doRemoveImage();
+    
+    void handleMenuAction(HbAction* aAction);
+    void handleSendBusinessCard( HbAction* aAction );
     
 public:
     CntContactCardView* q_ptr;    
@@ -97,11 +103,8 @@ public:
 #else
 private:
 #endif
-    void doChangeImage();
-    void doRemoveImage();
-    
     void launchAction(QContact contact, QContactDetail detail, QString action);
-    bool createVCard(QString& vCardPath);
+    //bool createVCard(QString& vCardPath);
     bool isFavoriteGroupContact();
 	bool isFavoriteGroupCreated();
     
@@ -124,6 +127,7 @@ private:
     QContactAvatar              *mAvatar;
     bool                        mIsGroupMember;
     bool                        mIsHandlingMenu;
+    bool                        mIsPreviousImageEditorView;
     QMap<QString, CntContactCardDetailItem*> mPreferredItems;
     int                         mFavoriteGroupId;
     CntDocumentLoader           *mLoader;
@@ -132,6 +136,7 @@ private:
     CntImageLabel               *mImageLabel;
 	XQServiceRequest            *mHighwayService;
     HbIcon                      *mVCardIcon;
+    
 };
 
 #endif // CNTCOMMLAUNCHERVIEW_H

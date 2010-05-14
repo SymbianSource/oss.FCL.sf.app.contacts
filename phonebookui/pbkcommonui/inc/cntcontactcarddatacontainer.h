@@ -49,7 +49,8 @@ private:
     QList<QContactDetail> actionDetails(const QString &actionName, const QContact &contact);
     bool supportsDetail(const QString &actionName, const QContactDetail &contactDetail);
     void addSeparator(int index);
-   
+    void sortDataItems();
+    
 #ifdef PBK_UNIT_TEST
 public:
 #else

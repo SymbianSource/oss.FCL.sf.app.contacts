@@ -28,6 +28,9 @@ public:
     MobCntMessageAction();
     ~MobCntMessageAction();
 
+    bool isDetailSupported(const QContactDetail &detail, const QContact &contact) const; 
+    QList<QContactDetail> supportedDetails(const QContact& contact) const;
+    
     MobCntMessageAction* clone() const;
     void performAction();
 };

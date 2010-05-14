@@ -80,8 +80,14 @@ void CntCompanyEditorModel::saveContactDetails()
     else
         mCompany.setAssistantName(QString());
     
-    if ( !mCompany.isEmpty() ) {
-        mContact->saveDetail( &mCompany );
+    mContact->saveDetail( &mCompany );
+    
+    if ( mCompany.name().isEmpty() && 
+         mCompany.title().isEmpty() &&
+         mCompany.department().isEmpty() &&
+         mCompany.assistantName().isEmpty() )
+    {
+        mContact->removeDetail( &mCompany );
     }
 }
 

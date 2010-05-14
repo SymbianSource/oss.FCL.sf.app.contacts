@@ -17,14 +17,15 @@
 
 #include "cntcontactcarddataitem.h"
 
-CntContactCardDataItem::CntContactCardDataItem(const QString& aTitle, bool aIsFocusable) :
+CntContactCardDataItem::CntContactCardDataItem(const QString& aTitle, int aPosition, bool aIsFocusable) :
     mIcon(HbIcon()),
     mSecondaryIcon(HbIcon()),
     mTitle(aTitle),
     mValueText(QString("")),
     mAction(QString("")),
     mValueTextElideMode(Qt::ElideRight),
-    mIsFocusable(aIsFocusable)
+    mIsFocusable(aIsFocusable),
+    mPosition(aPosition)
 {
     
 }

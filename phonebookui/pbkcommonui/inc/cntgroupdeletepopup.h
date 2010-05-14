@@ -20,8 +20,8 @@
 
 #include <QObject>
 #include <hbdialog.h>
-#include <hblistview.h>
-#include "qmobilityglobal.h"
+#include <qmobilityglobal.h>
+#include <qcontactid.h>
 #include "cntgroupdeletepopupmodel.h"
 
 class HbListView;
@@ -41,16 +41,16 @@ public:
     ~CntGroupDeletePopup();
 
     void populateListOfGroup();
-    void deleteGroup();
+    QList<QContactLocalId> deleteGroup() const;
 
 #ifdef PBK_UNIT_TEST
 public:
 #else
 private:
 #endif
-    HbListView              *mListView;
-    QContactManager         *mContactManager;
-    CntGroupDeletePopupModel * mModel;  
+    HbListView               *mListView;
+    QContactManager          *mContactManager;
+    CntGroupDeletePopupModel *mModel;  
 };
 
 #endif // CNTGROUPDELETEPOPUP_H

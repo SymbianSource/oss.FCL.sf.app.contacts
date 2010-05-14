@@ -21,15 +21,13 @@
 #include <QObject>
 #include <qmobilityglobal.h>
 #include <hbwidget.h>
-#include <hbgesturefilter.h>
-#include <hbgesture.h>
-
 
 class HbTouchArea;
 class HbIconItem;
 class HbTextItem;
 class HbFrameItem;
 class HbMarqueeItem;
+class QGestureEvent;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -56,7 +54,7 @@ public:
     void createPrimitives();
     void recreatePrimitives();
     void updatePrimitives();
-    void setDetails(const QContact* contact, bool isMyCard);
+    void setDetails(const QContact* contact);
     void setIcon(const HbIcon newIcon);
     void setGroupDetails(const QContact* contact);
     void setSecondaryIcon(bool favoriteContact);
@@ -69,9 +67,7 @@ public slots:
     void processLongPress(const QPointF &point);
 
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void gestureEvent(QGestureEvent* event);
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     
 private slots:
@@ -110,8 +106,6 @@ private:
     HbTextItem              *mSecondaryText;
     HbMarqueeItem           *mMarqueeItem;
     HbFrameItem             *mFrameItem;
-    HbGestureSceneFilter    *mGestureFilter;
-    HbGesture               *mGestureLongpressed;
     HbTouchArea             *mPictureArea;
     
     QString                 firstLineText;

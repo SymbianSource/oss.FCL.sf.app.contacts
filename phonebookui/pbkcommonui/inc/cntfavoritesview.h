@@ -34,6 +34,7 @@ QTM_USE_NAMESPACE
 
 class CntFavoritesView : public QObject, public CntAbstractView
 {
+    friend class TestCntFavoritesView;
     Q_OBJECT
     
 public:
@@ -50,6 +51,7 @@ public: // From CntAbstractView
 private slots:
     void showPreviousView();
     void openSelectionPopup();
+    void handleMemberSelection(HbAction *action);
     void setOrientation(Qt::Orientation orientation);
     
 #ifdef PBK_UNIT_TEST

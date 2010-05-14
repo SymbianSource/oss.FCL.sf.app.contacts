@@ -23,38 +23,34 @@
 #include <hbmainwindow.h>
 #include <qtcontacts.h>
 #include "cntviewnavigator.h"
-#include <simutility.h>
+#include "simutility.h"
 
 CntDefaultViewManager::CntDefaultViewManager( HbMainWindow* aWindow ) : QObject(),
     mFactory(NULL),
     mCurrent(NULL),
     mOldView(NULL),
     mNavigator(NULL),
-    mMainWindow( aWindow )
+    mMainWindow( aWindow ),
+    mSimUtility(NULL)
 
 {    
     setViewFactory(new CntDefaultViewFactory());
     setViewNavigator(new CntViewNavigator(this));
 
-#ifndef __WINS__
     int error = -1;
-    SimUtility simUtility = SimUtility(SimUtility::AdnStore, error);
-    if (error == 0) 
+    mSimUtility = new SimUtility(SimUtility::AdnStore, error);
+    if (error != 0) 
     {
-        SimUtility::AvailableStores store = simUtility.getAvailableStores(error);
-        if (error == 0 && store.AdnStorePresent)
-        {
-            QContactManager* manager = QContactManager::fromUri(SIM_BACKEND_ADN);
-            mBackends.append( manager );
-        }
+        delete mSimUtility; 
+        mSimUtility = 0;
     }
-#endif
 }
 
 CntDefaultViewManager::~CntDefaultViewManager()
 {
     qDeleteAll(mDefaults.values());
     delete mFactory;
+    delete mSimUtility;
 }
 
 void CntDefaultViewManager::setViewFactory( CntAbstractViewFactory* aFactory ) 
@@ -79,12 +75,16 @@ void CntDefaultViewManager::back(const CntViewParameters aArgs)
     
     QFlags<Hb::ViewSwitchFlag> flags;
     int back = mNavigator->back( flags );
-    
+
+    foreach( int k, aArgs.keys() )
+    {
+        mArgs.insert( k, aArgs.value(k) );
+    }
     mArgs.insert(EViewId, back );
-    mArgs.insert(ESelectedAction, aArgs.value(ESelectedAction));
-    mArgs.insert(ESelectedContact, aArgs.value(ESelectedContact));
-    mArgs.insert(ESelectedGroupContact, aArgs.value(ESelectedGroupContact));
-    mArgs.insert(ESelectedDetail, aArgs.value(ESelectedDetail));
+//    mArgs.insert(ESelectedAction, aArgs.value(ESelectedAction));
+//    mArgs.insert(ESelectedContact, aArgs.value(ESelectedContact));
+//    mArgs.insert(ESelectedGroupContact, aArgs.value(ESelectedGroupContact));
+//    mArgs.insert(ESelectedDetail, aArgs.value(ESelectedDetail));
 
     if (mArgs.value(EViewId).toInt() != noView)
     {
@@ -110,6 +110,7 @@ QContactManager* CntDefaultViewManager::contactManager( const QString& aType )
         }
     }
     QContactManager* manager = QContactManager::fromUri( aType );
+    
     if ( manager )
     {
         mBackends.append( manager );
@@ -143,6 +144,13 @@ void CntDefaultViewManager::deleteOldView()
             delete mOldView;
             mOldView = NULL;
         }
+        // If view id is not in defaults list, it means that view has changed
+        // its opinnion about preserving state to true.
+        else if ( !mDefaults.contains(mOldView->viewId()) ) 
+        {
+            mDefaults.insert( mOldView->viewId(), mOldView );
+        }
+
         mMainWindow->setInteractive(true);
     }
 }

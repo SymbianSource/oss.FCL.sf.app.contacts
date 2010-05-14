@@ -20,11 +20,23 @@
 #include <cntmaptileservice.h> //For fetching maptile
 
 #include <QPainter>
+#include <QList>
 #include <qtcontacts.h>
 #include <hbicon.h>
 #include <cntviewparams.h>
 
 #include "cntstringmapper.h"
+
+/*!
+Compare function for CntContactCardDataItem
+*/
+namespace
+{
+    bool compareObjects(const CntContactCardDataItem *d1, const CntContactCardDataItem *d2)
+    {   
+        return d1->mPosition < d2->mPosition;
+    }
+}
 
 /*!
 Constructor
@@ -72,31 +84,22 @@ void CntContactCardDataContainer::initializeActionsData()
         if (availableActions.contains("call", Qt::CaseInsensitive) && supportsDetail("call", details[i]) && details[i].definitionName() == QContactPhoneNumber::DefinitionName)
         {
             QContactPhoneNumber number(details.at(i));
-            QString title;
-            QString icon;
-            if (!number.contexts().isEmpty())
-            {
-                title = mStringMapper.getContactCardListLocString(number.subTypes().first(), number.contexts().first());
-                icon = mStringMapper.getContactCardIconString(number.subTypes().first(), number.contexts().first());
-            }
-            else
-            {
-                title = mStringMapper.getContactCardListLocString(number.subTypes().first(), QString());
-                icon = mStringMapper.getContactCardIconString(number.subTypes().first(), QString());
-            }
+            
+            QString context = number.contexts().isEmpty() ? QString() : number.contexts().first();
+            QString subtype = number.subTypes().isEmpty() ? number.definitionName() : number.subTypes().first();
              
-            CntContactCardDataItem* dataItem = new CntContactCardDataItem(title, true);
+            CntContactCardDataItem* dataItem = new CntContactCardDataItem(mStringMapper.getContactCardListLocString(subtype, context), itemCount(), true);
             dataItem->setAction("call");
             dataItem->setValueText(number.number());
-            dataItem->setIcon(HbIcon(icon));
+            dataItem->setIcon(HbIcon(mStringMapper.getContactCardIconString(subtype, context)));
             dataItem->setContactDetail(number);
             mDataItemList.insert(itemCount(), dataItem);
         }
        
-       if (availableActions.contains("message", Qt::CaseInsensitive) && supportsDetail("message", details[i]) && details[i].definitionName() == QContactPhoneNumber::DefinitionName)
-       {
+        if (availableActions.contains("message", Qt::CaseInsensitive) && supportsDetail("message", details[i]) && details[i].definitionName() == QContactPhoneNumber::DefinitionName)
+        {
            QContactPhoneNumber number(details.at(i));
-           CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_dblist_send_message"), true);
+           CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_dblist_send_message"), itemCount(), true);
            dataItem->setAction("message");
            dataItem->setValueText(number.number());
            QString icon;
@@ -119,39 +122,38 @@ void CntContactCardDataContainer::initializeActionsData()
            dataItem->setIcon(HbIcon(icon));
            dataItem->setContactDetail(number);
            mDataItemList.insert(itemCount(), dataItem);
-       }    
+        }
     }
-    
     //email
     if (availableActions.contains("email", Qt::CaseInsensitive))
     {
         QList<QContactDetail> details = actionDetails("email", *mContact);
         for (int i = 0; i < details.count(); i++)
-        {   
-            if (details[i].definitionName() == QContactEmailAddress::DefinitionName)
-            {
-                QContactEmailAddress email(details.at(i));
-                QString title;
-                QString icon;
-                if (!email.contexts().isEmpty())
-                {
-                    title = mStringMapper.getContactCardListLocString(email.definitionName(), email.contexts().first());
-                    icon = mStringMapper.getContactCardIconString(email.definitionName(), email.contexts().first());
-                }
-                else
-                {
-                    title = mStringMapper.getContactCardListLocString(email.definitionName(), QString());
-                    icon = mStringMapper.getContactCardIconString(email.definitionName(), QString());
-                }
-                 
-                CntContactCardDataItem* dataItem = new CntContactCardDataItem(title, true);
-                dataItem->setAction("email");
-                dataItem->setValueText(email.emailAddress(), Qt::ElideLeft);
-                dataItem->setIcon(HbIcon(icon));
-                dataItem->setContactDetail(email);
-                mDataItemList.insert(itemCount(), dataItem);
-            }
+        {
+            QContactEmailAddress email(details.at(i));
+            QString context = email.contexts().isEmpty() ? QString() : email.contexts().first();
+                                  
+            CntContactCardDataItem* dataItem = new CntContactCardDataItem(mStringMapper.getContactCardListLocString(email.definitionName(), context), itemCount(), true);
+            dataItem->setAction("email");
+            dataItem->setValueText(email.emailAddress(), Qt::ElideLeft);
+            dataItem->setIcon(HbIcon(mStringMapper.getContactCardIconString(email.definitionName(), context)));
+            dataItem->setContactDetail(email);
+            mDataItemList.insert(itemCount(), dataItem);  
         }
+    }
+    //url
+    QList<QContactUrl> urlDetails = mContact->details<QContactUrl>();
+    for (int i = 0; i < urlDetails.count(); i++)
+    {
+        QContactUrl url(urlDetails.at(i));
+        QString context = url.contexts().isEmpty() ? QString() : url.contexts().first();
+        
+        CntContactCardDataItem* dataItem = new CntContactCardDataItem(mStringMapper.getContactCardListLocString(url.definitionName(), context), itemCount(), true);
+        dataItem->setAction("url");
+        dataItem->setValueText(url.url());
+        dataItem->setIcon(HbIcon(mStringMapper.getContactCardIconString(url.definitionName(), context)));
+        dataItem->setContactDetail(url);
+        mDataItemList.insert(itemCount(), dataItem);     
     }
 }
 
@@ -166,7 +168,7 @@ void CntContactCardDataContainer::initializeGroupData()
     //call
     if (confCallNumber.number() != NULL)
     {
-        CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_dblist_conference_call"), true);
+        CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_dblist_conference_call"), itemCount(), true);
         dataItem->setAction("call");
         dataItem->setValueText(confCallNumber.number());
         dataItem->setIcon(HbIcon("qtg_large_call_group"));
@@ -175,7 +177,7 @@ void CntContactCardDataContainer::initializeGroupData()
     }
     
     //message
-    CntContactCardDataItem* dataMessageItem = new CntContactCardDataItem(hbTrId("txt_phob_dblist_send_val_members"), true);
+    CntContactCardDataItem* dataMessageItem = new CntContactCardDataItem(hbTrId("txt_phob_dblist_send_val_members"), itemCount(), true);
     dataMessageItem->setAction("message");
     dataMessageItem->setValueText(confCallNumber.number());
     dataMessageItem->setIcon(HbIcon("qtg_large_message"));
@@ -183,7 +185,7 @@ void CntContactCardDataContainer::initializeGroupData()
     mDataItemList.insert(itemCount(), dataMessageItem);
     
     //email
-    CntContactCardDataItem* dataEmailItem = new CntContactCardDataItem(hbTrId("txt_phob_dblist_email"), true);
+    CntContactCardDataItem* dataEmailItem = new CntContactCardDataItem(hbTrId("txt_phob_dblist_email"), itemCount(), true);
     dataEmailItem->setAction("email");
     dataEmailItem->setValueText(confCallNumber.number());
     dataEmailItem->setIcon(HbIcon("qtg_large_email"));
@@ -196,11 +198,27 @@ Initialize contact details which not include actions.
 */
 void CntContactCardDataContainer::initializeDetailsData()
 {
+    //sip & internet call
+    QList<QContactOnlineAccount> onlinedDetails = mContact->details<QContactOnlineAccount>();
+    for (int i = 0; i < onlinedDetails.count(); i++)
+    {
+        QContactOnlineAccount online(onlinedDetails.at(i));
+        QString context = online.contexts().isEmpty() ? QString() : online.contexts().first();
+        QString subtype = online.subTypes().isEmpty() ? online.definitionName() : online.subTypes().first();
+              
+        CntContactCardDataItem* dataItem = new CntContactCardDataItem(mStringMapper.getContactCardListLocString(subtype, context), itemCount(), false);
+        dataItem->setValueText(online.accountUri());
+        dataItem->setContactDetail(online);  
+        addSeparator(itemCount());
+        mDataItemList.insert(itemCount(), dataItem);
+    }
+    
+    //address
     QString contextHome(QContactAddress::ContextHome.operator QString());
     QString contextWork(QContactAddress::ContextWork.operator QString());
     CntMapTileService::ContactAddressType sourceAddressType;  
     mLocationFeatureEnabled = CntMapTileService::isLocationFeatureEnabled() ;
-    //address
+
     QList<QContactAddress> addressDetails = mContact->details<QContactAddress>();
     for (int i = 0; i < addressDetails.count(); i++)
     {
@@ -225,7 +243,7 @@ void CntContactCardDataContainer::initializeDetailsData()
                 title = hbTrId("txt_phob_formlabel_address_work");
             }
         }
-        CntContactCardDataItem* dataItem = new CntContactCardDataItem(title, false);
+        CntContactCardDataItem* dataItem = new CntContactCardDataItem(title, itemCount(), false);
         
         QStringList address;
         if (!addressDetails[i].street().isEmpty())
@@ -265,30 +283,44 @@ void CntContactCardDataContainer::initializeDetailsData()
                 QIcon mapTileIcon;
                 
                 QPainter painter;
-                QPixmap baloon(":/icons/pin.png");                
+                QPixmap baloon( HbIcon("qtg_small_location").pixmap() );                
                 QPixmap map(icon.pixmap());
 
                 //Display pin image in the center of maptile image
                 painter.begin(&map);
-                painter.drawPixmap((map.width()/2), 
-                               ((map.height()/2)-(baloon.height())), baloon);
+                painter.drawPixmap( ( map.width()/2 ) - ( baloon.width()/ 2 ), 
+                               (( map.height()/2 )-( baloon.height())), baloon );
+               
                 painter.end();
                 mapTileIcon.addPixmap(map);
                                 
                 addSeparator(itemCount());
                 
-                CntContactCardDataItem* dataItem = new CntContactCardDataItem(QString(), false);
+                CntContactCardDataItem* dataItem = new CntContactCardDataItem(QString(), itemCount(), false);
                 dataItem->setIcon(HbIcon(mapTileIcon));
                 mDataItemList.insert(itemCount(), dataItem);
 		    }
         }
     } 
     
+    //company
+    QList<QContactOrganization> organizationDetails = mContact->details<QContactOrganization>();
+    for (int i = 0; i < organizationDetails.count(); i++)
+    {
+        CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_company_details"), itemCount(), false);
+        QStringList companyList;
+        companyList << organizationDetails[i].title() << organizationDetails[i].name() << organizationDetails[i].department();
+        dataItem->setValueText(companyList.join(" ").trimmed());
+        dataItem->setContactDetail(organizationDetails[i]);  
+        addSeparator(itemCount());
+        mDataItemList.insert(itemCount(), dataItem);
+    }
+            
     //birthday
     QList<QContactBirthday> birthdayDetails = mContact->details<QContactBirthday>();
     for (int i = 0; i < birthdayDetails.count(); i++)
     {
-        CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_birthday"), false);
+        CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_birthday"), itemCount(), false);
         dataItem->setValueText(birthdayDetails[i].date().toString("dd MMMM yyyy"));
         dataItem->setContactDetail(birthdayDetails[i]);  
         addSeparator(itemCount());
@@ -299,7 +331,7 @@ void CntContactCardDataContainer::initializeDetailsData()
     QList<QContactAnniversary> anniversaryDetails = mContact->details<QContactAnniversary>();
     for (int i = 0; i < anniversaryDetails.count(); i++)
     {
-        CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_anniversary"), false);
+        CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_anniversary"), itemCount(), false);
         dataItem->setValueText(anniversaryDetails[i].originalDate().toString("dd MMMM yyyy"));
         dataItem->setContactDetail(anniversaryDetails[i]);  
         addSeparator(itemCount());
@@ -312,7 +344,7 @@ void CntContactCardDataContainer::initializeDetailsData()
     {
         if (!ringtoneDetails.at(i).audioRingtoneUrl().isEmpty())
         {
-            CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_ringing_tone"), false);
+            CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_ringing_tone"), itemCount(), false);
             dataItem->setValueText(ringtoneDetails[i].audioRingtoneUrl().toString());
             dataItem->setContactDetail(ringtoneDetails[i]);  
             addSeparator(itemCount());
@@ -325,7 +357,7 @@ void CntContactCardDataContainer::initializeDetailsData()
     QList<QContactNote> noteDetails = mContact->details<QContactNote>();
     for (int i = 0; i < noteDetails.count(); i++)
     {
-        CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_note"), false);
+        CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_note"), itemCount(), false);
         dataItem->setValueText(noteDetails[i].note());
         dataItem->setContactDetail(noteDetails[i]);  
         addSeparator(itemCount());
@@ -336,13 +368,13 @@ void CntContactCardDataContainer::initializeDetailsData()
     QList<QContactFamily> familyDetails = mContact->details<QContactFamily>();
     for (int i = 0; i < familyDetails.count(); i++)
     {
-        CntContactCardDataItem* dataSpouseItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_spouse"), false);
+        CntContactCardDataItem* dataSpouseItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_spouse"), itemCount(), false);
         dataSpouseItem->setValueText(familyDetails[i].spouse());
         dataSpouseItem->setContactDetail(familyDetails[i]);  
         addSeparator(itemCount());
         mDataItemList.insert(itemCount(), dataSpouseItem);
         
-        CntContactCardDataItem* dataChildrenItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_children"), false);
+        CntContactCardDataItem* dataChildrenItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_children"), itemCount(), false);
         dataChildrenItem->setValueText(familyDetails[i].children().join(", "));
         dataChildrenItem->setContactDetail(familyDetails[i]);  
         addSeparator(itemCount());
@@ -356,8 +388,12 @@ Returns true if contactDetails contains spesific action.
 bool CntContactCardDataContainer::supportsDetail(const QString &actionName, const QContactDetail &contactDetail)
 {    
     QList<QContactActionDescriptor> actionDescriptors = QContactAction::actionDescriptors(actionName, "symbian");
-    QContactAction* contactAction = QContactAction::action(actionDescriptors.first());
+    if (actionDescriptors.isEmpty())
+    {
+        return false;
+    }
     
+    QContactAction* contactAction = QContactAction::action(actionDescriptors.first());
     bool isSupportDetail = contactAction->isDetailSupported(contactDetail);
     
     delete contactAction;
@@ -371,8 +407,12 @@ Returns the list of details which current action support.
 QList<QContactDetail> CntContactCardDataContainer::actionDetails(const QString &actionName, const QContact &contact)
 {
     QList<QContactActionDescriptor> actionDescriptors = QContactAction::actionDescriptors(actionName, "symbian");
-    QContactAction* contactAction = QContactAction::action(actionDescriptors.first());
-
+    if (actionDescriptors.isEmpty())
+    {
+       return QList<QContactDetail>();
+    }
+    
+    QContactAction* contactAction = QContactAction::action(actionDescriptors.first()); 
     QList<QContactDetail> details = contactAction->supportedDetails(contact);
 
     delete contactAction;
@@ -403,7 +443,7 @@ void CntContactCardDataContainer::addSeparator(int index)
     if (mSeparatorIndex == -1)
     {
         mSeparatorIndex = index;
-        CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_subtitle_details"), false);
+        CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_subtitle_details"), itemCount(), false);
         mDataItemList.insert(itemCount(), dataItem);
     }
 }
@@ -415,4 +455,14 @@ int CntContactCardDataContainer::itemCount() const
 {
     return mDataItemList.count();
 }
+
+/*!
+Sort data item list by position number
+*/
+void CntContactCardDataContainer::sortDataItems()
+{
+    qStableSort(mDataItemList.begin(), mDataItemList.end(), compareObjects);
+}
+
+
 

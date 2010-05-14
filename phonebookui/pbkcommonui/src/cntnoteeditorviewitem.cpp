@@ -64,7 +64,7 @@ HbWidget* CntNoteEditorViewItem::createCustomWidget()
     mEdit->setMinRows( CNT_NOTE_EDITOR_MIN_ROWCOUNT );
     mEdit->setText( detail.note() );
 
-    HbLabel* label = new HbLabel(hbTrId("Note"));
+    HbLabel* label = new HbLabel(hbTrId("txt_phob_formlabel_note"));
     mLayout->addItem(label);
     mLayout->addItem(mEdit);
     widget->setLayout( mLayout );

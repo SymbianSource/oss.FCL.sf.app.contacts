@@ -71,7 +71,7 @@ public:
 	TBool IsDatabaseEmptyL();
 	CPplPreferencesPersistor& PreferencesPersitor();
 	CContactIdArray* GroupIdListL();	
-	CContactIdArray* SearchIdListL (const TDesC& aSearchQuery) const;
+    CBufSeg* DetailsListL (const TDesC& aSearchQuery) const;
     CContactIdArray& CardTemplateIdsL();
     TContactItemId OwnCardIdL();
     void SetOwnCardIdL(TContactItemId aId);

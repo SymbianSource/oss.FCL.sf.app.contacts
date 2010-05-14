@@ -722,22 +722,39 @@ CContactIdArray* CPplContactItemManager::GroupIdListL()
 	return idArray;
 	}
 
-CContactIdArray* CPplContactItemManager::SearchIdListL(const TDesC& aSearchQuery) const
+/**
+Fast access method for retrieving a list of contact details as raw data.
+This method can be used for example to fetch the names of all contacts
+in a very efficient manner. It is assumed that the first column in
+aSearchQuery is 'id' and that the other columns are text.
+
+The returned buffer can be read with RBufReadStream - the first column
+of each row is a 32-bit integer (the id), the rest of the columns are
+16-bit descriptors. An id of 0 signifies the end of the list.
+*/
+CBufSeg* CPplContactItemManager::DetailsListL(const TDesC& aSearchQuery) const
     {
-    CContactIdArray* idArray = CContactIdArray::NewLC();
-    
+    CBufSeg* array = CBufSeg::NewL(4096);
+    CleanupStack::PushL(array);
+
     //Prepare and execute the sql query
     RSqlStatement selectStatement;
     CleanupClosePushL(selectStatement);
     User::LeaveIfError(selectStatement.Prepare(iDatabase, aSearchQuery));
-    const TInt KIdx = iSelectStatement->ParameterIndex(KContactId);
-        
+
     // Iterate through the results and append the contactIds to idArray
     TInt err;
-    while((err = selectStatement.Next()) == KSqlAtRow)
+    RBufWriteStream stream;
+    stream.Open(*array);
+    TInt columnCount = selectStatement.ColumnCount();
+    while ((err = selectStatement.Next()) == KSqlAtRow)
         {
-        idArray->AddL(selectStatement.ColumnInt(KIdx)); 
+        stream.WriteInt32L(selectStatement.ColumnInt(0));
+		for (TInt i = 1; i < columnCount; ++i)
+	        stream << selectStatement.ColumnTextL(i);
         }
+    stream.WriteInt32L(0);
+    stream.Close();
 
     if(err != KSqlAtEnd)
         {
@@ -746,10 +763,11 @@ CContactIdArray* CPplContactItemManager::SearchIdListL(const TDesC& aSearchQuery
 
     //Cleanup 
     CleanupStack::PopAndDestroy(&selectStatement);
-    CleanupStack::Pop(idArray);
+    CleanupStack::Pop(array);
     
-    return idArray;
+    return array;
     }
+
 
 /**
 Utility method used to rthe prefered card template id

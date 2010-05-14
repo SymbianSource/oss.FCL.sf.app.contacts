@@ -19,6 +19,7 @@
 #include "t_cpplpredictivesearchtable.h"
 #include "pltables.h"
 #include "dbsqlconstants.h"
+#include "cpcskeymap.h" // USE_ORBIT_KEYMAP macro
 
 //  SYSTEM INCLUDES
 #include <digia/eunit/eunitmacros.h>
@@ -44,6 +45,9 @@ _LIT(KTestLastName, "45678");
 
 // Must have same value as KMaxDigits in cpplpredictivesearchtable.cpp
 const TInt KMaxDigits = 15;
+
+
+const TInt KTableCount = 12;
 
 // Must have same value as KConversionError in cpplpredictivesearchtable.cpp
 const quint64 KConversionError = 0xeeeeeeeeeeeeeee;
@@ -787,31 +791,34 @@ void UT_CPplPredictiveSearchTable::UT_WriteToDbL()
 void UT_CPplPredictiveSearchTable::UT_ConvertToHexL()
 	{
 	// Basic case
-	EUNIT_ASSERT_EQUALS(0x4458aaaaaaaaaaa, iTable->ConvertToHex("4458"));
+	EUNIT_ASSERT_EQUALS(0x4458fffffffffff, iTable->ConvertToHex("4458"));
+	
+	// Long digit
+	EUNIT_ASSERT_EQUALS(0x123456789012345, iTable->ConvertToHex("123456789012345"));
 
 	// Trailing zeros
-	EUNIT_ASSERT_EQUALS(0x12345678900aaaa, iTable->ConvertToHex("12345678900"));
+	EUNIT_ASSERT_EQUALS(0x12345678900ffff, iTable->ConvertToHex("12345678900"));
 
 	// Leading zeros
-	EUNIT_ASSERT_EQUALS(0x00123456789aaaa, iTable->ConvertToHex("00123456789"));
+	EUNIT_ASSERT_EQUALS(0x00123456789ffff, iTable->ConvertToHex("00123456789"));
 
 	// Just zeros
-	EUNIT_ASSERT_EQUALS(0x00000aaaaaaaaaa, iTable->ConvertToHex("00000"));
-	EUNIT_ASSERT_EQUALS(0x00000000000000a, iTable->ConvertToHex("00000000000000"));
+	EUNIT_ASSERT_EQUALS(0x00000ffffffffff, iTable->ConvertToHex("00000"));
+	EUNIT_ASSERT_EQUALS(0x00000000000000f, iTable->ConvertToHex("00000000000000"));
 	EUNIT_ASSERT_EQUALS(0x000000000000000, iTable->ConvertToHex("000000000000000"));
-	EUNIT_ASSERT_EQUALS(0x0aaaaaaaaaaaaaa, iTable->ConvertToHex("0"));
+	EUNIT_ASSERT_EQUALS(0x0ffffffffffffff, iTable->ConvertToHex("0"));
 
 	// Zeros in the middle
-	EUNIT_ASSERT_EQUALS(0x12300450008000a, iTable->ConvertToHex("12300450008000"));
+	EUNIT_ASSERT_EQUALS(0x12300450008000f, iTable->ConvertToHex("12300450008000"));
 
 	// Empty string
-	EUNIT_ASSERT_EQUALS(0xaaaaaaaaaaaaaaa, iTable->ConvertToHex(""));
+	EUNIT_ASSERT_EQUALS(0xfffffffffffffff, iTable->ConvertToHex(""));
 	
 	// Unmapped characters
-	EUNIT_ASSERT_EQUALS(0x123aaaaaaaaaaaa, iTable->ConvertToHex("123??45??67"));
-	EUNIT_ASSERT_EQUALS(0x00aaaaaaaaaaaaa, iTable->ConvertToHex("00?1234567"));
-	EUNIT_ASSERT_EQUALS(0xaaaaaaaaaaaaaaa, iTable->ConvertToHex("?1234567"));
-	EUNIT_ASSERT_EQUALS(0xaaaaaaaaaaaaaaa, iTable->ConvertToHex("???"));
+	EUNIT_ASSERT_EQUALS(0x123ffffffffffff, iTable->ConvertToHex("123??45??67"));
+	EUNIT_ASSERT_EQUALS(0x00fffffffffffff, iTable->ConvertToHex("00?1234567"));
+	EUNIT_ASSERT_EQUALS(0xfffffffffffffff, iTable->ConvertToHex("?1234567"));
+	EUNIT_ASSERT_EQUALS(0xfffffffffffffff, iTable->ConvertToHex("???"));
 	
 	// Too many digits
 	EUNIT_ASSERT_EQUALS(KConversionError, iTable->ConvertToHex("12345678901234567890"));
@@ -864,9 +871,10 @@ void UT_CPplPredictiveSearchTable::CheckItemCountL(
     TInt aCountInTable6,
     TInt aCountInTable7,
     TInt aCountInTable8,
-    TInt aCountInTable9)
+    TInt aCountInTable9,
+    TInt aCountInTable10,
+    TInt aCountInTable11)
     {
-    const TInt KTableCount = 10;
     TPtrC tableNames[KTableCount] =
         {
         KSqlContactPredSearchTable0,
@@ -878,15 +886,17 @@ void UT_CPplPredictiveSearchTable::CheckItemCountL(
         KSqlContactPredSearchTable6,
         KSqlContactPredSearchTable7,
         KSqlContactPredSearchTable8,
-        KSqlContactPredSearchTable9
+        KSqlContactPredSearchTable9,
+        KSqlContactPredSearchTable10,
+        KSqlContactPredSearchTable11
         };
     TInt rowCounts[KTableCount] = {0};
     
     for (TInt i = 0; i < KTableCount; ++i)
         {
         HBufC* s = HBufC::NewLC(KCountSelect().Length() +
-            // All table names are same length
-            KSqlContactPredSearchTable0().Length());
+            // Enough space for longest table name
+            KSqlContactPredSearchTable11().Length());
         TPtr ptr = s->Des();
         ptr.Format(KCountSelect, &tableNames[i]);
 
@@ -906,6 +916,8 @@ void UT_CPplPredictiveSearchTable::CheckItemCountL(
     EUNIT_ASSERT_EQUALS(aCountInTable7, rowCounts[7]);
     EUNIT_ASSERT_EQUALS(aCountInTable8, rowCounts[8]);
     EUNIT_ASSERT_EQUALS(aCountInTable9, rowCounts[9]);
+    EUNIT_ASSERT_EQUALS(aCountInTable10, rowCounts[10]);
+    EUNIT_ASSERT_EQUALS(aCountInTable11, rowCounts[11]);
     }
 
 // There is only need to search from one table (unless search string begins
@@ -930,7 +942,7 @@ UT_CPplPredictiveSearchTable::DoPredictiveSearchL(const TDesC& aSearchString)
 		// No need to use "WHERE.." or "ORDER BY first_name ASC"
 		_LIT(KSearchOneDigitFormat, "SELECT contact_id FROM %S");
 		select = HBufC::NewLC(KSearchOneDigitFormat().Length() +
-							  KSqlContactPredSearchTable0().Length());
+							  KSqlContactPredSearchTable11().Length());
 		select->Des().AppendFormat(KSearchOneDigitFormat, &tableName);
 		}
 	else
@@ -944,7 +956,7 @@ UT_CPplPredictiveSearchTable::DoPredictiveSearchL(const TDesC& aSearchString)
 		TInt KNbrColumns = 4;
 		TInt KSpaceForLimits = KNbrColumns * 2 * (KMaxDigits + 2); // Two extra for decimal representation of max 15 hex digits
 		select = HBufC::NewLC(KSearchFormat().Length() +
-							  KSqlContactPredSearchTable0().Length() +
+							  KSqlContactPredSearchTable11().Length() +
 							  KSpaceForLimits);
 		select->Des().AppendFormat(KSearchFormat, &tableName,
 								   lowerLimit, upperLimit,
@@ -998,6 +1010,10 @@ const TDesC& UT_CPplPredictiveSearchTable::DetermineTableName(
 			return KSqlContactPredSearchTable8;
 		case '9':
 			return KSqlContactPredSearchTable9;
+		case 'a':
+		    return KSqlContactPredSearchTable10;
+		case 'b':
+		    return KSqlContactPredSearchTable11;
 		default:
 			return KNullDesC;
 		}
@@ -1010,7 +1026,7 @@ TInt64 UT_CPplPredictiveSearchTable::LowerLimitL(const TDesC& aString) const
 
 TInt64 UT_CPplPredictiveSearchTable::UpperLimitL(const TDesC& aString) const
 	{
-	return ConvertToNbrL(aString, 'a');
+	return ConvertToNbrL(aString, 'f');
 	}
 
 TInt64 UT_CPplPredictiveSearchTable::ConvertToNbrL(const TDesC& aString,
@@ -1044,7 +1060,7 @@ TInt UT_CPplPredictiveSearchTable::CPplContactItemManager_DoesPredSearchTableExi
     _LIT(KCheckIfTableExistsFormat, "SELECT %S FROM %S;");
     TInt bufSize = KCheckIfTableExistsFormat().Length() +
                    KPredSearchContactId().Length() +
-                   KSqlContactPredSearchTable0().Length();
+                   KSqlContactPredSearchTable11().Length();
     HBufC* sqlStatement = HBufC::NewLC(bufSize);
     sqlStatement->Des().AppendFormat(KCheckIfTableExistsFormat,
         &KPredSearchContactId,
@@ -1063,7 +1079,6 @@ TInt UT_CPplPredictiveSearchTable::CPplContactItemManager_DoesPredSearchTableExi
 // This function has code copied from CPplContactItemManager::DeletePredSearchTablesL
 void UT_CPplPredictiveSearchTable::CPplContactItemManager_DeletePredSearchTablesL()
 	{
-	const TInt KTableCount = 10;
     const TDesC* KTableNames[KTableCount] =
         {
         &KSqlContactPredSearchTable0,
@@ -1075,7 +1090,9 @@ void UT_CPplPredictiveSearchTable::CPplContactItemManager_DeletePredSearchTables
         &KSqlContactPredSearchTable6,
         &KSqlContactPredSearchTable7,
         &KSqlContactPredSearchTable8,
-        &KSqlContactPredSearchTable9
+        &KSqlContactPredSearchTable9,
+        &KSqlContactPredSearchTable10,
+        &KSqlContactPredSearchTable11
         };
 
 	// IF EXISTS suppresses error that would occur if table does not exist

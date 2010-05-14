@@ -17,8 +17,9 @@
 
 #include <QStringList>
 #include <QtAlgorithms>
-#include <HbGlobal>
-#include <msgitem.h>
+#include <hbglobal.h>
+#include <hbicon.h>
+#include <hbframebackground.h>
 
 #include "cnthistorymodel_p.h"
 #include "cnthistorymodel.h"
@@ -28,12 +29,12 @@ namespace
 {
     bool greaterThan(const HItemPointer& t1, const HItemPointer& t2)
     {
-        return t1.data()->timeStamp > t2.data()->timeStamp;
+        return ((*t1).timeStamp > (*t2).timeStamp);
     }
     
     bool lessThan(const HItemPointer& t1, const HItemPointer& t2)
     {
-        return t1.data()->timeStamp < t2.data()->timeStamp;
+        return ((*t1).timeStamp < (*t2).timeStamp);
     }
 }
 
@@ -54,16 +55,8 @@ CntHistoryModel::CntHistoryModel(QContactLocalId contactId,
 {
     d = new CntHistoryModelData(contactId, manager);
     
-    // Check if the contact is my card
-    if (d->m_contactId == d->m_contactManager->selfContactId()) {
-        d->m_isMyCard = true;
-    }
-    else {
-        d->m_isMyCard = false;
-    }
     // Create the model structure and cache history data from the databases
     initializeModel();
-
 }
 
 CntHistoryModel::~CntHistoryModel()
@@ -95,13 +88,11 @@ QVariant CntHistoryModel::data(const QModelIndex& index, int role) const
         case Qt::DisplayRole:
             return displayRoleData(*p);
         case Qt::DecorationRole:
-            return QVariant((*p).iconPath);
-        case SeenStatusRole:
-            return QVariant((*p).seenStatus);
-        case DirectionRole:
-            return QVariant((*p).direction);
-        case ItemTypeRole:
-            return QVariant((*p).msgType);
+            return decorationRoleData(*p);
+        case Qt::BackgroundRole:
+            return backgroundRoleData(*p);
+        case FlagsRole:
+            return QVariant((*p).flags);
         case PhoneNumberRole:
             return QVariant((*p).number);
         default:
@@ -112,7 +103,7 @@ QVariant CntHistoryModel::data(const QModelIndex& index, int role) const
 /*!
  * Return the data to be used by the view for a display role.
  *
- * \param column The column of the item to return data about.
+ * \param item The History item to return data about.
  *  return QVariant List of strings to be displayed on the view.
  *  The stings can also be NULL
  *  index 0 Title of the conversation item.
@@ -123,9 +114,55 @@ QVariant CntHistoryModel::displayRoleData(const HistoryItem& item) const
 {
     QStringList list;
     
-    list << item.title << item.message << item.timeStamp.toString();
+    if (item.timeStamp.date() == QDateTime::currentDateTime().date())
+    {
+        list << item.title << item.message << item.timeStamp.toString(TIME_FORMAT);
+    }
+    else
+    {
+        list << item.title << item.message << item.timeStamp.toString(DATE_FORMAT);
+    }
     
     return QVariant(list);
+}
+
+/*!
+ * Return the data to be used by the view for a decoration role.
+ *
+ * \param item The History item to return data about.
+ *  return QVariant String of the icon path.
+ */
+QVariant CntHistoryModel::decorationRoleData(const HistoryItem& item) const
+{
+    // Messages
+    if (item.flags & Message)
+        return QVariant(HbIcon(MESSAGE_ICON));
+    
+    // Call logs
+    if (item.flags & CallLog) {
+        if (item.flags & MissedCall)
+            return QVariant(HbIcon(MISSED_CALL_ICON));
+        if (item.flags & DialledCall)
+            return QVariant(HbIcon(DAILED_CALL_ICON));
+        if (item.flags & ReceivedCall)
+            return QVariant(HbIcon(RECEIVED_CALL_ICON));
+    }
+    
+    return QVariant();
+}
+
+/*!
+ * Return the data to be used to draw the background of list items
+ *
+ * \param item The History item to return data about.
+ *  return QVariant HbFrameBackground of the list item.
+ */
+QVariant CntHistoryModel::backgroundRoleData(const HistoryItem& item) const
+{
+    if (item.flags & Incoming)
+        return QVariant(HbFrameBackground("qtg_fr_convlist_received_normal", HbFrameDrawer::NinePieces));
+    else
+        return QVariant(HbFrameBackground("qtg_fr_convlist_sent_normal", HbFrameDrawer::NinePieces));
 }
 
 /*!
@@ -159,25 +196,27 @@ void CntHistoryModel::sort(int /*column*/, Qt::SortOrder order)
  * 
  */
 void CntHistoryModel::clearHistory()
-{
+{    
     if ( d->m_List.isEmpty() )
         return;
     
     // Call logs
-    if ( !d->m_isMyCard && d->m_logsFilter ) {
-        if ( !d->m_logsFilter->clearEvents() ) {
-            // Operation not async
-            clearedCallLogs( 0 );
-        }
-    } else if ( d->m_logsModel ) {
-        if ( !d->m_logsModel->clearList(LogsModel::TypeLogsClearAll) ) {
-            // Operation not async
-            clearedCallLogs( 0 );
-        }
-    }
+    if ( !d->m_isMyCard && d->m_logsFilter )
+        d->m_logsFilter->clearEvents();
+    else if ( d->m_logsModel )
+        d->m_logsModel->clearList(LogsModel::TypeLogsClearAll);
     
     // Messages
-    d->m_msgHistory->clearMessages( (int)d->m_contactId );    
+    if (d->m_msgHistory)
+        d->m_msgHistory->clearMessages( (int)d->m_contactId );
+    
+    // Clear all data from the history model.
+    int count = rowCount();
+    d->m_List.clear();
+    d->m_msgMap.clear();
+    d->m_logsMap.clear();
+    beginRemoveRows( QModelIndex(), 0, count );
+    endRemoveRows();
 }
 
 /*!
@@ -189,17 +228,9 @@ void CntHistoryModel::markAllAsSeen()
     if ( d->m_isMarkedAsSeen )
         return;
     
-    // Call logs
-    if ( !d->m_isMyCard && d->m_logsFilter ) {
-        d->m_logsFilter->markEventsSeen();
-    } else if ( d->m_logsModel ) {
-        d->m_logsModel->markEventsSeen(LogsModel::TypeLogsClearMissed);
-    }
-    
     // Messages
-    d->m_msgHistory->markRead( (int)d->m_contactId );
-    
-    d->m_isMarkedAsSeen = true;
+    if (d->m_msgHistory->markRead( d->m_contactId ))
+        d->m_isMarkedAsSeen = true;
 }
 
 /*!
@@ -209,7 +240,8 @@ void CntHistoryModel::markAllAsSeen()
 void CntHistoryModel::sortAndRefresh(Qt::SortOrder order)
 {
     sort(0, order);
-    emit layoutChanged();
+    beginInsertRows(QModelIndex(), 0, rowCount());
+    endInsertRows();
 }
 
 /*!
@@ -225,7 +257,13 @@ void CntHistoryModel::initializeModel()
 
 void CntHistoryModel::initializeMsgModel()
 {
+    if( d->m_isMyCard )
+        return;
+    
+    // Contact centric
     MsgHistory* m = new MsgHistory();
+    
+    d->m_msgHistory = m;
     
     // Connect to signals emitted by msg model
     connect(m, SIGNAL(messagesReady(QList<MsgItem>& )), this, SLOT(messagesReady(QList<MsgItem>& )));
@@ -233,17 +271,12 @@ void CntHistoryModel::initializeMsgModel()
     connect(m, SIGNAL(messageChanged(MsgItem& )), this, SLOT(messageChanged(MsgItem& )));
     connect(m, SIGNAL(messageDeleted(MsgItem& )), this, SLOT(messageDeleted(MsgItem& )));
     
-    // Contact centric
-    if( !d->m_isMyCard ) {
-        // Subscribe to get new messages
-        // received from this contact
-        m->subscribe(d->m_contactId);
-        
-        // Initial fetch of all messages
-        m->getMessages(d->m_contactId);
-    }
+    // Subscribe to get new messages
+    // received from this contact
+    m->subscribe(d->m_contactId);
     
-    d->m_msgHistory = m;
+    // Initial fetch of all messages
+    m->getMessages(d->m_contactId);
 }
 
 void CntHistoryModel::initializeLogsModel()
@@ -259,19 +292,15 @@ void CntHistoryModel::initializeLogsModel()
         
         connect(d->m_logsFilter, SIGNAL(clearingCompleted(int)), 
                     this, SLOT(clearedCallLogs(int)));
-        connect(d->m_logsFilter, SIGNAL(markingCompleted(int)), 
-                    this, SLOT(markingCompleted(int)));
     } else {
         //get all call events
         d->m_AbstractLogsModel = d->m_logsModel;
         
         connect(d->m_logsModel, SIGNAL(clearingCompleted(int)), 
                     this, SLOT(clearedCallLogs(int)));
-        connect(d->m_logsModel, SIGNAL(markingCompleted(int)), 
-                    this, SLOT(markingCompleted(int)));
     }
     
-    //read first call events and start listening for more 
+    //read first call events if any and start listening for more 
     for ( int i = 0; i < d->m_AbstractLogsModel->rowCount(); ++i ) {
         LogsEvent* event = qVariantValue<LogsEvent*>(
                 d->m_AbstractLogsModel->data(d->m_AbstractLogsModel->index(i, 0), LogsModel::RoleFullEvent) );
@@ -300,44 +329,40 @@ void CntHistoryModel::initializeLogsModel()
  * \param item Conversation history item
  */
 void CntHistoryModel::readLogEvent(LogsEvent* event, HistoryItem& item)
-{
+{    
     QString bodyText;
-    QString icon;
     QString title;
     
     if ( d->m_isMyCard ) {
         if ( event->remoteParty().length() > 0 ) {
-            title = event->remoteParty();
+            title = QString(event->remoteParty());
         }
         else {
-            title = event->number();
+            title = QString(event->number());
         }
     } else {
         if ( event->direction() == LogsEvent::DirIn ) {
             bodyText = hbTrId("txt_phob_list_received");
-            icon = QString("qtg_small_received");
+            item.flags |= ReceivedCall;
         } else if ( event->direction() == LogsEvent::DirOut ) {
             bodyText = hbTrId("txt_phob_list_dialled_call");
-            icon = QString("qtg_small_sent");
+            item.flags |= DialledCall;
         } else if ( event->direction() == LogsEvent::DirMissed ) {
             bodyText = hbTrId("txt_phob_list_missed_call");
-            icon = QString("qtg_small_missed_call");
-            if ( !event->isRead() )
-                item.seenStatus = Unseen;
+            item.flags |= MissedCall;
         }
     }
 
     if ( event->direction() == LogsEvent::DirOut )
-        item.direction = Outgoing;
+        item.flags |= Outgoing;
     else
-        item.direction = Incoming;
+        item.flags |= Incoming;
     
     item.message = bodyText;
-    item.iconPath = icon;
     item.title = title;
-    item.timeStamp = event->time();
-    item.msgType = CallLog;
-    item.number = event->number();
+    item.timeStamp = event->time().toLocalTime();
+    item.flags |= CallLog;
+    item.number = QString(event->number());
 }
 
 /*!
@@ -350,6 +375,7 @@ void CntHistoryModel::readLogEvent(LogsEvent* event, HistoryItem& item)
 void CntHistoryModel::logsRowsInserted(const QModelIndex& /*parent*/, int first, int last)
 {
     int oldRowCount = rowCount();
+    QList<HItemPointer> l;
     
     for ( int i = first; i < d->m_AbstractLogsModel->rowCount() && i <= last; ++i ) {
         LogsEvent* event = qVariantValue<LogsEvent*>(
@@ -361,6 +387,14 @@ void CntHistoryModel::logsRowsInserted(const QModelIndex& /*parent*/, int first,
             d->m_logsMap.insert(i, item);
             d->m_List.append( item );
         }
+    }
+    
+    // Check if this is the first time to receive events
+    // and sort the entire list.
+    if ( !d->m_initLogs ) {
+        sort();
+        oldRowCount = 0;
+        d->m_initLogs = true;
     }
     
     beginInsertRows(QModelIndex(), oldRowCount, rowCount());
@@ -381,9 +415,11 @@ void CntHistoryModel::logsRowsRemoved(const QModelIndex& /*parent*/, int first, 
     for ( int i = first; i <= last; ++i ) {
         HItemPointer item = d->m_logsMap.value( i );
         int index = d->m_List.indexOf( item );
-        d->m_List.removeOne( item );
-        d->m_logsMap.remove( i );        
-        indices.append( index );
+        if ( index > -1 ) {
+            d->m_List.removeAt( index );
+            d->m_logsMap.remove( i );        
+            indices.append( index );
+        }
     }
     
     // Remove list items in batches
@@ -434,45 +470,6 @@ void CntHistoryModel::logsDataChanged(const QModelIndex& first, const QModelInde
 }
 
 /*!
- * Clear logs event slot received from logs model
- *
- * \param err Error of the clear logs request
- */
-void CntHistoryModel::clearedCallLogs(int err)
-{
-    if ( err != 0 ) {
-        return;
-    }
-    
-    QList< int > indices;
-    foreach( HItemPointer p, d->m_logsMap.values() ) {
-        d->m_List.removeOne( p );
-    }
-    d->m_logsMap.clear();
-    
-    // Remove list items in batches
-    if ( !indices.isEmpty() ) {
-        QList< QList<int> > batches = findIndices(indices);
-        foreach( QList<int> l, batches ) {
-            beginRemoveRows( QModelIndex(), l.first(), l.last() );
-            endRemoveRows();
-        }
-    }
-}
-
-/*!
- * Mark events as seen slot received from logs model
- *
- * \param err Error of the marking logs request
- */
-void CntHistoryModel::markingCompleted(int err)
-{
-    if ( err == 0 ) {
-        d->m_isMarkedAsSeen = true;
-    }
-}
-
-/*!
  * Check whether an idex is out of bound of our list
  *
  * \param index Index to be validated
@@ -495,11 +492,9 @@ QList< QList<int> > CntHistoryModel::findIndices( const QList< int >& indices )
     QList<int> currSequence;
     int prevIndex = indices.at(0) - 1;
     
-    for (int i = 0; i < indices.count(); i++)
+    foreach( int currIndex, indices )
     {
-        int currIndex = indices.at(i);
-        
-        if (currIndex >= 0)
+        if ( currIndex >= 0 )
         {
             if ( prevIndex+1 != currIndex && !currSequence.isEmpty() )
             {
@@ -511,7 +506,7 @@ QList< QList<int> > CntHistoryModel::findIndices( const QList< int >& indices )
         }
     }
     
-    if (!currSequence.isEmpty())
+    if ( !currSequence.isEmpty() )
     {
         // Add last sequence if such exist
         sequences.append( currSequence );
@@ -529,23 +524,24 @@ QList< QList<int> > CntHistoryModel::findIndices( const QList< int >& indices )
 void CntHistoryModel::readMsgEvent(MsgItem& event, HistoryItem& item)
 {
     // Msg direction
-    if ( event.direction() == MsgItem::MsgDirectionIncoming )
-        item.direction = CntHistoryModel::Incoming;
-    if ( event.direction() == MsgItem::MsgDirectionOutgoing )
-        item.direction = CntHistoryModel::Outgoing;
+    if ( event.direction() == MsgItem::MsgDirectionIncoming ) {
+        item.flags |= Incoming;
+        // Read status
+        if ( event.isAttributeSet(MsgItem::MsgAttributeUnread) )
+            item.flags |= Unseen;
+        else
+            item.flags &= ~Unseen;
+    } else if ( event.direction() == MsgItem::MsgDirectionOutgoing )
+        item.flags |= Outgoing;
     
-    // Read status
-    /* TODO: This API available in the next release
-	 *if ( event.isAttributeSet(MsgItem::MsgAttributeUnread) )
-        item.seenStatus = CntHistoryModel::Unseen;
-    else
-        item.seenStatus = CntHistoryModel::Seen;*/
+    // Attachment
+    if (event.isAttributeSet(MsgItem::MsgAttributeAttachment))
+        item.flags |= Attachment;
     
-    item.msgType = CntHistoryModel::Message;
-    item.number = event.phoneNumber(); 
-    item.iconPath = QString("qtg_small_message");
+    item.flags |= Message;
+    item.number = event.phoneNumber();
     item.message = event.body();
-    item.timeStamp = event.timeStamp();
+    item.timeStamp = event.timeStamp().toLocalTime();
 }
 
 /*!
@@ -557,8 +553,6 @@ void CntHistoryModel::readMsgEvent(MsgItem& event, HistoryItem& item)
  */
 void CntHistoryModel::messagesReady(QList<MsgItem>& msgs)
 {
-    int oldRowCount = rowCount();
-    
     foreach( MsgItem m, msgs ) {
         // Create a new hst item
         HItemPointer item(new HistoryItem());
@@ -566,19 +560,17 @@ void CntHistoryModel::messagesReady(QList<MsgItem>& msgs)
         // Parse the MsgItem and add data into hst item
         readMsgEvent( m, *item );
         
-        // Map the hst item to a MsgItem in the msgModel
+        // Map the hist item to a MsgItem in the msgModel
         d->m_msgMap.insert( m.id(), item );
         
         // Append the hst item to our list
         d->m_List.append( item );
     }
     
-    beginInsertRows(QModelIndex(), oldRowCount, rowCount());
-    endInsertRows();
+    sort();
     
-    // After all messagas are fetched sort them and
-    // refresh the UI.
-    sortAndRefresh();
+    beginInsertRows(QModelIndex(), 0, rowCount());
+    endInsertRows();
 }
 
 /*!
@@ -597,7 +589,7 @@ void CntHistoryModel::messageAdded(MsgItem& msg)
     // Parse the MsgItem and add data into hst item
     readMsgEvent( msg, *item );
     
-    // Map the hst item to a MsgItem in the msgModel
+    // Map the hist item to a MsgItem in the msgModel
     d->m_msgMap.insert( msg.id(), item );
     
     // Append the hst item to our list
@@ -647,11 +639,10 @@ void CntHistoryModel::messageDeleted(MsgItem& msg)
         return;
     
     // Remove the item in stored containers
-    int count = d->m_msgMap.remove( msg.id() );
+    d->m_msgMap.remove( msg.id() );
     int index = d->m_List.indexOf( p );
-    bool removed = d->m_List.removeOne( p );
-    
-    if ( removed && count > 0 ) {
+    if ( index > -1 ) {
+        d->m_List.removeAt( index );
         beginRemoveRows(QModelIndex(), index, index);
         endRemoveRows();
     }

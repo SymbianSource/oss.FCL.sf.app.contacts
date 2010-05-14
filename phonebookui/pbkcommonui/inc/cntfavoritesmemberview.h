@@ -56,7 +56,11 @@ private slots:
 #endif
 
     void manageFavorites();
+    void handleManageFavorites(HbAction *action);
+    
     void onLongPressed (HbAbstractViewItem *item, const QPointF &coords);
+    void handleMenu(HbAction* action);
+    
     void openContact(const QModelIndex &index);
     void editContact(const QModelIndex &index);
     void removeFromFavorites(const QModelIndex &index);
@@ -77,7 +81,6 @@ private:
     HbView*                     mView; // own
 
     HbAction*                   mSoftkey; // owned by view
-
 };
 
 #endif /* CNTFAVORITESMEMBERVIEW_H */

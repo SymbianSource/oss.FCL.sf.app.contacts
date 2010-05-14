@@ -23,4 +23,6 @@ EXPORTS
 	?getStaticMetaObject@SimUtility@@SAABUQMetaObject@@XZ @ 22 NONAME ; struct QMetaObject const & SimUtility::getStaticMetaObject(void)
 	?simInfoReady@SimUtility@@IAEXAAUSimInfo@1@H@Z @ 23 NONAME ; void SimUtility::simInfoReady(struct SimUtility::SimInfo &, int)
 	?isSimInserted@SimUtility@@ABE_NXZ @ 24 NONAME ; bool SimUtility::isSimInserted(void) const
+	?adnCacheStatusReady@SimUtility@@IAEXAAW4CacheStatus@1@H@Z @ 25 NONAME ; void SimUtility::adnCacheStatusReady(enum SimUtility::CacheStatus &, int)
+	?notifyAdnCacheStatus@SimUtility@@QAE_NXZ @ 26 NONAME ; bool SimUtility::notifyAdnCacheStatus(void)
 

@@ -17,11 +17,9 @@
 #ifndef STUB_CLASSES_H
 #define STUB_CLASSES_H
 
-#include <QString>
-#include <QDateTime>
 #include <QtTest/QtTest>
 #include <QAbstractItemModel>
-#include <qcontactmanager.h>
+#include "cnthistorymodel.h"
 
 #define ALL_EVENTS 7
 #define FILTERED_EVENTS 5
@@ -30,81 +28,6 @@ const QString own_msg = QString("Own card view message %1 added");
 const QString cc_msg = QString("Contact message %1 added");
 const QString icon_path = QString("Icon %1 path");
 const QDateTime constDateTime = QDateTime(QDate(2010, 2, 15), QTime(12, 10, 10));
-
-struct HistoryItem {
-    int direction; // 0 - incoming, 1 - outgoing, 2 - missed
-    int seenStatus;    // 3 = unseen, 4 = seen
-    int msgType;    // 5 = call log, 6 = message
-    QString number; 
-    QString iconPath;
-    QString title;
-    QString message;
-    QDateTime timeStamp;
-    QString mmsMessage;
-    
-    HistoryItem() :
-        direction(0),
-        seenStatus(4),
-        iconPath(QString()),
-        title(QString()),
-        message(QString()),
-        timeStamp(QDateTime()),
-        mmsMessage(QString())
-    {};
-    
-    inline const HistoryItem& operator=(const HistoryItem& other)
-    {        
-        direction = other.direction;
-        seenStatus = other.seenStatus;
-        msgType = other.msgType;
-        number = other.number;
-        iconPath = other.iconPath;
-        title = other.title;
-        message = other.message;
-        timeStamp = other.timeStamp;
-        return *this;
-    }
-    
-    inline bool operator==(const HistoryItem& other) const
-    { return timeStamp == other.timeStamp; }
-};
-
-enum
-{
-   TimeStamp,
-   Direction,
-   BodyText,
-   UnReadStatus,
-   FirstName,
-   LastName
-};
-
-enum
-{
-    Incoming,
-    Outgoing,
-    Missed
-};
-
-enum
-{
-    Unseen = 3,
-    Seen
-};
-
-enum ItemType
-{
-    CallLog = 5,
-    Message
-};
-
-enum CustomRoles
-{
-    SeenStatusRole = Qt::UserRole + 1,
-    DirectionRole, 
-    ItemTypeRole,
-    PhoneNumberRole
-};
 
 class LogsEvent
 {

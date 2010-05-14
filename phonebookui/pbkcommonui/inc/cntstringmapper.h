@@ -45,107 +45,160 @@ public:
 public:
     void initMappings()
     {
-        // init stringmap for string localization
-        mStringMap.insert(QContactPhoneNumber::DefinitionName, hbTrId("Phone number"));
-        mStringMap.insert(QContactPhoneNumber::SubTypeAssistant, hbTrId("Assistant number"));
-        mStringMap.insert(QContactPhoneNumber::SubTypeCar, hbTrId("Car phone"));
-        mStringMap.insert(QContactPhoneNumber::SubTypeMobile, hbTrId("Mobile"));
-        mStringMap.insert(QContactPhoneNumber::SubTypeLandline, hbTrId("Phone"));
-        mStringMap.insert(QContactPhoneNumber::SubTypeDtmfMenu, hbTrId("DTMF"));
-        mStringMap.insert(QContactPhoneNumber::SubTypeFacsimile, hbTrId("Fax"));
-        mStringMap.insert(QContactPhoneNumber::SubTypePager, hbTrId("Pager number"));
+        //editor icons
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::DefinitionName, "", "qtg_small_mobile"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::DefinitionName, QContactDetail::ContextHome, "qtg_small_mobile_home"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::DefinitionName, QContactDetail::ContextWork, "qtg_small_mobile_work"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeMobile, "", "qtg_small_mobile"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeMobile, QContactDetail::ContextHome, "qtg_small_mobile_home"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeMobile, QContactDetail::ContextWork, "qtg_small_mobile_work"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeLandline, "", "qtg_small_landline"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextHome, "qtg_small_landline_home"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextWork, "qtg_small_landline_work"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, "", "qtg_small_fax"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextHome, "qtg_small_fax_home"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextWork, "qtg_small_fax_work"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypePager, "", "qtg_small_pager"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeCar, "", "qtg_small_car"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeAssistant, "", "qtg_small_assistant"));
+        mContactEditorIconList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, "", "qtg_small_voip"));
+        mContactEditorIconList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextHome, "qtg_small_voip_home"));
+        mContactEditorIconList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextWork, "qtg_small_voip_work"));
+        mContactEditorIconList.append(Loc(QContactOnlineAccount::SubTypeSip, "", "qtg_small_internet"));
+        mContactEditorIconList.append(Loc(QContactEmailAddress::DefinitionName, "", "qtg_small_email"));
+        mContactEditorIconList.append(Loc(QContactEmailAddress::DefinitionName, QContactDetail::ContextHome, "qtg_small_email_home"));
+        mContactEditorIconList.append(Loc(QContactEmailAddress::DefinitionName, QContactDetail::ContextWork, "qtg_small_email_work"));
+        mContactEditorIconList.append(Loc(QContactUrl::DefinitionName, "", "qtg_small_url_address"));
+        mContactEditorIconList.append(Loc(QContactUrl::DefinitionName, QContactDetail::ContextHome, "qtg_small_url_address_home"));
+        mContactEditorIconList.append(Loc(QContactUrl::DefinitionName, QContactDetail::ContextWork, "qtg_small_url_address_work"));
+        mContactEditorIconList.append(Loc(QContactAddress::DefinitionName, "", "qtg_small_location"));
+      
+        //editor list items
+        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, "", hbTrId("txt_phob_dblist_mobile")));
+        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_mobile_home")));
+        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_mobile_work")));
+        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, "", hbTrId("txt_phob_dblist_phone")));
+        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_phone_home")));
+        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_phone_work")));
+        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypePager, "", hbTrId("txt_phob_dblist_pager")));
+        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeAssistant, "", hbTrId("txt_phob_dblist_assistant")));
+        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeCar, "", hbTrId("txt_phob_dblist_car")));
+        mContactEditorLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, "", hbTrId("txt_phob_dblist_internet_telephone")));
+        mContactEditorLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_internet_telephone_home")));
+        mContactEditorLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_internet_telephone_work")));
+        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, "", hbTrId("txt_phob_dblist_fax")));
+        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_fax_home")));
+        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_fax_work")));
+        mContactEditorLocList.append(Loc(QContactOnlineAccount::SubTypeSip, "", hbTrId("txt_phob_dblist_ptt")));
 
-        mStringMap.insert(QContactEmailAddress::DefinitionName, hbTrId("Email"));
-
-        mStringMap.insert(QContactAddress::DefinitionName, hbTrId("Address"));
-
-        mStringMap.insert(QContactOnlineAccount::DefinitionName, hbTrId("Chat"));
-        mStringMap.insert(QContactOnlineAccount::SubTypeSipVoip, hbTrId("Internet call"));
-        mStringMap.insert(QContactOnlineAccount::SubTypeSip, hbTrId("SIP"));
-        mStringMap.insert(QContactOnlineAccount::SubTypeVideoShare, hbTrId("Share Video"));
-
-        mStringMap.insert(QContactUrl::DefinitionName, hbTrId("URL"));
-
-        mStringMap.insert(QContactOrganization::DefinitionName, hbTrId("Company details"));
-        mStringMap.insert(QContactOrganization::FieldAssistantName, hbTrId("Assistant name"));
-
-        mStringMap.insert(QContactBirthday::DefinitionName, hbTrId("Birthday"));
-        mStringMap.insert(QContactAnniversary::DefinitionName, hbTrId("Anniversary"));
-
-        mStringMap.insert(QContactAvatar::SubTypeAudioRingtone, hbTrId("Ringtone"));
-
-        mStringMap.insert(QContactNote::DefinitionName, hbTrId("Note"));
-
-        mStringMap.insert(QContactFamily::FieldSpouse, hbTrId("Spouse"));
-        mStringMap.insert(QContactFamily::FieldChildren, hbTrId("Children"));
-
-        mStringMap.insert(QContactDetail::ContextHome, hbTrId("(home)"));
-        mStringMap.insert(QContactDetail::ContextWork, hbTrId("(work)"));
-
-        // init mapping of editor icons
-        mEditorIconMap.insert(QContactPhoneNumber::DefinitionName, "qtg_small_mobile");
-        mEditorIconMap.insert(QContactPhoneNumber::SubTypeAssistant, "qtg_small_assistant");
-        mEditorIconMap.insert(QContactPhoneNumber::SubTypeCar, "qtg_small_car");
-        mEditorIconMap.insert(QContactPhoneNumber::SubTypeMobile, "qtg_small_mobile");
-        mEditorIconMap.insert(QContactPhoneNumber::SubTypeLandline, "qtg_small_landline");
-        mEditorIconMap.insert(QContactPhoneNumber::SubTypeDtmfMenu, "qgn_prop_empty");
-        mEditorIconMap.insert(QContactPhoneNumber::SubTypeFacsimile, "qtg_small_fax");
-        mEditorIconMap.insert(QContactPhoneNumber::SubTypePager, "qtg_small_pagerg");
-
-        mEditorIconMap.insert(QContactEmailAddress::DefinitionName, "qtg_small_email");
-
-        mEditorIconMap.insert(QContactAddress::DefinitionName, "qtg_small_location");
-
-        mEditorIconMap.insert(QContactOnlineAccount::DefinitionName, "qtg_small_internet");
-        mEditorIconMap.insert(QContactOnlineAccount::SubTypeSipVoip, "qtg_small_internet");
-        mEditorIconMap.insert(QContactOnlineAccount::SubTypeSip, "qtg_small_internet");
-        mEditorIconMap.insert(QContactOnlineAccount::SubTypeVideoShare, "qtg_small_internet");
-        mEditorIconMap.insert(QContactUrl::DefinitionName, "qtg_small_url_address.svg");
+        //editor list item specific menu items
+        mContactEditorAddLocList.append(Loc(QContactAddress::DefinitionName, "", hbTrId("txt_phob_menu_add_address")));
+        mContactEditorAddLocList.append(Loc(QContactOrganization::DefinitionName, "", hbTrId("txt_phob_menu_add_company_details")));
+        mContactEditorAddLocList.append(Loc(QContactEmailAddress::DefinitionName, "", hbTrId("txt_phob_menu_add_email")));
+        mContactEditorAddLocList.append(Loc(QContactFamily::DefinitionName, "", hbTrId("txt_phob_menu_add_family_details")));
+        mContactEditorAddLocList.append(Loc(QContactPhoneNumber::DefinitionName, "", hbTrId("txt_phob_menu_add_number")));
+        mContactEditorAddLocList.append(Loc(QContactUrl::DefinitionName, "", hbTrId("txt_phob_menu_add_url")));
         
-        mLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, "", hbTrId("txt_phob_dblist_mobile")));
-        mLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, QContactDetail::ContextHome,hbTrId("txt_phob_dblist_mobile_home")));
-        mLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, QContactDetail::ContextWork,hbTrId("txt_phob_dblist_mobile_work")));
-        mLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, "",hbTrId("txt_phob_dblist_phone")));
-        mLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_phone_home")));
-        mLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_phone_work")));
-        mLocList.append(Loc(QContactPhoneNumber::SubTypePager, "", hbTrId("txt_phob_dblist_pager")));
-        mLocList.append(Loc(QContactPhoneNumber::SubTypeAssistant, "", hbTrId("txt_phob_dblist_assistant")));
-        mLocList.append(Loc(QContactPhoneNumber::SubTypeCar, "", hbTrId("txt_phob_dblist_car")));
-        mLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, "", hbTrId("txt_phob_dblist_internet_telephone")));
-        mLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_internet_telephone_home")));
-        mLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_internet_telephone_work")));
-        mLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, "", hbTrId("txt_phob_dblist_fax")));
-        mLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_fax_home")));
-        mLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_fax_work")));
-        mLocList.append(Loc(QContactOnlineAccount::SubTypeSip, "", hbTrId("txt_phob_dblist_ptt")));
-
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::DefinitionName, "", hbTrId("txt_phob_menu_call_mobile")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::DefinitionName, QContactDetail::ContextHome, hbTrId("txt_phob_menu_call_mobile_home")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::DefinitionName, QContactDetail::ContextWork, hbTrId("txt_phob_menu_call_mobile_work")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypeAssistant, "", hbTrId("txt_phob_menu_call_assistant")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypeAssistant, QContactDetail::ContextHome, hbTrId("txt_phob_menu_call_assistant")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypeAssistant, QContactDetail::ContextWork, hbTrId("txt_phob_menu_call_assistant")));   
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypeCar, "", hbTrId("txt_phob_menu_call_car_phone")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypeCar, QContactDetail::ContextHome, hbTrId("txt_phob_menu_call_car_phone")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypeCar, QContactDetail::ContextWork, hbTrId("txt_phob_menu_call_car_phone")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, QContactDetail::ContextHome,hbTrId("txt_phob_menu_call_mobile_home")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, QContactDetail::ContextWork,hbTrId("txt_phob_menu_call_mobile_work")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, "", hbTrId("txt_phob_menu_call_mobile")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, "",hbTrId("txt_phob_menu_call_phone")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextHome, hbTrId("txt_phob_menu_call_phone_home")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextWork, hbTrId("txt_phob_menu_call_phone_work")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, "", hbTrId("txt_phob_menu_fax")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextHome, hbTrId("txt_phob_menu_fax_home")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextWork, hbTrId("txt_phob_menu_fax_work")));
-        mContactCardMenuLocList.append(Loc(QContactPhoneNumber::SubTypePager, "", hbTrId("txt_phob_menu_call_pager")));
-        mContactCardMenuLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, "", hbTrId("txt_phob_menu_call_internet_call")));
-        mContactCardMenuLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextHome, hbTrId("txt_phob_menu_call_internet_call_home")));
-        mContactCardMenuLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextWork, hbTrId("txt_phob_menu_call_internet_call_work")));
-        mContactCardMenuLocList.append(Loc(QContactOnlineAccount::SubTypeSip, "", hbTrId("txt_phob_menu_sip")));
-        mContactCardMenuLocList.append(Loc(QContactEmailAddress::DefinitionName, "", hbTrId("txt_phob_menu_email")));
-        mContactCardMenuLocList.append(Loc(QContactEmailAddress::DefinitionName, QContactDetail::ContextHome, hbTrId("txt_phob_menu_email_home")));
-        mContactCardMenuLocList.append(Loc(QContactEmailAddress::DefinitionName, QContactDetail::ContextWork, hbTrId("txt_phob_menu_email_work")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::DefinitionName, "", hbTrId("txt_phob_menu_edit_mobile")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::DefinitionName, QContactDetail::ContextHome, hbTrId("txt_phob_menu_edit_mobile_home")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::DefinitionName, QContactDetail::ContextWork, hbTrId("txt_phob_menu_edit_mobile_work")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeAssistant, "", hbTrId("txt_phob_menu_call_assistant")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeAssistant, QContactDetail::ContextHome, hbTrId("txt_phob_menu_edit_assistant")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeAssistant, QContactDetail::ContextWork, hbTrId("txt_phob_menu_edit_assistant")));   
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeCar, "", hbTrId("txt_phob_menu_edit_car")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeCar, QContactDetail::ContextHome, hbTrId("txt_phob_menu_edit_car")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeCar, QContactDetail::ContextWork, hbTrId("txt_phob_menu_edit_car")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, QContactDetail::ContextHome,hbTrId("txt_phob_menu_edit_mobile")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, QContactDetail::ContextWork,hbTrId("txt_phob_menu_edit_mobile_home")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, "", hbTrId("txt_phob_menu_edit_mobile_work")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, "",hbTrId("txt_phob_menu_edit_phone")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextHome, hbTrId("txt_phob_menu_edit_phone_home")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextWork, hbTrId("txt_phob_menu_edit_phone_work")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, "", hbTrId("txt_phob_menu_edit_fax")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextHome, hbTrId("txt_phob_menu_edit_fax_home")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextWork, hbTrId("txt_phob_menu_edit_fax_work")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypePager, "", hbTrId("txt_phob_menu_edit_pager")));
+        mContactEditorEditLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, "", hbTrId("txt_phob_menu_edit_internet_telephone")));
+        mContactEditorEditLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextHome, hbTrId("txt_phob_menu_edit_internet_telephone_home")));
+        mContactEditorEditLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextWork, hbTrId("txt_phob_menu_edit_internet_telephone_work")));
+        mContactEditorEditLocList.append(Loc(QContactOnlineAccount::SubTypeSip, "", hbTrId("txt_phob_menu_edit_sip")));
+        mContactEditorEditLocList.append(Loc(QContactEmailAddress::DefinitionName, "", hbTrId("txt_phob_menu_edit_email")));
+        mContactEditorEditLocList.append(Loc(QContactEmailAddress::DefinitionName, QContactDetail::ContextHome, hbTrId("txt_phob_menu_edit_email_home")));
+        mContactEditorEditLocList.append(Loc(QContactEmailAddress::DefinitionName, QContactDetail::ContextWork, hbTrId("txt_phob_menu_edit_email_work")));
+        mContactEditorEditLocList.append(Loc(QContactAddress::DefinitionName, "", hbTrId("txt_phob_menu_edit_address")));
+        mContactEditorEditLocList.append(Loc(QContactAddress::DefinitionName, QContactDetail::ContextHome, hbTrId("txt_phob_menu_edit_address_home")));
+        mContactEditorEditLocList.append(Loc(QContactAddress::DefinitionName, QContactDetail::ContextWork, hbTrId("txt_phob_menu_edit_address_work")));
+        mContactEditorEditLocList.append(Loc(QContactAnniversary::DefinitionName, "", hbTrId("txt_phob_menu_edit_anniversary")));
+        mContactEditorEditLocList.append(Loc(QContactBirthday::DefinitionName, "", hbTrId("txt_phob_menu_edit_birthday")));
+        mContactEditorEditLocList.append(Loc(QContactNote::DefinitionName, "", hbTrId("txt_phob_menu_edit_note")));
+        mContactEditorEditLocList.append(Loc(QContactFamily::FieldSpouse, "", hbTrId("txt_phob_menu_edit_children")));
+        mContactEditorEditLocList.append(Loc(QContactFamily::FieldChildren, "", hbTrId("txt_phob_menu_edit_spouse")));
+                
+                
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::DefinitionName, "", hbTrId("txt_phob_menu_delete_mobile")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::DefinitionName, QContactDetail::ContextHome, hbTrId("txt_phob_menu_delete_mobile_home")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::DefinitionName, QContactDetail::ContextWork, hbTrId("txt_phob_menu_delete_mobile_work")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeAssistant, "", hbTrId("txt_phob_menu_call_assistant")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeAssistant, QContactDetail::ContextHome, hbTrId("txt_phob_menu_delete_assistant")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeAssistant, QContactDetail::ContextWork, hbTrId("txt_phob_menu_delete_assistant")));   
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeCar, "", hbTrId("txt_phob_menu_delete_car")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeCar, QContactDetail::ContextHome, hbTrId("txt_phob_menu_delete_car")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeCar, QContactDetail::ContextWork, hbTrId("txt_phob_menu_delete_car")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, QContactDetail::ContextHome,hbTrId("txt_phob_menu_delete_mobile")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, QContactDetail::ContextWork,hbTrId("txt_phob_menu_delete_mobile_home")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, "", hbTrId("txt_phob_menu_delete_mobile_work")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, "",hbTrId("txt_phob_menu_delete_phone")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextHome, hbTrId("txt_phob_menu_delete_phone_home")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextWork, hbTrId("txt_phob_menu_delete_phone_work")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, "", hbTrId("txt_phob_menu_delete_fax")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextHome, hbTrId("txt_phob_menu_delete_fax_home")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextWork, hbTrId("txt_phob_menu_delete_fax_work")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypePager, "", hbTrId("txt_phob_menu_delete_pager")));
+        mContactEditorDelLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, "", hbTrId("txt_phob_menu_delete_internet_telephone")));
+        mContactEditorDelLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextHome, hbTrId("txt_phob_menu_delete_internet_telephone_home")));
+        mContactEditorDelLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextWork, hbTrId("txt_phob_menu_delete_internet_telephone_work")));
+        mContactEditorDelLocList.append(Loc(QContactOnlineAccount::SubTypeSip, "", hbTrId("txt_phob_menu_delete_sip")));
+        mContactEditorDelLocList.append(Loc(QContactEmailAddress::DefinitionName, "", hbTrId("txt_phob_menu_delete_email")));
+        mContactEditorDelLocList.append(Loc(QContactEmailAddress::DefinitionName, QContactDetail::ContextHome, hbTrId("txt_phob_menu_delete_email_home")));
+        mContactEditorDelLocList.append(Loc(QContactEmailAddress::DefinitionName, QContactDetail::ContextWork, hbTrId("txt_phob_menu_delete_email_work")));
+        mContactEditorDelLocList.append(Loc(QContactAddress::DefinitionName, "", hbTrId("txt_phob_menu_delete_address")));
+        mContactEditorDelLocList.append(Loc(QContactAddress::DefinitionName, QContactDetail::ContextHome, hbTrId("txt_phob_menu_delete_address_home")));
+        mContactEditorDelLocList.append(Loc(QContactAddress::DefinitionName, QContactDetail::ContextWork, hbTrId("txt_phob_menu_delete_address_work")));
+        mContactEditorDelLocList.append(Loc(QContactAnniversary::DefinitionName, "", hbTrId("txt_phob_menu_delete_anniversary")));
+        mContactEditorDelLocList.append(Loc(QContactBirthday::DefinitionName, "", hbTrId("txt_phob_menu_delete_birthday")));
+        mContactEditorDelLocList.append(Loc(QContactNote::DefinitionName, "", hbTrId("txt_phob_menu_delete_note")));
+        mContactEditorDelLocList.append(Loc(QContactFamily::FieldSpouse, "", hbTrId("txt_phob_menu_delete_children")));
+        mContactEditorDelLocList.append(Loc(QContactFamily::FieldChildren, "", hbTrId("txt_phob_menu_delete_spouse")));
+             
+        //contact card item specific menu 
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::DefinitionName, "", hbTrId("txt_phob_menu_call_mobile")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::DefinitionName, QContactDetail::ContextHome, hbTrId("txt_phob_menu_call_mobile_home")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::DefinitionName, QContactDetail::ContextWork, hbTrId("txt_phob_menu_call_mobile_work")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeAssistant, "", hbTrId("txt_phob_menu_call_assistant")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeAssistant, QContactDetail::ContextHome, hbTrId("txt_phob_menu_call_assistant")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeAssistant, QContactDetail::ContextWork, hbTrId("txt_phob_menu_call_assistant")));   
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeCar, "", hbTrId("txt_phob_menu_call_car_phone")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeCar, QContactDetail::ContextHome, hbTrId("txt_phob_menu_call_car_phone")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeCar, QContactDetail::ContextWork, hbTrId("txt_phob_menu_call_car_phone")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, QContactDetail::ContextHome,hbTrId("txt_phob_menu_call_mobile_home")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, QContactDetail::ContextWork,hbTrId("txt_phob_menu_call_mobile_work")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeMobile, "", hbTrId("txt_phob_menu_call_mobile")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, "",hbTrId("txt_phob_menu_call_phone")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextHome, hbTrId("txt_phob_menu_call_phone_home")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextWork, hbTrId("txt_phob_menu_call_phone_work")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, "", hbTrId("txt_phob_menu_fax")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextHome, hbTrId("txt_phob_menu_fax_home")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextWork, hbTrId("txt_phob_menu_fax_work")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypePager, "", hbTrId("txt_phob_menu_call_pager")));
+        mItemSpecificMenuLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, "", hbTrId("txt_phob_menu_call_internet_call")));
+        mItemSpecificMenuLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextHome, hbTrId("txt_phob_menu_call_internet_call_home")));
+        mItemSpecificMenuLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextWork, hbTrId("txt_phob_menu_call_internet_call_work")));
+        mItemSpecificMenuLocList.append(Loc(QContactOnlineAccount::SubTypeSip, "", hbTrId("txt_phob_menu_sip")));
+        mItemSpecificMenuLocList.append(Loc(QContactEmailAddress::DefinitionName, "", hbTrId("txt_phob_menu_email")));
+        mItemSpecificMenuLocList.append(Loc(QContactEmailAddress::DefinitionName, QContactDetail::ContextHome, hbTrId("txt_phob_menu_email_home")));
+        mItemSpecificMenuLocList.append(Loc(QContactEmailAddress::DefinitionName, QContactDetail::ContextWork, hbTrId("txt_phob_menu_email_work")));
         
+        //contact card list items
         mContactCardLocList.append(Loc(QContactPhoneNumber::DefinitionName, "", hbTrId("txt_phob_dblist_call_mobile")));
         mContactCardLocList.append(Loc(QContactPhoneNumber::DefinitionName, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_call_mobile_home")));
         mContactCardLocList.append(Loc(QContactPhoneNumber::DefinitionName, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_call_mobile_work")));
@@ -165,15 +218,18 @@ public:
         mContactCardLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_fax_home")));
         mContactCardLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_fax_work")));
         mContactCardLocList.append(Loc(QContactPhoneNumber::SubTypePager, "", hbTrId("txt_phob_dblist_call_pager")));
-        mContactCardLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, "", hbTrId("txt_phob_dblist_call_internet_call")));
-        mContactCardLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_call_internet_call_home")));
-        mContactCardLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_call_internet_call_work")));
-        mContactCardLocList.append(Loc(QContactOnlineAccount::SubTypeSip, "", hbTrId("txt_phob_dblist_sip")));
+        mContactCardLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, "", hbTrId("txt_phob_formlabel_internet_telephone")));
+        mContactCardLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextHome, hbTrId("txt_phob_formlabel_internet_telephone_home")));
+        mContactCardLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextWork, hbTrId("txt_phob_formlabel_internet_telephone_work")));
+        mContactCardLocList.append(Loc(QContactOnlineAccount::SubTypeSip, "", hbTrId("txt_phob_formlabel_sip")));
         mContactCardLocList.append(Loc(QContactEmailAddress::DefinitionName, "", hbTrId("txt_phob_dblist_email")));
         mContactCardLocList.append(Loc(QContactEmailAddress::DefinitionName, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_email_home")));
         mContactCardLocList.append(Loc(QContactEmailAddress::DefinitionName, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_email_work")));
+        mContactCardLocList.append(Loc(QContactUrl::DefinitionName, "", hbTrId("txt_phob_dblist_url")));
+        mContactCardLocList.append(Loc(QContactUrl::DefinitionName, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_url_home")));
+        mContactCardLocList.append(Loc(QContactUrl::DefinitionName, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_url_work")));
         
-        // init mapping of contact card icons
+        //contact card icons
         mContactCardIconList.append(Loc(QContactPhoneNumber::DefinitionName, "", "qtg_large_call_mobile"));
         mContactCardIconList.append(Loc(QContactPhoneNumber::DefinitionName, QContactDetail::ContextHome, "qtg_large_call_mobile_home"));
         mContactCardIconList.append(Loc(QContactPhoneNumber::DefinitionName, QContactDetail::ContextWork, "qtg_large_call_mobile_work"));
@@ -197,29 +253,16 @@ public:
         mContactCardIconList.append(Loc(QContactEmailAddress::DefinitionName, "", "qtg_large_email"));
         mContactCardIconList.append(Loc(QContactEmailAddress::DefinitionName, QContactDetail::ContextHome, "qtg_large_email_home"));
         mContactCardIconList.append(Loc(QContactEmailAddress::DefinitionName, QContactDetail::ContextWork, "qtg_large_email_work"));
+        mContactCardIconList.append(Loc(QContactUrl::DefinitionName, "", "qtg_large_url_address"));
+        mContactCardIconList.append(Loc(QContactUrl::DefinitionName, QContactDetail::ContextHome, "qtg_large_url_address_home"));
+        mContactCardIconList.append(Loc(QContactUrl::DefinitionName, QContactDetail::ContextWork, "qtg_large_url_address_work"));
     }
 
-    QString getMappedDetail(const QString &string) { return mStringMap.value(string); }
-    QString getMappedIcon(const QString &string) { return mEditorIconMap.value(string); }
-    
-	QString getLocString( QString aDefId, QString aContext )
-    {
-        QString str = aDefId;
-        foreach ( Loc loc, mLocList )
-        {
-            if ( loc.mId == aDefId && loc.mContext == aContext )
-            {
-                str = loc.mLoc;
-                break;
-            }
-        }
-        return str;
-    }
-
-    QString getContactCardMenuLocString( QString aDefId, QString aContext )
+    //helper function to get string from list
+    QString getLocString( QString aDefId, QString aContext, QList<Loc> list)
     {
         QString str;
-        foreach ( Loc loc, mContactCardMenuLocList )
+        foreach ( Loc loc, list )
         {
             if ( loc.mId == aDefId && loc.mContext == aContext )
             {
@@ -229,40 +272,63 @@ public:
         }
         return str;
     }
+    
+    //get string of editor view item
+	QString getContactEditorLocString( QString aDefId, QString aContext )
+    {
+	    return getLocString( aDefId, aContext, mContactEditorLocList );
+    }
+	
+	//get add string of contect editor
+	QString getContactEditorAddLocString( QString aDefId, QString aContext )
+    {
+	   return getLocString( aDefId, aContext, mContactEditorAddLocList );
+	}
+	
+	//get edit string of contect editor
+	QString getContactEditorEditLocString( QString aDefId, QString aContext )
+	{
+        return getLocString( aDefId, aContext, mContactEditorEditLocList );
+    }
+	    
+	
+	//get delete string of contect editor
+	QString getContactEditorDelLocString( QString aDefId, QString aContext )
+    {
+        return getLocString( aDefId, aContext, mContactEditorDelLocList );
+    }
+
+	//get string of item specific menu of contact card and editor view
+    QString getItemSpecificMenuLocString( QString aDefId, QString aContext )
+    {
+        return getLocString( aDefId, aContext, mItemSpecificMenuLocList );      
+    }
+    
+    //get string of contact card list item
     QString getContactCardListLocString( QString aDefId, QString aContext )
     {
-        QString str;
-        foreach ( Loc loc, mContactCardLocList )
-        {
-            if ( loc.mId == aDefId && loc.mContext == aContext )
-            {
-                str = loc.mLoc;
-                break;
-            }
-        }
-        return str;
+        return getLocString( aDefId, aContext, mContactCardLocList );
     }
+    
+    //get string of editor view icon
+    QString getContactEditorIconString( QString aDefId, QString aContext )
+    {
+        return getLocString( aDefId, aContext, mContactEditorIconList );
+    }
+    
+    //get string of contact card icon
     QString getContactCardIconString( QString aDefId, QString aContext )
     {
-        QString str;
-        foreach ( Loc loc, mContactCardIconList )
-        {
-            if ( loc.mId == aDefId && loc.mContext == aContext )
-            {
-                str = loc.mLoc;
-                break;
-            }
-        }
-        return str;
+        return getLocString( aDefId, aContext, mContactCardIconList );
     }
-
+    
 private:
-    QMap<QString, QString> mStringMap;
-    QMap<QString, QString> mEditorIconMap;
-    QMap<QString, QString> mLauncherIconMap;
-
-	QList<Loc> mLocList;    
-	QList<Loc> mContactCardMenuLocList;
+    QList<Loc> mContactEditorIconList;
+	QList<Loc> mContactEditorLocList; 
+	QList<Loc> mContactEditorAddLocList;
+	QList<Loc> mContactEditorEditLocList;
+	QList<Loc> mContactEditorDelLocList;
+	QList<Loc> mItemSpecificMenuLocList;
     QList<Loc> mContactCardLocList;
     QList<Loc> mContactCardIconList;
 };

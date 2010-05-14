@@ -45,7 +45,7 @@ private slots:
     void saveChanges();
     void discardChanges();
     void insertField();
-    void handleOrientation(Qt::Orientation aOrientation);
+    void handleItemShown(const QModelIndex& aIndex );
     
 public:
     void setViewId( int aId );
@@ -74,7 +74,7 @@ private:
 #endif
 
     QPointer<HbDataForm>           mDataForm;
-    QPointer<CntDetailEditorModel> mDataFormModel;
+    CntDetailEditorModel           *mDataFormModel;
     QPointer<HbGroupBox>           mHeader;
     int                            mId;
     HbView                         *mView;
@@ -83,5 +83,6 @@ private:
     CntEditorFactory               *mEditorFactory;
     HbAction                       *mSoftkey;
     HbAction                       *mCancel;
+    CntViewParameters               mArgs;
     };
 #endif /* CNTDETAILEDITOR_H_ */

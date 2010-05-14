@@ -364,7 +364,7 @@ void CCntServer::CreateMessageMapL()
 	iMsgLut.InsertL(ECntGetDatabaseReady,       static_cast<MsgHandlerFptr>(&CCntFileManagerMsgHandler::GetDatabaseReadyL));
 	iMsgLut.InsertL(ECntFetchTemplateIds,       static_cast<MsgHandlerFptr>(&CCntFileManagerMsgHandler::FetchTemplateIdsL));
 	iMsgLut.InsertL(ECntFetchGroupIdLists,      static_cast<MsgHandlerFptr>(&CCntFileManagerMsgHandler::FetchGroupIdListsL));
-	iMsgLut.InsertL(ECntSearchResultIdLists,  static_cast<MsgHandlerFptr>(&CCntFileManagerMsgHandler::FetchSearchResultsL));
+	iMsgLut.InsertL(ECntSearchResultList,  static_cast<MsgHandlerFptr>(&CCntFileManagerMsgHandler::FetchSearchResultsL));
 	
 	iMsgLut.InsertL(ECntFilesSize,          static_cast<MsgHandlerFptr>(&CCntFileManagerMsgHandler::FilesSizeL));
 	

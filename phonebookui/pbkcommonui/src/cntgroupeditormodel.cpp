@@ -39,28 +39,33 @@ CntGroupEditorModel::CntGroupEditorModel(QContact* aContact) :
     iGroupName = nameDetails.first();
     iGroupConfCallNumber = numberDetails.first();
     
-    HbDataFormModelItem::DataItemType text = HbDataFormModelItem::TextItem;
-    HbDataFormModelItem* groupname = new HbDataFormModelItem(text, hbTrId("txt_phob_formlabel_group_name"));
-    HbDataFormModelItem* conferenceNumber = new HbDataFormModelItem(text, hbTrId("Conference Call number"));
+    HbDataFormModelItem::DataItemType type = HbDataFormModelItem::TextItem;
+    iNameItem = new HbDataFormModelItem(type, hbTrId("txt_phob_formlabel_group_name"));
+    iNumberItem = new HbDataFormModelItem(type, hbTrId("txt_phob_formlabel_conference_number"));
     
-    groupname->setContentWidgetData("text", iGroupName.customLabel());
-    conferenceNumber->setContentWidgetData("text", iGroupConfCallNumber.number());
+    iNameItem->setContentWidgetData("text", iGroupName.customLabel());
+    iNumberItem->setContentWidgetData("text", iGroupConfCallNumber.number() );
     
     HbDataFormModelItem* root = invisibleRootItem();
-    appendDataFormItem(groupname, root);
-    appendDataFormItem(conferenceNumber, root);
+    appendDataFormItem( iNameItem, root);
+    appendDataFormItem( iNumberItem, root);
 }
 
 CntGroupEditorModel::~CntGroupEditorModel()
 {
 }
 
+bool CntGroupEditorModel::isConferenceNumber( const QModelIndex& aIndex )
+{
+    return ( itemFromIndex( aIndex ) == iNumberItem );
+}
+
 void CntGroupEditorModel::saveContactDetails()
 {
     HbDataFormModelItem* root = invisibleRootItem();
     
-    iGroupName.setCustomLabel(root->childAt( 0 )->contentWidgetData("text").toString().trimmed());
-    iGroupConfCallNumber.setNumber(root->childAt( 1 )->contentWidgetData("text").toString().trimmed());
+    iGroupName.setCustomLabel( iNameItem->contentWidgetData("text").toString().trimmed());
+    iGroupConfCallNumber.setNumber( iNumberItem->contentWidgetData("text").toString().trimmed());
     
     mContact->saveDetail( &iGroupName );
     mContact->saveDetail( &iGroupConfCallNumber );
@@ -73,7 +78,7 @@ void CntGroupEditorModel::saveContactDetails()
 
     if(iGroupConfCallNumber.number().isEmpty())
     {
-    mContact->removeDetail( &iGroupConfCallNumber );
+        mContact->removeDetail( &iGroupConfCallNumber );
     }
 }
 

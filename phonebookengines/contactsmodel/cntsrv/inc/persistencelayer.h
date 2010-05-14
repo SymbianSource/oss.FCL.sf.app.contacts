@@ -174,7 +174,7 @@ public:
 	virtual TInt64 MachineIdL() const = 0;
 	virtual CContactIdArray& CardTemplateIdsL() = 0;
 	virtual CContactIdArray& GroupIdListL() = 0;
-	virtual CContactIdArray* SearchIdListL(const TDesC& aSearchQuery) const = 0;
+    virtual CBufSeg* DetailsListL(const TDesC& aSearchQuery) const = 0;
 	virtual void SetMachineIdL(TInt64 aMachineId) = 0;
 	virtual TPtrC UniqueIdL() = 0; 
 	

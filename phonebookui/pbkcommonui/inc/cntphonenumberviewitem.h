@@ -57,7 +57,6 @@ private:
 #endif
     HbComboBox*             mBox;
     HbLineEdit*             mEdit;
-    HbEditorInterface*      mFilter;
     QGraphicsLinearLayout*  mLayout;
     };
 #endif /* CNTPHONENUMBERVIEWITEM_H_ */

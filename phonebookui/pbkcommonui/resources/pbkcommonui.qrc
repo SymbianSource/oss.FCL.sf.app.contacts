@@ -13,6 +13,7 @@
         <file alias="contacts_groupactions.docml" >contacts_groupactions.docml</file>
         <file alias="contacts_history.docml" >contacts_history.docml</file>
         <file alias="contacts_editor.docml" >contacts_editor.docml</file>
+        <file alias="contacts_sim.docml">contacts_sim.docml</file>
         <file alias="contacts_favorite.docml" >contacts_favorite.docml</file>
         <file alias="contacts_favmember.docml" >contacts_favmember.docml</file>
         <file alias="contacts_collections.docml" >contacts_collections.docml</file>
@@ -33,8 +34,8 @@
         <file alias="cntcontactcarddetailitem.css">style/cntcontactcarddetailitem.css</file>
         <file alias="cntcontactcardheadingitem.widgetml">style/cntcontactcardheadingitem.widgetml</file>
         <file alias="cntcontactcardheadingitem.css">style/cntcontactcardheadingitem.css</file>
-        <file alias="cnthistoryviewitemwidget.widgetml">style/cnthistoryviewitemwidget.widgetml</file>
-        <file alias="cnthistoryviewitemwidget.css">style/cnthistoryviewitemwidget.css</file>
+        <file alias="cnthistoryviewitem.widgetml">style/cnthistoryviewitem.widgetml</file>
+        <file alias="cnthistoryviewitem.css">style/cnthistoryviewitem.css</file>
         <file alias="cntlocationbutton.hbpushbutton.widgetml">style/cntlocationbutton.hbpushbutton.widgetml</file>
         <file alias="cntlocationbutton.css">style/cntlocationbutton.css</file>
     </qresource>

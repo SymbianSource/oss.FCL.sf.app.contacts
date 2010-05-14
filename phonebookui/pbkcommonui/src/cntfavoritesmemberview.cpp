@@ -24,6 +24,8 @@
 #include <hbaction.h>
 #include <hblistview.h>
 #include <hblistviewitem.h>
+#include <hbindexfeedback.h>
+#include <hbscrollbar.h>
 #include <hbview.h>
 #include <hbaction.h>
 #include <hblabel.h>
@@ -92,8 +94,15 @@ void CntFavoritesMemberView::activate( CntAbstractViewManager* aMgr, const CntVi
 
     mFavoriteListView = static_cast<HbListView*> (mDocumentLoader.findWidget("listView"));
     mFavoriteListView->setUniformItemSizes(true);
+    mFavoriteListView->setFrictionEnabled(true);
+    mFavoriteListView->setScrollingStyle(HbScrollArea::PanWithFollowOn);
+    mFavoriteListView->verticalScrollBar()->setInteractive(true);
     connect(mFavoriteListView, SIGNAL(longPressed(HbAbstractViewItem *, const QPointF &)),
                       this,  SLOT(onLongPressed(HbAbstractViewItem *, const QPointF &)));
+
+    HbIndexFeedback *indexFeedback = new HbIndexFeedback(mView);
+    indexFeedback->setIndexFeedbackPolicy(HbIndexFeedback::IndexFeedbackSingleCharacter);
+    indexFeedback->setItemView(mFavoriteListView);
     
     HbFrameBackground frame;
     frame.setFrameGraphicsName("qtg_fr_list_normal");
@@ -141,17 +150,20 @@ void CntFavoritesMemberView::manageFavorites()
 {
     // call a dialog to display the contacts
     CntGroupSelectionPopup *groupSelectionPopup = new CntGroupSelectionPopup(mViewManager->contactManager(SYMBIAN_BACKEND), mContact);
-    mFavoriteListView->setModel(0);
+
     groupSelectionPopup->populateListOfContact();
 
-    HbAction* action = groupSelectionPopup->exec();
-    if (action == groupSelectionPopup->primaryAction())
+    groupSelectionPopup->open(this, SLOT(handleManageFavorites(HbAction*)));
+}
+
+void CntFavoritesMemberView::handleManageFavorites(HbAction *action)
+{
+    CntGroupSelectionPopup *groupSelectionPopup = static_cast<CntGroupSelectionPopup*>(sender());
+    
+    if (groupSelectionPopup && action == groupSelectionPopup->actions().first())
     {
         groupSelectionPopup->saveOldGroup();
     }
-    delete groupSelectionPopup;
-	
-    mFavoriteListView->setModel(mModel);
 }
 
 
@@ -160,11 +172,15 @@ Called when a list item is longpressed
 */
 void CntFavoritesMemberView::onLongPressed (HbAbstractViewItem *aItem, const QPointF &aCoords)
 {
+    QVariant data( aItem->modelIndex().row() );
+   
     QModelIndex index = aItem->modelIndex();
     QVariant variant = index.data(Qt::UserRole+1);
     const QMap<QString, QVariant> map = variant.toMap();
 
     HbMenu *menu = new HbMenu();
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+    menu->setPreferredPos( aCoords );
    
     HbAction *openContactAction = 0;
     HbAction *editContactAction = 0;
@@ -177,30 +193,40 @@ void CntFavoritesMemberView::onLongPressed (HbAbstractViewItem *aItem, const QPo
     editContactAction = menu->addAction(hbTrId("txt_common_menu_edit"));
     removeFromFavoritesAction = menu->addAction(hbTrId("txt_phob_menu_remove_from_favorites"));
     sendToHsAction = menu->addAction(hbTrId("Send to HS"));
+    
+    openContactAction->setData( data );
+    editContactAction->setData( data );
+    removeFromFavoritesAction->setData( data );
+    sendToHsAction->setData( data );
 
-    HbAction *selectedAction = menu->exec(aCoords);
+    menu->open(this, SLOT(handleMenu(HbAction*)));
+}
 
-    if (selectedAction)
+void CntFavoritesMemberView::handleMenu(HbAction* action)
     {
-        if (selectedAction == openContactAction)
+    int row = action->data().toInt();
+    HbMenu *menuItem = static_cast<HbMenu*>(sender());
+    QModelIndex index = mModel->index(row, 0);
+       
+    int id = index.data(Qt::UserRole).toInt();
+
+    if ( action == menuItem->actions().first() )
         {
             openContact(index);
         }
-        else if (selectedAction == editContactAction)
+    else if (action == menuItem->actions().at(1))
         {
             editContact(index);
         }
-        else if (selectedAction == removeFromFavoritesAction)
+    else if (action == menuItem->actions().at(2))
         {
-            removeFromFavorites(index);
+        removeFromFavorites(index);
         }
-        else if (selectedAction == sendToHsAction)
-        {
-//            sendToHs(index);
-        }
+   else if (action == menuItem->actions().at(3))
+       {
+       //            sendToHs(index);
+       }
     }
-    menu->deleteLater();
-}
 
 void CntFavoritesMemberView::openContact(const QModelIndex &index)
 {
@@ -236,11 +262,11 @@ Called after user clicked on the listview.
 void CntFavoritesMemberView::removeFromFavorites(const QModelIndex &index)
 {
     // get contact id using index
-        QContact selectedContact = mModel->contact(index);
-        QContactRelationship relationship;
-        relationship.setRelationshipType(QContactRelationship::HasMember);
-        relationship.setFirst(mContact->id());
-        relationship.setSecond(selectedContact.id());
-        mViewManager->contactManager(SYMBIAN_BACKEND)->removeRelationship(relationship);
+    QContact selectedContact = mModel->contact(index);
+    QContactRelationship relationship;
+    relationship.setRelationshipType(QContactRelationship::HasMember);
+    relationship.setFirst(mContact->id());
+    relationship.setSecond(selectedContact.id());
+    mViewManager->contactManager(SYMBIAN_BACKEND)->removeRelationship(relationship);
 }
 

@@ -19,7 +19,7 @@
 
 #include <QAbstractListModel>
 #include <QSharedData>
-#include <QIcon>
+#include <HbIcon>
 
 #include "mobcntmodelglobal.h"
 #include <qcontactmanager.h>
@@ -99,7 +99,8 @@ protected slots:
 private:
     QSharedDataPointer<MobCntModelData>  d;
     MobCntIconManager                   *mIconManager;
-    QIcon                                mDefaultIcon;
+    HbIcon                               mDefaultIcon;
+    HbIcon                               mDefaultMyCardIcon;
 };
 
 #endif

@@ -21,6 +21,7 @@
 #include <QtGlobal>
 #include <QString>
 #include <QList>
+#include <qdebug.h>
 
 #ifdef CNTHISTORYMODEL_NO_EXPORT
 #define CNTHISTORYMODEL_EXPORT 

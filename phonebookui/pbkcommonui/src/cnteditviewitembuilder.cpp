@@ -43,7 +43,7 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::phoneNumberItems(QContact& aCont
                 QContactPhoneNumber::FieldNumber,
                 phoneNumberEditorView );
         detailItem->addText( hbTrId("txt_phob_list_add_phone_number") );
-        detailItem->addIcon( HbIcon(mMap->getMappedIcon(QContactPhoneNumber::DefinitionName)) );
+        detailItem->addIcon( HbIcon(mMap->getContactEditorIconString(QContactPhoneNumber::DefinitionName, "")) );
         list.append( detailItem );
     }
     // existing phonenumber(s)
@@ -61,8 +61,8 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::phoneNumberItems(QContact& aCont
                     QContactPhoneNumber::FieldNumber,
                     phoneNumberEditorView);
             
-            detailItem->addIcon( mMap->getMappedIcon(subtype) );
-            detailItem->addText( mMap->getLocString(subtype, context) );
+            detailItem->addIcon( mMap->getContactEditorIconString(subtype, context) );
+            detailItem->addText( mMap->getContactEditorLocString(subtype, context) );
             detailItem->addText( number.number() );
             list.append( detailItem );
             }
@@ -84,13 +84,15 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::phoneNumberItems(QContact& aCont
                         number,
                         QContactOnlineAccount::FieldAccountUri,
                         phoneNumberEditorView);
-                detailItem->addIcon( mMap->getMappedIcon(subtype) );
+                detailItem->addIcon( mMap->getContactEditorIconString(subtype, context) );
                 
                 if ( subtype == QContactOnlineAccount::SubTypeSip )
                 {
                     detailItem->addText( hbTrId("txt_phob_formlabel_val_sip") );
+                    detailItem->addText( number.accountUri() );
+                    list.append( detailItem );
                 }
-                else
+                else if ( subtype == QContactOnlineAccount::SubTypeSipVoip )
                 {
                     if ( context == QContactOnlineAccount::ContextHome )
                         detailItem->addText( hbTrId("txt_phob_dblist_internet_telephone_home") );
@@ -98,9 +100,14 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::phoneNumberItems(QContact& aCont
                         detailItem->addText( hbTrId("txt_phob_dblist_internet_telephone_work") );
                     else
                         detailItem->addText( hbTrId("txt_phob_dblist_internet_telephone") );
+                    
+                    detailItem->addText( number.accountUri() );
+                    list.append( detailItem );
                 }
-                detailItem->addText( number.accountUri() );
-                list.append( detailItem );
+                else
+                {
+                    /* Other subtypes of QContactOnlineAccount are not supported by UI */
+                }
             }
         }
     }
@@ -121,7 +128,7 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::emailAddressItems(QContact& aCon
                 QContactEmailAddress::FieldEmailAddress,
                 emailEditorView);
         detailItem->addText( hbTrId("txt_phob_list_add_email_address") );
-        detailItem->addIcon( HbIcon(mMap->getMappedIcon(QContactEmailAddress::DefinitionName)) );
+        detailItem->addIcon( HbIcon(mMap->getContactEditorIconString(QContactEmailAddress::DefinitionName, "")) );
         list.append( detailItem );
     }
     // existing email(s)
@@ -135,7 +142,7 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::emailAddressItems(QContact& aCon
                     address,
                     QContactEmailAddress::FieldEmailAddress,
                     emailEditorView);
-            detailItem->addIcon( mMap->getMappedIcon(QContactEmailAddress::DefinitionName) );
+            detailItem->addIcon( mMap->getContactEditorIconString(QContactEmailAddress::DefinitionName, context) );
             
             if ( context == QContactEmailAddress::ContextHome )
                 detailItem->addText(hbTrId("txt_phob_formlabel_email_home"));
@@ -168,7 +175,7 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::addressItems(QContact& aContact)
                 fieldList,
                 addressEditorView);
         detailItem->addText( hbTrId("txt_phob_list_add_address") );
-        detailItem->addIcon( HbIcon(mMap->getMappedIcon(QContactAddress::DefinitionName)) );
+        detailItem->addIcon( HbIcon(mMap->getContactEditorIconString(QContactAddress::DefinitionName, "")) );
         list.append( detailItem );
     }
     return list;
@@ -187,7 +194,7 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::urlItems(QContact& aContact)
                 QContactUrl::FieldUrl,
                 urlEditorView );
         detailItem->addText( hbTrId("txt_phob_list_add_url_address") );
-        detailItem->addIcon( HbIcon(mMap->getMappedIcon(QContactUrl::DefinitionName)) );
+        detailItem->addIcon( HbIcon(mMap->getContactEditorIconString(QContactUrl::DefinitionName, "")) );
         list.append( detailItem );
     }
     // existing url(s)
@@ -201,12 +208,12 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::urlItems(QContact& aContact)
                     url, 
                     QContactUrl::FieldUrl,
                     urlEditorView );
-            detailItem->addIcon( mMap->getMappedIcon(QContactUrl::DefinitionName) );
+            detailItem->addIcon( mMap->getContactEditorIconString(QContactUrl::DefinitionName, context) );
             
             if ( context == QContactUrl::ContextHome )
-                detailItem->addText( hbTrId("txt_phob_dblist_url_home") );
+                detailItem->addText( hbTrId("txt_phob_formlabel_address_home") );
             else if ( context == QContactUrl::ContextWork )
-                detailItem->addText( hbTrId("txt_phob_dblist_url_work") );
+                detailItem->addText( hbTrId("txt_phob_formlabel_address_work") );
             else
                 detailItem->addText( hbTrId("txt_phob_list_url") );
             
@@ -236,16 +243,16 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::addressDetails(QContact& aContac
         QString address = valueList.join(" ").trimmed();
         if ( !address.isEmpty() )
         {
-            QString context = addr.contexts().isEmpty() ? "" : mMap->getMappedDetail(addr.contexts().first() );
+            QString context = addr.contexts().isEmpty() ? "" : addr.contexts().first();
             CntEditViewDetailItem* detailItem = new CntEditViewDetailItem(
                     addr,
                     fieldList,
                     addressEditorView);
             
             if ( context == QContactAddress::ContextHome )
-                detailItem->addText(hbTrId("txt_phob_dblist_url_home"));
+                detailItem->addText(hbTrId("txt_phob_formlabel_address_home"));
             else if ( context == QContactAddress::ContextWork )
-                detailItem->addText(hbTrId("txt_phob_dblist_url_work"));
+                detailItem->addText(hbTrId("txt_phob_formlabel_address_work"));
             else
                 detailItem->addText(hbTrId("txt_phob_list_address"));
             
@@ -408,14 +415,15 @@ void CntEditViewItemBuilder::removeDetail( QContact& aContact, QContactDetail& a
             org.setName( QString() );
             org.setDepartment( QStringList() );
         }
+        aContact.saveDetail(&org);
         
         if ( org.assistantName().isEmpty() && 
              org.title().isEmpty() && 
              org.name().isEmpty() && 
              org.department().isEmpty() )
+        {
             aContact.removeDetail(&org);
-        else
-            aContact.saveDetail(&org);
+        }
     }
 
     else if ( aDetail.definitionName() == QContactFamily::DefinitionName )
@@ -430,10 +438,12 @@ void CntEditViewItemBuilder::removeDetail( QContact& aContact, QContactDetail& a
             family.setChildren( QStringList() );
         }
         
+        aContact.saveDetail( &family );
+        
         if ( family.spouse().isEmpty() && family.children().isEmpty() )
+        {
             aContact.removeDetail( &family );
-        else
-            aContact.saveDetail( &family );
+        }
     }
     else
     {

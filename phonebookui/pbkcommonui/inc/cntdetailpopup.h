@@ -25,11 +25,14 @@
 class QStandardItemModel;
 class HbListView;
 
+typedef QList<int> CntViewIdList;
+
 class CntDetailPopup : public HbDialog
 {
     Q_OBJECT
 public:
-    static int selectDetail();
+    static void selectDetail( CntViewIdList aList, QObject *receiver = 0, const char *member = 0 );
+    int selectedDetail();
 
 #ifdef PBK_UNIT_TEST
 public slots:
@@ -43,10 +46,9 @@ public:
 #else
 private:
 #endif
-    CntDetailPopup(QGraphicsItem *parent = 0);
+    CntDetailPopup(QGraphicsItem *parent,  CntViewIdList aList );
     ~CntDetailPopup();
 
-    QString selectedDetail();
     void addListItem(QString aIcon, QString label, int aId);
 
 #ifdef PBK_UNIT_TEST
@@ -56,7 +58,8 @@ private:
 #endif
     QStandardItemModel  *mListModel;
     HbListView          *mListView;
-    QString              mSelectedDetail;
+    int                  mSelectedDetail;
+    CntViewIdList        mViewIdList;
 };
 
 #endif // CNTDETAILPOPUP_H

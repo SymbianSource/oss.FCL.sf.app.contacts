@@ -47,5 +47,12 @@ private:
     QContactAddress *mAddress;
     QContactAddress *mAddressHome;
     QContactAddress *mAddressWork;
+    
+#ifdef PBK_UNIT_TEST
+public:
+#else
+protected:
+#endif
+    bool mIsLocationPickerEnabled;
     };
 #endif /* CNTDETAILADDRESSEDITORMODEL_H_ */

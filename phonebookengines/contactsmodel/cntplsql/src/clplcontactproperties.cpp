@@ -177,11 +177,11 @@ CContactIdArray& CLplContactProperties::GroupIdListL()
 	}	
 
 
-CContactIdArray* CLplContactProperties::SearchIdListL(const TDesC& aSearchQuery) const 
+CBufSeg* CLplContactProperties::DetailsListL(const TDesC& aSearchQuery) const 
     {
-	return iContactItemManager->SearchIdListL(aSearchQuery);
-
+	return iContactItemManager->DetailsListL(aSearchQuery);
     }   
+
 
 TInt64 CLplContactProperties::MachineIdL() const
 	{

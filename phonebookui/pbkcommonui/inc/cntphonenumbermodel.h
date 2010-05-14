@@ -36,7 +36,7 @@ class CntPhoneNumberModel : public CntDetailEditorModel
     
 public:
     // takes ownership of aContact
-    CntPhoneNumberModel( QContact* aContact, QObject* aParent=0 );
+    CntPhoneNumberModel( QContact* aContact, QObject* aParent = 0 );
     ~CntPhoneNumberModel();
     
     void saveContactDetails();

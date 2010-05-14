@@ -90,7 +90,7 @@ NONSHARABLE_CLASS(CPcsKeyMap) : public CBase
 		/**
 		 * Construct mappings between keys and characters.
 		 */
-		TBool ContructKeyboardMappings();
+		void ContructKeyboardMappings();
 
 		/**
          * Returns a list of languages installed on the phone.
@@ -108,8 +108,10 @@ NONSHARABLE_CLASS(CPcsKeyMap) : public CBase
          */
         TChar KeyForCharacter(const TChar& aChar) const;
 
+#if defined(_DEBUG)
         TInt KeyIdToNumber(TInt aKeyId) const;
-        
+#endif // #if defined(_DEBUG)
+
         TChar ArrayIndexToNumberChar(TInt aArrayIndex) const;
 #else // #if defined(USE_ORBIT_KEYMAP)
 		TChar GetNumericValueForChar(TChar input) const;
@@ -118,10 +120,18 @@ NONSHARABLE_CLASS(CPcsKeyMap) : public CBase
     private: // Data
 
 #if defined(USE_ORBIT_KEYMAP)
-		// One QString for each key of the keyboard (1-9,0).
+		// One QString for each key of the keyboard (1-9,0,*,#).
 		// Each contains all the characters that can originate from that key,
         // considering the languages available on the device.
+		//
+		// iKeyMapping[0] has mappings for 1-key, iKeyMapping[1] for 2-key, ...
+		// iKeyMapping[8] for 9-key, iKeyMapping[9] for 0-key,
+		// iKeyMapping[10] for *-key, iKeyMapping[11] for #-key.
         QList<QString> iKeyMapping;
+
+		// Characters that have been hardcoded to certain keys, regardless of
+		// actual keymap.
+		QString iHardcodedChars;
 #endif // #if defined(USE_ORBIT_KEYMAP)
 
 		// For unit testing

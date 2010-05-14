@@ -2,8 +2,8 @@ EXPORTS
 	_ZN11CntEditView10deactivateEv @ 1 NONAME
 	_ZN11CntEditView11qt_metacallEN11QMetaObject4CallEiPPv @ 2 NONAME
 	_ZN11CntEditView11qt_metacastEPKc @ 3 NONAME
-	_ZN11CntEditView14contactRemovedEv @ 4 NONAME
-	_ZN11CntEditView14contactUpdatedEv @ 5 NONAME
+	_ZN11CntEditView14contactRemovedEb @ 4 NONAME
+	_ZN11CntEditView14contactUpdatedEb @ 5 NONAME
 	_ZN11CntEditView16changesDiscardedEv @ 6 NONAME
 	_ZN11CntEditView16staticMetaObjectE @ 7 NONAME DATA 16
 	_ZN11CntEditView19getStaticMetaObjectEv @ 8 NONAME

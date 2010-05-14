@@ -58,7 +58,7 @@ HbMenu* CntActionMenuBuilder::buildActionMenu( QContact& aContact )
         
         if ( actions.contains("message", Qt::CaseInsensitive) )
             {
-            createSmsAction( *menu, aContact );
+            createMessageAction( *menu, aContact );
             }
         
         if ( actions.contains("email", Qt::CaseInsensitive) )
@@ -80,12 +80,10 @@ HbMenu* CntActionMenuBuilder::buildActionMenu( QContact& aContact )
     return menu;
     }
 
-void CntActionMenuBuilder::execActionMenu( QContact& aContact, QPointF aPoint )
+HbMenu* CntActionMenuBuilder::actionMenu( QContact& aContact )
 {
     mContact = new QContact( aContact );
-    HbMenu* menu = buildActionMenu( aContact );
-    menu->exec( aPoint );
-    delete menu;
+    return buildActionMenu( aContact );
 }
 
 void CntActionMenuBuilder::emitOpenContact()
@@ -123,31 +121,26 @@ void CntActionMenuBuilder::createCallAction( HbMenu& aMenu, QContact& aContact )
     // Create call action
     QContactDetail detail = aContact.preferredDetail("call");
     QContactPhoneNumber number = detail.isEmpty() ? aContact.detail<QContactPhoneNumber>() : detail;
-    
-    QString detailName = mMap->getMappedDetail( number.subTypes().first() );
-    if (!number.contexts().isEmpty())
-        {
-        detailName += hbTrId(" %1").arg(mMap->getMappedDetail( number.contexts().first()) );
-        }
-    aMenu.addAction( hbTrId("Call %1").arg(detailName), this, SLOT(emitCallContact()) );
+    QString context = number.contexts().isEmpty() ? QString() : number.contexts().first();
+    QString subtype = number.subTypes().isEmpty() ? number.definitionName() : number.subTypes().first();
+
+    aMenu.addAction( mMap->getItemSpecificMenuLocString( subtype, context ), this, SLOT(emitCallContact()) );
     }
 
 void CntActionMenuBuilder::createEmailAction( HbMenu& aMenu, QContact& aContact )
     {
+    // Create email action
     QContactDetail detail = aContact.preferredDetail("email");
     QContactEmailAddress email = detail.isEmpty() ? aContact.detail<QContactEmailAddress>() : detail;
-
-    QString detailName = hbTrId("txt_phob_menu_email");
-    if (!email.contexts().isEmpty())
-        {
-        detailName += hbTrId(" %1").arg(mMap->getMappedDetail(email.contexts().first()));
-        }
-     aMenu.addAction(hbTrId("Mail %1").arg(detailName), this, SLOT(emitMailContact()));
+    QString context = email.contexts().isEmpty() ? QString() : email.contexts().first();
+       
+    aMenu.addAction( mMap->getItemSpecificMenuLocString( email.definitionName(), context), this, SLOT(emitMailContact()) );
     }
 
-void CntActionMenuBuilder::createSmsAction( HbMenu& aMenu, QContact& aContact )
+void CntActionMenuBuilder::createMessageAction( HbMenu& aMenu, QContact& aContact )
     {
-    Q_UNUSED( aContact )
+    Q_UNUSED( aContact );
+    
     aMenu.addAction(hbTrId("txt_phob_menu_send_message"), this, SLOT(emitSmsContact()));
     }
     

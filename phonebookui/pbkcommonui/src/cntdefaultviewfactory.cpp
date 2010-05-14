@@ -35,6 +35,7 @@
 #include "cnthistoryview.h"
 #include "cnteditview.h"
 #include "cntmycardselectionview.h"
+#include "cntimportsview.h"
 #include "cntextensionmanager.h"
 
 CntDefaultViewFactory::CntDefaultViewFactory():
@@ -102,6 +103,8 @@ CntAbstractView* CntDefaultViewFactory::createView( int aId )
         return new CntGroupActionsView();
     case historyView:
         return new CntHistoryView();
+    case importsView:
+        return new CntImportsView();
     default:
        return createPluginView(aId);
     }

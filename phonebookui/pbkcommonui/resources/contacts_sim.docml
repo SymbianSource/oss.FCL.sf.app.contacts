@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hbdocument version="1.0">
+    <widget name="view" type="HbView">
+        <widget name="content" role="HbView:widget" type="HbWidget">
+            <widget name="groupBox" type="HbGroupBox">
+                <bool name="collapsable" value="FALSE"/>
+                <string locid="txt_phob_subtitle_import_contacts" name="heading" value="Group Box"/>
+            </widget>
+            <widget name="listView" type="HbListView">
+                <widget name="listItemPrototype" role="HbAbstractView:prototype" type="HbListViewItem"/>
+            </widget>
+            <real name="z" value="0"/>
+            <layout orientation="Vertical" type="linear">
+                <linearitem itemname="groupBox"/>
+                <linearitem itemname="listView"/>
+            </layout>
+        </widget>
+        <string name="title" value="Contacts"/>
+    </widget>
+    <metadata activeUIState="Common ui state" display="NHD portrait" unit="un">
+        <uistate name="Common ui state" sections="#common"/>
+        <dummydata objectName="listView" section="#common" value="app_list_template5"/>
+    </metadata>
+</hbdocument>

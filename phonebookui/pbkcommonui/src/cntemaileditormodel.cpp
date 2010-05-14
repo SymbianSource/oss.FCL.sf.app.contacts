@@ -42,7 +42,6 @@ CntEmailEditorModel::~CntEmailEditorModel()
 void CntEmailEditorModel::insertDetailField()
 {
     QContactEmailAddress newAddr;
-    
     CntDetailModelItem* item = new CntDetailModelItem( newAddr );
     appendDataFormItem( item, invisibleRootItem() );
 }
@@ -53,10 +52,11 @@ void CntEmailEditorModel::saveContactDetails()
     int count( root->childCount() );
     for ( int i(0); i < count; i++ ) {
         CntDetailModelItem* item = static_cast<CntDetailModelItem*>( root->childAt(i) );
-        QContactEmailAddress address = item->detail();
-        QString email = address.emailAddress();
-        if ( email.length() > 0 ) {
-            mContact->saveDetail( &address );
+        QContactDetail address = item->detail();
+        mContact->saveDetail( &address );
+        
+        if ( address.value(QContactEmailAddress::FieldEmailAddress).isEmpty() ) {
+            mContact->removeDetail( &address );
         }
     }
 }

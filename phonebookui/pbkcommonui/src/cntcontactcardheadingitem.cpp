@@ -19,6 +19,7 @@
 
 #include <qtcontacts.h>
 #include <QGraphicsSceneMouseEvent>
+#include <QTapAndHoldGesture>
 
 #include <hbiconitem.h>
 #include <hbtextitem.h>
@@ -40,11 +41,8 @@ CntContactCardHeadingItem::CntContactCardHeadingItem(QGraphicsItem *parent) :
     mSecondaryText(NULL),
     mMarqueeItem(NULL),
     mFrameItem(NULL),
-    mGestureFilter(NULL),
-    mGestureLongpressed(NULL),
     mPictureArea(NULL)
 {
-
 }
 
 CntContactCardHeadingItem::~CntContactCardHeadingItem()
@@ -192,7 +190,7 @@ void CntContactCardHeadingItem::createPrimitives()
     if (!mFrameItem)
     {
         mFrameItem = new HbFrameItem(this);
-        mFrameItem->frameDrawer().setFrameGraphicsName("qtg_fr_list_parent_normal");
+        mFrameItem->frameDrawer().setFrameGraphicsName("qtg_fr_groupbox");
         mFrameItem->frameDrawer().setFrameType(HbFrameDrawer::NinePieces);
         mFrameItem->setZValue(-2);
         style()->setItemName(mFrameItem, "background");
@@ -291,7 +289,7 @@ bool CntContactCardHeadingItem::isCompanyName(const QContact* contact)
         || !(contact->detail<QContactOrganization>().department().isEmpty()));
 }
 
-void CntContactCardHeadingItem::setDetails(const QContact* contact, bool isMyCard)
+void CntContactCardHeadingItem::setDetails(const QContact* contact)
 {
     primaryText.clear();
     firstLineText.clear();
@@ -300,14 +298,7 @@ void CntContactCardHeadingItem::setDetails(const QContact* contact, bool isMyCar
     tinyMarqueeText.clear();
 
     // icon label
-    if (isMyCard)
-    {
-        icon = HbIcon("qtg_large_mycard");
-    }
-    else
-    {
-        icon = HbIcon("qtg_large_avatar");
-    }
+    icon = HbIcon("qtg_large_add_contact_picture");
 
     QContactName name = contact->detail<QContactName>();
 
@@ -392,37 +383,17 @@ void CntContactCardHeadingItem::processLongPress(const QPointF &point)
     emit passLongPressed(point);
 }
 
-void CntContactCardHeadingItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void CntContactCardHeadingItem::gestureEvent(QGestureEvent* event)
 {
-    event->accept();
-}
-
-void CntContactCardHeadingItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    event->accept();
-}
-
-void CntContactCardHeadingItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (rect().contains(event->pos())) {
-        emit clicked();
+    QGesture *tapAndHold = event->gesture(Qt::TapAndHoldGesture);
+    if (tapAndHold && tapAndHold->state() == Qt::GestureFinished) {
+        processLongPress(static_cast<QTapAndHoldGesture *>(tapAndHold)->position());
     }
-    event->accept();
 }
-    
+
 void CntContactCardHeadingItem::initGesture()
 {
-    mGestureFilter = new HbGestureSceneFilter(Qt::LeftButton, this);
-    
-    // Orbit documentation states that added gestures will be deleted 
-    // when the filter is deleted (filter takes ownership). So no 
-    // need to worry about deleting the gesture. 
-    mGestureLongpressed = new HbGesture(HbGesture::longpress, 5);
-    mGestureFilter->addGesture(mGestureLongpressed);
-    mGestureFilter->setLongpressAnimation(true);
-    
-    mIcon->installSceneEventFilter(mGestureFilter);
-    connect(mGestureLongpressed, SIGNAL(longPress(QPointF)), this, SLOT(processLongPress(QPointF)));    
+    grabGesture(Qt::TapAndHoldGesture);
 }
 
 QVariant CntContactCardHeadingItem::itemChange(GraphicsItemChange change, const QVariant &value)

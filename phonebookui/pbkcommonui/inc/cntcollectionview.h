@@ -19,6 +19,7 @@
 #define CNTCOLLECTIONVIEW_H
 
 #include <QObject>
+#include <QSet>
 #include <hbdocumentloader.h>
 
 #include <cntabstractview.h>
@@ -27,9 +28,12 @@ class HbAction;
 class HbView;
 class HbListView;
 class CntCollectionListModel;
+class CntFetchContacts;
 class QModelIndex;
 class HbAbstractViewItem;
 class CntExtensionManager;
+
+QTM_USE_NAMESPACE
 
 class CntCollectionView : public QObject, public CntAbstractView
 {
@@ -50,13 +54,27 @@ public: // From CntAbstractView
 private slots:
     void showPreviousView();
     void openGroup(const QModelIndex &index);
-    void showContextMenu(HbAbstractViewItem *item, const QPointF &coords);
-    void newGroup();
-    void refreshDataModel();
-    void deleteGroup(QContact group);
-    void deleteGroups();
     
-
+    void showContextMenu(HbAbstractViewItem *item, const QPointF &coords);
+    void handleMenu(HbAction* action);
+    
+    void newGroup();
+    void handleNewGroup(HbAction* action);
+    void handleNewGroupMembers();
+    
+    void refreshDataModel();
+    
+    void deleteGroup(QContact group);
+    void handleDeleteGroup(HbAction* action);
+    
+    void deleteGroups();
+    void handleDeleteGroups(HbAction* action);
+    
+private:
+    QContactManager* getContactManager();
+    void saveNewGroup(QContact* aContact);
+    
+    
 private:
     CntExtensionManager&    mExtensionManager;
     HbView*                 mView; // own
@@ -70,6 +88,10 @@ private:
     HbAction*               mExtensionAction; // owned by view
     HbAction*               mNewGroupAction; // owned by view
     HbAction*               mDeleteGroupsAction; // owned by view
+    
+    QContact*               mHandledContact; // own, needed for asynchronous popups
+    CntFetchContacts*       mFetchView;
+    QSet<QContactLocalId>   mSelectedContactsSet;
 };
 
 #endif // CNTCOLLECTIONVIEW_H

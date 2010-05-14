@@ -21,9 +21,7 @@
 #include <cntdef.hrh>
 
 const TInt KInitialValue = -1;
-
-// TODO: update this to handle all 10 predictive search tables
-const TInt KNumOfTables = 14;
+const TInt KNumOfTables = 16;
 const TInt KNumColInPrefTable = 6;
 const TInt KNumColInContactTable = 16;
 const TInt KNumColInGroupTable = 3;
@@ -46,6 +44,8 @@ _LIT(KSqlContactPredSearchTable6,"predictivesearch6");
 _LIT(KSqlContactPredSearchTable7,"predictivesearch7");
 _LIT(KSqlContactPredSearchTable8,"predictivesearch8");
 _LIT(KSqlContactPredSearchTable9,"predictivesearch9");
+_LIT(KSqlContactPredSearchTable10,"predictivesearch10");
+_LIT(KSqlContactPredSearchTable11,"predictivesearch11");
 _LIT(KSqlContactPresenceTableName, "presence");
 
 enum TDatabaseTables
@@ -63,7 +63,9 @@ enum TDatabaseTables
 	KContactPredSearchTable6Name,
 	KContactPredSearchTable7Name,
 	KContactPredSearchTable8Name,
-	KContactPredSearchTable9Name
+	KContactPredSearchTable9Name,
+	KContactPredSearchTable10Name,
+	KContactPredSearchTable11Name
 	};
 
 // columns for contact table
@@ -225,6 +227,14 @@ _LIT(KPredSearchCreateTable9Stmnt,
 "CREATE TABLE predictivesearch9 (contact_id INTEGER PRIMARY KEY,\
  nbr BIGINT NULL, nbr2 BIGINT NULL, nbr3 BIGINT NULL, nbr4 BIGINT NULL,\
  first_name CHAR(16) NULL, last_name CHAR(16) NULL);");
+_LIT(KPredSearchCreateTable10Stmnt,
+"CREATE TABLE predictivesearch10 (contact_id INTEGER PRIMARY KEY,\
+ nbr BIGINT NULL, nbr2 BIGINT NULL, nbr3 BIGINT NULL, nbr4 BIGINT NULL,\
+ first_name CHAR(16) NULL, last_name CHAR(16) NULL);");
+_LIT(KPredSearchCreateTable11Stmnt,
+"CREATE TABLE predictivesearch11 (contact_id INTEGER PRIMARY KEY,\
+ nbr BIGINT NULL, nbr2 BIGINT NULL, nbr3 BIGINT NULL, nbr4 BIGINT NULL,\
+ first_name CHAR(16) NULL, last_name CHAR(16) NULL);");
 
 
 // create table indexes
@@ -278,6 +288,16 @@ _LIT(KPredSearchCreateNbr2IndexTable9, "CREATE INDEX index9_nbr2 on predictivese
 _LIT(KPredSearchCreateNbr3IndexTable9, "CREATE INDEX index9_nbr3 on predictivesearch9 (nbr3);");
 _LIT(KPredSearchCreateNbr4IndexTable9, "CREATE INDEX index9_nbr4 on predictivesearch9 (nbr4);");
 
+_LIT(KPredSearchCreateNbrIndexTable10, "CREATE INDEX index10_nbr on predictivesearch10 (nbr);");
+_LIT(KPredSearchCreateNbr2IndexTable10, "CREATE INDEX index10_nbr2 on predictivesearch10 (nbr2);");
+_LIT(KPredSearchCreateNbr3IndexTable10, "CREATE INDEX index10_nbr3 on predictivesearch10 (nbr3);");
+_LIT(KPredSearchCreateNbr4IndexTable10, "CREATE INDEX index10_nbr4 on predictivesearch10 (nbr4);");
+
+_LIT(KPredSearchCreateNbrIndexTable11, "CREATE INDEX index11_nbr on predictivesearch11 (nbr);");
+_LIT(KPredSearchCreateNbr2IndexTable11, "CREATE INDEX index11_nbr2 on predictivesearch11 (nbr2);");
+_LIT(KPredSearchCreateNbr3IndexTable11, "CREATE INDEX index11_nbr3 on predictivesearch11 (nbr3);");
+_LIT(KPredSearchCreateNbr4IndexTable11, "CREATE INDEX index11_nbr4 on predictivesearch11 (nbr4);");
+
 // create table indexes for readable names for ordering results alphabetically
 _LIT(KPredSearchCreateFNIndexInTable0,
 "CREATE INDEX index_last_name0 on predictivesearch0 (last_name);");
@@ -328,6 +348,16 @@ _LIT(KPredSearchCreateFNIndexInTable9,
 "CREATE INDEX index_last_name9 on predictivesearch9 (last_name);");
 _LIT(KPredSearchCreateLNIndexInTable9,
 "CREATE INDEX index_first_name9 on predictivesearch9 (first_name);");
+
+_LIT(KPredSearchCreateFNIndexInTable10,
+"CREATE INDEX index_last_name10 on predictivesearch10 (last_name);");
+_LIT(KPredSearchCreateLNIndexInTable10,
+"CREATE INDEX index_first_name10 on predictivesearch10 (first_name);");
+
+_LIT(KPredSearchCreateFNIndexInTable11,
+"CREATE INDEX index_last_name11 on predictivesearch11 (last_name);");
+_LIT(KPredSearchCreateLNIndexInTable11,
+"CREATE INDEX index_first_name11 on predictivesearch11 (first_name);");
 
 
 

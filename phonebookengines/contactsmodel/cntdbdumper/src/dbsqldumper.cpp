@@ -148,6 +148,10 @@ const TDesC& CDbStructure::TableName(TInt aTableIndex)
 			return KSqlContactPredSearchTable8;
 		case KContactPredSearchTable9Name:
 			return KSqlContactPredSearchTable9;
+		case KContactPredSearchTable10Name:
+			return KSqlContactPredSearchTable10;
+		case KContactPredSearchTable11Name:
+			return KSqlContactPredSearchTable11;
 
 		default:
 			{
@@ -340,6 +344,8 @@ const TDesC& CDbStructure::Column(TInt aTableIndex, TInt aColumnIndex)
 		case KContactPredSearchTable7Name:
 		case KContactPredSearchTable8Name:
 		case KContactPredSearchTable9Name:
+		case KContactPredSearchTable10Name:
+		case KContactPredSearchTable11Name:
 			switch(aColumnIndex)
 				{
 				case 0:

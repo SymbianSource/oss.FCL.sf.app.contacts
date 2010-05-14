@@ -16,6 +16,7 @@
 */
 
 #include "cntmycardview.h"
+#include "cntfetchcontactsview.h"
 #include "qtpbkglobal.h"
 #include <hbpushbutton.h>
 #include <hbaction.h>
@@ -26,7 +27,8 @@ const char *CNT_MYCARD_UI_XML = ":/xml/contacts_mc.docml";
 
 CntMyCardView::CntMyCardView() :
     mContact(NULL),
-    mViewManager(NULL)
+    mViewManager(NULL),
+    mFetchView(NULL)
 {
     bool ok = false;
     mDocumentLoader.load(CNT_MYCARD_UI_XML, &ok);
@@ -51,6 +53,9 @@ CntMyCardView::~CntMyCardView()
     
     delete mContact;
     mContact = 0;
+    
+    delete mFetchView;
+    mFetchView = NULL;
 }
 
 /*!
@@ -67,6 +72,8 @@ Activates a default view
 */
 void CntMyCardView::activate(CntAbstractViewManager* aMgr, const CntViewParameters aArgs)
 {
+    mViewManager = aMgr;
+    
     if (mView->navigationAction() != mSoftkey)
         mView->setNavigationAction(mSoftkey);
     
@@ -75,8 +82,6 @@ void CntMyCardView::activate(CntAbstractViewManager* aMgr, const CntViewParamete
     setOrientation(window->orientation());
     
     mContact = new QContact(aArgs.value(ESelectedContact).value<QContact>());
-    mViewManager = aMgr;
-    
     HbPushButton *newButton = static_cast<HbPushButton*>(mDocumentLoader.findWidget(QString("cnt_button_new")));
     connect(newButton, SIGNAL(clicked()), this, SLOT(openNameEditor()));
 
@@ -91,6 +96,9 @@ void CntMyCardView::activate(CntAbstractViewManager* aMgr, const CntViewParamete
     {
         chooseButton->setEnabled(false);
     }
+    
+    mFetchView = new CntFetchContacts(mViewManager->contactManager( SYMBIAN_BACKEND ));
+    connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleMultiCardSelection()));
 }
 
 void CntMyCardView::deactivate()
@@ -117,13 +125,10 @@ Opens the name detail editor view
 */
 void CntMyCardView::openNameEditor()
 {
-    //create a new my card contact
-    QContactManager* mgr = mViewManager->contactManager( SYMBIAN_BACKEND );
-    mgr->saveContact(mContact);
-    mgr->setSelfContactId(mContact->localId());
-    //open the contact editor
     CntViewParameters viewParameters;
     viewParameters.insert(EViewId, editView);
+    viewParameters.insert(EMyCard, "myCard" );
+    
     QVariant var;
     var.setValue(*mContact);
     viewParameters.insert(ESelectedContact, var);
@@ -135,8 +140,27 @@ Opens the my card selection view
 */
 void CntMyCardView::openMyCardSelectionView()
 {
+    // Display a list of contacts to choose a mycard from.
+    mFetchView->setDetails(hbTrId("txt_phob_subtitle_my_card"),hbTrId("Save"));
+    QSet<QContactLocalId> emptyContactsSet;
+    mFetchView->displayContacts(CntFetchContacts::popup,
+                                HbAbstractItemView::SingleSelection,
+                                emptyContactsSet);
+}
+
+void CntMyCardView::handleMultiCardSelection()
+{
+    QContactManager* manager = mViewManager->contactManager( SYMBIAN_BACKEND );
+
+    QSet<QContactLocalId> selectedContacts = mFetchView->getSelectedContacts();
+
+    if ( !mFetchView->wasCanceled() && !selectedContacts.isEmpty() ) {
+        QList<QContactLocalId> selectedContactsList = selectedContacts.values();
+        manager->setSelfContactId(selectedContactsList.front());
+    }
+    
     CntViewParameters viewParameters;
-    viewParameters.insert(EViewId, myCardSelectionView);
+    viewParameters.insert(EViewId, namesView);
     mViewManager->changeView(viewParameters);
 }
 

@@ -28,8 +28,9 @@ public:
     MobCntEmailAction();
     ~MobCntEmailAction();
     
-    bool supportsDetail(const QContactDetail& detail) const;
     QContactFilter contactFilter(const QVariant& value) const;
+    bool isDetailSupported(const QContactDetail &detail, const QContact &contact = QContact()) const;
+    QList<QContactDetail> supportedDetails(const QContact& contact) const;
     MobCntEmailAction* clone() const;
     void performAction();
 };

@@ -50,8 +50,11 @@ public: // From CntAbstractView
 public slots:
     void updateScrollingPosition();
     void clearHistory();
+    void handleClearHistory(HbAction *action);
     void itemActivated(const QModelIndex &index);
     void showPreviousView();
+    void showClearHistoryMenu();
+    
     
     
 private:
@@ -67,8 +70,9 @@ private:
     HbView*                     mView; // not own
     HbDocumentLoader*           mDocumentLoader; // own
     CntAbstractViewManager*     mViewMgr; // not own
-    HbAction*                   mBackKey; // own
+    HbAction*                   mBackKey; // not own
     QContact*                   mContact; // own
+    HbAction*                   mClearHistory;  // not own
     
 };
 

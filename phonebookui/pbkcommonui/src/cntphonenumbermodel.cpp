@@ -35,10 +35,13 @@ CntDetailEditorModel( aContact )
     // if there's no details, add 
     if ( all.isEmpty() )
         {
-        QContactPhoneNumber number;
-        number.setSubTypes( QContactPhoneNumber::SubTypeMobile );
-        
-        all.append( number );
+        QContactPhoneNumber mobileNumber;
+        mobileNumber.setSubTypes( QContactPhoneNumber::SubTypeMobile );
+        all.append( mobileNumber );
+
+        QContactPhoneNumber landLineNumber;
+        landLineNumber.setSubTypes( QContactPhoneNumber::SubTypeLandline );
+        all.append( landLineNumber );
         }
             
     HbDataFormModelItem* root = invisibleRootItem();
@@ -54,7 +57,7 @@ void CntPhoneNumberModel::insertDetailField()
 {
     QContactPhoneNumber number;
     number.setSubTypes( QContactPhoneNumber::SubTypeMobile );
-    
+        
     appendDataFormItem( new CntDetailModelItem(number), invisibleRootItem() );
 }
 
@@ -65,24 +68,20 @@ void CntPhoneNumberModel::saveContactDetails()
     for ( int i = 0; i < count; i++ ) {
         CntDetailModelItem* item = static_cast<CntDetailModelItem*>( root->childAt(i) );
         QContactDetail detail = item->detail();
+        mContact->saveDetail( &detail );
         
         if ( detail.definitionName() == QContactPhoneNumber::DefinitionName )
         {
-            QContactPhoneNumber phonenumber = detail;
-            if ( phonenumber.number().length() > 0 ) {
-                mContact->saveDetail( &phonenumber );
-            }
+            if ( detail.value(QContactPhoneNumber::FieldNumber).isEmpty() )
+                mContact->removeDetail( &detail );
         }
-        else if ( detail.definitionName() == QContactOnlineAccount::DefinitionName )
+        
+        if ( detail.definitionName() == QContactOnlineAccount::DefinitionName )
         {
-            QContactOnlineAccount account = detail;
-            if ( account.accountUri().length() > 0 ) {
-                mContact->saveDetail( &account );
+            if ( detail.value(QContactOnlineAccount::FieldAccountUri).isEmpty() )
+            {
+                mContact->removeDetail( &detail );
             }
-        }
-        else {
-            /* should never be here */
-            qWarning() << "Unknown: " << detail.definitionName(); 
         }
     }
 }

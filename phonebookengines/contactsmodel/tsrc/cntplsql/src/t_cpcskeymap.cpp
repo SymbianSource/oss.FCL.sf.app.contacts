@@ -112,11 +112,14 @@ void UT_CPcsKeyMap::Teardown()
 void UT_CPcsKeyMap::UT_NewLL()
     {
 #if defined(USE_ORBIT_KEYMAP)
-    const TInt KAmountOfKeys = 10; // Must have same value as in cpcskeymap.cpp
+	// Must be same as in cpcskeymap.cpp
+	const TInt KAmountOfKeys = 12;
+	// Note that * and # keys do not have mappings in most languages
+    const TInt KAmountOfNumberKeys = 10;
 
     // Each numeric key has been mapped
     EUNIT_ASSERT_EQUALS( KAmountOfKeys, iKeyMap->iKeyMapping.count() );
-    for (TInt i = 0; i < KAmountOfKeys; ++i)
+    for (TInt i = 0; i < KAmountOfNumberKeys; ++i)
         {
         EUNIT_ASSERT( iKeyMap->iKeyMapping.at(i).length() > 0 );
         }
@@ -225,13 +228,11 @@ void UT_CPcsKeyMap::UT_GetNumericKeyStringWithNumbersL()
 //
 void UT_CPcsKeyMap::UT_GetNumericKeyStringWithSpecialCharactersL()
     {
-    _LIT( KAlpha, " +g-[5]t" );
+	_LIT( KAlpha, " +g-*[#5]?t" );
 #if defined(USE_ORBIT_KEYMAP)
-	// Orbit keymap code is used
-    _LIT( KNumeric, " 141[5]8" );
+	_LIT( KNumeric, " a41afb5f18" );
 #else
-	// Hardcoded keymap is used
-    _LIT( KNumeric, " +4-[5]8" );
+    _LIT( KNumeric, " a4-a[b5]?8" );
 #endif
     HBufC* numericBuf = iKeyMap->GetNumericKeyStringL( KAlpha, EFalse );
     CleanupStack::PushL( numericBuf );

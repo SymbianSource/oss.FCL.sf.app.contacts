@@ -64,7 +64,7 @@ void CntServiceContactFetchView::aboutToCloseView()
         CntServicesContact servicesContact;
 
         //get the name
-        servicesContact.mDisplayName = mgr->synthesizedDisplayLabel(contact);
+        servicesContact.mDisplayName = contact.displayLabel();
 
         //get the phonenumber
         QList<QContactPhoneNumber> phonenumbers = contact.details<QContactPhoneNumber>();

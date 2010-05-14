@@ -16,17 +16,34 @@
 */
 
 #include <QObject>
+#include <qtcontacts.h>
+
+QTM_USE_NAMESPACE
+
+class CntHistoryModel;
 
 class TestCntHistoryModel : public QObject
 {
     Q_OBJECT
 
 private slots:
-	void initTestCase();
-	void cleanupTestCase();
+    void init();
+    void cleanup();
 	
+    void testLogsInsertions();
+    void testLogsRemovals();
+    void testLogsUpdates();
+    void testMsgInsertions();
+    void testMsgRemovals();
+    void testMsgUpdates();
+    void testReadLogEvent();
+    void testReadMsgEvent();
 	void testRoles();
 	void testSorting();
 	void testClear();
 	void testMarkSeen();
+	
+private:
+	QContactManager* cm;
+	CntHistoryModel* model;
 };

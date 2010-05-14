@@ -76,8 +76,7 @@ HbWidget* CntEmailEditorViewItem::createCustomWidget()
     CntDetailModelItem* item = static_cast<CntDetailModelItem*>( model->itemFromIndex(modelIndex()) );
     QContactDetail detail = item->detail();
     
-    HbEditorInterface editorInterface( mEdit );
-    editorInterface.setFilter( HbEmailAddressFilter::instance() );
+    mEdit->setInputMethodHints( Qt::ImhEmailCharactersOnly );
     
     constructSubTypeModel( detail.contexts() );
     

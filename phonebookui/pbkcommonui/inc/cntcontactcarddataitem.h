@@ -30,7 +30,7 @@ class CntContactCardDataItem: public QObject
     Q_OBJECT    
 
 public:
-    CntContactCardDataItem(const QString& aTitle, bool aIsFocusable);
+    CntContactCardDataItem(const QString& aTitle, int aPosition, bool aIsFocusable);
     virtual ~CntContactCardDataItem();
 
 public:
@@ -50,7 +50,8 @@ public:
     QContactDetail detail() { return mDetail; }
     Qt::TextElideMode elideMode() { return mValueTextElideMode; }
     bool isFocusable() { return mIsFocusable; }
-    
+    int position() { return mPosition; }
+ 
 private:
     HbIcon              mIcon;
     HbIcon              mSecondaryIcon;
@@ -60,6 +61,9 @@ private:
     QContactDetail      mDetail;
     Qt::TextElideMode   mValueTextElideMode;
     bool                mIsFocusable;
+    
+public:
+    int                 mPosition;
 };
 
 #endif /* CNTCONTACTCARDDATAITEM_H */

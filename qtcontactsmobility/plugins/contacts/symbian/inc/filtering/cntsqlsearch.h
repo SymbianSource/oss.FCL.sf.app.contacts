@@ -56,6 +56,9 @@ class CntSqlSearch : public QObject
     Q_OBJECT
 
 public:
+
+enum SearchMethod { Undefinded, ZerosEndOfFirstToken };
+public:
     CntSqlSearch();
 
     QString CreatePredictiveSearch(const QString &pattern);
@@ -86,6 +89,9 @@ private:
 							  const QString& lower2,
 							  const QString& upper2) const;
 
+    QString TwoDifferentTokensSearch(const QString& pattern,
+                                                                  const QStringList& tokens) const;
+
     QString ExactMatch(const QString& pattern, QString table = "") const;
 
     QString CreateJoinTableSearch(QString pattern, QStringList numbers) const;
@@ -97,6 +103,10 @@ private:
     QString UpperLimit( const QString &pattern ) const;
     
     QString LowerLimit( const QString &pattern ) const;
+
+    QString ChangeStringPadings( const QString &pattern ) const;
+
+    bool TestPattern( const QString &pattern, SearchMethod searchMethod =  Undefinded ) const;
     
     QString Pad( const QString &pattern, char padChar ) const;
     

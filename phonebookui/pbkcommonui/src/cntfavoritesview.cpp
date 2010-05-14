@@ -84,25 +84,35 @@ void CntFavoritesView::openSelectionPopup()
    // call a dialog to display the contacts
    CntGroupSelectionPopup *groupSelectionPopup = new CntGroupSelectionPopup(mViewManager->contactManager(SYMBIAN_BACKEND), mContact);
    groupSelectionPopup->populateListOfContact();
-   HbAction* action = groupSelectionPopup->exec();
-   
-   if (action == groupSelectionPopup->primaryAction())
-   {
-       groupSelectionPopup->saveOldGroup();
-       delete groupSelectionPopup;
-       
-       CntViewParameters viewParameters;
-       viewParameters.insert(EViewId, FavoritesMemberView);
-       QVariant var;
-       var.setValue(*mContact);
-       viewParameters.insert(ESelectedContact, var);
-       mViewManager->changeView(viewParameters);
-   }
-   else if (action == groupSelectionPopup->secondaryAction())
-   {
-       delete groupSelectionPopup;
-       showPreviousView();
-   }
+   groupSelectionPopup->open(this, SLOT(handleMemberSelection(HbAction*)));
+}
+
+void CntFavoritesView::handleMemberSelection(HbAction *action)
+{
+    CntGroupSelectionPopup *groupSelectionPopup = static_cast<CntGroupSelectionPopup*>(sender());
+    
+    if (groupSelectionPopup && action == groupSelectionPopup->actions().first())
+    {
+        bool membersSaved = groupSelectionPopup->saveOldGroup();
+        
+        if (membersSaved)
+        {
+            CntViewParameters viewParameters;
+            viewParameters.insert(EViewId, FavoritesMemberView);
+            QVariant var;
+            var.setValue(*mContact);
+            viewParameters.insert(ESelectedContact, var);
+            mViewManager->changeView(viewParameters);
+        }
+        else
+        {
+            showPreviousView();
+        }
+    }
+    else if (groupSelectionPopup && action == groupSelectionPopup->actions().at(1))
+    {
+        showPreviousView();
+    }
 }
 
 void CntFavoritesView::setOrientation(Qt::Orientation orientation)

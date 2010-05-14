@@ -41,8 +41,8 @@ CntDetailEditorModel( aContact )
     mAnniversary = anniversaryList.first();
     
     HbDataFormModelItem* root = invisibleRootItem();
-    appendDataFormItem( new CntDetailModelItem( mBirthday, qtTrId("Birthday")), root );
-    appendDataFormItem( new CntDetailModelItem( mAnniversary, qtTrId("Anniversary")), root );
+    appendDataFormItem( new CntDetailModelItem( mBirthday, hbTrId("txt_phob_formlabel_birthday")), root );
+    appendDataFormItem( new CntDetailModelItem( mAnniversary, hbTrId("txt_phob_formlabel_anniversary")), root );
     }
 
 CntDateEditorModel::~CntDateEditorModel()

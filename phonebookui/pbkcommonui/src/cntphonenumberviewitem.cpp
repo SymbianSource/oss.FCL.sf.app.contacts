@@ -40,14 +40,12 @@ CntPhoneNumberViewItem::CntPhoneNumberViewItem( QGraphicsItem* aParent ) :
 CntDetailViewItem( aParent ),
 mBox(NULL),
 mEdit(NULL),
-mFilter(NULL),
 mLayout(NULL)
     {
     }
 
 CntPhoneNumberViewItem::~CntPhoneNumberViewItem()
     {
-    delete mFilter;
     }
 
 HbAbstractViewItem* CntPhoneNumberViewItem::createItem()
@@ -118,8 +116,7 @@ HbWidget* CntPhoneNumberViewItem::createCustomWidget()
     HbWidget* widget = new HbWidget();
     mBox = new HbComboBox();
     mEdit = new HbLineEdit();
-    mFilter = new HbEditorInterface( mEdit );
-        
+    
     widget->setLayout( mLayout );
 
     mLayout->addItem( mBox );
@@ -167,8 +164,7 @@ HbWidget* CntPhoneNumberViewItem::createCustomWidget()
 
 void CntPhoneNumberViewItem::constructPhoneNumber( CntDetailModelItem* aItem, QString aSubType, QStringList aContext )
     {
-    mFilter->setFilter( HbPhoneNumberFilter::instance() );
-    mFilter->setUpAsPhoneNumberEditor();
+    mEdit->setInputMethodHints( Qt::ImhDialableCharactersOnly );
     mEdit->setMaxLength( CNT_PHONENUMBER_EDITOR_MAXLENGTH );
             
     QContactDetail detail = aItem->detail();
@@ -178,7 +174,7 @@ void CntPhoneNumberViewItem::constructPhoneNumber( CntDetailModelItem* aItem, QS
         {
         // also we need to remove the old online account and replace it
         // with phonenumber
-        CntDetailEditorModel* model = static_cast<CntDetailEditorModel*>( aItem->model() );
+        CntDetailEditorModel* model = static_cast<CntDetailEditorModel*>( itemView()->model() );
         QContact* contact = model->contact();
         contact->removeDetail( &detail );
                 
@@ -199,9 +195,8 @@ void CntPhoneNumberViewItem::constructPhoneNumber( CntDetailModelItem* aItem, QS
 
 void CntPhoneNumberViewItem::constructOnlineAccount( CntDetailModelItem* aItem, QString aSubType, QStringList aContext )
     {
-    mFilter->setFilter( HbEmailAddressFilter::instance() );
-    mFilter->setUpAsCompletingEmailField();
     mEdit->setMaxLength( CNT_ONLINEACCOUNT_EDITOR_MAXLENGTH );
+    mEdit->setInputMethodHints( Qt::ImhUrlCharactersOnly );
     
     QContactDetail detail = aItem->detail();
     // check if the detail type needs to changed
@@ -209,7 +204,7 @@ void CntPhoneNumberViewItem::constructOnlineAccount( CntDetailModelItem* aItem, 
         {
         // also we need to remove the old phonenumber and replace it
         // with online account
-        CntDetailEditorModel* model = static_cast<CntDetailEditorModel*>( aItem->model() );
+        CntDetailEditorModel* model = static_cast<CntDetailEditorModel*>( itemView()->model() );
         QContact* contact = model->contact();
         contact->removeDetail( &detail );
         
@@ -270,20 +265,20 @@ void CntPhoneNumberViewItem::constructSubtypeModel( QString aSubType, QStringLis
     model->appendRow(mobilework);
 
     QStandardItem *land = new QStandardItem;
-    land->setText(hbTrId("txt_phob_setlabel_val_phone"));
+    land->setText(hbTrId("txt_phob_dblist_phone"));
     land->setData(subTypeLandline, DetailSubType);
     land->setData(CNT_PHONENUMBER_EDITOR_MAXLENGTH, DetailMaxLength);
     model->appendRow(land);
        
     QStandardItem *landhome = new QStandardItem;
-    landhome->setText(hbTrId("txt_phob_setlabel_val_phone_home"));
+    landhome->setText(hbTrId("txt_phob_dblist_phone_home"));
     landhome->setData(subTypeLandline, DetailSubType);
     landhome->setData(contextHome, DetailContext);
     landhome->setData(CNT_PHONENUMBER_EDITOR_MAXLENGTH, DetailMaxLength);
     model->appendRow(landhome);
        
     QStandardItem *landwork = new QStandardItem;
-    landwork->setText(hbTrId("txt_phob_setlabel_val_phone_work"));
+    landwork->setText(hbTrId("txt_phob_dblist_phone_work"));
     landwork->setData(subTypeLandline, DetailSubType);
     landwork->setData(contextWork, DetailContext);
     landwork->setData(CNT_PHONENUMBER_EDITOR_MAXLENGTH, DetailMaxLength);
@@ -310,19 +305,19 @@ void CntPhoneNumberViewItem::constructSubtypeModel( QString aSubType, QStringLis
     model->appendRow(faxwork);
         
     QStandardItem *pager = new QStandardItem;
-    pager->setText(hbTrId("txt_phob_setlabel_val_pager"));
+    pager->setText(hbTrId("txt_phob_dblist_pager"));
     pager->setData(subTypePager, DetailSubType);
     pager->setData(CNT_PHONENUMBER_EDITOR_MAXLENGTH, DetailMaxLength);
     model->appendRow(pager);
     
     QStandardItem *assistant = new QStandardItem;
-    assistant->setText(hbTrId("txt_phob_setlabel_val_assistant"));
+    assistant->setText(hbTrId("txt_phob_dblist_assistant"));
     assistant->setData(subTypeAssistant, DetailSubType);
     assistant->setData(CNT_PHONENUMBER_EDITOR_MAXLENGTH, DetailMaxLength);
     model->appendRow(assistant);
         
     QStandardItem *carPhone = new QStandardItem;
-    carPhone->setText(hbTrId("txt_phob_setlabel_val_car"));
+    carPhone->setText(hbTrId("txt_phob_dblist_car"));
     carPhone->setData(subTypeCarPhone, DetailSubType);
     carPhone->setData(CNT_PHONENUMBER_EDITOR_MAXLENGTH, DetailMaxLength);
     model->appendRow(carPhone);

@@ -17,16 +17,10 @@
 
 #include "cntgroupdeletepopup.h"
 
-#include <hblabel.h>
 #include <hbgroupbox.h>
 #include <hbaction.h>
-#include <hbsearchpanel.h>
-#include <hbtextitem.h>
+#include <hblistview.h>
 #include <qtcontacts.h>
-#include <QStringListModel>
-#include <QGraphicsWidget>
-#include <mobcntmodel.h>
-
 
 CntGroupDeletePopup::CntGroupDeletePopup(QContactManager *manager, QGraphicsItem *parent):
     HbDialog(parent),
@@ -45,14 +39,12 @@ CntGroupDeletePopup::~CntGroupDeletePopup()
 
 void CntGroupDeletePopup::populateListOfGroup()
 {
-    HbGroupBox *headingLabel = new HbGroupBox();
-    HbLabel *label = new HbLabel(hbTrId("txt_phob_opt_delete_groups"));    
-    headingLabel->setContentWidget(label);
+    HbGroupBox *headingLabel = new HbGroupBox(this);   
+    headingLabel->setHeading(hbTrId("txt_phob_opt_delete_groups"));
     
     setHeadingWidget(headingLabel);
     
     mListView = new HbListView(this);
-    
     
     mModel->initializeGroupsList();
 
@@ -66,20 +58,22 @@ void CntGroupDeletePopup::populateListOfGroup()
     
     setContentWidget(mListView);
     
-    setTimeout(0);
+    setTimeout(HbDialog::NoTimeout);
+    setDismissPolicy(HbDialog::NoDismiss);
     setModal(true);
+    setAttribute(Qt::WA_DeleteOnClose, true);
     
-    HbAction *mPrimaryAction = new HbAction(hbTrId("Delete selected"));
-    setPrimaryAction(mPrimaryAction);
+    HbAction *mPrimaryAction = new HbAction(hbTrId("Delete selected"), this);
+    addAction(mPrimaryAction);
     
-    HbAction *mSecondaryAction = new HbAction(hbTrId("txt_common_button_cancel"));
-    setSecondaryAction(mSecondaryAction);
+    HbAction *mSecondaryAction = new HbAction(hbTrId("txt_common_button_cancel"), this);
+    addAction(mSecondaryAction);
 }
 
-void CntGroupDeletePopup::deleteGroup()
+QList<QContactLocalId> CntGroupDeletePopup::deleteGroup() const
 {
     QModelIndexList indexes = mListView->selectionModel()->selection().indexes();
-    QList<QContactLocalId>   selectionList;
+    QList<QContactLocalId> selectionList;
     for (int i = 0; i < indexes.count(); i++)
     {
         QContact contact = mModel->contact(indexes[i]);
@@ -88,5 +82,7 @@ void CntGroupDeletePopup::deleteGroup()
     }
     
     QMap<int, QContactManager::Error> errors;
-    bool result = mContactManager->removeContacts(selectionList, &errors);
+    mContactManager->removeContacts(selectionList, &errors);
+    
+    return selectionList;
 }

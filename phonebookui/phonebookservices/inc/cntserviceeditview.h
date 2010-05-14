@@ -36,8 +36,8 @@ public:
     int viewId() const { return serviceEditView; }
 
 private slots:
-    void doContactUpdated();
-    void doContactRemoved();
+    void doContactUpdated(bool aSuccess);
+    void doContactRemoved(bool aSuccess);
     void doChangesDiscarded();
     
 //public slots:

@@ -34,10 +34,18 @@ const TInt KMaxTokens = 4;
 // to prevent overflow when comparing upper and lower limits.
 const TInt KMaxDigits = 15;
 
-const QChar KPadChar = 'a'; // Pad with hex-digit 0xA
-
 const quint64 KConversionError = 0xeeeeeeeeeeeeeee;
 
+#define MAPPED_CHAR_FOR_STAR	'a'
+#define MAPPED_CHAR_FOR_HASH	'b'
+
+const QChar KMappedQCharForStar = MAPPED_CHAR_FOR_STAR;
+const QChar KMappedQCharForHash = MAPPED_CHAR_FOR_HASH;
+
+// These must be same as in cpcskeymap.cpp
+const TChar KMappedCharForStar = MAPPED_CHAR_FOR_STAR;
+const TChar KMappedCharForHash = MAPPED_CHAR_FOR_HASH;
+const QChar KPadChar = 'f'; // Pad with hex-digit 0xF
 
 
 /**
@@ -92,7 +100,7 @@ CPplPredictiveSearchTable::~CPplPredictiveSearchTable()
 /**
 @param aItem A contact item whose data are added to the table.
 */
-void CPplPredictiveSearchTable::CreateInDbL( CContactItem& aItem )
+void CPplPredictiveSearchTable::CreateInDbL(CContactItem& aItem)
 	{
 	RDebug::Print(_L("CPplPredictiveSearchTable::CreateInDbL"));
 	WriteToDbL(aItem);
@@ -106,7 +114,7 @@ then insert it into relevant tables.
 
 @param aItem A contact item whose data is updated in the database.
 */
-void CPplPredictiveSearchTable::UpdateL( const CContactItem& aItem )
+void CPplPredictiveSearchTable::UpdateL(const CContactItem& aItem)
 	{
 	RDebug::Print(_L("CPplPredictiveSearchTable::UpdateL"));
 
@@ -146,7 +154,7 @@ void CPplPredictiveSearchTable::CreateTableL()
 	{
 	RDebug::Print(_L("CPplPredictiveSearchTable::CreateTableL"));
 
-	RDebug::Print(_L("Create 10 tables"));
+	RDebug::Print(_L("Create 12 tables"));
 	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateTable0Stmnt));
 	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateTable1Stmnt));
 	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateTable2Stmnt));
@@ -157,6 +165,8 @@ void CPplPredictiveSearchTable::CreateTableL()
 	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateTable7Stmnt));
 	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateTable8Stmnt));
 	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateTable9Stmnt));
+	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateTable10Stmnt));
+	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateTable11Stmnt));
 
 
 	RDebug::Print(_L("Create indexes"));
@@ -210,6 +220,16 @@ void CPplPredictiveSearchTable::CreateTableL()
 	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateNbr3IndexTable9));
 	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateNbr4IndexTable9));
 
+	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateNbrIndexTable10));
+	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateNbr2IndexTable10));
+	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateNbr3IndexTable10));
+	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateNbr4IndexTable10));
+
+	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateNbrIndexTable11));
+	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateNbr2IndexTable11));
+	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateNbr3IndexTable11));
+	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateNbr4IndexTable11));
+
 	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateFNIndexInTable0));
 	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateLNIndexInTable0));
 	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateFNIndexInTable1));
@@ -230,6 +250,10 @@ void CPplPredictiveSearchTable::CreateTableL()
 	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateLNIndexInTable8));
 	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateFNIndexInTable9));
 	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateLNIndexInTable9));
+	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateFNIndexInTable10));
+	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateLNIndexInTable10));
+	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateFNIndexInTable11));
+	User::LeaveIfError(iDatabase.Exec(KPredSearchCreateLNIndexInTable11));
 
 	RDebug::Print(_L("CPplPredictiveSearchTable::CreateTableL ends"));
 	}
@@ -247,7 +271,7 @@ void CPplPredictiveSearchTable::ConstructL()
 	TCntSqlStatementType deleteType(EDelete, KSqlContactPredSearchTable0);
 
 	// Insert new record
-	// INSERT INTO predictivesearchX (X=0..9)
+	// INSERT INTO predictivesearchX (X=0..11)
 	//   (contact_id, nbr, nbr2, nbr3, nbr4, first_name, last_name)
 	//   VALUES (contact_id value, nbr value, nbr2 value, nbr3 value, nbr4 value,
 	//			 first_name value, last_name value);
@@ -277,7 +301,7 @@ void CPplPredictiveSearchTable::ConstructL()
 		&KPredSearchContactId, &KPredSearchContactIdParam);
 
 	// Delete information of a particular contact item
-	// 	DELETE FROM predictivesearchX (X=0..9)
+	// 	DELETE FROM predictivesearchX (X=0..11)
 	//	WHERE contact_id = [contact id value];
 	iDeleteStmnt = TSqlProvider::GetSqlStatementL(deleteType);
 	iDeleteStmnt->SetConditionL(*whereContactIdClause);
@@ -321,7 +345,7 @@ void CPplPredictiveSearchTable::WriteToDbL(const CContactItem& aItem)
 	});
 
 	HBufC* tableName(NULL);
-	while ((tableName = GetTableNameL(tables)) != NULL)
+	while ((tableName = GetNextTableNameL(tables)) != NULL)
 		{
 		// Takes ownership. Clears also earlier SQL statement.
 		iInsertStmnt->SetTableName(tableName);
@@ -447,53 +471,15 @@ QList<TChar> CPplPredictiveSearchTable::DetermineTables(QStringList aTokens) con
 	QList<TChar> tables;
 	for (TInt i = aTokens.count() - 1; i >= 0; --i)
 		{
-		TChar ch(aTokens[i][0].unicode());
-		__ASSERT_ALWAYS(IsValidChar(ch),
+		__ASSERT_ALWAYS(IsValidChar(aTokens[i][0]),
 						User::Panic(_L("DetermineTables"), KErrArgument));
+		TChar ch(aTokens[i][0].unicode());
 		if (!tables.contains(ch))
 			{
 			tables.append(ch);
 			}
 		}
 	return tables;
-	}
-
-
-// Ignore tokens beginning with something else than '0'..'9'.
-// Keep duplicate tokens to support e.g. search "202" when both FN and LN are "23".
-void
-CPplPredictiveSearchTable::AddTokens(HBufC* aString, QStringList& aTokens) const
-	{
-	if (aString)
-		{
-		QString s((QChar*)aString->Ptr(), aString->Length());
-#if defined(USE_ORBIT_KEYMAP)
-		QStringList tokens = s.split(iKeyMap->Separator(), QString::SkipEmptyParts);
-#else
-		QStringList tokens = s.split(' ', QString::SkipEmptyParts);
-#endif
-
-		// Select tokens in the same order they are in original aString
-		for (TInt i = 0; i < tokens.count(); ++i)
-			{
-			if (IsValidChar(tokens[i][0]))
-				{
-				aTokens.append(tokens[i]);
-				}
-			}
-		}
-	}
-
-
-TBool CPplPredictiveSearchTable::IsValidChar(TInt aChar) const
-	{
-	return (aChar >= '0' && aChar <= '9');
-	}
-
-
-TBool CPplPredictiveSearchTable::IsValidChar(QChar aChar) const
-	{
-	return (aChar >= '0' && aChar <= '9');
 	}
 
 
@@ -530,6 +516,40 @@ QStringList CPplPredictiveSearchTable::GetNumericTokens(HBufC* aFirstName,
 	}
 
 
+// Ignore tokens beginning with invalid (unknown) character.
+// Keep duplicate tokens to support e.g. search "202" when both FN and LN are "23".
+void
+CPplPredictiveSearchTable::AddTokens(HBufC* aString, QStringList& aTokens) const
+	{
+	if (aString)
+		{
+		QString s((QChar*)aString->Ptr(), aString->Length());
+#if defined(USE_ORBIT_KEYMAP)
+		QStringList tokens = s.split(iKeyMap->Separator(), QString::SkipEmptyParts);
+#else
+		QStringList tokens = s.split(' ', QString::SkipEmptyParts);
+#endif
+
+		// Select tokens in the same order they are in original aString
+		for (TInt i = 0; i < tokens.count(); ++i)
+			{
+			if (IsValidChar(tokens[i][0]))
+				{
+				aTokens.append(tokens[i]);
+				}
+			}
+		}
+	}
+
+
+TBool CPplPredictiveSearchTable::IsValidChar(QChar aChar) const
+	{
+	return (aChar >= '0' && aChar <= '9') ||
+			aChar == MAPPED_CHAR_FOR_STAR ||
+			aChar == MAPPED_CHAR_FOR_HASH;
+	}
+
+
 void CPplPredictiveSearchTable::GetNextToken(QStringList& aSource,
 											 QStringList& aDestination) const
 	{
@@ -547,10 +567,10 @@ CPplPredictiveSearchTable::DeleteFromAllTablesL(TContactItemId aContactId,
 											    TBool& aLowDiskErrorOccurred) const
 	{
 	QList<TChar> tables;
-	QT_TRYCATCH_LEAVING(tables = FillTableList());
+	QT_TRYCATCH_LEAVING(tables = FillAllTables());
 
 	HBufC* tableName(NULL);
-	while ((tableName = GetTableNameL(tables)) != NULL)
+	while ((tableName = GetNextTableNameL(tables)) != NULL)
 		{
 		iDeleteStmnt->SetTableName(tableName); // Clears also earlier SQL statement
 
@@ -567,9 +587,8 @@ CPplPredictiveSearchTable::DeleteFromAllTablesL(TContactItemId aContactId,
 		const TInt KContactIdParamIndex(KFirstIndex);
 		User::LeaveIfError(stmnt.BindInt(KContactIdParamIndex, aContactId));
 		RDebug::Print(_L("CPplPredictiveSearchTable::DeleteFromAllTablesL execute statement"));
-		// Returns the amount of rows that were changed/inserted/deleted.
-		// Since contact is not present in all tables, some operations return 0,
-		// it is not an error.
+		// Returns the amount of affected rows. As contact is not present each
+		// table, some operations return 0, it is not an error.
 		TInt status = stmnt.Exec();
 		RDebug::Print(_L("CPplPredictiveSearchTable::DeleteFromAllTablesL rows deleted=%d"), status);
 		CleanupStack::PopAndDestroy(&stmnt);
@@ -588,43 +607,69 @@ CPplPredictiveSearchTable::DeleteFromAllTablesL(TContactItemId aContactId,
 	}
 
 
-QList<TChar> CPplPredictiveSearchTable::FillTableList() const
+QList<TChar> CPplPredictiveSearchTable::FillAllTables() const
 	{
 	QList<TChar> tables;
-	const TInt KLargestKey = '9';
-	for (TInt i = '0'; i <= KLargestKey; ++i)
+
+	const TInt KLargestDigitKey = '9';
+	for (TInt i = '0'; i <= KLargestDigitKey; ++i)
 		{
 		TChar ch = i;
 		tables << ch;
 		}
+	tables << KMappedCharForStar;
+	tables << KMappedCharForHash;
+
 	return tables;
 	}
 
 
-HBufC* CPplPredictiveSearchTable::GetTableNameL(QList<TChar>& aTables) const
+HBufC* CPplPredictiveSearchTable::GetNextTableNameL(QList<TChar>& aTables) const
 	{
 	HBufC* tableName(NULL);
 	if (aTables.count() > 0)
 		{
-		TChar ch = aTables[0];
-		__ASSERT_ALWAYS(IsValidChar(ch), User::Leave(KErrArgument));
-
-        // Each table's name has same length, replace last char with the correct one
-        tableName = HBufC::NewL(KSqlContactPredSearchTable0().Length());
+        // Enough space for the longest table name
+        tableName = HBufC::NewL(KSqlContactPredSearchTable11().Length());
         TPtr ptr = tableName->Des();
-        ptr.Append(KSqlContactPredSearchTable0);
-        ptr[ptr.Length() - 1] = ch;
+		ptr.Append(TableNameL(aTables[0]));
+
 		aTables.removeFirst();
-		RDebug::Print(_L("CPplPredictiveSearchTable::GetTableNameL '%S'"), tableName);
+		RDebug::Print(_L("CPplPredictiveSearchTable::GetNextTableNameL '%S'"), tableName);
         }
 	return tableName;
 	}
 
+// when qwerty will be supported, keymap prob maps original chars to
+// 0..9, a..z + few capital letters
+const TDesC& CPplPredictiveSearchTable::TableNameL(TChar aCh) const
+	{
+	switch (aCh)
+		{
+		case '0': return KSqlContactPredSearchTable0;
+		case '1': return KSqlContactPredSearchTable1;
+		case '2': return KSqlContactPredSearchTable2;
+		case '3': return KSqlContactPredSearchTable3;
+		case '4': return KSqlContactPredSearchTable4;
+		case '5': return KSqlContactPredSearchTable5;
+		case '6': return KSqlContactPredSearchTable6;
+		case '7': return KSqlContactPredSearchTable7;
+		case '8': return KSqlContactPredSearchTable8;
+		case '9': return KSqlContactPredSearchTable9;
+		case MAPPED_CHAR_FOR_STAR: return KSqlContactPredSearchTable10;
+		case MAPPED_CHAR_FOR_HASH: return KSqlContactPredSearchTable11;
+		default:
+			TUint ch = aCh;
+			RDebug::Print(_L("CPplPredictiveSearchTable::TableName unknown char '%c'"), ch);
+			User::Leave(KErrArgument);
+			return KNullDesC;
+		}
+	}
 
-// E.g. aToken = "01230" -> append 'a' until has KMaxDigits characters
-// -> "01230aaaaaaaaaa" -> convert to hexadecimal number -> 0x01230aaaaaaaaaa.
-// Leaving from this function causes panic, perhaps because of QString
-// parameter? So rather return an error code if conversion fails.
+
+// E.g. aToken = "01230" -> append KPadChar until has KMaxDigits characters
+// -> "01230ffffffffff" -> convert to hexadecimal number -> 0x01230ffffffffff.
+// If this function would leave, causes panic, perhaps because of QString parameter?
 quint64 CPplPredictiveSearchTable::ConvertToHex(QString aToken) const
 	{
 	if (aToken.length() > KMaxDigits)

@@ -109,22 +109,6 @@ bool CntCollectionListModel::removeRows(int row, int count, const QModelIndex &p
     
     beginRemoveRows(parent, row, row);
     mDataPointer->mDataList.removeAt(row);
-    if (mDataPointer->mExtensions.remove(row) > 0)
-    {
-        // if extension group was deleted, refresh the indices of extension group map
-        QList<int> keyList = mDataPointer->mExtensions.keys();
-        qSort(keyList);
-        
-        for (int i = 0;i < keyList.count();i++)
-        {
-            if (keyList.at(i) > row)
-            {
-                CntUiGroupSupplier* groupSupplier = mDataPointer->mExtensions.take(keyList.at(i));
-                mDataPointer->mExtensions.insert(keyList.at(i) - 1, groupSupplier);
-            }
-        }
-    }
-
     endRemoveRows();
 
     return true;
@@ -137,7 +121,8 @@ void CntCollectionListModel::removeGroup(int localId)
 {
     for (int i = 0;i < rowCount();i++)
     {
-        if (mDataPointer->mDataList.at(i)[2] == localId)
+        // extension items have 4 items in the list, we don't allow those to be deleted from here
+        if (mDataPointer->mDataList.at(i)[2] == localId && mDataPointer->mDataList.at(i).count() < 4)
         {
             removeRow(i);
             break;
@@ -221,13 +206,13 @@ void CntCollectionListModel::initializeStaticGroups()
        }
        else
        {
-       displayList.append(hbTrId("txt_phob_dblist_favorites_val_no_favorites_selecte")); // as this isn't supported yet
+           displayList.append(hbTrId("txt_phob_dblist_favorites_val_no_favorites_selecte"));
        }
 
     }
     dataList.append(displayList);
     dataList.append(QStringList("qtg_large_favourites"));
-    dataList.append(mFavoriteGroupId); // as favorites doesn't really have a contact Id, -1 is used
+    dataList.append(mFavoriteGroupId);
     mDataPointer->mDataList.append(dataList);
 }
 
@@ -358,9 +343,23 @@ void CntCollectionListModel::initializeUserGroups()
                 }
                 dataList.append(displayList);
                 
-                // icon, default for now always
-                dataList.append(QStringList("qtg_large_custom"));
-                
+                // Default if no image for group 
+                bool icon = false;
+                QList<QContactAvatar> details = contact.details<QContactAvatar>();
+                for (int i = 0;i < details.count();i++)
+                {
+                    if (details.at(i).imageUrl().isValid())
+                    {
+                        dataList.append(QStringList(details.at(i).imageUrl().toString()));
+                        icon = true;
+                        break;
+                    }
+                }
+                if(!icon)
+                {
+                    dataList.append(QStringList("qtg_large_custom"));
+                }
+ 
                 // contact Id for identification
                 dataList.append(groupContactIds.at(i));
                 

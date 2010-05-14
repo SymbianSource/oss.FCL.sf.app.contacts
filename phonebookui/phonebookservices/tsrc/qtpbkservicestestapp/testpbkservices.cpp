@@ -29,10 +29,10 @@
 #include <QGraphicsLinearLayout>
 #include <QDebug>
 
+
 testPbkServices::testPbkServices(HbMainWindow *aParent)
 {
-    mSndFetch=0;
-    mSndEdit=0;
+    mRequest=NULL;
     mMainWindow=aParent;
     setParent(aParent);
 
@@ -40,139 +40,178 @@ testPbkServices::testPbkServices(HbMainWindow *aParent)
 
 testPbkServices::~testPbkServices()
 {
-
+    if (mRequest)
+    {
+        delete mRequest;
+        mRequest=0;
+    }
 }
 
 void testPbkServices::launchEditorNumber()
 {
-    if (mSndEdit)
-        {
-        delete mSndEdit;
-        mSndEdit=0;
-        }
+    if (mRequest)
+    {
+        delete mRequest;
+        mRequest=0;
+    }
 
-    mSndEdit = new XQServiceRequest("com.nokia.services.phonebookservices.Fetch", "editCreateNew(QString,QString)", false);
-    connect(mSndEdit, SIGNAL(requestCompleted(QVariant)), this, SLOT(onEditCompleted(QVariant)));
-
-    QString type = QContactPhoneNumber::DefinitionName;
-    *mSndEdit << type;
-    *mSndEdit << "1234567";
-
-    QVariant retValue;
-    bool res=mSndEdit->send(retValue);
+    QVariantList args; 
+    QString serviceName("com.nokia.services.phonebookservices"); 
+    QString operation("editCreateNew(QString,QString)");
+    XQApplicationManager appMng;
+    mRequest = appMng.create(serviceName, "Fetch", operation, true); // embedded 
+    
+    // Result handlers 
+    connect (mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(onEditCompleted(const QVariant&)));
+    
+    args << QContactPhoneNumber::DefinitionName.operator QVariant();
+    args << "1234567";
+    
+    mRequest->setArguments(args); 
+    mRequest->send();
 }
 
 void testPbkServices::launchEditorEmail()
 {
-    if (mSndEdit)
-        {
-        delete mSndEdit;
-        mSndEdit=0;
-        }
+    if (mRequest)
+    {
+        delete mRequest;
+        mRequest=0;
+    }
 
-    mSndEdit = new XQServiceRequest("com.nokia.services.phonebookservices.Fetch", "editCreateNew(QString,QString)", false);
-    connect(mSndEdit, SIGNAL(requestCompleted(QVariant)), this, SLOT(onEditCompleted(QVariant)));
-
-    QString type = QContactEmailAddress::DefinitionName;
-    *mSndEdit << type;
-    *mSndEdit << "email@mailprovider.com";
-
-    QVariant retValue;
-    bool res=mSndEdit->send(retValue);
+    QVariantList args; 
+    QString serviceName("com.nokia.services.phonebookservices"); 
+    QString operation("editCreateNew(QString,QString)");
+    XQApplicationManager appMng;
+    mRequest = appMng.create(serviceName, "Fetch", operation, true); // embedded 
+    
+    // Result handlers 
+    connect (mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(onEditCompleted(const QVariant&)));
+    
+    args << QContactEmailAddress::DefinitionName.operator QVariant();
+    args << "email@mailprovider.com";
+    
+    mRequest->setArguments(args); 
+    mRequest->send();
 }
 
 void testPbkServices::launchEditorOnlineAccount()
 {
-    if (mSndEdit)
-        {
-        delete mSndEdit;
-        mSndEdit=0;
-        }
+    if (mRequest)
+    {
+        delete mRequest;
+        mRequest=0;
+    }
 
-    mSndEdit = new XQServiceRequest("com.nokia.services.phonebookservices.Fetch", "editCreateNew(QString,QString)", false);
-    connect(mSndEdit, SIGNAL(requestCompleted(QVariant)), this, SLOT(onEditCompleted(QVariant)));
-
-    QString type = QContactOnlineAccount::DefinitionName;
-    *mSndEdit << type;
-    *mSndEdit << "account@provider.com";
-
-    QVariant retValue;
-    bool res=mSndEdit->send(retValue);
+    QVariantList args; 
+    QString serviceName("com.nokia.services.phonebookservices"); 
+    QString operation("editCreateNew(QString,QString)");
+    XQApplicationManager appMng;
+    mRequest = appMng.create(serviceName, "Fetch", operation, true); // embedded 
+    
+    // Result handlers 
+    connect (mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(onEditCompleted(const QVariant&)));
+    
+    args << QContactOnlineAccount::DefinitionName.operator QVariant();
+    args << "account@provider.com";
+    
+    mRequest->setArguments(args); 
+    mRequest->send();
 }
 
 void testPbkServices::launchEditorVCard()
 {
-    if (mSndEdit)
-        {
-        delete mSndEdit;
-        mSndEdit=0;
-        }
+    if (mRequest)
+    {
+        delete mRequest;
+        mRequest=0;
+    }
 
-    mSndEdit = new XQServiceRequest("com.nokia.services.phonebookservices.Fetch", "editCreateNew(QString)", false);
-    connect(mSndEdit, SIGNAL(requestCompleted(QVariant)), this, SLOT(onEditCompleted(QVariant)));
-
-    QString filename("C:\\data\\Others\\testvcard.vcf");
-    *mSndEdit << filename;
-
-    QVariant retValue;
-    bool res=mSndEdit->send(retValue);
+    QVariantList args; 
+    QString serviceName("com.nokia.services.phonebookservices"); 
+    QString operation("editCreateNew(QString)");
+    XQApplicationManager appMng;
+    mRequest = appMng.create(serviceName, "Fetch", operation, true); // embedded 
+    
+    // Result handlers 
+    connect (mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(onEditCompleted(const QVariant&)));
+    
+    args << "C:\\data\\Others\\testvcard.vcf";
+    
+    mRequest->setArguments(args); 
+    mRequest->send();
 }
 
 void testPbkServices::launchUpdateEditorNumber()
 {
-    if (mSndEdit)
-        {
-        delete mSndEdit;
-        mSndEdit=0;
-        }
+    if (mRequest)
+    {
+        delete mRequest;
+        mRequest=0;
+    }
 
-    mSndEdit = new XQServiceRequest("com.nokia.services.phonebookservices.Fetch", "editUpdateExisting(QString,QString)", false);
-    connect(mSndEdit, SIGNAL(requestCompleted(QVariant)), this, SLOT(onEditCompleted(QVariant)));
-
-    QString type = QContactPhoneNumber::DefinitionName;
-    *mSndEdit << type;
-    *mSndEdit << "1234567";
-
-    QVariant retValue;
-    bool res=mSndEdit->send(retValue);
+    QVariantList args; 
+    QString serviceName("com.nokia.services.phonebookservices"); 
+    QString operation("editUpdateExisting(QString,QString)");
+    XQApplicationManager appMng;
+    mRequest = appMng.create(serviceName, "Fetch", operation, true); // embedded 
+    
+    // Result handlers 
+    connect (mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(onEditCompleted(const QVariant&)));
+    
+    args << QContactPhoneNumber::DefinitionName.operator QVariant();
+    args << "1234567";
+    
+    mRequest->setArguments(args); 
+    mRequest->send();
 }
 
 void testPbkServices::launchUpdateEditorEmail()
 {
-    if (mSndEdit)
-        {
-        delete mSndEdit;
-        mSndEdit=0;
-        }
+    if (mRequest)
+    {
+        delete mRequest;
+        mRequest=0;
+    }
 
-    mSndEdit = new XQServiceRequest("com.nokia.services.phonebookservices.Fetch", "editUpdateExisting(QString,QString)", false);
-    connect(mSndEdit, SIGNAL(requestCompleted(QVariant)), this, SLOT(onEditCompleted(QVariant)));
-
-    QString type = QContactEmailAddress::DefinitionName;
-    *mSndEdit << type;
-    *mSndEdit << "email@mailprovider.com";
-
-    QVariant retValue;
-    bool res=mSndEdit->send(retValue);
+    QVariantList args; 
+    QString serviceName("com.nokia.services.phonebookservices"); 
+    QString operation("editUpdateExisting(QString,QString)");
+    XQApplicationManager appMng;
+    mRequest = appMng.create(serviceName, "Fetch", operation, true); // embedded 
+    
+    // Result handlers 
+    connect (mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(onEditCompleted(const QVariant&)));
+    
+    args << QContactEmailAddress::DefinitionName.operator QVariant();
+    args << "email@mailprovider.com";
+    
+    mRequest->setArguments(args); 
+    mRequest->send();
 }
 
 void testPbkServices::launchUpdateEditorOnlineAccount()
 {
-    if (mSndEdit)
-        {
-        delete mSndEdit;
-        mSndEdit=0;
-        }
+    if (mRequest)
+    {
+        delete mRequest;
+        mRequest=0;
+    }
 
-    mSndEdit = new XQServiceRequest("com.nokia.services.phonebookservices.Fetch", "editUpdateExisting(QString,QString)", false);
-    connect(mSndEdit, SIGNAL(requestCompleted(QVariant)), this, SLOT(onEditCompleted(QVariant)));
-
-    QString type = QContactOnlineAccount::DefinitionName;
-    *mSndEdit << type;
-    *mSndEdit << "account@provider.com";
-
-    QVariant retValue;
-    bool res=mSndEdit->send(retValue);
+    QVariantList args; 
+    QString serviceName("com.nokia.services.phonebookservices"); 
+    QString operation("editUpdateExisting(QString,QString)");
+    XQApplicationManager appMng;
+    mRequest = appMng.create(serviceName, "Fetch", operation, true); // embedded 
+    
+    // Result handlers 
+    connect (mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(onEditCompleted(const QVariant&)));
+    
+    args << QContactOnlineAccount::DefinitionName.operator QVariant();
+    args << "account@provider.com";
+    
+    mRequest->setArguments(args); 
+    mRequest->send();
 }
 
 void testPbkServices::onEditCompleted(const QVariant& value)
@@ -197,84 +236,103 @@ void testPbkServices::onEditCompleted(const QVariant& value)
 
 void testPbkServices::launchFetch()
 {
+    if (mRequest)
+    {
+        delete mRequest;
+        mRequest=0;
+    }
 
-    if (mSndFetch)
-        {
-        delete mSndFetch;
-        mSndFetch=0;
-        }
-
-    //XQServiceRequest snd("com.nokia.services.hbserviceprovider.Dialer","dial(QString)",true);
-    mSndFetch = new XQServiceRequest("com.nokia.services.phonebookservices.Fetch", "fetch(QString,QString,QString)",false);
-    connect(mSndFetch, SIGNAL(requestCompleted(QVariant)), this, SLOT(onRequestCompleted(QVariant)));
-
-    *mSndFetch << "Non-filtered multi-fetch";
-    *mSndFetch << KCntActionAll;
-    *mSndFetch << KCntFilterDisplayAll;
-
-    QVariant retValue;
-    bool res=mSndFetch->send(retValue);
-
+    QVariantList args; 
+    QString serviceName("com.nokia.services.phonebookservices"); 
+    QString operation("fetch(QString,QString,QString)");
+    XQApplicationManager appMng;
+    mRequest = appMng.create(serviceName, "Fetch", operation, true); // embedded 
+    
+    // Result handlers 
+    connect (mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(onRequestCompleted(const QVariant&)));
+    
+    args << "Non-filtered multi-fetch";
+    args << KCntActionAll; 
+    args << KCntFilterDisplayAll; 
+    
+    mRequest->setArguments(args); 
+    mRequest->send();
 }
 
 void testPbkServices::launchSingleFetch()
 {
-    if (mSndFetch)
-        {
-        delete mSndFetch;
-        mSndFetch=0;
-        }
+    if (mRequest)
+    {
+        delete mRequest;
+        mRequest=0;
+    }
 
-    mSndFetch = new XQServiceRequest("com.nokia.services.phonebookservices.Fetch", "Dofetch(QString,QString,QString,QString)",false);
-    connect(mSndFetch, SIGNAL(requestCompleted(QVariant)), this, SLOT(onRequestCompleted(QVariant)));
-
-    *mSndFetch << "Single-fetching";
-    *mSndFetch << KCntActionAll;
-    *mSndFetch << KCntFilterDisplayAll;
-    *mSndFetch << KCntSingleSelectionMode;
-
-    QVariant retValue;
-    bool res=mSndFetch->send(retValue);
+    QVariantList args; 
+    QString serviceName("com.nokia.services.phonebookservices"); 
+    QString operation("Dofetch(QString,QString,QString,QString)");
+    XQApplicationManager appMng;
+    mRequest = appMng.create(serviceName, "Fetch", operation, true); // embedded 
+    
+    // Result handlers 
+    connect (mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(onRequestCompleted(const QVariant&)));
+    
+    args << "Single-fetching";
+    args << KCntActionAll; 
+    args << KCntFilterDisplayAll;
+    args << KCntSingleSelectionMode;
+    
+    mRequest->setArguments(args); 
+    mRequest->send();
 }
 
 void testPbkServices::launchSmsFilteredFetch()
 {
+    if (mRequest)
+    {
+        delete mRequest;
+        mRequest=0;
+    }
 
-    if (mSndFetch)
-        {
-        delete mSndFetch;
-        mSndFetch=0;
-        }
-
-    //XQServiceRequest snd("com.nokia.services.hbserviceprovider.Dialer","dial(QString)",true);
-    mSndFetch = new XQServiceRequest("com.nokia.services.phonebookservices.Fetch", "fetch(QString,QString,QString)",false);
-    connect(mSndFetch, SIGNAL(requestCompleted(QVariant)), this, SLOT(onRequestCompleted(QVariant)));
-
-    *mSndFetch << "Filtered multi-fetch";
-    *mSndFetch << KCntActionSms;
-    *mSndFetch << KCntFilterDisplayAll;
-
-    QVariant retValue;
-    bool res=mSndFetch->send(retValue);
+    QVariantList args; 
+    QString serviceName("com.nokia.services.phonebookservices"); 
+    QString operation("fetch(QString,QString,QString)");
+    XQApplicationManager appMng;
+    mRequest = appMng.create(serviceName, "Fetch", operation, true); // embedded 
+    
+    // Result handlers 
+    connect (mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(onRequestCompleted(const QVariant&)));
+    
+    args << "Filtered multi-fetch";
+    args << KCntActionSms; 
+    args << KCntFilterDisplayAll;
+    
+    mRequest->setArguments(args); 
+    mRequest->send();
 }
 
 void testPbkServices::launchEmailFilteredFetch()
 {
+    if (mRequest)
+    {
+        delete mRequest;
+        mRequest=0;
+    }
 
-    if (mSndFetch)
-        {
-        delete mSndFetch;
-        mSndFetch=0;
-        }
-    mSndFetch = new XQServiceRequest("com.nokia.services.phonebookservices.Fetch", "fetch(QString,QString,QString)",false);
-    connect(mSndFetch, SIGNAL(requestCompleted(QVariant)), this, SLOT(onRequestCompleted(QVariant)));
-
-    *mSndFetch << "Filtered multi-fetch";
-    *mSndFetch << KCntActionEmail;
-    *mSndFetch << KCntFilterDisplayAll;
-
-    QVariant retValue;
-    bool res=mSndFetch->send(retValue);
+    QVariantList args; 
+    QString serviceName("com.nokia.services.phonebookservices"); 
+    QString operation("fetch(QString,QString,QString)");
+    XQApplicationManager appMng;
+    mRequest = appMng.create(serviceName, "Fetch", operation, true); // embedded 
+    
+    // Result handlers 
+    connect (mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(onRequestCompleted(const QVariant&)));
+    
+    args << "Filtered multi-fetch";
+    args << KCntActionEmail; 
+    args << KCntFilterDisplayAll;
+    
+    mRequest->setArguments(args); 
+    mRequest->send();
 }
 
 

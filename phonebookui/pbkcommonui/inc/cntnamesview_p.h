@@ -38,6 +38,7 @@ class HbSearchPanel;
 class HbStaticVkbHost;
 class QGraphicsLinearLayout;
 class CntExtensionManager;
+class CntFetchContacts;
 
 class CntNamesViewPrivate : public QObject
     {
@@ -62,6 +63,11 @@ public slots:
     void handleExtensionAction();
     
     void createNewContact();
+    void deleteContact( QContact& aContact );
+    void deleteMultipleContacts();
+    
+    void handleDeleteMultipleContacts();
+
     void showPreviousView();
     void showCollectionView();
     void showContactView( QContact& aContact );
@@ -71,26 +77,25 @@ public slots:
         
     void executeAction( QContact& aContact, QString aAction );
     void actionExecuted( CntAction* aAction );
-    void deleteContact( QContact& aContact );        
+    void handleDeleteContact( HbAction* aAction );
     void importSim();
-        
+
 public:
     bool isFinderVisible();
     void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
     void deactivate();
-    void scrollTo(const QContact &aContact);
     
 public:
-    CntNamesView* q_ptr;
+    CntNamesView *q_ptr;
     
-public: // lazy initializations
-    HbListView* list();
-    HbTextItem* emptyLabel();
-    HbGroupBox* groupBox();
-    HbSearchPanel* search();
-    QGraphicsLinearLayout* layout();
-    HbDocumentLoader* document();
-
+public:  // lazy initializations
+    HbListView *list();
+    HbTextItem *emptyLabel();
+    HbGroupBox *groupBox();
+    HbSearchPanel *search();
+    QGraphicsLinearLayout *layout();
+    HbDocumentLoader *document();
+    
 private:
     CntExtensionManager&        mExtensionManager;
     CntAbstractViewManager*     mViewManager;
@@ -103,10 +108,15 @@ private:
     HbDocumentLoader*           mLoader;
     QGraphicsLinearLayout*      mLayout;
     HbStaticVkbHost*            mVirtualKeyboard;
-    HbAction*                   mSoftkey; // own
-    CntActionMenuBuilder*       mMenuBuilder; // own
-    
-    bool mIsDefault;
-    int mId;
+    HbAction*                   mSoftkey;
+    CntActionMenuBuilder*       mMenuBuilder;
+    HbAction*                   mImportSim;
+    HbAction*                   mNewContact;
+    QContactLocalId             mHandledContactId;
+    HbAction*                   mMultipleDeleter;
+    CntFetchContacts*           mFetchView;
+    bool                        mIsDefault;
+    int                         mId;
+    bool                        mMenuVisible;
     };
 #endif /* CNTABSTRACTLISTVIEW_H_ */

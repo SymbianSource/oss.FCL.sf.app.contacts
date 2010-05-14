@@ -16,6 +16,7 @@
 */
 #include "cntdetaileditor.h"
 #include "cnteditorfactory.h"
+#include "cntgroupeditormodel.h"
 #include <cntviewparams.h>
 #include <hbmenu.h>
 #include <hbaction.h>
@@ -23,11 +24,15 @@
 #include <hbview.h>
 #include <hbdocumentloader.h>
 #include <hbaction.h>
+#include <hblineedit.h>
+#include <hbinputeditorinterface.h>
+#include <hbinputstandardfilters.h>
 
 const char *CNT_DETAILEDITOR_XML = ":/xml/contacts_detail_editor.docml";
 
 CntDetailEditor::CntDetailEditor( int aId ) :
     QObject(),
+    mDataFormModel(NULL),
     mId(aId),
     mView(NULL),
     mLoader(NULL),   
@@ -42,7 +47,6 @@ CntDetailEditor::CntDetailEditor( int aId ) :
     }
     else {
         mView = static_cast<HbView*> (document()->findWidget(QString("view")));
-
         mDataForm = static_cast<HbDataForm*> (document()->findWidget(QString("dataForm")));
     }
  
@@ -76,6 +80,7 @@ void CntDetailEditor::setInsertAction( const QString aInsert )
 void CntDetailEditor::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
 {
     mViewManager = aMgr;
+    mArgs = aArgs; //don't loose the params while swiching between editview and editorviews.
     
     mCancel = static_cast<HbAction*>(document()->findObject("cnt:discardchanges"));
     mView->menu()->addAction( mCancel );
@@ -94,11 +99,10 @@ void CntDetailEditor::activate( CntAbstractViewManager* aMgr, const CntViewParam
     if ( aArgs.value(ESelectedAction).toString() == "add" ) {
         mDataFormModel->insertDetailField();
     }
-
-    HbMainWindow* window = mView->mainWindow();
-    if ( window ) {
-        connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(handleOrientation(Qt::Orientation)));
-        handleOrientation(window->orientation());
+    
+    if ( mId == groupEditorView )
+    {
+        connect( mDataForm, SIGNAL(itemShown(const QModelIndex&)), this, SLOT(handleItemShown(const QModelIndex&)) );
     }
 }
 
@@ -134,19 +138,27 @@ void CntDetailEditor::insertField()
     mDataFormModel->insertDetailField();
 }
 
-void CntDetailEditor::handleOrientation(Qt::Orientation aOrientation)
+void CntDetailEditor::handleItemShown(const QModelIndex& aIndex )
 {
-    Q_UNUSED(aOrientation);
+    if ( mId == groupEditorView )
+    {
+        CntGroupEditorModel* groupModel = static_cast<CntGroupEditorModel*>( mDataFormModel );    
+        if ( groupModel->isConferenceNumber(aIndex) )
+        {
+            HbDataFormViewItem* viewItem = static_cast<HbDataFormViewItem*>(mDataForm->itemByIndex( aIndex ));
+            HbLineEdit* edit = static_cast<HbLineEdit*>( viewItem->dataItemContentWidget() );
+            edit->setInputMethodHints( Qt::ImhDialableCharactersOnly );
+        }
+    }
 }
 
 void CntDetailEditor::discardChanges()
 {
     QContact selected( *mDataFormModel->contact() );
-    CntViewParameters args;
     QVariant var;
     var.setValue(selected);
-    args.insert(ESelectedContact, var);
-    mViewManager->back( args );
+    mArgs.insert(ESelectedContact, var);
+    mViewManager->back( mArgs );
 }
 
 void CntDetailEditor::saveChanges()
@@ -154,11 +166,10 @@ void CntDetailEditor::saveChanges()
     mDataFormModel->saveContactDetails();
     
     QContact selected( *mDataFormModel->contact() );
-    CntViewParameters args;
     QVariant var;
     var.setValue(selected);
-    args.insert(ESelectedContact, var);
-    mViewManager->back( args );
+    mArgs.insert(ESelectedContact, var);
+    mViewManager->back( mArgs );
 }
 
 void CntDetailEditor::setHeader(QString aHeader)
@@ -171,8 +182,17 @@ void CntDetailEditor::setHeader(QString aHeader)
 
 void CntDetailEditor::setDetails(CntDetailEditorModel* aModel, HbAbstractViewItem* aPrototype)
 {
+    //Append custom view item prototype
+    if ( aPrototype )
+    {
+        QList <HbAbstractViewItem*> protos = mDataForm->itemPrototypes();
+        protos.append( aPrototype );
+        mDataForm->setItemPrototypes( protos );
+    }
+
     mDataFormModel = aModel;
-    mDataForm->setModel(mDataFormModel, aPrototype);
+    mDataForm->setModel( mDataFormModel );
+
 }
 
 int CntDetailEditor::viewId() const

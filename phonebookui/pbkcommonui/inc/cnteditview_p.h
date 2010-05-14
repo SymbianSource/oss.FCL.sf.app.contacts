@@ -38,6 +38,7 @@ class HbListView;
 class HbView;
 class HbAction;
 class QAction;
+class HbMenu;
 
 QTM_BEGIN_NAMESPACE
 class QContactDetail;
@@ -57,8 +58,8 @@ public:
     void deactivate();
     
 signals:
-    void contactUpdated();
-    void contactRemoved();
+    void contactUpdated(bool aSuccess);
+    void contactRemoved(bool aSuccess);
     void changesDiscarded();
     
 public:
@@ -69,7 +70,9 @@ private slots:
     void longPressed( HbAbstractViewItem *item, const QPointF &coords );
     
     void addDetailItem();
+    void handleAddDetailItem(HbAction *aAction);
     void deleteContact();
+    void handleDeleteContact(HbAction *action);
     void discardChanges();
     void saveChanges();
     
@@ -77,10 +80,11 @@ private slots:
     void openImageEditor();
     void thumbnailReady( const QPixmap& pixmap, void *data, int id, int error );
     void setOrientation(Qt::Orientation aOrientation);
+    void handleMenuAction( HbAction* aAction );
     
 private:
     void loadAvatar();
-    QList<QAction*> createPopup( CntEditViewItem* aDetail );
+    HbMenu* createPopup( const QModelIndex aIndex, CntEditViewItem* aDetail );
     void addDetail( CntEditViewItem* aDetail );
     void editDetail( CntEditViewItem* aDetail );
     void removeDetail( CntEditViewItem* aDetail, const QModelIndex& aIndex );
@@ -91,10 +95,12 @@ public:
     CntEditViewListModel* mModel;
     CntEditViewHeadingItem* mHeading;
     CntImageLabel *mImageLabel;
+    CntViewParameters mArgs;
     HbDocumentLoader* mDocument;
     ThumbnailManager* mThumbnailManager;
     QContact* mContact; // own
     CntAbstractViewManager* mMgr; // not owned
+    bool mIsMyCard;
     
     HbAction* mSoftkey;
     HbAction* mDiscard;

@@ -96,9 +96,10 @@ bool MobCntAction::isDetailSupported(const QContactDetail &detail, const QContac
     return (detail.definitionName() == QContactPhoneNumber::DefinitionName);
 }
 
-QList<QContactDetail> MobCntAction::supportedDetails(const QContact& /*contact*/) const
+//virtual function, common code for call, videocall and message actions
+QList<QContactDetail> MobCntAction::supportedDetails(const QContact& contact) const
 {
-    return QList<QContactDetail>();
+    return contact.details(QContactPhoneNumber::DefinitionName);
 }
 
 QContactActionDescriptor MobCntAction::actionDescriptor() const

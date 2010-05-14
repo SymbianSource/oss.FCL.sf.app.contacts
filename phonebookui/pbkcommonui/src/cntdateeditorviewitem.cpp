@@ -30,118 +30,141 @@
 #include <hbpushbutton.h>
 #include <hbdialog.h>
 #include <hbdatetimepicker.h>
-#include <hbtextitem.h>
+#include <hblabel.h>
 #include <hbaction.h>
 
-#include <QPointer>
-
 CntDateEditorViewItem::CntDateEditorViewItem( QGraphicsItem* aParent ) : 
-CntDetailViewItem( aParent ),
-mButton(NULL)
-    {
+    CntDetailViewItem( aParent ),
+    mButton(NULL)
+{
     mLocale = QLocale::system();
-    }
+}
 
 CntDateEditorViewItem::~CntDateEditorViewItem()
-    {
-    }
+{
+}
 
 HbAbstractViewItem* CntDateEditorViewItem::createItem()
-    {
+{
     return new CntDateEditorViewItem( *this );
-    }
+}
 
 void CntDateEditorViewItem::clicked()
-    {
+{
     HbDataFormModel* model = static_cast<HbDataFormModel*>(itemView()->model());
     CntDetailModelItem* item = static_cast<CntDetailModelItem*>( model->itemFromIndex(modelIndex()) );
     QContactDetail detail = item->detail();
-    
-    QString buttonText = qtTrId( "No date set" );
+
     if ( detail.definitionName() == QContactBirthday::DefinitionName )
-        {
+    {
         QContactBirthday bd = detail;
-        QDate date = editDate( bd.date(), qtTrId("Birthday") );
-        if ( date != bd.date() )
-            {
-            bd.setDate( date );
-            item->setDetail( bd );
-            }
-        buttonText = mLocale.toString( date );
-        }
-        
-    if ( detail.definitionName() == QContactAnniversary::DefinitionName )
-        {
-        QContactAnniversary anniversary = detail;
-        QDate date = editDate( anniversary.originalDate(), qtTrId("Anniversary") );
-        if ( date != anniversary.originalDate() )
-            {
-            anniversary.setOriginalDate( date );
-            item->setDetail( anniversary );
-            }
-        buttonText = mLocale.toString( date );
-        }
-    
-    mButton->setText( buttonText );
+        editDate( bd.date(), hbTrId("txt_phob_formlabel_birthday") );
     }
+
+    if ( detail.definitionName() == QContactAnniversary::DefinitionName )
+    {
+        QContactAnniversary anniversary = detail;
+        editDate( anniversary.originalDate(), hbTrId("txt_phob_formlabel_anniversary") );
+    }
+}
 
 HbWidget* CntDateEditorViewItem::createCustomWidget()
-    {
+{
     mButton = new HbPushButton();
     connect( mButton, SIGNAL(clicked(bool)), this, SLOT(clicked()) );
-    
+
     HbDataFormModel* model = static_cast<HbDataFormModel*>(itemView()->model());
     CntDetailModelItem* item = static_cast<CntDetailModelItem*>( model->itemFromIndex(modelIndex()) );
-    
+
     QContactDetail detail = item->detail();
-    QString text( qtTrId("No date set") );
-    
+    QString text("No date set"); // loc missing
+
     if ( detail.definitionName() == QContactBirthday::DefinitionName )
-        {
+    {
         QContactBirthday birthday = detail;
         if ( !birthday.isEmpty() )
-            {
-            text = mLocale.toString( birthday.date() );
-            }
-        }
-    
-    if ( detail.definitionName() == QContactAnniversary::DefinitionName )
         {
-        QContactAnniversary anniversary = detail;
-        if ( !anniversary.isEmpty() )
-            {
-            text = mLocale.toString( anniversary.originalDate() );
-            }
+            text = mLocale.toString( birthday.date() );
         }
-    mButton->setText( text );
-    return mButton;
     }
 
-QDate CntDateEditorViewItem::editDate( QDate aCurrent, QString aTitle )
+    if ( detail.definitionName() == QContactAnniversary::DefinitionName )
     {
-    QPointer<HbDialog> popup = new HbDialog();
+        QContactAnniversary anniversary = detail;
+        if ( !anniversary.isEmpty() )
+        {
+            text = mLocale.toString( anniversary.originalDate() );
+        }
+    }
+    mButton->setText( text );
+    return mButton;
+}
+
+void CntDateEditorViewItem::editDate( QDate aCurrent, QString aTitle )
+{
+    HbDialog *popup = new HbDialog();
     popup->setDismissPolicy(HbDialog::NoDismiss);
     popup->setTimeout(HbPopup::NoTimeout);
+    popup->setAttribute(Qt::WA_DeleteOnClose, true);
 
     HbDateTimePicker *picker = new HbDateTimePicker( popup );
     picker->setDisplayFormat( mLocale.dateFormat() );
     picker->setDateRange(CNT_DATEPICKER_FROM, CNT_DATEPICKER_TO );
     picker->setDate( aCurrent );
-                
-    HbTextItem *headingText = new HbTextItem( popup );
-    headingText->setFontSpec( HbFontSpec(HbFontSpec::Title) );
-    headingText->setText( aTitle );
-    
+
+    HbLabel *headingText = new HbLabel( popup );
+    headingText->setPlainText( aTitle );
+
     popup->setHeadingWidget(headingText);
     popup->setContentWidget(picker);
-    popup->setPrimaryAction(new HbAction(qtTrId("Ok"), popup));
-    popup->setSecondaryAction(new HbAction(qtTrId("Cancel"), popup));
-
-    HbAction *selected = popup->exec();
-    QDate date = (selected == popup->primaryAction()) ? picker->date() : aCurrent;
-    delete popup;
+    popup->addAction(new HbAction(hbTrId("txt_common_button_ok"), popup));
+    popup->addAction(new HbAction(hbTrId("txt_common_button_cancel"), popup));
     
-    return date;
+    popup->open(this, SLOT(handleEditDate(HbAction*)));
+}
+
+void CntDateEditorViewItem::changeDate( QDate aNewDate )
+{
+    HbDataFormModel* model = static_cast<HbDataFormModel*>(itemView()->model());
+    CntDetailModelItem* item = static_cast<CntDetailModelItem*>( model->itemFromIndex(modelIndex()) );
+    QContactDetail detail = item->detail();
+
+    QString buttonText("No date set"); // loc missing
+    if ( detail.definitionName() == QContactBirthday::DefinitionName )
+    {
+        QContactBirthday bd = detail;
+        if ( aNewDate != bd.date() )
+        {
+            bd.setDate( aNewDate );
+            item->setDetail( bd );
+        }
+        buttonText = mLocale.toString( aNewDate );
     }
+
+    if ( detail.definitionName() == QContactAnniversary::DefinitionName )
+    {
+        QContactAnniversary anniversary = detail;
+        if ( aNewDate != anniversary.originalDate() )
+        {
+            anniversary.setOriginalDate( aNewDate );
+            item->setDetail( anniversary );
+        }
+        buttonText = mLocale.toString( aNewDate );
+    }
+
+    mButton->setText( buttonText );
+}
+
+void CntDateEditorViewItem::handleEditDate( HbAction *aAction )
+{
+    HbDialog *popup = static_cast<HbDialog*>(sender());
+    
+    if (popup && aAction == popup->actions().first())
+    {
+        QDate date = static_cast<HbDateTimePicker*>(popup->contentWidget())->date();
+        changeDate(date);
+    }
+            
+}
 
 // End of File

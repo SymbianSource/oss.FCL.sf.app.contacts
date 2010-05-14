@@ -109,7 +109,7 @@ void CntEditorFactory::setupEditorView(CntDetailEditor &aEditor, QContact &aCont
 
     case addressEditorView:
     {
-        aEditor.setDetails(new CntAddressModel(new QContact(aContact)), NULL);
+        aEditor.setDetails(new CntAddressModel(new QContact(aContact)),  new CntAddressViewItem() );
         aEditor.setHeader(hbTrId("txt_phob_subtitle_edit_address_details"));
         break;
     }

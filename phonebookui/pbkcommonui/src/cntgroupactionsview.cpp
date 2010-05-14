@@ -137,6 +137,7 @@ void CntGroupActionsView::activate( CntAbstractViewManager* aMgr, const CntViewP
     mListView->itemPrototypes().first()->setDefaultFrame(frame);
     
     mListView->listItemPrototype()->setGraphicsSize(HbListViewItem::LargeIcon);
+    mListView->listItemPrototype()->setStretchingStyle(HbListViewItem::StretchLandscape);
     
     
     mModel = new QStandardItemModel();

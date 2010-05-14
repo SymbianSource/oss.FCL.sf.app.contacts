@@ -156,7 +156,7 @@ void CntEditViewHeadingItem::setDetails(const QContact* contact)
     icon.clear();
 
     // icon label shows default icon first
-    icon = HbIcon("qtg_large_avatar");
+    icon = HbIcon("qtg_large_add_contact_picture");
 
     QContactName name = contact->detail<QContactName>();
 

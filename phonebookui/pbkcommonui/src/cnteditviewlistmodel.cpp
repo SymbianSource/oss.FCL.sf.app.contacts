@@ -160,6 +160,7 @@ void CntEditViewListModel::removeItem( CntEditViewItem* aItem, const QModelIndex
 
 void CntEditViewListModel::refreshExtensionItems( const QModelIndex& aIndex )
 {
+    Q_UNUSED( aIndex );
     beginResetModel();
     // remove all extension items
     for( int i(mItemList.count()-1); i >= 0; i-- )
@@ -183,6 +184,69 @@ void CntEditViewListModel::refreshExtensionItems( const QModelIndex& aIndex )
         }
     }
     endResetModel();
+}
+
+void CntEditViewListModel::allInUseFields( CntViewIdList& aList )
+{
+    foreach ( KLookupKey key, mLookupTable.keys() )
+    {
+        int index = mLookupTable.value( key );
+        if ( index != -1 )
+        {
+            switch (key)
+            {
+                case EAddressDetail:
+                {
+                    // Considered to be in use if all address contexts have been added
+                    QList<QContactAddress> addrList = mContact->details<QContactAddress>();
+                    if ( addrList.count() >= 3 ) // no context, context home, context work
+                        aList.append( addressEditorView );
+                }
+                break;
+                
+                case ECompany:
+                {
+                    // Considered in use if some details and assistant exists
+                    QContactOrganization org = mContact->detail( QContactOrganization::DefinitionName );
+                    if ( !org.assistantName().isEmpty() && 
+                        (!org.name().isEmpty() || !org.department().isEmpty() || !org.title().isEmpty()) )
+                        aList.append( companyEditorView );
+                }
+                break;
+                
+                case EDate:
+                {
+                    QContactBirthday bd = mContact->detail( QContactBirthday::DefinitionName );
+                    QContactAnniversary anniversary = mContact->detail( QContactAnniversary::DefinitionName );
+                    // considered as in use when both birthday and anniversary has a valid date
+                    if ( bd.date().isValid() && anniversary.originalDate().isValid() )
+                        aList.append( dateEditorView );
+                }
+                break;
+                    
+                case EFamily:
+                {
+                    QContactFamily family = mContact->detail( QContactFamily::DefinitionName );
+                    if ( !family.children().isEmpty() && !family.spouse().isEmpty() )
+                        aList.append( familyDetailEditorView );
+                }
+                break;
+                
+                case ERingingTone:
+                {
+                    /*
+                    QContactRingtone tone = mContact->detail( QContactRingtone::DefinitionName );
+                    if ( !tone.audioRingtoneUrl().isEmpty() )
+                        aList.append( ringingToneEditor );
+                    */
+                }
+                break;
+                
+                default:
+                    break;
+            }
+        }
+    }
 }
 
 void CntEditViewListModel::refresh()

@@ -20,6 +20,7 @@
 #include <qglobal.h>
 #include <QObject>
 #include <etelmm.h>
+#include <rmmcustomapi.h>
 #include <secuisecuritysettings.h> 
 #include <secui.h>
 
@@ -38,7 +39,8 @@ private:
     enum ActiveRequest {
          ENoActiveRequest = 0,
          EGetInfo,
-         EGetAvailableStores
+         EGetAvailableStores,
+         EGetCacheStatus
     };
     
 public:
@@ -81,15 +83,22 @@ public:
     };
     
     struct AvailableStores {
+        bool SimPresent;
         bool AdnStorePresent;
         bool SdnStorePresent;
         bool FdnStorePresent;
         
         AvailableStores() {
+            SimPresent = false;
             AdnStorePresent = false;
             SdnStorePresent = false;
             FdnStorePresent = false;
         };
+    };
+    
+    enum CacheStatus {
+        ECacheReady,
+        ECacheFailed
     };
     
 public:
@@ -106,6 +115,7 @@ public:
 	//async request
 	bool startGetSimInfo();
 	bool startGetAvailableStores();
+	bool notifyAdnCacheStatus();
 	
 public:
     void RequestCompleted(int error);
@@ -113,6 +123,7 @@ public:
 signals:
     void simInfoReady(SimUtility::SimInfo& simInfo, int error);
     void availableStoresReady(SimUtility::AvailableStores& availableStores, int error);
+    void adnCacheStatusReady(SimUtility::CacheStatus& cacheStatus, int error);
 	
 private: 
     void ParseServiceTable(AvailableStores* availableStores) const;
@@ -127,6 +138,8 @@ private:
     RMobilePhone::TMobilePhoneServiceTableV1 m_serviceTable;
     RMobilePhone::TMobilePhoneServiceTableV1Pckg m_serviceTablePckg;
     RMobilePhone::TMobilePhoneServiceTable m_serviceTableType;
+    RMmCustomAPI m_customPhone;
+    TName m_etelStoreNameCached;
 
     AsyncWorker* m_asyncWorker;
     int m_activeRequest;

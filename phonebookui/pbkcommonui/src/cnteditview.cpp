@@ -20,7 +20,7 @@
 #include "cntabstractviewmanager.h"
 
 #include <hbview.h>
-
+#include "qtpbkglobal.h"
 #include "cntdetailpopup.h"
 #include "cnteditviewdetailitem.h"
 #include "cnteditviewheadingitem.h"
@@ -36,8 +36,8 @@
 CntEditView::CntEditView() : d_ptr(new CntEditViewPrivate())
 {
     Q_D( CntEditView );
-    connect( d_ptr, SIGNAL(contactUpdated()), this, SIGNAL(contactUpdated()) );
-    connect( d_ptr, SIGNAL(contactRemoved()), this, SIGNAL(contactRemoved()) );
+    connect( d_ptr, SIGNAL(contactUpdated(bool)), this, SIGNAL(contactUpdated(bool)) );
+    connect( d_ptr, SIGNAL(contactRemoved(bool)), this, SIGNAL(contactRemoved(bool)) );
     connect( d_ptr, SIGNAL(changesDiscarded()), this, SIGNAL(changesDiscarded()) );
 }
 

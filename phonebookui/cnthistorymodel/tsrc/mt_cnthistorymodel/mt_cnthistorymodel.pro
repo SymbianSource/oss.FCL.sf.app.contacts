@@ -36,10 +36,11 @@ HEADERS += mt_cnthistorymodel.h \
            ../../inc/cnthistorymodel_p.h \
            ../../inc/cnthistorymodel.h
            
-SOURCES += mt_cnthistorymodel.cpp \
-           stub_classes.cpp \
-           ../../src/cnthistorymodel.cpp
+SOURCES += stub_classes.cpp \
+           ../../src/cnthistorymodel.cpp \
+           mt_cnthistorymodel.cpp
            
-LIBS += -lQtContacts
+LIBS += -lQtContacts \
+        -lmsghistory
 
 TARGET.CAPABILITY = ALL -TCB

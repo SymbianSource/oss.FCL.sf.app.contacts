@@ -22,7 +22,7 @@
 #include <QVariant>
 
 #include <qmobilityglobal.h> //defines Q_SFW_EXPORT
-#include <xqservicerequest.h>
+#include <xqappmgr.h>
 
 class HbMainWindow;
 
@@ -51,9 +51,8 @@ public:
 
 private:
 
-    XQServiceRequest    *mSndFetch;
-    XQServiceRequest    *mSndEdit;
-    HbMainWindow        *mMainWindow;
+    XQAiwRequest         *mRequest; 
+    HbMainWindow         *mMainWindow;
 
 };
 

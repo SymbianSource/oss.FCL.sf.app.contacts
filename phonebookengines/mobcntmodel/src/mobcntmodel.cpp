@@ -42,7 +42,8 @@ MobCntModel::MobCntModel(const QContactFilter& contactFilter,
     mIconManager = new MobCntIconManager();
     connect(mIconManager, SIGNAL(contactIconReady(int)), this, SLOT(updateContactIcon(int)));
     
-    mDefaultIcon = QIcon(":/icons/qtg_large_avatar.svg");
+    mDefaultIcon = HbIcon("qtg_large_avatar");
+    mDefaultMyCardIcon = HbIcon("qtg_large_mycard");
 
     d = new MobCntModelData(contactFilter, contactSortOrders, showMyCard);
     d->m_contactManager = new QContactManager;
@@ -71,7 +72,8 @@ MobCntModel::MobCntModel(QContactManager* manager,
     mIconManager = new MobCntIconManager();
     connect(mIconManager, SIGNAL(contactIconReady(int)), this, SLOT(updateContactIcon(int)));
 
-    mDefaultIcon = QIcon(":/icons/qtg_large_avatar.svg");
+    mDefaultIcon = HbIcon("qtg_large_avatar");
+    mDefaultMyCardIcon = HbIcon("qtg_large_mycard");
 
     d = new MobCntModelData(contactFilter, contactSortOrders, showMyCard);
     d->m_contactManager = manager;
@@ -117,8 +119,11 @@ QVariant MobCntModel::data(const QModelIndex &index, int role) const
             definitionRestrictions.append(QContactAvatar::DefinitionName);
             definitionRestrictions.append(QContactPhoneNumber::DefinitionName);
             definitionRestrictions.append(QContactOrganization::DefinitionName);
+            QContactFetchHint restrictions;
+            restrictions.setDetailDefinitionsHint(definitionRestrictions);
+            restrictions.setOptimizationHints(QContactFetchHint::NoRelationships);
             
-            d->currentContact = d->m_contactManager->contact(d->contactIds[row], definitionRestrictions);
+            d->currentContact = d->m_contactManager->contact(d->contactIds[row], restrictions);
         }
         d->currentRow = row;
     }
@@ -132,7 +137,7 @@ QVariant MobCntModel::data(const QModelIndex &index, int role) const
 	else if (role == Qt::BackgroundRole) {
 	    if (d->mMyCardId == d->contactIds[row] ||
 	        dummyMyCardId == d->contactIds[row]) {
-                return HbFrameBackground("qtg_fr_groupbox", HbFrameDrawer::NinePieces);
+                return HbFrameBackground("qtg_fr_list_parent_normal", HbFrameDrawer::NinePieces);
 	    }
 	}
 	else if (role == Qt::DecorationRole) {
@@ -142,14 +147,27 @@ QVariant MobCntModel::data(const QModelIndex &index, int role) const
 	    if(!contactAvatar.imageUrl().isEmpty()) {
             QIcon icon = mIconManager->contactIcon(contactAvatar.imageUrl().toString(), row);
             if (icon.isNull()) {
-                icons.append(mDefaultIcon);
+                if (d->mMyCardId == d->contactIds[row] ||
+                        dummyMyCardId == d->contactIds[row]) {
+                    icons.append(mDefaultMyCardIcon);
+                }
+                else {
+                    icons.append(mDefaultIcon);
+                }
             }
             else {
                 icons.append(icon);
             }
 	    }
 	    else {
-            icons.append(mDefaultIcon);
+	        if (d->mMyCardId == d->contactIds[row] ||
+	                    dummyMyCardId == d->contactIds[row]) {
+	            icons.append(mDefaultMyCardIcon);
+	        }
+	        else {
+	            icons.append(mDefaultIcon);
+	        }
+            
 	    }        
 	    
 	    return QVariant(icons);
@@ -419,8 +437,8 @@ QVariant MobCntModel::dataForDisplayRole(int row) const
         isSelfContact = true;
         if (d->currentContact.details().count() <= 4) {    
             //empty card
-            name = tr("My card");
-            number = tr("Create my identity");
+            name = hbTrId("txt_phob_dblist_mycard");
+            number = hbTrId("txt_phob_dblist_mycard_val_create_my_identity");
         }
         else {
             isNonEmptySelfContact = true;
@@ -500,8 +518,6 @@ void MobCntModel::handleRemoved(const QList<QContactLocalId>& contactIds)
     if (contactIds.contains(d->mMyCardId))
         d->mMyCardId = 0;
 
-    updateContactIdsArray();
-    
     for (int i = (indexSequences.count() - 1);i >= 0; i--)
     {
         if (indexSequences.at(i).first() == 0 && d->showMyCard) {
@@ -522,6 +538,7 @@ void MobCntModel::handleRemoved(const QList<QContactLocalId>& contactIds)
             endRemoveRows();
         }
     }
+    updateContactIdsArray();
 }
 
 /*!

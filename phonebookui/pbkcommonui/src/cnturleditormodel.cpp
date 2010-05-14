@@ -22,7 +22,7 @@
 CntUrlEditorModel::CntUrlEditorModel(QContact* aContact) :
     CntDetailEditorModel(aContact)
 {
-    QList<QContactUrl> urlList = mContact->details<QContactUrl> ();
+    QList<QContactUrl> urlList = mContact->details<QContactUrl>();
     if (urlList.isEmpty()) {
         QContactUrl url;
         url.setSubType(QContactUrl::SubTypeHomePage);
@@ -43,7 +43,7 @@ void CntUrlEditorModel::insertDetailField()
 {
     QContactUrl url;
     url.setSubType(QContactUrl::SubTypeHomePage);
-    
+        
     appendDataFormItem( new CntDetailModelItem(url), invisibleRootItem() );
 }
 
@@ -54,9 +54,12 @@ void CntUrlEditorModel::saveContactDetails()
     int count(root->childCount());
     for (int i(0); i < count; i++) {
         CntDetailModelItem* detail = static_cast<CntDetailModelItem*> (root->childAt(i));
-        QContactUrl url = detail->detail();
-        if (url.url().length() > 0) {
-            mContact->saveDetail(&url);
+        QContactDetail url = detail->detail();
+        mContact->saveDetail( &url );
+        
+        if ( url.value(QContactUrl::FieldUrl).isEmpty() )
+        {
+            mContact->removeDetail( &url );
         }
     }
 }

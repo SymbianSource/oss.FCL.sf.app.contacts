@@ -93,6 +93,8 @@ private:
     HbDocumentLoader         mDocumentLoader;
     HbListView              *mListView; // owned by layout
     QStandardItemModel      *mModel; // own
+    
+    CntViewParameters       mArgs;
 };
 
 #endif // CNTIMAGEEDITORVIEW_H

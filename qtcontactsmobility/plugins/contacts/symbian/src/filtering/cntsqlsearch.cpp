@@ -41,6 +41,8 @@
 #include <QStringList>
 
 #include "cntsqlsearch.h"
+#include <QHash>
+#include <QLocale>
 
 const char KLimitLength = 15;
 const int KTwoTokens = 2;
@@ -48,6 +50,7 @@ const int KOneToken = 1;
 const char KLowerLimitPadding = '0';
 const char KUpperLimitPadding = 'F';
 const int KMinimumSearchPatternLength = 1;
+const int KHexadecimalBase = 16;
 
 
 #define ORDER_BY_FIRSTNAME_LASTNAME " ORDER BY first_name, last_name ASC;"
@@ -61,6 +64,13 @@ const QString KColumn1 = "nbr";
 const QString KColumn2 = "nbr2";
 const QString KColumn3 = "nbr3";
 const QString KColumn4 = "nbr4";
+
+// Special handling for characters that originate from * and # keys
+const QChar KStarChar('*');
+const QChar KPlusChar('+');
+const QChar KPChar('p');
+const QChar KWChar('w');
+const QChar KHashChar('#');
 
 
 CntSqlSearch::CntSqlSearch()
@@ -100,15 +110,16 @@ CntSqlSearch::CntSqlSearch()
 QString CntSqlSearch::CreatePredictiveSearch(const QString &pattern)
 	{
 	int len = pattern.length();
+        QString newPattern = ChangeStringPadings(pattern);
 	// For best performance, handle 1 digit case first
 	if (len == KMinimumSearchPatternLength)
         {
 		// Case 1
-        return SELECT_CONTACT_ID + SelectTable(pattern) + ORDER_BY_FIRSTNAME_LASTNAME;
+        return SELECT_CONTACT_ID + SelectTable(newPattern) + ORDER_BY_FIRSTNAME_LASTNAME;
         }
     if (len <= KLimitLength && len > KMinimumSearchPatternLength)
         {
-		return CreateQuery(pattern);
+                return CreateQuery(newPattern);
 		}
 
 	return QString(""); // Invalid pattern
@@ -116,68 +127,86 @@ QString CntSqlSearch::CreatePredictiveSearch(const QString &pattern)
 
 QString CntSqlSearch::SelectTable(const QString &pattern) const
 	{
-    QString predictivesearch;
-	if (pattern.length() == 0)
-		{
-		return "";
-		}
-    switch (pattern.at(0).digitValue())
-        {
-        case 0:
+        QString predictivesearch;
+        QStringList tokens = GetTokens(pattern);
+        bool ok;
+        if (pattern.length() == 0)
+                {
+                return "";
+                }
+        QString firstNumber(pattern.at(0));
+        uint hex = firstNumber.toUInt(&ok, 16);
+        if (!ok)
             {
-            predictivesearch = QString("predictivesearch0");
+            // TODO: handle error (=invalid characters in pattern)
             }
-        break;
-        case 1:
+        switch (hex)
             {
-            predictivesearch = QString("predictivesearch1");
+            case 0:
+                {
+                predictivesearch = QString("predictivesearch0");
+                }
+            break;
+            case 1:
+                {
+                predictivesearch = QString("predictivesearch1");
+                }
+            break;
+            case 2:
+                {
+                predictivesearch = QString("predictivesearch2");
+                }
+            break;
+            case 3:
+                {
+                predictivesearch = QString("predictivesearch3");
+                }
+            break;
+            case 4:
+                {
+                predictivesearch = QString("predictivesearch4");
+                }
+            break;
+            case 5:
+                {
+                predictivesearch = QString("predictivesearch5");
+                }
+            break;
+            case 6:
+                {
+                predictivesearch = QString("predictivesearch6");
+                }
+            break;
+            case 7:
+                {
+                predictivesearch = QString("predictivesearch7");
+                }
+            break;
+            case 8:
+                {
+                predictivesearch = QString("predictivesearch8");
+                }
+            break;
+            case 9:
+                {
+                predictivesearch = QString("predictivesearch9");
+                }
+             break;
+            case 10:
+                {
+                predictivesearch = QString("predictivesearch10");
+                }
+            break;
+            case 11:
+                {
+                predictivesearch = QString("predictivesearch11");
+                }
+            break;
+                    default: // error
+                            predictivesearch = "";
+                            break;
             }
-        break;
-        case 2:
-            {
-            predictivesearch = QString("predictivesearch2");
-            }
-        break;
-        case 3:
-            {
-            predictivesearch = QString("predictivesearch3");
-            }
-        break;
-        case 4:
-            {
-            predictivesearch = QString("predictivesearch4");
-            }
-        break;
-        case 5:
-            {
-            predictivesearch = QString("predictivesearch5");
-            }
-        break;
-        case 6:
-            {
-            predictivesearch = QString("predictivesearch6");
-            }
-        break;
-        case 7:
-            {
-            predictivesearch = QString("predictivesearch7");
-            }
-        break;
-        case 8:
-            {
-            predictivesearch = QString("predictivesearch8");
-            }
-        break;
-        case 9:
-            {
-            predictivesearch = QString("predictivesearch9");
-            }
-        break;
-		default: // error
-			predictivesearch = "";
-			break;
-        }
-	return predictivesearch;
+            return predictivesearch;
 	}
 
 // Even if there are over 2 tokens, make 2 tokens.
@@ -186,7 +215,7 @@ QString CntSqlSearch::SelectTable(const QString &pattern) const
 // E.g. "0010230" results tokens "001" and "230" and
 // "001230045067800900" tokens "00123" and "45067800900".
 QStringList CntSqlSearch::GetTokens(const QString& pattern) const
-	{
+    {
     const QChar KZero('0');
     QStringList tokens = pattern.split(KZero, QString::SkipEmptyParts);
     if (tokens.count() < KTwoTokens)
@@ -212,17 +241,17 @@ QStringList CntSqlSearch::GetTokens(const QString& pattern) const
         }
     twoTokens.append(pattern.mid(i));
     return twoTokens;
-	}
+    }
 
 // pattern length is between KMinimumSearchPatternLength...KLimitLength
 QString CntSqlSearch::CreateQuery(const QString& pattern) const
 	{
-	QStringList tokens = GetTokens(pattern);
+        QStringList tokens = GetTokens(pattern);
 	if (tokens.count() < KTwoTokens)
             {
-            if( tokens.count() == KOneToken && !tokens.at(0).contains("0") && !pattern.startsWith('0') && pattern.endsWith('0'))
+            if( TestPattern(pattern, CntSqlSearch::ZerosEndOfFirstToken))
                 {
-                return IdenticalTokensSearch(pattern, tokens) + Order(tokens); // Case 6
+                return TwoDifferentTokensSearch(pattern, tokens);  // Case 6
                 }
             else
                 {
@@ -316,7 +345,7 @@ This query works if both tokens have just one digit (e.g. "102", but not "1023")
 // and Y means: (value > lower-limit-2 AND value < upper-limit-2)
 QString CntSqlSearch::SearchTokensFromOneTable(const QString& pattern,
 											   const QStringList& tokens) const
-	{
+    {
 	QString token = tokens.at(0);
     QString lower = LowerLimit(token);
     QString upper = UpperLimit(token);
@@ -362,6 +391,26 @@ QString CntSqlSearch::IdenticalTokensSearch(const QString& pattern,
 	query += Order(tokens);
 	return query;
 	}
+
+
+QString CntSqlSearch::TwoDifferentTokensSearch(const QString& pattern, const QStringList& tokens) const
+        {
+        QString token = tokens.at(0);
+        QString sortPatern = pattern;
+        sortPatern.truncate(pattern.length()-1);
+#if defined(USE_DEMORGAN)
+        QString query(SELECT_CONTACT_ID + SelectTable(pattern) + " WHERE NOT(NOT" +
+            ExactMatch(sortPatern) +
+        " AND NOT" + ExactMatch(pattern) + ")");
+#else
+        QString query(SELECT_CONTACT_ID + SelectTable(pattern) + " WHERE (" +
+            ExactMatch(sortPatern) +  // exact match (e.g. "2")
+        ") OR " + ExactMatch(pattern)); // exact match (e.g. "20")
+#endif
+        query += Order(tokens);
+        return query;
+        }
+
 
 // Put individual AND / OR operations in such order that in most cases there is
 // no need to evaluate all arguments of the AND / OR.
@@ -547,24 +596,27 @@ QString CntSqlSearch::CreateJoinTableSearch(QString pattern, QStringList numbers
 	}
 
 QString CntSqlSearch::ExactMatchColumns(QStringList numbers) const
+    {
+    const int KFirstColumn = 0;
+    const int KSecondColumn = 1;
+    QString firstColumn = numbers.at(KFirstColumn);
+    QString secondColumn = numbers.at(KSecondColumn);
+
+    if( firstColumn.count() >  1 && secondColumn.count() > 1)
         {
-
-        QString firstColumn = numbers.at(0);
-        QString secondColumn = numbers.at(1);
-
-        if( firstColumn.count() >  1 && secondColumn.count() > 1)
-            {
-            return "(" + ExactMatch(numbers.at(0), SelectTable(numbers.at(0))) + " AND " + ExactMatch(numbers.at(1), SelectTable(numbers.at(1))) + ")";
-            }
-        else if(firstColumn.count() > 1)
-            {
-            return ExactMatch(numbers.at(0), SelectTable(numbers.at(0)));
-            }
-        else
-            {
-            return ExactMatch(numbers.at(1), SelectTable(numbers.at(1)));
-            }
+        return "(" + ExactMatch(numbers.at(KFirstColumn), SelectTable(numbers.at(KFirstColumn)))
+            + " AND " +
+            ExactMatch(numbers.at(KSecondColumn), SelectTable(numbers.at(KSecondColumn))) + ")";
         }
+    else if(firstColumn.count() > 1)
+        {
+        return ExactMatch(numbers.at(KFirstColumn), SelectTable(numbers.at(KFirstColumn)));
+        }
+    else
+        {
+        return ExactMatch(numbers.at(KSecondColumn), SelectTable(numbers.at(KSecondColumn)));
+        }
+    }
 
 QString CntSqlSearch::Order(QStringList tokens) const
 	{
@@ -575,6 +627,46 @@ QString CntSqlSearch::Order(QStringList tokens) const
 		}
 	return QString(ORDER_BY_FIRSTNAME_LASTNAME);
 	}
+
+QString CntSqlSearch::ChangeStringPadings( const QString &pattern ) const
+    { 
+    QString newPattern = pattern;
+    if (QLocale::system().language() == QLocale::Thai)
+        {
+        newPattern.remove(KStarChar, Qt::CaseInsensitive);
+        newPattern.remove(KPlusChar, Qt::CaseInsensitive);
+        newPattern.remove(KPChar, Qt::CaseInsensitive);
+        newPattern.remove(KWChar, Qt::CaseInsensitive);
+        newPattern.remove(KHashChar, Qt::CaseInsensitive);
+        }
+    else
+        { 
+        newPattern.replace(KStarChar, 'A');
+        newPattern.replace(KPlusChar, 'A');
+        newPattern.replace(KPChar, 'A');
+        newPattern.replace(KWChar, 'A');
+        newPattern.replace(KHashChar, 'B');
+        }
+    return newPattern;
+    }
+
+bool CntSqlSearch::TestPattern( const QString &pattern, SearchMethod searchMethod ) const
+    {
+    QStringList tokens = GetTokens(pattern);
+    if (!tokens.isEmpty() && !pattern.isEmpty())
+        {
+        if (CntSqlSearch::ZerosEndOfFirstToken == searchMethod)
+            {
+            if( tokens.count() == KOneToken && !tokens.at(0).contains("0")
+                && !pattern.startsWith('0') && pattern.count('0') == 1
+                && pattern.endsWith('0'))
+                {
+                return true;
+                }
+            }
+        }
+    return false;
+    }
 
 QString CntSqlSearch::Pad( const QString &pattern, char padChar ) const
     {
@@ -592,7 +684,6 @@ QString CntSqlSearch::Pad( const QString &pattern, char padChar ) const
             result.append(padChar);
             }
         }
-    const int KHexadecimalBase = 16;
     bool ok;
     // Use signed int to prevent underflow when replaced is "00...00"
     qint64 value = result.toLongLong(&ok, KHexadecimalBase); 

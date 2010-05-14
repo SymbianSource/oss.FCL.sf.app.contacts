@@ -41,4 +41,5 @@ SOURCES += src/simutility.cpp \
 
 LIBS += -letel \
         -letelmm \
-        -lsecui
+        -lsecui \
+        -lcustomapi

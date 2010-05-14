@@ -22,8 +22,8 @@
 CntServiceEditView::CntServiceEditView(CntServiceHandler *aServiceHandler ) : CntEditView(),
 mServiceHandler(aServiceHandler)
 {   
-    connect( this, SIGNAL(contactUpdated()), this, SLOT(doContactUpdated()) );
-    connect( this, SIGNAL(contactRemoved()), this, SLOT(doContactRemoved()) );
+    connect( this, SIGNAL(contactUpdated(bool)), this, SLOT(doContactUpdated(bool)) );
+    connect( this, SIGNAL(contactRemoved(bool)), this, SLOT(doContactRemoved(bool)) );
     connect( this, SIGNAL(changesDiscarded()), this, SLOT(doChangesDiscarded()) );
 }
 
@@ -31,16 +31,18 @@ CntServiceEditView::~CntServiceEditView()
 {
 }
 
-void CntServiceEditView::doContactUpdated()
+void CntServiceEditView::doContactUpdated(bool aSuccess)
 {
     connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
-    mServiceHandler->completeEdit(1);
+    int retValue = aSuccess ? 1 : 0;
+    mServiceHandler->completeEdit(retValue);
 }
 
-void CntServiceEditView::doContactRemoved()
+void CntServiceEditView::doContactRemoved(bool aSuccess)
 {
     connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
-    mServiceHandler->completeEdit(-1);
+    int retValue = aSuccess ? -1 : 0;
+    mServiceHandler->completeEdit(retValue);
 }
 
 void CntServiceEditView::doChangesDiscarded()

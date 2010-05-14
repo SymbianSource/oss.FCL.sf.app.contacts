@@ -344,7 +344,6 @@ private:
 	// aString ownership is not transferred
 	void AddTokens(HBufC* aString, QStringList& aTokens) const;
 
-	TBool IsValidChar(TInt aChar) const;
 	TBool IsValidChar(QChar aChar) const;
 
 	// aFirstName ownership is not transferred
@@ -354,10 +353,11 @@ private:
 	void DeleteFromAllTablesL(TContactItemId aContactId,
 							  TBool& aLowDiskErrorOccurred) const;
 
-	QList<TChar> FillTableList() const;
+	QList<TChar> FillAllTables() const;
 
 	// Return next table's name, ownership is transferred
-	HBufC* GetTableNameL(QList<TChar>& aTables) const;
+	HBufC* GetNextTableNameL(QList<TChar>& aTables) const;
+	const TDesC& TableNameL(TChar aCh) const;
 
 	quint64 ConvertToHex(QString aToken) const;
 

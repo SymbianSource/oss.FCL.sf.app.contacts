@@ -77,6 +77,7 @@ HEADERS += \
     inc/cntcontactcardheadingitem.h \
     inc/cntcontactcarddatacontainer.h \
     inc/cntcontactcarddataitem.h \
+    inc/cntcontactcardcontextmenu.h \
     inc/cntcontactcardview.h \
     inc/cntcontactcardview_p.h \
     inc/cntcontactcarddetailitem.h \
@@ -94,7 +95,6 @@ HEADERS += \
     inc/cntgroupeditormodel.h \
     inc/cnthistoryview.h \
     inc/cnthistoryviewitem.h \
-    inc/cnthistoryviewitemwidget.h \
     inc/cntgroupselectionpopup.h \
     inc/cntgroupdeletepopupmodel.h \
     inc/cntdetailconst.h \
@@ -120,7 +120,9 @@ HEADERS += \
     inc/cntdetailviewitem.h \
     inc/cntgroupdeletepopup.h \
     inc/cntextensionmanager.h \
-    inc/cntimagelabel.h
+    inc/cntimagelabel.h \
+    inc/cntfetchcontactsview.h \
+    inc/cntimportsview.h
     
 SOURCES += \
 	src/cntviewnavigator.cpp \
@@ -144,6 +146,7 @@ SOURCES += \
     src/cntcontactcardview.cpp \
     src/cntcontactcardview_p.cpp \
     src/cntcontactcardheadingitem.cpp \
+    src/cntcontactcardcontextmenu.cpp \
     src/cntdocumentloader.cpp \
     src/cnteditview.cpp \
     src/cnteditview_p.cpp \
@@ -159,7 +162,6 @@ SOURCES += \
     src/cntgroupeditormodel.cpp \
     src/cnthistoryview.cpp \
     src/cnthistoryviewitem.cpp \
-    src/cnthistoryviewitemwidget.cpp \
     src/cntgroupselectionpopup.cpp \
     src/cntgroupdeletepopupmodel.cpp \
     src/cntaddressmodel.cpp \
@@ -182,7 +184,9 @@ SOURCES += \
     src/cnturleditorviewitem.cpp \
     src/cntgroupdeletepopup.cpp \
     src/cntextensionmanager.cpp \
-    src/cntimagelabel.cpp
+    src/cntimagelabel.cpp \
+    src/cntimportsview.cpp \
+    src/cntfetchcontactsview.cpp
     
 RESOURCES += resources\pbkcommonui.qrc
 

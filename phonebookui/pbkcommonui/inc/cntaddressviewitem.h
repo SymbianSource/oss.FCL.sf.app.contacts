@@ -19,11 +19,8 @@
 #define CNTADDRESSVIEWITEM_H_
 
 #include <hbdataformviewitem.h>
-//#include "cntdetailviewitem.h"
 #include <hbpushbutton.h>
-#include <xqappmgr.h>
 
-class XQAiwRequest;
 class HbWidget;
 class HbAbstractViewItem;
 
@@ -34,18 +31,27 @@ class CntAddressViewItem : public /*CntDetailViewItem*/ HbDataFormViewItem
 public:
     CntAddressViewItem( QGraphicsItem* aParent = 0 );
     ~CntAddressViewItem();
-   
+
+#ifdef PBK_UNIT_TEST
+public slots:
+#else
 private slots:
+#endif    
     void launchLocationPicker();
-    void handleLocationChange(const QVariant& aValue );
     
 public:
     HbAbstractViewItem* createItem();
     HbWidget* createCustomWidget();
- 
-    XQAiwRequest*         mRequest;
-    XQApplicationManager* mAppManager;
-    QObject*              mSenderButton;
-    };
+    
+    bool canSetModelIndex( const QModelIndex &index ) const;
+    
+#ifdef PBK_UNIT_TEST
+public:
+#else
+private:
+#endif    
+    void handleLocationChange(const QVariant& aValue );
+
+};
 
 #endif /* CNTADDRESSVIEWITEM_H_ */

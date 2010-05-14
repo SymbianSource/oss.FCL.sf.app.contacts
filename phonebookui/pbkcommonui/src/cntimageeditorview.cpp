@@ -102,16 +102,21 @@ Called when activating the view
 */
 void CntImageEditorView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
 {
+    mViewManager = aMgr;
+    mArgs = aArgs;
+    
     if (mView->navigationAction() != mSoftkey)
         mView->setNavigationAction(mSoftkey);
     
     HbMainWindow* window = mView->mainWindow();
+    if ( window )
+    {
     connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
-    setOrientation(window->orientation());    
+    setOrientation(window->orientation());
+    }
     
-    mContact = new QContact(aArgs.value(ESelectedContact).value<QContact>());
-    mViewManager = aMgr;
-
+    mContact = new QContact(mArgs.value(ESelectedContact).value<QContact>());
+    
     // set the correct image if the contact already has an image set
     mImageLabel = static_cast<HbLabel*>(mDocumentLoader.findWidget(QString("cnt_image_label")));
     QList<QContactAvatar> details = mContact->details<QContactAvatar>();
@@ -209,20 +214,26 @@ void CntImageEditorView::showPreviousView()
         mContact->removeDetail(mAvatar);
     }
     
-    CntViewParameters args;
     QVariant var;
     var.setValue(*mContact);
-    args.insert(ESelectedContact, var);
-    mViewManager->back( args );
+    
+    mArgs.insert(ESelectedContact, var);
+    mArgs.insert(ECustomParam, viewId());
+    mViewManager->back( mArgs );
 }
 
 void CntImageEditorView::removeImage()
 {
-    int err;
-    CntImageUtility imageUtility;
-    if(!mAvatar->imageUrl().isEmpty()
-       && imageUtility.removeImage(mAvatar->imageUrl().toString(),err))
+    QString filePath=mAvatar->imageUrl().toString();
+    if(!filePath.isEmpty())
     {
+        // Check if image removable.
+        CntImageUtility imageUtility;
+        if(imageUtility.isImageRemovable(filePath))
+        {
+            imageUtility.removeImage(filePath);
+        }
+        
         mAvatar->setImageUrl(QUrl());
         mImageLabel->clear();
         mImageLabel->setIcon(HbIcon("qtg_large_avatar"));
@@ -238,17 +249,30 @@ void CntImageEditorView::handleImageChange(const QVariant &value)
     if(value.canConvert<QString>())
     {
         CntImageUtility imageUtility;
-        int err;
-        QString imagepath;
-        
-        if(imageUtility.createImage(value.toString(),imagepath,err))
+        if(imageUtility.isMassStorageAvailable())
         {
-            // If image exists, delete
-            if(!mAvatar->imageUrl().isEmpty())
-                imageUtility.removeImage(mAvatar->imageUrl().toString(),err);
+            /* Copy image and create thumbnail
+             * When contact image removed only copy is deleted
+             */
+            QString imagepath;
+            if(imageUtility.createImage(value.toString(),imagepath))
+            {
+                // If image already assigned, delete
+                QString filePath=mAvatar->imageUrl().toString();
+                if(!filePath.isEmpty()
+                   && imageUtility.isImageRemovable(filePath))
+                    imageUtility.removeImage(filePath);
             
-            mAvatar->setImageUrl(QUrl(imagepath));
-            mThumbnailManager->getThumbnail(imagepath);
+                mAvatar->setImageUrl(QUrl(imagepath));
+                mThumbnailManager->getThumbnail(imagepath);
+                mRemoveImage->setEnabled(true);
+            }
+        }
+        else
+        {
+            // No mass memory, use the orginal image
+            mAvatar->setImageUrl(QUrl(value.toString()));
+            mThumbnailManager->getThumbnail(value.toString());
             mRemoveImage->setEnabled(true);
         }
     }

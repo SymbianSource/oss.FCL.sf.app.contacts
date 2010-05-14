@@ -7,6 +7,12 @@ CntContactCardDetailItem::icon{
 		fixed-height:var(hb-param-graphic-size-primary-large);
 }
 
+CntContactCardDetailItem::secondaryIcon{
+    fixed-width:var(hb-param-graphic-size-secondary);
+    fixed-height:var(hb-param-graphic-size-secondary);
+}
+
+
 CntContactCardDetailItem::text{
     text-height:var(hb-param-text-height-primary);
     font-variant:primary;

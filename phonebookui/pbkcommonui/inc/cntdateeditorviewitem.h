@@ -23,6 +23,8 @@
 #include <QLocale>
 #include <hbpushbutton.h>
 
+class HbAction;
+
 class CntDateEditorViewItem : public CntDetailViewItem
     {
     Q_OBJECT
@@ -39,7 +41,12 @@ public:
     HbWidget* createCustomWidget();
     
 private:
-    QDate editDate( QDate aCurrent, QString aTitle );
+    void editDate( QDate aCurrent, QString aTitle );
+    void changeDate( QDate aNewDate );
+    
+private slots:
+    void handleEditDate( HbAction *aAction );
+    
     
 #ifdef PBK_UNIT_TEST
 public:

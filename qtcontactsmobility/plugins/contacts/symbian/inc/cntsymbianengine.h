@@ -71,6 +71,7 @@ class QContactChangeSet;
 class QContactAbstractRequest;
 QTM_END_NAMESPACE
 class CntSymbianDatabase;
+class CntSymbianSrvConnection;
 class CntTransformContact;
 class CntAbstractContactFilter;
 class CntAbstractContactSorter;
@@ -165,16 +166,22 @@ private:
     bool cancelRequest(QContactAbstractRequest* req);
     bool waitForRequestProgress(QContactAbstractRequest* req, int msecs);
     bool waitForRequestFinished(QContactAbstractRequest* req, int msecs);
+    
+    /* Delete contact image */
+    void deleteContactImage(const QString& filePath);
 
 private slots:
     void performAsynchronousOperation();
 
 private:
     CntSymbianDatabase *m_dataBase;
+    CntSymbianSrvConnection *m_srvConnection;
     QString m_managerUri;
     CntTransformContact *m_transformContact;
     CntAbstractContactFilter *m_contactFilter;
+#ifndef SYMBIAN_BACKEND_USE_SQLITE    
     CntAbstractContactSorter *m_contactSorter;
+#endif    
     CntRelationship *m_relationship;
     CntDisplayLabel *m_displayLabel;
 

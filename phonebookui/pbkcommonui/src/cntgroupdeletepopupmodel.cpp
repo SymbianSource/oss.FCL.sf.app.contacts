@@ -48,8 +48,17 @@ void CntGroupDeletePopupModel::initializeGroupsList()
     QContactDetailFilter groupFilter;
     groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
     groupFilter.setValue(QString(QLatin1String(QContactType::TypeGroup)));
+    
+    QContactSortOrder sortOrderGroupName;
+    sortOrderGroupName.setDetailDefinitionName(QContactName::DefinitionName,
+        QContactName::FieldCustomLabel);
+    sortOrderGroupName.setCaseSensitivity(Qt::CaseInsensitive);
 
-    QList<QContactLocalId> groupContactIds = mContactManager->contactIds(groupFilter);
+    QList<QContactSortOrder> groupsOrder;
+    groupsOrder.append(sortOrderGroupName);
+
+    QList<QContactLocalId> groupContactIds = mContactManager->contactIds(groupFilter, groupsOrder);
+
     if (!groupContactIds.isEmpty())
     {
         for(int i = 0;i < groupContactIds.count();i++)

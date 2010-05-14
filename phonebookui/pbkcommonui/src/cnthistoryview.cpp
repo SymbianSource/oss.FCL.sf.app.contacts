@@ -26,6 +26,9 @@
 #include <hbaction.h>
 #include <xqservicerequest.h>
 #include <cnthistorymodel.h>
+#include <hbparameterlengthlimiter.h>
+#include <hbmainwindow.h>
+#include <hbframebackground.h>
 
 #include "cnthistoryviewitem.h"
 #include "qtpbkglobal.h"
@@ -102,9 +105,11 @@ void CntHistoryView::activate( CntAbstractViewManager* aMgr, const CntViewParame
     
     //construct listview
     mHistoryListView = static_cast<HbListView*>(docLoader()->findWidget(QString("listView")));
+    mHistoryListView->setLayoutName("history");
     CntHistoryViewItem *item = new CntHistoryViewItem;
+    item->setSecondaryTextRowCount(1, 3);
+    item->setGraphicsSize(HbListViewItem::SmallIcon);
     mHistoryListView->setItemPrototype(item); //ownership is taken
-    mHistoryListView->setUniformItemSizes(true);
     
     // Connect listview items to respective slots
     connect(mHistoryListView, SIGNAL(activated(const QModelIndex &)),
@@ -116,14 +121,23 @@ void CntHistoryView::activate( CntAbstractViewManager* aMgr, const CntViewParame
     //start listening to the events amount changing in the model
     connect(mHistoryModel, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
         this, SLOT(updateScrollingPosition()));
+    connect(mHistoryModel, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
+        this, SLOT(showClearHistoryMenu()));
     connect(mHistoryModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)),
         this, SLOT(updateScrollingPosition()));
+    connect(mHistoryModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)),
+        this, SLOT(showClearHistoryMenu()));
     connect(mHistoryModel, SIGNAL(layoutChanged()),
         this, SLOT(updateScrollingPosition()));
     
     // Connect the menu options to respective slots
-    HbAction* clearHistory = static_cast<HbAction*>(docLoader()->findObject("cnt:clearhistory"));
-    connect(clearHistory, SIGNAL(triggered()), this, SLOT(clearHistory()));
+    mClearHistory = static_cast<HbAction*>(docLoader()->findObject("cnt:clearhistory"));
+    connect(mClearHistory, SIGNAL(triggered()), this, SLOT(clearHistory()));
+    showClearHistoryMenu();
+    
+    HbMainWindow* mainWindow = mView->mainWindow();
+    connect(mainWindow, SIGNAL(orientationChanged(Qt::Orientation)), 
+            this, SLOT(updateScrollingPosition()));
 }
 
 /*!
@@ -139,23 +153,28 @@ void CntHistoryView::updateScrollingPosition()
 }
 
 /*
-Clear communications history
+Query the user for clearing communications history
 */
 void CntHistoryView::clearHistory()
 {
     // Ask the use if they want to clear the history
-    HbMessageBox *note = new HbMessageBox(hbTrId("txt_phob_info_clear_communications_history_with_1"),
-                HbMessageBox::MessageTypeQuestion);
+    QString name = mContact->displayLabel();
     
-    note->setPrimaryAction(new HbAction(hbTrId("txt_phob_button_delete"), note));
-    note->setSecondaryAction(new HbAction(hbTrId("txt_common_button_cancel"), note));
-    HbAction *selected = note->exec();
-    if (selected == note->primaryAction())
+    HbMessageBox::question(HbParameterLengthLimiter(hbTrId("txt_phob_info_clear_communications_history_with_1")).arg(name), this, 
+            SLOT(handleClearHistory(HbAction*)), hbTrId("txt_phob_button_delete"), hbTrId("txt_common_button_cancel"));
+}
+
+/*
+Handle the selected action for clearing history
+*/
+void CntHistoryView::handleClearHistory(HbAction *action)
+{
+    HbMessageBox *note = static_cast<HbMessageBox*>(sender());
+    
+    if (note && action == note->actions().first())
     {
-        // Clear comm history
         mHistoryModel->clearHistory();
     }
-    delete note;
 }
 
 /*!
@@ -164,13 +183,10 @@ emitted signal
  */
 void CntHistoryView::itemActivated(const QModelIndex &index)
 {
-    QVariant itemType = index.data(CntHistoryModel::ItemTypeRole);
-    
-    if (!itemType.isValid())
-        return;
+    int flags = index.data(CntHistoryModel::FlagsRole).toInt();
     
     // If the list item is a call log a call is made to that item
-    if (itemType.toInt() == CntHistoryModel::CallLog) {
+    if (flags & CntHistoryModel::CallLog) {
         // Make a call
         QVariant v = index.data(CntHistoryModel::PhoneNumberRole);
         if (!v.isValid())
@@ -180,6 +196,18 @@ void CntHistoryView::itemActivated(const QModelIndex &index)
         QString type("dial(QString)");
         XQServiceRequest snd(service, type, false);
         snd << v.toString();
+        snd.send();
+    }
+    else if (flags & CntHistoryModel::Message) {
+        // Open conversation view
+        QVariant v = index.data(CntHistoryModel::PhoneNumberRole);
+        if (!v.isValid())
+            return;
+        
+        QString service("com.nokia.services.hbserviceprovider.conversationview");
+        QString type("send(QString,qint32,QString)");
+        XQServiceRequest snd(service, type, false);       
+        snd << v.toString() << mContact->localId() << mContact->displayLabel();
         snd.send();
     }
 }
@@ -194,6 +222,18 @@ void CntHistoryView::showPreviousView()
     var.setValue(*mContact);
     viewParameters.insert(ESelectedContact, var);
     mViewMgr->back(viewParameters);
+}
+
+/*!
+Show or hide the clear history menu
+*/
+void CntHistoryView::showClearHistoryMenu()
+{
+    if (mHistoryModel->rowCount() > 0) {
+        mClearHistory->setEnabled(true);
+    } else {
+        mClearHistory->setEnabled(false);
+    }
 }
 
 /*!

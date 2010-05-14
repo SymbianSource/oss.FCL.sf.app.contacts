@@ -23,8 +23,15 @@ SimUtility::SimUtility(StoreType type, int& error, QObject *parent)
     : QObject(parent),
     m_etelStoreInfoPckg(m_etelStoreInfo),
     m_serviceTablePckg(m_serviceTable),
-    m_activeRequest(ENoActiveRequest)
+    m_asyncWorker(NULL),
+    m_activeRequest(ENoActiveRequest),
+    m_securitySettings(NULL)
 {
+#ifdef __WINS__
+    error = KErrNotSupported;
+    return;
+#endif
+
     error = m_etelServer.Connect();
     if (error == KErrNone) {
         error = m_etelServer.LoadPhoneModule(KMmTsyModuleName);
@@ -50,6 +57,10 @@ SimUtility::SimUtility(StoreType type, int& error, QObject *parent)
         else {
             error = KErrNotSupported;
         }
+    }
+    
+    if (error == KErrNone) {
+        error = m_customPhone.Open(m_etelPhone);
     }
     
     if (error == KErrNone) {
@@ -194,6 +205,47 @@ bool SimUtility::startGetAvailableStores()
     return true;
 }
 
+bool SimUtility::notifyAdnCacheStatus()
+{
+    if(m_asyncWorker->IsActive()) {
+        return false;
+    }
+    CacheStatus cacheStatus;
+    
+    //check current cache status
+    TRequestStatus requestStatus;
+    RMmCustomAPI::TPndCacheStatus pndStatus;
+    TName storeName;
+    storeName.Copy(KETelIccAdnPhoneBook);
+    m_customPhone.GetPndCacheStatus(requestStatus, pndStatus, storeName);
+    User::WaitForRequest(requestStatus);
+    if (requestStatus.Int() != KErrNone) {
+        return false;
+    }
+    
+    if (pndStatus == RMmCustomAPI::ECacheReady ||
+        pndStatus == RMmCustomAPI::ECacheNotUsed) {
+        cacheStatus = ECacheReady;
+        emit adnCacheStatusReady(cacheStatus, KErrNone);
+        return true;
+        }
+    else if (pndStatus == RMmCustomAPI::ECacheFailed) {
+        cacheStatus = ECacheFailed;
+        emit adnCacheStatusReady(cacheStatus, KErrNone);
+        return true;    
+        }
+    else if (pndStatus == RMmCustomAPI::ECacheNotReady) {
+        //wait for cache notification
+        m_customPhone.NotifyPndCacheReady(m_asyncWorker->iStatus, m_etelStoreNameCached);
+        m_asyncWorker->SetActive();
+        m_activeRequest = EGetCacheStatus;
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 void SimUtility::RequestCompleted(int error)
 {
     if (m_activeRequest == EGetInfo) {
@@ -219,23 +271,40 @@ void SimUtility::RequestCompleted(int error)
         AvailableStores availableStores;
         if (error == KErrNone) {
             //parse service table to find what stores are supported
-             ParseServiceTable(&availableStores);
+            ParseServiceTable(&availableStores);
         }
         emit availableStoresReady(availableStores, error);
     }//EGetAvailableStores
+    else if (m_activeRequest == EGetCacheStatus) {
+        if ( m_etelStoreNameCached.Compare(KETelIccAdnPhoneBook) == 0) {
+            //ADN cache is ready
+            CacheStatus cacheStatus;
+            if (error != KErrNone) {
+                cacheStatus = ECacheFailed;
+                emit adnCacheStatusReady(cacheStatus, error);
+            }
+            else {
+                cacheStatus = ECacheReady;
+                emit adnCacheStatusReady(cacheStatus, error);
+            }
+        }
+        else {
+            //another store is cached, continue listening for ADN cache
+            notifyAdnCacheStatus();
+        }
+    }//EGetCacheStatus
     
-    m_activeRequest = ENoActiveRequest;
+    if (!m_asyncWorker->IsActive()) {
+        m_activeRequest = ENoActiveRequest;
+    }
 }
 
 void SimUtility::ParseServiceTable(AvailableStores* availableStores) const
 {
+    availableStores->SimPresent = true;
     if (m_serviceTableType == RMobilePhone::EUSIMServiceTable) {
-        if (m_serviceTable.iServices1To8 & RMobilePhone::KUstLocalPhBk ) {
-            availableStores->AdnStorePresent = true;
-        }
-        else {
-            availableStores->AdnStorePresent = false;
-        }
+        //ADN store is always present if SIM card is inserted
+        availableStores->AdnStorePresent = true;
         
         if (m_serviceTable.iServices1To8 & RMobilePhone::KUstSDN ) {
             availableStores->SdnStorePresent = true;
@@ -252,12 +321,8 @@ void SimUtility::ParseServiceTable(AvailableStores* availableStores) const
         }
     }
     else if (m_serviceTableType == RMobilePhone::ESIMServiceTable) {
-        if (m_serviceTable.iServices1To8 & RMobilePhone::KSstADN ) {
-            availableStores->AdnStorePresent = true;
-        }
-        else {
-            availableStores->AdnStorePresent = false;
-        }
+        //ADN store is always present if SIM card is inserted
+        availableStores->AdnStorePresent = true;
         
         if (m_serviceTable.iServices17To24 & RMobilePhone::KSstSDN) {
             availableStores->SdnStorePresent = true;

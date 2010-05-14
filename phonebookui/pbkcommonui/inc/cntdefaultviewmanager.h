@@ -25,6 +25,7 @@ class HbMainWindow;
 class CntAbstractViewFactory;
 class CntAbstractView;
 class CntViewNavigator;
+class SimUtility;
 
 QTM_BEGIN_NAMESPACE
 class QContactManager;
@@ -65,6 +66,8 @@ private:
     QList<QContactManager*>      mBackends;
     HbMainWindow*                mMainWindow;
     
-    friend class TestCntDefaultViewManager;
+    SimUtility* mSimUtility;
+    
+    friend class T_CntDefaultViewManager;
 };
 #endif /* CNTDEFAULTVIEWMANAGER_H_ */

@@ -19,6 +19,9 @@
 
 #include <qglobal.h>
 #include <QObject>
+
+#include <f32file.h>
+
 #include "cntimageutilityglobal.h"
 
 class QPixmap;
@@ -28,16 +31,29 @@ class CNTIMAGEUTILITYLIB_EXPORT CntImageUtility : public QObject
     Q_OBJECT
     
 public:
+    enum Error {
+            NoError = 0,
+            NotSupportedError,
+            UnspecifiedError,
+        };
+    
 	CntImageUtility(QObject *parent = 0);
 	~CntImageUtility();
 	
-	bool createImage(const QString& filePath, QString& imagePath, int& error);
-	bool createImage(const QPixmap& pixmap, QString& imagePath, int& error);
-	bool removeImage(const QString& imagePath, int& error);
+	bool createImage(const QString& filePath, QString& imagePath);
+	bool createImage(const QPixmap& pixmap, QString& imagePath);
+	bool removeImage(const QString& imagePath);
+	bool isImageRemovable(const QString& filePath);
+	bool isMassStorageAvailable();
+	CntImageUtility::Error error();
 	
 private:
 	int selectDrive(int &driveIndex);
-	void initPath(QString &path, int drive);
+	bool initPath(QString &path, int drive);
+
+private:
+	RFs m_Fs;
+	CntImageUtility::Error m_error;
 };
 
 #endif

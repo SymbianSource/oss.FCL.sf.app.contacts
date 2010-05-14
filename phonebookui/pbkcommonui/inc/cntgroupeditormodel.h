@@ -21,6 +21,7 @@
 #include <qtcontacts.h>
 #include "qtpbkglobal.h"
 
+class HbDataFormModelItem;
 QTM_BEGIN_NAMESPACE
 class QContact;
 QTM_END_NAMESPACE
@@ -37,9 +38,13 @@ public:
     
     void saveContactDetails();
     
+    bool isConferenceNumber( const QModelIndex& aIndex );
 private:
 
     QContactName iGroupName;
     QContactPhoneNumber iGroupConfCallNumber;
+    
+    HbDataFormModelItem* iNameItem;
+    HbDataFormModelItem* iNumberItem;
     };
 #endif /* CNTGROUPEDITORMODEL_H_ */

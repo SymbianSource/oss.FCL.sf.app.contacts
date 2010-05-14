@@ -91,7 +91,9 @@ NONSHARABLE_CLASS( UT_CPplPredictiveSearchTable ): public CEUnitTestSuiteClass
             TInt aCountInTable6 = 0,
             TInt aCountInTable7 = 0,
             TInt aCountInTable8 = 0,
-            TInt aCountInTable9 = 0);
+            TInt aCountInTable9 = 0,
+			TInt aCountInTable10 = 0,
+			TInt aCountInTable11 = 0);
         
         /**
          * Adds a new contact to table.

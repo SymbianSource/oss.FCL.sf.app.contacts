@@ -17,17 +17,18 @@
 
 #include "cntgroupselectionpopup.h"
 
-#include <hblabel.h>
 #include <hbgroupbox.h>
 #include <hbaction.h>
 #include <hbsearchpanel.h>
 #include <hblistviewitem.h>
+#include <hbindexfeedback.h>
+#include <hbscrollbar.h>
 #include <hbtextitem.h>
 #include <qtcontacts.h>
-#include <QStringListModel>
 #include <QGraphicsWidget>
 #include <mobcntmodel.h>
 #include <hbmainwindow.h>
+#include <hbparameterlengthlimiter.h>
 
 
 CntGroupSelectionPopup::CntGroupSelectionPopup(QContactManager *manager, QContact *contact, QGraphicsItem *parent):
@@ -36,7 +37,7 @@ CntGroupSelectionPopup::CntGroupSelectionPopup(QContactManager *manager, QContac
     mEmptyListLabel(NULL),
     mContactManager(manager),
     mContact(contact)
-{
+{    
     QList<QContactSortOrder> sortOrders;
     QContactSortOrder sortOrderFirstName;
     sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName, QContactName::FieldFirst);
@@ -76,7 +77,7 @@ void CntGroupSelectionPopup::populateListOfContact()
     QString groupName(groupContactName.value( QContactName::FieldCustomLabel ));
     
     HbGroupBox *headingLabel = new HbGroupBox(this);
-    headingLabel->setHeading(hbTrId("txt_phob_title_members_of_1_group").arg(groupName));    
+    headingLabel->setHeading(HbParameterLengthLimiter(hbTrId("txt_phob_title_members_of_1_group")).arg(groupName));
     
     setHeadingWidget(headingLabel);
     
@@ -101,9 +102,13 @@ void CntGroupSelectionPopup::populateListOfContact()
     // set the listview to multiSelection mode, this will bring MarkAll functionality (from Orbit)
     mListView->setSelectionMode(HbAbstractItemView::MultiSelection);
     mListView->setFrictionEnabled(true);
-    mListView->setScrollingStyle(HbScrollArea::PanOrFlick);
+    mListView->setScrollingStyle(HbScrollArea::PanWithFollowOn);
+    mListView->verticalScrollBar()->setInteractive(true);
     HbListViewItem *prototype = mListView->listItemPrototype();
     prototype->setGraphicsSize(HbListViewItem::Thumbnail);
+    HbIndexFeedback *indexFeedback = new HbIndexFeedback(this);
+    indexFeedback->setIndexFeedbackPolicy(HbIndexFeedback::IndexFeedbackSingleCharacter);
+    indexFeedback->setItemView(mListView);
     
     for (int i=0; i < countContacts; i++ )
     {
@@ -116,6 +121,7 @@ void CntGroupSelectionPopup::populateListOfContact()
     setTimeout(HbPopup::NoTimeout);
     setDismissPolicy(HbPopup::NoDismiss);
     setModal(true);
+    setAttribute(Qt::WA_DeleteOnClose, true);
      
     // Note that the layout takes ownership of the item(s) it contains.
     if (!mCntModel->rowCount())
@@ -136,19 +142,23 @@ void CntGroupSelectionPopup::populateListOfContact()
     }
     mContainerLayout->addItem(mSearchPanel);
     mContainerWidget->setLayout(mContainerLayout);
-    mContainerWidget->setPreferredHeight(mainWindow()->size().height());
+    HbMainWindow* window = mainWindow();
+    if ( window )
+        {
+        mContainerWidget->setPreferredHeight(window->size().height());
+        }
     mContainerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     setContentWidget(mContainerWidget);
     
-    HbAction *mPrimaryAction = new HbAction(hbTrId("Save"));
-    setPrimaryAction(mPrimaryAction);
+    HbAction *mPrimaryAction = new HbAction(hbTrId("Save"), this);
+    addAction(mPrimaryAction);
     
-    HbAction *mSecondaryAction = new HbAction(hbTrId("txt_common_button_cancel"));
-    setSecondaryAction(mSecondaryAction);
+    HbAction *mSecondaryAction = new HbAction(hbTrId("txt_common_button_cancel"), this);
+    addAction(mSecondaryAction);
 }
 
-void CntGroupSelectionPopup::saveNewGroup()
+bool CntGroupSelectionPopup::saveNewGroup()
 {
     // Save the relationship from the selection model of the member selection list
     QModelIndexList indexes = mListView->selectionModel()->selection().indexes();
@@ -167,9 +177,11 @@ void CntGroupSelectionPopup::saveNewGroup()
         // save relationship
         mContactManager->saveRelationship(&relationship);
     }
+    
+    return indexes.count() > 0;
 }
 
-void CntGroupSelectionPopup::saveOldGroup()
+bool CntGroupSelectionPopup::saveOldGroup()
 {
     // Use relationship filter to get list of contacts in the relationship (if any)
     QContactRelationshipFilter rFilter;
@@ -228,6 +240,8 @@ void CntGroupSelectionPopup::saveOldGroup()
     QMap<int, QContactManager::Error> errors;
     mContactManager->removeRelationships(removedRelationships, &errors);
     mContactManager->saveRelationships(&addedRelationships, &errors);
+    
+    return (removedRelationships.count() > 0 || addedRelationships.count() > 0);
 }
 
 void CntGroupSelectionPopup::closeFind()

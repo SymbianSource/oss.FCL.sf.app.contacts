@@ -44,30 +44,30 @@ class CNTHISTORYMODEL_EXPORT CntHistoryModel : public QAbstractListModel
     Q_OBJECT
     
 public:
-    enum ConversationDirection
+    enum Attributes
         {
-        Incoming = 0,
-        Outgoing,
-        Missed
-        };
-    
-    enum ReadStatus
-        {
-        Unseen = 3,
-        Seen
+        Incoming = 1,
+        Outgoing = 2,
+        Unseen = 4,
+        Seen = 8,
+        Attachment = 16
         };
     
     enum ItemType
         {
-        CallLog = 5,
-        Message
+        CallLog = 32,
+        Message = 64
+        };
+    enum Icon
+        {
+        MissedCall = 128,
+        ReceivedCall = 256,
+        DialledCall = 512
         };
     
     enum CustomRoles
         {
-        SeenStatusRole = Qt::UserRole + 1,
-        DirectionRole,
-        ItemTypeRole,
+        FlagsRole = Qt::UserRole + 1,
         PhoneNumberRole
         };
     
@@ -88,6 +88,8 @@ public: // from QAbstractTableModel/QAbstractItemModel
 private:
     void initializeModel();
     QVariant displayRoleData(const HistoryItem& item) const;
+    QVariant decorationRoleData(const HistoryItem& item) const;
+    QVariant backgroundRoleData(const HistoryItem& item) const;
     
     // Utility finctions
     void readLogEvent(LogsEvent* event, HistoryItem& item);
@@ -102,8 +104,7 @@ private slots:
     void logsRowsInserted(const QModelIndex& parent, int first, int last);
     void logsRowsRemoved(const QModelIndex& parent, int first, int last);
     void logsDataChanged(const QModelIndex& first, const QModelIndex& last);
-    void clearedCallLogs(int err);
-    void markingCompleted(int err);
+    
     // Messaging model slots
     void messagesReady(QList<MsgItem>& msgs);
     void messageAdded(MsgItem& msg);
@@ -112,5 +113,8 @@ private slots:
     
 private:
 	QSharedDataPointer<CntHistoryModelData> d;
+    
+    // Testing related friend definitions    
+    friend class TestCntHistoryModel;
 };
 #endif

@@ -27,10 +27,12 @@
 
 QTM_USE_NAMESPACE
 
-CntDetailPopup::CntDetailPopup(QGraphicsItem *parent):
+CntDetailPopup::CntDetailPopup(QGraphicsItem *parent,  CntViewIdList aList ):
     HbDialog(parent),
     mListModel(NULL),
-    mListView(NULL)
+    mListView(NULL),
+    mSelectedDetail(0),
+    mViewIdList( aList )
 {
     mListView = new HbListView(this);
     mListModel = new QStandardItemModel(this);
@@ -39,11 +41,11 @@ CntDetailPopup::CntDetailPopup(QGraphicsItem *parent):
     addListItem("qtg_small_email", hbTrId("txt_phob_list_email"), emailEditorView );
     addListItem("qtg_small_url_address", hbTrId("txt_phob_list_url"), urlEditorView);
     addListItem("qtg_small_location", hbTrId("txt_phob_list_address"), addressEditorView );
-    addListItem("qtg_small_note", hbTrId("txt_phob_formlabel_note"), noteEditorView);
-    addListItem("qtg_small_sound", hbTrId("txt_phob_formlabel_personal_ringing_tone"), noView );
-    addListItem("qtg_small_calendar", hbTrId("txt_phob_formlabel_date"), dateEditorView);
-    addListItem("qtg_small_company_details", hbTrId("txt_phob_formlabel_company_details"), companyEditorView);
-    addListItem("qtg_small_family", hbTrId("txt_phob_formlabel_family"), familyDetailEditorView);
+    addListItem("qtg_small_note", hbTrId("txt_phob_list_note"), noteEditorView);
+    addListItem("qtg_small_sound", hbTrId("txt_phob_list_personal_ringing_tone"), noView );
+    addListItem("qtg_small_calendar", hbTrId("txt_phob_list_date"), dateEditorView);
+    addListItem("qtg_small_company_details", hbTrId("txt_phob_list_company_details"), companyEditorView);
+    addListItem("qtg_small_family", hbTrId("txt_phob_list_family"), familyDetailEditorView);
     
     mListView->setModel(mListModel);
     mListView->setSelectionMode(HbAbstractItemView::NoSelection);
@@ -51,16 +53,17 @@ CntDetailPopup::CntDetailPopup(QGraphicsItem *parent):
     HbListViewItem* prototype = mListView->listItemPrototype();
     prototype->setGraphicsSize( HbListViewItem::SmallIcon );
     
-    HbGroupBox *headingLabel = new HbGroupBox();
-    HbLabel *label = new HbLabel(hbTrId("txt_phob_title_add_field"));    
-    headingLabel->setContentWidget(label);
+    HbLabel *label = new HbLabel(this);    
+    label->setPlainText(hbTrId("txt_phob_title_add_field"));
 
-    setHeadingWidget(headingLabel);
+    setHeadingWidget(label);
     setContentWidget(mListView);
 
-    HbAction *mSecondaryAction = new HbAction(hbTrId("txt_common_button_cancel"));
-    setSecondaryAction(mSecondaryAction);
-    setTimeout(0);
+    HbAction *cancelAction = new HbAction(hbTrId("txt_common_button_cancel"), this);
+    addAction(cancelAction);
+    setTimeout(HbDialog::NoTimeout);
+    setDismissPolicy(HbDialog::NoDismiss);
+    setAttribute(Qt::WA_DeleteOnClose, true);
     setModal(true);
 
     connect(mListView, SIGNAL(activated(const QModelIndex&)), this, SLOT(listItemSelected(QModelIndex)));
@@ -72,38 +75,30 @@ CntDetailPopup::~CntDetailPopup()
 
 void CntDetailPopup::listItemSelected(QModelIndex index)
 {
-    mSelectedDetail = mListModel->item(index.row(), 1)->text();
+    mSelectedDetail = mListModel->item(index.row())->data(Qt::UserRole).toInt();
     close();
 }
 
-QString CntDetailPopup::selectedDetail()
+int CntDetailPopup::selectedDetail()
 {
     return mSelectedDetail;
 }
 
-int CntDetailPopup::selectDetail()
+void CntDetailPopup::selectDetail( CntViewIdList aList, QObject *receiver, const char *member  )
 {
-    CntDetailPopup *popup = new CntDetailPopup();
-    QString result;
-
-    HbAction *action = popup->exec();
-
-    if (action != popup->secondaryAction() && !popup->selectedDetail().isEmpty())
-   	{
-        result = popup->selectedDetail();
-    }
-    delete popup;
-
-    return result.toInt();
+    CntDetailPopup *popup = new CntDetailPopup( NULL, aList );
+    
+    popup->open(receiver, member);
 }
 
 void CntDetailPopup::addListItem(QString aIcon, QString label, int aId )
 {
-    QList<QStandardItem*> items;
-    QStandardItem *labelItem = new QStandardItem(HbIcon(aIcon).qicon(), label);
-    QString id;
-    QStandardItem *idItem = new QStandardItem( id.number(aId) );
+    if ( !mViewIdList.contains(aId) )
+    {
+        QStandardItem *labelItem = new QStandardItem(label);
+        labelItem->setData(HbIcon(aIcon), Qt::DecorationRole);
+        labelItem->setData(aId, Qt::UserRole);
 
-    items << labelItem << idItem;
-    mListModel->appendRow(items);
+        mListModel->appendRow(labelItem);
+    }
 }

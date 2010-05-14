@@ -560,7 +560,6 @@ QContactFilter QContactManagerEngine::canonicalizedFilter(const QContactFilter &
             f.setFilters(filters);
             return canonicalizedFilter(f);
         }
-        break;
 
         case QContactFilter::IntersectionFilter:
         {
@@ -589,7 +588,6 @@ QContactFilter QContactManagerEngine::canonicalizedFilter(const QContactFilter &
             f.setFilters(filters);
             return f;
         }
-        break;
 
         case QContactFilter::UnionFilter:
         {
@@ -618,7 +616,6 @@ QContactFilter QContactManagerEngine::canonicalizedFilter(const QContactFilter &
             f.setFilters(filters);
             return f;
         }
-        break;
 
         case QContactFilter::LocalIdFilter:
         {

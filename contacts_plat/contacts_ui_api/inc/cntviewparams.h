@@ -37,6 +37,7 @@ enum CntViewParamId
     ESelectedGroupContact,
     ESelectedDetail,
     ESelectionMode,
+    EMyCard,
 	ECustomParam = 100
 };
 
@@ -72,6 +73,7 @@ enum CntViewId
     groupMemberView,
     groupActionsView,
     historyView,
+    importsView,
     customPhonebookView = 100, // reserved for internal view plugins, DO NOT USE THESE
     customView = 200 // for all other view plugins
 };

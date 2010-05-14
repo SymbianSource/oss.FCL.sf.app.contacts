@@ -21,15 +21,8 @@
 CntNoteEditorModel::CntNoteEditorModel( QContact* aContact ) :
 CntDetailEditorModel( aContact )
     {
-    QList<QContactNote> noteList = mContact->details<QContactNote>();
-    if ( noteList.isEmpty() )
-        {
-        QContactNote emptyNote;
-        noteList.append( emptyNote );
-        }
-    
     HbDataFormModelItem* root = invisibleRootItem();
-    foreach ( QContactNote note, noteList )
+    foreach ( QContactNote note, mContact->details<QContactNote>() )
         {
         CntDetailModelItem* item = new CntDetailModelItem(note);
         appendDataFormItem( item, root );
@@ -53,9 +46,12 @@ void CntNoteEditorModel::saveContactDetails()
     int count( root->childCount() );
     for ( int i(0); i < count; i++ ) {
         CntDetailModelItem* detail = static_cast<CntDetailModelItem*>( root->childAt(i) );
-        QContactNote note = detail->detail();
-        if ( note.note().length() > 0 ) {
-            mContact->saveDetail( &note );
+        QContactDetail note = detail->detail();
+        mContact->saveDetail( &note );
+        
+        if ( note.value(QContactNote::FieldNote).isEmpty() )
+        {
+            mContact->removeDetail( &note );
         }
     }
 }

@@ -75,8 +75,8 @@ signals:
     void launchAssignContactCard(QContact contact, QContactDetail detail);
     
 private:
-    void removeFields(QContact& contact);
-    void removeDetails(QContact& contact);
+    void removeNotSupportedFields(QContact& contact);
+    void removeNotSupportedDetails(QContact& contact);
 
 private:
     int mCurrentRequestIndex;

@@ -19,6 +19,7 @@
 #define CNTGROUPMEMBERVIEW_H
 
 #include <QObject>
+#include <QList>
 #include <hbdocumentloader.h>
 
 #include <cntabstractview.h>
@@ -26,6 +27,7 @@
 class MobCntModel;
 class CntAbstractViewManager;
 class CntContactCardHeadingItem;
+class CntFetchContacts;
 class HbView;
 class HbAction;
 class HbListView;
@@ -65,14 +67,30 @@ private slots:
     void showPreviousView();
     void openGroupActions();
     void manageMembers();
+    void handleManageMembers();
     void editGroup();
     void deleteGroup();
+    void handleDeleteGroup(HbAction *action);
+    
     void showContextMenu(HbAbstractViewItem *item, const QPointF &coords);
+    void handleMenu(HbAction* action);
+
+    
     void showContactView(const QModelIndex &index);
     void removeFromGroup(const QModelIndex &index);
     void editContact(const QModelIndex &index);
     void thumbnailReady(const QPixmap& pixmap, void *data, int id, int error);
     void openImageEditor();
+    
+    void drawImageMenu(const QPointF &aCoords);
+    void handleImageMenu(HbAction* action);
+    
+private:    
+    void changeImage();
+    void removeImage();
+    
+private:
+    QContactManager* getContactManager();
     
 private:
     QContact*                   mGroupContact; // own
@@ -90,6 +108,10 @@ private:
     CntImageLabel*              mImageLabel;
     HbListView*                 mListView; // owned by layout
     HbDocumentLoader*           mDocument;
+    CntFetchContacts*           mFetchView;
+    QList<QContactLocalId>      mOriginalGroupMembers;
+    bool                        mIsPreviousImageEditorView;
+    QContactAvatar*             mAvatar;
 };
 
 #endif // CNTGROUPMEMBERVIEW_H

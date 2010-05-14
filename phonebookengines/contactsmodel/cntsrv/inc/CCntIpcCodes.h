@@ -37,7 +37,7 @@
 #define KCapabilityWriteUserData 400
 
 // To be removed. Should be defined in a header file
-#define KCntSearchResultIdLists 99
+#define KCntSearchResultList 99
 
 /**
 Contacts database filename maximum length.  Used to police descriptors on Client
@@ -108,9 +108,9 @@ enum TCntClientIpcCodes
 	ECntOpenViewSession,
 	ECntCloseViewSession,
     ECntViewChangeSortOrderL,
-    ECntSearchResultIdLists = KCntSearchResultIdLists,  // Do not change this enum value
-                                                        // and do not add anything immediately
-                                                        // after this.
+    ECntSearchResultList = KCntSearchResultList,  // Do not change this enum value
+                                                  // and do not add anything immediately
+                                                  // after this.
 	// ---- Read User Data capability ----
 	ECntOpenDataBase= KCapabilityReadUserData,
 	ECntReOpenDbTables,

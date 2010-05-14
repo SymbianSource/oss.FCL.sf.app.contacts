@@ -56,7 +56,7 @@ const TInt KCntFileManagerIpcCodes[] =
 	ECntGetDatabaseReady,
 	ECntFetchTemplateIds,
 	ECntFetchGroupIdLists,
-	ECntSearchResultIdLists,
+	ECntSearchResultList,
 	ECntFilesSize,
 	ECntGetDefinitionsForExistingView
 	};
@@ -397,26 +397,26 @@ void CCntFileManagerMsgHandler::FetchSearchResultsL(const RMessage2& aMessage)
     aMessage.ReadL(1, searchQueryPtr);
     
     CheckForManagerL();
-    CContactIdArray* arrayPtr = iManager->GetPersistenceLayer().ContactProperties().SearchIdListL(searchQuery->Des());
-    CleanupStack::PushL(arrayPtr);
-	TPtr8 cntIDBuff = iPackager.PackL(*arrayPtr); 
-    TInt length = cntIDBuff.Length();
-	CleanupStack::PopAndDestroy(); //arrayPtr
-    CleanupStack::PopAndDestroy(); //searchQuery
-	
-    // Write data if client buffer is large enough otherwise return the
-    // required buffer size.
-    if(aMessage.GetDesMaxLength(0) >= length)
-        { 
-        aMessage.WriteL(0, cntIDBuff); 
+
+    CBufSeg* buffer = iManager->GetPersistenceLayer().ContactProperties().DetailsListL(searchQuery->Des());
+    if (aMessage.GetDesMaxLength(0) >= buffer->Size())
+        {
+        TInt offset = 0;
+        while (offset < buffer->Size())
+            {
+            TPtr8 ptr = buffer->Ptr(offset);
+            aMessage.WriteL(0, ptr, offset);
+            offset += ptr.Size();
+            }
         aMessage.Complete(KErrNone);
         }
     else
-        { 
-        aMessage.Complete(length);  
+        {
+        aMessage.Complete(buffer->Size());
         }
-	
-	
+
+    delete buffer;
+    CleanupStack::PopAndDestroy(); //searchQuery
     }
     
 
@@ -424,6 +424,7 @@ void CCntFileManagerMsgHandler::GetDefinitionsForExistingViewL(const RMessage2& 
 	{
 	DefinitionsOfExistingViewsL(aMessage);
 	}
+
 
 void CCntFileManagerMsgHandler::FilesSizeL(const RMessage2& aMessage)
 	{

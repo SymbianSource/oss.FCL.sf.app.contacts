@@ -36,6 +36,34 @@ MobCntMessageAction* MobCntMessageAction::clone() const
 	 return new MobCntMessageAction();
 }
 
+bool MobCntMessageAction::isDetailSupported(const QContactDetail &detail, const QContact &/*contact*/) const
+{
+    if (detail.definitionName() == QContactPhoneNumber::DefinitionName 
+        && !static_cast<QContactPhoneNumber>(detail).subTypes().isEmpty())
+    {
+        return (static_cast<QContactPhoneNumber>(detail).subTypes().first() == QContactPhoneNumber::SubTypeMobile);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+QList<QContactDetail> MobCntMessageAction::supportedDetails(const QContact& contact) const
+{
+    QList<QContactDetail> details = contact.details(QContactPhoneNumber::DefinitionName);
+    QList<QContactDetail> supportedDetails;
+    for (int i = 0; i < details.count(); i++)
+    {
+        if (!static_cast<QContactPhoneNumber>(details[i]).subTypes().isEmpty() 
+            && static_cast<QContactPhoneNumber>(details[i]).subTypes().first() == QContactPhoneNumber::SubTypeMobile)
+        {
+            supportedDetails.append(details[i]);
+        }
+    } 
+    return supportedDetails;
+}
+
 void MobCntMessageAction::performAction()
 {
     QString service("com.nokia.services.hbserviceprovider.conversationview");

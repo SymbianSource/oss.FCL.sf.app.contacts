@@ -45,8 +45,8 @@ public:
     CntGroupSelectionPopup(QContactManager *manager, QContact *contact, QGraphicsItem *parent = 0);
     ~CntGroupSelectionPopup();
 
-    void saveNewGroup();
-    void saveOldGroup();
+    bool saveNewGroup();
+    bool saveOldGroup();
     void populateListOfContact();
     
 #ifdef PBK_UNIT_TEST
@@ -54,9 +54,8 @@ public slots:
 #else
 private slots:
 #endif
-
-void closeFind();
-void setFilter(const QString &filterString);
+    void closeFind();
+    void setFilter(const QString &filterString);
 
 #ifdef PBK_UNIT_TEST
 public:
