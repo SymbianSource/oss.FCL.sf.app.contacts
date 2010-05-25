@@ -14,23 +14,5 @@ rem
 rem Description:
 rem
 
-@echo off
-set /p userin= What is your release [3.2/5.0]? :
-set tmp_path=%PATH%
-set path=\epoc32\tools\cenrep;%PATH%
-FOR /R "." %%i IN (cenrep.bat) DO set curdrive=%%~di
-\epoc32\tools\cenrep\generate_cenrep_inifile.pl -r %userin% -d ..\adapters\contacts\cenrep -f 4
-\epoc32\tools\cenrep\generate_cenrep_inifile.pl -r %userin% -d ..\PcsAlgorithm\Algorithm1\cenrep -f 4
-
-copy 2000B5C6.txt \epoc32\data\Z\private\10202be9\2000B5C6.txt 
-copy 2000B5C5.txt \epoc32\data\Z\private\10202be9\2000B5C5.txt
-
-set path=%tmp_path%
-
-@echo on
-
-makesis cenrep.pkg
-signsis cenrep.sis cenrep.sisx rd.cer rd-key.pem
-
 makesis pcs_urel.pkg
 signsis pcs_urel.sis pcs_urel.sisx rd.cer rd-key.pem

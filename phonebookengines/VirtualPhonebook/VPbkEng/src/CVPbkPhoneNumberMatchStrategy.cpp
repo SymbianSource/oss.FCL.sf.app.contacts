@@ -78,7 +78,11 @@ NONSHARABLE_CLASS(CVPbkPhoneNumberMatchStrategyImpl) :
         void VPbkSingleContactOperationFailed(
                 MVPbkContactOperationBase& aOperation,
                 TInt aError);
-
+   
+    private:
+        /// Phone number types
+        enum TNumberType { ENotInitialized, EUnknown, EDigit, EPlus, EOneZero, ETwoZeros };
+        
     private: // Implementation
         CVPbkPhoneNumberMatchStrategyImpl(CVPbkPhoneNumberMatchStrategy& aParent);
         void ConstructL(
@@ -123,6 +127,11 @@ NONSHARABLE_CLASS(CVPbkPhoneNumberMatchStrategyImpl) :
          * @return Pointer descriptor with field's value.
          */
         TPtrC NameFieldValueL( MVPbkStoreContact* aContact, TVPbkFieldTypeName aFieldType );
+        
+        TBool ValidateBestMatchingRulesL( const TDesC& aNumber );
+        TBool CheckBestMatchingRules( const TDesC& aNumberA, TNumberType aNumberAType,
+                const TDesC& aNumberB, TNumberType aNumberBType  );
+        TInt FormatAndCheckNumberType( TDes& aNumber );
         
     private: // Data
         CVPbkPhoneNumberMatchStrategy& iParent;
@@ -170,6 +179,8 @@ NONSHARABLE_CLASS(CVPbkPhoneNumberMatchStrategyImpl) :
         RPointerArray <HBufC> iTempNameTokensArray;
         /// Indicates if all contact in iResult are the same
         TBool iDoubledContacts;
+        /// type of iPhoneNumber
+        TNumberType iPhoneNumberType;
     };
 
 CVPbkPhoneNumberMatchStrategyImpl::CVPbkPhoneNumberMatchStrategyImpl(
@@ -226,7 +237,7 @@ inline void CVPbkPhoneNumberMatchStrategyImpl::ConstructL(
 	    iLastNameSelector = CVPbkFieldTypeSelector::NewL( resReader, iContactManager->FieldTypes() );
 	    CleanupStack::PopAndDestroy( lastNameSelectorBuf );
     	}
-    
+
     CleanupStack::PopAndDestroy( &resFile );
     }
 
@@ -267,6 +278,7 @@ void CVPbkPhoneNumberMatchStrategyImpl::MatchL(const TDesC& aPhoneNumber)
     HBufC* phoneNumber = aPhoneNumber.AllocL();
     delete iPhoneNumber;
     iPhoneNumber = phoneNumber;
+    iPhoneNumberType = ENotInitialized;
     
     if ( iWorkingResults )
         {
@@ -351,17 +363,19 @@ void CVPbkPhoneNumberMatchStrategyImpl::RunL()
                 {
                 iResults = CVPbkContactLinkArray::NewL();
                 }
-            if ( iDoubledContacts )
-                {
-                iDoubledContacts = CheckContactDuplicationL( iStoreContact );
-                }
             
             MVPbkContactLink* result = IsValidResultLC( iStoreContact );
             if ( result )
                 {
                 iResults->AppendL( result );
                 CleanupStack::Pop(); // MVPbkContactLink
+                
+                if ( iDoubledContacts )
+                    {
+                    iDoubledContacts = CheckContactDuplicationL( iStoreContact );
+                    }
                 }
+
             delete iStoreContact;
             iStoreContact = NULL;
                 
@@ -509,7 +523,8 @@ MVPbkContactLink* CVPbkPhoneNumberMatchStrategyImpl::IsValidResultLC(
     {
     MVPbkContactLink* result = NULL;
 
-    if (!(iMatchFlags & CVPbkPhoneNumberMatchStrategy::EVPbkExactMatchFlag))
+    if (!(iMatchFlags & CVPbkPhoneNumberMatchStrategy::EVPbkExactMatchFlag)
+            && !(iMatchFlags & CVPbkPhoneNumberMatchStrategy::EVPbkBestMatchingFlag))
         {
         // If exact match is not needed we will accept the contact as valid
         // if it is not NULL
@@ -539,10 +554,19 @@ MVPbkContactLink* CVPbkPhoneNumberMatchStrategyImpl::IsValidResultLC(
             if (data.DataType() == EVPbkFieldStorageTypeText)
                 {
                 const TDesC& dataText = MVPbkContactFieldTextData::Cast(data).Text();
-                TPtrC dataTextPtr = dataText.Right(Min(dataText.Length(), iMaxMatchDigits));
-                if (dataTextPtr == matchedNumber)
+                if (iMatchFlags & CVPbkPhoneNumberMatchStrategy::EVPbkExactMatchFlag)
                     {
-                    result = iFieldFilter->FieldAt(i).CreateLinkLC();
+                    TPtrC dataTextPtr = dataText.Right(Min(dataText.Length(), iMaxMatchDigits));
+                    if (dataTextPtr == matchedNumber)
+                        {
+                        result = iFieldFilter->FieldAt(i).CreateLinkLC();
+                        break;
+                        }
+                    }
+                else if (iMatchFlags & CVPbkPhoneNumberMatchStrategy::EVPbkBestMatchingFlag
+                            && ValidateBestMatchingRulesL(dataText))
+                    {
+                    result = aContact->CreateLinkLC();
                     break;
                     }
                 }
@@ -693,6 +717,232 @@ TPtrC CVPbkPhoneNumberMatchStrategyImpl::NameFieldValueL(
         {
         return KNullDesC();
         }
+    }
+
+// Removes non-digit chars except plus form the beginning
+// Checks if number matches to one of defined types
+//
+TInt CVPbkPhoneNumberMatchStrategyImpl::FormatAndCheckNumberType( TDes& aNumber )
+    {
+    _LIT( KOneZeroPattern, "0*" );
+    _LIT( KTwoZerosPattern, "00*" );
+    _LIT( KPlusPattern, "+*" );
+    const TChar KPlus = TChar('+');
+    const TChar KZero = TChar('0');
+    const TChar KAsterisk = TChar('*');
+    const TChar KHash = TChar('#');
+    
+    for( TInt pos = 0; pos < aNumber.Length(); ++pos )
+        {
+        TChar chr = aNumber[pos];
+        if ( !chr.IsDigit() && !( pos == 0 && chr == KPlus  )
+                && !( chr == KAsterisk ) && !( chr == KHash ) )
+            {
+            aNumber.Delete( pos, 1 );
+            --pos;
+            }
+        }
+    
+	TInt format;
+	
+    if ( !aNumber.Match( KTwoZerosPattern ) && aNumber.Length() > 2 && aNumber[2] != KZero )
+        {
+        format = ETwoZeros;
+        }
+    else if ( !aNumber.Match( KOneZeroPattern )&& aNumber.Length() > 1 && aNumber[1] != KZero )
+        {
+        format = EOneZero;
+        }
+    else if ( !aNumber.Match( KPlusPattern ) && aNumber.Length() > 1 && aNumber[1] != KZero )
+        {
+        format = EPlus;
+        }
+    else if ( aNumber.Length() > 0 && aNumber[0] != KZero && ( ( TChar ) aNumber[0] ).IsDigit() )
+        {
+        format = EDigit;
+        }
+	else
+		{
+        format = EUnknown;
+	    }
+
+    return format;
+    }
+
+TBool CVPbkPhoneNumberMatchStrategyImpl::ValidateBestMatchingRulesL( const TDesC& aNumber )
+    {
+    if ( iPhoneNumberType == ENotInitialized )
+        {
+        TPtr16 phoneNumber = iPhoneNumber->Des();
+        iPhoneNumberType = ( TNumberType ) FormatAndCheckNumberType( phoneNumber );
+        }
+    
+    HBufC* number = aNumber.AllocLC();
+    TPtr16 phoneNumber = number->Des();
+    TNumberType numberType = ( TNumberType ) FormatAndCheckNumberType( phoneNumber );
+
+    TBool match = ( !phoneNumber.Compare( *iPhoneNumber ) ||
+                  CheckBestMatchingRules( *iPhoneNumber, iPhoneNumberType, *number, numberType  ) ||
+                  CheckBestMatchingRules( *number, numberType, *iPhoneNumber, iPhoneNumberType  ) );
+
+    CleanupStack::PopAndDestroy( number );
+
+    return match;
+    }
+
+TBool CVPbkPhoneNumberMatchStrategyImpl::CheckBestMatchingRules(
+        const TDesC& aNumberA, TNumberType aNumberAType,
+        const TDesC& aNumberB, TNumberType aNumberBType  )
+    {
+    TBool result = EFalse;
+    
+    // Rules for matching not identical numbers
+    // Rules details are presented in Best_Number_Matching_Algorithm_Description.doc
+    
+    // rule International-International 1
+    if ( !result && aNumberAType == EPlus && aNumberBType == ETwoZeros )
+        {
+        TPtrC numberA = aNumberA.Right( aNumberA.Length() - 1 );
+        TPtrC numberB = aNumberB.Right( aNumberB.Length() - 2 );
+        result = !( numberA.Compare( numberB ) );
+        if ( result )
+            {
+            return result;
+            }
+        }
+
+    // rule International-International 2
+    if ( aNumberAType == EPlus && aNumberBType == EDigit )
+        {
+        TPtrC numberA = aNumberA.Right( aNumberA.Length() - 1 );
+        if ( numberA.Length() < aNumberB.Length() )
+            {
+            TPtrC numberB = aNumberB.Right( numberA.Length() );
+            result = !( numberA.Compare( numberB ) );
+            if ( result )
+                {
+                return result;
+                }
+            }
+        }
+
+    // rule International-International 3
+    if ( aNumberAType == ETwoZeros && aNumberBType == EDigit )
+        {
+        TPtrC numberA = aNumberA.Right( aNumberA.Length() - 2 );
+        if ( numberA.Length() < aNumberB.Length() )
+            {
+            TPtrC numberB = aNumberB.Right( numberA.Length() );
+            result = !( numberA.Compare( numberB ) );
+            if ( result )
+                {
+                return result;
+                }
+            }
+        }
+
+    // rule International-Operator 1
+    if ( aNumberAType == EOneZero && aNumberBType == EPlus
+            || aNumberAType == EDigit && aNumberBType == EPlus )
+        {
+        TPtrC numberA;
+        if ( aNumberAType == EOneZero )
+            {
+            numberA.Set( aNumberA.Right( aNumberA.Length() - 1 ) );
+            }
+        else
+            {
+            numberA.Set( aNumberA );
+            }
+        if ( numberA.Length() < aNumberB.Length() - 1 )
+            {
+            TPtrC numberB = aNumberB.Right( numberA.Length() );
+            result = !( numberA.Compare( numberB ) );
+            if ( result )
+                {
+                return result;
+                }
+            }
+        }
+
+    // rule International-Operator 2
+    if ( aNumberAType == EOneZero && aNumberBType == ETwoZeros
+            || aNumberAType == EDigit && aNumberBType == ETwoZeros )
+        {
+        TPtrC numberA;
+        if ( aNumberAType == EOneZero )
+            {
+            numberA.Set( aNumberA.Right( aNumberA.Length() - 1 ) );
+            }
+        else
+            {
+            numberA.Set( aNumberA );
+            }
+        if ( numberA.Length() < aNumberB.Length() - 2 )
+            {
+            TPtrC numberB = aNumberB.Right( numberA.Length() );
+            result = !( numberA.Compare( numberB ) );
+            if ( result )
+                {
+                return result;
+                }
+            }
+        }
+
+    // rule International-Operator 3
+    if ( aNumberAType == EOneZero && aNumberBType == EDigit
+            || aNumberAType == EDigit && aNumberBType == EDigit )
+        {
+        TPtrC numberA;
+        if ( aNumberAType == EOneZero )
+            {
+            numberA.Set( aNumberA.Right( aNumberA.Length() - 1 ) );
+            }
+        else
+            {
+            numberA.Set( aNumberA );
+            }
+        if ( numberA.Length() < aNumberB.Length() )
+            {
+            TPtrC numberB = aNumberB.Right( numberA.Length() );
+            result = !( numberA.Compare( numberB ) );
+            if ( result )
+                {
+                return result;
+                }
+            }
+        }
+
+    // rule Operator-Operator 1
+    if ( aNumberAType == EOneZero && aNumberBType == EDigit )
+        {
+        TPtrC numberA = aNumberA.Right( aNumberA.Length() - 1 );
+        result = !( numberA.Compare( aNumberB ) );
+            {
+            if ( result )
+                {
+                return result;
+                }
+            }
+        }
+    
+    // rule North America Numbering Plan 1
+    if ( aNumberAType == EDigit && aNumberBType == EPlus )
+        {
+        TPtrC numberB = aNumberB.Right( aNumberB.Length() - 1 );
+        result = !( aNumberA.Compare( numberB ) );
+            {
+            if ( result )
+                {
+                return result;
+                }
+            }
+        }
+
+    // More exceptional acceptance rules can be added here
+	// Keep rules updated in the document Best_Number_Matching_Algorithm_Description.doc
+
+    return result;
     }
 
 CVPbkPhoneNumberMatchStrategy::CVPbkPhoneNumberMatchStrategy()

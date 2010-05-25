@@ -100,7 +100,7 @@ void CPcsContactFetch::ConstructL()
 	CVPbkContactStoreUriArray* uriArray = CVPbkContactStoreUriArray::NewLC();
 	for(TInt i = 0; i< iUriFromCenrep.Count();i++)
 	{
-		uriArray->AppendL( TVPbkContactStoreUriPtr(iUriFromCenrep[i]->Des()));
+		uriArray->AppendL( TVPbkContactStoreUriPtr(*iUriFromCenrep[i]) );
 	}
 
 	// Create the instance of the contact manager
@@ -153,7 +153,7 @@ CPcsContactFetch::~CPcsContactFetch()
 }
 
 // ----------------------------------------------------------------------------
-// CPsContactDataAdapter::SetObserver
+// CPcsContactFetch::SetObserver
 // 
 // ----------------------------------------------------------------------------
 void CPcsContactFetch::SetObserver(MDataStoreObserver& aObserver)
@@ -162,7 +162,7 @@ void CPcsContactFetch::SetObserver(MDataStoreObserver& aObserver)
 }
 
 // ----------------------------------------------------------------------------
-// CPsContactDataAdapter::GetSupportedDataStoresL
+// CPcsContactFetch::GetSupportedDataStoresL
 // 
 // ----------------------------------------------------------------------------
 void CPcsContactFetch::GetSupportedDataStoresL( RPointerArray<TDesC> &aDataStoresURIs )
@@ -177,7 +177,7 @@ void CPcsContactFetch::GetSupportedDataStoresL( RPointerArray<TDesC> &aDataStore
 }
 
 // ----------------------------------------------------------------------------
-// CPsContactDataAdapter::RequestForDataL
+// CPcsContactFetch::RequestForDataL
 // 
 // ----------------------------------------------------------------------------
 void  CPcsContactFetch::RequestForDataL(TDesC& aDataStoreURI)
@@ -212,8 +212,8 @@ void CPcsContactFetch::StoreReady(MVPbkContactStore& /*aStore*/)
 {
 	PRINT ( _L("Enter CPcsContactFetch::StoreReady") );
 	iAtLeastOneStoreReady = ETrue;
-	if( iWait->IsStarted() ) 
-			iWait->AsyncStop();
+	if( iWait->IsStarted() )
+		iWait->AsyncStop();
 	
 	PRINT ( _L("End CPcsContactFetch::StoreReady") );
 }
@@ -278,7 +278,6 @@ void CPcsContactFetch::RunL()
 	{
 		if( iWait->IsStarted() ) 
 			iWait->AsyncStop();
-    	 	
 	}
 }
 
@@ -297,26 +296,29 @@ TInt CPcsContactFetch::RunError(TInt aError)
 void CPcsContactFetch::ReadUrisFromCenrepL()
 {
     
-    CRepository *repository = CRepository::NewL( KCRUidPSContacts );
+    CRepository* repository = CRepository::NewL( KCRUidPSContacts );
+    CleanupStack::PushL( repository );
     
     // Read the cenrep for URIs	
-    TBuf<KCRMaxLen> UriStr;
+    TBuf<KCRMaxLen> uriStr;
     for (TInt i(KUriCenRepStartKey); i < KUriCenRepStartKey + KCenrepUriSupportedCount; i++ )
     {
-	    TInt err = repository->Get(i, UriStr );
-	    if (KErrNone != err)
-	    {
-		    break;
-	    }
-	    
-	    if (UriStr != KNullDesC)
-	    {
-		    iUriFromCenrep.Append(UriStr.AllocL());
-	    }
-	    		
+        TInt err = repository->Get( i, uriStr );
+        if (KErrNone != err)
+        {
+            break;
+        }
+        
+        if (uriStr != KNullDesC)
+        {
+            HBufC* uri = uriStr.AllocLC();
+            iUriFromCenrep.AppendL(uri);
+            CleanupStack::Pop(uri);
+        }
+    
     }
     
-    delete repository;
+    CleanupStack::PopAndDestroy( repository );
 }
 
 
@@ -331,20 +333,20 @@ void CPcsContactFetch::CreateSubStoresL(TDesC& aDataStoreURI)
 	{
 		if( ! (iWait->IsStarted()) ) 
 	    {
-	    	iWait->Start();			        	
+	    	iWait->Start();
 	    }
 	}
 	
 	// Check if data store is already present
-	for ( int i = 0; i < iAllDataStores.Count(); i++ )
+	for ( TInt i = 0; i < iAllDataStores.Count(); i++ )
 	{
 	    CPcsContactStore* contactStore = iAllDataStores[i];
 		if ( contactStore->GetStoreUri().Compare(aDataStoreURI) == 0 )
 		{
 		    // Remove the store
 		    delete contactStore;
-			iAllDataStores.Remove(i);	
-			break;		
+			iAllDataStores.Remove(i);
+			break;
 		}
 	}
 	
@@ -356,12 +358,12 @@ void CPcsContactFetch::CreateSubStoresL(TDesC& aDataStoreURI)
         	CPcsContactStore* contactStore = CPcsContactStore::NewL(*iContactManager,
 		                                                        *iObserver,
 		                                                        stores.At(i).StoreProperties().Uri().UriDes());
-			iAllDataStores.Append(contactStore);	
+			iAllDataStores.Append(contactStore);
 			break;
         }
 	}
 	PRINT ( _L("End CPcsContactFetch::CreateSubStoresL") );
-			  
+	
 }
 
 // ----------------------------------------------------------------------------
@@ -387,7 +389,7 @@ void CPcsContactFetch::GetSupportedDataFieldsL(RArray<TInt> &aDataFields )
 	    {
 		   aDataFields.Append(fieldToCache);
 	    }
-	    		
+	
     }
     
     delete repository; 
@@ -401,9 +403,9 @@ void CPcsContactFetch::GetSupportedDataFieldsL(RArray<TInt> &aDataFields )
 TBool CPcsContactFetch::IsDataStoresSupportedL( TDesC& aDataStoreURI ) 
 {
 	
-	for(TInt i =0 ; i<iUriFromCenrep.Count();i++)
+	for ( TInt i = 0 ; i < iUriFromCenrep.Count() ; i++ )
 	{
-		if(iUriFromCenrep[i]->Des().Compare(aDataStoreURI) ==0)
+		if ( iUriFromCenrep[i]->Compare(aDataStoreURI) == 0 )
 		    return ETrue;
 	}
 	

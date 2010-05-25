@@ -118,7 +118,8 @@ CPguAddMembersCmd::~CPguAddMembersCmd()
         {
         iUiControl->RegisterCommand( NULL );
         }
-
+    
+    delete iContact;
     delete iRetrieveContactOperation;
     delete iRetrieveGroupOperation;
     delete iContactGroup;
@@ -136,6 +137,7 @@ CPguAddMembersCmd::~CPguAddMembersCmd()
 inline void CPguAddMembersCmd::ConstructL()
     {
     iState = ERetrievingContact;
+    iContactsCounter = 0;
     }
 // --------------------------------------------------------------------------
 // CPguAddMembersCmd::NewLC
@@ -208,6 +210,16 @@ void CPguAddMembersCmd::RunL()
             HandleContactLockedEventL();
             break;
             }
+        case ECheckContacts:
+            {
+            CheckContactsL();
+            break;
+            } 
+        case ERelocateContacts:
+            {
+            BeginRelocationL();
+            break;
+            }            
         case EShowingProgressNote:
             {
             ShowProgressNoteL();
@@ -250,20 +262,8 @@ void CPguAddMembersCmd::DoCancel()
 // --------------------------------------------------------------------------
 //
 TInt CPguAddMembersCmd::RunError( TInt aError )
-    {
-    if ( iState == EAddingContactsToGroup && aError == KErrInUse &&
-         iEntriesToAdd && iEntriesToAdd->Count() > KOneContact )
-        {    
-        // Incase there was more than just one contact being added, ignore
-        // the KErrInUse error and continue with the remaining contacts
-        iState = EAddingContactsToGroup;
-        IssueRequest();   
-        }
-    else if ( aError != KErrNone )
-        {
-        FinishCommand( aError );
-        }
-
+    {        
+    FinishCommand( aError );
     return KErrNone;
     }
 
@@ -288,9 +288,15 @@ void CPguAddMembersCmd::VPbkSingleContactOperationComplete
 
         TRAP( error, iContactGroup->LockL( *this ) );
         }
-    else if ( &aOperation == iRetrieveContactOperation )
+    else if ( &aOperation == iRetrieveContactOperation && iState == ERelocateContacts )
         {
         TRAP( error, RelocateContactL( aContact ) );
+        }
+    else if ( &aOperation == iRetrieveContactOperation && iState == ECheckContacts )
+        {
+        iContact = aContact;
+        // try to lock to check if contact is being modified by another application
+        TRAP( error, iContact->LockL( *this ) );
         }
 
     if ( error != KErrNone )
@@ -315,9 +321,19 @@ void CPguAddMembersCmd::VPbkSingleContactOperationFailed
 //
 void CPguAddMembersCmd::ContactOperationCompleted( TContactOpResult aResult )
     {
-    if ( aResult.iOpCode == MVPbkContactObserver::EContactLock )
+    if ( aResult.iOpCode == MVPbkContactObserver::EContactLock && 
+            iState == ERetrievingContact )
         {
         iState = EHandleContactLockedEvent;
+        IssueRequest();
+        }
+    else if ( aResult.iOpCode == MVPbkContactObserver::EContactLock && 
+            iState == ECheckContacts )
+        {
+        iContactsCounter++;
+        // delete to release the lock of contact
+        delete iContact;
+        iContact = NULL;
         IssueRequest();
         }
     else if ( aResult.iOpCode == MVPbkContactObserver::EContactCommit )
@@ -330,10 +346,18 @@ void CPguAddMembersCmd::ContactOperationCompleted( TContactOpResult aResult )
 // CPguAddMembersCmd::ContactOperationFailed
 // --------------------------------------------------------------------------
 //
+
 void CPguAddMembersCmd::ContactOperationFailed
-        ( TContactOp /*aOpCode*/, TInt aErrorCode, TBool aErrorNotified )
+        ( TContactOp aOpCode, TInt aErrorCode, TBool aErrorNotified )
     {
-    if ( !aErrorNotified )
+    if ( aOpCode == MVPbkContactObserver::EContactLock && 
+            iState == ECheckContacts )
+        {
+        delete iContact;
+        iContact = NULL;
+        FinishCommand( aErrorCode );
+        }
+    else if ( !aErrorNotified )
         {
         FinishCommand( aErrorCode );
         }
@@ -357,6 +381,7 @@ void CPguAddMembersCmd::ContactViewReady
 // CPguAddMembersCmd::ContactViewUnavailable
 // --------------------------------------------------------------------------
 //
+
 void CPguAddMembersCmd::ContactViewUnavailable
         ( MVPbkContactViewBase& /*aView*/ )
     {
@@ -681,28 +706,8 @@ void CPguAddMembersCmd::PrepareFetchResultsL
                 }
             }
 
-        if ( iEntriesToRelocate->Count() > KOneContact )
-            {
-            RelocateContactsL();
-            }
-        else if ( iEntriesToRelocate->Count() == KOneContact )
-            {
-            // We'll have to retrieve the one single contact and
-            // use single contact relocator
-            delete iRetrieveContactOperation;
-            iRetrieveContactOperation = NULL;
-            iRetrieveContactOperation =
-                Phonebook2::Pbk2AppUi()->ApplicationServices().
-                    ContactManager().RetrieveContactL(
-                        iEntriesToRelocate->At( KFirstElement ), *this );
-            }
-        else
-            {
-            // Contacts will be added to group. First show
-            // the progress note.
-            iState = EShowingProgressNote;
-            IssueRequest();
-            }
+        iState = ECheckContacts;
+        IssueRequest();
         }
     }
 
@@ -945,4 +950,45 @@ void CPguAddMembersCmd::SetFocusToLastAddedL()
         }
     }
 
+void CPguAddMembersCmd::BeginRelocationL()
+    {
+    if ( iEntriesToRelocate->Count() > KOneContact )
+        {
+        RelocateContactsL();
+        }
+    else if ( iEntriesToRelocate->Count() == KOneContact )
+        {
+        // We'll have to retrieve the one single contact and
+        // use single contact relocator
+        delete iRetrieveContactOperation;
+        iRetrieveContactOperation = NULL;
+        iRetrieveContactOperation =
+            Phonebook2::Pbk2AppUi()->ApplicationServices().
+                ContactManager().RetrieveContactL(
+                    iEntriesToRelocate->At( KFirstElement ), *this );
+        }
+    else
+        {
+        // Contacts will be added to group. First show
+        // the progress note.
+        iState = EShowingProgressNote;
+        IssueRequest();
+        }
+    }
+
+void CPguAddMembersCmd::CheckContactsL()
+    {
+    if ( iContactsCounter < iEntriesToAdd->Count() )
+        {
+        delete iRetrieveContactOperation;
+        iRetrieveContactOperation = NULL;
+        iRetrieveContactOperation = Phonebook2::Pbk2AppUi()->ApplicationServices().
+            ContactManager().RetrieveContactL( iEntriesToAdd->At( iContactsCounter ), *this );
+        }
+    else
+        {
+        iState = ERelocateContacts;
+        IssueRequest();
+        }
+    }
 // End of File

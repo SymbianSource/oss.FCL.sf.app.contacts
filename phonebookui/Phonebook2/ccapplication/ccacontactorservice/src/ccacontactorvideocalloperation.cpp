@@ -25,7 +25,10 @@
 // CCCAContactorVideocallOperation::CCCAContactorVideocallOperation()
 // -----------------------------------------------------------------------------
 //
-CCCAContactorVideocallOperation::CCCAContactorVideocallOperation(const TDesC& aParam) : CCCAContactorOperation(aParam)
+CCCAContactorVideocallOperation::CCCAContactorVideocallOperation(const TDesC& aParam,
+        const TDesC8& aContactLinkArray ) : 
+        CCCAContactorOperation(aParam),
+        iContactLinkArray(aContactLinkArray)
     {
     // No implementation required
     }
@@ -42,9 +45,11 @@ CCCAContactorVideocallOperation::~CCCAContactorVideocallOperation()
 // CCCAContactorVideocallOperation::NewLC()
 // -----------------------------------------------------------------------------
 //
-CCCAContactorVideocallOperation* CCCAContactorVideocallOperation::NewLC(const TDesC& aParam)
+CCCAContactorVideocallOperation* CCCAContactorVideocallOperation::NewLC(const TDesC& aParam, 
+                const TDesC8& aContactLinkArray)
     {
-    CCCAContactorVideocallOperation* self = new (ELeave)CCCAContactorVideocallOperation(aParam);
+    CCCAContactorVideocallOperation* self = new (ELeave)CCCAContactorVideocallOperation(
+                        aParam, aContactLinkArray);
     CleanupStack::PushL(self);
     self->ConstructL();
     return self;
@@ -54,10 +59,11 @@ CCCAContactorVideocallOperation* CCCAContactorVideocallOperation::NewLC(const TD
 // CCCAContactorVideocallOperation::NewL()
 // -----------------------------------------------------------------------------
 //
-CCCAContactorVideocallOperation* CCCAContactorVideocallOperation::NewL(const TDesC& aParam)
+CCCAContactorVideocallOperation* CCCAContactorVideocallOperation::NewL(const TDesC& aParam, 
+        const TDesC8& aContactLinkArray)
     {
     CCCAContactorVideocallOperation* self=
-            CCCAContactorVideocallOperation::NewLC(aParam);
+            CCCAContactorVideocallOperation::NewLC(aParam, aContactLinkArray);
     CleanupStack::Pop(); // self;
     return self;
     }
@@ -78,7 +84,7 @@ void CCCAContactorVideocallOperation::ConstructL()
 void CCCAContactorVideocallOperation::ExecuteLD()
     {
     CleanupStack::PushL(this);
-    CCCAPhoneCall::ExecuteL(iParam, CCCAPhoneCall::ECCACallTypeVideo);
+    CCCAPhoneCall::ExecuteL(iParam, iContactLinkArray, CCCAPhoneCall::ECCACallTypeVideo);
     CleanupStack::PopAndDestroy(this);
     }
 // End of File

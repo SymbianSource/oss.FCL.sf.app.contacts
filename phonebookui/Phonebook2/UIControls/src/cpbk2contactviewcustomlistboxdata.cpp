@@ -35,7 +35,7 @@
 #include <layoutmetadata.cdl.h>
 #include <aknlayoutscalable_avkon.cdl.h>
 #include <aknphysics.h>
-#include <akniconarray.h>
+#include <AknIconArray.h>
 #include <avkon.mbg>
 
 

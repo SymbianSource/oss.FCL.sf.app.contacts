@@ -21,7 +21,7 @@
 
 //  INCLUDES
 #include <e32base.h>
-#include <pbk2iconarrayid.hrh>
+#include <Pbk2IconArrayId.hrh>
 
 //  FORWARD DECLARATIONS
 class CGulIcon;

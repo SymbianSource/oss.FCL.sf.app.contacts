@@ -138,7 +138,7 @@ SYSTEMINCLUDE   ../inc
 APP_LAYER_SYSTEMINCLUDE
 
 // Dependencies to Symbian OS components
-LIBRARY         euser.lib efsrv.lib bafl.lib ecom.lib estor.lib
+LIBRARY         euser.lib efsrv.lib bafl.lib ecom.lib estor.lib eikcore.lib cone.lib
 
 // Dependencies to other Phonebook components
 LIBRARY         VPbkEngUtils.lib

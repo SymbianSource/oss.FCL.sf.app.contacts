@@ -64,11 +64,33 @@ class CPbk2CommAddressSelectPhase : public CBase,
         
         enum TState
             {
-            EMainContactRetrieving,
-            ExSPLinksRetrieving,
-            ExSPContactsRetrieving,
-            EWaitForPresenceIcons,
-            EDialogWaitsUserInput
+            // EInitialState -> EMainContactRetrieved
+            EInitialState,
+            // EMainContactRetrieved -> ExSPLinksRetrieved
+            // EMainContactRetrieved -> EAddressSelectDone
+            EMainContactRetrieved,
+            // ExSPLinksRetrieved -> ExSPContactRetrieved 
+            // ExSPLinksRetrieved -> EPresenceIconInfoRetrieved
+            // ExSPLinksRetrieved -> EAddressSelectDone
+            ExSPLinksRetrieved, 
+            // ExSPContactRetrieved -> ExSPContactRetrieved
+            // ExSPContactRetrieved -> ExSPContactsRetrieved
+            // ExSPContactRetrieved -> EAddressSelectDone
+            ExSPContactRetrieved,
+            // ExSPContactsRetrieved -> EPresenceIconInfoRetrieved
+            // ExSPContactsRetrieved -> EAddressSelectDone
+            ExSPContactsRetrieved,
+            // EPresenceIconInfoRetrieved -> EPresenceIconRetrieved
+            // EPresenceIconInfoRetrieved -> EAddressSelectDone
+            EPresenceIconInfoRetrieved,
+            // EPresenceIconRetrieved -> EPresenceIconsRetrieved
+            // EPresenceIconRetrieved -> EAddressSelectDone
+            EPresenceIconRetrieved,
+            // EPresenceIconsRetrieved -> EAddressSelectDone
+            EPresenceIconsRetrieved,
+            // EAddressSelectDone -> EAddressSelectError
+            EAddressSelectDone,
+            EAddressSelectError
             };
      
     public: // Construction
@@ -178,7 +200,13 @@ class CPbk2CommAddressSelectPhase : public CBase,
                     aCommSelector );
         void ConstructL(
                 const MVPbkContactLink& aContactLink );
+        void HandleReceiveIconInfosL(
+                const TDesC8& aPackedLink,
+                RPointerArray <MContactPresenceInfo>& aInfoArray,
+                TInt aOpId );
+        void RetrieveContact();
         void RetrieveContactL();
+        void DoSelectAddresses();
         void DoSelectAddressesL();
         TInt CorrectRSK(
                 TInt aAddressSelectResourceId );
@@ -189,6 +217,15 @@ class CPbk2CommAddressSelectPhase : public CBase,
         void FilterXspContactsL();
         TBool IsMatchL( MVPbkStoreContact& aXspContact, 
                 MVPbkStoreContact& aStoreContact );
+        void StartLoadingxSPContactLinks();
+        void StartLoadingxSPContactLinksL();
+        void StartLoadingxSPContacts( MVPbkContactLinkArray& aArray );
+        void StartLoadingxSPContactsL( MVPbkContactLinkArray& aArray );
+        void StartLoadingPresenceIconInfo();
+        void StartLoadingPresenceIconInfoL();
+        TInt NumOfAddressesL( MVPbkStoreContact& aStoreContact );
+        TInt NumOfAddressesL();
+        void GetPresenceInfoL();
     
     private: // Data
         /// Ref: Observer
@@ -233,10 +270,6 @@ class CPbk2CommAddressSelectPhase : public CBase,
         MContactPresence* iContactPresence;
         /// Own: array of presence icons
         RPointerArray<CPbk2PresenceIconInfo> iPresenceIconArray;
-        /// Own: ETrue, if presence icon has been retrieved
-        TBool iPresenceIconsRetrieved;
-        /// Own: ETrue, if contact has been retrieved
-        TBool iContactRetrieved;
         /// Own: Communication method
         VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector iCommMethod;
     };

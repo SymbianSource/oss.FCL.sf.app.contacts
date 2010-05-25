@@ -260,11 +260,6 @@ void CCCAppCommLauncherMenuHandler::DynInitSelectMenuItemL(
     {
     CCA_DP(KCommLauncherLogFile, CCA_L("->CCCAppCommLauncherMenuHandler::DynInitSelectMenuItemL()"));
     
-    // Used for checking whether some maps have been installed or not.
-    RPointerArray<CMnProvider> providers;
-    CleanupClosePushL( providers );
-    MnProviderFinder::FindProvidersL( providers, CMnProvider::EServiceMapView );
-    
     if ( !iPlugin.Container().CommMethodsAvailable() )
         {// no comm methods available
         aMenuPane->DeleteMenuItem( ECCAppCommLauncherSelectCmd );
@@ -274,14 +269,12 @@ void CCCAppCommLauncherMenuHandler::DynInitSelectMenuItemL(
             aMenuPane->DeleteMenuItem( ECCAppCommLauncherDefaultsCmd );
             }
         }
-    // If the count equals to 0, it means:
-    // No map is installed and there must be no adress item displayed in launcher view. 
-    else if ( providers.Count() > 0 )
+    else
     	{
         CCCAppCommLauncherContactHandler& contactHandler = iPlugin.ContactHandler();
         
         // Get the number how many addresses are defined.
-        TInt addressAmount = 
+        const TInt addressAmount = 
              contactHandler.AddressAmount( VPbkFieldTypeSelectorFactory::EFindOnMapSelector);
         
         // If the amount of address is not 0 and the amount of listbox in launcher view is 1.
@@ -292,9 +285,6 @@ void CCCAppCommLauncherMenuHandler::DynInitSelectMenuItemL(
         	aMenuPane->DeleteMenuItem( ECCAppCommLauncherDefaultsCmd );
         	}
     	}
-
-    providers.ResetAndDestroy();
-    CleanupStack::PopAndDestroy( &providers );
     
     CCA_DP(KCommLauncherLogFile, CCA_L("<-CCCAppCommLauncherMenuHandler::DynInitSelectMenuItemL()"));
     }

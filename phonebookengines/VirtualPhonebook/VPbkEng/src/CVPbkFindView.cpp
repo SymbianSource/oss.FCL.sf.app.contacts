@@ -14,8 +14,7 @@
 * Description:  Filtered contact view
 *
 */
-
-
+#include <eikenv.h>
 #include "CVPbkFindView.h"
 #include <MVPbkFieldType.h>
 #include <CVPbkSortOrder.h>
@@ -24,13 +23,12 @@
 #include <CVPbkAsyncOperation.h>
 #include <VPbkError.h>
 
-#include <CVPbkFieldTypeRefsList.h>
-#include <CVPbkContactNameConstructionPolicy.h>
 #include <CVPbkContactFindPolicy.h>
 #include <MVPbkContactBookmarkCollection.h>
 #include <CVPbkContactFieldIterator.h>
 #include <MVPbkContactFieldData.h>
 #include <MVPbkContactFieldTextData.h>
+
 
 #include <VPbkDebug.h>
 
@@ -108,16 +106,20 @@ inline void CVPbkFindView::ConstructL(
     
     SetAlwaysIncludedContactsL( aAlwaysIncludedContacts );
 
-    // Create contact find policy
-    iContactFindPolicy = CVPbkContactFindPolicy::NewL();
     
-    CVPbkContactNameConstructionPolicy::TParam param( *iMasterFieldTypeList );
-    iNameConstructionPolicy =
-        CVPbkContactNameConstructionPolicy::NewL( param );
-        
-    //Create field type list
-    iFieldTypeRefsList = CVPbkFieldTypeRefsList::NewL();        
-            
+    CEikonEnv* eikonEnv = CEikonEnv::Static();
+     
+    if ( eikonEnv )
+        {
+        CVPbkContactFindPolicy::TParam param =
+            CVPbkContactFindPolicy::TParam(
+                *iMasterFieldTypeList,
+                eikonEnv->FsSession() );
+    
+        // Create contact find policy
+        iContactFindPolicy = CVPbkContactFindPolicy::NewL( param );
+        }
+    
     iBaseView.AddObserverL(*this);
 
     VPBK_DEBUG_PRINT(VPBK_DEBUG_STRING
@@ -154,8 +156,6 @@ CVPbkFindView::~CVPbkFindView()
     iBaseView.RemoveObserver(*this); 
     iObservers.Close();
     delete iFindStrings;
-    delete iFieldTypeRefsList;
-    delete iNameConstructionPolicy;
     delete iContactFindPolicy;
     delete iAsyncOperation;        
     }
@@ -464,14 +464,12 @@ void CVPbkFindView::BuildViewMappingL()
         const MVPbkViewContact& contact = iBaseView.ContactAtL( i );
         
         TBool match( ETrue );
-        const TInt countStrings( iFindStrings->MdcaCount() );
-        for ( TInt j(0); j < countStrings; ++j )
+
+        if ( iContactFindPolicy && 
+                !iContactFindPolicy->MatchContactNameL( *iFindStrings, contact ))
             {
-            if ( !ContactMatchRefineL( contact, iFindStrings->MdcaPoint( j ) ) )
-                {                
-                match = EFalse;                
-                }            
-            }                
+            match = EFalse;      
+            }
 
         if ( match && iContactMapping.FindInOrder( i ) == KErrNotFound ) 
             {                    
@@ -618,47 +616,6 @@ void CVPbkFindView::ContactRemovedFromView(
         SendViewErrorEventToObservers( res, EFalse );
         }
     }
-    
-// --------------------------------------------------------------------------
-// CVPbkFindView::ContactMatchRefineL
-// --------------------------------------------------------------------------
-//    
-TBool CVPbkFindView::ContactMatchRefineL(         
-        const MVPbkViewContact& aViewContact,
-        TPtrC aFindWord )
-    {
-    TBool match( EFalse );
-    iFieldTypeRefsList->Reset(); 
-    
-    // Create iterator                        
-    MVPbkBaseContactFieldIterator* iterator = 
-        iNameConstructionPolicy->NameConstructionFieldsLC( 
-            aViewContact.Fields(),
-            *iFieldTypeRefsList );                            
-             
-    // Loop iterator
-    while ( iterator->HasNext() )
-        {                    
-        const MVPbkBaseContactField* field = iterator->Next();
-        
-        // Check field's type
-        if ( field->FieldData().DataType() == EVPbkFieldStorageTypeText )
-            {                    
-            const MVPbkContactFieldTextData& data = 
-                MVPbkContactFieldTextData::Cast( field->FieldData() );
-                
-            // Match refine
-            if ( iContactFindPolicy->MatchRefineL( data.Text(), aFindWord ) )
-                {
-                match = ETrue;
-                break;
-                }                
-            }
-        }           
-    CleanupStack::PopAndDestroy( 1 ); //iterator    
-    
-    return match;    
-    }    
 
 // --------------------------------------------------------------------------
 // CVPbkFindView::SetFindStringsL

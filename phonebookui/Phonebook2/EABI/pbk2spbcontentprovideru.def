@@ -19,4 +19,5 @@ EXPORTS
 	_ZNK20CSpbContactDataModel4TextENS_10TTextTypesE @ 18 NONAME
 	_ZTI20CSpbContactDataModel @ 19 NONAME
 	_ZTV20CSpbContactDataModel @ 20 NONAME
+	_ZN19CSpbContentProvider13CleanContentLER17MVPbkContactStore @ 21 NONAME
 

@@ -32,9 +32,6 @@
 
 const TText KSpace = ' ';
 
-// UID used for Publish and Subscribe mechanism
-// This should be same as the one defined in CPsPropertyHandler.cpp
-const TUid KCStatus = {0x2000B5B6};
 
 // ============================== MEMBER FUNCTIONS ============================
 
@@ -80,23 +77,19 @@ void CPcsAlgorithm1::ConstructL()
     iPluginLauncher = CIdle::NewL( CActive::EPriorityStandard );
     
     // Define cache status property used to inform clients about the caching status.
-    TInt err = RProperty::Define(KCStatus,0, RProperty::EInt);      
-    if ( err != KErrAlreadyExists )
-    {
-    	User::LeaveIfError(err);
-    }
+    DefinePropertyL( EPsKeyCacheStatus );
     
     // Define cache error property used to inform client about the errors.
-    err = RProperty::Define(KCStatus,1, RProperty::EInt);
-    if ( err != KErrAlreadyExists )
-    {
-    	User::LeaveIfError(err);
-    }
+    DefinePropertyL( EPsKeyCacheError );
     
+    // Define properties for notifying about cache updates
+    DefinePropertyL( EPsKeyContactRemovedCounter );
+    DefinePropertyL( EPsKeyContactModifiedCounter );
+    DefinePropertyL( EPsKeyContactAddedCounter );
+
     // Initialize key map and pti engine
-    //iKeyMap = CPcsKeyMap::NewL();
     TInt keyMapErr = KErrNone;
-    TRAP( keyMapErr, iKeyMap = CPcsKeyMap::NewL());
+    TRAP( keyMapErr, iKeyMap = CPcsKeyMap::NewL() );
     if ( keyMapErr != KErrNone )
     {
         PRINT ( _L("**********************************************."));
@@ -117,8 +110,7 @@ void CPcsAlgorithm1::ConstructL()
      
     PRINT ( _L("End CPcsAlgorithm1::ConstructL") );
 } 
-	
-	
+
 // ----------------------------------------------------------------------------
 // CPcsAlgorithm1::~CPcsAlgorithm1
 // Destructor
@@ -145,6 +137,23 @@ CPcsAlgorithm1::~CPcsAlgorithm1()
 
     PRINT ( _L("End CPcsAlgorithm1::~CPcsAlgorithm1") );
 }
+
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm1::DefinePropertyL
+// Define a P&S property with given key under the internal category 
+// UID of PCS. Leave if definition fails for any other reason than
+// key already existing. 
+// ----------------------------------------------------------------------------
+void CPcsAlgorithm1::DefinePropertyL( TPcsInternalKeyCacheStatus aPsKey )
+    {
+    TInt err = RProperty::Define( KPcsInternalUidCacheStatus, 
+                                  aPsKey, 
+                                  RProperty::EInt );
+    if ( err != KErrAlreadyExists )
+        {
+        User::LeaveIfError(err);
+        }
+    }
 
 // ----------------------------------------------------------------------------
 // CPcsAlgorithm1::RemoveSpacesL
@@ -533,16 +542,16 @@ void CPcsAlgorithm1::SearchMatchStringL( CPsQuery& aSearchQuery,
 // CPcsAlgorithm1::DoSearchL
 // Search function helper
 // ----------------------------------------------------------------------------
-void  CPcsAlgorithm1::DoSearchL(const CPsSettings& aSettings,
-								CPsQuery& aQuery,
-								RPointerArray<CPsData>& aSearchResults,
-								RPointerArray<CPsPattern>& aSearchSeqs )
+void  CPcsAlgorithm1::DoSearchL( const CPsSettings& aSettings,
+                                 CPsQuery& aQuery,
+                                 RPointerArray<CPsData>& aSearchResults,
+                                 RPointerArray<CPsPattern>& aSearchSeqs )
 {
     PRINT ( _L("Enter CPcsAlgorithm1::DoSearchL") );
 
     __LATENCY_MARK ( _L("CPcsAlgorithm1::DoSearchL") ); 
     
-    // -(0)----------------- Check if group search is required ---------------    
+    // (0)------------------ Check if group search is required ---------------
     RArray<TInt> contactsInGroup;
     CleanupClosePushL( contactsInGroup );
     RArray<TInt> groupIdArray;
@@ -619,10 +628,10 @@ void  CPcsAlgorithm1::DoSearchL(const CPsSettings& aSettings,
 // CPcsAlgorithm1::DoSearchInputL
 // Search function helper
 // ----------------------------------------------------------------------------
-void  CPcsAlgorithm1::DoSearchInputL(CPsQuery& aQuery,
-		                             const TDesC& aData,
-		                             RPointerArray<TDesC>& aMatchSet,
-		                             RArray<TPsMatchLocation>& aMatchLocation )
+void  CPcsAlgorithm1::DoSearchInputL( CPsQuery& aQuery,
+                                      const TDesC& aData,
+                                      RPointerArray<TDesC>& aMatchSet,
+                                      RArray<TPsMatchLocation>& aMatchLocation )
 {
     PRINT ( _L("Enter CPcsAlgorithm1::DoSearchInputL") );
 
@@ -699,7 +708,7 @@ void CPcsAlgorithm1::AddData(TDesC& aDataStore, CPsData* aData)
 // CPcsAlgorithm1::RemoveData
 // Remove a data element from the pool
 // ----------------------------------------------------------------------------
-void CPcsAlgorithm1::RemoveData(TDesC &aDataStore, TInt aItemId)
+void CPcsAlgorithm1::RemoveData(TDesC& aDataStore, TInt aItemId)
 {
     TInt arrayIndex = GetCacheIndex(aDataStore);
     
@@ -775,10 +784,10 @@ void CPcsAlgorithm1::AddDataStore(TDesC& aDataStore)
 	{
 		SetCachingError(aDataStore, err);
 		return;
-	}		    
+	}
     cache->SetDataFields(dataFields); 
     
-    // Check if sort order is persisted already    
+    // Check if sort order is persisted already
     RArray<TInt> sortOrder;
     TRAP(err, ReadSortOrderFromCenRepL(cache->GetURI(), sortOrder));
     if ( err != KErrNone )
@@ -808,7 +817,7 @@ void CPcsAlgorithm1::AddDataStore(TDesC& aDataStore)
 		SetCachingError(aDataStore, err);
 		UpdateCachingStatus(aDataStore,ECachingCompleteWithErrors);
 		return;
-	}		
+	}
 }
 
 // ----------------------------------------------------------------------------
@@ -821,7 +830,7 @@ void CPcsAlgorithm1::RemoveDataStore(TDesC& aDataStore)
     {
     	CPcsCache* cache = iPcsCache[i];
     	
-    	if ( cache->GetURI().CompareC(aDataStore) == 0 ) 
+    	if ( cache->GetURI().CompareC(aDataStore) == 0 )
     	{
     		delete iPcsCache[i];
     		iPcsCache.Remove(i);
@@ -850,7 +859,7 @@ const TDesC& CPcsAlgorithm1::GetUriForIdL(TUint8 aUriId)
     for ( i = 0; i < iPcsCache.Count(); i++ )
     {
     	if ( iPcsCache[i]->GetUriId() == aUriId ) 
-    	{    	   
+    	{
     	   found = ETrue;
     	   break;
     	}
@@ -870,15 +879,15 @@ const TDesC& CPcsAlgorithm1::GetUriForIdL(TUint8 aUriId)
 // ----------------------------------------------------------------------------
 TInt CPcsAlgorithm1::FindStoreUri ( const TDesC& aDataStore )
 {
-    for ( int i = 0; i < iPcsCache.Count(); i++ )
+    for ( TInt i = 0; i < iPcsCache.Count(); i++ )
     {
         if ( aDataStore.CompareC(iPcsCache[i]->GetURI()) == 0 ) 
     	{
-    	   return i;   
+    	   return i;
     	}
     }
 
-    return -1;
+    return KErrNotFound;
 }
 
 // ----------------------------------------------------------------------------
@@ -889,12 +898,24 @@ void CPcsAlgorithm1::UpdateCachingStatus(TDesC& aDataStore, TInt aStatus)
 {
 	PRINT ( _L("Enter CPcsAlgorithm1::UpdateCachingStatus") );
 	
+	// Handle data store update events
+	if ( aStatus == ECacheUpdateContactRemoved ||
+	     aStatus == ECacheUpdateContactModified ||
+	     aStatus == ECacheUpdateContactAdded )
+	    {
+        HandleCacheUpdated( static_cast<TCachingStatus>(aStatus) );
+        return;
+	    }
+	
+	// If not a cache update event, then this event is related to the initial
+	// cache construction.
 	TInt index = FindStoreUri(aDataStore);
+	
 	iPcsCache[index]->UpdateCacheStatus(aStatus);
 	
 	// Check if any error occurred
 	// If so, update the cache status, Set the property and return
-	if( aStatus < 0)
+	if ( aStatus < 0 )
 	{
 		SetCachingError(aDataStore, aStatus);
 		//return;
@@ -905,20 +926,20 @@ void CPcsAlgorithm1::UpdateCachingStatus(TDesC& aDataStore, TInt aStatus)
 	TBool atLeastOneStoreCachingCompleteWithErrors(EFalse);
 	for ( TInt i = 0; i < iPcsCache.Count(); i++ )
 	{
-		if( iPcsCache[i]->GetCacheStatus() == ECachingComplete)
-		  {
-	      continue;
-	      }	
-		else if ( iPcsCache[i]->GetCacheStatus() == ECachingCompleteWithErrors)
-		   {
-		 	 atLeastOneStoreCachingCompleteWithErrors = ETrue;
-		 	 continue;
-		   }
+		if ( iPcsCache[i]->GetCacheStatus() == ECachingComplete )
+		{
+	        continue;
+	    }
+		else if ( iPcsCache[i]->GetCacheStatus() == ECachingCompleteWithErrors )
+		{
+            atLeastOneStoreCachingCompleteWithErrors = ETrue;
+            continue;
+		}
 		else
 		{
 			status = ECachingInProgress;
 			break;
-		}			
+		}
 	}
 	
 	if ( status == ECachingComplete )
@@ -933,7 +954,7 @@ void CPcsAlgorithm1::UpdateCachingStatus(TDesC& aDataStore, TInt aStatus)
 	if ( status != iCacheStatus )
 	{
 		iCacheStatus = status;
-		RProperty::Set(KCStatus,0,iCacheStatus );
+		RProperty::Set(KPcsInternalUidCacheStatus, EPsKeyCacheStatus, iCacheStatus );
 	}
 	
 	PRINT ( _L("End CPcsAlgorithm1::UpdateCachingStatus") );
@@ -945,10 +966,10 @@ void CPcsAlgorithm1::UpdateCachingStatus(TDesC& aDataStore, TInt aStatus)
 // ----------------------------------------------------------------------------
 void CPcsAlgorithm1::SetCachingError(const TDesC& aDataStore, TInt aError)
 {
-	PRINT2 ( _L("SetCachingError::URI %S ERROR %d"), &aDataStore, aError );
+    PRINT2 ( _L("SetCachingError::URI %S ERROR %d"), &aDataStore, aError );
 
-	iCacheError = aError;
-	RProperty::Set( KCStatus, 1, iCacheError );
+    iCacheError = aError;
+    RProperty::Set( KPcsInternalUidCacheStatus, EPsKeyCacheError, iCacheError );
 }
 
 // ----------------------------------------------------------------------------
@@ -960,7 +981,7 @@ void CPcsAlgorithm1::GetAllContentsL ( const CPsSettings& aSettings,
 {
 	__LATENCY_MARK ( _L("CPcsAlgorithm1::GetAllContentsL") );
     
-    PRINT ( _L("Enter CPcsAlgorithm1::GetAllContentsL") );   
+    PRINT ( _L("Enter CPcsAlgorithm1::GetAllContentsL") );
     
     // To hold array of results from different data stores
     typedef RPointerArray<CPsData> CPSDATA_R_PTR_ARRAY;
@@ -1145,7 +1166,7 @@ void CPcsAlgorithm1::GetDataOrderL ( TDesC& aURI,
 {
     PRINT ( _L("End CPcsAlgorithm1::GetDataOrderL") );
 
-    TInt arrayIndex = -1;     
+    TInt arrayIndex = KErrNotFound;
     
     if ( CPcsAlgorithm1Utils::IsGroupUri(aURI) )
     {
@@ -1153,8 +1174,8 @@ void CPcsAlgorithm1::GetDataOrderL ( TDesC& aURI,
         arrayIndex = GetCacheIndex(KVPbkDefaultCntDbURI);
     }
     else 
-    {		
-		arrayIndex = GetCacheIndex(aURI);
+    {
+        arrayIndex = GetCacheIndex(aURI);
     }
     
     if ( arrayIndex < 0 ) return;
@@ -1178,17 +1199,16 @@ void CPcsAlgorithm1::GetSortOrderL ( TDesC& aURI,
 {
     PRINT ( _L("End CPcsAlgorithm1::GetSortOrderL") );
 
-    TInt arrayIndex = -1;
+    TInt arrayIndex = KErrNotFound;
     
     if ( CPcsAlgorithm1Utils::IsGroupUri(aURI) )
     {
         // If search in a group uri, use contacts db
-        TBuf<255> cntdb(KVPbkDefaultCntDbURI);
-        arrayIndex = GetCacheIndex(cntdb);
+        arrayIndex = GetCacheIndex(KVPbkDefaultCntDbURI);
     }
     else 
     {
-		arrayIndex = GetCacheIndex(aURI);
+        arrayIndex = GetCacheIndex(aURI);
     }
     
     if ( arrayIndex < 0 ) return;
@@ -1237,10 +1257,10 @@ void CPcsAlgorithm1::ChangeSortOrderL ( TDesC& aURI,
     RArray<TInt> mySortOrder;
     cache->GetSortOrder(mySortOrder);
     
-    if ( aSortOrder.Count() == mySortOrder.Count() )    
+    if ( aSortOrder.Count() == mySortOrder.Count() )
     {
         TBool same = ETrue;
-        for ( TInt i = 0; i < mySortOrder.Count(); i++ )	
+        for ( TInt i = 0; i < mySortOrder.Count(); i++ )
         {
             if ( mySortOrder[i] != aSortOrder[i] )
             {
@@ -1363,8 +1383,8 @@ void CPcsAlgorithm1::WriteSortOrderToCenRepL(const TDesC& aURI,
 	TInt keyIndex = -1;
 
 	for ( TInt i(KCenrepFieldsStartKey); 
-	  		   i < KCenrepFieldsStartKey + KCenrepNumberOfFieldsCount; 
-	           i++ )
+	      i < KCenrepFieldsStartKey + KCenrepNumberOfFieldsCount; 
+	      i++ )
 	{
 		TInt err = repository->Get( i, str );
 
@@ -1395,8 +1415,8 @@ void CPcsAlgorithm1::WriteSortOrderToCenRepL(const TDesC& aURI,
 	{
 		// Find the next free key index
 		for ( TInt i(KCenrepFieldsStartKey); 
-		  		   i < KCenrepFieldsStartKey + KCenrepNumberOfFieldsCount; 
-		           i++ )
+		      i < KCenrepFieldsStartKey + KCenrepNumberOfFieldsCount; 
+		      i++ )
 	    {
 		    TInt err = repository->Get( i, str );
 
@@ -1477,6 +1497,45 @@ CPsClientData* CPcsAlgorithm1::WriteClientDataL( CPsData& aPsData )
 	
 	return clientData;
 }
+
+// ---------------------------------------------------------------------------------
+// HandleCacheUpdated.
+// ---------------------------------------------------------------------------------
+void CPcsAlgorithm1::HandleCacheUpdated( TCachingStatus aStatus )
+    {
+    TInt psKey( KErrNotFound );
+    
+    switch ( aStatus )
+        {
+        case ECacheUpdateContactRemoved:
+            psKey = EPsKeyContactRemovedCounter;
+            break;
+            
+        case ECacheUpdateContactModified:
+            psKey = EPsKeyContactModifiedCounter;
+            break;
+            
+        case ECacheUpdateContactAdded:
+            psKey = EPsKeyContactAddedCounter;
+            break;
+            
+        default:
+            break;
+        }
+
+    if ( psKey != KErrNotFound )
+        {
+        // Increment the related counter in P&S by one to signal the clients about
+        // the cache update.
+        TInt counter( KErrNotFound );
+        TInt err = RProperty::Get( KPcsInternalUidCacheStatus, psKey, counter );
+        if ( !err )
+            {
+            counter++;
+            RProperty::Set( KPcsInternalUidCacheStatus, psKey, counter );
+            }
+        }
+    }
 
 // ---------------------------------------------------------------------------------
 // DoLaunchPluginsL.

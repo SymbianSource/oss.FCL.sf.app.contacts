@@ -69,6 +69,14 @@ NONSHARABLE_CLASS(CPbk2ContactDuplicatePolicy)
         void ConstructL(
                 const MVPbkFieldTypeList* aFieldTypeForFind );
 
+        /**
+         * Creates field type list for find.
+         *
+         * @param aContactManager  Virtual Phonebook Contact Manager.
+         * @return  A field type list.
+         */
+        MVPbkFieldTypeList* CreateFieldTypesForFindL
+                (CVPbkContactManager& aContactManager) const;
     private: // Data
         /// Ref: Contact manager
         CVPbkContactManager& iContactManager;
@@ -80,6 +88,8 @@ NONSHARABLE_CLASS(CPbk2ContactDuplicatePolicy)
         CPbk2DuplicateContactFinder* iDuplicateFinder;
         /// Own: Duplicate contacts
         RPointerArray<MVPbkStoreContact> iDuplicates;
+        /// Own: These are the field types that are used for find
+        MVPbkFieldTypeList* iFieldTypeRefsList;
     };
 
 #endif // CPBK2CONTACTDUPLICATEPOLICY_H

@@ -35,12 +35,6 @@
 #include "CPcsDefs.h"
 #include "FindUtilChineseECE.h"
 
-// UID used for Publish and Subscribe mechanism
-// This should be same as the one defined in CPsPropertyHandler.cpp
-const TUid KCStatus =
-    {
-    0x2000B5B6
-    };
 
 // ============================== MEMBER FUNCTIONS ============================
 
@@ -90,18 +84,15 @@ void CPcsAlgorithm2::ConstructL()
     iPluginLauncher = CIdle::NewL( CActive::EPriorityStandard );
 
     // Define cache status property used to inform clients about the caching status.
-    TInt err = RProperty::Define(KCStatus, 0, RProperty::EInt);
-    if (err != KErrAlreadyExists)
-        {
-        User::LeaveIfError(err);
-        }
-
+    DefinePropertyL( EPsKeyCacheStatus );
+    
     // Define cache error property used to inform client about the errors.
-    err = RProperty::Define(KCStatus, 1, RProperty::EInt);
-    if (err != KErrAlreadyExists)
-        {
-        User::LeaveIfError(err);
-        }
+    DefinePropertyL( EPsKeyCacheError );
+    
+    // Define properties for notifying about cache updates
+    DefinePropertyL( EPsKeyContactRemovedCounter );
+    DefinePropertyL( EPsKeyContactModifiedCounter );
+    DefinePropertyL( EPsKeyContactAddedCounter );
 
     // Initialize key map and pti engine
     TInt keyMapErr = KErrNone;
@@ -154,6 +145,23 @@ CPcsAlgorithm2::~CPcsAlgorithm2()
     delete iPluginLauncher;
 
     PRINT ( _L("End CPcsAlgorithm2::~CPcsAlgorithm2") );
+    }
+
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm2::DefinePropertyL
+// Define a P&S property with given key under the internal category 
+// UID of PCS. Leave if definition fails for any other reason than
+// key already existing. 
+// ----------------------------------------------------------------------------
+void CPcsAlgorithm2::DefinePropertyL( TPcsInternalKeyCacheStatus aPsKey )
+    {
+    TInt err = RProperty::Define( KPcsInternalUidCacheStatus, 
+                                  aPsKey, 
+                                  RProperty::EInt );
+    if ( err != KErrAlreadyExists )
+        {
+        User::LeaveIfError(err);
+        }
     }
 
 // ----------------------------------------------------------------------------
@@ -803,6 +811,17 @@ void CPcsAlgorithm2::UpdateCachingStatus(TDesC& aDataStore, TInt aStatus)
     {
     PRINT ( _L("Enter CPcsAlgorithm2::UpdateCachingStatus") );
 
+    // Handle data store update events
+    if ( aStatus == ECacheUpdateContactRemoved ||
+         aStatus == ECacheUpdateContactModified ||
+         aStatus == ECacheUpdateContactAdded )
+        {
+        HandleCacheUpdated( static_cast<TCachingStatus>(aStatus) );
+        return;
+        }
+
+    // If not a cache update event, then this event is related to the initial
+    // cache construction.
     TInt index = FindStoreUri(aDataStore);
     iPcsCache[index]->UpdateCacheStatus(aStatus);
 
@@ -868,7 +887,7 @@ void CPcsAlgorithm2::UpdateCachingStatus(TDesC& aDataStore, TInt aStatus)
     if (status != iCacheStatus)
         {
         iCacheStatus = status;
-        RProperty::Set(KCStatus, 0, iCacheStatus);
+        RProperty::Set(KPcsInternalUidCacheStatus, EPsKeyCacheStatus, iCacheStatus );
         }
 
     PRINT ( _L("End CPcsAlgorithm2::UpdateCachingStatus") );
@@ -880,12 +899,10 @@ void CPcsAlgorithm2::UpdateCachingStatus(TDesC& aDataStore, TInt aStatus)
 // ----------------------------------------------------------------------------
 void CPcsAlgorithm2::SetCachingError(TDesC& aDataStore, TInt aError)
     {
-    TBuf<KBufferMaxLen> store;
-    store.Copy(aDataStore);
-    PRINT2 ( _L("SetCachingError::URI %S ERROR %d"), &store, aError );
+    PRINT2 ( _L("SetCachingError::URI %S ERROR %d"), &aDataStore, aError );
 
     iCacheError = aError;
-    RProperty::Set(KCStatus, 1, iCacheError);
+    RProperty::Set( KPcsInternalUidCacheStatus, EPsKeyCacheError, iCacheError );
     }
 
 // ----------------------------------------------------------------------------
@@ -1414,6 +1431,48 @@ CPsClientData* CPcsAlgorithm2::WriteClientDataL(CPsData& aPsData)
     return clientData;
     }
 
+// ---------------------------------------------------------------------------------
+// HandleCacheUpdated.
+// ---------------------------------------------------------------------------------
+void CPcsAlgorithm2::HandleCacheUpdated( TCachingStatus aStatus )
+    {
+    TInt psKey( KErrNotFound );
+    
+    switch ( aStatus )
+        {
+        case ECacheUpdateContactRemoved:
+            psKey = EPsKeyContactRemovedCounter;
+            break;
+            
+        case ECacheUpdateContactModified:
+            psKey = EPsKeyContactModifiedCounter;
+            break;
+            
+        case ECacheUpdateContactAdded:
+            psKey = EPsKeyContactAddedCounter;
+            break;
+            
+        default:
+            break;
+        }
+
+    if ( psKey != KErrNotFound )
+        {
+        // Increment the relevant counter in P&S by one to signal the clients about
+        // the cache update.
+        TInt counter( KErrNotFound );
+        TInt err = RProperty::Get( KPcsInternalUidCacheStatus, psKey, counter );
+        if ( !err )
+            {
+            counter++;
+            RProperty::Set( KPcsInternalUidCacheStatus, psKey, counter );
+            }
+        }
+    }
+
+// ---------------------------------------------------------------------------------
+// ReconstructCacheDataL.
+// ---------------------------------------------------------------------------------
 void CPcsAlgorithm2::ReconstructCacheDataL()
     {
     PRINT ( _L("Enter CPcsAlgorithm2::ReconstructCacheDataL.") );

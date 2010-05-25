@@ -372,6 +372,7 @@ class CPbk2ContactEditorDlgImpl : public CAknForm,
                 const TKeyEvent& aKeyEvent, 
                 TEventCode aType );
         void RestorePrevNaviDecoratorL();
+        void RestoreStatusPaneL(); 
 
     private: // Data structures
 
@@ -469,6 +470,8 @@ class CPbk2ContactEditorDlgImpl : public CAknForm,
         /// the empty one on to the top.
         /// Doesnt Own.
         CAknNavigationDecorator* iPrevNaviDecorator;
+        
+        TInt iCurrentstatuspane;
     };
 
 #endif // CPBK2CONTACTEDITORDLGIMPL_H

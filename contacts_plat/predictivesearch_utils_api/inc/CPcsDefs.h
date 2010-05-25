@@ -19,7 +19,7 @@
 #define __PCSSERVERDEFS_H__
 
 #include <e32base.h>
-#include <BidiText.h>
+#include <biditext.h>
 
 /**
  * PCS Server Exe Name
@@ -58,8 +58,8 @@ enum TPsServerRequestCommands
  */
 enum TPsServerResponseCommand
 {
-	ESearchComplete,
-	ECancelComplete
+    ESearchComplete,
+    ECancelComplete
 };
 
 /**
@@ -106,10 +106,13 @@ enum TKeyboardModes
  */
 enum TCachingStatus
 {
-	ECachingNotStarted         =  0,
-	ECachingInProgress         = 10,
-	ECachingComplete           = 20,
-	ECachingCompleteWithErrors = 30
+    ECachingNotStarted          =  0,
+    ECachingInProgress          = 10,
+    ECachingComplete            = 20,
+    ECachingCompleteWithErrors  = 30,
+    ECacheUpdateContactRemoved  = 40,
+    ECacheUpdateContactModified = 50,
+    ECacheUpdateContactAdded    = 60
 };
 
 /**
@@ -117,8 +120,8 @@ enum TCachingStatus
  */
 enum TSortType
 {
-	EPatternBased,
-	EAlphabetical
+    EPatternBased,
+    EAlphabetical
 };
 
 /**
@@ -139,7 +142,7 @@ const TInt KMaxNbrOfLangKeymapping = 10;
  * Central Repository constants
  */
 const TInt KCRMaxLen = 255;
-const TInt KPsQueryMaxLen = 50;
+const TInt KPsQueryMaxLen = 150;
 const TInt KBufferMaxLen = 255;
 const TInt KSearchResultsBufferLen = 8192;
 
@@ -168,6 +171,20 @@ struct TPsMatchLocation
  */
 const TInt KUnitSeparator  = 31;
 const TInt KSpaceCharacter = 32;
+
+/**
+ * Publish & Subscribe ID and keys for internal use of PCS
+ */
+const TUid KPcsInternalUidCacheStatus = {0x2000B5B6};
+enum TPcsInternalKeyCacheStatus
+    {
+    EPsKeyCacheStatus            = 0,
+    EPsKeyCacheError             = 1,
+    EPsKeyContactRemovedCounter  = 2,
+    EPsKeyContactModifiedCounter = 3,
+    EPsKeyContactAddedCounter    = 4
+    };
+
 
 #endif // __PCSSERVERDEFS_H__
 

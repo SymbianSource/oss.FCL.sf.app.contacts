@@ -434,7 +434,7 @@ TInt CCCAppMyCardContainer::CheckExtensionFactoryL(TAny* aPtr)
 void CCCAppMyCardContainer::DoCheckExtensionFactoryL()
     {
     CCCAExtensionFactory* extension = iFactoryExtensionNotifier->ExtensionFactory();
-    // if extension is not null, extensionfactory plugins are available ->
+    // if extension is not null and view launcher supports mycard view then 
     // show statuscontrol
     TBool visible = EFalse;
     if( extension )
@@ -443,7 +443,11 @@ void CCCAppMyCardContainer::DoCheckExtensionFactoryL()
             {
             iViewLauncher = extension->CreateViewLauncherL();
             }
-        visible = ETrue;
+        if( iViewLauncher && 
+                iViewLauncher->IsViewSupported( MCCAViewLauncher::EMyCardView ) )
+            {
+            visible = ETrue;
+            }
         }
     else
         {

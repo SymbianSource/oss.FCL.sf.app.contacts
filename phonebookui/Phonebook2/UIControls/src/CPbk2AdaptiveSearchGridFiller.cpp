@@ -29,7 +29,7 @@
 
 const TInt KMaxAdaptiveGridCacheCount = 10;
 const TInt KAdaptiveSearchKeyMapGranularity = 100;
-const TInt KAdaptiveSearchRefineStep = 10;
+const TInt KAdaptiveSearchRefineStep = 25;
 const TInt KContactFormattingFlags = MPbk2ContactNameFormatter::EPreserveLeadingSpaces |
             MPbk2ContactNameFormatter::EReplaceNonGraphicChars |
             MPbk2ContactNameFormatter::EDisableCompanyNameSeparator;
@@ -63,12 +63,12 @@ NONSHARABLE_CLASS(CPbk2AdaptiveGrid) : public CBase
 			iKeyMap = aKeyMap.AllocL();
 			}
 
-		const TDesC& FindText() const
+		const TDesC& GetFindText() const
 			{
 			return *iFindText;
 			}
 
-		const TDesC& KeyMap() const
+		const TDesC& GetKeyMap() const
 			{
 			return *iKeyMap;
 			}
@@ -92,6 +92,7 @@ CPbk2AdaptiveSearchGridFiller::CPbk2AdaptiveSearchGridFiller( CAknSearchField& a
 CPbk2AdaptiveSearchGridFiller::~CPbk2AdaptiveSearchGridFiller()
     {
     Cancel();
+    delete iGridWaiter;
 	delete iKeyMap;
 	delete iCurrentGrid;
 	iAdaptiveGridCache.ResetAndDestroy();
@@ -124,6 +125,7 @@ void CPbk2AdaptiveSearchGridFiller::ConstructL()
     {
 	iKeyMap = HBufC::NewL( KAdaptiveSearchKeyMapGranularity );
 	iFindUtil = CFindUtil::NewL();
+	iGridWaiter = CPbk2AdaptiveSearchGridWaiter::NewL( *this );
     }
 
 void CPbk2AdaptiveSearchGridFiller::StartFilling( const MVPbkContactViewBase& aView, const TDesC& aSearchString )
@@ -132,7 +134,8 @@ void CPbk2AdaptiveSearchGridFiller::StartFilling( const MVPbkContactViewBase& aV
 
 	if( keyMap )
 		{
-		iSearchField.SetAdaptiveGridChars( keyMap->KeyMap() );
+		iSearchField.SetAdaptiveGridChars( keyMap->GetKeyMap() );
+		iGridWaiter->Stop();
 		return;
 		}
 
@@ -143,14 +146,13 @@ void CPbk2AdaptiveSearchGridFiller::StartFilling( const MVPbkContactViewBase& aV
 
 	// If there is no search word, the user is not searching any contacts
 	// so we should reset the array to prepare for the next searching.
-    if ( iSearchString->Length()== 0 )
+    if ( iSearchString->Length() == 0 )
     	{
     	iDigraphContactsTitleArray.ResetAndDestroy();
     	}
 	iView = &aView;
 
 	iKeyMap->Des().Zero();
-
 
 	iCounter = 0;
 
@@ -174,13 +176,16 @@ void CPbk2AdaptiveSearchGridFiller::RunL()
 
 	TInt stopCount = iCounter + KAdaptiveSearchRefineStep;
 	const TInt itemCount = iView->ContactCountL();
-	TInt maxSpacesNumber = 0;
-
 	if( stopCount > itemCount )
 		{
 		stopCount = itemCount;
 		}
 
+	TInt maxSpacesNumber = 0;
+
+    CDesC16Array* searchWordsArray = SplitSearchFieldTextIntoArrayLC( *iSearchString );
+    TInt searchStringSpacesNumber = searchWordsArray->MdcaCount() - 1;
+    
 	for( ; iCounter < stopCount; iCounter++ )
 		{
 		const MVPbkViewContact& contact = iView->ContactAtL( iCounter );
@@ -210,7 +215,7 @@ void CPbk2AdaptiveSearchGridFiller::RunL()
 		    }
 
         CleanupStack::PushL( title );
-		BuildGridL( *title, *iSearchString, iKeyMap );
+		BuildGridL( *title, searchWordsArray, iKeyMap );
 		
 		// check number of spaces in the contact title
 		TInt numberOfSpaces = NumberOfSpacesInString( *title );
@@ -227,7 +232,7 @@ void CPbk2AdaptiveSearchGridFiller::RunL()
 			}
 		else
 			{
-			CleanupStack::PopAndDestroy(); //title
+			CleanupStack::PopAndDestroy( title );
 			}
 		}
 	// If there are titles in array, we should add them to build grids again,
@@ -238,14 +243,15 @@ void CPbk2AdaptiveSearchGridFiller::RunL()
     	for( TInt i(0); i < iDigraphContactsTitleArray.Count() ; i++ )
     		{
     		TPtr ptrContactsTitle = iDigraphContactsTitleArray[i]->Des();
-        	BuildGridL( ptrContactsTitle, *iSearchString, iKeyMap );
+        	BuildGridL( ptrContactsTitle, searchWordsArray, iKeyMap );
     		}
 		}
 
+    CleanupStack::PopAndDestroy( searchWordsArray ); //searchWordsArray
 
 	if( stopCount == itemCount )
 		{
-		SetAdaptiveGridCharsL( maxSpacesNumber );
+		SetAdaptiveGridCharsL( maxSpacesNumber, searchStringSpacesNumber );
 		AddKeyMapToCacheL( *iSearchString, *iKeyMap );
 		}
 	else
@@ -274,7 +280,8 @@ CPbk2AdaptiveGrid* CPbk2AdaptiveSearchGridFiller::KeyMapFromCache( const TDesC& 
 
 	for( TInt i( 0 ); i < count; i++ )
 		{
-		if( !aFindText.Compare( iAdaptiveGridCache[i]->FindText() ) )
+		if( iAdaptiveGridCache[i] != NULL
+		    && !aFindText.Compare( iAdaptiveGridCache[i]->GetFindText() ) )
 			{
 			return iAdaptiveGridCache[i];
 			}
@@ -285,17 +292,40 @@ CPbk2AdaptiveGrid* CPbk2AdaptiveSearchGridFiller::KeyMapFromCache( const TDesC& 
 
 void CPbk2AdaptiveSearchGridFiller::AddKeyMapToCacheL( const TDesC& aFindText, const TDesC& aKeyMap )
 	{
-	CPbk2AdaptiveGrid* keyMap = new( ELeave )CPbk2AdaptiveGrid;
-	CleanupStack::PushL( keyMap );
-	keyMap->SetKeyMapL( aFindText, aKeyMap );
-	iAdaptiveGridCache.InsertL( keyMap, 0 );
-	CleanupStack::Pop();//keyMap
+    CPbk2AdaptiveGrid* keyMap = new( ELeave )CPbk2AdaptiveGrid;
+    CleanupStack::PushL( keyMap );
+    keyMap->SetKeyMapL( aFindText, aKeyMap );
 
-	if( iAdaptiveGridCache.Count() > KMaxAdaptiveGridCacheCount )
-		{
-		delete iAdaptiveGridCache[0];
-		iAdaptiveGridCache.Remove( 0 );
-		}
+    // Keep always in the cache at position 0 the grid cache element for empty find box,
+    // which is the one that requires more time to be built
+    if ( aFindText.Length() == 0 )
+        {
+        if ( iAdaptiveGridCache.Count() > 0 )
+            {
+            delete iAdaptiveGridCache[0];
+            iAdaptiveGridCache.Remove( 0 );
+            }
+
+        iAdaptiveGridCache.InsertL( keyMap, 0 );
+        }
+    else
+        {
+        if ( iAdaptiveGridCache.Count() == 0 )
+        {
+        iAdaptiveGridCache.InsertL( NULL, 0 );
+        }
+
+        iAdaptiveGridCache.InsertL( keyMap, 1 );
+    
+        // Delete oldest cache element
+        if( iAdaptiveGridCache.Count() > KMaxAdaptiveGridCacheCount )
+            {
+            delete iAdaptiveGridCache[KMaxAdaptiveGridCacheCount];
+            iAdaptiveGridCache.Remove( KMaxAdaptiveGridCacheCount );
+            }
+        }
+
+    CleanupStack::Pop(); //keyMap
 	}
 
 void CPbk2AdaptiveSearchGridFiller::ClearCache()
@@ -311,6 +341,7 @@ void CPbk2AdaptiveSearchGridFiller::ClearCache()
 void CPbk2AdaptiveSearchGridFiller::InvalidateAdaptiveSearchGrid()
 	{
 	iInvalidateAdaptiveSearchGrid = ETrue;
+	iGridWaiter->Start();
 	}
 
 void CPbk2AdaptiveSearchGridFiller::SetFocusToAdaptiveSearchGrid()
@@ -318,11 +349,12 @@ void CPbk2AdaptiveSearchGridFiller::SetFocusToAdaptiveSearchGrid()
     iSetFocusToSearchGrid = ETrue;
     }
 
-void CPbk2AdaptiveSearchGridFiller::SetAdaptiveGridCharsL(  const TInt aMaxSpacesNumber )
+void CPbk2AdaptiveSearchGridFiller::SetAdaptiveGridCharsL(
+        const TInt aMaxSpacesNumber, const TInt aSearchStringSpacesNumber )
 	{
 	TPtr ptr = iKeyMap->Des();
 
-	//To do upper case for all characters
+	// Do upper case for all characters
 	ptr.UpperCase();
 	CDesCArray* array = new (ELeave) CDesCArrayFlat( KAdaptiveSearchKeyMapGranularity );
 	CleanupStack::PushL( array );
@@ -337,21 +369,17 @@ void CPbk2AdaptiveSearchGridFiller::SetAdaptiveGridCharsL(  const TInt aMaxSpace
 	array->Sort( ECmpCollated );
 	ptr.Zero();
 
-    // Add space character only if user typed already some characters
-    // in the find pane and more spaces can be found in contacts than
-    // in the current search string.
-    TInt searchTextLength = iSearchField.TextLength();
-    HBufC* searchText = HBufC::NewL( searchTextLength );
-	TPtr ptrSearchText = searchText->Des();
-	iSearchField.GetSearchText( ptrSearchText );
-    if ( searchTextLength > 0 
-        && NumberOfSpacesInString( ptrSearchText ) < aMaxSpacesNumber  )
+    // Add space character only if:
+	// - user typed already some characters in the find pane,
+	// - and more spaces can be found in contacts than in the current search string,
+	// - and space is not the last character in the search string.
+    if ( iSearchString->Length() > 0 
+         && aMaxSpacesNumber > aSearchStringSpacesNumber
+         && (*iSearchString)[iSearchString->Length() - 1] != TChar( ' ' ) )
         {
         ptr.Append( TChar( ' ' ) );
         }
-    delete searchText;
-    searchText = NULL;
-    
+     
 	for( TInt ii = 0; ii < length; ii++ )
 	    {
 	    ptr.Append(array->MdcaPoint( ii ));
@@ -368,17 +396,22 @@ void CPbk2AdaptiveSearchGridFiller::SetAdaptiveGridCharsL(  const TInt aMaxSpace
 				//if grid hasn't been invalidated, we do not need to set it again
 				return;
 				}
-
 			}
 		}
-
-	iInvalidateAdaptiveSearchGrid = EFalse;
 
 	delete iCurrentGrid;
 	iCurrentGrid = NULL;
 	iCurrentGrid = iKeyMap->Des().AllocL();
 
 	iSearchField.SetAdaptiveGridChars( *iKeyMap );
+	
+    if( iInvalidateAdaptiveSearchGrid )
+         {
+         iGridWaiter->Stop();
+         }
+    
+    iInvalidateAdaptiveSearchGrid = EFalse;
+    
 	if ( iSetFocusToSearchGrid )
 	    {
         // set the focus to findbox
@@ -392,120 +425,149 @@ void CPbk2AdaptiveSearchGridFiller::SetAdaptiveGridCharsL(  const TInt aMaxSpace
 CDesC16Array* CPbk2AdaptiveSearchGridFiller::SplitContactFieldTextIntoArrayLC(
         const TDesC& aText )
     {
-    const TInt KGranularity = 2;
+    // Attempt to minimize the allocations considering 3 words for the search fields:
+    // FirstName, LastName, CompanyName.
+    const TInt KGranularity = 2; // Attempt to minimize the allocations
+
     CDesCArrayFlat* array = new ( ELeave ) CDesCArrayFlat( KGranularity );
     CleanupStack::PushL( array );
     const TInt textLength = aText.Length();
-    for ( TInt beg = 0; beg < textLength; ++beg )
+    for ( TInt beg = 0; beg < textLength; beg++ )
         {
         // Skip separators before next word
-        if ( !iNameFormatter.IsFindSeparatorChar( aText[beg] ) )
+        if ( iNameFormatter.IsFindSeparatorChar( aText[beg] ) )
             {
-            // Scan the end of the word
-            TInt end = beg;
-            for (; end < textLength &&
-                   !iNameFormatter.IsFindSeparatorChar( aText[end] );
-                ++end )
-                {
-                }
-            const TInt len = end - beg;
-            // Append found word to the array
-          	array->AppendL( aText.Mid( beg,len ) );
-            // Scan for next word
-            beg = end;
+            continue;
             }
+        
+        // Scan till the end of the word
+        TInt end;
+        for ( end = beg + 1;
+              end < textLength && !iNameFormatter.IsFindSeparatorChar( aText[end] );
+              ++end )
+            {
+            }
+
+        // Append found word to the array
+        array->AppendL( aText.Mid( beg, end - beg) );
+
+        // Scan for next word
+        beg = end;
         }
 
-    if ( array->MdcaCount() == 0 && textLength > 0 )
-        {
-        // aText is all word separator characters
-        // -> make a "word" out of those
-        array->AppendL( aText );
-        }
     return array;
     }
 
+CDesC16Array* CPbk2AdaptiveSearchGridFiller::SplitSearchFieldTextIntoArrayLC(
+        const TDesC& aText )
+    {
+    CDesC16Array* searchWordsArray = SplitContactFieldTextIntoArrayLC( aText );
 
+    // In searchWordsArray, the last word is the only one which generates new keymap characters
+    // for the grid; the other words are used only for matching the contact words.
+    //
+    // KNullDesC fake word as last word in search string will match all contact words so that all
+    // initials of contact words will be put into the grid.
+    // We do this in case the search string is empty or the last character is a space separator.
+    
+    if( searchWordsArray->MdcaCount() == 0 ||
+        ( aText.Length() > 0 && aText[aText.Length() - 1] == TChar(' ') ) )
+        {
+        searchWordsArray->AppendL( KNullDesC );
+        }
 
-void CPbk2AdaptiveSearchGridFiller::BuildGridL( const TDesC& aContactTitle, const TDesC& aSearchString, HBufC*& aKeyMap )
+    return searchWordsArray;
+    }
+
+void CPbk2AdaptiveSearchGridFiller::BuildGridL( const TDesC& aContactString, const CDesC16Array* aSearchWords, HBufC*& aKeyMap )
 	{
-	CDesC16Array* contactTitles = SplitContactFieldTextIntoArrayLC( aContactTitle );
-	CDesC16Array* searchWords = SplitContactFieldTextIntoArrayLC( aSearchString );
+    CDesC16Array* contactWords = SplitContactFieldTextIntoArrayLC( aContactString );
+	
+    const TInt contactWordCount = contactWords->MdcaCount();
+	const TInt searchWordCount = aSearchWords->MdcaCount();
 
-	//in searchWords list, the last term is the only one which generates new keymap characters
-	//other ones are used only for matching
+    TPtrC searchWord;
+    TPtrC contactWord;
 
-	if( searchWords->MdcaCount() == 0 )
-		{
-		searchWords->AppendL( KNullDesC );
-		}
+    // Try to make as fast algorithm as possible if there is only one search word,
+    // which is the most common case    
+    if ( searchWordCount == 1 )
+        {
+        searchWord.Set( aSearchWords->MdcaPoint( 0 ) ); // Search word
 
-	if( aSearchString.Length() > 0 )
-		{
-		if( aSearchString[ aSearchString.Length() - 1 ] == TChar( ' ' ) )
-			{
-			//because we now start new search term, we must add KNullDesC so we
-			//can find the matching new words
-			searchWords->AppendL( KNullDesC );
-			}
-		}
+        for( TInt j = 0; j < contactWordCount; j++ )
+            {
+            contactWord.Set( contactWords->MdcaPoint( j ) );
+    
+            iFindUtil->Interface()->MatchAdaptiveRefineL( contactWord, searchWord, aKeyMap );
+            }
+        }
+    
+    // The clients of this method will provide at least one search word, so 0 is unexpected
+    else if ( searchWordCount > 1 )
+        {
+        RArray<TBool> contactWordsMatchedArray;
+        contactWordsMatchedArray.ReserveL( contactWordCount );
+        for ( TInt i = 0; i < contactWordCount; ++i )
+            {
+            contactWordsMatchedArray.AppendL( EFalse );
+            }
 
+        TBool matched = ETrue;
 
-	const TInt searchWordCount = searchWords->MdcaCount();
+        // Scan search words except for the last one
+        for ( TInt i = 0; matched && i < searchWordCount - 1; i++ )
+            {
+            searchWord.Set( aSearchWords->MdcaPoint( i ) );
 
-	TBool contactMatch( searchWordCount == 1 );
+            matched = EFalse; // Search word not matched yet
+            
+            // Check if the search word is matched in the contact
+            for( TInt j = 0; !matched && j < contactWordCount; j++ )
+                {
+                contactWord.Set( contactWords->MdcaPoint( j ) );
+    
+                // Partially or fully matched
+                if ( iFindUtil->Interface()->MatchRefineL( contactWord, searchWord ) )
+                    {
+                    // Allow one search word to match only one contact word.
+                    // This could be done better if both search and grid creation would
+                    // work in the same way for contacts matching...
+                    // Example: Contact: "Dim Din Dit"
+                    //          Search:  "DIN DI"
+                    //          - DIN is matched fully
+                    //          - DI is matched partially and assigned to "Dim"
+                    //          - The grid will show "_T" instead of "_MT"
+                    contactWordsMatchedArray[j] = ETrue;    
+                    matched = ETrue;
+                    }
+                }
+            }
 
-	for( TInt i( 0 ); i < searchWordCount; i++ )
-		{
-		TInt contactTitleCount = contactTitles->MdcaCount();
-
-		TBool contactTitleMatch( EFalse );
-
-		for( TInt j( 0 ); j < contactTitleCount; j++ )
-			{
-			TPtrC searchWord = searchWords->MdcaPoint( i );
-			TPtrC contactTitle = contactTitles->MdcaPoint( j );
-
-			const TBool lastSearchWord = ( i == searchWordCount - 1 );
-
-			TBool match( EFalse );
-
-			if( lastSearchWord )
-				{
-				if( !contactMatch )
-					{
-					//none of the previous words didin't match, so why this is not filtered?
-					//marked contact!?
-					}
-				else
-					{
-					match = iFindUtil->Interface()->MatchAdaptiveRefineL( contactTitle, searchWord, aKeyMap );
-					}
-				}
-			else
-				{
-				match = iFindUtil->Interface()->MatchRefineL( contactTitle, searchWord );
-				}
-
-			if( match )
-				{
-
-				if( !contactTitleMatch )
-					{
-					contactTitles->Delete( j );
-					//allow one search word to take away only one contactTitle
-					contactTitleMatch = ETrue;
-					//for loop must go from first contact title to last
-					//to be consistent with match functionality of VPbk.
-					j--; contactTitleCount--;
-					}
-				contactMatch = ETrue;
-				}
-			}
-
-		}
-
-	CleanupStack::PopAndDestroy( 2 );//contactTitle, searchWords
+        // If all search words before the last one matched (fully or partially),
+        // add characters to the grid using last search word.
+        if ( matched )
+            {
+            searchWord.Set( aSearchWords->MdcaPoint( searchWordCount - 1 ) ); // Last search word
+    
+            for( TInt j = 0; j < contactWordCount; j++ )
+                {
+                // skip Contact words matched by previous search words
+                if (contactWordsMatchedArray[j])
+                    {
+                    continue;
+                    }
+    
+                contactWord.Set( contactWords->MdcaPoint( j ) );
+    
+                iFindUtil->Interface()->MatchAdaptiveRefineL( contactWord, searchWord, aKeyMap );
+                }
+            }
+    
+        contactWordsMatchedArray.Close();
+        }
+        
+	CleanupStack::PopAndDestroy( contactWords );
 	}
 
 TInt CPbk2AdaptiveSearchGridFiller::NumberOfSpacesInString(
@@ -545,4 +607,21 @@ TBool CPbk2AdaptiveSearchGridFiller::IsDigraphContactsTitleL(const TDesC& aConta
 		}
 	return isDigraphic;
 	}
+
+void CPbk2AdaptiveSearchGridFiller::GridDelayCompleteL()
+    {
+    // simulating pointer event to hide adaptive grid
+    TPointerEvent pointerEvent;
+    pointerEvent.iType = TPointerEvent::EButton1Down;
+    TPoint position = iSearchField.Rect().iTl;
+    position.iX += 1;
+    position.iY += 1;
+    pointerEvent.iPosition = position;
+    iSearchField.HandlePointerEventL( pointerEvent );
+    }
+
+void CPbk2AdaptiveSearchGridFiller::WaitNoteDismissed()
+    {
+    iSearchField.ShowAdaptiveSearchGrid();
+    }
 // End of File

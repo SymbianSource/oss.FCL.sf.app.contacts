@@ -28,20 +28,20 @@
 // CPsContactDataAdapter::NewL
 // Two Phase Construction
 // ----------------------------------------------------------------------------
-CPsContactDataAdapter* CPsContactDataAdapter::NewL(TAny* aPsDataPluginParameters)
+CPsContactDataAdapter* CPsContactDataAdapter::NewL( TAny* aPsDataPluginParameters )
 {
     PRINT ( _L("Enter CPsContactDataAdapter::NewL") );
-    
+
     // Get the PsData plugin parametrs
-    TPsDataPluginParams* params = reinterpret_cast<TPsDataPluginParams*>( aPsDataPluginParameters );
-	CPsContactDataAdapter* self = new ( ELeave ) CPsContactDataAdapter();
-	CleanupStack::PushL( self );
-	self->ConstructL(params->iDataStoreObserver, params->iStoreListObserver);
-	CleanupStack::Pop( self );
+    TPsDataPluginParams* params = static_cast<TPsDataPluginParams*>( aPsDataPluginParameters );
+    CPsContactDataAdapter* self = new ( ELeave ) CPsContactDataAdapter();
+    CleanupStack::PushL( self );
+    self->ConstructL(params->iDataStoreObserver, params->iStoreListObserver);
+    CleanupStack::Pop( self );
 
     PRINT ( _L("End CPsContactDataAdapter::NewL") );
-    
-	return self;
+
+    return self;
 }
 
 // ----------------------------------------------------------------------------
@@ -49,7 +49,7 @@ CPsContactDataAdapter* CPsContactDataAdapter::NewL(TAny* aPsDataPluginParameters
 // Two Phase Construction
 // ----------------------------------------------------------------------------
 CPsContactDataAdapter::CPsContactDataAdapter()
-{		
+{
     PRINT ( _L("Enter CPsContactDataAdapter::CPsContactDataAdapter") );
     PRINT ( _L("End CPsContactDataAdapter::CPsContactDataAdapter") );
 }
@@ -58,10 +58,10 @@ CPsContactDataAdapter::CPsContactDataAdapter()
 // CPsContactDataAdapter::ConstructL
 // Two Phase Construction
 // ----------------------------------------------------------------------------
-void CPsContactDataAdapter::ConstructL(MDataStoreObserver* aObserverForDataStore,
-									   MStoreListObserver* aStoreListObserver)
+void CPsContactDataAdapter::ConstructL( MDataStoreObserver* aObserverForDataStore,
+                                        MStoreListObserver* aStoreListObserver )
 {
-    PRINT ( _L("Enter CPsContactDataAdapter::ConstructL") );   
+    PRINT ( _L("Enter CPsContactDataAdapter::ConstructL") );
     
     iContactFetcher = CPcsContactFetch::NewL(); 
      
@@ -69,11 +69,10 @@ void CPsContactDataAdapter::ConstructL(MDataStoreObserver* aObserverForDataStore
     iStoreListObserver = aStoreListObserver;
     
     iContactFetcher->SetObserver(*iObserverForDataStore);	
-                
+    
     PRINT ( _L("End CPsContactDataAdapter::ConstructL") );
-} 
-	
-	
+}
+
 // ----------------------------------------------------------------------------
 // CPsContactDataAdapter::~CPsContactDataAdapter
 // Destructor
@@ -86,19 +85,18 @@ CPsContactDataAdapter::~CPsContactDataAdapter()
     
     PRINT ( _L("End CPsContactDataAdapter::~CPsContactDataAdapter") );
 }
-                                 
+
 // ----------------------------------------------------------------------------
 // CPsContactDataAdapter::RequestForDataL
 // 
 // ----------------------------------------------------------------------------
 void  CPsContactDataAdapter::RequestForDataL( TDesC& aDataStoreURI )
 {
-	PRINT ( _L("Enter CPsContactDataAdapter::RequestForDataL") );
+    PRINT ( _L("Enter CPsContactDataAdapter::RequestForDataL") );
 
-    iContactFetcher->RequestForDataL(aDataStoreURI);  	 	
+    iContactFetcher->RequestForDataL(aDataStoreURI);
 
-	PRINT ( _L("End CPsContactDataAdapter::RequestForDataL") );		     
-     
+    PRINT ( _L("End CPsContactDataAdapter::RequestForDataL") );
 }
 
 // ----------------------------------------------------------------------------
@@ -106,15 +104,14 @@ void  CPsContactDataAdapter::RequestForDataL( TDesC& aDataStoreURI )
 // 
 // ----------------------------------------------------------------------------
 
-void CPsContactDataAdapter::GetSupportedDataStoresL( RPointerArray<TDesC> &aDataStoresURIs )
+void CPsContactDataAdapter::GetSupportedDataStoresL( RPointerArray<TDesC>& aDataStoresURIs )
 {
-	PRINT ( _L("Enter CPsContactDataAdapter::GetSupportedDataStoresL") );
-	
-	iContactFetcher->GetSupportedDataStoresL(aDataStoresURIs);
+    PRINT ( _L("Enter CPsContactDataAdapter::GetSupportedDataStoresL") );
 
-	PRINT ( _L("End CPsContactDataAdapter::GetSupportedDataStoresL") );
+    iContactFetcher->GetSupportedDataStoresL(aDataStoresURIs);
+
+    PRINT ( _L("End CPsContactDataAdapter::GetSupportedDataStoresL") );
 }
-
 
 // ----------------------------------------------------------------------------
 // CPsContactDataAdapter::IsDataStoresSupportedL
@@ -122,20 +119,20 @@ void CPsContactDataAdapter::GetSupportedDataStoresL( RPointerArray<TDesC> &aData
 // ----------------------------------------------------------------------------
 TBool CPsContactDataAdapter::IsDataStoresSupportedL( TDesC& aDataStoreURI ) 
 {
-	return iContactFetcher->IsDataStoresSupportedL(aDataStoreURI);
-
+    return iContactFetcher->IsDataStoresSupportedL(aDataStoreURI);
 }
+
 // ----------------------------------------------------------------------------
 // CPsContactDataAdapter::GetSupportedDataFieldsL
 // 
 // ----------------------------------------------------------------------------
-void CPsContactDataAdapter::GetSupportedDataFieldsL(RArray<TInt> &aDataFields )
+void CPsContactDataAdapter::GetSupportedDataFieldsL( RArray<TInt>& aDataFields )
 {
-	PRINT ( _L("Enter CPsContactDataAdapter::GetSupportedDataFieldsL") );
-	
-	iContactFetcher->GetSupportedDataFieldsL(aDataFields );
-	
-	PRINT ( _L("End CPsContactDataAdapter::GetSupportedDataFieldsL") );
+    PRINT ( _L("Enter CPsContactDataAdapter::GetSupportedDataFieldsL") );
+
+    iContactFetcher->GetSupportedDataFieldsL(aDataFields );
+
+    PRINT ( _L("End CPsContactDataAdapter::GetSupportedDataFieldsL") );
 }
 
 // End of file

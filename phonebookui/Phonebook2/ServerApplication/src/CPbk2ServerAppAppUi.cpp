@@ -103,6 +103,18 @@ void CPbk2ServerAppAppUi::ConstructL()
     // Make sure that we are using empty statuspane layout
     ChangeStatuspaneLayoutL( CPbk2ServerAppAppUi::EStatusPaneLayoutEmpty );
     
+    CEikStatusPane* statusPane = StatusPane();
+    if (statusPane && statusPane->PaneCapabilities(
+        TUid::Uid(EEikStatusPaneUidTitle)).IsPresent())
+        {
+        CAknTitlePane* titlePane = static_cast<CAknTitlePane*>
+            (statusPane->ControlL(TUid::Uid(EEikStatusPaneUidTitle)));
+        if (titlePane->Text())
+            {            
+            titlePane->SetTextL(KNullDesC);
+            }
+        }
+    
     }
 
 // --------------------------------------------------------------------------

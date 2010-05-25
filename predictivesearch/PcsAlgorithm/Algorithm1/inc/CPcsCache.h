@@ -67,7 +67,7 @@ class CPcsCache : public CBase
 		/**
 		* Removes a data element from the cache
 		*/
-		void RemoveFromCacheL(TInt aItemId);	    
+		void RemoveFromCacheL(TInt aItemId);
 
 		/**
 		* Removes all data elements from the cache
@@ -151,7 +151,7 @@ class CPcsCache : public CBase
          */
         void ComputeIndexOrder();
         
-	private:    
+	private:
 
 		/*
 		* Array of key maps

@@ -432,6 +432,7 @@ TInt CPbk2ThumbnailManager::GetPbkIconIndexL(
             item->SetIconArrayIndexAndId( iDefaultIconIndex,iDefaultIconId );
             item->SetHasThumbnail( ETrue );
             iContactThumbnails[ aListboxIndex ] = item;
+            iIsCacheClean = EFalse;
 		    }
 		
         // if item has a thumbnail image, but it is not loaded yet ( queue )
@@ -610,7 +611,7 @@ void CPbk2ThumbnailManager::SetContactViewL( MPbk2FilteredViewStack* aView )
         iView->AddObserverL( *this );
         iView->AddStackObserverL( *this );
         }
-    Reset();
+    FlushCache();
     }
 
 // --------------------------------------------------------------------------
@@ -920,7 +921,7 @@ void CPbk2ThumbnailManager::MakeRoomForNextThumbnail()
 			iPriorityArray.Remove( 0 );
 			
 			//remove icon from Pbk2IconArray
-			if( iIconArray )
+			if( iIconArray && rem->GetIconArrayIndex() != iDefaultIconIndex )
 				{
 				iIconArray->RemoveIcon( rem->GetIconId() );
 				}
@@ -1025,50 +1026,9 @@ void CPbk2ThumbnailManager::ContactViewReady( MVPbkContactViewBase& aView )
 // --------------------------------------------------------------------------
 //
 void CPbk2ThumbnailManager::DoContactViewReadyL( MVPbkContactViewBase& aView )
-    {   
-    // get contact count
-    const TInt thumbnailCount = iContactThumbnails.Count();
-    if( thumbnailCount == 0 )
-        {
-        PreCreateThumbnailArrayL( aView );
-        }
-    else
-        {
-        // Check if view count has changed
-        if ( aView.ContactCountL() != thumbnailCount )
-            {
-            if( iLoadingQueue.Count() > 0 )
-                {
-                // store item that is currently in processing
-                iInProgressItemToBeRemoved = iLoadingQueue[0];
-                }
-
-            for ( TInt i = thumbnailCount - 1; i >= 0; --i )
-                {
-                CPbk2TmItem* item = iContactThumbnails[i];
-                if ( item )
-                    {
-                    // check that the icon is not a default icon
-                    if( iIconArray && item->GetIconArrayIndex() != iDefaultIconIndex )
-                        {
-                        // inform icon array to remove the icon
-                        iIconArray->RemoveIcon( item->GetIconId() );
-                        }
-
-                    if ( iInProgressItemToBeRemoved == item )
-                        {
-                        // prevent item from being deleted later
-                        iContactThumbnails[i] = NULL;
-                        }
-                    }
-                }
-            
-            // reset and recreate arrays
-            iLoadingQueue.Reset();
-            iPriorityArray.Reset();
-            PreCreateThumbnailArrayL( aView );
-            }
-        }  
+    {
+    FlushCache();
+    PreCreateThumbnailArrayL( aView );
     }
 
 // --------------------------------------------------------------------------
@@ -1083,6 +1043,45 @@ void CPbk2ThumbnailManager::PreCreateThumbnailArrayL( MVPbkContactViewBase& aVie
         {
         iContactThumbnails.AppendL( NULL );
         }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ThumbnailManager::FlushCache
+// --------------------------------------------------------------------------
+//
+void CPbk2ThumbnailManager::FlushCache()
+    {
+    // reset operations
+    delete iRetrieveOperation;
+    iRetrieveOperation = NULL;
+    delete iThumbOperation;
+    iThumbOperation = NULL;
+    iState = EIdle;
+
+    if( !iIsCacheClean ) // prevent unnecessary work if cache is already cleaned
+        {
+        iIsCacheClean = ETrue;
+        const TInt count = iContactThumbnails.Count();
+        for ( TInt i = count - 1; i >= 0; --i )
+            {
+            CPbk2TmItem* item = iContactThumbnails[i];
+            if ( item )
+                {
+                // check that the icon is not a default icon
+                if( iIconArray && item->GetIconArrayIndex() != iDefaultIconIndex )
+                    {
+                    iIconArray->RemoveIcon( item->GetIconId() );
+                    }
+        
+                delete item;
+                iContactThumbnails[i] = NULL;
+                }
+            }
+        }
+    
+    // reset loading queue and cache priority
+    iLoadingQueue.Reset();
+    iPriorityArray.Reset();
     }
 
 // --------------------------------------------------------------------------
@@ -1102,22 +1101,12 @@ void CPbk2ThumbnailManager::ContactViewUnavailable(
 void CPbk2ThumbnailManager::ContactAddedToView(
     MVPbkContactViewBase& /*aView*/, 
     TInt aIndex, 
-    const MVPbkContactLink& aContactLink )
+    const MVPbkContactLink& /*aContactLink*/ )
     {
-    CPbk2TmItem* item = NULL;
-    TRAPD( err,
-        {
-        item = CPbk2TmItem::NewL( aContactLink.CloneLC(), aIndex );
-        CleanupStack::Pop();
-        });
-    if( KErrNone == err )
-        {
-        // set default icon index
-        item->SetIconArrayIndexAndId( iDefaultIconIndex, iDefaultIconId );
-        item->SetHasThumbnail( ETrue );
-        iContactThumbnails.Insert( item, aIndex );
-        }
-    ResetIndexes();
+    // Because contact events and contact view are not always in sync we need to
+    // flush the whole cache. 
+    FlushCache();
+    iContactThumbnails.Insert( NULL, aIndex );
     }
 
 // --------------------------------------------------------------------------
@@ -1127,9 +1116,12 @@ void CPbk2ThumbnailManager::ContactAddedToView(
 void CPbk2ThumbnailManager::ContactRemovedFromView(
     MVPbkContactViewBase& /*aView*/, 
     TInt aIndex, 
-    const MVPbkContactLink& aContactLink )
+    const MVPbkContactLink& /*aContactLink*/ )
     {
-    RemoveThumbnail( aContactLink, aIndex );
+    // Because contact events and contact view are not always in sync we need to
+    // flush the whole cache. 
+    FlushCache();
+    iContactThumbnails.Remove( aIndex );
     }
 
 // --------------------------------------------------------------------------
@@ -1150,7 +1142,7 @@ void CPbk2ThumbnailManager::ContactViewError(
 //
 void CPbk2ThumbnailManager::TopViewChangedL( MVPbkContactViewBase& /*aOldView*/ )
     {
-    Reset();
+    FlushCache();
     if( iView )
         {
         PreCreateThumbnailArrayL( *iView );

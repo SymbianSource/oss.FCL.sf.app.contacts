@@ -457,7 +457,7 @@ void CCCAppCommLauncherCustomListBoxItemDrawer::DrawBackgroundAndSeparatorLines(
             transApi->StopDrawing();
             }
 #endif // RD_UI_TRANSITION_EFFECTS_LIST
-        if ( aDrawSeparator && 
+        if ( aDrawSeparator && control &&
             static_cast<CEikListBox*>( control )->ItemsInSingleLine() == 1 )
             {
             AknListUtils::DrawSeparator( *iGc, aItemTextRect, iTextColor );

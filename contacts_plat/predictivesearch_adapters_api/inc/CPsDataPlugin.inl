@@ -17,7 +17,7 @@
 
 
 // INCLUDE FILES
-#include <ecom/ECom.h>
+#include <ecom/ecom.h>
 #include <mdatastoreobserver.h>
 #include <mstorelistobserver.h>
 

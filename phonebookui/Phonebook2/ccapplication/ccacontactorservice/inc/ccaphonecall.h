@@ -48,11 +48,12 @@ public:
 	 * Establish a call by using a phone number (or voip address)
 	 *
 	 * @param TDesC8& Phone number
+	 * @param aContactLinkArray Streamed contact link array of contact to be communicated at
 	 * @param aCallType Is this a cellular Voice, VoIP, or Video call
 	 *
 	 * @return void 
 	 */
-	static void ExecuteL( const TDesC& aPhoneNumber,
+	static void ExecuteL( const TDesC& aPhoneNumber,const TDesC8& aContactLinkArray,
 	        TCCAPhoneCallType aCallType = ECCACallTypeVoice, TUint32 aServiceId = 0);
 
 private:

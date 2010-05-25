@@ -221,18 +221,8 @@ CPbk2ContactEditorDlgImpl::~CPbk2ContactEditorDlgImpl()
         iEikonEnv->EikAppUi()->RemoveFromStack( iContextMenuBar );
         delete iContextMenuBar;
         }
-
-    // Restore the titlepane text
-    if (iTitlePane && iStoredTitlePaneText)
-        {
-        iTitlePane->SetTextL(*iStoredTitlePaneText);
-        }
-
-    // Reset title pane picture
-    if( iTitlePane )
-        {
-        iTitlePane->SetSmallPicture( NULL, NULL, EFalse );
-        }
+    
+    TRAP_IGNORE ( RestoreStatusPaneL() );    
 
     // Remove empty status pane
     if (iNaviContainer)
@@ -395,16 +385,6 @@ void CPbk2ContactEditorDlgImpl::ConstructL()
 //
 void CPbk2ContactEditorDlgImpl::ExecuteLD()
     {
-    CleanupStack::PushL( this );
-
-    // Set status pane layout to the Phonebook 2 one
-    CEikStatusPane* statusPane = iAvkonAppUi->StatusPane();
-    if (statusPane)
-        {
-        statusPane->SwitchLayoutL(R_AVKON_STATUS_PANE_LAYOUT_USUAL);
-        }
-
-    CleanupStack::Pop( this );
     CAknForm::ExecuteLD(R_PBK2_EDIT_MEMORY_ENTRY_DIALOG);
     }
 
@@ -521,11 +501,11 @@ void CPbk2ContactEditorDlgImpl::HandleResourceChange( TInt aType )
         CEikStatusPane* statusPane = iAvkonAppUi->StatusPane();
         if ( statusPane )
             {
-            TRAP_IGNORE(
-                    statusPane->SwitchLayoutL(
-                            R_AVKON_STATUS_PANE_LAYOUT_USUAL
-                            )
-            );
+            iCurrentstatuspane = statusPane->CurrentLayoutResId();
+            if( iCurrentstatuspane != R_AVKON_STATUS_PANE_LAYOUT_USUAL )
+                {
+                TRAP_IGNORE( statusPane->SwitchLayoutL(R_AVKON_STATUS_PANE_LAYOUT_USUAL) );
+                }
             }
         }
     
@@ -801,6 +781,8 @@ void CPbk2ContactEditorDlgImpl::PreLayoutDynInitL()
     iEditorExtension->ModifyButtonGroupContainerL(ButtonGroupContainer());
 
     ConstructNaviPaneL();
+	UpdateTitleL();
+    UpdateTitlePictureL();
     }
 
 // --------------------------------------------------------------------------
@@ -809,8 +791,7 @@ void CPbk2ContactEditorDlgImpl::PreLayoutDynInitL()
 //
 void CPbk2ContactEditorDlgImpl::PostLayoutDynInitL()
     {
-    UpdateTitleL();
-    UpdateTitlePictureL();
+    
     if(iParams.iFocusedContactField)
         {
         const TInt count = iUiFieldArray->Count();
@@ -2576,6 +2557,17 @@ void CPbk2ContactEditorDlgImpl::UpdateTitleL()
 				}
         	}
         }
+    CEikStatusPane* statusPane = iAvkonAppUi->StatusPane();
+    
+    if (statusPane)
+        {
+        iCurrentstatuspane = statusPane->CurrentLayoutResId();
+        if( iCurrentstatuspane != R_AVKON_STATUS_PANE_LAYOUT_USUAL )
+            {
+            statusPane->SwitchLayoutL(R_AVKON_STATUS_PANE_LAYOUT_USUAL);
+            }
+        }
+        
     }
 
 // --------------------------------------------------------------------------
@@ -3465,5 +3457,34 @@ void CPbk2ContactEditorDlgImpl::RestorePrevNaviDecoratorL()
         }
     }
 
+// --------------------------------------------------------------------------
+// CPbk2ContactEditorDlgImpl::RestoreStatusPaneL
+// --------------------------------------------------------------------------
+//
+void CPbk2ContactEditorDlgImpl::RestoreStatusPaneL() 
+    {    
+    //Restore StatusPane & Title    
+    if ( iCurrentstatuspane )
+        {
+        CEikStatusPane* statusPane = iAvkonAppUi->StatusPane();
+        
+        if (statusPane)
+            {
+            statusPane->SwitchLayoutL( iCurrentstatuspane );            
+            }            
+        }
+    // Restore the titlepane text
+    if (iTitlePane && iStoredTitlePaneText)
+        {    
+        iTitlePane->SetTextL(*iStoredTitlePaneText);
+        }
+    
+    // Reset title pane picture
+    if( iTitlePane )
+        {
+        iTitlePane->SetSmallPicture( NULL, NULL, EFalse );
+        }        
+    }
+   
 
 // End of File

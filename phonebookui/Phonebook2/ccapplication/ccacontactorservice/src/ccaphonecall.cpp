@@ -47,7 +47,7 @@ namespace
 // ---------------------------------------------------------
 // CCCAPhoneCall::ExecuteL
 // ---------------------------------------------------------
-void CCCAPhoneCall::ExecuteL( const TDesC& aPhoneNumber, TCCAPhoneCallType aCallType, TUint32 aServiceId)
+void CCCAPhoneCall::ExecuteL( const TDesC& aPhoneNumber,const TDesC8& aContactLinkArray, TCCAPhoneCallType aCallType, TUint32 aServiceId)
 	{
     
     __ASSERT_DEBUG (NULL != &aPhoneNumber && 0 < aPhoneNumber.Size(), Panic (EPanicPreCond_ExecuteL));
@@ -86,10 +86,11 @@ void CCCAPhoneCall::ExecuteL( const TDesC& aPhoneNumber, TCCAPhoneCallType aCall
 
 	CAiwDialDataExt* dialDataExt = CAiwDialDataExt::NewLC ();
 	dialDataExt->SetPhoneNumberL ( numBuf->Des ());
+	dialDataExt->SetContactLinkL( aContactLinkArray );	
 	switch (aCallType)
 	    {
 	    case ECCACallTypeVoice:
-	        dialDataExt->SetCallType ( CAiwDialData::EAIWForcedCS);
+	        dialDataExt->SetCallType ( CAiwDialData::EAIWForcedCS);	        
 	        break;
 	    case ECCACallTypeVoIP:
 	        dialDataExt->SetServiceId(aServiceId);
@@ -104,7 +105,7 @@ void CCCAPhoneCall::ExecuteL( const TDesC& aPhoneNumber, TCCAPhoneCallType aCall
 	    }
 
 	dialDataExt->SetWindowGroup ( CCoeEnv::Static()->RootWin().Identifier ());
-
+	
 	DoAIWCallL (*dialDataExt);
 
 	CleanupStack::PopAndDestroy (dialDataExt);

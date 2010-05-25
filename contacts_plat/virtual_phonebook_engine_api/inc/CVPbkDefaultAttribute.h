@@ -23,7 +23,7 @@
 #include <e32base.h>
 #include <MVPbkContactAttribute.h>
 #include <MVPbkContactAttributeManager.h>
-#include <VPbkPublicUID.h>
+#include <VPbkPublicUid.h>
 #include <VPbkFieldType.hrh>
 
 

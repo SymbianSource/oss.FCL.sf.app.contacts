@@ -465,8 +465,8 @@ void CCCAppCommLauncherHeaderControl::HandlePointerEventL(
             //      saving memory includes local contact db (contacts.cdb) or if the contact belongs to
             //      local contact DB            
             if( cntStore != ECmsContactStoreSdn 
-                && ( IsPhoneMemoryInConfigurationL()
-                     || (cntStore != ECmsContactStoreSim) )
+                && IsPhoneMemoryInConfigurationL()
+                     && (cntStore != ECmsContactStoreSim)
                 && iImage->Rect().Contains(aPointerEvent.iPosition) )
                 {
                 // Show the feedback

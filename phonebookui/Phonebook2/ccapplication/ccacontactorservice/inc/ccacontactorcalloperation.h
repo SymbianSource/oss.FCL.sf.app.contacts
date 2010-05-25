@@ -50,15 +50,17 @@ public:
      * Two-phased constructor.
      * 
      * @param aParam The phone number to call.
+     * @param aContactLinkArray Streamed contact link array of contact to be communicated at
      */
-    static CCCAContactorCallOperation* NewL(const TDesC& aParam);
+    static CCCAContactorCallOperation* NewL(const TDesC& aParam, const TDesC8& aContactLinkArray);
 
     /**
      * Two-phased constructor.
      * 
      * @param aParam The phone number to call.
+     * @param aContactLinkArray Streamed contact link array of contact to be communicated at
      */
-    static CCCAContactorCallOperation* NewLC(const TDesC& aParam);
+    static CCCAContactorCallOperation* NewLC(const TDesC& aParam, const TDesC8& aContactLinkArray);
     
     /**
      * Executes the operation (makes the call)
@@ -71,13 +73,18 @@ private:
      * Constructor for performing 1st stage construction
      * 
      * @param aParam The phone number to call.
+     * @param aContactLinkArray Streamed contact link array of contact to be communicated at
      */
-    CCCAContactorCallOperation(const TDesC& aParam);
+    CCCAContactorCallOperation(const TDesC& aParam, const TDesC8& aContactLinkArray);
 
     /**
      * EPOC default constructor for performing 2nd stage construction
      */
     void ConstructL();
+    
+    
+    //Doesnt Own : Streamed contact link array of contact
+    const TDesC8& iContactLinkArray;
 
     };
 

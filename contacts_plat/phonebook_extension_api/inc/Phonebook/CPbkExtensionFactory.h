@@ -21,7 +21,7 @@
 #define __CPbkExtensionFactory_H__
 
 #include <ecom/ecom.h>
-#include <mpbkextensionfactory.h>
+#include <MPbkExtensionFactory.h>
 
 class CPbkExtensionFactory : public CBase,
                              public MPbkExtensionFactory

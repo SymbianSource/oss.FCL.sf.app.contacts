@@ -30,8 +30,9 @@
 #include <MVPbkContactLink.h>
 #include <MPbk2Command.h>
 #include <Pbk2MenuFilteringFlags.hrh>
-
 #include <coemain.h>
+#include <aknnotewrappers.h>
+#include <StringLoader.h>
 
 _LIT(KPbk2CommandsDllResFileName,   "Pbk2Commands.rsc");
 _LIT(KPbk2UiControlsDllResFileName, "Pbk2UiControls.rsc");
@@ -341,7 +342,19 @@ void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdDeleteL( const TDesC8& aContact )
 //
 void CCCAppCommLauncherPbkCmd::HandleError( TInt aError )
     {
-    CCoeEnv::Static()->HandleError( aError );
+    if( KErrNotSupported == aError && 
+        (TPbk2CommandId)EPbk2ExtensionShowOnMap == iPbk2CommandId )
+        {
+        // Show maps specifix error note
+        HBufC* prompt = StringLoader::LoadLC( R_QTN_CCA_ERROR_NOTE_MAPS_NOT_FOUND );
+        CAknErrorNote* note = new ( ELeave ) CAknErrorNote( ETrue );
+        note->ExecuteLD( *prompt );
+        CleanupStack::PopAndDestroy( prompt );        
+        }
+    else
+        {
+        CCoeEnv::Static()->HandleError( aError );
+        }
     }
 // ---------------------------------------------------------------------------
 // CCCAppCommLauncherPbkCmd::StoreReady

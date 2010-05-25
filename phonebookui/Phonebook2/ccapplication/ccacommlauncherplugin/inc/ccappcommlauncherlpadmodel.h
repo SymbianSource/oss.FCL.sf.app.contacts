@@ -285,14 +285,6 @@ private: // New
         TDes& aText );
 
     /**
-     * Draws find/show on map button
-     *
-     * @param aNumberOfAddresses number of addresses
-     * @param aIndex communication method index 
-     */    
-    void AddressButtonL( const TInt aNumberOfAddresses, const TInt aIndex );
-
-    /**
      * Updates addresses button popup text
      *
      * @since S60 v5.0

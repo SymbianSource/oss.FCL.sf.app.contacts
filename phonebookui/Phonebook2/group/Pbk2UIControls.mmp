@@ -143,10 +143,10 @@ SOURCE          CPbk2FindStringSplitter.cpp
 SOURCE          CPbk2FieldSelector.cpp
 SOURCE          TPbk2FindTextUtil.cpp 
 SOURCE          CPbk2AdaptiveSearchGridFiller.cpp
-SOURCE		Pbk2RingtoneCommands.cpp
-SOURCE		Pbk2ImageCommands.cpp
-SOURCE		CPbk2ContactEditorReadonlyField.cpp 
-SOURCE      CPbk2ContactIconsUtils.cpp
+SOURCE          Pbk2RingtoneCommands.cpp
+SOURCE          Pbk2ImageCommands.cpp
+SOURCE          CPbk2ContactEditorReadonlyField.cpp 
+SOURCE          CPbk2ContactIconsUtils.cpp
 SOURCE          CPbk2UIField.cpp 
 SOURCE          CPbk2UIFieldArray.cpp 
 SOURCE          CPbk2ContactEditorUIFieldBase.cpp 
@@ -156,14 +156,15 @@ SOURCE          CPbk2ContactEditorUIAddressOfficeField.cpp
 SOURCE          CPbk2ContactEditorArrayItem.cpp 
 SOURCE          Pbk2AddressTools.cpp
 SOURCE          cpbk2predictiveviewstack.cpp 
-SOURCE 			cpbk2contactviewcustomlistboxitemdrawer.cpp 
-SOURCE 			cpbk2contactviewcustomlistboxdata.cpp
-SOURCE 			CPbk2PredictiveSearchFilter.cpp
-SOURCE			CPbk2ThumbnailManager.cpp
+SOURCE          cpbk2contactviewcustomlistboxitemdrawer.cpp 
+SOURCE          cpbk2contactviewcustomlistboxdata.cpp
+SOURCE          CPbk2PredictiveSearchFilter.cpp
+SOURCE          CPbk2ThumbnailManager.cpp
 SOURCE          cpbk2contactviewdoublelistbox.cpp
 SOURCE          cpbk2contactviewdoublelistboxmodel.cpp
 SOURCE          pbk2contactviewdoublelistboxdataelement.cpp
-SOURCE			cpbk2doublelistboxmodelcmddecorator.cpp
+SOURCE          cpbk2doublelistboxmodelcmddecorator.cpp
+SOURCE          CPbk2AdaptiveSearchGridWaiter.cpp
 
 // Resources
 LANGUAGE_IDS

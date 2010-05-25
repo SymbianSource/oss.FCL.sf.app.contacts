@@ -129,8 +129,14 @@ TKeyResponse CxSPSortViewControl::OfferKeyEventL
          case EKeyUpArrow:
          case EKeyDownArrow:
              {
-             const CListBoxView::CSelectionIndexArray* inds = iListBox->SelectionIndexes();
-             TInt count = inds->Count();
+             const CListBoxView::CSelectionIndexArray* inds = NULL;
+             TInt count = 0;
+             
+             if ( iListBox )
+            	 {
+            	 inds = iListBox->SelectionIndexes();
+            	 count = inds->Count();
+            	 }
              
              if ( count <= 0 )
                  {
@@ -147,8 +153,14 @@ TKeyResponse CxSPSortViewControl::OfferKeyEventL
          case EKeyEnter:
          case EKeyOK: 
              {
-             const CListBoxView::CSelectionIndexArray* inds = iListBox->SelectionIndexes();
-             TInt count = inds->Count();
+             const CListBoxView::CSelectionIndexArray* inds = NULL;
+             TInt count = 0;
+             
+             if ( iListBox )
+            	 {
+            	 inds = iListBox->SelectionIndexes();
+            	 count = inds->Count();
+            	 }
              
              if ( count <= 0 )
                  {

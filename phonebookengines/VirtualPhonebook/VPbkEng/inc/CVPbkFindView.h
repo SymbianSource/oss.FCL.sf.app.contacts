@@ -27,8 +27,6 @@
 
 namespace VPbkEngUtils { class CVPbkAsyncOperation; }
 
-class CVPbkFieldTypeRefsList;
-class CVPbkContactNameConstructionPolicy;
 class CVPbkContactFindPolicy;
 
 /**
@@ -120,9 +118,7 @@ NONSHARABLE_CLASS( CVPbkFindView ): public CBase,
         void HandleBuildViewMapping();
         void DoAddObserverL(MVPbkContactViewObserver& aObserver);
         void AddObserverError(MVPbkContactViewObserver& aObserver, TInt aError);
-        TBool ContactMatchRefineL(         
-                const MVPbkViewContact& aViewContact,
-                TPtrC aFindWord );
+
         void SetFindStringsL( const MDesCArray& aFindWords );
         void SetAlwaysIncludedContactsL( 
                 const MVPbkContactBookmarkCollection* aAlwaysIncludedContacts );
@@ -147,10 +143,6 @@ NONSHARABLE_CLASS( CVPbkFindView ): public CBase,
         RPointerArray<MVPbkContactViewObserver> iObservers;
         /// Own: find words for filtering
         CDesCArrayFlat* iFindStrings;
-        /// Own: a field type list for name construction policy
-        CVPbkFieldTypeRefsList* iFieldTypeRefsList;
-        /// Own: a policy for name formatting
-        CVPbkContactNameConstructionPolicy* iNameConstructionPolicy;
         /// Own: a policy for match
         CVPbkContactFindPolicy* iContactFindPolicy;
         /// Own: always included contacts

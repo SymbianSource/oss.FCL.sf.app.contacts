@@ -44,7 +44,7 @@ class CPsContactDataAdapter : public CPsDataPlugin
 	    /**
 		 * Two phase construction
 		 */
-		static CPsContactDataAdapter* NewL(TAny* aPsDataPluginParameters);
+		static CPsContactDataAdapter* NewL( TAny* aPsDataPluginParameters );
 
         /**
 		 * Destructor
@@ -59,12 +59,12 @@ class CPsContactDataAdapter : public CPsDataPlugin
 	    * to the algorithm is provided via the observer callback 
 	    * @param aDataStoreURI - The store from which data is requested
 	    */
-		void  RequestForDataL(TDesC& aDataStoreURI );
+		void  RequestForDataL( TDesC& aDataStoreURI );
 		
 		/**
 	    * Checks if the given data store is supported.
 	    * @param aDataStoreURI - data store
-	    * @return True if this store is supported        
+	    * @return True if this store is supported
 	    */  
 	    TBool IsDataStoresSupportedL( TDesC& aDataStoreURI ) ;
 	          
@@ -74,13 +74,13 @@ class CPsContactDataAdapter : public CPsDataPlugin
 	    * @param aDataStores supported data stores URIs
 	    *         
 	    */  
-	    void GetSupportedDataStoresL( RPointerArray<TDesC> &aDataStoresURIs );
+	    void GetSupportedDataStoresL( RPointerArray<TDesC>& aDataStoresURIs );
 	    
 		/**
 	    * Gets the supported data fields.
-	    * @param aDataFields supported data fields.         
+	    * @param aDataFields supported data fields.
 	    */ 
-		void GetSupportedDataFieldsL(RArray<TInt> &aDataFields );
+		void GetSupportedDataFieldsL( RArray<TInt>& aDataFields );
 	
 	private:
 	

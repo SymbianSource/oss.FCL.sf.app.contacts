@@ -22,7 +22,7 @@
 // INCLUDE FILES
 #include <e32base.h>
 #include <ecom/ecom.h>
-#include <mpbk2uiextensionfactory.h>
+#include <MPbk2UiExtensionFactory.h>
 
 // FORWARD DECLARATIONS
 class CPbk2UIExtensionView;

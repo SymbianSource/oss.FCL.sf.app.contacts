@@ -27,15 +27,15 @@
 #include <e32svr.h>
 #include <s32mem.h>
 #include <e32property.h>
-#include <mvpbkContactLink.h>
+#include <MVPbkContactLink.h>
 #include <CVPbkContactManager.h>
 #include <CVPbkContactStoreUriArray.h>
-#include <tvpbkcontactstoreuriptr.h>
+#include <TVPbkContactStoreUriPtr.h>
 #include <MVPbkContactStoreList.h>
 #include <MVPbkContactStore.h>
 #include <CVPbkContactIdConverter.h>
-#include <vpbkcontactstoreuris.h>
-#include <badesca.H>
+#include <VPbkContactStoreUris.h>
+#include <badesca.h>
 
 // USER INCLUDES
 #include <CPcsDefs.h>
@@ -48,6 +48,7 @@
 // FORWARD DECLARATIONS
 class MPsResultsObserver;
 class CPsPropertyHandler;
+class CPsUpdateHandler;
 
 
 // CLASS DECLARATION
@@ -157,13 +158,13 @@ class CPSRequestHandler : public CActive
 		IMPORT_C void SearchL(const CPsQuery& aSearchQuery, 
 							  RPointerArray<CPsClientData>& aMarkedContacts,
 							  CVPbkContactManager* aContactManager);
-							  
+		
         /**
         * CancelSearch.
         * Cancels ongoing search.
-        */        							  
+        */
 		IMPORT_C void CancelSearch();
-							  		    
+		
 		/**
 		* LookupL. 
 		* Sends a request to the predictive search server.
@@ -181,21 +182,21 @@ class CPSRequestHandler : public CActive
                               CDesCArray& aMatchSet,
                               RArray<TPsMatchLocation>& aMatchLocation);
 
-    /**
-    * LookupMatchL. 
-    * Sends a request to the predictive search server.
-    * Does a predictive search in aSearchData for aSearchQuery and return
-    * the match string in aMatch.
-    * If there is no full match aMatch will be empty (Length()==0)
-    * This is a synchronous request.
-    * 
-    * @param aSearchQuery The input search query.(Length of aSearchQuery <= KPsQueryMaxLen)
-    * @param aSearchData  The input data to be searched.
-    * @param aMatch       The matched result
-    */
-    IMPORT_C void LookupMatchL(const CPsQuery& aSearchQuery,
-                          const TDesC& aSearchData,
-                          TDes& aMatch );		
+        /**
+        * LookupMatchL. 
+        * Sends a request to the predictive search server.
+        * Does a predictive search in aSearchData for aSearchQuery and return
+        * the match string in aMatch.
+        * If there is no full match aMatch will be empty (Length()==0)
+        * This is a synchronous request.
+        * 
+        * @param aSearchQuery The input search query.(Length of aSearchQuery <= KPsQueryMaxLen)
+        * @param aSearchData  The input data to be searched.
+        * @param aMatch       The matched result
+        */
+        IMPORT_C void LookupMatchL(const CPsQuery& aSearchQuery,
+                                   const TDesC& aSearchData,
+                                   TDes& aMatch);
 		
 		/**
 		* IsLanguageSupportedL.
@@ -291,10 +292,9 @@ class CPSRequestHandler : public CActive
 	public:
 	
 		/**
-		* CPsPropertyHandler is internal class to make it access
-		* to CPsRequestHandler class
+		* Notify observers about the cahcing status
 		*/
-    	friend class CPsPropertyHandler;
+		void NotifyCachingStatus( TCachingStatus aStatus, TInt aError );
     	
 	private: // Constructors and destructors
 
@@ -323,19 +323,19 @@ class CPSRequestHandler : public CActive
 		* HandleBufferOverFlowL.
 		* Handles internal buffer overflow event.
 		*/
-		void HandleBufferOverFlowL();    
+		void HandleBufferOverFlowL();
 
 		/**
 		* HandleErrorL.
 		* Handles error events.
 		*/
-		void HandleErrorL(TInt aErrorCode);   
+		void HandleErrorL(TInt aErrorCode);
 		
 		/**
 		* AddMarkedContacts
 		* Filters the bookmark results and adds them to final search result set
 		*/
-		TInt AddMarkedContactsL(RPointerArray<CPsClientData>& searchResults);  
+		TInt AddMarkedContactsL(RPointerArray<CPsClientData>& searchResults);
 
 		/**
         * RunSearchFromBufferL
@@ -384,6 +384,21 @@ class CPSRequestHandler : public CActive
         * iPropertyHandler, the handler to property which is asynchronously monitored
         */
         CPsPropertyHandler* iPropertyHandler;
+        
+        /**
+        * iContactAddedHandler, handler for reacting to contact being added to cache
+        */
+        CPsUpdateHandler* iContactAddedHandler;
+
+        /**
+        * iContactRemovedHandler, handler for reacting to contact being removed from cache
+        */
+        CPsUpdateHandler* iContactRemovedHandler;
+        
+        /**
+        * iContactModifiedHandler, handler for reacting to contact being modified in cache
+        */
+        CPsUpdateHandler* iContactModifiedHandler;
         
         /**
         * Not Owned

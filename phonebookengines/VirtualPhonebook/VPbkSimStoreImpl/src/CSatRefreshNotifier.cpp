@@ -20,8 +20,8 @@
 // INCLUDE FILES
 #include "CSatRefreshNotifier.h"
 
-#include <RSatSession.h>
-#include <RSatRefresh.h>
+#include <rsatsession.h>
+#include <rsatrefresh.h>
 #include <VPbkDebug.h>
 #include "MSimRefreshObject.h"
 

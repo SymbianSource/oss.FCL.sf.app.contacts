@@ -28,6 +28,7 @@ class CVPbkContactManager;
 class CPbk2StoreManager;
 class TPbk2IconId;
 class CGulIcon;
+class MVPbkContactStore;
 
 /**
  * Interface to observe content changes
@@ -163,6 +164,11 @@ public:
      */
     IMPORT_C CGulIcon* CreateServiceIconLC( 
         const TPbk2IconId& aIconId );
+    
+    /**
+     * Clean the content in the cache if it belongs to the specified store
+     */
+    IMPORT_C void CleanContentL( MVPbkContactStore& aStore );
     
 private: // Constructors
     

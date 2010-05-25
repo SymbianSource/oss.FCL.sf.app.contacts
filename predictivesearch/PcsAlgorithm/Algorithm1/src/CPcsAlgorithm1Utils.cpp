@@ -205,7 +205,7 @@ TInt CPcsAlgorithm1Utils::CompareDataBySortOrderL(const CPsData& aObject1,
 	CPcsCache* cache1 = (*pcsCache)[aObject1.UriId()];
     CPcsCache* cache2 = (*pcsCache)[aObject2.UriId()];
 	RArray<TInt> indexOrder1;
-    RArray<TInt> indexOrder2;	
+    RArray<TInt> indexOrder2;
 	  
     // Get the index order based on sort order from the cache
 	cache1->GetIndexOrder(indexOrder1);
@@ -224,7 +224,7 @@ TInt CPcsAlgorithm1Utils::CompareDataBySortOrderL(const CPsData& aObject1,
         if ( object1Idx < aObject1.DataElementCount() 
              && aObject1.Data(object1Idx)
              && strCompare1->Length() )
-            {   
+            {
             strCompare1->Des().TrimAll();
             
             for(; idx2 < indexOrder2.Count(); idx2++)

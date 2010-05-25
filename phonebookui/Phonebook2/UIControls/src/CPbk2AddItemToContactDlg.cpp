@@ -393,17 +393,6 @@ void CPbk2AddItemToContactDlg::PreparePopupL
     iListBox->Model()->SetItemTextArray(listBoxModel);
     iListBox->Model()->SetOwnershipType(ELbmOwnsItemArray);
     
-    CEikStatusPane* statusPane = iAvkonAppUi->StatusPane();
-    if (statusPane)
-        {
-        TInt currentStatusPaneResId = statusPane->CurrentLayoutResId();
-        // Make the statusPane update when it was already set to EMPTY status,
-        // in other case it'll update itself automaticlly
-        if( currentStatusPaneResId == R_AVKON_STATUS_PANE_LAYOUT_EMPTY )
-            {
-            statusPane->SwitchLayoutL( R_AVKON_STATUS_PANE_LAYOUT_USUAL );
-            }
-        }    
     }
 
 // --------------------------------------------------------------------------

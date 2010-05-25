@@ -19,6 +19,7 @@
 #include "spbcontentprovider.h"
 #include "spbcontentproviderprivate.h"
 #include <featmgr.h>
+#include <MVPbkContactStore.h>
 
 // LOCAL METHODS AND CONSTANTS
 namespace {
@@ -124,6 +125,15 @@ EXPORT_C CGulIcon* CSpbContentProvider::CreateServiceIconLC(
     const TPbk2IconId& aIconId )
     {
     return iImpl->CreateServiceIconLC( aIconId );
+    }
+
+// ----------------------------------------------------------------------------
+// CSpbContentProvider::CleanContentL
+// ----------------------------------------------------------------------------
+//
+EXPORT_C void CSpbContentProvider::CleanContentL( MVPbkContactStore& aStore )
+    {
+    return iImpl->CleanContentL( aStore );
     }
 
 // end of file

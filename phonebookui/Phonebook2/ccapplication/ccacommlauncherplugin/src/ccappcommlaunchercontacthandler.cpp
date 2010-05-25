@@ -66,6 +66,7 @@ CCCAppCommLauncherContactHandler::~CCCAppCommLauncherContactHandler()
         iCmsWrapper->Release();
         }
     iDynamicVoipAddressGroup.Close();
+    iAddressCache.Close();
     }
 
 // --------------------------------------------------------------------------
@@ -165,6 +166,7 @@ void CCCAppCommLauncherContactHandler::ContactFieldDataObserverNotifyL(
         == aParameter.iType )
         {
         iDynamicAddressGroupSet = EFalse;
+        iAddressCache.Close(); // reset cache on change
         iObserver.ContactsChangedL();
         }
     else if (MCCAppContactFieldDataObserver::TParameter::EContactPresenceChanged == aParameter.iType)
@@ -228,7 +230,14 @@ void CCCAppCommLauncherContactHandler::ContactFieldFetchedNotifyL(
 TInt CCCAppCommLauncherContactHandler::AddressAmount( 
     VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aContactAction )
     {
-    return iCmsWrapper->GetContactActionFieldCount(aContactAction);
+    TInt* count = iAddressCache.Find( aContactAction );
+    if( !count )
+        {
+        TInt newcount = iCmsWrapper->GetContactActionFieldCount( aContactAction );
+        iAddressCache.Insert( aContactAction, newcount );
+        return newcount;
+        }
+    return *count;
     }
 
 // ---------------------------------------------------------------------------
@@ -549,6 +558,7 @@ void CCCAppCommLauncherContactHandler::RefetchContactL()
     {
     iCmsWrapper->RefetchContactL();
     iCmsWrapper->AddObserverL( *this );
+    iAddressCache.Close();
     }
 
 // --------------------------------------------------------------------------

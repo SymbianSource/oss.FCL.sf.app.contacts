@@ -54,7 +54,8 @@
 #include <akntitle.h>
 #include <eikspane.h>
 #include <avkon.hrh>
-
+#include <avkon.rsg>
+#include <layoutmetadata.cdl.h>
 // Debugging headers
 #include <Pbk2Debug.h>
 
@@ -379,8 +380,20 @@ void CPguSendMessageGroupCmd::DoSendMessageL()
     Phonebook2::Pbk2AppUi()->ApplicationServices().SendUiL()->
         CreateAndSendMessageL( iMtmUid, iMessageData );
 
-    // Sets title pane for tile which was save
-    titlePane->SetText( title );
+    if( !Layout_Meta_Data::IsLandscapeOrientation() )
+        {
+        sp->SwitchLayoutL( R_AVKON_STATUS_PANE_LAYOUT_USUAL );
+        sp->MakeVisible( ETrue );
+        
+        // Sets title pane for tile which was save
+        titlePane->SetText( title );
+        sp->DrawNow();
+        }
+    else
+        {
+        // Sets title pane for tile which was save
+        titlePane->SetText( title );
+        }
     CleanupStack::Pop();
 
     iState = EStopping;

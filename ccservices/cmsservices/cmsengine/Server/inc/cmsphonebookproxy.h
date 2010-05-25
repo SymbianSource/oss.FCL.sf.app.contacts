@@ -293,7 +293,14 @@ NONSHARABLE_CLASS( CCmsPhonebookProxy ) : public CBase,
         * @return - ETrue if XSP Contacts else EFalse.
         */
         TBool IsXspContact( const MVPbkContactLink& aContactLink ) const;
-        
+
+        /**
+        * Finds whether the store is XSP Store or not
+        * @param aStoreUri  - Contact store uri which needs to be checked
+        * @return - ETrue if XSP store else EFalse.
+        */
+        TBool IsXspStoreUri( const TDesC& aStoreUri ) const;
+
     private: //Data
         
         /// ETrue, if at least one store was opened successfully

@@ -22,6 +22,7 @@
 //  INCLUDES
 #include <e32base.h>
 #include <aknsfld.h>
+#include "CPbk2AdaptiveSearchGridWaiter.h"
 
 // FORWARD DECLARATIONS
 class CAknSearchField;
@@ -38,7 +39,8 @@ class MPbk2ContactNameFormatter;
  * This class used to create adaptive search grid used to
  * search contacts from Phonebook 2.
  */
-NONSHARABLE_CLASS(CPbk2AdaptiveSearchGridFiller) : public CActive
+NONSHARABLE_CLASS(CPbk2AdaptiveSearchGridFiller) : public CActive,
+        public MPbk2SearchGridWaiterObserver
     {
     public: // Constructors and destructor
 
@@ -102,8 +104,11 @@ NONSHARABLE_CLASS(CPbk2AdaptiveSearchGridFiller) : public CActive
          * But actually this operation is done to Adaptive Search Grid. So set the focus back to it.
          */
     	 void SetFocusToAdaptiveSearchGrid();
-    	
-
+    
+    public: // MPbk2SearchGridWaiterObserver
+    	 void GridDelayCompleteL();
+    	 void WaitNoteDismissed();
+    	 
     private: // from CActive
     	
     	void RunL();
@@ -117,9 +122,10 @@ NONSHARABLE_CLASS(CPbk2AdaptiveSearchGridFiller) : public CActive
         
         CPbk2AdaptiveGrid* KeyMapFromCache( const TDesC& aFindText );
         void AddKeyMapToCacheL( const TDesC& aFindText, const TDesC& aKeyMap );
-        void SetAdaptiveGridCharsL( const TInt aMaxSpacesNumber );
+        void SetAdaptiveGridCharsL( const TInt aMaxSpacesNumber, const TInt aSearchStringSpacesNumber );
         CDesC16Array* SplitContactFieldTextIntoArrayLC( const TDesC& aText );
-		void BuildGridL( const TDesC& aContactTitle, const TDesC& aSearchString, HBufC*& aKeyMap );
+        CDesC16Array* SplitSearchFieldTextIntoArrayLC( const TDesC& aText );
+		void BuildGridL( const TDesC& aContactString, const CDesC16Array* aSearchWords, HBufC*& aKeyMap );
         TInt NumberOfSpacesInString( const TDesC& aSearchString );
         // Used to judge if this contact's title include drgraphs
         TBool IsDigraphContactsTitleL(const TDesC& aContactTitle);
@@ -160,8 +166,12 @@ NONSHARABLE_CLASS(CPbk2AdaptiveSearchGridFiller) : public CActive
 		/// Used to get the focus for the search pane,when it is true, the search pane will be drawn and get
 		/// the focus
 		TBool iSetFocusToSearchGrid;
+
 		/// Used to save the contacts' title which include drgraphs
 		RPointerArray<HBufC> iDigraphContactsTitleArray;
+		
+		/// Own: Used to display wait note if building of grid takes longer than specified time
+		CPbk2AdaptiveSearchGridWaiter* iGridWaiter;
     };
 
 #endif // CPBK2ADAPTIVESEARCHGRIDFILLER_H

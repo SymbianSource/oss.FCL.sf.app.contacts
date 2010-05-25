@@ -86,9 +86,9 @@ void SetTitlePaneL
     if ( !( aFlags & AiwContactAssign::EUseProviderTitle ) )
         {
         titlePaneText = aDataRetriever.GetTitlePaneTextL( aMessage );
+        TPbk2TitlePaneOperator titlePaneOperator;
+        titlePaneOperator.SetTitlePaneL( titlePaneText ); // takes ownership
         }
-    TPbk2TitlePaneOperator titlePaneOperator;
-    titlePaneOperator.SetTitlePaneL( titlePaneText ); // takes ownership
     }
 
 } /// namespace

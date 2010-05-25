@@ -115,11 +115,10 @@ void CPcsContactStore::ConstructL(CVPbkContactManager&  aContactManager,
 {
     PRINT ( _L("Enter CPcsContactStore::ConstructL") );
     
-	iContactManager  = &aContactManager;
+	iContactManager = &aContactManager;
 	iObserver = &aObserver;
 	
-	iUri = HBufC::NewL(aUri.Length());
-	iUri->Des().Copy(aUri);
+	iUri = aUri.AllocL();
 	
 	// create containers for holding the sim data
     iSimContactItems = CVPbkContactLinkArray::NewL();
@@ -200,8 +199,11 @@ void CPcsContactStore::HandleStoreEventL(MVPbkContactStore& aContactStore,
 		case TVPbkContactStoreEvent::EContactAdded:
 		{
 		    PRINT ( _L("Add contact/group event received") );
-		    iContactManager->RetrieveContactL( *(aStoreEvent.iContactLink),
-	                                           *this);
+		    
+		    // Observer will be notified once the cache update is complete
+		    iOngoingCacheUpdate = ECacheUpdateContactAdded;
+		                    
+		    iContactManager->RetrieveContactL( *(aStoreEvent.iContactLink), *this );
 			break;
 		}
 		
@@ -243,7 +245,7 @@ void CPcsContactStore::HandleStoreEventL(MVPbkContactStore& aContactStore,
 				{
 				    // We are not removing from the array cache. If you try to fetch, 
 				    // then it will give an error
-				    TInt index = CreateCacheIDfromSimArrayIndex (contactLocation);
+				    TInt index = CreateCacheIDfromSimArrayIndex( contactLocation );
 				    
 	                iObserver->RemoveData(*iUri,index );
 		       	}
@@ -265,8 +267,16 @@ void CPcsContactStore::HandleStoreEventL(MVPbkContactStore& aContactStore,
 	        if (( aStoreEvent.iEventType == TVPbkContactStoreEvent::EContactChanged ) ||
 	            ( aStoreEvent.iEventType == TVPbkContactStoreEvent::EGroupChanged ) )
 	        {
-	  		    // Add the contact
-	  		   iContactManager->RetrieveContactL( *(aStoreEvent.iContactLink), *this );
+	            // Observer will be notified once the cache update is complete
+	            iOngoingCacheUpdate = ECacheUpdateContactModified;
+	            
+	            // Add the contact
+	            iContactManager->RetrieveContactL( *(aStoreEvent.iContactLink), *this );
+	        }
+	        else
+	        {
+	            // Inform observer immediately about contact removal
+                iObserver->UpdateCachingStatus( *iUri, ECacheUpdateContactRemoved );
 	        }
 	        
 			break;
@@ -363,20 +373,21 @@ void CPcsContactStore::VPbkSingleContactOperationFailed(
 // ---------------------------------------------------------------------------
 void CPcsContactStore::HandleRetrievedContactL(MVPbkStoreContact* aContact)
 {    
-    if ( iMyCardSupported && IsMyCard( *aContact ) )
-        {
-        return;
-        }
-    
     // Take the ownership
     aContact->PushL();
 
+    if ( iMyCardSupported && IsMyCard( *aContact ) )
+        {
+        CleanupStack::PopAndDestroy( aContact );
+        return;
+        }
+    
     // Fill the contact link
 	MVPbkContactLink* tmpLink = aContact->CreateLinkLC();
 	
     // If the link is null, then it is not put on the cleanup stack,
     // so we need not pop in such a case
-    if( NULL == tmpLink )
+    if ( NULL == tmpLink )
     {
         CleanupStack::PopAndDestroy( aContact );
         return;
@@ -402,7 +413,7 @@ void CPcsContactStore::HandleRetrievedContactL(MVPbkStoreContact* aContact)
         // Get the index of the SIM contact
         TInt tempIndex =  iSimContactItems->Find(*tmpLink);	
 		
-		if( KErrNotFound == tempIndex)
+		if ( KErrNotFound == tempIndex)
 		    {
 		    tempIndex = iSimContactItems->Count();
 	        iSimContactItems->AppendL(tmpLink);
@@ -443,21 +454,21 @@ void CPcsContactStore::HandleRetrievedContactL(MVPbkStoreContact* aContact)
 	    // Fetch the group name 
 	    HBufC* groupName = myContactGroup->GroupLabel().AllocLC();
 	    TInt grpArrayIndex = -1; 
-	    for(TInt i =0; i  <iFieldsToCache.Count(); i++)
+	    for (TInt i =0; i  <iFieldsToCache.Count(); i++)
 	    {
-	    	if(iFieldsToCache[i] == R_VPBK_FIELD_TYPE_LASTNAME)
+	    	if (iFieldsToCache[i] == R_VPBK_FIELD_TYPE_LASTNAME)
 			{
 			    grpArrayIndex = i;
 			}
 			phoneContact->SetDataL(i, KNullDesC);
 	    }
-	    if(grpArrayIndex != -1)
+	    if (grpArrayIndex != -1)
 	    {
 	    	phoneContact->SetDataL(grpArrayIndex, *groupName);
 	    
             // Check for the contact in the group.
             MVPbkContactLinkArray* contactsContainedInGroup = myContactGroup->ItemsContainedLC();
-            for(TInt i = 0; i < contactsContainedInGroup->Count(); i++)
+            for (TInt i = 0; i < contactsContainedInGroup->Count(); i++)
             {
                 TInt grpContactId = converter->LinkToIdentifier(contactsContainedInGroup->At(i));
                 phoneContact->AddIntDataExtL(grpContactId);
@@ -485,9 +496,16 @@ void CPcsContactStore::HandleRetrievedContactL(MVPbkStoreContact* aContact)
 	converter = NULL;
 
 	CleanupStack::PopAndDestroy(aContact);
+	
+	// Inform observer if this contact addition was a result of contact store event.
+	if ( iOngoingCacheUpdate == ECacheUpdateContactModified ||
+	     iOngoingCacheUpdate == ECacheUpdateContactAdded )
+	    {
+        iObserver->UpdateCachingStatus( *iUri, iOngoingCacheUpdate );
+        iOngoingCacheUpdate = ECachingComplete;
+	    }
 }
- 
-    
+
 // ---------------------------------------------------------------------------
 // Fetches the data from a particular contact 
 // --------------------------------------------------------------------------- 
@@ -507,11 +525,11 @@ void CPcsContactStore::GetDataForSingleContactL( MVPbkBaseContact& aContact,
 // Add the data from contact fields
 // --------------------------------------------------------------------------- 
 void CPcsContactStore::AddContactFieldsL( MVPbkBaseContact& aContact,
-                                          TInt afieldtype,
+                                          TInt aFieldType,
                                           CPsData *aPhoneData)
 {
-	const MVPbkFieldType*  myContactDataField = 
-		iContactManager->FieldTypes().Find( afieldtype );
+	const MVPbkFieldType* myContactDataField = 
+		iContactManager->FieldTypes().Find( aFieldType );
 
 	CVPbkBaseContactFieldTypeIterator* itr = 
 		CVPbkBaseContactFieldTypeIterator::NewLC( *myContactDataField, 
@@ -528,9 +546,9 @@ void CPcsContactStore::AddContactFieldsL( MVPbkBaseContact& aContact,
 				MVPbkContactFieldTextData::Cast( field->FieldData() );
 			
 			//If the field exist in iFieldsToCache, then set it
-			for( TInt i = 0 ; i< iFieldsToCache.Count(); i++)
+			for ( TInt i = 0 ; i< iFieldsToCache.Count(); i++ )
 			{
-				if(afieldtype == iFieldsToCache[i])
+				if (aFieldType == iFieldsToCache[i])
 				{	
                     // Check if the field has any data entry. If so
                     // concatenate the next data to the existing one.
@@ -547,7 +565,7 @@ void CPcsContactStore::AddContactFieldsL( MVPbkBaseContact& aContact,
                         newDataPtr.Append(KSpaceCharacter);
                         newDataPtr.Append(data.Text());
                         aPhoneData->SetDataL(i,*newData);
-                        CleanupStack::PopAndDestroy(); // newData
+                        CleanupStack::PopAndDestroy(newData);
                     }
                     else
                     {
@@ -769,7 +787,7 @@ void CPcsContactStore::CreateContactFetchViewL()
         CleanupStack::Pop(); // iContactViewBase       
     }
 	else
-	{        
+	{
 		// Create sort order with the fields from cenrep
 		CreateSortOrderL(iContactManager->FieldTypes());
 		
@@ -850,27 +868,25 @@ TInt CPcsContactStore::RunError(TInt /*aError*/)
 // ---------------------------------------------------------------------------------
 void CPcsContactStore::ReadFieldsToCacheFromCenrepL()
 {
-	CRepository *repository = CRepository::NewL( KCRUidPSContacts );
+    CRepository* repository = CRepository::NewL( KCRUidPSContacts );
 
     // Read the data fields from cenrep
     for (TInt i(KCenrepFieldsStartKey); i < KCenrepFieldsStartKey + KCenrepNumberOfFieldsCount; i++ )
     {
-	TInt fieldToCache (-1);
-	    TInt err = repository->Get(i, fieldToCache );
-	    
-	    if ( KErrNone != err )
-	    {
-		    break;
-	    }
-	    if ( fieldToCache != 0 )
-	    {
-		    iFieldsToCache.Append(fieldToCache);
-	    }
-	    		
+        TInt fieldToCache (-1);
+        TInt err = repository->Get(i, fieldToCache );
+        
+        if ( KErrNone != err )
+        {
+            break;
+        }
+        if ( fieldToCache != 0 )
+        {
+            iFieldsToCache.Append(fieldToCache);
+        }
     }
     
     delete repository;
-    
 }
 
 // ---------------------------------------------------------------------------------
@@ -922,6 +938,7 @@ void CPcsContactStore::CreateSortOrderL(const MVPbkFieldTypeList& aMasterList)
 	}
 	
 }
+
 // ---------------------------------------------------------------------------------
 // Checks MyCard extension of contact
 // ---------------------------------------------------------------------------------
@@ -934,7 +951,7 @@ TBool CPcsContactStore::IsMyCard( const MVPbkBaseContact& aContact )
     MVPbkBaseContact& contact = const_cast<MVPbkBaseContact&>( aContact );
     TAny* extension = contact.BaseContactExtension( KVPbkBaseContactExtension2Uid );
 
-    if( extension )
+    if ( extension )
         {
         MVPbkBaseContact2* baseContactExtension = static_cast<MVPbkBaseContact2*>( extension );
         TInt error( KErrNone );

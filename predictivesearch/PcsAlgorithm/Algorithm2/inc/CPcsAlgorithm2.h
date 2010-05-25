@@ -199,7 +199,14 @@ private:
      */
     void ConstructL();
 
-private:		
+private:
+
+    /**
+     * Define a P&S property with given key under the internal category 
+     * UID of PCS. Leave if definition fails for any other reason than
+     * key already existing.
+     */
+    void DefinePropertyL( TPcsInternalKeyCacheStatus aPsKey );
 
     /**
      * Replace occurance of "0" in ITU-T mode with space
@@ -287,6 +294,11 @@ private:
      * Function to return data base URI for an internal identifier
      */		                     
     TDesC& GetUriForIdL( TUint8 aUriId );	
+
+    /**
+     * Inform clients about update happened on the cache
+     */
+    void HandleCacheUpdated( TCachingStatus aStatus );
     
     /**
     * launch plugins by idle

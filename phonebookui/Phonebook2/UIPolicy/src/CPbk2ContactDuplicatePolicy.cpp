@@ -24,12 +24,23 @@
 #include <MPbk2ContactNameFormatter.h>
 #include <CPbk2DuplicateContactFinder.h>
 #include <MPbk2DuplicateContactObserver.h>
+#include <RPbk2LocalizedResourceFile.h>
+#include "Pbk2DataCaging.hrh"
+#include "Pbk2PresentationUtils.h"
+#include <Pbk2Presentation.rsg>
+#include <CVPbkFieldTypeSelector.h>
+#include <CVPbkFieldTypeIterator.h>
+#include <CVPbkFieldTypeRefsList.h>
 
 // Virtual Phonebook
 #include <CVPbkContactManager.h>
 #include <MVPbkContactOperationBase.h>
 #include <CVPbkContactLinkArray.h>
 #include <MVPbkStoreContact.h>
+
+// System includes
+#include <barsread.h>
+
 
 /// Unnamed namespace for local definitions
 namespace {
@@ -222,6 +233,7 @@ CPbk2ContactDuplicatePolicy::~CPbk2ContactDuplicatePolicy()
     delete iDuplicateFinder;
     delete iNameFormatter;
     delete iSortOrderManager;
+    delete iFieldTypeRefsList;
     }
 
 // --------------------------------------------------------------------------
@@ -252,11 +264,11 @@ void CPbk2ContactDuplicatePolicy::ConstructL
         iContactManager.FieldTypes(), *iSortOrderManager,
         &iContactManager.FsSession() );
 
-    const MVPbkFieldTypeList* fieldTypesForFind =
-        &iSortOrderManager->SortOrder();
-    if ( aFieldTypeForFind )
+    const MVPbkFieldTypeList* fieldTypesForFind = aFieldTypeForFind;
+    if ( !fieldTypesForFind )
         {
-        fieldTypesForFind = aFieldTypeForFind;
+        iFieldTypeRefsList = CreateFieldTypesForFindL(iContactManager);
+        fieldTypesForFind = iFieldTypeRefsList;
         }
     iDuplicateFinder = CPbk2DuplicateContactFinder::NewL( iContactManager,
         *iNameFormatter, *fieldTypesForFind, iDuplicates );
@@ -277,6 +289,59 @@ MVPbkContactOperationBase* CPbk2ContactDuplicatePolicy::FindDuplicatesL
     return CPbk2DuplicateOperation::NewL( *iDuplicateFinder, iDuplicates,
         aDuplicates, aContact, aTargetStore, aObserver,
         aMaxDuplicatesToFind );
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ContactDuplicatePolicy::CreateFieldTypesForFindL
+// --------------------------------------------------------------------------
+//
+MVPbkFieldTypeList* CPbk2ContactDuplicatePolicy::CreateFieldTypesForFindL
+        (CVPbkContactManager& aContactManager) const
+    {
+    RFs fs = aContactManager.FsSession();
+    RPbk2LocalizedResourceFile resFile(&fs);
+    resFile.OpenLC(KPbk2RomFileDrive, 
+        KDC_RESOURCE_FILES_DIR, 
+        Pbk2PresentationUtils::PresentationResourceFile());
+
+    // Create resource reader.
+    TResourceReader resReader;
+    resReader.SetBuffer(resFile.AllocReadLC(R_TITLE_FIELD_SELECTOR));
+
+    // Create title field selector.
+    CVPbkFieldTypeSelector* titleFieldSelector = CVPbkFieldTypeSelector::NewL
+        (resReader, aContactManager.FieldTypes());
+    CleanupStack::PushL(titleFieldSelector);
+    
+    // Create field type list for find.
+    CVPbkFieldTypeRefsList* fieldTypeRefsList = CVPbkFieldTypeRefsList::NewL();
+    CleanupStack::PushL(fieldTypeRefsList);
+    const MVPbkFieldType* fieldType = NULL;
+
+    // Create field type iterator.
+    CVPbkFieldTypeIterator* fieldTypeIterator =
+        CVPbkFieldTypeIterator::NewLC(*titleFieldSelector, 
+            aContactManager.FieldTypes());
+    while(fieldTypeIterator->HasNext())
+        {
+        fieldType = fieldTypeIterator->Next();
+        if (fieldType)
+            {
+            // Filter the Versit type for find.
+            if (EVPbkNonVersitTypeNone == fieldType->NonVersitType())
+                {
+                fieldTypeRefsList->AppendL(*fieldType);
+                }
+            }
+        }
+
+    CleanupStack::PopAndDestroy();  // fieldTypeIterator
+    CleanupStack::Pop(fieldTypeRefsList);
+    CleanupStack::PopAndDestroy();  // titleFieldSelector
+    CleanupStack::PopAndDestroy();  // resReader
+    CleanupStack::PopAndDestroy();  // resFile
+
+    return fieldTypeRefsList;
     }
 
 // End of File

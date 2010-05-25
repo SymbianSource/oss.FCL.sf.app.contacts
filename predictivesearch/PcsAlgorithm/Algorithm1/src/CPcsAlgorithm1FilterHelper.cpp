@@ -164,7 +164,7 @@ void CPcsAlgorithm1FilterHelper::AddL(CPsData* aPsData, RPointerArray<TDesC>& aP
 // 
 // ----------------------------------------------------------------------------
 
-TInt CPcsAlgorithm1FilterHelper::AddToPoolL(CPsData* psData, 
+TInt CPcsAlgorithm1FilterHelper::AddToPoolL(CPsData* aPsData, 
 											RPointerArray<TDesC>& aPatternSequence)
 {
 	
@@ -182,7 +182,7 @@ TInt CPcsAlgorithm1FilterHelper::AddToPoolL(CPsData* psData,
 	TInt matchpatterpoolIndexToAppend = -1;
 	
 	
-	for(TInt cnt=0; cnt <aPatternSequence.Count(); cnt++ )
+	for ( TInt cnt=0; cnt <aPatternSequence.Count(); cnt++ )
 	{
 	
 		// Create the pattern for aPatternSequence[cnt] in  iMatchPatternDetails
@@ -195,8 +195,8 @@ TInt CPcsAlgorithm1FilterHelper::AddToPoolL(CPsData* psData,
 	    {
 	    	TInt poolIndex = iMatchPatternDetails[indexInMatchPatternDetails]->poolIndex;
 	    	matchpatterpoolIndexToAppend = indexInMatchPatternDetails;
-	       	iMatchPatternPools[poolIndex]->InsertInOrderAllowRepeats(psData, psDataRule);
-	       	TInt findposition = iMatchPatternPools[poolIndex]->Find(psData,identitySearchRule) ;
+	       	iMatchPatternPools[poolIndex]->InsertInOrderAllowRepeats(aPsData, psDataRule);
+	       	TInt findposition = iMatchPatternPools[poolIndex]->Find(aPsData, identitySearchRule) ;
 	       	if ( findposition != KErrNotFound )
 	       	{
 	       		poolItemCount = findposition;
@@ -212,7 +212,7 @@ TInt CPcsAlgorithm1FilterHelper::AddToPoolL(CPsData* psData,
 		    // Check if aPatternSequence[cnt] is listed in subpatterns of aPatternSequence[0]
 		    // If not, then create a sub pattern and apped it to  iMatchPatternDetails for aPatternSequence[0]
 		 	TInt subSeq = FindSubSequence(*aPatternSequence[cnt], matchpatterpoolIndexToAppend);
-		 	if(subSeq  == KErrNotFound )
+		 	if ( subSeq == KErrNotFound )
 		 	{
 		 	
 		 		//Create the subpattern and append it.

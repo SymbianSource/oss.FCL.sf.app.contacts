@@ -1611,23 +1611,6 @@ TInt CPbk2NamesListReadyState::GetMenuFilteringFlagsL() const
         {
         ret |= KPbk2ListContainsNoMarkedItems;
         }
-
-    TInt focusIndex = iListBox.CurrentItemIndex();
-    // Non-contact items are not expandable.
-    const TInt commandItemCount = CommandItemCount();
-    if ( focusIndex < commandItemCount )
-        {
-        // It is not a contact.
-        focusIndex = KErrNotFound;
-        }
-
-    // There is an offset between view indexes and listbox indexes.
-    if (focusIndex >= 0 &&
-        iViewStack.ContactAtL(focusIndex - commandItemCount).Expandable())
-        {
-        ret |= KPbk2FocusedItemIsExpandable;
-        }
-
     return ret;
     }
 

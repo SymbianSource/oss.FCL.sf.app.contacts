@@ -450,9 +450,9 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
     
     // Remember a temporary copy of query list
     // since we sort the queries
-	for( TInt i = 0; i < queryList.Count(); i++)
+	for ( TInt i = 0; i < queryList.Count(); i++)
 	{
-		tempqueryList.Append(queryList[i]);
+		tempqueryList.AppendL(queryList[i]);
 	}
          
 	// Sort the query items before we search them
@@ -470,6 +470,13 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
 		CPsData* psData = poolElement->GetPsData();
 		psData->ClearDataMatches();
 		
+        // Skip the contact if we are doing a group search and contact doesn't belong to the group
+        if ( aIsSearchInGroup && 
+             aContactsInGroup.Find( psData->Id() ) == KErrNotFound )
+            {
+            continue;
+            }
+        
 		TBool isMatch = ETrue;		
 		TInt wordMatches = 0;
 		
@@ -562,17 +569,7 @@ void  CPcsAlgorithm1MultiSearchHelper::FilterResultsMultiL(
 		//  And before adding to the result set, check if there is atleast one match per query
 		if ( isMatch && wordMatches >= queryList.Count() )
 		{
-			if ( aIsSearchInGroup )
-			{
-				if ( aContactsInGroup.Find(psData->Id()) != KErrNotFound )
-				{
-					aAlgorithmFilterHelper->AddL(psData,tmpMatchSet);
-				}
-			}
-			else 
-			{
-				aAlgorithmFilterHelper->AddL(psData,tmpMatchSet);
-			}
+			aAlgorithmFilterHelper->AddL(psData,tmpMatchSet);
 	    } 
 	    
 	    // Cleanup the match sequence array as 

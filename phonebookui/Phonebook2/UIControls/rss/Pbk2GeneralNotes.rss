@@ -124,6 +124,32 @@ RESOURCE DIALOG r_qtn_gen_note_synchronizing_progress
             }
         };
     }
-    
+
+// ---------------------------------------------------------
+// General checking contacts progress bar note
+// ---------------------------------------------------------
+//
+RESOURCE DIALOG r_qtn_gen_note_checking_progress
+    {
+    flags = EAknWaitNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_EMPTY;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EPbk2NoteCheckingContacts;
+            control = AVKON_NOTE 
+                { 
+                layout = EWaitLayout;
+                singular_label = qtn_fdn_reading_memory;       
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                imagefile = AVKON_ICON_FILE;
+                imageid = EMbmAvkonQgn_note_copy;
+                imagemask = EMbmAvkonQgn_note_copy_mask;
+                };
+            }
+        };
+    }
 	
 // End of file

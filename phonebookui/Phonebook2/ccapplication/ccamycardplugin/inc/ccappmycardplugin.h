@@ -83,7 +83,13 @@ public: // New methods
     * @aError System wide error code
     */
     void HandleError( TInt aError );
-       
+    	
+    /**
+     * Enables or disables Left Soft Key
+     * 
+     * @param aEnable  enable/disable LSK
+     */   
+    void EnableOptionsMenu( TBool aEnable );
     
 public: 
 

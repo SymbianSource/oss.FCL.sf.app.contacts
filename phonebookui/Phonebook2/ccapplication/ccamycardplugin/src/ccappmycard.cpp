@@ -356,6 +356,13 @@ void CCCAppMyCard::FetchMyCardL()
     {
     if( !iStoreCallBack )
         {
+        if ( !iMyCard && iForceCreateMyCard )
+            {
+            // Disable LSK if new contact will be created
+            // to avoid opening wrong menu
+            iPlugin.EnableOptionsMenu( EFalse );
+            }
+        
         iStoreCallBack = CTimerCallBack::NewL(
             TCallBack( &CCCAppMyCard::OpenStoresL, this ) );
 
@@ -650,6 +657,12 @@ void CCCAppMyCard::LaunchContactEditorL( TUint32 aFlags )
         
         iDialogIsRunning = ETrue;
         dlg->ExecuteLD();
+        
+        if( aFlags & TPbk2ContactEditorParams::ENewContact )
+            {
+            // Enable LSK in my card view after edit dialog is opened
+            iPlugin.EnableOptionsMenu( ETrue );
+            }
         }
 	
 	// if field was created, destroy it

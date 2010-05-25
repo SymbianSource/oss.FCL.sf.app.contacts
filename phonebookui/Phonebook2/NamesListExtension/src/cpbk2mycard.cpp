@@ -440,6 +440,8 @@ void CPbk2MyCard::HandleStoreEventL(
 				{
 				delete iMyCardLink;
 				iMyCardLink = NULL;
+			    delete iMyCardStoreContact;
+			    iMyCardStoreContact = NULL;
 				iMyCardState = ENonExisting;
 				NotifyObservers( MPbk2MyCardObserver::EStateStatusResolved );
 				

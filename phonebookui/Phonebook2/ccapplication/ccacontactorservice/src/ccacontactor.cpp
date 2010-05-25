@@ -32,12 +32,12 @@ void CCAContactor::ExecuteServiceL(VPbkFieldTypeSelectorFactory::TVPbkContactAct
     
     switch (aCommMethod)
         {
-        case VPbkFieldTypeSelectorFactory::EVoiceCallSelector:
-            operation = CCCAContactorCallOperation::NewL(aParam);
+        case VPbkFieldTypeSelectorFactory::EVoiceCallSelector:              
+            operation = CCCAContactorCallOperation::NewL(aParam, aContactLinkArray);
             break;
             
         case VPbkFieldTypeSelectorFactory::EVideoCallSelector:
-            operation = CCCAContactorVideocallOperation::NewL(aParam);
+            operation = CCCAContactorVideocallOperation::NewL(aParam, aContactLinkArray);
             break;
         case VPbkFieldTypeSelectorFactory::EUniEditorSelector:
             operation = CCCAContactorUniEditorOperation::NewL(aParam, aName);
@@ -49,7 +49,7 @@ void CCAContactor::ExecuteServiceL(VPbkFieldTypeSelectorFactory::TVPbkContactAct
             operation = CCCAContactorURLOperation::NewL(aParam);
             break;
         case VPbkFieldTypeSelectorFactory::EVOIPCallSelector:
-            operation = CCCAContactorVOIPOperation::NewL(aParam, aServiceId);
+            operation = CCCAContactorVOIPOperation::NewL(aParam, aServiceId, aContactLinkArray);
             break;
         case VPbkFieldTypeSelectorFactory::EInstantMessagingSelector:
             MCmsContactorImPluginParameter* cmsParameter;

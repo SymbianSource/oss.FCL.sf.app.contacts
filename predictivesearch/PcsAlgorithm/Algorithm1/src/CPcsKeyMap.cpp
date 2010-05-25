@@ -653,7 +653,7 @@ TBool CPcsKeyMap::GetSpaceAndZeroOnSameKey( TKeyboardModes aKbMode )
 // Initialise the keyboard type variables
 // ----------------------------------------------------------------------------
 void CPcsKeyMap::GetPhysicalKeyboardTypesL( TPtiKeyboardType& aItutKbType,
-                                              TPtiKeyboardType& aQwertyKbType )
+                                            TPtiKeyboardType& aQwertyKbType )
     {
     TInt physicalKeyboard = 0;
     CRepository* aknFepRepository = CRepository::NewL( KCRUidAknFep );

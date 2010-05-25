@@ -20,7 +20,7 @@
 #define CPBK2UIEXTENSIONVIEW_H
 
 // INCLUDES
-#include <cpbk2appviewbase.h>
+#include <CPbk2AppViewBase.h>
 
 // FORWARD DECLARATIONS
 class MPbk2UIExtensionView;

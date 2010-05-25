@@ -423,26 +423,16 @@ void CCCAppCommLauncherLPadModel::FillButtonArrayL()
 
         if ( numberOfAddresses )
             {
-            TBool isServiceAvailable =
+            const TBool isServiceAvailable =
                 iContainer.Plugin().ContactHandler().IsServiceAvailable(
                     preferredCommMethods[i] );
-            if (isServiceAvailable)
+            if ( isServiceAvailable )
                 {
-                if ( preferredCommMethods[i] ==
-                        VPbkFieldTypeSelectorFactory::EFindOnMapSelector )
-                	{
-
-                	AddressButtonL( numberOfAddresses, i );
-
-                	}
-                else
-                	{
-                    TCommLauncherButtonData buttonData = 
-                        TCommLauncherButtonData( preferredCommMethods[i] );
-                    ButtonTextL(preferredCommMethods[i], buttonData.iText);
-                    buttonData.iNumberOfAddresses = numberOfAddresses;
-                    iButtonDataArray.AppendL( buttonData );
-                	}
+                TCommLauncherButtonData buttonData = 
+                    TCommLauncherButtonData( preferredCommMethods[i] );
+                ButtonTextL(preferredCommMethods[i], buttonData.iText);
+                buttonData.iNumberOfAddresses = numberOfAddresses;
+                iButtonDataArray.AppendL( buttonData );
                 }
             }
         }    
@@ -963,7 +953,7 @@ TPtrC CCCAppCommLauncherLPadModel::TextForPopUpL( TInt aButtonIndex )
 void CCCAppCommLauncherLPadModel::Reset()
     {
     iButtonDataArray.Reset();
-    iButtonIconArray->Reset();
+    iButtonIconArray->ResetAndDestroy();
     }
 
 // ---------------------------------------------------------------------------
@@ -1039,32 +1029,6 @@ void CCCAppCommLauncherLPadModel::ContactPresenceChangedL(
             delete presData.Mask();
             }
         }
-    }
-
-// ---------------------------------------------------------------------------
-// CCCAppCommLauncherLPadModel::AddressButtonL
-// ---------------------------------------------------------------------------
-//
-void CCCAppCommLauncherLPadModel::AddressButtonL(
-		const TInt aNumberOfAddresses, const TInt aIndex )
-    {
-    RArray<VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector>& 
-        preferredCommMethods = iContainer.Plugin().PreferredCommMethods();//not owned
-
-    RPointerArray<CMnProvider> providers;
-    CleanupClosePushL( providers );
-    MnProviderFinder::FindProvidersL( providers,
-        CMnProvider::EServiceMapView );
-    if (providers.Count() > 0)
-        {
-        TCommLauncherButtonData buttonData = 
-            TCommLauncherButtonData( preferredCommMethods[aIndex] );
-        ButtonTextL(preferredCommMethods[aIndex], buttonData.iText);
-        buttonData.iNumberOfAddresses = aNumberOfAddresses;
-        iButtonDataArray.AppendL( buttonData );
-        }
-    providers.ResetAndDestroy();
-    CleanupStack::PopAndDestroy( &providers );
     }
 
 // ---------------------------------------------------------------------------

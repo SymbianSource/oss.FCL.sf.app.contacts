@@ -88,5 +88,5 @@ LIBRARY Avkon.lib FeatMgr.lib sendui.lib touchfeedback.lib
 // Dependencies to Phonebook
 LIBRARY Pbk2CommonUi.lib Pbk2UiControls.lib Pbk2Commands.lib
 LIBRARY Pbk2Presentation.lib VPbkEng.lib
-
+LIBRARY CdlEngine.lib
 // End of File

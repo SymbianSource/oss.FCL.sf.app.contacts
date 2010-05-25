@@ -118,7 +118,7 @@ RESOURCE REGISTRY_INFO theInfo
                     version_no = 1;
                     display_name = "AllContacts";
                     default_data = "";
-                    opaque_data = "48";
+                    opaque_data = "304";
                     }
                 };
             }

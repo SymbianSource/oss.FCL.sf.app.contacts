@@ -87,7 +87,12 @@ class CVPbkPhoneNumberMatchStrategy : public CBase
              * first name and last name field values only first
              * one is returned.
              */
-            EVPbkDuplicatedContactsMatchFlag   = 0x00000004
+            EVPbkDuplicatedContactsMatchFlag   = 0x00000004,
+            
+            /**
+             * Enables additional set of rules to compare numbers
+             */
+            EVPbkBestMatchingFlag   = 0x00000008
             };
 
         /**

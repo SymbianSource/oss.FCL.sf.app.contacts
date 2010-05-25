@@ -29,23 +29,21 @@
 :"Nokia"
 
 ; Predictive Search Engine files to be installed
-"\epoc32\release\armv5\udeb\PsServerClientAPI.dll" 	- "!:\sys\bin\PsServerClientAPI.dll"
-"\epoc32\release\armv5\udeb\PcsUtils.dll" 		- "!:\sys\bin\PcsUtils.dll"
+"\epoc32\release\armv5\udeb\PsServerClientAPI.dll"       - "!:\sys\bin\PsServerClientAPI.dll"
+"\epoc32\release\armv5\udeb\PcsUtils.dll"                - "!:\sys\bin\PcsUtils.dll"
 
 ; PS Algorithm1
-"\epoc32\release\armv5\udeb\PcsAlgorithm1.dll" 		- "!:\sys\bin\PcsAlgorithm1.dll"
-"\epoc32\data\z\resource\plugins\PcsAlgorithm1.rsc" 	- "!:\resource\plugins\PcsAlgorithm1.rsc"
+"\epoc32\release\armv5\udeb\PcsAlgorithm1.dll"           - "!:\sys\bin\PcsAlgorithm1.dll"
+"\epoc32\data\z\resource\plugins\PcsAlgorithm1.rsc"      - "!:\resource\plugins\PcsAlgorithm1.rsc"
 
 ; PS Algorithm2
-"\epoc32\release\armv5\udeb\PcsAlgorithm2.dll" 		- "!:\sys\bin\PcsAlgorithm2.dll"
-"\epoc32\data\z\resource\plugins\PcsAlgorithm2.rsc" 	- "!:\resource\plugins\PcsAlgorithm2.rsc"
-
+"\epoc32\release\armv5\udeb\PcsAlgorithm2.dll"           - "!:\sys\bin\PcsAlgorithm2.dll"
+"\epoc32\data\z\resource\plugins\PcsAlgorithm2.rsc"      - "!:\resource\plugins\PcsAlgorithm2.rsc"
 
 ; PS Server
-"\epoc32\release\armv5\udeb\PcsServer.exe" 		- "!:\sys\bin\PcsServer.exe"
+"\epoc32\release\armv5\udeb\PcsServer.exe"               - "!:\sys\bin\PcsServer.exe"
 
 ; PS Contacts Data Store Adapter
-"\epoc32\release\armv5\udeb\pscontactdatastore.dll" 	- "!:\sys\bin\pscontactdatastore.dll"
+"\epoc32\release\armv5\udeb\pscontactdatastore.dll"      - "!:\sys\bin\pscontactdatastore.dll"
 "\epoc32\data\z\resource\plugins\pscontactdatastore.rsc" - "!:\resource\plugins\pscontactdatastore.rsc"
-"\epoc32\data\z\resource\contactsort.rsc" 		- "!:\resource\contactsort.rsc"
-
+"\epoc32\data\z\resource\contactsort.rsc"                - "!:\resource\contactsort.rsc"

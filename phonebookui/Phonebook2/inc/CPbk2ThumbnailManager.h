@@ -140,6 +140,7 @@ public:	// new functions
 
 	/**
 	 * Reset thumbnail manager. Clear cache and cancel all ongoing operations.
+	 * NOTICE: Does not remove icons from icon array.
 	 */
 	void Reset();
 	
@@ -218,6 +219,12 @@ private:	// new functions
 	 */
 	void PreCreateThumbnailArrayL( MVPbkContactViewBase& aView );
 
+    /**
+     * Flush cached thumbnails and cancel all ongoing and scheduled operations.
+     * Remove icons from icon array if available.
+     */
+    void FlushCache();
+    
 private: // From MVPbkSingleContactOperationObserver
    void VPbkSingleContactOperationComplete(
 		   MVPbkContactOperationBase& aOperation,
@@ -316,6 +323,9 @@ private:	//data
 	CPbk2TmItem*                    iInProgressItemToBeRemoved;
 	/// Not own. Filtered view of contacts.
 	MPbk2FilteredViewStack*         iView;
+	/// Flag whether cache is clean. Used to prevent unnecessary work when cleaning
+	/// is requested repeatedly
+	TBool iIsCacheClean;
 	};
 
 #endif /* CPBK2THUMBNAILMANAGER_H_ */

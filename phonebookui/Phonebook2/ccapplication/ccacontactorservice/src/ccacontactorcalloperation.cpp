@@ -26,7 +26,8 @@
 // CCCAContactorCallOperation::CCCAContactorCallOperation()
 // -----------------------------------------------------------------------------
 //
-CCCAContactorCallOperation::CCCAContactorCallOperation(const TDesC& aParam) : CCCAContactorOperation(aParam)
+CCCAContactorCallOperation::CCCAContactorCallOperation(const TDesC& aParam, const TDesC8& aContactLinkArray) : CCCAContactorOperation(aParam), 
+        iContactLinkArray(aContactLinkArray)
     {
     }
 
@@ -42,9 +43,9 @@ CCCAContactorCallOperation::~CCCAContactorCallOperation()
 // CCCAContactorCallOperation::NewLC()
 // -----------------------------------------------------------------------------
 //
-CCCAContactorCallOperation* CCCAContactorCallOperation::NewLC(const TDesC& aParam)
+CCCAContactorCallOperation* CCCAContactorCallOperation::NewLC(const TDesC& aParam, const TDesC8& aContactLinkArray)
     {
-    CCCAContactorCallOperation* self = new (ELeave)CCCAContactorCallOperation(aParam);
+    CCCAContactorCallOperation* self = new (ELeave)CCCAContactorCallOperation(aParam, aContactLinkArray);
     CleanupStack::PushL(self);
     self->ConstructL();
     return self;
@@ -54,9 +55,9 @@ CCCAContactorCallOperation* CCCAContactorCallOperation::NewLC(const TDesC& aPara
 // CCCAContactorCallOperation::NewL()
 // -----------------------------------------------------------------------------
 //
-CCCAContactorCallOperation* CCCAContactorCallOperation::NewL(const TDesC& aParam)
+CCCAContactorCallOperation* CCCAContactorCallOperation::NewL(const TDesC& aParam, const TDesC8& aContactLinkArray)
     {
-    CCCAContactorCallOperation* self=CCCAContactorCallOperation::NewLC(aParam);
+    CCCAContactorCallOperation* self=CCCAContactorCallOperation::NewLC(aParam, aContactLinkArray);
     CleanupStack::Pop(); // self;
     return self;
     }
@@ -77,7 +78,7 @@ void CCCAContactorCallOperation::ConstructL()
 void CCCAContactorCallOperation::ExecuteLD()
     {
     CleanupStack::PushL(this);
-    CCCAPhoneCall::ExecuteL(iParam, CCCAPhoneCall::ECCACallTypeVoice);
+    CCCAPhoneCall::ExecuteL(iParam, iContactLinkArray, CCCAPhoneCall::ECCACallTypeVoice);
     CleanupStack::PopAndDestroy(this);
     }
 // End of File

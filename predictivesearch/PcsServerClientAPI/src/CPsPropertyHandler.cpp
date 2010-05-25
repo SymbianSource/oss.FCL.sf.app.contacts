@@ -12,7 +12,7 @@
 * Contributors:
 *
 * Description:  This is the client side internal file to handle
-*                property used in Publish and Subscribe framework.
+*               property used in Publish and Subscribe framework.
 *
 */
 
@@ -24,10 +24,6 @@
 #include "CPsPropertyHandler.h"
 #include "CPcsDebug.h"
 
-// UID used for Publish and Subscribe mechanism
-// This should be same as the one defined in CPcsAlgorithm.cpp
-// Server UID3 has to be used for this framework
-const TUid KCStatus = {0x2000B5B6};
 
 // ========================= MEMBER FUNCTIONS ==================================
 
@@ -53,16 +49,16 @@ const TUid KCStatus = {0x2000B5B6};
 // CPsPropertyHandler::ConstructL()
 // Symbian 2nd phase constructor can leave.
 // -----------------------------------------------------------------------------
-void CPsPropertyHandler::ConstructL(  )
+void CPsPropertyHandler::ConstructL()
 {
     PRINT ( _L("Enter CPsPropertyHandler::ConstructL") );
     
-    TInt err = iCacheStatusProperty.Attach(KCStatus, 0 );
-    User::LeaveIfError(err);   
+    TInt err = iCacheStatusProperty.Attach( KPcsInternalUidCacheStatus, EPsKeyCacheStatus );
+    User::LeaveIfError(err);
     
     // Attach the cache error property
-    err = iCacheErrorProperty.Attach(KCStatus, 1);
-    User::LeaveIfError(err); 
+    err = iCacheErrorProperty.Attach( KPcsInternalUidCacheStatus, EPsKeyCacheError );
+    User::LeaveIfError(err);
     
     iCacheStatusProperty.Subscribe(iStatus);
     
@@ -97,7 +93,7 @@ CPsPropertyHandler::~CPsPropertyHandler()
     Cancel(); // Causes call to DoCancel()
     
     iCacheStatusProperty.Close();
-
+    iCacheErrorProperty.Close();
 }
 
 // -----------------------------------------------------------------------------
@@ -106,23 +102,22 @@ CPsPropertyHandler::~CPsPropertyHandler()
 // -----------------------------------------------------------------------------
 void CPsPropertyHandler::RunL()
 {
-	iCacheStatusProperty.Subscribe(iStatus);
-	SetActive();
-	
-	//Get the value
-	TCachingStatus status; 
-	TInt statusValue;
-	iCacheStatusProperty.Get(statusValue);
-	status = (TCachingStatus)statusValue;
-	
-	TInt cacheError;
-	iCacheErrorProperty.Get(cacheError);
-	
-	if( (status == ECachingComplete) || (status == ECachingCompleteWithErrors))
-	{
-		for(TInt i = 0; i < iRequestHandler->iObservers.Count(); i++)
-			iRequestHandler->iObservers[i]->CachingStatus(status, cacheError);
-	}
+    iCacheStatusProperty.Subscribe(iStatus);
+    SetActive();
+    
+    //Get the value
+    TCachingStatus status; 
+    TInt statusValue;
+    iCacheStatusProperty.Get(statusValue);
+    status = (TCachingStatus)statusValue;
+    
+    TInt cacheError;
+    iCacheErrorProperty.Get(cacheError);
+    
+    if ( (status == ECachingComplete) || (status == ECachingCompleteWithErrors) )
+    {
+        iRequestHandler->NotifyCachingStatus( status, cacheError );
+    }
 }
 
 // -----------------------------------------------------------------------------

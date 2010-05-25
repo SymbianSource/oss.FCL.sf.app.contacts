@@ -155,6 +155,7 @@ class CNamesListUIExtensionPlugin : public CPbk2UIExtensionPlugin,
     TBool IsTopContact( const MVPbkBaseContact* aContact );
     MVPbkContactLink* MyCardLink() const;
     void InitLocalStoreObserverL();
+    void InitAdnStoreObserverL();
 
     private: // Data
     MCCAConnection* iCCAConnection;  // own
@@ -165,6 +166,7 @@ class CNamesListUIExtensionPlugin : public CPbk2UIExtensionPlugin,
     TInt iLocalStoreContactsCount;
     // Not own:
     MVPbkContactStore* iLocalStore;
+    MVPbkContactStore* iAdnStore;
     // Own
     CPbk2ApplicationServices*  iAppServices;
     };

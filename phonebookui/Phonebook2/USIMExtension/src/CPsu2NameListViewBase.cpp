@@ -38,11 +38,12 @@
 #include <MPbk2ContactNameFormatter.h>
 #include <MPbk2PointerEventInspector.h>
 #include <MPbk2ApplicationServices.h>
-
+#include <Pbk2MenuFilteringFlags.hrh>
 
 // Virtual Phonebook
 #include <MVPbkContactViewBase.h>
 #include <CVPbkContactManager.h>
+#include <MVPbkViewContact.h>
 
 // System includes
 #include <avkon.rsg>
@@ -270,6 +271,11 @@ TInt CPsu2NameListViewBase::GetViewSpecificMenuFilteringFlagsL() const
     if ( iControl )
         {
         flags = iControl->GetMenuFilteringFlagsL();
+        const MVPbkViewContact* contact = iControl->FocusedViewContactL();
+        if( contact && contact->Expandable() )
+            {
+            flags |= KPbk2FocusedItemIsExpandable;
+            }
         }
         
     return flags;

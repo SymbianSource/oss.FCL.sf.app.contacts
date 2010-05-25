@@ -21,10 +21,10 @@
 
 // INCLUDES
 #include <e32base.h>
-#include <akntabobserver.h>
+#include <AknTabObserver.h>
 #include <w32std.h>
 #include <pbk2viewinfo.hrh>
-#include <aknnavidecoratorobserver.h>
+#include <AknNaviDecoratorObserver.h>
 
 // FORWARD DECLARATIONS
 class MPbk2ViewExplorer;

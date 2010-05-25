@@ -158,6 +158,8 @@ class CPguAddMembersCmd : public CActive,
         void DoLaunchFetchDialogL();
         void PrepareFetchResultsL(
                 MVPbkContactLinkArray* aMarkedEntries );
+        void CheckContactsL();
+        void BeginRelocationL();
         void RelocateContactsL();
         void RelocateContactL(
                 MVPbkStoreContact* aStoreContact );
@@ -178,6 +180,8 @@ class CPguAddMembersCmd : public CActive,
             {
             ERetrievingContact,
             EHandleContactLockedEvent,
+            ECheckContacts,
+            ERelocateContacts,
             EShowingProgressNote,
             EAddingContactsToGroup,
             ECommitingTransaction,
@@ -213,6 +217,10 @@ class CPguAddMembersCmd : public CActive,
         TState iState;
         /// Own: count of contacts already added to group 
         TInt iAddedContactsCount;
+        /// Own: counter of contacts 
+        TInt iContactsCounter;
+        /// Own: Contact 
+        MVPbkStoreContact* iContact;
     };
 
 #endif // CPGUADDMEMBERSCMD_H

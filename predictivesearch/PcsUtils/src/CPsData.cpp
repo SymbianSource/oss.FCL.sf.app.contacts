@@ -336,12 +336,13 @@ EXPORT_C TInt CPsData::CompareByData( const CPsData& aObject1,
 // ----------------------------------------------------------------------------
 EXPORT_C TBool CPsData::CompareById(const CPsData& aObject1, const CPsData& aObject2)
 {
-	if(aObject1.Id() == aObject2.Id())
-	{
-		return ETrue;
-	}
-	
-	return EFalse;
+    // Both Id() and UriId() must match if data objects represent the same contact.    
+    // Values of Id() are guaranteed to be unique only within one store. 
+    if ( aObject1.Id() == aObject2.Id() && aObject1.UriId() == aObject2.UriId() )  
+        {      
+            return ETrue;       
+        }        
+    return EFalse;
 }
 
 

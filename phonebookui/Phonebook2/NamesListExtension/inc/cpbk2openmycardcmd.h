@@ -29,6 +29,7 @@ class CPbk2FieldPropertyArray;
 class CPbk2StoreSpecificFieldPropertyArray;
 class CPbk2PresentationContact;
 class CPbk2MyCard;
+class MVPbkContactLink;
 
 //Cca
 class MCCAParameter;
@@ -77,6 +78,18 @@ class CPbk2OpenMyCardCmd : public CActive,
         void ConstructL();
 
     private: // Implementation
+
+        /**
+         * Set contact launch data (launch mycard from link)
+         */
+        void SetContactDataL( MCCAParameter& aParam, MVPbkContactLink* aLink );
+        
+        /**
+         * Set contact launch data (launch mycard from data model)
+         * If aContact is not provided then empty model will be delivered.
+         * Empty model means that mycard does not exist and needs to be created.
+         */
+        void SetContactDataL( MCCAParameter& aParam, CPbk2PresentationContact* aContact = NULL );
 
         void LaunchCcaL(); // Sync
 		void IssueRequest();

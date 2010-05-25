@@ -73,8 +73,8 @@ class CPcsAlgorithm1 : public CPcsPlugin,
 		void PerformSearchL(const CPsSettings& aPcsSettings,
 					   	    CPsQuery& aCondition,
 					   	    RPointerArray<CPsClientData>& aData,
-					   	    RPointerArray<CPsPattern>& aPattern);							
-									
+					   	    RPointerArray<CPsPattern>& aPattern);
+		
 		/**
 		* Search Function for input string
 		*/
@@ -89,20 +89,20 @@ class CPcsAlgorithm1 : public CPcsPlugin,
         void  SearchMatchStringL( CPsQuery& aSearchQuery,
                                     TDesC& aSearchData,
                                     TDes& aMatch ); 
-								       
+		
 		/**
 		* Returns ETrue if this language is supported
 		*/
 		TBool IsLanguageSupportedL(const TUint32 aLanguage);
-		      
+		
 		/**
 		* Returns supported data fields for a cache
-		*/		                     
+		*/
 		void GetDataOrderL( TDesC& aURI, RArray<TInt>& aDataOrder );
 
 		/**
 		* Returns supported sort order for a cache
-		*/		                     
+		*/
 		void GetSortOrderL( TDesC& aURI, RArray<TInt>& aDataOrder );
 
 		/**
@@ -123,7 +123,7 @@ class CPcsAlgorithm1 : public CPcsPlugin,
 		void AddData ( TDesC& aDataStore, CPsData* aData);
 
 		/** 
-		* Remove a contact from the cache based on contact id		
+		* Remove a contact from the cache based on contact id
 		*/
 		void RemoveData ( TDesC& aDataStore, TInt aItemId );
 
@@ -140,7 +140,7 @@ class CPcsAlgorithm1 : public CPcsPlugin,
 		// --------------------------------------------------------------------
 		
 	public:
-				
+		
 		// ----------------- From base class MStoreListObserver ---------------
 
 		/**
@@ -191,15 +191,23 @@ class CPcsAlgorithm1 : public CPcsPlugin,
 		*/
 		void ConstructL();
 			
-    private:		
+    private:
 
+        /**
+        * Define a P&S property with given key under the internal category 
+        * UID of PCS. Leave if definition fails for any other reason than
+        * key already existing.
+        */
+        void DefinePropertyL( TPcsInternalKeyCacheStatus aPsKey );
+    
         /**
         * Remove leading and trailing spaces of search query
         */
         void RemoveSpacesL ( CPsQuery& aQuery );
 
 		/**
-		* Replace occurance of "0" in ITU-T mode with space
+		* Replace occurances of "0" in predictive mode with space
+		* if those are on the same button
 		*/
 		TBool ReplaceZeroWithSpaceL ( CPsQuery& aQuery );
 			
@@ -208,8 +216,8 @@ class CPcsAlgorithm1 : public CPcsPlugin,
 		*/
 		void DoSearchL ( const CPsSettings& aPcsSettings,
 						 CPsQuery& aCondition,
-						 RPointerArray<CPsData>& searchResults,
-	                     RPointerArray<CPsPattern>& searchSeqs );
+						 RPointerArray<CPsData>& aSearchResults,
+	                     RPointerArray<CPsPattern>& aSearchSeqs );
 		
 		/**                
 		* Search function helper
@@ -285,6 +293,11 @@ class CPcsAlgorithm1 : public CPcsPlugin,
 		*/
 		const TDesC& GetUriForIdL( TUint8 aUriId );
 		
+        /**
+        * Inform clients about update happened on the cache
+        */
+        void HandleCacheUpdated( TCachingStatus aStatus );
+        
         /**
         * launch plugins by idle
         */

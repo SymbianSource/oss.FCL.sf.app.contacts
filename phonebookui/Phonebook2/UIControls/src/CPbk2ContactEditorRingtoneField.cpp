@@ -237,7 +237,8 @@ TBool CPbk2ContactEditorRingtoneField::HandleCustomFieldCommandL(TInt aCommand )
     if(aCommand == EPbk2CmdEditorHandleCustomSelect)
         {
 #ifdef ECE_DISABLE_CONTEXT_MENU
-        if (ContactField().FieldData().IsEmpty())
+        if (ContactField().FieldData().IsEmpty() 
+              || !Pbk2RingtoneCommands::IsRingtoneFieldValidL(ContactField()) )
             {
             ret = ext->HandleCustomFieldCommandL(EPbk2CmdEditorChangeRingtone);
             }

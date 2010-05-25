@@ -43,6 +43,8 @@
 #include <MVPbkContactFieldUriData.h>
 #include <CVPbkFieldTypeRefsList.h>
 #include <CVPbkContactFieldIterator.h>
+#include <CVPbkFieldTypeSelector.h>
+#include <CVPbkFieldFilter.h>
 #include <VPbkEng.rsg>
 
 // System includes
@@ -55,6 +57,22 @@
 
 /// Unnamed namespace for local definitions
 namespace {
+
+#ifdef _DEBUG
+enum TPanicCode
+    {
+    EPanicPreCond_LaunchServicePhaseL = 1,
+    EPanicPreCond_ContactOperationComplete,
+    EPanicPreCond_RetrieveContactL,
+    EPanicPreCond_DoSelectAddressesL
+    };
+
+static void Panic(TPanicCode aReason)
+    {
+    _LIT(KPanicText, "CPbk2CommAddressSelectPhase");
+    User::Panic(KPanicText, aReason);
+    }
+#endif // _DEBUG
 
 // Separator between service name and user's id in the service name returned
 // in presence icon info.
@@ -130,8 +148,8 @@ CPbk2CommAddressSelectPhase::CPbk2CommAddressSelectPhase
             iPriorities( aPriorities ),
             iRskBack( aRskBack ),
             iFieldTypeSelector ( aFieldTypeSelector ),
-            iCommMethod( aCommSelector ),
-            iContactRetrieved( EFalse )
+            iState( EInitialState ),
+            iCommMethod( aCommSelector )
     {
     }
 
@@ -193,25 +211,6 @@ inline void CPbk2CommAddressSelectPhase::ConstructL
 
     ixSPManager = CVPbkxSPContacts::NewL(
          appUi.ApplicationServices().ContactManager() );
-
-    // Create contact presence manager if chat fields should be shown
-    if ( ( iCommMethod ==
-            VPbkFieldTypeSelectorFactory::EInstantMessagingSelector ) ||
-            ( iCommMethod ==
-                        VPbkFieldTypeSelectorFactory::EVOIPCallSelector ) )
-            
-        {
-        iContactPresence = TContactPresenceFactory::NewContactPresenceL(
-            *this );
-        // ...and start presence icons retrieving
-        HBufC8* packedLink = iContactLink->PackLC();
-        TInt opId = iContactPresence->GetPresenceInfoL( *packedLink );
-        CleanupStack::PopAndDestroy( packedLink );
-        }
-    else
-        {
-        iPresenceIconsRetrieved = ETrue;
-        }
     }
 
 // --------------------------------------------------------------------------
@@ -242,9 +241,9 @@ CPbk2CommAddressSelectPhase* CPbk2CommAddressSelectPhase::NewL
 //
 void CPbk2CommAddressSelectPhase::LaunchServicePhaseL()
     {
-    // Start by retrieving first contact
-    iState = EMainContactRetrieving;
-    iContactRetrieved = ETrue;
+    __ASSERT_DEBUG( iState == EInitialState, 
+            Panic( EPanicPreCond_LaunchServicePhaseL ) );
+    
     RetrieveContactL();
     
     CPbk2ServerAppAppUi& appUi = static_cast<CPbk2ServerAppAppUi&>
@@ -268,6 +267,11 @@ void CPbk2CommAddressSelectPhase::CancelServicePhase()
 
     delete iRetrieveOperation;
     iRetrieveOperation = NULL;
+    
+    if ( iContactPresence )
+    	{
+		iContactPresence->CancelAll();
+    	}
 
     iObserver.PhaseCanceled( *this );
     }
@@ -354,58 +358,35 @@ void CPbk2CommAddressSelectPhase::VPbkSingleContactOperationComplete
         ( MVPbkContactOperationBase& /*aOperation*/,
           MVPbkStoreContact* aContact )
     {
-    if ( iState == EMainContactRetrieving )
+    __ASSERT_DEBUG( iState == EInitialState || iState == ExSPLinksRetrieved ||
+            iState == ExSPContactRetrieved, 
+            Panic( EPanicPreCond_ContactOperationComplete ) );
+    
+    if ( iState == EInitialState )
         {
+        iState = EMainContactRetrieved;
         // Contact retrieval complete, take contact ownership
         delete iStoreContact;
         iStoreContact = aContact;
-
-        // Start fetching xSP contact links
-        iState = ExSPLinksRetrieving;
-
-        TRAPD( err,
-            ixSPContactOperation = ixSPManager->GetxSPContactLinksL(
-                *iStoreContact, *this, *this );
-             );
-
-        if ( err != KErrNone )
-            {
-            // Run the address select dialog for the main contact at least
-            TRAPD( err, DoSelectAddressesL() );
-            if ( err != KErrNone )
-                {
-                iObserver.PhaseError( *this, err );
-                }
-            iState = EDialogWaitsUserInput;
-            }
+        StartLoadingxSPContactLinks();
         }
-
-    if ( iState == ExSPContactsRetrieving )
+    else if ( iState == ExSPLinksRetrieved || iState == ExSPContactRetrieved )
         {
-        // xSP contact retrieval complete
-        TInt err = ixSPStoreContactsArray.Append( aContact );
-
-        // If error, stop retrieving xSP contacts and show address select
-        // dialog.
+        iState = ExSPContactRetrieved;
+        
+        // xSP contact retrieval complete. Ignore errors, just try next one
+        // or go to next state.
+        /*TInt err = */ixSPStoreContactsArray.Append( aContact );
 
         // Start retrieving next xSP contact, if there are some contacts left
-        if ( ixSPContactsArray->Count() != 0 && err == KErrNone )
+        if ( ixSPContactsArray->Count() > 0 )
             {
-            TRAP( err, RetrieveContactL(); );
-            if ( err != KErrNone )
-                {
-                iState = EDialogWaitsUserInput;
-                }
+            RetrieveContact();
             }
         else
             {
-            FilterXspContactsL();            
-            // Run the address select, if no more contacts to retrieve
-            TRAP( err, DoSelectAddressesL() );
-            if ( err != KErrNone )
-                {
-                iObserver.PhaseError( *this, err );
-                }
+            iState = ExSPContactsRetrieved;
+            StartLoadingPresenceIconInfo();
             }
         }
     }
@@ -446,13 +427,7 @@ void CPbk2CommAddressSelectPhase::VPbkOperationFailed(
     MVPbkContactOperationBase* /*aOperation*/, TInt /*aError*/ )
     {
     // Ignore an error, xSP info can be omitted. Just run address select dialog
-    TRAPD( err, DoSelectAddressesL() );
-    if ( err != KErrNone )
-       {
-       iObserver.PhaseError( *this, err );
-       }
-
-    iState = EDialogWaitsUserInput;
+    DoSelectAddresses();
     }
 // --------------------------------------------------------------------------
 // CPbk2CommAddressSelectPhase::VPbkOperationResultCompleted
@@ -462,38 +437,14 @@ void CPbk2CommAddressSelectPhase::VPbkOperationResultCompleted(
     MVPbkContactOperationBase* /*aOperation*/,
     MVPbkContactLinkArray* aArray )
     {
-    if ( aArray == NULL || aArray->Count() == 0 )
+    iState = ExSPLinksRetrieved;
+    if ( !aArray || aArray->Count() == 0 )
         {
-        // No xSP contacts, run address select dialog
-        TRAPD( err, DoSelectAddressesL() );
-        if ( err != KErrNone )
-            {
-            iObserver.PhaseError( *this, err );
-            }
+        StartLoadingPresenceIconInfo();
         }
     else
         {
-        TRAPD( err,
-            // Take a own copy of supplied contact links
-            ixSPContactsArray = CVPbkContactLinkArray::NewL();
-            CopyContactLinksL( *aArray, *ixSPContactsArray );
-
-            // Start fetching xSP contacts
-            iState = ExSPContactsRetrieving;
-            RetrieveContactL();
-            );
-
-        // If error happened, show address select dialog
-        if ( err != KErrNone )
-            {
-            TRAP( err, DoSelectAddressesL() );
-            if ( err != KErrNone )
-                {
-                iObserver.PhaseError( *this, err );
-                }
-            }
-
-        ixSPStoreContactsArray.ResetAndDestroy();
+		StartLoadingxSPContacts( *aArray );
         }
     }
 
@@ -519,13 +470,8 @@ void CPbk2CommAddressSelectPhase::ReceiveIconFileL(
             CFbsBitmap* aBrandedBitmap,
             CFbsBitmap* aMask )
     {
-    if ( iPresenceIconsRetrieved )
-        {
-        // icons retrieving failed before, no need to take care about
-        // presence icons anymore
-        return;
-        }
-
+	iState = EPresenceIconRetrieved;
+	
     // icon file received, save it to icon info array
     TInt count = iPresenceIconArray.Count();    
     for ( TInt i = 0; i < count; i++ )
@@ -542,24 +488,21 @@ void CPbk2CommAddressSelectPhase::ReceiveIconFileL(
         }
 
     // check if all icon files received
-    iPresenceIconsRetrieved = ETrue;
-    for ( TInt j = 0; j < count && iPresenceIconsRetrieved; j++ )
+    iState = EPresenceIconsRetrieved;
+    for ( TInt j = 0; j < count && iState == EPresenceIconsRetrieved; j++ )
         {
         if ( iPresenceIconArray[j]->IconBitmap() == NULL ||
              iPresenceIconArray[j]->IconBitmapMask() == NULL )
             {
-            iPresenceIconsRetrieved = EFalse;
+            // Not all retrieved, still in state  EPresenceIconRetrieved.
+            iState = EPresenceIconRetrieved;
             }
         }
 
     // start address fetch dialog, if it waits for presence icons
-    if ( iPresenceIconsRetrieved && iState == EWaitForPresenceIcons )
+    if ( iState == EPresenceIconsRetrieved )
         {
-        TRAPD( err, DoSelectAddressesL() );
-        if ( err != KErrNone )
-            {
-            iObserver.PhaseError( *this, err );
-            }
+        DoSelectAddresses();
         }
     }
 
@@ -582,26 +525,11 @@ void CPbk2CommAddressSelectPhase::ErrorOccured(
             TInt /*aOpId*/,
             TInt /*aStatus*/ )
     {
-    // Incase of several errors from contact precense avoid
-    // multiple launching of the select dialog
-    // TODO: How should the errors be hanlded?
-    if (!iPresenceIconsRetrieved)
+    if (iState == EPresenceIconInfoRetrieved || 
+        iState == EPresenceIconRetrieved )
         {
-        // Error occured, destroy presence icon array
-        iPresenceIconsRetrieved = ETrue;
         iPresenceIconArray.ResetAndDestroy();
-        //Needn't to launch address fetch dialog if contact had been retrieved,
-        //because it will start this dialog after retrieve the contact,
-        //avoid multiple launching of the select dialog
-        if ( !iContactRetrieved )
-            {
-            // Launch the address fetch dialog if it's waiting for presence icons.
-            TRAPD( err, DoSelectAddressesL() );
-            if ( err != KErrNone )
-                {
-                iObserver.PhaseError( *this, err );
-                }
-        	}
+        DoSelectAddresses();
         }
     }
 
@@ -610,10 +538,66 @@ void CPbk2CommAddressSelectPhase::ErrorOccured(
 // --------------------------------------------------------------------------
 //
 void CPbk2CommAddressSelectPhase::ReceiveIconInfosL(
-            const TDesC8& /*aPackedLink*/,
+            const TDesC8& aPackedLink,
             RPointerArray <MContactPresenceInfo>& aInfoArray,
-            TInt /*aOpId*/ )
+            TInt aOpId )
     {
+    iState = EPresenceIconInfoRetrieved;
+    // Must be TRAPped here because presence framework ignores the leave
+    // and this instance will be jammed if ReceiveIconInfosL leaves.
+    TRAPD( res, HandleReceiveIconInfosL( aPackedLink, aInfoArray, aOpId ) );
+    if ( res != KErrNone )
+        {
+        DoSelectAddresses();
+        }
+    
+    }
+// --------------------------------------------------------------------------
+// CPbk2AddressSelectPhase::StoreReady
+// --------------------------------------------------------------------------
+//
+void CPbk2CommAddressSelectPhase::StoreReady(
+    MVPbkContactStore& /*aContactStore*/ ) 
+    {
+    // not interested
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2AddressSelectPhase::StoreUnavailable
+// --------------------------------------------------------------------------
+//
+void CPbk2CommAddressSelectPhase::StoreUnavailable(
+    MVPbkContactStore& /*aContactStore*/,
+    TInt /*aReason*/ ) 
+    {
+    // not interested
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2AttributeAddressSelectPhase::StoreUnavailable
+// --------------------------------------------------------------------------
+//
+void CPbk2CommAddressSelectPhase::HandleStoreEventL(
+     MVPbkContactStore& /*aContactStore*/,
+     TVPbkContactStoreEvent aEvent ) 
+    {
+    if ( aEvent.iContactLink != NULL && iStoreContact != NULL )
+        {
+        if ( aEvent.iContactLink->RefersTo( *iStoreContact ) )
+            {
+            CancelServicePhase();
+            }
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2CommAddressSelectPhase::HandleReceiveIconInfosL
+// --------------------------------------------------------------------------
+//
+void CPbk2CommAddressSelectPhase::HandleReceiveIconInfosL(
+        const TDesC8& /*aPackedLink*/,
+        RPointerArray<MContactPresenceInfo>& aInfoArray, TInt /*aOpId*/)
+    {    
     // service specific icons received
     TInt count = aInfoArray.Count();
 
@@ -656,54 +640,23 @@ void CPbk2CommAddressSelectPhase::ReceiveIconInfosL(
                 }
             }
         }
+    
     if ( iPresenceIconArray.Count() == 0 )
         {
-        iPresenceIconsRetrieved = ETrue;
+        DoSelectAddresses();
         }
-    if ( iPresenceIconsRetrieved && iState == EWaitForPresenceIcons )
-        {
-        TRAPD( err, DoSelectAddressesL() );
-        if ( err != KErrNone )
-            {
-            iObserver.PhaseError( *this, err );
-            }
-        }
-    }
-// --------------------------------------------------------------------------
-// CPbk2AddressSelectPhase::StoreReady
-// --------------------------------------------------------------------------
-//
-void CPbk2CommAddressSelectPhase::StoreReady(
-    MVPbkContactStore& /*aContactStore*/ ) 
-    {
-    // not interested
     }
 
 // --------------------------------------------------------------------------
-// CPbk2AddressSelectPhase::StoreUnavailable
+// CPbk2CommAddressSelectPhase::RetrieveContact
 // --------------------------------------------------------------------------
 //
-void CPbk2CommAddressSelectPhase::StoreUnavailable(
-    MVPbkContactStore& /*aContactStore*/,
-    TInt /*aReason*/ ) 
+void CPbk2CommAddressSelectPhase::RetrieveContact()
     {
-    // not interested
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2AttributeAddressSelectPhase::StoreUnavailable
-// --------------------------------------------------------------------------
-//
-void CPbk2CommAddressSelectPhase::HandleStoreEventL(
-     MVPbkContactStore& /*aContactStore*/,
-     TVPbkContactStoreEvent aEvent ) 
-    {
-    if ( aEvent.iContactLink != NULL && iStoreContact != NULL )
+    TRAPD( res, RetrieveContactL() );
+    if ( res != KErrNone )
         {
-        if ( aEvent.iContactLink->RefersTo( *iStoreContact ) )
-            {
-            CancelServicePhase();
-            }
+        DoSelectAddresses();
         }
     }
 
@@ -713,6 +666,10 @@ void CPbk2CommAddressSelectPhase::HandleStoreEventL(
 //
 void CPbk2CommAddressSelectPhase::RetrieveContactL()
     {
+    __ASSERT_DEBUG( iState == EInitialState || iState == ExSPLinksRetrieved ||
+            iState == ExSPContactRetrieved, 
+            Panic( EPanicPreCond_RetrieveContactL ) );
+
     CPbk2ServerAppAppUi& appUi =
         static_cast<CPbk2ServerAppAppUi&>
             ( *iEikenv->EikAppUi() );
@@ -722,12 +679,12 @@ void CPbk2CommAddressSelectPhase::RetrieveContactL()
     delete iRetrieveOperation;
     iRetrieveOperation = NULL;
 
-    if ( iState == EMainContactRetrieving )
+    if ( iState == EInitialState )
         {
         iRetrieveOperation = appUi.ApplicationServices().ContactManager().
             RetrieveContactL( *iContactLink, *this );
         }
-    else if ( iState == ExSPContactsRetrieving )
+    else if ( iState == ExSPLinksRetrieved || iState == ExSPContactRetrieved  )
         {
         iRetrieveOperation = appUi.ApplicationServices().ContactManager().
             RetrieveContactL( ixSPContactsArray->At( 0 ), *this );
@@ -736,24 +693,29 @@ void CPbk2CommAddressSelectPhase::RetrieveContactL()
     }
 
 // --------------------------------------------------------------------------
+// CPbk2CommAddressSelectPhase::DoSelectAddresses
+// --------------------------------------------------------------------------
+//
+void CPbk2CommAddressSelectPhase::DoSelectAddresses()
+	{
+	TRAPD( res, DoSelectAddressesL() );
+	if ( res != KErrNone )
+		{
+		iState = EAddressSelectError;
+		iObserver.PhaseError( *this, res );
+		}
+	}
+
+// --------------------------------------------------------------------------
 // CPbk2CommAddressSelectPhase::DoSelectAddressesL
 // --------------------------------------------------------------------------
 //
 void CPbk2CommAddressSelectPhase::DoSelectAddressesL()
     {
-    
-    if ( !iStoreContact )
-        {
-        return;
-        }
-    
-    if ( !iPresenceIconsRetrieved )
-        {
-        // wait for presence icons
-        iState = EWaitForPresenceIcons;
-        return;
-        }
+    __ASSERT_DEBUG(iStoreContact, Panic(EPanicPreCond_DoSelectAddressesL));
 
+    FilterXspContactsL();
+    
     TResourceReader reader;
     CCoeEnv::Static()->CreateResourceReaderLC( reader, iResourceId );
 
@@ -774,9 +736,13 @@ void CPbk2CommAddressSelectPhase::DoSelectAddressesL()
     // Launch call directly using default values.
     params.SetUseDefaultDirectly( ETrue );
 
+    TArray<MVPbkStoreContact*> storeContactsArray = 
+            ixSPStoreContactsArray.Array();
+    TArray<CPbk2PresenceIconInfo*> presenceIconsArray = 
+            iPresenceIconArray.Array();
     CPbk2AddressSelect* addressSelect = CPbk2AddressSelect::NewL(
-        params, iFieldTypeSelector, &ixSPStoreContactsArray.Array(),
-        &iPresenceIconArray.Array() );
+        params, iFieldTypeSelector, &storeContactsArray,
+        &presenceIconsArray );
 
     // Correct CBA buttons
     TInt correctedCba = CorrectRSK( iResourceId );
@@ -791,7 +757,8 @@ void CPbk2CommAddressSelectPhase::DoSelectAddressesL()
         ( &iAddressSelectEliminator );
     
     appUi.StoreManager().RegisterStoreEventsL( *this );     
-    MVPbkStoreContactField* resultField = addressSelect->ExecuteLD();   
+    MVPbkStoreContactField* resultField = addressSelect->ExecuteLD();
+    iState = EAddressSelectDone;
     appUi.StoreManager().DeregisterStoreEvents( *this ); 
 	
     CleanupStack::PopAndDestroy(); // reader
@@ -957,7 +924,8 @@ void CPbk2CommAddressSelectPhase::FilterXspContactsL()
 // CPbk2CommAddressSelectPhase::IsMatchL
 // --------------------------------------------------------------------------
 //
-TBool CPbk2CommAddressSelectPhase::IsMatchL( MVPbkStoreContact& aXspContact, MVPbkStoreContact& aStoreContact )
+TBool CPbk2CommAddressSelectPhase::IsMatchL( MVPbkStoreContact& aXspContact, 
+        MVPbkStoreContact& aStoreContact )
     {
     TBool result = EFalse;
     
@@ -987,4 +955,151 @@ TBool CPbk2CommAddressSelectPhase::IsMatchL( MVPbkStoreContact& aXspContact, MVP
     
     return result;
     }
+
+// --------------------------------------------------------------------------
+// CPbk2CommAddressSelectPhase::StartLoadingxSPContactLinks
+// --------------------------------------------------------------------------
+//
+void CPbk2CommAddressSelectPhase::StartLoadingxSPContactLinks()
+    {
+    TRAPD( res, StartLoadingxSPContactLinksL() );
+    if (res != KErrNone)
+        {
+        DoSelectAddresses();
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2CommAddressSelectPhase::StartLoadingxSPContactLinksL
+// --------------------------------------------------------------------------
+//
+void CPbk2CommAddressSelectPhase::StartLoadingxSPContactLinksL()
+    {
+    delete ixSPContactOperation;
+    ixSPContactOperation = NULL;
+    ixSPContactOperation = ixSPManager->GetxSPContactLinksL(
+            *iStoreContact, *this, *this);
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2CommAddressSelectPhase::StartLoadingxSPContacts
+// --------------------------------------------------------------------------
+//
+void CPbk2CommAddressSelectPhase::StartLoadingxSPContacts(
+        MVPbkContactLinkArray& aArray )
+	{
+	TRAPD( res, StartLoadingxSPContactsL( aArray ) );
+	if ( res != KErrNone )
+		{
+		DoSelectAddresses();
+		}
+	}
+
+// --------------------------------------------------------------------------
+// CPbk2CommAddressSelectPhase::StartLoadingxSPContactsL
+// --------------------------------------------------------------------------
+//
+void CPbk2CommAddressSelectPhase::StartLoadingxSPContactsL( 
+        MVPbkContactLinkArray& aArray )
+	{
+	// Take a own copy of supplied contact links
+    if (!ixSPContactsArray)
+        {
+        ixSPContactsArray = CVPbkContactLinkArray::NewL();
+        }
+    ixSPStoreContactsArray.ResetAndDestroy();
+    
+	CopyContactLinksL( aArray, *ixSPContactsArray );
+	RetrieveContactL();
+	}
+
+
+// --------------------------------------------------------------------------
+// CPbk2CommAddressSelectPhase::StartLoadingPresenceIconInfo
+// --------------------------------------------------------------------------
+//
+void CPbk2CommAddressSelectPhase::StartLoadingPresenceIconInfo()
+	{
+	TRAPD( res, StartLoadingPresenceIconInfoL());
+	if ( res != KErrNone )
+		{
+		// In error case continue like there are no presence icons.
+        DoSelectAddresses();
+		}
+	}
+
+// --------------------------------------------------------------------------
+// CPbk2CommAddressSelectPhase::StartLoadingPresenceIconInfoL
+// --------------------------------------------------------------------------
+//
+void CPbk2CommAddressSelectPhase::StartLoadingPresenceIconInfoL()
+	{
+	const TInt oneAddress = 1;
+	if ( ( iCommMethod == 
+			VPbkFieldTypeSelectorFactory::EInstantMessagingSelector ||
+		   iCommMethod ==
+				   VPbkFieldTypeSelectorFactory::EVOIPCallSelector ) &&
+		   NumOfAddressesL() > oneAddress )
+		{
+        GetPresenceInfoL();
+		}
+	else
+		{
+        DoSelectAddresses();
+        }
+	}
+
+// --------------------------------------------------------------------------
+// CPbk2CommAddressSelectPhase::NumOfAddressesL
+// --------------------------------------------------------------------------
+//
+TInt CPbk2CommAddressSelectPhase::NumOfAddressesL( 
+		MVPbkStoreContact& aStoreContact )
+	{
+	CVPbkFieldFilter::TConfig config( aStoreContact.Fields(),
+			&iFieldTypeSelector );
+	CVPbkFieldFilter* fieldFilter = CVPbkFieldFilter::NewL( config );
+	TInt result = fieldFilter->FieldCount();
+	delete fieldFilter;
+	return result;
+	}
+
+// --------------------------------------------------------------------------
+// CPbk2CommAddressSelectPhase::NumOfAddressesL
+// --------------------------------------------------------------------------
+//
+TInt CPbk2CommAddressSelectPhase::NumOfAddressesL()
+	{
+	TInt numOfAddresses = 0; 
+	if ( iStoreContact )
+		{
+		numOfAddresses += NumOfAddressesL( *iStoreContact );
+		}
+		
+	const TInt count = ixSPStoreContactsArray.Count();
+	for ( TInt i = 0; i < count; ++i )
+		{
+		numOfAddresses += NumOfAddressesL( *ixSPStoreContactsArray[i] );
+		}
+	return numOfAddresses;
+	}
+
+// --------------------------------------------------------------------------
+// CPbk2CommAddressSelectPhase::GetPresenceInfoL
+// --------------------------------------------------------------------------
+//
+void CPbk2CommAddressSelectPhase::GetPresenceInfoL()
+	{
+	if ( !iContactPresence )
+		{
+		iContactPresence = TContactPresenceFactory::NewContactPresenceL(
+				*this );
+		}
+	// ...and start presence icons retrieving
+	HBufC8* packedLink = iContactLink->PackLC();
+	// Operation id no needed because CancelAll is used.
+	/*TInt opId =*/iContactPresence->GetPresenceInfoL( *packedLink );
+	CleanupStack::PopAndDestroy( packedLink );
+	}
+
 // End of File

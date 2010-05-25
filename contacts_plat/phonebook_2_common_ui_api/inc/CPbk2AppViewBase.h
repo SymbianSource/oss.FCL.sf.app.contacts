@@ -21,8 +21,8 @@
 
 // INCLUDES
 #include <aknview.h>
-#include <mpbk2keyeventhandler.h>
-#include <mpbk2pointereventhandler.h>
+#include <MPbk2KeyEventHandler.h>
+#include <MPbk2PointerEventHandler.h>
 
 // FORWARD DECLARATIONS
 class CPbk2ViewState;

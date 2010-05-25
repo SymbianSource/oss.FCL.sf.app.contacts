@@ -2015,9 +2015,7 @@ MLogsModel* CLogsBaseView::CurrentModel()
 void CLogsBaseView::SendMessageCmdHandlerL( 
     TInt  aCommandId ,
     const MLogsEventGetter* aEvent )
-    {
-    CMessageData* messageData = CMessageData::NewL();
-    CleanupStack::PushL( messageData );
+    {   
     
     TBool isRead = aEvent->Event()->IsRead();
     TLogId logid = aEvent->LogId();
@@ -2032,8 +2030,11 @@ void CLogsBaseView::SendMessageCmdHandlerL(
     else
         {
         return;    
-        }        
-
+        } 
+    
+    CMessageData* messageData = CMessageData::NewL();
+    CleanupStack::PushL( messageData );
+    
     TBuf<KLogsPhoneNumberMaxLen> nbrBuff;        
     CPhoneNumberFormat::DTMFStrip( number, nbrBuff );
     
@@ -2877,10 +2878,12 @@ void CLogsBaseView::CmdShowMyAddressL( const MLogsEventGetter* aEvent )
 
     HBufC* textBuf = NULL;
     textBuf = StringLoader::LoadLC( R_STM_MY_ADDRESS, buf );    
-	CAknNoteDialog* noteDlg = new ( ELeave ) CAknNoteDialog( );
+    CAknNoteDialog* noteDlg = new ( ELeave ) CAknNoteDialog( );
+    CleanupStack::PushL( noteDlg );
     noteDlg->SetTextL( *textBuf );
-	noteDlg->ExecuteLD( R_MY_ADDRESS_QUERY );	
-    CleanupStack::PopAndDestroy( textBuf );  
+    noteDlg->ExecuteLD( R_MY_ADDRESS_QUERY );	
+    CleanupStack::Pop( noteDlg ); 
+    CleanupStack::PopAndDestroy( textBuf );
     }
 
 // ----------------------------------------------------------------------------

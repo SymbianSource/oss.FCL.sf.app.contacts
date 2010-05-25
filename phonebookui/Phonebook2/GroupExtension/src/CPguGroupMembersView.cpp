@@ -56,6 +56,7 @@
 #include <MPbk2ContactViewSupplier.h>
 #include <CPbk2StoreConfiguration.h>
 #include <MPbk2AppUi.h>
+#include <Pbk2MenuFilteringFlags.hrh>
 
 // Virtual Phonebook
 #include <MVPbkContactViewBase.h>
@@ -2093,7 +2094,17 @@ TBool CPguGroupMembersView::HandleCommandKeyL(
 //
 TInt CPguGroupMembersView::GetViewSpecificMenuFilteringFlagsL() const
     {
-    return iViewImpl->GetViewSpecificMenuFilteringFlagsL();
+    TInt flags = iViewImpl->GetViewSpecificMenuFilteringFlagsL();
+    MPbk2ContactUiControl* ctrl = iViewImpl->Control();
+    if( ctrl )
+        {
+        const MVPbkViewContact* contact = ctrl->FocusedViewContactL();
+        if( contact && contact->Expandable() )
+            {
+            flags |= KPbk2FocusedItemIsExpandable;
+            }
+        }
+    return flags;
     }
 
 // --------------------------------------------------------------------------

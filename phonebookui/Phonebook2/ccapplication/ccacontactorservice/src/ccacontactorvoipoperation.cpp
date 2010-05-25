@@ -25,7 +25,10 @@
 // CCCAContactorVOIPOperation::CCCAContactorVOIPOperation()
 // -----------------------------------------------------------------------------
 //
-CCCAContactorVOIPOperation::CCCAContactorVOIPOperation(const TDesC& aParam, TUint32 aServiceId) : CCCAContactorOperation(aParam), iServiceId(aServiceId)
+CCCAContactorVOIPOperation::CCCAContactorVOIPOperation(const TDesC& aParam, 
+        TUint32 aServiceId, const TDesC8& aContactLinkArray) : 
+        CCCAContactorOperation(aParam), iServiceId(aServiceId),
+        iContactLinkArray(aContactLinkArray)
     {
     // No implementation required
     }
@@ -42,9 +45,11 @@ CCCAContactorVOIPOperation::~CCCAContactorVOIPOperation()
 // CCCAContactorVOIPOperation::NewLC()
 // -----------------------------------------------------------------------------
 //
-CCCAContactorVOIPOperation* CCCAContactorVOIPOperation::NewLC(const TDesC& aParam, TUint32 aServiceId)
+CCCAContactorVOIPOperation* CCCAContactorVOIPOperation::NewLC(const TDesC& aParam, 
+        TUint32 aServiceId, const TDesC8& aContactLinkArray)
     {
-    CCCAContactorVOIPOperation* self = new (ELeave)CCCAContactorVOIPOperation(aParam, aServiceId);
+    CCCAContactorVOIPOperation* self = new (ELeave)CCCAContactorVOIPOperation(
+            aParam, aServiceId, aContactLinkArray);
     CleanupStack::PushL(self);
     self->ConstructL();
     return self;
@@ -54,9 +59,11 @@ CCCAContactorVOIPOperation* CCCAContactorVOIPOperation::NewLC(const TDesC& aPara
 // CCCAContactorVOIPOperation::NewL()
 // -----------------------------------------------------------------------------
 //
-CCCAContactorVOIPOperation* CCCAContactorVOIPOperation::NewL(const TDesC& aParam, TUint32 aServiceId)
+CCCAContactorVOIPOperation* CCCAContactorVOIPOperation::NewL(const TDesC& aParam, 
+        TUint32 aServiceId, const TDesC8& aContactLinkArray)
     {
-    CCCAContactorVOIPOperation* self=CCCAContactorVOIPOperation::NewLC(aParam, aServiceId);
+    CCCAContactorVOIPOperation* self=CCCAContactorVOIPOperation::NewLC(
+            aParam, aServiceId, aContactLinkArray);
     CleanupStack::Pop(); // self;
     return self;
     }
@@ -77,7 +84,7 @@ void CCCAContactorVOIPOperation::ConstructL()
 void CCCAContactorVOIPOperation::ExecuteLD()
     {
     CleanupStack::PushL(this);
-    CCCAPhoneCall::ExecuteL(iParam, CCCAPhoneCall::ECCACallTypeVoIP, iServiceId);
+    CCCAPhoneCall::ExecuteL(iParam, iContactLinkArray, CCCAPhoneCall::ECCACallTypeVoIP, iServiceId);
     CleanupStack::PopAndDestroy(this);
     }
 // End of File

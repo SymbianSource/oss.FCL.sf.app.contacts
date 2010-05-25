@@ -714,14 +714,22 @@ void CCmsPhonebookProxy::FindXSPStoresL( CDesCArrayFlat& aArray )
             uri.Create( KSPMaxDesLength );
             CleanupClosePushL( uri );
             property->GetValue( uri );
-            TVPbkContactStoreUriPtr uriPtr( uri );
-            if( !iUriList->IsIncluded( uriPtr ) ) 
-            	{
-            	iUriList->AppendL( uriPtr );            
-            	}
-            aArray.AppendL( uri );
+            // Don't add native contact DB's into the find array. Some service 
+            // providers might add e.g. default contacts db as contact store.
+            // Unnecessary lookup from default contacts store is very slow
+            // if there are thousands of contacts, and it will delay the launch
+            // of CCA UI with tens of seconds. 
+            if( IsXspStoreUri( uri ) )
+                {
+                TVPbkContactStoreUriPtr uriPtr( uri );
+                if( !iUriList->IsIncluded( uriPtr ) ) 
+                    {
+                    iUriList->AppendL( uriPtr );            
+                    }
+                aArray.AppendL( uri );
+                iXspStoresInstalled = ETrue;
+                }
             CleanupStack::PopAndDestroy();  //uri
-            iXspStoresInstalled = ETrue;
             }
         CleanupStack::PopAndDestroy();  //property
         }
@@ -820,20 +828,24 @@ void CCmsPhonebookProxy::VPbkSingleContactOperationFailed(
 TBool CCmsPhonebookProxy::IsXspContact( const MVPbkContactLink& aContactLink ) const
     {
     //find whether the contact belongs to XSP Store using the StoreProperties
-    TBool xspContact = ETrue;
-    const TDesC& storeName = aContactLink.ContactStore().StoreProperties().Uri().UriDes();
-    
-    using namespace VPbkContactStoreUris;
-    if( ( storeName.CompareF( DefaultCntDbUri() ) == 0 ) ||
-            ( storeName.CompareF( SimGlobalAdnUri() ) == 0 ) ||
-            ( storeName.CompareF( SimGlobalFdnUri() ) == 0 ) ||
-            ( storeName.CompareF( SimGlobalSdnUri() ) == 0 ) )
-        {
-        xspContact = EFalse;
-        }
-
-    return xspContact;    
+    return IsXspStoreUri( 
+        aContactLink.ContactStore().StoreProperties().Uri().UriDes() );
     }
 
+// ----------------------------------------------------------
+// CCmsPhonebookProxy::IsXspStoreUri
+// ----------------------------------------------------------
+//
+TBool CCmsPhonebookProxy::IsXspStoreUri( const TDesC& aStoreUri ) const
+    {
+    if( aStoreUri.CompareF( VPbkContactStoreUris::DefaultCntDbUri() ) == 0 ||
+        aStoreUri.CompareF( VPbkContactStoreUris::SimGlobalAdnUri() ) == 0 ||
+        aStoreUri.CompareF( VPbkContactStoreUris::SimGlobalFdnUri() ) == 0 ||
+        aStoreUri.CompareF( VPbkContactStoreUris::SimGlobalSdnUri() ) == 0 )
+        {
+        return EFalse;
+        }
+    return ETrue;
+    }
 
 // End of File

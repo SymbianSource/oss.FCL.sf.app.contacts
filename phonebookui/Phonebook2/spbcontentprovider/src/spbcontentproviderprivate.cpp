@@ -22,6 +22,8 @@
 #include "spbcontent.h"
 #include "spbcontactstorelistener.h"
 
+#include <MVPbkContactStore.h>
+
 // CONSTANTS 
 namespace{
 
@@ -163,6 +165,29 @@ void CSpbContentProviderPrivate::GetContentL(
             aIconId = content->IconId();
             aType = content->Type();
             }
+        }
+    }
+
+// ----------------------------------------------------------------------------
+// CSpbContentProviderPrivate::CleanContentL
+// ----------------------------------------------------------------------------
+//
+void CSpbContentProviderPrivate::CleanContentL( 
+       MVPbkContactStore& aStore )
+    {
+    TInt i=0;
+    while( i < iContentCache.Count() )
+       {
+       CSpbContent* content = iContentCache[i];
+       if ( &content->Link().ContactStore() == &aStore )
+           {
+           iContentCache.Remove( i );
+           delete content;
+           }
+       else
+           {
+           i++;
+           }
         }
     }
 

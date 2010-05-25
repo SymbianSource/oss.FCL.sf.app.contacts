@@ -265,4 +265,5 @@ RESOURCE TBUF r_qtn_phob_popup_incomplete_address         { buf = qtn_phob_popup
 RESOURCE TBUF r_qtn_phob_commlauncher_onelinepreview      { buf = qtn_phob_commlauncher_onelinepreview; }
 RESOURCE TBUF r_qtn_cca_voip_call_with_servicename { buf = qtn_cca_voip_call_single_service; }
 RESOURCE TBUF r_qtn_cca_ftu_discover               { buf = qtn_cca_ftu_discover; }
+RESOURCE TBUF r_qtn_cca_error_note_maps_not_found  { buf = qtn_cca_error_note_maps_not_found; }
 //End of File

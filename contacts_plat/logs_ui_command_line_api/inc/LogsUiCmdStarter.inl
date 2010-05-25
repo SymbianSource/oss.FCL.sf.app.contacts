@@ -20,8 +20,8 @@
 #define LOGSUICMDSTARTER_INL
 
 //  INCLUDES
-#include <ApGTask.h>
-#include <ApGCli.h>
+#include <apgtask.h>
+#include <apgcli.h>
 
 // --------------------------------------------------------------------------
 // LogsUiCmdStarter::CmdStart

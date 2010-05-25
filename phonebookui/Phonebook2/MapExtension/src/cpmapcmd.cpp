@@ -182,7 +182,7 @@ void CPmapCmd::ConstructL()
                 
     if ( !iMapViewProvider )
         {
-        User::Leave( KErrGeneral );
+        User::Leave( KErrNotSupported );
         }
     
     if( iUiControl && ! iContact )

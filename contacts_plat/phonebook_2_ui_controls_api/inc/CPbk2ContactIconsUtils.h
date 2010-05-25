@@ -21,7 +21,7 @@
 
 // INCLUDE FILES
 #include <e32base.h>
-#include <tpbk2iconid.h>
+#include <TPbk2IconId.h>
 // FORWARD DECLARATIONS
 class CPbk2StorePropertyArray;
 class MPbk2ContactUiControlExtension;

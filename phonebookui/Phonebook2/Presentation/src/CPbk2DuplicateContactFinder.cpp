@@ -470,7 +470,7 @@ TBool CPbk2DuplicateContactFinder::IsFieldMatched( const MVPbkBaseContact* aCont
         const TDesC& compareContactFieldText = 
                 MVPbkContactFieldTextData::Cast(compareContactField->FieldData()).Text();
         const TDesC& contactFieldText = 
-                MVPbkContactFieldTextData::Cast(compareContactField->FieldData()).Text();
+                MVPbkContactFieldTextData::Cast(contactField->FieldData()).Text();
         if ( compareContactFieldText.CompareF( contactFieldText ) == 0 )
             {
             result = ETrue;

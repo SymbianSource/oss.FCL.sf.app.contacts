@@ -291,8 +291,10 @@ void CCCAppMyCardHeaderControl::HandlePointerEventL(
         {
         case TPointerEvent::EButton1Down:
  
-            // Image selection popup
-        	if ( iPortraitImage->Rect().Contains(aPointerEvent.iPosition) )
+            // Image selection popup. If image is not set, then don't report
+            // touch events
+        	if ( iPortraitImage->Bitmap() &&
+        	     iPortraitImage->Rect().Contains(aPointerEvent.iPosition) )
         		{
 				// Show the feedback
 				MTouchFeedback* feedback = MTouchFeedback::Instance();

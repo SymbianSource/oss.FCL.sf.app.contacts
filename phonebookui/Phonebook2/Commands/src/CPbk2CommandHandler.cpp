@@ -705,16 +705,13 @@ inline void CPbk2CommandHandler::PerformStoreSpecificFilteringL(
             CEikMenuPane* aMenuPane,
             MPbk2ContactUiControl& aControl )
     {
-    // ETrue if all selected contacts are read-only
-    TBool readOnly = AreSelectedContactsFromReadOnlyStoreL( aControl );
-
     switch (aResourceId)
         {
         case R_PHONEBOOK2_NAMESLIST_CONTEXT_MENU_MARKED_ITEMS: // FALLTHROUGH
         case R_PHONEBOOK2_NAMESLIST_DELETE_MENU:
             {
             // Weed out commands not meant to be used with read only stores
-            if (readOnly)
+            if (AreSelectedContactsFromReadOnlyStoreL( aControl ))
                 {
                 aMenuPane->SetItemDimmed(EPbk2CmdDeleteMe, ETrue);
                 }
@@ -727,7 +724,7 @@ inline void CPbk2CommandHandler::PerformStoreSpecificFilteringL(
                     iContactRelocator->IsPhoneMemoryInConfigurationL();
 
             // Weed out commands not meant to be used with read only stores
-            if (readOnly)
+            if (AreSelectedContactsFromReadOnlyStoreL( aControl ))
                 {
                 aMenuPane->SetItemDimmed(EPbk2CmdDeleteMe, ETrue);
                 aMenuPane->SetItemDimmed(EPbk2CmdEditMe, ETrue);
@@ -770,7 +767,7 @@ inline void CPbk2CommandHandler::PerformStoreSpecificFilteringL(
         case R_PHONEBOOK2_CONTACTINFO_CONTEXT_MENU:
             {
             // Weed out commands not meant to be used with read only stores
-            if (readOnly)
+            if (AreSelectedContactsFromReadOnlyStoreL( aControl ))
                 {
                 aMenuPane->SetItemDimmed(EPbk2CmdEditMe, ETrue);
                 }

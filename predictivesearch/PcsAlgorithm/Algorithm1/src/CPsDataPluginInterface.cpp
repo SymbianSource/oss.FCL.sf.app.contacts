@@ -175,17 +175,17 @@ CPsDataPlugin* CPsDataPluginInterface::InstantiatePlugInFromImpUidL( const TUid&
 // CPsDataPluginInterface::RequestForDataL
 // Requests for data from the data store
 // ---------------------------------------------------------------------------- 
-void  CPsDataPluginInterface::RequestForDataL(TDesC& aDataStore)
+void CPsDataPluginInterface::RequestForDataL(TDesC& aDataStore)
 {
 
     PRINT ( _L("Enter CPsDataPluginInterface::RequestForDataL") );
    
     for ( TInt idx = 0; idx < iPsDataPluginInstances.Count(); idx++ )
     {
-        if(iPsDataPluginInstances[idx]->IsDataStoresSupportedL(aDataStore))
+        if ( iPsDataPluginInstances[idx]->IsDataStoresSupportedL(aDataStore) )
         {
-       		iPsDataPluginInstances[idx]->RequestForDataL(aDataStore);
-    		break; 
+            iPsDataPluginInstances[idx]->RequestForDataL(aDataStore);
+            break; 
         }
     }
     
@@ -197,14 +197,14 @@ void  CPsDataPluginInterface::RequestForDataL(TDesC& aDataStore)
 // CPsDataPluginInterface::GetAllSupportedDataStoresL
 // Requests all the supported data stores from data adapters
 // ---------------------------------------------------------------------------- 
-void  CPsDataPluginInterface::GetAllSupportedDataStoresL(RPointerArray<TDesC>& aDataStores)
+void CPsDataPluginInterface::GetAllSupportedDataStoresL(RPointerArray<TDesC>& aDataStores)
 {
 
     PRINT ( _L("Enter CPsDataPluginInterface::GetAllSupportedDataStoresL") );
    
     for ( TInt idx = 0; idx < iPsDataPluginInstances.Count(); idx++ )
-    {       
-       iPsDataPluginInstances[idx]->GetSupportedDataStoresL(aDataStores);
+    {
+        iPsDataPluginInstances[idx]->GetSupportedDataStoresL(aDataStores);
     }
     
     PRINT ( _L("End CPsDataPluginInterface::GetAllSupportedDataStoresL") );
@@ -228,11 +228,11 @@ void  CPsDataPluginInterface::GetSupportedDataFieldsL(TDesC& aUri, RArray<TInt>&
        
        for ( TInt i(0); i<dataStores.Count(); i++)
        {
-	       	if ( dataStores[i]->Compare(aUri) == 0)
-	       	{
-	       		iPsDataPluginInstances[idx]->GetSupportedDataFieldsL(aDataFields);
-	       		break;
-	       	}
+           if ( dataStores[i]->Compare(aUri) == 0 )
+           {
+               iPsDataPluginInstances[idx]->GetSupportedDataFieldsL(aDataFields);
+               break;
+           }
        }
        CleanupStack::PopAndDestroy( &dataStores ); // Close
     }

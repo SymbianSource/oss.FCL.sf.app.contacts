@@ -51,16 +51,20 @@ public:
      * 
      * @param aParam The address to make the voip call to
      * @param aServiceID The voip service ID
+     * @param aContactLinkArray Streamed contact link array of contact to be communicated at
      */
-    static CCCAContactorVOIPOperation* NewL(const TDesC& aParam, TUint32 aServiceID);
+    static CCCAContactorVOIPOperation* NewL(const TDesC& aParam, 
+            TUint32 aServiceID, const TDesC8& aContactLinkArray);
 
     /**
      * Two-phased constructor.
      * 
      * @param aParam The address to make the voip call to
      * @param aServiceID The voip service ID
+     * @param aContactLinkArray Streamed contact link array of contact to be communicated at
      */
-    static CCCAContactorVOIPOperation* NewLC(const TDesC& aParam, TUint32 aServiceID);
+    static CCCAContactorVOIPOperation* NewLC(const TDesC& aParam, 
+            TUint32 aServiceID, const TDesC8& aContactLinkArray);
     
     /**
      * Executes the operation (launches the voip call)
@@ -74,8 +78,10 @@ private:
      * 
      * @param aParam The address to make the voip call to
      * @param aServiceID The voip service ID
+     * @param aContactLinkArray Streamed contact link array of contact to be communicated at
      */
-    CCCAContactorVOIPOperation(const TDesC& aParam, TUint32 aServiceID);
+    CCCAContactorVOIPOperation(const TDesC& aParam, 
+            TUint32 aServiceID, const TDesC8& aContactLinkArray);
 
     /**
      * EPOC default constructor for performing 2nd stage construction
@@ -86,6 +92,10 @@ private:
      * The voip service id
      */
     TUint32 iServiceId;
+    
+    
+    //Doesnt Own : Streamed contact link array of contact
+    const TDesC8& iContactLinkArray;
 
     };
 

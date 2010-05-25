@@ -282,6 +282,7 @@ class CPcsContactStore: public CActive,
         TInt  iAllContactLinksCount;
         TInt  iFetchedContactCount;
         TBool iContactViewReady;
+        TCachingStatus iOngoingCacheUpdate;
 
         /**
          * Variable to store the next state for the RunL to take appropriate action

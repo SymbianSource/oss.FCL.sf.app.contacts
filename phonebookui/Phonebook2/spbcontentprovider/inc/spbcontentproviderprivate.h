@@ -31,6 +31,7 @@ class CSpbContent;
 class CVPbkContactManager;
 class CSpbContactStoreListener;
 class CPbk2StoreManager;
+class MVPbkContactStore;
 
 /**
  * Private implementation of the content provider
@@ -68,7 +69,12 @@ public: // From CSpbContentProvider
             
     /// From CSpbContentProvider
     inline CGulIcon* CreateServiceIconLC( 
-        const TPbk2IconId& aIconId );
+        const TPbk2IconId& aIconId );		
+    
+    /**
+     * Clean the content in the cache if it belongs to the specified store
+     */
+    void CleanContentL( MVPbkContactStore& aStore );
     
 private: // constructors
     

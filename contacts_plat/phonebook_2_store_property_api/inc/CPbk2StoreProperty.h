@@ -21,9 +21,9 @@
 
 // INCLUDE FILES
 #include <e32base.h>
-#include <tvpbkcontactstoreuriptr.h>
-#include <pbk2contentidentifiers.hrh>
-#include <pbk2contactview.hrh>
+#include <TVPbkContactStoreUriPtr.h>
+#include <Pbk2ContentIdentifiers.hrh>
+#include <Pbk2ContactView.hrh>
 
 // FORWARD DECLARATIONS
 class TResourceReader;

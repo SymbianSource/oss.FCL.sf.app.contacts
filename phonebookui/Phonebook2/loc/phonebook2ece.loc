@@ -243,6 +243,7 @@
 // r:5.1
 //
 #define qtn_phob_comlauncher_show_on_map "Show on map"
+
 // d:Text for the video call communication method.
 // l:list_single_large_graphic_pane_t1
 // r:5.0
@@ -344,6 +345,12 @@
 // r:5.1
 //
 #define qtn_cca_popup_assign_from_map "Assign from map:"
+
+// d:Shown when the user selects "Find on map" in CCA, but there's no location app installed
+// l:popup_note_window
+// r:5.2
+//
+#define qtn_cca_error_note_maps_not_found "Maps not found"
 
 // d:Prompt text for select number/address popup if only one VOIP Service is available in the phone
 // d:%U will be replaced with ServiceName and truncated to fit

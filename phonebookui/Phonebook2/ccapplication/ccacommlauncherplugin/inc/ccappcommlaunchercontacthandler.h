@@ -468,6 +468,12 @@ private: // data
      * Not own.
      */
     CCCAppCommLauncherPlugin& iPlugin;
+    
+    /**
+     * Address amount cache
+     * Own
+     */
+    RHashMap<TInt, TInt> iAddressCache;
     };
 
 #endif // C_CCAPPCOMMLAUNCHERCONTACTHANDLER_H

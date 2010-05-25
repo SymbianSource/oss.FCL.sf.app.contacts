@@ -108,6 +108,10 @@ CNamesListUIExtensionPlugin::~CNamesListUIExtensionPlugin()
         {
         iLocalStore->Close( *this );
         }
+    if ( iAdnStore )
+        {
+        iAdnStore->Close( *this );
+        }
     Release( iAppServices );
     }
 
@@ -515,6 +519,7 @@ MPbk2ContactUiControlExtension*
 		mycard = iNamesListExViewRef->MyCard();
 		}
     InitLocalStoreObserverL();
+    InitAdnStoreObserverL();
     
     MPbk2ContactUiControlExtension* extension = 
         CPbk2NameslistUiControlExtension::NewL( aContactManager, ContentProviderL(), mycard );
@@ -722,10 +727,12 @@ void CNamesListUIExtensionPlugin::HandlePbk2Command( TInt aCommand )
 //
 void CNamesListUIExtensionPlugin::StoreReady( MVPbkContactStore& aContactStore )
     {
-    if ( aContactStore.StoreProperties().Name().UriDes().Compare
+    if ( !aContactStore.StoreProperties().Uri().UriDes().Compare
             ( VPbkContactStoreUris::DefaultCntDbUri() ) )
         {
-        iLocalStoreContactsCount = iLocalStore->StoreInfo().NumberOfContactsL();
+        TRAP_IGNORE( 
+                iLocalStoreContactsCount = iLocalStore->StoreInfo().NumberOfContactsL(); 
+                );
         }
     }
 
@@ -734,9 +741,13 @@ void CNamesListUIExtensionPlugin::StoreReady( MVPbkContactStore& aContactStore )
 // --------------------------------------------------------------------------
 //
 void CNamesListUIExtensionPlugin::StoreUnavailable
-        ( MVPbkContactStore& /*aContactStore*/, TInt /*aReason*/ )
+        ( MVPbkContactStore& aContactStore, TInt /*aReason*/ )
     {
-
+    if( iContentProvider )
+       {
+       // when store unavailable, its cached content is to be deleted
+       iContentProvider->CleanContentL( aContactStore );    
+       }
     }
 
 // --------------------------------------------------------------------------
@@ -746,8 +757,8 @@ void CNamesListUIExtensionPlugin::StoreUnavailable
 void CNamesListUIExtensionPlugin::HandleStoreEventL(
         MVPbkContactStore& aContactStore,
         TVPbkContactStoreEvent aStoreEvent )
-    {
-    if ( aContactStore.StoreProperties().Name().UriDes().Compare
+    {   
+    if ( !aContactStore.StoreProperties().Uri().UriDes().Compare
             ( VPbkContactStoreUris::DefaultCntDbUri() ) )
         {
         switch ( aStoreEvent.iEventType )
@@ -781,6 +792,23 @@ void CNamesListUIExtensionPlugin::InitLocalStoreObserverL()
         if ( iLocalStore )
             {
             iLocalStore->OpenL( *this );
+            }
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CNamesListUIExtensionPlugin::InitAdnStoreObserverL
+// --------------------------------------------------------------------------
+//
+void CNamesListUIExtensionPlugin::InitAdnStoreObserverL()
+    {
+    if ( !iAdnStore )
+        {
+        MVPbkContactStoreList& storeList = iAppServices->ContactManager().ContactStoresL();
+        iAdnStore = storeList.Find( VPbkContactStoreUris::SimGlobalAdnUri() );
+        if ( iAdnStore )
+            {
+            iAdnStore->OpenL( *this );
             }
         }
     }

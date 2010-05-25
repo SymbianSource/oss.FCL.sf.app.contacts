@@ -21,7 +21,7 @@
 
 // INCLUDES
 #include <e32base.h>
-#include <pbk2viewinfo.hrh>
+#include <Pbk2ViewInfo.hrh>
 
 // FORWARD DECLARATIONS
 class CPbk2ViewNode;

@@ -40,7 +40,7 @@ END
 SOURCEPATH      ../src
 SOURCE          proxy.cpp
 SOURCE          cpcscontactfetch.cpp
-SOURCE 		CPsContactDataAdapter.cpp
+SOURCE          CPsContactDataAdapter.cpp
 SOURCE          cpcscontactstore.cpp
 
 USERINCLUDE     ../inc
@@ -54,7 +54,7 @@ LIBRARY         efsrv.lib
 
 LIBRARY         flogger.lib
 LIBRARY         bafl.lib
-LIBRARY	    	PcsUtils.lib
+LIBRARY         PcsUtils.lib
 LIBRARY         VPbkEng.lib
 LIBRARY         centralrepository.lib
 LIBRARY         FeatMgr.lib

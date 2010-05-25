@@ -94,21 +94,21 @@ class CPsPropertyHandler : public CActive
         * @param aObserver The object to be used to
         *                  handle updates from the server.
         */
-        CPsPropertyHandler(CPSRequestHandler* aRequestHandler );
+        CPsPropertyHandler( CPSRequestHandler* aRequestHandler );
 
         /**
         * ConstructL.
         * Performs the second phase construction of a
         * CPsPropertyHandler object.
         */
-        void ConstructL(  );
+        void ConstructL();
         
     private: // Data
     	
     	/**
     	* iRequestHandler, object to RequestHandler through which 
     	* observers will be accessed
-    	*/		
+    	*/
 		CPSRequestHandler* iRequestHandler;
 		
 		/**

@@ -21,8 +21,8 @@
 
 // INCLUDE FILES
 #include <e32base.h>
-#include <pbk2contactview.hrh>
-#include <tpbk2iconid.h>
+#include <Pbk2ContactView.hrh>
+#include <TPbk2IconId.h>
 
 // FORWARD DECLARATIONS
 class TResourceReader;

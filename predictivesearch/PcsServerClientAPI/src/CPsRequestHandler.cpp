@@ -23,6 +23,7 @@
 
 // USER INCLUDE
 #include "CPsPropertyHandler.h"
+#include "CPsUpdateHandler.h"
 #include "CPcsDebug.h"
 #include "CPsPattern.h"
 
@@ -41,7 +42,7 @@ EXPORT_C CPSRequestHandler* CPSRequestHandler::NewL()
 
     PRINT ( _L("End CPSRequestHandler::NewL") );
 
-    return (self);
+    return self;
     }
 
 // -----------------------------------------------------------------------------
@@ -74,6 +75,11 @@ void CPSRequestHandler::ConstructL()
     // Initiate the property handler
     iPropertyHandler = CPsPropertyHandler::NewL(this);
 
+    // Initiate handlers for cache updating
+    iContactAddedHandler = CPsUpdateHandler::NewL( *this, EPsKeyContactAddedCounter );
+    iContactModifiedHandler = CPsUpdateHandler::NewL( *this, EPsKeyContactModifiedCounter );
+    iContactRemovedHandler = CPsUpdateHandler::NewL( *this, EPsKeyContactRemovedCounter );
+    
     // Initialize the contact id converter
     iConverter = NULL;
 
@@ -107,39 +113,15 @@ CPSRequestHandler::~CPSRequestHandler()
     // Close the session
     iSession.Close();
 
-    // Cleanup
-    if (iSearchQueryBuffer)
-        {
-        delete iSearchQueryBuffer;
-        }
-
-    if (iPendingSearchQueryBuffer)
-        {
-        delete iPendingSearchQueryBuffer;
-        }
-
-    if (iSearchDataBuffer)
-        {
-        delete iSearchDataBuffer;
-        }
-
-    if (iSearchResultsBuffer)
-        {
-        delete iSearchResultsBuffer;
-        iSearchResultsBuffer = NULL;
-        }
-
-    if (iPropertyHandler)
-        {
-        delete iPropertyHandler;
-        iPropertyHandler = NULL;
-        }
-
-    if (iConverter)
-        {
-        delete iConverter;
-        iConverter = NULL;
-        }
+    delete iSearchQueryBuffer;
+    delete iPendingSearchQueryBuffer;
+    delete iSearchDataBuffer;
+    delete iSearchResultsBuffer;
+    delete iPropertyHandler;
+    delete iContactAddedHandler;
+    delete iContactModifiedHandler;
+    delete iContactRemovedHandler;
+    delete iConverter;
 
     iObservers.Reset();
     iObservers.Close();
@@ -1125,7 +1107,7 @@ EXPORT_C void CPSRequestHandler::GetDataOrderL(const TDesC& aURI,
     TInt fieldCount = resultStream.ReadUint16L();
 
     // Fields
-    for (int i = 0; i < fieldCount; i++)
+    for (TInt i = 0; i < fieldCount; i++)
         {
         TInt fieldId = resultStream.ReadUint16L();
         aDataOrder.Append(fieldId);
@@ -1266,7 +1248,18 @@ EXPORT_C void CPSRequestHandler::ChangeSortOrderL(const TDesC& aURI, RArray<TInt
     iSearchDataBuffer = NULL;
 
     PRINT ( _L("End CPSRequestHandler::ChangeSortOrderL") );
+    }
 
+// -----------------------------------------------------------------------------
+// CPSRequestHandler::NotifyCachingStatus()
+// 
+// -----------------------------------------------------------------------------
+void CPSRequestHandler::NotifyCachingStatus( TCachingStatus aStatus, TInt aError )
+    {
+    for ( TInt i = 0; i < iObservers.Count(); i++ )
+        {
+        iObservers[i]->CachingStatus(aStatus, aError);
+        }
     }
 
 // End of File

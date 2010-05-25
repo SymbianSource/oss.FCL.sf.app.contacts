@@ -218,13 +218,13 @@ void CCCAppMyCardPlugin::DoActivateL(
     CCCAppViewPluginAknView::DoActivateL(
         aPrevViewId, aCustomMessageId, aCustomMessage );
     
+    iMyCard->FetchMyCardL(); 
+    
     // Set view title
     HBufC* title = iCoeEnv->AllocReadResourceLC( R_QTN_CCA_TITLE_MY_CARD );
     SetTitleL( *title );
     CleanupStack::PopAndDestroy( title );
-    
-    iMyCard->FetchMyCardL();
-    
+
     CCA_DP(KMyCardLogFile, CCA_L("<-CCCAppMyCardPlugin::DoActivateL()"));
     }
 
@@ -546,4 +546,9 @@ void CCCAppMyCardPlugin::CopyDetailL()
     CommandHandlerL()->HandleCommandL( EPbk2CmdCopyDetail, *iOwnContainer, NULL );
     }
 
+void CCCAppMyCardPlugin::EnableOptionsMenu( TBool aEnable )
+    {
+    Cba()->MakeCommandVisibleByPosition( 
+           CEikButtonGroupContainer::ELeftSoftkeyPosition, aEnable );
+    }
 // End of File

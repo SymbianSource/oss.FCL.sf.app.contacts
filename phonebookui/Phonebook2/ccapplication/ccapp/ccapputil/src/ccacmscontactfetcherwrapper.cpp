@@ -112,7 +112,8 @@ void CCCAppCmsContactFetcherWrapper::ConstructL()
     {
     CCA_DP(KCCAppUtilLogFile, CCA_L("->CCCAppCmsContactFetcherWrapper::ConstructL()"));
 
-    TRAPD( err, StartFetcherL( ETrue));
+    // The setting of default number is disabled when opening CCA for better performance 
+    TRAPD( err, StartFetcherL( EFalse ));
     // problem can either be with connecting to CMS or with opening the contact
     iErrorsOccured = err;
 

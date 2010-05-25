@@ -34,35 +34,39 @@ class CPsClientData;
 */
 class MPsResultsObserver
 {
-	public:
+    public:
 
-		/**
-		* HandlePsResultsUpdateL.
-		* Handle updates from the server.
-		* 
-		* @param searchResults Search results returned from the server.
-		* @param searchSeqs    List of matching character sequences.
-		*/
-		virtual void HandlePsResultsUpdate(RPointerArray<CPsClientData>& searchResults,
-		                                    RPointerArray<CPsPattern>& searchSeqs) = 0;
-		                                    
-
-		/**
-		* HandlePsErrorL.
-		* Handle errors from the server.
-		* 
-		* @param aErrorCode Search errors returned from the server.	    
-		*/	                                        
-		virtual void HandlePsError(TInt aErrorCode) = 0;
         /**
-        * CachingStatus
-        * Gets called when caching is completed.
-        * Observers need to implement this function accordingly
-        * to take action after cache completion
-        * @param aStatus - caching status, 20 - Caching completes succesfully, 30 - Caching completed with errors
-        * @param aError - Any error that occurred while caching. KErrNone if no error else the error code
+        * HandlePsResultsUpdateL.
+        * Handle updates from the server.
+        * 
+        * @param searchResults Search results returned from the server.
+        * @param searchSeqs    List of matching character sequences.
         */
-        virtual void CachingStatus(TCachingStatus& aStatus, TInt& aError) = 0;   
+        virtual void HandlePsResultsUpdate(RPointerArray<CPsClientData>& aSearchResults,
+                                           RPointerArray<CPsPattern>& aSearchSeqs) = 0;
+
+        /**
+        * HandlePsErrorL.
+        * Handle errors from the server.
+        * 
+        * @param aErrorCode Search errors returned from the server.
+        */
+        virtual void HandlePsError(TInt aErrorCode) = 0;
+
+        /**
+        * CachingStatus.
+        * Gets called when caching is completed, or cache has been modified after
+        * the initial caching. For update events, it's not guaranteed that function
+        * gets called separately for each modification in case there are several same kind of
+        * modifications happening in rapid sequence.
+        * Observers need to implement this function accordingly
+        * to take action after cache completion or update.
+        * @param aStatus - caching status
+        * @param aError - Any error that occurred while caching. 
+        *                 KErrNone if no error, else the error code
+        */
+        virtual void CachingStatus(TCachingStatus& aStatus, TInt& aError) = 0;
 };
 
 #endif // __M_PS_RESULTS_OBSERVER__

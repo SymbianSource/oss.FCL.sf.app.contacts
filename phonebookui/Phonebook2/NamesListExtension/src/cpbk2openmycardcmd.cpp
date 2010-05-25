@@ -168,35 +168,25 @@ void CPbk2OpenMyCardCmd::LaunchCcaL()
         {
         // Speed up mycard launching by constructing the view model here.
         // This information is not mandatory for mycard launching however.
-        CBufFlat* buffer = CBufFlat::NewL( KKilo );
-        CleanupStack::PushL( buffer );
-        RBufWriteStream stream( *buffer );
-        CleanupClosePushL( stream );
-
-        // create model and dump it into stream
-        CSpbContactDataModel* model = CSpbContactDataModel::NewL( 
-            iMyCard->ContactManager(), *CCoeEnv::Static(), 
-            R_PBK2_MYCARD_FIELD_CLIP_SELECTOR );
-        CleanupStack::PushL( model );
-
         if( iMyCard->MyCardState() == CPbk2MyCard::EExisting )
             {
-            // preset contact data model to contain my cards data.
             CPbk2PresentationContact* contact = PresentationContactL();
             if( contact )
                 {
-                model->SetDataL( *contact, NULL );
+                // preset contact data model to contain my cards data.
+                SetContactDataL( *parameter, contact );
+                }
+            else
+                {
+                // special case when we have mycard but it's not loaded yet.
+                SetContactDataL( *parameter, iMyCard->MyCardLink() );
                 }
             }
-        model->ExternalizeL( stream );
-        CleanupStack::PopAndDestroy( 2, &stream ); // model
-
-        // set model dump as parameter
-        TPtrC8 buf( buffer->Ptr( 0 ) );
-        TPtrC16 data( (TUint16*)buf.Ptr(), ( buf.Size() + 1 ) / 2 );
-        parameter->SetContactDataFlag( MCCAParameter::EContactDataModel );
-        parameter->SetContactDataL( data );
-        CleanupStack::PopAndDestroy( buffer ); 
+        else
+            {
+            // My card does not exist. Give empty model as parameter.
+            SetContactDataL( *parameter );
+            }
         }
 
     // Sync call
@@ -205,6 +195,56 @@ void CPbk2OpenMyCardCmd::LaunchCcaL()
 
     iState = ERunning;
     IssueRequest();
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2OpenMyCardCmd::SetContactDataL
+// --------------------------------------------------------------------------
+//
+void CPbk2OpenMyCardCmd::SetContactDataL( MCCAParameter& aParam, MVPbkContactLink* aLink )
+    {
+    if( aLink )
+        {
+        HBufC8* link8 = aLink->PackLC();                        
+        HBufC16* link16 = HBufC16::NewLC( link8->Length() );
+        link16->Des().Copy( *link8 );
+        aParam.SetContactDataFlag( MCCAParameter::EContactLink );
+        aParam.SetContactDataL( link16->Des() );
+        CleanupStack::PopAndDestroy( 2, link8 ); 
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2OpenMyCardCmd::SetContactDataL
+// --------------------------------------------------------------------------
+//
+void CPbk2OpenMyCardCmd::SetContactDataL( MCCAParameter& aParam, CPbk2PresentationContact* aContact )
+    {
+    CBufFlat* buffer = CBufFlat::NewL( KKilo );
+    CleanupStack::PushL( buffer );
+    RBufWriteStream stream( *buffer );
+    CleanupClosePushL( stream );
+
+    // create model and dump it into stream
+    CSpbContactDataModel* model = CSpbContactDataModel::NewL( 
+        iMyCard->ContactManager(), *CCoeEnv::Static(), 
+        R_PBK2_MYCARD_FIELD_CLIP_SELECTOR );
+    CleanupStack::PushL( model );
+
+    if( aContact )
+        {
+        model->SetDataL( *aContact, NULL );
+        }
+    
+    model->ExternalizeL( stream );
+    CleanupStack::PopAndDestroy( 2, &stream ); // model
+
+    // set model dump as parameter
+    TPtrC8 buf( buffer->Ptr( 0 ) );
+    TPtrC16 data( (TUint16*)buf.Ptr(), ( buf.Size() + 1 ) / 2 );
+    aParam.SetContactDataFlag( MCCAParameter::EContactDataModel );
+    aParam.SetContactDataL( data );
+    CleanupStack::PopAndDestroy( buffer ); 
     }
 
 // --------------------------------------------------------------------------
