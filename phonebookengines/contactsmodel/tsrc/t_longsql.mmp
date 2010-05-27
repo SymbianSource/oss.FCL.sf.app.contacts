@@ -20,7 +20,7 @@ TARGETTYPE		EXE
 CAPABILITY   ReadUserData WriteUserData
 SOURCEPATH		../tsrc
 SOURCE			t_longsql.cpp
-systeminclude /epoc32/include 
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN 
 userinclude ../inc ../tsrc	
 
 LIBRARY			euser.lib cntmodel.lib

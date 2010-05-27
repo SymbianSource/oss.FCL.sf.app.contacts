@@ -23,6 +23,10 @@
 #include <cntfldst.h>
 #include <phbksync.h>
 
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "cntsyncecom.h"
+#endif
+
 // include templates for CleanupResetAndDestroyPushL(T)
 #include "cntviewprivate.h"
 
@@ -34,8 +38,8 @@ _LIT(KDatabaseFileName,"C:T_ICCMULTIPLEPHONEBOOK");
 _LIT(KGivenEditName,"edited name");
 _LIT(KIccName,"icc entry name");
 _LIT(KNonIccName,"non-icc name");
-_LIT(KIccNumber,"020 123 4567");
-_LIT(KNonIccNumber,"020 987 6543");
+_LIT(KIccNumber,"020 794 60123");
+_LIT(KNonIccNumber,"020 794 60060");
 
 _LIT(KPluginName,"phone book synchronizer Implementation");
 _LIT(KTestPluginName,"Test phone book synchronizer Implementation");

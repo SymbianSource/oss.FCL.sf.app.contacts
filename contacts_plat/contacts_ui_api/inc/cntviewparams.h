@@ -74,6 +74,7 @@ enum CntViewId
     groupActionsView,
     historyView,
     importsView,
+    settingsView,
     customPhonebookView = 100, // reserved for internal view plugins, DO NOT USE THESE
     customView = 200 // for all other view plugins
 };

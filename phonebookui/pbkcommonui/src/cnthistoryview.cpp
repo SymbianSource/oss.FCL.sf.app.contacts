@@ -97,7 +97,8 @@ void CntHistoryView::deactivate()
 void CntHistoryView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
 {
     mViewMgr = aMgr;
-    mContact = new QContact(aArgs.value(ESelectedContact).value<QContact>());
+    mArgs = aArgs;
+    mContact = new QContact(mArgs.value(ESelectedContact).value<QContact>());
     
     // Set history view heading
     HbGroupBox* groupBox = static_cast<HbGroupBox*>(docLoader()->findWidget(QString("groupBox")));
@@ -192,7 +193,7 @@ void CntHistoryView::itemActivated(const QModelIndex &index)
         if (!v.isValid())
             return;
         
-        QString service("com.nokia.services.telephony");
+        QString service("com.nokia.symbian.ICallDial");
         QString type("dial(QString)");
         XQServiceRequest snd(service, type, false);
         snd << v.toString();
@@ -217,11 +218,10 @@ Go back to previous view
 */
 void CntHistoryView::showPreviousView()
 {
-    CntViewParameters viewParameters;
     QVariant var;
     var.setValue(*mContact);
-    viewParameters.insert(ESelectedContact, var);
-    mViewMgr->back(viewParameters);
+    mArgs.insert(ESelectedContact, var);
+    mViewMgr->back( mArgs );
 }
 
 /*!

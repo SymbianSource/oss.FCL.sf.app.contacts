@@ -7,9 +7,9 @@ EXPORTS
 	?setViewNavigator@CntDefaultViewManager@@QAEXPAVCntViewNavigator@@@Z @ 6 NONAME ; void CntDefaultViewManager::setViewNavigator(class CntViewNavigator *)
 	??0CntDefaultViewFactory@@QAE@XZ @ 7 NONAME ; CntDefaultViewFactory::CntDefaultViewFactory(void)
 	??1CntMainWindow@@UAE@XZ @ 8 NONAME ; CntMainWindow::~CntMainWindow(void)
-	?view@CntEditView@@UBEPAVHbView@@XZ @ 9 NONAME ; class HbView * CntEditView::view(void) const
-	?qt_metacall@CntBaseSelectionView@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 10 NONAME ; int CntBaseSelectionView::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?viewActivated@CntContactCardView@@IAEXVQContact@QtMobility@@VQContactDetail@3@@Z @ 11 NONAME ; void CntContactCardView::viewActivated(class QtMobility::QContact, class QtMobility::QContactDetail)
+	?viewActivated@CntContactCardView@@IAEXPAVCntAbstractViewManager@@V?$QMap@HVQVariant@@@@@Z @ 9 NONAME ; void CntContactCardView::viewActivated(class CntAbstractViewManager *, class QMap<int, class QVariant>)
+	?view@CntEditView@@UBEPAVHbView@@XZ @ 10 NONAME ; class HbView * CntEditView::view(void) const
+	?qt_metacall@CntBaseSelectionView@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 11 NONAME ; int CntBaseSelectionView::qt_metacall(enum QMetaObject::Call, int, void * *)
 	?closeView@CntBaseSelectionView@@AAEXXZ @ 12 NONAME ; void CntBaseSelectionView::closeView(void)
 	?isDefault@CntEditView@@UBE_NXZ @ 13 NONAME ; bool CntEditView::isDefault(void) const
 	??_ECntViewNavigator@@UAE@I@Z @ 14 NONAME ; CntViewNavigator::~CntViewNavigator(unsigned int)

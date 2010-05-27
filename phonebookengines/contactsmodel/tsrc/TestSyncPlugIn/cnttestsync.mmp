@@ -19,7 +19,7 @@
 CAPABILITY   All -TCB
 target cnttestsync.dll
 targettype plugin
-systeminclude /epoc32/include/ecom 
+
 UID				0x10009D8D 0x102035FE
 
 start resource 102035FE.RSS
@@ -27,9 +27,10 @@ target cnttestsync.rsc
 end
 VENDORID 0x70000001
 sourcepath	.
+
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 userinclude	.
 userinclude	../../inc
-systeminclude /epoc32/include 
  
 source          cnttestsync.cpp
 library         euser.lib cntsyncchecker.lib cntmodel.lib

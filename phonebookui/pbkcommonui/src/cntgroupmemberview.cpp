@@ -64,7 +64,6 @@ CntGroupMemberView::CntGroupMemberView() :
     mImageLabel(NULL), 
     mListView(NULL),
     mFetchView(NULL),
-    mIsPreviousImageEditorView(false),
     mAvatar(NULL)
 {
 
@@ -84,6 +83,7 @@ CntGroupMemberView::CntGroupMemberView() :
     
     mImageLabel = static_cast<CntImageLabel*>(mDocument->findWidget("editViewImage"));
     connect( mImageLabel, SIGNAL(iconClicked()), this, SLOT(openImageEditor()) );
+    connect( mImageLabel, SIGNAL(iconLongPressed(const QPointF&)), this, SLOT(drawImageMenu(const QPointF&)) );
     
     mListView = static_cast<HbListView*>( mDocument->findWidget("listView") );
     connect(mListView, SIGNAL(longPressed(HbAbstractViewItem*,QPointF)), this,
@@ -92,6 +92,7 @@ CntGroupMemberView::CntGroupMemberView() :
         SLOT(showContactView(const QModelIndex&)));
     
     mHeadingItem = static_cast<CntContactCardHeadingItem*>( mDocument->findWidget("editViewHeading") );
+    connect(mHeadingItem, SIGNAL(passShortPressed(const QPointF&)), this, SLOT(openImageEditor()) );
     connect(mHeadingItem, SIGNAL(passLongPressed(const QPointF&)), this, SLOT(drawImageMenu(const QPointF&)));
 
     // menu actions
@@ -159,13 +160,8 @@ void CntGroupMemberView::activate( CntAbstractViewManager* aMgr, const CntViewPa
         mView->setNavigationAction(mSoftkey);   
         }
         
-    QVariant contact = aArgs.value( ESelectedContact );
+    QVariant contact = aArgs.value( ESelectedGroupContact );
     mGroupContact = new QContact( contact.value<QContact>() );
-    
-    if (aArgs.value(ECustomParam).toInt() == imageEditorView)
-        {    
-            mIsPreviousImageEditorView = true;   
-        }
     
     HbMainWindow* window = mView->mainWindow();
     if ( window )
@@ -203,27 +199,7 @@ void CntGroupMemberView::activate( CntAbstractViewManager* aMgr, const CntViewPa
     frame.setFrameType(HbFrameDrawer::NinePieces);
     mListView->itemPrototypes().first()->setDefaultFrame(frame);
     
-    QContactRelationshipFilter rFilter;
-    rFilter.setRelationshipType(QContactRelationship::HasMember);
-    rFilter.setRelatedContactRole(QContactRelationship::First);
-    rFilter.setRelatedContactId(mGroupContact->id());
-    
-    QContactSortOrder sortOrderFirstName;
-    sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,
-        QContactName::FieldFirst);
-    sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
-
-    QContactSortOrder sortOrderLastName;
-    sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,
-        QContactName::FieldLast);
-    sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
-
-    QList<QContactSortOrder> sortOrders;
-    sortOrders.append(sortOrderFirstName);
-    sortOrders.append(sortOrderLastName);
-
-    mModel = new MobCntModel(getContactManager(), rFilter, sortOrders, false);
-    mListView->setModel(mModel);
+    createModel();
     
     if (aArgs.value(ESelectedAction).toString() == "save")
     {
@@ -242,12 +218,18 @@ void CntGroupMemberView::deactivate()
 
 void CntGroupMemberView::showPreviousView()
 {
-    //save an avatar
-    if (mIsPreviousImageEditorView)
+    //save the contact if avatar has been changed.
+    QContact contact = mViewManager->contactManager( SYMBIAN_BACKEND )->contact(mGroupContact->localId());
+    if ( contact != *mGroupContact )
     {
-        if (!mAvatar->imageUrl().isEmpty())
+        QList<QContactAvatar> details = mGroupContact->details<QContactAvatar>();
+        for (int i = 0; i < details.count(); i++)
         {
-            mViewManager->contactManager( SYMBIAN_BACKEND )->saveContact(mGroupContact);
+            if (!details.at(i).imageUrl().isEmpty())
+            {
+                getContactManager()->saveContact(mGroupContact);
+                break;
+            }
         }
     }
     
@@ -261,7 +243,7 @@ void CntGroupMemberView::openGroupActions()
     viewParameters.insert(EViewId, groupActionsView);
     QVariant var;
     var.setValue(*mGroupContact);
-    viewParameters.insert(ESelectedContact, var);
+    viewParameters.insert(ESelectedGroupContact, var);
     mViewManager->changeView(viewParameters);
 }
 
@@ -269,15 +251,20 @@ void CntGroupMemberView::manageMembers()
 {
     QContactRelationshipFilter membersFilter;
     membersFilter.setRelationshipType(QContactRelationship::HasMember);
-    membersFilter.setRelatedContactRole(QContactRelationshipFilter::First);
+    membersFilter.setRelatedContactRole(QContactRelationship::First);
     membersFilter.setRelatedContactId(mGroupContact->id());   
     mOriginalGroupMembers = getContactManager()->contactIds(membersFilter);
     
     QSet<QContactLocalId> contactsSet = mOriginalGroupMembers.toSet();
     QContactName groupContactName = mGroupContact->detail( QContactName::DefinitionName );
     QString groupName(groupContactName.value( QContactName::FieldCustomLabel ));
+    
+    if (!mFetchView) {
+        mFetchView = new CntFetchContacts(mViewManager->contactManager( SYMBIAN_BACKEND ));
+        connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleManageMembers()));
+    }
     mFetchView->setDetails(HbParameterLengthLimiter(hbTrId("txt_phob_subtitle_1_group")).arg(groupName),
-                           hbTrId("Save"));
+                           hbTrId("txt_common_button_save"));
     mFetchView->displayContacts(CntFetchContacts::popup,
                                 HbAbstractItemView::MultiSelection,
                                 contactsSet);
@@ -285,6 +272,7 @@ void CntGroupMemberView::manageMembers()
 
 void CntGroupMemberView::handleManageMembers()
 {
+    
     QSet<QContactLocalId> selectedContacts = mFetchView->getSelectedContacts();
     
     if (mFetchView->wasCanceled()) {
@@ -321,14 +309,46 @@ void CntGroupMemberView::handleManageMembers()
         membership.setSecond(contact.id());
         addedMemberships.append(membership);
     }
-        
+    
+    QMap<int, QContactManager::Error> errors;
     if (!addedMemberships.isEmpty()) {
-        getContactManager()->saveRelationships(&addedMemberships);
+        getContactManager()->saveRelationships(&addedMemberships, &errors);
     }
     
     if (!removedMemberships.isEmpty()) {
-        getContactManager()->removeRelationships(removedMemberships);
+        getContactManager()->removeRelationships(removedMemberships, &errors);
     }
+    
+    // delete the model and recreate it with relationship changes
+    delete mModel;
+    mModel = 0;
+    
+    createModel();
+}
+
+void CntGroupMemberView::createModel()
+{
+    QContactRelationshipFilter rFilter;
+    rFilter.setRelationshipType(QContactRelationship::HasMember);
+    rFilter.setRelatedContactRole(QContactRelationship::First);
+    rFilter.setRelatedContactId(mGroupContact->id());
+    
+    QContactSortOrder sortOrderFirstName;
+    sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,
+        QContactName::FieldFirst);
+    sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
+
+    QContactSortOrder sortOrderLastName;
+    sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,
+        QContactName::FieldLast);
+    sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
+
+    QList<QContactSortOrder> sortOrders;
+    sortOrders.append(sortOrderFirstName);
+    sortOrders.append(sortOrderLastName);
+
+    mModel = new MobCntModel(getContactManager(), rFilter, sortOrders, false);
+    mListView->setModel(mModel);
 }
 
 void CntGroupMemberView::editGroup()
@@ -337,7 +357,7 @@ void CntGroupMemberView::editGroup()
     viewParameters.insert(EViewId, groupEditorView);
     QVariant var;
     var.setValue(*mGroupContact);
-    viewParameters.insert(ESelectedContact, var);
+    viewParameters.insert(ESelectedGroupContact, var);
     mViewManager->changeView(viewParameters);
 }
 
@@ -394,9 +414,7 @@ void CntGroupMemberView::handleMenu(HbAction* action)
 {
     int row = action->data().toInt();
     HbMenu *menuItem = static_cast<HbMenu*>(sender());
-    QModelIndex index = mModel->index(row, 0);
-    
-    int id = index.data(Qt::UserRole).toInt();
+    QModelIndex index = mModel->index(row);
     
     if ( action == menuItem->actions().first() )
         {
@@ -426,7 +444,6 @@ void CntGroupMemberView::showContactView(const QModelIndex &index)
     QVariant varGroup;
     varGroup.setValue(*mGroupContact);
     viewParameters.insert(ESelectedGroupContact, varGroup);
-    viewParameters.insert(ESelectedAction, "FromGroupMemberView");
     mViewManager->changeView(viewParameters);
         
 }
@@ -440,6 +457,12 @@ void CntGroupMemberView::removeFromGroup(const QModelIndex &index)
     relationship.setFirst(mGroupContact->id());
     relationship.setSecond(selectedContact.id());
     getContactManager()->removeRelationship(relationship);
+    
+    // delete the model and recreate it with relationship changes
+    delete mModel;
+    mModel = NULL;
+    
+    createModel();
 }
 
 void CntGroupMemberView::editContact(const QModelIndex &index)
@@ -474,7 +497,12 @@ void CntGroupMemberView::openImageEditor()
     var.setValue(*mGroupContact);
                 
     CntViewParameters viewParameters;
+    // SelectedGroupContact is needed so we know which group to show
+    // when we come back to this view, and selected contact is needed
+    // for image editor to be able to assign the image to correct contact.
+    viewParameters.insert(ESelectedGroupContact, var);
     viewParameters.insert(ESelectedContact, var);
+    
     viewParameters.insert(EViewId, imageEditorView );
         
     mViewManager->changeView( viewParameters );
@@ -482,8 +510,6 @@ void CntGroupMemberView::openImageEditor()
 
 QContactManager* CntGroupMemberView::getContactManager()
 {
-    if (!mViewManager) return NULL;
-
     return mViewManager->contactManager(SYMBIAN_BACKEND);
 }
 
@@ -493,50 +519,32 @@ Draw the image specific content menu
 void CntGroupMemberView::drawImageMenu(const QPointF &aCoords)
 {
     HbMenu *menu = new HbMenu();
-    HbAction *changeImageAction = menu->addAction(hbTrId("txt_phob_menu_change_picture"));
-    HbAction *removeAction = menu->addAction(hbTrId("txt_phob_menu_remove_image"));
+    HbAction *changeImageAction = menu->addAction(hbTrId("txt_phob_menu_change_picture"), this, SLOT(openImageEditor()));
+    if (mAvatar)
+    {
+        HbAction *removeAction = menu->addAction(hbTrId("txt_phob_menu_remove_image"), this, SLOT(removeImage()));
+    }
     menu->setPreferredPos(aCoords);
-    menu->open(this, SLOT(handleImageMenu(HbAction*)));
+    menu->open();
 }
 
-void CntGroupMemberView::handleImageMenu(HbAction* action)
-{
-    HbMenu *menuItem = static_cast<HbMenu*>(sender());
-    if ( action == menuItem->actions().first() ) {
-        changeImage();
-    }
-    else if (action == menuItem->actions().at(1)) {
-        removeImage();
-    }
-}
-
-void CntGroupMemberView::changeImage()
-{
-    CntViewParameters viewParameters;
-    viewParameters.insert(EViewId, imageEditorView);
-    QVariant var;
-    var.setValue(*mGroupContact);
-    viewParameters.insert(ESelectedContact, var);
-    mViewManager->changeView(viewParameters);
-}
 
 void CntGroupMemberView::removeImage()
 {
-if (mAvatar) 
+    if (mAvatar) 
     {
-    if (!mAvatar->imageUrl().isEmpty())
+        if (!mAvatar->imageUrl().isEmpty())
+        {
+            mGroupContact->removeDetail(mAvatar);
+            // Check if image removable.
+            CntImageUtility imageUtility;
+            if(imageUtility.isImageRemovable(mAvatar->imageUrl().toString()))
             {
-                mGroupContact->removeDetail(mAvatar);
-                // Check if image removable.
-                CntImageUtility imageUtility;
-                if(imageUtility.isImageRemovable(mAvatar->imageUrl().toString()))
-                {
-                    imageUtility.removeImage(mAvatar->imageUrl().toString());
-                }
-                mViewManager->contactManager( SYMBIAN_BACKEND )->saveContact(mGroupContact);
-                mHeadingItem->setIcon(HbIcon("qtg_large_avatar"));
-                
+                imageUtility.removeImage(mAvatar->imageUrl().toString());
             }
+            mViewManager->contactManager( SYMBIAN_BACKEND )->saveContact(mGroupContact);
+            mHeadingItem->setIcon(HbIcon("qtg_large_avatar"));
+        }
     }
 }
 

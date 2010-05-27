@@ -26,8 +26,7 @@
 #include <hbmainwindow.h>
 #include <hblabel.h>
 #include <hblistview.h>
-#include <hbgroupbox.h>
-#include <QTimer.h>
+#include <QTimer>
 #include <hbnotificationdialog.h>
 #include <hbmessagebox.h>
 #include <hbprogressbar.h>
@@ -93,8 +92,8 @@ Activates a previous view
 */
 void CntImportsView::showPreviousView()
 {
-  CntViewParameters args;
-  mViewManager->back(args);
+    CntViewParameters args;
+    mViewManager->back(args);
 }
 
 /*
@@ -445,31 +444,31 @@ void CntImportsView::timerEvent(QTimerEvent *event)
 void CntImportsView::showWaitNote()
 {
     mImportSimPopup = new HbDialog();    
-    mImportSimPopup->setDismissPolicy(HbDialog::NoDismiss);
-    mImportSimPopup->setTimeout(0);
+    mImportSimPopup->setDismissPolicy(HbPopup::NoDismiss);
+    mImportSimPopup->setTimeout(HbPopup::NoTimeout);
     mImportSimPopup->setBackgroundFaded(true);
     mImportSimPopup->setAttribute(Qt::WA_DeleteOnClose, true);
     
-    HbGroupBox *groupBox = new HbGroupBox;
-    groupBox->setHeading(hbTrId("txt_phob_title_import_contacts")); 
-    mImportSimPopup->setHeadingWidget(groupBox);
+    HbLabel *headingLabel = new HbLabel(mImportSimPopup);
+    headingLabel->setPlainText(hbTrId("txt_phob_title_import_contacts")); 
+    mImportSimPopup->setHeadingWidget(headingLabel);
     
     QGraphicsLinearLayout *containerLayout = new QGraphicsLinearLayout(Qt::Vertical);
     containerLayout->setContentsMargins(0, 0, 0, 0);
     containerLayout->setSpacing(10);
     
-    HbLabel *icon = new HbLabel();
+    HbLabel *icon = new HbLabel(mImportSimPopup);
     icon->setIcon(HbIcon("qtg_large_sim"));  
     
-    HbLabel *simText= new HbLabel();
+    HbLabel *simText= new HbLabel(mImportSimPopup);
     simText->setPlainText(hbTrId("txt_phob_info_importing_contacts_from_sim")); 
     simText->setTextWrapping(Hb::TextWordWrap);
     simText->setElideMode(Qt::ElideNone);
     
-    HbProgressBar *progressBar = new HbProgressBar;
+    HbProgressBar *progressBar = new HbProgressBar(mImportSimPopup);
     progressBar->setRange(0,0); 
     
-    HbPushButton *stopButton = new HbPushButton;
+    HbPushButton *stopButton = new HbPushButton(mImportSimPopup);
     stopButton->setText(hbTrId("txt_phob_button_cancel"));
     connect(stopButton, SIGNAL(clicked()), this, SLOT(stopSimImport()));
     

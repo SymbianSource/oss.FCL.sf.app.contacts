@@ -30,22 +30,22 @@ CntCompanyEditorModel::CntCompanyEditorModel(QContact* aContact) :
     mCompany = orgList.first();
 
     HbDataFormModelItem* organization = new HbDataFormModelItem(HbDataFormModelItem::TextItem,
-        qtTrId("Company"));
+        hbTrId("txt_phob_formlabel_company"));
     organization->setContentWidgetData("text", mCompany.name());
     organization->setContentWidgetData("maxLength", CNT_ORGANIZATION_MAXLENGTH);
 
-    HbDataFormModelItem* jobTitle = new HbDataFormModelItem(HbDataFormModelItem::TextItem, qtTrId(
-        "Job title"));
+    HbDataFormModelItem* jobTitle = new HbDataFormModelItem(HbDataFormModelItem::TextItem, 
+        hbTrId("txt_phob_formlabel_job_title"));
     jobTitle->setContentWidgetData("text", mCompany.title());
     jobTitle->setContentWidgetData("maxLength", CNT_JOBTITLE_MAXLENGTH);
 
     HbDataFormModelItem* department = new HbDataFormModelItem(HbDataFormModelItem::TextItem,
-        qtTrId("Department"));
+        hbTrId("txt_phob_formlabel_department"));
     department->setContentWidgetData("text", mCompany.department());
     department->setContentWidgetData("maxLength", CNT_DEPARTMENT_MAXLENGTH);
 
-    HbDataFormModelItem* assistant = new HbDataFormModelItem(HbDataFormModelItem::TextItem, qtTrId(
-        "Assistant name"));
+    HbDataFormModelItem* assistant = new HbDataFormModelItem(HbDataFormModelItem::TextItem, 
+        hbTrId("txt_phob_formlabel_assistant"));
     assistant->setContentWidgetData("text", mCompany.assistantName());
     assistant->setContentWidgetData("maxLength", CNT_ASSISTANT_MAXLENGTH);
 

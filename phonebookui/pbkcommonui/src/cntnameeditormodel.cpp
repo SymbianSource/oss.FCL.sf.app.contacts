@@ -39,12 +39,12 @@ CntNameEditorModel::CntNameEditorModel(QContact* aContact) :
     iNick = nickList.first();
 
     HbDataFormModelItem::DataItemType text = HbDataFormModelItem::TextItem;
-    HbDataFormModelItem* firstname = new HbDataFormModelItem(text, qtTrId("First name"));
-    HbDataFormModelItem* lastname = new HbDataFormModelItem(text, qtTrId("Last name"));
-    HbDataFormModelItem* middlename = new HbDataFormModelItem(text,qtTrId("Middle name"));
-    HbDataFormModelItem* nickname = new HbDataFormModelItem(text, qtTrId("Nick name"));
-    HbDataFormModelItem* prefix = new HbDataFormModelItem(text, qtTrId("Prefix"));
-    HbDataFormModelItem* suffix = new HbDataFormModelItem(text, qtTrId("Suffix"));
+    HbDataFormModelItem* firstname = new HbDataFormModelItem(text, hbTrId("txt_phob_formlabel_first_name"));
+    HbDataFormModelItem* lastname = new HbDataFormModelItem(text, hbTrId("txt_phob_formlabel_last_name"));
+    HbDataFormModelItem* middlename = new HbDataFormModelItem(text,hbTrId("txt_phob_formlabel_middle_name"));
+    HbDataFormModelItem* nickname = new HbDataFormModelItem(text, hbTrId("txt_phob_formlabel_nick_name"));
+    HbDataFormModelItem* prefix = new HbDataFormModelItem(text, hbTrId("txt_phob_formlabel_prefix"));
+    HbDataFormModelItem* suffix = new HbDataFormModelItem(text, hbTrId("txt_phob_formlabel_sufix"));
 
     firstname->setContentWidgetData("text", iName.firstName());
     firstname->setContentWidgetData("maxLength", CNT_FIRSTNAME_MAXLENGTH);
@@ -94,6 +94,7 @@ void CntNameEditorModel::saveContactDetails()
             {
             mContact->removeDetail( &iName );
             }
+    
     if(iNick.nickname().isEmpty())
         {
         mContact->removeDetail( &iNick );

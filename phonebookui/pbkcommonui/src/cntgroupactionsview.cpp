@@ -85,7 +85,7 @@ void CntGroupActionsView::editGroup()
     viewParameters.insert(EViewId, groupEditorView);
     QVariant var;
     var.setValue(*mGroupContact);
-    viewParameters.insert(ESelectedContact, var);
+    viewParameters.insert(ESelectedGroupContact, var);
     mViewManager->changeView(viewParameters);
 
 }
@@ -99,7 +99,7 @@ void CntGroupActionsView::showPreviousView()
     CntViewParameters viewParameters;
     QVariant var;
     var.setValue(*mGroupContact);
-    viewParameters.insert(ESelectedContact, var);
+    viewParameters.insert(ESelectedGroupContact, var);
     mViewManager->back(viewParameters);
 }
 
@@ -116,7 +116,7 @@ void CntGroupActionsView::activate( CntAbstractViewManager* aMgr, const CntViewP
     if (mView->navigationAction() != mSoftkey)
         mView->setNavigationAction(mSoftkey);   
     
-    mGroupContact = new QContact(aArgs.value(ESelectedContact).value<QContact>());
+    mGroupContact = new QContact(aArgs.value(ESelectedGroupContact).value<QContact>());
     mViewManager = aMgr;
 
     QContactName groupContactName = mGroupContact->detail( QContactName::DefinitionName );

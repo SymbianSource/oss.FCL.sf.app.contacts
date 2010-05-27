@@ -63,8 +63,8 @@ public:
     ~CntEditViewSeparator();
     
     QVariant data(int role) const;
-    void activated();
-    void longPressed(const QPointF &coords);  
+    void activated(CntEditViewItemCallback* interface);
+    void longPressed(const QPointF &coords, CntEditViewItemCallback* interface);  
 };
 
 class CntEditViewListModel : public QAbstractListModel
@@ -83,7 +83,7 @@ public:
     CntEditViewItem* itemAt( const QModelIndex& aIndex ) const;
     void removeItem( CntEditViewItem* aItem, const QModelIndex& aIndex );
     bool isEmptyItem( CntEditViewItem* aItem );
-    void refreshExtensionItems( const QModelIndex& aIndex );
+    void refreshExtensionItems();
     void allInUseFields( CntViewIdList& aList );
     
 private:

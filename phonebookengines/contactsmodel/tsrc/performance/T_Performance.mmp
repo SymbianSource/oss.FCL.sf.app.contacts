@@ -24,7 +24,7 @@ SOURCEPATH		.
 
 MACRO			__TRANSACTION_ON__
 
-systeminclude /epoc32/include /epoc32/include/kernel /epoc32/include/ecom 
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN 
 userinclude ../ 
 
 source          T_Performance.cpp T_PerfInitialSync.cpp T_PerfSyncDelete.cpp T_PerfBulkDelete.cpp

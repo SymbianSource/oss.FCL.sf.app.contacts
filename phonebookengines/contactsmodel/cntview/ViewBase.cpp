@@ -15,7 +15,8 @@
 *
 */
 
-#include "ecom/ecom.h"		// for recomsession
+// System includess
+#include "ecom/ecom.h"		// For REComSession
 #include <ecom/ecomresolverparams.h>
 
 // User includes
@@ -25,6 +26,9 @@
 #include "cviewcontactextension.h"
 #include <cntviewsortplugin.h>
 #include "cntviewprivate.h"
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include <cntviewsortpluginbase.h>
+#endif
 
 extern void DebugLogViewNotification(const TDesC& aMethod, const TContactViewEvent& aEvent);
 

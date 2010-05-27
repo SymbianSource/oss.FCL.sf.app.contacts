@@ -37,19 +37,22 @@ INCLUDEPATH += ../../inc
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
     
 HEADERS += inc/testrunner.h
-HEADERS += inc/ut_mobcnticonmanager.h
 HEADERS += inc/ut_mobcntmodel.h
 HEADERS += ../../inc/mobcntmodelglobal.h \
            ../../inc/mobcntmodel.h \
            ../../inc/mobcntmodel_p.h \
-           ../../inc/mobcnticonmanager.h
+           ../../inc/cntcache.h \
+           ../../inc/cntcache_p.h \
+           ../../inc/cntinfoprovider.h \
+           ../../inc/cntdefaultinfoprovider.h
 
 SOURCES += src/testrunner.cpp
 SOURCES += src/main.cpp
-SOURCES += src/ut_mobcnticonmanager.cpp
 SOURCES += src/ut_mobcntmodel.cpp
-SOURCES += ../../src/mobcntmodel.cpp \
-           ../../src/mobcnticonmanager.cpp
+SOURCES += ../../src/mobcntmodel.cpp
+SOURCES += ../../src/cntcache.cpp
+SOURCES += ../../src/cntcache_p.cpp
+SOURCES += ../../src/cntdefaultinfoprovider.cpp
 
 RESOURCES += ../../resources/mobcntmodel.qrc
 

@@ -29,6 +29,7 @@ SOURCEPATH	.
 
 userinclude     ../cntview	
 userinclude	../inc ../src
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 
 APP_LAYER_SYSTEMINCLUDE
 

@@ -130,20 +130,20 @@ void CntEmailEditorViewItem::constructSubTypeModel( QStringList aContext )
     QString fieldAddress = QContactEmailAddress::FieldEmailAddress;
         
     QStandardItem *noContext = new QStandardItem;
-    noContext->setText(qtTrId("Email"));
+    noContext->setText(hbTrId("txt_phob_formlabel_val_email"));
     noContext->setData(fieldAddress, DetailSubType);
     noContext->setData(CNT_EMAIL_EDITOR_MAXLENGTH, DetailMaxLength);
     model->appendRow(noContext);
            
     QStandardItem *home = new QStandardItem;
-    home->setText(qtTrId("Email (home)"));
+    home->setText(hbTrId("txt_phob_formlabel_val_email_home"));
     home->setData(fieldAddress, DetailSubType);
     home->setData(contextHome, DetailContext);
     home->setData(CNT_EMAIL_EDITOR_MAXLENGTH, DetailMaxLength);
     model->appendRow(home);
            
     QStandardItem *work = new QStandardItem;
-    work->setText(qtTrId("Email (work)"));
+    work->setText(hbTrId("txt_phob_formlabel_val_email_work"));
     work->setData(fieldAddress, DetailSubType);
     work->setData(contextWork, DetailContext);
     work->setData(CNT_EMAIL_EDITOR_MAXLENGTH, DetailMaxLength);

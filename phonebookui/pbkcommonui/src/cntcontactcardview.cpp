@@ -24,7 +24,8 @@ CntContactCardView::CntContactCardView() : d_ptr(new CntContactCardViewPrivate()
 {
     Q_D(CntContactCardView);
     connect(d_ptr, SIGNAL(backPressed()), this, SIGNAL(backPressed()));
-    connect(d_ptr, SIGNAL(viewActivated(QContact, QContactDetail)), this, SIGNAL(viewActivated(QContact, QContactDetail)));
+    connect(d_ptr, SIGNAL(viewActivated(CntAbstractViewManager*, const CntViewParameters)), 
+            this, SIGNAL(viewActivated(CntAbstractViewManager*, const CntViewParameters)));
 }
 
 /*!
@@ -56,13 +57,11 @@ HbView* CntContactCardView::view() const
 
 bool CntContactCardView::isDefault() const 
 { 
-    Q_D(const CntContactCardView);
     return false; 
 }
 
 int CntContactCardView::viewId() const 
 { 
-    Q_D(const CntContactCardView);
     return commLauncherView; 
 }
 

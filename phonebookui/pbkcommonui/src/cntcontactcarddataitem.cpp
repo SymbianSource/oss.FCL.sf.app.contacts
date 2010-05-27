@@ -23,6 +23,7 @@ CntContactCardDataItem::CntContactCardDataItem(const QString& aTitle, int aPosit
     mTitle(aTitle),
     mValueText(QString("")),
     mAction(QString("")),
+    mActionDescriptor(QContactActionDescriptor()),
     mValueTextElideMode(Qt::ElideRight),
     mIsFocusable(aIsFocusable),
     mPosition(aPosition)
@@ -66,3 +67,12 @@ void CntContactCardDataItem::setContactDetail(QContactDetail aDetail)
     mDetail = aDetail;
 }
 
+void CntContactCardDataItem::setActionDescriptor(const QContactActionDescriptor& aActionDescriptor)
+{
+    mActionDescriptor = aActionDescriptor;
+}
+
+void CntContactCardDataItem::setLongPressText(const QString& aLongPressText)
+{
+    mLongPressText = aLongPressText;
+}

@@ -67,7 +67,7 @@ void CntFavoritesView::activate( CntAbstractViewManager* aMgr, const CntViewPara
     connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
     setOrientation(window->orientation());
     
-    mContact = new QContact(aArgs.value(ESelectedContact).value<QContact>());
+    mContact = new QContact(aArgs.value(ESelectedGroupContact).value<QContact>());
     mViewManager = aMgr;
 
     HbPushButton *addButton = static_cast<HbPushButton*>(mDocumentLoader.findWidget(QString("cnt_button_add")));
@@ -101,7 +101,7 @@ void CntFavoritesView::handleMemberSelection(HbAction *action)
             viewParameters.insert(EViewId, FavoritesMemberView);
             QVariant var;
             var.setValue(*mContact);
-            viewParameters.insert(ESelectedContact, var);
+            viewParameters.insert(ESelectedGroupContact, var);
             mViewManager->changeView(viewParameters);
         }
         else

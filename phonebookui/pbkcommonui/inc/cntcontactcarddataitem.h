@@ -30,6 +30,71 @@ class CntContactCardDataItem: public QObject
     Q_OBJECT    
 
 public:
+    
+enum CntContactCardPosition
+{ 
+        EInternalServices = 0,
+        ECallMobile = 100,
+        ECallMobileSendMessage,
+        ECallMobileHome,
+        ECallMobileHomeSendMessage,
+        ECallMobileWork,
+        ECallMobileWorkSendMessage,
+        ECallPhone,
+        ECallPhoneHome,
+        ECallPhoneWork,
+        ECallFax,
+        ECallFaxHome,
+        ECallFaxWork,
+        ECallPager,
+        ECallAssistant,
+        ECallCar,
+        EEmail,
+        EEmailHome,
+        EEmailWork,
+        EUrl,
+        EUrlHome,
+        EUrlWork,
+        ECallDynamic,
+        ECallDynamicHome,
+        ECallDynamicWork,
+        EEmailDynamic,
+        EEmailDynamicHome,
+        EEmailDynamicWork,
+        EUrlDynamic,
+        EUrlDynamicHome,
+        EUrlDynamicWork,
+        EInternetDynamic,
+        EInternetDynamicHome,
+        EInternetDynamicWork,
+        EAddressDynamic,
+        EAddressDynamicHome,
+        EAddressDynamicWork,
+        EDynamic,
+        EGenericDynamic,
+        ELastAction = 200,
+        ELastActionHome,
+        ELastActionWork,
+        EExternalServices = 250,
+        ESeparator = 300,
+        EInternetTelephone,
+        EInternetTelephoneHome,
+        EInternetTelephoneWork,
+        ESip,
+        EAddress,
+        EAddressHome,
+        EAddressWork,
+        ECompanyDetails,
+        EBirthday,
+        EAnniversary,
+        ERingtone,
+        ENote,
+        ESpouse,
+        EChildren,
+        EOther = 400
+};    
+    
+public:
     CntContactCardDataItem(const QString& aTitle, int aPosition, bool aIsFocusable);
     virtual ~CntContactCardDataItem();
 
@@ -40,6 +105,8 @@ public:
     void setSecondaryIcon(HbIcon aSecondaryIcon);
     void setAction(const QString& aAction);
     void setContactDetail(QContactDetail aDetail);
+    void setActionDescriptor(const QContactActionDescriptor& aActionDescriptor);
+    void setLongPressText(const QString& aLongPressText);
 
 public:
     QString titleText() { return mTitle; }
@@ -50,20 +117,24 @@ public:
     QContactDetail detail() { return mDetail; }
     Qt::TextElideMode elideMode() { return mValueTextElideMode; }
     bool isFocusable() { return mIsFocusable; }
+    QContactActionDescriptor actionDescriptor() { return mActionDescriptor; }
+    QString longPressText() { return mLongPressText; }
     int position() { return mPosition; }
  
 private:
-    HbIcon              mIcon;
-    HbIcon              mSecondaryIcon;
-    QString             mTitle;
-    QString             mValueText;
-    QString             mAction;
-    QContactDetail      mDetail;
-    Qt::TextElideMode   mValueTextElideMode;
-    bool                mIsFocusable;
+    HbIcon                      mIcon;
+    HbIcon                      mSecondaryIcon;
+    QString                     mTitle;
+    QString                     mValueText;
+    QString                     mAction;
+    QContactDetail              mDetail;
+    Qt::TextElideMode           mValueTextElideMode;
+    bool                        mIsFocusable;
+    QContactActionDescriptor    mActionDescriptor;
+    QString                     mLongPressText;
     
 public:
-    int                 mPosition;
+    int                         mPosition;
 };
 
 #endif /* CNTCONTACTCARDDATAITEM_H */

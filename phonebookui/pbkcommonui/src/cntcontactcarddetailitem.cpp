@@ -31,8 +31,7 @@
 #include <hbinstantfeedback.h>
 #include <hbcolorscheme.h>
 #include <QGestureEvent>
-#include <QTapGesture>
-#include <hbtoucharea.h>
+#include <hbtapgesture.h>
 
 
 CntContactCardDetailItem::CntContactCardDetailItem(int index, QGraphicsItem *parent, bool isFocusable) :
@@ -51,10 +50,11 @@ CntContactCardDetailItem::CntContactCardDetailItem(int index, QGraphicsItem *par
 {  
     if (mIsFocusable)
     {
-        HbEffect::add(QString("frameitem"), QString(":/xml/edit_button_pressed.fxml"), QString("pressed"));
-        HbEffect::add(QString("frameitem"), QString(":/xml/edit_button_released.fxml"), QString("released"));
+        HbEffect::add("frameitem", "listviewitem_press", "pressed");
+        HbEffect::add("frameitem", "listviewitem_release", "released");
         initGesture();
     }
+    setProperty("state", "normal");
 }
 
 CntContactCardDetailItem::~CntContactCardDetailItem()
@@ -148,7 +148,7 @@ void CntContactCardDetailItem::createPrimitives()
         style()->setItemName(mFocusItem, "highlight");
     }
    
-    updatePrimitives();
+    HbWidget::updatePrimitives();
     updateGeometry();
     repolish();
 }
@@ -162,71 +162,53 @@ void CntContactCardDetailItem::recreatePrimitives()
 
 void CntContactCardDetailItem::initGesture()
 {
-    grabGesture(Qt::TapAndHoldGesture, Qt::ReceivePartialGestures);
-    grabGesture(Qt::TapGesture, Qt::ReceivePartialGestures);
+    grabGesture(Qt::TapGesture);
 }
 
 void CntContactCardDetailItem::gestureEvent(QGestureEvent* event)
 {
     qDebug() << "CntContactCardDetailItem::gestureEvent - IN";
-    event->accept( Qt::TapAndHoldGesture );
-    
-    if (QGesture *tap = event->gesture(Qt::TapGesture))
+    if (HbTapGesture *tap = qobject_cast<HbTapGesture *>(event->gesture(Qt::TapGesture))) 
     {
-        tapTriggered(static_cast<QTapGesture *>(tap));
-        event->accept( tap );
-    }
-    
-    if (QGesture *tapAndHold = event->gesture(Qt::TapAndHoldGesture))
+        switch(tap->state()) 
+        {
+            case Qt::GestureStarted:  //
+                if (mIsFocusable)
+                {
+                    HbInstantFeedback::play(HbFeedback::Basic);
+                }
+                mHasFocus = true;
+                updatePrimitives();
+                break;
+            case Qt::GestureCanceled: // Reset state
+                mHasFocus = false;
+                updatePrimitives();
+                break;
+            case Qt::GestureUpdated:
+                if(tap->tapStyleHint() == HbTapGesture::TapAndHold) 
+                {
+                    emit onLongPress(event->mapToGraphicsScene(tap->position()));
+                }
+                break;
+            case Qt::GestureFinished: // emit clicked
+                mHasFocus = false;
+                updatePrimitives();
+                if (tap->tapStyleHint() == HbTapGesture::Tap) 
+                {
+                    emit clicked();                  
+                }
+                break;
+            default:
+                break;
+        }  
+        event->accept();
+    } 
+    else 
     {
-        tapAndHoldTriggered(static_cast<QTapAndHoldGesture *>(tapAndHold));
-        event->accept( tapAndHold );
+        event->ignore();
     }
     qDebug() << "CntContactCardDetailItem::gestureEvent - OUT";
 }
-
-void CntContactCardDetailItem::tapTriggered(QTapGesture *gesture)
-{
-    qDebug() << "CntContactdDetailItem::tagTriggered - IN";
-    
-    Qt::GestureState state = gesture->state();
-    qDebug() << "CntContactdDetailItem::tagTriggered, state: " << state;
-    switch ( state ) 
-    {
-        case Qt::GestureStarted:
-        {
-            if (mIsFocusable)
-            {
-                HbInstantFeedback::play(HbFeedback::Basic);
-            }
-            mHasFocus = true;
-            updatePrimitives();
-            break;
-        }
-        case Qt::GestureFinished:
-        case Qt::GestureCanceled:
-        {
-            mHasFocus = false;
-            updatePrimitives();
-            emit clicked(); // also in GestureCancelled?
-            break;
-        }
-        default:
-        {
-            break;
-        }
-    }
-    qDebug() << "CntContactdDetailItem::tagTriggered - OUT";
-}
-
-void CntContactCardDetailItem::tapAndHoldTriggered(QTapAndHoldGesture *gesture)
-{
-    if (gesture->state() == Qt::GestureFinished)
-    {
-        onLongPress(gesture->position());
-    }
-}    
-
 
 void CntContactCardDetailItem::onLongPress(const QPointF &point)
 {
@@ -237,54 +219,20 @@ void CntContactCardDetailItem::onLongPress(const QPointF &point)
 
 void CntContactCardDetailItem::updatePrimitives()
 {
-    HbWidget::updatePrimitives();
     if (mHasFocus && mIsFocusable)
     {
         mFocusItem->setVisible(true);
-        HbEffect::start(mFocusItem, QString("frameitem"), QString("pressed"));
+        setProperty("state", "pressed");
+        HbEffect::start(mFocusItem, QString("frameitem"), QString("pressed"));      
     }
     else
     {
         HbEffect::start(mFocusItem, QString("frameitem"), QString("released"));
+        mFocusItem->setVisible(false);
+        setProperty("state", "normal");
     }
+    HbWidget::updatePrimitives();
 }
-
-/*
-void CntContactCardDetailItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (mIsFocusable)
-    {
-        HbInstantFeedback::play(HbFeedback::Basic);
-    }
-    event->accept();
-    mHasFocus = true;
-    updatePrimitives();
-}
-*/
-/*
-void CntContactCardDetailItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (!rect().contains(event->pos()) && mHasFocus)
-    {
-        mHasFocus = false;
-        updatePrimitives();
-    }
-    event->accept();
-}
-
-
-void CntContactCardDetailItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    bool hadFocus = mHasFocus;
-    mHasFocus = false;
-    if (rect().contains(event->pos()) && hadFocus)
-    {
-        updatePrimitives();
-        emit clicked();
-    }
-    event->accept();
-}
-*/
 
 void CntContactCardDetailItem::setDetails(CntContactCardDataItem* aDataItem)
 {

@@ -158,9 +158,8 @@ void CntEditViewListModel::removeItem( CntEditViewItem* aItem, const QModelIndex
     }
 }
 
-void CntEditViewListModel::refreshExtensionItems( const QModelIndex& aIndex )
+void CntEditViewListModel::refreshExtensionItems()
 {
-    Q_UNUSED( aIndex );
     beginResetModel();
     // remove all extension items
     for( int i(mItemList.count()-1); i >= 0; i-- )

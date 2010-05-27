@@ -49,7 +49,6 @@
 #include <qcontact.h>
 #include <qcontactdetail.h>
 
-
 #include <qmobilityglobal.h>
 
 QTM_USE_NAMESPACE
@@ -71,10 +70,12 @@ private:
     void setDisplayLabelDetails();
     QString generateDisplayLabel( const QContact &contact, const QList<QList<QPair<QLatin1String, QLatin1String> > > detailList) const;
     QString delimiter() const;
+    QString comma() const;
     
 private:
     QList<QList<QPair<QLatin1String, QLatin1String> > > m_contactDisplayLabelDetails;
     QList<QList<QPair<QLatin1String, QLatin1String> > > m_groupDisplayLabelDetails;
+    int m_nameOrder;
 };
 
 #endif /* CNTDISPLAYLABEL_H_ */

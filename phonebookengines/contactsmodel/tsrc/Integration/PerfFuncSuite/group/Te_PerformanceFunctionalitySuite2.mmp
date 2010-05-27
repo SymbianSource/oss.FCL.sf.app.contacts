@@ -50,8 +50,7 @@ USERINCLUDE   	../../../../cntsrv/inc // for ccnteventqueue.h
 USERINCLUDE   	../../../../cntmodel/inc //ccontactprivate.h
 USERINCLUDE  	../../CntPerfTest/inc
 
-SYSTEMINCLUDE /epoc32/include
-SYSTEMINCLUDE /epoc32/include/test
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 
 //Please add your system include under here. 
 

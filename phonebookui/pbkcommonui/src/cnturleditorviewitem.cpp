@@ -119,20 +119,20 @@ void CntUrlEditorViewItem::constructSubTypeModel( QStringList aContext )
     QString fieldAddress = QContactUrl::FieldUrl;
         
     QStandardItem *noContext = new QStandardItem;
-    noContext->setText(qtTrId("URL"));
+    noContext->setText(hbTrId("txt_phob_formlabel_val_url"));
     noContext->setData(fieldAddress, DetailSubType);
     noContext->setData(CNT_URL_EDITOR_MAXLENGTH, DetailMaxLength);
     model->appendRow(noContext);
            
     QStandardItem *home = new QStandardItem;
-    home->setText(qtTrId("URL (home)"));
+    home->setText(hbTrId("txt_phob_formlabel_val_url_home"));
     home->setData(fieldAddress, DetailSubType);
     home->setData(contextHome, DetailContext);
     home->setData(CNT_URL_EDITOR_MAXLENGTH, DetailMaxLength);
     model->appendRow(home);
            
     QStandardItem *work = new QStandardItem;
-    work->setText(qtTrId("URL (work)"));
+    work->setText(hbTrId("txt_phob_formlabel_val_url_work"));
     work->setData(fieldAddress, DetailSubType);
     work->setData(contextWork, DetailContext);
     work->setData(CNT_URL_EDITOR_MAXLENGTH, DetailMaxLength);

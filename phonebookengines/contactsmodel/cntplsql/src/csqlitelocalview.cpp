@@ -30,6 +30,9 @@
 #include "cviewcontactmanager.h"
 #include "cntstd.h"
 #include <phbksync.h>
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include <cntviewsortpluginbase.h>
+#endif
 //uncomment to test
 //#define __PROFILE_SORT__
 
@@ -607,23 +610,23 @@ void CContactLocalView::HandleDatabaseEventL(TContactDbObserverEvent aEvent)
 #endif
 			iOutstandingEvents.AppendL(aEvent);
 			
-			// The view state is set to ENotReady when a recovery takes place, and also when the tables
-			// are closed, so set ready here.
-			if (iState == ENotReady && (aEvent.iType
-			        == EContactDbObserverEventRecover || aEvent.iType
-			        == EContactDbObserverEventTablesOpened))
-			    {
+            // The view state is set to ENotReady when a recovery takes place, and also when the tables
+            // are closed, so set ready here.
+            if (iState == ENotReady && (aEvent.iType
+                    == EContactDbObserverEventRecover || aEvent.iType
+                    == EContactDbObserverEventTablesOpened))
+                {
                 SetState(EReady);
-			    }
-			// view was Initializing (sorting) before recovery or compression started! 
-			if (iState == EInitializing && (aEvent.iType
-			        == EContactDbObserverEventRecover || aEvent.iType
-			        == EContactDbObserverEventCompress))
-			    {
+                }
+            // view was Initializing (sorting) before recovery or compression started!  
+            if (iState == EInitializing && (aEvent.iType
+                    == EContactDbObserverEventRecover || aEvent.iType
+                    == EContactDbObserverEventCompress))
+                {
                 // re-read database and sort
                 SafeResort();
-			    }
-			
+                }
+                
 			}		
 			
 			

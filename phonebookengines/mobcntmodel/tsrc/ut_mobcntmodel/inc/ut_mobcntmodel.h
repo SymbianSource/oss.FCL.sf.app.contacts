@@ -26,10 +26,14 @@ QTM_END_NAMESPACE
 QTM_USE_NAMESPACE
 
 class MobCntModel;
+class ModelListener;
 
 class TestMobCntModel : public QObject
 {
     Q_OBJECT
+
+private:
+    void contactReady(int start, int end);
 
 private slots:
 	void initTestCase();
@@ -47,7 +51,6 @@ private slots:
 	void rowId();
 	void dataForDisplayRole();
 
-	void updateContactIcon();
     void handleAdded();
     void handleChanged();
     void handleRemoved();
@@ -58,4 +61,22 @@ private slots:
 private:
     QContactManager *mManager;
     MobCntModel     *mCntModel;
+    ModelListener   *mModelListener;
+    bool             mDataReady;
+
+friend class ModelListener;
+};
+
+class ModelListener : public QObject
+{
+    Q_OBJECT
+
+public:
+    ModelListener(TestMobCntModel* parent);
+
+private slots:
+    void onDataChanged(QModelIndex start, QModelIndex end);
+
+private:
+    TestMobCntModel* mParent;
 };

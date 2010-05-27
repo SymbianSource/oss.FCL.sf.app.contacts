@@ -25,10 +25,7 @@ class HbIconItem;
 class HbTextItem;
 class QGraphicsGridLayout;
 class HbFrameItem;
-class HbTouchArea;
 class CntContactCardDataItem;
-class QTapGesture;
-class QTapAndHoldGesture;
 
 class CntContactCardDetailItem : public HbWidget
 {
@@ -43,14 +40,7 @@ public:
     ~CntContactCardDetailItem();
 
 protected:
-    //void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    //void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    //void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     void gestureEvent(QGestureEvent* event);
-      
-private:
-    void tapTriggered(QTapGesture *gesture);
-    void tapAndHoldTriggered(QTapAndHoldGesture *gesture);
     
 public:
     void initGesture();
@@ -84,7 +74,6 @@ private:
     HbTextItem              *mSecondLineText;
     HbFrameItem             *mFrameItem;
     HbFrameItem             *mFocusItem;
-    HbTouchArea             *mTouchArea;
     bool                    mHasFocus;
     int                     mIndex;
     bool                    mIsFocusable;

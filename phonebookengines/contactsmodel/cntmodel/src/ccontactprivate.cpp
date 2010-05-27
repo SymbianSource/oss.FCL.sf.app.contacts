@@ -28,6 +28,10 @@
 #include "rcntmodel.h"
 #include "ccontactprivate.h"
 #include "cntviewprivate.h"
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "cntdb_internal.h"
+#include "cntsyncecom.h"
+#endif
 
 
 const TInt KMaxItemsInTemplateCache = 8; // Maximum number of cached templates.

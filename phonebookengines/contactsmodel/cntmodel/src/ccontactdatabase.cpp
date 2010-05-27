@@ -27,6 +27,16 @@
 #include "ccontactprivate.h"
 
 #include "clplproxyfactory.h"
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "cntdb_internal.h"
+#include "cntsyncecom.h"
+
+const TInt KMajorVersion=1;
+
+const TInt KMinorVersion=0;
+
+const TInt KBuildNumber=40;
+#endif
 
 CContactDatabase::CContactDatabase():
 		iDbConnectionState(EDbConnectionNotReady),
@@ -4165,6 +4175,7 @@ EXPORT_C void CContactDatabase::RemoveObserver(const MContactDbObserver& aChange
 	iCntSvr->RemoveObserver(aChangeNotifier);
 	}
 	
+
 void CContactDatabase::CancelNotifyRequestL()
 	{
 	}

@@ -58,10 +58,9 @@ USERINCLUDE   ../../../../tsrc
 USERINCLUDE   ../../../NbCntTestLib
 USERINCLUDE   ../../../../src  //cntmodel source
 USERINCLUDE   ../../../../cntsrv/inc
-userinclude ../inc 
-systeminclude /epoc32/include 
-systeminclude /epoc32/include/test 
-systeminclude /epoc32/include/connect 
+USERINCLUDE   ../inc
+USERINCLUDE   ../../../../inc 
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN 
 
 
 LIBRARY		euser.lib

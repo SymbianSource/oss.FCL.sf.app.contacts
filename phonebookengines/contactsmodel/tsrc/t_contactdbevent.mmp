@@ -22,7 +22,7 @@ CAPABILITY   ReadUserData WriteUserData
 UID		0
 VENDORID 0x70000001
 
-systeminclude   ../inc  /EPOC32/INCLUDE /epoc32/include/kernel
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 
 library         EUSER.LIB  cntmodel.LIB CNTVIEW.LIB EFSRV.LIB PIMTestClient.lib
 

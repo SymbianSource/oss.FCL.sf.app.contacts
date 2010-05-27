@@ -27,7 +27,7 @@
 #include <hbsearchpanel.h>
 #include <hbstaticvkbhost.h>
 #include <QGraphicsLinearLayout>
-#include <QContactId.h>
+#include <qcontactid.h>
 #include <QDebug>
 #include <mobcntmodel.h>
 #include "cntfetchcontactsview.h"
@@ -53,7 +53,7 @@ mIndexFeedback(NULL)
 {
     mSearchPanel = new HbSearchPanel();
     mSearchPanel->setVisible(false);
-    connect(mSearchPanel, SIGNAL(exitClicked()), this, SLOT(closeFind()));
+    mSearchPanel->setCancelEnabled(false);
     connect(mSearchPanel, SIGNAL(criteriaChanged(QString)), this, SLOT(setFilter(QString)));
 
     mLayout = new QGraphicsLinearLayout(Qt::Vertical);
@@ -143,18 +143,6 @@ void CntFetchContacts::displayContacts(DisplayType aType, HbAbstractItemView::Se
 QSet<QContactLocalId> CntFetchContacts::getSelectedContacts() const
 {
    return mCurrentlySelected;
-}
-
-void CntFetchContacts::closeFind()
-{
-    if (mSearchPanel) {
-         QContactDetailFilter filter;
-         filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
-         QString typeContact = QContactType::TypeContact;
-         filter.setValue(typeContact);
-
-         mSearchPanel->deleteLater();
-     }
 }
 
 void CntFetchContacts::setFilter(const QString &filterString)
@@ -254,6 +242,12 @@ void CntFetchContacts::memberSelectionChanged(const QModelIndex &index)
             mCurrentlySelected.remove(contactId);
         }
     }
+    
+    // Check for the case where there is a cancel button only. If so, 
+    // after selecting any contact, should dismiss the dialog immediately.
+    if (mButtonText.isEmpty() && mSelectionMode == HbAbstractItemView::SingleSelection) {
+        mPopup->close();
+    }
 }
 
 void CntFetchContacts::doInitialize(HbAbstractItemView::SelectionMode aMode,
@@ -264,38 +258,43 @@ void CntFetchContacts::doInitialize(HbAbstractItemView::SelectionMode aMode,
 
     mSearchPanel->setVisible(true);
 
-    mPopup = new HbDialog;
-    mListView = new HbListView(mPopup);
-    mListView->setModel(mCntModel);
-    mListView->setSelectionMode(mSelectionMode);
-    mListView->setFrictionEnabled(true);
-    mListView->setScrollingStyle(HbScrollArea::PanWithFollowOn);
-    mListView->verticalScrollBar()->setInteractive(true);
-
-    HbListViewItem *prototype = mListView->listItemPrototype();
-    prototype->setGraphicsSize(HbListViewItem::Thumbnail);
-    prototype->setStretchingStyle(HbListViewItem::StretchLandscape);
-
-    mIndexFeedback = new HbIndexFeedback(mPopup);
-    mIndexFeedback->setIndexFeedbackPolicy(HbIndexFeedback::IndexFeedbackSingleCharacter);
-    mIndexFeedback->setItemView(mListView);
+    if (!mPopup) {
+        mPopup = new HbDialog;
+    }
     
-    // Note that the layout takes ownership of the item(s) it contains.
-    if (!mCntModel->rowCount()) {
-        mListView->setVisible(false);
-        if (!mEmptyListLabel) {
-            mEmptyListLabel = new HbTextItem(hbTrId("(no matching contacts)"));
-            mEmptyListLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-            mEmptyListLabel->setFontSpec(HbFontSpec(HbFontSpec::Primary));
-            mEmptyListLabel->setAlignment(Qt::AlignCenter);
-            mLayout->insertItem(0, mEmptyListLabel);
+    if (!mListView) {
+        mListView = new HbListView(mPopup);
+        mListView->setModel(mCntModel);
+        mListView->setSelectionMode(mSelectionMode);
+        mListView->setFrictionEnabled(true);
+        mListView->setScrollingStyle(HbScrollArea::PanWithFollowOn);
+        mListView->verticalScrollBar()->setInteractive(true);
+
+        HbListViewItem *prototype = mListView->listItemPrototype();
+        prototype->setGraphicsSize(HbListViewItem::Thumbnail);
+        prototype->setStretchingStyle(HbListViewItem::StretchLandscape);
+
+        mIndexFeedback = new HbIndexFeedback(mPopup);
+        mIndexFeedback->setIndexFeedbackPolicy(HbIndexFeedback::IndexFeedbackSingleCharacter);
+        mIndexFeedback->setItemView(mListView);
+
+        // Note that the layout takes ownership of the item(s) it contains.
+        if (!mCntModel->rowCount()) {
+            mListView->setVisible(false);
+            if (!mEmptyListLabel) {
+                mEmptyListLabel = new HbTextItem(hbTrId("txt_phob_info_no_matching_contacts"));
+                mEmptyListLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+                mEmptyListLabel->setFontSpec(HbFontSpec(HbFontSpec::Primary));
+                mEmptyListLabel->setAlignment(Qt::AlignCenter);
+                mLayout->insertItem(0, mEmptyListLabel);
+            }
         }
+        else {
+            mLayout->addItem(mListView);
+        }
+
+        mCntModel->showMyCard(false);
     }
-    else {
-        mLayout->addItem(mListView);
-    }
-    
-    mCntModel->showMyCard(false);
 }
 
 void CntFetchContacts::connectSignal()
@@ -322,13 +321,15 @@ void CntFetchContacts::showPopup()
     }
     mPopup->setHeadingWidget(mLabel);
 
-    if (!mButtonText.isEmpty()) {
+    if (!mButtonText.isEmpty() && !mPrimaryAction) {
         mPrimaryAction = new HbAction(hbTrId(mButtonText.toAscii()));
         mPopup->addAction(mPrimaryAction);
     }
     
-    mSecondaryAction = new HbAction(hbTrId("txt_common_button_cancel"));
-    mPopup->addAction(mSecondaryAction);
+    if (!mSecondaryAction) {
+        mSecondaryAction = new HbAction(hbTrId("txt_common_button_cancel"));
+        mPopup->addAction(mSecondaryAction);
+    }
 
     mPopup->open(this, SLOT(handleUserResponse(HbAction*)));
 }

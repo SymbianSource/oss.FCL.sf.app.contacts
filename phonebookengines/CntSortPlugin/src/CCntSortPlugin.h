@@ -22,6 +22,9 @@
 
 // INCLUDES
 #include <cntviewsortplugin.h>
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include <cntviewsortpluginbase.h>
+#endif 
 
 // FORWARD DECLARATIONS
 class CSortUtil;

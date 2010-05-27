@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RCC>
     <qresource prefix="/xml" >
-        <file alias="edit_button_pressed.fxml" >edit_button_pressed.fxml</file>
-        <file alias="edit_button_released.fxml" >edit_button_released.fxml</file>
         <file alias="contacts_actions.docml" >contacts_actions.docml</file>
         <file alias="contacts_contactcard.docml" >contacts_contactcard.docml</file>
         <file alias="contacts_ev.docml" >contacts_ev.docml</file>
@@ -19,10 +17,7 @@
         <file alias="contacts_collections.docml" >contacts_collections.docml</file>
         <file alias="contacts_groupmembers.docml" >contacts_groupmembers.docml</file>
         <file alias="contacts_detail_editor.docml" >contacts_detail_editor.docml</file>
-    </qresource>
-    <qresource prefix="/icons">
-        <file alias="pickerIcon.jpg">icons/pickerIcon.jpg</file>
-        <file alias="pin.png">icons/pin.png</file>
+		<file alias="contacts_settings.docml" >contacts_settings.docml</file>
     </qresource>
     <qresource prefix="/style">
         <file alias="cnteditviewlistitem.hblistviewitem.widgetml">style/cnteditviewlistitem.hblistviewitem.widgetml</file>
@@ -32,8 +27,10 @@
         <file alias="cnteditviewdetailitem_color.css">style/cnteditviewdetailitem_color.css</file>       
 		<file alias="cntcontactcarddetailitem.widgetml">style/cntcontactcarddetailitem.widgetml</file>
         <file alias="cntcontactcarddetailitem.css">style/cntcontactcarddetailitem.css</file>
+        <file alias="cntcontactcarddetailitem_color.css">style/cntcontactcarddetailitem_color.css</file>
         <file alias="cntcontactcardheadingitem.widgetml">style/cntcontactcardheadingitem.widgetml</file>
         <file alias="cntcontactcardheadingitem.css">style/cntcontactcardheadingitem.css</file>
+        <file alias="cntcontactcardheadingitem_color.css">style/cntcontactcardheadingitem_color.css</file>
         <file alias="cnthistoryviewitem.widgetml">style/cnthistoryviewitem.widgetml</file>
         <file alias="cnthistoryviewitem.css">style/cnthistoryviewitem.css</file>
         <file alias="cntlocationbutton.hbpushbutton.widgetml">style/cntlocationbutton.hbpushbutton.widgetml</file>

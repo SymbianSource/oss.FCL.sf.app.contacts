@@ -24,7 +24,7 @@ UID		0
 VENDORID 0x70000001
 SOURCEPATH	.
 source          T_VExportORG.cpp
-systeminclude   /epoc32/include
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 userinclude	..
 
 library         euser.lib  estor.lib cntmodel.lib cnttutil.lib efsrv.lib 

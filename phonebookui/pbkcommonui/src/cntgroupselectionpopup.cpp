@@ -151,7 +151,7 @@ void CntGroupSelectionPopup::populateListOfContact()
 
     setContentWidget(mContainerWidget);
     
-    HbAction *mPrimaryAction = new HbAction(hbTrId("Save"), this);
+    HbAction *mPrimaryAction = new HbAction(hbTrId("txt_common_button_save"), this);
     addAction(mPrimaryAction);
     
     HbAction *mSecondaryAction = new HbAction(hbTrId("txt_common_button_cancel"), this);

@@ -41,9 +41,6 @@
             </widget>
             <widget name="scrollArea" type="HbScrollArea">
                 <enums name="scrollingStyle" value="PanWithFollowOn"/>
-                <enums name="verticalScrollBarPolicy" value="ScrollBarAlwaysOff"/>
-                <enums name="horizontalScrollBarPolicy" value="ScrollBarAlwaysOff"/>
-                <sizepolicy horizontalPolicy="MinimumExpanding" horizontalStretch="0" verticalPolicy="MinimumExpanding" verticalStretch="0"/>
                 <enums name="focusPolicy" value="ClickFocus"/>
                 <enums name="clampingStyle" value="BounceBackClamping"/>
                 <bool name="visible" value="TRUE"/>

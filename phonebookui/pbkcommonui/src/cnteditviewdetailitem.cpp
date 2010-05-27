@@ -92,12 +92,14 @@ QVariant CntEditViewDetailItem::data( int aRole ) const
     }
 }
 
-void CntEditViewDetailItem::activated()
+void CntEditViewDetailItem::activated(CntEditViewItemCallback* interface)
 {
+    Q_UNUSED( interface );
 }
 
-void CntEditViewDetailItem::longPressed(const QPointF &coords)
+void CntEditViewDetailItem::longPressed(const QPointF &coords, CntEditViewItemCallback* interface)
 {
+    Q_UNUSED( interface );
     Q_UNUSED( coords );
 }
 

@@ -22,6 +22,8 @@
 #include <hbframeitem.h>
 
 #define NEW_EVENT_FRAME "qtg_fr_list_new_item"
+#define INCOMING_FOCUS_FRAME "qtg_fr_convlist_received_pressed"
+#define OUTGOING_FOCUS_FRAME "qtg_fr_convlist_sent_pressed"
 
 //---------------------------------------------------------------
 // HbListViewItem::HbListViewItem
@@ -31,7 +33,8 @@ CntHistoryViewItem::CntHistoryViewItem(QGraphicsItem* parent)
 : HbListViewItem(parent),
   mIncoming(false),
   mNewMessage(false),
-  mNewItem(NULL)
+  mNewItem(NULL),
+  mFocusItem(NULL)
 {
 }
 
@@ -53,7 +56,7 @@ void CntHistoryViewItem::updateChildItems()
     int flags = modelIndex().data(CntHistoryModel::FlagsRole).toInt();
     mIncoming = flags & CntHistoryModel::Incoming ? true : false;
     mNewMessage = flags & CntHistoryModel::Unseen ? true : false;
-    
+
     if (mNewMessage)
     {
         if (!mNewItem)
@@ -70,7 +73,52 @@ void CntHistoryViewItem::updateChildItems()
             mNewItem = NULL;
         }
     }
-
+    
     HbListViewItem::updateChildItems();
+}
+
+//---------------------------------------------------------------
+// HbAbstractViewItem::pressStateChanged
+// This function is called whenever item press state changes.
+//---------------------------------------------------------------
+void CntHistoryViewItem::pressStateChanged(bool pressed, bool animate)
+{
+    Q_UNUSED(animate);
+    if (pressed)
+    {
+        if (!mFocusItem)
+        {
+            // focus frame position can't be read from widgetml, we set it manually
+            QRectF frameRect = HbWidget::primitive("frame")->boundingRect();
+            QPointF framePoint = HbWidget::primitive("frame")->pos();
+            
+            // W12:
+            //QRectF frameRect = primitive(HbStyle::P_ItemViewItem_frame)->boundingRect();
+            //QPointF framePoint = primitive(HbStyle::P_ItemViewItem_frame)->pos();
+            
+            frameRect.moveTo(framePoint);
+            
+            if (mIncoming)
+            {
+                mFocusItem = new HbFrameItem(INCOMING_FOCUS_FRAME, HbFrameDrawer::NinePieces, this);
+            }
+            else
+            {
+                mFocusItem = new HbFrameItem(OUTGOING_FOCUS_FRAME, HbFrameDrawer::NinePieces, this);
+            }
+            
+            mFocusItem->setGeometry(frameRect);
+            mFocusItem->setZValue(-1.0);
+            style()->setItemName(mFocusItem, "focusframe");
+        }
+    }
+    else
+    {
+        if (mFocusItem)
+        {
+            delete mFocusItem;
+            mFocusItem = NULL;
+        }
+    }
 }
 // EOF

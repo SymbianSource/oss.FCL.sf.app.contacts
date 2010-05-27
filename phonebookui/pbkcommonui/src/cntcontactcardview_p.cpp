@@ -19,6 +19,8 @@
 #include <QGraphicsLinearLayout>
 #include <QGraphicsSceneResizeEvent>
 #include <QStringList>
+#include <QDebug>
+
 #include <qtcontacts.h>
 #include <hbscrollarea.h>
 #include <hblabel.h>
@@ -38,6 +40,7 @@
 #include <qversitcontactexporter.h>
 #include <qversitwriter.h>
 #include <xqservicerequest.h>
+
 #include "cntcontactcarddatacontainer.h"
 #include "cntcontactcarddetailitem.h"
 #include "cntcontactcardheadingitem.h"
@@ -48,6 +51,7 @@
 #include "cntdocumentloader.h"
 #include "cntimagelabel.h"
 #include "cntimageutility.h"
+#include "cntfavourite.h"
 
 const char *CNT_CONTACTCARDVIEW_XML = ":/xml/contacts_contactcard.docml";
 
@@ -65,11 +69,8 @@ CntContactCardViewPrivate::CntContactCardViewPrivate() :
     mDataContainer(NULL),
     mHeadingItem(NULL),
     mThumbnailManager(NULL),
-    mGroupContact(NULL),
     mAvatar(NULL),
-    mIsGroupMember(false),
     mIsHandlingMenu(false),
-    mIsPreviousImageEditorView(false),
     mFavoriteGroupId(-1),
     mLoader(NULL),
     mContactAction(NULL),
@@ -111,9 +112,6 @@ CntContactCardViewPrivate::~CntContactCardViewPrivate()
     delete mDataContainer;
     mDataContainer = NULL;
     
-    delete mGroupContact;
-    mGroupContact = NULL;
-    
     delete mAvatar;
     mAvatar = NULL;
     
@@ -131,8 +129,9 @@ void CntContactCardViewPrivate::showPreviousView()
 {
     emit backPressed();
     
-    //save an avatar
-    if (mIsPreviousImageEditorView)
+    //save the contact if avatar has been changed.
+    QContact contact = contactManager()->contact(mContact->localId());
+    if ( contact != *mContact )
     {
         QList<QContactAvatar> details = mContact->details<QContactAvatar>();
         for (int i = 0; i < details.count(); i++)
@@ -145,14 +144,7 @@ void CntContactCardViewPrivate::showPreviousView()
         }
     }
        
-    CntViewParameters viewParameters;
-    if (mIsGroupMember)
-    {
-        QVariant var;
-        var.setValue(*mGroupContact);
-        viewParameters.insert(ESelectedContact, var);
-    }
-    mViewManager->back(viewParameters);
+    mViewManager->back( mArgs );
 }
 
 /*
@@ -160,24 +152,20 @@ Activates a default view and setup name label texts
 */
 void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const CntViewParameters aArgs)
 {   
-    mView->installEventFilter(this);
-    
     mViewManager = aMgr;
+    mArgs = aArgs;
+    
+    mView->installEventFilter(this);
     
     HbMainWindow* window = mView->mainWindow();
     connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
     setOrientation(window->orientation());
         
-    if (aArgs.value(ECustomParam).toInt() == imageEditorView)
-    {    
-        mIsPreviousImageEditorView = true;   
-    }
-    
     QContact contact = aArgs.value(ESelectedContact).value<QContact>();
-    mContact = new QContact(contact);
-
+    mContact = new QContact( contact );
     //my card
-    if (mContact->localId() == contactManager()->selfContactId())
+    bool myCard = mContact->localId() == contactManager()->selfContactId();
+    if (myCard)
     {
         mView->menu()->clearActions();
         mView->toolBar()->removeAction(static_cast<HbAction*>(document()->findObject(QString("cnt:history"))));
@@ -187,24 +175,18 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
         mView->toolBar()->removeAction(static_cast<HbAction*>(document()->findObject(QString("cnt:sendMyCard"))));
     }
     
-    if (aArgs.value(ESelectedAction).toString() == "FromGroupMemberView")
-    {
-        mIsGroupMember = true;
-        QContact groupContact = aArgs.value(ESelectedGroupContact).value<QContact>();
-        mGroupContact = new QContact(groupContact);
-    }
     // add heading widget to the content
     QGraphicsWidget *c = document()->findWidget(QString("content"));
     QGraphicsLinearLayout* l = static_cast<QGraphicsLinearLayout*>(c->layout());
 
     mHeadingItem = static_cast<CntContactCardHeadingItem*>(document()->findWidget(QString("cnt_contactcard_heading")));
     mHeadingItem->setDetails(mContact);
-    mHeadingItem->setSecondaryIcon(isFavoriteGroupContact());
-    
     connect(mHeadingItem, SIGNAL(passLongPressed(const QPointF&)), this, SLOT(drawMenu(const QPointF&)));
+    connect(mHeadingItem, SIGNAL(passShortPressed(const QPointF&)), this, SLOT(doChangeImage()));
 
     mImageLabel = static_cast<CntImageLabel*>(document()->findWidget("cnt_contactcard_image"));
     connect(mImageLabel, SIGNAL(iconClicked()), this, SLOT(doChangeImage()));
+    connect(mImageLabel, SIGNAL(iconLongPressed(const QPointF&)), this, SLOT(drawMenu(const QPointF&)));
     
     // avatar
     QList<QContactAvatar> details = mContact->details<QContactAvatar>();
@@ -219,7 +201,7 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
     }
     
     // data
-    mDataContainer = new CntContactCardDataContainer(mContact);
+    mDataContainer = new CntContactCardDataContainer(mContact, NULL, myCard);
 
     // scroll area + container widget
     mScrollArea = static_cast<HbScrollArea*>(document()->findWidget(QString("scrollArea")));
@@ -296,38 +278,15 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
         }
     }
     
-    bool setAsFavorite = false;
-    if(isFavoriteGroupCreated())
+    bool setAsFavorite( false );
+    QContactLocalId favouriteGroupId = CntFavourite::favouriteGroupId( contactManager() );
+    if( favouriteGroupId != 0 )
     {
-        QContact favoriteGroup = contactManager()->contact(mFavoriteGroupId);
-        // Use relationship filter to get list of contacts in the relationship (if any)
-        QContactRelationshipFilter filter;
-        filter.setRelationshipType(QContactRelationship::HasMember);
-        filter.setRelatedContactRole(QContactRelationship::First); 
-        filter.setRelatedContactId(favoriteGroup.id());
-        
-        QList<QContactLocalId> mContactsList = contactManager()->contactIds(filter);
-        int count = mContactsList.count();
-        if (count)
-        {
-            for (int i = 0 ; i < count ; i++)
-            {
-                if (mContactsList.at(i) == mContact->localId())
-                {
-                setAsFavorite = true;
-                }
-            }
-        }
+        setAsFavorite = CntFavourite::isMemberOfFavouriteGroup( contactManager(), mContact );
+        mHeadingItem->setSecondaryIcon( setAsFavorite ); // if contact is part of favourites group
     }
-    
-    if (setAsFavorite)
-    {
-        qobject_cast<HbAction *>(document()->findObject("cnt:setasfavorite"))->setVisible(false);
-    }
-    else
-    {
-        qobject_cast<HbAction *>(document()->findObject("cnt:removefromfavorite"))->setVisible(false);
-    }
+    qobject_cast<HbAction *>(document()->findObject("cnt:setasfavorite"))->setVisible( !setAsFavorite );
+    qobject_cast<HbAction *>(document()->findObject("cnt:removefromfavorite"))->setVisible( setAsFavorite );
         
     // Menu items
     connect(qobject_cast<HbAction *>(document()->findObject("cnt:sendbusinesscard")), SIGNAL(triggered()),
@@ -349,7 +308,7 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
     connect(qobject_cast<HbAction *>(document()->findObject("cnt:sendMyCard")), SIGNAL(triggered()),
                 this, SLOT (sendBusinessCard()));
  
-    emit viewActivated(*mContact, aArgs.value(ESelectedDetail).value<QContactDetail>());
+    emit viewActivated( mViewManager, aArgs );
 }
 
 void CntContactCardViewPrivate::thumbnailReady(const QPixmap& pixmap, void *data, int id, int error)
@@ -388,12 +347,13 @@ Launch contact editor
 */
 void CntContactCardViewPrivate::editContact()
 {
-    CntViewParameters viewParameters;
-    viewParameters.insert(EViewId, editView);
     QVariant var;
     var.setValue(*mContact);
-    viewParameters.insert(ESelectedContact, var);
-    mViewManager->changeView(viewParameters);
+    
+    mArgs.insert(ESelectedContact, var);
+    mArgs.insert(EViewId, editView);
+    
+    mViewManager->changeView( mArgs );
 }
 
 void CntContactCardViewPrivate::addToGroup()
@@ -402,43 +362,18 @@ void CntContactCardViewPrivate::addToGroup()
 
 void CntContactCardViewPrivate::setAsFavorite()
 {
-    QContact favoriteGroup;
-    if (!isFavoriteGroupCreated() )
-    {
-        //Create Fav grp
-        favoriteGroup.setType(QContactType::TypeGroup);
-        QContactName favoriteGroupName;
-        favoriteGroupName.setCustomLabel("Favorites");
-        favoriteGroup.saveDetail(&favoriteGroupName);
-        contactManager()->saveContact(&favoriteGroup);
-        mFavoriteGroupId = favoriteGroup.localId();
-    }
-    else
-    {
-        favoriteGroup = contactManager()->contact(mFavoriteGroupId);
-    }
+    QContactId id = mContact->id();
+    CntFavourite::addContactToFavouriteGroup( contactManager(), id );
     
-    // new contact added to the favorite group
-    QContactRelationship relationship;
-    relationship.setRelationshipType(QContactRelationship::HasMember);
-    relationship.setFirst(favoriteGroup.id());
-    relationship.setSecond(mContact->id());
-    // save relationship
-    contactManager()->saveRelationship(&relationship);
-    
-    qobject_cast<HbAction *>(document()->findObject("cnt:setasfavorite"))->setVisible(false);
     qobject_cast<HbAction *>(document()->findObject("cnt:removefromfavorite"))->setVisible(true);
+    qobject_cast<HbAction *>(document()->findObject("cnt:setasfavorite"))->setVisible(false);
     mHeadingItem->setSecondaryIcon(true);  
 }
 
 void CntContactCardViewPrivate::removeFromFavorite()
 {
-    QContact favoriteGroup = contactManager()->contact(mFavoriteGroupId);
-    QContactRelationship relationship;
-    relationship.setRelationshipType(QContactRelationship::HasMember);
-    relationship.setFirst(favoriteGroup.id());
-    relationship.setSecond(mContact->id());
-    contactManager()->removeRelationship(relationship);
+    QContactId id = mContact->id();   
+    CntFavourite::removeContactFromFavouriteGroup( contactManager(), id );
 
     qobject_cast<HbAction *>(document()->findObject("cnt:removefromfavorite"))->setVisible(false);
     qobject_cast<HbAction *>(document()->findObject("cnt:setasfavorite"))->setVisible(true);
@@ -466,9 +401,8 @@ void CntContactCardViewPrivate::handleDeleteContact(HbAction *action)
     if (note && action == note->actions().first())
     {
         contactManager()->removeContact(mContact->localId());
-        CntViewParameters viewParameters;
-        viewParameters.insert(EViewId, namesView);
-        mViewManager->changeView(viewParameters);
+        mArgs.insert(EViewId, namesView);
+        mViewManager->changeView( mArgs );
     }
 }
 
@@ -477,12 +411,12 @@ Launch history view
 */
 void CntContactCardViewPrivate::viewHistory()
 {
-    CntViewParameters viewParameters;
-    viewParameters.insert(EViewId, historyView);
     QVariant var;
     var.setValue(*mContact);
-    viewParameters.insert(ESelectedContact, var);
-    mViewManager->changeView(viewParameters);
+    mArgs.insert(ESelectedContact, var);
+    mArgs.insert(EViewId, historyView);
+        
+    mViewManager->changeView( mArgs );
 }
 
 /*!
@@ -498,6 +432,7 @@ Send the business card / my card
 */
 void CntContactCardViewPrivate::sendBusinessCard()
 {
+    qDebug() << "CntContactCardViewPrivate::sendBusinessCard - IN";
     // Check if the contact has an image.
     QList<QContactAvatar> avatars = mContact->details<QContactAvatar>();
     bool imageExists( false );
@@ -529,8 +464,10 @@ void CntContactCardViewPrivate::sendBusinessCard()
     
     if ( !imageExists )
     {
+        qDebug() << "CntContactCardViewPrivate::sendBusinessCard without image";
         handleSendBusinessCard( NULL ); // no image
     }
+    qDebug() << "CntContactCardViewPrivate::sendBusinessCard - OUT";
 }
 
 /*!
@@ -557,7 +494,19 @@ void CntContactCardViewPrivate::onItemActivated()
 {
     CntContactCardDetailItem *item = qobject_cast<CntContactCardDetailItem*>(sender());
     int index = item->index();
-    launchAction(*mContact, mDataContainer->dataItem(index)->detail(), mDataContainer->dataItem(index)->action());
+    QString action = mDataContainer->dataItem(index)->action();
+    // Check if action is internal
+    QList<QContactActionDescriptor> actionDescriptors = QContactAction::actionDescriptors(action, "symbian", 1);
+    if(0 < actionDescriptors.count())
+    {
+        // These actions are considered internal(vendor=symbian and version=1)
+        launchAction(*mContact, mDataContainer->dataItem(index)->detail(), action);
+    }
+    else
+    {
+        //Handle dynamic actions differently
+        launchDynamicAction(*mContact, mDataContainer->dataItem(index)->detail(), mDataContainer->dataItem(index)->actionDescriptor());
+    }
 }
 
 /*!
@@ -577,6 +526,18 @@ void CntContactCardViewPrivate::launchAction(QContact contact, QContactDetail de
     mContactAction->invokeAction(contact, detail);
 }
 
+/*!
+Launch dynamic action
+*/
+void CntContactCardViewPrivate::launchDynamicAction(QContact contact, QContactDetail detail, QContactActionDescriptor actionDescriptor)
+{
+    // detail might be empty -> in that case engine uses the preferred detail for the selected action
+    mContactAction = QContactAction::action(actionDescriptor);
+    connect(mContactAction, SIGNAL(stateChanged(QContactAction::State)),
+                this, SLOT(progress(QContactAction::State)));
+    mContactAction->invokeAction(contact, detail);
+}
+
 void CntContactCardViewPrivate::progress(QContactAction::State status)
 {
     switch(status)
@@ -584,7 +545,6 @@ void CntContactCardViewPrivate::progress(QContactAction::State status)
     case QContactAction::FinishedState:
     case QContactAction::FinishedWithErrorState:
         mContactAction->deleteLater();
-        mContactAction = 0;
         break;
     default:
         break;
@@ -610,6 +570,7 @@ void CntContactCardViewPrivate::onLongPressed(const QPointF &aCoords)
     
     CntContactCardContextMenu *menu = new CntContactCardContextMenu( item );
     HbAction *communicationAction = 0;
+    HbAction *dynamicAction = 0;
     HbAction *videoCommunicationAction = 0;
     HbAction *preferredAction = 0;
     CntStringMapper stringMapper;
@@ -629,7 +590,8 @@ void CntContactCardViewPrivate::onLongPressed(const QPointF &aCoords)
             communicationAction = menu->addAction(stringMapper.getItemSpecificMenuLocString(subtype, context));
    
             // TODO : uncomment next line when videotelephony is released
-            //videoCommunicationAction = menu->addAction(QString("VideoCall"));
+            Q_UNUSED(videoCommunicationAction)
+            //videoCommunicationAction = menu->addAction(QString("txt_phob_menu_call_video_number"));
         }        
     }
     else if (action.compare("message", Qt::CaseInsensitive) == 0)
@@ -645,7 +607,25 @@ void CntContactCardViewPrivate::onLongPressed(const QPointF &aCoords)
         else
         {
             communicationAction = menu->addAction(stringMapper.getItemSpecificMenuLocString(detail.definitionName(), QString()));
-        }        
+        }
+    }
+    else if (action.compare("url", Qt::CaseInsensitive) == 0)
+    {
+        if (!detail.contexts().isEmpty())
+        {
+            communicationAction = menu->addAction(stringMapper.getItemSpecificMenuLocString(detail.definitionName(), detail.contexts().first()));
+        }
+        else
+        {
+            communicationAction = menu->addAction(stringMapper.getItemSpecificMenuLocString(detail.definitionName(), QString()));
+        }
+    }
+    else if (1 > QContactAction::actionDescriptors(action, "symbian", 1).count())
+    {
+        // Do verification that action is not internal type(vendor=symbian and version=1)
+        // If hard coded action is not found, fetch localization from dynamic action
+        // and create dynamic action item.
+        dynamicAction = menu->addAction(mDataContainer->dataItem(index)->longPressText());
     }
     
     if (action.compare("call", Qt::CaseInsensitive) == 0)
@@ -669,6 +649,11 @@ void CntContactCardViewPrivate::onLongPressed(const QPointF &aCoords)
     if ( communicationAction )
     {
         communicationAction->setObjectName( "communicationAction" );
+    }
+   
+    if ( dynamicAction )
+    {
+        dynamicAction->setObjectName( "dynamicAction" );
     }
     
     if ( preferredAction )
@@ -697,6 +682,11 @@ void CntContactCardViewPrivate::handleMenuAction(HbAction* aAction)
     {
         launchAction( *mContact, detail, action );
     }
+
+    if ( name == "dynamicAction" )
+    {             
+        launchDynamicAction(*mContact, detail, mDataContainer->dataItem(index)->actionDescriptor());
+    }
     
     if ( name == "preferredAction" )
     {
@@ -718,6 +708,7 @@ void CntContactCardViewPrivate::handleMenuAction(HbAction* aAction)
 
 void CntContactCardViewPrivate::handleSendBusinessCard( HbAction* aAction )
 {
+    qDebug() << "CntContactCardViewPrivate::handleSendBusinessCard - IN";
     QList<QContact> list;
     if ( aAction && aAction->objectName() == "cancel" )
     {
@@ -762,13 +753,14 @@ void CntContactCardViewPrivate::handleSendBusinessCard( HbAction* aAction )
         
     QVersitContactExporter exporter;
     // The vCard version needs to be 2.1 due to backward compatiblity when sending 
-    if (!exporter.exportContacts(list, QVersitDocument::VCard21Type))
+    if (exporter.exportContacts(list, QVersitDocument::VCard21Type))
     {
-            
+        qDebug() << "CntContactCardViewPrivate::handleSendBusinessCard, VCard21Type";
         QList<QVersitDocument> docs = exporter.documents();
         QFile f(vCardPath);
         if ( f.open(QIODevice::WriteOnly) ) 
         {
+            qDebug() << "CntContactCardViewPrivate::handleSendBusinessCard write VCard";
             // Start creating the vCard
             QVersitWriter writer;
             writer.setDevice(&f);
@@ -783,6 +775,7 @@ void CntContactCardViewPrivate::handleSendBusinessCard( HbAction* aAction )
             s.send(l,false);
         }
     }
+    qDebug() << "CntContactCardViewPrivate::handleSendBusinessCard - OUT";
 }
 
 /*!
@@ -804,11 +797,6 @@ bool CntContactCardViewPrivate::eventFilter(QObject *obj, QEvent *event)
         }
         return true;
     }
-    else if (event->type() == QEvent::LayoutRequest && mScrollArea)
-    {
-        mContainerWidget->resize(mScrollArea->size().width(), mScrollArea->size().height());
-        return true;
-    }
     else
     {
         return QObject::eventFilter(obj,event);
@@ -821,12 +809,13 @@ longpressing the image in this view.
 */
 void CntContactCardViewPrivate::doChangeImage()
 {
-    CntViewParameters viewParameters;
-    viewParameters.insert(EViewId, imageEditorView);
     QVariant var;
     var.setValue(*mContact);
-    viewParameters.insert(ESelectedContact, var);
-    mViewManager->changeView(viewParameters);
+    
+    mArgs.insert(ESelectedContact, var);
+    mArgs.insert(EViewId, imageEditorView);
+        
+    mViewManager->changeView( mArgs );
 }
 
 /*!
@@ -871,73 +860,14 @@ void CntContactCardViewPrivate::drawMenu(const QPointF &aCoords)
     
     HbMenu *menu = new HbMenu();
     menu->addAction(hbTrId("txt_phob_menu_change_picture"), this, SLOT(doChangeImage()) );
-    menu->addAction(hbTrId("txt_phob_menu_remove_image"), this, SLOT(doRemoveImage()) );
- 
+    if (mAvatar)
+    {
+        menu->addAction(hbTrId("txt_phob_menu_remove_image"), this, SLOT(doRemoveImage()) );
+    }
     menu->setAttribute( Qt::WA_DeleteOnClose );
     menu->setPreferredPos( aCoords );
     menu->open();
     }
-
-/*!
-Check if the favourite group created
-*/
-bool CntContactCardViewPrivate::isFavoriteGroupCreated()
-{
-    bool favoriteGroupCreated = false;
-    QContactDetailFilter groupFilter;
-    groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
-    groupFilter.setValue(QString(QLatin1String(QContactType::TypeGroup)));
-
-    QList<QContactLocalId> groupContactIds = contactManager()->contactIds(groupFilter);
-    
-    if (!groupContactIds.isEmpty())
-    {
-        for(int i = 0;i < groupContactIds.count();i++)
-        {
-            QContact contact = contactManager()->contact(groupContactIds.at(i));
-            QContactName contactName = contact.detail<QContactName>();
-            QString groupName = contactName.customLabel();
-            if(groupName.compare("Favorites") == 0)
-            {
-                favoriteGroupCreated = true;
-                mFavoriteGroupId = groupContactIds.at(i);
-                break;
-            }
-        }
-    }
-    return favoriteGroupCreated;
-}
-
-/*!
-Check if the contact is the favourite group
-*/
-bool CntContactCardViewPrivate::isFavoriteGroupContact()
-{
-    bool favoriteGroupContact = false;
-    
-    if (isFavoriteGroupCreated())
-    {
-        QContact favoriteGroup = contactManager()->contact(mFavoriteGroupId);
-        QContactRelationshipFilter rFilter;
-        rFilter.setRelationshipType(QContactRelationship::HasMember);
-        rFilter.setRelatedContactRole(QContactRelationship::First);
-        rFilter.setRelatedContactId(favoriteGroup.id());
-    
-        QList<QContactLocalId> contactsLocalIdList = contactManager()->contactIds(rFilter);
-        if (!contactsLocalIdList.isEmpty())
-        {
-            for(int i = 0;i < contactsLocalIdList.count();i++)
-            {
-                QContact favContact = contactManager()->contact(contactsLocalIdList.at(i));
-                if (favContact.localId() == mContact->localId())
-                {
-                    favoriteGroupContact = true;
-                }  
-             }
-        }
-    }
-    return favoriteGroupContact;
-}
 
 /*!
 Return the pointer to the document loader

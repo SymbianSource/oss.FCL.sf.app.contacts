@@ -56,8 +56,10 @@ void CntServiceContactSelectionView::aboutToCloseView()
     mServiceHandler->completeEdit(0);
 }
 
-void CntServiceContactSelectionView::aboutToOpenView(const CntViewParameters viewParameters)
+void CntServiceContactSelectionView::aboutToOpenView(CntAbstractViewManager* aMgr, const CntViewParameters viewParameters)
 {
+    mMgr = aMgr;
+    
     QContactDetailFilter filter;
     filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
     QString typeContact = QContactType::TypeContact;

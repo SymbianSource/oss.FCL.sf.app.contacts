@@ -75,7 +75,6 @@ private slots:
     void showContextMenu(HbAbstractViewItem *item, const QPointF &coords);
     void handleMenu(HbAction* action);
 
-    
     void showContactView(const QModelIndex &index);
     void removeFromGroup(const QModelIndex &index);
     void editContact(const QModelIndex &index);
@@ -83,10 +82,9 @@ private slots:
     void openImageEditor();
     
     void drawImageMenu(const QPointF &aCoords);
-    void handleImageMenu(HbAction* action);
+    void createModel();
     
 private:    
-    void changeImage();
     void removeImage();
     
 private:
@@ -110,7 +108,6 @@ private:
     HbDocumentLoader*           mDocument;
     CntFetchContacts*           mFetchView;
     QList<QContactLocalId>      mOriginalGroupMembers;
-    bool                        mIsPreviousImageEditorView;
     QContactAvatar*             mAvatar;
 };
 

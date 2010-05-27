@@ -20,9 +20,6 @@
 
 #include <QtTest/QtTest>
 
-Q_DECLARE_METATYPE(QContactAction::Status)
-
-
 #define QTRY_COMPARE(__expr, __expected) \
     do { \
         const int __step = 50; \
@@ -37,9 +34,7 @@ Q_DECLARE_METATYPE(QContactAction::Status)
 
 void TestMobCntActions::initTestCase()
 {
-	//Non standard types needs to be registered before they can be used by QSignalSpy
-	int error = qRegisterMetaType<QContactAction::Status>();
-	
+    int error = qRegisterMetaType<QContactAction::State>();
 	//create manager
 	m_manager = new QContactManager("symbian");
 	    
@@ -53,8 +48,9 @@ void TestMobCntActions::cleanupTestCase()
 void TestMobCntActions::init()
 {
     //delete all contacts from the database
-    QList<QContactLocalId> contacts = m_manager->contacts();
-    m_manager->removeContacts(&contacts);
+    QList<QContactLocalId> contacts = m_manager->contactIds();
+    QMap<int, QContactManager::Error> errorMap;
+    m_manager->removeContacts(&contacts, &errorMap);
 }
 
 void TestMobCntActions::cleanup()
@@ -66,7 +62,7 @@ void TestMobCntActions::emptyContactNoActionSupport()
     m_manager->saveContact(&contact);
     
     //expected no actions found
-    QStringList actions = contact.availableActions();
+    QList<QContactActionDescriptor> actions = contact.availableActions();
     QVERIFY(actions.count() == 0);
 }
 
@@ -86,7 +82,13 @@ void TestMobCntActions::phonenumberCallSupport()
     QVERIFY(numberList.count() >  0);
     
     //get the actions
-    QStringList actions = contact.availableActions();
+    QList<QContactActionDescriptor> actionDescriptors = contact.availableActions();
+    QStringList actions;
+    for (int i = 0;i < actionDescriptors.count();i++)
+    {
+        QString action = actionDescriptors.at(i).actionName();
+        actions << action;
+    }
     
     //verify that it includes the actiosn
     QVERIFY(actions.contains("call", Qt::CaseInsensitive));
@@ -96,45 +98,33 @@ void TestMobCntActions::phonenumberCallSupport()
     QVERIFY(callActionDescriptors.count() == 1);
     QContactAction *callAction = QContactAction::action(callActionDescriptors.at(0));
     QVERIFY(callAction != 0);
-    QVERIFY(callAction->supportsDetail(numberList.at(0)) == true);
-    QVariantMap variantMap = callAction->metadata();
+    QVERIFY(callAction->isDetailSupported(numberList.at(0)) == true);
+    QVariantMap variantMap = callAction->metaData();
     QVERIFY(variantMap.count() == 0);
+    variantMap = callAction->results();
     QVERIFY(variantMap.count() == 0);
-    variantMap = callAction->result();
-    QSignalSpy spyCallAction(callAction, SIGNAL(progress(QContactAction::Status, const QVariantMap &)));
+    QSignalSpy spyCallAction(callAction, SIGNAL(stateChanged(QContactAction::State)));
     callAction->invokeAction(contact, numberList.at(0));
     callAction->invokeAction(contact);
     QTRY_COMPARE(spyCallAction.count(), 2); // make sure the signal was emitted exactly one time
-    //Verify that the data is correct
-    //QList<QVariant> arguments = spy.takeFirst(); // take the first signal
-    //QContactAction::Status status = arguments.at(0).value<QContactAction::Status>();
-    //QVariantMap map = (arguments.at(1)).toMap();
     delete callAction;
 }
 
 void TestMobCntActions::phonenumberNoCallSupport()
 {
     QContact contact;
-    
-    QContactPhoneNumber faxNumber;
-    faxNumber.setNumber("555111222");
-    faxNumber.setSubTypes(QContactPhoneNumber::SubTypeFacsimile);
-    contact.saveDetail(&faxNumber);
     m_manager->saveContact(&contact);
-    
-    //one number exist in contact
-    QList<QContactPhoneNumber> numberList = contact.details<QContactPhoneNumber>();
-    QVERIFY(numberList.count() == 1);
-    
-    QStringList subTypeList = numberList.at(0).subTypes();
-    
-    QVERIFY(subTypeList.count() == 1);
-    QVERIFY(subTypeList.contains(QContactPhoneNumber::SubTypeFacsimile));
         
     //no actions expected
-    QStringList actions = contact.availableActions();
+    QList<QContactActionDescriptor> actionDescriptors = contact.availableActions();
+    QStringList actions;
+    for (int i = 0;i < actionDescriptors.count();i++)
+    {
+        QString action = actionDescriptors.at(i).actionName();
+        actions << action;
+    }
     
-    QVERIFY(actions.contains("call", Qt::CaseInsensitive)      == false);
+    QVERIFY(actions.contains("call", Qt::CaseInsensitive) == false);
 }
 
 void TestMobCntActions::phonenumberMessageSupport()
@@ -153,7 +143,13 @@ void TestMobCntActions::phonenumberMessageSupport()
     QVERIFY(numberList.count() >  0);
     
     //get the actions
-    QStringList actions = contact.availableActions();
+    QList<QContactActionDescriptor> actionDescriptors = contact.availableActions();
+    QStringList actions;
+    for (int i = 0;i < actionDescriptors.count();i++)
+    {
+        QString action = actionDescriptors.at(i).actionName();
+        actions << action;
+    }
     
     //verify that it includes the actiosn
     QVERIFY(actions.contains("message", Qt::CaseInsensitive));
@@ -162,12 +158,12 @@ void TestMobCntActions::phonenumberMessageSupport()
     QVERIFY(messageActionDescriptors.count() == 1);
     QContactAction *messageAction = QContactAction::action(messageActionDescriptors.at(0));
     QVERIFY(messageAction != 0);
-    QVERIFY(messageAction->supportsDetail(numberList.at(0)) == true);
-    QVariantMap variantMap = messageAction->metadata();
+    QVERIFY(messageAction->isDetailSupported(numberList.at(0)) == true);
+    QVariantMap variantMap = messageAction->metaData();
     QVERIFY(variantMap.count() == 0);
-    variantMap = messageAction->result();
+    variantMap = messageAction->results();
     QVERIFY(variantMap.count() == 0);
-    QSignalSpy spyMessageAction(messageAction, SIGNAL(progress(QContactAction::Status, const QVariantMap &)));
+    QSignalSpy spyMessageAction(messageAction, SIGNAL(stateChanged(QContactAction::State)));
     messageAction->invokeAction(contact, numberList.at(0));
     messageAction->invokeAction(contact);
     QTRY_COMPARE(spyMessageAction.count(), 2); // make sure the signal was emitted exactly one time
@@ -176,27 +172,18 @@ void TestMobCntActions::phonenumberMessageSupport()
 
 void TestMobCntActions::phonenumberNoMessageSupport()
 {
-    QContact contact;
-    
     QContactPhoneNumber faxNumber;
     faxNumber.setNumber("555111222");
     faxNumber.setSubTypes(QContactPhoneNumber::SubTypeFacsimile);
-    contact.saveDetail(&faxNumber);
-    m_manager->saveContact(&contact);
+
+    QList<QContactActionDescriptor> actionDescriptors = QContactAction::actionDescriptors("message", "symbian");
+
+    QContactAction* contactAction = QContactAction::action(actionDescriptors.first());
+    bool isSupportDetail = contactAction->isDetailSupported(faxNumber);
     
-    //one number exist in contact
-    QList<QContactPhoneNumber> numberList = contact.details<QContactPhoneNumber>();
-    QVERIFY(numberList.count() == 1);
-    
-    QStringList subTypeList = numberList.at(0).subTypes();
-    
-    QVERIFY(subTypeList.count() == 1);
-    QVERIFY(subTypeList.contains(QContactPhoneNumber::SubTypeFacsimile));
-        
-    //no actions expected
-    QStringList actions = contact.availableActions();
-    
-    QVERIFY(actions.contains("message", Qt::CaseInsensitive)   == false);
+    delete contactAction;
+
+    QVERIFY(isSupportDetail == false);
 }
 
 void TestMobCntActions::phonenumberVideoCallSupport()
@@ -215,7 +202,13 @@ void TestMobCntActions::phonenumberVideoCallSupport()
     QVERIFY(numberList.count() >  0);
     
     //get the actions
-    QStringList actions = contact.availableActions();
+    QList<QContactActionDescriptor> actionDescriptors = contact.availableActions();
+    QStringList actions;
+    for (int i = 0;i < actionDescriptors.count();i++)
+    {
+        QString action = actionDescriptors.at(i).actionName();
+        actions << action;
+    }
     
     //verify that it includes the actiosn
     QVERIFY(actions.contains("videocall", Qt::CaseInsensitive));
@@ -225,12 +218,12 @@ void TestMobCntActions::phonenumberVideoCallSupport()
     QVERIFY(videoCallActionDescriptors.count() == 1);
     QContactAction *videoCallAction = QContactAction::action(videoCallActionDescriptors.at(0));
     QVERIFY(videoCallAction != 0);
-    QVERIFY(videoCallAction->supportsDetail(numberList.at(0)) == true);
-    QVariantMap variantMap = videoCallAction->metadata();
+    QVERIFY(videoCallAction->isDetailSupported(numberList.at(0)) == true);
+    QVariantMap variantMap = videoCallAction->metaData();
     QVERIFY(variantMap.count() == 0);
-    variantMap = videoCallAction->result();
+    variantMap = videoCallAction->results();
     QVERIFY(variantMap.count() == 0);
-    QSignalSpy spyVideoCallAction(videoCallAction, SIGNAL(progress(QContactAction::Status, const QVariantMap &)));
+    QSignalSpy spyVideoCallAction(videoCallAction, SIGNAL(stateChanged(QContactAction::State)));
     videoCallAction->invokeAction(contact, numberList.at(0));
     videoCallAction->invokeAction(contact);
     QTRY_COMPARE(spyVideoCallAction.count(), 2); // make sure the signal was emitted exactly one time
@@ -240,29 +233,20 @@ void TestMobCntActions::phonenumberVideoCallSupport()
 void TestMobCntActions::phonenumberNoVideoCallSupport()
 {
     QContact contact;
-    
-    QContactPhoneNumber faxNumber;
-    faxNumber.setNumber("555111222");
-    faxNumber.setSubTypes(QContactPhoneNumber::SubTypeFacsimile);
-    contact.saveDetail(&faxNumber);
     m_manager->saveContact(&contact);
     
-    //one number exist in contact
-    QList<QContactPhoneNumber> numberList = contact.details<QContactPhoneNumber>();
-    QVERIFY(numberList.count() == 1);
-    
-    QStringList subTypeList = numberList.at(0).subTypes();
-    
-    QVERIFY(subTypeList.count() == 1);
-    QVERIFY(subTypeList.contains(QContactPhoneNumber::SubTypeFacsimile));
-        
-    //no actions expected
-    QStringList actions = contact.availableActions();
-    
+    //expected no actions found
+    QList<QContactActionDescriptor> actionDescriptors = contact.availableActions();
+    QStringList actions;
+    for (int i = 0;i < actionDescriptors.count();i++)
+    {
+        QString action = actionDescriptors.at(i).actionName();
+        actions << action;
+    }
     QVERIFY(actions.contains("videocall", Qt::CaseInsensitive) == false);
 }
 
-void TestMobCntActions::phonenumberEmailSupport()
+void TestMobCntActions::emailSupport()
 {
     QContact contact;
     QContactEmailAddress email;
@@ -274,8 +258,14 @@ void TestMobCntActions::phonenumberEmailSupport()
     QList<QContactEmailAddress> emailList = contact.details<QContactEmailAddress>();
     QVERIFY(emailList.count() == 1);
     
-    //no actions expected
-    QStringList actions = contact.availableActions();
+    //one action expected
+    QList<QContactActionDescriptor> actionDescriptors = contact.availableActions();
+    QStringList actions;
+    for (int i = 0;i < actionDescriptors.count();i++)
+    {
+        QString action = actionDescriptors.at(i).actionName();
+        actions << action;
+    }
     QVERIFY(actions.count() == 1);   
     QVERIFY(actions.contains("email", Qt::CaseInsensitive));
     
@@ -287,26 +277,91 @@ void TestMobCntActions::phonenumberEmailSupport()
     QVERIFY(emailActionDescriptors.count() == 1);
     QContactAction *emailAction = QContactAction::action(emailActionDescriptors.at(0));
     QVERIFY(emailAction != 0);
-    QVERIFY(emailAction->supportsDetail(emailList.at(0)) == true);
-    QVariantMap variantMap = emailAction->metadata();
+    QVERIFY(emailAction->isDetailSupported(emailList.at(0)) == true);
+    QVariantMap variantMap = emailAction->metaData();
     QVERIFY(variantMap.count() == 0);
-    variantMap = emailAction->result();
+    variantMap = emailAction->results();
     QVERIFY(variantMap.count() == 0);
-    QSignalSpy spyEmailAction(emailAction, SIGNAL(progress(QContactAction::Status, const QVariantMap &)));
+    QSignalSpy spyEmailAction(emailAction, SIGNAL(stateChanged(QContactAction::State)));
     emailAction->invokeAction(contact, emailAddress);
     emailAction->invokeAction(contact);
     QTRY_COMPARE(spyEmailAction.count(), 2); // make sure the signal was emitted exactly one time
     delete emailAction;
 }
 
-void TestMobCntActions::phonenumberNoEmailSupport()
+void TestMobCntActions::noEmailSupport()
 {
     QContact contact;
     m_manager->saveContact(&contact);
     
     //expected no actions found
-    QStringList actions = contact.availableActions();
+    QList<QContactActionDescriptor> actionDescriptors = contact.availableActions();
+    QStringList actions;
+    for (int i = 0;i < actionDescriptors.count();i++)
+    {
+        QString action = actionDescriptors.at(i).actionName();
+        actions << action;
+    }
     QVERIFY(actions.contains("email", Qt::CaseInsensitive) == false);
+}
+
+void TestMobCntActions::urlSupport()
+{
+    QContact contact;
+    QContactUrl url;
+    url.setUrl("www.test.com");
+    contact.saveDetail(&url);
+    m_manager->saveContact(&contact);
+    
+    //one number exist in contact
+    QList<QContactUrl> urlList = contact.details<QContactUrl>();
+    QVERIFY(urlList.count() == 1);
+    
+    //no actions expected
+    QList<QContactActionDescriptor> actionDescriptors = contact.availableActions();
+    QStringList actions;
+    for (int i = 0;i < actionDescriptors.count();i++)
+    {
+        QString action = actionDescriptors.at(i).actionName();
+        actions << action;
+    }
+    QVERIFY(actions.count() == 1);   
+    QVERIFY(actions.contains("url", Qt::CaseInsensitive));
+    
+    //pick first number for the actions
+    QContactUrl urlAddress = contact.detail<QContactUrl>();
+        
+    //Test Email action
+    QList<QContactActionDescriptor> urlActionDescriptors = QContactAction::actionDescriptors("url", "symbian");
+    QVERIFY(urlActionDescriptors.count() == 1);
+    QContactAction *urlAction = QContactAction::action(urlActionDescriptors.at(0));
+    QVERIFY(urlAction != 0);
+    QVERIFY(urlAction->isDetailSupported(urlList.at(0)) == true);
+    QVariantMap variantMap = urlAction->metaData();
+    QVERIFY(variantMap.count() == 0);
+    variantMap = urlAction->results();
+    QVERIFY(variantMap.count() == 0);
+    QSignalSpy spyUrlAction(urlAction, SIGNAL(stateChanged(QContactAction::State)));
+    urlAction->invokeAction(contact, urlAddress);
+    urlAction->invokeAction(contact);
+    QTRY_COMPARE(spyUrlAction.count(), 2); // make sure the signal was emitted exactly once each time
+    delete urlAction;
+}
+
+void TestMobCntActions::noUrlSupport()
+{
+    QContact contact;
+    m_manager->saveContact(&contact);
+    
+    //expected no actions found
+    QList<QContactActionDescriptor> actionDescriptors = contact.availableActions();
+    QStringList actions;
+    for (int i = 0;i < actionDescriptors.count();i++)
+    {
+        QString action = actionDescriptors.at(i).actionName();
+        actions << action;
+    }
+    QVERIFY(actions.contains("url", Qt::CaseInsensitive) == false);
 }
 
 QTEST_MAIN(TestMobCntActions);

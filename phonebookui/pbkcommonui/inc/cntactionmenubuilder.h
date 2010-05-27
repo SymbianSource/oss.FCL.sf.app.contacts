@@ -37,7 +37,7 @@ public:
     ~CntActionMenuBuilder();
     
 public:
-    HbMenu* actionMenu( QContact& aContact );
+    HbMenu* actionMenu( QContact& aContact, QContactLocalId myCardId );
     
 public:
     HbMenu* buildActionMenu( QContact& aContact );
@@ -65,6 +65,8 @@ private:
     void createCallAction( HbMenu& aMenu, QContact& aContact );
     void createMessageAction( HbMenu& aMenu, QContact& aContact );
     void createEmailAction( HbMenu& aMenu, QContact& aContact );
+    bool isSupportedDetails( const QString &actionName, const QContact &contact );
+
 private:
     QContactLocalId iMyCardId;
     QContact* mContact;

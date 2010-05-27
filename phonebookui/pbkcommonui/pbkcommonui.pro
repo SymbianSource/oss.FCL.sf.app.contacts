@@ -47,14 +47,18 @@ symbian: {
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntviewparams.h APP_LAYER_PLATFORM_EXPORT_PATH(cntviewparams.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntabstractview.h APP_LAYER_PLATFORM_EXPORT_PATH(cntabstractview.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntabstractviewmanager.h APP_LAYER_PLATFORM_EXPORT_PATH(cntabstractviewmanager.h)"
+        :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntcenrepkeys.h APP_LAYER_PLATFORM_EXPORT_PATH(cntcenrepkeys.h)"
 
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntuiextensionfactory.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuiextensionfactory.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntuigroupsupplier.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuigroupsupplier.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntuisocialextension.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuisocialextension.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntuiextensiongroup.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuiextensiongroup.h)"
+        :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntextensiongroupcallback.h APP_LAYER_PLATFORM_EXPORT_PATH(cntextensiongroupcallback.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntviewsupplier.h APP_LAYER_PLATFORM_EXPORT_PATH(cntviewsupplier.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cnteditviewitemsupplier.h APP_LAYER_PLATFORM_EXPORT_PATH(cnteditviewitemsupplier.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cnteditviewitem.h APP_LAYER_PLATFORM_EXPORT_PATH(cnteditviewitem.h)"
+        :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntuiactionextension.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuiactionextension.h)"
+        :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cnteditviewitemcallback.h APP_LAYER_PLATFORM_EXPORT_PATH(cnteditviewitemcallback.h)"
 }
 
 # Input
@@ -71,6 +75,7 @@ HEADERS += \
     inc/cntimageeditorview.h \
     inc/cntfavoritesmemberview.h \
     inc/cntfavoritesview.h \
+    inc/cntfavourite.h \
     inc/cntmainwindow.h \
     inc/cntnamesview.h \
     inc/cntnamesview_p.h \
@@ -122,7 +127,8 @@ HEADERS += \
     inc/cntextensionmanager.h \
     inc/cntimagelabel.h \
     inc/cntfetchcontactsview.h \
-    inc/cntimportsview.h
+    inc/cntimportsview.h \
+    inc/cntsettingsview.h
     
 SOURCES += \
 	src/cntviewnavigator.cpp \
@@ -137,6 +143,7 @@ SOURCES += \
     src/cntimageeditorview.cpp \
     src/cntfavoritesmemberview.cpp \
     src/cntfavoritesview.cpp \
+    src/cntfavourite.cpp \
     src/cntmainwindow.cpp \
     src/cntnamesview.cpp \
     src/cntnamesview_p.cpp \
@@ -186,7 +193,9 @@ SOURCES += \
     src/cntextensionmanager.cpp \
     src/cntimagelabel.cpp \
     src/cntimportsview.cpp \
-    src/cntfetchcontactsview.cpp
+    src/cntfetchcontactsview.cpp \
+    src/cntsettingsview.cpp \
+    src/cntsettingsmodel.cpp
     
 RESOURCES += resources\pbkcommonui.qrc
 

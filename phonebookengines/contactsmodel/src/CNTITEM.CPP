@@ -27,6 +27,9 @@
 
 #include "cntstd.h"
 #include "cntprof.h"
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "cntfieldheader.h"
+#endif
 
 
 EXPORT_C CContactItemFieldSet* CContactItemFieldSet::NewL()

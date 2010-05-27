@@ -74,16 +74,24 @@ public slots:
     void showContactView( const QModelIndex& );
     void showContactEditorView( QContact& aContact );
     void showContextMenu(HbAbstractViewItem* aItem, QPointF aPoint);
-        
+    void showSettings();
+    
     void executeAction( QContact& aContact, QString aAction );
     void actionExecuted( CntAction* aAction );
     void handleDeleteContact( HbAction* aAction );
     void importSim();
-
+    
+    void handleContactAddition(const QList<QContactLocalId> & aAddedList);
+    void handleContactRemoval(const QList<QContactLocalId> & aRemovedList);
+    void handleSelfContactIdChange(const QContactLocalId & aOldId, const QContactLocalId & aNewId);
+    
 public:
     bool isFinderVisible();
     void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
     void deactivate();
+    
+private:
+    void disableDeleteAction();
     
 public:
     CntNamesView *q_ptr;

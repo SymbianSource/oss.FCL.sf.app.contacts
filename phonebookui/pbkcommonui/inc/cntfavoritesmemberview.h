@@ -44,6 +44,7 @@ public: // From CntAbstractView
     bool isDefault() const { return false; }
     HbView* view() const { return mView; }
     int viewId() const { return FavoritesMemberView; }
+    void createModel();
     
 public:
     CntFavoritesMemberView();
@@ -64,6 +65,7 @@ private slots:
     void openContact(const QModelIndex &index);
     void editContact(const QModelIndex &index);
     void removeFromFavorites(const QModelIndex &index);
+    void sendToHs(const QModelIndex &index);
     void showPreviousView();
     
 #ifdef PBK_UNIT_TEST

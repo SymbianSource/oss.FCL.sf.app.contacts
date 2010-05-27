@@ -21,7 +21,7 @@ TARGETTYPE      exe
 CAPABILITY   	ReadUserData WriteUserData AllFiles
 
 SOURCEPATH	../tsrc
-SYSTEMINCLUDE   /epoc32/include
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 USERINCLUDE	../tsrc ../inc
 SOURCE          t_lowdiskspace.cpp
 LIBRARY         euser.lib cntmodel.lib efsrv.lib

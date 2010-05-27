@@ -20,7 +20,7 @@
 #include "mobcntmodel_p.h"
 
 #include <qtcontacts.h>
-#include <QSignalSpy>
+#include <QUrl>
 
 void TestMobCntModel::initTestCase()
 {
@@ -31,12 +31,18 @@ void TestMobCntModel::initTestCase()
     mManager->removeContacts(ids, &errorMapInit);
 }
 
+void TestMobCntModel::contactReady(int startRow, int endRow)
+{
+    QVERIFY(startRow == endRow);
+    mDataReady = true;
+}
+
 void TestMobCntModel::create()
 {
     mCntModel = new MobCntModel();
     QVERIFY(mCntModel != 0);
     QVERIFY(mCntModel->rowCount() == 1);
-    QVERIFY(mCntModel->mIconManager);
+    QVERIFY(mCntModel->d->m_cache);
     QVERIFY(mCntModel->d->ownedContactManager);
     QVERIFY(mCntModel->d->m_contactManager != 0);
     
@@ -47,13 +53,16 @@ void TestMobCntModel::create()
     QVERIFY(mCntModel != 0);
     QCOMPARE(mCntModel->rowCount(),1);
     QVERIFY(mCntModel->rowCount() == 1);
-    QVERIFY(mCntModel->mIconManager);
+    QVERIFY(mCntModel->d->m_cache);
     QVERIFY(!mCntModel->d->ownedContactManager);
     QVERIFY(mCntModel->d->m_contactManager != 0);
 }
 
 void TestMobCntModel::data()
 {
+    mModelListener = new ModelListener(this);
+    mDataReady = false;
+
     //create and save contact
     QContact c;
     QContactName name;
@@ -91,8 +100,19 @@ void TestMobCntModel::data()
     displayContent = ret.toStringList();
     QVERIFY(displayContent.count() == 2);
     QVERIFY(displayContent.at(0) == "firstname lastname");
+    // second string is only an empty placeholder, e.g. " ", until cache has fetched the value
+
+    // wait for cache to signal that all contact info is ready
+    while (!mDataReady) { QTest::qWait(200); QApplication::processEvents(); }
+    mDataReady = false;
+    ret = mCntModel->data(modelIndex, Qt::DisplayRole); 
+
+    QVERIFY(ret.type() == QVariant::StringList);
+    displayContent = ret.toStringList();
+    QVERIFY(displayContent.count() == 2);
+    QVERIFY(displayContent.at(0) == "firstname lastname");
     QVERIFY(displayContent.at(1) == "1234567");
-    
+   
     // check backgroundrole
     ret = mCntModel->data(modelIndex, Qt::BackgroundRole); 
     QVERIFY(ret.isNull());
@@ -100,10 +120,9 @@ void TestMobCntModel::data()
     //check decoration role
     ret = mCntModel->data(modelIndex, Qt::DecorationRole); 
     QVERIFY(ret.type() == QVariant::List);
-    
+
     // add empty avatar and check decoration
     QContactAvatar avatar;
-    avatar.setSubType(QContactAvatar::SubTypeImage);
     c.saveDetail(&avatar);
     QVERIFY(mManager->saveContact(&c));
     QTest::qWait(1000);
@@ -111,11 +130,16 @@ void TestMobCntModel::data()
     QVERIFY(ret.type() == QVariant::List);
     
     // add data to the avatar and check decoration
-    avatar.setAvatar("dummyimagepath");
+    avatar.setImageUrl(QUrl("dummyimagepath"));
     c.saveDetail(&avatar);
     QVERIFY(mManager->saveContact(&c));
     QTest::qWait(1000);
     modelIndex = mCntModel->indexOfContact(c);
+    ret = mCntModel->data(modelIndex, Qt::DecorationRole); 
+
+    // wait for cache to signal that all contact info is ready
+    while (!mDataReady) { QTest::qWait(200); QApplication::processEvents(); }
+    mDataReady = false;
     ret = mCntModel->data(modelIndex, Qt::DecorationRole); 
     QVERIFY(ret.type() == QVariant::List);
     
@@ -140,16 +164,19 @@ void TestMobCntModel::data()
     ret = mCntModel->data(modelIndex, Qt::DisplayRole);
     QVERIFY(ret.type() == QVariant::StringList);
     displayContent = ret.toStringList();
-    QVERIFY(displayContent.count() == 2);// "My card" ; "Create my identity"
+    QVERIFY(displayContent.count() == 1); // "Unnamed"
     
     // add some content to MyCard
     myCard.saveDetail(&number);
     QVERIFY(mManager->saveContact(&myCard));
     QTest::qWait(1000);
     ret = mCntModel->data(modelIndex, Qt::DisplayRole);
+    // wait for cache
+    QTest::qWait(1000);
+    ret = mCntModel->data(modelIndex, Qt::DisplayRole);
     QVERIFY(ret.type() == QVariant::StringList);
     displayContent = ret.toStringList();
-    QVERIFY(displayContent.contains(myCard.displayLabel()));
+    QVERIFY(displayContent.contains(hbTrId("txt_phob_list_unnamed")));
 }
 
 void TestMobCntModel::rowCount()
@@ -212,7 +239,8 @@ void TestMobCntModel::contactManager()
 void TestMobCntModel::setFilterAndSortOrder()
 {
     QList<QContactLocalId> ids = mManager->contactIds();
-    mManager->removeContacts(&ids);
+    QMap<int, QContactManager::Error> errorMap;
+    mManager->removeContacts(ids,&errorMap);
     QTest::qWait(1000);
     
     QContact c;
@@ -260,7 +288,8 @@ void TestMobCntModel::myCard()
     mCntModel = new MobCntModel(mManager);
     
     QList<QContactLocalId> ids = mManager->contactIds();
-    mManager->removeContacts(&ids);
+    QMap<int, QContactManager::Error> errorMap;
+    mManager->removeContacts(ids,&errorMap);
     QTest::qWait(1000);
     
     QContact c;
@@ -301,7 +330,8 @@ void TestMobCntModel::myCard()
 void TestMobCntModel::rowId()
 {
     QList<QContactLocalId> ids = mManager->contactIds();
-    mManager->removeContacts(&ids);
+    QMap<int, QContactManager::Error> errorMap;
+    mManager->removeContacts(ids,&errorMap);
     QTest::qWait(1000);
     
     QContact c;
@@ -321,7 +351,8 @@ void TestMobCntModel::rowId()
 void TestMobCntModel::dataForDisplayRole()
 {
     QList<QContactLocalId> ids = mManager->contactIds();
-    mManager->removeContacts(&ids);
+    QMap<int, QContactManager::Error> errorMap;
+    mManager->removeContacts(ids,&errorMap);
     QTest::qWait(1000);
     
     QContact c;
@@ -339,32 +370,11 @@ void TestMobCntModel::dataForDisplayRole()
     QVERIFY(var.type() == QVariant::StringList);
 }
 
-void TestMobCntModel::updateContactIcon()
-{
-    QList<QContactLocalId> ids = mManager->contactIds();
-    mManager->removeContacts(&ids);
-    QTest::qWait(1000);
-    
-    QContact c;
-    QContactName name;
-    name.setFirstName("firstname");
-    name.setLastName("lastname");
-    c.saveDetail(&name);
-    QVERIFY(mManager->saveContact(&c));
-    
-    int row = mCntModel->rowId(c.localId());
-    
-    QSignalSpy spy(mCntModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)));
-    
-    mCntModel->updateContactIcon(row);
-    QCOMPARE(spy.count(), 1);
-}
-
 void TestMobCntModel::handleAdded()
 {
     QList<QContactLocalId> ids = mManager->contactIds();
-    QMap<int, QContactManager::Error> errorMapHandleAdded;
-    mManager->removeContacts(ids,&errorMapHandleAdded);
+    QMap<int, QContactManager::Error> errorMap;
+    mManager->removeContacts(ids,&errorMap);
     QTest::qWait(1000);
 
     QSignalSpy spy(mCntModel, SIGNAL(rowsAboutToBeInserted(const QModelIndex&, int, int)));
@@ -382,8 +392,8 @@ void TestMobCntModel::handleAdded()
 void TestMobCntModel::handleChanged()
 {
     QList<QContactLocalId> ids = mManager->contactIds();
-    QMap<int, QContactManager::Error> errorMapHandleChanged;
-    mManager->removeContacts(ids,&errorMapHandleChanged);
+    QMap<int, QContactManager::Error> errorMap;
+    mManager->removeContacts(ids,&errorMap);
     QTest::qWait(1000);
     
     QContact c;
@@ -407,8 +417,8 @@ void TestMobCntModel::handleRemoved()
     QSignalSpy spy(mCntModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex&, int, int)));
     
     QList<QContactLocalId> ids = mManager->contactIds();
-    QMap<int, QContactManager::Error> errorMapHandle;
-    mManager->removeContacts(ids,&errorMapHandle);
+    QMap<int, QContactManager::Error> errorMap;
+    mManager->removeContacts(ids,&errorMap);
     QTest::qWait(1000);
     
     QCOMPARE(spy.count(), 1);
@@ -417,7 +427,8 @@ void TestMobCntModel::handleRemoved()
 void TestMobCntModel::handleMyCardChanged()
 {
     QList<QContactLocalId> ids = mManager->contactIds();
-    mManager->removeContacts(&ids);
+    QMap<int, QContactManager::Error> errorMap;
+    mManager->removeContacts(ids,&errorMap);
     QTest::qWait(1000);
     
     QContact c;
@@ -445,5 +456,19 @@ void TestMobCntModel::cleanupTestCase()
     mManager->removeContacts(ids, &errorMap);
     delete mManager;
     mManager = 0;
+    delete mModelListener;
+    mModelListener = 0;
+}
+
+
+ModelListener::ModelListener(TestMobCntModel* parent)
+    : mParent(parent)
+{
+    connect(mParent->mCntModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onDataChanged(QModelIndex,QModelIndex)));
+}
+
+void ModelListener::onDataChanged(QModelIndex start, QModelIndex end)
+{
+    mParent->contactReady(start.row(), end.row());
 }
 

@@ -20,7 +20,7 @@
             <widget name="cnt_listview" type="HbListView">
                 <sizehint height="1.0un" type="PREFERRED" width="1.0un"/>
                 <sizepolicy horizontalPolicy="MinimumExpanding" horizontalStretch="0" verticalPolicy="MinimumExpanding" verticalStretch="0"/>
-                <string name="scrollingStyle" value="PanOrFlick"/>
+                <string name="scrollingStyle" value="PanWithFollowOn"/>
                 <string name="clampingStyle" value="BounceBackClamping"/>
             </widget>
         </widget>

@@ -23,7 +23,7 @@ VENDORID        0x70000001
 
 USERINCLUDE     .
 USERINCLUDE     ../../tsrc/NbCntTestLib
-SYSTEMINCLUDE   /epoc32/include 
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN 
 
 SOURCEPATH      .
 SOURCE          t_requeststoretest.cpp

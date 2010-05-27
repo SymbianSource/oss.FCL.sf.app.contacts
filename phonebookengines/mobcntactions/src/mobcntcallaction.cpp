@@ -38,7 +38,7 @@ MobCntCallAction* MobCntCallAction::clone() const
 
 void MobCntCallAction::performAction()
 {
-    QString service("com.nokia.services.telephony");
+    QString service("com.nokia.symbian.ICallDial");
     QString type("dial(QString,int)");
     
     performNumberAction(service, type);

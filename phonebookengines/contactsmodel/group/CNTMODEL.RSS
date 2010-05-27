@@ -17,9 +17,13 @@
 */
 
 
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "../inc/cntdef_internal.hrh"
+#endif
 #include "cntmodel.rls"
 #include <cntdef.hrh> // as existing version, but see below
 #include <cntmodel.rh>
+
 
 
 //  

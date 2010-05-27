@@ -1,21 +1,19 @@
-/*
-* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description: 
-* Persistence layer exports
-*
-*/
-
+// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+// All rights reserved.
+// This component and the accompanying materials are made available
+// under the terms of "Eclipse Public License v1.0"
+// which accompanies this distribution, and is available
+// at the URL "http://www.eclipse.org/legal/epl-v10.html".
+//
+// Initial Contributors:
+// Nokia Corporation - initial contribution.
+//
+// Contributors:
+//
+// Description:
+// Persistence layer exports
+// 
+//
 
 #if !defined(__CNTITEM_H__)
 #define __CNTITEM_H__
@@ -46,10 +44,12 @@ const TInt KUidStringLength =244;
 */
 #define KUidStringSeparator '-'
 
+#ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
 /** Constant used by vCard import/export.
 @internalComponent
 */
 #define KContactMaxFieldNumber 32
+#endif
 
 class CContactItemField;
 class CContactItemViewDef;

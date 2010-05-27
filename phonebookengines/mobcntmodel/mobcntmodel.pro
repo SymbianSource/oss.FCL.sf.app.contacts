@@ -42,18 +42,21 @@ INTERNAL_PUBLIC_HEADERS += \
         inc/mobcntmodelglobal.h \
         inc/mobcntmodel.h    
 
-HEADERS += \
-                 $$INTERNAL_PUBLIC_HEADERS \
-                 inc/mobcntmodel_p.h \
-                 inc/mobcnticonmanager.h
+HEADERS += $$INTERNAL_PUBLIC_HEADERS \
+           inc/mobcntmodel_p.h \
+           inc/cntcache.h \
+           inc/cntcache_p.h \
+           inc/cntinfoprovider.h \
+           inc/cntdefaultinfoprovider.h
 
 SOURCES += src/mobcntmodel.cpp \
-           src/mobcnticonmanager.cpp
+           src/cntcache.cpp \
+           src/cntcache_p.cpp \
+           src/cntdefaultinfoprovider.cpp
 
 RESOURCES += resources/mobcntmodel.qrc
     
-LIBS += \
-        -lQtContacts \
+LIBS += -lQtContacts \
         -lhbcore \
         -lthumbnailmanagerqt
 

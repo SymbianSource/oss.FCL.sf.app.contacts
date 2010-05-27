@@ -93,7 +93,7 @@ public:
 signals:
     void preferredUpdated();
     void backPressed();
-    void viewActivated(QContact, QContactDetail);
+    void viewActivated(CntAbstractViewManager* aMgr, const CntViewParameters aArgs);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
@@ -104,9 +104,7 @@ public:
 private:
 #endif
     void launchAction(QContact contact, QContactDetail detail, QString action);
-    //bool createVCard(QString& vCardPath);
-    bool isFavoriteGroupContact();
-	bool isFavoriteGroupCreated();
+    void launchDynamicAction(QContact contact, QContactDetail detail, QContactActionDescriptor actionDescriptor);
     
 #ifdef PBK_UNIT_TEST
 public:
@@ -123,11 +121,11 @@ private:
     CntContactCardDataContainer *mDataContainer;
     CntContactCardHeadingItem   *mHeadingItem;
     ThumbnailManager            *mThumbnailManager;
-    QContact                    *mGroupContact;
+    //QContact                    *mGroupContact;
     QContactAvatar              *mAvatar;
-    bool                        mIsGroupMember;
+    //bool                        mIsGroupMember;
     bool                        mIsHandlingMenu;
-    bool                        mIsPreviousImageEditorView;
+    //bool                        mIsPreviousImageEditorView;
     QMap<QString, CntContactCardDetailItem*> mPreferredItems;
     int                         mFavoriteGroupId;
     CntDocumentLoader           *mLoader;
@@ -136,6 +134,7 @@ private:
     CntImageLabel               *mImageLabel;
 	XQServiceRequest            *mHighwayService;
     HbIcon                      *mVCardIcon;
+    CntViewParameters           mArgs;
     
 };
 

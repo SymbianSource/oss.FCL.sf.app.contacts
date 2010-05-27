@@ -27,7 +27,6 @@
 #include <qapplication.h>
 #include <hbabstractviewitem.h>
 #include <hbaction.h>
-#include <hbnotificationdialog.h>
 #include <hbmenu.h>
 #include <hbtoolbar.h>
 #include <hbmainwindow.h>
@@ -101,6 +100,9 @@ CntNamesViewPrivate::CntNamesViewPrivate(CntExtensionManager &extensionManager) 
            SLOT(showContextMenu(HbAbstractViewItem*,QPointF)));
     connect(list(), SIGNAL(activated (const QModelIndex&)), this,
            SLOT(showContactView(const QModelIndex&)));
+    
+    HbAction* settings = static_cast<HbAction*>(document()->findObject("cnt:settings") );
+    connect( settings, SIGNAL(triggered()), this, SLOT(showSettings()) );
 }
 
 CntNamesViewPrivate::~CntNamesViewPrivate()
@@ -134,6 +136,7 @@ CntNamesViewPrivate::~CntNamesViewPrivate()
 
 void CntNamesViewPrivate::activate(CntAbstractViewManager* aMgr, const CntViewParameters aArgs)
 {
+    Q_UNUSED( aArgs )
     mViewManager = aMgr;
     if (!mListModel) {
         QContactSortOrder sortOrderFirstName;
@@ -172,35 +175,31 @@ void CntNamesViewPrivate::activate(CntAbstractViewManager* aMgr, const CntViewPa
     }
     
     QContactManager* contactManager = aMgr->contactManager( SYMBIAN_BACKEND );
-    if ( aArgs.contains(ESelectedContact) )
-    {
-        QContact selectedContact = aArgs.value(ESelectedContact).value<QContact>();
-        QString action = aArgs.value(ESelectedAction).toString();
-        
-        if ( action == "save" )
-        {
-            QString name = contactManager->synthesizedDisplayLabel( selectedContact );
-            HbNotificationDialog::launchDialog(qtTrId("Contact \"%1\" saved").arg(name));
-        }
-               
-        else if ( action == "delete" )
-        {
-            QString name = contactManager->synthesizedDisplayLabel( selectedContact );
-            HbNotificationDialog::launchDialog(qtTrId("%1 deleted").arg(name));
-        }    
-        else if ( action == "failed")
-        {
-            HbNotificationDialog::launchDialog(qtTrId("SAVING FAILED!"));
-        }
-    }
     
-    bool multipleContacts = mListModel->rowCount() >=  CNT_MIN_ROW_COUNT;
-    mMultipleDeleter->setEnabled(multipleContacts);
+    disableDeleteAction();
+    connect(contactManager, SIGNAL(contactsAdded(const QList<QContactLocalId>&)),
+            this, SLOT(handleContactAddition(const QList<QContactLocalId>&)));
+    
+    connect(contactManager, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)),
+            this, SLOT(handleContactRemoval(const QList<QContactLocalId>&)));
+    
+    connect(contactManager, SIGNAL(selfContactIdChanged(const QContactLocalId&, const QContactLocalId&)), 
+            this, SLOT(handleSelfContactIdChange(const QContactLocalId&, const QContactLocalId&)));
 }
 
 void CntNamesViewPrivate::deactivate()
 {
     hideFinder();
+    
+    QContactManager* contactManager = mViewManager->contactManager( SYMBIAN_BACKEND );
+    disconnect(contactManager, SIGNAL(contactsAdded(const QList<QContactLocalId>&)),
+            this, SLOT(handleContactAddition(const QList<QContactLocalId>&)));
+    
+    disconnect(contactManager, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)),
+            this, SLOT(handleContactRemoval(const QList<QContactLocalId>&)));
+    
+    disconnect(contactManager, SIGNAL(selfContactIdChanged(const QContactLocalId&, const QContactLocalId&)), 
+            this, SLOT(handleSelfContactIdChange(const QContactLocalId&, const QContactLocalId&)));
 
     delete mMenuBuilder;
     mMenuBuilder = NULL;
@@ -208,6 +207,12 @@ void CntNamesViewPrivate::deactivate()
     // delete the hbsearch since we can not empty text from outside.
     delete mSearchPanel;
     mSearchPanel = NULL;
+}
+
+void CntNamesViewPrivate::disableDeleteAction()
+{
+    bool multipleContacts = mListModel->rowCount() >= CNT_MIN_ROW_COUNT;
+    mMultipleDeleter->setEnabled(multipleContacts);
 }
 
 void CntNamesViewPrivate::setFilter(const QString &filterString)
@@ -286,33 +291,41 @@ void CntNamesViewPrivate::showFinder()
 
 void CntNamesViewPrivate::hideFinder()
 {
-    layout()->removeItem(emptyLabel());
-    layout()->removeItem(search());
-    emptyLabel()->setVisible(false);
-    search()->setVisible(false);
+    if ( mSearchPanel )
+    {
+        layout()->removeItem(emptyLabel());
+        layout()->removeItem(search());
+        emptyLabel()->setVisible(false);
+        search()->setVisible(false);
 
-    hideBanner();
+        hideBanner();
 
-    layout()->addItem(list());
-    list()->setVisible(true);
+        layout()->addItem(list());
+        list()->setVisible(true);
 
-    QContactDetailFilter filter;
-    filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
-    QString typeContact = QContactType::TypeContact;
-    filter.setValue(typeContact);
+        QContactDetailFilter filter;
+        filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
+        QString typeContact = QContactType::TypeContact;
+        filter.setValue(typeContact);
 
-    mListModel->setFilterAndSortOrder(filter);
-    mListModel->showMyCard(true);
+        mListModel->setFilterAndSortOrder(filter);
+        mListModel->showMyCard(true);
 
-    mNewContact->setVisible(true);
-    mImportSim->setVisible(true);
-    mMultipleDeleter->setVisible(true);
-    mView->toolBar()->show();
+        mNewContact->setVisible(true);
+        mImportSim->setVisible(true);
+        mMultipleDeleter->setVisible(true);
+        mView->toolBar()->show();
+    }   
 }
 
 bool CntNamesViewPrivate::isFinderVisible()
 {
-    return search()->isVisible();
+    bool isVisible = false;
+    if ( mSearchPanel )
+    {
+        isVisible = mSearchPanel->isVisible();
+    }
+    return isVisible;
 }
 
 void CntNamesViewPrivate::showPreviousView()
@@ -368,7 +381,7 @@ void CntNamesViewPrivate::deleteMultipleContacts()
         connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleDeleteMultipleContacts()));
     }
 
-    mFetchView->setDetails(hbTrId("txt_phob_opt_delete_contact"),hbTrId("txt_phob_button_delete"));
+    mFetchView->setDetails(hbTrId("txt_phob_title_delete_contacts"),hbTrId("txt_phob_button_delete"));
     QSet<QContactLocalId> emptyContactsSet;
 
     // Pop up a list of contacts for deletion
@@ -383,16 +396,10 @@ void CntNamesViewPrivate::handleDeleteMultipleContacts()
 
     QContactManager* manager = mViewManager->contactManager( SYMBIAN_BACKEND );
     if ( !mFetchView->wasCanceled() && !selectedContacts.isEmpty() ) {
-        QList<QContactLocalId> selectedContactsList = selectedContacts.values();
-        foreach (QContactLocalId id, selectedContactsList) {
-            QContact contact = manager->contact(id);
-
-            manager->removeContact(contact.localId());
+        foreach ( QContactLocalId id, selectedContacts.values() )
+        {
+            manager->removeContact( id );
         }
-    }
-
-    if (mListModel->rowCount() < CNT_MIN_ROW_COUNT) {
-        mMultipleDeleter->setEnabled(false);
     }
 
     delete mFetchView;
@@ -423,10 +430,17 @@ void CntNamesViewPrivate::showContactView( QContact& aContact )
 void CntNamesViewPrivate::showContextMenu(HbAbstractViewItem* aItem, QPointF aPoint)
 {
     QContact contact = mListModel->contact(aItem->modelIndex());
-    HbMenu* menu = mMenuBuilder->actionMenu( contact );
-    menu->setPreferredPos( aPoint );
-    menu->setAttribute( Qt::WA_DeleteOnClose, true );
-    menu->open();
+    
+   // In case of an empty MyCard, do not show any ContextMenu
+    if (!(contact.localId() == mListModel->myCardId() && contact.details().count() <= 4))
+    {
+        HbMenu* menu = mMenuBuilder->actionMenu( contact, mListModel->myCardId() );
+        menu->setPreferredPos( aPoint );
+        menu->setAttribute( Qt::WA_DeleteOnClose, true );
+        menu->open();
+    }
+    
+    
 }
 
 void CntNamesViewPrivate::executeAction( QContact& aContact, QString aAction )
@@ -479,6 +493,31 @@ void CntNamesViewPrivate::importSim()
    mViewManager->changeView(args);
 }
 
+void CntNamesViewPrivate::showSettings()
+{
+    CntViewParameters args;
+    args.insert( EViewId, settingsView );
+    mViewManager->changeView( args );
+}
+
+void CntNamesViewPrivate::handleContactAddition(const QList<QContactLocalId>& aAddedList)
+{
+    Q_UNUSED(aAddedList);
+    disableDeleteAction();
+}
+
+void CntNamesViewPrivate::handleContactRemoval(const QList<QContactLocalId>& aRemovedList)
+{
+    Q_UNUSED(aRemovedList);
+    disableDeleteAction();
+}
+
+void CntNamesViewPrivate::handleSelfContactIdChange(const QContactLocalId& aOldId, const QContactLocalId& aNewId)
+{
+    Q_UNUSED(aOldId);
+    Q_UNUSED(aNewId);
+    disableDeleteAction();
+}
 
 //// lazy accessors
 HbListView* CntNamesViewPrivate::list()

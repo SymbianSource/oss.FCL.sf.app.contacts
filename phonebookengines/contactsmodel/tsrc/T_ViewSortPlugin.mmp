@@ -22,7 +22,7 @@ CAPABILITY   ReadUserData WriteUserData
 
 SOURCEPATH	.
 SOURCE			T_ViewSortPlugin.cpp
-SYSTEMINCLUDE	 /epoc32/include
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 
 library  euser.lib efsrv.lib estor.lib cntmodel.lib
 

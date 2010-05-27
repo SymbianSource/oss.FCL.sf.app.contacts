@@ -19,6 +19,9 @@
 #include <cntviewbase.h>
 #include "cntviewprivate.h"
 #include <cntviewsortplugin.h>
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include <cntviewsortpluginbase.h>
+#endif
 
 #include "ccntserver.h" //for kslot1 and kslot2
 #include "rcntmodel.h"

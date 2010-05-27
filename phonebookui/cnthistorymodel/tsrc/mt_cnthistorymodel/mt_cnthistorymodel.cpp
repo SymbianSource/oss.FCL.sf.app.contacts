@@ -202,9 +202,9 @@ void TestCntHistoryModel::testRoles()
     QModelIndex modelIndex = model->index(0, 0);
     QVERIFY(modelIndex.isValid());
     
-    // Branded icon path
-    //QVariant var = modelIndex.data(Qt::DecorationRole);
-    //QVERIFY(var.type() == QVariant::String);
+    // HbIcon
+    QVariant var = modelIndex.data(Qt::DecorationRole);
+    QVERIFY(var.isValid());
     
     // FlagsRole
     var = modelIndex.data(CntHistoryModel::FlagsRole);

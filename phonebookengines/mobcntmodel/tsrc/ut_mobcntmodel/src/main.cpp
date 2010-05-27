@@ -17,7 +17,6 @@
 
 #include "testrunner.h"
 
-#include "ut_mobcnticonmanager.h"
 #include "ut_mobcntmodel.h"
 
 #include <QtTest/QtTest>
@@ -34,9 +33,6 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     
     TestRunner testRunner("ut_mobcntmodel");
-    
-    TestMobCntIconManager ut_MobCntIconManager;
-    testRunner.runTests(ut_MobCntIconManager);
     
     TestMobCntModel ut_MobCntModel;
     testRunner.runTests(ut_MobCntModel);

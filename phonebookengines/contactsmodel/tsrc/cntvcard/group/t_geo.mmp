@@ -10,11 +10,8 @@
 * Nokia Corporation - initial contribution.
 *
 * Contributors:
-
-*
-
-* Description: 
-
+* 
+* Description:
 *
 */
 
@@ -23,7 +20,8 @@ TARGETTYPE	  exe
 UID			 0 0xE1526DCF
 
 USERINCLUDE	  ../..
-SYSTEMINCLUDE   /epoc32/include
+USERINCLUDE   ../../../inc
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 
 SOURCEPATH	  ../src
 

@@ -27,7 +27,8 @@ HEADERS += \
     inc/mobcntmessageaction.h \
     inc/mobcntvideocallaction.h \
     inc/mobcntcallaction.h \
-    inc/mobcntemailaction.h
+    inc/mobcntemailaction.h \
+    inc/mobcntbrowseraction.h
     
 SOURCES += \
     src/mobcntactionfactory.cpp \
@@ -35,7 +36,8 @@ SOURCES += \
     src/mobcntmessageaction.cpp \
     src/mobcntvideocallaction.cpp \
     src/mobcntcallaction.cpp \
-    src/mobcntemailaction.cpp
+    src/mobcntemailaction.cpp \
+    src/mobcntbrowseraction.cpp
 
 MOC_DIR = moc
 

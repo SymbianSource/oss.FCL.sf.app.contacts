@@ -30,7 +30,7 @@ class CntContactCardDataContainer: public QObject
     Q_OBJECT    
 
 public:
-    CntContactCardDataContainer(QContact* contact, QObject *parent = 0);
+    CntContactCardDataContainer(QContact* contact, QObject *parent = 0, bool myCard = false);
     virtual ~CntContactCardDataContainer();
 
 public:
@@ -43,13 +43,14 @@ public:
 #else
 private:    
 #endif  
-    void initializeActionsData();
+    void initializeActionsData(bool myCard);
     void initializeGroupData();
     void initializeDetailsData();
     QList<QContactDetail> actionDetails(const QString &actionName, const QContact &contact);
     bool supportsDetail(const QString &actionName, const QContactDetail &contactDetail);
     void addSeparator(int index);
     void sortDataItems();
+    int getPosition(const QString& aId, const QString& aContext, bool dynamicAction = false);
     
 #ifdef PBK_UNIT_TEST
 public:

@@ -54,7 +54,7 @@ void CntGroupDeletePopup::populateListOfGroup()
     // set the listview to multiSelection mode, this will bring MarkAll functionality (from Orbit)
     mListView->setSelectionMode(HbAbstractItemView::MultiSelection);
     mListView->setFrictionEnabled(true);
-    mListView->setScrollingStyle(HbScrollArea::PanOrFlick);
+    mListView->setScrollingStyle(HbScrollArea::PanWithFollowOn);
     
     setContentWidget(mListView);
     

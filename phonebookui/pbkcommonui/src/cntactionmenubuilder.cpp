@@ -51,12 +51,12 @@ HbMenu* CntActionMenuBuilder::buildActionMenu( QContact& aContact )
             actions << d.actionName();
             }
         
-        if ( actions.contains("call", Qt::CaseInsensitive) )
+        if ( actions.contains("call", Qt::CaseInsensitive) && isSupportedDetails("call", aContact))
             {
             createCallAction( *menu, aContact );
             }
         
-        if ( actions.contains("message", Qt::CaseInsensitive) )
+        if ( actions.contains("message", Qt::CaseInsensitive) && isSupportedDetails("message", aContact) )
             {
             createMessageAction( *menu, aContact );
             }
@@ -80,8 +80,9 @@ HbMenu* CntActionMenuBuilder::buildActionMenu( QContact& aContact )
     return menu;
     }
 
-HbMenu* CntActionMenuBuilder::actionMenu( QContact& aContact )
+HbMenu* CntActionMenuBuilder::actionMenu( QContact& aContact, QContactLocalId myCardId)
 {
+    iMyCardId = myCardId;
     mContact = new QContact( aContact );
     return buildActionMenu( aContact );
 }
@@ -142,6 +143,30 @@ void CntActionMenuBuilder::createMessageAction( HbMenu& aMenu, QContact& aContac
     Q_UNUSED( aContact );
     
     aMenu.addAction(hbTrId("txt_phob_menu_send_message"), this, SLOT(emitSmsContact()));
+    }
+
+bool CntActionMenuBuilder::isSupportedDetails( const QString &actionName, const QContact &contact )
+    {
+    QList<QContactActionDescriptor> actionDescriptors = QContactAction::actionDescriptors(actionName, "symbian");
+    if (actionDescriptors.isEmpty())
+        {
+        return false;
+        }
+    
+    QContactAction* contactAction = QContactAction::action(actionDescriptors.first()); 
+    QList<QContactDetail> details = contactAction->supportedDetails(contact);
+
+    delete contactAction;
+    
+    for (int i = 0; i < details.count(); i++)
+        {
+        if (contact.details().contains(details[i]))
+            {
+            return true;
+            }
+        }
+    
+    return false;
     }
     
 // End of File

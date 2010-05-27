@@ -21,36 +21,42 @@
 
 QTM_USE_NAMESPACE
 
+Q_DECLARE_METATYPE(QContactAction::State)
+
 class TestMobCntActions : public QObject
 {
     Q_OBJECT
 
 private slots:
     //Init/cleanup the test class
-	void initTestCase();
-	void cleanupTestCase();
+    void initTestCase();
+    void cleanupTestCase();
 	
-	//Init/cleanup each test method
-	void init();
-	void cleanup();
+    //Init/cleanup each test method
+    void init();
+    void cleanup();
 	
-	void emptyContactNoActionSupport();
+    void emptyContactNoActionSupport();
 	
-	//call
-	void phonenumberCallSupport();
-	void phonenumberNoCallSupport();
+    //call
+    void phonenumberCallSupport();
+    void phonenumberNoCallSupport();
 	
-	//message
-	void phonenumberMessageSupport();
-	void phonenumberNoMessageSupport();
+    //message
+    void phonenumberMessageSupport();
+    void phonenumberNoMessageSupport();
 
-	//video call
-	void phonenumberVideoCallSupport();
-	void phonenumberNoVideoCallSupport();
+    //video call
+    void phonenumberVideoCallSupport();
+    void phonenumberNoVideoCallSupport();
 	
-	//email
-	void phonenumberEmailSupport();
-	void phonenumberNoEmailSupport();
+    //email
+    void emailSupport();
+    void noEmailSupport();
+
+    //url
+    void urlSupport();
+    void noUrlSupport();
 
 private:
     QContactManager *m_manager; 

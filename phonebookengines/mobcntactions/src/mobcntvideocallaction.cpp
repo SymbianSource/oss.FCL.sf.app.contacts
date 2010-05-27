@@ -38,7 +38,7 @@ MobCntVideoCallAction* MobCntVideoCallAction::clone() const
 
 void MobCntVideoCallAction::performAction()
 {
-    QString service("com.nokia.services.telephony");
+    QString service("com.nokia.symbian.ICallDial");
     QString type("dialVideo(QString,int)");
     
     performNumberAction(service, type);

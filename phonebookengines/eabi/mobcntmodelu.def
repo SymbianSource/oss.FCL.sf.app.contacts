@@ -9,11 +9,11 @@ EXPORTS
 	_ZN11MobCntModel13handleRemovedERK5QListIjE @ 8 NONAME
 	_ZN11MobCntModel14initializeDataEv @ 9 NONAME
 	_ZN11MobCntModel16staticMetaObjectE @ 10 NONAME DATA 16
-	_ZN11MobCntModel17updateContactIconEi @ 11 NONAME
-	_ZN11MobCntModel19getStaticMetaObjectEv @ 12 NONAME
-	_ZN11MobCntModel19handleMyCardChangedERKjS1_ @ 13 NONAME
-	_ZN11MobCntModel21setFilterAndSortOrderERKN10QtMobility14QContactFilterERK5QListINS0_17QContactSortOrderEE @ 14 NONAME
-	_ZN11MobCntModel21updateContactIdsArrayEv @ 15 NONAME
+	_ZN11MobCntModel19getStaticMetaObjectEv @ 11 NONAME
+	_ZN11MobCntModel19handleMyCardChangedERKjS1_ @ 12 NONAME
+	_ZN11MobCntModel21setFilterAndSortOrderERKN10QtMobility14QContactFilterERK5QListINS0_17QContactSortOrderEE @ 13 NONAME
+	_ZN11MobCntModel21updateContactIdsArrayEv @ 14 NONAME
+	_ZN11MobCntModel24handleContactInfoUpdatedEj @ 15 NONAME
 	_ZN11MobCntModelC1EPN10QtMobility15QContactManagerERKNS0_14QContactFilterERK5QListINS0_17QContactSortOrderEEbP7QObject @ 16 NONAME
 	_ZN11MobCntModelC1ERKN10QtMobility14QContactFilterERK5QListINS0_17QContactSortOrderEEbP7QObject @ 17 NONAME
 	_ZN11MobCntModelC2EPN10QtMobility15QContactManagerERKNS0_14QContactFilterERK5QListINS0_17QContactSortOrderEEbP7QObject @ 18 NONAME
@@ -31,8 +31,8 @@ EXPORTS
 	_ZNK11MobCntModel5rowIdERKj @ 30 NONAME
 	_ZNK11MobCntModel7contactERK11QModelIndex @ 31 NONAME
 	_ZNK11MobCntModel7contactEi @ 32 NONAME
-	_ZNK11MobCntModel8rowCountERK11QModelIndex @ 33 NONAME
-	_ZTI11MobCntModel @ 34 NONAME
-	_ZTV11MobCntModel @ 35 NONAME
-	_ZNK11MobCntModel8myCardIdEv @ 36 NONAME
+	_ZNK11MobCntModel8myCardIdEv @ 33 NONAME
+	_ZNK11MobCntModel8rowCountERK11QModelIndex @ 34 NONAME
+	_ZTI11MobCntModel @ 35 NONAME
+	_ZTV11MobCntModel @ 36 NONAME
 

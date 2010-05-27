@@ -90,19 +90,25 @@ void CntDetailEditor::activate( CntAbstractViewManager* aMgr, const CntViewParam
         mView->setNavigationAction(mSoftkey);
     }
     
-    QContact selectedContact = aArgs.value(ESelectedContact).value<QContact>();
+    QContact selectedContact;
+    if ( mId == groupEditorView )
+    {
+        selectedContact = aArgs.value(ESelectedGroupContact).value<QContact>();
+        connect( mDataForm, SIGNAL(itemShown(const QModelIndex&)), this, SLOT(handleItemShown(const QModelIndex&)) );
+
+    }
+    else
+    {
+        selectedContact = aArgs.value(ESelectedContact).value<QContact>();
+    }
     mEditorFactory->setupEditorView(*this, selectedContact);
     
     mDataForm->setItemRecycling(true);
 
     // add new field if required
-    if ( aArgs.value(ESelectedAction).toString() == "add" ) {
-        mDataFormModel->insertDetailField();
-    }
-    
-    if ( mId == groupEditorView )
+    if ( aArgs.value(ESelectedAction).toString() == "add" )
     {
-        connect( mDataForm, SIGNAL(itemShown(const QModelIndex&)), this, SLOT(handleItemShown(const QModelIndex&)) );
+        mDataFormModel->insertDetailField();
     }
 }
 
@@ -168,7 +174,15 @@ void CntDetailEditor::saveChanges()
     QContact selected( *mDataFormModel->contact() );
     QVariant var;
     var.setValue(selected);
-    mArgs.insert(ESelectedContact, var);
+    if ( mId == groupEditorView )
+    {
+       mArgs.insert(ESelectedGroupContact, var);
+    }
+    else
+    {
+        mArgs.insert(ESelectedContact, var);
+    }
+    
     mViewManager->back( mArgs );
 }
 

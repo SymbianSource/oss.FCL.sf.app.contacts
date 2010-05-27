@@ -27,9 +27,9 @@ mAddressHome(NULL),
 mAddressWork(NULL),
 mIsLocationPickerEnabled( false )
     {
-    HbDataFormModelItem* address = appendDataFormGroup(qtTrId("Address"), invisibleRootItem());
-    HbDataFormModelItem* addressHome = appendDataFormGroup(qtTrId("Address (home)"), invisibleRootItem());
-    HbDataFormModelItem* addressWork = appendDataFormGroup(qtTrId("Address (work)"), invisibleRootItem());
+    HbDataFormModelItem* address = appendDataFormGroup(hbTrId("txt_phob_formlabel_address"), invisibleRootItem());
+    HbDataFormModelItem* addressHome = appendDataFormGroup(hbTrId("txt_phob_formlabel_address_home"), invisibleRootItem());
+    HbDataFormModelItem* addressWork = appendDataFormGroup(hbTrId("txt_phob_formlabel_address_work"), invisibleRootItem());
     
     foreach ( QContactAddress a, mContact->details<QContactAddress>() )
         {
@@ -98,23 +98,23 @@ void CntAddressModel::createAddressItems( HbDataFormModelItem* aGroup, QContactA
     }
     
     // default items for rest of fields
-    HbDataFormModelItem* street = new HbDataFormModelItem( HbDataFormModelItem::TextItem, qtTrId("Street"));
+    HbDataFormModelItem* street = new HbDataFormModelItem( HbDataFormModelItem::TextItem, hbTrId("txt_phob_formlabel_street"));
     street->setContentWidgetData( "text", aAddress->street() );
     street->setContentWidgetData( "maxLength", CNT_STREET_MAXLENGTH );
     
-    HbDataFormModelItem* postal = new HbDataFormModelItem( HbDataFormModelItem::TextItem, qtTrId("Post code"));
+    HbDataFormModelItem* postal = new HbDataFormModelItem( HbDataFormModelItem::TextItem, hbTrId("txt_phob_formlabel_postal_codezip_code"));
     postal->setContentWidgetData( "text", aAddress->postcode() );
     postal->setContentWidgetData( "maxLength", CNT_POSTCODE_MAXLENGTH );
     
-    HbDataFormModelItem* city = new HbDataFormModelItem( HbDataFormModelItem::TextItem, qtTrId("City"));
+    HbDataFormModelItem* city = new HbDataFormModelItem( HbDataFormModelItem::TextItem, hbTrId("txt_phob_formlabel_city"));
     city->setContentWidgetData( "text", aAddress->locality() );
     city->setContentWidgetData( "maxLength", CNT_LOCALITY_MAXLENGTH );
     
-    HbDataFormModelItem* region = new HbDataFormModelItem( HbDataFormModelItem::TextItem, qtTrId("Province"));
+    HbDataFormModelItem* region = new HbDataFormModelItem( HbDataFormModelItem::TextItem, hbTrId("txt_phob_formlabel_province"));
     region->setContentWidgetData( "text", aAddress->region() );
     region->setContentWidgetData( "maxLength", CNT_REGION_MAXLENGTH );
     
-    HbDataFormModelItem* country = new HbDataFormModelItem( HbDataFormModelItem::TextItem, qtTrId("Country"));
+    HbDataFormModelItem* country = new HbDataFormModelItem( HbDataFormModelItem::TextItem, hbTrId("txt_phob_formlabel_countryregion"));
     country->setContentWidgetData( "text", aAddress->country() );
     country->setContentWidgetData( "maxLength", CNT_COUNTRY_MAXLENGTH );
     

@@ -28,6 +28,9 @@
 
 #include "t_cntpbapsupport.h"
 #include "t_testdata.h"
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "cntdb_internal.h"
+#endif
 
 _LIT(KTestName,"T_CntPBAPSupport");
 // Configure database location

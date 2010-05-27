@@ -24,6 +24,7 @@
 #include <qcontactmanager.h>
 #include <qcontactfilter.h>
 #include <qcontactsortorder.h>
+#include "cntcache.h"
 
 QTM_USE_NAMESPACE
 
@@ -44,8 +45,9 @@ public:
 
 public:
     QContactManager* m_contactManager;
+    CntCache* m_cache;
     bool ownedContactManager;
-    mutable QContact currentContact;
+    mutable CntContactInfo currentContact;
     mutable int currentRow;
 	
     QList<QContactLocalId> contactIds;

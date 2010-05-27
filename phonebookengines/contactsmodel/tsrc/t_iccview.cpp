@@ -24,11 +24,15 @@
 #include <e32math.h>
 #include <phbksync.h>
 
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "cntsyncecom.h"
+#endif
+
 #include "t_utils.h"
 #include "cntsyncchecker.h"
 #include "ccontactvieweventqueue.h"
 #include "ccontactdbeventqueue.h"
-#include <ecom.h>
+#include <ecom/ecom.h>
 // include templates for CleanupResetAndDestroyPushL(T)
 #include "cntviewprivate.h"
 

@@ -23,6 +23,7 @@
 #include "cnteditview.h"
 #include "qtpbkglobal.h"
 #include <qtcontacts.h>
+#include <cnteditviewitemcallback.h>
 
 class CntAbstractViewManager;
 class CntEditViewListModel;
@@ -46,7 +47,7 @@ class QContactId;
 QTM_END_NAMESPACE
 QTM_USE_NAMESPACE
 
-class CntEditViewPrivate : public QObject
+class CntEditViewPrivate : public QObject, public CntEditViewItemCallback
 {
     Q_OBJECT    
     
@@ -56,6 +57,10 @@ public:
     
     void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
     void deactivate();
+    
+public: // From CntEditViewItemCallback
+    void openView(CntViewParameters& viewParams);
+    void requestRefresh();
     
 signals:
     void contactUpdated(bool aSuccess);

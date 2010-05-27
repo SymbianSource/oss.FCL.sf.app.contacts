@@ -11,11 +11,11 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 * Utility class, which exports the contact items with PBAP version 2.1 or 3.0. Also implements AddIntraContactPropertiesL
+* 
 *
 */
-
 
 
  
@@ -34,11 +34,14 @@
 #include <cntdef.h>
 #include <cntdef.hrh>
 #include <cntfield.h>
-#include <testexecutestepbase.h>
+#include <test/testexecutestepbase.h>
 
 // User includes
 #include "cntvcardutils.h"
 #include "testimpexvcardsuitedefs.h"
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "cntconvertercallback.h"
+#endif
 
 class CContactsPBAPExportUtilityClass : public CBase, public MConverterCallBack
 	{
@@ -61,10 +64,10 @@ private:
 		
 	};
 
-_LIT(KAddr1,								"6th Floor");
-_LIT(KAddr2,								"SJRi Park");
+_LIT(KAddr1,								"1st Floor");
+_LIT(KAddr2,								"Some Park");
 _LIT(KAddr3,								"Tower No.1");					
-_LIT(KEmailVal,								"divya@symbian.com");
+_LIT(KEmailVal,								"dtest@symbianfoundation.com");
 _LIT8(KPhotoVal,							"PHOTO");
 
 _LIT(KDATETIME,								"DateTime");

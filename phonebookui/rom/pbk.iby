@@ -47,5 +47,7 @@ data=DATAZ_\RESOURCE_FILES_DIR\qt\plugins\contacts\mobcntactionsplugin.qtplugin 
 data=DATAZ_\RESOURCE_FILES_DIR\qt\plugins\contacts\mobapicontactspluginsymbiansim.qtplugin      RESOURCE_FILES_DIR\qt\plugins\contacts\mobapicontactspluginsymbiansim.qtplugin
 
 data=DATAZ_\CONTACTS_RESOURCE_DIR\cntmodel.rsc         CONTACTS_RESOURCE_DIR\cntmodel.rsc
+data=ZRESOURCE\hb\splashml\phonebook.splashml          RESOURCE_FILES_DIR\hb\splashml\phonebook.splashml
+data=ZRESOURCE\hb\splashml\phonebook.docml             RESOURCE_FILES_DIR\hb\splashml\phonebook.docml
 
 #endif

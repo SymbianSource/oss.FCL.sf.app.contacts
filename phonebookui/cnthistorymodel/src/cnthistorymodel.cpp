@@ -416,10 +416,13 @@ void CntHistoryModel::logsRowsRemoved(const QModelIndex& /*parent*/, int first, 
         HItemPointer item = d->m_logsMap.value( i );
         int index = d->m_List.indexOf( item );
         if ( index > -1 ) {
-            d->m_List.removeAt( index );
             d->m_logsMap.remove( i );        
             indices.append( index );
         }
+    }
+    
+    foreach(int i, indices) {
+        d->m_List.removeAt( i );
     }
     
     // Remove list items in batches

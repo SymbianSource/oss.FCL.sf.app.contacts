@@ -26,10 +26,9 @@ epocstacksize 16000
 
 SOURCEPATH	../tsrc
 
-systeminclude /epoc32/include 
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN 
 userinclude ../inc 
 
-systeminclude /epoc32/include/coreappstest 
 
 source          T_SEC_CNTDBASE.CPP
 

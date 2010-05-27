@@ -26,6 +26,7 @@
 #include "mobcntvideocallaction.h"
 #include "mobcntmessageaction.h"
 #include "mobcntemailaction.h"
+#include "mobcntbrowseraction.h"
 
 #define makestr(x) (#x)
 #define makename(x) makestr(x)
@@ -38,6 +39,7 @@ MobCntActionFactory::MobCntActionFactory()
 	actionList.append(new MobCntVideoCallAction());
     actionList.append(new MobCntMessageAction());
     actionList.append(new MobCntEmailAction());
+    actionList.append(new MobCntBrowserAction());
 }
 
 MobCntActionFactory::~MobCntActionFactory()

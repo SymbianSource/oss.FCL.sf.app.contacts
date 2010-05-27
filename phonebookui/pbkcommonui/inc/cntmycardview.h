@@ -60,6 +60,10 @@ private slots:
     void openMyCardSelectionView(); 
     void handleMultiCardSelection();
     void setOrientation(Qt::Orientation orientation);
+
+private: 
+    
+    void removeFromGroup(const QContact* contact);
     
 private:  
     QContact*                 mContact; // own

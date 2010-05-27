@@ -20,13 +20,11 @@ TARGET			t_logcntmodel.exe
 CAPABILITY		ReadUserData WriteUserData
 TARGETTYPE		exe
 
-SOURCEPATH		../src
-SOURCE			t_logcntmodel.cpp
-
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 USERINCLUDE		../inc
 
-SYSTEMINCLUDE	/epoc32/include
-SYSTEMINCLUDE	/epoc32/include/ecom
+SOURCEPATH		../src
+SOURCE			t_logcntmodel.cpp
 
 LIBRARY			euser.lib ecom.lib logcntmodel.lib cntmodel.lib
 

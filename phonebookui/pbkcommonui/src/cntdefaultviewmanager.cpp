@@ -133,26 +133,33 @@ void CntDefaultViewManager::removeCurrentView()
 
 void CntDefaultViewManager::deleteOldView()
 {
-    if (mOldView && !mOldView->view()->isVisible())
+    disconnect(mMainWindow, SIGNAL(viewReady()), this, SLOT(deleteOldView()));
+    
+    if (mOldView)
     {
-        disconnect(mMainWindow, SIGNAL(viewReady()), this, SLOT(deleteOldView()));
         mOldView->deactivate();
-        mMainWindow->removeView(mOldView->view());
         
-        if (!mOldView->isDefault())
+        // Due to something strange in wk16, this check will fail occationally and cause
+        // a memory leak... most likely when opening edit view for the first time
+        if (!mOldView->view()->isVisible())
         {
-            delete mOldView;
-            mOldView = NULL;
+            mMainWindow->removeView(mOldView->view());
+            
+            if (!mOldView->isDefault())
+            {
+                delete mOldView;
+                mOldView = NULL;
+            }
+            // If view id is not in defaults list, it means that view has changed
+            // its opinnion about preserving state to true.
+            else if ( !mDefaults.contains(mOldView->viewId()) ) 
+            {
+                mDefaults.insert( mOldView->viewId(), mOldView );
+            }
         }
-        // If view id is not in defaults list, it means that view has changed
-        // its opinnion about preserving state to true.
-        else if ( !mDefaults.contains(mOldView->viewId()) ) 
-        {
-            mDefaults.insert( mOldView->viewId(), mOldView );
-        }
-
-        mMainWindow->setInteractive(true);
     }
+
+    mMainWindow->setInteractive(true);
 }
 
 void CntDefaultViewManager::switchView(const CntViewParameters aArgs, QFlags<Hb::ViewSwitchFlag> flags)

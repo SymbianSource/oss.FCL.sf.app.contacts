@@ -24,5 +24,6 @@
 data=DATAZ_\QT_TRANSLATIONS_DIR\contacts.qm     QT_TRANSLATIONS_DIR\contacts.qm
 
 S60_APP_RESOURCE(phonebook)
+data=DATAZ_/APP_RESOURCE_DIR/phonebook.mif      APP_RESOURCE_DIR/phonebook.mif  
 
 #endif

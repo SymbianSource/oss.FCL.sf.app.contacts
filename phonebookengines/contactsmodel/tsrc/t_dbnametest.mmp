@@ -21,10 +21,10 @@ TARGETTYPE      EXE
 CAPABILITY      ReadUserData WriteUserData
 VENDORID        0x70000001
 
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 USERINCLUDE     ../cntsrv/inc
 USERINCLUDE     ../cntmodel/inc
 USERINCLUDE     .
-SYSTEMINCLUDE   /epoc32/include
 
 SOURCEPATH      .
 SOURCE          t_dbnametest.cpp
