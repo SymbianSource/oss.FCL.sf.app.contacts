@@ -973,7 +973,8 @@ TAccept CStateOpening::AcceptRequestL(CReqCancelAsyncOpen* aRequest)
 */
 void CStateOpening::InitialStep()
 	{
-	iActive->Register(*this, ETrue);
+	//iActive->Register(*this, ETrue);
+	iActive->Register( *this );
 	}
 
 /** 

@@ -137,6 +137,7 @@ class CPsu2CopySimContactsCmd : public CActive,
         void CopyContactsL();
         void ShowResultsL();
         void CompleteL();
+        void PublishOpenCompleteL();
         void CompleteWithError(
                 TInt aError );
         TBool ValidStoreConfigurationL();

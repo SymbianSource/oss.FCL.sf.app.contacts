@@ -1400,15 +1400,29 @@ void CCCAppCommLauncherLPadModel::LoadVoipButtonInfoFromPbkL(
         const CPbk2ServiceManager::TService& service = services[i];
         //Found the appropriate service info
         if ( service.iServiceId == aServiceId )
-            {          
-            // Set service bitmap size           
+            { 
+			TRect mainPane;
+			AknLayoutUtils::LayoutMetricsRect(
+				AknLayoutUtils::EMainPane, mainPane );
+			TAknLayoutRect listLayoutRect;
+			listLayoutRect.LayoutRect(
+				mainPane,
+				AknLayoutScalable_Avkon::list_single_graphic_pane_g1(0).LayoutLine() );		
+			
+			TSize size(listLayoutRect.Rect().Size());
+			
+			// Set service bitmap size 
             AknIconUtils::SetSize( service.iBitmap, iServiceIconSize );
             AknIconUtils::SetSize( service.iMask, iServiceIconSize );
-               
-            //Trickiest Bitmap cloning
-            //No direct way of cloning a bitmap
+			
+            // Trickiest Bitmap cloning
+            // No direct way of cloning a bitmap
             aBitmap = CloneBitmapLC( iServiceIconSize, service.iBitmap );
             aMask = CloneBitmapLC( iServiceIconSize, service.iMask );
+            
+            // Set preferred size for xsp service icons
+            AknIconUtils::SetSize( service.iBitmap, size );
+            AknIconUtils::SetSize( service.iMask, size );
                        
             aLocalisedServiceName = service.iDisplayName.AllocL(); 
             

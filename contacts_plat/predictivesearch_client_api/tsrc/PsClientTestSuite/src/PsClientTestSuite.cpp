@@ -33,7 +33,6 @@
 // C++ default constructor can NOT contain any code, that
 // might leave.
 // -----------------------------------------------------------------------------
-//
 CPsClientTestSuite::CPsClientTestSuite(CTestModuleIf& aTestModuleIf):CScriptBase( aTestModuleIf )
 {
 }
@@ -41,7 +40,6 @@ CPsClientTestSuite::CPsClientTestSuite(CTestModuleIf& aTestModuleIf):CScriptBase
 // -----------------------------------------------------------------------------
 // Symbian 2nd phase constructor can leave.
 // -----------------------------------------------------------------------------
-//
 void CPsClientTestSuite::ConstructL()
 {
     // Local timer for block fetch delay. This is created as first step to 
@@ -101,7 +99,6 @@ void CPsClientTestSuite::ConstructL()
 // -----------------------------------------------------------------------------
 // Two-phased constructor.
 // -----------------------------------------------------------------------------
-//
 CPsClientTestSuite* CPsClientTestSuite::NewL( CTestModuleIf& aTestModuleIf )
 {
     CPsClientTestSuite* self = new (ELeave) CPsClientTestSuite( aTestModuleIf );
@@ -113,7 +110,9 @@ CPsClientTestSuite* CPsClientTestSuite::NewL( CTestModuleIf& aTestModuleIf )
     return self;
 }
 
+// -----------------------------------------------------------------------------
 // Destructor
+// -----------------------------------------------------------------------------
 CPsClientTestSuite::~CPsClientTestSuite()
 { 
     // Delete resources allocated from test methods
@@ -138,7 +137,6 @@ CPsClientTestSuite::~CPsClientTestSuite()
 	{
 		delete iInputParsedData;
 		iInputParsedData = NULL;
-	
 	}
 	
 	if(iSettings)
@@ -158,11 +156,9 @@ CPsClientTestSuite::~CPsClientTestSuite()
 // LibEntryL is a polymorphic Dll entry point.
 // Returns: CScriptBase: New CScriptBase derived object
 // -----------------------------------------------------------------------------
-//
 EXPORT_C CScriptBase* LibEntryL( CTestModuleIf& aTestModuleIf ) // Backpointer to STIF Test Framework
 {
     return ( CScriptBase* ) CPsClientTestSuite::NewL( aTestModuleIf );
 }
-
 
 //  End of File

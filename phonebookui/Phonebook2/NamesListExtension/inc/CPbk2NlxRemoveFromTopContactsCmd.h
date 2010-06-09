@@ -16,13 +16,15 @@
 */
 
 
-#ifndef CPbk2NlxRemoveFromTopContactsCmd_H
-#define CPbk2NlxRemoveFromTopContactsCmd_H
+#ifndef CPBK2NLXREMOVEFROMTOPCONTACTSCMD_H
+#define CPBK2NLXREMOVEFROMTOPCONTACTSCMD_H
 
 // INCLUDES
 #include <e32base.h>
 #include <MPbk2Command.h>
 #include <MVPbkOperationObserver.h>
+
+#include "CPbk2DelayedWaitNote.h"
 
 // FORWARD DECLARATIONS
 class MPbk2ContactUiControl;
@@ -38,7 +40,8 @@ class CPbk2NlxRemoveFromTopContactsCmd :
     public CActive,
     public MPbk2Command,
     public MVPbkOperationObserver,
-    public MVPbkOperationErrorObserver
+    public MVPbkOperationErrorObserver,
+    public MPbk2ProcessDecoratorObserver
     {
     public: // Construction and destruction
 
@@ -77,8 +80,12 @@ class CPbk2NlxRemoveFromTopContactsCmd :
         void RunL();
         TInt RunError(TInt aError);
         
+    private: // From MPbk2ProcessDecoratorObserver
+        void ProcessDismissed( TInt aCancelCode );    
+        
     private: // Implementation        
         void RemoveTopContactL();
+        void ShowDelayedWaitNoteL();
 
     private: // Data
         //Ref
@@ -89,8 +96,10 @@ class CPbk2NlxRemoveFromTopContactsCmd :
         MVPbkContactOperationBase* iVPbkContactOperationBase;
         //Own:        
         CVPbkTopContactManager* iVPbkTopContactManager;
+        
+        CPbk2DelayedWaitNote* iDelayedWaitNote;
     };
 
-#endif // CPbk2NlxRemoveFromTopContactsCmd_H
+#endif // CPBK2NLXREMOVEFROMTOPCONTACTSCMD_H
 
 // End of File

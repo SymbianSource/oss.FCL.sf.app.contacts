@@ -16,8 +16,8 @@
 */
 
 
-#ifndef CPbk2NlxAddToTopContactsCmd_H
-#define CPbk2NlxAddToTopContactsCmd_H
+#ifndef CPBK2NLXADDTOTOPCONTACTSCMD_H
+#define CPBK2NLXADDTOTOPCONTACTSCMD_H
 
 // INCLUDES
 #include <e32base.h>
@@ -29,17 +29,21 @@
 #include <MVPbkContactSelector.h>
 #include <MPbk2ProcessDecorator.h>
 
+#include "CPbk2DelayedWaitNote.h"
+
 // FORWARD DECLARATIONS
 class MPbk2ContactUiControl;
 class MVPbkContactOperationBase;
 class CVPbkTopContactManager;
 class CPbk2ContactRelocator;
-class MVPbkContactOperationBase;
 class MPbk2ContactLinkIterator;
 class CVPbkContactLinkArray;
 class CVPbkContactManager;
 class MPbk2DialogEliminator;
 class CVPbkContactStoreUriArray;
+
+
+
 
 // CLASS DECLARATION
 /**
@@ -165,7 +169,7 @@ class CPbk2NlxAddToTopContactsCmd :
         TInt CountSimContacts() const;
         CVPbkContactLinkArray* CreateSimContactsArrayLC() const;
         void ReplaceSimContactsL();
-        void ShowWaitNoteL();
+        void ShowDelayedWaitNoteL();
 
     private: // Data
         
@@ -200,10 +204,10 @@ class CPbk2NlxAddToTopContactsCmd :
         MPbk2DialogEliminator* iFetchDlgEliminator;
         /// Own: Store uris used for the fetch dlg
         CVPbkContactStoreUriArray* iStoreUris;
-        /// Own: Decorator for the wait note process
-        MPbk2ProcessDecorator* iDecorator;
+        /// Own: Decorator for the delayed wait note process
+        CPbk2DelayedWaitNote* iDelayedWaitNote;
     };
 
-#endif // CPbk2NlxAddToTopContactsCmd_H
+#endif // CPBK2NLXADDTOTOPCONTACTSCMD_H
 
 // End of File

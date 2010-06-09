@@ -58,12 +58,15 @@ public:
     /**
      * Initializes view plugin for usage. Calls 1st 
      * PreparePluginViewL and then ActivatePluginViewL.
-     *
-     * @since S60 v5.0
+     */
+    void InitializePluginL();
+    
+    /**
+     * Sets the CCApp parameter
      * @param aParameter contains contact information. 
      *        Ownership is transferred.
-     */
-    void InitializePlugin( CCCAParameter& aParameter );
+     */        
+    void SetParameter( CCCAParameter& aParameter );
 
     /**
      * Returns a reference to CCApp parameter

@@ -18,4 +18,5 @@ EXPORTS
 	?Data@CSpbContactDataModel@@QBE?AVTPtrC8@@W4TBinaryTypes@1@@Z @ 17 NONAME ; class TPtrC8 CSpbContactDataModel::Data(enum CSpbContactDataModel::TBinaryTypes) const
 	?ListBoxModel@CSpbContactDataModel@@QAEAAVMDesC16Array@@XZ @ 18 NONAME ; class MDesC16Array & CSpbContactDataModel::ListBoxModel(void)
 	?CleanContentL@CSpbContentProvider@@QAEXAAVMVPbkContactStore@@@Z @ 19 NONAME ; void CSpbContentProvider::CleanContentL(class MVPbkContactStore &)
+	?ListIndex@CSpbContactDataModel@@QAEHH@Z @ 20 NONAME ; int CSpbContactDataModel::ListIndex(int)
 

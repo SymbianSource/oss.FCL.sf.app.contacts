@@ -27,7 +27,7 @@
 #include <CPsClientData.h>
 #include <CPsRequestHandler.h>
 
-//User Include 
+//User Include
 #include "psclienttestsuitedefs.h"
 
 //Forward Declaration
@@ -50,10 +50,10 @@ class CTestSuiteInputData :public CBase
         /**
         * Destructor.
         */
-        virtual ~CTestSuiteInputData();	
-   
+        virtual ~CTestSuiteInputData();
+
 	public: // Functions
-	
+
 		/**
 		* Provides the Keyboard mode of this object
 		*
@@ -62,12 +62,12 @@ class CTestSuiteInputData :public CBase
 		TDesC& KeyboardMode() const;
 
 		/**
-		* Sets the Keyboard mode of this object 
+		* Sets the Keyboard mode of this object
 		*
-		* @param aKeyboardMode The Keyboard mode 
+		* @param aKeyboardMode The Keyboard mode
 		*/
 		void SetKeyboardModeL(const TDesC& aKeyboardMode);
-		
+
 		/**
 		* Returns the search query, as specified in the configuration parameter
 		*
@@ -76,12 +76,12 @@ class CTestSuiteInputData :public CBase
 		TDesC& Query() const;
 
 		/**
-		* Sets the search query 
+		* Sets the search query
 		*
-		* @param aQuery	The Query 
+		* @param aQuery	The Query
 		*/
 		void SetQueryL(const TDesC& aQuery);
-		
+
 		/**
 		* Pointer to the data element at the specified location
 		*
@@ -93,17 +93,17 @@ class CTestSuiteInputData :public CBase
 		/**
 		* Adds the cachedata to the array of input cache data
 		*
-		* @param aInputCacheData 
+		* @param aInputCacheData
 		*/
 		void AppendInputCacheDataL(const cacheData& aInputCacheData);
-		
+
 		/**
 		* Returns the number of Input Cache Data elements
 		*
 		* @return Number of Input Cache Data elements
 		*/
 		TInt InputCacheDataCount() const;
-		
+
 		/**
 		* Returns the array of cachedata of the result data
 		*
@@ -114,24 +114,24 @@ class CTestSuiteInputData :public CBase
 		/**
 		* Appends cachedata to the the aResultData
 		*
-		* @param aResultData 
+		* @param aResultData
 		*/
 		void AppendResultDataL(const cacheData& aResultData);
-		
+
 		/**
 		* Returns the number of ResultData elements
 		*
 		* @return Number of ResultData elements
 		*/
 		TInt ResultDataCount() const;
-		
+
 		/**
-		* Returns the sort type 
+		* Returns the sort type
 		*
 		* @return sort Type
 		*/
 		TSortType GetSortType();
-		
+
 		/**
 		* Returns the pointer to the uri at the specified location
 		*
@@ -145,89 +145,93 @@ class CTestSuiteInputData :public CBase
 		*
 		* @param aCacheUri Cache Uri descriptor to be searched
 		*/
-		void ApendCacheUrisL(RPointerArray<TDesC>& aCacheUriArray);  
-		
+		void ApendCacheUrisL(RPointerArray<TDesC>& aCacheUriArray);
+
 		/**
 		* Returns the number of Cache Uris (data stores)
 		*
 		* @return Number of Cache Uris (data stores)
 		*/
 		TInt CacheUrisCount() const;
-		
+
 		/*
 		* Returns the Input language (as specified in the configuration file)
 		*/
 		TLanguage LanguageInput();
-		
+
 		/*
-		* Returns the expected result for the  Input language 
+		* Returns the expected result for the  Input language
 		* (as specified in the configuration file)
 		*/
 		TBool LanguageInputExpectedResult();
 		/*
-		* Parses the input data 
-		* 
+		* Parses the input data
+		*
 		* @param aItem - The input test case name and parmeters
 		*/
 		void ParseInputL(CStifItemParser& aItem);
-		
+
 		/*
 		* Creates contacts in the phonebook. The contact data is taken from iInputCacheData
 		*/
-		void  CreateContactsL();
-	
+		void CreateContactsL();
+
 		/*
 		* Creates the search query
-		* 
-		* @param aPsQuery - The search query as needed by the ps engine 
-		* @param aQueryBuf - The input search query 
+		*
+		* @param aPsQuery - The search query as needed by the ps engine
+		* @param aQueryBuf - The input search query
 		*/
 		void CreateSearchQueryL(CPsQuery& aPsQuery,TDesC& aQueryBuf);
-	
+
 		/*
 		* Performs the search settings
-		* 
+		*
 		* @param aSettings - The search settings
 		*/
 		void PerformSearchSettingsL(CPsSettings& aSettings);
-		
-		
+
 		/*
 		* compares the search results with expected results
-		* 
+		*
 		* @param aSettings - The search results
 		*/
 		TInt CompareResWithExpResL(RPointerArray<CPsClientData>& searchResults);
 		TInt ExactMatchCompareInputDataWithResultDataL(RPointerArray<CPsClientData>& searchResults);
-		
+
 		/*
 		* Deletes all the created contacts
 		*/
 		void DeleteAllCreatedContactsL();
-	
+
 		/*
 		* Deletes contacts with specific ids
 		*/
 		void DeleteContactsWithIdsL(RArray<TInt>& aContactIdArray);
-	
+
 		/*
-		* Returns the input search string 
-		*/	
+		* Returns the input search string
+		*/
 		TDesC& InputSearchString() const;
-	
+
 		/*
-        * Returns the input search string 
-        */  
+        * Returns the input search string
+        */
         const TDesC& ExpectedResultString() const;
-		
+
+        /*
+        * Returns the input boolean
+        */
+        TBool InputBoolean() const;
+
 		/*
 		* Return the group name to be searched (as specified in configuration file)
 		*/
 		TDesC& GroupToBeSearched() const;
-		
-	   /**
-        *  Tests if Id returns correct vpbklink
-        * 
+
+	    /*
+        * Tests if Id returns correct vpbklink
+        *
         * @param aPsClientHandler -  PsClientHandler instance
         * @param srchId -  Id to be tested\
         * @return - ETrue if Id returns correct link, else EFalse
@@ -235,19 +239,19 @@ class CTestSuiteInputData :public CBase
         TBool TestVpbkLinkForIdL(CPSRequestHandler& aPsClientHandler,const CPsClientData& aSearchResult);
 
 		/**
-        *  Returns ths sort order
-        * 
+        * Returns ths sort order
+        *
         * @param aSortOrder - The sort order
         */
 	    void SortOrder(RArray<TInt>& aSortOrder);
 
 	    /*
-	     * Return array of expected result locations data
+	    * Return array of expected result locations data
 	    */
 	    const RArray<TPsMatchLocation>& ExpectedLocations();
-	    
+
 private: // functions
-	
+
 		/**
 		* Default Constructor
 		*/
@@ -257,8 +261,8 @@ private: // functions
 		* Second phase constructor
 		*/
 		void ConstructL(CStifItemParser& aItem,CPSRequestHandler& aPsClientHandler);
-		
-private:  //  Private functions for internal Parsing data
+
+private:  // Private functions for internal Parsing data
 		void ParseInputForContactsDataL(TDesC& aInput, TInt aType);
 	    void AddSingleContactDataL(TDesC& aInput, TInt aType);
 	    void ParseInputForMatchLocationsL(TDesC& aInput);
@@ -268,105 +272,111 @@ private:  //  Private functions for internal Parsing data
         TBool CompareInputDataWithResultDataL(CPsClientData& aResData,cacheData aInputData);
         void ParseInputForDisplayFieldsL(TDesC& aInput);
 	    void ParseInputInputSearchStringL(TDesC& aInput);
-	    void ParseInputExpectedResultStringL(TDesC& aInput);
+        void ParseInputExpectedResultStringL(TDesC& aInput);
+        void ParseInputInputBoolean(TDesC& aInput);
 	    void ParseInputForLanguageSupportL(TDesC& aInput);
 	    void ParseInputForAddingGroupsL(TDesC& aInput);
 	    void ParseInputForSearchWithinGroupL(TDesC& aInput);
 		void ParseInputForSortOrderL(TDesC& aInput);
 		TInt GetFieldIdFromVpbkIdentifierL(TDesC& aIdentifierAsString);
 
-private:  // data
+private: // data
 
-        /* 
+        /*
 		* Array of cache data elements
 		*/
 		RPointerArray<cacheData>  iInputCacheData;
-		
-		/* 
+
+		/*
 		* Array of cache data elements of the expected results
 		*/
 		RPointerArray<cacheData>  iResultData;
-		
+
 		/*
 		 * Array of expected result locations data
 		 */
         RArray<TPsMatchLocation> iExpectedLocations;
-		
-		/* 
-		* Array of cache uris to be searched 
+
+		/*
+		* Array of cache uris to be searched
 		*/
 		RPointerArray<TDesC>  iCacheUris;
-		
-		/* 
-		* Keyboard mode 
+
+		/*
+		* Keyboard mode
 		*/
-		HBufC* iKeyboardModeBuf; 
-		
-		/* 
+		HBufC* iKeyboardModeBuf;
+
+		/*
 		* The search query
 		*/
 		HBufC* iQueryBuf;
-		
-		/* 
+
+		/*
 		* The contacts handler. Performs the operations related to virtual phone book
-		*/	
+		*/
 		CPcsTestContactsHandler * iContactHandler;
-		
-		/* 
-		* The client handler 
+
+		/*
+		* The client handler
 		*/
 		CPSRequestHandler* iPsClientHandler;
-		
-    	/* 
+
+    	/*
 		* Flag indicating if the contacts have been created
 		*/
     	TBool iContactAlreadyCreated;
-    	
-    	/* 
+
+    	/*
 		* The list of display fields
 		*/
     	RArray<TInt> iDisplayFields;
-    	
-    	/* 
+
+    	/*
 		* The input search string
 		*/
     	HBufC* iInputSearchString;
-    	
-        /* 
+
+        /*
         * The expected result string
         */
-        HBufC* iExpectedResultString;    	
-    	
-    	/* 
+        HBufC* iExpectedResultString;
+
+        /*
+        * The input boolean
+        */
+        TBool iInputBoolean;
+
+    	/*
 		* The input language id
 		*/
     	TLanguage iLangId;
-    	
-    	/* 
+
+    	/*
 		* Flag indicating if the language is supported
 		*/
     	TBool iIsLangSupported;
-    	
-    	/* 
+
+    	/*
 		* The group to be searched
 		*/
     	HBufC* iGroupToBeSearched;
-    	
-    	/* 
+
+    	/*
 		* The sort Type
 		*/
     	TSortType iSortType;
-    	
+
     	/*
     	* The sort order
     	*/
     	RArray<TInt> iSortOrder;
-    	
+
     	/*
     	* The max number of results
     	*/
     	TInt iMaxNumberOfResults;
-    	
+
 };
 
 #endif // TEST_SUITE_INPUT_DATA_H

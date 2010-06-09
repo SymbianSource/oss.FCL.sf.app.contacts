@@ -41,6 +41,19 @@ EXPORT_C CVPbkTopContactManager* CVPbkTopContactManager::NewL()
 	return self;
 	}
 
+
+EXPORT_C CVPbkTopContactManager* CVPbkTopContactManager::NewL(
+    CVPbkContactManager& aContactManager,
+    MVPbkContactViewBase& aTopView)
+    {
+    CVPbkTopContactManager* self =
+        new (ELeave) CVPbkTopContactManager();
+    CleanupStack::PushL( self );
+    self->iImpl = CVPbkTopContactManagerImpl::NewL( aContactManager, aTopView ); 
+    CleanupStack::Pop( self );
+    return self;
+    }
+
 EXPORT_C CVPbkTopContactManager::~CVPbkTopContactManager()
     {
     delete iImpl;

@@ -37,17 +37,15 @@
 // -----------------------------------------------------------------------------
 void CPsUtilsTestSuite::Delete() 
     {
-
     }
 
 // -----------------------------------------------------------------------------
 // Run specified method. Contains also table of test mothods and their names.
 // -----------------------------------------------------------------------------
-TInt CPsUtilsTestSuite::RunMethodL( 
-    CStifItemParser& aItem ) 
+TInt CPsUtilsTestSuite::RunMethodL( CStifItemParser& aItem ) 
     {
 
-     TStifFunctionInfo const KFunctions[] =
+    TStifFunctionInfo const KFunctions[] =
         {  
         // First string is the function name used in TestScripter script file.
         // Second is the actual implementation member function. 
@@ -58,14 +56,12 @@ TInt CPsUtilsTestSuite::RunMethodL(
 		ENTRY( "PsData_SetAndGetL", CPsUtilsTestSuite::PsData_SetAndGetL),
 		ENTRY( "PsSettings_SetAndGetL", CPsUtilsTestSuite::PsSettings_SetAndGetL),
 		ENTRY( "PsPattern_SetAndGetL", CPsUtilsTestSuite::PsPattern_SetAndGetL),
-	      
         };
 
     const TInt count = sizeof( KFunctions ) / 
-                        sizeof( TStifFunctionInfo );
+                       sizeof( TStifFunctionInfo );
 
     return RunInternalL( KFunctions, count, aItem );
-
     }
 
 // -----------------------------------------------------------------------------
@@ -76,8 +72,7 @@ TInt CPsUtilsTestSuite::CPsQueryItem_SetAndGetL( CStifItemParser& aItem )
 	TInt errorStatus = KErrGeneral;
 	RPointerArray<TDesC> inputParameterArray;
 	Parse_StifItem(aItem,inputParameterArray);
-	
-	
+
 	//Parse data for CPsQueryItem
     TKeyboardModes inputKeyboardMode = EModeUndefined;
     TChar inputCharacter = '=';
@@ -121,7 +116,6 @@ TInt CPsUtilsTestSuite::CPsQueryItem_SetAndGetL( CStifItemParser& aItem )
         || (itemDest->Character() != itemSrc->Character()) )
     {
     	errorStatus = KErrGeneral;
-        
     }
     else
     {
@@ -137,100 +131,93 @@ TInt CPsUtilsTestSuite::CPsQueryItem_SetAndGetL( CStifItemParser& aItem )
 // -----------------------------------------------------------------------------
 // This test case performs all the  operations on the CPsQuery
 // -----------------------------------------------------------------------------
-
 TInt CPsUtilsTestSuite::CPsQuery_SetAndGetL( CStifItemParser& aItem )
 {
-		TInt errorStatus = KErrNone;
-       	RPointerArray<TDesC> inputParameterArray;
-		Parse_StifItem(aItem,inputParameterArray);
+    TInt errorStatus = KErrNone;
+    RPointerArray<TDesC> inputParameterArray;
+    Parse_StifItem(aItem,inputParameterArray);
+    
+    //Parse data 
+    TKeyboardModes inputKeyboardMode = EModeUndefined;
+    TChar inputCharacter = '=';
+    //Create the query
+    CPsQuery* inputSearchQuery = CPsQuery::NewL(); 
+    CleanupStack::PushL(inputSearchQuery); 
+    TInt removeIndex;
+    
+    // Parse data for CPsQuery
+    ParseForCPsQueryL(inputParameterArray,inputKeyboardMode,*inputSearchQuery,removeIndex);
+    
+    // Create the destination CPsQuery
+    CPsQuery* destSearchQuery = NULL;
+    destSearchQuery = CPsQuery::NewL();
+    CleanupStack::PushL(destSearchQuery); 
+    
+    // Externalize to a stream of type RBufWriteStream
+    CBufFlat *buf = CBufFlat::NewL(KBufferMaxLen); 
+    CleanupStack::PushL(buf);
+    RBufWriteStream stream(*buf);
+    stream.PushL(); 
+    inputSearchQuery->ExternalizeL(stream);
+    stream.CommitL();
+    CleanupStack::PopAndDestroy(); // stream
+    
+    // Internalize from the stream
+    HBufC8* destBuf = HBufC8::NewLC(buf->Size()); 
+    TPtr8 ptrdestBuf(destBuf->Des()); 
+    buf->Read(0, ptrdestBuf, buf->Size()); 
+    
+    RDesReadStream rdStream(destBuf->Des()); 
+    CleanupClosePushL(rdStream);
+    destSearchQuery->InternalizeL(rdStream);
+    CleanupStack::PopAndDestroy(3);//rdStream, destBuf, buf
 
-		//Parse data 
-	    TKeyboardModes inputKeyboardMode = EModeUndefined;
-	    TChar inputCharacter = '=';
-	    //Create the query
-	    CPsQuery* inputSearchQuery = CPsQuery::NewL(); 
-	    CleanupStack::PushL(inputSearchQuery); 
-	    TInt removeIndex;
-   
-        // Parse data for CPsQuery
-	    ParseForCPsQueryL(inputParameterArray,inputKeyboardMode,*inputSearchQuery,removeIndex);
-	    
-	    
-	    // Create the destination CPsQuery
-		CPsQuery* destSearchQuery = NULL;
-		destSearchQuery = CPsQuery::NewL();
-		CleanupStack::PushL(destSearchQuery); 
-		
-        // Externalize to a stream of type RBufWriteStream
-	    CBufFlat *buf = CBufFlat::NewL(KBufferMaxLen); 
-	    CleanupStack::PushL(buf);
-	    RBufWriteStream stream(*buf);
-		stream.PushL(); 
-		inputSearchQuery->ExternalizeL(stream);
-		stream.CommitL();
-		CleanupStack::PopAndDestroy(); // stream
-
-	    // Internalize from the stream
-		HBufC8* destBuf = HBufC8::NewLC(buf->Size()); 
-	    TPtr8 ptrdestBuf(destBuf->Des()); 
-	    buf->Read(0, ptrdestBuf, buf->Size()); 
-
-		RDesReadStream rdStream(destBuf->Des()); 
-		CleanupClosePushL(rdStream);
-	    destSearchQuery->InternalizeL(rdStream);
-	    CleanupStack::PopAndDestroy(3);//rdStream, destBuf, buf
-	
+    // Check if internalized and externalized values are same.
+    if (  !ComparePsQueryL(*inputSearchQuery, *destSearchQuery)  )
+    {
+        errorStatus = KErrGeneral;
+    }
         
-        // Check if internalized and externalized values are same.
-	    if (  !ComparePsQueryL(*inputSearchQuery, *destSearchQuery)  )
-	    {
-	    	errorStatus = KErrGeneral;
-	    }
-	        
-		// Perform other operations (not performed yet)
-        
-        // Get the item at removeindex
-        CPsQueryItem* item = CPsQueryItem::NewL();
-        CPsQueryItem &tempitem = inputSearchQuery->GetItemAtL(removeIndex);
-        item->SetMode(tempitem.Mode());
-        item->SetCharacter(tempitem.Character());
-        
-        //Remove the item
-        inputSearchQuery->Remove(removeIndex);
-        
-        //Insert the item back
-        inputSearchQuery->InsertL(*item,removeIndex);
-        
-        //Get the query and check with original query
-        TPtrC queryPtr ( inputSearchQuery->QueryAsStringLC() );
-        if (queryPtr.Compare(*(inputParameterArray[1])) != 0)
-        {
-            errorStatus = KErrGeneral;
-        }
-        CleanupStack::PopAndDestroy(3); // queryPtr,destSearchQuery,inputSearchQuery
-        
-        //Clean up
-        inputParameterArray.ResetAndDestroy();
-        
-        // Return errorStatus
-        return errorStatus;
+    // Perform other operations (not performed yet)
+    
+    // Get the item at removeindex
+    CPsQueryItem* item = CPsQueryItem::NewL();
+    CPsQueryItem &tempitem = inputSearchQuery->GetItemAtL(removeIndex);
+    item->SetMode(tempitem.Mode());
+    item->SetCharacter(tempitem.Character());
+    
+    //Remove the item
+    inputSearchQuery->Remove(removeIndex);
+    
+    //Insert the item back
+    inputSearchQuery->InsertL(*item,removeIndex);
+    
+    //Get the query and check with original query
+    TPtrC queryPtr ( inputSearchQuery->QueryAsStringLC() );
+    if (queryPtr.Compare(*(inputParameterArray[1])) != 0)
+    {
+        errorStatus = KErrGeneral;
+    }
+    CleanupStack::PopAndDestroy(3); // queryPtr,destSearchQuery,inputSearchQuery
+    
+    //Clean up
+    inputParameterArray.ResetAndDestroy();
+    
+    // Return errorStatus
+    return errorStatus;
 }
-
-
 
 // -----------------------------------------------------------------------------
 // This test case performs all the  operations on the CPsClientData
 // -----------------------------------------------------------------------------
 TInt CPsUtilsTestSuite::PsClientData_SetAndGetL( CStifItemParser& aItem )
-
 {
 	TInt errorStatus = KErrNone;
 	CTestSuiteInputData* iInputParsedData = CTestSuiteInputData::NewL(aItem);
 	
 	// Parse the input data
   	iInputParsedData->ParseInputL(aItem) ;
-  	
-  	
+
   	// Create a new source PS Query object
     CPsClientData* psSrcData = CPsClientData::NewL();
     CleanupStack::PushL(psSrcData);
@@ -246,7 +233,7 @@ TInt CPsUtilsTestSuite::PsClientData_SetAndGetL( CStifItemParser& aItem )
     // Set the data elements
     for (TInt i(0); i < contactDataArray.Count(); i++)
     {
-            psSrcData->SetDataL(i, *(contactDataArray[i]) );
+        psSrcData->SetDataL(i, *(contactDataArray[i]) );
     }
     
     //set data extension
@@ -286,31 +273,24 @@ TInt CPsUtilsTestSuite::PsClientData_SetAndGetL( CStifItemParser& aItem )
     TBool ret2 = ComparePsClientDataL(*psSrcData,*destObject);
     if(ret1 !=0 && ret2)
     {
-    
     	errorStatus = KErrGeneral;
-    	
     }
 	CleanupStack::PopAndDestroy(2);
-	
-	
+
 	return errorStatus;
-
 }
-
 
 // -----------------------------------------------------------------------------
 // This test case performs all the  operations on the CPsData
 // -----------------------------------------------------------------------------
 TInt CPsUtilsTestSuite::PsData_SetAndGetL( CStifItemParser& aItem )
-
 {
 	TInt errorStatus = KErrNone;
 	CTestSuiteInputData* iInputParsedData = CTestSuiteInputData::NewL(aItem);
 	
 	// Parse the input data
   	iInputParsedData->ParseInputL(aItem) ;
-  	
-  	
+
   	// Create a new source PS Query object
     CPsData* psSrcData = CPsData::NewL();
     CleanupStack::PushL(psSrcData);
@@ -335,7 +315,7 @@ TInt CPsUtilsTestSuite::PsData_SetAndGetL( CStifItemParser& aItem )
     // Set the data elements
     for (TInt i(0); i < contactDataArray.Count(); i++)
     {
-            psSrcData->SetDataL(i, *(contactDataArray[i]) );
+        psSrcData->SetDataL(i, *(contactDataArray[i]) );
     }
     
      //set data extension
@@ -343,66 +323,62 @@ TInt CPsUtilsTestSuite::PsData_SetAndGetL( CStifItemParser& aItem )
     psSrcData->SetDataExtension(contactDataArray[0]);
     
     // Create the destination CPsQuery
-		CPsData* destObject = NULL;
-		destObject = CPsData::NewL();
-		CleanupStack::PushL(destObject);
-		
-        // Externalize to a stream of type RBufWriteStream
-	    CBufFlat *buf = CBufFlat::NewL(KBufferMaxLen); 
-	    CleanupStack::PushL(buf);
-	    RBufWriteStream stream(*buf);
-		stream.PushL(); 
-		psSrcData->ExternalizeL(stream);
-		stream.CommitL();
-		CleanupStack::PopAndDestroy(); // stream
-
-	    // Internalize from the stream
-		HBufC8* destBuf = HBufC8::NewLC(buf->Size()); 
-	    TPtr8 ptrdestBuf(destBuf->Des()); 
-	    buf->Read(0, ptrdestBuf, buf->Size()); 
-
-		RDesReadStream rdStream(destBuf->Des()); 
-		CleanupClosePushL(rdStream);
-		 destObject->InternalizeL(rdStream);
-	    CleanupStack::PopAndDestroy(3);//rdStream, destBuf, buf
+    CPsData* destObject = NULL;
+    destObject = CPsData::NewL();
+    CleanupStack::PushL(destObject);
+    
+    // Externalize to a stream of type RBufWriteStream
+    CBufFlat *buf = CBufFlat::NewL(KBufferMaxLen); 
+    CleanupStack::PushL(buf);
+    RBufWriteStream stream(*buf);
+    stream.PushL(); 
+    psSrcData->ExternalizeL(stream);
+    stream.CommitL();
+    CleanupStack::PopAndDestroy(); // stream
+    
+    // Internalize from the stream
+    HBufC8* destBuf = HBufC8::NewLC(buf->Size()); 
+    TPtr8 ptrdestBuf(destBuf->Des()); 
+    buf->Read(0, ptrdestBuf, buf->Size()); 
+    
+    RDesReadStream rdStream(destBuf->Des()); 
+    CleanupClosePushL(rdStream);
+    destObject->InternalizeL(rdStream);
+    CleanupStack::PopAndDestroy(3);//rdStream, destBuf, buf
+    
+    //Compare the internalized and externalized object
+    TInt ret1 = CPsData::CompareByData(*psSrcData,*destObject);
+    TInt ret2 = CPsData::CompareById(*psSrcData,*destObject);
+    TBool ret3 = ComparePsDataL(*psSrcData,*destObject);
 	    
-	    //Compare the internalized and externalized object
-	    TInt ret1 = CPsData::CompareByData(*psSrcData,*destObject);
-	    TInt ret2 = CPsData::CompareById(*psSrcData,*destObject);
-	    TBool ret3 = ComparePsDataL(*psSrcData,*destObject);
+    if((ret1 !=0) && (ret2 != 0) && !ret3 )
+    {
+        errorStatus = KErrGeneral;
+    }
+    else
+    {
+        if(iInputParsedData->Id())
+        {
+            if(psSrcData->IsDataMatch(iInputParsedData->Id()))
+            {
+                errorStatus = KErrNone;
+            }
+            else
+            {
+                errorStatus = KErrGeneral;
+            }
+        }
+        else
+        {
+            errorStatus = KErrNone;
+        }
+        
+    }
 	    
-	    if((ret1 !=0) && (ret2 != 0) && !ret3 )
-	    {
-	    
-	    	errorStatus = KErrGeneral;
-	    	
-	    }
-	    else
-	    {
-	    	if(iInputParsedData->Id())
-	    	{
-		    	if(psSrcData->IsDataMatch(iInputParsedData->Id()))
-		    	{
-		    		errorStatus = KErrNone;
-		    	}
-		    	else
-		    	{
-		    		errorStatus = KErrGeneral;
-		    	}
-	    	}
-	    	else
-	    	{
-	    	
-	    		errorStatus = KErrNone;
-	    	}
-	    	
-	    }
-	    
-	    psSrcData->RemoveIntDataExt(iInputParsedData->Id());
-	    psSrcData->ClearDataMatches();
-  		CleanupStack::PopAndDestroy(2);
-  		return errorStatus;
-
+    psSrcData->RemoveIntDataExt(iInputParsedData->Id());
+    psSrcData->ClearDataMatches();
+    CleanupStack::PopAndDestroy(2);
+    return errorStatus;
 }
 
 // -----------------------------------------------------------------------------
@@ -516,8 +492,7 @@ TInt CPsUtilsTestSuite::PsSettings_SetAndGetL(CStifItemParser& aItem )
     {
     	errorStatus = KErrGeneral;
     }
-    
-    
+
     CleanupStack::PopAndDestroy(2);  // destPsSettings, srcPsSettings
   	
   	// clean up
@@ -536,10 +511,10 @@ TInt CPsUtilsTestSuite::PsPattern_SetAndGetL(CStifItemParser& aItem )
 	CTestSuiteInputData* inputParsedData = CTestSuiteInputData::NewL(aItem);
 	
 	// Parse the input data
-  	inputParsedData->ParseInputL(aItem) ;
+  	inputParsedData->ParseInputL(aItem);
   	
 	RPointerArray<TDesC> dataArray;
-    inputParsedData->Data(dataArray)  ;    
+    inputParsedData->Data(dataArray);    
     
     TInt index = inputParsedData->Id();
 
@@ -588,16 +563,13 @@ TInt CPsUtilsTestSuite::PsPattern_SetAndGetL(CStifItemParser& aItem )
     {
     	errorStatus = KErrGeneral;
     }
-    
-    
+
     CleanupStack::PopAndDestroy(2);  // destPsPattern, srcPsPattern
   	// clean up
   	delete inputParsedData;
   	
   	// return error code
   	return errorStatus;
-
-	
 }
 
 // -----------------------------------------------------------------------------
@@ -612,7 +584,6 @@ void CPsUtilsTestSuite::Parse_StifItem(CStifItemParser& aItem,RPointerArray<TDes
 	{ 
 		aInputParameter.Append(string.AllocL()); 
 	} 
-
 }
 
 // -----------------------------------------------------------------------------
@@ -620,7 +591,6 @@ void CPsUtilsTestSuite::Parse_StifItem(CStifItemParser& aItem,RPointerArray<TDes
 // -----------------------------------------------------------------------------
 void CPsUtilsTestSuite::ParseForCPsQueryItemL(RPointerArray<TDesC>& aInputParameterArray,TKeyboardModes& aCurrentMode,TChar& aCurrentChar)
 {
-
 	//There should be only 2 arguments, else it is an error in input
 	if(aInputParameterArray.Count() != 2)
 	{
@@ -640,8 +610,7 @@ void CPsUtilsTestSuite::ParseForCPsQueryItemL(RPointerArray<TDesC>& aInputParame
     {
        	aCurrentMode = EModeUndefined;
     }
-    
-    
+
     //Get the current character
     TDesC* tmp = aInputParameterArray[1];
     if (tmp!=NULL)
@@ -652,16 +621,15 @@ void CPsUtilsTestSuite::ParseForCPsQueryItemL(RPointerArray<TDesC>& aInputParame
         }
         aCurrentChar = (*tmp)[0];
     }
-
 }	
 
 // -----------------------------------------------------------------------------
 // Parses the input stif parameters for CPsQuery
 // -----------------------------------------------------------------------------
 void CPsUtilsTestSuite::ParseForCPsQueryL(RPointerArray<TDesC>& aInputParameterArray,
-														TKeyboardModes& aCurrentMode,
-														CPsQuery& aSearchQuery, 
-														TInt& aRemoveIndex)
+                                          TKeyboardModes& aCurrentMode,
+                                          CPsQuery& aSearchQuery, 
+                                          TInt& aRemoveIndex)
 {
 	//There should be only 3 arguments, else an error in input
 	if(aInputParameterArray.Count()!= 3)
@@ -694,12 +662,11 @@ void CPsUtilsTestSuite::ParseForCPsQueryL(RPointerArray<TDesC>& aInputParameterA
         item->SetMode(aCurrentMode);
         aSearchQuery.AppendL(*item);
     }
-   
-   
-   // Get the removeIndex 
-   TInt removeIndex = 0;
-   TLex myDocId(*(aInputParameterArray[2]));
-   TInt err = myDocId.Val(removeIndex);
+
+    // Get the removeIndex 
+    TInt removeIndex = 0;
+    TLex myDocId(*(aInputParameterArray[2]));
+    TInt err = myDocId.Val(removeIndex);
 			 
   	if(err == KErrNone)
   	{
@@ -709,13 +676,11 @@ void CPsUtilsTestSuite::ParseForCPsQueryL(RPointerArray<TDesC>& aInputParameterA
   	{
   		User::Leave(err);
   	} 
-
 }	
 
 // -----------------------------------------------------------------------------
 // Compares two CPsQuery objects
 // -----------------------------------------------------------------------------
-
 TBool CPsUtilsTestSuite::ComparePsQueryL(CPsQuery& aInputSearchQuery, CPsQuery& aDestSearchQuery)
 {
 	// The count and keyboardmode  of both objects should be equal
@@ -724,13 +689,11 @@ TBool CPsUtilsTestSuite::ComparePsQueryL(CPsQuery& aInputSearchQuery, CPsQuery& 
 	  )
 	{
 		return EFalse;
-
 	}
 	
 	// Compare each CPsQueryItem from both the objects 
 	for(TInt i =0; i < aInputSearchQuery.Count(); i++)
 	{
-	
 	    CPsQueryItem& src =  aInputSearchQuery.GetItemAtL(i);
 	    CPsQueryItem& dest =  aDestSearchQuery.GetItemAtL(i);
 	    // The mode and Character should be equal
@@ -738,7 +701,6 @@ TBool CPsUtilsTestSuite::ComparePsQueryL(CPsQuery& aInputSearchQuery, CPsQuery& 
     	{
     		return EFalse;
         }
- 
 	}
 	// All ok, return ETrue
 	return ETrue;
@@ -802,9 +764,7 @@ TBool CPsUtilsTestSuite::ComparePsSettingsL(CPsSettings& aSrcPsSettings, CPsSett
 			}
 		}
 	}
-	
-	
-	
+
 	return matched;
 }
 

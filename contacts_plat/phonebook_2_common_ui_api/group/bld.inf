@@ -46,3 +46,4 @@ PRJ_EXPORTS
 ../inc/Pbk2ViewGraph.rh     APP_LAYER_PLATFORM_EXPORT_PATH(Pbk2ViewGraph.rh)
 ../inc/MPbk2ViewActivationTransaction.h     APP_LAYER_PLATFORM_EXPORT_PATH(MPbk2ViewActivationTransaction.h)
 ../inc/Pbk2LaunchNewContact.h               APP_LAYER_PLATFORM_EXPORT_PATH(Pbk2LaunchNewContact.h)
+../inc/Phonebook2PublicPSKeys.h             APP_LAYER_PLATFORM_EXPORT_PATH(Phonebook2PublicPSKeys.h)

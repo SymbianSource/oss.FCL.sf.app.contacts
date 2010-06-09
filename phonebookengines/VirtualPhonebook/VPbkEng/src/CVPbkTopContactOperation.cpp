@@ -197,7 +197,8 @@ MVPbkContactOperationBase* CVPbkTopContactOperation::NewTopOperationL(
         const MVPbkContactLinkArray& aContactLinks,
         MVPbkOperationObserver& aObserver,
         MVPbkOperationErrorObserver& aErrorObserver,
-        TTopOperation aOperation )
+        TTopOperation aOperation,
+        MVPbkContactViewBase* aViewRef)
     {
     __ASSERT_DEBUG( aOperation == EAddToTop || aOperation == ERemoveFromTop ||
             aOperation == EReorderTop,
@@ -209,6 +210,7 @@ MVPbkContactOperationBase* CVPbkTopContactOperation::NewTopOperationL(
             aOperation );
     self->iObserver = &aObserver;
     self->iInputLinks = CloneArrayL( aContactLinks ); 
+    self->iViewRef = aViewRef;
     
     CleanupStack::Pop(self);
     return self;
@@ -479,8 +481,9 @@ inline void CVPbkTopContactOperation::Top_RunL()
         {
         if ( iInputLinks->Count() > 0 )
             {
-            // view is needed for AddToTop operation to get next top index
-            if ( iCurrentOperation == EAddToTop )
+            // If the top view was not passed as a reference, we needed to construct
+            // own instance for AddToTop operation to get next top index
+            if ( iCurrentOperation == EAddToTop && !iViewRef )
                 {
                 iNextState = EStateCreateView;
                 }
@@ -535,9 +538,11 @@ inline void CVPbkTopContactOperation::DoTopOperationL()
         {
         case EAddToTop:
             {
-            // get next top index and delete the view right away, 
-            __ASSERT_DEBUG( iView, Panic(ETopViewMissing) );
-            TInt nextTopIndex = NextTopOrderIndexL( *iView );
+            // Get next top index, either from the provided top view or
+            // from the self contsructed one. Delete the owned view right away.
+            __ASSERT_DEBUG( iView || iViewRef, Panic(ETopViewMissing) );
+            TInt nextTopIndex =  iViewRef ? NextTopOrderIndexL( *iViewRef ) : 
+                                            NextTopOrderIndexL( *iView );
             __ASSERT_DEBUG( nextTopIndex >= 0, Panic(ETopErrorBadIndex) );
             delete iView;
             iView = NULL;

@@ -92,7 +92,7 @@ RESOURCE MENU_PANE r_rcl_search_result_dialog_menu_pane
         MENU_ITEM { command = ERclCmdSendEmail; txt = qtn_rcl_stylus_popup_email; flags = EEikMenuItemSpecific;},
         
 		MENU_ITEM { command = ERclCmdViewDetails; txt = qtn_rcl_opt_details; flags = EEikMenuItemAction; },
-		MENU_ITEM { command = ERclCmdAddAsRecipient; txt = qtn_rcl_opt_add_recipient; flags = EEikMenuItemAction;},		
+		MENU_ITEM { command = ERclCmdAddAsRecipient; txt = qtn_rcl_opt_add_recipient; flags = EEikMenuItemSpecific;},		
 		MENU_ITEM { command = ERclCmdNewSearchPrefilled; txt = qtn_rcl_opt_new_search; },
 		MENU_ITEM { command = ERclCmdCall; cascade = r_rcl_call_menu_pane; txt = qtn_rcl_opt_call; flags = EEikMenuItemAction; },
 		MENU_ITEM { command = ERclCmdSend; cascade = r_rcl_send_menu_pane; txt = qtn_rcl_opt_send; flags = EEikMenuItemAction; },

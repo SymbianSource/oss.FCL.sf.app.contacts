@@ -36,6 +36,7 @@ SYSTEMINCLUDE   /epoc32/include/ecom
 
 // Include paths
 USERINCLUDE     ../NamesListExtension/inc
+USERINCLUDE     ../UIControls/inc
 SYSTEMINCLUDE   ../inc
 SYSTEMINCLUDE   ../ccapplication/inc
 
@@ -66,7 +67,8 @@ SOURCE			cpbk2cmditemmycard.cpp
 SOURCE			cpbk2mycard.cpp
 SOURCE 			cpbk2openmycardcmd.cpp
 SOURCE          cpbk2contextlaunch.cpp
-SOURCE          cpbk2deletemycardcmd.cpp
+SOURCE          cpbk2deletemycardcmd.cpp 
+SOURCE			CPbk2DelayedWaitNote.cpp
 
 // Resources
 START RESOURCE  ../rss/Pbk2ExNamesListRes.rss

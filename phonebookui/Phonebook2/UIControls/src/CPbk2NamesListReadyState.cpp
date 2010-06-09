@@ -935,16 +935,17 @@ void CPbk2NamesListReadyState::HandleControlEventL( CCoeControl* aControl,
                     iAdaptiveSearchGridFiller->InvalidateAdaptiveSearchGrid();
                     }
                 }
+            
+            if ( iFindDelay->IsActive() )
+                {
+                iFindDelay->Cancel();
+                }
             //if aParam is ETrue, it means that event came from adaptive search, which means
             //we do not want to delay filtering
             if ( ( !aParam ) &&
                  ( iFindDelay ) &&
                  ( NumberOfContacts() >= KFindDelayThresholdContacts ) )
                 {
-                if ( iFindDelay->IsActive() )
-                    {
-                    iFindDelay->Cancel();
-                    }
                 iFindDelay->After( TTimeIntervalMicroSeconds32( KFindDelayTime ) );
                 }
             else
@@ -2333,15 +2334,7 @@ void CPbk2NamesListReadyState::UpdateAdaptiveSearchGridL( TBool aClearCache )
         return;
         }
 
-    iAdaptiveSearchGridFiller->StopFilling();
-
-    if( aClearCache )
-        {
-        iAdaptiveSearchGridFiller->ClearCache();
-        }
-
-
-    iAdaptiveSearchGridFiller->StartFilling( iViewStack, FindTextL() );
+    iAdaptiveSearchGridFiller->StartFillingL( iViewStack, FindTextL(), aClearCache );
     }
 
 /**

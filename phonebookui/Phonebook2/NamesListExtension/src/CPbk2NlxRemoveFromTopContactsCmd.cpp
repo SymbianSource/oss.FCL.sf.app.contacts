@@ -27,6 +27,7 @@
 #include <MVPbkBaseContact.h>
 #include <MVPbkContactOperationBase.h>
 #include <CVPbkTopContactManager.h>
+#include <Pbk2UIControls.rsg> 
 
 // Debugging headers
 #include <Pbk2Debug.h>
@@ -66,6 +67,8 @@ CPbk2NlxRemoveFromTopContactsCmd::~CPbk2NlxRemoveFromTopContactsCmd()
     //Cancel the operation if not yet done
     delete iVPbkContactOperationBase;                
     delete iVPbkTopContactManager;
+    delete iDelayedWaitNote;
+    iDelayedWaitNote = NULL;
     }
 
 // --------------------------------------------------------------------------
@@ -148,6 +151,8 @@ void CPbk2NlxRemoveFromTopContactsCmd::AddObserver(
 //
 void CPbk2NlxRemoveFromTopContactsCmd::RunL()
     {
+    ShowDelayedWaitNoteL();
+    
     RemoveTopContactL();
     }    
 
@@ -157,6 +162,10 @@ void CPbk2NlxRemoveFromTopContactsCmd::RunL()
 //
 TInt CPbk2NlxRemoveFromTopContactsCmd::RunError(TInt aError)
 	{
+    if (iDelayedWaitNote)
+        {
+        iDelayedWaitNote->Stop();       
+        }  
     return aError;
 	}
     
@@ -167,6 +176,29 @@ TInt CPbk2NlxRemoveFromTopContactsCmd::RunError(TInt aError)
 void CPbk2NlxRemoveFromTopContactsCmd::DoCancel()
     {
     //Currently no op    
+    }
+    
+// --------------------------------------------------------------------------
+// CPbk2NlxRemoveFromTopContactsCmd::ShowDelayedWaitNoteL
+// --------------------------------------------------------------------------
+//
+void CPbk2NlxRemoveFromTopContactsCmd::ShowDelayedWaitNoteL()
+    {
+    iDelayedWaitNote = CPbk2DelayedWaitNote::NewL(*this, R_QTN_GEN_NOTE_SAVING_WAIT );
+    iDelayedWaitNote->Start();
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2NlxRemoveFromTopContactsCmd::ProcessDismissed
+// --------------------------------------------------------------------------
+//
+void CPbk2NlxRemoveFromTopContactsCmd::ProcessDismissed(TInt /*aCancelCode*/)
+    {
+    if( iUiControl )
+        {
+        iUiControl->SetBlank( EFalse);
+        }     
+    iCommandObserver->CommandFinished( *this );   
     }
     
 // --------------------------------------------------------------------------
@@ -204,11 +236,10 @@ void CPbk2NlxRemoveFromTopContactsCmd::RemoveTopContactL()
 //
 void CPbk2NlxRemoveFromTopContactsCmd::VPbkOperationCompleted(MVPbkContactOperationBase*)
     {
-    if( iUiControl )
+    if (iDelayedWaitNote)
         {
-        iUiControl->SetBlank( EFalse);
+        iDelayedWaitNote->Stop();       
         }     
-    iCommandObserver->CommandFinished( *this );    
     }
 
 // ---------------------------------------------------------------------------
@@ -218,11 +249,10 @@ void CPbk2NlxRemoveFromTopContactsCmd::VPbkOperationCompleted(MVPbkContactOperat
 void CPbk2NlxRemoveFromTopContactsCmd::VPbkOperationFailed( MVPbkContactOperationBase*, TInt aError )
     {
     CCoeEnv::Static()->HandleError( aError );
-    if( iUiControl )
+    if (iDelayedWaitNote)
         {
-        iUiControl->SetBlank( EFalse);
+        iDelayedWaitNote->Stop();       
         }         
-    iCommandObserver->CommandFinished( *this );    
     }
 	    
 //  End of File

@@ -29,6 +29,7 @@
 #include <CPbk2SortOrderManager.h>
 #include <Pbk2ProcessDecoratorFactory.h>
 #include <TPbk2CopyContactsResults.h>
+#include <Phonebook2PublicPSKeys.h>
 #include <Phonebook2PrivatePSKeys.h>
 #include <Pbk2UID.h>
 #include <Pbk2USimThinUIRes.rsg>
@@ -735,7 +736,46 @@ void CPsu2CopySimContactsCmd::CompleteL()
     {
     iStartupMonitor.HandleStartupComplete();
     iCommandObserver->CommandFinished( *this );
+
+    if (iAvkonAppUi->IsForeground())
+        {
+        PublishOpenCompleteL();
+        }
     }
+
+// --------------------------------------------------------------------------
+// CPsu2CopySimContactsCmd::PublishOpenCompleteL
+// --------------------------------------------------------------------------
+//
+void CPsu2CopySimContactsCmd::PublishOpenCompleteL()
+    {
+    PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
+        ("CPsu2CopySimContactsCmd::PublishOpenCompleteL") );
+
+    TInt err = RProperty::Define( TUid::Uid( KPbk2PSUidPublic ),
+                                  KPhonebookOpenCompleted, RProperty::EInt );
+    if ( err != KErrAlreadyExists )
+        {
+        User::LeaveIfError( err );
+        }
+    RProperty prop;
+    CleanupClosePushL( prop );
+    User::LeaveIfError(prop.Attach( TUid::Uid( KPbk2PSUidPublic ),
+                                    KPhonebookOpenCompleted )); 
+    TInt value( EPhonebookClosed );
+    err = prop.Get( value );
+    if ( err == KErrNone && value != EPhonebookOpenCompleted)
+        {
+        // Only publish once per phonebook opening
+        PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
+            ("publish EPhonebookOpenCompleted") );
+        err = prop.Set( EPhonebookOpenCompleted );
+        }
+    User::LeaveIfError( err );
+
+    CleanupStack::PopAndDestroy(&prop);
+    }
+
 
 // --------------------------------------------------------------------------
 // CPsu2CopySimContactsCmd::CompleteWithError

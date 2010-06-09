@@ -23,13 +23,14 @@
 
 // INCLUDE FILES
 #include <MVPbkContactLink.h>
-
+#include <vpbkeng.rsg>
+#include "CPcsDefs.h"
 #include "CPsData.h"
 #include "CPcsCache.h"
 #include "CPcsDebug.h"
 #include "CWords.h"
 #include "CPcsAlgorithm1Utils.h"
-
+#include "CPcsAdaptiveGridItem.h"
 
 // ============================== MEMBER FUNCTIONS ============================
 
@@ -87,7 +88,9 @@ void CPcsCache::ConstructL(const TDesC& aURI, CPcsKeyMap& aKeyMap, TUint8 aUriId
         RPointerArray<CPcsPoolElement> *keyMap = new (ELeave) RPointerArray<CPcsPoolElement>(1);
         iKeyArr.InsertL(keyMap,i);
         }
-   
+
+    // Adaptive Grid map
+    iAdaptiveGridMap = CPcsAdaptiveGrid::NewL( );
     
     PRINT ( _L("End CPcsCache::ConstructL") );
 }
@@ -109,6 +112,8 @@ CPcsCache::~CPcsCache()
     iSortOrder.Reset();
     iIndexOrder.Reset();
     iMasterPoolBackup.Close();
+
+    delete iAdaptiveGridMap;
 
     PRINT ( _L("End CPcsCache::~CPcsCache") );
 }
@@ -155,27 +160,30 @@ void CPcsCache::GetAllContentsL(RPointerArray<CPsData>& aData)
 // ----------------------------------------------------------------------------
 void CPcsCache::AddToPoolL(TUint64& aPoolMap, CPsData& aData)
 {
-     // Temp hash to remember the location of pool elements
-     // First TInt  = Pool 
-     // Second TInt = Location in the pool
-     // Required for memory optimization so that more than one pool
-     // element doesn't get added for the same data
-     RHashMap<TInt, TInt> elementHash;
-     CleanupClosePushL( elementHash );
-     TLinearOrder<CPcsPoolElement> rule( CPcsPoolElement::CompareByData );
+    // Temp hash to remember the location of pool elements
+    // First TInt  = Pool 
+    // Second TInt = Location in the pool
+    // Required for memory optimization so that more than one pool
+    // element doesn't get added for the same data
+    RHashMap<TInt, TInt> elementHash;
+    CleanupClosePushL( elementHash );
+    TLinearOrder<CPcsPoolElement> rule( CPcsPoolElement::CompareByData );
 
-     // Parse thru each data element
-     for ( TInt dataIndex = 0; dataIndex < aData.DataElementCount(); dataIndex++ )
-     {
+    TBool unnamed = ETrue;
+    // Parse thru each data element
+    for ( TInt dataIndex = 0; dataIndex < aData.DataElementCount(); dataIndex++ )
+    {
+        HBufC* dataStr = aData.Data(dataIndex);
+
         // Find store all the pool IDs where this contact should be
 		RArray<TUint> poolIds;
 		CleanupClosePushL( poolIds );
 		
 		// Recover the first character
-		if ( aData.Data(dataIndex) && aData.Data(dataIndex)->Length() != 0 )
+		if ( dataStr && dataStr->Length() != 0 )
 		{
 		    // Split the data into words
-		    CWords* words = CWords::NewLC(*aData.Data(dataIndex));
+		    CWords* words = CWords::NewLC(*dataStr);
 
 		    // Store the first numeric key for each word
 		    for ( TInt i = 0; i < words->MdcaCount(); i++ )
@@ -201,6 +209,18 @@ void CPcsCache::AddToPoolL(TUint64& aPoolMap, CPsData& aData)
                         poolIds.Append(qwertyPoolId);
                         }
                     }
+
+#ifdef _DEBUG 
+                PRINT2 ( _L("CPcsCache::AddToPoolL: iURI=\"%S\", iUriId=%d"), &*iURI, iUriId );
+                TPtrC16 ptr = words->MdcaPoint(i); 
+                PRINT5 ( _L("CPcsCache::AddToPoolL: Data[%d]=\"%S\", word=\"%S\", firstChar='%c', Match=%d" ),
+                         dataIndex, &*dataStr, &(ptr), (TUint) firstChar, aData.IsDataMatch(dataIndex) );
+#endif // _DEBUG
+
+                // Set the 1st char of the word for the Adaptive Grid or
+                // increment the reference counter
+                TUint selector = GridItemSelector( dataIndex, unnamed );
+                iAdaptiveGridMap->IncrementRefCounterL( firstChar, selector );
 		    }
 		    
 		    CleanupStack::PopAndDestroy(words); 
@@ -251,9 +271,9 @@ void CPcsCache::AddToPoolL(TUint64& aPoolMap, CPsData& aData)
 		
 		CleanupStack::PopAndDestroy( &poolIds );
 		
-     } // for 1 loop
-     
-     CleanupStack::PopAndDestroy( &elementHash );
+    } // for 1 loop
+
+    CleanupStack::PopAndDestroy( &elementHash );
 }
 
 // ---------------------------------------------------------------------
@@ -303,30 +323,35 @@ void CPcsCache::RemoveFromCacheL( TInt aItemId )
         {
         	continue;
         }
-
-        const RPointerArray<CPcsPoolElement>& tmpKeyMap = *(iKeyArr[keyIndex]);
-        for ( TInt arrayIndex = 0; 
-              arrayIndex < tmpKeyMap.Count();
-              arrayIndex++ )
+        
+        TInt arrayIndex = 0;
+        TInt arrayCount = iKeyArr[keyIndex]->Count();
+        while ( arrayIndex < arrayCount )
         {
-		    CPcsPoolElement *element = tmpKeyMap[arrayIndex];
-		    TInt id = element->GetPsData()->Id();
-		    if ( id == aItemId )
-		    {
-		        data = element->GetPsData();
-		    	delete element;
-		    	iKeyArr[keyIndex]->Remove(arrayIndex);  
-		    }
+            CPcsPoolElement* element = (*(iKeyArr[keyIndex]))[arrayIndex];
+            if ( element->GetPsData()->Id() == aItemId )
+            {
+                data = element->GetPsData();
+                delete element;
+                iKeyArr[keyIndex]->Remove(arrayIndex);
+                arrayCount--;
+            }
+            else
+            {
+                arrayIndex++;
+            }
         }
     }
-        
+
     // Remove this element from master pool
     TInt arrayIndex = 0;
-    while ( arrayIndex < iMasterPool.Count() )
+    TInt arrayCount = iMasterPool.Count();
+    while ( arrayIndex < arrayCount )
     {
         if ( iMasterPool[arrayIndex]->Id() == aItemId )
         {
-            iMasterPool.Remove(arrayIndex);  
+            iMasterPool.Remove(arrayIndex);
+            arrayCount--;
         }
         else
         {
@@ -334,6 +359,43 @@ void CPcsCache::RemoveFromCacheL( TInt aItemId )
         }
     }
     
+    if ( data )
+    {
+        TBool unnamed = ETrue;
+        // Parse thru each data element
+        for ( TInt dataIndex = 0; dataIndex < data->DataElementCount(); dataIndex++ )
+        {
+            HBufC* dataStr = data->Data(dataIndex);
+    
+            // Recover the first character
+            if ( dataStr && dataStr->Length() != 0 )
+            {
+                // Split the data into words
+                CWords* words = CWords::NewLC(*dataStr);
+    
+                // Store the first numeric key for each word
+                for ( TInt i = 0; i < words->MdcaCount(); i++ )
+                {
+                    TChar firstChar = (words->MdcaPoint(i))[0];
+    
+#ifdef _DEBUG
+                    PRINT2 ( _L("CPcsCache::RemoveFromCacheL: iURI=\"%S\", iUriId=%d"), &*iURI, iUriId );
+                    TPtrC16 ptr = words->MdcaPoint(i); 
+                    PRINT5 ( _L("CPcsCache::RemoveFromCacheL: Data[%d]=\"%S\", word=\"%S\", firstChar='%c', Match=%d" ),
+                             dataIndex, &*dataStr, &(ptr), (TUint) firstChar, data->IsDataMatch(dataIndex) );
+#endif // _DEBUG
+    
+                    // Decrement the reference counter of the 1st char of the word for the Adaptive Grid or
+                    // delete the Adaptive Grid item if there are no references to it anymore
+                    TUint selector = GridItemSelector( dataIndex, unnamed );
+                    iAdaptiveGridMap->DecrementRefCounter( firstChar, selector );
+                }
+    
+                CleanupStack::PopAndDestroy( words ); 
+            }
+        }
+    }
+
     // Delete data 
     delete data;
     data = NULL;
@@ -350,15 +412,31 @@ void CPcsCache::RemoveAllFromCache()
 {
     PRINT ( _L("Enter CPcsCache::RemoveAllFromCache") );
     
-    for ( TInt i = 0 ; i < iKeyArr.Count() ; i++ )
+    for ( TInt i = 0; i < iKeyArr.Count(); i++ )
         {
         iKeyArr[i]->ResetAndDestroy();
         }
 	
 	iMasterPool.ResetAndDestroy();
 	iCacheInfo.Close();
+
+    delete iAdaptiveGridMap;
+	iAdaptiveGridMap = NULL;
 	
 	PRINT ( _L("End CPcsCache::RemoveAllFromCache") );
+}
+
+// ---------------------------------------------------------------------
+// CPcsCache::GetAdaptiveGridL
+// 
+// ---------------------------------------------------------------------
+void CPcsCache::GetAdaptiveGridL( const TBool aCompanyName, TDes& aAdaptiveGrid )
+{
+    PRINT ( _L("Enter CPcsCache::GetAdaptiveGridL") );
+    
+    iAdaptiveGridMap->GetAdaptiveGrid( aCompanyName, aAdaptiveGrid );
+    
+    PRINT ( _L("End CPcsCache::GetAdaptiveGridL") );
 }
 
 // ---------------------------------------------------------------------
@@ -559,25 +637,54 @@ void CPcsCache::ComputeIndexOrder()
 // ---------------------------------------------------------------------
 void CPcsCache::ResortdataInPoolsL()
     {
-    // copy iMasterPool data into iMasterPoolBackup
+    // Copy iMasterPool data into iMasterPoolBackup
     for (TInt i = 0; i < iMasterPool.Count(); i++ )
         {
         iMasterPoolBackup.Append( iMasterPool[i] );
         }
-    //Now reset the key array
+
+    // Now reset the key array
     for (TInt i = 0; i < iKeyArr.Count(); i++ )
         {
         iKeyArr[i]->ResetAndDestroy();
         }
     iMasterPool.Reset();
     iCacheInfo.Close();
-    //now add data again from the iMasterPoolBackup
+
+    // Now add data again from the iMasterPoolBackup
     for (TInt i = 0; i < iMasterPoolBackup.Count(); i++ )
         {
         CPsData* temp = iMasterPoolBackup[i];
         AddToCacheL( *temp );
         }
     iMasterPoolBackup.Reset();
+    }
+
+// ---------------------------------------------------------------------
+// CPcsCache::GridItemSelectorL
+// 
+// ---------------------------------------------------------------------
+TUint CPcsCache::GridItemSelector( TInt aIndex, TBool& aUnnamed )
+    {
+    __ASSERT_ALWAYS( iDataFields.Count() > aIndex, User::Panic(_L("CPcsCache"), KErrArgument ) );
+
+    if ( iDataFields[aIndex] == R_VPBK_FIELD_TYPE_LASTNAME || iDataFields[aIndex] == R_VPBK_FIELD_TYPE_FIRSTNAME )
+        {
+        aUnnamed = EFalse;
+        return CPcsAdaptiveGridItem::EFirstNameLastName;
+        }
+    else if ( iDataFields[aIndex] == R_VPBK_FIELD_TYPE_COMPANYNAME && !aUnnamed )
+        {
+        return CPcsAdaptiveGridItem::ECompanyName;
+        }
+    else if ( iDataFields[aIndex] == R_VPBK_FIELD_TYPE_COMPANYNAME )
+        {
+        return CPcsAdaptiveGridItem::EUnnamedCompanyName;
+        }
+    else
+        {
+        return CPcsAdaptiveGridItem::ENumberCounters;
+        }
     }
 
 // End of file

@@ -124,7 +124,7 @@ CCmsPhonebookProxy::~CCmsPhonebookProxy()
 //
 TBool CCmsPhonebookProxy::StoreOpenStatus()
     {
-    if( iAtLeastOneStoreReady && iOpenComplete && iCurrentContactStoreReady )
+    if( iAtLeastOneStoreReady && iOpenComplete )
         {
         return ETrue;
         }
@@ -142,9 +142,7 @@ void CCmsPhonebookProxy::InitStoresL()
     PRINT ( _L("Start CCmsPhonebookProxy::InitStoresL()") );
     
     if( !iOpenComplete )
-        {
-        iCurrentContactStoreReady = EFalse;
-        iReadyStores.ResetAndDestroy();                        
+        {                               
         iStoreList->OpenAllL( *this );
         }
     PRINT ( _L("End CCmsPhonebookProxy::InitStoresL()") );
@@ -426,37 +424,20 @@ void CCmsPhonebookProxy::SetVoiceCallDefaultL( MVPbkStoreContact* aContact )
 void CCmsPhonebookProxy::SetContact( MVPbkStoreContact* aContact )
     {
     iContact = aContact;
-    
-    if( !iCurrentContactStoreReady  && iContact )
+    iCurrentContactStoreReady = EFalse;
+        
+    if( iContact )
         {
         for( TInt x=0; x<iReadyStores.Count(); x++ )
             {
             if( iReadyStores[x]->Des().CompareC(  
                     iContact->ContactStore().StoreProperties().Uri().UriDes() ) == 0 )
-                {
-            
+                {                            
                 iCurrentContactStoreReady = ETrue;
-                iCmsPhonebookOperationsObserver.StoreOpenComplete();
                 break;
                 }                                        
             }
-        }
-    // Check in case the contact has changed
-    else if( iCurrentContactStoreReady  && iContact )
-        {
-        iCurrentContactStoreReady = EFalse;
-    
-        for( TInt x=0; x<iReadyStores.Count(); x++ )
-            {
-            if( iReadyStores[x]->Des().Compare(  
-                    iContact->ContactStore().StoreProperties().Uri().UriDes() ) == 0 )
-                {
-                // Contact found from ready stores
-                iCurrentContactStoreReady = ETrue;                
-                break;
-                }                                        
-            }
-        }
+        }            
     }
 
 // ----------------------------------------------------------
@@ -488,10 +469,10 @@ void CCmsPhonebookProxy::OpenComplete()
     {
     PRINT( _L("Start CCmsPhonebookProxy::OpenComplete()" ) );
     iOpenComplete = ETrue;
-    if ( iAtLeastOneStoreReady && !iCurrentContactStoreReady )
+    if ( iAtLeastOneStoreReady )
         {        
         iCmsPhonebookOperationsObserver.StoreOpenComplete();
-        iCurrentContactStoreReady = ETrue;        
+        iCurrentContactStoreReady = ETrue;				      
         }
     PRINT( _L("End CCmsPhonebookProxy::OpenComplete()" ) );
     }
@@ -587,7 +568,7 @@ void CCmsPhonebookProxy::StoreReady( MVPbkContactStore& aContactStore )
     aContactStore.StoreProperties().Uri().UriDes() ) == 0 && !iCurrentContactStoreReady )
         {
         iCurrentContactStoreReady = ETrue;
-        iCmsPhonebookOperationsObserver.StoreOpenComplete();        
+        iCmsPhonebookOperationsObserver.StoreOpenComplete();
         }
     }
 
@@ -634,6 +615,10 @@ void CCmsPhonebookProxy::HandleStoreEventL( MVPbkContactStore& /*aContactStore*/
 void CCmsPhonebookProxy::ConfigurationChanged()
     {
     PRINT( _L( "CCmsPhonebookProxy::ConfigurationChanged()" ) );
+    if( iContactInterface && iContact )
+        {
+        iContactInterface->ContactReadyL( KErrNone, NULL );        
+        }
     }
 
 // ----------------------------------------------------------
@@ -659,10 +644,12 @@ void CCmsPhonebookProxy::CreateConfigurationL()
     PRINT( _L( "Start CCmsPhonebookProxy::CreateConfigurationL()" ) );
 
     iAtLeastOneStoreReady = EFalse;
+    iCurrentContactStoreReady = EFalse;    
     iOpenComplete = EFalse;
     delete iUriList;
     iUriList = NULL;
     iContactStore = NULL;
+    iReadyStores.ResetAndDestroy();
 
     // Support all contact stores, not only those defined by phonebook2 setting
     iUriList = iStoreConfiguration->SupportedStoreConfigurationL();

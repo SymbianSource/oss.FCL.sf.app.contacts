@@ -171,20 +171,29 @@ void CCCAAppAppUi::HandleWsEventL(const TWsEvent &aEvent,
 // CCCAAppAppUi::InitializePlugin
 // ---------------------------------------------------------------------------
 //
-void CCCAAppAppUi::InitializePlugin(
-    CCCAParameter& aParameter )
+void CCCAAppAppUi::InitializePluginL()
     {
     CCA_DP( KCCAppLogFile, CCA_L("->CCCAAppAppUi::InitializePluginL"));
 
-    iCCAParameter = &aParameter;
-    if ( KErrNone !=
-       iCCAppView->StartView( iCCAParameter->LaunchedViewUid() ))
-        {
-        Exit();
-        }
 
+
+    TInt error = iCCAppView->StartView( iCCAParameter->LaunchedViewUid() );
+    if ( KErrNone != error )
+        {
+        User::Leave( error );
+        }
+    
     CCA_DP( KCCAppLogFile, CCA_L("<-CCCAAppAppUi::InitializePluginL"));
     }
+
+// ---------------------------------------------------------------------------
+// CCCAAppAppUi::SetParameter
+// ---------------------------------------------------------------------------
+//
+void CCCAAppAppUi::SetParameter( CCCAParameter& aParameter )
+	{
+	iCCAParameter = &aParameter;
+	}
 
 // ---------------------------------------------------------------------------
 // CCCAAppAppUi::Parameter

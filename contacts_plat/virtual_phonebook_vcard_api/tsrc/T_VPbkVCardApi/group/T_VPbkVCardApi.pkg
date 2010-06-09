@@ -42,5 +42,5 @@
 ; PRJ_TESTEXPORTS
 "\epoc32\winscw\c\bctestlog\testcbcard.ccf"-"c:\bctestlog\testcbcard.ccf"
 "\epoc32\winscw\c\bctestlog\testvcard.vcf"-"c:\bctestlog\testvcard.vcf"
-"..\conf\T_VPbkVCardApi.cfg"-"c:\TestFramework\T_VPbkVCardApi.cfg"
+"..\conf\T_VPbkVCardApi.cfg"-"c:\TestFramework\Ui_T_VPbkVCardApi.cfg"
 "..\init\T_VPbkVCardApi.ini"-"c:\TestFramework\T_VPbkVCardApi.ini"

@@ -109,7 +109,7 @@ void CPcsTestContactsHandler::ConstructL(TBool aSimStoreOnly)
 	}
 	else
 	{
-		 iStore = iContactManager->ContactStoresL().Find( TVPbkContactStoreUriPtr( VPbkContactStoreUris::DefaultCntDbUri() ) ); 	
+		iStore = iContactManager->ContactStoresL().Find( TVPbkContactStoreUriPtr( VPbkContactStoreUris::DefaultCntDbUri() ) ); 	
 	}
 
 	iStore->OpenL( *this ); 
@@ -128,10 +128,8 @@ void CPcsTestContactsHandler::ConstructL(TBool aSimStoreOnly)
 // ---------------------------------------------------------------------------------
 // Destructor
 // ---------------------------------------------------------------------------------
-
 CPcsTestContactsHandler::~CPcsTestContactsHandler() 
 {
-
 	delete iWait;
     iWait = NULL;
     
@@ -145,7 +143,7 @@ CPcsTestContactsHandler::~CPcsTestContactsHandler()
         iContactLinksToAddToGroup->ResetAndDestroy();
         delete iContactLinksToAddToGroup;
         }
-//plese note you shouldn't close stores before cleaning links arrays    
+    //plese note you shouldn't close stores before cleaning links arrays    
 	if ( iContactManager )
 	{
 	    TRAP_IGNORE(iContactManager->ContactStoresL().CloseAll( *this ));
@@ -155,10 +153,9 @@ CPcsTestContactsHandler::~CPcsTestContactsHandler()
 
 	if(iOp)
 	{
-		 delete iOp ;
-		 iOp = NULL;
+		delete iOp ;
+		iOp = NULL;
 	}
-
 }
 
 // ---------------------------------------------------------------------------
@@ -168,9 +165,9 @@ void CPcsTestContactsHandler::OpenComplete()
 {
     iOpenComplete = ETrue;
     if( iWait->IsStarted() )
-     {
+    {
  	    iWait->AsyncStop();
-     }
+    }
 }
     
 // ---------------------------------------------------------------------------
@@ -198,11 +195,10 @@ void CPcsTestContactsHandler::StoreUnavailable(
 void CPcsTestContactsHandler::HandleStoreEventL(MVPbkContactStore& /*aContactStore*/, 
                 TVPbkContactStoreEvent aStoreEvent)
 {
-
     if ( aStoreEvent.iEventType == iStoreEventToWaitFor )
-        {
+    {
         iExpectedStoreEventReceived = ETrue;
-        }
+    }
 
 	switch (aStoreEvent.iEventType) 
 	{
@@ -295,7 +291,6 @@ void CPcsTestContactsHandler::CreateOneContactL(cacheData& aInputCacheData)
 // ---------------------------------------------------------------------------------
 // This fucntion deletes all the created contacts
 // ---------------------------------------------------------------------------------    
-
 void CPcsTestContactsHandler::DeleteAllCreatedContactsL()
 {
 	if(iContactsCreatedLinks->Count())
@@ -314,7 +309,6 @@ void CPcsTestContactsHandler::DeleteAllCreatedContactsL()
 // ---------------------------------------------------------------------------------
 // This fucntion adds a group 
 // ---------------------------------------------------------------------------------    
-
 void CPcsTestContactsHandler::AddGroupL(const TDesC& aGroupName)
 {
 	iGroupAdded = iStore->CreateNewContactGroupLC();
@@ -363,12 +357,12 @@ void CPcsTestContactsHandler::DoCancel()
 // Stops main active scheduler loop if stop conditions are fullfiled
 // ---------------------------------------------------------------------------------
 void CPcsTestContactsHandler::StopSchedulerIfNothingToWaitFor()
-    {
-     if( iOperationComplete && iExpectedStoreEventReceived )
+{
+    if( iOperationComplete && iExpectedStoreEventReceived )
         {
         CActiveScheduler::Stop();
         }
-    }
+}
 
 // ---------------------------------------------------------------------------------
 // Called when a contact operation has succesfully completed.
@@ -537,4 +531,5 @@ void CPcsTestContactsHandler::AddCreatedContactsToGroup()
             iGroupAdded->AddContactL(iContactLinksToAddToGroup->At(i));
     }
 }
+
 // End of file

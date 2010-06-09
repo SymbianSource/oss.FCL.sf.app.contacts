@@ -47,6 +47,11 @@ class CPcsAlgorithm1Utils : public CBase
 		static void FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR_ARRAY>& aSearchResultsArr, 
 										       RPointerArray<CPsData>& SearchResults);
 
+        /**
+         * Compare by character.
+         */
+		static TInt CompareByCharacter(const TChar& aFirst, const TChar& aSecond);
+
 		/**
 		 * Compare by length.
 		 */

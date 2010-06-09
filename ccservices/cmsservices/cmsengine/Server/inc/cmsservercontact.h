@@ -476,6 +476,8 @@ NONSHARABLE_CLASS( CCmsServerContact ) : public CBase,
         /// Used to save Retrieve Contact operation. Owned.
         MVPbkContactOperationBase*              iOperation;
 
+        /// Cached VoIP features
+        TInt iVoipFeatures;
     };
 
 #endif  //__CMSSERVERCONTACT__

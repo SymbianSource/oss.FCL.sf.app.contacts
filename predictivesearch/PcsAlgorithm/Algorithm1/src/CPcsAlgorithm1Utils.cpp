@@ -79,10 +79,33 @@ void CPcsAlgorithm1Utils::FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR
 }
 
 // ----------------------------------------------------------------------------
+// CPcsAlgorithm1Utils::CompareByCharacter()
+// Compare by character.
+// ----------------------------------------------------------------------------
+TInt CPcsAlgorithm1Utils::CompareByCharacter( const TChar& aFirst, const TChar& aSecond )
+{
+    TInt retValue;
+    if ( aFirst == aSecond )
+        {
+        retValue = 0;
+        }
+    else if ( aFirst < aSecond )
+        {
+        retValue = -1;
+        }
+    else 
+        {
+        retValue = 1;
+        }
+
+    return retValue;
+}
+
+// ----------------------------------------------------------------------------
 // CPcsAlgorithm1Utils::CompareByLength()
 // Compare by length.
 // ----------------------------------------------------------------------------
-TInt CPcsAlgorithm1Utils::CompareByLength ( const HBufC& aFirst, const HBufC& aSecond )
+TInt CPcsAlgorithm1Utils::CompareByLength( const HBufC& aFirst, const HBufC& aSecond )
 {
     return ( aFirst.Length() - aSecond.Length() );
 }
@@ -91,7 +114,7 @@ TInt CPcsAlgorithm1Utils::CompareByLength ( const HBufC& aFirst, const HBufC& aS
 // CPcsAlgorithm1Utils::CompareExact()
 // Compare strings exactly case sensitively.
 // ----------------------------------------------------------------------------
-TBool CPcsAlgorithm1Utils::CompareExact ( const TDesC& aFirst, const TDesC& aSecond )
+TBool CPcsAlgorithm1Utils::CompareExact( const TDesC& aFirst, const TDesC& aSecond )
 {
     return aFirst == aSecond;
 }
@@ -100,7 +123,7 @@ TBool CPcsAlgorithm1Utils::CompareExact ( const TDesC& aFirst, const TDesC& aSec
 // CPcsAlgorithm1Utils::CompareCollate()
 // Compare strings with collate rules depending on locale.
 // ----------------------------------------------------------------------------
-TInt CPcsAlgorithm1Utils::CompareCollate ( const TDesC& aFirst, const TDesC& aSecond )
+TInt CPcsAlgorithm1Utils::CompareCollate( const TDesC& aFirst, const TDesC& aSecond )
 {
     return CPcsAlgorithm1Utils::MyCompareC(aFirst, aSecond);
 }
@@ -146,9 +169,11 @@ TBool CPcsAlgorithm1Utils::MyCompareK(const TDesC& aLeft, const TDesC& aRight, C
         {
         for ( TInt i = 0; i < aPsQuery.Count(); i++ )
             {
-            CPsQueryItem& currentItem = aPsQuery.GetItemAtL(i);
-            if ( (CPcsKeyMap::IsModePredictive(currentItem.Mode()))
-                 && (aLeft[i] != aRight[i]) )
+            CPsQueryItem* currentItemPtr;
+            TRAPD ( err, currentItemPtr = &(aPsQuery.GetItemAtL(i)) );
+            if ( err != KErrNone
+                 || ( CPcsKeyMap::IsModePredictive(currentItemPtr->Mode())
+                    && aLeft[i] != aRight[i] ) )
                 {
                 comparison = EFalse;
                 break;

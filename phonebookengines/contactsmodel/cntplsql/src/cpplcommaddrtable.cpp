@@ -21,6 +21,16 @@
 #include <cntphonenumparser.h>
 #endif
 
+/// Unnamed namespace for local definitions
+namespace {
+
+TBool ComparePtr( const TPtrC* aLeft, const TPtrC& aRight )
+    {
+    return ( aLeft->Compare( aRight )== 0 );
+    }
+
+} /// namespace
+
 /**
 @param aDatabase A handle to the database.
 @param aProperties A contact properties object.
@@ -216,10 +226,13 @@ void CPplCommAddrTable::CreateInDbL(CContactItem& aItem)
 					}
 				}
 			// get email addresses
-			else if (isEmail && newEmails.Find(currField.TextStorage()->Text() ) == KErrNotFound)
+			else if (isEmail)
 				{
-				DoNonPhoneWriteOpL(currField.TextStorage()->Text(), EInsert, KItemId, EEmailAddress);
-				newEmails.AppendL(currField.TextStorage()->Text() );
+				if (newEmails.Find( currField.TextStorage()->Text(), ComparePtr ) == KErrNotFound)
+					{
+					DoNonPhoneWriteOpL(currField.TextStorage()->Text(), EInsert, KItemId, EEmailAddress);
+					newEmails.AppendL(currField.TextStorage()->Text() );
+					}
 				}
 			// get SIP addresses
 			else if (newSips.Find(currField.TextStorage()->Text() ) == KErrNotFound)
@@ -290,10 +303,13 @@ void CPplCommAddrTable::UpdateL(const CContactItem& aItem)
 					}
 				}
 			// get email addresses
-			else if (isEmail && newEmails.Find(currField.TextStorage()->Text() ) == KErrNotFound)
-				{
-				newEmails.AppendL(currField.TextStorage()->Text() );
-				}
+		   else if (isEmail)
+			  {
+			  if (newEmails.Find(currField.TextStorage()->Text(), ComparePtr ) == KErrNotFound)
+				  {
+				  newEmails.AppendL(currField.TextStorage()->Text() );
+				  }
+			  }
 			// get SIP addresses
 			else if (newSips.Find(currField.TextStorage()->Text() ) == KErrNotFound)
 				{
@@ -382,7 +398,7 @@ void CPplCommAddrTable::RemoveNonUpdatedAddrsL(RArray<TMatch>& aNewPhones, RArra
 			// we already have them in the db and they haven't changed...
 			if (KType == EEmailAddress)
 				{
-				matchIndex = aNewEmails.Find(valString);
+				matchIndex = aNewEmails.Find( valString, ComparePtr );
 				if (matchIndex != KErrNotFound)
 					{
 					aNewEmails.Remove(matchIndex);

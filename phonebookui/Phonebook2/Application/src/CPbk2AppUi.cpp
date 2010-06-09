@@ -45,6 +45,7 @@
 #include <MPbk2ContactViewSupplier.h>
 #include <Pbk2CommonUi.rsg>
 #include <Pbk2UID.h>
+#include <Phonebook2PublicPSKeys.h> 
 
 // Virtual Phonebook
 #include <VPbkVariant.hrh>
@@ -55,6 +56,7 @@
 #include <centralrepository.h>
 #include <gfxtranseffect/gfxtranseffect.h>
 #include <akntranseffect.h>
+#include <e32property.h>
 
 // Debugging headers
 #include <Pbk2Config.hrh>
@@ -262,7 +264,12 @@ CPbk2Application* CPbk2AppUi::Pbk2Application() const
 void CPbk2AppUi::ExitL()
     {
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING("CPbk2AppUi::ExitL"));
-    
+
+    TInt err = RProperty::Set( TUid::Uid( KPbk2PSUidPublic ),
+                               KPhonebookOpenCompleted, EPhonebookClosed );
+    PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
+        ("CPbk2AppUi::ExitL set pubsub key to EPhonebookClosed (%d)"), err);
+
 #ifdef _DEBUG
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING("CPbk2AppUi::ExitL real exit debug"));
     CAknViewAppUi::ProcessCommandL( EAknCmdExit );

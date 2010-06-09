@@ -383,9 +383,9 @@ EXPORT_C void CPSRequestHandler::LookupL(const CPsQuery& aSearchQuery,
 // CPSRequestHandler::LookupMatchL()
 // Sends a request to the predictive search engine to perform a search.
 // -----------------------------------------------------------------------------
-EXPORT_C void CPSRequestHandler::LookupMatchL(const CPsQuery& aSearchQuery, 
-                                         const TDesC& aSearchData,
-                                         TDes& aMatch )
+EXPORT_C void CPSRequestHandler::LookupMatchL( const CPsQuery& aSearchQuery, 
+                                               const TDesC& aSearchData,
+                                               TDes& aMatch )
     {
     PRINT ( _L("Enter CPSRequestHandler::LookupMatchL") );
 
@@ -545,7 +545,7 @@ void CPSRequestHandler::HandleSearchResultsL()
             if ( searchResults[i]->Data(j) )
                 {
                 PRINT3 ( _L("CPSRequestHandler::HandleSearchResultsL: Results[%d,%d] = %S"),
-                         i, j, &searchResults[i]->Data(j)->Des() );
+                         i, j, &*(searchResults[i]->Data(j)) );
                 }       
             }
         }    
@@ -1260,6 +1260,84 @@ void CPSRequestHandler::NotifyCachingStatus( TCachingStatus aStatus, TInt aError
         {
         iObservers[i]->CachingStatus(aStatus, aError);
         }
+    }
+
+// -----------------------------------------------------------------------------
+// CPSRequestHandler::GetAdaptiveGridCharactersL()
+// 
+// -----------------------------------------------------------------------------
+EXPORT_C void CPSRequestHandler::GetAdaptiveGridCharactersL( const MDesCArray& aDataStores,
+                                                             const TDesC& aSearchText,
+                                                             const TBool aCompanyName,
+                                                             TDes& aAdaptiveGrid )
+    {
+    /*
+     * aSearchText is unused in the current implementation.
+     * If/when this API method will support grids at bigger level it will be used.
+     * Grids at bigger level can be kept in a multilevel Adaptive Grid cache, or could
+     * be calculated inside PCS Engine. There are two implementation choices.
+     */
+    
+    PRINT ( _L("Enter CPSRequestHandler::GetAdaptiveGridCharactersL") );
+
+    if ( aSearchText.Length() > KPsAdaptiveGridSupportedMaxLen )
+        {
+        PRINT1 ( _L("CPSRequestHandler::GetAdaptiveGridCharactersL: Too many chars in search text, Max supported is %d"),
+		         KPsAdaptiveGridSupportedMaxLen );
+        }
+    else
+	    {    
+        // -------------------- Data Stores --------------------
+    
+        // Temp buffer
+        CBufFlat* dataBuffer = CBufFlat::NewL( KBufferMaxLen );
+        CleanupStack::PushL( dataBuffer );
+    
+        // Stream over the temp buffer
+        RBufWriteStream dataStream( *dataBuffer );
+        dataStream.PushL();
+    
+        // Write the URI count in the stream
+        TInt dataStoresCount = aDataStores.MdcaCount();
+        dataStream.WriteUint16L( dataStoresCount );
+    
+        for ( TUint i=0; i < dataStoresCount; i++ )
+            {
+            // Write the URI details in the stream
+            TPtrC16 uri = aDataStores.MdcaPoint(i);
+            dataStream.WriteUint16L( uri.Length() );
+            dataStream << uri;
+            }
+
+        // Create a HBufC8 for IPC
+        HBufC8* storesDataBuffer = HBufC8::NewL( dataBuffer->Size() );
+        TPtr8 storesDataBufferPtr( storesDataBuffer->Des() );
+        dataBuffer->Read( 0, storesDataBufferPtr, dataBuffer->Size() );
+
+        CleanupStack::PopAndDestroy( 2, dataBuffer ); // dataBuffer, dataStream
+        CleanupStack::PushL( storesDataBuffer );
+
+        // -----------------------------------------------------
+    
+        iSession.GetAdaptiveGridL( storesDataBuffer->Des(), aCompanyName, aAdaptiveGrid );
+    
+        // Cleanup
+        CleanupStack::PopAndDestroy(storesDataBuffer);
+        }
+	
+#ifdef _DEBUG
+    for ( TUint i=0; i < aDataStores.MdcaCount(); i++ )
+        {
+        TPtrC16 ptr = aDataStores.MdcaPoint(i);
+        PRINT2 ( _L("CPSRequestHandler::GetAdaptiveGridCharactersL: Data Store [%d]: %S"),
+                 i, &ptr );
+        }
+    PRINT1 ( _L("CPSRequestHandler::GetAdaptiveGridCharactersL: Search Text: %S"), &aSearchText );
+    PRINT1 ( _L("CPSRequestHandler::GetAdaptiveGridCharactersL: Company Name: %d"), aCompanyName );
+    PRINT1 ( _L("CPSRequestHandler::GetAdaptiveGridCharactersL: Grid: %S"), &aAdaptiveGrid );
+#endif // _DEBUG
+
+    PRINT ( _L("End CPSRequestHandler::GetAdaptiveGridCharactersL") );
     }
 
 // End of File

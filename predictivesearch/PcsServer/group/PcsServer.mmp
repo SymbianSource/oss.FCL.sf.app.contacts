@@ -40,6 +40,7 @@ APP_LAYER_SYSTEMINCLUDE
 LIBRARY       euser.lib
 LIBRARY       estor.lib
 LIBRARY       flogger.lib
+LIBRARY       bafl.lib
 LIBRARY       ecom.lib
 LIBRARY       PcsUtils.lib
 LIBRARY       FeatMgr.lib

@@ -28,6 +28,21 @@
 
 
 CVPbkTopContactManagerImpl* CVPbkTopContactManagerImpl::NewL(
+    CVPbkContactManager& aContactManager,
+    MVPbkContactViewBase& aTopView
+    )
+    {
+    CVPbkTopContactManagerImpl* self =
+        new (ELeave) CVPbkTopContactManagerImpl();
+    CleanupStack::PushL( self );
+    self->iContactManager = &aContactManager;
+    self->iTopView = &aTopView;
+    self->ConstructL();
+    CleanupStack::Pop( self );
+    return self;
+    }
+
+CVPbkTopContactManagerImpl* CVPbkTopContactManagerImpl::NewL(
     CVPbkContactManager& aContactManager )
     {
     CVPbkTopContactManagerImpl* self =
@@ -141,7 +156,8 @@ MVPbkContactOperationBase* CVPbkTopContactManagerImpl::AddToTopL(
             aContactLinks,
             aObserver,
             aErrorObserver,
-            CVPbkTopContactOperation::EAddToTop );
+            CVPbkTopContactOperation::EAddToTop, 
+            iTopView);
     }
 
 MVPbkContactOperationBase* CVPbkTopContactManagerImpl::AddToTopL(

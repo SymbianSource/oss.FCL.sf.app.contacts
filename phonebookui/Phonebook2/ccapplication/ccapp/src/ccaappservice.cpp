@@ -131,10 +131,11 @@ void CCAAppService::ReadMsgL( const RMessage2& aMessage )
     data->InternalizeL( readStream );
 
     //PERFORMANCE LOGGING: 5. Parameter transferred/unpacked over AppServer
-    WriteToPerfLog();
-
-    iAppUi->InitializePlugin( *data );//ownership transferred
+    WriteToPerfLog();    
     CleanupStack::Pop( data ); // data
+    iAppUi->SetParameter( *data );//ownership transferred
+    iAppUi->InitializePluginL();
+    
 
     CleanupStack::PopAndDestroy( 2, clientData );// readStream, clientData
 

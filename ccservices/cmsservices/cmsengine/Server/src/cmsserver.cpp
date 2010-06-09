@@ -22,7 +22,7 @@
 #include "cmsserver.h"
 #include "cmsserversession.h"
 #include "cmsphonebookproxy.h"
-
+#include <crcseprofileregistry.h>
 
 // ----------------------------------------------------------
 // CCmsServer::New
@@ -85,6 +85,7 @@ CCmsServer::~CCmsServer()
     PRINT( _L( "Start CCmsServer::~CCmsServer()" ) );
     Cancel();
     delete iPhonebookProxy;
+    delete iRCSEProfileRegistry;
     iFS.Close();
     PRINT( _L( "End CCmsServer::~CCmsServer()" ) );
     }
@@ -119,6 +120,20 @@ void CCmsServer::PanicServer( TCmsServerPanic aPanic )
 RFs& CCmsServer::FileSession()
     {
     return iFS;
+    }
+
+// ----------------------------------------------------
+// CCmsServer::RCSEProfileRegistryL
+// 
+// ----------------------------------------------------
+//
+CRCSEProfileRegistry& CCmsServer::RCSEProfileRegistryL()
+    {
+    if( !iRCSEProfileRegistry )
+        {
+        iRCSEProfileRegistry = CRCSEProfileRegistry::NewL();
+        }
+    return *iRCSEProfileRegistry;
     }
 
 // ----------------------------------------------------

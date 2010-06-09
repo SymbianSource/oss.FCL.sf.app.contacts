@@ -32,6 +32,7 @@ class MVPbkContactLink;
 class CCmsServerSession;
 class CCmsServerContact;
 class CCmsPhonebookProxy;
+class CRCSEProfileRegistry;
 
 /** 
  * CCmsScheduler is used instead of default active scheduler to
@@ -117,6 +118,14 @@ NONSHARABLE_CLASS( CCmsServer ) : public CServer2,
         */
         RFs& FileSession();
         
+        /**
+         * Return a reference to RCSE Profile registry.
+         * Uses lazy initialization
+         * 
+         * @return RCSE Profile Registry instance 
+         */
+        CRCSEProfileRegistry& RCSEProfileRegistryL();
+        
     public:  //static
         
         /**
@@ -140,6 +149,11 @@ NONSHARABLE_CLASS( CCmsServer ) : public CServer2,
         /// Phonebook proxy which is responsible for common phonebook 
         /// operations. Available for all CMS sessions. Owned.
         CCmsPhonebookProxy*                     iPhonebookProxy;
+        
+        /// Owned. Shared RCSE Profile registry instance for all sessions.
+        /// Constructing this instance is slow and therefore it's kept
+        /// in server where it can be quickly aquired.
+        CRCSEProfileRegistry*                   iRCSEProfileRegistry;
     };
 
 #endif

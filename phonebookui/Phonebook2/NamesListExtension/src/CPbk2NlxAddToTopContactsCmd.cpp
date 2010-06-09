@@ -45,6 +45,7 @@
 #include <CVPbkTopContactManager.h>
 #include <CPbk2FetchDlg.h>
 #include <MPbk2ContactViewSupplier.h>
+#include <MPbk2ContactViewSupplier2.h>
 #include <CPbk2ContactViewBuilder.h>
 #include <MVPbkContactViewBase.h>
 #include <CPbk2StoreConfiguration.h>
@@ -139,7 +140,7 @@ CPbk2NlxAddToTopContactsCmd::~CPbk2NlxAddToTopContactsCmd()
     delete iMarkedEntries;
     delete iContactIterator;
     delete iContactOperation; //Cancels request if pending
-    delete iDecorator;
+    delete iDelayedWaitNote;
     delete iVPbkTopContactManager;
     delete iContactRelocator;
     }
@@ -170,12 +171,33 @@ void CPbk2NlxAddToTopContactsCmd::ConstructL()
         {
         iUiControl->RegisterCommand( this );
         }    
-    
+      
     iContactManager =
         &Phonebook2::Pbk2AppUi()->ApplicationServices().ContactManager();
-    iVPbkTopContactManager = CVPbkTopContactManager::NewL( *iContactManager );
-    }
     
+    // For performance optimization, get the top contacts view 
+    // from pbk2 applications services and provide to top contact 
+    // manager if the view is available
+    
+    MPbk2ContactViewSupplier2* viewSupplierExtension = 
+               reinterpret_cast<MPbk2ContactViewSupplier2*>(
+                   Phonebook2::Pbk2AppUi()->ApplicationServices().ViewSupplier().
+                       MPbk2ContactViewSupplierExtension(
+                           KMPbk2ContactViewSupplierExtension2Uid ));
+
+    MVPbkContactViewBase* topContactsView = viewSupplierExtension->TopContactsViewL();
+    if ( topContactsView )
+        {
+        iVPbkTopContactManager = CVPbkTopContactManager::NewL( *iContactManager, 
+                *topContactsView);
+        }
+    else
+        {
+        iVPbkTopContactManager = CVPbkTopContactManager::NewL( *iContactManager );
+        }
+    
+    }
+
 // --------------------------------------------------------------------------
 // CPbk2NlxAddToTopContactsCmd::ExecuteLD
 // --------------------------------------------------------------------------
@@ -260,7 +282,7 @@ void CPbk2NlxAddToTopContactsCmd::RunL()
                 {
                 StartNext(ESetAsTopContact);
                 }
-    	    ShowWaitNoteL();
+    	    ShowDelayedWaitNoteL();
     	    }
     	    break;
         case ESetAsTopContact:
@@ -594,10 +616,10 @@ void CPbk2NlxAddToTopContactsCmd::Finish( TInt aReason )
 	    CCoeEnv::Static()->HandleError( aReason );
 	    }
 	
-    if ( iDecorator )
+    if ( iDelayedWaitNote ) 
         {
-        // wait for callback from the wait note and finish then
-        iDecorator->ProcessStopped();
+        // wait for callback from the wait note and finish then      
+        iDelayedWaitNote->Stop();
         }
     else
         {
@@ -618,6 +640,10 @@ void CPbk2NlxAddToTopContactsCmd::StartNext( TPhase aPhase )
     SetActive();
     }
 
+// ---------------------------------------------------------------------------
+// CPbk2NlxAddToTopContactsCmd::StartNext
+// ---------------------------------------------------------------------------
+//
 void CPbk2NlxAddToTopContactsCmd::StartNext()
     {
     __ASSERT_DEBUG( !IsActive(), Panic( ENlxAtcWronglyActivated ));    
@@ -626,15 +652,23 @@ void CPbk2NlxAddToTopContactsCmd::StartNext()
     SetActive();
     }
 
-void CPbk2NlxAddToTopContactsCmd::ShowWaitNoteL()
+// ---------------------------------------------------------------------------
+// CPbk2NlxAddToTopContactsCmd::ShowDelayedWaitNoteL
+// ---------------------------------------------------------------------------
+//
+void CPbk2NlxAddToTopContactsCmd::ShowDelayedWaitNoteL()
     {
-    __ASSERT_DEBUG( !iDecorator, Panic( ENlxNoteActive ));
-    iDecorator = Pbk2ProcessDecoratorFactory::CreateWaitNoteDecoratorL
-        ( R_QTN_GEN_NOTE_SAVING_WAIT, ETrue );
-    iDecorator->SetObserver( *this );
-    iDecorator->ProcessStartedL( 0 ); // wait note doesn't care about amount
+    if ( !iDelayedWaitNote )
+        {
+        iDelayedWaitNote = CPbk2DelayedWaitNote::NewL(*this, R_QTN_GEN_NOTE_SAVING_WAIT);
+        iDelayedWaitNote->Start();
+        }
     }
-
+      
+// ---------------------------------------------------------------------------
+// CPbk2NlxAddToTopContactsCmd::ProcessDismissed
+// ---------------------------------------------------------------------------
+//
 void CPbk2NlxAddToTopContactsCmd::ProcessDismissed( TInt /*aCancelCode*/ )
     {
     StartNext( EFinish );
@@ -673,10 +707,10 @@ void CPbk2NlxAddToTopContactsCmd::ContactRelocationFailed(
     TInt /* aReason */,
     MVPbkStoreContact* /* aContact */ )
 	{
-    if ( iDecorator )
+    if ( iDelayedWaitNote )
         {
         // wait for callback from the wait note and finish then
-        iDecorator->ProcessStopped();
+        iDelayedWaitNote->Stop();
         }
     else
         {

@@ -134,6 +134,21 @@ NONSHARABLE_CLASS( CVPbkTopContactManager ) : public CBase
         IMPORT_C static CVPbkTopContactManager* NewL( CVPbkContactManager& aContactManager );
 
         /**
+         * Creates the top contact manager passing an already constructed top
+         * contacts view as a parameter. This greatly improves performance of adding 
+         * new favorites as the top contact view contsrution can be a heavy operation.
+         * 
+         * Note, passing the view doesn't affect the view and links fetching 
+         * (e.g. GetTopContactsViewL, GetTopContactLinksL, etc.)
+         * 
+         * @param aContactManager Contact manager which already has its stores opened.
+         * @param aTopView top contact view which already has been constructed.
+         */
+        IMPORT_C static CVPbkTopContactManager* NewL(
+                CVPbkContactManager& aContactManager,
+                MVPbkContactViewBase& aTopView);
+        
+        /**
          * Creates the top contact manager.
          * Holds its own CVPbkContactManager instance.
          * 

@@ -1850,21 +1850,20 @@ void CPbk2ContactEditorDlgImpl::LoadBitmapToFieldL
     
     if ( image )
         {
-        image->SetPictureOwnedExternally( EFalse );
-        image->CopyControlContextFrom( LineControl( aControlId ) );
-        image->SetContainerWindowL( *LineControl( aControlId ) );
-        image->SetNonFocusing();
-        image->SetBrushStyle( CGraphicsContext::ENullBrush );
+        CEikCaptionedControl* line = LineControl( aControlId );
+        if( line )
+            {
+            line->SetIconL( 
+                const_cast<CFbsBitmap*>( image->Bitmap() ), 
+                const_cast<CFbsBitmap*>( image->Mask() ) );
+            line->iBitmap->SetPictureOwnedExternally( EFalse );
+            image->SetPictureOwnedExternally( ETrue );
+            line->iBitmap->SetNonFocusing();
+            line->iBitmap->SetBrushStyle( CGraphicsContext::ENullBrush );
+            line->iBitmap->SetContainerWindowL( *line );
+            }
 
-        delete LineControl( aControlId )->iBitmap;
-        LineControl( aControlId )->iBitmap = image;
-        CleanupStack::Pop( image );
-
-        TRect rect = LineControl( aControlId )->Rect();
-        rect.Resize( -1, -1 );
-        LineControl( aControlId )->SetRect( rect );
-        rect.Resize( 1, 1 );
-        LineControl( aControlId )->SetRect( rect );
+        CleanupStack::PopAndDestroy( image );
         }
 
     CleanupStack::PopAndDestroy( factory );

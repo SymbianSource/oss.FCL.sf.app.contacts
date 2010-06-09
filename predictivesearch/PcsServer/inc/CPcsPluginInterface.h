@@ -127,7 +127,15 @@ class CPcsPluginInterface: public CBase
 		* to the algorithm instance
 		*/
 		void ChangeSortOrderL(TDesC& aURI, RArray<TInt>& aSortOrder);
-		                                                          
+
+        /**
+        * Forwards the request to get the Adaptive Grid for one or more URI
+        * to the algorithm instance
+        */
+        void GetAdaptiveGridL( const MDesCArray& aURIs,
+                               const TBool aCompanyName,
+                               TDes& aAdaptiveGrid );
+
 		/** 
 		* Returns the UID of the algorithm in use
 		*/

@@ -24,6 +24,6 @@ file=ABI_DIR\BUILD_DIR\cmsserver.exe                            PROGRAMS_DIR\cms
 file=ABI_DIR\BUILD_DIR\cmsclient.dll                            SHARED_LIB_DIR\cmsclient.dll
 data=DATAZ_\RESOURCE_FILES_DIR\cms\cmsserver.rsc                RESOURCE_FILES_DIR\cms\cmsserver.rsc
 
-data=DATAZ_\system\install\cmsengine_stub.sis       system\install\cmsengine_stub.sis
+//data=DATAZ_\system\install\cmsengine_stub.sis       system\install\cmsengine_stub.sis
 #endif //__CMSENGINE_IBY__
 

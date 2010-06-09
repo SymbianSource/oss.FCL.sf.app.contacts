@@ -37,7 +37,6 @@
 namespace
     {
     // LOCAL CONSTANTS AND MACROS
-    _LIT( KSeparator, "\t" );    
     _LIT( KSpace, " " );
     }
 
@@ -67,7 +66,7 @@ CPbk2PhonebookInfoDlg::~CPbk2PhonebookInfoDlg()
 // inline because only one call site
 inline void CPbk2PhonebookInfoDlg::ConstructL()
     {
-	iListBox = new(ELeave) CAknSingleHeadingPopupMenuStyleListBox;
+    iListBox = new(ELeave) CAknSinglePopupMenuStyleListBox;    
 	iPopupList = CAknPopupList::NewL(iListBox,
 								R_AVKON_SOFTKEYS_OK_EMPTY__OK,
                                 AknPopupLayouts::EMenuGraphicHeadingWindow);
@@ -164,9 +163,8 @@ void CPbk2PhonebookInfoDlg::SetDataL(CVPbkContactManager& aContactManager,
         {
         MPbk2StoreInfoUiItem& uiItem = *iInfoItems->At(i);
         HBufC* itemBuf = HBufC::NewLC(uiItem.HeadingText().Length() +
-            uiItem.ItemText().Length() + KSeparator().Length() + KSpace().Length());
+            uiItem.ItemText().Length() + KSpace().Length());                
         TPtr ptr(itemBuf->Des());
-        ptr.Append(KSeparator);
         ptr.Append(uiItem.HeadingText());
         ptr.Append(KSpace);
         ptr.Append(uiItem.ItemText());

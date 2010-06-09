@@ -365,12 +365,12 @@ void CVPbkImportToStoreOperation::HandleContactSavedL(
     if ( curUnsavedCount == 0 )
         {
         // Try to read the next entry, if one existed
-        static_cast<CVPbkVCardImporter*>(iOperationImpl)->StartL();
+        iOperationImpl->StartL();
         }
     else
         {
         CommitNextContactL();
-        static_cast<CVPbkVCardImporter*>(iOperationImpl)->StartL();
+        iOperationImpl->StartL();
         }
 
     }

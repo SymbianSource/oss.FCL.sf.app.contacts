@@ -164,7 +164,6 @@ SOURCE          cpbk2contactviewdoublelistbox.cpp
 SOURCE          cpbk2contactviewdoublelistboxmodel.cpp
 SOURCE          pbk2contactviewdoublelistboxdataelement.cpp
 SOURCE          cpbk2doublelistboxmodelcmddecorator.cpp
-SOURCE          CPbk2AdaptiveSearchGridWaiter.cpp
 
 // Resources
 LANGUAGE_IDS

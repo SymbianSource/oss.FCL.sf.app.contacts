@@ -107,13 +107,17 @@ class CPcsSession : public CSession2
 	    /**
 		 * Service method to get sort order of data fields
 		 */
-		void GetSortOrderL(const RMessage2& aMessage);	
+		void GetSortOrderL(const RMessage2& aMessage);
 		
 		/**
 		 * Service method to get sort order of data fields
 		 */
-		void ChangeSortOrderL(const RMessage2& aMessage);		
+		void ChangeSortOrderL(const RMessage2& aMessage);
 		
+		/**
+		 * Service method to get Adaptive Grid
+		 */
+		void GetAdaptiveGridL(const RMessage2& aMessage);
 		
 		/**
 		 * Service method to shutdown the server

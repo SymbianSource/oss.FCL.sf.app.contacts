@@ -22,7 +22,7 @@
 //  INCLUDES
 #include <e32base.h>
 #include <aknsfld.h>
-#include "CPbk2AdaptiveSearchGridWaiter.h"
+#include <MPsResultsObserver.h>
 
 // FORWARD DECLARATIONS
 class CAknSearchField;
@@ -30,6 +30,7 @@ class CFindUtil;
 class CPbk2AdaptiveGrid;
 class MVPbkContactViewBase;
 class MPbk2ContactNameFormatter;
+class CPSRequestHandler;
 
 // CLASS DECLARATION
 
@@ -40,7 +41,7 @@ class MPbk2ContactNameFormatter;
  * search contacts from Phonebook 2.
  */
 NONSHARABLE_CLASS(CPbk2AdaptiveSearchGridFiller) : public CActive,
-        public MPbk2SearchGridWaiterObserver
+                                                   public MPsResultsObserver
     {
     public: // Constructors and destructor
 
@@ -70,7 +71,7 @@ NONSHARABLE_CLASS(CPbk2AdaptiveSearchGridFiller) : public CActive,
          * 				 to create adaptive search grid
          * @param aFindText is text user has entered in the find pane.
          */
-    	void StartFilling( const MVPbkContactViewBase& aView, const TDesC& aSearchString );
+    	void StartFillingL( const MVPbkContactViewBase& aView, const TDesC& aSearchString, TBool aClearCache );
 
 
         /**
@@ -104,17 +105,23 @@ NONSHARABLE_CLASS(CPbk2AdaptiveSearchGridFiller) : public CActive,
          * But actually this operation is done to Adaptive Search Grid. So set the focus back to it.
          */
     	 void SetFocusToAdaptiveSearchGrid();
-    
-    public: // MPbk2SearchGridWaiterObserver
-    	 void GridDelayCompleteL();
-    	 void WaitNoteDismissed();
-    	 
+ 
     private: // from CActive
     	
     	void RunL();
     	void DoCancel();
     	TInt RunError( TInt aError );    	
-    	
+
+    private: // from MPsResultsObserver
+
+        void HandlePsResultsUpdate(
+            RPointerArray<CPsClientData>& searchResults,
+            RPointerArray<CPsPattern>& searchSeqs);
+
+        void HandlePsError(TInt aErrorCode);
+
+        void CachingStatus(TCachingStatus& aStatus, TInt& aError);
+        
     private: // Implementation
 
         CPbk2AdaptiveSearchGridFiller( CAknSearchField& aField, MPbk2ContactNameFormatter& aNameFormatter );
@@ -129,6 +136,7 @@ NONSHARABLE_CLASS(CPbk2AdaptiveSearchGridFiller) : public CActive,
         TInt NumberOfSpacesInString( const TDesC& aSearchString );
         // Used to judge if this contact's title include drgraphs
         TBool IsDigraphContactsTitleL(const TDesC& aContactTitle);
+        TBool GridFromPsEngineL( const MVPbkContactViewBase& aView );
     private: // Data
     	
 		/// Own: Containts adaptive search grid.
@@ -170,8 +178,11 @@ NONSHARABLE_CLASS(CPbk2AdaptiveSearchGridFiller) : public CActive,
 		/// Used to save the contacts' title which include drgraphs
 		RPointerArray<HBufC> iDigraphContactsTitleArray;
 		
-		/// Own: Used to display wait note if building of grid takes longer than specified time
-		CPbk2AdaptiveSearchGridWaiter* iGridWaiter;
+	    /// Own: Number of contacts in view
+	    TInt iViewItemCount;
+	    
+        /// Own: Predictive search handler
+        CPSRequestHandler* iPsHandler;
     };
 
 #endif // CPBK2ADAPTIVESEARCHGRIDFILLER_H

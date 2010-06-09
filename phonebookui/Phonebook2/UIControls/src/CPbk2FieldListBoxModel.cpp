@@ -791,18 +791,14 @@ inline TBool CPbk2FieldListBoxModel::DuplicatesExist(
     {
     TBool ret = EFalse;
     TInt rowsCount = iRows.Count();
-    for( TInt i = 0; i < rowsCount && !ret; i++ )
-        {
-        TInt columnsCount = iRows[i]->ColumnCount();
-        for( TInt j = 0; j < columnsCount && !ret; j++ )
+    for (TInt i = 0; i < rowsCount && !ret; i++ )
+        {            
+        if ( iRows[i]->At( EContentColumn ).CompareF( aContent ) == 0 )
             {
-            if ( iRows[i]->At(j).CompareF( aContent ) == 0 )
-                {
-                ret = ETrue;
-                }
+            ret = ETrue;
             }
         }
-    
+
     return ret;
     }
 

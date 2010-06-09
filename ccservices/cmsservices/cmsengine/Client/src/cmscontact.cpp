@@ -132,6 +132,12 @@ EXPORT_C TInt RCmsContact::IsServiceAvailable( VPbkFieldTypeSelectorFactory::TVP
     #ifdef _DEBUG
         RCmsSession::WriteToLog( _L8( "RCmsContact::IsServiceAvailable() - Field: %d" ), aServiceType );
     #endif
+    if( VPbkFieldTypeSelectorFactory::EEmailEditorSelector == aServiceType )
+        {
+        // Resolving email accounts is too slow -> 
+        // CCA show email item if email field is defined in contact
+        return ETrue;
+        }
     return SendReceive( ECmsFetchServiceAvailability, TIpcArgs( aServiceType ) );
     }
 

@@ -61,6 +61,7 @@
 #include <MPbk2UiControlCmdItem.h>
 #include <pbk2mapcommands.hrh>
 #include "Pbk2InternalCommands.hrh"
+#include "CPbk2ContactViewListBox.h"
 
 #include "CVPbkContactManager.h"
 #include "MVPbkContactStoreList.h"
@@ -418,6 +419,16 @@ void CPbk2NamesListExView::HandleCommandL(TInt aCommandId)
     	{
         iControl->SetOpeningCca( ETrue );
     	}
+
+    // Set focus, keep current focus on the area of the client screen
+    // when scoll to the bottom of Names list view.
+    CPbk2ContactViewListBox* listbox = static_cast<CPbk2ContactViewListBox*>(iControl->ComponentControl(0));
+    if ( EPbk2CmdCreateNew == aCommandId &&
+            listbox->CurrentItemIndex() < listbox->TopItemIndex() &&
+                listbox->BottomItemIndex() == listbox->Model()->NumberOfItems()-1 )
+        {
+        listbox->SetCurrentItemIndex( listbox->TopItemIndex() );
+        }
 
     // No command handling in this class, forward to Commands
     if (!iCommandHandler->HandleCommandL( aCommandId, *iControlProxy, &iView ))
@@ -1376,6 +1387,10 @@ void CPbk2NamesListExView::PostCommandExecutionL
             // above the Find box
             iContainer->SetRect(iView.ClientRect());
             iControl->DrawNow();
+            }
+        if ( EPbk2CmdCreateNew == iCurrentCommandId )
+            {
+            iControl->DrawDeferred();
             }
         }
     iCurrentCommandId = KErrNotFound;

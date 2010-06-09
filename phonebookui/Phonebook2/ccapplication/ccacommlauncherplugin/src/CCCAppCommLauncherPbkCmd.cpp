@@ -52,8 +52,7 @@ CCCAppCommLauncherPbkCmd::CCCAppCommLauncherPbkCmd( CCCAppCommLauncherPlugin& aP
     iCommandsResourceFile( *CCoeEnv::Static() ),
     iUiControlsResourceFile( *CCoeEnv::Static() ),
     iCommonUiResourceFile( *CCoeEnv::Static() ),
-    iPlugin( aPlugin ),
-    iCommandInProgress( EFalse )
+    iPlugin( aPlugin )
     {
     }
 
@@ -66,6 +65,7 @@ void CCCAppCommLauncherPbkCmd::ConstructL()
     {
     PreparePbk2ApplicationServicesL();
     iCommandHandler = CPbk2CommandHandler::NewL();
+    iCommandHandler->AddMenuCommandObserver( *this );
     }
 
 
@@ -106,6 +106,10 @@ CCCAppCommLauncherPbkCmd::~CCCAppCommLauncherPbkCmd()
         }
 
     delete iStoreContact;
+    if ( iCommandHandler )
+        {
+        iCommandHandler->RemoveMenuCommandObserver( *this );
+        }
     delete iCommandHandler;
     delete iLinks;
     delete iOperation;
@@ -145,26 +149,31 @@ void CCCAppCommLauncherPbkCmd::PreparePbk2ApplicationServicesL()
 //
 void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdAssignDefaultL( const TDesC8& aContact )
     {
-    iCommandInProgress = ETrue;
+    TCCAppCommandState& cmdState( iPlugin.CommandState() );
+    if ( !cmdState.IsRunning() )
+        {
+        cmdState.SetRunningAndPushCleanupL();
+        
+        iPbk2CommandId = EPbk2CmdDefaultSettings;
     
-    iPbk2CommandId = EPbk2CmdDefaultSettings;
-
-    if( iLinks )
-        {
-        delete iLinks;
-        iLinks = NULL;
+        if( iLinks )
+            {
+            delete iLinks;
+            iLinks = NULL;
+            }
+    
+        iLinks = iAppServices->ContactManager().CreateLinksLC( aContact );
+    
+        if ( iLinks && iLinks->Count() > 0 )
+            {
+            // operation completes by StoreReady,
+            //  StoreUnavailable or HandleStoreEventL
+            (iLinks->At( 0 )).ContactStore().OpenL( *this );
+            }
+    
+        CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
+        cmdState.PopCleanup();
         }
-
-    iLinks = iAppServices->ContactManager().CreateLinksLC( aContact );
-
-    if ( iLinks && iLinks->Count() > 0 )
-        {
-        // operation completes by StoreReady,
-        //  StoreUnavailable or HandleStoreEventL
-        (iLinks->At( 0 )).ContactStore().OpenL( *this );
-        }
-
-    CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
     }
 
 // ---------------------------------------------------------------------------
@@ -173,26 +182,31 @@ void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdAssignDefaultL( const TDesC8& aCont
 //
 void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdViewImageL( const TDesC8& aContact )
     {
-    iCommandInProgress = ETrue;
+    TCCAppCommandState& cmdState( iPlugin.CommandState() );
+    if ( !cmdState.IsRunning() )
+        {
+        cmdState.SetRunningAndPushCleanupL();
+        
+        iPbk2CommandId = EPbk2CmdViewImage;
     
-    iPbk2CommandId = EPbk2CmdViewImage;
-
-    if( iLinks )
-        {
-        delete iLinks;
-        iLinks = NULL;
+        if( iLinks )
+            {
+            delete iLinks;
+            iLinks = NULL;
+            }
+    
+        iLinks = iAppServices->ContactManager().CreateLinksLC( aContact );
+    
+        if ( iLinks && iLinks->Count() > 0 )
+            {
+            // operation completes by StoreReady,
+            //  StoreUnavailable or HandleStoreEventL
+            (iLinks->At( 0 )).ContactStore().OpenL( *this );
+            }
+    
+        CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
+        cmdState.PopCleanup();
         }
-
-    iLinks = iAppServices->ContactManager().CreateLinksLC( aContact );
-
-    if ( iLinks && iLinks->Count() > 0 )
-        {
-        // operation completes by StoreReady,
-        //  StoreUnavailable or HandleStoreEventL
-        (iLinks->At( 0 )).ContactStore().OpenL( *this );
-        }
-
-    CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
     }
 
 // ---------------------------------------------------------------------------
@@ -201,26 +215,31 @@ void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdViewImageL( const TDesC8& aContact 
 //
 void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdChangeImageL( const TDesC8& aContact )
     {
-    iCommandInProgress = ETrue;
+    TCCAppCommandState& cmdState( iPlugin.CommandState() );
+    if ( !cmdState.IsRunning() )
+        {
+        cmdState.SetRunningAndPushCleanupL();
+        
+        iPbk2CommandId = EPbk2CmdChangeImage;
     
-    iPbk2CommandId = EPbk2CmdChangeImage;
-
-    if( iLinks )
-        {
-        delete iLinks;
-        iLinks = NULL;
+        if( iLinks )
+            {
+            delete iLinks;
+            iLinks = NULL;
+            }
+    
+        iLinks = iAppServices->ContactManager().CreateLinksLC( aContact );
+    
+        if ( iLinks && iLinks->Count() > 0 )
+            {
+            // operation completes by StoreReady,
+            //  StoreUnavailable or HandleStoreEventL
+            (iLinks->At( 0 )).ContactStore().OpenL( *this );
+            }
+    
+        CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
+        cmdState.PopCleanup();
         }
-
-    iLinks = iAppServices->ContactManager().CreateLinksLC( aContact );
-
-    if ( iLinks && iLinks->Count() > 0 )
-        {
-        // operation completes by StoreReady,
-        //  StoreUnavailable or HandleStoreEventL
-        (iLinks->At( 0 )).ContactStore().OpenL( *this );
-        }
-
-    CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
     }
 
 // ---------------------------------------------------------------------------
@@ -229,26 +248,31 @@ void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdChangeImageL( const TDesC8& aContac
 //
 void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdRemoveImageL( const TDesC8& aContact )
     {
-    iCommandInProgress = ETrue;
+    TCCAppCommandState& cmdState( iPlugin.CommandState() );
+    if ( !cmdState.IsRunning() )
+        {
+        cmdState.SetRunningAndPushCleanupL();
+        
+        iPbk2CommandId = EPbk2CmdRemoveImage;
     
-	iPbk2CommandId = EPbk2CmdRemoveImage;
-
-    if( iLinks )
-        {
-        delete iLinks;
-        iLinks = NULL;
+        if( iLinks )
+            {
+            delete iLinks;
+            iLinks = NULL;
+            }
+    
+        iLinks = iAppServices->ContactManager().CreateLinksLC( aContact );
+    
+        if ( iLinks && iLinks->Count() > 0 )
+            {
+            // operation completes by StoreReady,
+            //  StoreUnavailable or HandleStoreEventL
+            (iLinks->At( 0 )).ContactStore().OpenL( *this );
+            }
+    
+        CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
+        cmdState.PopCleanup();
         }
-
-    iLinks = iAppServices->ContactManager().CreateLinksLC( aContact );
-
-    if ( iLinks && iLinks->Count() > 0 )
-        {
-        // operation completes by StoreReady,
-        //  StoreUnavailable or HandleStoreEventL
-        (iLinks->At( 0 )).ContactStore().OpenL( *this );
-        }
-
-    CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
     }
 
 // ---------------------------------------------------------------------------
@@ -257,26 +281,31 @@ void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdRemoveImageL( const TDesC8& aContac
 //
 void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdAddImageL( const TDesC8& aContact )
     {
-    iCommandInProgress = ETrue;
+    TCCAppCommandState& cmdState( iPlugin.CommandState() );
+    if ( !cmdState.IsRunning() )
+        {
+        cmdState.SetRunningAndPushCleanupL();
+        
+        iPbk2CommandId = EPbk2CmdAddImage;
     
-    iPbk2CommandId = EPbk2CmdAddImage;
-
-    if( iLinks )
-        {
-        delete iLinks;
-        iLinks = NULL;
+        if( iLinks )
+            {
+            delete iLinks;
+            iLinks = NULL;
+            }
+    
+        iLinks = iAppServices->ContactManager().CreateLinksLC( aContact );
+    
+        if ( iLinks && iLinks->Count() > 0 )
+            {
+            // operation completes by StoreReady,
+            //  StoreUnavailable or HandleStoreEventL
+            (iLinks->At( 0 )).ContactStore().OpenL( *this );
+            }
+    
+        CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
+        cmdState.PopCleanup();
         }
-
-    iLinks = iAppServices->ContactManager().CreateLinksLC( aContact );
-
-    if ( iLinks && iLinks->Count() > 0 )
-        {
-        // operation completes by StoreReady,
-        //  StoreUnavailable or HandleStoreEventL
-        (iLinks->At( 0 )).ContactStore().OpenL( *this );
-        }
-
-    CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
     }
 
 // ---------------------------------------------------------------------------
@@ -286,26 +315,31 @@ void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdAddImageL( const TDesC8& aContact )
 void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdShowMapL( const HBufC8* aContact,
 		TPbk2CommandId aCommandId )
     {
-    iCommandInProgress = ETrue;
-	
-	iPbk2CommandId = aCommandId;
-    
-    if( iLinks )
+    TCCAppCommandState& cmdState( iPlugin.CommandState() );
+    if ( !cmdState.IsRunning() )
         {
-        delete iLinks;
-        iLinks = NULL;
+        cmdState.SetRunningAndPushCleanupL();
+        
+        iPbk2CommandId = aCommandId;
+        
+        if( iLinks )
+            {
+            delete iLinks;
+            iLinks = NULL;
+            }
+        
+        iLinks = iAppServices->ContactManager().CreateLinksLC( *aContact );   
+        
+        if ( iLinks->Count() > 0 )
+            {       
+            // operation completes by StoreReady,
+            //  StoreUnavailable or HandleStoreEventL
+            (iLinks->At( 0 )).ContactStore().OpenL( *this );
+            }
+        
+        CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
+        cmdState.PopCleanup();
         }
-    
-    iLinks = iAppServices->ContactManager().CreateLinksLC( *aContact );   
-    
-    if ( iLinks->Count() > 0 )
-        {       
-        // operation completes by StoreReady,
-        //  StoreUnavailable or HandleStoreEventL
-        (iLinks->At( 0 )).ContactStore().OpenL( *this );
-        }
-    
-    CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
     }
 
 // ---------------------------------------------------------------------------
@@ -314,26 +348,31 @@ void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdShowMapL( const HBufC8* aContact,
 //
 void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdDeleteL( const TDesC8& aContact )
     {
-    iCommandInProgress = ETrue;
-    
-    iPbk2CommandId = EPbk2CmdDeleteMe;
-    
-    if( iLinks )
+    TCCAppCommandState& cmdState( iPlugin.CommandState() );
+    if ( !cmdState.IsRunning() )
         {
-        delete iLinks;
-        iLinks = NULL;
+        cmdState.SetRunningAndPushCleanupL();
+        
+        iPbk2CommandId = EPbk2CmdDeleteMe;
+        
+        if( iLinks )
+            {
+            delete iLinks;
+            iLinks = NULL;
+            }
+        
+        iLinks = iAppServices->ContactManager().CreateLinksLC( aContact );   
+        
+        if ( iLinks->Count() > 0 )
+            {       
+            // operation completes by StoreReady,
+            //  StoreUnavailable or HandleStoreEventL
+            ( iLinks->At( 0 ) ).ContactStore().OpenL( *this );
+            }
+        
+        CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
+        cmdState.PopCleanup();
         }
-    
-    iLinks = iAppServices->ContactManager().CreateLinksLC( aContact );   
-    
-    if ( iLinks->Count() > 0 )
-        {       
-        // operation completes by StoreReady,
-        //  StoreUnavailable or HandleStoreEventL
-        ( iLinks->At( 0 ) ).ContactStore().OpenL( *this );
-        }
-    
-    CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
     }
 
 // ---------------------------------------------------------------------------
@@ -342,6 +381,8 @@ void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdDeleteL( const TDesC8& aContact )
 //
 void CCCAppCommLauncherPbkCmd::HandleError( TInt aError )
     {
+    iPlugin.CommandState().SetNotRunning();
+    
     if( KErrNotSupported == aError && 
         (TPbk2CommandId)EPbk2ExtensionShowOnMap == iPbk2CommandId )
         {
@@ -388,6 +429,7 @@ void CCCAppCommLauncherPbkCmd::StoreUnavailable(
     MVPbkContactStore& /*aContactStore*/,
     TInt /*aReason*/)
     {
+    iPlugin.CommandState().SetNotRunning();
     }
 
 // ---------------------------------------------------------------------------
@@ -411,16 +453,6 @@ void CCCAppCommLauncherPbkCmd::VPbkSingleContactOperationComplete(
     delete iStoreContact;
     iStoreContact = aContact;
 
-    if( !iCommandHandler )
-        {
-        TRAPD(err, iCommandHandler = CPbk2CommandHandler::NewL();)
-        if( err != KErrNone )
-            {
-            HandleError( err );
-            return;
-            }
-        }
-
     TRAPD(err, iCommandHandler->HandleCommandL(
             iPbk2CommandId, *this, NULL );)
     if( err != KErrNone )
@@ -437,7 +469,7 @@ void CCCAppCommLauncherPbkCmd::VPbkSingleContactOperationFailed(
         MVPbkContactOperationBase& /*aOperation*/,
         TInt /*aError*/ )
     {
-
+    iPlugin.CommandState().SetNotRunning();
     }
 
 // --------------------------------------------------------------------------
@@ -723,7 +755,6 @@ void CCCAppCommLauncherPbkCmd::UpdateAfterCommandExecution()
         /// Reset command pointer, command has completed
         iCommand->ResetUiControl(*this);
         iCommand = NULL;
-        iCommandInProgress = EFalse;
     }
 }
 
@@ -885,12 +916,24 @@ void CCCAppCommLauncherPbkCmd::AddCommandItemL(
 }
 
 // --------------------------------------------------------------------------
+// CCCAppCommLauncherPbkCmd::PostCommandExecutionL
+// --------------------------------------------------------------------------
+//
+void CCCAppCommLauncherPbkCmd::PostCommandExecutionL( 
+        const MPbk2Command& /*aCommand*/ )
+    {
+    // Async Pbk2 command has been executed. The state must be set back to
+    // not running.
+    iPlugin.CommandState().SetNotRunning();
+    }
+
+// --------------------------------------------------------------------------
 // CCCAppCommLauncherPbkCmd::IsPbk2CommandRunning
 // --------------------------------------------------------------------------
 //
 TBool CCCAppCommLauncherPbkCmd::IsPbk2CommandRunning()
     {
-    return iCommandInProgress;
+    return iPlugin.CommandState().IsRunning();
     }
 
 // --------------------------------------------------------------------------

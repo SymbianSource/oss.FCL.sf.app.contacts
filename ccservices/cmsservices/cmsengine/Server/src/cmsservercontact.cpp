@@ -50,6 +50,9 @@
 #include "cmsserverdefines.h"
 #include "cmsdebug.h"
 
+/// Definition of non-parsed VoIP features
+const TInt KVoIPFeaturesUndefined       = KMinTInt;
+
 // ----------------------------------------------------
 // CCmsServerContact::CCmsServerContact
 // 
@@ -60,7 +63,8 @@ CCmsServerContact::CCmsServerContact( CCmsServerSession& aSession,
                                       iContactDeleted( EFalse ),
                                       iPresenceNotifySubscribed( EFalse ),                                       
                                       iSession( aSession ),
-                                      iCmsServer( aCmsServer )
+                                      iCmsServer( aCmsServer ),
+                                      iVoipFeatures( KVoIPFeaturesUndefined )
     {
     }
 
@@ -117,16 +121,18 @@ CCmsServerContact::~CCmsServerContact()
             iChatHandler->UnsubscribeBrandingForContact( iContactLink, this );            
             }        
         }
-    delete iContact;
-    iContact = NULL;
-    
-    iCmsServer.PhonebookProxyHandle().SetContact( iContact );
-    
+   
     delete iStoreUri;
     delete iChatHandler;
     delete iVoipHandler;
     delete iXSPContactHandler;
     delete iContactLink;    
+    delete iContact;
+    iContact = NULL;
+    
+
+    iCmsServer.PhonebookProxyHandle().SetContact( iContact );
+
     delete iCachedField8;
     delete iAsyncContact;
     delete iCachedField16;
@@ -637,10 +643,22 @@ void CCmsServerContact::CachedDataSend8( TInt aMessageParam )
 void CCmsServerContact::ContactReadyL( TInt aError, MVPbkStoreContact* aContact )
     {
     TPtrC uri( _L( "" ) );
+    
+    delete iContact;
+    iContact = aContact;
+    if( !iContact )
+        {        
+        iContactDeleted = ETrue;
+        }
+    else
+        {    
+        iContactDeleted = EFalse;
+        }
+    
+    iCmsServer.PhonebookProxyHandle().SetContact( iContact );
+        
     if( KErrNone == aError && aContact )
         {
-        delete iContact;
-        iContact = aContact;
         //Create contactlink array of this contact. This is needed for UI operations. 
         //Only 1 contact link appended to array.
         //Possible performance issue. Should this be created only when array is requested from client side?
@@ -648,7 +666,7 @@ void CCmsServerContact::ContactReadyL( TInt aError, MVPbkStoreContact* aContact 
         uri.Set( aContact->ParentStore().StoreProperties().Uri().UriDes() );
         ParseContactStore( uri );
         
-        iCmsServer.PhonebookProxyHandle().SetContact( iContact );      
+        iVoipFeatures = KVoIPFeaturesUndefined; // reset VoIP cache
         }
     }
 
@@ -1312,52 +1330,50 @@ TInt CCmsServerContact::ParseVoIPAvailabilityL()
     {
     PRINT( _L( "Start CCmsServerContact::ParseVoIPAvailabilityL()" ) );
     
-    TInt bitter( 0 );
-    TBool found( EFalse );
-
-    if( CmsServerUtils::IsVoIPSupportedL() )
-        {
-        bitter |= ECmsVoIPSupportBasic;
-        CheckServiceProviderSupportL( bitter );
-
-        CSPSettings* settings = CSPSettings::NewLC();
-
-        if ( FeatureManager::FeatureSupported(KFeatureIdCommonVoip) )
+    if( iVoipFeatures == KVoIPFeaturesUndefined )
+        { 
+        iVoipFeatures = 0; // no features
+        if( CmsServerUtils::IsVoIPSupportedL() )
             {
-            RIdArray idArray;
-            CleanupClosePushL(idArray);
-            User::LeaveIfError( settings->FindServiceIdsL(idArray) );
-		
-            CRCSEProfileRegistry* profileRegistry = CRCSEProfileRegistry::NewLC();
-            RPointerArray<CRCSEProfileEntry> entries;
-            CleanupStack::PushL( TCleanupItem(CleanupResetAndDestroy, &entries) );
-
-            // Check if we have atleast one SPSetting entry
-            // Any entry in this array uses SIP protocol for VoIP
-            for (TInt i = 0; !found && i < idArray.Count(); ++i)
+            iVoipFeatures = ECmsVoIPSupportBasic;
+            CheckServiceProviderSupportL( iVoipFeatures );
+    
+            CSPSettings* settings = CSPSettings::NewLC();
+    
+            if ( FeatureManager::FeatureSupported(KFeatureIdCommonVoip) )
                 {
-                profileRegistry->FindByServiceIdL( idArray[i], entries );
-                if (entries.Count() > 0)
+                RIdArray idArray;
+                CleanupClosePushL(idArray);
+                User::LeaveIfError( settings->FindServiceIdsL(idArray) );
+                CRCSEProfileRegistry& profileRegistry = iCmsServer.RCSEProfileRegistryL();
+                RPointerArray<CRCSEProfileEntry> entries;
+                CleanupStack::PushL( TCleanupItem(CleanupResetAndDestroy, &entries) );
+                
+                // Check if we have atleast one SPSetting entry
+                // Any entry in this array uses SIP protocol for VoIP
+                for (TInt i = 0; i < idArray.Count(); ++i)
                     {
-                    bitter |= ECmsVoIPSupportSip;
-                    found = ETrue;
+                    profileRegistry.FindByServiceIdL( idArray[i], entries );
+                    if (entries.Count() > 0)
+                        {
+                        iVoipFeatures |= ECmsVoIPSupportSip;
+                        break;
+                        }
                     }
+            
+                CleanupStack::PopAndDestroy( 2 ); //entries, idArray,
                 }
-		
-            CleanupStack::PopAndDestroy( 3 ); //entries, profileRegistry, idArray,
+            
+            if( settings->IsFeatureSupported( ESupportCallOutFeature ) )
+                {
+                iVoipFeatures |= ECmsVoIPSupportCallout;
+                }
+    
+            CleanupStack::PopAndDestroy(); // settings
             }
-        
-        if( settings->IsFeatureSupported( ESupportCallOutFeature ) )
-            {
-            bitter |= ECmsVoIPSupportCallout;
-            }
-
-        CleanupStack::PopAndDestroy(); // settings
-
-        
         }
     PRINT( _L( "End CCmsServerContact::ParseVoIPAvailabilityL()" ) );    
-    return bitter;
+    return iVoipFeatures;
     }
 
 // ----------------------------------------------------
@@ -1495,8 +1511,7 @@ void CCmsServerContact::VPbkSingleContactOperationComplete(
 void CCmsServerContact::VPbkSingleContactOperationFailed(
         MVPbkContactOperationBase& /*aOperation*/,
         TInt aError )
-    {
-    TRAP_IGNORE ( ContactReadyL( aError, NULL ) );
+    {  
     iCmsServer.CmsSingleContactOperationComplete( aError );
     }
 

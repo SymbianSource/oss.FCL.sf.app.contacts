@@ -27,6 +27,61 @@
 class CCCAppCommLauncherContactHandler;
 class CCCAppCommLauncherMenuHandler;
 class CCAContactorService;
+class TCSParameter;
+
+/**
+ * A helper class to keep up the command running state correct.
+ * Only one command should be able to run at a time.
+ */
+class TCCAppCommandState
+    {
+public:
+    /**
+     * Constructor
+     */
+    TCCAppCommandState();
+    /**
+     * Returns ETrue if a command is running.
+     * @return ETrue if a command is running.
+     */
+    inline TBool IsRunning() const { return iState; }
+    /**
+     * Change to Running state.
+     */
+    void SetRunning();
+    /**
+     * Change to Not Running state.
+     */
+    void SetNotRunning();
+    /**
+     * Sets state to Running and pushes a cleanup item to the CleanupStack.
+     * The state will be changed to 'Not Running' in case of leave.
+     */
+    void SetRunningAndPushCleanupL();
+    /**
+     * Change to Not Running state and pops up the cleanup item previously
+     * pushed by PushCleanupL or SetRunningAndPushCleanupL.
+     */
+    void SetNotRunningAndPopCleanup();
+    /**
+     * Pushes a cleanup item to the CleanupStack. 
+     * The state will be changed to 'Not Running' in case of leave.
+     */
+    void PushCleanupL();
+    /**
+     * Pops up the cleanup item previously pushed by 
+     * PushCleanupL or SetRunningAndPushCleanupL.
+     */
+    void PopCleanup();
+private:
+    TCCAppCommandState& operator=(const TCCAppCommandState&);
+    TCCAppCommandState(const TCCAppCommandState&);
+    static void CleanupOperation( TAny* aCommanState );
+private:
+    /// Own: ETrue if command is running, false otherwise.
+    TBool iState;
+    };
+   
 
 /**
  *  Class implementing CCCAppViewPluginBase interface. This is
@@ -47,7 +102,7 @@ class CCCAppCommLauncherPlugin :
 #ifdef __COMMLAUNCHERPLUGINUNITTESTMODE
     friend class T_CCCAppCommLauncherPlugin;
 #endif// __COMMLAUNCHERPLUGINUNITTESTMODE
-
+    
 public:
 
     /**
@@ -213,9 +268,17 @@ public:
     }
 
     /**
-     * Return pointer to contactor service.
+     * Returns a const pointer to contactor service.
+     * Use ExecuteServiceL to run contactor service.
      */
-    CCAContactorService* ContactorService();
+    const CCAContactorService* ContactorService();
+    
+    /**
+     * Executes the service using CCAContactorService. This must
+     * be used instead of direct call to CCAContactorService to keep
+     * the command running/not running state correct.
+     */
+    void ExecuteServiceL(const CCAContactorService::TCSParameter& aParameter);
     
     /**
      *  Start timer.
@@ -276,6 +339,13 @@ public:
     void UpdateMSKinCbaL( TBool aCommMethodsAvailable );
     
     /**
+     * Returns the command running state instance. Command state must be
+     * to running before executing the command and to not running after
+     * the command has completed.
+     */
+    inline TCCAppCommandState& CommandState() {return iCommandState;}
+    
+    /**
      * Notify the timeout after sent an aiw service request.
      * 
      */
@@ -333,6 +403,11 @@ private:// data
      * Own.
      */
     TBool iIsTimerStart;
+    
+    /**
+     * 
+     */
+    TCCAppCommandState iCommandState;
     };
 
 #endif // C_CCAPPCOMMLAUNCHERPLUGIN_H

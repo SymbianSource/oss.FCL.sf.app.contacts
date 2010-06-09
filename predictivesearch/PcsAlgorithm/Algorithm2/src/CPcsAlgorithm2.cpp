@@ -383,8 +383,8 @@ void CPcsAlgorithm2::SearchInputL(CPsQuery& aQuery, TDesC& aData,
 // Search function for input string, result also as string
 // ----------------------------------------------------------------------------
 void CPcsAlgorithm2::SearchMatchStringL( CPsQuery& /*aSearchQuery*/,
-                            TDesC& /*aSearchData*/,
-                            TDes& /*aMatch*/ )
+                                         TDesC& /*aSearchData*/,
+                                         TDes& /*aMatch*/ )
     {
     //NOT IMPLEMENTED YET
     }
@@ -1237,6 +1237,17 @@ void CPcsAlgorithm2::ChangeSortOrderL(TDesC& aURI, RArray<TInt>& aSortOrder)
         }
 
     PRINT ( _L("End CPcsAlgorithm2::ChangeSortOrderL.") );
+    }
+
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm2::GetAdaptiveGridL
+// 
+// ----------------------------------------------------------------------------
+void CPcsAlgorithm2::GetAdaptiveGridL( const MDesCArray& /*aURIs*/,
+                                       const TBool /*aCompanyName*/,
+                                       TDes& /*aAdaptiveGrid*/ )
+    {
+    //NOT IMPLEMENTED YET
     }
 
 // ---------------------------------------------------------------------------------

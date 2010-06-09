@@ -43,13 +43,11 @@ CTestSuiteInputData::CTestSuiteInputData()
 {
 }
 
-
 // ----------------------------------------------------------------------------
 // Destructor
 // ----------------------------------------------------------------------------
 CTestSuiteInputData::~CTestSuiteInputData()
 {    	
-    	
     if(iQueryBuf)
     {
     	delete iQueryBuf;
@@ -61,12 +59,9 @@ CTestSuiteInputData::~CTestSuiteInputData()
     	iKeyboardModeBuf = NULL;
     }
 
-	
-	iCacheUris.ResetAndDestroy();
-	
+    iCacheUris.ResetAndDestroy();
 
 	iDisplayFields.Close();
-
 }
 
 // ----------------------------------------------------------------------------
@@ -87,12 +82,12 @@ TInt CTestSuiteInputData::Id()
 
 void CTestSuiteInputData::Data(RPointerArray<TDesC> & aDataArray)
 {
-	for(TInt i = 0 ; i < iDataArray.Count(); i++)
+	for(TInt i = 0; i < iDataArray.Count(); i++)
 	{
 		aDataArray.Append(iDataArray[i]->AllocL());
 	}
-
 }
+
 // ----------------------------------------------------------------------------
 // Sets the keyboard mode
 // ----------------------------------------------------------------------------
@@ -128,7 +123,6 @@ void CTestSuiteInputData::SetQueryL(const TDesC& aQuery)
 	iQueryBuf = aQuery.AllocL();
 }
 
-
 // ----------------------------------------------------------------------------
 // Return the cache uri at given index 
 // ----------------------------------------------------------------------------
@@ -145,13 +139,12 @@ TDesC& CTestSuiteInputData::CacheUriAt(TInt aIndex) const
     return *(iCacheUris[aIndex]);
 }
 
-
 // ----------------------------------------------------------------------------
 // Return the cache uri 
 // ----------------------------------------------------------------------------
 void CTestSuiteInputData::CacheUris(RPointerArray<TDesC> & aUriArray)
 {
-	for(TInt i = 0 ; i < iCacheUris.Count(); i++)
+	for(TInt i = 0; i < iCacheUris.Count(); i++)
 	{
 		aUriArray.Append(iCacheUris[i]->AllocL());
 	}
@@ -161,7 +154,8 @@ void CTestSuiteInputData::CacheUris(RPointerArray<TDesC> & aUriArray)
 // Sets the cache uris
 // ----------------------------------------------------------------------------
 void CTestSuiteInputData::ApendCacheUrisL(RPointerArray<TDesC>& aCacheUriArray)
-{   iCacheUris.ResetAndDestroy();
+{
+    iCacheUris.ResetAndDestroy();
 	for(TInt i =0; i <aCacheUriArray.Count(); i++ ) 
     	iCacheUris.Append(aCacheUriArray[i]);
 }
@@ -193,7 +187,6 @@ void CTestSuiteInputData::GroupIds(RArray<TInt>& aGroupId)
 // ----------------------------------------------------------------------------
 void CTestSuiteInputData::ConstructL(CStifItemParser& /*aItem*/)
 {
-
 }
 
 // -----------------------------------------------------------------------------
@@ -225,7 +218,7 @@ void CTestSuiteInputData:: ParseInputL(CStifItemParser& aItem)
 			
 			
 			// Check the type of tag, then do the corresponding parsing
-		   if(optionPtr.Compare(KSearchQueryTag) == 0)
+		    if(optionPtr.Compare(KSearchQueryTag) == 0)
 		    {
 		    	// Search query
 		    	ParseInputForSearchQueryL(dataPtr);
@@ -268,32 +261,27 @@ void CTestSuiteInputData:: ParseInputL(CStifItemParser& aItem)
 		{
 			// Wrong Input..
 			User::Leave(KErrGeneral);
-		
 		}
-		
 	}
 }
-
 
 // -----------------------------------------------------------------------------
 // This function parses input for number id
 // -----------------------------------------------------------------------------
 void CTestSuiteInputData::ParseInputForIdL(TDesC& aInput)
 {
-
-		TInt fieldId = 0;
-		TLex num(aInput);
-		
-		TInt err = num.Val(fieldId);
-		if(err == KErrNone)
-		{
-			iId = fieldId;
-		}
-		else
-		{
-			User::Leave(KErrArgument);
-		}
-
+    TInt fieldId = 0;
+    TLex num(aInput);
+    
+    TInt err = num.Val(fieldId);
+    if(err == KErrNone)
+    {
+        iId = fieldId;
+    }
+    else
+    {
+        User::Leave(KErrArgument);
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -330,9 +318,8 @@ void CTestSuiteInputData::ParseInputForData(TDesC& aInput)
 	GetCharacterSeparatedDataL( aInput,separator, data);
 	for(TInt i = 0; i< data.Count(); i++)
 	{
-	        HBufC *temp =  data[i]->AllocL();
-			iDataArray.Append(data[i]);
-	
+        HBufC *temp =  data[i]->AllocL();
+        iDataArray.Append(data[i]);
 	}
 }
 
@@ -348,12 +335,10 @@ void CTestSuiteInputData::ParseInputForDataStoresUriL(TDesC& aInput)
 	GetCharacterSeparatedDataL( aInput,separator, Uris);
 	for(TInt i = 0; i< Uris.Count(); i++)
 	{
-	        HBufC *temp =  Uris[i]->AllocL();
-			iCacheUris.Append(Uris[i]);
-	
+        HBufC *temp =  Uris[i]->AllocL();
+        iCacheUris.Append(Uris[i]);
 	}
 }
-
 
 // -----------------------------------------------------------------------------
 // This function parses the input for display fields
@@ -369,15 +354,15 @@ void CTestSuiteInputData::ParseInputForDisplayFieldsL(TDesC& aInput)
 		TInt fieldId = 0;
 		TLex num(*(dispFieldsBuf[i]));
 		
-		    TInt err = num.Val(fieldId);  // parse the string to extract integer value
-			if(err != KErrNone)
-			{
-				User::Leave(KErrGeneral);
-			}
-			else
-			{
-			    iDisplayFields.Append(fieldId);
-			}
+        TInt err = num.Val(fieldId);  // parse the string to extract integer value
+        if(err != KErrNone)
+        {
+            User::Leave(KErrGeneral);
+        }
+        else
+        {
+            iDisplayFields.Append(fieldId);
+        }
 	}
 }
 
@@ -395,15 +380,15 @@ void CTestSuiteInputData::ParseInputForGroupIdsL(TDesC& aInput)
 		TInt groupId = 0;
 		TLex num(*(grpIdsBuf[i]));
 		
-		    TInt err = num.Val(groupId);  // parse the string to extract integer value
-			if(err != KErrNone)
-			{
-				User::Leave(KErrGeneral);
-			}
-			else
-			{
-			    iGroupIds.Append(groupId);
-			}
+        TInt err = num.Val(groupId);  // parse the string to extract integer value
+        if(err != KErrNone)
+        {
+            User::Leave(KErrGeneral);
+        }
+        else
+        {
+            iGroupIds.Append(groupId);
+        }
 	}
 }
 
@@ -412,29 +397,24 @@ void CTestSuiteInputData::ParseInputForGroupIdsL(TDesC& aInput)
 // -----------------------------------------------------------------------------
 void CTestSuiteInputData::GetCharacterSeparatedDataL(TDesC& aInput,TChar aSeparator, RPointerArray<TDesC> &aSeparatedData)
 {
-	
 	TInt SeparatorPos = -1 ;
     for (TInt j = 0 ; j< aInput.Length();)
 	{
-			
-	        TInt Startpos = SeparatorPos + 1;
+        TInt Startpos = SeparatorPos + 1;
 		// Get the data for each contact
-			while((aInput[j] != aSeparator) && (j < ( aInput.Length()-1) ) )
-			     j++;
-			if(j == (aInput.Length() - 1))
-			 j++; 
-			      
-			TPtrC16 dataPtr = aInput.Mid(Startpos ,j - Startpos);	
-			
-			
-			// Add data to the output
-			HBufC* tempData = dataPtr.AllocL();
-			aSeparatedData.Append(tempData);
-			SeparatorPos = j ;  
-			j++;   
-			
-		}
+        while((aInput[j] != aSeparator) && (j < ( aInput.Length()-1) ) )
+            j++;
+		if(j == (aInput.Length() - 1))
+			j++; 
 
+        TPtrC16 dataPtr = aInput.Mid(Startpos ,j - Startpos);	
+
+        // Add data to the output
+        HBufC* tempData = dataPtr.AllocL();
+        aSeparatedData.Append(tempData);
+        SeparatorPos = j ;  
+        j++;   
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -442,7 +422,6 @@ void CTestSuiteInputData::GetCharacterSeparatedDataL(TDesC& aInput,TChar aSepara
 // -----------------------------------------------------------------------------
 void CTestSuiteInputData::ParseInputForSearchQueryL(TDesC& aInput)
 {
-
 	RPointerArray<TDesC> queryData;
 	TChar separator = ',';
 	GetCharacterSeparatedDataL( aInput,separator, queryData);
@@ -459,11 +438,7 @@ void CTestSuiteInputData::ParseInputForSearchQueryL(TDesC& aInput)
     	queryData.ResetAndDestroy();
      	User::Leave(KErrArgument);
     }
-	
-
 }
-
-
 
 // -----------------------------------------------------------------------------
 // This function creates the search query from the input buffer
@@ -518,14 +493,12 @@ void CTestSuiteInputData::CreateSearchQueryL(CPsQuery& aPsQuery,TDesC& aQueryBuf
 	}
 }
 
-
 // -----------------------------------------------------------------------------
 // Perform the search settings
 // -----------------------------------------------------------------------------
 
 void CTestSuiteInputData::PerformSearchSettingsL(CPsSettings& aSettings)
 {
-
 	RPointerArray<TDesC> databases; // list of databases
 	RArray<TInt> displayFields;     // list of display fields
 	TInt maxResults = 100;
@@ -535,7 +508,6 @@ void CTestSuiteInputData::PerformSearchSettingsL(CPsSettings& aSettings)
     {
 		for(TInt i =0; i<iDisplayFields.Count();i++)
 		    displayFields.Append(iDisplayFields[i]);
-    
     }
     else
     {
@@ -543,69 +515,65 @@ void CTestSuiteInputData::PerformSearchSettingsL(CPsSettings& aSettings)
 	    displayFields.Append(4); // Lastname
 	    displayFields.Append(27); // Company name
     }
-    
      
     // Set the databases to be searched 
 	for(TInt i =0; i <iCacheUris.Count(); i++ )
 	{
 		databases.Append(iCacheUris[i]->AllocL());
-	
 	}
 	
 	// Perform the settings
 	aSettings.SetSearchUrisL(databases);
     aSettings.SetDisplayFieldsL(displayFields);
     aSettings.SetMaxResults(maxResults);
-	
 
 	// cleanup
 	displayFields.Close();
 	databases.Reset(); 
 	databases.Close(); 
-
-
 }
 
 TInt CTestSuiteInputData::CompareByDataL ( const CPsClientData& aObject1, const CPsClientData& aObject2 )
 {
 	TBuf<KBufferMaxLen> data1;
-     TBuf<255> data2;
+    TBuf<255> data2;
      
-     _LIT(KSpace, " ");
+    _LIT(KSpace, " ");
      
-     data1 = KNullDesC;
-     for ( int i = 0; i < aObject1.DataElementCount(); i++ )
-     {
-     	 if ( aObject1.Data(i) )
-	     {
-	     	data1 += aObject1.Data(i)->Des();
-	     	data1 += KSpace;
-	     }	     
-     }
-     
-     // Trim the unnecessary white spaces before we compare
-     data1.TrimAll();
-     
-     data2 = KNullDesC;
-     for ( int i = 0; i < aObject2.DataElementCount(); i++ )
-     {
-     	 if ( aObject2.Data(i) )
-	     {
-	     	data2 += aObject2.Data(i)->Des();
-	     	data2 += KSpace;
-	     }	     
-     }   
-     
-     // Trim the unnecessary white spaces before we compare 
-     data2.TrimAll();   
-     
-	 // Get the standard method
-	 TCollationMethod meth = *Mem::CollationMethodByIndex( 0 );
-  	 meth.iFlags |= TCollationMethod::EIgnoreNone;
-  	 meth.iFlags |= TCollationMethod::EFoldCase;
-
-	 // Magic: Collation level 3 is used
-	 TInt comparison(data1.CompareC( data2, 3, &meth ));
-	 return comparison;
+    data1 = KNullDesC;
+    for ( int i = 0; i < aObject1.DataElementCount(); i++ )
+    {
+        if ( aObject1.Data(i) )
+        {
+            data1 += aObject1.Data(i)->Des();
+            data1 += KSpace;
+        }	     
+    }
+    
+    // Trim the unnecessary white spaces before we compare
+    data1.TrimAll();
+    
+    data2 = KNullDesC;
+    for ( int i = 0; i < aObject2.DataElementCount(); i++ )
+    {
+        if ( aObject2.Data(i) )
+        {
+            data2 += aObject2.Data(i)->Des();
+            data2 += KSpace;
+        }	     
+    }   
+    
+    // Trim the unnecessary white spaces before we compare 
+    data2.TrimAll();   
+    
+    // Get the standard method
+    TCollationMethod meth = *Mem::CollationMethodByIndex( 0 );
+    meth.iFlags |= TCollationMethod::EIgnoreNone;
+    meth.iFlags |= TCollationMethod::EFoldCase;
+    
+    // Magic: Collation level 3 is used
+    TInt comparison(data1.CompareC( data2, 3, &meth ));
+    return comparison;
 }
+
 // End of file

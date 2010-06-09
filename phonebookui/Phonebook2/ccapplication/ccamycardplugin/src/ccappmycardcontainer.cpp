@@ -325,6 +325,53 @@ void CCCAppMyCardContainer::SizeChanged()
     // Background skin
     iBackground->SetRect( rect );
 
+    LayoutControls();
+    
+	delete iImageSelectionPopup;
+	iImageSelectionPopup = NULL;
+
+	if( !iImageLoader )
+	    {
+        if( !iModel.IsEmpty() )
+            {
+            TPtrC8 data( iModel.Data( CSpbContactDataModel::EDataImageContent ) );
+            TInt err = KErrNotFound;
+            if( data.Length() )
+                {
+                // thumbnail image in model -> load it
+                TPtrC file( iModel.Text( CSpbContactDataModel::ETextImageFileName ) );
+                TRAP( err, 
+                    iImageLoader = CCCAppMyCardImageLoader::NewL( *this );
+                    iImageLoader->LoadImageL( data, file, iHeaderCtrl->ThumbnailSize() );
+                    );
+                }
+            
+            if( err )
+                {
+                // no thumbnail image available -> load default
+                ThumbnailLoadError( KErrNotFound ); 
+                }
+            }
+	    }
+	else
+	    {
+        // No need to call ResizeImageL() which would invoke the image decoder re-stating
+        // to show the previous user-assigned image if MyCard image is not set. 
+        if ( iMyCardImageSet )
+            {
+            TRAP_IGNORE( iImageLoader->ResizeImageL(iHeaderCtrl->ThumbnailSize()));
+            }
+	    }
+	
+    DrawDeferred();
+    }
+
+// ---------------------------------------------------------------------------
+// CCCAppMyCardContainer::LayoutControls
+// ---------------------------------------------------------------------------
+//
+void CCCAppMyCardContainer::LayoutControls()
+    {
     /**
      * Option0 (w button, prt)
      * Option2 (w/o button, prt)
@@ -376,45 +423,8 @@ void CCCAppMyCardContainer::SizeChanged()
     listPaneLayoutRect.LayoutRect( Rect(), listPaneLayout.LayoutLine() );
     TRect listPaneRect( listPaneLayoutRect.Rect() );
     iListBox->SetRect( listPaneRect );
-    
-	delete iImageSelectionPopup;
-	iImageSelectionPopup = NULL;
-
-	if( !iImageLoader )
-	    {
-        if( !iModel.IsEmpty() )
-            {
-            TPtrC8 data( iModel.Data( CSpbContactDataModel::EDataImageContent ) );
-            TInt err = KErrNotFound;
-            if( data.Length() )
-                {
-                // thumbnail image in model -> load it
-                TPtrC file( iModel.Text( CSpbContactDataModel::ETextImageFileName ) );
-                TRAP( err, 
-                    iImageLoader = CCCAppMyCardImageLoader::NewL( *this );
-                    iImageLoader->LoadImageL( data, file, iHeaderCtrl->ThumbnailSize() );
-                    );
-                }
-            
-            if( err )
-                {
-                // no thumbnail image available -> load default
-                ThumbnailLoadError( KErrNotFound ); 
-                }
-            }
-	    }
-	else
-	    {
-        // No need to call ResizeImageL() which would invoke the image decoder re-stating
-        // to show the previous user-assigned image if MyCard image is not set. 
-        if ( iMyCardImageSet )
-            {
-            TRAP_IGNORE( iImageLoader->ResizeImageL(iHeaderCtrl->ThumbnailSize()));
-            }
-	    }
-	
-    DrawDeferred();
     }
+
 
 // ----------------------------------------------------------------------------
 // CCCAppMyCardContainer::CheckExtensionFactoryL()
@@ -434,8 +444,6 @@ TInt CCCAppMyCardContainer::CheckExtensionFactoryL(TAny* aPtr)
 void CCCAppMyCardContainer::DoCheckExtensionFactoryL()
     {
     CCCAExtensionFactory* extension = iFactoryExtensionNotifier->ExtensionFactory();
-    // if extension is not null and view launcher supports mycard view then 
-    // show statuscontrol
     TBool visible = EFalse;
     if( extension )
         {
@@ -443,8 +451,8 @@ void CCCAppMyCardContainer::DoCheckExtensionFactoryL()
             {
             iViewLauncher = extension->CreateViewLauncherL();
             }
-        if( iViewLauncher && 
-                iViewLauncher->IsViewSupported( MCCAViewLauncher::EMyCardView ) )
+        if ( iControlLink  // my card link has been set
+                && iViewLauncher->IsViewSupported( MCCAViewLauncher::EMyCardView ) )
             {
             visible = ETrue;
             }
@@ -459,6 +467,8 @@ void CCCAppMyCardContainer::DoCheckExtensionFactoryL()
     if( statusControl )
         {
         statusControl->MakeVisible( visible );
+        LayoutControls();
+        DrawDeferred();
         }
     }
 
@@ -531,9 +541,32 @@ void CCCAppMyCardContainer::MyCardEventL( MMyCardObserver::TEvent aEvent )
     if( aEvent == MMyCardObserver::EEventContactChanged ||
         ( aEvent == MMyCardObserver::EEventContactLoaded && iModel.IsEmpty() ) )
         {   
+        TInt itemCount_BeforeChange = iModel.ListBoxModel().MdcaCount();
+        TInt focusItem_BeforeChange = iListBox->CurrentItemIndex();
+    
         CCCAppMyCard& mycard = iPlugin.MyCard();
-
         iModel.SetDataL( mycard.PresentationContactL(), iIconArray );
+        
+        TInt itemCount_AfterChange = iModel.ListBoxModel().MdcaCount();
+        TInt focusItem_AfterChange = iListBox->CurrentItemIndex();
+        
+        if( itemCount_BeforeChange > itemCount_AfterChange && 
+                focusItem_AfterChange == KErrNotFound )
+            {
+            if( focusItem_BeforeChange >= itemCount_AfterChange )
+            	{
+                iListBox->SetCurrentItemIndex( itemCount_AfterChange-1 );
+            	}
+            else if( focusItem_BeforeChange >= 0 )
+            	{
+                iListBox->SetCurrentItemIndex( focusItem_BeforeChange );
+            	}
+            else
+            	{
+                iListBox->SetCurrentItemIndex( 0 );
+            	}
+            }
+        
         if( iListBox )
             {
             iListBox->HandleItemAdditionL();
@@ -552,15 +585,25 @@ void CCCAppMyCardContainer::MyCardEventL( MMyCardObserver::TEvent aEvent )
                 iHeaderCtrl->ThumbnailSize() );
         }
 
+    CCCAppStatusControl* statusControl = iHeaderCtrl->StatusControl();
+
     if( iPlugin.MyCard().IsContactLinkReady() && !iControlLink )
 		{
-        CCCAppStatusControl* statusControl = iHeaderCtrl->StatusControl();
-		if(statusControl)
+		if( statusControl )
 		    {
             statusControl->SetContactLinkL( iPlugin.MyCard().ContactLink() );
+            iControlLink = ETrue;
 		    }
-		iControlLink = ETrue;
 		}
+
+    if ( statusControl && !statusControl->IsVisible() &&
+            iControlLink && iViewLauncher &&
+            iViewLauncher->IsViewSupported( MCCAViewLauncher::EMyCardView ) )
+        {
+        statusControl->MakeVisible( ETrue );
+        LayoutControls();
+        DrawDeferred();
+        }
     }
 
 

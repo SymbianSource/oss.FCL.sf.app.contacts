@@ -529,4 +529,5 @@ TInt CPsTestQueryHandler::CompareByData ( const CPsClientData& aObject1, const C
 	 TInt comparison(data1.CompareC( data2, 3, &meth ));
 	 return comparison;
 }
+
 // End of file

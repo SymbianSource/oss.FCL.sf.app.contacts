@@ -95,8 +95,8 @@ public:
     * Performs search on a input string, and return result also as a string 
     */
     void  SearchMatchStringL( CPsQuery& aSearchQuery,
-                                TDesC& aSearchData,
-                                TDes& aMatch );     
+                              TDesC& aSearchData,
+                              TDes& aMatch );     
     
     /**
      * Returns ETrue if this language is supported
@@ -118,6 +118,12 @@ public:
      */
     void ChangeSortOrderL(TDesC& aURI, RArray<TInt>& aSortOrder);
 
+    /**
+     * Get the Adaptive Grid for one or more URIs
+     */
+    void GetAdaptiveGridL( const MDesCArray& aURIs,
+                           const TBool aCompanyName,
+                           TDes& aAdaptiveGrid );
 
     // --------------------------------------------------------------------
 

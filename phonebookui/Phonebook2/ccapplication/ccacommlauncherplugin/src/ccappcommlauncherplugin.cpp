@@ -40,8 +40,107 @@ const TInt KSupportedMethodsArray[] = {
 const TInt KSupportedMethodsArrayLength = sizeof( KSupportedMethodsArray ) / sizeof( TInt );
 const TInt KDelayTime = 30000000; // 30s
 
+/**
+ * Panic codes for the class TCCAppCommandState
+ */
+enum TCCAppCommandStatePanicCode
+    {
+    ETCCAppCommandState_SetRunning_PreCond = 1
+    };
+
+// ---------------------------------------------------------------------------
+// Panic function for the class TCCAppCommandState
+// ---------------------------------------------------------------------------
+//
+void Panic(TCCAppCommandStatePanicCode aPanicCode)
+    {
+    _LIT( KPanicText, "TCCAppCommandState" );
+    User::Panic( KPanicText, aPanicCode );
+    }
+
 // ======== MEMBER FUNCTIONS ========
 
+// ---------------------------------------------------------------------------
+// TCCAppCommandState::TCCAppCommandState
+// ---------------------------------------------------------------------------
+//
+TCCAppCommandState::TCCAppCommandState()
+    : iState( EFalse )
+    {
+    }
+    
+// ---------------------------------------------------------------------------
+// TCCAppCommandState::SetRunning
+// ---------------------------------------------------------------------------
+//
+void TCCAppCommandState::SetRunning()
+    {
+    // Catch all the implementation errors in release build too.
+    __ASSERT_ALWAYS( !IsRunning(), 
+            Panic( ETCCAppCommandState_SetRunning_PreCond ) );
+    iState = ETrue;
+    }
+
+// ---------------------------------------------------------------------------
+// TCCAppCommandState::SetNotRunning
+// ---------------------------------------------------------------------------
+//
+void TCCAppCommandState::SetNotRunning()
+    {
+    iState = EFalse;
+    }
+
+// ---------------------------------------------------------------------------
+// TCCAppCommandState::SetRunningAndPushCleanupL
+// ---------------------------------------------------------------------------
+//
+void TCCAppCommandState::SetRunningAndPushCleanupL()
+    {
+    SetRunning();
+    PushCleanupL();
+    }
+
+// ---------------------------------------------------------------------------
+// TCCAppCommandState::SetNotRunningAndPopCleanup
+// ---------------------------------------------------------------------------
+//
+void TCCAppCommandState::SetNotRunningAndPopCleanup()
+    {
+    SetNotRunning();
+    PopCleanup();
+    }
+
+// ---------------------------------------------------------------------------
+// TCCAppCommandState::PushCleanupL
+// ---------------------------------------------------------------------------
+//
+void TCCAppCommandState::PushCleanupL()
+    {
+    CleanupStack::PushL( TCleanupItem( TCCAppCommandState::CleanupOperation, 
+            this) );
+    }
+
+// ---------------------------------------------------------------------------
+// TCCAppCommandState::PopCleanup
+// ---------------------------------------------------------------------------
+//
+void TCCAppCommandState::PopCleanup()
+    {
+    CleanupStack::Pop();
+    }
+
+// ---------------------------------------------------------------------------
+// TCCAppCommandState::CleanupOperation
+// ---------------------------------------------------------------------------
+//
+void TCCAppCommandState::CleanupOperation( TAny* aCommanState )
+    {
+    TCCAppCommandState* state = static_cast<TCCAppCommandState*>( 
+            aCommanState );
+    state->SetNotRunning();
+    }
+    
+        
 // ---------------------------------------------------------------------------
 // CCCAppCommLauncherPlugin::NewL
 // ---------------------------------------------------------------------------
@@ -379,9 +478,24 @@ void CCCAppCommLauncherPlugin::CloseCCApp()
 // CCCAppCommLauncherContainer::ContactorService
 // ---------------------------------------------------------------------------
 //
-CCAContactorService* CCCAppCommLauncherPlugin::ContactorService()
+const CCAContactorService* CCCAppCommLauncherPlugin::ContactorService()
     {
     return iContactorService;
+    }
+
+// ---------------------------------------------------------------------------
+// CCCAppCommLauncherPlugin::ExecuteServiceL
+// ---------------------------------------------------------------------------
+//
+void CCCAppCommLauncherPlugin::ExecuteServiceL(
+        const CCAContactorService::TCSParameter& aParameter)
+    {
+    if (iContactorService)
+        {
+        iCommandState.SetRunningAndPushCleanupL();
+        iContactorService->ExecuteServiceL( aParameter );
+        iCommandState.SetNotRunningAndPopCleanup();
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -442,16 +556,20 @@ TBool CCCAppCommLauncherPlugin::IsContactL()
 //
 void CCCAppCommLauncherPlugin::HandleCommandL( TInt aCommand )
     {
-    // Make sure the aiw request timer is canceled before executing another command.
-    CancelTimer();
+    if ( !iCommandState.IsRunning() )
+        {
+        // Make sure the aiw request timer is canceled before executing 
+        // another command.
+        CancelTimer();
+        
+        // Forward the command handling 1st to base-class.
+        // The "Exit"- and "Back"-commands are handled there.
+        CCCAppViewPluginAknView::HandleCommandL( aCommand );
     
-    // Forward the command handling 1st to base-class.
-    // The "Exit"- and "Back"-commands are handled there.
-    CCCAppViewPluginAknView::HandleCommandL( aCommand );
-
-    // Rest to menuhandler
-    EnsureMenuHandlerCreatedL();
-    iMenuHandler->HandleCommandL( aCommand );
+        // Rest to menuhandler
+        EnsureMenuHandlerCreatedL();
+        iMenuHandler->HandleCommandL( aCommand );
+        }
     }
 
 // ---------------------------------------------------------------------------

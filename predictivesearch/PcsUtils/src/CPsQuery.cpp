@@ -94,7 +94,7 @@ EXPORT_C void CPsQuery::AppendL(const CPsQueryItem& aQueryItem)
 // ----------------------------------------------------------------------------
 EXPORT_C CPsQueryItem& CPsQuery:: GetItemAtL(TInt aIndex)
 {    
-	if ( aIndex < 0 && aIndex >= iSearchQuery.Count()) 
+	if ( aIndex < 0 || aIndex >= iSearchQuery.Count()) 
 	{
 	    User::Leave(KErrArgument);		
 	}

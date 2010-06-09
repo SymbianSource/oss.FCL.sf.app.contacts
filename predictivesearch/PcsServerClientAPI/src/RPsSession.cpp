@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:  This is the PS server client side interface implementation. 
+* Description:  This is the PS server client side interface implementation.
 *
 */
 
@@ -28,7 +28,7 @@
 TInt StartServer()
 {
     PRINT ( _L("Enter RPsSession->StartServer") );
-    
+
 	RProcess server;
     server.Create ( KPcsServerExeName, KNullDesC );
 
@@ -41,13 +41,13 @@ TInt StartServer()
 		server.Close();
 		return KErrGeneral;
     }
-    else 
+    else
     {
 		server.Resume();
     }
 
     User::WaitForRequest(status);
- 
+
     if ( status != KErrNone )
     {
     	server.Close();
@@ -64,23 +64,23 @@ TInt StartServer()
 // RPsSession::RPsSession
 // Constructor
 // ----------------------------------------------------------------------------
-RPsSession::RPsSession() : RSessionBase(), 
+RPsSession::RPsSession() : RSessionBase(),
                            iSearchQueryBufferPtr (0, 0),
                            iResultsBufferPtr (0, 0)
 {
-    PRINT ( _L("Enter RPsSession::RPsSession") );          
+    PRINT ( _L("Enter RPsSession::RPsSession") );
     PRINT ( _L("End RPsSession::RPsSession") );
 }
 
 
 // ----------------------------------------------------------------------------
 // RPsSession::Connects to the search server
-// Returns the version number 
+// Returns the version number
 // ----------------------------------------------------------------------------
 TInt RPsSession::Connect()
 {
     PRINT ( _L("Enter RPsSession::Connect") );
-    
+
     TInt err = CreateSession( KPcsServerName, Version() );
     if ( err != KErrNone )
         {
@@ -107,13 +107,13 @@ TInt RPsSession::Connect()
         }
 
     PRINT ( _L("End RPsSession::Connect") );
-    
+
     return err;
 }
 
 // ----------------------------------------------------------------------------
 // RPsSession::Version
-// Returns the version number 
+// Returns the version number
 // ----------------------------------------------------------------------------
 TVersion RPsSession::Version() const
 {
@@ -129,16 +129,16 @@ TVersion RPsSession::Version() const
 void RPsSession::SetSearchSettingsL(const TDes8& aSettings)
 {
     PRINT ( _L("Enter RPsSession::SetSearchSettingsL") );
-    
+
     TIpcArgs args(&aSettings);
 
     // Send the search settings to the server. sync call
     TRequestStatus status;
-	SendReceive(ESearchSettings, 
+	SendReceive(ESearchSettings,
 	            args,
 	            status);
-    User::WaitForRequest(status);	            
-    
+    User::WaitForRequest(status);
+
     PRINT ( _L("End RPsSession::SetSearchSettingsL") );
 }
 
@@ -154,18 +154,18 @@ void RPsSession::SearchL(const TDes8& aSearchQuery,
 
     // Hold the pointer to buffers till the async request is complete
     iSearchQueryBufferPtr.Set(aSearchQuery);
-    iResultsBufferPtr.Set(aResultsBuffer);     
+    iResultsBufferPtr.Set(aResultsBuffer);
 
     TIpcArgs args(&iSearchQueryBufferPtr, &iResultsBufferPtr);
 
     aStatus = KRequestPending;
 
     // Initiate the search request
-	SendReceive(ESearch, 
-	            args, 
+	SendReceive(ESearch,
+	            args,
 	            aStatus );
-	            
-    PRINT ( _L("End RPsSession::SearchL") );	            
+
+    PRINT ( _L("End RPsSession::SearchL") );
 }
 
 // ----------------------------------------------------------------------------
@@ -175,16 +175,16 @@ void RPsSession::SearchL(const TDes8& aSearchQuery,
 void RPsSession::CancelSearch()
 {
     PRINT ( _L("Enter RPsSession::CancelSearch") );
-    
+
     TRequestStatus status;
-    
-	SendReceive(ECancelSearch, 
-	            TIpcArgs(), 
+
+	SendReceive(ECancelSearch,
+	            TIpcArgs(),
 	            status );
-	            
-    User::WaitForRequest(status);	  
-    
-    PRINT ( _L("End RPsSession::CancelSearch") );          
+
+    User::WaitForRequest(status);
+
+    PRINT ( _L("End RPsSession::CancelSearch") );
 }
 
 // ----------------------------------------------------------------------------
@@ -195,20 +195,20 @@ void RPsSession::SearchL(const TDes8& aSearchQuery,
                          const TDes8& aSearchData,
                          TPtr8 aResultsBuffer)
 {
-    PRINT ( _L("Enter RPsSession::SearchL") );  
+    PRINT ( _L("Enter RPsSession::SearchL") );
 
     TIpcArgs args(&aSearchQuery, &aSearchData, &aResultsBuffer);
 
     TRequestStatus status;
 
     // Initiate the search request
-	SendReceive(ESearchInput, 
-	            args, 
+	SendReceive(ESearchInput,
+	            args,
 	            status );
-	            
-    User::WaitForRequest(status);	  	            
-	            
-    PRINT ( _L("End RPsSession::SearchL") );	            
+
+    User::WaitForRequest(status);
+
+    PRINT ( _L("End RPsSession::SearchL") );
 }
 
 // ----------------------------------------------------------------------------
@@ -219,20 +219,20 @@ void RPsSession::SearchMatchStringL(const TDes8& aSearchQuery,
                          const TDes8& aSearchData,
                          TDes& aResultsBuffer)
 {
-    PRINT ( _L("Enter RPsSession::SearchMatchStringL") );  
+    PRINT ( _L("Enter RPsSession::SearchMatchStringL") );
 
     TIpcArgs args(&aSearchQuery, &aSearchData, &aResultsBuffer);
 
     TRequestStatus status;
 
     // Initiate the search request
-    SendReceive(ESearchMatchString, 
-                args, 
+    SendReceive(ESearchMatchString,
+                args,
                 status );
-                
-    User::WaitForRequest(status);                   
-                
-    PRINT ( _L("End RPsSession::SearchMatchStringL") );                
+
+    User::WaitForRequest(status);
+
+    PRINT ( _L("End RPsSession::SearchMatchStringL") );
 }
 
 // ----------------------------------------------------------------------------
@@ -244,25 +244,25 @@ void RPsSession::SendNewBufferL(TPtr8 aResultsBuffer,
 {
     PRINT ( _L("Enter RPsSession::SendNewBufferL") );
 
-	iResultsBufferPtr.Set(aResultsBuffer);     
-	
+	iResultsBufferPtr.Set(aResultsBuffer);
+
 	aStatus = KRequestPending;
 
     // Search command is reused here. Hence there is no need to fill
     // the search query.
-    TIpcArgs args(TIpcArgs::ENothing, 
+    TIpcArgs args(TIpcArgs::ENothing,
                   &iResultsBufferPtr);
 
-	SendReceive(ESearch, 
-	            args, 
-	            aStatus);     
-	            
-    PRINT ( _L("Enter RPsSession::SendNewBufferL") );	            
+	SendReceive(ESearch,
+	            args,
+	            aStatus);
+
+    PRINT ( _L("Enter RPsSession::SendNewBufferL") );
 }
 
 // -----------------------------------------------------------------------------
 // RPsSession::IsLanguageSupportedL()
-// Checks if the language variant is supported by 
+// Checks if the language variant is supported by
 // the predictive search engine.
 // Synchronous
 // -----------------------------------------------------------------------------
@@ -270,17 +270,17 @@ void RPsSession::IsLanguageSupportedL(const TDes8& aLanguage,
                                       TPtr8 aResultsBuffer)
 {
 	PRINT ( _L("Enter RPsSession::IsLanguageSupportedL") );
-	
+
 	TIpcArgs args(&aLanguage, &aResultsBuffer);
 	TRequestStatus status;
 
 	// initiate the request
-	SendReceive(ELangSupport, 
+	SendReceive(ELangSupport,
 				args,
 				status);
-	
+
 	User::WaitForRequest(status);
-	
+
 	PRINT ( _L("End RPsSession::IsLanguageSupportedL") );
 }
 
@@ -298,13 +298,13 @@ void RPsSession::GetDataOrderL(const TDes8& aURI,
     TRequestStatus status;
 
     // Initiate the request
-	SendReceive(EGetDataOrder, 
-	            args, 
+	SendReceive(EGetDataOrder,
+	            args,
 	            status );
-	            
-    User::WaitForRequest(status); 
-	            
-    PRINT ( _L("End RPsSession::GetDataOrderL") );	            
+
+    User::WaitForRequest(status);
+
+    PRINT ( _L("End RPsSession::GetDataOrderL") );
 }
 
 // ----------------------------------------------------------------------------
@@ -321,13 +321,13 @@ void RPsSession::GetSortOrderL(const TDes8& aURI,
     TRequestStatus status;
 
     // Initiate the request
-	SendReceive(EGetSortOrder, 
-	            args, 
+	SendReceive(EGetSortOrder,
+	            args,
 	            status );
-	            
-    User::WaitForRequest(status); 
-	            
-    PRINT ( _L("End RPsSession::GetSortOrderL") );	            
+
+    User::WaitForRequest(status);
+
+    PRINT ( _L("End RPsSession::GetSortOrderL") );
 }
 
 // ----------------------------------------------------------------------------
@@ -343,13 +343,37 @@ void RPsSession::ChangeSortOrderL(const TDes8& aInput)
     TRequestStatus status;
 
     // Initiate the request
-	SendReceive(ESetSortOrder, 
-	            args, 
+	SendReceive(ESetSortOrder,
+	            args,
 	            status );
-	            
-    User::WaitForRequest(status); 
-	            
-    PRINT ( _L("End RPsSession::ChangeSortOrderL") );	            
+
+    User::WaitForRequest(status);
+
+    PRINT ( _L("End RPsSession::ChangeSortOrderL") );
+}
+
+// ----------------------------------------------------------------------------
+// RPsSession::GetAdaptiveGridL
+// Initiate the Adaptive Grid request.
+// ----------------------------------------------------------------------------
+void RPsSession::GetAdaptiveGridL( const TDesC8& aURIs,
+                                   const TBool aCompanyName,
+                                   TDes& aResultsBuffer )
+{
+    PRINT ( _L("Enter RPsSession::GetAdaptiveGrid") );
+
+    TIpcArgs args( &aURIs, aCompanyName, &aResultsBuffer );
+
+    TRequestStatus status;
+
+    // Initiate the Adaptive Grid request
+    SendReceive( EGetAdaptiveGrid,
+                 args,
+                 status );
+
+    User::WaitForRequest(status);
+
+    PRINT ( _L("End RPsSession::GetAdaptiveGrid") );
 }
 
 // ----------------------------------------------------------------------------
@@ -359,14 +383,14 @@ void RPsSession::ChangeSortOrderL(const TDes8& aInput)
 void RPsSession::ShutdownServerL()
 {
     PRINT ( _L("Enter RPsSession::ShutdownServerL") );
-    
+
     TIpcArgs args;
-    
+
     TRequestStatus status;
     SendReceive(EShutdown, args, status );
     User::WaitForRequest(status);
-    
-    PRINT ( _L("End RPsSession::ShutdownServerL") );    
+
+    PRINT ( _L("End RPsSession::ShutdownServerL") );
 }
 
 // End of File

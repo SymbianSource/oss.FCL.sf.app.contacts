@@ -211,9 +211,9 @@ NONSHARABLE_CLASS( CCmsServerSession ) : public CSession2
         /// retrieving operation is done.
         RMessage2                               iCmsContactRetrieveMessage;
         
-        /// Copy of the service message received from the client. It's saved for 
-        /// delayed processing if stores are not opened yet.
-        RMessage2                               iServiceMessage;
+        /// Pointer for delayed processing if stores are not opened yet.
+        /// Must be pointer, Message status is not updated if a copy is done !                
+        const RMessage2*                        iServiceMessage;
         
         /// ETrue, if FeatureManager library was initialized.
         TBool                                   iFeatureManagerInitialized;

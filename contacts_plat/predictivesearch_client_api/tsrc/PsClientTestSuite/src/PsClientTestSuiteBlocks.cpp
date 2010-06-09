@@ -71,6 +71,7 @@ TInt CPsClientTestSuite::RunMethodL( CStifItemParser& aItem )
         ENTRY( "TC_ITU_TestSearchingInCache",    CPsClientTestSuite::SearchCacheL ), // For easy handling of .cgf file
         ENTRY( "TC_N97_TestSearchingInCache",    CPsClientTestSuite::SearchCacheL ), // For easy handling of .cgf file
         ENTRY( "TC_N00_TestSearchingInCache",    CPsClientTestSuite::SearchCacheL ), // For easy handling of .cgf file
+	    ENTRY( "CheckAdaptiveString",            CPsClientTestSuite::CheckAdaptiveStringL ),
 	    ENTRY( "CheckCachingStatus",             CPsClientTestSuite::CheckCachingStatusL ),
 	    ENTRY( "CheckVersion",                   CPsClientTestSuite::CheckVersion),
 	    ENTRY( "CheckLanguageSupport",           CPsClientTestSuite::TestIsLanguageSupportedL),
@@ -137,6 +138,9 @@ TInt CPsClientTestSuite::CreateContactsL( CStifItemParser& aItem )
     return iReturnStatus;
 }
 
+// -----------------------------------------------------------------------------
+// This test case creates groups in the phonebook
+// -----------------------------------------------------------------------------
 TInt CPsClientTestSuite::CreateGroupsInPhoneL( CStifItemParser& aItem )
 {
 	iReturnStatus = KErrNone;
@@ -422,7 +426,6 @@ TInt CPsClientTestSuite::SearchOnInputStringL(CStifItemParser& aItem)
     return iReturnStatus;
 }
 
-
 // -----------------------------------------------------------------------------
 // Searches for a query in input string.
 // -----------------------------------------------------------------------------
@@ -450,6 +453,67 @@ TInt CPsClientTestSuite::SearchLookupMatchStringL(CStifItemParser& aItem)
     //Perform the search
     iPsClientHandler->LookupMatchL(*iPsQuery, *inputStr, result);
     
+    if ( iInputParsedData->ExpectedResultString() != result )
+    {
+        iReturnStatus = KErrArgument;
+    }
+
+    return iReturnStatus;
+}
+
+// -----------------------------------------------------------------------------
+// Checks the Adaptive Grid string.
+// -----------------------------------------------------------------------------
+TInt CPsClientTestSuite::CheckAdaptiveStringL(CStifItemParser& aItem)
+{
+    RTimerWait(KOneSecDelay);
+    iReturnStatus = KErrNone;
+    
+    // Create the input parser
+    iInputParsedData = CTestSuiteInputData::NewL(aItem,*iPsClientHandler);
+    
+    // Parse the input data
+    iInputParsedData->ParseInputL(aItem);
+
+    // If more than one cacheuris are configured, this is not
+    // supported by the test suite
+    HBufC* dataStore = HBufC::NewL(50);
+    if(iInputParsedData->CacheUrisCount() == 1)
+    {
+        dataStore->Des().Copy(iInputParsedData->CacheUris(0)); 
+    }
+    else
+    {
+        User::Leave(KErrArgument);
+    }
+
+    CDesCArrayFlat* dataStoreArr = NULL;
+    dataStoreArr = new (ELeave) CDesCArrayFlat( 1 );
+    CleanupStack::PushL( dataStoreArr );
+    dataStoreArr->AppendL( *dataStore );
+
+    // Search Text
+    //Get the input string
+    HBufC* searchText = iInputParsedData->InputSearchString().AllocL();
+
+    // Company Name
+    TBool companyName = iInputParsedData->InputBoolean();
+    
+    TBuf<KPsAdaptiveGridStringMaxLen> result;
+    // Wait for one second
+    RTimerWait(KOneSecDelay);
+
+    TPtrC16 ptr = dataStoreArr->MdcaPoint(0);
+    
+    // Get the Adaptive Grid
+    iPsClientHandler->GetAdaptiveGridCharactersL( *dataStoreArr,
+	                                              searchText->Des(),
+												  companyName,
+												  result );
+    
+    CleanupStack::PopAndDestroy( dataStoreArr );
+    delete dataStore;
+
     if ( iInputParsedData->ExpectedResultString() != result )
     {
         iReturnStatus = KErrArgument;
@@ -594,7 +658,6 @@ TInt CPsClientTestSuite::TestIsLanguageSupportedL(CStifItemParser& aItem)
 	else
 	{
 		iReturnStatus =  KErrGeneral;
-	
 	}
 	
 	return iReturnStatus;
@@ -628,8 +691,6 @@ TInt CPsClientTestSuite::GetAllContentsL( CStifItemParser& aItem )
    
 	// return error code
     return iReturnStatus;
-
-
 }
 
 // -----------------------------------------------------------------------------
@@ -710,7 +771,7 @@ TInt CPsClientTestSuite::TestSortOrderErrCaseL( CStifItemParser& aItem )
 	
 	//If more than one cacheuris are configured, then it is an error
 	HBufC* datastore = HBufC::NewL(50);
-	if(iInputParsedData->CacheUrisCount() ==1)
+	if(iInputParsedData->CacheUrisCount() == 1)
 	{
 		datastore->Des().Copy(iInputParsedData->CacheUris(0)); 
 	}
@@ -722,7 +783,6 @@ TInt CPsClientTestSuite::TestSortOrderErrCaseL( CStifItemParser& aItem )
 	// Get the config file sort order
 	RArray<TInt> inputSortOrder;
 	iInputParsedData->SortOrder(inputSortOrder);
-	
 	
 	//Set the sort order
 	iPsClientHandler->ChangeSortOrderL(*datastore,inputSortOrder);
@@ -745,9 +805,8 @@ TInt CPsClientTestSuite::TestSortOrderErrCaseL( CStifItemParser& aItem )
 			{
 				iReturnStatus = KErrArgument;
 			}
-		
+
 			delete temp; temp = NULL;
-	
 		}
 	}
 	else
@@ -797,7 +856,6 @@ TInt CPsClientTestSuite::SearchWithInGroupL(CStifItemParser& aItem )
 	
 	// set search settings
 	iPsClientHandler->SetSearchSettingsL(*iSettings); 
-	
 
 	// Create the search query
 	iInputParsedData->CreateSearchQueryL(*iPsQuery, iInputParsedData->GroupToBeSearched());
@@ -935,7 +993,8 @@ TInt CPsClientTestSuite::AddMarkedContactsTestL(CStifItemParser& aItem)
 	//Perform the search
 	iPsClientHandler->SearchL(*iPsQuery,iMarkedContacts,NULL);
 	CActiveScheduler::Start();
-   return iReturnStatus;
+
+    return iReturnStatus;
 }
 
 // -----------------------------------------------------------------------------

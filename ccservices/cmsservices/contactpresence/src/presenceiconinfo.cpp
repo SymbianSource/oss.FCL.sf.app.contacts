@@ -499,7 +499,11 @@ void CPresenceIconInfo::SendPendingCallback()
 #endif              
             TRAP_IGNORE( iObs.ReceiveIconInfosL( ContactLink(), iPendings, info->OpId() ));  
             // This instance is not needed anymore
-            Destroy();            
+            if (!destroyed)
+                {
+                Destroy();
+                }
+                        
             }         
         }
     else if ( iNotifyPending )
@@ -510,7 +514,10 @@ void CPresenceIconInfo::SendPendingCallback()
         // Empty notification
         TRAP_IGNORE( iObs.ReceiveIconInfosL( ContactLink(), iPendings, iOpId ));  
         // This instance is not needed anymore
-        Destroy();         
+        if (!destroyed)
+            {
+            Destroy();    
+            }
         }
     
     if ( !destroyed )

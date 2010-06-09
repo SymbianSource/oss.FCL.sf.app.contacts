@@ -445,6 +445,21 @@ void CPbk2ContactViewDoubleListBoxModel::FormatBufferForElementDataL(
 
     AppendThumbnailL( aDataElement, aIndex );
     
+    // The cached element needs to be updated when the presence icon is changed
+    RArray<TPbk2IconId> ids;
+    CleanupClosePushL( ids );    
+    const MVPbkViewContact& contact = iView->ContactAtL( aIndex );
+    iContactIcons->GetIconIdsForContactL( contact, ids );
+
+    // If no icon was found, append an empty icon
+    if( ids.Count() == 0 )
+        {
+        ids.Append( iEmptyIconId );
+        }
+    
+    aDataElement.SetIconId( MPbk2DoubleListboxDataElement::EMainIcon, ids[ 0 ] );
+    CleanupStack::PopAndDestroy( &ids );
+    
     // Format line buffer based on element's content
     FormatBufferFromElement( aDataElement );
     }
@@ -460,7 +475,10 @@ void CPbk2ContactViewDoubleListBoxModel::FormatBufferForContactL(
     MVPbkContactLink* link = aViewContact.CreateLinkLC();
     CPbk2ContactViewDoubleListboxDataElement* element = 
         CPbk2ContactViewDoubleListboxDataElement::NewL( link, aIndex );
-    CleanupStack::Pop();    // link
+    if( link )
+        {
+        CleanupStack::Pop();    // link
+        }
     CleanupStack::PushL( element );
 
     // get data for element

@@ -290,23 +290,19 @@ inline void CPbk2MemoryEntryDefaultsAssignDlg::CreateModelL
     iModel->SetClipper( *this );
 
     // Insert TEXT_NO_DEFAULT as the last item to the array
-    // Don't add "No default" for call selector
-    if ( iSelectorId != VPbkFieldTypeSelectorFactory::EVoiceCallSelector )
-    	{
-		CPbk2FieldListBoxRow* row = CPbk2FieldListBoxRow::NewL();
-		CleanupStack::PushL( row );
-		TBuf<KMaxIntLength> iconBuffer;
-		_LIT( KIcon, "%d" );
-		iconBuffer.Format( KIcon, aIconArray.FindIcon(
-			TPbk2AppIconId( EPbk2qgn_prop_nrtyp_empty )));
-		row->AppendColumnL( iconBuffer );
-		HBufC* text = StringLoader::LoadLC( R_QTN_PHOB_SETI_NO_DEFAULT );
-		row->AppendColumnL( *text );
-		CleanupStack::PopAndDestroy( text );
-		row->AppendColumnL( KNullDesC ); // empty label column
-		iModel->AppendRowL( row );
-		CleanupStack::Pop( row );
-    	}
+    CPbk2FieldListBoxRow* row = CPbk2FieldListBoxRow::NewL();
+	CleanupStack::PushL( row );
+	TBuf<KMaxIntLength> iconBuffer;
+	_LIT( KIcon, "%d" );
+	iconBuffer.Format( KIcon, aIconArray.FindIcon(
+	    TPbk2AppIconId( EPbk2qgn_prop_nrtyp_empty )));
+	row->AppendColumnL( iconBuffer );
+	HBufC* text = StringLoader::LoadLC( R_QTN_PHOB_SETI_NO_DEFAULT );
+	row->AppendColumnL( *text );
+	CleanupStack::PopAndDestroy( text );
+	row->AppendColumnL( KNullDesC ); // empty label column
+	iModel->AppendRowL( row );
+	CleanupStack::Pop( row );
 
     iListBox->Model()->SetItemTextArray( iModel );
     iListBox->Model()->SetOwnershipType( ELbmDoesNotOwnItemArray );

@@ -222,7 +222,8 @@ private:// data
 
     /// Own: CCCAppCommLauncherPbkCmd
     CCCAppCommLauncherPbkCmd* iPbkCmd;
-    /// Own: CAknInputBlock
+    
+    /// Doesnt Own: CAknInputBlock. Ownership transferred thro SetCancelDelete Call.
     CAknInputBlock *iInputBlock;
     };
 

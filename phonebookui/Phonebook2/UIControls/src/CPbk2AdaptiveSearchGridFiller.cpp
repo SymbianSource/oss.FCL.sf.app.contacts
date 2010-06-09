@@ -21,11 +21,18 @@
 #include "MVPbkViewContact.h"
 #include "MVPbkContactViewBase.h"
 #include "MPbk2ContactNameFormatter.h"
+#include "MPbk2FilteredViewStack.h"
 
+#include <MPbk2ContactViewSupplier.h>
+#include <MPbk2ApplicationServices.h>
+#include <MPbk2AppUi.h>
+#include <CPbk2StoreConfiguration.h>
 #include <MPbk2ContactNameFormatter2.h>
 #include <FindUtil.h>
 #include <badesca.h>
 #include <featmgr.h>
+
+#include <CPsRequestHandler.h>
 
 const TInt KMaxAdaptiveGridCacheCount = 10;
 const TInt KAdaptiveSearchKeyMapGranularity = 100;
@@ -92,7 +99,11 @@ CPbk2AdaptiveSearchGridFiller::CPbk2AdaptiveSearchGridFiller( CAknSearchField& a
 CPbk2AdaptiveSearchGridFiller::~CPbk2AdaptiveSearchGridFiller()
     {
     Cancel();
-    delete iGridWaiter;
+    if ( iPsHandler )
+        {
+        iPsHandler->RemoveObserver( this );
+        delete iPsHandler;
+        }
 	delete iKeyMap;
 	delete iCurrentGrid;
 	iAdaptiveGridCache.ResetAndDestroy();
@@ -125,20 +136,45 @@ void CPbk2AdaptiveSearchGridFiller::ConstructL()
     {
 	iKeyMap = HBufC::NewL( KAdaptiveSearchKeyMapGranularity );
 	iFindUtil = CFindUtil::NewL();
-	iGridWaiter = CPbk2AdaptiveSearchGridWaiter::NewL( *this );
+    // UI Language
+	TLanguage uiLanguage = User::Language();
+	if ( uiLanguage != ELangJapanese && uiLanguage != ELangPrcChinese && 
+	        uiLanguage != ELangHongKongChinese && uiLanguage != ELangTaiwanChinese &&
+	        uiLanguage != ELangKorean )
+	    {  
+        iPsHandler = CPSRequestHandler::NewL();
+        iPsHandler->AddObserverL( this );
+	    }
     }
 
-void CPbk2AdaptiveSearchGridFiller::StartFilling( const MVPbkContactViewBase& aView, const TDesC& aSearchString )
+void CPbk2AdaptiveSearchGridFiller::StartFillingL( const MVPbkContactViewBase& aView,
+        const TDesC& aSearchString, TBool aClearCache )
 	{
-	CPbk2AdaptiveGrid* keyMap = KeyMapFromCache( aSearchString );
+	
+    if( aClearCache )
+        {
+        ClearCache();
+        }
+    
+	if ( IsActive() && iView == &aView && iViewItemCount == aView.ContactCountL() 
+	        && iSearchString && !iSearchString->Compare( aSearchString ) )
+	    {
+	    return;
+	    }
+	else
+	    {
+	    StopFilling();
+	    }
 
-	if( keyMap )
-		{
-		iSearchField.SetAdaptiveGridChars( keyMap->GetKeyMap() );
-		iGridWaiter->Stop();
-		return;
-		}
-
+    CPbk2AdaptiveGrid* keyMap = KeyMapFromCache( aSearchString );
+    
+    if( keyMap )
+        {
+        iSearchField.SetAdaptiveGridChars( keyMap->GetKeyMap() );
+        return;
+        }
+    
+	iViewItemCount = aView.ContactCountL();
 	delete iSearchString;
 	iSearchString = NULL;
 
@@ -156,6 +192,11 @@ void CPbk2AdaptiveSearchGridFiller::StartFilling( const MVPbkContactViewBase& aV
 
 	iCounter = 0;
 
+	if ( iSearchString->Length() <= KPsAdaptiveGridSupportedMaxLen && GridFromPsEngineL( aView ) )
+	    {
+	    return;
+	    }
+	
 	SetActive();
 	TRequestStatus* status = &iStatus;
 	User::RequestComplete( status, KErrNone );
@@ -176,6 +217,7 @@ void CPbk2AdaptiveSearchGridFiller::RunL()
 
 	TInt stopCount = iCounter + KAdaptiveSearchRefineStep;
 	const TInt itemCount = iView->ContactCountL();
+    
 	if( stopCount > itemCount )
 		{
 		stopCount = itemCount;
@@ -341,7 +383,6 @@ void CPbk2AdaptiveSearchGridFiller::ClearCache()
 void CPbk2AdaptiveSearchGridFiller::InvalidateAdaptiveSearchGrid()
 	{
 	iInvalidateAdaptiveSearchGrid = ETrue;
-	iGridWaiter->Start();
 	}
 
 void CPbk2AdaptiveSearchGridFiller::SetFocusToAdaptiveSearchGrid()
@@ -404,11 +445,6 @@ void CPbk2AdaptiveSearchGridFiller::SetAdaptiveGridCharsL(
 	iCurrentGrid = iKeyMap->Des().AllocL();
 
 	iSearchField.SetAdaptiveGridChars( *iKeyMap );
-	
-    if( iInvalidateAdaptiveSearchGrid )
-         {
-         iGridWaiter->Stop();
-         }
     
     iInvalidateAdaptiveSearchGrid = EFalse;
     
@@ -608,20 +644,110 @@ TBool CPbk2AdaptiveSearchGridFiller::IsDigraphContactsTitleL(const TDesC& aConta
 	return isDigraphic;
 	}
 
-void CPbk2AdaptiveSearchGridFiller::GridDelayCompleteL()
+void CPbk2AdaptiveSearchGridFiller::HandlePsResultsUpdate(
+        RPointerArray<CPsClientData>& /*searchResults*/,
+        RPointerArray<CPsPattern>& /*searchSeqs*/ )
     {
-    // simulating pointer event to hide adaptive grid
-    TPointerEvent pointerEvent;
-    pointerEvent.iType = TPointerEvent::EButton1Down;
-    TPoint position = iSearchField.Rect().iTl;
-    position.iX += 1;
-    position.iY += 1;
-    pointerEvent.iPosition = position;
-    iSearchField.HandlePointerEventL( pointerEvent );
+    
     }
 
-void CPbk2AdaptiveSearchGridFiller::WaitNoteDismissed()
+void CPbk2AdaptiveSearchGridFiller::HandlePsError( TInt /*aErrorCode*/ )
     {
-    iSearchField.ShowAdaptiveSearchGrid();
+    
+    }
+
+void CPbk2AdaptiveSearchGridFiller::CachingStatus( TCachingStatus& aStatus, TInt& /*aError*/ )
+    {
+    TRAP_IGNORE(
+    MVPbkContactViewBase* allContactsView = Phonebook2::Pbk2AppUi()->ApplicationServices().ViewSupplier().AllContactsViewL();
+    
+    const MPbk2FilteredViewStack* filteredView = dynamic_cast<const MPbk2FilteredViewStack*> ( iView );
+    
+    if ( aStatus >= ECachingComplete && filteredView && filteredView->Level() == 0 && &filteredView->BaseView() == allContactsView )
+        {
+        HBufC* string = iSearchString->AllocL();
+        CleanupStack::PushL( string );
+        StartFillingL( *iView, *string, ETrue );
+        CleanupStack::PopAndDestroy( string  );
+        }
+        );
+    }
+
+TBool CPbk2AdaptiveSearchGridFiller::GridFromPsEngineL( const MVPbkContactViewBase& aView )
+    {
+    if ( iPsHandler == NULL )
+        {
+        return EFalse;
+        }
+    MPbk2ApplicationServices& appServices = Phonebook2::Pbk2AppUi()->ApplicationServices();
+    MVPbkContactViewBase* allContactsView = appServices.ViewSupplier().AllContactsViewL();
+    const MPbk2FilteredViewStack* filteredView = dynamic_cast<const MPbk2FilteredViewStack*> ( &aView );
+        
+    if ( filteredView && filteredView->Level() == 0 && &filteredView->BaseView() == allContactsView )
+        {
+        CPbk2StoreConfiguration& config = appServices.StoreConfiguration();
+        CVPbkContactStoreUriArray* stores = NULL;
+        stores = config.CurrentConfigurationL();
+        if ( !stores || stores->Count() == 0 )
+            {
+            delete stores;
+            return EFalse;
+            }
+        
+        TInt count = stores->Count();
+        CleanupStack::PushL(stores);
+        
+        CDesCArrayFlat* array = new ( ELeave ) CDesCArrayFlat( count );
+        CleanupStack::PushL( array );
+        
+        for ( TInt i = 0; i < count; ++i)
+            {
+            TVPbkContactStoreUriPtr uriPtr = stores->operator[](i);
+            array->AppendL( uriPtr.UriDes() );
+            }
+
+        TBool companyName = EFalse;
+        TBuf<KPsAdaptiveGridStringMaxLen> gridChars;
+        if( FeatureManager::FeatureSupported( KFeatureIdFfContactsCompanyNames ) )
+            {
+            companyName = ETrue;
+            }
+        iPsHandler->GetAdaptiveGridCharactersL( *array, *iSearchString, companyName, gridChars );
+        
+        CleanupStack::PopAndDestroy( array );
+        CleanupStack::PopAndDestroy( stores );
+        
+        if ( !gridChars.Length() && iViewItemCount > 0 )
+            {
+            // grid should be created on standard way
+            return EFalse;
+            }
+        if ( iKeyMap->Des().MaxLength() < gridChars.Length() )
+            {
+            iKeyMap = iKeyMap->ReAllocL( gridChars.Length() );
+            }
+        iKeyMap->Des().Copy( gridChars );
+        
+        delete iCurrentGrid;
+        iCurrentGrid = NULL;
+        iCurrentGrid = iKeyMap->Des().AllocL();
+
+        iSearchField.SetAdaptiveGridChars( *iKeyMap );
+        
+        iInvalidateAdaptiveSearchGrid = EFalse;
+        
+        if ( iSetFocusToSearchGrid )
+            {
+            // set the focus to findbox
+            iSearchField.DrawDeferred();
+            iSetFocusToSearchGrid = EFalse;
+            }
+        AddKeyMapToCacheL( *iSearchString, *iKeyMap );
+        return ETrue;
+        }
+    else
+        {
+        return EFalse;
+        }
     }
 // End of File

@@ -205,7 +205,7 @@ void CPcsPluginInterface::SearchInputL(CPsQuery& aSearchQuery,
     for ( TInt idx = 0; idx < iPcsPluginInstances.Count(); idx++ )
     {
        iPcsPluginInstances[idx]->SearchInputL( aSearchQuery,
-                                               aSearchData,                                                  
+                                               aSearchData,
                                                aMatchSet,
                                                aMatchLocation );
     }
@@ -217,9 +217,9 @@ void CPcsPluginInterface::SearchInputL(CPsQuery& aSearchQuery,
 // CPcsPluginInterface::SearchMatchStringL
 // Search
 // ----------------------------------------------------------------------------      
-void CPcsPluginInterface::SearchMatchStringL(CPsQuery& aSearchQuery,
-                   TDesC& aSearchData,
-                   TDes& aMatch )
+void CPcsPluginInterface::SearchMatchStringL( CPsQuery& aSearchQuery,
+                                              TDesC& aSearchData,
+                                              TDes& aMatch )
 {  
     PRINT ( _L("Enter CPcsPluginInterface::SearchMatchStringL") );
 
@@ -268,4 +268,25 @@ void CPcsPluginInterface::ChangeSortOrderL(TDesC& aURI, RArray<TInt>& aSortOrder
 {
 	return(iPcsPluginInstances[0]->ChangeSortOrderL(aURI, aSortOrder));
 }
+
+// ----------------------------------------------------------------------------
+// CPcsPluginInterface::GetAdaptiveGridL
+// Adaptive Grid
+// ----------------------------------------------------------------------------
+void CPcsPluginInterface::GetAdaptiveGridL( const MDesCArray& aURIs,
+                                            const TBool aCompanyName,
+                                            TDes& aAdaptiveGrid )
+{
+    PRINT ( _L("Enter CPcsPluginInterface::GetAdaptiveGridL ") );
+
+    for ( TInt idx = 0; idx < iPcsPluginInstances.Count(); idx++ )
+    {
+       iPcsPluginInstances[idx]->GetAdaptiveGridL( aURIs,
+                                                   aCompanyName,
+                                                   aAdaptiveGrid );
+    }
+
+    PRINT ( _L("End CPcsPluginInterface::GetAdaptiveGridL") );
+}
+
 // End of file

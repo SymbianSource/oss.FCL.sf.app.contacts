@@ -260,7 +260,7 @@ void CSpdiaContainer::HandleResourceChange( TInt aType )
              iSpeedPrivate->GridStatus() == CSpeedDialPrivate::EGridUse )
             {
             // if refresh grid here, termination will be interrupt when edit type is full screen QWERTY.
-            RefreshGrid();
+            // RefreshGrid();
             iGrid->HandleResourceChange( aType );
 
             // Reload menubar when swap between landscape and portrait mode.
@@ -490,8 +490,6 @@ TKeyResponse CSpdiaContainer::OfferKeyEventL(
     // If not, updated the option menu
     else if ( !iView->IsFocused() )
     	{
-    	// LOGTEXT( _L("CR addition: handle HW key shortcuts event in OfferKeyEventL()") );
-    	iGrid->SetCurrentDataIndex( 0 );
         iView->LoadCba( MenuResourceID() );
         MiddleSoftKeyL();
     	}
@@ -1064,6 +1062,12 @@ void CSpdiaContainer::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         return;
         }
   
+    //reset iLongTapUsed 
+    if ( aPointerEvent.iType == TPointerEvent::EButton1Down )
+        {
+        iLongTapUsed = EFalse;
+        }
+    
     if ( ( aPointerEvent.iType == TPointerEvent::EButton1Down ) ||
              ( aPointerEvent.iType == TPointerEvent::EButton1Up ) )
     	{

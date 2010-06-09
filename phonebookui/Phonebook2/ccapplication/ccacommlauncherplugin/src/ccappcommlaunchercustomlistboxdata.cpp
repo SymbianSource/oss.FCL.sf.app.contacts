@@ -41,6 +41,9 @@
 #include <AknFontId.h>
 #include <AknLayoutFont.h>
 
+#include <AknIconArray.h>
+#include <avkon.mbg>
+
 #include "ccappcommlaunchercustomlistboxdata.h"
 
 #ifdef RD_UI_TRANSITION_EFFECTS_LIST
@@ -180,6 +183,7 @@ public:
                              TBool aUseLogicalToVisualConversion, 
                              const TRgb &aColor);
     TInt ConvertTextToSmiley( TDes& aText );
+    void LoadMarkingIconsL();
 private:
 	// New internal methods
 	TBool DrawHighlightBackground(CFbsBitGc& aGc);
@@ -275,6 +279,7 @@ public:
 	TBool iKineticScrolling;
     CAknSmileyManager* iSmileyMan;
     TSize iSmileySize; // last set simley size
+    CAknIconArray* iMarkingIconArray;
 	};
 
 /**
@@ -322,6 +327,9 @@ void CCCAppCommLauncherCustomListBoxDataExtension::ConstructL(
 #endif
 
 	iKineticScrolling = CAknPhysics::FeatureEnabled();
+#ifdef RD_TOUCH2_MARKING
+    LoadMarkingIconsL();
+#endif // RD_TOUCH2_MARKING
 	}
 
 CCCAppCommLauncherCustomListBoxDataExtension::~CCCAppCommLauncherCustomListBoxDataExtension()
@@ -348,6 +356,12 @@ CCCAppCommLauncherCustomListBoxDataExtension::~CCCAppCommLauncherCustomListBoxDa
 	delete iAnimation;
 	delete iColorBmp;
 	delete iHiliBmp;
+
+    if ( iMarkingIconArray )
+        {
+        iMarkingIconArray->ResetAndDestroy();
+        }
+    delete iMarkingIconArray;
 	}
 
 void CCCAppCommLauncherCustomListBoxDataExtension::AddRowAndSubCellL(TInt aRow,
@@ -660,6 +674,9 @@ void CCCAppCommLauncherCustomListBoxDataExtension::SkinChanged()
 	DeleteAnim();
 	TryCreateAnimation();
 	TRAP_IGNORE( CreateColorBitmapsL() );
+#ifdef RD_TOUCH2_MARKING
+    TRAP_IGNORE( LoadMarkingIconsL() );
+#endif //  RD_TOUCH2_MARKING
 	}
 
 // -----------------------------------------------------------------------------
@@ -1201,6 +1218,44 @@ TInt CCCAppCommLauncherCustomListBoxDataExtension::ConvertTextToSmiley( TDes& aT
     TInt count = 0;
     TRAPD( err, count = iSmileyMan->ConvertTextToCodesL( aText )) ;
     return err == KErrNone ? count : err;
+    }
+
+// -----------------------------------------------------------------------------
+// CCCAppCommLauncherCustomListBoxDataExtension::LoadMarkingIconsL
+// -----------------------------------------------------------------------------
+//
+void CCCAppCommLauncherCustomListBoxDataExtension::LoadMarkingIconsL()
+    {
+#ifdef RD_TOUCH2_MARKING
+    if ( !iMarkingIconArray )
+        {
+        iMarkingIconArray = new ( ELeave ) CAknIconArray( 2 );
+        }
+    else
+        {
+        iMarkingIconArray->ResetAndDestroy();
+        }
+
+    CGulIcon* icon = AknsUtils::CreateGulIconL( AknsUtils::SkinInstance(), 
+            KAknsIIDQgnPropCheckboxOn, 
+            AknIconUtils::AvkonIconFileName(), 
+            EMbmAvkonQgn_prop_checkbox_on, 
+            EMbmAvkonQgn_prop_checkbox_on_mask );
+    
+    CleanupStack::PushL( icon );
+    iMarkingIconArray->AppendL( icon );
+    CleanupStack::Pop( icon );
+
+    icon = AknsUtils::CreateGulIconL( AknsUtils::SkinInstance(), 
+            KAknsIIDQgnPropCheckboxOff, 
+            AknIconUtils::AvkonIconFileName(), 
+            EMbmAvkonQgn_prop_checkbox_off, 
+            EMbmAvkonQgn_prop_checkbox_off_mask );
+
+    CleanupStack::PushL( icon );
+    iMarkingIconArray->AppendL( icon );
+    CleanupStack::Pop( icon );
+#endif // RD_TOUCH2_MARKING
     }
 
  CCoeControl *CCCAppCommLauncherCustomListBoxData::Control() const

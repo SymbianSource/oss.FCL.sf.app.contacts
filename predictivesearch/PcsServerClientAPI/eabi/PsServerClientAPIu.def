@@ -22,4 +22,7 @@ EXPORTS
 	_ZTV18CPsPropertyHandler @ 21 NONAME ; #<VT>#
 	_ZN17CPSRequestHandler12CancelSearchEv @ 22 NONAME
 	_ZN17CPSRequestHandler12LookupMatchLERK8CPsQueryRK7TDesC16R6TDes16 @ 23 NONAME
+	_ZN17CPSRequestHandler26GetAdaptiveGridCharactersLERK12MDesC16ArrayRK7TDesC16iR6TDes16 @ 24 NONAME
+	_ZTI16CPsUpdateHandler @ 25 NONAME
+	_ZTV16CPsUpdateHandler @ 26 NONAME
 

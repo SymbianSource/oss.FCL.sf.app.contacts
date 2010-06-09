@@ -883,14 +883,21 @@
 //
 #define qtn_cca_title_my_card "My Card"
 
-//d:Default string for CCA status button when the social information text
-//d:cannot be displayed.
+//d:Default string for CCA status button with the social information text
+//d:To be removed when qtn_cca_social_networks is localised and taken into
+//d:use into the code.
 //l:phob2_cc_button_pane
 //r:9.2
 //
 #define qtn_cca_ftu_discover "See what %U is up to"
 
-//d:Default string for MyCard status button when the social information text
+//d:Default string for CCA status button with the social information text
+//l:phob2_cc_button_pane
+//r:9.2
+//
+#define qtn_cca_social_networks "Social networks"
+
+//d:Default string for MyCard status button with the social information text
 //d:cannot be displayed.
 //l:phob2_cc_button_pane
 //r:9.2

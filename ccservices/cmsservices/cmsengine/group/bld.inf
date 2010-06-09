@@ -26,7 +26,7 @@ PRJ_EXPORTS
 //--------------------
 ../rom/CmsEngine.iby	CORE_APP_LAYER_IBY_EXPORT_PATH(CmsEngine.iby)
 // headers done in cms_client_api
-../sis/cmsengine_stub.sis   										/epoc32/data/z/system/install/cmsengine_stub.sis
+//../sis/cmsengine_stub.sis   										/epoc32/data/z/system/install/cmsengine_stub.sis
 //--------------------
 PRJ_MMPFILES
 //--------------------

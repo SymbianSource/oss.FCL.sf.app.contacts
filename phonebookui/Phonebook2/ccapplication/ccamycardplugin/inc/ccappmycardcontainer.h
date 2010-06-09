@@ -268,6 +268,7 @@ private: // Constructors
     void DoCheckExtensionFactoryL();
 
     inline void ResolveNameOrderL();
+    void LayoutControls();
     
 private: // Data
 

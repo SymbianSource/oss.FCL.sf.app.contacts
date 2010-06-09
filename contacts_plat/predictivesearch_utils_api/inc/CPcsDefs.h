@@ -50,7 +50,8 @@ enum TPsServerRequestCommands
     EGetSortOrder,
     ESetSortOrder,
     EShutdown,
-    ESearchMatchString
+    ESearchMatchString,
+    EGetAdaptiveGrid
 };
 
 /**
@@ -145,6 +146,8 @@ const TInt KCRMaxLen = 255;
 const TInt KPsQueryMaxLen = 150;
 const TInt KBufferMaxLen = 255;
 const TInt KSearchResultsBufferLen = 8192;
+const TInt KPsAdaptiveGridSupportedMaxLen = 0; // Max Len of input Search Text
+const TInt KPsAdaptiveGridStringMaxLen = 255; // Max Len of returned Adaptive Grid String
 
 /**
  * Data Stores Constants 

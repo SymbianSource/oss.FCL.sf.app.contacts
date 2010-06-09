@@ -208,4 +208,5 @@ EXPORTS
 	?CreateActionTypeSelectorIdL@VPbkFieldTypeSelectorFactory@@SA?AW4TVPbkContactActionTypeSelector@1@H@Z @ 207 NONAME ; enum VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector VPbkFieldTypeSelectorFactory::CreateActionTypeSelectorIdL(int)
 	?AddressFieldsIncluded@CVPbkFieldTypeSelector@@QBEHABVMVPbkStoreContactFieldCollection@@@Z @ 208 NONAME ; int CVPbkFieldTypeSelector::AddressFieldsIncluded(class MVPbkStoreContactFieldCollection const &) const
 	?FindL@CVPbkContactManager@@QAEPAVMVPbkContactOperationBase@@ABVMDesC16Array@@ABVMVPbkFieldTypeList@@AAVMVPbkContactFindFromStoresObserver@@ABVTCallBack@@ABVCDesC16ArrayFlat@@@Z @ 209 NONAME ; class MVPbkContactOperationBase * CVPbkContactManager::FindL(class MDesC16Array const &, class MVPbkFieldTypeList const &, class MVPbkContactFindFromStoresObserver &, class TCallBack const &, class CDesC16ArrayFlat const &)
+	?NewL@CVPbkTopContactManager@@SAPAV1@AAVCVPbkContactManager@@AAVMVPbkContactViewBase@@@Z @ 210 NONAME ; class CVPbkTopContactManager * CVPbkTopContactManager::NewL(class CVPbkContactManager &, class MVPbkContactViewBase &)
 

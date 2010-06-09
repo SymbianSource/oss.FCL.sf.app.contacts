@@ -24,7 +24,7 @@
 
 // FORWARD DECLARATIONS
 class CAknPopupList;
-class CAknSingleHeadingPopupMenuStyleListBox;
+class CAknSinglePopupMenuStyleListBox;
 class CVPbkContactManager;
 class CVPbkContactStoreUriArray;
 class MPbk2StoreInfoUiItem;
@@ -77,7 +77,7 @@ class CPbk2PhonebookInfoDlg : public CBase
         /// Own: Popup list that is the actual dialog that is shown
         CAknPopupList* iPopupList;
         /// Own: Listbox that is given to CAknPopupList constructor
-        CAknSingleHeadingPopupMenuStyleListBox* iListBox;
+        CAknSinglePopupMenuStyleListBox* iListBox;        
         /// Ref: Keeps track if destructor is already called
         TBool* iDestroyed;
         /// Own: Info item array

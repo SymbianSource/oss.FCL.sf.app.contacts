@@ -20,6 +20,7 @@
 #include "ccappheaders.h"
 #include <mccappviewpluginbase2.h>
 #include "ccappmycardpluginuids.hrh"
+#include "ccacmscontactfetcherwrapper.h"
 
 // ======== MEMBER FUNCTIONS ========
 
@@ -109,16 +110,20 @@ void CCCAppView::StartViewL( const TUid aUid )
     CCA_DP( KCCAppLogFile, CCA_L("->CCCAppView::StartViewL"));
     iDelayedStarting = ETrue;
 
-    // 1st start the contact fetching
-    iCmsWrapper = CCCAppCmsContactFetcherWrapper::CreateInstanceL( 
-         &iAppUi.Parameter(), CCCAppCmsContactFetcherWrapper::EFindContactFromOtherStores );
-    iCmsWrapper->AddObserverL( *this );
-
     // At the moment mycard does not need to support tabs, so this is 
     // good enough sollution for launching mycard plugin
     TBool isUidMyCard = ( aUid == 
             TUid::Uid( KCCAMyCardPluginImplmentationUid ) );
 
+	// MyCard does not need CMS session. Initializing CMS for no real use
+	// will only waste time in MyCard launching.
+    if( !isUidMyCard )
+        {
+        // 1st start the contact fetching
+        iCmsWrapper = CCCAppCmsContactFetcherWrapper::CreateInstanceL( 
+             &iAppUi.Parameter(), CCCAppCmsContactFetcherWrapper::EFindContactFromOtherStores );
+        iCmsWrapper->AddObserverL( *this );
+        }
     
     //In this version support only contact type data (i.e. group data discarded)
     _LIT8( KCcaOpaqueTag_CNT,           "CNT" );    //Contact    
@@ -472,8 +477,11 @@ void CCCAppView::ContactFieldDataObserverHandleErrorL(
     {
     CCA_DP( KCCAppLogFile, CCA_L("CCCAppView::ContactFieldDataObserverHandleErrorL"));
     CCA_DP( KCCAppLogFile, CCA_L("::ContactFieldDataObserverHandleErrorL - aState: %d, aError: %d"), aState, aError );
-    //todo; what kind of behaviour is wanted in error case?
-    // - exit the app if no cms connection/contact is not found?
+    // If no contact found, leave here and launching CCA fails
+    if ( CCCAppCmsContactFetcherWrapper::EOpeningContact == aState )
+    	{
+        User::Leave(aError);
+    	}
     }
 
 // ---------------------------------------------------------------------------

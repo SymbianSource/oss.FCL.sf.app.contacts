@@ -40,11 +40,6 @@
 #include <MVPbkContactFieldData.h>
 #include <e32base.h>
 
-// For finding mailbox accounts
-#include <emailinterfacefactory.h>
-#include <memailmailbox.h>
-
-
 namespace {
 
 TBool IsFieldTypeVoipCapable( TInt aFieldTypeResId, TInt aVoipFlag )
@@ -272,10 +267,11 @@ CCmsServerSession::~CCmsServerSession()
 //
 void CCmsServerSession::StoreOpenComplete()
     {
-    if ( !iServiceMessage.IsNull() )
+    if ( iServiceMessage  )
         {
         // Some request waits when stores are opened. Handle it now.
-        DoServiceL( iServiceMessage );
+        DoServiceL( *iServiceMessage );
+        iServiceMessage = NULL;
         }
     }
  
@@ -315,7 +311,7 @@ void CCmsServerSession::ServiceL( const RMessage2& aMessage )
     {
     PRINT( _L( "Start CCmsServerSession::ServiceL()" ) );
     
-    if ( !iServiceMessage.IsNull() && !iCmsServer->PhonebookProxyHandle().StoreOpenStatus() )
+    if ( iServiceMessage && !iCmsServer->PhonebookProxyHandle().StoreOpenStatus() )
         {
         // some message already waits for store opening completion
         aMessage.Complete( KErrNotReady );
@@ -325,7 +321,7 @@ void CCmsServerSession::ServiceL( const RMessage2& aMessage )
     if( !iCmsServer->PhonebookProxyHandle().StoreOpenStatus() )
         {
         // Stores are not ready yet, save message for later processing
-        iServiceMessage = aMessage;
+        iServiceMessage = &aMessage;                                       
     	return;
         }
      
@@ -485,38 +481,6 @@ TInt CCmsServerSession::FindServiceAvailabilityL( const RMessage2& aMessage )
                 availability = iServerContact->ParseVoIPAvailabilityL();
                 break;
                 }
-            case VPbkFieldTypeSelectorFactory::EEmailEditorSelector:
-            	{
-            	using namespace EmailInterface;
-
-            	CEmailInterfaceFactory* factory = CEmailInterfaceFactory::NewL();
-            	CleanupStack::PushL( factory );
-            	MEmailInterface* ifPtr = factory->InterfaceL( KEmailClientApiInterface );
-            	MEmailClientApi* clientApi = static_cast<MEmailClientApi*>( ifPtr );
-            	CleanupReleasePushL( *clientApi );
-            	
-            	RMailboxPtrArray mailboxes;
-            	TRAPD( error, clientApi->GetMailboxesL( mailboxes ););
-            	TInt count = mailboxes.Count();
-            	
-            	// Release mailboxs before releasing clientapi
-            	for ( TInt i=0; i<count; i++ )
-            		{
-            		MEmailMailbox* mailbox = mailboxes[i];
-            		mailbox->Release();
-            		}
-            	
-            	mailboxes.Close();
-            	
-            	CleanupStack::PopAndDestroy( 2 ); // clientApi and factory
-            	
-            	if( count == 0 )
-            	    {
-            	    availability = EFalse;
-            	    }           					            					
-                
-            	break;
-            	}
             default:
                 {
                 //In case the type is unknown, just break here and return true

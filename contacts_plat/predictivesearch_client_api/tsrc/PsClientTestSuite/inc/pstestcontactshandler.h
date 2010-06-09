@@ -55,14 +55,14 @@ class CPcsTestContactsHandler: public CActive,
 {	
 public:
 
-   /**
+    /**
     * 1st phase constructor 
     *
   	* @return returns pointer to the constructed object of type CPcsContactFetch
 	*/
 	static CPcsTestContactsHandler* NewL(TBool SimStoreOnly=EFalse);
 	
-   /**
+    /**
     * Destructor
     * 
     */
@@ -71,14 +71,14 @@ public:
 public:
 
 //From CActive
-	/**
+
+    /**
 	* From CActive
 	* Implements cancellation of an outstanding request.
 	*
 	* This function is called as part of the active object's Cancel().
 	*/
 	void DoCancel(); 
-	
 	
 	/**
 	* From CActive
@@ -105,8 +105,7 @@ public:
 	* RunError() functions.
 	*/
 	void RunL() ;
-	
-	
+
 	/**
 	* From CActive 
 	* If the RunL function leaves,
@@ -114,7 +113,6 @@ public:
 	* @param aError - The error code
 	*/
 	TInt RunError(TInt aError) ;
-
 
 // From base class MVPbkContactStoreListObserver
 
@@ -185,8 +183,8 @@ public:
 	*/
 	void StepComplete(MVPbkContactOperationBase& aOperation, TInt aStepSize );
 
-
 // From MVPbkBatchOperationObserver
+
 	/**
 	* From MVPbkBatchOperationObserver
 	* Called when one step of the operation fails.
@@ -235,14 +233,12 @@ public:
 	*
 	*/
 	void DeleteAllCreatedContactsL();
-	
-	
+
 	/**
 	* Adds a group to the phonebook
 	*
 	*/  
 	void AddGroupL(const TDesC& aGroupName);
-
 
 	/**
 	* Deletes contacts from the phonebook 
@@ -252,7 +248,7 @@ public:
 	void DeleteContactsWithIdsL(RArray<TInt>& aContactIdArray);
 	
 	/**
-    *  Tests if Id returns correct vpbklink
+    * Tests if Id returns correct vpbklink
     * 
     * @param aPsClientHandler -  PsClientHandler instance
     * @param srchId -  Id to be tested\
@@ -266,14 +262,15 @@ public:
     */
 
     void AddCreatedContactsToGroup();
+
 private:	
-   /**
+
+    /**
     * Constructor
-    *
     */
     CPcsTestContactsHandler();
     
-   /** 
+    /** 
     * 2nd phase constructor
     *
     * @param SimStoreOnly
@@ -311,7 +308,6 @@ private: // Data
     * The field type reference list
     */
     CVPbkFieldTypeRefsList* fieldTypeRefList;
-    
     
     /*
 	* The array of contactlinks to be deleted

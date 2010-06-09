@@ -447,7 +447,9 @@ void CCCAppCommLauncherContainer::HandlePointerEventL(
     iPlugin.CancelTimer();
     
     TInt index;
-    if ( iListBox->View()->XYPosToItemIndex( aPointerEvent.iPosition, index ) )
+    // start iLongTapDetector in listbox area and handle PointerEvent when dragged
+    if ( iListBox->View()->XYPosToItemIndex( aPointerEvent.iPosition, index )
+        || ( aPointerEvent.iType == TPointerEvent::EDrag ) )
         {
         if ( iLongTapDetector )
             {
@@ -471,52 +473,48 @@ void CCCAppCommLauncherContainer::HandlePointerEventL(
 void CCCAppCommLauncherContainer::HandleLongTapEventL( const TPoint& /*aPenEventLocation*/, 
                                  	const TPoint& /*aPenEventScreenLocation*/ )
     {
-    CCAContactorService* contactorService = iPlugin.ContactorService();
-    if ( contactorService )
+    if ( iPlugin.CommandState().IsRunning() )
         {
-        if ( contactorService->IsBusy() )
-            {
-            return;
-            }
-        else if ( CommMethodsAvailable() )
-            {
-            TPtrC fullName;
-            iPlugin.ContactHandler().ContactFieldItemDataL(
-                CCmsContactFieldItem::ECmsFullName, fullName );
+        return;
+        }
+    else if ( CommMethodsAvailable() )
+        {
+        TPtrC fullName;
+        iPlugin.ContactHandler().ContactFieldItemDataL(
+            CCmsContactFieldItem::ECmsFullName, fullName );
 
-            TUint paramFlag = 0;//CCAContactorService::TCSParameter::EEnableDefaults;
+        TUint paramFlag = 0;//CCAContactorService::TCSParameter::EEnableDefaults;
+    
+        VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector
+            contactActionType = iPlugin.Container().SelectedCommunicationMethod();
         
-            VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector
-                contactActionType = iPlugin.Container().SelectedCommunicationMethod();
+        if ( !iLongTap && contactActionType
+                        == VPbkFieldTypeSelectorFactory::EFindOnMapSelector )
+            {  
+            iLongTap = ETrue;    
+            DoShowMapCmdL( (TPbk2CommandId)EPbk2ExtensionShowOnMap );
+            }
+        else
+            {
+            CCAContactorService::TCSParameter param(
+                contactActionType,
+                *iPlugin.ContactHandler().ContactIdentifierLC(),//contactlinkarray
+                paramFlag, 
+                fullName );
+               
+            iPlugin.ExecuteServiceL( param );   
             
-            if ( !iLongTap && contactActionType
-                            == VPbkFieldTypeSelectorFactory::EFindOnMapSelector )
-                {  
-                iLongTap = ETrue;    
-                DoShowMapCmdL( (TPbk2CommandId)EPbk2ExtensionShowOnMap );
-                }
-            else
+            //The Timer can be started after user selected any call item
+            if ( iPlugin.ContactorService()->IsSelected() && 
+                (contactActionType == VPbkFieldTypeSelectorFactory::EVoiceCallSelector ||
+                 contactActionType == VPbkFieldTypeSelectorFactory::EVideoCallSelector ||
+                 contactActionType == VPbkFieldTypeSelectorFactory::EVOIPCallSelector) )
                 {
-                CCAContactorService::TCSParameter param(
-                    contactActionType,
-                    *iPlugin.ContactHandler().ContactIdentifierLC(),//contactlinkarray
-                    paramFlag, 
-                    fullName );
-                   
-                contactorService->ExecuteServiceL( param );   
-                
-                //The Timer can be started after user selected any call item
-                if ( contactorService->IsSelected() && 
-                	(contactActionType == VPbkFieldTypeSelectorFactory::EVoiceCallSelector ||
-                     contactActionType == VPbkFieldTypeSelectorFactory::EVideoCallSelector ||
-                     contactActionType == VPbkFieldTypeSelectorFactory::EVOIPCallSelector) )
-                    {
-                    iPlugin.StartTimerL();
-                    }
-                
-                
-                CleanupStack::PopAndDestroy( 1 );// contactlinkarray
+                iPlugin.StartTimerL();
                 }
+            
+            
+            CleanupStack::PopAndDestroy( 1 );// contactlinkarray
             }
         }
     }
@@ -552,9 +550,7 @@ void CCCAppCommLauncherContainer::HandleListBoxEventL(
         iHasBeenDragged = EFalse;
         }
 
-    CCAContactorService* contactorService = iPlugin.ContactorService();
-
-    if ( executeContactAction && contactorService && contactorService->IsBusy())
+    if ( executeContactAction && iPlugin.CommandState().IsRunning() )
         {
         executeContactAction = EFalse;
         }
@@ -578,35 +574,32 @@ void CCCAppCommLauncherContainer::HandleListBoxEventL(
         	}
         else
         	{
-        	if(contactorService)
-        	    {
-                TPtrC fullName;
-    
-                iPlugin.ContactHandler().ContactFieldItemDataL(
-                    CCmsContactFieldItem::ECmsFullName, fullName);
-    
-                TUint paramFlag = CCAContactorService::TCSParameter::EEnableDefaults;
-    
-                CCAContactorService::TCSParameter param(
-                    contactActionType,
-                    *iPlugin.ContactHandler().ContactIdentifierLC(),//contactlinkarray
-                    paramFlag,
-                    fullName);
+            TPtrC fullName;
+
+            iPlugin.ContactHandler().ContactFieldItemDataL(
+                CCmsContactFieldItem::ECmsFullName, fullName);
+
+            TUint paramFlag = CCAContactorService::TCSParameter::EEnableDefaults;
+
+            CCAContactorService::TCSParameter param(
+                contactActionType,
+                *iPlugin.ContactHandler().ContactIdentifierLC(),//contactlinkarray
+                paramFlag,
+                fullName);
+        
+            iPlugin.ExecuteServiceL(param);
             
-                contactorService->ExecuteServiceL(param);
-                
-                //The Timer can be started after user selected any call item
-                if ( contactorService->IsSelected() && 
-                	(contactActionType == VPbkFieldTypeSelectorFactory::EVoiceCallSelector ||
-                     contactActionType == VPbkFieldTypeSelectorFactory::EVideoCallSelector ||
-                     contactActionType == VPbkFieldTypeSelectorFactory::EVOIPCallSelector) )
-                    {
-                    iPlugin.StartTimerL();
-                    }
-                
-                CleanupStack::PopAndDestroy(1);// contactlinkarray
-        	    }
-        	}
+            //The Timer can be started after user selected any call item
+            if ( iPlugin.ContactorService()->IsSelected() && 
+                (contactActionType == VPbkFieldTypeSelectorFactory::EVoiceCallSelector ||
+                 contactActionType == VPbkFieldTypeSelectorFactory::EVideoCallSelector ||
+                 contactActionType == VPbkFieldTypeSelectorFactory::EVOIPCallSelector) )
+                {
+                iPlugin.StartTimerL();
+                }
+            
+            CleanupStack::PopAndDestroy(1);// contactlinkarray
+            }
         }
     }
 

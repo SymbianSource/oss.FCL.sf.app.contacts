@@ -26,6 +26,7 @@
 #include <MVPbkContactStoreObserver.h>
 #include <MPbk2ContactUiControl.h>
 #include <MPbk2ContactUiControl2.h>
+#include <MPbk2MenuCommandObserver.h>
 #include <Pbk2Commands.hrh>
 
 class CPbk2CommandHandler;
@@ -53,7 +54,8 @@ class CCCAppCommLauncherPbkCmd :
             public MVPbkContactStoreObserver,
             public MVPbkSingleContactOperationObserver,
             public MPbk2ContactUiControl,
-            public MPbk2ContactUiControl2
+            public MPbk2ContactUiControl2,
+            private MPbk2MenuCommandObserver
     {
 public:
 
@@ -163,6 +165,11 @@ public: // From MPbk2ContactUiControl2
     const MPbk2UiControlCmdItem* FocusedCommandItem() const;
     void DeleteCommandItemL( TInt aIndex );
     void AddCommandItemL(MPbk2UiControlCmdItem* /*aCommand*/, TInt /*aIndex*/);
+
+private: // From MPbk2MenuCommandObserver
+    void PreCommandExecutionL( const MPbk2Command& /*aCommand*/ ) {}
+    void PostCommandExecutionL( const MPbk2Command& aCommand );
+    
 private:
 
     void ConstructL();
@@ -223,9 +230,6 @@ private:
     
     /// Own: contact store in use, has to be closed when done
     MVPbkContactStore* iContactStore;
-    
-    /// Own: Boolean for querying if there is a command being executed
-    TBool iCommandInProgress;
     };
 
 #endif // C_CCCAPPCOMMLAUNCHERPBKCMD_H

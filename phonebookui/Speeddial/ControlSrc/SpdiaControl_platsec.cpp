@@ -157,9 +157,9 @@ const TInt KLayoutCount(5);
 const TInt KNullIndexData(-1);
 const TInt32 KVmbxUid(0x100058F5) ;
 const TInt KOperatorNameLength(100);
-const TInt KIconsCount(14);
-const TInt KIconsIdCount(12);
-const TInt KIconsMaskCount(12);
+const TInt KIconsCount(15);
+const TInt KIconsIdCount(15);
+const TInt KIconsMaskCount(15);
 
 _LIT(KNullCell, "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t%d\t");
 _LIT(KDesTab, "\t");
@@ -458,6 +458,7 @@ void CSpdiaControl::InitializeArray()
     	{
         iSkinIcons->Append( KAknsIIDQgnPropNrtypVoip ); 
         iSkinIcons->Append( KAknsIIDQgnPropNrtypSwis );
+        iSkinIcons->Append( KAknsIIDQgnPropNrtypSip );
         }
     iSkinIcons->Append( KAknsIIDQgnPropNrtypAssistant );
     iSkinIcons->Append( KAknsIIDQgnPropEmpty );
@@ -478,6 +479,7 @@ void CSpdiaControl::InitializeArray()
     	{
         iIcons->Append( EMbmAvkonQgn_prop_nrtyp_voip );
         iIcons->Append( EMbmAvkonQgn_prop_empty );
+        iIcons->Append( EMbmAvkonQgn_prop_empty );
     	}
     iIcons->Append( EMbmAvkonQgn_prop_nrtyp_assistant );
     iIcons->Append( EMbmAvkonQgn_prop_empty );
@@ -496,8 +498,11 @@ void CSpdiaControl::InitializeArray()
     	{
     	iIconsId->Append( EPbkqgn_prop_nrtyp_voip );
     	iIconsId->Append( EPbkqgn_prop_nrtyp_swis );
+        iIconsId->Append( EPbkqgn_prop_nrtyp_sip );
     	}
     iIconsId->Append( EPbkqgn_prop_nrtyp_assistant );
+    iIconsId->Append( EPbkqgn_prop_nrtyp_empty );
+    iIconsId->Append( EPbkqgn_prop_nrtyp_empty );
     iIconsId->Append( EPbkqgn_prop_nrtyp_empty );
     
     iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_phone_mask );
@@ -512,8 +517,11 @@ void CSpdiaControl::InitializeArray()
     	{
     	iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_voip_mask );
     	iIconsMask->Append( EMbmAvkonQgn_prop_empty_mask );
+        iIconsMask->Append( EMbmAvkonQgn_prop_empty_mask );
     	}
     iIconsMask->Append( EMbmAvkonQgn_prop_nrtyp_assistant_mask );
+    iIconsMask->Append( EMbmAvkonQgn_prop_empty_mask );
+    iIconsMask->Append( EMbmAvkonQgn_prop_empty_mask );
     iIconsMask->Append( EMbmAvkonQgn_prop_empty_mask );
     }
 // ---------------------------------------------------------
@@ -1521,7 +1529,7 @@ void CSpdiaControl::ConstructL()
     iSdmArray = new (ELeave) CArrayFixFlat<TSpdiaIndexData> (iSdmCount);
 
     iDialSkinBmp = new (ELeave)RArray<TAknsItemID>(KArraySize);
-    iSkinIcons = new (ELeave)RArray<TAknsItemID>(KArraySize);
+    iSkinIcons = new (ELeave)RArray<TAknsItemID>(iIconsIdCount);
     iIcons = new (ELeave)RArray<TInt>(iIconsCount);
     iIconsId = new (ELeave)RArray<TInt>(iIconsIdCount);
     iIconsMask = new (ELeave)RArray<TInt>(iIconsMaskCount);

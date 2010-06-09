@@ -280,14 +280,17 @@ CCoeControl* CCCAppStatusControl::ComponentControl( TInt aIndex )  const
 void CCCAppStatusControl::SetVariableLayouts( TInt aOption )
     {
     const TRect rect(Rect());
-    // set background graphics layout
-    const TAknWindowComponentLayout innerLayout(
-            AknLayoutScalable_Apps::bg_button_pane_cp033( aOption ) );
-    
+
+    // Set background and border graphics layout
+    //
+    // Avkon LAF needs to be used because phob2_cc_button_pane does not have
+    // definition for inner rect (to make border visible) and LAF change to 
+    // phob2_cc_button_pane was not accepted. If the border layout at some
+    // point gets broken, then custom LAF for the border is needed.
     TAknLayoutRect innerLayoutRect;
-    innerLayoutRect.LayoutRect( rect, innerLayout.LayoutLine() );
-    const TRect innerRect( innerLayoutRect.Rect() );
-    iBgContext->SetFrameRects( rect, innerRect );      
+    innerLayoutRect.LayoutRect( rect,
+        AknLayoutScalable_Avkon::bg_button_pane_g1() );
+    iBgContext->SetFrameRects( rect, innerLayoutRect.Rect() );      
                        
     // status icon
     const TAknWindowComponentLayout statusIconLayout( 

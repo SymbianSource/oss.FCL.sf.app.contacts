@@ -94,8 +94,16 @@ public: // New methods
      * @return Presentation field index shown at aListIndex  
      */
     IMPORT_C TInt PresentationFieldIndex( TInt aListIndex );
-
+    
     /**
+     * Get List Box index for field at aIndex
+     * 
+     * @param Presentation field index
+     * @return Listbox row index  
+     */
+    IMPORT_C TInt ListIndex( TInt aPresentationIndex );	
+    
+	/**
      * Externalize model into stream
      */
     IMPORT_C void ExternalizeL( RWriteStream& aStream ) const;

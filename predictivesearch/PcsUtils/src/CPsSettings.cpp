@@ -36,7 +36,6 @@ EXPORT_C CPsSettings* CPsSettings::NewL()
     self->ConstructL();
     CleanupStack::Pop();
     return self;
-	
 }
 
 // ----------------------------------------------------------------------------
@@ -71,7 +70,7 @@ EXPORT_C CPsSettings*  CPsSettings::CloneL() const
 	self->SetSortType(iSortType);
     
     // Copy the search uris
-    RPointerArray <TDesC>  newUris;
+    RPointerArray<TDesC> newUris;
 
     for(TInt i =0; i < iSearchUri.Count() ; i++)
 	{
@@ -108,10 +107,9 @@ EXPORT_C void CPsSettings::SetSearchUrisL(const RPointerArray<TDesC>& aSearchUri
 	iSearchUri.ResetAndDestroy();
     for(TInt i =0 ; i < aSearchUri.Count();i++)
 	{
-		const HBufC* uriToAppend =aSearchUri[i]->AllocL();
+		const HBufC* uriToAppend = aSearchUri[i]->AllocL();
 		iSearchUri.Append(uriToAppend);
 	}
-
 }
 
 // ----------------------------------------------------------------------------
@@ -125,7 +123,6 @@ EXPORT_C void CPsSettings::SetDisplayFieldsL(const RArray<TInt>& aDisplayFields)
 	{
 		iDisplayFields.Append(aDisplayFields[i]);
 	}
-	
 }
 
 // ----------------------------------------------------------------------------
@@ -152,6 +149,7 @@ EXPORT_C void CPsSettings::SetSortType(const TSortType aSortType)
 {
 	iSortType = aSortType;
 }
+
 // CPsSettings::SearchUrisL
 // Returns the list of URIs configured to search from.
 // ----------------------------------------------------------------------------
@@ -175,7 +173,6 @@ EXPORT_C void CPsSettings:: DisplayFieldsL(RArray<TInt>& aDisplayFields) const
 	{
 		aDisplayFields.Append(iDisplayFields[i]);
 	}
-
 }
 
 // ----------------------------------------------------------------------------
@@ -186,6 +183,7 @@ EXPORT_C TInt CPsSettings::MaxResults() const
 {
 	return iMaxResults;
 }
+
 // ----------------------------------------------------------------------------
 // CPsSettings::GetSortType
 // Returns the sort type based on which results will be sorted.
@@ -232,7 +230,6 @@ EXPORT_C void CPsSettings::GetGroupIdsL(RArray<TInt>& aGroupIdArray)
 			// Cleanup memory
 			delete   grpIdBuf;
 			grpIdBuf = NULL;
-           
 		}
 	}		
 }
@@ -287,8 +284,7 @@ EXPORT_C void CPsSettings::InternalizeL(RReadStream& aStream)
 	    TUint8 szUri = aStream.ReadUint8L();
     	    
     	HBufC* uri =  HBufC::NewL(aStream, szUri);
-	    iSearchUri.InsertL(uri, index);
-	    
+	    iSearchUri.InsertL(uri, index);   
     }
     
     // Read number of display fields
@@ -301,6 +297,4 @@ EXPORT_C void CPsSettings::InternalizeL(RReadStream& aStream)
     // Read Number of contacts that will be displayed to the client
     iMaxResults = aStream.ReadInt16L();
     iSortType = (TSortType)aStream.ReadInt8L();
-	
 }
-

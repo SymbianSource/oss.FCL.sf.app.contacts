@@ -127,6 +127,7 @@ const TUint KFieldIds[] =
     R_VPBK_FIELD_TYPE_VOIPGEN,
     R_VPBK_FIELD_TYPE_POC,
     R_VPBK_FIELD_TYPE_SWIS,
+    R_VPBK_FIELD_TYPE_SIP,
     R_VPBK_FIELD_TYPE_PAGERNUMBER,
     R_VPBK_FIELD_TYPE_ASSTPHONE,
     R_VPBK_FIELD_TYPE_CARPHONE,
@@ -477,6 +478,7 @@ void CSpeedDialPrivate::InitBmpArray()
 		
 		delete iImageManager;
 		delete iWait;
+        delete iWaitFetchmail;
 		delete iContact;
 		delete iContactLinkArray;
 		delete iSpeedDial;
@@ -2067,7 +2069,7 @@ TBool CSpeedDialPrivate::ShowRemoveL( TInt aIndex )
 
 	TBool aReturn = EFalse;
 		
-	if ( (*iSdmArray)[aIndex].Contact()!= NULL )
+    if ( (!CheckSpaceBelowCriticalLevelL() )&&( (*iSdmArray)[aIndex].Contact()!= NULL ))
 	{
 		iState = STATE_REMOVE;
 		if((*iSdmArray)[aIndex].Field() != NULL)

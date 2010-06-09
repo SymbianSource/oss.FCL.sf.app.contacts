@@ -239,7 +239,8 @@ EXPORT_C void CPcsDebug::PrintMatchSet(const TDesC& aPreTxt, CDesCArray& aMatchS
 {
     for ( TInt i = 0; i < aMatchSet.Count(); i++ )
     {
-        PRINT4 ( _L("%SMatchSet[%d]=%S, Length=%d"), &aPreTxt, i, &aMatchSet[i], aMatchSet[i].Length() );
+        TPtrC16 ptr = aMatchSet.MdcaPoint(i);
+        PRINT4 ( _L("%SMatchSet[%d]=%S, Length=%d"), &aPreTxt, i, &ptr, aMatchSet[i].Length() );
     }
 }
 

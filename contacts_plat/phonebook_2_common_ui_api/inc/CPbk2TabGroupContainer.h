@@ -23,7 +23,7 @@
 #include <e32base.h>
 #include <AknTabObserver.h>
 #include <w32std.h>
-#include <pbk2viewinfo.hrh>
+#include <Pbk2ViewInfo.hrh>
 #include <AknNaviDecoratorObserver.h>
 
 // FORWARD DECLARATIONS

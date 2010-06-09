@@ -12,7 +12,7 @@
 * Contributors:
 *
 * Description:  Implementation of details view plugin
-*  Version     : %version: he1s60#23.1.1.2.17 %
+*  Version     : %version: be1s60pr#23.1.1.2.18 %
 *
 */
 
@@ -507,13 +507,40 @@ void CCCAppDetailsViewPlugin::StoreReady(MVPbkContactStore& aContactStore)
 // --------------------------------------------------------------------------
 //
 void CCCAppDetailsViewPlugin::StoreUnavailable(
-    MVPbkContactStore& /*aContactStore*/,
+    MVPbkContactStore& aContactStore,
     TInt /*aReason*/)
 {
-    if (iSchedulerWait.IsStarted())
-    {
-        iSchedulerWait.AsyncStop();
-    }
+    if( iLink )
+        {
+        TVPbkContactStoreUriPtr linkuri = 
+                iLink->ContactStore().StoreProperties().Uri();
+        
+        TVPbkContactStoreUriPtr uri = aContactStore.StoreProperties().Uri();
+        
+        if( linkuri.Compare( uri, 
+                TVPbkContactStoreUriPtr::EContactStoreUriAllComponents ) == 0 )
+            {
+            /*
+             * When the end user is selecting a phone contact, the SIM store 
+             * will be opened during opening phone stores, and this function is 
+             * called if the SIM store is unavailable.However the scheduler wait
+             * object can not stop during the operation (phone contact 
+             * selecting), since the program is keeping on waiting for the 
+             * other call backs coming.
+             */
+            if (iSchedulerWait.IsStarted())
+                {
+                iSchedulerWait.AsyncStop();
+                }
+            }
+        }
+    else
+        {
+        if (iSchedulerWait.IsStarted())
+            {
+            iSchedulerWait.AsyncStop();
+            }
+        }
 }
 
 // --------------------------------------------------------------------------

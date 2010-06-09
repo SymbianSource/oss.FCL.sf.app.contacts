@@ -18,4 +18,5 @@ EXPORTS
 	?Version@CPSRequestHandler@@QBE?AVTVersion@@XZ @ 17 NONAME ; class TVersion CPSRequestHandler::Version(void) const
 	?CancelSearch@CPSRequestHandler@@QAEXXZ @ 18 NONAME ; void CPSRequestHandler::CancelSearch(void)
 	?LookupMatchL@CPSRequestHandler@@QAEXABVCPsQuery@@ABVTDesC16@@AAVTDes16@@@Z @ 19 NONAME ; void CPSRequestHandler::LookupMatchL(class CPsQuery const &, class TDesC16 const &, class TDes16 &)
+	?GetAdaptiveGridCharactersL@CPSRequestHandler@@QAEXABVMDesC16Array@@ABVTDesC16@@HAAVTDes16@@@Z @ 20 NONAME ; void CPSRequestHandler::GetAdaptiveGridCharactersL(class MDesC16Array const &, class TDesC16 const &, int, class TDes16 &)
 

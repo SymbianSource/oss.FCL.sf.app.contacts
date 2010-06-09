@@ -119,8 +119,11 @@ NONSHARABLE_CLASS( CVPbkTopContactOperation ) : public CActive,
          * @param aErrorObserver Error observer is notified in case of an error
          * @param aOperation valid values EAddToTop,
          *                                ERemoveFromTop,
-         *                                EReorderTop
-         * 
+         *                                EReorderTop                                
+         * @param aTopView Top contact view which already has been constructed. 
+         *                 If a NULL value is passed, own top contact view is 
+         *                 constructed.
+         *                
          * @return Contact operation handle 
          */
         static MVPbkContactOperationBase* NewTopOperationL(
@@ -128,7 +131,10 @@ NONSHARABLE_CLASS( CVPbkTopContactOperation ) : public CActive,
                 const MVPbkContactLinkArray& aContactLinks,
                 MVPbkOperationObserver& aObserver,
                 MVPbkOperationErrorObserver& aErrorObserver,
-                TTopOperation aOperation );
+                TTopOperation aOperation,
+                MVPbkContactViewBase* aViewRef = NULL
+                );
+          
         
         /**
          * Destructor. Cancels any ongoing requests.
@@ -273,6 +279,9 @@ NONSHARABLE_CLASS( CVPbkTopContactOperation ) : public CActive,
 
         CVPbkContactManager& iContactManager; // not owned
         MVPbkContactViewBase* iView; // owned
+        //  A handle to externally provided top contact view
+        MVPbkContactViewBase* iViewRef; // Not owned.
+        
         MVPbkContactStore* iContactStore; // not owned
         CVPbkContactLinkArray* iInputLinks; // owned
         RPointerArray<MVPbkStoreContact> iContacts; // owns the contacts

@@ -256,6 +256,18 @@ void  CPcsAlgorithm1::PerformSearchL(const CPsSettings& aSettings,
 	
 	__LATENCY_MARK ( _L("CPcsAlgorithm1::PerformSearchL") );
 
+    // Check aSettings   
+    RPointerArray<TDesC> searchUris;
+    CleanupResetAndDestroyPushL( searchUris );
+    aSettings.SearchUrisL(searchUris);
+         
+    if ( searchUris.Count() <= 0)
+    {
+        PRINT ( _L("searchUris.Count() <= 0, Leave from CPcsAlgorithm1::PerformSearchL") );
+        User::Leave(KErrArgument); 
+    }
+    CleanupStack::PopAndDestroy( &searchUris ); // ResetAndDestroy
+  
 	// Local arrays to hold the search results 
 	RPointerArray<CPsData> tempSearchResults;
 	CleanupClosePushL( tempSearchResults );
@@ -502,8 +514,8 @@ void  CPcsAlgorithm1::SearchInputL(CPsQuery& aQuery,
 // Search function for input string, result also as string
 // ----------------------------------------------------------------------------
 void CPcsAlgorithm1::SearchMatchStringL( CPsQuery& aSearchQuery,
-                            TDesC& aSearchData,
-                            TDes& aMatch )
+                                         TDesC& aSearchData,
+                                         TDes& aMatch )
     {
     PRINT ( _L("Enter CPcsAlgorithm1::SearchMatchStringL") );
 
@@ -752,7 +764,7 @@ TInt CPcsAlgorithm1::GetCacheIndex(const TDesC& aDataStore)
     	if ( cache->GetURI().CompareC(aDataStore) == 0 ) return i;
     }
     
-	return -1;
+	return KErrNotFound;
 }
 
 // ----------------------------------------------------------------------------
@@ -763,7 +775,7 @@ void CPcsAlgorithm1::AddDataStore(TDesC& aDataStore)
 {
     // Check if the datastore cache already exists
     TInt index = GetCacheIndex(aDataStore);
-    if ( index != -1 )
+    if ( index != KErrNotFound )
     {
     	// Already exists
     	return;
@@ -1230,10 +1242,10 @@ void CPcsAlgorithm1::GetSortOrderL ( TDesC& aURI,
 void CPcsAlgorithm1::ChangeSortOrderL ( TDesC& aURI,
                                         RArray<TInt>& aSortOrder )
 {
-    PRINT ( _L("Enter CPcsAlgorithm1::ChangeSortOrderL.") );
+    PRINT ( _L("Enter CPcsAlgorithm1::ChangeSortOrderL") );
     
     PRINT ( _L("CPcsAlgorithm1::ChangeSortOrderL. Sort order change received.") );
-    PRINT1 ( _L("URI = %S"), &aURI );
+    PRINT1 ( _L("CPcsAlgorithm1::ChangeSortOrderL. URI = %S"), &aURI );
     
     // If URI is search in a group URI return
     if ( CPcsAlgorithm1Utils::IsGroupUri(aURI) )
@@ -1298,7 +1310,127 @@ void CPcsAlgorithm1::ChangeSortOrderL ( TDesC& aURI,
 		return;
 	}
 	
-	PRINT ( _L("End CPcsAlgorithm1::ChangeSortOrderL.") );
+	PRINT ( _L("End CPcsAlgorithm1::ChangeSortOrderL") );
+}
+
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm1::GetAdaptiveGridL
+// 
+// ----------------------------------------------------------------------------
+void CPcsAlgorithm1::GetAdaptiveGridL( const MDesCArray& aURIs,
+                                       const TBool aCompanyName,
+                                       TDes& aAdaptiveGrid )
+{
+    PRINT ( _L("Enter CPcsAlgorithm1::GetAdaptiveGridL") );
+
+    PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Request of Adaptive Grid for %d URI(s)"),
+             aURIs.MdcaCount() );
+
+    RArray<TInt> cacheIds;
+    CleanupClosePushL( cacheIds );
+
+    // Create the list of the cache indexes that will form the Adaptive Grid
+    for ( TInt i=0; i < aURIs.MdcaCount(); i++ )
+    {
+        TPtrC16 uri = aURIs.MdcaPoint(i);
+
+        // If URI is a group URI skip it
+        if ( CPcsAlgorithm1Utils::IsGroupUri( uri ) )
+        {
+            PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Adaptive Grid for URI \"%S\" is not supported. Skipping"),
+                     &uri );
+            continue;
+        }
+
+        TInt cacheIndex = GetCacheIndex( uri );
+        if ( cacheIndex == KErrNotFound )
+        {
+            PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Cache for URI \"%S\" doesn't exist"),
+                     &uri );
+            continue;
+        }
+
+        PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Cache for URI \"%S\" will be used to form the Adaptive Grid"),
+                 &uri );
+
+        cacheIds.AppendL( cacheIndex );
+    }
+
+    PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Number of caches that will be used to form the grid is %d"),
+             cacheIds.Count( ) );
+
+    // Create the Adaptive Grid from the cache(s)
+    if ( cacheIds.Count() == 1 ) // No merge if we have only one cache
+        {
+        // Cache instance for this URI
+        CPcsCache* cache = iPcsCache[cacheIds[0]];
+
+        // Get the Adaptive Grid    
+        cache->GetAdaptiveGridL( aCompanyName, aAdaptiveGrid );
+
+        PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Adaptive Grid: \"%S\" (No merge was needed)"),
+                 &aAdaptiveGrid );
+        }
+    else if ( cacheIds.Count() > 1 ) // Merge if we have more than one cache
+        {
+        RArray<TChar> gridAll;
+        CleanupClosePushL( gridAll );
+        TUint gridSize = 0;
+
+        HBufC16* gridOne = HBufC::NewLC(KPsAdaptiveGridStringMaxLen);
+        TPtr16 gridOnePtr( gridOne->Des( ));
+
+        TLinearOrder<TChar> rule( CPcsAlgorithm1Utils::CompareByCharacter );
+
+        // Loop through the caches that form the Adaptive Grid
+        for ( TUint i=0;
+              gridSize < KPsAdaptiveGridStringMaxLen && i < cacheIds.Count();
+              i++ )
+            {
+            // Cache instance for this URI
+            CPcsCache* cache = iPcsCache[cacheIds[i]];
+
+            // Get the Adaptive Grid    
+            gridOnePtr.Zero();
+            cache->GetAdaptiveGridL( aCompanyName, gridOnePtr );
+
+            PRINT2 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Adaptive Grid for cache \"%S\" is \"%S\""),
+                     &cache->GetURI(), &gridOnePtr );
+
+            // Loop through the characters of the Adaptive Grid for the cache
+            for ( TUint j=0;
+                  gridSize < KPsAdaptiveGridStringMaxLen && j < gridOnePtr.Length();
+                  j++ )
+                {
+                if ( i == 0 ) // Grid from one cache is already ordered with no repetitions
+                    {
+                    gridAll.Append( gridOnePtr[j]);
+                    }
+                else // Grids from more caches can have repeated characters
+                    {
+                    gridAll.InsertInOrder( gridOnePtr[j], rule ); // No repeats !!! 
+                    }
+                gridSize++;
+                }
+            }
+
+        // Form the Adaptive Grid to be returned
+        aAdaptiveGrid.Zero();
+        for ( TUint i=0; i < gridAll.Count(); i++ )
+            {
+            aAdaptiveGrid.Append( gridAll[i] );
+            }
+
+        PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Adaptive Grid: \"%S\" (Merge was done)"),
+                 &aAdaptiveGrid );
+        
+        CleanupStack::PopAndDestroy( gridOne );
+        CleanupStack::PopAndDestroy( &gridAll ); // Close
+        }
+
+    CleanupStack::PopAndDestroy( &cacheIds ); // Close
+    
+    PRINT ( _L("End CPcsAlgorithm1::GetAdaptiveGridL") );
 }
 
 // ---------------------------------------------------------------------------------
@@ -1578,5 +1710,6 @@ void CPcsAlgorithm1::DoLaunchPluginsL()
     
     CleanupStack::PopAndDestroy( &dataStores ); // Close
     }
+
 // End of file
 

@@ -33,13 +33,15 @@ SOURCEPATH      ../src
 SOURCE          proxy.cpp
 SOURCE          CPcsAlgorithm1.cpp
 SOURCE          CPcsAlgorithm1Helper.cpp
-SOURCE		CPcsAlgorithm1FilterHelper.cpp
+SOURCE          CPcsAlgorithm1FilterHelper.cpp
 SOURCE          CPcsAlgorithm1MultiSearchHelper.cpp
 SOURCE          CPcsAlgorithm1Utils.cpp
 SOURCE          CPcsCache.cpp
 SOURCE	        CPcsPoolElement.cpp
 SOURCE          CPcsKeyMap.cpp
 SOURCE 	        CPsDataPluginInterface.cpp
+SOURCE 	        CPcsAdaptiveGrid.cpp
+SOURCE 	        CPcsAdaptiveGridItem.cpp
 
 USERINCLUDE     ../inc
 USERINCLUDE     ../../inc
@@ -54,8 +56,8 @@ LIBRARY         efsrv.lib
 LIBRARY         estor.lib
 LIBRARY         flogger.lib
 LIBRARY         bafl.lib
-LIBRARY			gdi.lib 
+LIBRARY         gdi.lib 
 
 LIBRARY	    	PcsUtils.lib
 LIBRARY	        ptiengine.lib
-LIBRARY      centralrepository.lib
+LIBRARY         centralrepository.lib

@@ -180,6 +180,15 @@ TInt CSpbContactDataModelPrivate::PresentationFieldIndex( TInt aListIndex )
     return iListIndxToPresentationIndx[ aListIndex ];
     }
 
+// ---------------------------------------------------------------------------
+// CSpbContactDataModelPrivate::ListIndex
+// ---------------------------------------------------------------------------
+//
+TInt CSpbContactDataModelPrivate::ListIndex( TInt aPresentationIndex )
+    {
+    return iListIndxToPresentationIndx.Find( aPresentationIndex );
+    }
+
 // --------------------------------------------------------------------------
 // CSpbContactDataModelPrivate::ExternalizeL
 // --------------------------------------------------------------------------

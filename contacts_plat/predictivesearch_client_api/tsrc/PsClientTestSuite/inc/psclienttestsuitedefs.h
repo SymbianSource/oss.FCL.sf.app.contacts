@@ -78,6 +78,7 @@ _LIT(KSearchExpectedMatchLocations, "MATCHLOC");       // Expected match locatio
 _LIT(KSearchOnInputString,          "IPSTR");          // The Input string tag for search in input string
 _LIT(KExpectedResultString,         "RESSTR");         // Expected string result 
 _LIT(KSearchExpectedResultForInput, "RESIP");          // Expected result (For input search string case)
+_LIT(KInputBoolean,                 "BOOL");           // Input Boolean for cases that need it
 
 // The enumeration used to specify the type of test case
 enum TTestCase

@@ -24,6 +24,7 @@
 #include <s32mem.h>
 #include <e32hashtab.h>
 #include <e32property.h>
+#include <bamdesca.h>
 #include <centralrepository.h>
 
 #include "PSAlgorithmInternalCRKeys.h"
@@ -78,17 +79,17 @@ class CPcsAlgorithm1 : public CPcsPlugin,
 		/**
 		* Search Function for input string
 		*/
-		void SearchInputL(CPsQuery& aSearchQuery,
-						  TDesC& aSearchData,
-						  RPointerArray<TDesC>& aMatchSet,
-						  RArray<TPsMatchLocation>& aMatchLocation ); 
+		void SearchInputL( CPsQuery& aSearchQuery,
+						   TDesC& aSearchData,
+						   RPointerArray<TDesC>& aMatchSet,
+						   RArray<TPsMatchLocation>& aMatchLocation ); 
 		
         /**
         * Performs search on a input string, and return result also as a string 
         */
-        void  SearchMatchStringL( CPsQuery& aSearchQuery,
-                                    TDesC& aSearchData,
-                                    TDes& aMatch ); 
+        void SearchMatchStringL( CPsQuery& aSearchQuery,
+                                 TDesC& aSearchData,
+                                 TDes& aMatch ); 
 		
 		/**
 		* Returns ETrue if this language is supported
@@ -110,7 +111,13 @@ class CPcsAlgorithm1 : public CPcsPlugin,
 		*/
 		void ChangeSortOrderL(TDesC& aURI, RArray<TInt>& aSortOrder);
 		
-		
+        /**
+        * Get the Adaptive Grid for one or more URIs
+        */
+        void GetAdaptiveGridL( const MDesCArray& aURIs,
+                               const TBool aCompanyName,
+                               TDes& aAdaptiveGrid );
+
 		// --------------------------------------------------------------------
          
 	public:

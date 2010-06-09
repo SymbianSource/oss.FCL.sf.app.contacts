@@ -168,6 +168,11 @@ void CPcsSession::DoServiceL(const RMessage2& aMessage)
 			ChangeSortOrderL(aMessage);
 			break;
 
+        case EGetAdaptiveGrid:
+            PRINT ( _L("Received function EGetAdaptiveGrid") );
+			GetAdaptiveGridL(aMessage);
+			break;
+
 	    case EShutdown:
 		    PRINT ( _L("Received function EShutdown") );
 			ShutdownServerL(aMessage);
@@ -246,8 +251,8 @@ void CPcsSession::GetAsyncPcsResultsL(const RMessage2& aMessage)
 
 	    // -------------------------------------------------------------
 
-        RPointerArray<CPsClientData>  searchResults;
-        RPointerArray<CPsPattern>     searchSeqs;
+        RPointerArray<CPsClientData> searchResults;
+        RPointerArray<CPsPattern> searchSeqs;
 
         iServer->PluginInterface()->PerformSearchL(*iSettings,
                                                    *psQuery,
@@ -330,11 +335,9 @@ void CPcsSession::GetAsyncPcsResultsL(const RMessage2& aMessage)
         iDes = NULL;
     }
 
-
     PRINT ( _L("End CPcsSession::GetAsyncPcsResultsL") );
 
     __LATENCY_MARKEND ( _L("CPcsSession::GetAsyncPcsResultsL") );
-
 }
 
 // ----------------------------------------------------------------------------
@@ -384,7 +387,6 @@ void CPcsSession::SearchInputL(const RMessage2& aMessage)
 	                                         *data,
 	                                         searchSeqs,
 	                                         sequenceLoc);
-
 
     // Delete the search query and search data
 	CleanupStack::PopAndDestroy( data );
@@ -449,7 +451,6 @@ void CPcsSession::SearchInputL(const RMessage2& aMessage)
 	
     PRINT ( _L("End CPcsSession::SearchInputL") );
     __LATENCY_MARKEND ( _L("CPcsSession::SearchInputL") );
-
 }
 
 // ----------------------------------------------------------------------------
@@ -487,7 +488,7 @@ void CPcsSession::SearchMatchStringL(const RMessage2& aMessage)
     // Data to be searched
     // Read data size
     TUint16 szData = searchDataStream.ReadUint16L();
-    HBufC* data =  HBufC::NewL(searchDataStream, szData);
+    HBufC* data = HBufC::NewL(searchDataStream, szData);
 
     // searchQueryStream, searchQuery
     CleanupStack::PopAndDestroy(2, searchData);
@@ -495,10 +496,7 @@ void CPcsSession::SearchMatchStringL(const RMessage2& aMessage)
 
     // -------------------------------------------------------------
 
-    iServer->PluginInterface()->SearchMatchStringL(*psQuery,
-                                                   *data,
-                                                   ptr);
-
+    iServer->PluginInterface()->SearchMatchStringL( *psQuery, *data, ptr );
 
     // Delete the search query and search data
     CleanupStack::PopAndDestroy( data );
@@ -510,7 +508,6 @@ void CPcsSession::SearchMatchStringL(const RMessage2& aMessage)
     
     PRINT ( _L("End CPcsSession::SearchMatchStringL") );
     __LATENCY_MARKEND ( _L("CPcsSession::SearchMatchStringL") );
-
 }
 
 // ----------------------------------------------------------------------------
@@ -593,8 +590,6 @@ void CPcsSession::GetDataOrderL(const RMessage2& aMessage)
 
     // URI
     HBufC* uri = HBufC::NewLC(stream, uriSize);
-
-    
 
     // --------------------------------------------------------------
 
@@ -762,6 +757,71 @@ void CPcsSession::ChangeSortOrderL(const RMessage2& aMessage)
 }
 
 // ----------------------------------------------------------------------------
+// CPcsSession::GetAdaptiveGridL
+//
+// ----------------------------------------------------------------------------
+void CPcsSession::GetAdaptiveGridL(const RMessage2& aMessage)
+{
+    PRINT ( _L("Enter CPcsSession::GetAdaptiveGridL") );
+    __LATENCY_MARK ( _L("CPcsSession::GetAdaptiveGridL") );
+
+    // Create the result output buffer
+    HBufC* outBuf = HBufC::NewLC( KBufferMaxLen );
+    TPtr outBufPtr( outBuf->Des() );
+
+    // ------- Read the Data Stores from the message -------
+    
+    // Read URIs from the message
+    HBufC8* buffer = HBufC8::NewLC(KBufferMaxLen);
+
+    TPtr8 bufferPtr(buffer->Des());
+    aMessage.ReadL(0, bufferPtr);
+
+    // Stream over the buffer
+    RDesReadStream stream(bufferPtr);
+    stream.PushL();
+
+    // Number of URIs
+    TUint16 uriCount = stream.ReadUint16L();
+
+    CDesCArrayFlat* dataStores = NULL;
+    dataStores = new (ELeave) CDesCArrayFlat( uriCount );
+    CleanupStack::PushL( dataStores );
+
+    for (TUint i = 0; i < uriCount; i++ )
+        {
+        // Size of URI
+        TUint16 uriSize = stream.ReadUint16L();
+    
+        // URI
+        HBufC* uri = HBufC::NewLC( stream, uriSize );
+        dataStores->AppendL( *uri );
+        CleanupStack::PopAndDestroy( uri );
+        }
+    
+    // -----------------------------------------------------
+    
+    // Read the Company Name from the message
+    TBool companyName = aMessage.Int1();
+    
+    // Get the Adaptive Grid
+    iServer->PluginInterface()->GetAdaptiveGridL( *dataStores, companyName, outBufPtr );
+
+    // Write the Adaptive Grid to the message
+    aMessage.Write( 2, *outBuf );
+    aMessage.Complete( KErrNone );
+
+    // Cleanup
+    CleanupStack::PopAndDestroy( dataStores );
+    CleanupStack::PopAndDestroy( &stream ); 
+    CleanupStack::PopAndDestroy( buffer ); 
+    CleanupStack::PopAndDestroy( outBuf );
+    
+    PRINT ( _L("End CPcsSession::GetAdaptiveGridL") );
+    __LATENCY_MARKEND ( _L("CPcsSession::GetAdaptiveGridL") );
+}
+
+// ----------------------------------------------------------------------------
 // CPcsSession::ShutdownServerL
 //
 // ----------------------------------------------------------------------------
@@ -781,7 +841,15 @@ void CPcsSession::ShutdownServerL(const RMessage2& aMessage)
 // ----------------------------------------------------------------------------
 CPsQuery* CPcsSession::ReadQueryLC( TInt aParam, const RMessage2& aMessage )
 {
+    PRINT( _L("Enter CPcsSession::ReadQueryLC") );
     TInt size = aMessage.GetDesLength( aParam );
+
+    if(size < 0)
+    {
+        PRINT ( _L("DesLength <0, Leave from  CPcsSession::ReadQueryLC"));
+        User::Leave(KErrArgument);
+    }
+
     HBufC8* tempBuf = HBufC8::NewLC( size );
 
     TPtr8 ptr( tempBuf->Des() );
@@ -801,6 +869,7 @@ CPsQuery* CPcsSession::ReadQueryLC( TInt aParam, const RMessage2& aMessage )
     CleanupStack::PopAndDestroy( &stream );
     CleanupStack::PopAndDestroy( tempBuf );
     CleanupStack::PushL( psQuery );
-    
+	
+    PRINT ( _L("End CPcsSession::ReadQueryLC") );
     return psQuery;
 }

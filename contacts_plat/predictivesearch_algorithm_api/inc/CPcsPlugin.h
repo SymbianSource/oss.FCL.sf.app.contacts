@@ -22,6 +22,7 @@
 //  INCLUDES
 #include <e32base.h>
 #include <s32mem.h>
+#include <bamdesca.h>
 #include <ecom/ecom.h>
 #include <CPsData.h>
 #include <CPsClientData.h>
@@ -35,7 +36,7 @@
 class CPcsPlugin: public CBase
 {
 
-	public: 
+	public:
 
 		/**
 		* Ecom interface static factory method implementation.
@@ -56,12 +57,12 @@ class CPcsPlugin: public CBase
 		*/
 		virtual ~CPcsPlugin();
 
-	public: 
+	public:
 
 		/**
 		* Gets the plugin id.
 		* @return Id of the plugin.
-		*/   
+		*/
 		inline TUid PluginId() const;
 
 		/**
@@ -72,11 +73,11 @@ class CPcsPlugin: public CBase
 		virtual void  PerformSearchL( const CPsSettings& aPcsSettings,
 				                      CPsQuery& aCondition,
 				                      RPointerArray<CPsClientData>& aData,
-				                      RPointerArray<CPsPattern>& aPattern) = 0;				                      	                                                                          
+				                      RPointerArray<CPsPattern>& aPattern) = 0;
 
 		/**
 		* Performs search on a input string
-		* Implementation needs to be provided by the algorithm classes 
+		* Implementation needs to be provided by the algorithm classes
 		*/
 		virtual void  SearchInputL( CPsQuery& aSearchQuery,
 			                        TDesC& aSearchData,
@@ -85,23 +86,23 @@ class CPcsPlugin: public CBase
 
         /**
         * Performs search on a input string, and return result also as a string
-        * Implementation needs to be provided by the algorithm classes 
+        * Implementation needs to be provided by the algorithm classes
         */
         virtual void  SearchMatchStringL( CPsQuery& aSearchQuery,
-                                    TDesC& aSearchData,
-                                    TDes& aMatch ) = 0;		
-		
+                                          TDesC& aSearchData,
+                                          TDes& aMatch ) = 0;
+
 		/**
 		* Returns ETrue if the predictive search is supported for
 		*              the local language
 		* Returns EFalse otherwise
 		*/
-		virtual TBool IsLanguageSupportedL(const TUint32 aLanguage) = 0;                                                                 	                                                      
+		virtual TBool IsLanguageSupportedL(const TUint32 aLanguage) = 0;
 
 		/**
 		* Get the data order (mapped to VPbk ids) supported for a URI
 		*/
-		virtual void GetDataOrderL(TDesC& aURI, RArray<TInt>& aDataOrder) = 0;                                                            	                                                       
+		virtual void GetDataOrderL(TDesC& aURI, RArray<TInt>& aDataOrder) = 0;
 
 		/**
 		* Get the sort order (mapped to VPbk ids) supported for a URI
@@ -112,8 +113,16 @@ class CPcsPlugin: public CBase
 		* Set the sort order (mapped to VPbk ids) supported for a URI
 		*/
 		virtual void ChangeSortOrderL(TDesC& aURI, RArray<TInt>& aDataOrder) = 0;
-	                          
-	private:    
+
+        /**
+        * Returns the Adaptive Grid for one or more URI
+        * Implementation needs to be provided by the algorithm classes
+        */
+        virtual void GetAdaptiveGridL( const MDesCArray& aURIs,
+                                       const TBool aCompanyName,
+                                       TDes& aAdaptiveGrid ) = 0;
+
+	private:
 
 		TUid iPluginId;
 		TUid iDtor_ID_Key;

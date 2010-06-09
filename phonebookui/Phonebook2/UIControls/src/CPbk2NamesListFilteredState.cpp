@@ -1085,9 +1085,7 @@ void CPbk2NamesListFilteredState::UpdateAdaptiveSearchGridL()
         return;
     	}
 	
-    iAdaptiveSearchGridFiller->StopFilling();
-    iAdaptiveSearchGridFiller->ClearCache();
-    iAdaptiveSearchGridFiller->StartFilling( iViewStack.BaseView(), FindTextL() );
+    iAdaptiveSearchGridFiller->StartFillingL( iViewStack.BaseView(), FindTextL(), ETrue );
 	}
 
 // --------------------------------------------------------------------------

@@ -27,6 +27,7 @@
 #include "CPcsPoolElement.h"
 #include "TCacheInfo.h"
 #include "CPcsDefs.h"
+#include "CPcsAdaptiveGrid.h"
 
 // CLASS DECLARATION
 class CPcsCache : public CBase
@@ -115,9 +116,14 @@ class CPcsCache : public CBase
 		void GetIndexOrder(RArray<TInt>& aIndexOrder);
 		
         /**
-         * Resort data according to the new sortorder
-         */
+        * Resort data according to the new sortorder
+        */
         void ResortdataInPoolsL();
+        
+        /**
+        * Returns the Adaptive Grid
+        */  
+        void GetAdaptiveGridL( const TBool aCompanyName, TDes& aAdaptiveGrid );
 
 	private:
 
@@ -150,6 +156,11 @@ class CPcsCache : public CBase
          * Utility function
          */
         void ComputeIndexOrder();
+        
+        /**
+         * Matches Adaptive Grid Item Selector
+         */
+        TUint GridItemSelector( TInt aIndex, TBool& aUnnamed );
         
 	private:
 
@@ -210,6 +221,10 @@ class CPcsCache : public CBase
 		*/
 		RArray<TInt> iIndexOrder;
 		
+		/**
+		* Grid characters with reference counters.
+		*/
+		CPcsAdaptiveGrid* iAdaptiveGridMap;
 };
 
 

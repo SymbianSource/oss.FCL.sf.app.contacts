@@ -55,6 +55,15 @@ EXPORT_C TInt CSpbContactDataModel::PresentationFieldIndex( TInt aListIndex )
     return iImpl->PresentationFieldIndex( aListIndex );
     }
 
+// ---------------------------------------------------------------------------
+// CSpbContactDataModel::PresentationFieldIndex
+// ---------------------------------------------------------------------------
+//
+EXPORT_C TInt CSpbContactDataModel::ListIndex( TInt aPresentationIndex )
+    {
+    return iImpl->ListIndex( aPresentationIndex );
+    }
+
 // --------------------------------------------------------------------------
 // CSpbContactDataModel::ExternalizeL
 // --------------------------------------------------------------------------

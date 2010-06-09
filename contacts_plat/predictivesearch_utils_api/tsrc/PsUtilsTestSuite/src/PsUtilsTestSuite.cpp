@@ -16,7 +16,6 @@
 */
 
 
-
 // SYSTEM INCLUDES
 #include <Stiftestinterface.h>
 #include <SettingServerClient.h>
@@ -32,9 +31,7 @@
 // might leave.
 // -----------------------------------------------------------------------------
 //
-CPsUtilsTestSuite::CPsUtilsTestSuite( 
-    CTestModuleIf& aTestModuleIf ):
-        CScriptBase( aTestModuleIf )
+CPsUtilsTestSuite::CPsUtilsTestSuite( CTestModuleIf& aTestModuleIf ): CScriptBase( aTestModuleIf )
     {
     }
 
@@ -78,18 +75,16 @@ void CPsUtilsTestSuite::ConstructL()
         }
 
     iLog = CStifLogger::NewL( KPsTestSuiteLogPath, 
-                          logFileName,
-                          CStifLogger::ETxt,
-                          CStifLogger::EFile,
-                          EFalse );
-
+                              logFileName,
+                              CStifLogger::ETxt,
+                              CStifLogger::EFile,
+                              EFalse );
     }
 
 // -----------------------------------------------------------------------------
 // Two-phased constructor.
 // -----------------------------------------------------------------------------
-CPsUtilsTestSuite* CPsUtilsTestSuite::NewL( 
-    CTestModuleIf& aTestModuleIf )
+CPsUtilsTestSuite* CPsUtilsTestSuite::NewL( CTestModuleIf& aTestModuleIf )
     {
     CPsUtilsTestSuite* self = new (ELeave) CPsUtilsTestSuite( aTestModuleIf );
 
@@ -98,22 +93,19 @@ CPsUtilsTestSuite* CPsUtilsTestSuite::NewL(
     CleanupStack::Pop();
 
     return self;
-
     }
 
 // -----------------------------------------------------------------------------
 // Destructor
 // -----------------------------------------------------------------------------
 CPsUtilsTestSuite::~CPsUtilsTestSuite()
-{ 
-
+    {
     // Delete resources allocated from test methods
     Delete();
 
     // Delete logger
     delete iLog; 
-	
-}
+    }
 
 // ========================== OTHER EXPORTED FUNCTIONS =========================
 
@@ -122,13 +114,9 @@ CPsUtilsTestSuite::~CPsUtilsTestSuite()
 // Returns: CScriptBase: New CScriptBase derived object
 // -----------------------------------------------------------------------------
 //
-EXPORT_C CScriptBase* LibEntryL( 
-    CTestModuleIf& aTestModuleIf ) // Backpointer to STIF Test Framework
+EXPORT_C CScriptBase* LibEntryL( CTestModuleIf& aTestModuleIf ) // Backpointer to STIF Test Framework
     {
-
     return ( CScriptBase* ) CPsUtilsTestSuite::NewL( aTestModuleIf );
-
     }
-
 
 //  End of File

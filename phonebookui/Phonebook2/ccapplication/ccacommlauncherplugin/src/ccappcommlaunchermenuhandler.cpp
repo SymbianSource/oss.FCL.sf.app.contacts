@@ -53,7 +53,10 @@ CCCAppCommLauncherMenuHandler::~CCCAppCommLauncherMenuHandler()
     // iView is deleted through the alfdisplay
     delete iPbkCmd;
     delete iAiwServiceHandler;
-    delete iInputBlock;
+    if ( iInputBlock )
+        {
+        iInputBlock->Cancel();
+        }    
     }
 
 // ---------------------------------------------------------------------------
@@ -404,8 +407,7 @@ void CCCAppCommLauncherMenuHandler::DoSelectCmdL( TBool aUseDefaultAddress )
             paramFlag,
             fullName );
 
-        CCAContactorService* contactorService = iPlugin.ContactorService();
-        contactorService->ExecuteServiceL( param );
+        iPlugin.ExecuteServiceL( param );
         CleanupStack::PopAndDestroy( 1 );// contactlinkarray
     	}
     
@@ -420,6 +422,9 @@ void CCCAppCommLauncherMenuHandler::DoEditCmdL()
     {
     CCA_DP(KCommLauncherLogFile, CCA_L("->CCCAppCommLauncherMenuHandler::DoEditCmdL()"));
 
+    TCCAppCommandState& cmdState( iPlugin.CommandState() );
+    cmdState.SetRunningAndPushCleanupL();
+    
     // Avoid user input during Edit command execution
     if( iInputBlock )
         {
@@ -446,6 +451,8 @@ void CCCAppCommLauncherMenuHandler::DoEditCmdL()
         iAiwServiceHandler->OutParamListL(), NULL, this );
 
    CleanupStack::PopAndDestroy( popAndDestroyUs );
+   // Async AIW command -> set state to not running in HandleNotifyL.
+   cmdState.PopCleanup();
 
    CCA_DP(KCommLauncherLogFile, CCA_L("<-CCCAppCommLauncherMenuHandler::DoEditCmdL()"));
     }
@@ -458,6 +465,11 @@ void CCCAppCommLauncherMenuHandler::DoAiwCommandL( TInt aCmdId, TInt aServiceId 
     {
     CCA_DP(KCommLauncherLogFile, CCA_L("->CCCAppCommLauncherMenuHandler::DoAiwCommandL()"));
 
+    // Command state is checked in CCCAppCommLauncherPlugin::HandleCommandL 
+    // before calling the menuhandler.
+    TCCAppCommandState& cmdState( iPlugin.CommandState() );
+    cmdState.SetRunningAndPushCleanupL();
+    
     CAiwGenericParamList& inParamList = iAiwServiceHandler->InParamListL();
     TInt popAndDestroyUs = 0;
 
@@ -476,6 +488,8 @@ void CCCAppCommLauncherMenuHandler::DoAiwCommandL( TInt aCmdId, TInt aServiceId 
         iAiwServiceHandler->OutParamListL(), NULL, NULL );// not needed (so far)
 
    CleanupStack::PopAndDestroy( popAndDestroyUs );
+   // Synchronous AIW call -> state to not running.
+   cmdState.SetNotRunningAndPopCleanup();
 
    CCA_DP(KCommLauncherLogFile, CCA_L("<-CCCAppCommLauncherMenuHandler::DoAiwCommandL()"));
    }
@@ -509,6 +523,13 @@ TInt CCCAppCommLauncherMenuHandler::HandleNotifyL(
     CAiwGenericParamList& aEventParamList,
     const CAiwGenericParamList& /*aInParamList*/ )
     {
+    if ( aEventId == KAiwEventCompleted || 
+         aEventId == KAiwEventCanceled ||
+         aEventId == KAiwEventError )
+        {
+        iPlugin.CommandState().SetNotRunning();
+        }
+    
     TInt returnValue = KErrNone;
     TInt index = 0;
     const TAiwGenericParam* param = aEventParamList.FindFirst(index,

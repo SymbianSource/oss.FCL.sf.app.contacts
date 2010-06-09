@@ -75,6 +75,7 @@ public:
 public: // "From" CSpbContactDataModel
     
     TInt PresentationFieldIndex( TInt aListIndex );
+    TInt ListIndex( TInt aPresentationIndex );
     void ExternalizeL( RWriteStream& aStream ) const;
     void InternalizeL( RReadStream& aStream );
     void SetDataL( 

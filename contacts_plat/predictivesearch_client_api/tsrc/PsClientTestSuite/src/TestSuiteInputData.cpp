@@ -116,6 +116,14 @@ const TDesC& CTestSuiteInputData::ExpectedResultString() const
 }
 
 // ----------------------------------------------------------------------------
+// Returns the Input boolean (as specified in the config file)
+// ----------------------------------------------------------------------------
+TBool CTestSuiteInputData::InputBoolean() const
+{
+    return iInputBoolean;
+}
+
+// ----------------------------------------------------------------------------
 // Sets the search query
 // 
 // ----------------------------------------------------------------------------
@@ -206,7 +214,8 @@ TDesC& CTestSuiteInputData::CacheUris(TInt aIndex) const
 // Sets the cache uris
 // ----------------------------------------------------------------------------
 void CTestSuiteInputData::ApendCacheUrisL(RPointerArray<TDesC>& aCacheUriArray)
-{   iCacheUris.ResetAndDestroy();
+{
+    iCacheUris.ResetAndDestroy();
 	for(TInt i =0; i <aCacheUriArray.Count(); i++ ) 
     	iCacheUris.Append(aCacheUriArray[i]);
 }
@@ -257,7 +266,6 @@ void CTestSuiteInputData::ParseInputL(CStifItemParser& aItem)
 		    {
 		    	// Search query
 		    	ParseInputForSearchQueryL(dataPtr);
-		    
 		    }
 		    else if(optionPtr.Compare(KUriTag) == 0)
 		    {
@@ -290,6 +298,11 @@ void CTestSuiteInputData::ParseInputL(CStifItemParser& aItem)
                 // Expected result string
                 ParseInputExpectedResultStringL(dataPtr);
             }
+            else if(optionPtr.Compare(KInputBoolean) == 0)
+            {
+                // Input boolean
+                ParseInputInputBoolean(dataPtr);
+            }
 		    else if(optionPtr.Compare(KSearchExpectedResultForInput) == 0)
 		    {
 		    	// Expected results for input string search
@@ -304,15 +317,13 @@ void CTestSuiteInputData::ParseInputL(CStifItemParser& aItem)
 		    {
 		    	// Add groups to phonebook
 		    	ParseInputForAddingGroupsL(dataPtr);
-		    
 		    }
 		    else if(optionPtr.Compare(KSearchInGroup) == 0)
 		    {
 		    	// Search within a particular group
 		    	ParseInputForSearchWithinGroupL(dataPtr);
-		    
 		    }
-			 else if(optionPtr.Compare(KSortOrderTag) == 0)
+			else if(optionPtr.Compare(KSortOrderTag) == 0)
 		    {
 		    	// Search within a particular group
 		    	ParseInputForSortOrderL(dataPtr);
@@ -673,7 +684,7 @@ void CTestSuiteInputData::CreateSearchQueryL(CPsQuery& aPsQuery, TDesC& aQueryBu
  			aPsQuery.AppendL(*item);
 		}
 		
-		return ;
+		return;
 	}
 	
 	// create the query as CPsQuery object
@@ -690,7 +701,6 @@ void CTestSuiteInputData::CreateSearchQueryL(CPsQuery& aPsQuery, TDesC& aQueryBu
 // -----------------------------------------------------------------------------
 // Perform the search settings
 // -----------------------------------------------------------------------------
-
 void CTestSuiteInputData::PerformSearchSettingsL(CPsSettings& aSettings)
 {
 	RPointerArray<TDesC> databases; // list of databases
@@ -733,7 +743,6 @@ void CTestSuiteInputData::PerformSearchSettingsL(CPsSettings& aSettings)
 // This function compares the searchResults with expected results
 // The expected results are stored in iResultData
 // -----------------------------------------------------------------------------
-
 TInt CTestSuiteInputData::CompareResWithExpResL(RPointerArray<CPsClientData>& searchResults)
 {
 	TInt returnStatus = KErrNone;
@@ -849,6 +858,25 @@ void CTestSuiteInputData::ParseInputExpectedResultStringL(TDesC& aInput)
 }
 
 // -----------------------------------------------------------------------------
+// This function parses the input expected result string
+// -----------------------------------------------------------------------------
+void CTestSuiteInputData::ParseInputInputBoolean(TDesC& aInput)
+{
+    if(aInput.Compare(KTrue) == 0)
+    {
+        iInputBoolean = ETrue;
+    }
+    else if(aInput.Compare(KFalse) == 0)
+    {
+        iInputBoolean = EFalse;
+    }
+    else
+    {
+        User::Leave(KErrArgument);
+    }
+}
+
+// -----------------------------------------------------------------------------
 // Deletes all the created contacts
 // -----------------------------------------------------------------------------
 void CTestSuiteInputData::DeleteAllCreatedContactsL()
@@ -900,7 +928,6 @@ void CTestSuiteInputData::ParseInputForLanguageSupportL(TDesC& aInput)
 		iIsLangSupported = ETrue;
 	}
 	else if(langData[1]->Compare(KFalse) == 0)
-	
 	{
 		iIsLangSupported = EFalse;
 	}
@@ -969,7 +996,7 @@ TDesC& CTestSuiteInputData::GroupToBeSearched() const
 // -----------------------------------------------------------------------------
 TBool CTestSuiteInputData::TestVpbkLinkForIdL(CPSRequestHandler& aPsClientHandler,const CPsClientData& aSearchResult)
 {
-   return iContactHandler->TestVpbkLinkForIdL(aPsClientHandler,aSearchResult);
+    return iContactHandler->TestVpbkLinkForIdL(aPsClientHandler,aSearchResult);
 }
 
 // -----------------------------------------------------------------------------
