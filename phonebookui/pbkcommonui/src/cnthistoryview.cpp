@@ -31,7 +31,7 @@
 #include <hbframebackground.h>
 
 #include "cnthistoryviewitem.h"
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 
 const char *CNT_HISTORYVIEW_XML = ":/xml/contacts_history.docml";
 
@@ -70,6 +70,8 @@ Destructor
 */
 CntHistoryView::~CntHistoryView()
 {
+    mView->deleteLater();
+    
     if (mDocumentLoader) {
         delete mDocumentLoader;
         mDocumentLoader = NULL;

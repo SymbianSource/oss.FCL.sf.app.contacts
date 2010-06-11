@@ -73,7 +73,7 @@ QTM_END_NAMESPACE
 class CntSymbianDatabase;
 class CntSymbianSrvConnection;
 class CntTransformContact;
-class CntAbstractContactFilter;
+class CntSymbianFilter;
 class CntAbstractContactSorter;
 class CntRelationship;
 class CntDisplayLabel;
@@ -178,7 +178,7 @@ private:
     CntSymbianSrvConnection *m_srvConnection;
     QString m_managerUri;
     CntTransformContact *m_transformContact;
-    CntAbstractContactFilter *m_contactFilter;
+    CntSymbianFilter *m_contactFilter;
 #ifndef SYMBIAN_BACKEND_USE_SQLITE    
     CntAbstractContactSorter *m_contactSorter;
 #endif    

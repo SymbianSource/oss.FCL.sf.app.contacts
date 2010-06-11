@@ -28,7 +28,7 @@ DEPENDPATH += .
 INCLUDEPATH += .
 INCLUDEPATH += ../inc
 INCLUDEPATH += ../../phonebookengines/cntimageutility/inc
-INCLUDEPATH += ../../phonebookengines/simutility/inc
+INCLUDEPATH += ../../phonebookengines/cntsimutility/inc
 
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 
@@ -67,7 +67,7 @@ HEADERS += \
 	inc/cntabstractviewfactory.h \
 	inc/cntdefaultviewmanager.h \
 	inc/cntactionmenubuilder.h \
-	inc/cntaction.h \
+	inc/cntactionlauncher.h \
     inc/cntbaseselectionview.h \
     inc/cntcollectionview.h \
     inc/cntcollectionlistmodel.h \
@@ -100,7 +100,6 @@ HEADERS += \
     inc/cntgroupeditormodel.h \
     inc/cnthistoryview.h \
     inc/cnthistoryviewitem.h \
-    inc/cntgroupselectionpopup.h \
     inc/cntgroupdeletepopupmodel.h \
     inc/cntdetailconst.h \
     inc/cntdetaileditormodel.h \
@@ -135,7 +134,7 @@ SOURCES += \
 	src/cntdefaultviewfactory.cpp \
 	src/cntdefaultviewmanager.cpp \
 	src/cntactionmenubuilder.cpp \
-	src/cntaction.cpp \
+	src/cntactionlauncher.cpp \
     src/cntbaseselectionview.cpp \
     src/cntcollectionview.cpp \
     src/cntcollectionlistmodel.cpp \
@@ -169,7 +168,6 @@ SOURCES += \
     src/cntgroupeditormodel.cpp \
     src/cnthistoryview.cpp \
     src/cnthistoryviewitem.cpp \
-    src/cntgroupselectionpopup.cpp \
     src/cntgroupdeletepopupmodel.cpp \
     src/cntaddressmodel.cpp \
     src/cntaddressviewitem.cpp \
@@ -202,13 +200,13 @@ RESOURCES += resources\pbkcommonui.qrc
 LIBS+= -lhbcore \
        -lxqservice \
        -lqtcontacts \
-       -lmobcntmodel \
+       -lcntlistmodel \
        -lthumbnailmanagerqt \
        -lcnthistorymodel \
        -lcntmaptileservice \
        -lqtversit \
        -lcntimageutility \
-       -lsimutility \
+       -lcntsimutility \
        -lshareui
 
 # capability

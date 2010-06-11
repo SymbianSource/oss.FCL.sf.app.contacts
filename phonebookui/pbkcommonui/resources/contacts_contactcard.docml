@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hbdocument version="1.0">
     <object name="cnt:edit" type="HbAction">
-        <icon iconName="qtg_mono_add_field" name="icon"/>
+        <icon iconName="qtg_mono_edit" name="icon"/>
     </object>
     <object name="cnt:history" type="HbAction">
-        <icon iconName="qtg_mono_person_history" name="icon"/>
+        <icon iconName="qtg_mono_history" name="icon"/>
     </object>
     <object name="cnt:sendMyCard" type="HbAction">
-        <icon iconName="qtg_mono_send" name="icon"/>
+        <icon iconName="qtg_mono_send_mycard" name="icon"/>
     </object>
     <object name="cnt:activityStream" type="HbAction">
         <icon iconName="qtg_mono_person_activitystream" name="icon"/>

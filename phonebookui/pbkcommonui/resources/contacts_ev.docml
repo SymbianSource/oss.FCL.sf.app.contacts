@@ -13,7 +13,7 @@
     </object>
     
     <object name="cnt:deletecontact" type="HbAction">
-        <string locid="txt_common_menu_delete_contact" name="text" value="Delete contact"/>
+        <string locid="txt_phob_menu_delete_contact" name="text" value="Delete contact"/>
     </object>
     
     <widget name="view" type="HbView">

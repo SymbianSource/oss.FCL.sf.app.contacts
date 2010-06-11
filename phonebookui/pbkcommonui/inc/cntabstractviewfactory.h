@@ -18,7 +18,7 @@
 #define CNTABSTRACTVIEWFACTORY_H_
 
 #include <QObject>
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 
 class CntAbstractView;
 class HbMainWindow;

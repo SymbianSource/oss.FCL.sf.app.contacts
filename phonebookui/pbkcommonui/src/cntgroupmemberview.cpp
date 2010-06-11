@@ -18,7 +18,7 @@
 #include "cntgroupmemberview.h"
 #include "cntfetchcontactsview.h"
 #include "cntcontactcardheadingitem.h"
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 #include "cntimagelabel.h"
 #include "cntimageutility.h"
 #include <hbnotificationdialog.h>
@@ -34,7 +34,7 @@
 #include <hblabel.h>
 #include <hbparameterlengthlimiter.h>
 #include <thumbnailmanager_qt.h>
-#include <mobcntmodel.h>
+#include <cntlistmodel.h>
 #include <hbmainwindow.h>
 
 #include "cntdocumentloader.h"
@@ -154,13 +154,14 @@ void CntGroupMemberView::setOrientation(Qt::Orientation orientation)
 void CntGroupMemberView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
 {
     mViewManager = aMgr;
+    mArgs = aArgs;
     
     if (mView->navigationAction() != mSoftkey)
         {
         mView->setNavigationAction(mSoftkey);   
         }
         
-    QVariant contact = aArgs.value( ESelectedGroupContact );
+    QVariant contact = mArgs.value( ESelectedGroupContact );
     mGroupContact = new QContact( contact.value<QContact>() );
     
     HbMainWindow* window = mView->mainWindow();
@@ -201,10 +202,10 @@ void CntGroupMemberView::activate( CntAbstractViewManager* aMgr, const CntViewPa
     
     createModel();
     
-    if (aArgs.value(ESelectedAction).toString() == "save")
+    if (mArgs.value(ESelectedAction).toString() == "save")
     {
         QString name = getContactManager()->synthesizedDisplayLabel(*mGroupContact);
-        HbNotificationDialog::launchDialog(hbTrId("Group \"%1\" saved").arg(name));
+        HbNotificationDialog::launchDialog(HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_new_group_1_created").arg(name)));
     }
     
     mFetchView = new CntFetchContacts(mViewManager->contactManager( SYMBIAN_BACKEND ));
@@ -232,19 +233,17 @@ void CntGroupMemberView::showPreviousView()
             }
         }
     }
-    
-    CntViewParameters viewParameters;
-    mViewManager->back(viewParameters);
+    mViewManager->back(mArgs);
 }
 
 void CntGroupMemberView::openGroupActions()
 {
-    CntViewParameters viewParameters;
-    viewParameters.insert(EViewId, groupActionsView);
     QVariant var;
     var.setValue(*mGroupContact);
-    viewParameters.insert(ESelectedGroupContact, var);
-    mViewManager->changeView(viewParameters);
+    
+    mArgs.insert(EViewId, groupActionsView);
+    mArgs.insert(ESelectedGroupContact, var);
+    mViewManager->changeView(mArgs);
 }
 
 void CntGroupMemberView::manageMembers()
@@ -263,7 +262,7 @@ void CntGroupMemberView::manageMembers()
         mFetchView = new CntFetchContacts(mViewManager->contactManager( SYMBIAN_BACKEND ));
         connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleManageMembers()));
     }
-    mFetchView->setDetails(HbParameterLengthLimiter(hbTrId("txt_phob_subtitle_1_group")).arg(groupName),
+    mFetchView->setDetails(HbParameterLengthLimiter(hbTrId("txt_phob_title_members_of_1_group")).arg(groupName),
                            hbTrId("txt_common_button_save"));
     mFetchView->displayContacts(CntFetchContacts::popup,
                                 HbAbstractItemView::MultiSelection,
@@ -335,30 +334,29 @@ void CntGroupMemberView::createModel()
     
     QContactSortOrder sortOrderFirstName;
     sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,
-        QContactName::FieldFirst);
+        QContactName::FieldFirstName);
     sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
 
     QContactSortOrder sortOrderLastName;
     sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,
-        QContactName::FieldLast);
+        QContactName::FieldLastName);
     sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
 
     QList<QContactSortOrder> sortOrders;
     sortOrders.append(sortOrderFirstName);
     sortOrders.append(sortOrderLastName);
 
-    mModel = new MobCntModel(getContactManager(), rFilter, sortOrders, false);
+    mModel = new CntListModel(getContactManager(), rFilter, sortOrders, false);
     mListView->setModel(mModel);
 }
 
 void CntGroupMemberView::editGroup()
 {
-    CntViewParameters viewParameters;
-    viewParameters.insert(EViewId, groupEditorView);
+    mArgs.insert(EViewId, groupEditorView);
     QVariant var;
     var.setValue(*mGroupContact);
-    viewParameters.insert(ESelectedGroupContact, var);
-    mViewManager->changeView(viewParameters);
+    mArgs.insert(ESelectedGroupContact, var);
+    mViewManager->changeView(mArgs);
 }
 
 void CntGroupMemberView::deleteGroup()
@@ -436,15 +434,14 @@ Called after user clicked on the listview.
 */
 void CntGroupMemberView::showContactView(const QModelIndex &index)
 {
-    CntViewParameters viewParameters;
-    viewParameters.insert(EViewId, commLauncherView);
+    mArgs.insert(EViewId, commLauncherView);
     QVariant var;
     var.setValue(mModel->contact(index));
-    viewParameters.insert(ESelectedContact, var);
+    mArgs.insert(ESelectedContact, var);
     QVariant varGroup;
     varGroup.setValue(*mGroupContact);
-    viewParameters.insert(ESelectedGroupContact, varGroup);
-    mViewManager->changeView(viewParameters);
+    mArgs.insert(ESelectedGroupContact, varGroup);
+    mViewManager->changeView(mArgs);
         
 }
 
@@ -467,12 +464,12 @@ void CntGroupMemberView::removeFromGroup(const QModelIndex &index)
 
 void CntGroupMemberView::editContact(const QModelIndex &index)
 {
-    CntViewParameters viewParameters;
-    viewParameters.insert(EViewId, editView);
+
+    mArgs.insert(EViewId, editView);
     QVariant var;
     var.setValue(mModel->contact(index));
-    viewParameters.insert(ESelectedContact, var);
-    mViewManager->changeView(viewParameters);
+    mArgs.insert(ESelectedContact, var);
+    mViewManager->changeView(mArgs);
 }
 
 void CntGroupMemberView::thumbnailReady(const QPixmap& pixmap, void *data, int id, int error)
@@ -496,16 +493,15 @@ void CntGroupMemberView::openImageEditor()
     QVariant var;
     var.setValue(*mGroupContact);
                 
-    CntViewParameters viewParameters;
     // SelectedGroupContact is needed so we know which group to show
     // when we come back to this view, and selected contact is needed
     // for image editor to be able to assign the image to correct contact.
-    viewParameters.insert(ESelectedGroupContact, var);
-    viewParameters.insert(ESelectedContact, var);
+    mArgs.insert(ESelectedGroupContact, var);
+    mArgs.insert(ESelectedContact, var);
     
-    viewParameters.insert(EViewId, imageEditorView );
+    mArgs.insert(EViewId, imageEditorView );
         
-    mViewManager->changeView( viewParameters );
+    mViewManager->changeView( mArgs );
 }
 
 QContactManager* CntGroupMemberView::getContactManager()

@@ -25,8 +25,10 @@
 #include <qtcontacts.h>
 #include <hbicon.h>
 #include <cntviewparams.h>
+#include <QLocale>
 
 #include "cntstringmapper.h"
+#include <hbnumbergrouping.h>
 
 /*!
 Compare function for CntContactCardDataItem
@@ -100,12 +102,20 @@ void CntContactCardDataContainer::initializeActionsData(bool myCard)
             
             int position = getPosition(subtype, context);
             
-            CntContactCardDataItem* dataItem = new CntContactCardDataItem(mStringMapper.getContactCardListLocString(subtype, context), position, true);
-            dataItem->setAction("call");
-            dataItem->setValueText(details[i].number());
-            dataItem->setIcon(HbIcon(mStringMapper.getContactCardIconString(subtype, context)));
-            dataItem->setContactDetail(details[i]);
-            mDataItemList.append(dataItem);
+            if (position != CntContactCardDataItem::ENotSupported)
+            {       
+                CntContactCardDataItem* dataItem = new CntContactCardDataItem(mStringMapper.getContactCardListLocString(subtype, context), position, true);
+                dataItem->setAction("call");
+                /*
+                 * Internationalization support, activate the following code 
+                 * when support available from Orbit
+                 */
+                //dataItem->setValueText(HbNumberGrouping::formatPhoneNumber(details[i].number()));
+                dataItem->setValueText(details[i].number());
+                dataItem->setIcon(HbIcon(mStringMapper.getContactCardIconString(subtype, context)));
+                dataItem->setContactDetail(details[i]);
+                mDataItemList.append(dataItem);
+            }
         }
         //message
         if (availableActions.contains("message", Qt::CaseInsensitive) && supportsDetail("message", details[i]))
@@ -117,6 +127,11 @@ void CntContactCardDataContainer::initializeActionsData(bool myCard)
            
            CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_dblist_send_message"), position, true);
            dataItem->setAction("message");
+           /*
+            * Internationalization support, activate the following code 
+            * when support available from Orbit
+            */
+           //dataItem->setValueText(HbNumberGrouping::formatPhoneNumber(details[i].number()));
            dataItem->setValueText(details[i].number());
            QString icon;
            if (details[i].contexts().isEmpty())
@@ -297,6 +312,11 @@ void CntContactCardDataContainer::initializeGroupData()
     {
         CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_dblist_conference_call"), itemCount(), true);
         dataItem->setAction("call");
+        /*
+         * Internationalization support, activate the following code 
+         * when support available from Orbit
+         */
+        //dataItem->setValueText(HbNumberGrouping::formatPhoneNumber(confCallNumber.number()));
         dataItem->setValueText(confCallNumber.number());
         dataItem->setIcon(HbIcon("qtg_large_call_group"));
         dataItem->setContactDetail(confCallNumber);  
@@ -306,6 +326,11 @@ void CntContactCardDataContainer::initializeGroupData()
     //message
     CntContactCardDataItem* dataMessageItem = new CntContactCardDataItem(hbTrId("txt_phob_dblist_send_val_members"), itemCount(), true);
     dataMessageItem->setAction("message");
+    /*
+     * Internationalization support, activate the following code 
+     * when support available from Orbit
+     */
+    //dataMessageItem->setValueText(HbNumberGrouping::formatPhoneNumber(confCallNumber.number()));
     dataMessageItem->setValueText(confCallNumber.number());
     dataMessageItem->setIcon(HbIcon("qtg_large_message"));
     dataMessageItem->setContactDetail(confCallNumber);  
@@ -314,6 +339,11 @@ void CntContactCardDataContainer::initializeGroupData()
     //email
     CntContactCardDataItem* dataEmailItem = new CntContactCardDataItem(hbTrId("txt_phob_dblist_email"), itemCount(), true);
     dataEmailItem->setAction("email");
+    /*
+     * Internationalization support, activate the following code 
+     * when support available from Orbit
+     */
+    //dataEmailItem->setValueText(HbNumberGrouping::formatPhoneNumber(confCallNumber.number()));
     dataEmailItem->setValueText(confCallNumber.number());
     dataEmailItem->setIcon(HbIcon("qtg_large_email"));
     dataEmailItem->setContactDetail(confCallNumber);  
@@ -334,12 +364,15 @@ void CntContactCardDataContainer::initializeDetailsData()
         QString subtype = online.subTypes().isEmpty() ? online.definitionName() : online.subTypes().first();
         
         int position = getPosition(subtype, context);
-              
-        CntContactCardDataItem* dataItem = new CntContactCardDataItem(mStringMapper.getContactCardListLocString(subtype, context), position, false);
-        dataItem->setValueText(online.accountUri());
-        dataItem->setContactDetail(online);  
-        addSeparator(itemCount());
-        mDataItemList.append(dataItem);
+        
+        if (position != CntContactCardDataItem::ENotSupported)
+        { 
+            CntContactCardDataItem* dataItem = new CntContactCardDataItem(mStringMapper.getContactCardListLocString(subtype, context), position, false);
+            dataItem->setValueText(online.accountUri());
+            dataItem->setContactDetail(online);  
+            addSeparator(itemCount());
+            mDataItemList.append(dataItem);
+        }
     }
     
     //address
@@ -354,7 +387,7 @@ void CntContactCardDataContainer::initializeDetailsData()
         sourceAddressType = CntMapTileService::AddressPreference;
         QVariantList addressList;
         //no action
-        int position;
+        int position = CntContactCardDataItem::EOther;
         QString title;
         if (addressDetails[i].contexts().isEmpty())
         {
@@ -403,36 +436,16 @@ void CntContactCardDataContainer::initializeDetailsData()
             //Get the maptile image path
             QString imageFile = CntMapTileService::getMapTileImage(contactId, sourceAddressType);
         
-		    if ( !imageFile.isNull() )
-		    {   
-		        //Insert the imagepath in data container
-		        QVariantList maptileImage;
-                maptileImage.append(QString());
-                maptileImage.append(QString(" "));
-                maptileImage.append(QString(" "));
-    
-                //Display the maptile image
+		        if ( !imageFile.isNull() )
+		        {   
+		            //Display the maptile image
                 HbIcon icon(imageFile);
-                QIcon mapTileIcon;
-                
-                QPainter painter;
-                QPixmap baloon( HbIcon("qtg_small_location").pixmap() );                
-                QPixmap map(icon.pixmap());
-
-                //Display pin image in the center of maptile image
-                painter.begin(&map);
-                painter.drawPixmap( ( map.width()/2 ) - ( baloon.width()/ 2 ), 
-                               (( map.height()/2 )-( baloon.height())), baloon );
-               
-                painter.end();
-                mapTileIcon.addPixmap(map);
-                                
-                addSeparator(itemCount());
                 
                 CntContactCardDataItem* dataItem = new CntContactCardDataItem(QString(), position, false);
-                dataItem->setIcon(HbIcon(mapTileIcon));
+                dataItem->setIcon(icon);
+                addSeparator(itemCount());
                 mDataItemList.append(dataItem);
-		    }
+		       }
         }
     } 
     
@@ -454,7 +467,7 @@ void CntContactCardDataContainer::initializeDetailsData()
     for (int i = 0; i < birthdayDetails.count(); i++)
     {
         CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_birthday"), CntContactCardDataItem::EBirthday, false);
-        dataItem->setValueText(birthdayDetails[i].date().toString("dd MMMM yyyy"));
+        dataItem->setValueText(QLocale::system().toString(birthdayDetails[i].date()));
         dataItem->setContactDetail(birthdayDetails[i]);  
         addSeparator(itemCount());
         mDataItemList.append(dataItem);
@@ -465,7 +478,7 @@ void CntContactCardDataContainer::initializeDetailsData()
     for (int i = 0; i < anniversaryDetails.count(); i++)
     {
         CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_anniversary"), CntContactCardDataItem::EAnniversary, false);
-        dataItem->setValueText(anniversaryDetails[i].originalDate().toString("dd MMMM yyyy"));
+        dataItem->setValueText(QLocale::system().toString(anniversaryDetails[i].originalDate()));
         dataItem->setContactDetail(anniversaryDetails[i]);  
         addSeparator(itemCount());
         mDataItemList.append(dataItem);
@@ -583,7 +596,7 @@ void CntContactCardDataContainer::addSeparator(int index)
     {
         mSeparatorIndex = index;
         CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_subtitle_details"), CntContactCardDataItem::ESeparator, false);
-        mDataItemList.insert(itemCount(), dataItem);
+        mDataItemList.append(dataItem);
     }
 }
 

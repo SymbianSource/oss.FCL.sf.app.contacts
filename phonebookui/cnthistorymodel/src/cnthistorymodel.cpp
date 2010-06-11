@@ -24,6 +24,7 @@
 #include "cnthistorymodel_p.h"
 #include "cnthistorymodel.h"
 
+
 // Unnamed namespace for helper functions
 namespace
 {
@@ -113,14 +114,15 @@ QVariant CntHistoryModel::data(const QModelIndex& index, int role) const
 QVariant CntHistoryModel::displayRoleData(const HistoryItem& item) const
 {
     QStringList list;
+    HbExtendedLocale locale = d->m_extendedLocale;
     
     if (item.timeStamp.date() == QDateTime::currentDateTime().date())
     {
-        list << item.title << item.message << item.timeStamp.toString(TIME_FORMAT);
+        list << item.title << item.message << locale.format(item.timeStamp.time(), r_qtn_time_usual);
     }
     else
     {
-        list << item.title << item.message << item.timeStamp.toString(DATE_FORMAT);
+        list << item.title << item.message << locale.format(item.timeStamp.date(), r_qtn_date_usual);
     }
     
     return QVariant(list);
@@ -543,7 +545,16 @@ void CntHistoryModel::readMsgEvent(MsgItem& event, HistoryItem& item)
     
     item.flags |= Message;
     item.number = event.phoneNumber();
-    item.message = event.body();
+    
+    if (event.body().isEmpty())
+    {
+        item.message = " ";
+    }
+    else
+    {
+        item.message = event.body();
+    }
+    
     item.timeStamp = event.timeStamp().toLocalTime();
 }
 

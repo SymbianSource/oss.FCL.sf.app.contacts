@@ -34,7 +34,7 @@
 #include <hbmenu.h>
 #include <hbframebackground.h>
 #include <hbparameterlengthlimiter.h>
-#include <hbnotificationdialog.h>
+#include <hbdevicenotificationdialog.h>
 
 const char *CNT_EDIT_XML = ":/xml/contacts_ev.docml";
 
@@ -119,6 +119,7 @@ void CntEditViewPrivate::activate( CntAbstractViewManager* aMgr, const CntViewPa
     HbMainWindow* window = mView->mainWindow();
     if ( window )
     {
+        connect(window, SIGNAL(viewReady()), this, SLOT(setScrollPosition()) );
         connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
         setOrientation(window->orientation());
     }
@@ -324,7 +325,7 @@ void CntEditViewPrivate::deleteContact()
 {
     if ( mIsMyCard )
     {
-        HbMessageBox::question(hbTrId("txt_phob_info_clear_my_card"), this, 
+        HbMessageBox::question(hbTrId("txt_phob_dialog_remove_all_personal_data_from_my_c"), this, 
                 SLOT(handleDeleteContact(HbAction*)), 
                 hbTrId("txt_phob_button_clear"), 
                 hbTrId("txt_common_button_cancel"));
@@ -345,15 +346,7 @@ void CntEditViewPrivate::handleDeleteContact(HbAction *action)
     {
         QContactManager* cm = mMgr->contactManager( SYMBIAN_BACKEND );
 
-        if ( mIsMyCard )
-        {
-            mContact->clearDetails();
-            emit contactUpdated(cm->saveContact(mContact));
-        }
-        else
-        {
-            emit contactRemoved(cm->removeContact( mContact->localId() ));
-        }
+        emit contactRemoved(cm->removeContact( mContact->localId() ));
         
         mMgr->back( mArgs );
     }
@@ -397,19 +390,23 @@ void CntEditViewPrivate::saveChanges()
                     mgr->setSelfContactId( mContact->localId() );
                 }
                 
-                emit contactUpdated(success);
-                
                 QString name = mgr->synthesizedDisplayLabel( *mContact );
                 
                 if ( success )
                 {
-                    HbNotificationDialog::launchDialog(HbParameterLengthLimiter("txt_phob_dpophead_contact_1_saved").arg(name));
+                    HbDeviceNotificationDialog notificationDialog;
+                    notificationDialog.setTitle(HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contact_1_saved")).arg(name));
+                    notificationDialog.show();
                 }
                 else
                 {
                     //TODO: localization is missing
-                    HbNotificationDialog::launchDialog(qtTrId("SAVING FAILED!"));
+                    HbDeviceNotificationDialog notificationDialog;
+                    notificationDialog.setTitle(qtTrId("SAVING FAILED!"));
+                    notificationDialog.show();
                 }
+                
+                emit contactUpdated(success);
                 
                 QVariant var;
                 var.setValue(*mContact);
@@ -432,19 +429,23 @@ void CntEditViewPrivate::saveChanges()
             {
                 bool success = mgr->saveContact(mContact);
                 
-                emit contactUpdated( success );
-                
                 QString name = mgr->synthesizedDisplayLabel( *mContact );
                 
                 if ( success )
                 {
-                    HbNotificationDialog::launchDialog(HbParameterLengthLimiter("txt_phob_dpophead_contacts_1_updated").arg(name));
+                    HbDeviceNotificationDialog notificationDialog;
+                    notificationDialog.setTitle(HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contacts_1_updated")).arg(name));
+                    notificationDialog.show();
                 }
                 else
                 {
                     //TODO: localization is missing
-                    HbNotificationDialog::launchDialog(qtTrId("SAVING FAILED!"));
+                    HbDeviceNotificationDialog notificationDialog;
+                    notificationDialog.setTitle(qtTrId("SAVING FAILED!"));
+                    notificationDialog.show();
                 }
+                
+                emit contactUpdated( success );
                 
                 QVariant var;
                 var.setValue(*mContact);
@@ -494,6 +495,20 @@ void CntEditViewPrivate::loadAvatar()
         {
             mThumbnailManager->getThumbnail( url.toString() );
             break;
+        }
+    }
+}
+
+void CntEditViewPrivate::setScrollPosition()
+{
+    if ( mArgs.contains(ESelectedDetail) )
+    {
+        QContactDetail d = mArgs.value( ESelectedDetail ).value<QContactDetail>();
+        
+        QModelIndex index = mModel->itemIndex( d );
+        if ( index.isValid() )
+        {
+            mListView->scrollTo( index, HbListView::EnsureVisible );
         }
     }
 }
@@ -576,7 +591,7 @@ HbMenu* CntEditViewPrivate::createPopup( const QModelIndex aIndex, CntEditViewIt
         add->setProperty( "menu", HbAction::NewRole );
         add->setData( data );
     }
-    
+    delete map;
     return menu;
 }
 

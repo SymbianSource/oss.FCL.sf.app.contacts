@@ -20,7 +20,7 @@
 
 #include <QObject>
 #include <cntabstractview.h>
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 
 class CntEditViewPrivate;
 class CntAbstractViewManager;

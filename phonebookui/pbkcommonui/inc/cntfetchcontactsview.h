@@ -32,7 +32,7 @@ class HbLabel;
 class HbStaticVkbHost;
 class HbIndexFeedback;
 
-class MobCntModel;
+class CntListModel;
 class QGraphicsLinearLayout;
 
 QTM_BEGIN_NAMESPACE
@@ -87,7 +87,7 @@ private:
 private:
     HbDialog*                          mPopup;
     HbSearchPanel*                     mSearchPanel;
-    MobCntModel*                       mCntModel;
+    CntListModel*                      mCntModel;
     HbListView*                        mListView;
     QGraphicsLinearLayout*             mLayout;
     HbTextItem*                        mEmptyListLabel;

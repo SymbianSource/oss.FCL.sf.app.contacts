@@ -55,4 +55,19 @@ void CntNoteEditorModel::saveContactDetails()
         }
     }
 }
+
+QContactDetail CntNoteEditorModel::detail() const
+{
+    QListIterator<QContactNote> noteList(mContact->details<QContactNote>());
+    noteList.toBack(); // go through backwards, so the newest item will be returned
+    while ( noteList.hasPrevious() )
+    {
+        QContactNote note = noteList.previous();
+        if ( !note.value(QContactNote::FieldNote).isEmpty() )
+        {
+            return note;
+        }
+    }
+    return QContactNote(); // return empty address if none found
+}
 // End of File

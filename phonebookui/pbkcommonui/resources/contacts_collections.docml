@@ -2,10 +2,11 @@
 <hbdocument version="0.9">
     <object name="cnt:names" type="HbAction">
         <icon iconName="qtg_mono_contact_all" name="icon"/>
+        <bool name="checkable" value="TRUE"/>
     </object>
     <object name="cnt:groups" type="HbAction">
         <icon iconName="qtg_mono_group" name="icon"/>
-        <bool name="enabled" value="FALSE"/>
+        <bool name="checkable" value="TRUE"/>
     </object>
     <object name="cnt:find" type="HbAction">
         <icon iconName="qtg_mono_search" name="icon"/>

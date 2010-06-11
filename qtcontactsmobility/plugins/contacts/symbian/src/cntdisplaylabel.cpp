@@ -55,16 +55,6 @@ const TUint32 KOrderFirstLast = 0x00000002;
 CntDisplayLabel::CntDisplayLabel() :
     m_nameOrder(KOrderFirstLast)
 {
-#ifdef SYMBIAN_BACKEND_USE_SQLITE
-    CRepository* cenrep;
-    TRAPD(err, cenrep = CRepository::NewL(KCRUiContacts));
-    if (err == KErrNone) {
-        TInt value(-1);
-        if (cenrep->Get(KNameOrdering, value) == KErrNone) {
-            m_nameOrder = static_cast<int>(value);
-        }
-    }
-#endif
     setDisplayLabelDetails();
 }
 

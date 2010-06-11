@@ -75,7 +75,7 @@ void CntGroupDeletePopupModel::initializeGroupsList()
             {
                 if (groupName.isNull())
                     {
-                    QString unnamed(hbTrId("Unnamed"));
+                    QString unnamed(hbTrId("txt_phob_dblist_unnamed"));
                     displayList.append(unnamed);
                     }
                 else

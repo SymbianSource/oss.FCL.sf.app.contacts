@@ -2,10 +2,11 @@
 <hbdocument version="0.9">
     <object name="cnt:names" type="HbAction">
         <icon iconName="qtg_mono_contact_all" name="icon"/>
-        <bool name="enabled" value="FALSE"/>
+        <bool name="checkable" value="TRUE"/>
     </object>
     <object name="cnt:groups" type="HbAction">
         <icon iconName="qtg_mono_group" name="icon"/>
+        <bool name="checkable" value="TRUE"/>
     </object>
     <object name="cnt:find" type="HbAction">
         <icon iconName="qtg_mono_search" name="icon"/>
@@ -17,7 +18,7 @@
         <string locid="txt_phob_opt_new_contact" name="text" value="New contact"/>
     </object>
     <object name="cnt:delete" type="HbAction">
-    	<string name="text" value="Delete"/>
+    	<string locid="txt_common_opt_delete" name="text" value="Delete"/>
     </object>
     <object name="cnt:importsim" type="HbAction">
     	<string locid="txt_phob_opt_import_contacts" name="text" value="Import contacts"/>

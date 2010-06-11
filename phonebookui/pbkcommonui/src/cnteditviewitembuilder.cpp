@@ -19,6 +19,7 @@
 #include "cnteditviewdetailitem.h"
 #include "cntviewparams.h"
 #include "cntstringmapper.h"
+#include <hbnumbergrouping.h>
 
 CntEditViewItemBuilder::CntEditViewItemBuilder() :
 mMap( new CntStringMapper() )
@@ -63,7 +64,12 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::phoneNumberItems(QContact& aCont
             
             detailItem->addIcon( mMap->getContactEditorIconString(subtype, context) );
             detailItem->addText( mMap->getContactEditorLocString(subtype, context) );
-            detailItem->addText( number.number() );
+            /*
+             * Internationalization support, activate the following code 
+             * when support available from Orbit
+             */
+            //detailItem->addText( HbNumberGrouping::formatPhoneNumber(number.number())); 
+            detailItem->addText( number.number());
             list.append( detailItem );
             }
         }
@@ -95,11 +101,11 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::phoneNumberItems(QContact& aCont
                 else if ( subtype == QContactOnlineAccount::SubTypeSipVoip )
                 {
                     if ( context == QContactOnlineAccount::ContextHome )
-                        detailItem->addText( hbTrId("txt_phob_formlabel_internet_telephone") );
-                    else if ( context == QContactOnlineAccount::ContextWork )
                         detailItem->addText( hbTrId("txt_phob_formlabel_internet_telephone_home") );
-                    else
+                    else if ( context == QContactOnlineAccount::ContextWork )
                         detailItem->addText( hbTrId("txt_phob_formlabel_internet_telephone_work") );
+                    else
+                        detailItem->addText( hbTrId("txt_phob_formlabel_internet_telephone") );
                     
                     detailItem->addText( number.accountUri() );
                     list.append( detailItem );

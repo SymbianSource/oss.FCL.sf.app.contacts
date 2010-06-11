@@ -23,7 +23,7 @@
 #include <hbmainwindow.h>
 #include <qtcontacts.h>
 #include "cntviewnavigator.h"
-#include "simutility.h"
+#include "cntsimutility.h"
 
 CntDefaultViewManager::CntDefaultViewManager( HbMainWindow* aWindow ) : QObject(),
     mFactory(NULL),
@@ -38,7 +38,7 @@ CntDefaultViewManager::CntDefaultViewManager( HbMainWindow* aWindow ) : QObject(
     setViewNavigator(new CntViewNavigator(this));
 
     int error = -1;
-    mSimUtility = new SimUtility(SimUtility::AdnStore, error);
+    mSimUtility = new CntSimUtility(CntSimUtility::AdnStore, error);
     if (error != 0) 
     {
         delete mSimUtility; 

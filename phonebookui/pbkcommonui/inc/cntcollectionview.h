@@ -31,6 +31,7 @@ class HbListView;
 class CntCollectionListModel;
 class CntFetchContacts;
 class QModelIndex;
+class QActionGroup;
 class HbAbstractViewItem;
 class CntExtensionManager;
 
@@ -96,6 +97,8 @@ private:
     QContact*               mHandledContact; // own, needed for asynchronous popups
     CntFetchContacts*       mFetchView;
     QSet<QContactLocalId>   mSelectedContactsSet;
+    
+    QActionGroup*           mActionGroup;
 };
 
 #endif // CNTCOLLECTIONVIEW_H

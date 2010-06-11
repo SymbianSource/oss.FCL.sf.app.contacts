@@ -248,6 +248,19 @@ void CntEditViewListModel::allInUseFields( CntViewIdList& aList )
     }
 }
 
+QModelIndex CntEditViewListModel::itemIndex( QContactDetail aDetail ) const
+{
+    QModelIndex itemIndex;
+    for ( int i(0); i < mItemList.count(); i++ ) {
+        QVariant data = mItemList.at(i)->data( ERoleContactDetail );
+        if ( data.value<QContactDetail>() == aDetail )
+        {
+            itemIndex = index( i ); 
+        }
+    }
+    return itemIndex;
+}
+
 void CntEditViewListModel::refresh()
 {
     beginResetModel();

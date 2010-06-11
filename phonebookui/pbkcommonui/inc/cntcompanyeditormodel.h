@@ -21,7 +21,7 @@
 #include "cntdetaileditormodel.h"
 #include <hbdataformmodelitem.h>
 #include <qtcontacts.h>
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -39,6 +39,7 @@ public:
     ~CntCompanyEditorModel();
     
     void saveContactDetails();
+    QContactDetail detail() const;
     
 private:
     QContactOrganization mCompany;

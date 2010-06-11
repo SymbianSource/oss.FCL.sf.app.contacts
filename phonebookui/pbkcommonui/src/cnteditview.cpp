@@ -20,7 +20,7 @@
 #include "cntabstractviewmanager.h"
 
 #include <hbview.h>
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 #include "cntdetailpopup.h"
 #include "cnteditviewdetailitem.h"
 #include "cnteditviewheadingitem.h"

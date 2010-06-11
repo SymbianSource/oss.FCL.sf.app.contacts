@@ -21,7 +21,7 @@ INCLUDEPATH += .
 
 CONFIG += hb
 
-LIBS+=-lhbcore -lxqservice -lqtcontacts -lmobcntmodel
+LIBS+=-lhbcore -lxqservice -lqtcontacts -lcntlistmodel
 
 # Input
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE

@@ -91,7 +91,8 @@ enum CntContactCardPosition
         ENote,
         ESpouse,
         EChildren,
-        EOther = 400
+        EOther = 400,
+        ENotSupported = 1000
 };    
     
 public:
@@ -109,17 +110,17 @@ public:
     void setLongPressText(const QString& aLongPressText);
 
 public:
-    QString titleText() { return mTitle; }
-    QString valueText() { return mValueText; }
-    HbIcon  icon() { return mIcon; }
-    HbIcon  secondaryIcon() { return mSecondaryIcon; }
-    QString action() { return mAction; }
-    QContactDetail detail() { return mDetail; }
-    Qt::TextElideMode elideMode() { return mValueTextElideMode; }
-    bool isFocusable() { return mIsFocusable; }
-    QContactActionDescriptor actionDescriptor() { return mActionDescriptor; }
-    QString longPressText() { return mLongPressText; }
-    int position() { return mPosition; }
+    QString titleText() const { return mTitle; }
+    QString valueText() const { return mValueText; }
+    HbIcon  icon() const { return mIcon; }
+    HbIcon  secondaryIcon() const { return mSecondaryIcon; }
+    QString action() const { return mAction; }
+    QContactDetail detail() const { return mDetail; }
+    Qt::TextElideMode elideMode() const { return mValueTextElideMode; }
+    bool isFocusable() const { return mIsFocusable; }
+    QContactActionDescriptor actionDescriptor() const { return mActionDescriptor; }
+    QString longPressText() const { return mLongPressText; }
+    int position() const { return mPosition; }
  
 private:
     HbIcon                      mIcon;

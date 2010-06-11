@@ -21,7 +21,7 @@
 #include <QObject>
 
 #include "cnteditview.h"
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 #include <qtcontacts.h>
 #include <cnteditviewitemcallback.h>
 
@@ -86,6 +86,7 @@ private slots:
     void thumbnailReady( const QPixmap& pixmap, void *data, int id, int error );
     void setOrientation(Qt::Orientation aOrientation);
     void handleMenuAction( HbAction* aAction );
+    void setScrollPosition();
     
 private:
     void loadAvatar();

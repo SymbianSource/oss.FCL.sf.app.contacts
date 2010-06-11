@@ -17,7 +17,7 @@
 
 #include "cntmycardview.h"
 #include "cntfetchcontactsview.h"
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 #include <hbpushbutton.h>
 #include <hbaction.h>
 #include <hbview.h>

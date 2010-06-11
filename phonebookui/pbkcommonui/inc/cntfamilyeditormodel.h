@@ -20,7 +20,7 @@
 
 #include "cntdetaileditormodel.h"
 #include <qtcontacts.h>
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -38,6 +38,7 @@ public:
     ~CntFamilyEditorModel();
     
     void saveContactDetails();
+    QContactDetail detail() const;
     
 private:
     QContactFamily mFamily;

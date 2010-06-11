@@ -62,4 +62,9 @@ void CntFamilyEditorModel::saveContactDetails()
         mContact->saveDetail( &mFamily );
     }
 }
+
+QContactDetail CntFamilyEditorModel::detail() const
+{
+    return mFamily;
+}
 // End of File

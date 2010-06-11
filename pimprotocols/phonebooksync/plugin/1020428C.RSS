@@ -13,7 +13,7 @@
 // Description:
 //
 
-#include <ecom\registryinfo.rh>
+#include <ecom/registryinfo.rh>
 RESOURCE REGISTRY_INFO theInfo
 	{
 	dll_uid = 0x1020428C;

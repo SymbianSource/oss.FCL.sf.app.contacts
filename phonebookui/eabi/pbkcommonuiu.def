@@ -54,7 +54,7 @@ EXPORTS
 	_ZN18CntContactCardViewD2Ev @ 53 NONAME
 	_ZN20CntBaseSelectionView10deactivateEv @ 54 NONAME
 	_ZN20CntBaseSelectionView10viewClosedEv @ 55 NONAME
-	_ZN20CntBaseSelectionView10viewOpenedE4QMapIi8QVariantE @ 56 NONAME
+	_ZN20CntBaseSelectionView10viewOpenedEP22CntAbstractViewManager4QMapIi8QVariantE @ 56 NONAME
 	_ZN20CntBaseSelectionView11qt_metacallEN11QMetaObject4CallEiPPv @ 57 NONAME
 	_ZN20CntBaseSelectionView11qt_metacastEPKc @ 58 NONAME
 	_ZN20CntBaseSelectionView16staticMetaObjectE @ 59 NONAME DATA 16

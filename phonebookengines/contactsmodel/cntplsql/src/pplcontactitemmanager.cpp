@@ -647,7 +647,14 @@ TBool CPplContactItemManager::IsDatabaseEmptyL()
 CContactIdArray* CPplContactItemManager::MatchPhoneNumberL(const TDesC& aNumber, TInt aMatchLengthFromRight)
 	{
 	// Call comm address table
-	return  static_cast<CPplCommAddrTable*>(iCommAddrTable)->MatchPhoneNumberL(aNumber, aMatchLengthFromRight);
+	if (aMatchLengthFromRight == KBestMatchingPhoneNumbers)
+        {
+        return  static_cast<CPplCommAddrTable*>(iCommAddrTable)->BestMatchingPhoneNumberL(aNumber);
+        }
+    else
+        {
+        return  static_cast<CPplCommAddrTable*>(iCommAddrTable)->MatchPhoneNumberL(aNumber, aMatchLengthFromRight);
+        }
 	}
 
 /**

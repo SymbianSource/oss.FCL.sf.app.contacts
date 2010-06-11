@@ -28,8 +28,8 @@ deploy.path = /epoc32/rom/include/core/app/
 BLD_INF_RULES.prj_exports += \
      "$${LITERAL_HASH}include <platform_paths.hrh>" \
      "./rom/phonebookservices.iby                CORE_APP_LAYER_IBY_EXPORT_PATH(phonebookservices.iby)" \
-     "./rom/pbk.iby                              CORE_APP_LAYER_IBY_EXPORT_PATH(pbk.iby)" \
-     "./rom/pbkresources.iby                     LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(pbkresources.iby)" 
+     "./rom/phonebook.iby                        CORE_APP_LAYER_IBY_EXPORT_PATH(phonebook.iby)" \
+     "./rom/phonebookresources.iby               LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(phonebookresources.iby)" 
 	 
 exists(confml/phonebook.confml) :BLD_INF_RULES.prj_exports += "confml/phonebook.confml CONFML_EXPORT_PATH(phonebook.confml,uda_content)"
 exists(implml/phonebook.implml) :BLD_INF_RULES.prj_exports += "implml/phonebook.implml CRML_EXPORT_PATH(phonebook.implml,uda_content)"

@@ -33,6 +33,9 @@
 #include <QGestureEvent>
 #include <hbtapgesture.h>
 
+const int CNT_CONTACTCARD_TEXT_MAX_ROWCOUNT = 1;
+const int CNT_CONTACTCARD_Z_FRAME = -1;
+const int CNT_CONTACTCARD_Z_FOCUS = -2;
 
 CntContactCardDetailItem::CntContactCardDetailItem(int index, QGraphicsItem *parent, bool isFocusable) :
     HbWidget(parent),
@@ -82,6 +85,7 @@ void CntContactCardDetailItem::createPrimitives()
         mIcon = 0;
     }
 
+    
     if (!mSecondaryIcon)
     {
         mSecondaryIcon = new HbIconItem(this);
@@ -91,59 +95,42 @@ void CntContactCardDetailItem::createPrimitives()
     mSecondaryIcon->setIcon(secondaryIcon);
     mSecondaryIcon->setColor(HbColorScheme::color("foreground"));
 
-    if (!text.isNull())
+    
+    if (!mFirstLineText)
     {
-        if (!mFirstLineText)
-        {
-            mFirstLineText = new HbTextItem(this);
-            mFirstLineText->setTextWrapping(Hb::TextWordWrap);
-            style()->setItemName(mFirstLineText, "text");    
-        }
-        mFirstLineText->setText(text);        
+        mFirstLineText = new HbTextItem(this);
+        mFirstLineText->setTextWrapping(Hb::TextNoWrap);
+        style()->setItemName(mFirstLineText, "text");    
     }
-    else
-    {
-        if (mFirstLineText)
-        {
-            delete mFirstLineText;
-        }
-        mFirstLineText = 0;
-    }
+    mFirstLineText->setText(text);        
 
-    if (!valueText.isNull())
+    
+    if (!mSecondLineText)
     {
-        if (!mSecondLineText)
-        {
-            mSecondLineText = new HbTextItem(this);
-            mSecondLineText->setElideMode(mValueTextElideMode);
-            style()->setItemName(mSecondLineText, "valueText");
-        }
-        mSecondLineText->setText(valueText);
+        mSecondLineText = new HbTextItem(this);
+        mSecondLineText->setElideMode(mValueTextElideMode);
+        style()->setItemName(mSecondLineText, "valueText");
     }
-    else
-    {
-        if (mSecondLineText)
-        {
-            delete mSecondLineText;
-        }
-        mSecondLineText = 0;
-    }
+    
+    mSecondLineText->setText(valueText);
+
 
     if (!mFrameItem)
     {
         mFrameItem = new HbFrameItem(this);
         mFrameItem->frameDrawer().setFrameGraphicsName("qtg_fr_list_normal");
         mFrameItem->frameDrawer().setFrameType(HbFrameDrawer::NinePieces);
-        mFrameItem->setZValue(-2);
+        mFrameItem->setZValue(CNT_CONTACTCARD_Z_FOCUS);
         style()->setItemName(mFrameItem, "background");
     }
 
+    
     if (!mFocusItem && mIsFocusable)
     {
         mFocusItem = new HbFrameItem(this);
         mFocusItem->frameDrawer().setFrameGraphicsName("qtg_fr_list_pressed");
         mFocusItem->frameDrawer().setFrameType(HbFrameDrawer::NinePieces);
-        mFocusItem->setZValue(-1);
+        mFocusItem->setZValue(CNT_CONTACTCARD_Z_FRAME);
         mFocusItem->setVisible(false);
         style()->setItemName(mFocusItem, "highlight");
     }
@@ -248,16 +235,12 @@ void CntContactCardDetailItem::setDetails(CntContactCardDataItem* aDataItem)
         secondaryIcon.clear();
         secondaryIcon = aDataItem->secondaryIcon();
         }
-    if (aDataItem->titleText() != text)
-        {
-        text.clear();
-        text = aDataItem->titleText();
-        }
-    if (aDataItem->valueText() != valueText)
-        {
-        valueText.clear();
-        valueText = aDataItem->valueText();
-        }
+   
+    text.clear();
+    text = aDataItem->titleText();
+
+    valueText.clear();
+    valueText = aDataItem->valueText();
 
     recreatePrimitives();
 }

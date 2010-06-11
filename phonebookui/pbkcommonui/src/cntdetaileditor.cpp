@@ -58,6 +58,7 @@ CntDetailEditor::CntDetailEditor( int aId ) :
 
 CntDetailEditor::~CntDetailEditor()
 {
+    mView->deleteLater();
     delete mDataForm;
     delete mDataFormModel;
     delete mHeader;
@@ -181,6 +182,11 @@ void CntDetailEditor::saveChanges()
     else
     {
         mArgs.insert(ESelectedContact, var);
+        
+        QContactDetail selectedDetail( mDataFormModel->detail() );
+        QVariant var2;
+        var2.setValue( selectedDetail );
+        mArgs.insert( ESelectedDetail, var2 );
     }
     
     mViewManager->back( mArgs );

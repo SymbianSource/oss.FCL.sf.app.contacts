@@ -27,8 +27,9 @@
 #include <hblabel.h>
 #include <hbicon.h>
 #include <hbgroupbox.h>
-#include <mobcntmodel.h>
+#include <cntlistmodel.h>
 #include <hbframebackground.h>
+#include <hbnumbergrouping.h>
 
 #include <QStandardItemModel>
 
@@ -145,6 +146,11 @@ void CntGroupActionsView::activate( CntAbstractViewManager* aMgr, const CntViewP
     QContactPhoneNumber confCallNumber = mGroupContact->detail<QContactPhoneNumber>();
     if(!confCallNumber.number().isEmpty())
         {
+        /*
+         * Internationalization support, activate the following code 
+         * when support available from Orbit
+         */
+        //populatelist(hbTrId("txt_phob_dblist_conference_call"), HbIcon("qtg_large_call_group"),HbNumberGrouping::formatPhoneNumber(confCallNumber.number()));
         populatelist(hbTrId("txt_phob_dblist_conference_call"), HbIcon("qtg_large_call_group"),confCallNumber.number());
         }
       

@@ -91,4 +91,8 @@ void CntCompanyEditorModel::saveContactDetails()
     }
 }
 
+QContactDetail CntCompanyEditorModel::detail() const
+{
+    return mCompany;
+}
 // End of File

@@ -20,10 +20,11 @@
 
 #include <hbdataformmodel.h>
 #include <qtcontacts.h>
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 
 QTM_BEGIN_NAMESPACE
 class QContact;
+class QContactDetail;
 QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
@@ -38,6 +39,7 @@ public:
     
 public:
     inline QContact* contact() const;
+    virtual QContactDetail detail() const = 0;
     
     virtual void saveContactDetails() = 0;
     virtual void insertDetailField(){}

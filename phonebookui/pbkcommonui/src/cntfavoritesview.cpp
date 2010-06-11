@@ -16,12 +16,13 @@
 */
 
 #include "cntfavoritesview.h"
-#include "cntgroupselectionpopup.h"
-#include "qtpbkglobal.h"
+#include "cntfetchcontactsview.h"
+#include "cntglobal.h"
 #include <hbpushbutton.h>
 #include <hbaction.h>
 #include <hbview.h>
 #include <hbmainwindow.h>
+#include <QSet>
 
 const char *CNT_FAVORITE_UI_XML = ":/xml/contacts_favorite.docml";
 
@@ -29,7 +30,8 @@ CntFavoritesView::CntFavoritesView() :
     mContact(NULL),
     mView(NULL),
     mSoftkey(NULL),
-    mViewManager(NULL)
+    mViewManager(NULL),
+    mFetchView(NULL)
 {
     bool ok = false;
     mDocumentLoader.load(CNT_FAVORITE_UI_XML, &ok);
@@ -56,6 +58,9 @@ CntFavoritesView::~CntFavoritesView()
     
     delete mContact;
     mContact = 0;
+
+    delete mFetchView;
+    mFetchView = 0;
 }
 
 void CntFavoritesView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
@@ -76,43 +81,54 @@ void CntFavoritesView::activate( CntAbstractViewManager* aMgr, const CntViewPara
 
 void CntFavoritesView::deactivate()
 {
-
 }
 
 void CntFavoritesView::openSelectionPopup()
 {
-   // call a dialog to display the contacts
-   CntGroupSelectionPopup *groupSelectionPopup = new CntGroupSelectionPopup(mViewManager->contactManager(SYMBIAN_BACKEND), mContact);
-   groupSelectionPopup->populateListOfContact();
-   groupSelectionPopup->open(this, SLOT(handleMemberSelection(HbAction*)));
+    QSet<QContactLocalId> emptySet;
+    
+    if (!mFetchView) {
+        mFetchView = new CntFetchContacts(getContactManager());
+        connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleMemberSelection()));
+    }
+    mFetchView->setDetails(hbTrId("txt_phob_subtitle_favorites"), hbTrId("txt_common_button_save"));
+    mFetchView->displayContacts(CntFetchContacts::popup, HbAbstractItemView::MultiSelection, emptySet);
 }
 
-void CntFavoritesView::handleMemberSelection(HbAction *action)
+void CntFavoritesView::handleMemberSelection()
 {
-    CntGroupSelectionPopup *groupSelectionPopup = static_cast<CntGroupSelectionPopup*>(sender());
-    
-    if (groupSelectionPopup && action == groupSelectionPopup->actions().first())
-    {
-        bool membersSaved = groupSelectionPopup->saveOldGroup();
-        
-        if (membersSaved)
-        {
-            CntViewParameters viewParameters;
-            viewParameters.insert(EViewId, FavoritesMemberView);
-            QVariant var;
-            var.setValue(*mContact);
-            viewParameters.insert(ESelectedGroupContact, var);
-            mViewManager->changeView(viewParameters);
-        }
-        else
-        {
-            showPreviousView();
-        }
-    }
-    else if (groupSelectionPopup && action == groupSelectionPopup->actions().at(1))
-    {
+    QSet<QContactLocalId> members = mFetchView->getSelectedContacts();
+    QList<QContactRelationship> memberships;
+    bool saveChanges = !mFetchView->wasCanceled();
+
+    delete mFetchView;
+    mFetchView = 0;
+
+    if (!saveChanges || members.count() == 0) {
         showPreviousView();
+        return;
     }
+
+    foreach (QContactLocalId id, members) {
+        QContact contact = getContactManager()->contact(id);
+        QContactRelationship membership;
+        membership.setRelationshipType(QContactRelationship::HasMember);
+        membership.setFirst(mContact->id());
+        membership.setSecond(contact.id());
+        memberships.append(membership);
+    }
+
+    if (!memberships.isEmpty()) {
+        QMap<int, QContactManager::Error> errors;
+        getContactManager()->saveRelationships(&memberships, &errors);
+    }
+
+    CntViewParameters viewParameters;
+    viewParameters.insert(EViewId, FavoritesMemberView);
+    QVariant var;
+    var.setValue(*mContact);
+    viewParameters.insert(ESelectedGroupContact, var);
+    mViewManager->changeView(viewParameters);
 }
 
 void CntFavoritesView::setOrientation(Qt::Orientation orientation)
@@ -133,6 +149,15 @@ void CntFavoritesView::showPreviousView()
 {
     CntViewParameters args;
     mViewManager->back(args);
+}
+
+QContactManager* CntFavoritesView::getContactManager()
+{
+    if (!mViewManager) {
+        return NULL;
+    }
+
+    return mViewManager->contactManager(SYMBIAN_BACKEND);
 }
 
 // end of file

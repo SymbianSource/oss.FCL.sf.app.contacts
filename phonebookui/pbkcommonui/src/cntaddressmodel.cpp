@@ -160,6 +160,26 @@ void CntAddressModel::saveContactDetails()
     }
 }
 
+QContactDetail CntAddressModel::detail() const
+{
+    if ( !isAddressEmpty(mAddressWork) )
+    {
+        return *mAddressWork;
+    }
+    
+    if ( !isAddressEmpty(mAddressHome) )
+    {
+        return *mAddressHome;
+    }
+    
+    if ( !isAddressEmpty(mAddress) )
+    {
+        return *mAddress;
+    }
+    
+    return QContactAddress();
+}
+
 void CntAddressModel::saveAddressItems( HbDataFormModelItem* aGroup, QContactAddress* aAddress )
 {
     int offset = 0;
@@ -176,7 +196,7 @@ void CntAddressModel::saveAddressItems( HbDataFormModelItem* aGroup, QContactAdd
     aAddress->setCountry( aGroup->childAt( 4 + offset  )->contentWidgetData("text").toString().trimmed() );
 }
 
-bool CntAddressModel::isAddressEmpty( QContactAddress* aAddress )
+bool CntAddressModel::isAddressEmpty( QContactAddress* aAddress ) const
 {
     return ( aAddress->street().length() == 0 &&
              aAddress->postcode().length() == 0 &&

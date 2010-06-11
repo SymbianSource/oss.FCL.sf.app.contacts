@@ -17,11 +17,10 @@
 
 #include "cntcollectionview.h"
 #include "cntfetchcontactsview.h"
-#include "cntgroupselectionpopup.h"
 #include "cntgroupdeletepopup.h"
 #include "cntcollectionlistmodel.h"
 #include "cntextensionmanager.h"
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 #include "cntfavourite.h"
 
 #include <cntuiextensionfactory.h>
@@ -40,6 +39,7 @@
 #include <hbmessagebox.h>
 #include <hbparameterlengthlimiter.h>
 
+#include <QActionGroup>
 #include <QList>
 
 const char *CNT_COLLECTIONVIEW_XML = ":/xml/contacts_collections.docml";
@@ -60,7 +60,8 @@ CntCollectionView::CntCollectionView(CntExtensionManager &extensionManager) :
     mNewGroupAction(NULL),
     mDeleteGroupsAction(NULL),
     mHandledContact(NULL),
-    mFetchView(NULL)
+    mFetchView(NULL),
+    mActionGroup(NULL)
 {
     bool ok = false;
     mDocumentLoader.load(CNT_COLLECTIONVIEW_XML, &ok);
@@ -88,6 +89,13 @@ CntCollectionView::CntCollectionView(CntExtensionManager &extensionManager) :
     
     mNamesAction = static_cast<HbAction*>(mDocumentLoader.findObject("cnt:names"));
     connect(mNamesAction, SIGNAL(triggered()), this, SLOT(showPreviousView()));
+    HbAction* groups = static_cast<HbAction*> (mDocumentLoader.findObject("cnt:groups"));
+    
+    mActionGroup = new QActionGroup(this);
+    groups->setActionGroup(mActionGroup);
+    mNamesAction->setActionGroup(mActionGroup);
+    groups->setChecked(true);
+    
     mFindAction = static_cast<HbAction*>(mDocumentLoader.findObject("cnt:find"));
     mFindAction->setEnabled(false);
     mExtensionAction = static_cast<HbAction*> (mDocumentLoader.findObject("cnt:activity"));

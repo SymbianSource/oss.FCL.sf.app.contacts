@@ -18,7 +18,7 @@
 #include "cntservicecontactfetchview.h"
 
 #include <cntservicescontact.h>
-#include <mobcntmodel.h>
+#include <cntlistmodel.h>
 #include "cntservicehandler.h"
 
 #include <hbmenu.h>
@@ -102,7 +102,7 @@ void CntServiceContactFetchView::aboutToOpenView(const CntViewParameters aArgs)
     
     // Set action filter
     QString filter = aArgs.value(CntServiceHandler::EFilter).toString();
-    QString action = aArgs.value(ESelectedAction).toString();
+    QString action = aArgs.value(CntServiceHandler::EAction).toString();
     if (action == KCntActionSms)
         {
             QContactActionFilter actionFilter;

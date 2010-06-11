@@ -85,6 +85,7 @@ public:
     bool isEmptyItem( CntEditViewItem* aItem );
     void refreshExtensionItems();
     void allInUseFields( CntViewIdList& aList );
+    QModelIndex itemIndex( QContactDetail aDetail ) const;
     
 private:
     void refresh();

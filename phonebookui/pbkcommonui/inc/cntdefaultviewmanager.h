@@ -19,13 +19,13 @@
 
 #include <cntabstractviewmanager.h>
 #include <hbnamespace.h>
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 
 class HbMainWindow;
 class CntAbstractViewFactory;
 class CntAbstractView;
 class CntViewNavigator;
-class SimUtility;
+class CntSimUtility;
 
 QTM_BEGIN_NAMESPACE
 class QContactManager;
@@ -66,7 +66,7 @@ private:
     QList<QContactManager*>      mBackends;
     HbMainWindow*                mMainWindow;
     
-    SimUtility* mSimUtility;
+    CntSimUtility* mSimUtility;
     
     friend class T_CntDefaultViewManager;
 };

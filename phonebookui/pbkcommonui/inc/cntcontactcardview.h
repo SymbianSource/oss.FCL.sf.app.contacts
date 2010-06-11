@@ -19,7 +19,7 @@
 #define CNTCONTACTCARDVIEW_H
 
 #include <cntabstractview.h>
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 #include <QObject>
 
 class HbView;

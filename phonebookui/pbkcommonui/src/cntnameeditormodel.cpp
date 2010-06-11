@@ -101,4 +101,21 @@ void CntNameEditorModel::saveContactDetails()
         }
 }
 
+QContactDetail CntNameEditorModel::detail() const
+{
+    if (!iName.firstName().isEmpty() ||
+        !iName.lastName().isEmpty() ||
+        !iName.middleName().isEmpty() ||
+        !iName.prefix().isEmpty() ||
+        !iName.suffix().isEmpty())
+    {
+        return iName;
+    }
+    
+    if ( !iNick.nickname().isEmpty() )
+    {
+        return iNick;
+    }
+    return QContactName();
+}
 // End of File

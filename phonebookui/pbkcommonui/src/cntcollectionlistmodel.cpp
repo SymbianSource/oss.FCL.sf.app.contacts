@@ -164,12 +164,12 @@ void CntCollectionListModel::initializeStaticGroups()
        
         QContactSortOrder sortOrderFirstName;
         sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,
-            QContactName::FieldFirst);
+            QContactName::FieldFirstName);
         sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
 
         QContactSortOrder sortOrderLastName;
         sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,
-            QContactName::FieldLast);
+            QContactName::FieldLastName);
         sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
 
         QList<QContactSortOrder> sortOrders;
@@ -285,7 +285,7 @@ void CntCollectionListModel::initializeUserGroups()
         {
             if (groupName.isNull())
             {
-                QString unnamed(hbTrId("Unnamed"));
+                QString unnamed(hbTrId("txt_phob_dblist_unnamed"));
                 displayList.append(unnamed);
             }
             else
@@ -300,12 +300,12 @@ void CntCollectionListModel::initializeUserGroups()
 
             QContactSortOrder sortOrderFirstName;
             sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,
-                    QContactName::FieldFirst);
+                    QContactName::FieldFirstName);
             sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
 
             QContactSortOrder sortOrderLastName;
             sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,
-                    QContactName::FieldLast);
+                    QContactName::FieldLastName);
             sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
 
             QList<QContactSortOrder> sortOrders;

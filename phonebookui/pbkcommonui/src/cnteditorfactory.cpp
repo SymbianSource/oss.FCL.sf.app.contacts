@@ -58,7 +58,7 @@ void CntEditorFactory::setupEditorView(CntDetailEditor &aEditor, QContact &aCont
     {
         aEditor.setDetails(new CntEmailEditorModel(new QContact(aContact)), new CntEmailEditorViewItem);
         aEditor.setHeader(hbTrId("txt_phob_subtitle_edit_email_address"));
-        aEditor.setInsertAction(hbTrId("txt_phob_list_add_email_address"));
+        aEditor.setInsertAction(hbTrId("txt_phob_opt_add_email"));
         break;
     }
         
@@ -73,7 +73,7 @@ void CntEditorFactory::setupEditorView(CntDetailEditor &aEditor, QContact &aCont
     {
         aEditor.setDetails(new CntUrlEditorModel(new QContact(aContact)), new CntUrlEditorViewItem);
         aEditor.setHeader(hbTrId("txt_phob_subtitle_edit_web_address"));
-        aEditor.setInsertAction(hbTrId("txt_phob_list_add_url_address"));
+        aEditor.setInsertAction(hbTrId("txt_phob_opt_add_url"));
         break;
     }
     
@@ -95,8 +95,8 @@ void CntEditorFactory::setupEditorView(CntDetailEditor &aEditor, QContact &aCont
     case noteEditorView:
     {
         aEditor.setDetails(new CntNoteEditorModel(new QContact(aContact)), new CntNoteEditorViewItem);
-        aEditor.setHeader(hbTrId("Edit note details"));
-        aEditor.setInsertAction(hbTrId("Add note"));
+        aEditor.setHeader(hbTrId("txt_phob_subtitle_edit_note"));
+        aEditor.setInsertAction(hbTrId("txt_phob_opt_add_note"));
         break;
     }
 

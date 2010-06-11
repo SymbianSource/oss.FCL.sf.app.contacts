@@ -21,7 +21,7 @@
 #include "cntdetaileditormodel.h"
 #include <hbdataformmodelitem.h>
 #include <qtcontacts.h>
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -38,11 +38,12 @@ public:
     ~CntAddressModel();
     
     void saveContactDetails();
+    QContactDetail detail() const;
     
 private:
     void createAddressItems( HbDataFormModelItem* aGroup, QContactAddress* aAddress );
     void saveAddressItems( HbDataFormModelItem* aGroup, QContactAddress* aAddress );
-    bool isAddressEmpty( QContactAddress* aAddress );
+    bool isAddressEmpty( QContactAddress* aAddress ) const;
 private:
     QContactAddress *mAddress;
     QContactAddress *mAddressHome;

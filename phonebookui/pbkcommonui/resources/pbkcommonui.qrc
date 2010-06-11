@@ -23,6 +23,7 @@
         <file alias="cnteditviewlistitem.hblistviewitem.widgetml">style/cnteditviewlistitem.hblistviewitem.widgetml</file>
        	<file alias="cnteditviewlistitem.css">style/cnteditviewlistitem.css</file>
         <file alias="cnteditviewheadingitem.css">style/cnteditviewheadingitem.css</file>
+        <file alias="cnteditviewheadingitem_color.css">style/cnteditviewheadingitem_color.css</file>
         <file alias="cnteditviewheadingitem.widgetml">style/cnteditviewheadingitem.widgetml</file>
         <file alias="cnteditviewdetailitem_color.css">style/cnteditviewdetailitem_color.css</file>       
 		<file alias="cntcontactcarddetailitem.widgetml">style/cntcontactcarddetailitem.widgetml</file>

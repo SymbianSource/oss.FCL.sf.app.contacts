@@ -16,8 +16,8 @@
         <string name="iconText" value="New contact"/>
         <string locid="txt_phob_opt_new_contact" name="text" value="New contact"/>
     </object>
-        <object name="cnt:delete" type="HbAction">
-    	<string name="text" value="Delete"/>
+    <object name="cnt:delete" type="HbAction">
+    	<string locid="txt_common_opt_delete" name="text" value="Delete"/>
     </object>
     <object name="cnt:refresh" type="HbAction">
         <string locid="txt_phob_opt_refresh" name="text" value="Refresh"/>

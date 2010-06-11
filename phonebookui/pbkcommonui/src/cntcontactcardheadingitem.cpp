@@ -210,9 +210,12 @@ void CntContactCardHeadingItem::createPrimitives()
 
 void CntContactCardHeadingItem::setIcon(const HbIcon newIcon)
 {
-    if (newIcon != icon && mainWindow()->orientation() != Qt::Horizontal)
+    if (newIcon != icon)
     {
         icon = newIcon;
+    }
+    if (mainWindow()->orientation() != Qt::Horizontal)
+    {
         createPrimitives();
         mIcon->setIcon(icon);
         repolish();

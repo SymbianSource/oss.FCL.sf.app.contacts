@@ -35,7 +35,8 @@ public:
     enum CntServiceViewParams
     {
         ETitle = ECustomParam,
-        EFilter
+        EFilter,
+        EAction
     };
 
 public:

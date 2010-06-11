@@ -31,8 +31,6 @@ userinclude     ../cntview
 userinclude	../inc ../src
 APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 
-APP_LAYER_SYSTEMINCLUDE
-
 source		../cntview/concview.cpp
 source		../cntview/filteredview.cpp
 source		../cntview/range.cpp

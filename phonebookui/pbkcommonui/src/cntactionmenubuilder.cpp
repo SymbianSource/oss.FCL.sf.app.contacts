@@ -75,7 +75,7 @@ HbMenu* CntActionMenuBuilder::buildActionMenu( QContact& aContact )
         {
         menu->addAction(hbTrId("txt_common_menu_open"), this, SLOT(emitOpenContact()) );
         menu->addAction(hbTrId("txt_common_menu_edit"), this, SLOT(emitEditContact()) );
-        menu->addAction(hbTrId("txt_common_menu_delete_contact"), this, SLOT(emitDeleteContact()));
+        menu->addAction(hbTrId("txt_phob_menu_delete_contact"), this, SLOT(emitDeleteContact()));
         }
     return menu;
     }

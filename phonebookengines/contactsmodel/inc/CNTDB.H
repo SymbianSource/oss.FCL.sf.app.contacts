@@ -1,17 +1,20 @@
-// Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
-// All rights reserved.
-// This component and the accompanying materials are made available
-// under the terms of "Eclipse Public License v1.0"
-// which accompanies this distribution, and is available
-// at the URL "http://www.eclipse.org/legal/epl-v10.html".
-//
-// Initial Contributors:
-// Nokia Corporation - initial contribution.
-//
-// Contributors:
-//
-// Description:
-//
+/*
+* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
 
 #ifndef __CNTDB_H__
 #define __CNTDB_H__
@@ -82,6 +85,15 @@ Maximum number of fields that can be set as filterable fields by licensees.
 @released
 */
 const TInt KMaxCustomFilterableFields=4;
+
+/** 
+Enables searching for best matching strategy: 
+Leading zeros are removed then shorter number must be substring of second one.
+@see CContactDatabase::MatchPhoneNumberL
+@publishedAll
+@released
+*/
+const TInt KBestMatchingPhoneNumbers=0;
 
 #ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
 
@@ -863,6 +875,7 @@ public:
 
 	//New Phone Matching function, takes a number as a TDesc& and will match from the right of the string
 	//by the the number defined
+	//use KBestMatchingPhoneNumbers as second parameter to enable best matching number strategy
 	IMPORT_C CContactIdArray* MatchPhoneNumberL(const TDesC& aNumber, TInt aMatchLengthFromRight);
 
 

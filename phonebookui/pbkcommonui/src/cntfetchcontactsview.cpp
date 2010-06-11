@@ -29,7 +29,7 @@
 #include <QGraphicsLinearLayout>
 #include <qcontactid.h>
 #include <QDebug>
-#include <mobcntmodel.h>
+#include <cntlistmodel.h>
 #include "cntfetchcontactsview.h"
 
 /*!
@@ -63,19 +63,19 @@ mIndexFeedback(NULL)
     // set up the list with all contacts
     QList<QContactSortOrder> sortOrders;
     QContactSortOrder sortOrderFirstName;
-    sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName, QContactName::FieldFirst);
+    sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName, QContactName::FieldFirstName);
     sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
     sortOrders.append(sortOrderFirstName);
 
     QContactSortOrder sortOrderLastName;
-    sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName, QContactName::FieldLast);
+    sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName, QContactName::FieldLastName);
     sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
     sortOrders.append(sortOrderLastName);
 
     QContactDetailFilter contactsFilter;
     contactsFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
     contactsFilter.setValue(QString(QLatin1String(QContactType::TypeContact)));
-    mCntModel = new MobCntModel(mManager, contactsFilter, sortOrders, false);
+    mCntModel = new CntListModel(mManager, contactsFilter, sortOrders, false);
 }
 
 CntFetchContacts::~CntFetchContacts()
@@ -131,7 +131,7 @@ void CntFetchContacts::displayContacts(DisplayType aType, HbAbstractItemView::Se
         mLayout->addItem(mSearchPanel);
         mContainerWidget->setLayout(mLayout);
         mContainerWidget->setPreferredHeight(mListView->mainWindow()->size().height());
-        mContainerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        mContainerWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         break;
     }
 
@@ -340,7 +340,7 @@ void CntFetchContacts::markMembersInView()
     // show "no matching contacts" label
     if (mCntModel->rowCount() == 0) {
         if (!mEmptyListLabel) {
-            mEmptyListLabel = new HbTextItem(hbTrId("(no matching contacts)"));
+            mEmptyListLabel = new HbTextItem(hbTrId("txt_phob_info_no_matching_contacts"));
             mEmptyListLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
             mEmptyListLabel->setFontSpec(HbFontSpec(HbFontSpec::Primary));
             mEmptyListLabel->setAlignment(Qt::AlignCenter);

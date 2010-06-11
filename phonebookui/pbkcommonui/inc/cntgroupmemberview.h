@@ -24,7 +24,7 @@
 
 #include <cntabstractview.h>
 
-class MobCntModel;
+class CntListModel;
 class CntAbstractViewManager;
 class CntContactCardHeadingItem;
 class CntFetchContacts;
@@ -83,8 +83,7 @@ private slots:
     
     void drawImageMenu(const QPointF &aCoords);
     void createModel();
-    
-private:    
+  
     void removeImage();
     
 private:
@@ -102,13 +101,14 @@ private:
     HbAction*                   mDeleteAction; // owned by view
     HbAction*                   mShowActionsAction; // owned by view
     HbAction*                   mEditGroupAction; // owned by view
-    MobCntModel*                mModel; // own
+    CntListModel*               mModel; // own
     CntImageLabel*              mImageLabel;
     HbListView*                 mListView; // owned by layout
     HbDocumentLoader*           mDocument;
     CntFetchContacts*           mFetchView;
     QList<QContactLocalId>      mOriginalGroupMembers;
     QContactAvatar*             mAvatar;
+    CntViewParameters           mArgs;
 };
 
 #endif // CNTGROUPMEMBERVIEW_H

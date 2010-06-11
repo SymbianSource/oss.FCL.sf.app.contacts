@@ -218,6 +218,7 @@ void CntImageEditorView::showPreviousView()
     var.setValue(*mContact);
     
     mArgs.insert(ESelectedContact, var);
+    mArgs.insert(ESelectedGroupContact, var);
     mArgs.insert(ECustomParam, viewId());
     mViewManager->back( mArgs );
 }
@@ -236,7 +237,7 @@ void CntImageEditorView::removeImage()
         
         mAvatar->setImageUrl(QUrl());
         mImageLabel->clear();
-        mImageLabel->setIcon(HbIcon("qtg_large_avatar"));
+        mImageLabel->setIcon(HbIcon("qtg_large_add_contact_picture"));
         mRemoveImage->setEnabled(false);
     }
 }

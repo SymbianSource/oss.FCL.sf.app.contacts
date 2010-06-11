@@ -185,7 +185,7 @@ void CntEditViewHeadingItem::setDetails(const QContact* contact)
 
     if (!contact->detail<QContactNickname>().nickname().isEmpty())
     {
-        second_text = hbTrId("\"%1\"").arg(contact->detail<QContactNickname>().nickname());
+        second_text = contact->detail<QContactNickname>().nickname();
     }
 
     if (text.isEmpty() && second_text.isEmpty())

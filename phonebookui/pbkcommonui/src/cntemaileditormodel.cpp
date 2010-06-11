@@ -36,8 +36,8 @@ CntDetailEditorModel( aContact )
     }
 
 CntEmailEditorModel::~CntEmailEditorModel()
-    {
-    }
+{
+}
 
 void CntEmailEditorModel::insertDetailField()
 {
@@ -59,6 +59,21 @@ void CntEmailEditorModel::saveContactDetails()
             mContact->removeDetail( &address );
         }
     }
+}
+
+QContactDetail CntEmailEditorModel::detail() const
+{
+    QListIterator<QContactEmailAddress> addrList(mContact->details<QContactEmailAddress>());
+    addrList.toBack(); // go through backwards, so the newest item will be returned
+    while ( addrList.hasPrevious() )
+    {
+        QContactEmailAddress address = addrList.previous();
+        if ( !address.value(QContactEmailAddress::FieldEmailAddress).isEmpty() )
+        {
+            return address;
+        }
+    }
+    return QContactEmailAddress(); // return empty address if none found
 }
 
 // End of File

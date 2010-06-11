@@ -36,7 +36,6 @@ public:
 public:
     CntContactCardDataItem* dataItem(int index) const;
     int itemCount() const;
-    int separatorIndex() { return mSeparatorIndex; }
     
 #ifdef PBK_UNIT_TEST
 public:
