@@ -24,6 +24,7 @@
 #include "cnthistorymodel_p.h"
 #include "cnthistorymodel.h"
 
+
 // Unnamed namespace for helper functions
 namespace
 {
@@ -113,14 +114,15 @@ QVariant CntHistoryModel::data(const QModelIndex& index, int role) const
 QVariant CntHistoryModel::displayRoleData(const HistoryItem& item) const
 {
     QStringList list;
+    HbExtendedLocale locale = d->m_extendedLocale;
     
     if (item.timeStamp.date() == QDateTime::currentDateTime().date())
     {
-        list << item.title << item.message << item.timeStamp.toString(TIME_FORMAT);
+        list << item.title << item.message << locale.format(item.timeStamp.time(), r_qtn_time_usual);
     }
     else
     {
-        list << item.title << item.message << item.timeStamp.toString(DATE_FORMAT);
+        list << item.title << item.message << locale.format(item.timeStamp.date(), r_qtn_date_usual);
     }
     
     return QVariant(list);
@@ -416,10 +418,13 @@ void CntHistoryModel::logsRowsRemoved(const QModelIndex& /*parent*/, int first, 
         HItemPointer item = d->m_logsMap.value( i );
         int index = d->m_List.indexOf( item );
         if ( index > -1 ) {
-            d->m_List.removeAt( index );
             d->m_logsMap.remove( i );        
             indices.append( index );
         }
+    }
+    
+    foreach(int i, indices) {
+        d->m_List.removeAt( i );
     }
     
     // Remove list items in batches
@@ -540,7 +545,16 @@ void CntHistoryModel::readMsgEvent(MsgItem& event, HistoryItem& item)
     
     item.flags |= Message;
     item.number = event.phoneNumber();
-    item.message = event.body();
+    
+    if (event.body().isEmpty())
+    {
+        item.message = " ";
+    }
+    else
+    {
+        item.message = event.body();
+    }
+    
     item.timeStamp = event.timeStamp().toLocalTime();
 }
 

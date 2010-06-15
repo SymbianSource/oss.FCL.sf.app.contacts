@@ -90,4 +90,19 @@ CntPhoneNumberModel::~CntPhoneNumberModel()
     {
     }
 
+QContactDetail CntPhoneNumberModel::detail() const 
+{
+    QListIterator<QContactPhoneNumber> numberList(mContact->details<QContactPhoneNumber>());
+    numberList.toBack(); // go through backwards, so the newest item will be returned
+    while ( numberList.hasPrevious() )
+    {
+        QContactPhoneNumber number = numberList.previous();
+        if ( !number.value(QContactPhoneNumber::FieldNumber).isEmpty() )
+        {
+            return number;
+        }
+    }
+    return QContactPhoneNumber(); // return empty address if none found
+}
+
 // End of File

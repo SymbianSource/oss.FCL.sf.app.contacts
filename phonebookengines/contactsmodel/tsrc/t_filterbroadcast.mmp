@@ -25,7 +25,7 @@ VENDORID 0x70000001
 
 SOURCEPATH	../tsrc
 
-systeminclude /epoc32/include /epoc32/include/kernel 
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN 
 userinclude ../inc 
 
 source          t_filterbroadcast.cpp

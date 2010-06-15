@@ -19,6 +19,9 @@
 #include <cntview.h>
 #include "cntstd.h"
 #include <cntitem.h>
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "cnthint.h"
+#endif
 
 
 //#define CNTVIEW_API_PROFILING

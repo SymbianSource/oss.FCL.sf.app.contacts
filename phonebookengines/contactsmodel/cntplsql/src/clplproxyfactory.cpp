@@ -27,6 +27,11 @@
 #include "rcntmodel.h"
 #include <ecom/ecom.h>
 #include <cntsync.h>
+
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "cntsyncecom.h"
+#endif
+
 #include "cntviewprivate.h"
 
 

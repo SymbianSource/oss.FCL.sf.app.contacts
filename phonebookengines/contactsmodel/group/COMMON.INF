@@ -22,31 +22,36 @@
 */
 
 PRJ_EXPORTS
-../inc/CNTDEF.H /epoc32/include/cntdef.h
-../inc/CNTDB.H /epoc32/include/cntdb.h         
-../inc/CNTDBOBS.H /epoc32/include/cntdbobs.h      
-../inc/CNTFIELD.H /epoc32/include/cntfield.h      
-../inc/CNTFLDST.H /epoc32/include/cntfldst.h	
-../inc/CNTFILT.H /epoc32/include/cntfilt.h	
-../inc/CNTITEM.H /epoc32/include/cntitem.h       
-../inc/cntview.h
-../inc/cntviewbase.h
-../inc/cntsync.h
+../inc/CNTDEF.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntdef.h)
+../inc/CNTDB.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntdb.h)         
+../inc/CNTDBOBS.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntdbobs.h)      
+../inc/CNTFIELD.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntfield.h)      
+../inc/CNTFLDST.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntfldst.h)	
+../inc/CNTFILT.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntfilt.h)	
+../inc/CNTITEM.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntitem.h)       
+../inc/cntview.h SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntview.h)
+../inc/cntviewbase.h SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntviewbase.h)
+../inc/cntsync.h SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntsync.h)
 //Cntmodel Find configuration Implementation definition header.
-../inc/cntviewfindconfig.h	
-../inc/cntviewfindconfig.inl
+../inc/cntviewfindconfig.h	 SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(cntviewfindconfig.h)
+../inc/cntviewfindconfig.inl SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(cntviewfindconfig.inl)
 //CntModel Sort Plug-in implementation definition header
-../inc/cntviewsortplugin.h
+../inc/cntviewsortplugin.h SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntviewsortplugin.h)
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+../inc/cntphonenumparser.h SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(cntphonenumparser.h)
+../inc/cntviewsortpluginbase.h SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(cntviewsortpluginbase.h)
+../inc/cntsyncecom.h SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(cntsyncecom.h)
+#endif
 
-../inc/CNTMODEL.RH /epoc32/include/cntmodel.rh
+../inc/CNTMODEL.RH SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(cntmodel.rh)
 ../inc/CNTDEF.HRH /epoc32/include/cntdef.hrh
 
  
 // VCard Converter Plugin
-../cntvcard/CNTVCARD.H /epoc32/include/cntvcard.h
+../cntvcard/CNTVCARD.H SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(cntvcard.h)
 
 // Default View Definition store
-../inc/cntviewstore.h
+../inc/cntviewstore.h SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(cntviewstore.h)
 
 // Documentation
 ../documentation/contacts_connectivityapi.doc	/epoc32/engdoc/cntmodel/contacts_connectivityapi.doc

@@ -29,8 +29,7 @@ SOURCEPATH			../src
 SOURCE				CntMatchLog.cpp
 
 USERINCLUDE			../inc
-SYSTEMINCLUDE		/epoc32/include 
-SYSTEMINCLUDE		/epoc32/include/ecom
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 
 START RESOURCE		../src/2000862D.rss
 	TARGET 				cntmatchlog.rsc

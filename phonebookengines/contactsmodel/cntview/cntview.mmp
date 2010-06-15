@@ -28,7 +28,7 @@ SOURCEPATH	.
 userinclude     ../cntview	
 userinclude	../inc ../src
 
-APP_LAYER_SYSTEMINCLUDE
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 
 source		../cntview/ConcView.cpp
 source		../cntview/FilteredView.cpp

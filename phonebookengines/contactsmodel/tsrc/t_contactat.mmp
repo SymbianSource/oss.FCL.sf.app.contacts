@@ -26,7 +26,7 @@ SOURCEPATH  .
 SOURCE      t_contactat.cpp
 
 USERINCLUDE .
-SYSTEMINCLUDE   /epoc32/include
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 LIBRARY     euser.lib cntmodel.lib
 
 SMPSAFE

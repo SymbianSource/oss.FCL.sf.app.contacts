@@ -20,11 +20,21 @@
 
 #include <QObject>
 #include <cntviewparams.h>
+#include <cntextensiongroupcallback.h>
 
 class QPointF;
 
 /**
  * Handle to specific group provided by the group supplier
+ *
+ * Example usage for CntViewParameters callbacks:
+ *
+ * MyExtensionGroup::activated(CntViewParameters& callBack) const {
+ *     callBack.insert(EViewId, customView); <- when item is tapped, it opens the view specified here
+ *     callBack.insert(ECustomParam, myCustomParam); <- custom parameters can also be used if needed
+ * }
+ * 
+ * see cntviewparams.h for more information on view parameters
  */
 class CntUiExtensionGroup
 {
@@ -80,19 +90,21 @@ public:
     virtual int serviceId() const = 0;
 
     /**
-     * Called when this item is activated (tapped) in the list.
+     * Called when this item is activated (tapped) in the list. The callback is handled 
+     * synchronously and therefore it is assumed that this should be used for
+     * opening a new view.
      *
      * @param CntViewParameters&, callback for view switching
      */   
-    virtual void activated(CntViewParameters& callBack) const = 0;
+    virtual void activated(CntViewParameters& callBack) = 0;
 
     /**
      * Called when this item is longpressed in the list.
      *
      * @param QPointF&, coordinates from where the longpress was initiated
-     * @param CntViewParameters&, callback for view switching
+     * @param CntExtensionGroupCallback*, callback interface for view switching, ownership NOT given
      */   
-    virtual void longPressed(const QPointF& coords, CntViewParameters &callBack) const = 0;
+    virtual void longPressed(const QPointF& coords, CntExtensionGroupCallback *interface) = 0;
 
     virtual void* GroupExtension(
             int /*aExtensionId*/ )

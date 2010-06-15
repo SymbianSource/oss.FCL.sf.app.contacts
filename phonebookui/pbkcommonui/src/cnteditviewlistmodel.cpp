@@ -158,9 +158,8 @@ void CntEditViewListModel::removeItem( CntEditViewItem* aItem, const QModelIndex
     }
 }
 
-void CntEditViewListModel::refreshExtensionItems( const QModelIndex& aIndex )
+void CntEditViewListModel::refreshExtensionItems()
 {
-    Q_UNUSED( aIndex );
     beginResetModel();
     // remove all extension items
     for( int i(mItemList.count()-1); i >= 0; i-- )
@@ -247,6 +246,19 @@ void CntEditViewListModel::allInUseFields( CntViewIdList& aList )
             }
         }
     }
+}
+
+QModelIndex CntEditViewListModel::itemIndex( QContactDetail aDetail ) const
+{
+    QModelIndex itemIndex;
+    for ( int i(0); i < mItemList.count(); i++ ) {
+        QVariant data = mItemList.at(i)->data( ERoleContactDetail );
+        if ( data.value<QContactDetail>() == aDetail )
+        {
+            itemIndex = index( i ); 
+        }
+    }
+    return itemIndex;
 }
 
 void CntEditViewListModel::refresh()

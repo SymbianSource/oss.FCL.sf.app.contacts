@@ -62,9 +62,11 @@ public:
 signals:
     void clicked();
     void passLongPressed(const QPointF &point);
+    void passShortPressed(const QPointF &point);
     
 public slots:
     void processLongPress(const QPointF &point);
+    void processShortPress(const QPointF &point);
 
 protected:
     void gestureEvent(QGestureEvent* event);

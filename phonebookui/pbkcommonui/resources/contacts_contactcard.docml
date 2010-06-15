@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hbdocument version="1.0">
     <object name="cnt:edit" type="HbAction">
-        <icon iconName="qtg_mono_add_field" name="icon"/>
+        <icon iconName="qtg_mono_edit" name="icon"/>
     </object>
     <object name="cnt:history" type="HbAction">
-        <icon iconName="qtg_mono_person_history" name="icon"/>
+        <icon iconName="qtg_mono_history" name="icon"/>
     </object>
     <object name="cnt:sendMyCard" type="HbAction">
-        <icon iconName="qtg_mono_send" name="icon"/>
+        <icon iconName="qtg_mono_send_mycard" name="icon"/>
     </object>
     <object name="cnt:activityStream" type="HbAction">
         <icon iconName="qtg_mono_person_activitystream" name="icon"/>
@@ -41,9 +41,6 @@
             </widget>
             <widget name="scrollArea" type="HbScrollArea">
                 <enums name="scrollingStyle" value="PanWithFollowOn"/>
-                <enums name="verticalScrollBarPolicy" value="ScrollBarAlwaysOff"/>
-                <enums name="horizontalScrollBarPolicy" value="ScrollBarAlwaysOff"/>
-                <sizepolicy horizontalPolicy="MinimumExpanding" horizontalStretch="0" verticalPolicy="MinimumExpanding" verticalStretch="0"/>
                 <enums name="focusPolicy" value="ClickFocus"/>
                 <enums name="clampingStyle" value="BounceBackClamping"/>
                 <bool name="visible" value="TRUE"/>

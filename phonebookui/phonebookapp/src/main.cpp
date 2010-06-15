@@ -17,9 +17,10 @@
 
 #include <hbapplication.h>
 #include <QTranslator>
+#include <QLocale>
 #include "cntmainwindow.h"
 #include "cntappservicehandler.h"
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 
 int main(int argc, char **argv)
 {

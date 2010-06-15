@@ -32,7 +32,7 @@ class HbLabel;
 class HbStaticVkbHost;
 class HbIndexFeedback;
 
-class MobCntModel;
+class CntListModel;
 class QGraphicsLinearLayout;
 
 QTM_BEGIN_NAMESPACE
@@ -57,7 +57,6 @@ public:
 private slots:
     void memberSelectionChanged(const QModelIndex &index);
     
-    void closeFind();
     void setFilter(const QString &filterString);
     
     void handleKeypadOpen();
@@ -81,11 +80,14 @@ private:
     
 signals:
     void clicked();
+    
+private:
+    friend class TestCntFetchUtility;
 
 private:
     HbDialog*                          mPopup;
     HbSearchPanel*                     mSearchPanel;
-    MobCntModel*                       mCntModel;
+    CntListModel*                      mCntModel;
     HbListView*                        mListView;
     QGraphicsLinearLayout*             mLayout;
     HbTextItem*                        mEmptyListLabel;

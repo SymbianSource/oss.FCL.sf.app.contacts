@@ -18,12 +18,13 @@
 #include "cntimagelabel.h"
 
 #include <hbinstantfeedback.h>
+#include <hbtapgesture.h>
 #include <QGraphicsSceneMouseEvent>
 
 CntImageLabel::CntImageLabel(QGraphicsItem *parent) :
     HbLabel(parent)
 {
-
+    grabGesture(Qt::TapGesture);
 }
 
 CntImageLabel::~CntImageLabel()
@@ -31,17 +32,33 @@ CntImageLabel::~CntImageLabel()
 
 }
 
-void CntImageLabel::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    HbInstantFeedback::play(HbFeedback::Basic);
-    event->accept();
+void CntImageLabel::gestureEvent(QGestureEvent* event)
+{ 
+    if (HbTapGesture *tap = qobject_cast<HbTapGesture *>(event->gesture(Qt::TapGesture))) 
+    {    
+        switch (tap->state()) 
+        {
+            case Qt::GestureFinished:
+                if (tap->tapStyleHint() == HbTapGesture::Tap)
+                {
+                    HbInstantFeedback::play(HbFeedback::Basic);
+                    emit iconClicked();
+                }
+                break;
+            case Qt::GestureUpdated:
+                if (tap->tapStyleHint() == HbTapGesture::TapAndHold) 
+                {
+                    emit iconLongPressed(tap->position());
+                }
+                break;
+            default:
+                break;
+        }
+        event->accept();
+    } 
+    else 
+    {
+        event->ignore();
+    }
 }
 
-void CntImageLabel::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (rect().contains(event->pos()))
-    {
-        emit iconClicked();
-    }
-    event->accept();
-}

@@ -26,8 +26,8 @@ SOURCEPATH      .
 SOURCE          t_cntidtest.cpp
 SOURCE          t_cntidtestmain.cpp
 
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 USERINCLUDE     .
-SYSTEMINCLUDE   /epoc32/include
 
 LIBRARY         euser.lib
 LIBRARY         cntmodel.lib

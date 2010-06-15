@@ -21,6 +21,8 @@
 #include <QObject>
 #include <hblabel.h>
 
+class QGesture;
+
 class CntImageLabel : public HbLabel
 {
     Q_OBJECT
@@ -30,11 +32,11 @@ public:
     ~CntImageLabel();
 
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void gestureEvent(QGestureEvent* event);
     
 signals:
     void iconClicked();
+    void iconLongPressed(const QPointF&);
 };
 
 #endif // CNTEDITVIEWHEADINGITEM_H

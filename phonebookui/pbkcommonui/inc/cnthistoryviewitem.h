@@ -54,11 +54,18 @@ public:
     bool getIncoming() const { return mIncoming; }
     bool isNewMessage() const { return mNewMessage; }
     
+protected:
+    /*
+     * Overriden method to overwrite the default "pressed" effect
+     */
+    void pressStateChanged(bool pressed, bool animate);
+    
 private:
     bool            mIncoming;
     bool            mNewMessage;
 
     HbFrameItem*    mNewItem;
+    HbFrameItem*    mFocusItem;
 };
 
 #endif // CNTHISTORYVIEWITEM_H

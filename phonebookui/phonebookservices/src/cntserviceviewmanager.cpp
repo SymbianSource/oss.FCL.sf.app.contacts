@@ -74,7 +74,7 @@ void CntServiceViewManager::launchFetch(const QString &title, const QString &act
 {
     CntViewParameters params;
     params.insert(EViewId, serviceContactFetchView);
-    params.insert(ESelectionMode, action);
+    params.insert(CntServiceHandler::EAction, action);
     params.insert(CntServiceHandler::EFilter, filter);
     params.insert(CntServiceHandler::ETitle, title);
 

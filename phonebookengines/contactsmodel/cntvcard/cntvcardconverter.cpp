@@ -32,6 +32,10 @@
 #include <cntdef.h>
 #include <cntitem.h>
 
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "cntconvertercallback.h"
+#endif
+
 
 
 /** 
@@ -183,7 +187,7 @@ void CContactVCardConverter::doImportL(CVCardToContactsAppConverter& aConverter,
 		HandleAgentsInVCardL(aConverter, agentPropertyList, *mainItem, aDb, aOption, aIncAccessCount, aDecAccessCount, aContactItems, EFalse);
 		}
 	
-	if	(mainItem->CardFields().Count()) /// checks vcard is not empty
+	if	(mainItem->CardFields().Count()) // checks vcard is not empty
 		{
 		ModifyAccessCountL(*mainItem, aIncAccessCount, aDecAccessCount);
 		if	(aOption & ENullTemplateId)

@@ -38,10 +38,12 @@ SYSTEMINCLUDE		/epoc32/include/stdapis/stlportv5
 SYSTEMINCLUDE		/epoc32/include/mw/hb/hbcore
 SYSTEMINCLUDE		/epoc32/include/mw/hb/hbinput
 
-USERINCLUDE	 		../src //for cntstd.h 
-USERINCLUDE	 		../cntsrv/inc //for persistencelayer.h
-USERINCLUDE	 		../cntplsql/inc 
-USERINCLUDE	 		../inc	//for ccontactprivate.h
+userinclude ../src //for cntstd.h 
+userinclude ../cntsrv/inc //for persistencelayer.h 
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
+
+userinclude 	../cntplsql/inc 
+userinclude 	../inc			//for ccontactprivate.h
 
 // Qt Macros
 MACRO		UNICODE
@@ -103,3 +105,5 @@ OPTION ARMCC --visibility_inlines_hidden
 EPOCALLOWDLLDATA
 STDCPP
 SMPSAFE
+
+

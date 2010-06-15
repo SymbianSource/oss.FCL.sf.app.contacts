@@ -22,9 +22,13 @@
  @released
 */
 
-
 #include "plplugins.h"
 #include "cntviewprivate.h"
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include <cntphonenumparser.h>
+#include "cntdb_internal.h"
+#include "cntsyncecom.h"
+#endif
 
 
 // The name of the test phone book sync plugin.  This plugin will be used in the

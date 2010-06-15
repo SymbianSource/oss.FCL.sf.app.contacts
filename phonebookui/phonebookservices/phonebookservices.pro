@@ -64,7 +64,7 @@ LIBS += -lxqservice \
         -lxqserviceutil \
         -lhbcore \
         -lqtcontacts \
-        -lmobcntmodel \
+        -lcntlistmodel \
         -lpbkcommonui \
         -lqtversit \
         -lcntimageutility

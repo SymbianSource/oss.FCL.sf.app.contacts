@@ -25,7 +25,7 @@
 //#include "cntabstractview.h"
 #include "cntactionmenubuilder.h"
 #include <hbdocumentloader.h>
-#include "simutility.h"
+#include "cntsimutility.h"
 
 #include <cntabstractview.h>
 
@@ -53,7 +53,7 @@ public slots:
     void stopSimImport();
     void importFetchResultReceivedADN();
     void importFetchResultReceivedSDN();
-    void adnCacheStatusReady(SimUtility::CacheStatus& cacheStatus, int error);
+    void adnCacheStatusReady(CntSimUtility::CacheStatus& cacheStatus, int error);
      
 public:
 CntImportsView();
@@ -100,7 +100,8 @@ private :
     HbView* mView; // own
     HbAction* mSoftkey;
 	QStandardItemModel* mModel;
-    SimUtility *mSimUtility;
+    CntSimUtility *mAdnSimUtility;
+    CntSimUtility *mSdnSimUtility;
     bool mAdnEntriesPresent;
     HbDialog *mImportSimPopup;
     int mSaveCount;
@@ -113,6 +114,7 @@ private :
     bool mSdnStorePresent;
     bool mSimPresent;
     int mAdnStoreEntries;
+    int mSdnStoreEntries;
     bool mSimError;
     bool mWaitingForAdnCache;
 };

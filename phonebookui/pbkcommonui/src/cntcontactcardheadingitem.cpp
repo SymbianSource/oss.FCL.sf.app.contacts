@@ -19,7 +19,6 @@
 
 #include <qtcontacts.h>
 #include <QGraphicsSceneMouseEvent>
-#include <QTapAndHoldGesture>
 
 #include <hbiconitem.h>
 #include <hbtextitem.h>
@@ -30,6 +29,7 @@
 #include <hbtoucharea.h>
 #include <hbaction.h>
 #include <hbmainwindow.h>
+#include <hbtapgesture.h>
 
 CntContactCardHeadingItem::CntContactCardHeadingItem(QGraphicsItem *parent) :
     HbWidget(parent),
@@ -210,9 +210,12 @@ void CntContactCardHeadingItem::createPrimitives()
 
 void CntContactCardHeadingItem::setIcon(const HbIcon newIcon)
 {
-    if (newIcon != icon && mainWindow()->orientation() != Qt::Horizontal)
+    if (newIcon != icon)
     {
         icon = newIcon;
+    }
+    if (mainWindow()->orientation() != Qt::Horizontal)
+    {
         createPrimitives();
         mIcon->setIcon(icon);
         repolish();
@@ -324,18 +327,6 @@ void CntContactCardHeadingItem::setDetails(const QContact* contact)
         {
             primaryText = hbTrId("txt_phob_list_unnamed");
         }
-        
-        /*
-        // prefix, first and middle
-        QStringList firstNameList;
-        firstNameList << name.prefix() << name.first() << name.middle();
-        firstLineText = firstNameList.join(" ").trimmed();
-
-        // last and suffix
-        QStringList lastNameList;
-        lastNameList << name.last() << name.suffix();
-        mSecondLineText = lastNameList.join(" ").trimmed();
-        */
     }
 
     // nick label
@@ -383,21 +374,48 @@ void CntContactCardHeadingItem::processLongPress(const QPointF &point)
     emit passLongPressed(point);
 }
 
+void CntContactCardHeadingItem::processShortPress(const QPointF &point)
+{
+    emit passShortPressed(point);
+}
+
 void CntContactCardHeadingItem::gestureEvent(QGestureEvent* event)
 {
-    QGesture *tapAndHold = event->gesture(Qt::TapAndHoldGesture);
-    if (tapAndHold && tapAndHold->state() == Qt::GestureFinished) {
-        processLongPress(static_cast<QTapAndHoldGesture *>(tapAndHold)->position());
+    
+    if (HbTapGesture *tap = qobject_cast<HbTapGesture *>(event->gesture(Qt::TapGesture))) 
+    {    
+        switch (tap->state()) 
+        {
+            case Qt::GestureFinished:
+                if (tap->tapStyleHint() == HbTapGesture::Tap && mIcon->rect().contains(mapFromScene(tap->position())))
+                {
+                    processShortPress(tap->position());
+                }
+                break;
+            case Qt::GestureUpdated:
+                if (tap->tapStyleHint() == HbTapGesture::TapAndHold && mIcon->rect().contains(mapFromScene(tap->position()))) 
+                {
+                    processLongPress(tap->position());
+                }
+                break;
+            default:
+                break;
+        }
+        event->accept();
+    } 
+    else 
+    {
+        event->ignore();
     }
 }
 
 void CntContactCardHeadingItem::initGesture()
 {
-    grabGesture(Qt::TapAndHoldGesture);
+    grabGesture(Qt::TapGesture);
 }
 
 QVariant CntContactCardHeadingItem::itemChange(GraphicsItemChange change, const QVariant &value)
-{
+{      
     if (change == QGraphicsItem::ItemSceneHasChanged)
     {
         HbMainWindow *window = mainWindow();

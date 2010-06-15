@@ -32,16 +32,18 @@ QVariant CntEditViewSeparator::data(int role) const
     case Hb::ItemTypeRole:
         return QVariant( Hb::SeparatorItem );
     case Qt::DisplayRole:
-        return QVariant(qtTrId("Details"));
+        return QVariant(hbTrId("txt_phob_subtitle_details"));
     default:
         return QVariant();
     }
 }
-void CntEditViewSeparator::activated()
+void CntEditViewSeparator::activated(CntEditViewItemCallback* interface)
 {
+    Q_UNUSED( interface );
 }
 
-void CntEditViewSeparator::longPressed(const QPointF &coords)
+void CntEditViewSeparator::longPressed(const QPointF &coords, CntEditViewItemCallback* interface)
 {
+    Q_UNUSED( interface );
     Q_UNUSED( coords );
 }

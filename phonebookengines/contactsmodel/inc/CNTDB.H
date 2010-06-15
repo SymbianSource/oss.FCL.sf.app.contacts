@@ -60,6 +60,10 @@ class CContactOpenOperation;
 class CDataBaseChangeObserver;
 class CContactConverter;
 
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+class CContactSynchroniser;
+#endif
+
 // Constants
 
 /** 
@@ -82,6 +86,17 @@ Maximum number of fields that can be set as filterable fields by licensees.
 */
 const TInt KMaxCustomFilterableFields=4;
 
+/** 
+Enables searching for best matching strategy: 
+Leading zeros are removed then shorter number must be substring of second one.
+@see CContactDatabase::MatchPhoneNumberL
+@publishedAll
+@released
+*/
+const TInt KBestMatchingPhoneNumbers=0;
+
+#ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
+
 /** @internalComponent */
 const TInt KMajorVersion=1;
 /** @internalComponent */
@@ -89,6 +104,7 @@ const TInt KMinorVersion=0;
 /** @internalComponent */
 const TInt KBuildNumber=41;
 
+#endif //SYMBIAN_ENABLE_SPLIT_HEADERS
 
 //
 // Classes used for compact
@@ -135,7 +151,8 @@ private:
 
 class CContactActiveBase : public CBase, public MContactUiActive
 /**
-@internalTechnology
+@publishedAll
+@released
 */
 	{
 public:
@@ -526,6 +543,7 @@ public:
 	virtual void HandleSortEventL(TInt aContactsSorted, TInt aContactsTotal)=0;
 	};
 
+#ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
 class MConverterCallBack
 /**
 Interface class for providing Intra-Contact Properties during a PBAP specific contacts export.
@@ -540,13 +558,16 @@ Interface class for providing Intra-Contact Properties during a PBAP specific co
 	*/
 	virtual	void AddIntraContactPropertiesL(const TContactItemId& aContactId, CArrayPtr<CParserProperty>* aPropertyList) = 0;
 };
+#else
+class MConverterCallBack;
+#endif //SYMBIAN_ENABLE_SPLIT_HEADERS
 
 enum TVCardVersion
 /**
 Specifies type of export of contact items.
 PBAP clients should use EPBAPVCard21 and EPBAPVCard30.
+@publishedAll
 @released
-@internalTechnology
 */
 	{
 	EVCardUDEF = -1,
@@ -733,6 +754,8 @@ public:
 		for such use. */
 		EMultiThread
 		};
+		
+#ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
 /**
 @internalComponent
 */
@@ -743,6 +766,7 @@ public:
 		EUsesAllTables,
 		EIdentityTableNotUsed //Not used
 		};
+#endif
 public:
 	IMPORT_C static CContactDatabase* OpenL(TThreadAccess aAccess=ESingleThread);
 	IMPORT_C static CContactDatabase* OpenL(const TDesC& aFileName,TThreadAccess aAccess=ESingleThread);
@@ -851,6 +875,7 @@ public:
 
 	//New Phone Matching function, takes a number as a TDesc& and will match from the right of the string
 	//by the the number defined
+	//use KBestMatchingPhoneNumbers as second parameter to enable best matching number strategy
 	IMPORT_C CContactIdArray* MatchPhoneNumberL(const TDesC& aNumber, TInt aMatchLengthFromRight);
 
 
@@ -996,7 +1021,7 @@ private:
 public:
 	void CancelNotifyRequestL();
 	TBool IsICCSynchronisedL();
-	
+
 	void OpenDatabaseAsyncL(TRequestStatus& aStatus, const TDesC& aFileName = KNullDesC);
 	static void CleanupLastLockedContact(TAny *aDatabase);
 
@@ -1155,7 +1180,8 @@ private:
 
 
 /** The UID of the default vCard converter implemented by an ECom plugin.
-@internalComponent
+@publishedAll
+@released
 */
 #define KUidEComCntVCardConverterDefaultImplementation  0x102035F9
 /** The UID of the default vCard converter plugin implementation. This
@@ -1165,24 +1191,34 @@ implementation is independent of the plugin framework used.
 */
 #define KUidVCardConvDefaultImpl 	KUidEComCntVCardConverterDefaultImplementation
 
-/** The UID of the vCard converter ECom plugin interface. */
-const TUid KUidEcomCntVCardConverterInterface = {0x102035F7};
+#ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
 
-/** The UID of the phone number parser ECom plugin interface. */
-const TUid KUidEcomCntPhoneNumberParserInterface = {0x102035FA};
-
-/** The UID of PBAP vCard Converter plugin Implementation.
+/** The UID of the vCard converter ECom plugin interface. 
 @released
 @internalTechnology
 */
+const TUid KUidEcomCntVCardConverterInterface = {0x102035F7};
+
+/** The UID of the phone number parser ECom plugin interface. 
+@released
+@internalTechnology
+*/
+const TUid KUidEcomCntPhoneNumberParserInterface = {0x102035FA};
+
+/** The UID of PBAP vCard Converter plugin Implementation.
+@internalTechnology
+@released
+*/
 #define KUidPBAPVCardConvImpl 0xA00015C1
+
+#endif //SYMBIAN_ENABLE_SPLIT_HEADERS
 
 class TPluginParameters
 /**
 Class used to pack the extra arguments required for a PBAP conveter,
 PBAP client provides these arguments using overloaded CContactDatabase::ExportSelectedContacts.
+@publishedAll
 @released
-@internalComponent
 */
 {
 public:
@@ -1225,8 +1261,7 @@ class CContactConverter : public CBase
 /** Provides functionality to import and export vCards.
 One or more vCards can be imported from a read stream (the vCards are converted 
 into contact items and added to the database). Also, contact items can be exported as vCards.
-
-@publishedPartner
+@publishedAll
 @released
 */
 	{
@@ -1240,7 +1275,7 @@ class CContactEcomConverter : public CContactConverter
 /**
 It provides Ecom Framework based facilities to resolve and load the appropriate implementations at run-time.
 The framework supplies a default resolver for selecting appropriate implementations.
-@publishedPartner
+@publishedAll
 @released
 */
 	{
@@ -1287,7 +1322,7 @@ inline CContactEcomConverter::~CContactEcomConverter()
 	REComSession::DestroyedImplementation(iDtor_ID_Key);
 	}
 
-
+#ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
 class CContactPhoneNumberParser : public CBase
 /** Provides functionality to extract the real phone number from a contact's phone number field.
 @publishedPartner
@@ -1329,7 +1364,7 @@ inline CContactEcomPhoneNumberParser::~CContactEcomPhoneNumberParser()
 	{
 	REComSession::DestroyedImplementation(iDtor_ID_Key);
 	}
-
+#endif //SYMBIAN_ENABLE_SPLIT_HEADERS
 
 inline TInt CContactDatabase::TemplateCount() const
 /** Gets the number of contact card templates that exist in the database.

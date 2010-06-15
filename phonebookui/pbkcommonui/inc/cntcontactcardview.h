@@ -19,7 +19,7 @@
 #define CNTCONTACTCARDVIEW_H
 
 #include <cntabstractview.h>
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 #include <QObject>
 
 class HbView;
@@ -43,7 +43,7 @@ public:
   
 signals:
     void backPressed();  
-    void viewActivated(QContact, QContactDetail);
+    void viewActivated(CntAbstractViewManager* aMgr, const CntViewParameters aArgs);
     
 public: // From CntAbstractView
     void activate(CntAbstractViewManager* aMgr, const CntViewParameters aArgs);
@@ -58,7 +58,6 @@ private:
     Q_DECLARE_PRIVATE_D(d_ptr, CntContactCardView)
     Q_DISABLE_COPY(CntContactCardView)    
 };
-
 #endif // CNTCONTACTCARDVIEW_H
 
 // EOF

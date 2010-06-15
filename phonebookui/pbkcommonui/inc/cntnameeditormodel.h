@@ -19,7 +19,7 @@
 #define CNTNAMEEDITORMODEL_H_
 #include "cntdetaileditormodel.h"
 #include <qtcontacts.h>
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -38,7 +38,7 @@ public:
     ~CntNameEditorModel();
     
     void saveContactDetails();
-    
+    QContactDetail detail() const;
 private:
     QContactName iName;
     QContactNickname iNick;

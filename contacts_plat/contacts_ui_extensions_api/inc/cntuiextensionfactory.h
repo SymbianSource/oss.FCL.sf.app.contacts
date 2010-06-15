@@ -47,17 +47,13 @@ QTM_USE_NAMESPACE
  * A factory which gives access to UI extension interfaces.
  * The plugin can extend the needed extensions and return null for the
  * unsupported extension types.
+ *
+ * Plugins must be exported to /resource/qt/plugins/contacts/extensions
  */
 class CntUiExtensionFactory
 {
  public:
     virtual ~CntUiExtensionFactory() {}
-
-    /**
-     * Gives access to an interface for extending UI action buttons.
-     * @return Returns null if not supported. Ownership is not given.
-     */
-    virtual CntContactCardActionSupplier* contactCardActionSupplier() = 0;
 
     /**
      * Gives access to an interface for extending UI with new groups.

@@ -19,11 +19,12 @@
 #define CNTGROUPEDITORMODEL_H_
 #include "cntdetaileditormodel.h"
 #include <qtcontacts.h>
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 
 class HbDataFormModelItem;
 QTM_BEGIN_NAMESPACE
 class QContact;
+class QContactDetail;
 QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
@@ -37,7 +38,7 @@ public:
     ~CntGroupEditorModel();
     
     void saveContactDetails();
-    
+    QContactDetail detail() const;
     bool isConferenceNumber( const QModelIndex& aIndex );
 private:
 

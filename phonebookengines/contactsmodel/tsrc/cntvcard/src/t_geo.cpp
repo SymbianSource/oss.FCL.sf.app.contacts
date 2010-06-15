@@ -31,6 +31,9 @@
 #include <e32std.h>
 #include <e32test.h>
 #include "t_utils.h"
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "cntdb_internal.h"
+#endif
 
 
 //  Global Variables

@@ -73,6 +73,7 @@ private:
     HbAction*                   mBackKey; // not own
     QContact*                   mContact; // own
     HbAction*                   mClearHistory;  // not own
+    CntViewParameters           mArgs;
     
 };
 

@@ -28,7 +28,7 @@ DEPENDPATH += .
 INCLUDEPATH += .
 INCLUDEPATH += ../inc
 INCLUDEPATH += ../../phonebookengines/cntimageutility/inc
-INCLUDEPATH += ../../phonebookengines/simutility/inc
+INCLUDEPATH += ../../phonebookengines/cntsimutility/inc
 
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 
@@ -47,14 +47,18 @@ symbian: {
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntviewparams.h APP_LAYER_PLATFORM_EXPORT_PATH(cntviewparams.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntabstractview.h APP_LAYER_PLATFORM_EXPORT_PATH(cntabstractview.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntabstractviewmanager.h APP_LAYER_PLATFORM_EXPORT_PATH(cntabstractviewmanager.h)"
+        :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntcenrepkeys.h APP_LAYER_PLATFORM_EXPORT_PATH(cntcenrepkeys.h)"
 
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntuiextensionfactory.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuiextensionfactory.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntuigroupsupplier.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuigroupsupplier.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntuisocialextension.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuisocialextension.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntuiextensiongroup.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuiextensiongroup.h)"
+        :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntextensiongroupcallback.h APP_LAYER_PLATFORM_EXPORT_PATH(cntextensiongroupcallback.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntviewsupplier.h APP_LAYER_PLATFORM_EXPORT_PATH(cntviewsupplier.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cnteditviewitemsupplier.h APP_LAYER_PLATFORM_EXPORT_PATH(cnteditviewitemsupplier.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cnteditviewitem.h APP_LAYER_PLATFORM_EXPORT_PATH(cnteditviewitem.h)"
+        :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntuiactionextension.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuiactionextension.h)"
+        :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cnteditviewitemcallback.h APP_LAYER_PLATFORM_EXPORT_PATH(cnteditviewitemcallback.h)"
 }
 
 # Input
@@ -63,7 +67,7 @@ HEADERS += \
 	inc/cntabstractviewfactory.h \
 	inc/cntdefaultviewmanager.h \
 	inc/cntactionmenubuilder.h \
-	inc/cntaction.h \
+	inc/cntactionlauncher.h \
     inc/cntbaseselectionview.h \
     inc/cntcollectionview.h \
     inc/cntcollectionlistmodel.h \
@@ -71,6 +75,7 @@ HEADERS += \
     inc/cntimageeditorview.h \
     inc/cntfavoritesmemberview.h \
     inc/cntfavoritesview.h \
+    inc/cntfavourite.h \
     inc/cntmainwindow.h \
     inc/cntnamesview.h \
     inc/cntnamesview_p.h \
@@ -95,7 +100,6 @@ HEADERS += \
     inc/cntgroupeditormodel.h \
     inc/cnthistoryview.h \
     inc/cnthistoryviewitem.h \
-    inc/cntgroupselectionpopup.h \
     inc/cntgroupdeletepopupmodel.h \
     inc/cntdetailconst.h \
     inc/cntdetaileditormodel.h \
@@ -122,14 +126,15 @@ HEADERS += \
     inc/cntextensionmanager.h \
     inc/cntimagelabel.h \
     inc/cntfetchcontactsview.h \
-    inc/cntimportsview.h
+    inc/cntimportsview.h \
+    inc/cntsettingsview.h
     
 SOURCES += \
 	src/cntviewnavigator.cpp \
 	src/cntdefaultviewfactory.cpp \
 	src/cntdefaultviewmanager.cpp \
 	src/cntactionmenubuilder.cpp \
-	src/cntaction.cpp \
+	src/cntactionlauncher.cpp \
     src/cntbaseselectionview.cpp \
     src/cntcollectionview.cpp \
     src/cntcollectionlistmodel.cpp \
@@ -137,6 +142,7 @@ SOURCES += \
     src/cntimageeditorview.cpp \
     src/cntfavoritesmemberview.cpp \
     src/cntfavoritesview.cpp \
+    src/cntfavourite.cpp \
     src/cntmainwindow.cpp \
     src/cntnamesview.cpp \
     src/cntnamesview_p.cpp \
@@ -162,7 +168,6 @@ SOURCES += \
     src/cntgroupeditormodel.cpp \
     src/cnthistoryview.cpp \
     src/cnthistoryviewitem.cpp \
-    src/cntgroupselectionpopup.cpp \
     src/cntgroupdeletepopupmodel.cpp \
     src/cntaddressmodel.cpp \
     src/cntaddressviewitem.cpp \
@@ -186,20 +191,22 @@ SOURCES += \
     src/cntextensionmanager.cpp \
     src/cntimagelabel.cpp \
     src/cntimportsview.cpp \
-    src/cntfetchcontactsview.cpp
+    src/cntfetchcontactsview.cpp \
+    src/cntsettingsview.cpp \
+    src/cntsettingsmodel.cpp
     
 RESOURCES += resources\pbkcommonui.qrc
 
 LIBS+= -lhbcore \
        -lxqservice \
        -lqtcontacts \
-       -lmobcntmodel \
+       -lcntlistmodel \
        -lthumbnailmanagerqt \
        -lcnthistorymodel \
        -lcntmaptileservice \
        -lqtversit \
        -lcntimageutility \
-       -lsimutility \
+       -lcntsimutility \
        -lshareui
 
 # capability

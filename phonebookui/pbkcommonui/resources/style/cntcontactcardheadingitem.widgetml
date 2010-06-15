@@ -24,16 +24,17 @@
   </layout>
   
   <layout name="layout_one_row-landscape" type="mesh">
-		<meshitem src="primary_text" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-middle-horizontal)" />
-		<meshitem src="primary_text" srcEdge="CENTERV" dst="" dstEdge="CENTERV" />
-		<meshitem src="primary_text" srcEdge="RIGHT" dst="secondary_icon" dstEdge="LEFT" spacing="var(hb-param-margin-gene-middle-horizontal)" />
+	<meshitem src="primary_text" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-left)" />
+	<meshitem src="primary_text" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-1un" />
+	<meshitem src="primary_text" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="1un" />
+	<meshitem src="primary_text" srcEdge="RIGHT" dst="secondary_icon" dstEdge="LEFT" spacing="var(hb-param-margin-gene-right)" />
     
     <meshitem src="background" srcEdge="TOP" dst="" dstEdge="TOP" />
     <meshitem src="background" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" />
     <meshitem src="background" srcEdge="LEFT" dst="" dstEdge="LEFT" />
     <meshitem src="background" srcEdge="RIGHT" dst="" dstEdge="RIGHT" />
 
-		<meshitem src="secondary_icon" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="var(hb-param-margin-gene-right)" />
+	<meshitem src="secondary_icon" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="var(hb-param-margin-gene-right)" />
     <meshitem src="secondary_icon" srcEdge="CENTERV" dst="primary_text" dstEdge="CENTERV" />
   </layout>
   

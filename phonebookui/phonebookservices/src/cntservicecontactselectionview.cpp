@@ -21,7 +21,7 @@
 #include <QModelIndex>
 #include "cntservicehandler.h"
 #include <hblistview.h>
-#include <mobcntmodel.h>
+#include <cntlistmodel.h>
 
 CntServiceContactSelectionView::CntServiceContactSelectionView(CntServiceHandler *aServiceHandler):
 CntBaseSelectionView(),
@@ -29,7 +29,7 @@ mServiceHandler(aServiceHandler)
 {
     connect(mListView, SIGNAL(activated(const QModelIndex&)), this, SLOT(onListViewActivated(const QModelIndex&)));
     connect( this, SIGNAL(viewClosed()), this, SLOT(aboutToCloseView()) );
-    connect( this, SIGNAL(viewOpened(const CntViewParameters)), this, SLOT(aboutToOpenView(const CntViewParameters)) );
+    connect( this, SIGNAL(viewOpened(CntAbstractViewManager*, const CntViewParameters)), this, SLOT(aboutToOpenView(CntAbstractViewManager*, const CntViewParameters)) );
 }
 
 CntServiceContactSelectionView::~CntServiceContactSelectionView()
@@ -56,8 +56,10 @@ void CntServiceContactSelectionView::aboutToCloseView()
     mServiceHandler->completeEdit(0);
 }
 
-void CntServiceContactSelectionView::aboutToOpenView(const CntViewParameters viewParameters)
+void CntServiceContactSelectionView::aboutToOpenView(CntAbstractViewManager* aMgr, const CntViewParameters viewParameters)
 {
+    mMgr = aMgr;
+    
     QContactDetailFilter filter;
     filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
     QString typeContact = QContactType::TypeContact;

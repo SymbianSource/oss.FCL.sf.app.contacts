@@ -17,6 +17,7 @@
 
 #include <hbapplication.h>
 #include <QTranslator>
+#include <QLocale>
 #include "cntservicemainwindow.h"
 #include "cntservicehandler.h"
 

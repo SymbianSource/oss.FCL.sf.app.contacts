@@ -19,7 +19,6 @@
 #ifndef __CNTSYNC_H__
 #define __CNTSYNC_H__
 
-
 #include <e32base.h>
 #include <cntdef.h>
 
@@ -32,12 +31,13 @@ It should be inherited by classes which implement the phonebook
 synchroniser API. The plug-in should have a second UID of 
 0x101F4A6E (KUidContactSynchroniserDll).
 
-@internalAll
+@publishedAll
 */
 	{
 public:
 	/**
-	@internalAll
+	@publishedAll
+	@released
 	*/
 	enum TValidateOperation
 		{
@@ -99,10 +99,11 @@ public:
 private:
 	IMPORT_C virtual void MContactSynchroniser_Reserved_1();
 	};
-	
+
+#ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
 
 /** The UID for the default phone book synchroniser ECom plugin interface.
-@internalComponent
+@publishedPartner
 */
 const TUid KUidEcomCntPhBkSyncInterface = {0x102035FD};
 	
@@ -113,7 +114,7 @@ Abstract interface for a ECom contacts phonebook synchroniser plugin
 It should be inherited by classes which implement the phonebook 
 synchroniser API in a platform secured environment. The ECom plug-in interface uid is 
 KUidEcomCntPhBkSyncInterface
-@internalAll
+@publishedPartner
 */
 	{
 public:
@@ -136,4 +137,6 @@ private:
 	TUid iDtor_ID_Key;
 	};
 
+#endif
+	
 #endif

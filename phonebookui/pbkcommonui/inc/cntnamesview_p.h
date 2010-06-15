@@ -19,7 +19,7 @@
 #define CNTABSTRACTLISTVIEW_H_
 
 #include "cntnamesview.h"
-#include "cntaction.h"
+#include "cntactionlauncher.h"
 #include "cntactionmenubuilder.h"
 
 #include <hbaction.h>
@@ -27,7 +27,7 @@
 #include <QObject>
 
 #include <qcontact.h>
-#include <mobcntmodel.h>
+#include <cntlistmodel.h>
 
 class HbView;
 class HbListView;
@@ -41,7 +41,7 @@ class CntExtensionManager;
 class CntFetchContacts;
 
 class CntNamesViewPrivate : public QObject
-    {
+{
     Q_OBJECT
     Q_DECLARE_PUBLIC(CntNamesView)
     
@@ -74,16 +74,25 @@ public slots:
     void showContactView( const QModelIndex& );
     void showContactEditorView( QContact& aContact );
     void showContextMenu(HbAbstractViewItem* aItem, QPointF aPoint);
-        
+    void showSettings();
+    
     void executeAction( QContact& aContact, QString aAction );
-    void actionExecuted( CntAction* aAction );
+    void actionExecuted( CntActionLauncher* aAction );
     void handleDeleteContact( HbAction* aAction );
     void importSim();
-
+    
+    void handleContactAddition(const QList<QContactLocalId> & aAddedList);
+    void handleContactChanged(const QList<QContactLocalId> & aChangedList);
+    void handleContactRemoval(const QList<QContactLocalId> & aRemovedList);
+    void handleSelfContactIdChange(const QContactLocalId & aOldId, const QContactLocalId & aNewId);
+    
 public:
     bool isFinderVisible();
     void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
     void deactivate();
+    
+private:
+    void disableDeleteAction();
     
 public:
     CntNamesView *q_ptr;
@@ -99,7 +108,7 @@ public:  // lazy initializations
 private:
     CntExtensionManager&        mExtensionManager;
     CntAbstractViewManager*     mViewManager;
-    MobCntModel*                mListModel;
+    CntListModel*               mListModel;
     HbView*                     mView;
     HbListView*                 mListView;
     HbTextItem*                 mEmptyList;
@@ -117,6 +126,7 @@ private:
     CntFetchContacts*           mFetchView;
     bool                        mIsDefault;
     int                         mId;
-    bool                        mMenuVisible;
-    };
+    QActionGroup*               mActionGroup;
+};
+
 #endif /* CNTABSTRACTLISTVIEW_H_ */

@@ -23,6 +23,7 @@
 #include <hbdocumentloader.h>
 
 #include <cntabstractview.h>
+#include <cntextensiongroupcallback.h>
 
 class HbAction;
 class HbView;
@@ -30,12 +31,13 @@ class HbListView;
 class CntCollectionListModel;
 class CntFetchContacts;
 class QModelIndex;
+class QActionGroup;
 class HbAbstractViewItem;
 class CntExtensionManager;
 
 QTM_USE_NAMESPACE
 
-class CntCollectionView : public QObject, public CntAbstractView
+class CntCollectionView : public QObject, public CntAbstractView, public CntExtensionGroupCallback
 {
     Q_OBJECT
     friend class TestCntCollectionView;
@@ -50,6 +52,9 @@ public: // From CntAbstractView
     bool isDefault() const { return false; }
     HbView* view() const { return mView; }
     int viewId() const { return collectionView; }
+    
+public: // From CntExtensionGroupCallback
+    void openView(CntViewParameters& viewParams);
 
 private slots:
     void showPreviousView();
@@ -92,6 +97,8 @@ private:
     QContact*               mHandledContact; // own, needed for asynchronous popups
     CntFetchContacts*       mFetchView;
     QSet<QContactLocalId>   mSelectedContactsSet;
+    
+    QActionGroup*           mActionGroup;
 };
 
 #endif // CNTCOLLECTIONVIEW_H

@@ -32,8 +32,9 @@ SOURCEPATH	.
 
 userinclude     ../cntvcard ../src
 userinclude		../inc
+USERINCLUDE     ../../../../organizer/pimappsupport/vcardandvcal/inc
 
-APP_LAYER_SYSTEMINCLUDE
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 
 source cntvcardstd.cpp cntvcardconverter.cpp
 source cntvcardimport.cpp cntvcardexport.cpp

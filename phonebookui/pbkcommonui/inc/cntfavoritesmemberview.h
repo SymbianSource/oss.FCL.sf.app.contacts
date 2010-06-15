@@ -19,16 +19,17 @@
 #define CNTFAVORITESMEMBERVIEW_H
 
 #include <hbdocumentloader.h>
-
 #include <cntabstractview.h>
+#include <QSet>
 
-class MobCntModel;
+class CntListModel;
 class CntAbstractViewManager;
 class HbView;
 class HbAction;
 class HbListView;
 class HbAbstractViewItem;
 class QModelIndex;
+class CntFetchContacts;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -44,6 +45,7 @@ public: // From CntAbstractView
     bool isDefault() const { return false; }
     HbView* view() const { return mView; }
     int viewId() const { return FavoritesMemberView; }
+    void createModel();
     
 public:
     CntFavoritesMemberView();
@@ -56,7 +58,7 @@ private slots:
 #endif
 
     void manageFavorites();
-    void handleManageFavorites(HbAction *action);
+    void handleManageFavorites();
     
     void onLongPressed (HbAbstractViewItem *item, const QPointF &coords);
     void handleMenu(HbAction* action);
@@ -64,7 +66,11 @@ private slots:
     void openContact(const QModelIndex &index);
     void editContact(const QModelIndex &index);
     void removeFromFavorites(const QModelIndex &index);
+    void sendToHs(const QModelIndex &index);
     void showPreviousView();
+
+private:
+    QContactManager* getContactManager();
     
 #ifdef PBK_UNIT_TEST
 public:
@@ -74,12 +80,13 @@ private:
 
     QContact*                   mContact;
     HbAction*                   mManageFavoritesAction; 
-    MobCntModel*                mModel; // own
+    CntListModel*               mModel; // own
     HbListView*                 mFavoriteListView; 
     CntAbstractViewManager*     mViewManager;
     HbDocumentLoader            mDocumentLoader;
     HbView*                     mView; // own
-
+    CntFetchContacts*           mFetchView;
+    QSet<QContactLocalId>       mOriginalGroupMembers;
     HbAction*                   mSoftkey; // owned by view
 };
 

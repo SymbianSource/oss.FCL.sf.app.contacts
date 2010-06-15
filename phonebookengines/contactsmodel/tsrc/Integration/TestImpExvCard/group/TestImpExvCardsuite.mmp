@@ -49,11 +49,9 @@ SOURCE				TestGenericImportStep.cpp
 
 USERINCLUDE		../../../../cntvcard
 USERINCLUDE		../inc
-userinclude 		../../../../inc 
+USERINCLUDE 	../../../../inc 
 
-systeminclude /epoc32/include 
-systeminclude /epoc32/include/test 
-systeminclude /epoc32/include/ecom 
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN 
 
 LIBRARY		euser.lib 
 LIBRARY		testexecutelogclient.lib

@@ -82,4 +82,9 @@ void CntGroupEditorModel::saveContactDetails()
     }
 }
 
+// This function is from API and is not used currently. "Implementation side-effect".
+QContactDetail CntGroupEditorModel::detail() const
+{
+    return iGroupName;
+}
 // End of File

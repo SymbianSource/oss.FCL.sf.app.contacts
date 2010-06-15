@@ -15,5 +15,5 @@
 #
 
 TEMPLATE = subdirs
-SUBDIRS = phonebookengines phonebookui
+SUBDIRS = presencecache phonebookengines phonebookui
 CONFIG += ordered

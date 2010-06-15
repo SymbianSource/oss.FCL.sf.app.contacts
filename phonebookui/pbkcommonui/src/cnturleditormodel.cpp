@@ -63,5 +63,20 @@ void CntUrlEditorModel::saveContactDetails()
         }
     }
 }
+
+QContactDetail CntUrlEditorModel::detail() const 
+{
+    QListIterator<QContactUrl> urlList(mContact->details<QContactUrl>());
+    urlList.toBack(); // go through backwards, so the newest item will be returned
+    while ( urlList.hasPrevious() )
+    {
+        QContactUrl url = urlList.previous();
+        if ( !url.value(QContactUrl::FieldUrl).isEmpty() )
+        {
+            return url;
+        }
+    }
+    return QContactEmailAddress(); // return empty address if none found
+}
 // End of File
 

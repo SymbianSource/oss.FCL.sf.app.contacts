@@ -33,6 +33,7 @@
 #endif
 #include <msghistory.h>
 #include <msgitem.h>
+#include <hbextendedlocale.h>
 
 QTM_USE_NAMESPACE
 
@@ -41,8 +42,6 @@ QTM_USE_NAMESPACE
 #define DAILED_CALL_ICON "qtg_small_sent"
 #define RECEIVED_CALL_ICON "qtg_small_received"
 #define MESSAGE_ICON "qtg_small_message"
-const QString DATE_FORMAT("dd/MM");     // Date format.
-const QString TIME_FORMAT("hh:mm");     // Time format.
 
 class HistoryItem
 {   
@@ -88,7 +87,8 @@ public:
           m_contactManager(manager),
           m_isMyCard(false),
           m_isMarkedAsSeen(false),
-          m_initLogs(false)
+          m_initLogs(false),
+          m_extendedLocale(HbExtendedLocale::system())
           {}
     ~CntHistoryModelData()
     {
@@ -120,6 +120,7 @@ public:
     QList<HItemPointer> m_List;
     QMap<int, HItemPointer> m_logsMap;
     QMap<int, HItemPointer> m_msgMap;
+    const HbExtendedLocale m_extendedLocale;
 };
 
 #endif

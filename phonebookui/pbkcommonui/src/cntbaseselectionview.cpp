@@ -23,7 +23,7 @@
 #include <hbscrollbar.h>
 #include <hbdocumentloader.h>
 #include <hbaction.h>
-#include <mobcntmodel.h>
+#include <cntlistmodel.h>
 
 const char *CNT_SELECTION_LISTVIEW_UI_XML = ":/xml/contacts_list.docml";
 
@@ -73,11 +73,11 @@ void CntBaseSelectionView::activate( CntAbstractViewManager* aMgr, const CntView
     }
     
     QContactSortOrder sortOrderFirstName;
-    sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,QContactName::FieldFirst);
+    sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,QContactName::FieldFirstName);
     sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
 
     QContactSortOrder sortOrderLastName;
-    sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,QContactName::FieldLast);
+    sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,QContactName::FieldLastName);
     sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
 
     QList<QContactSortOrder> sortOrders;
@@ -89,7 +89,7 @@ void CntBaseSelectionView::activate( CntAbstractViewManager* aMgr, const CntView
     QString typeContact = QContactType::TypeContact;
     filter.setValue(typeContact);
 
-    mListModel = new MobCntModel(mMgr->contactManager(SYMBIAN_BACKEND), filter, sortOrders);
+    mListModel = new CntListModel(mMgr->contactManager(SYMBIAN_BACKEND), filter, sortOrders);
     mListModel->showMyCard( false );
     
     mListView->setModel( mListModel );
@@ -98,7 +98,7 @@ void CntBaseSelectionView::activate( CntAbstractViewManager* aMgr, const CntView
         mListView->setSelectionMode( static_cast<HbAbstractItemView::SelectionMode>(aArgs.value(ESelectionMode).toInt()) );
     }
     
-    emit viewOpened( aArgs );
+    emit viewOpened( mMgr, aArgs );
 }
 
 void CntBaseSelectionView::deactivate()
@@ -123,86 +123,4 @@ void CntBaseSelectionView::closeView()
     mMgr->back( args );
 }
 
-    
-/*
-CntBaseSelectionView::CntBaseSelectionView()
-    : CntBaseView(viewManager, parent),
-    mListView(NULL),
-    mListLayout(NULL),
-    mSelectionMode(HbAbstractItemView::NoSelection)
-{
-    bool ok = false;
-    ok = loadDocument(CNT_SELECTION_LISTVIEW_UI_XML);
-    if (!ok)
-    {
-       qFatal("Unable to read :/xml/contacts_list.docml");
-    }
-}
-
-CntBaseSelectionView::~CntBaseSelectionView()
-{
-}
-
-void CntBaseSelectionView::setupView()
-{
-    addItemsToLayout();
-    CntBaseView::setupView();
-}
-
-
-void CntBaseSelectionView::activateView(const CntViewParameters viewParameters)
-{
-    listView()->setModel(contactModel());
-    
-    if (viewParameters.contains(ESelectionMode)) {
-        mSelectionMode = static_cast<HbAbstractItemView::SelectionMode>(viewParameters.value(ESelectionMode).toInt());
-    }    
-    listView()->setSelectionMode(mSelectionMode);
-}
-
-void CntBaseSelectionView::addItemsToLayout()
-{
-    listView();
-    setWidget(findWidget(QString("container")));
-}
-
-QGraphicsLinearLayout *CntBaseSelectionView::listLayout()
-{
-    QGraphicsWidget *w = findWidget(QString("container"));
-    return static_cast<QGraphicsLinearLayout*>(w->layout());
-}
-
-HbListView *CntBaseSelectionView::listView()
-{
-    if (mListView==0)
-    {
-        mListView = static_cast<HbListView*>(findWidget(QString("listView")));
-
-        HbListViewItem *prototype = mListView->listItemPrototype();
-        prototype->setGraphicsSize(HbListViewItem::Thumbnail);
-
-        mListView->setSelectionMode(mSelectionMode);
-        
-        mListView->setFrictionEnabled(true);
-        mListView->setScrollingStyle(HbScrollArea::PanOrFlick);
-        
-        HbFrameBackground frame;
-        frame.setFrameGraphicsName("qtg_fr_list_normal");
-        frame.setFrameType(HbFrameDrawer::NinePieces);
-        mListView->itemPrototypes().first()->setDefaultFrame(frame);
-        
-        if (mListView->selectionMode() == HbAbstractItemView::NoSelection)
-        {
-            connect(mListView, SIGNAL(activated(const QModelIndex&)), 
-                    this, SLOT(onListViewActivated(const QModelIndex&)));
-        }
-    }
-    return mListView;
-}
-
-QItemSelectionModel* CntBaseSelectionView::selectionModel()
-{
-    return listView()->selectionModel();
-}
-*/
 // EOF

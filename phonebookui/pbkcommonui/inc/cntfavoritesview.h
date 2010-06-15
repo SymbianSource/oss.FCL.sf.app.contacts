@@ -20,14 +20,15 @@
 
 #include <QObject>
 #include <hbdocumentloader.h>
-
 #include <cntabstractview.h>
 
 class HbAction;
 class HbView;
+class CntFetchContacts;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
+class QContactManager;
 QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
@@ -51,8 +52,11 @@ public: // From CntAbstractView
 private slots:
     void showPreviousView();
     void openSelectionPopup();
-    void handleMemberSelection(HbAction *action);
+    void handleMemberSelection();
     void setOrientation(Qt::Orientation orientation);
+
+private:
+    QContactManager* getContactManager();
     
 #ifdef PBK_UNIT_TEST
 public:
@@ -64,7 +68,7 @@ private:
     HbAction* mSoftkey;
     CntAbstractViewManager* mViewManager;
     HbDocumentLoader mDocumentLoader;
-
+    CntFetchContacts* mFetchView;
 };
 
 #endif // CNTFAVORITESVIEW_H

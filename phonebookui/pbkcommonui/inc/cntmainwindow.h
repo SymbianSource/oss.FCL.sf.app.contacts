@@ -21,7 +21,7 @@
 #include <hbmainwindow.h>
 #include <QKeyEvent>
 
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 #include <cntviewparams.h>
 
 class CntDefaultViewManager;

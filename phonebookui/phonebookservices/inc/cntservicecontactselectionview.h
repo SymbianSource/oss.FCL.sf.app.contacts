@@ -37,7 +37,7 @@ public:
     
 public slots:
     void onListViewActivated(const QModelIndex &aIndex);
-    void aboutToOpenView(const CntViewParameters viewParameters);
+    void aboutToOpenView(CntAbstractViewManager* aMgr, const CntViewParameters viewParameters);
     void aboutToCloseView();
         
 private:

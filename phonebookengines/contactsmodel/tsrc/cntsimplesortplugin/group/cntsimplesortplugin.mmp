@@ -24,7 +24,7 @@ CAPABILITY   All -TCB
 UID 0x10009D8D 0x10200FBC
 VENDORID 0x70000001
 
-systeminclude   /epoc32/include  /epoc32/include/ecom
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 
 sourcepath              ../src
 source		cntsimplesortplugin.cpp 

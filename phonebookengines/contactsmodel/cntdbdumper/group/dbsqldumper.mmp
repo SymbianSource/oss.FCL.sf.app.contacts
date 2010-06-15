@@ -24,7 +24,7 @@ VENDORID 0x70000001
 SOURCEPATH		../src
 
 
-systeminclude   	/EPOC32/INCLUDE 
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN 
 userinclude			../src ../../src ../../cntplsql/inc
 source 				dbsqldumper.CPP
 

@@ -15,8 +15,10 @@
 *
 */
 
-
 #include "contactutilitiescollection.h"
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "cntdb_internal.h"
+#endif
 
 /**
  * Destructor

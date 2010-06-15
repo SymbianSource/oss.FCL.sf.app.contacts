@@ -55,11 +55,9 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
     void removeGroup(int localId);
-    bool isFavoriteGroupCreated();
-    int favoriteGroupId();
     bool isExtensionGroup(const QModelIndex &index);
     CntViewParameters extensionGroupActivated(int row);
-    CntViewParameters extensionGroupLongPressed(int row, const QPointF& coords);
+    void extensionGroupLongPressed(int row, const QPointF& coords, CntExtensionGroupCallback* interface);
     
 #ifdef PBK_UNIT_TEST
 public:

@@ -25,12 +25,14 @@
 #include <cntdef.h>
 
 
+
 /** Null field ID.
 @publishedAll
 @released
 */
 const TInt KNullFieldId=-1;
 
+#ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
 /** @internalComponent */
 const TInt KIntContactHintIsPhone=0x02;
 /** @internalComponent */
@@ -91,7 +93,7 @@ const TInt KHintAdditionalMask = 0x200000;
 const TInt KHintIdMask = 0xFFC00000;
 
 #endif //_SYMBIAN_USE_SQLITE__
-
+#endif //SYMBIAN_ENABLE_SPLIT_HEADERS
 
 class RWriteStream;
 class RReadStream;
@@ -206,6 +208,9 @@ private:
 	friend class CContactTables;
 	friend class RPplContactTable;
 	friend class CPackagerTests;
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+    class THint;
+#else
 	class THint
 	/**
 	@internalComponent
@@ -272,6 +277,7 @@ private:
 		TInt iHintValue;
 
 		};
+#endif
 		
 public:
 	IMPORT_C static CContactItemField* NewLC();
@@ -434,7 +440,7 @@ public:
 	/** Constructs the CContactItemFieldDef object, with an array granularity of 8. */
 		{};
 	};
-
+#ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
 class TContactFieldAtts
 /**
 @internalComponent
@@ -512,6 +518,7 @@ public:
 inline TFieldHeader::TFieldHeader(TStreamId aId,TContactFieldAtts aAtts)
 	{ iStreamId=aId; iAtts=aAtts; }
 #endif //__SYMBIAN_CNTMODEL_USE_SQLITE__
+#endif //SYMBIAN_ENABLE_SPLIT_HEADERS
 
 inline TBool CContactItemField::IsHidden() const
 /** Gets the value of the field's hidden attribute.
@@ -560,7 +567,7 @@ inline TBool CContactItemField::IsDeleted() const
 
 @return ETrue if the field is deleted, otherwise EFalse.                            */
 	{ return iAttributes&EDeleted; }
-
+#ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
 inline void CContactItemField::THint::SetIsPhone()
 	{iHintValue|=KIntContactHintIsPhone;}
 inline void CContactItemField::THint::SetIsMsg()
@@ -625,7 +632,7 @@ inline void CContactItemField::THint::SetHasAdditionalUids()
 #endif //__SYMBIAN_CNTMODEL_USE_SQLITE__ 
 inline TBool CContactItemField::THint::Contains(const THint& aHint) const
 	{return (iHintValue&aHint.iHintValue);}
-
+#endif
 inline TBool CContactItemField::OverRidesLabel() const
 /** Tests whether the field's label (as set by SetLabel()) overrides the label 
 specified in the field's template.

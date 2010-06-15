@@ -24,6 +24,9 @@
 #include <cntviewsortplugin.h>
 #include "persistencelayer.h"
 #include "cviewiterator.h"
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include <cntviewsortpluginbase.h>
+#endif
 //uncomment to test
 //#define __PROFILE_SORT__
 

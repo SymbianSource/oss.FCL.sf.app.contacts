@@ -17,8 +17,11 @@
 
 
 #include <cntviewsortplugin.h>
-#include <implementationproxy.h>
+#include <ecom/implementationproxy.h>
 #include "cntsimplesortplugin.hrh"
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include <cntviewsortpluginbase.h>
+#endif
 
 
 

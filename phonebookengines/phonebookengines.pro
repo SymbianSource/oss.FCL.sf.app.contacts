@@ -26,12 +26,12 @@ SUBDIRS += cntfindplugin
 SUBDIRS += contactsmodel
 SUBDIRS += cntsortplugin
 SUBDIRS += ../qtcontactsmobility
-SUBDIRS += mobcntmodel 
-SUBDIRS += mobcntactions 
+SUBDIRS += cntlistmodel 
+SUBDIRS += cntactions 
 SUBDIRS += cntmaptileservice
-SUBDIRS += simutility
+SUBDIRS += cntsimutility
 SUBDIRS += cntimageutility
 	
-#SUBDIRS += mobcntmodel/tsrc/mt_mobcntmodel
+#SUBDIRS += cntlistmodel/tsrc/mt_mobcntmodel
 
 CONFIG += ordered

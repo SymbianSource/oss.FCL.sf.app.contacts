@@ -22,6 +22,7 @@
 #include <QVariant>
 #include <QPointF>
 #include <hbnamespace.h>
+#include <cnteditviewitemcallback.h>
 
 // Value enum for EditViewItemRole::ERoleItemType
 enum EditViewItemType
@@ -52,22 +53,29 @@ public:
      * Returns data for a given role.
      * ETypeUiExtension must be returned for ERoleItemType
      *
+     * Other supported roles and restrictions:
+     * Qt::DisplayRole -> QStringList with 1-2 QStrings
+     * Qt::DecorationRole -> 0-1 HbIcon
+     *
      * @param int, role
      * @return QVariant, data for the given role
-     */   
+     */
     virtual QVariant data(int role) const = 0;
 
     /**
      * Called when this item is activated (tapped) in the list.
+     *
+     * @param CntEditViewItemCallback*, callback interface for possible view switching and list refreshing requests, ownership NOT given
      */   
-    virtual void activated() = 0;
+    virtual void activated(CntEditViewItemCallback* interface) = 0;
 
     /**
      * Called when this item is longpressed in the list.
      *
      * @param QPointF&, coordinates from where the longpress was initiated
+     * @param CntEditViewItemCallback*, callback interface for possible view switching and list refreshing requests, ownership NOT given
      */   
-    virtual void longPressed(const QPointF& coords) = 0;
+    virtual void longPressed(const QPointF& coords, CntEditViewItemCallback* interface) = 0;
 };
 
 #endif // CNTEDITVIEWITEM_H

@@ -36,6 +36,7 @@
 #include "cnteditview.h"
 #include "cntmycardselectionview.h"
 #include "cntimportsview.h"
+#include "cntsettingsview.h"
 #include "cntextensionmanager.h"
 
 CntDefaultViewFactory::CntDefaultViewFactory():
@@ -56,18 +57,12 @@ CntAbstractView* CntDefaultViewFactory::createView( int aId )
     {
     case namesView:
         return new CntNamesView(*mExtensionManager);
-    case noView:
     case commLauncherView:
         return new CntContactCardView();
-    case serviceContactCardView:
-    case serviceAssignContactCardView:
-        break;
     case myCardView:
         return new CntMyCardView();
     case myCardSelectionView:
         return new CntMyCardSelectionView();
-    case serviceContactSelectionView:
-        break;
     case collectionView:
         return new CntCollectionView(*mExtensionManager);
     case collectionFavoritesView:
@@ -77,8 +72,6 @@ CntAbstractView* CntDefaultViewFactory::createView( int aId )
     case editView:
 		return new CntEditView();
     case onlineAccountEditorView:
-    case serviceEditView:
-    case serviceSubEditView:
         break;
   
     case emailEditorView:
@@ -95,8 +88,6 @@ CntAbstractView* CntDefaultViewFactory::createView( int aId )
 
     case imageEditorView:
         return new CntImageEditorView();
-    case serviceContactFetchView:
-        break;
     case groupMemberView:
         return new CntGroupMemberView();
     case groupActionsView:
@@ -105,6 +96,8 @@ CntAbstractView* CntDefaultViewFactory::createView( int aId )
         return new CntHistoryView();
     case importsView:
         return new CntImportsView();
+    case settingsView:
+        return new CntSettingsView();
     default:
        return createPluginView(aId);
     }

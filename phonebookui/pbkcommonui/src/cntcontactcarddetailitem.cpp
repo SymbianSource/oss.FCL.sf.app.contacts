@@ -31,9 +31,11 @@
 #include <hbinstantfeedback.h>
 #include <hbcolorscheme.h>
 #include <QGestureEvent>
-#include <QTapGesture>
-#include <hbtoucharea.h>
+#include <hbtapgesture.h>
 
+const int CNT_CONTACTCARD_TEXT_MAX_ROWCOUNT = 1;
+const int CNT_CONTACTCARD_Z_FRAME = -1;
+const int CNT_CONTACTCARD_Z_FOCUS = -2;
 
 CntContactCardDetailItem::CntContactCardDetailItem(int index, QGraphicsItem *parent, bool isFocusable) :
     HbWidget(parent),
@@ -51,10 +53,11 @@ CntContactCardDetailItem::CntContactCardDetailItem(int index, QGraphicsItem *par
 {  
     if (mIsFocusable)
     {
-        HbEffect::add(QString("frameitem"), QString(":/xml/edit_button_pressed.fxml"), QString("pressed"));
-        HbEffect::add(QString("frameitem"), QString(":/xml/edit_button_released.fxml"), QString("released"));
+        HbEffect::add("frameitem", "listviewitem_press", "pressed");
+        HbEffect::add("frameitem", "listviewitem_release", "released");
         initGesture();
     }
+    setProperty("state", "normal");
 }
 
 CntContactCardDetailItem::~CntContactCardDetailItem()
@@ -82,6 +85,7 @@ void CntContactCardDetailItem::createPrimitives()
         mIcon = 0;
     }
 
+    
     if (!mSecondaryIcon)
     {
         mSecondaryIcon = new HbIconItem(this);
@@ -91,64 +95,47 @@ void CntContactCardDetailItem::createPrimitives()
     mSecondaryIcon->setIcon(secondaryIcon);
     mSecondaryIcon->setColor(HbColorScheme::color("foreground"));
 
-    if (!text.isNull())
+    
+    if (!mFirstLineText)
     {
-        if (!mFirstLineText)
-        {
-            mFirstLineText = new HbTextItem(this);
-            mFirstLineText->setTextWrapping(Hb::TextWordWrap);
-            style()->setItemName(mFirstLineText, "text");    
-        }
-        mFirstLineText->setText(text);        
+        mFirstLineText = new HbTextItem(this);
+        mFirstLineText->setTextWrapping(Hb::TextNoWrap);
+        style()->setItemName(mFirstLineText, "text");    
     }
-    else
-    {
-        if (mFirstLineText)
-        {
-            delete mFirstLineText;
-        }
-        mFirstLineText = 0;
-    }
+    mFirstLineText->setText(text);        
 
-    if (!valueText.isNull())
+    
+    if (!mSecondLineText)
     {
-        if (!mSecondLineText)
-        {
-            mSecondLineText = new HbTextItem(this);
-            mSecondLineText->setElideMode(mValueTextElideMode);
-            style()->setItemName(mSecondLineText, "valueText");
-        }
-        mSecondLineText->setText(valueText);
+        mSecondLineText = new HbTextItem(this);
+        mSecondLineText->setElideMode(mValueTextElideMode);
+        style()->setItemName(mSecondLineText, "valueText");
     }
-    else
-    {
-        if (mSecondLineText)
-        {
-            delete mSecondLineText;
-        }
-        mSecondLineText = 0;
-    }
+    
+    mSecondLineText->setText(valueText);
+
 
     if (!mFrameItem)
     {
         mFrameItem = new HbFrameItem(this);
         mFrameItem->frameDrawer().setFrameGraphicsName("qtg_fr_list_normal");
         mFrameItem->frameDrawer().setFrameType(HbFrameDrawer::NinePieces);
-        mFrameItem->setZValue(-2);
+        mFrameItem->setZValue(CNT_CONTACTCARD_Z_FOCUS);
         style()->setItemName(mFrameItem, "background");
     }
 
+    
     if (!mFocusItem && mIsFocusable)
     {
         mFocusItem = new HbFrameItem(this);
         mFocusItem->frameDrawer().setFrameGraphicsName("qtg_fr_list_pressed");
         mFocusItem->frameDrawer().setFrameType(HbFrameDrawer::NinePieces);
-        mFocusItem->setZValue(-1);
+        mFocusItem->setZValue(CNT_CONTACTCARD_Z_FRAME);
         mFocusItem->setVisible(false);
         style()->setItemName(mFocusItem, "highlight");
     }
    
-    updatePrimitives();
+    HbWidget::updatePrimitives();
     updateGeometry();
     repolish();
 }
@@ -162,71 +149,53 @@ void CntContactCardDetailItem::recreatePrimitives()
 
 void CntContactCardDetailItem::initGesture()
 {
-    grabGesture(Qt::TapAndHoldGesture, Qt::ReceivePartialGestures);
-    grabGesture(Qt::TapGesture, Qt::ReceivePartialGestures);
+    grabGesture(Qt::TapGesture);
 }
 
 void CntContactCardDetailItem::gestureEvent(QGestureEvent* event)
 {
     qDebug() << "CntContactCardDetailItem::gestureEvent - IN";
-    event->accept( Qt::TapAndHoldGesture );
-    
-    if (QGesture *tap = event->gesture(Qt::TapGesture))
+    if (HbTapGesture *tap = qobject_cast<HbTapGesture *>(event->gesture(Qt::TapGesture))) 
     {
-        tapTriggered(static_cast<QTapGesture *>(tap));
-        event->accept( tap );
-    }
-    
-    if (QGesture *tapAndHold = event->gesture(Qt::TapAndHoldGesture))
+        switch(tap->state()) 
+        {
+            case Qt::GestureStarted:  //
+                if (mIsFocusable)
+                {
+                    HbInstantFeedback::play(HbFeedback::Basic);
+                }
+                mHasFocus = true;
+                updatePrimitives();
+                break;
+            case Qt::GestureCanceled: // Reset state
+                mHasFocus = false;
+                updatePrimitives();
+                break;
+            case Qt::GestureUpdated:
+                if(tap->tapStyleHint() == HbTapGesture::TapAndHold) 
+                {
+                    emit onLongPress(event->mapToGraphicsScene(tap->position()));
+                }
+                break;
+            case Qt::GestureFinished: // emit clicked
+                mHasFocus = false;
+                updatePrimitives();
+                if (tap->tapStyleHint() == HbTapGesture::Tap) 
+                {
+                    emit clicked();                  
+                }
+                break;
+            default:
+                break;
+        }  
+        event->accept();
+    } 
+    else 
     {
-        tapAndHoldTriggered(static_cast<QTapAndHoldGesture *>(tapAndHold));
-        event->accept( tapAndHold );
+        event->ignore();
     }
     qDebug() << "CntContactCardDetailItem::gestureEvent - OUT";
 }
-
-void CntContactCardDetailItem::tapTriggered(QTapGesture *gesture)
-{
-    qDebug() << "CntContactdDetailItem::tagTriggered - IN";
-    
-    Qt::GestureState state = gesture->state();
-    qDebug() << "CntContactdDetailItem::tagTriggered, state: " << state;
-    switch ( state ) 
-    {
-        case Qt::GestureStarted:
-        {
-            if (mIsFocusable)
-            {
-                HbInstantFeedback::play(HbFeedback::Basic);
-            }
-            mHasFocus = true;
-            updatePrimitives();
-            break;
-        }
-        case Qt::GestureFinished:
-        case Qt::GestureCanceled:
-        {
-            mHasFocus = false;
-            updatePrimitives();
-            emit clicked(); // also in GestureCancelled?
-            break;
-        }
-        default:
-        {
-            break;
-        }
-    }
-    qDebug() << "CntContactdDetailItem::tagTriggered - OUT";
-}
-
-void CntContactCardDetailItem::tapAndHoldTriggered(QTapAndHoldGesture *gesture)
-{
-    if (gesture->state() == Qt::GestureFinished)
-    {
-        onLongPress(gesture->position());
-    }
-}    
-
 
 void CntContactCardDetailItem::onLongPress(const QPointF &point)
 {
@@ -237,54 +206,20 @@ void CntContactCardDetailItem::onLongPress(const QPointF &point)
 
 void CntContactCardDetailItem::updatePrimitives()
 {
-    HbWidget::updatePrimitives();
     if (mHasFocus && mIsFocusable)
     {
         mFocusItem->setVisible(true);
-        HbEffect::start(mFocusItem, QString("frameitem"), QString("pressed"));
+        setProperty("state", "pressed");
+        HbEffect::start(mFocusItem, QString("frameitem"), QString("pressed"));      
     }
     else
     {
         HbEffect::start(mFocusItem, QString("frameitem"), QString("released"));
+        mFocusItem->setVisible(false);
+        setProperty("state", "normal");
     }
+    HbWidget::updatePrimitives();
 }
-
-/*
-void CntContactCardDetailItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (mIsFocusable)
-    {
-        HbInstantFeedback::play(HbFeedback::Basic);
-    }
-    event->accept();
-    mHasFocus = true;
-    updatePrimitives();
-}
-*/
-/*
-void CntContactCardDetailItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (!rect().contains(event->pos()) && mHasFocus)
-    {
-        mHasFocus = false;
-        updatePrimitives();
-    }
-    event->accept();
-}
-
-
-void CntContactCardDetailItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    bool hadFocus = mHasFocus;
-    mHasFocus = false;
-    if (rect().contains(event->pos()) && hadFocus)
-    {
-        updatePrimitives();
-        emit clicked();
-    }
-    event->accept();
-}
-*/
 
 void CntContactCardDetailItem::setDetails(CntContactCardDataItem* aDataItem)
 {
@@ -300,16 +235,12 @@ void CntContactCardDetailItem::setDetails(CntContactCardDataItem* aDataItem)
         secondaryIcon.clear();
         secondaryIcon = aDataItem->secondaryIcon();
         }
-    if (aDataItem->titleText() != text)
-        {
-        text.clear();
-        text = aDataItem->titleText();
-        }
-    if (aDataItem->valueText() != valueText)
-        {
-        valueText.clear();
-        valueText = aDataItem->valueText();
-        }
+   
+    text.clear();
+    text = aDataItem->titleText();
+
+    valueText.clear();
+    valueText = aDataItem->valueText();
 
     recreatePrimitives();
 }

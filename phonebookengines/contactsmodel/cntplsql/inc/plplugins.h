@@ -30,6 +30,8 @@
 
 #include "persistencelayer.h"
 
+//Forward declarations
+class CContactPhoneNumberParser;
 
 /** 
 Base class for Contacts Model plugins.

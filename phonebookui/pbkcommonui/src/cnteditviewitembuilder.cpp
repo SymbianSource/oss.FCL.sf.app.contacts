@@ -19,6 +19,7 @@
 #include "cnteditviewdetailitem.h"
 #include "cntviewparams.h"
 #include "cntstringmapper.h"
+#include <hbnumbergrouping.h>
 
 CntEditViewItemBuilder::CntEditViewItemBuilder() :
 mMap( new CntStringMapper() )
@@ -63,7 +64,12 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::phoneNumberItems(QContact& aCont
             
             detailItem->addIcon( mMap->getContactEditorIconString(subtype, context) );
             detailItem->addText( mMap->getContactEditorLocString(subtype, context) );
-            detailItem->addText( number.number() );
+            /*
+             * Internationalization support, activate the following code 
+             * when support available from Orbit
+             */
+            //detailItem->addText( HbNumberGrouping::formatPhoneNumber(number.number())); 
+            detailItem->addText( number.number());
             list.append( detailItem );
             }
         }
@@ -95,11 +101,11 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::phoneNumberItems(QContact& aCont
                 else if ( subtype == QContactOnlineAccount::SubTypeSipVoip )
                 {
                     if ( context == QContactOnlineAccount::ContextHome )
-                        detailItem->addText( hbTrId("txt_phob_dblist_internet_telephone_home") );
+                        detailItem->addText( hbTrId("txt_phob_formlabel_internet_telephone_home") );
                     else if ( context == QContactOnlineAccount::ContextWork )
-                        detailItem->addText( hbTrId("txt_phob_dblist_internet_telephone_work") );
+                        detailItem->addText( hbTrId("txt_phob_formlabel_internet_telephone_work") );
                     else
-                        detailItem->addText( hbTrId("txt_phob_dblist_internet_telephone") );
+                        detailItem->addText( hbTrId("txt_phob_formlabel_internet_telephone") );
                     
                     detailItem->addText( number.accountUri() );
                     list.append( detailItem );
@@ -149,7 +155,7 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::emailAddressItems(QContact& aCon
             else if ( context == QContactEmailAddress::ContextWork )
                 detailItem->addText(hbTrId("txt_phob_formlabel_email_work"));
             else
-                detailItem->addText( hbTrId("txt_phob_list_email") );
+                detailItem->addText( hbTrId("txt_phob_formlabel_email") );
             
             detailItem->addText( address.emailAddress() );
             list.append( detailItem );
@@ -211,11 +217,11 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::urlItems(QContact& aContact)
             detailItem->addIcon( mMap->getContactEditorIconString(QContactUrl::DefinitionName, context) );
             
             if ( context == QContactUrl::ContextHome )
-                detailItem->addText( hbTrId("txt_phob_formlabel_address_home") );
+                detailItem->addText( hbTrId("txt_phob_dblist_url_home") );
             else if ( context == QContactUrl::ContextWork )
-                detailItem->addText( hbTrId("txt_phob_formlabel_address_work") );
+                detailItem->addText( hbTrId("txt_phob_dblist_url_work") );
             else
-                detailItem->addText( hbTrId("txt_phob_list_url") );
+                detailItem->addText( hbTrId("txt_phob_dblist_url") );
             
             detailItem->addText( url.url() );
             list.append( detailItem );
@@ -254,7 +260,7 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::addressDetails(QContact& aContac
             else if ( context == QContactAddress::ContextWork )
                 detailItem->addText(hbTrId("txt_phob_formlabel_address_work"));
             else
-                detailItem->addText(hbTrId("txt_phob_list_address"));
+                detailItem->addText(hbTrId("txt_phob_formlabel_address"));
             
             detailItem->addText( address );
             list.append( detailItem );
@@ -285,7 +291,7 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::companyDetails(QContact& aContac
                 org,
                 fields,
                 companyEditorView);
-        detailItem->addText( hbTrId("txt_phob_list_company_details") );
+        detailItem->addText( hbTrId("txt_phob_formlabel_company_details") );
         detailItem->addText( company );
         list.append( detailItem );
     }
@@ -349,7 +355,7 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::noteDetails(QContact& aContact)
                     note,
                     QContactNote::FieldNote,
                     noteEditorView);
-            detailItem->addText( hbTrId("txt_phob_list_note") );
+            detailItem->addText( hbTrId("txt_phob_formlabel_note") );
             detailItem->addText( text );
             list.append( detailItem );
         }

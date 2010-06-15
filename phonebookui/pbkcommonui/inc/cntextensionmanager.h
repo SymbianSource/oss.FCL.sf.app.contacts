@@ -20,7 +20,7 @@
 
 #include <QObject>
 #include <qtcontacts.h>
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 
 class CntUiExtensionFactory;
 class QPluginLoader;

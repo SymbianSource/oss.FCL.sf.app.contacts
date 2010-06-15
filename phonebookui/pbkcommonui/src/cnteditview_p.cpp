@@ -34,6 +34,7 @@
 #include <hbmenu.h>
 #include <hbframebackground.h>
 #include <hbparameterlengthlimiter.h>
+#include <hbdevicenotificationdialog.h>
 
 const char *CNT_EDIT_XML = ":/xml/contacts_ev.docml";
 
@@ -118,12 +119,13 @@ void CntEditViewPrivate::activate( CntAbstractViewManager* aMgr, const CntViewPa
     HbMainWindow* window = mView->mainWindow();
     if ( window )
     {
+        connect(window, SIGNAL(viewReady()), this, SLOT(setScrollPosition()) );
         connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
         setOrientation(window->orientation());
     }
         
-    QVariant selectedAction = mArgs.value( EMyCard );
-    QString myCard = selectedAction.toString();
+    QString myCard = mArgs.value( EMyCard ).toString();
+    QString selectedAction = mArgs.value( ESelectedAction ).toString();
     
     QVariant contact = aArgs.value( ESelectedContact );
     mContact = new QContact( contact.value<QContact>() );
@@ -182,6 +184,21 @@ void CntEditViewPrivate::activate( CntAbstractViewManager* aMgr, const CntViewPa
 void CntEditViewPrivate::deactivate()
 {   
 }
+
+void CntEditViewPrivate::openView(CntViewParameters& viewParams)
+{
+    QList<int> keys = viewParams.keys();
+    for(int i = 0;i < keys.count();i++)
+    {
+        mArgs.insert(keys.at(i), viewParams.value(keys.at(i)));
+    }
+    mMgr->changeView( mArgs );
+}
+
+void CntEditViewPrivate::requestRefresh()
+{
+    mModel->refreshExtensionItems();
+}
     
 void CntEditViewPrivate::activated( const QModelIndex& aIndex )
 {
@@ -189,8 +206,7 @@ void CntEditViewPrivate::activated( const QModelIndex& aIndex )
     QVariant type = item->data( ERoleItemType );
     if ( type == QVariant(ETypeUiExtension) )
     {
-        item->activated();
-        mModel->refreshExtensionItems( aIndex );
+        item->activated(this);
     }
     else
     {
@@ -214,8 +230,7 @@ void CntEditViewPrivate::longPressed( HbAbstractViewItem* aItem, const QPointF& 
     // Ui extensions handle the long press by themselves.
     if ( type == QVariant(ETypeUiExtension) )
     {
-        item->longPressed( aCoords );
-        mModel->refreshExtensionItems( aItem->modelIndex() );
+        item->longPressed( aCoords, this );
     }
     // only detail items are able to show context specific menu
     else
@@ -235,7 +250,7 @@ void CntEditViewPrivate::handleMenuAction( HbAction* aAction )
     CntEditViewItem* item = mModel->itemAt( index );
     if ( aAction )
     {
-        switch ( aAction->commandRole() )  
+        switch ( aAction->property("menu").toInt() )  
         {
         case HbAction::EditRole:
         {
@@ -310,7 +325,7 @@ void CntEditViewPrivate::deleteContact()
 {
     if ( mIsMyCard )
     {
-        HbMessageBox::question(hbTrId("txt_phob_info_clear_my_card"), this, 
+        HbMessageBox::question(hbTrId("txt_phob_dialog_remove_all_personal_data_from_my_c"), this, 
                 SLOT(handleDeleteContact(HbAction*)), 
                 hbTrId("txt_phob_button_clear"), 
                 hbTrId("txt_common_button_cancel"));
@@ -331,15 +346,7 @@ void CntEditViewPrivate::handleDeleteContact(HbAction *action)
     {
         QContactManager* cm = mMgr->contactManager( SYMBIAN_BACKEND );
 
-        if ( mIsMyCard )
-        {
-            mContact->clearDetails();
-            emit contactUpdated(cm->saveContact(mContact));
-        }
-        else
-        {
-            emit contactRemoved(cm->removeContact( mContact->localId() ));
-        }
+        emit contactRemoved(cm->removeContact( mContact->localId() ));
         
         mMgr->back( mArgs );
     }
@@ -382,12 +389,29 @@ void CntEditViewPrivate::saveChanges()
                 {
                     mgr->setSelfContactId( mContact->localId() );
                 }
+                
+                QString name = mgr->synthesizedDisplayLabel( *mContact );
+                
+                if ( success )
+                {
+                    HbDeviceNotificationDialog notificationDialog;
+                    notificationDialog.setTitle(HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contact_1_saved")).arg(name));
+                    notificationDialog.show();
+                }
+                else
+                {
+                    //TODO: localization is missing
+                    HbDeviceNotificationDialog notificationDialog;
+                    notificationDialog.setTitle(qtTrId("SAVING FAILED!"));
+                    notificationDialog.show();
+                }
+                
+                emit contactUpdated(success);
+                
                 QVariant var;
                 var.setValue(*mContact);
                 mArgs.insert(ESelectedContact, var);
-                mArgs.insert( ESelectedAction, success ? "save" : "failed" );
-                emit contactUpdated(success);
-            }
+            }        
         }
         else
         {
@@ -400,24 +424,32 @@ void CntEditViewPrivate::saveChanges()
                 
                 bool success = mgr->removeContact( mContact->localId() );
                 emit contactRemoved(success);
-                if ( success )
-                {
-                    mArgs.insert( ESelectedAction, "delete" );
-                    QVariant contact;
-                    contact.setValue( c );
-                    mArgs.insert( ESelectedContact, contact );
-                }
             }
             else
             {
                 bool success = mgr->saveContact(mContact);
-                mArgs.insert( ESelectedAction, success ? "save" : "failed");
+                
+                QString name = mgr->synthesizedDisplayLabel( *mContact );
+                
+                if ( success )
+                {
+                    HbDeviceNotificationDialog notificationDialog;
+                    notificationDialog.setTitle(HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contacts_1_updated")).arg(name));
+                    notificationDialog.show();
+                }
+                else
+                {
+                    //TODO: localization is missing
+                    HbDeviceNotificationDialog notificationDialog;
+                    notificationDialog.setTitle(qtTrId("SAVING FAILED!"));
+                    notificationDialog.show();
+                }
+                
+                emit contactUpdated( success );
                 
                 QVariant var;
                 var.setValue(*mContact);
-                mArgs.insert(ESelectedContact, var);
-                    
-                emit contactUpdated( success );
+                mArgs.insert(ESelectedContact, var);           
             }
         }
     }
@@ -467,6 +499,20 @@ void CntEditViewPrivate::loadAvatar()
     }
 }
 
+void CntEditViewPrivate::setScrollPosition()
+{
+    if ( mArgs.contains(ESelectedDetail) )
+    {
+        QContactDetail d = mArgs.value( ESelectedDetail ).value<QContactDetail>();
+        
+        QModelIndex index = mModel->itemIndex( d );
+        if ( index.isValid() )
+        {
+            mListView->scrollTo( index, HbListView::EnsureVisible );
+        }
+    }
+}
+
 void CntEditViewPrivate::thumbnailReady( const QPixmap& pixmap, void *data, int id, int error )
 {
     Q_UNUSED(data);
@@ -502,9 +548,8 @@ HbMenu* CntEditViewPrivate::createPopup( const QModelIndex aIndex, CntEditViewIt
              def == QContactUrl::DefinitionName || 
              def == QContactNote::DefinitionName )
         {
-            HbAction* add = menu->addAction(HbParameterLengthLimiter(
-                    map->getContactEditorAddLocString(detail.definitionName(), "")));
-            add->setCommandRole( HbAction::NewRole );
+            HbAction* add = menu->addAction(map->getContactEditorAddLocString(detail.definitionName(), ""));
+            add->setProperty( "menu", HbAction::NewRole );
             add->setData( data );
         }
         
@@ -532,20 +577,21 @@ HbMenu* CntEditViewPrivate::createPopup( const QModelIndex aIndex, CntEditViewIt
             context = QString();
             subtype = detail.definitionName();
         }
-            HbAction* edit = menu->addAction(HbParameterLengthLimiter(map->getContactEditorEditLocString(subtype, context)));
-            HbAction* del = menu->addAction(HbParameterLengthLimiter(map->getContactEditorDelLocString(subtype, context)));
-            edit->setCommandRole( HbAction::EditRole );
-            del->setCommandRole( HbAction::DeleteRole );
-            edit->setData( data );
-            del->setData( data );
+        
+        HbAction* edit = menu->addAction(hbTrId("txt_common_menu_edit"));
+        HbAction* del = menu->addAction(map->getContactEditorDelLocString(subtype, context));
+        edit->setProperty( "menu", HbAction::EditRole );
+        del->setProperty( "menu" , HbAction::DeleteRole );
+        edit->setData( data );
+        del->setData( data );
     }
     else
     {
-        HbAction* edit = menu->addAction(HbParameterLengthLimiter(map->getContactEditorEditLocString(detail.definitionName(), "")));
-        edit->setCommandRole( HbAction::EditRole );
-        edit->setData( data );
+        HbAction* add = menu->addAction(map->getContactEditorAddLocString(detail.definitionName(), ""));
+        add->setProperty( "menu", HbAction::NewRole );
+        add->setData( data );
     }
-    
+    delete map;
     return menu;
 }
 

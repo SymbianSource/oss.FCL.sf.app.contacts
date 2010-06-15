@@ -32,12 +32,12 @@ CntFamilyEditorModel::CntFamilyEditorModel(QContact* aContact) :
     QStringList children = mFamily.children();
 
     HbDataFormModelItem* spouseItem = new HbDataFormModelItem(HbDataFormModelItem::TextItem,
-        qtTrId("Spouse"));
+        hbTrId("txt_phob_formlabel_spouse"));
     spouseItem->setContentWidgetData("text", mFamily.spouse());
     spouseItem->setContentWidgetData("maxLength", CNT_SPOUSE_MAXLENGTH);
 
     HbDataFormModelItem* childrenItem = new HbDataFormModelItem(HbDataFormModelItem::TextItem,
-        qtTrId("Children"));
+        hbTrId("txt_phob_formlabel_children"));
     childrenItem->setContentWidgetData("text", children.join(", "));
     childrenItem->setContentWidgetData("maxLength", CNT_CHILDREN_MAXLENGTH);
 
@@ -61,5 +61,10 @@ void CntFamilyEditorModel::saveContactDetails()
     if ( !mFamily.isEmpty() ) {
         mContact->saveDetail( &mFamily );
     }
+}
+
+QContactDetail CntFamilyEditorModel::detail() const
+{
+    return mFamily;
 }
 // End of File

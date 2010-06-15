@@ -22,11 +22,12 @@
 target          cntmodel.dll
 targettype      DLL
 
-APP_LAYER_SYSTEMINCLUDE
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 
 userinclude 	../inc
 userinclude 	../cntmodel/inc 
 userinclude 	../cntsrv/inc
+USERINCLUDE     ../cntplsql/inc
 userinclude    ../src			//for Panic code
 
 SOURCEPATH	.	

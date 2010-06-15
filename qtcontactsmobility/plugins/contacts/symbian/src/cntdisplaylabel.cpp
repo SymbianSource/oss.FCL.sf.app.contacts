@@ -41,12 +41,19 @@
 
 #include "cntdisplaylabel.h"
 #include <qtcontacts.h>
+#include <centralrepository.h>
+#include <cntcenrepkeys.h>
+
+const TUint32 KOrderLastFirst = 0x00000000;
+const TUint32 KOrderLastCommaFirst = 0x00000001;
+const TUint32 KOrderFirstLast = 0x00000002;
 
 /*! 
  * Constructor
  */
 
-CntDisplayLabel::CntDisplayLabel()
+CntDisplayLabel::CntDisplayLabel() :
+    m_nameOrder(KOrderFirstLast)
 {
     setDisplayLabelDetails();
 }
@@ -74,8 +81,16 @@ void CntDisplayLabel::setDisplayLabelDetails()
     //Contact
     //Preferred details
     QList<QPair<QLatin1String, QLatin1String> > contactPrefferedDisplayLabelDetails;
-    contactPrefferedDisplayLabelDetails.append(qMakePair(QLatin1String(QContactName::DefinitionName), QLatin1String(QContactName::FieldFirstName)));
-    contactPrefferedDisplayLabelDetails.append(qMakePair(QLatin1String(QContactName::DefinitionName), QLatin1String(QContactName::FieldLastName)));
+    QLatin1String firstLatin(QContactName::FieldFirstName);
+    QLatin1String secondLatin(QContactName::FieldLastName);
+    
+    if (m_nameOrder == KOrderLastFirst || m_nameOrder == KOrderLastCommaFirst) {
+        firstLatin = QLatin1String(QContactName::FieldLastName);
+        secondLatin = QLatin1String(QContactName::FieldFirstName);
+    }
+
+    contactPrefferedDisplayLabelDetails.append(qMakePair(QLatin1String(QContactName::DefinitionName), firstLatin));
+    contactPrefferedDisplayLabelDetails.append(qMakePair(QLatin1String(QContactName::DefinitionName), secondLatin));
     m_contactDisplayLabelDetails.append(contactPrefferedDisplayLabelDetails);
 
     //if preferred details doesn't exist use these
@@ -146,9 +161,12 @@ QString CntDisplayLabel::generateDisplayLabel( const QContact &contact, const QL
                 
                 if(!label.isEmpty())
                 {
-                    displayLabel.append(delimiter());
+                    // Inlcude a comma if needed in the display label
+                    if (m_nameOrder == KOrderLastCommaFirst)
+                        displayLabel.append(comma());
+                    displayLabel.append(delimiter());                        
                     displayLabel.append(label);
-                }  
+                }
             }
         }
     }
@@ -195,4 +213,13 @@ QList<QPair<QLatin1String, QLatin1String> > CntDisplayLabel::contactFilterDetail
 QList<QPair<QLatin1String, QLatin1String> > CntDisplayLabel::groupFilterDetails() const
 {
     return m_groupDisplayLabelDetails.at(0);
+}
+
+/*! 
+ * Comma to be used in display label
+ * \return comma
+ */
+QString CntDisplayLabel::comma() const
+{
+    return ",";
 }

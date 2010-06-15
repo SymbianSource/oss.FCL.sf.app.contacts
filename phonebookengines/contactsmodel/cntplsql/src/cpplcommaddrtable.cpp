@@ -20,6 +20,9 @@
 #include "dbsqlconstants.h"
 #include "plplugins.h"
 #include <cntdb.h>
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include <cntphonenumparser.h>
+#endif
 
 /**
 @param aDatabase A handle to the database.
@@ -768,6 +771,87 @@ CContactIdArray* CPplCommAddrTable::MatchPhoneNumberL(const TDesC& aNumber, cons
 	return phoneMatchArray;
 	}
 
+/**
+Returns an array of contact item IDs for all the contact items which may contain
+the specified telephone number in a telephone, fax or SMS type field.
+
+This is improved version of MatchPhoneNumberL method.
+The number is compared starting from the right side of the number and 
+the method returns an array of candidate matches.  
+Punctuation (e.g. spaces) and other alphabetic characters are ignored
+when comparing. Leading zeros are removed. Digits are compared up to 
+the lenght of shorter number.
+
+@param aNumber Phone number string.
+@return Array of contact IDs which are candidate matches.
+*/
+CContactIdArray* CPplCommAddrTable::BestMatchingPhoneNumberL(const TDesC& aNumber)
+    {
+    const TInt KUpperMaxLength = KMaxPhoneMatchLength - KLowerSevenDigits;
+
+    CContactIdArray* phoneMatchArray = CContactIdArray::NewLC();
+
+    TMatch phoneDigits = CreatePaddedPhoneDigitsL(aNumber, KLowerSevenDigits, KUpperMaxLength);
+
+    if (phoneDigits.iNumLowerDigits + phoneDigits.iNumUpperDigits > 0)
+        {
+        // build statement
+        RSqlStatement stmnt;
+        CleanupClosePushL(stmnt);
+        stmnt.PrepareL(iDatabase, iMatchSelectStmnt->SqlStringL());
+
+        const TInt KValueParamIndex(KFirstParam); // first parameter in query...
+        const TInt KTypeParamIndex(KValueParamIndex + 1); // ...and the second.
+
+        User::LeaveIfError(stmnt.BindInt(KValueParamIndex,
+                phoneDigits.iLowerSevenDigits));
+        User::LeaveIfError(stmnt.BindInt(KTypeParamIndex, EPhoneNumber));
+
+        // fetch the list of any matching contact ids
+        TInt err(KErrNone);
+        const TInt KContactIdIdx(iMatchSelectStmnt->ParameterIndex( KCommAddrContactId()));
+        const TInt KExtraValueIdx(iMatchSelectStmnt->ParameterIndex(KCommAddrExtraValue()));
+        while ((err = stmnt.Next()) == KSqlAtRow)
+            {
+            // Check the upper digits...
+            TInt32 number = phoneDigits.iUpperDigits;
+            TPtrC extValString = stmnt.ColumnTextL(KExtraValueIdx);
+            TInt32 storedUpperDigits;
+            User::LeaveIfError(TLex(extValString).Val(storedUpperDigits));
+            TInt32 stored = storedUpperDigits;
+
+            TBool nonZeroInStoredFound = EFalse;
+            TBool nonZeroInNumberFound = EFalse;
+            while ((number != 0) && (stored != 0))
+                {
+                nonZeroInNumberFound |= (number % 10 != 0);
+                nonZeroInStoredFound |= (stored % 10 != 0);
+                if (nonZeroInStoredFound && nonZeroInNumberFound)
+                    {
+                    break;
+                    }
+                number /= 10;
+                stored /= 10;
+                }
+
+            if ( (phoneDigits.iUpperDigits == 0) || (storedUpperDigits == 0) ||
+                 (number == stored) )
+                {
+                phoneMatchArray->AddL(stmnt.ColumnInt(KContactIdIdx));
+                }
+            }
+
+        // leave if we didn't complete going through the results properly
+        if (err != KSqlAtEnd)
+            {
+            User::Leave(err);
+            }
+        CleanupStack::PopAndDestroy(&stmnt);
+        }
+
+    CleanupStack::Pop(phoneMatchArray);
+    return phoneMatchArray;
+    }
 
 /**
 Searches the contacts database to find any contact items with an exact match on the email address supplied.

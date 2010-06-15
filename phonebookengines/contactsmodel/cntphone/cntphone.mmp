@@ -21,7 +21,7 @@ CAPABILITY   All -TCB
 target cntphone.dll
 
   targettype plugin
-  SYSTEMINCLUDE	/epoc32/include/ecom
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
   UID			0x10009D8D 0x102035FB
 
   start resource 102035FB.RSS
@@ -34,7 +34,6 @@ VENDORID		0x70000001
 sourcepath		.
 userinclude		../cntphone
 userinclude		../inc
-systeminclude   /epoc32/include
 source          cntphone.cpp
 library         euser.lib
 

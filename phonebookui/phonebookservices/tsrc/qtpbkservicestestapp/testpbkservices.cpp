@@ -21,7 +21,7 @@
 #include <hbdialog.h>
 #include <hblistwidget.h>
 #include <hblabel.h>
-#include <mobcntmodel.h>
+#include <cntlistmodel.h>
 #include <hbaction.h>
 #include <hbmainwindow.h>
 #include <qtcontacts.h>
@@ -218,19 +218,13 @@ void testPbkServices::onEditCompleted(const QVariant& value)
 {
     mMainWindow->activateWindow();
     
-    if (value.toBool())
+    if (value.toInt() == 1)
     {
-        HbMessageBox note;
-        note.setTimeout(10000);
-        note.setText("Contact saved");
-        note.exec();
+        HbMessageBox::information("Contact saved");
     }
     else
     {
-        HbMessageBox note;
-        note.setTimeout(10000);
-        note.setText("Contact saving failed");
-        note.exec();
+        HbMessageBox::information("Contact saving failed");
     }
 }
 
@@ -348,10 +342,7 @@ void testPbkServices::onRequestCompleted(const QVariant& value)
 
     if (retValue.count() == 0)
     {
-        HbMessageBox note;
-        note.setTimeout(10000);
-        note.setText("Nothing returned");
-        note.exec();
+        HbMessageBox::information("Nothing returned");
     }
 
     else
@@ -382,25 +373,26 @@ void testPbkServices::onRequestCompleted(const QVariant& value)
             listWidget->addItem( contactId );
 
             }
-            HbDialog popup;
+            HbDialog *popup = new HbDialog();
+            popup->setAttribute(Qt::WA_DeleteOnClose, true);
 
             // Set dismiss policy that determines what tap events will cause the popup
             // to be dismissed
-            popup.setDismissPolicy(HbDialog::NoDismiss);
+            popup->setDismissPolicy(HbDialog::NoDismiss);
 
             // Set the label as heading widget
-            popup.setHeadingWidget(new HbLabel(tr("Contact")));
+            popup->setHeadingWidget(new HbLabel(tr("Contact")));
 
             // Set a list widget as content widget in the popup
-            popup.setContentWidget(listWidget);
+            popup->setContentWidget(listWidget);
 
             // Sets the primary action and secondary action
             //popup.setPrimaryAction(new HbAction(tr("Ok"),&popup));
             //popup.setSecondaryAction(new HbAction(tr("Cancel"),&popup));
 
-            // Launch popup syncronously
-            popup.setTimeout(15000);
-            popup.exec();
+            // Launch popup asyncronously
+            popup->setTimeout(15000);
+            popup->open();
     }
 
 }

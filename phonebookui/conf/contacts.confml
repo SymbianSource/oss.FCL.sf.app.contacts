@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns="http://www.s60.com/xml/confml/1" name="Contacts" version="1">
+  <feature ref="KCRUiContacts" name="Contacts app ui settings">
+    <desc>Contacts app ui settings</desc>
+    <setting ref="KNameOrdering" name="Name ordering in lists" type="selection">
+      <desc>Displays name label order in names lists</desc>
+      <option name="name order Lastname Firstname" value="0"/>
+      <option name="name order Lastname, Firstname" value="1"/>
+      <option name="name order Firstname Lastname" value="2"/>
+    </setting>
+  </feature>
+  <data>
+    <KCRUiContacts>
+      <KNameOrdering>0</KNameOrdering>
+    </KCRUiContacts>
+  </data>
+  <rfs>
+    <KCRUiContacts>
+      <KNameOrdering>true</KNameOrdering>
+    </KCRUiContacts>
+  </rfs>
+</configuration>

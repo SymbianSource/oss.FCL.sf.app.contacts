@@ -94,7 +94,7 @@ void CntServiceAssignContactCardView::saveNew()
     QVariant var;
     var.setValue(mContact);
     viewParameters.insert(ESelectedContact, var);
-    //viewManager()->changeView(viewParameters);
+    mViewManager->changeView(viewParameters);
 }
 
 /*!
@@ -107,16 +107,17 @@ void CntServiceAssignContactCardView::updateExisting()
     QVariant var;
     var.setValue(mDetail);
     viewParameters.insert(ESelectedDetail, var);
-    //viewManager()->changeView(viewParameters);
+    mViewManager->changeView(viewParameters);
 }
 
 /*!
 Called after the view has been activated
 */
-void CntServiceAssignContactCardView::doViewActivated(QContact contact, QContactDetail detail)
+void CntServiceAssignContactCardView::doViewActivated(CntAbstractViewManager* aMgr, const CntViewParameters aArgs)
 {
-    mContact = contact;
-    mDetail = detail;
+    mViewManager = aMgr;
+    mContact = aArgs.value(ESelectedContact).value<QContact>();
+    mDetail = aArgs.value(ESelectedDetail).value<QContactDetail>();
 }
 
 /*!

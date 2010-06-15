@@ -27,6 +27,9 @@
 #include "cviewcontactmanager.h"
 
 #include <cntviewbase.h>
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include <cntviewsortpluginbase.h>
+#endif
 
 const TInt KContactsArrayGranularity = 100;
 const TInt KUnsortedArrayGranularity = 16;

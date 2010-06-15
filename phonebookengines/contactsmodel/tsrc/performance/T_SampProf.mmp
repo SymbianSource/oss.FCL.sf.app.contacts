@@ -21,7 +21,7 @@ TARGETTYPE		exe
 CAPABILITY     ReadUserData WriteUserData
 SOURCE			T_PerfDbCreator.cpp 
 SOURCE			T_SampProf.cpp 
-SYSTEMINCLUDE	/epoc32/include /epoc32/include/ecom
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 LIBRARY 			euser.lib cntmodel.lib ecom.lib efile.lib efsrv.lib bafl.lib
 
 VENDORID 0x70000001

@@ -23,10 +23,14 @@
 */
 
 
-#include <barsc.h> // for resource reading.
+#include <barsc.h> // For resource reading.
 #include <bautils.h>
-#include <cntmodel.rsg> // for system template resources.
-#include <phbksync.h> // for kuidiccglobaladnphonebook.
+#include <cntmodel.rsg> // For System template resources.
+#include <phbksync.h> // For KUidIccGlobalAdnPhonebook.
+
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "cntsyncecom.h"
+#endif
 
 #include "persistencelayerimpl.h"
 #include "clplcontactproperties.h" 
@@ -52,7 +56,6 @@ CLplContactProperties::~CLplContactProperties()
 	delete iSyncDummy;
 	delete iSystemTemplate;
 	delete iGroupIdList;
-
 	}
 
 

@@ -23,7 +23,7 @@
 #include <QObject>
 #include <QKeyEvent>
 #include <QGraphicsSceneResizeEvent>
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 
 class HbView;
 class HbScrollArea;
@@ -37,7 +37,12 @@ class CntContactCardDataContainer;
 class CntContactCardHeadingItem;
 class CntContactCardDetailItem;
 class CntImageLabel;
+class CntActionLauncher;
 class XQServiceRequest;
+class ShareUi;
+class QStandardItemModel;
+class QModelIndex;
+class HbSelectionDialog;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -66,6 +71,8 @@ public slots:
     void thumbnailReady(const QPixmap& pixmap, void *data, int id, int error);
     void drawMenu(const QPointF &aCoords);
     void sendToHs();
+    
+    void keyPressed(QKeyEvent *event);
 
 private slots:
     void sendBusinessCard();
@@ -74,7 +81,7 @@ private slots:
     void handleDeleteContact(HbAction *action);
     void setAsFavorite();
     void removeFromFavorite();
-    void progress(QContactAction::State status);
+    void actionExecuted(CntActionLauncher* aAction);
     void setOrientation(Qt::Orientation orientation);
     void showPreviousView();
     void doChangeImage();
@@ -82,6 +89,9 @@ private slots:
     
     void handleMenuAction(HbAction* aAction);
     void handleSendBusinessCard( HbAction* aAction );
+    void sendKeyDialogSlot(HbAction* action);
+    
+    void launchSendKeyAction(const QModelIndex &index);
     
 public:
     CntContactCardView* q_ptr;    
@@ -93,21 +103,18 @@ public:
 signals:
     void preferredUpdated();
     void backPressed();
-    void viewActivated(QContact, QContactDetail);
+    void viewActivated(CntAbstractViewManager* aMgr, const CntViewParameters aArgs);
 
-protected:
-    bool eventFilter(QObject *obj, QEvent *event);
     
 #ifdef PBK_UNIT_TEST
 public:
 #else
 private:
 #endif
-    void launchAction(QContact contact, QContactDetail detail, QString action);
-    //bool createVCard(QString& vCardPath);
-    bool isFavoriteGroupContact();
-	bool isFavoriteGroupCreated();
+    void executeAction(QContact& aContact, QContactDetail aDetail, QString aAction);
+    void executeDynamicAction(QContact& aContact, QContactDetail aDetail, QContactActionDescriptor aActionDescriptor);
     
+    void sendKeyPressed();
 #ifdef PBK_UNIT_TEST
 public:
 #else
@@ -123,11 +130,8 @@ private:
     CntContactCardDataContainer *mDataContainer;
     CntContactCardHeadingItem   *mHeadingItem;
     ThumbnailManager            *mThumbnailManager;
-    QContact                    *mGroupContact;
     QContactAvatar              *mAvatar;
-    bool                        mIsGroupMember;
     bool                        mIsHandlingMenu;
-    bool                        mIsPreviousImageEditorView;
     QMap<QString, CntContactCardDetailItem*> mPreferredItems;
     int                         mFavoriteGroupId;
     CntDocumentLoader           *mLoader;
@@ -136,6 +140,11 @@ private:
     CntImageLabel               *mImageLabel;
 	XQServiceRequest            *mHighwayService;
     HbIcon                      *mVCardIcon;
+    CntViewParameters           mArgs;
+    ShareUi                     *mShareUi;
+    bool                        mAcceptSendKey;
+    QStandardItemModel*         mSendKeyListModel;
+    HbSelectionDialog*          mSendKeyPopup;
     
 };
 

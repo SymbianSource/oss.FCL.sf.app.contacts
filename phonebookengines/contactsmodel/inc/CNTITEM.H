@@ -46,10 +46,12 @@ const TInt KUidStringLength =244;
 */
 #define KUidStringSeparator '-'
 
+#ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
 /** Constant used by vCard import/export.
 @internalComponent
 */
 #define KContactMaxFieldNumber 32
+#endif
 
 class CContactItemField;
 class CContactItemViewDef;

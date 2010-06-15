@@ -22,7 +22,7 @@
 #include <hblabel.h>
 #include <hbmainwindow.h>
 #include <qcontactnote.h>
-#include <qgraphicslinearlayout>
+#include <QGraphicsLinearLayout>
 
 CntNoteEditorViewItem::CntNoteEditorViewItem( QGraphicsItem* aParent ) :
 CntDetailViewItem(aParent),

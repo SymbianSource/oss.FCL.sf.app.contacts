@@ -23,6 +23,10 @@
 #include "cntvcardutils.h"
 #include <cntdef.h>
 #include <cntitem.h>
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "vcard3.h"
+#include "cntdb_internal.h"
+#endif
 
 
 

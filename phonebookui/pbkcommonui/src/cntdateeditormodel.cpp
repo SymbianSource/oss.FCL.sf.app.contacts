@@ -46,8 +46,8 @@ CntDetailEditorModel( aContact )
     }
 
 CntDateEditorModel::~CntDateEditorModel()
-    {
-    }
+{
+}
 
 void CntDateEditorModel::saveContactDetails()
 {
@@ -64,5 +64,18 @@ void CntDateEditorModel::saveContactDetails()
     if ( mAnniversary.originalDate().isValid() )
         mContact->saveDetail( &mAnniversary );
     
+}
+
+QContactDetail CntDateEditorModel::detail() const
+{
+    if ( mAnniversary.originalDate().isValid() )
+    {
+        return mAnniversary;
+    }
+    if ( mBirthday.date().isValid() )
+    {
+        return mBirthday;
+    }
+    return QContactAnniversary();
 }
 // End of File

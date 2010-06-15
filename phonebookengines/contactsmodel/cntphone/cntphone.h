@@ -21,6 +21,9 @@
 
 #include <e32std.h>
 #include <cntdb.h>
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include <cntphonenumparser.h>
+#endif
 
 /**
  * Default implementation of a phone number parser

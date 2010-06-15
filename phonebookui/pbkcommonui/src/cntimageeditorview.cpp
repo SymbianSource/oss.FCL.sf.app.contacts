@@ -32,9 +32,9 @@
 
 const char *CNT_IMAGE_XML = ":/xml/contacts_if.docml";
 
-#define FETCHER_SERVICE "com.nokia.services.media"
-#define FETCHER_INTERFACE "image"
-#define FETCHER_OPERATION "fetch(QVariantMap,QVariant)"
+#define FETCHER_SERVICE "photos"
+#define FETCHER_INTERFACE "com.nokia.symbian.IImageFetch"
+#define FETCHER_OPERATION "fetch()"
 
 /*!
 Constructor
@@ -194,7 +194,7 @@ void CntImageEditorView::openGallery()
         mRequest = 0;
     }
     
-    mRequest = mAppManager.create(FETCHER_SERVICE, FETCHER_INTERFACE, FETCHER_OPERATION, false);
+    mRequest = mAppManager.create(FETCHER_SERVICE, FETCHER_INTERFACE, FETCHER_OPERATION, true);
     if ( mRequest ) 
     {
         connect(mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(handleImageChange(const QVariant&)));
@@ -218,6 +218,7 @@ void CntImageEditorView::showPreviousView()
     var.setValue(*mContact);
     
     mArgs.insert(ESelectedContact, var);
+    mArgs.insert(ESelectedGroupContact, var);
     mArgs.insert(ECustomParam, viewId());
     mViewManager->back( mArgs );
 }
@@ -236,7 +237,7 @@ void CntImageEditorView::removeImage()
         
         mAvatar->setImageUrl(QUrl());
         mImageLabel->clear();
-        mImageLabel->setIcon(HbIcon("qtg_large_avatar"));
+        mImageLabel->setIcon(HbIcon("qtg_large_add_contact_picture"));
         mRemoveImage->setEnabled(false);
     }
 }

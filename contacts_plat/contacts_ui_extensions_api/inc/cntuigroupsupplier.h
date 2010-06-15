@@ -42,7 +42,7 @@ class CntUiGroupSupplier
      * @param int, group index 
      * @return CntUiExtensionGroup&, group handle
      */      
-    virtual const CntUiExtensionGroup& groupAt( int aIndex ) const = 0;
+    virtual CntUiExtensionGroup& groupAt( int aIndex ) const = 0;
 
     virtual void* GroupSupplierExtension(
             int /*aExtensionId*/ )

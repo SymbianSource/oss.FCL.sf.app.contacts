@@ -20,14 +20,14 @@
 
 #include "cntabstractviewmanager.h"
 #include "cntabstractview.h"
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 
 class HbListView;
 class HbView;
 class HbDocumentLoader;
 class HbAction;
 
-class MobCntModel;
+class CntListModel;
 
 class QTPBK_EXPORT CntBaseSelectionView : public QObject, public CntAbstractView
 {
@@ -38,7 +38,7 @@ public:
     ~CntBaseSelectionView();
 
 signals:
-    void viewOpened( const CntViewParameters aArgs );
+    void viewOpened( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
     void viewClosed();
     
 public:
@@ -58,34 +58,8 @@ protected:
     HbView* mView;
     HbAction* mSoftkey;
     CntAbstractViewManager* mMgr;
-    MobCntModel* mListModel;
-/*        
-public:
-    virtual void setupView();
-    virtual void activateView(const CntViewParameters viewParameters);
-    void addItemsToLayout();
-    
-public slots:
-    virtual void onListViewActivated(const QModelIndex &index) { Q_UNUSED(index); }
+    CntListModel* mListModel;
 
-public:
-
-    HbListView             *listView();
-    QGraphicsLinearLayout  *listLayout();
-    QItemSelectionModel    *selectionModel();
-
-private:
-    HbListView              *mListView;
-    QGraphicsLinearLayout   *mListLayout;
-
-    // needed in subclasses
-#ifdef PBK_UNIT_TEST
-public:
-#else
-protected:
-#endif
-    HbAbstractItemView::SelectionMode   mSelectionMode;
-*/
 };
 
 #endif /* CNTBASESELECTIONVIEW_H */

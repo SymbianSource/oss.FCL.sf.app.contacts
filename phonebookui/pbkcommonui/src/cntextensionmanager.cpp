@@ -20,6 +20,8 @@
 #include <cntuiextensionfactory.h>
 #include "cntextensionmanager.h"
 
+const char *CNT_UI_EXTENSION_PLUGIN_DIRECTORY = "/resource/qt/plugins/contacts/extensions/";
+
 CntExtensionManager::CntExtensionManager( QObject* aParent ):
     mPluginsLoaded(false)
 {
@@ -81,8 +83,8 @@ void CntExtensionManager::loadExtensionPlugins()
     // installed in runtime while contacts is running => new plugin should
     // be loaded when it is added to file system (assuming that this
     // extension API will be open for 3rd party plugins)
-
-    QDir pluginsDir(QLibraryInfo::location(QLibraryInfo::PluginsPath));
+    
+    QDir pluginsDir(CNT_UI_EXTENSION_PLUGIN_DIRECTORY);
     foreach (QString fileName, pluginsDir.entryList(QDir::Files))
         {
         // Create plugin loader

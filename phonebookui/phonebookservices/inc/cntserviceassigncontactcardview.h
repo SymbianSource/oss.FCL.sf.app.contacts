@@ -38,20 +38,20 @@ class CntServiceAssignContactCardView : public CntContactCardView
     Q_OBJECT
 
 public slots:
-
     void doCloseView();
     void addActionsToToolBar();
     void addToContacts();
     void saveNew();
     void updateExisting();
-    void doViewActivated(QContact contact, QContactDetail detail);
+    
+    void doViewActivated(CntAbstractViewManager* aMgr, const CntViewParameters aArgs);
 
 public:
     CntServiceAssignContactCardView(CntServiceHandler *aServiceHandler);
     ~CntServiceAssignContactCardView();
 
     int viewId() const { return serviceAssignContactCardView; }
-    
+
 private:
     CntServiceHandler       *mServiceHandler;
     CntAbstractViewManager  *mViewManager;

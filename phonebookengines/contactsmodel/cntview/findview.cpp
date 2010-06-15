@@ -19,6 +19,9 @@
 #include <cntview.h>
 #include "cntstd.h"
 #include <cntviewsortplugin.h>
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include <cntviewsortpluginbase.h>
+#endif
 
 //#define CNTVIEW_API_PROFILING
 // To see the diferences between class versions check the in source documentation of TContactViewEvent

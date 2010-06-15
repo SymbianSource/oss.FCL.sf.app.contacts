@@ -16,7 +16,7 @@
 */
 
 #include "cntimportsview.h"
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 #include <hbpushbutton.h>
 #include <hbaction.h>
 #include <hbview.h>
@@ -26,8 +26,7 @@
 #include <hbmainwindow.h>
 #include <hblabel.h>
 #include <hblistview.h>
-#include <hbgroupbox.h>
-#include <QTimer.h>
+#include <QTimer>
 #include <hbnotificationdialog.h>
 #include <hbmessagebox.h>
 #include <hbprogressbar.h>
@@ -43,7 +42,8 @@ CntImportsView::CntImportsView() : mContactSimManagerADN(0),
     mFetchRequestADN(0),
     mFetchRequestSDN(0),
     mListView(0),
-    mSimUtility(0),
+    mAdnSimUtility(0),
+    mSdnSimUtility(0),
     mAdnEntriesPresent(0),
     mImportSimPopup(0),
     mSaveCount(0),
@@ -53,6 +53,7 @@ CntImportsView::CntImportsView() : mContactSimManagerADN(0),
     mSdnStorePresent(0),
     mSimPresent(0),
     mAdnStoreEntries(0),
+    mSdnStoreEntries(0),
     mSimError(0),
     mWaitingForAdnCache(0)
 {
@@ -85,7 +86,8 @@ CntImportsView::~CntImportsView()
     delete mFetchRequestADN;
     delete mFetchRequestSDN;
     delete mModel;
-    delete mSimUtility;
+    delete mAdnSimUtility;
+    delete mSdnSimUtility;
 }
 
 /*!
@@ -93,8 +95,8 @@ Activates a previous view
 */
 void CntImportsView::showPreviousView()
 {
-  CntViewParameters args;
-  mViewManager->back(args);
+    CntViewParameters args;
+    mViewManager->back(args);
 }
 
 /*
@@ -116,19 +118,22 @@ void CntImportsView::activate(CntAbstractViewManager* aMgr, const CntViewParamet
     // Sim Utility info fetch
     int getSimInfoError(0);
     int storesError(0);
+    int getSdnSimInfoError(0);
     
+    
+    //ADN store
     int error = -1;
-    mSimUtility = new SimUtility(SimUtility::AdnStore, error);
+    mAdnSimUtility = new CntSimUtility(CntSimUtility::AdnStore, error);
     if (error != 0) 
     {
-        delete mSimUtility; 
-        mSimUtility = 0;
+        delete mAdnSimUtility; 
+        mAdnSimUtility = 0;
         mSimError = true;
     }
     else
     {
         // check what stores are there
-        SimUtility::AvailableStores stores = mSimUtility->getAvailableStores(storesError);
+        CntSimUtility::AvailableStores stores = mAdnSimUtility->getAvailableStores(storesError);
         if(!storesError)
         {
             mSimPresent = stores.SimPresent;
@@ -139,7 +144,7 @@ void CntImportsView::activate(CntAbstractViewManager* aMgr, const CntViewParamet
         //check there are ADN contacts 
         if (mAdnStorePresent)
         {
-            SimUtility::SimInfo simInfo = mSimUtility->getSimInfo(getSimInfoError);
+            CntSimUtility::SimInfo simInfo = mAdnSimUtility->getSimInfo(getSimInfoError);
             if (!getSimInfoError)
             {
                 // sim entries are present
@@ -158,8 +163,8 @@ void CntImportsView::activate(CntAbstractViewManager* aMgr, const CntViewParamet
                     mAdnStorePresent = true;
                     mAdnEntriesPresent = true;
                     mWaitingForAdnCache = true;
-                    connect(mSimUtility, SIGNAL(adnCacheStatusReady(SimUtility::CacheStatus&, int)), this, SLOT(adnCacheStatusReady(SimUtility::CacheStatus&, int)));
-                    if (!mSimUtility->notifyAdnCacheStatus()) {
+                    connect(mAdnSimUtility, SIGNAL(adnCacheStatusReady(SimUtility::CacheStatus&, int)), this, SLOT(adnCacheStatusReady(SimUtility::CacheStatus&, int)));
+                    if (!mAdnSimUtility->notifyAdnCacheStatus()) {
                         mAdnStorePresent = false;
                         mAdnEntriesPresent = false;
                         mWaitingForAdnCache = false;
@@ -172,7 +177,32 @@ void CntImportsView::activate(CntAbstractViewManager* aMgr, const CntViewParamet
             }
         }
     }
-        
+    
+    //SDN store
+     if (mSdnStorePresent && !mWaitingForAdnCache)
+     {
+        int sdnError = -1;
+        mSdnSimUtility = new CntSimUtility(CntSimUtility::SdnStore, sdnError);
+        if (sdnError != 0) 
+        {
+            delete mSdnSimUtility; 
+            mSdnSimUtility = 0;
+        }
+        else
+        {
+            //get number of SDN contacts 
+            CntSimUtility::SimInfo sdnSimInfo = mSdnSimUtility->getSimInfo(getSdnSimInfoError);
+            if (!getSdnSimInfoError)
+            {
+                // sim entries are present
+                mSdnStoreEntries = sdnSimInfo.usedEntries;
+            }
+        }
+     }
+    // end SDN store
+    
+    
+    
     mListView = static_cast<HbListView*>(mDocumentLoader.findWidget(QString("listView")));
     
     HbFrameBackground frame;
@@ -251,7 +281,7 @@ void CntImportsView::simInfoErrorMessage(int infoError)
 {
     Q_UNUSED(infoError);
     QString errorMessage;
-    errorMessage.append(hbTrId("sim_card_not_accessable"));
+    errorMessage.append(hbTrId("txt_phob_info_sim_card_error"));
     HbNotificationDialog::launchDialog(errorMessage);
     mSimError = true;
 }
@@ -445,31 +475,31 @@ void CntImportsView::timerEvent(QTimerEvent *event)
 void CntImportsView::showWaitNote()
 {
     mImportSimPopup = new HbDialog();    
-    mImportSimPopup->setDismissPolicy(HbDialog::NoDismiss);
-    mImportSimPopup->setTimeout(0);
+    mImportSimPopup->setDismissPolicy(HbPopup::NoDismiss);
+    mImportSimPopup->setTimeout(HbPopup::NoTimeout);
     mImportSimPopup->setBackgroundFaded(true);
     mImportSimPopup->setAttribute(Qt::WA_DeleteOnClose, true);
     
-    HbGroupBox *groupBox = new HbGroupBox;
-    groupBox->setHeading(hbTrId("txt_phob_title_import_contacts")); 
-    mImportSimPopup->setHeadingWidget(groupBox);
+    HbLabel *headingLabel = new HbLabel(mImportSimPopup);
+    headingLabel->setPlainText(hbTrId("txt_phob_title_import_contacts")); 
+    mImportSimPopup->setHeadingWidget(headingLabel);
     
     QGraphicsLinearLayout *containerLayout = new QGraphicsLinearLayout(Qt::Vertical);
     containerLayout->setContentsMargins(0, 0, 0, 0);
     containerLayout->setSpacing(10);
     
-    HbLabel *icon = new HbLabel();
+    HbLabel *icon = new HbLabel(mImportSimPopup);
     icon->setIcon(HbIcon("qtg_large_sim"));  
     
-    HbLabel *simText= new HbLabel();
+    HbLabel *simText= new HbLabel(mImportSimPopup);
     simText->setPlainText(hbTrId("txt_phob_info_importing_contacts_from_sim")); 
     simText->setTextWrapping(Hb::TextWordWrap);
     simText->setElideMode(Qt::ElideNone);
     
-    HbProgressBar *progressBar = new HbProgressBar;
+    HbProgressBar *progressBar = new HbProgressBar(mImportSimPopup);
     progressBar->setRange(0,0); 
     
-    HbPushButton *stopButton = new HbPushButton;
+    HbPushButton *stopButton = new HbPushButton(mImportSimPopup);
     stopButton->setText(hbTrId("txt_phob_button_cancel"));
     connect(stopButton, SIGNAL(clicked()), this, SLOT(stopSimImport()));
     
@@ -488,9 +518,8 @@ void CntImportsView::showWaitNote()
 }
 
 void CntImportsView::showSimImportResults() const
-{
-    QString results;
-    results.append(hbTrId("txt_phob_dpophead_ln_contacts_imported", mSaveCount));
+{   
+    QString results = hbTrId("txt_phob_dpophead_ln_contacts_imported").arg(mSaveCount).arg(mAdnStoreEntries + mSdnStoreEntries);
     HbNotificationDialog::launchDialog(results);
 }
 
@@ -589,11 +618,11 @@ void CntImportsView::importFetchResultReceivedSDN()
     }   
 }
 
-void CntImportsView::adnCacheStatusReady(SimUtility::CacheStatus& cacheStatus, int error)
+void CntImportsView::adnCacheStatusReady(CntSimUtility::CacheStatus& cacheStatus, int error)
 {
     mWaitingForAdnCache = false;
     //update ADN store info...
-    if (error != 0 || cacheStatus == SimUtility::ECacheFailed)
+    if (error != 0 || cacheStatus == CntSimUtility::ECacheFailed)
     {
         mAdnStorePresent = false;
         mAdnEntriesPresent = false;
@@ -604,7 +633,7 @@ void CntImportsView::adnCacheStatusReady(SimUtility::CacheStatus& cacheStatus, i
         mAdnStorePresent = true;
         mAdnEntriesPresent = false;
         int getSimInfoError = -1;
-        SimUtility::SimInfo simInfo = mSimUtility->getSimInfo(getSimInfoError);
+        CntSimUtility::SimInfo simInfo = mAdnSimUtility->getSimInfo(getSimInfoError);
         if (!getSimInfoError)
         {
             // sim entries are present

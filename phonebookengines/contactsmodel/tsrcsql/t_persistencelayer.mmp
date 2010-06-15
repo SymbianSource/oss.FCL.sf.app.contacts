@@ -25,7 +25,7 @@ UID           	0x1000097a 0x10003A73 //The same UID as CntSrv
 VENDORID 		0x70000001
 
 userinclude ../inc 
-systeminclude /epoc32/include 
+APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 userinclude ../src 
 userinclude ../tsrc/TestSyncPlugIn 
 userinclude 	. 

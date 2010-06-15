@@ -53,8 +53,8 @@ public:
     
 public:// From CntEditViewItem
     QVariant data(int role) const;
-    void activated();
-    void longPressed(const QPointF &coords);
+    void activated(CntEditViewItemCallback* interface);
+    void longPressed(const QPointF &coords, CntEditViewItemCallback* interface);
     
 private:
     QStringList mTextList;

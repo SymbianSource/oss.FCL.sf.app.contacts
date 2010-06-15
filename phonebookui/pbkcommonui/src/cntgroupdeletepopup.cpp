@@ -54,7 +54,7 @@ void CntGroupDeletePopup::populateListOfGroup()
     // set the listview to multiSelection mode, this will bring MarkAll functionality (from Orbit)
     mListView->setSelectionMode(HbAbstractItemView::MultiSelection);
     mListView->setFrictionEnabled(true);
-    mListView->setScrollingStyle(HbScrollArea::PanOrFlick);
+    mListView->setScrollingStyle(HbScrollArea::PanWithFollowOn);
     
     setContentWidget(mListView);
     
@@ -63,7 +63,7 @@ void CntGroupDeletePopup::populateListOfGroup()
     setModal(true);
     setAttribute(Qt::WA_DeleteOnClose, true);
     
-    HbAction *mPrimaryAction = new HbAction(hbTrId("Delete selected"), this);
+    HbAction *mPrimaryAction = new HbAction(hbTrId("txt_phob_button_delete_selected"), this);
     addAction(mPrimaryAction);
     
     HbAction *mSecondaryAction = new HbAction(hbTrId("txt_common_button_cancel"), this);

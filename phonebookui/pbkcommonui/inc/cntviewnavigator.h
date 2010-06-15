@@ -20,7 +20,7 @@
 #include <QObject>
 #include <QStack>
 #include <hbnamespace.h>
-#include "qtpbkglobal.h"
+#include "cntglobal.h"
 /*!
  * Navigator keeps track on view history, the path that user has
  * gone throug. If back() is called, one step back view id

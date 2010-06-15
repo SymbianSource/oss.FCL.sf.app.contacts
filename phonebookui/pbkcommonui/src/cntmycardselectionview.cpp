@@ -17,7 +17,7 @@
 
 #include "cntmycardselectionview.h"
 #include <QModelIndex>
-#include <mobcntmodel.h>
+#include <cntlistmodel.h>
 #include <hblistview.h>
 #include <qcontact.h>
 

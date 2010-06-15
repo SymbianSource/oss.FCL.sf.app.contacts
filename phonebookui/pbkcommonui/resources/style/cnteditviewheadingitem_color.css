@@ -1,0 +1,8 @@
+CntEditViewHeadingItem::text{
+    color: var(qtc_groupbox_normal);
+}
+
+CntEditViewHeadingItem::second_text{
+    color: var(qtc_groupbox_normal);
+}
+

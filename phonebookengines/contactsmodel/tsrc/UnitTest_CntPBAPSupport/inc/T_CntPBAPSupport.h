@@ -18,10 +18,14 @@
 		
 #ifndef __T_CNTPBAPSUPPORT_H__
 #define __T_CNTPBAPSUPPORT_H__
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include "cntconvertercallback.h"
+#endif
 
-///////////////////////////////////////////////////////////////////////////////
+
+//
 // Class CCntPBAPSupport Definition
-///////////////////////////////////////////////////////////////////////////////
+//
 
 class CCntPBAPSupport : public CBase, public MConverterCallBack
 	{
