@@ -855,30 +855,30 @@ EXPORTS
 	_ZNK10QtMobility8QContact7isEmptyEv @ 854 NONAME
 	_ZNK10QtMobility8QContact7localIdEv @ 855 NONAME
 	_ZNK10QtMobility8QContacteqERKS0_ @ 856 NONAME
-	_ZTIN10QtMobility12QContactNameE @ 857 NONAME
-	_ZTIN10QtMobility12QContactTypeE @ 858 NONAME
+	_ZTIN10QtMobility12QContactNameE @ 857 NONAME ABSENT
+	_ZTIN10QtMobility12QContactTypeE @ 858 NONAME ABSENT
 	_ZTIN10QtMobility14QContactActionE @ 859 NONAME
 	_ZTIN10QtMobility14QContactDetailE @ 860 NONAME
 	_ZTIN10QtMobility14QContactFilterE @ 861 NONAME
 	_ZTIN10QtMobility15QContactManagerE @ 862 NONAME
-	_ZTIN10QtMobility17QContactTimestampE @ 863 NONAME
+	_ZTIN10QtMobility17QContactTimestampE @ 863 NONAME ABSENT
 	_ZTIN10QtMobility19QContactSaveRequestE @ 864 NONAME
-	_ZTIN10QtMobility19QContactUnionFilterE @ 865 NONAME
-	_ZTIN10QtMobility20QContactActionFilterE @ 866 NONAME
-	_ZTIN10QtMobility20QContactDetailFilterE @ 867 NONAME
-	_ZTIN10QtMobility20QContactDisplayLabelE @ 868 NONAME
+	_ZTIN10QtMobility19QContactUnionFilterE @ 865 NONAME ABSENT
+	_ZTIN10QtMobility20QContactActionFilterE @ 866 NONAME ABSENT
+	_ZTIN10QtMobility20QContactDetailFilterE @ 867 NONAME ABSENT
+	_ZTIN10QtMobility20QContactDisplayLabelE @ 868 NONAME ABSENT
 	_ZTIN10QtMobility20QContactFetchRequestE @ 869 NONAME
-	_ZTIN10QtMobility20QContactOrganizationE @ 870 NONAME
+	_ZTIN10QtMobility20QContactOrganizationE @ 870 NONAME ABSENT
 	_ZTIN10QtMobility21QContactActionFactoryE @ 871 NONAME
-	_ZTIN10QtMobility21QContactInvalidFilterE @ 872 NONAME
-	_ZTIN10QtMobility21QContactLocalIdFilterE @ 873 NONAME
+	_ZTIN10QtMobility21QContactInvalidFilterE @ 872 NONAME ABSENT
+	_ZTIN10QtMobility21QContactLocalIdFilterE @ 873 NONAME ABSENT
 	_ZTIN10QtMobility21QContactManagerEngineE @ 874 NONAME
 	_ZTIN10QtMobility21QContactRemoveRequestE @ 875 NONAME
 	_ZTIN10QtMobility23QContactAbstractRequestE @ 876 NONAME
-	_ZTIN10QtMobility23QContactChangeLogFilterE @ 877 NONAME
-	_ZTIN10QtMobility25QContactDetailRangeFilterE @ 878 NONAME
-	_ZTIN10QtMobility26QContactIntersectionFilterE @ 879 NONAME
-	_ZTIN10QtMobility26QContactRelationshipFilterE @ 880 NONAME
+	_ZTIN10QtMobility23QContactChangeLogFilterE @ 877 NONAME ABSENT
+	_ZTIN10QtMobility25QContactDetailRangeFilterE @ 878 NONAME ABSENT
+	_ZTIN10QtMobility26QContactIntersectionFilterE @ 879 NONAME ABSENT
+	_ZTIN10QtMobility26QContactRelationshipFilterE @ 880 NONAME ABSENT
 	_ZTIN10QtMobility27QContactLocalIdFetchRequestE @ 881 NONAME
 	_ZTIN10QtMobility28QContactManagerEngineFactoryE @ 882 NONAME
 	_ZTIN10QtMobility31QContactRelationshipSaveRequestE @ 883 NONAME
@@ -887,30 +887,30 @@ EXPORTS
 	_ZTIN10QtMobility35QContactDetailDefinitionSaveRequestE @ 886 NONAME
 	_ZTIN10QtMobility36QContactDetailDefinitionFetchRequestE @ 887 NONAME
 	_ZTIN10QtMobility37QContactDetailDefinitionRemoveRequestE @ 888 NONAME
-	_ZTVN10QtMobility12QContactNameE @ 889 NONAME
-	_ZTVN10QtMobility12QContactTypeE @ 890 NONAME
+	_ZTVN10QtMobility12QContactNameE @ 889 NONAME ABSENT
+	_ZTVN10QtMobility12QContactTypeE @ 890 NONAME ABSENT
 	_ZTVN10QtMobility14QContactActionE @ 891 NONAME
 	_ZTVN10QtMobility14QContactDetailE @ 892 NONAME
 	_ZTVN10QtMobility14QContactFilterE @ 893 NONAME
 	_ZTVN10QtMobility15QContactManagerE @ 894 NONAME
-	_ZTVN10QtMobility17QContactTimestampE @ 895 NONAME
+	_ZTVN10QtMobility17QContactTimestampE @ 895 NONAME ABSENT
 	_ZTVN10QtMobility19QContactSaveRequestE @ 896 NONAME
-	_ZTVN10QtMobility19QContactUnionFilterE @ 897 NONAME
-	_ZTVN10QtMobility20QContactActionFilterE @ 898 NONAME
-	_ZTVN10QtMobility20QContactDetailFilterE @ 899 NONAME
-	_ZTVN10QtMobility20QContactDisplayLabelE @ 900 NONAME
+	_ZTVN10QtMobility19QContactUnionFilterE @ 897 NONAME ABSENT
+	_ZTVN10QtMobility20QContactActionFilterE @ 898 NONAME ABSENT
+	_ZTVN10QtMobility20QContactDetailFilterE @ 899 NONAME ABSENT
+	_ZTVN10QtMobility20QContactDisplayLabelE @ 900 NONAME ABSENT
 	_ZTVN10QtMobility20QContactFetchRequestE @ 901 NONAME
-	_ZTVN10QtMobility20QContactOrganizationE @ 902 NONAME
+	_ZTVN10QtMobility20QContactOrganizationE @ 902 NONAME ABSENT
 	_ZTVN10QtMobility21QContactActionFactoryE @ 903 NONAME
-	_ZTVN10QtMobility21QContactInvalidFilterE @ 904 NONAME
-	_ZTVN10QtMobility21QContactLocalIdFilterE @ 905 NONAME
+	_ZTVN10QtMobility21QContactInvalidFilterE @ 904 NONAME ABSENT
+	_ZTVN10QtMobility21QContactLocalIdFilterE @ 905 NONAME ABSENT
 	_ZTVN10QtMobility21QContactManagerEngineE @ 906 NONAME
 	_ZTVN10QtMobility21QContactRemoveRequestE @ 907 NONAME
 	_ZTVN10QtMobility23QContactAbstractRequestE @ 908 NONAME
-	_ZTVN10QtMobility23QContactChangeLogFilterE @ 909 NONAME
-	_ZTVN10QtMobility25QContactDetailRangeFilterE @ 910 NONAME
-	_ZTVN10QtMobility26QContactIntersectionFilterE @ 911 NONAME
-	_ZTVN10QtMobility26QContactRelationshipFilterE @ 912 NONAME
+	_ZTVN10QtMobility23QContactChangeLogFilterE @ 909 NONAME ABSENT
+	_ZTVN10QtMobility25QContactDetailRangeFilterE @ 910 NONAME ABSENT
+	_ZTVN10QtMobility26QContactIntersectionFilterE @ 911 NONAME ABSENT
+	_ZTVN10QtMobility26QContactRelationshipFilterE @ 912 NONAME ABSENT
 	_ZTVN10QtMobility27QContactLocalIdFetchRequestE @ 913 NONAME
 	_ZTVN10QtMobility28QContactManagerEngineFactoryE @ 914 NONAME
 	_ZTVN10QtMobility31QContactRelationshipSaveRequestE @ 915 NONAME

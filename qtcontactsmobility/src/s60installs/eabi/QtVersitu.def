@@ -131,7 +131,7 @@ EXPORTS
 	_ZNK10QtMobility22QVersitContactImporter8contactsEv @ 130 NONAME
 	_ZTIN10QtMobility13QVersitReaderE @ 131 NONAME
 	_ZTIN10QtMobility13QVersitWriterE @ 132 NONAME
-	_ZTIN10QtMobility22QVersitResourceHandlerE @ 133 NONAME
+	_ZTIN10QtMobility22QVersitResourceHandlerE @ 133 NONAME ABSENT
 	_ZTIN10QtMobility29QVersitDefaultResourceHandlerE @ 134 NONAME
 	_ZTVN10QtMobility13QVersitReaderE @ 135 NONAME
 	_ZTVN10QtMobility13QVersitWriterE @ 136 NONAME
