@@ -445,6 +445,8 @@ void CCCAppMyCardContainer::DoCheckExtensionFactoryL()
     {
     CCCAExtensionFactory* extension = iFactoryExtensionNotifier->ExtensionFactory();
     TBool visible = EFalse;
+    MCCAStatusProvider* ccaStatusProvider = NULL;
+    
     if( extension )
         {
         if ( !iViewLauncher )
@@ -462,11 +464,29 @@ void CCCAppMyCardContainer::DoCheckExtensionFactoryL()
         delete iViewLauncher;
         iViewLauncher = NULL;
         }
-    
+            
     CCCAppStatusControl* statusControl = iHeaderCtrl->StatusControl();
+    
     if( statusControl )
         {
-        statusControl->MakeVisible( visible );
+		if( extension )
+        	{				
+			TAny* factoryExtension = extension->FactoryExtension( KCCAExtensionFactoryStatusProviderCreatorUid );        	
+        	
+			 if( factoryExtension )
+				 {
+				 MCCAExtensionFactoryStatusProviderCreator* statusProviderCreator =
+						 static_cast<MCCAExtensionFactoryStatusProviderCreator*>( factoryExtension );
+
+				   if( statusProviderCreator )
+					   {
+					   ccaStatusProvider = statusProviderCreator->CreateStatusProviderL();					   
+					   }
+				 }
+        	}
+		
+		statusControl->SetStatusProvider( ccaStatusProvider );
+        statusControl->MakeVisible( visible );        
         LayoutControls();
         DrawDeferred();
         }

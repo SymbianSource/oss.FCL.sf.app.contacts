@@ -558,6 +558,9 @@ TInt CCCAppCommLauncherMenuHandler::HandleNotifyL(
         // Update the commlauncher the UI contact data
         iPlugin.ContactHandler().RefetchContactL();
         iPlugin.Container().ContactsChangedL();
+        
+        //Update the Store
+        SetContactStore(iPlugin.ContactHandler().ContactStore());
         }
 
     if (errParam)

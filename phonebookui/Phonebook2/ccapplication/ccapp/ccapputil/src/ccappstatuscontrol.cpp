@@ -60,13 +60,11 @@ inline void ReSizeIcon( CGulIcon* aIcon, const TSize& aSize )
         CFbsBitmap* mask = aIcon->Mask();
         if( bitmap )
             {
-            AknIconUtils::SetSize( 
-                    bitmap, aSize, EAspectRatioPreservedAndUnusedSpaceRemoved );
+            AknIconUtils::SetSize( bitmap, aSize );
             }
         if( mask )
             {
-            AknIconUtils::SetSize( 
-                    mask, aSize, EAspectRatioPreservedAndUnusedSpaceRemoved );
+            AknIconUtils::SetSize( mask, aSize );
             }
         }
     }
@@ -79,10 +77,11 @@ inline void ReSizeIcon( CGulIcon* aIcon, const TSize& aSize )
 //                            
 EXPORT_C CCCAppStatusControl* CCCAppStatusControl::NewL( 
     CSpbContentProvider& aContentProvider, 
-    MCCAStatusControlObserver& aObserver )
+    MCCAStatusControlObserver& aObserver,
+    CCCAppStatusControl::TContactType aContactType )
     {
     CCCAppStatusControl* self= new(ELeave) CCCAppStatusControl( 
-            aContentProvider, aObserver );
+            aContentProvider, aObserver, aContactType );
     CleanupStack::PushL(self);
     self->ConstructL();
     CleanupStack::Pop(self);
@@ -95,10 +94,12 @@ EXPORT_C CCCAppStatusControl* CCCAppStatusControl::NewL(
 //
 CCCAppStatusControl::CCCAppStatusControl( 
     CSpbContentProvider& aContentProvider, 
-    MCCAStatusControlObserver& aObserver ) : 
+    MCCAStatusControlObserver& aObserver,
+    CCCAppStatusControl::TContactType aContactType ) : 
     iContentProvider( aContentProvider ),
     iObserver( aObserver ),
-    iState( EStateUndefined )
+    iState( EStateUndefined ),
+    iContactType( aContactType )
     {		
     } 
 
@@ -151,8 +152,15 @@ CCCAppStatusControl::~CCCAppStatusControl()
         {
         iTouchFeedBack->RemoveFeedbackForControl( this );
         }
-	iContentProvider.RemoveObserver( *this );
 	
+    iContentProvider.RemoveObserver( *this );
+	
+	if( iCCAStatusProvider )
+		{
+		iCCAStatusProvider->RemoveObserver( *this );
+		}
+	
+	delete iCCAStatusProvider;		
     delete iStatusImage;
     delete iStatusIcon;
     delete iStatusLabel1;    
@@ -238,6 +246,22 @@ EXPORT_C void CCCAppStatusControl::SetDefaultStatusTextL(
 	    {
         ShowDefaultContentL();
 	    }
+	}
+
+// ---------------------------------------------------------------------------
+// CCCAppStatusControl::SetStatusProvider
+// ---------------------------------------------------------------------------
+//
+EXPORT_C void CCCAppStatusControl::SetStatusProvider( MCCAStatusProvider* aCCAStatusProvider )
+	{
+	if( iCCAStatusProvider )
+		{
+		iCCAStatusProvider->RemoveObserver( *this );
+		delete iCCAStatusProvider;
+		iCCAStatusProvider = NULL;
+		}
+	
+	iCCAStatusProvider = aCCAStatusProvider;					
 	}
 
 // ---------------------------------------------------------------------------
@@ -436,6 +460,21 @@ void CCCAppStatusControl::ContentUpdated( MVPbkContactLink& aLink,
 	}
 
 // ---------------------------------------------------------------------------
+// CCCAppStatusControl::StatusEvent
+// ---------------------------------------------------------------------------
+//
+void CCCAppStatusControl::StatusEvent(
+           MCCAStatusProviderObserver::TCCAStatusProviderObserverEvent aEvent,
+           const MVPbkContactLink* aLink )
+	{		       	
+	if( iCCAStatusProvider && aEvent == MCCAStatusProviderObserver::EStatusChanged && 
+			iLink && aLink && iLink->IsSame( *aLink ) )
+		{
+        UpdateCCAStatusL( iLink );
+		}			
+	}
+
+// ---------------------------------------------------------------------------
 // CCCAppStatusControl::DoStatusUpdateL
 // ---------------------------------------------------------------------------
 //
@@ -444,10 +483,23 @@ void CCCAppStatusControl::DoStatusUpdateL( MVPbkContactLink& aLink,
     {
     if( aEvent == EContentNotAvailable )
         {
-		ShowDefaultContentL();
+		if( iCCAStatusProvider )
+    		{
+            UpdateCCAStatusL( &aLink );            			        					
+    		TRAP_IGNORE( iCCAStatusProvider->AddObserverL( *this ) );
+    		}    
+		else
+			{
+			ShowDefaultContentL();
+			}
         }
     else if( iLink && iLink->IsSame( aLink ) )
         {
+        if( iCCAStatusProvider )
+            {
+            iCCAStatusProvider->RemoveObserver( *this );
+            }
+    
         iState = EStateStatusContent;
         delete iStatusText;
         iStatusText = NULL;
@@ -483,6 +535,55 @@ void CCCAppStatusControl::DoStatusUpdateL( MVPbkContactLink& aLink,
         
         iStatusImage->SetPicture( iStatusIcon->Bitmap(), iStatusIcon->Mask() );
         iStatusImage->MakeVisible( ETrue );
+        DrawDeferred();
+        }
+    }
+
+// ---------------------------------------------------------------------------
+// CCCAppStatusControl::UpdateCCAStatusL
+// ---------------------------------------------------------------------------
+//
+void CCCAppStatusControl::UpdateCCAStatusL( MVPbkContactLink* aLink )
+    {
+    if( aLink && iCCAStatusProvider )
+        {
+        delete iStatusText;
+        iStatusText = NULL;
+        delete iStatusIcon;
+        iStatusIcon = NULL;
+        
+        if( iContactType == ENormalContact )
+            {
+            iCCAStatusProvider->GetStatusInformationL(
+                *aLink,
+                iStatusText,
+                iStatusIcon );
+            }
+        else if( iContactType == EMyCardContact )
+            {
+            iCCAStatusProvider->GetMyCardStatusInformationL(
+                *aLink,
+                iStatusText,
+                iStatusIcon );
+            }
+                            
+        if( !iStatusIcon )
+            {
+            iStatusIcon = CreateEmptyIconL();
+            }
+                
+        ReSizeIcon( iStatusIcon, iStatusIconSize );                 
+        iStatusImage->SetPicture( iStatusIcon->Bitmap(), iStatusIcon->Mask() );
+        iStatusImage->MakeVisible( ETrue );        
+        
+        const TInt count( RewrapStatusTextL() );
+        TInt option( 1 );
+        if( count > 1 )
+           {
+           option = 0;
+           }
+        SetVariableLayouts( option );
+                   
         DrawDeferred();
         }
     }

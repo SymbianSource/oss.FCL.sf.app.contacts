@@ -710,7 +710,8 @@ void CPbkxRclSearchResultDlg::SetupStatusPaneL()
     CEikStatusPane* statusPane = appUi->StatusPane();
     
     // add the navigation decorators only if the usual statuspane layout is used
-    if ( statusPane->CurrentLayoutResId() == R_AVKON_STATUS_PANE_LAYOUT_USUAL_EXT )
+    if ( statusPane->CurrentLayoutResId() == R_AVKON_STATUS_PANE_LAYOUT_USUAL_EXT || 
+    		statusPane->CurrentLayoutResId() == R_AVKON_WIDESCREEN_PANE_LAYOUT_USUAL_FLAT )
         {
         iNaviPane = reinterpret_cast<CAknNavigationControlContainer*>(
                 statusPane->ControlL( TUid::Uid( EEikStatusPaneUidNavi ) ) );

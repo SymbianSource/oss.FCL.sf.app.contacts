@@ -58,6 +58,11 @@ class CPcsServer : public CServer2
          */			                  
 	    CPcsPluginInterface* PluginInterface();
 	    
+	    /**
+         * Returns ETrue if there is Chinese variant feature in phone
+         */	
+	    TBool  IsChineseVariant() const;
+	    
     private:
     
         /**
@@ -80,6 +85,11 @@ class CPcsServer : public CServer2
          * A PCS algorithm instance (owned)
          */
     	CPcsPluginInterface* iPcs;
+		
+		/**
+         * Flag for whether there is Chinese in phone
+         */	
+    	TBool iIsChineseVariant;
 };
 
 #endif // End of file

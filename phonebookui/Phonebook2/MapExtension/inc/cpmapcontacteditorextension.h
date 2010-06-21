@@ -30,7 +30,7 @@ class CVPbkContactManager;
 class MPbk2ContactEditorControl;
 class MPbk2ContactEditorUIField;
 class MPbk2UIField;
-
+class MPbk2Command;
 // CLASS DECLARATION
 class CPmapContactEditorExtension : public CBase,
 								    public MPbk2ContactEditorExtension,
@@ -107,7 +107,8 @@ class CPmapContactEditorExtension : public CBase,
         MVPbkStoreContact& iContact;
         /// Ref: Contact editor control
         MPbk2ContactEditorControl& iEditorControl;
-
+        /// Own: Map command controller
+        MPbk2Command* iCmd;
 	};
 
 #endif // CPMAPCONTACTEDITOREXTENSION_H

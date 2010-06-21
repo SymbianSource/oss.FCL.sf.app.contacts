@@ -953,6 +953,7 @@ TPtrC CCCAppCommLauncherLPadModel::TextForPopUpL( TInt aButtonIndex )
 void CCCAppCommLauncherLPadModel::Reset()
     {
     iButtonDataArray.Reset();
+    iAddressFields.Close();
     iButtonIconArray->ResetAndDestroy();
     }
 
@@ -1248,6 +1249,8 @@ TPtrC CCCAppCommLauncherLPadModel::AddressTextForPopUpL()
     HBufC* formattedText = NULL;
     TBool street = EFalse;
     TBool local = EFalse;
+    TBool region = EFalse;
+    TBool country = EFalse;
 
     TPtrC* text = iAddressFields.Find( EAddressStreet );
     if ( text )
@@ -1262,15 +1265,49 @@ TPtrC CCCAppCommLauncherLPadModel::AddressTextForPopUpL()
     	local = ETrue;
     	}
 
-    if ( street && local )
+    text = iAddressFields.Find( EAddressCountry );
+    if( text )
+       {
+       fields->AppendL( *text );
+       country = ETrue;
+       }
+    else
+       {
+       country = EFalse;
+       fields->AppendL(KNullDesC16);
+       }
+    
+    text = iAddressFields.Find( EAddressRegion );
+    if ( text )
+        {
+        fields->AppendL( *text );
+        region = ETrue;
+        }
+    else
+       {
+       region = EFalse;
+       fields->AppendL(KNullDesC16);
+       }
+    
+   
+   if ( street && local)
     	{
         formattedText = StringLoader::LoadLC(
     	        R_QTN_PHOB_COMMLAUNCHER_ONELINEPREVIEW, *fields );
     	}
-    else
+   else if( street && country )
+          {
+          formattedText = StringLoader::LoadLC(
+                  R_QTN_PHOB_COMMLAUNCHER_ONELINEPREVIEW, *fields );
+          }
+    else if( region || country )
         {
         formattedText = StringLoader::LoadLC(
-    	   		R_QTN_PHOB_POPUP_INCOMPLETE_ADDRESS );
+                R_QTN_PHOB_COMMLAUNCHER_ONELINEPREVIEW, *fields );
+        }
+    else
+        {
+        formattedText = KNullDesC16().AllocLC();
     	}
 
     tempText.Append( *formattedText );

@@ -37,12 +37,27 @@
 #include <barsread.h>
 #include <MVPbkContactFieldTextData.h>
 #include <CVPbkContactStoreUriArray.h>
+#include <centralrepository.h>
+#include <VPbkStoreUriLiterals.h>
 
 #include "CVPbkPhoneNumberSequentialMatchStrategy.h"
 #include "CVPbkPhoneNumberParallelMatchStrategy.h"
 
 // CONSTANTS
+// Unnamed namespace for local definitions
+namespace {
+// --------------------------------------------------------------------------
+// Phonebook Central Repository UIDs
+// Copied from sf\app\contacts\phonebookui\Phonebook2\inc\Phonebook2InternalCRKeys.h
+// --------------------------------------------------------------------------
+//
+const TUint32 KCRUidPhonebookStoreConfiguration             = 0x1020727f;
+const TUint32 KPhonebookCurrentConfigurationPartialKey      = 0x00000100;
+const TUint32 KPhonebookCurrentConfigurationMask            = 0xffffff00;
+
+const TInt KInitialStoreUriSize = 22; // length of KVPbkDefaultCntDbURI
 const TInt KMagicNumber = -1;
+} // namespace
 
 NONSHARABLE_CLASS(CVPbkPhoneNumberMatchStrategyImpl) :
         public CActive,
@@ -61,7 +76,8 @@ NONSHARABLE_CLASS(CVPbkPhoneNumberMatchStrategyImpl) :
         void MatchL(const TDesC& aPhoneNumber);
         TInt MaxMatchDigits() const;
         TArray<MVPbkContactStore*> StoresToMatch() const;
-
+        TBool IsSimStore( const MVPbkContactStore& aStore );
+        
     private: // From CActive
         void RunL();
         void DoCancel();
@@ -132,6 +148,19 @@ NONSHARABLE_CLASS(CVPbkPhoneNumberMatchStrategyImpl) :
         TBool CheckBestMatchingRules( const TDesC& aNumberA, TNumberType aNumberAType,
                 const TDesC& aNumberB, TNumberType aNumberBType  );
         TInt FormatAndCheckNumberType( TDes& aNumber );
+        
+        /**
+         * Reads current store configuration from central repositiry
+         * @return Array of stores or NULL if error during reading form cenrep.
+        */
+        CVPbkContactStoreUriArray* GetCurrentStoreConfigurationL();
+        
+        /**
+         * If there is in the results at least one contact
+         * from currently used stores in Phonebook2 it removes from results 
+         * contacts from other stores
+        */
+        void RefineDuplicatedNumbersL();
         
     private: // Data
         CVPbkPhoneNumberMatchStrategy& iParent;
@@ -410,6 +439,12 @@ void CVPbkPhoneNumberMatchStrategyImpl::RunL()
                 delete iResults;
                 iResults = results;
                 }
+
+            if ( iResults->Count() > 1 )
+                {
+                RefineDuplicatedNumbersL();
+                }
+
             CVPbkContactLinkArray* results = iResults;
             iResults = NULL;            
             iObserver->FindCompleteL( results );
@@ -945,6 +980,134 @@ TBool CVPbkPhoneNumberMatchStrategyImpl::CheckBestMatchingRules(
     return result;
     }
 
+CVPbkContactStoreUriArray* CVPbkPhoneNumberMatchStrategyImpl::GetCurrentStoreConfigurationL()
+    {
+    CRepository* repository = CRepository::NewL( TUid::Uid( KCRUidPhonebookStoreConfiguration ) );
+    CleanupStack::PushL( repository );
+    CVPbkContactStoreUriArray* result = CVPbkContactStoreUriArray::NewLC();
+
+    RArray<TUint32> configurationKeys;
+    CleanupClosePushL( configurationKeys );
+
+    repository->FindL( KPhonebookCurrentConfigurationPartialKey,
+            KPhonebookCurrentConfigurationMask, configurationKeys );
+
+    HBufC* buffer = HBufC::NewLC( KInitialStoreUriSize );
+    const TInt keyCount = configurationKeys.Count();
+    TInt ret = KErrNone;
+    for ( TInt i = 0; i < keyCount; ++i )
+        {
+        TPtr ptr = buffer->Des();
+        ptr.Zero();
+        TInt actualSize = 0;
+        ret = repository->Get( configurationKeys[i], ptr, actualSize );
+        if ( ret == KErrOverflow )
+            {
+            CleanupStack::PopAndDestroy(); // buffer
+            buffer = HBufC::NewLC( actualSize );
+            ptr.Set( buffer->Des() );
+            ret = repository->Get( configurationKeys[i], ptr );
+            }
+        
+        if ( ret != KErrNone )
+            {
+            break;
+            }
+        
+        if( !result->IsIncluded( TVPbkContactStoreUriPtr( ptr ) ) )  // Only append if the uri is not yet included
+            {
+            result->AppendL( ptr );
+            }
+        }
+    CleanupStack::PopAndDestroy( buffer );
+    CleanupStack::PopAndDestroy( &configurationKeys );
+    CleanupStack::Pop( result );
+    CleanupStack::PopAndDestroy( repository );
+    
+    if ( ret != KErrNone )
+        {
+        delete result;
+        result = NULL;
+        }
+    return result;
+    }
+
+void CVPbkPhoneNumberMatchStrategyImpl::RefineDuplicatedNumbersL()
+    {
+    CVPbkContactStoreUriArray* stores = GetCurrentStoreConfigurationL();
+    if ( !stores )
+        {
+        return;
+        }
+    CleanupStack::PushL( stores );
+    
+    TInt storesCount = stores->Count();
+    if ( storesCount )
+        {
+        TInt linksCount = iResults->Count();
+        // check if there is in the results at least one contact
+        // from currently used stores
+        TBool isFromUsedStore = EFalse;
+        for ( TInt i = 0; i < linksCount; i++ )
+            {
+            const MVPbkContactStoreProperties& linkStoreProp = 
+                iResults->At( i ).ContactStore().StoreProperties();
+
+            for ( TInt j = 0; j < storesCount; j++ )
+                {
+                if ( !linkStoreProp.Uri().UriDes().Compare( ( *stores )[j].UriDes() ) )
+                    {
+                    isFromUsedStore = ETrue;
+                    break;
+                    }
+                }
+            if ( isFromUsedStore )
+                {
+                break;
+                }
+            }
+        // remove from results contacts from not used stores
+        if ( isFromUsedStore )
+            {
+            for ( TInt i = 0; i < linksCount; i++ )
+                {
+                TBool remove = ETrue;
+                const MVPbkContactStoreProperties& linkStoreProp = 
+                    iResults->At( i ).ContactStore().StoreProperties();
+                
+                for ( TInt j = 0; j < storesCount; j++ )
+                    {
+                    if ( !linkStoreProp.Uri().UriDes().Compare( ( *stores )[j].UriDes() ) )
+                        {
+                        remove = EFalse;
+                        break;
+                        }
+                    }
+                if ( remove )
+                    {
+                    iResults->Delete( i );
+                    linksCount--;
+                    i--;
+                    }
+                }
+            }
+        }
+    CleanupStack::PopAndDestroy( stores );
+    }
+
+TBool CVPbkPhoneNumberMatchStrategyImpl::IsSimStore( const MVPbkContactStore& aStore )
+    {
+    TVPbkContactStoreUriPtr uriPtr = aStore.StoreProperties().Uri();
+    if ( !uriPtr.UriDes().Compare( KVPbkSimGlobalAdnURI )
+            || !uriPtr.UriDes().Compare( KVPbkSimGlobalFdnURI )
+            || !uriPtr.UriDes().Compare( KVPbkSimGlobalSdnURI )
+            || !uriPtr.UriDes().Compare( KVPbkSimGlobalOwnNumberURI ) )
+        {
+        return ETrue;
+        }
+    return EFalse;
+    }
+
 CVPbkPhoneNumberMatchStrategy::CVPbkPhoneNumberMatchStrategy()
     {
     }
@@ -1000,4 +1163,8 @@ TArray<MVPbkContactStore*> CVPbkPhoneNumberMatchStrategy::StoresToMatch() const
     return iImpl->StoresToMatch();
     }
 
+TBool CVPbkPhoneNumberMatchStrategy::IsSimStore( const MVPbkContactStore& aStore )
+    {
+    return iImpl->IsSimStore( aStore );
+    }
 // End of File

@@ -204,4 +204,13 @@ void CPcsAdaptiveGrid::PrintAdatptiveGrid( )
     PRINT ( _L("CPcsAdaptiveGrid::PrintAdatptiveGrid: ----------------------------------------") );
 }
 
+// ----------------------------------------------------------------------------
+// CPcsAdaptiveGrid::Reset
+// 
+// ----------------------------------------------------------------------------
+void CPcsAdaptiveGrid::Reset()
+    {
+    iAdaptiveGrid.ResetAndDestroy();
+    }
+
 // End of file

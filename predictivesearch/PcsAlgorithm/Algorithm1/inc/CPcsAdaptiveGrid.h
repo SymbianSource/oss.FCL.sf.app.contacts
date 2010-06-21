@@ -89,6 +89,11 @@ class CPcsAdaptiveGrid : public CBase
          * Print the Adaptive Grid
          */
         void CPcsAdaptiveGrid::PrintAdatptiveGrid( );
+        
+        /**
+         * Reset the grid
+         */
+        void Reset();
 
 	private:
 

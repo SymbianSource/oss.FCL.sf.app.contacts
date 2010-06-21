@@ -36,6 +36,9 @@ class CVPbkContactStoreUriArray;
  * implementations, but instances of the strategies are created using
  * this classes NewL function. Actual implementation selection is done
  * based on the given configuration data.
+ * In case of multiple matches from different stores, results from store
+ * configured in Phonebook 2 settings are returned. Only if no match
+ * is found from configured store(s), then return matches from other stores.
  */
 class CVPbkPhoneNumberMatchStrategy : public CBase
     {
@@ -183,7 +186,14 @@ class CVPbkPhoneNumberMatchStrategy : public CBase
          * @return Array of stores that are used in matching.
          */
         TArray<MVPbkContactStore*> StoresToMatch() const;
-
+        
+        /**
+         * Checks if contact store is SIM store.
+         * @param aStore Store to be checked.
+         * @return ETrue if aStore is SIM store, otherwise EFalse.
+         */
+        TBool IsSimStore( const MVPbkContactStore& aStore );
+        
     private: // Interface for derived classes to implement
         /**
          * Called from MatchL to indicate derived classes that 

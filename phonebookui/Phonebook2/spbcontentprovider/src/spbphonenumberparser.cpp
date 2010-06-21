@@ -109,94 +109,90 @@ void CSpbPhoneNumberParser::VPbkSingleContactOperationFailed(
 // ---------------------------------------------------------------------------
 //
 void CSpbPhoneNumberParser::SolvePhoneNumberL( MVPbkStoreContact& aContact )
-	{
-	RBuf number;
-	TInt numberCount = 0;
+    {
+    RBuf number;
+    TInt numberCount = 0;
 	
-	// check if the contact has default a number
-	MVPbkContactAttributeManager& attributeManager = 
-			iContactManager.ContactAttributeManagerL();
+    // check if the contact has default a number
+    MVPbkContactAttributeManager& attributeManager = 
+            iContactManager.ContactAttributeManagerL();
 	
-	CVPbkDefaultAttribute* attribute = 
-			CVPbkDefaultAttribute::NewL( EVPbkDefaultTypePhoneNumber );
-	CleanupStack::PushL( attribute );
-	
-	MVPbkStoreContactField* field = 
-			attributeManager.FindFieldWithAttributeL( *attribute, aContact );
-	if( field )
-		{
-		const MVPbkContactFieldTextData* textData =
-				&MVPbkContactFieldTextData::Cast( field->FieldData() );
-		number.CreateL( textData->Text() );
-		}
-	CleanupStack::PopAndDestroy(); //attribute
-	
-	// was the default number found?
-	if( number.Length() == 0 )
-		{
-        CDesC16Array* phoneNumberArray = new (ELeave) CDesC16ArraySeg(8);
-        CleanupStack::PushL( phoneNumberArray );
-        
-		// get contact fields
-		MVPbkStoreContactFieldCollection& fields = aContact.Fields();
-		const TInt fieldCount = fields.FieldCount();
-		// check fields
-		for ( TInt i = 0; i < fieldCount; ++i )
-			{
-			const MVPbkStoreContactField& field = fields.FieldAt( i );
-			// if correct data type
-			if( field.FieldData().DataType() == EVPbkFieldStorageTypeText )
-				{
-				const MVPbkFieldType* fieldType = field.BestMatchingFieldType();
-				if( fieldType )
-					{
-                    const TInt fieldTypeResId = fieldType->FieldTypeResId();
-					// if one of the number fields
-					if( fieldTypeResId == R_VPBK_FIELD_TYPE_LANDPHONEGEN    ||
-     			        fieldTypeResId == R_VPBK_FIELD_TYPE_LANDPHONEHOME   ||
-                        fieldTypeResId == R_VPBK_FIELD_TYPE_LANDPHONEWORK   ||
-                        fieldTypeResId == R_VPBK_FIELD_TYPE_MOBILEPHONEGEN  ||
-                        fieldTypeResId == R_VPBK_FIELD_TYPE_MOBILEPHONEHOME ||
-                        fieldTypeResId == R_VPBK_FIELD_TYPE_MOBILEPHONEWORK ||
-                        fieldTypeResId == R_VPBK_FIELD_TYPE_CARPHONE        ||
-                        fieldTypeResId == R_VPBK_FIELD_TYPE_ASSTPHONE       ||
-                        fieldTypeResId == R_VPBK_FIELD_TYPE_PAGERNUMBER )
-						{
-					    const MVPbkContactFieldTextData* textData =
-                                &MVPbkContactFieldTextData::Cast( field.FieldData() );
-					    const TPtrC phoneNumber( textData->Text() );
-					    
-                        // we need count phonenumbers same way how this is implemented in CCA
-                        // so that we show same count for phonenumbers in names list
-                        // CCA uses descriptor folded compare for phonenumbers
-					    TInt dummy = 0;
-					    if( 0 != phoneNumberArray->FindIsq( phoneNumber, dummy, ECmpFolded ) )
-					        {
-                            // phone number doesn't exist
-                            phoneNumberArray->InsertIsqL( phoneNumber, ECmpFolded );
-					        }
-						}
-					}
-				}
-			}
-        numberCount = phoneNumberArray->Count();
-        // if only one number, store it
-        if( numberCount == 1 )
+    CVPbkDefaultAttribute* attribute = 
+            CVPbkDefaultAttribute::NewL( EVPbkDefaultTypePhoneNumber );
+    CleanupStack::PushL( attribute );
+
+    TBool hasDefaultNumberField = EFalse;
+    CDesC16Array* phoneNumberArray = new (ELeave) CDesC16ArraySeg(8);
+    CleanupStack::PushL( phoneNumberArray );
+
+    // get contact fields
+    MVPbkStoreContactFieldCollection& fields = aContact.Fields();
+    const TInt fieldCount = fields.FieldCount();
+    // check fields
+    for ( TInt i = 0; i < fieldCount; ++i )
+        {
+        const MVPbkStoreContactField& field = fields.FieldAt( i );
+        // if correct data type
+        if( field.FieldData().DataType() == EVPbkFieldStorageTypeText )
             {
-            number.CreateL( (*phoneNumberArray)[0] );
+            const MVPbkFieldType* fieldType = field.BestMatchingFieldType();
+            if( fieldType )
+                {
+                const TInt fieldTypeResId = fieldType->FieldTypeResId();
+                // if one of the number fields
+                if( fieldTypeResId == R_VPBK_FIELD_TYPE_LANDPHONEGEN    ||
+                    fieldTypeResId == R_VPBK_FIELD_TYPE_LANDPHONEHOME   ||
+                    fieldTypeResId == R_VPBK_FIELD_TYPE_LANDPHONEWORK   ||
+                    fieldTypeResId == R_VPBK_FIELD_TYPE_MOBILEPHONEGEN  ||
+                    fieldTypeResId == R_VPBK_FIELD_TYPE_MOBILEPHONEHOME ||
+                    fieldTypeResId == R_VPBK_FIELD_TYPE_MOBILEPHONEWORK ||
+                    fieldTypeResId == R_VPBK_FIELD_TYPE_CARPHONE        ||
+                    fieldTypeResId == R_VPBK_FIELD_TYPE_ASSTPHONE       ||
+                    fieldTypeResId == R_VPBK_FIELD_TYPE_PAGERNUMBER )
+                    {
+                    const MVPbkContactFieldTextData* textData =
+                            &MVPbkContactFieldTextData::Cast( field.FieldData() );
+                    if( attributeManager.HasFieldAttributeL( *attribute, field ) )
+                        {
+                        //default number found
+                        number.CreateL( textData->Text() );
+                        hasDefaultNumberField = ETrue;
+                        break;
+                        }
+                    const TPtrC phoneNumber( textData->Text() );
+                    // we need count phonenumbers same way how this is implemented in CCA
+                    // so that we show same count for phonenumbers in names list
+                    // CCA uses descriptor folded compare for phonenumbers
+                    TInt dummy = 0;
+                    if( 0 != phoneNumberArray->FindIsq( phoneNumber, dummy, ECmpFolded ) )
+                        {
+                        // phone number doesn't exist
+                        phoneNumberArray->InsertIsqL( phoneNumber, ECmpFolded );
+                        }
+                    }
+                }
             }
-        CleanupStack::PopAndDestroy( phoneNumberArray );
-		}
+        }
+    numberCount = phoneNumberArray->Count();
+    
+    //default number not found, and only one number
+    if( EFalse == hasDefaultNumberField && numberCount == 1 )
+        {
+            number.CreateL( (*phoneNumberArray)[0] );
+        }
+
+    CleanupStack::PopAndDestroy( phoneNumberArray );
+    CleanupStack::PopAndDestroy( attribute );
 	
-	// no number was found
-	if( numberCount > 1 )
-	    {
+    // no number was found
+    if( numberCount > 1 )
+        {
         // contact has multiple numbers and no default
         TBuf<12> count;
         count.Num( numberCount );
         iContent.PhoneNumberUpdatedL( 
             count, CSpbContentProvider::ETypePhoneNumberMultiple );
-	    }
+        }
     else
         {
         // inform the observer
@@ -204,8 +200,8 @@ void CSpbPhoneNumberParser::SolvePhoneNumberL( MVPbkStoreContact& aContact )
             number, CSpbContentProvider::ETypePhoneNumber );
         }
 
-	number.Close();
-	}
+    number.Close();
+    }
 
 // ---------------------------------------------------------------------------
 // CSpbPhoneNumberParser::FetchPhoneNumber

@@ -36,13 +36,20 @@ class MPbk2ContactEditorControl;
 class MPbk2ContactEditorControlExtension;
 class MVPbkStoreContactField;
 class TLocality;
+class CMnMapView;
 
+enum TCurrentMapLaunchedByState
+    {
+    EMapNone = 1,
+    EMapAssignFromMaps,
+    EMapShowOnMaps
+    };
 // CLASS DECLARATION
 
 /**
  * Phonebook 2 show on map command object.
  */
-class CPmapCmd : public CBase,
+class CPmapCmd : public CActive,
 				 public MPbk2Command,
 				 public MVPbkContactObserver
     {
@@ -76,6 +83,27 @@ class CPmapCmd : public CBase,
          */
         ~CPmapCmd();
 
+        // CActive-related methods
+       /**
+       * RunL method to handle the user selection
+       */
+       void RunL();
+       
+       /**
+       * Cancel method to handle the user selection
+       */
+       void DoCancel();
+       
+       /**
+       * Function to handle any errors in async request
+       * @param aError   Error Code
+       */
+       TInt RunError( TInt aError );
+      
+       /**
+       * Disconnects from provider, when operation is completed
+       */
+       void Reset();
     public: //From MVPbkContactObserver
     	void ContactOperationCompleted( TContactOpResult aResult );
         void ContactOperationFailed(
@@ -85,6 +113,7 @@ class CPmapCmd : public CBase,
         
     public: // From MPbk2Command
         void ExecuteLD();
+        void ExecuteL();
         void AddObserver(
                 MPbk2CommandObserver& aObserver );
         void ResetUiControl(
@@ -235,6 +264,16 @@ class CPmapCmd : public CBase,
          */
         TPbk2FieldGroupId GetFieldGroupL( MVPbkStoreContactField& aField );
         
+        /**
+         * Handle the selection of map which was launched from Show On Map option. 
+         */
+        void HandleSelectiOnShowOnMapsL();
+        
+        /**
+         * Handle the selection of map which was launched from Assign From Maps option. 
+         */
+        void HandleSelectiOnAssignFromMapsL();
+        
     private: // Data
     	/// Ref: Contact editor control
         MPbk2ContactEditorControl* iEditorControl;
@@ -246,12 +285,20 @@ class CPmapCmd : public CBase,
         MPbk2CommandObserver* iObserver;
         /// Own: Map View Provider
         CMnProvider* iMapViewProvider;
+        /// Own: Map View
+        CMnMapView* iMapView;
         /// Own: Is in editor address view?
         TBool iAddressView;
         /// Own: command id
         TInt iCommandId;
         /// Own: Is in editor address view?
 		TBool iAddressUpdatePrompt;
+		/// Own: Current map launched is by which option
+		TCurrentMapLaunchedByState iCurrentMapLaunchedByState;
+		/// Own: Current AddressType
+		TVPbkFieldTypeParameter iAddressType;
+		/// Own: Is already address is there?
+		TBool iNoAddress;
     };
 
 #endif // CPMAPCMD_H

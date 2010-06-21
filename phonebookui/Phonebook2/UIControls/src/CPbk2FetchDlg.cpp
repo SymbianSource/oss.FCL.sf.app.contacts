@@ -717,16 +717,20 @@ TRect CPbk2FetchDlg::FetchDlgClientRect() const
 // CPbk2FetchDlg::FetchDlgPageChangedL
 // --------------------------------------------------------------------------
 //
-void CPbk2FetchDlg::FetchDlgPageChangedL( MPbk2FetchDlgPage& /*aPage*/ )
+void CPbk2FetchDlg::FetchDlgPageChangedL( MPbk2FetchDlgPage& aPage )
     {
-    // An view event burst from VPbk results this function being called
-    // several times a row. It is not meaningful to restore selections
-    // every time, but instead wait for a while and restore the selections
-    // after all events have been received. Hence the idle object is used.
     delete iSelectionRestorer;
     iSelectionRestorer = NULL;
-    iSelectionRestorer = CIdle::NewL( CActive::EPriorityIdle );
-    iSelectionRestorer->Start( TCallBack( RestoreSelections, this ));
+
+    if ( aPage.DlgPageReady() )
+        {
+        // An view event burst from VPbk results this function being called
+        // several times a row. It is not meaningful to restore selections
+        // every time, but inste ad wait for a while and restore the selections
+        // after all events have been received. Hence the idle object is used.
+        iSelectionRestorer = CIdle::NewL( CActive::EPriorityIdle );
+        iSelectionRestorer->Start( TCallBack( RestoreSelections, this ));
+        }
     }
 
 // --------------------------------------------------------------------------

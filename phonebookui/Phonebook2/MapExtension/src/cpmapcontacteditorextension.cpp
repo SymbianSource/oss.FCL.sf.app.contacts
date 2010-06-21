@@ -101,6 +101,11 @@ CPmapContactEditorExtension::CPmapContactEditorExtension
 //
 CPmapContactEditorExtension::~CPmapContactEditorExtension()
     {
+    if(iCmd)
+        {
+        delete iCmd;
+        iCmd = NULL;
+        }
     }
 
 // --------------------------------------------------------------------------
@@ -170,16 +175,26 @@ TBool CPmapContactEditorExtension::ProcessCommandL
         {
         case EPbk2ExtensionShowOnMap:
         	{
-        	MPbk2Command* cmd = CPmapCmd::NewL( iEditorControl, iContact, aCommandId );
-        	// Execute the command
-        	cmd->ExecuteLD();
+        	if(iCmd)
+        	    {
+                delete iCmd;
+                iCmd = NULL;
+        	    }
+        	iCmd = CPmapCmd::NewL( iEditorControl, iContact, aCommandId );
+        	// Execute the command 
+        	iCmd->ExecuteLD();
             return ETrue;
             }
         case EPbk2ExtensionAssignFromMap:
         	{
-        	MPbk2Command* cmd = CPmapCmd::NewL( iEditorControl, iContact, aCommandId );
+        	if(iCmd)
+                {
+                delete iCmd;
+                iCmd = NULL;
+                }
+        	iCmd = CPmapCmd::NewL( iEditorControl, iContact, aCommandId );
         	// Execute the command
-        	cmd->ExecuteLD();
+        	iCmd->ExecuteLD();
             return ETrue;
             }
         default:

@@ -834,7 +834,7 @@ TBool CPbk2MemoryEntryDefaultsDlg::IsSupported
     // Skip the line if Email field not supported or having no mailbox
     if ( aSelectorID == VPbkFieldTypeSelectorFactory::EEmailEditorSelector )
         {
-        if ( !FeatureManager::FeatureSupported( KFeatureIdEmailUi ) || !HasMailboxAccountsL() )
+        if ( !FeatureManager::FeatureSupported( KFeatureIdEmailUi ) )
         	{
         	ret = EFalse;
         	}

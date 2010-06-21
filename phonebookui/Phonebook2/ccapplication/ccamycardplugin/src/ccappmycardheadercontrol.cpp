@@ -81,12 +81,16 @@ void CCCAppMyCardHeaderControl::ConstructL(
     CVPbkContactManager& contactManager = iAppServices->ContactManager();
 
     FeatureManager::InitializeLibL();
-    if( FeatureManager::FeatureSupported( KFeatureIdFfContactsSocial ) )
-        {    
+    const TBool isFeatureIdFfContactsSocial =
+            FeatureManager::FeatureSupported( KFeatureIdFfContactsSocial );
+    FeatureManager::UnInitializeLib();
+
+    if( isFeatureIdFfContactsSocial )
+        {
         iProvider = CSpbContentProvider::NewL( contactManager, 
             iAppServices->StoreManager(),
             CSpbContentProvider::EStatusMessage | CSpbContentProvider::EServiceIcon );
-        iStatusControl = CCCAppStatusControl::NewL( *iProvider, aObserver );
+        iStatusControl = CCCAppStatusControl::NewL( *iProvider, aObserver, CCCAppStatusControl::EMyCardContact );
         iStatusControl->SetContainerWindowL( *this );
         iStatusControl->MakeVisible( EFalse );
         
@@ -95,19 +99,18 @@ void CCCAppMyCardHeaderControl::ConstructL(
                       
         AknsUtils::CreateIconL(
             AknsUtils::SkinInstance(),
-            KAknsIIDQgnPropWmlBmOvi,
+            KAknsIIDQgnPropSocialCommunities,
             bmp,
             bmpMask,
             KMyCardIconDefaultFileName,
-            EMbmPhonebook2eceQgn_prop_wml_bm_ovi,
-            EMbmPhonebook2eceQgn_prop_wml_bm_ovi_mask );    
+            EMbmPhonebook2eceQgn_prop_social_communities,
+            EMbmPhonebook2eceQgn_prop_social_communities_mask );     
                 
         CGulIcon* guiIcon = CGulIcon::NewL( bmp, bmpMask );
         iStatusControl->SetDefaultStatusIconL( guiIcon );
-        HBufC* defaultText = StringLoader::LoadL( R_QTN_CCA_MC_MY_CARD_IN_OVI );                                            
+        HBufC* defaultText = StringLoader::LoadL( R_QTN_CCA_SOCIAL_NETWORKS );                                            
         iStatusControl->SetDefaultStatusTextL( defaultText );        
         }
-    FeatureManager::UnInitializeLib();
     
     
     // Create portrait image

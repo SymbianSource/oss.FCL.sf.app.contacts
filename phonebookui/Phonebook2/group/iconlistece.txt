@@ -29,8 +29,9 @@
 /c8,8 qgn_prop_pb_comm_valid_lm_large.svg
 /c8,8 qgn_prop_locev_map.svg
 /c8,8 qgn_prop_pb_no_valid_lm.svg
-/c8,8 qgn_prop_wml_bm_ovi.svg
+/c8,8 qgn_prop_social_communities.svg
 /c8,8 qgn_indi_many_items_add.svg
 /c8,8 qgn_prop_pb_thump_mycard.svg
 /c8,8 qgn_prop_pb_add_top.svg
 /c8,8 qgn_prop_pb_topc.svg
+

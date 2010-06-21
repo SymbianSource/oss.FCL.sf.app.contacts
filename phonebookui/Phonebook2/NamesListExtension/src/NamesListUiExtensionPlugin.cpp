@@ -41,6 +41,7 @@
 #include <CPbk2StoreConfiguration.h>
 #include <TVPbkContactStoreUriPtr.h>
 #include <CPbk2ApplicationServices.h>
+#include <Phonebook2PrivateCRKeys.h>
 
 #include <MPbk2ContactUiControl.h>
 #include <MPbk2ViewExplorer.h>
@@ -79,6 +80,7 @@
 #include <AiwCommon.hrh>
 #include <avkon.hrh>
 #include <avkon.rsg>
+#include <centralrepository.h>
 
 /// Unnamed namespace for local definitions
 namespace {
@@ -155,10 +157,28 @@ inline CSpbContentProvider& CNamesListUIExtensionPlugin::ContentProviderL()
             {
             User::Leave( KErrNotReady );
             }
+        // Check status message variation
+        TInt showStatusInNamesList = 0;
+        CRepository* cenrep =
+            CRepository::NewLC( TUid::Uid( KCRUidPhonebook ) );
+        User::LeaveIfError(
+            cenrep->Get( KPhonebookStatusMessageVisibility, 
+                    showStatusInNamesList ) );
+        CleanupStack::PopAndDestroy( cenrep );
+        
+        // By default status is not shown in names list
+        TInt32 spbContentFlags = CSpbContentProvider::EPhoneNumber;
+        
+        if( showStatusInNamesList )
+            {
+            spbContentFlags = (CSpbContentProvider::EStatusMessage | 
+                    CSpbContentProvider::EPhoneNumber);
+            }
+        
         CPbk2StoreManager& storeManager = 
             static_cast<MPbk2ApplicationServices2*>(ext)->StoreManager();
-        iContentProvider = CSpbContentProvider::NewL( iAppServices->ContactManager(), storeManager,  
-            CSpbContentProvider::EStatusMessage | CSpbContentProvider::EPhoneNumber );
+        iContentProvider = CSpbContentProvider::NewL( 
+                iAppServices->ContactManager(), storeManager, spbContentFlags );
         }
 	return *iContentProvider;
 	}

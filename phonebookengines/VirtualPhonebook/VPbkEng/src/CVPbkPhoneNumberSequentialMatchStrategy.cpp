@@ -20,6 +20,7 @@
 
 #include <MVPbkContactStore.h>
 #include <MVPbkContactOperation.h>
+#include <cntdb.h>
 
 CVPbkPhoneNumberSequentialMatchStrategy::CVPbkPhoneNumberSequentialMatchStrategy() 
     {
@@ -54,13 +55,26 @@ MVPbkContactOperation* CVPbkPhoneNumberSequentialMatchStrategy::CreateFindOperat
         const TDesC& aPhoneNumber)
     {
     MVPbkContactOperation* operation = NULL;
-
+    TInt maxDigits = MaxMatchDigits();
     // Get the next store's operation if it not null
     while ( iCurrentOperation < StoresToMatch().Count() && !operation )
         {
-        operation = StoresToMatch()[iCurrentOperation]->CreateMatchPhoneNumberOperationL(
-                aPhoneNumber, MaxMatchDigits(), FindObserver());
-        
+        if ( maxDigits == KBestMatchingPhoneNumbers &&
+                IsSimStore( *( StoresToMatch()[iCurrentOperation] ) ) )
+            {
+            // KBestMatchingPhoneNumbers enables best matching strategy 
+            // on store level only for phone memory stores, for sim store
+            // MaxDigits parameter should be set to 7 or greater
+            const TInt KMaxDigitsForSimStore = 7;
+            operation = StoresToMatch()[iCurrentOperation]->CreateMatchPhoneNumberOperationL(
+                    aPhoneNumber, KMaxDigitsForSimStore, FindObserver());
+            }
+        else
+            {
+            operation = StoresToMatch()[iCurrentOperation]->CreateMatchPhoneNumberOperationL(
+                    aPhoneNumber, maxDigits, FindObserver());
+            }
+
         if ( operation )
             {
             CleanupDeletePushL(operation);

@@ -90,7 +90,14 @@ void CPcsCache::ConstructL(const TDesC& aURI, CPcsKeyMap& aKeyMap, TUint8 aUriId
         }
 
     // Adaptive Grid map
-    iAdaptiveGridMap = CPcsAdaptiveGrid::NewL( );
+    if ( iURI->Compare( KVPbkDefaultCntDbURI ) == 0
+            || iURI->Compare( KVPbkSimGlobalAdnURI ) == 0
+            || iURI->Compare( KVPbkSimGlobalFdnURI ) == 0 
+            || iURI->Compare( KVPbkSimGlobalSdnURI ) == 0
+            || iURI->Compare( KVPbkDefaultGrpDbURI ) == 0 )
+        {
+        iAdaptiveGridMap = CPcsAdaptiveGrid::NewL();
+        }
     
     PRINT ( _L("End CPcsCache::ConstructL") );
 }
@@ -217,10 +224,13 @@ void CPcsCache::AddToPoolL(TUint64& aPoolMap, CPsData& aData)
                          dataIndex, &*dataStr, &(ptr), (TUint) firstChar, aData.IsDataMatch(dataIndex) );
 #endif // _DEBUG
 
-                // Set the 1st char of the word for the Adaptive Grid or
-                // increment the reference counter
-                TUint selector = GridItemSelector( dataIndex, unnamed );
-                iAdaptiveGridMap->IncrementRefCounterL( firstChar, selector );
+                if ( iAdaptiveGridMap )
+                	{
+					// Set the 1st char of the word for the Adaptive Grid or
+					// increment the reference counter
+					TUint selector = GridItemSelector( dataIndex, unnamed );
+					iAdaptiveGridMap->IncrementRefCounterL( firstChar, selector );
+                	}
 		    }
 		    
 		    CleanupStack::PopAndDestroy(words); 
@@ -359,7 +369,7 @@ void CPcsCache::RemoveFromCacheL( TInt aItemId )
         }
     }
     
-    if ( data )
+    if ( iAdaptiveGridMap && data )
     {
         TBool unnamed = ETrue;
         // Parse thru each data element
@@ -383,14 +393,12 @@ void CPcsCache::RemoveFromCacheL( TInt aItemId )
                     TPtrC16 ptr = words->MdcaPoint(i); 
                     PRINT5 ( _L("CPcsCache::RemoveFromCacheL: Data[%d]=\"%S\", word=\"%S\", firstChar='%c', Match=%d" ),
                              dataIndex, &*dataStr, &(ptr), (TUint) firstChar, data->IsDataMatch(dataIndex) );
-#endif // _DEBUG
-    
+#endif // _DEBUG   
                     // Decrement the reference counter of the 1st char of the word for the Adaptive Grid or
                     // delete the Adaptive Grid item if there are no references to it anymore
                     TUint selector = GridItemSelector( dataIndex, unnamed );
                     iAdaptiveGridMap->DecrementRefCounter( firstChar, selector );
                 }
-    
                 CleanupStack::PopAndDestroy( words ); 
             }
         }
@@ -420,8 +428,10 @@ void CPcsCache::RemoveAllFromCache()
 	iMasterPool.ResetAndDestroy();
 	iCacheInfo.Close();
 
-    delete iAdaptiveGridMap;
-	iAdaptiveGridMap = NULL;
+	if ( iAdaptiveGridMap )
+	    {
+	    iAdaptiveGridMap->Reset();
+	    }
 	
 	PRINT ( _L("End CPcsCache::RemoveAllFromCache") );
 }
@@ -434,7 +444,10 @@ void CPcsCache::GetAdaptiveGridL( const TBool aCompanyName, TDes& aAdaptiveGrid 
 {
     PRINT ( _L("Enter CPcsCache::GetAdaptiveGridL") );
     
-    iAdaptiveGridMap->GetAdaptiveGrid( aCompanyName, aAdaptiveGrid );
+    if ( iAdaptiveGridMap )
+        {
+        iAdaptiveGridMap->GetAdaptiveGrid( aCompanyName, aAdaptiveGrid );
+        }
     
     PRINT ( _L("End CPcsCache::GetAdaptiveGridL") );
 }
@@ -650,7 +663,11 @@ void CPcsCache::ResortdataInPoolsL()
         }
     iMasterPool.Reset();
     iCacheInfo.Close();
-
+    if ( iAdaptiveGridMap )
+        {
+        iAdaptiveGridMap->Reset();
+        }
+    
     // Now add data again from the iMasterPoolBackup
     for (TInt i = 0; i < iMasterPoolBackup.Count(); i++ )
         {

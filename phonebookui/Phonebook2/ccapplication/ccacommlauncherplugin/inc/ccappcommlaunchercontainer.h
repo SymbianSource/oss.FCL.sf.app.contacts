@@ -18,7 +18,6 @@
 
 #ifndef __CCAPPCOMMALAUNCHERCONTAINER_H
 #define __CCAPPCOMMALAUNCHERCONTAINER_H
-
 // INCLUDES
 #include "ccappcommlauncherheaders.h"
 #include <Pbk2Commands.hrh>
@@ -238,6 +237,11 @@ private: // New
      * @since S60 v5.0
      */
     void CreateListboxControlL();
+    
+    /**
+     * Creates the status control
+     */
+    void CreateStatusControlL();
 
     /**
      * Updates the number/address popup
@@ -275,11 +279,6 @@ private: // New
     * availability.
     */
     void DoCheckExtensionFactoryL();
-    
-    /**
-	* Set default status text to CCCAppStatusControl
-	*/
-    void SetDefaultStatusTextL();
 
 private: // Constructors
 

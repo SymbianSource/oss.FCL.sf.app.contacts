@@ -122,12 +122,29 @@ EXPORT_C void CPbk2RemoteContactLookupAccounts::LoadProtocolPluginsL()
     // The actual ECom loading is implemented in CPbkxRemoteContactLookupProtocolAdapter.
     for ( TInt i = 0; i < implArray.Count(); i++ )
         {
-        CPbkxRemoteContactLookupProtocolAdapter* adapter = NULL;
-        adapter = CPbkxRemoteContactLookupProtocolAdapter::NewL(
-            implArray[i]->ImplementationUid(), *iProtocolEnv );
-        CleanupStack::PushL( adapter );
-        User::LeaveIfError( iAdapters.Append( adapter ) );
-        CleanupStack::Pop( adapter );
+        CPbkxRemoteContactLookupProtocolAdapter* volatile adapter = NULL;
+        
+        // Trap the error code of loading one specific protocal adapter, if the error is not 
+        // extremly harmful like "No memory", then go on loading remaining possibly working 
+        // adapters.
+        TRAPD(err,
+        		{
+                adapter = CPbkxRemoteContactLookupProtocolAdapter::NewL(
+                implArray[i]->ImplementationUid(), *iProtocolEnv );
+        		}
+        );
+        
+        if( err == KErrNoMemory )
+            {
+            User::Leave( KErrNoMemory );
+            }
+        
+        if ( adapter )
+        	{
+            CleanupStack::PushL( adapter );
+            User::LeaveIfError( iAdapters.Append( adapter ) );
+            CleanupStack::Pop( adapter );
+        	}
         }
     CleanupStack::PopAndDestroy(); // cleanupItem 
     }
@@ -153,23 +170,32 @@ EXPORT_C void CPbk2RemoteContactLookupAccounts::GetAllAccountsL(
         RPointerArray<CPbkxRemoteContactLookupProtocolAccount> protocolAccountsTmp;
         TCleanupItem cleanupItemAcc(CleanupResetAndDestroyAccArray, &protocolAccountsTmp);
         CleanupStack::PushL(cleanupItemAcc);
-        adapter.GetAllProtocolAccountsL( protocolAccountsTmp );
+        
+        TRAPD( err,
+        		{
+                adapter.GetAllProtocolAccountsL( protocolAccountsTmp );
+        		}
+        );
+        
+        if( err == KErrNoMemory )
+            {
+            User::Leave( KErrNoMemory );
+            }
         
         // Move accounts from temp array to main array
         
         // First expand the main array so that we can move ownership in one go.
         // TODO OOPS, METHOD NOT AVAILABLE iAdapters.SetReserveL( iAdapters.Count() + protocolAccountsTmp.Count() );
 
-        
-        // Don't need the cleanup item anymore since iAdapters will take ownership,
-        // and the iAdapters has already been expanded.
-        CleanupStack::Pop(); // cleanupItemAcc
-        for ( TInt x = 0; x < protocolAccountsTmp.Count(); x++ )
+        const TInt count = protocolAccountsTmp.Count();
+        for ( TInt x = 0; x < count; x++ )
             {
             // Ownership is passed
-            User::LeaveIfError( aAccounts.Append( protocolAccountsTmp[ x ] ) );
+            User::LeaveIfError( aAccounts.Append( protocolAccountsTmp[ 0 ] ) );
+            protocolAccountsTmp.Remove( 0 );
             }
-        // just let protocolAccountsTmp pass out of scope. It doesn't own anything now.
+        
+        CleanupStack::PopAndDestroy( &protocolAccountsTmp );
         }
     CleanupStack::Pop();
     }

@@ -85,86 +85,10 @@ void CCCAppCommLauncherContainer::ConstructL()
     // Create the header
     iHeaderCtrl = CCCAppCommLauncherHeaderControl::NewL( iPlugin );
     iHeaderCtrl->SetContainerWindowL(*this);
-
-    FeatureManager::InitializeLibL();
-    if( FeatureManager::FeatureSupported( KFeatureIdFfContactsSocial ) )
-        {
-        MVPbkContactLink* link = NULL;
-        MVPbkContactLinkArray* contactArray = NULL;
-        TInt isSame = KErrNotFound;
-        
-        iAppServices = CPbk2ApplicationServices::InstanceL();    
-        iProvider = CSpbContentProvider::NewL( iAppServices->ContactManager(), 
-            iAppServices->StoreManager(),
-            CSpbContentProvider::EStatusMessage | CSpbContentProvider::EServiceIcon );
-        
-        HBufC& contactData = iPlugin.AppEngine()->Parameter().ContactDataL();
-        HBufC8* contactData8 = HBufC8::NewLC( contactData.Size() );
-        TPtr8 contactData8Ptr( contactData8->Des() );
-		contactData8Ptr.Copy( contactData.Des() ); 
-        
-        CVPbkContactManager* vPbkContactManager = &iAppServices->ContactManager();
-        
-        if( vPbkContactManager )
-            {
-            contactArray = vPbkContactManager->CreateLinksLC( contactData8Ptr );
-
-           if( contactArray->Count() > 0 )
-                {
-                link = contactArray->At( 0 ).CloneLC();
-                }				
-                            
-            if ( link )
-                {    
-                const MVPbkContactStoreProperties& storeProperties = link->ContactStore().StoreProperties();
-                TVPbkContactStoreUriPtr uri = storeProperties.Uri();
-            
-                isSame = uri.Compare( VPbkContactStoreUris::DefaultCntDbUri(), 
-                            TVPbkContactStoreUriPtr::EContactStoreUriAllComponents );
-                }
-            }
-            
-        if( isSame == 0 )
-            {		
-            iStatusControl = CCCAppStatusControl::NewL( *iProvider, *this );
-            iStatusControl->SetContainerWindowL( *this );                   
-            iStatusControl->MakeVisible( EFalse );
-            iHeaderCtrl->SetStatusButtonVisibility( EFalse );
-            CFbsBitmap* bmp = NULL;
-            CFbsBitmap* bmpMask = NULL;
-
-            AknsUtils::CreateIconL(
-                AknsUtils::SkinInstance(),
-                KAknsIIDQgnPropWmlBmOvi,
-                bmp,
-                bmpMask,
-                KCcaIconDefaultFileName,
-                EMbmPhonebook2eceQgn_prop_wml_bm_ovi,
-                EMbmPhonebook2eceQgn_prop_wml_bm_ovi_mask );    
-        
-            CGulIcon* guiIcon = CGulIcon::NewL( bmp, bmpMask );
-            iStatusControl->SetDefaultStatusIconL( guiIcon );
-            iStatusControl->SetContactLinkL( *link );
-	
-            iFactoryExtensionNotifier = CCCaFactoryExtensionNotifier::NewL();
-            TCallBack callBack( CCCAppCommLauncherContainer::CheckExtensionFactoryL, this );
-            iFactoryExtensionNotifier->ObserveExtensionFactoryL( callBack );
-            }
-        
-        if( link )
-            {
-            CleanupStack::PopAndDestroy(); //link
-            }
-        
-        if( contactArray )
-            {
-            CleanupStack::PopAndDestroy(); // contactArray
-            }
-                        
-        CleanupStack::PopAndDestroy(); // contactData8	
-    } //  KFeatureIdFfContactsSocial	
-    FeatureManager::UnInitializeLib();
-
+    
+    // create status control  
+    CreateStatusControlL();     
+    
     // Get the skin background for the view
     iBackground = CAknsBasicBackgroundControlContext::NewL(
         KAknsIIDQsnBgAreaMain, TRect(0, 0, 0, 0), EFalse);
@@ -198,6 +122,108 @@ void CCCAppCommLauncherContainer::CreateListboxControlL()
     iListBox->ActivateL();
     }
 
+//-----------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::CreateStatusControlL()
+//-----------------------------------------------------------------------------
+//
+void CCCAppCommLauncherContainer::CreateStatusControlL() 
+    {
+    FeatureManager::InitializeLibL();
+    const TBool isFeatureIdFfContactsSocial =
+            FeatureManager::FeatureSupported( KFeatureIdFfContactsSocial );
+    FeatureManager::UnInitializeLib();
+
+    if( isFeatureIdFfContactsSocial )
+        {
+        MVPbkContactLink* link = NULL;
+        MVPbkContactLinkArray* contactArray = NULL;
+        TInt isSame = KErrNotFound;
+
+        if( !iAppServices )
+            {
+            iAppServices = CPbk2ApplicationServices::InstanceL();  
+            }
+        if( !iProvider )
+            {
+            iProvider = CSpbContentProvider::NewL( iAppServices->ContactManager(), 
+                    iAppServices->StoreManager(),
+                    CSpbContentProvider::EStatusMessage | 
+					    CSpbContentProvider::EServiceIcon );
+            }
+        HBufC& contactData = iPlugin.AppEngine()->Parameter().ContactDataL();
+        HBufC8* contactData8 = HBufC8::NewLC( contactData.Size() );
+        TPtr8 contactData8Ptr( contactData8->Des() );
+		contactData8Ptr.Copy( contactData.Des() ); 
+        
+        CVPbkContactManager* vPbkContactManager = 
+                &iAppServices->ContactManager();
+        
+        if( vPbkContactManager )
+            {
+            contactArray = vPbkContactManager->CreateLinksLC( contactData8Ptr );
+
+           if( contactArray->Count() > 0 )
+                {
+                link = contactArray->At( 0 ).CloneLC();
+                }				
+                            
+            if ( link )
+                {    
+                const MVPbkContactStoreProperties& storeProperties = 
+                    link->ContactStore().StoreProperties();
+                TVPbkContactStoreUriPtr uri = storeProperties.Uri();
+            
+                isSame = uri.Compare( VPbkContactStoreUris::DefaultCntDbUri(), 
+                    TVPbkContactStoreUriPtr::EContactStoreUriAllComponents );
+                }
+            }
+            
+        if( isSame == 0 )
+            {		
+            iStatusControl = CCCAppStatusControl::NewL( *iProvider, *this, CCCAppStatusControl::ENormalContact );
+            iStatusControl->SetContainerWindowL( *this );                   
+            iStatusControl->MakeVisible( EFalse );
+            iHeaderCtrl->SetStatusButtonVisibility( EFalse );
+            CFbsBitmap* bmp = NULL;
+            CFbsBitmap* bmpMask = NULL;
+
+            AknsUtils::CreateIconL(
+                AknsUtils::SkinInstance(),
+                KAknsIIDQgnPropSocialCommunities,
+                bmp,
+                bmpMask,
+                KCcaIconDefaultFileName,
+                EMbmPhonebook2eceQgn_prop_social_communities,
+                EMbmPhonebook2eceQgn_prop_social_communities_mask );    
+        
+            CGulIcon* guiIcon = CGulIcon::NewL( bmp, bmpMask );
+            iStatusControl->SetDefaultStatusIconL( guiIcon );
+            HBufC* defaultText = 
+                    StringLoader::LoadL( R_QTN_CCA_SOCIAL_NETWORKS );                                            
+            iStatusControl->SetDefaultStatusTextL( defaultText );        
+            iStatusControl->SetContactLinkL( *link );
+	
+            iFactoryExtensionNotifier = CCCaFactoryExtensionNotifier::NewL();
+            TCallBack callBack( 
+                    CCCAppCommLauncherContainer::CheckExtensionFactoryL, this );
+            iFactoryExtensionNotifier->ObserveExtensionFactoryL( callBack );
+            }
+        
+        if( link )
+            {
+            CleanupStack::PopAndDestroy(); //link
+            }
+        
+        if( contactArray )
+            {
+            CleanupStack::PopAndDestroy(); // contactArray
+            }
+                        
+        CleanupStack::PopAndDestroy(); // contactData8	
+		} //  KFeatureIdFfContactsSocial	
+	}
+	
+	
 // ----------------------------------------------------------------------------
 // CCCAppCommLauncherContainer::Draw()
 // ----------------------------------------------------------------------------
@@ -637,11 +663,6 @@ void CCCAppCommLauncherContainer::ContactFieldFetchedNotifyL(
     iHeaderCtrl->ContactFieldFetchedNotifyL(aContactField);
     // Forwarding to listbox-model
     iModel->ContactFieldFetchedNotifyL(aContactField);
-    
-    if( iStatusControl && iStatusControl->IsVisible() )
-       	{
-		SetDefaultStatusTextL();
-       	}
     }
 
 // ----------------------------------------------------------------------------
@@ -665,11 +686,6 @@ void CCCAppCommLauncherContainer::ContactFieldFetchingCompletedL()
     iListBox->DrawDeferred();
     
     iMdlRowCount = mdlCount;
-    
-    if( iStatusControl && iStatusControl->IsVisible() )
-    	{
-		SetDefaultStatusTextL();
-    	}
     }
 
 // ---------------------------------------------------------------------------
@@ -722,6 +738,15 @@ void CCCAppCommLauncherContainer::ContactsChangedL()
     iModel->Reset();
     iListBox->HandleItemRemovalL();
     iHeaderCtrl->ClearL();
+
+    if (!iStatusControl && iPlugin.ContactHandler().ContactStore() == ECmsContactStorePbk)
+        {
+        // create status control 
+        CreateStatusControlL();
+        //reset control's rect
+        SizeChanged();
+        }
+	
     }
 
 // ---------------------------------------------------------------------------
@@ -800,28 +825,6 @@ CAknLongTapDetector& CCCAppCommLauncherContainer::LongTapDetectorL()
     return *iLongTapDetector;
     }
 
-// --------------------------------------------------------------------------
-// CCCAppCommLauncherContainer::SetDefaultStatusTextL
-// --------------------------------------------------------------------------
-//
-void CCCAppCommLauncherContainer::SetDefaultStatusTextL()
-	{	
-	TPtrC fullName;
-	iPlugin.ContactHandler().ContactFieldItemDataL(
-		CCmsContactFieldItem::ECmsFullName, 
-		fullName );
-	
-	if( fullName.Size() == 0 )
-		{
-		return;
-		}
-	
-	HBufC* defaultStatusText = StringLoader::LoadL( 
-        R_QTN_CCA_FTU_DISCOVER, fullName, iCoeEnv );       
-		
-	iStatusControl->SetDefaultStatusTextL( defaultStatusText );
-	}
-
 //-----------------------------------------------------------------------------
 // CCCAppCommLauncherContainer::StatusClicked()
 //-----------------------------------------------------------------------------
@@ -857,8 +860,11 @@ TInt CCCAppCommLauncherContainer::CheckExtensionFactoryL(TAny* aPtr)
 void CCCAppCommLauncherContainer::DoCheckExtensionFactoryL()
     {
     CCCAExtensionFactory* extension = iFactoryExtensionNotifier->ExtensionFactory();
+    
+    MCCAStatusProvider* ccaStatusProvider = NULL;
+    
     // if extension is not null, extensionfactory plugins are available ->
-    // show statuscontrol
+    // show statuscontrol        
     if( extension )
         {
         if ( !iViewLauncher )
@@ -866,7 +872,24 @@ void CCCAppCommLauncherContainer::DoCheckExtensionFactoryL()
             iViewLauncher = extension->CreateViewLauncherL();
             }
         if( iStatusControl )
-            {
+            {        
+			if( extension )
+				{				
+				TAny* factoryExtension = extension->FactoryExtension( KCCAExtensionFactoryStatusProviderCreatorUid );        	
+				
+				 if( factoryExtension )
+					 {
+					 MCCAExtensionFactoryStatusProviderCreator* statusProviderCreator =
+							 static_cast<MCCAExtensionFactoryStatusProviderCreator*>( factoryExtension );
+
+					   if( statusProviderCreator )
+						   {
+                           ccaStatusProvider = statusProviderCreator->CreateStatusProviderL();						   
+						   }
+					 }
+				}
+        
+			iStatusControl->SetStatusProvider( ccaStatusProvider );
             iStatusControl->MakeVisible( ETrue );
             iHeaderCtrl->SetStatusButtonVisibility( ETrue );
             }

@@ -958,12 +958,15 @@ TInt CVPbkCompositeContactView::HandleContactRemoval
             {
             // Loop through the rest of the contacts of the subview
             // and modify their global contact mapping information
-            for (TInt i = index; i < iContactMapping.Count(); ++i)
+            for (TInt i = 0; i < iContactMapping.Count(); ++i )
                 {
-                if (iContactMapping[i].iViewIndex == subViewIndex)
+                // Adjust the iContactIndex in the same view except the deleted one.
+                if ( ( iContactMapping[i].iViewIndex == subViewIndex ) 
+                   && ( iContactMapping[i].iContactIndex >= aIndex )
+                   && ( i != index ) )
                     {
-                    // Subtract one because one contact was deleted
-                    // from the list before the current index
+                    // Subtract one because one contact was deleted, the index
+                    // from the list which is bigger than the deleted one needs to be adjusted.
                     --iContactMapping[i].iContactIndex;
                     }
                 }
@@ -999,13 +1002,18 @@ TInt CVPbkCompositeContactView::HandleContactAddition
             index = err;
             }
         else
-        	{
-        	// We have to fix the indexes of all the succeeding
+            {
+        	  // We have to fix the indexes of all the succeeding
             // contacts in the view where the contact addition took place
-            for ( TInt i = index + 1; i < iContactMapping.Count(); ++i )
+            for ( TInt i = 0; i < iContactMapping.Count(); ++i )
                 {
-                if (iContactMapping[i].iViewIndex == subViewIndex)
+                // Adjust the iContactIndex in the same view except the added one.
+                if ( ( iContactMapping[i].iViewIndex == subViewIndex ) 
+                   && ( iContactMapping[i].iContactIndex >= aIndex )
+                   && ( i != index ) )
                     {
+                    // plus one because one contact was added, the index
+                    // from the list which is bigger than the deleted one needs to be adjusted.
                     ++iContactMapping[i].iContactIndex;
                     }
                 }

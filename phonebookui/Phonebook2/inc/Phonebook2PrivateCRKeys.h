@@ -39,6 +39,7 @@ const TUint32 KPhonebookDefaultContactInfoTab               = 0x00000005;
 const TUint32 KPhonebookAddFavoritiesVisibility				= 0x00000006;
 const TUint32 KPhonebooksXPExtensionPluginsName             = 0x00000007; 
 const TUint32 KPhonebookPredictiveSearchEnablerFlags        = 0x00000008; 
+const TUint32 KPhonebookStatusMessageVisibility             = 0x00000009; 
 
 #endif // PHONEBOOK2PRIVATECRKEYS_H
 

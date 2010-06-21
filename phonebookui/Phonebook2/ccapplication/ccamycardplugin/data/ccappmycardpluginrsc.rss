@@ -199,9 +199,9 @@ RESOURCE TBUF r_qtn_cca_mc_title_edit_my_card
 // r_qtn_cca_mc_my_card_in_ovi
 // ---------------------------------------------------------------------------
 // 
-RESOURCE TBUF r_qtn_cca_mc_my_card_in_ovi 			   
+RESOURCE TBUF r_qtn_cca_social_networks 			   
     {  
-    buf = qtn_cca_mc_my_card_in_ovi; 
+    buf = qtn_cca_social_networks; 
     }
 
 // ---------------------------------------------------------------------------

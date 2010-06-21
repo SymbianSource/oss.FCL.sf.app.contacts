@@ -20,6 +20,7 @@
 
 #include <MVPbkContactStore.h>
 #include <CVPbkContactFindOperation.h>
+#include <cntdb.h>
 
 CVPbkPhoneNumberParallelMatchStrategy::CVPbkPhoneNumberParallelMatchStrategy()
     {
@@ -54,16 +55,33 @@ MVPbkContactOperation* CVPbkPhoneNumberParallelMatchStrategy::CreateFindOperatio
         const TDesC& aPhoneNumber)
     {
     CVPbkContactFindOperation* operation = NULL;
-
+    
     if (!iMatchingStarted)
         {
         operation = CVPbkContactFindOperation::NewLC(FindObserver());
         const TInt storeCount = StoresToMatch().Count();
+        TInt maxDigits = MaxMatchDigits();
+        
         for (TInt i = 0; i < storeCount; ++i)
             {
-            MVPbkContactOperation* subOperation = 
-                    StoresToMatch()[i]->CreateMatchPhoneNumberOperationL(
-                               aPhoneNumber, MaxMatchDigits(), *operation);
+            MVPbkContactOperation* subOperation = NULL;
+            
+            if ( maxDigits == KBestMatchingPhoneNumbers &&
+                    IsSimStore( *( StoresToMatch()[i] ) ) )
+                {
+                // KBestMatchingPhoneNumbers enables best matching strategy 
+                // on store level only for phone memory stores, for sim store
+                // MaxDigits parameter should be set to 7 or greater
+                const TInt KMaxDigitsForSimStore = 7;
+                subOperation = StoresToMatch()[i]->CreateMatchPhoneNumberOperationL(
+                        aPhoneNumber, KMaxDigitsForSimStore, *operation);
+                }
+            else
+                {
+                subOperation = StoresToMatch()[i]->CreateMatchPhoneNumberOperationL(
+                        aPhoneNumber, maxDigits, *operation);
+                }
+
             if (subOperation)
                 {
                 CleanupDeletePushL(subOperation);

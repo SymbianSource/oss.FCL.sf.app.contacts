@@ -23,6 +23,11 @@
 #include "MPbk2ContactNameFormatter.h"
 #include "MPbk2FilteredViewStack.h"
 
+#include <MVPbkBaseContactFieldCollection.h>
+#include <MVPbkContactFieldTextData.h>
+#include <MVPbkBaseContactField.h>
+
+
 #include <MPbk2ContactViewSupplier.h>
 #include <MPbk2ApplicationServices.h>
 #include <MPbk2AppUi.h>
@@ -41,6 +46,15 @@ const TInt KContactFormattingFlags = MPbk2ContactNameFormatter::EPreserveLeading
             MPbk2ContactNameFormatter::EReplaceNonGraphicChars |
             MPbk2ContactNameFormatter::EDisableCompanyNameSeparator;
 
+namespace {
+enum TNameOrder
+    {
+    ETopContactOrderNumber = 0,     //TC control data, not shown
+    ENameFirstPart,                 //Contact name data
+    ENameSecondPart,                //Contact name data
+    ENameCompanyPart                //to support Company name
+    };
+} // namespace
 
 NONSHARABLE_CLASS(CPbk2AdaptiveGrid) : public CBase
 	{
@@ -249,6 +263,14 @@ void CPbk2AdaptiveSearchGridFiller::RunL()
         else if ( titleLength )
             {
             title = iNameFormatter.GetContactTitleL( contact.Fields(), KContactFormattingFlags );
+            
+            // In FDN, the number will be displayed in the list if the contact is no name.
+            // If it is, set the search string as NULL.
+            if ( IsActualTitleEmpty( contact ) )    
+                {
+                delete title;
+                title = NULL;
+            	}
             }
 		
 		if ( !title )
@@ -749,5 +771,40 @@ TBool CPbk2AdaptiveSearchGridFiller::GridFromPsEngineL( const MVPbkContactViewBa
         {
         return EFalse;
         }
+    }
+
+TBool CPbk2AdaptiveSearchGridFiller::IsActualTitleEmpty( const MVPbkViewContact& aContact )
+    {
+    TBool result = ETrue;
+    const TInt fieldCount = aContact.Fields().FieldCount();
+    for ( TInt i = ENameFirstPart; i <= ENameSecondPart && i < fieldCount; ++i)
+        {     
+        const MVPbkBaseContactField& field = aContact.Fields().FieldAt( i );
+        if ( iNameFormatter.IsTitleField( field ) )
+            {
+            const MVPbkContactFieldData& fieldData = field.FieldData();
+            if ( fieldData.DataType() == EVPbkFieldStorageTypeText )
+                {
+                const TDesC& fieldText = MVPbkContactFieldTextData::Cast( fieldData ).Text();
+                TInt length = fieldText.Length();
+                    
+                if ( length > 0 )
+                    {
+                    TInt firstNonSpaceChar = 0;
+                    while ( firstNonSpaceChar < length 
+                        && TChar( fieldText[firstNonSpaceChar] ).IsSpace() )
+                        {
+                        ++firstNonSpaceChar;
+                        }
+                    if ( firstNonSpaceChar != length )
+                        {
+                        result = EFalse;
+                        break;
+                        }
+                    }   
+                }
+            }
+        }
+    return result;
     }
 // End of File

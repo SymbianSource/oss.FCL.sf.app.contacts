@@ -22,6 +22,8 @@
 // INCLUDES
 #include <coecntrl.h>
 #include <spbcontentprovider.h>
+#include <ccaextensionfactory.h>
+
 
 // FORWARD DECLARATIONS
 class CEikImage;
@@ -55,20 +57,29 @@ protected:
  */
 NONSHARABLE_CLASS( CCCAppStatusControl ) : 
     public CCoeControl, 
-    public MSpbContentProviderObserver 
+    public MSpbContentProviderObserver,
+    public MCCAStatusProviderObserver
     {
 public: // Construction & destruction
+	
+	enum TContactType
+            {
+            ENormalContact = 0x01,
+            EMyCardContact = 0x02
+            };
+
     /**
      * Two-phased constructor.
      */
     IMPORT_C static CCCAppStatusControl* NewL( 
             CSpbContentProvider& aContentProvider, 
-            MCCAStatusControlObserver& aObserver );
+            MCCAStatusControlObserver& aObserver,
+            CCCAppStatusControl::TContactType aContactType );
 
     /**
      * Destructor.
      */
-    ~CCCAppStatusControl();
+    ~CCCAppStatusControl();       
 
 public: // New implementation
         
@@ -100,7 +111,14 @@ public: // New implementation
 	 * @aDefaultStatusText Default status text
 	 */
     IMPORT_C void SetDefaultStatusTextL( HBufC* aDefaultStatusText );     
-             
+    
+    /**
+	 * Set the CCA statusprovider 
+	 * 	 
+	 * @aCCAStatusProvider ECom status provider
+	 */
+    IMPORT_C void SetStatusProvider( MCCAStatusProvider* aCCAStatusProvider );
+         
 public: // From CCoeControl
      
     /**
@@ -142,6 +160,15 @@ public: // From MSpbContentProviderObserver
         MVPbkContactLink& aLink, 
         MSpbContentProviderObserver::TSpbContentEvent aEvent );           
     
+public: // From MCCAStatusProviderObserver
+    
+	/*
+	 * From MCCAStatusProviderObserver
+	 */
+    void StatusEvent(
+		MCCAStatusProviderObserver::TCCAStatusProviderObserverEvent aEvent,
+		const MVPbkContactLink* aLink = NULL );
+		
 private: // New functions    
 
     /**
@@ -164,6 +191,12 @@ private: // New functions
         MVPbkContactLink& aLink, 
         MSpbContentProviderObserver::TSpbContentEvent aEvent );           
 
+    /*
+     * Update contact status from ECom plugin
+     * @param aLink contact which has the status updated
+     */
+    void UpdateCCAStatusL( MVPbkContactLink* aLink );
+    
     void SetVariableLayouts( TInt aOption );
     
     inline void RewrapStatusTextToArrayL( 
@@ -177,7 +210,8 @@ protected: // construction
      */
     CCCAppStatusControl( 
         CSpbContentProvider& aContentProvider, 
-        MCCAStatusControlObserver& aObserver );
+        MCCAStatusControlObserver& aObserver,
+        CCCAppStatusControl::TContactType aContactType );
 
     /**
      * Constructor for performing 2nd stage construction
@@ -267,6 +301,12 @@ protected: // data
      * Current control state.
      */
     TStatusControlState iState;
+        
+    // Own. ECOM plugin tatus provider
+    MCCAStatusProvider* iCCAStatusProvider;
+    
+    // Current contact type.
+    CCCAppStatusControl::TContactType iContactType;
     };
 
 #endif // CCAPPSTATUSCONTROL_H_

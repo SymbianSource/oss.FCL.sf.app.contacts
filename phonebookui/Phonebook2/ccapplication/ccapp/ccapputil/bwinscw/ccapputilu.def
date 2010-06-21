@@ -19,8 +19,8 @@ EXPORTS
 	?OfferKeyEventL@CCCAppViewPluginAknContainer@@MAE?AW4TKeyResponse@@ABUTKeyEvent@@W4TEventCode@@@Z @ 18 NONAME ; enum TKeyResponse CCCAppViewPluginAknContainer::OfferKeyEventL(struct TKeyEvent const &, enum TEventCode)
 	?Release@CCCAppCmsContactFetcherWrapper@@QAEXXZ @ 19 NONAME ; void CCCAppCmsContactFetcherWrapper::Release(void)
 	?RemoveObserver@CCCAppCmsContactFetcherWrapper@@QAEXAAVMCCAppContactFieldDataObserver@@@Z @ 20 NONAME ; void CCCAppCmsContactFetcherWrapper::RemoveObserver(class MCCAppContactFieldDataObserver &)
-	?SetTitleL@CCCAppViewPluginAknView@@QAEXABVTDesC16@@@Z @ 21 NONAME ; void CCCAppViewPluginAknView::SetTitleL(class TDesC16 const &)		
-	?NewL@CCCAppStatusControl@@SAPAV1@AAVCSpbContentProvider@@AAVMCCAStatusControlObserver@@@Z @ 22 NONAME ; class CCCAppStatusControl * CCCAppStatusControl::NewL(class CSpbContentProvider &, class MCCAStatusControlObserver &)
+	?SetTitleL@CCCAppViewPluginAknView@@QAEXABVTDesC16@@@Z @ 21 NONAME ; void CCCAppViewPluginAknView::SetTitleL(class TDesC16 const &)			
+	?NewL@CCCAppStatusControl@@SAPAV1@AAVCSpbContentProvider@@AAVMCCAStatusControlObserver@@W4TContactType@1@@Z @ 22  NONAME ; class CCCAppStatusControl * CCCAppStatusControl::NewL(class CSpbContentProvider &, class MCCAStatusControlObserver &, enum CCCAppStatusControl::TContactType)	
 	?SetContactLinkL@CCCAppStatusControl@@QAEXAAVMVPbkContactLink@@@Z @ 23 NONAME ; void CCCAppStatusControl::SetContactLinkL(class MVPbkContactLink &)	
 	?NewL@CCCaFactoryExtensionNotifier@@SAPAV1@XZ @ 24 NONAME ; class CCCaFactoryExtensionNotifier * CCCaFactoryExtensionNotifier::NewL(void)
 	?ObserveExtensionFactoryL@CCCaFactoryExtensionNotifier@@QAEXAAVTCallBack@@@Z @ 25 NONAME ; void CCCaFactoryExtensionNotifier::ObserveExtensionFactory(class TCallBack &)
@@ -30,3 +30,5 @@ EXPORTS
 	?SetDefaultStatusTextL@CCCAppStatusControl@@QAEXPAVHBufC16@@@Z @ 29 NONAME ; void CCCAppStatusControl::SetDefaultStatusTextL(class HBufC16 *)
 	?SetDefaultStatusIconL@CCCAppStatusControl@@QAEXPAVCGulIcon@@@Z @ 30 NONAME ; void CCCAppStatusControl::SetDefaultStatusIcon(class CGulIcon *)
 	?IsTopContact@CCCAppCmsContactFetcherWrapper@@QAEHXZ @ 31 NONAME ; int CCCAppCmsContactFetcherWrapper::IsTopContact(void)
+	?SetStatusProvider@CCCAppStatusControl@@QAEXPAVMCCAStatusProvider@@@Z @ 32 NONAME ; void CCCAppStatusControl::SetStatusProvider(class MCCAStatusProvider *)
+

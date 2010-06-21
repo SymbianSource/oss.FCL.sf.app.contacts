@@ -31,7 +31,7 @@ EXPORTS
 	_ZTV28CCCAppViewPluginAknContainer @ 30 NONAME ; #<VT>#
 	_ZTV30CCCAppCmsContactFetcherWrapper @ 31 NONAME ; #<VT>#	
 	_ZN19CCCAppStatusControl15SetContactLinkLER16MVPbkContactLink @ 32 NONAME
-	_ZN19CCCAppStatusControl4NewLER19CSpbContentProviderR25MCCAStatusControlObserver @ 33 NONAME
+	_ZN19CCCAppStatusControl4NewLER19CSpbContentProviderR25MCCAStatusControlObserverNS_12TContactTypeE @ 33 NONAME
 	_ZN28CCCaFactoryExtensionNotifier16ExtensionFactoryEv @ 34 NONAME
 	_ZN28CCCaFactoryExtensionNotifier24ObserveExtensionFactoryLER9TCallBack @ 35 NONAME
 	_ZN28CCCaFactoryExtensionNotifier4NewLEv @ 36 NONAME
@@ -40,4 +40,4 @@ EXPORTS
 	_ZN19CCCAppStatusControl21SetDefaultStatusTextLEP7HBufC16 @ 39 NONAME
 	_ZN19CCCAppStatusControl21SetDefaultStatusIconLEP8CGulIcon @ 40 NONAME
 	_ZN30CCCAppCmsContactFetcherWrapper12IsTopContactEv @ 41 NONAME
-
+	_ZN19CCCAppStatusControl17SetStatusProviderEP18MCCAStatusProvider @ 42 NONAME

@@ -332,8 +332,12 @@ void CPcsContactStore::VPbkSingleContactOperationComplete(
 		iNextState = EFetchContactBlock;
         // Delay the next fetch since contact fetch is CPU intensive,
         // this will give other threads a chance to use CPU
-        iTimer.After( iStatus, KTimerInterval); // 100 milliseconds
-        SetActive();
+	    if(!IsActive())
+	        {
+            iTimer.After( iStatus, KTimerInterval); // 100 milliseconds
+            SetActive();
+	        }
+
 	}
 	
 }
@@ -361,8 +365,11 @@ void CPcsContactStore::VPbkSingleContactOperationFailed(
 		iNextState = EFetchContactBlock;
         // Delay the next fetch since contact fetch is CPU intensive,
         // this will give other threads a chance to use CPU
-		iTimer.After( iStatus, KTimerInterval);   // 100 milliseconds
-        SetActive();
+        if(!IsActive())
+            {
+            iTimer.After( iStatus, KTimerInterval); // 100 milliseconds
+            SetActive();
+            }
 	}
 	
 	PRINT ( _L("End CPcsContactStore::VPbkSingleContactOperationFailed") );

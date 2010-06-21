@@ -23,6 +23,7 @@
 #include <e32base.h>
 #include <aknsfld.h>
 #include <MPsResultsObserver.h>
+#include "MVPbkViewContact.h"
 
 // FORWARD DECLARATIONS
 class CAknSearchField;
@@ -137,6 +138,8 @@ NONSHARABLE_CLASS(CPbk2AdaptiveSearchGridFiller) : public CActive,
         // Used to judge if this contact's title include drgraphs
         TBool IsDigraphContactsTitleL(const TDesC& aContactTitle);
         TBool GridFromPsEngineL( const MVPbkContactViewBase& aView );
+        // Check whether the title is empty or not.
+        TBool IsActualTitleEmpty( const MVPbkViewContact& aContact );
     private: // Data
     	
 		/// Own: Containts adaptive search grid.

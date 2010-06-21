@@ -880,9 +880,7 @@ TBool CLogsBaseView::ProcessKeyEventEventL(
         }
   
     //Process Send key for cellular, voip or poc call 
-    if( aKeyEvent.iScanCode == EStdKeyYes &&
-        ( MenuBar()->ItemSpecificCommandsEnabled() ||
-            LogsAppUi()->ActiveViewId() == ELogDetailViewId ) )
+    if( aKeyEvent.iScanCode == EStdKeyYes )
         {
         ConstructDelayedL( EFalse );        //EFalse: perform immediately
         TBool supportLongSendPress = EFalse;//FIXME: FeatureManager::FeatureSupported( ??? ) this value should be available from platform in future

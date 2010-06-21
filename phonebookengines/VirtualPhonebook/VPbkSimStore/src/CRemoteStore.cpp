@@ -676,6 +676,12 @@ void CRemoteStore::RunL()
                 {
                 iAsyncOpenOp->Purge();
                 TInt id = iStoreEvent.iData;
+                
+                if ( IsOpen() && id == MVPbkSimPhoneObserver::ESimCardNotInserted )
+                    {
+                    iCurrentState = iStoreEvent.iEvent;
+                    }
+
                 // If not SIM card or BT SAP is active then store is not available
                 if ( id == MVPbkSimPhoneObserver::ESimCardNotInserted ||
                      id == MVPbkSimPhoneObserver::EBtSapActive )

@@ -24,6 +24,7 @@
 // --------------------------------------------------------------------------
 //
 const TUint32 KCRUidPhonebookInternalConfig                 = 0x101f884a;
+// value redefined and used also in CVPbkPhoneNumberMatchStrategy.cpp
 const TUint32 KCRUidPhonebookStoreConfiguration             = 0x1020727f;
 
 // --------------------------------------------------------------------------
@@ -42,7 +43,9 @@ const TUint32 KPhonebookDefaultSavingStoreUri               = 0x00000001;
 /// Current configuration key range 0x00000100 to 0x000001ff
 const TUint32 KPhonebookCurrentConfigurationFirstKey        = 0x00000100;
 const TUint32 KPhonebookCurrentConfigurationLastKey         = 0x000001ff;
+// value redefined and used also in CVPbkPhoneNumberMatchStrategy.cpp
 const TUint32 KPhonebookCurrentConfigurationPartialKey      = 0x00000100;
+// value redefined and used also in CVPbkPhoneNumberMatchStrategy.cpp
 const TUint32 KPhonebookCurrentConfigurationMask            = 0xffffff00;
 
 /// Possible configuration key range 0x00000200 to 0x000002ff

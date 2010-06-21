@@ -488,11 +488,13 @@ const MVPbkBaseContactField* CPbk2DuplicateContactFinder::FindFieldById( const M
     for ( TInt i = 0; i < fieldCount; ++i )
         {
         const MVPbkBaseContactField& field = fieldSet.FieldAt(i);
-        TInt fieldTypeId = field.BestMatchingFieldType()->FieldTypeResId();
-        
-        if ( fieldTypeId == aFieldId )
+        if ( field.BestMatchingFieldType() )
             {
-            return &field;
+            TInt fieldTypeId = field.BestMatchingFieldType()->FieldTypeResId();
+            if ( fieldTypeId == aFieldId )
+                {
+                return &field;
+                }
             }
         }
     return NULL;

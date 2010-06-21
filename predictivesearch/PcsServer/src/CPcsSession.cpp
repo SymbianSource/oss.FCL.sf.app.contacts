@@ -254,10 +254,20 @@ void CPcsSession::GetAsyncPcsResultsL(const RMessage2& aMessage)
         RPointerArray<CPsClientData> searchResults;
         RPointerArray<CPsPattern> searchSeqs;
 
-        iServer->PluginInterface()->PerformSearchL(*iSettings,
-                                                   *psQuery,
-                                                   searchResults,
-                                                   searchSeqs);
+
+        if( !iServer->IsChineseVariant() )
+             {
+             PRINT ( _L("----Algorithm1 search----") );
+             iServer->PluginInterface()->PerformSearchL(*iSettings,
+                                                        *psQuery,
+                                                        searchResults,
+                                                        searchSeqs);
+             }
+         else
+             {
+             PRINT ( _L("----Algorithm2 fake search----") );
+             }       
+
         CleanupStack::PopAndDestroy( psQuery );
 
 		// Dynamic data buffer
@@ -383,10 +393,18 @@ void CPcsSession::SearchInputL(const RMessage2& aMessage)
     // To hold matched location
     RArray<TPsMatchLocation> sequenceLoc;
 
-	iServer->PluginInterface()->SearchInputL(*psQuery,
-	                                         *data,
-	                                         searchSeqs,
-	                                         sequenceLoc);
+    if( !iServer->IsChineseVariant() )
+         {
+         PRINT ( _L("----Algorithm1 searchinput----") );
+         iServer->PluginInterface()->SearchInputL(*psQuery,
+                                                  *data,
+                                                  searchSeqs,
+                                                  sequenceLoc);
+         }
+     else
+         {
+         PRINT ( _L("----Algorithm2 fake searchinput----") );
+         }       
 
     // Delete the search query and search data
 	CleanupStack::PopAndDestroy( data );
