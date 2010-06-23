@@ -19,6 +19,7 @@
 
 #include <qtcontacts.h>
 #include <hbglobal.h>
+#include <hbiconitem.h>
 
 /*!
 Constructor
@@ -88,6 +89,23 @@ void CntGroupDeletePopupModel::initializeGroupsList()
                 // contact Id for identification
                 dataList.append(groupContactIds.at(i));
                 
+                // Default if no image for group 
+                bool icon = false;
+                QList<QContactAvatar> details = contact.details<QContactAvatar>();
+                for (int k = 0;k < details.count();k++)
+                {
+                   if (details.at(k).imageUrl().isValid())
+                   {
+                       dataList.append(QStringList(details.at(k).imageUrl().toString()));
+                       icon = true;
+                       break;
+                   }
+                }
+                if(!icon)
+                {
+                   dataList.append(QStringList("qtg_large_custom"));
+                }
+
                 mDataPointer->mDataList.append(dataList);
             }
         }
@@ -152,6 +170,17 @@ QVariant CntGroupDeletePopupModel::data(const QModelIndex &index, int role) cons
     {
         QStringList list = values[0].toStringList();        
         return QVariant(list);
+    }
+    
+    else if (role == Qt::DecorationRole)
+    {
+        QVariantList icons;
+        for (int i = 0;i < values[2].toStringList().count();i++)
+        {
+            HbIcon icon(values[2].toStringList().at(i));
+            icons.append(icon);
+        }
+        return QVariant(icons);
     }
     
     else if (role == Qt::UserRole)

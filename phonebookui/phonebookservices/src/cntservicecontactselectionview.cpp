@@ -64,7 +64,7 @@ void CntServiceContactSelectionView::aboutToOpenView(CntAbstractViewManager* aMg
     filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
     QString typeContact = QContactType::TypeContact;
     filter.setValue(typeContact);
-    mListModel->setFilterAndSortOrder(filter);
+    mListModel->setFilter(filter);
     // hide my card if it's not set
     if (mListModel->myCardId() == 0)
     {

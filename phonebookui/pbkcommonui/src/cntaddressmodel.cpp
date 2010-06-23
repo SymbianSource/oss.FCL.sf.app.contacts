@@ -27,6 +27,7 @@ mAddressHome(NULL),
 mAddressWork(NULL),
 mIsLocationPickerEnabled( false )
     {
+    mMaptileInterface = new CntMapTileService;
     HbDataFormModelItem* address = appendDataFormGroup(hbTrId("txt_phob_formlabel_address"), invisibleRootItem());
     HbDataFormModelItem* addressHome = appendDataFormGroup(hbTrId("txt_phob_formlabel_address_home"), invisibleRootItem());
     HbDataFormModelItem* addressWork = appendDataFormGroup(hbTrId("txt_phob_formlabel_address_work"), invisibleRootItem());
@@ -84,12 +85,13 @@ CntAddressModel::~CntAddressModel()
     delete mAddress;
     delete mAddressHome;
     delete mAddressWork;
+    delete mMaptileInterface;
     }
 
 void CntAddressModel::createAddressItems( HbDataFormModelItem* aGroup, QContactAddress* aAddress )
     {
 	//Show the location picker button only if location feature enabled
-    if( CntMapTileService::isLocationFeatureEnabled() )
+    if( mMaptileInterface->isLocationFeatureEnabled() )
     {
         // custom item for map button
         HbDataFormModelItem* mapButton = new HbDataFormModelItem( HbDataFormModelItem::CustomItemBase );
@@ -129,20 +131,24 @@ void CntAddressModel::saveContactDetails()
 {
     // No Context
     HbDataFormModelItem* addressRoot = invisibleRootItem()->childAt( 0 );
-    saveAddressItems( addressRoot, mAddress );
+    if ( saveAddressItems( addressRoot, mAddress ) )
+    {
+        mContact->saveDetail( mAddress );    
+    }
     
     // Home 
     HbDataFormModelItem* addressHomeRoot = invisibleRootItem()->childAt( 1 );
-    saveAddressItems( addressHomeRoot, mAddressHome );
+    if ( saveAddressItems( addressHomeRoot, mAddressHome ) )
+    {
+        mContact->saveDetail( mAddressHome );    
+    }
     
-    // Work
+    // Business
     HbDataFormModelItem* addressWorkRoot = invisibleRootItem()->childAt( 2 );
-    saveAddressItems( addressWorkRoot, mAddressWork );
-    
-    // save and remove empty details
-    mContact->saveDetail( mAddress );
-    mContact->saveDetail( mAddressHome );
-    mContact->saveDetail( mAddressWork );
+    if ( saveAddressItems( addressWorkRoot, mAddressWork ) )
+    {
+        mContact->saveDetail( mAddressWork );    
+    }
     
     if ( isAddressEmpty(mAddress) ) 
     {
@@ -180,20 +186,37 @@ QContactDetail CntAddressModel::detail() const
     return QContactAddress();
 }
 
-void CntAddressModel::saveAddressItems( HbDataFormModelItem* aGroup, QContactAddress* aAddress )
+bool CntAddressModel::saveAddressItems( HbDataFormModelItem* aGroup, QContactAddress* aAddress )
 {
     int offset = 0;
-    if( CntMapTileService::isLocationFeatureEnabled() )
+    if( mMaptileInterface->isLocationFeatureEnabled() )
     {
         offset = 1;
     }
-		
-    // first item (0) is the map button
-    aAddress->setStreet( aGroup->childAt( 0 + offset  )->contentWidgetData("text").toString().trimmed() );
-    aAddress->setPostcode( aGroup->childAt( 1 + offset )->contentWidgetData("text").toString().trimmed() );
-    aAddress->setLocality( aGroup->childAt( 2 + offset  )->contentWidgetData("text").toString().trimmed() );
-    aAddress->setRegion( aGroup->childAt( 3 + offset  )->contentWidgetData("text").toString().trimmed() );
-    aAddress->setCountry( aGroup->childAt( 4 + offset  )->contentWidgetData("text").toString().trimmed() );
+    
+	QString street = aGroup->childAt( 0 + offset  )->contentWidgetData("text").toString().trimmed();
+	QString postcode = aGroup->childAt( 1 + offset )->contentWidgetData("text").toString().trimmed();
+	QString locality = aGroup->childAt( 2 + offset  )->contentWidgetData("text").toString().trimmed();
+	QString region = aGroup->childAt( 3 + offset  )->contentWidgetData("text").toString().trimmed();
+	QString country = aGroup->childAt( 4 + offset  )->contentWidgetData("text").toString().trimmed();
+	
+	bool changed = ( 
+	        street != aAddress->street() || 
+            postcode != aAddress->postcode() || 
+            locality != aAddress->locality() ||
+            region != aAddress->region() ||
+            country != aAddress->country() 
+            );
+	
+	if ( changed )
+	{
+        aAddress->setStreet( street );
+        aAddress->setPostcode( postcode );
+        aAddress->setLocality( locality );
+        aAddress->setRegion( region );
+        aAddress->setCountry( country );
+	}
+    return changed;
 }
 
 bool CntAddressModel::isAddressEmpty( QContactAddress* aAddress ) const

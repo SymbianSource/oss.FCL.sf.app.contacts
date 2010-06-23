@@ -164,7 +164,7 @@ void CntHistoryView::clearHistory()
     QString name = mContact->displayLabel();
     
     HbMessageBox::question(HbParameterLengthLimiter(hbTrId("txt_phob_info_clear_communications_history_with_1")).arg(name), this, 
-            SLOT(handleClearHistory(HbAction*)), hbTrId("txt_phob_button_delete"), hbTrId("txt_common_button_cancel"));
+            SLOT(handleClearHistory(HbAction*)), hbTrId("txt_common_button_delete"), hbTrId("txt_common_button_cancel"));
 }
 
 /*

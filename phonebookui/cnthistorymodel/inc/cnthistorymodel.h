@@ -19,9 +19,14 @@
 
 #include <QAbstractListModel>
 #include <QSharedData>
-#include <qtcontacts.h>
+#include <qmobilityglobal.h>
+#include <qcontactid.h>
 
 #include "cnthistorymodelglobal.h"
+
+QTM_BEGIN_NAMESPACE
+class QContactManager;
+QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
 
@@ -104,6 +109,7 @@ private slots:
     void logsRowsInserted(const QModelIndex& parent, int first, int last);
     void logsRowsRemoved(const QModelIndex& parent, int first, int last);
     void logsDataChanged(const QModelIndex& first, const QModelIndex& last);
+    void handleLogsReset();
     
     // Messaging model slots
     void messagesReady(QList<MsgItem>& msgs);

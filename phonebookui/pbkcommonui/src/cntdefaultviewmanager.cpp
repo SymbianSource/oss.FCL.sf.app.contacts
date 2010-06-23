@@ -24,6 +24,8 @@
 #include <qtcontacts.h>
 #include "cntviewnavigator.h"
 #include "cntsimutility.h"
+#include "cntdebug.h"
+#include <QApplication>
 
 CntDefaultViewManager::CntDefaultViewManager( HbMainWindow* aWindow ) : QObject(),
     mFactory(NULL),
@@ -32,8 +34,9 @@ CntDefaultViewManager::CntDefaultViewManager( HbMainWindow* aWindow ) : QObject(
     mNavigator(NULL),
     mMainWindow( aWindow ),
     mSimUtility(NULL)
-
-{    
+{
+    CNT_ENTRY
+    
     setViewFactory(new CntDefaultViewFactory());
     setViewNavigator(new CntViewNavigator(this));
 
@@ -44,33 +47,76 @@ CntDefaultViewManager::CntDefaultViewManager( HbMainWindow* aWindow ) : QObject(
         delete mSimUtility; 
         mSimUtility = 0;
     }
+    
+    CNT_EXIT
 }
 
 CntDefaultViewManager::~CntDefaultViewManager()
 {
+    CNT_ENTRY
+    
+    cleanup();
+
+    CNT_EXIT
+}
+
+void CntDefaultViewManager::cleanup()
+{
+    CNT_ENTRY
+
+    mOldView = mCurrent;
+    mCurrent = NULL;
+    deleteOldView();
+    
+    qDeleteAll(mBackends);
+    mBackends.clear();
+
     qDeleteAll(mDefaults.values());
+    mDefaults.clear();
+
     delete mFactory;
+    mFactory = NULL;
+
     delete mSimUtility;
+    mSimUtility = NULL;
+    
+    CNT_EXIT
 }
 
 void CntDefaultViewManager::setViewFactory( CntAbstractViewFactory* aFactory ) 
 {
+    CNT_ENTRY
+    
     if ( aFactory )
     {
+        if (mFactory) {
+            delete mFactory;
+        }
         mFactory = aFactory;
     }
+    
+    CNT_EXIT
 }
 
 void CntDefaultViewManager::setViewNavigator( CntViewNavigator* aNavigator )
 {
+    CNT_ENTRY
+    
     if ( aNavigator )
     {
+        if (mNavigator) {
+            delete mNavigator;
+        }
         mNavigator = aNavigator;
     }
+    
+    CNT_EXIT
 }
 
 void CntDefaultViewManager::back(const CntViewParameters aArgs)
 {
+    CNT_ENTRY
+    
     mArgs.clear();
     
     QFlags<Hb::ViewSwitchFlag> flags;
@@ -90,17 +136,39 @@ void CntDefaultViewManager::back(const CntViewParameters aArgs)
     {
         switchView( mArgs, flags );
     }
+    else {
+        // exiting application
+        cleanup();
+        closeApp();
+    }
+    
+    CNT_EXIT
+}
+
+void CntDefaultViewManager::closeApp()
+{
+    CNT_ENTRY
+    
+    qApp->quit();
+    
+    CNT_EXIT
 }
 
 void CntDefaultViewManager::changeView(const CntViewParameters aArgs)
 {
+    CNT_ENTRY
+    
     QFlags<Hb::ViewSwitchFlag> flags;
     mNavigator->next(aArgs.value(EViewId).toInt(), flags);
     switchView(aArgs, flags);
+    
+    CNT_EXIT
 }
 
 QContactManager* CntDefaultViewManager::contactManager( const QString& aType )
 {
+    CNT_ENTRY
+    
     foreach ( QContactManager* mgr, mBackends ) 
     {
         QString uri = mgr->managerUri();
@@ -116,11 +184,14 @@ QContactManager* CntDefaultViewManager::contactManager( const QString& aType )
         mBackends.append( manager );
     }
     
+    CNT_EXIT
     return manager;
 }
 
 void CntDefaultViewManager::removeCurrentView()
 {
+    CNT_ENTRY
+    
     if (mOldView) 
     {
         connect(mMainWindow, SIGNAL(viewReady()), this, SLOT(deleteOldView()));
@@ -129,10 +200,14 @@ void CntDefaultViewManager::removeCurrentView()
     {
         mMainWindow->setInteractive( true );
     }
+    
+    CNT_EXIT
 }
 
 void CntDefaultViewManager::deleteOldView()
 {
+    CNT_ENTRY
+    
     disconnect(mMainWindow, SIGNAL(viewReady()), this, SLOT(deleteOldView()));
     
     if (mOldView)
@@ -141,7 +216,7 @@ void CntDefaultViewManager::deleteOldView()
         
         // Due to something strange in wk16, this check will fail occationally and cause
         // a memory leak... most likely when opening edit view for the first time
-        if (!mOldView->view()->isVisible())
+        if (mCurrent == NULL || !mOldView->view()->isVisible())
         {
             mMainWindow->removeView(mOldView->view());
             
@@ -160,10 +235,14 @@ void CntDefaultViewManager::deleteOldView()
     }
 
     mMainWindow->setInteractive(true);
+    
+    CNT_EXIT
 }
 
 void CntDefaultViewManager::switchView(const CntViewParameters aArgs, QFlags<Hb::ViewSwitchFlag> flags)
 {
+    CNT_ENTRY
+    
     mMainWindow->setInteractive(false);
     int id = aArgs.value(EViewId).toInt();
     if ( id != noView )
@@ -184,12 +263,13 @@ void CntDefaultViewManager::switchView(const CntViewParameters aArgs, QFlags<Hb:
         
         mOldView = mCurrent;
         mCurrent = nextView;
-            
         mMainWindow->addView(mCurrent->view());
         mMainWindow->setCurrentView(mCurrent->view(), true, flags);
         mCurrent->activate(this, aArgs);
         
         removeCurrentView();
     }
+    
+    CNT_EXIT
 }
 // End of File

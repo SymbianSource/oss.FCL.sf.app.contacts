@@ -24,6 +24,7 @@
 #include <QKeyEvent>
 #include <QGraphicsSceneResizeEvent>
 #include "cntglobal.h"
+#include <cntmaptileservice.h>
 
 class HbView;
 class HbScrollArea;
@@ -43,6 +44,7 @@ class ShareUi;
 class QStandardItemModel;
 class QModelIndex;
 class HbSelectionDialog;
+class CntPresenceListener;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -52,6 +54,22 @@ class QContactAction;
 QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
+
+//To store the maptile request information
+class CntContactCardMapTileDetail 
+{
+public:
+    //Contact id 
+    int mContactId;
+    //Address type( preferred, home, work )
+    int mAddressType;
+    //Maptile status
+    int maptileStatus;
+    //Maptile progress icon animation count
+    int mProgressCount;
+    //Detial item containg contact address details
+    CntContactCardDetailItem* mDetailItem;
+};
 
 class CntContactCardViewPrivate : public QObject
 {
@@ -71,7 +89,7 @@ public slots:
     void thumbnailReady(const QPixmap& pixmap, void *data, int id, int error);
     void drawMenu(const QPointF &aCoords);
     void sendToHs();
-    
+    void mapTileStatusReceived(int contactid, int addressType, int status);
     void keyPressed(QKeyEvent *event);
 
 private slots:
@@ -93,6 +111,13 @@ private slots:
     
     void launchSendKeyAction(const QModelIndex &index);
     
+#ifdef PBK_UNIT_TEST
+public slots:
+#else
+private slots:
+#endif    
+	void updateSpinningIndicator();
+	
 public:
     CntContactCardView* q_ptr;    
     void activate(CntAbstractViewManager* aMgr, const CntViewParameters aArgs);
@@ -111,6 +136,7 @@ public:
 #else
 private:
 #endif
+    void connectAction(QString actionName, const char* slot);
     void executeAction(QContact& aContact, QContactDetail aDetail, QString aAction);
     void executeDynamicAction(QContact& aContact, QContactDetail aDetail, QContactActionDescriptor aActionDescriptor);
     
@@ -145,6 +171,10 @@ private:
     bool                        mAcceptSendKey;
     QStandardItemModel*         mSendKeyListModel;
     HbSelectionDialog*          mSendKeyPopup;
+    CntPresenceListener*        mPresenceListener; // own
+    CntMapTileService           *mMaptile;
+    QTimer                      *mProgressTimer;
+    QList <CntContactCardMapTileDetail*> mAddressList;
     
 };
 

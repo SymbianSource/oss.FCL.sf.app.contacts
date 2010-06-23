@@ -24,6 +24,7 @@
 #include <qcontactmanager.h>
 #include <qcontactfilter.h>
 #include <qcontactsortorder.h>
+#include <cntuids.h>
 #include "cntcache.h"
 
 QTM_USE_NAMESPACE
@@ -32,29 +33,29 @@ class CntListModelData : public QSharedData
 {
 public:
     CntListModelData( const QContactFilter& contactFilter = QContactFilter(),
-                     const QList<QContactSortOrder>& contactSortOrders = QList<QContactSortOrder>(),
                      bool showMyCard = true) :
-                         m_contactManager(0),
-                         ownedContactManager(false),
-                         currentRow(-1),
-                         filter(contactFilter),
-                         sortOrders(contactSortOrders),
-                         showMyCard(showMyCard)
-                      { }
-    ~CntListModelData() { if (ownedContactManager) {delete m_contactManager;}}
+                         m_contactManager(NULL),
+                         m_ownedContactManager(false),
+                         m_currentRow(-1),
+                         m_filter(contactFilter),
+                         m_showMyCard(showMyCard)
+                      { 
+                      }
+    ~CntListModelData() {if (m_ownedContactManager) delete m_contactManager;}
 
 public:
     QContactManager* m_contactManager;
     CntCache* m_cache;
-    bool ownedContactManager;
-    mutable CntContactInfo currentContact;
-    mutable int currentRow;
+    bool m_ownedContactManager;
+    mutable CntContactInfo m_currentContact;
+    mutable int m_currentRow;
 	
-    QList<QContactLocalId> contactIds;
-    QContactFilter filter;
-    QList<QContactSortOrder> sortOrders;
-    bool showMyCard;
-	QContactLocalId mMyCardId;
+    QList<QContactLocalId> m_contactIds;
+    QContactFilter m_filter;
+    QList<QContactSortOrder> m_sortOrders;
+    bool m_showMyCard;
+	QContactLocalId m_myCardId;
+	int nameOrder;
 };
 
 #endif // QCONTACTMODELPRIVATE_H

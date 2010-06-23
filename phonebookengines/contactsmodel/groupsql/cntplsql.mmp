@@ -30,6 +30,8 @@ VENDORID 		0x70000001
 
 APP_LAYER_SYSTEMINCLUDE
 
+
+
 // These two SYSTEMINCLUDES are needed as QT headers are used
 SYSTEMINCLUDE		/epoc32/include/mw/QtCore
 SYSTEMINCLUDE		/epoc32/include/stdapis/stlportv5
@@ -65,6 +67,10 @@ source		cpplcontacttable.cpp
 source		cpplgroupstable.cpp
 source		cpplcommaddrtable.cpp
 source		cpplpredictivesearchtable.cpp
+source		c12keypredictivesearchtable.cpp
+source		cqwertypredictivesearchtable.cpp
+source		cpredictivesearchsettingstable.cpp
+source		cpredictivesearchsynchronizer.cpp
 
 source 		pplcontactitemmanager.cpp
 source		rpplicccontactstore.cpp
@@ -83,9 +89,13 @@ source		clplgenericproxy.cpp
 source      cntpplviewmanager.cpp
 source      cntpplviewsession.cpp
 
-source    cpcskeymap.cpp
+source		cpcskeymap.cpp
+source		c12keykeymap.cpp
+source		cqwertykeymap.cpp
 //source		cntmetadataoperation.cpp
-source    cpplpresencetable.cpp
+source		cpplpresencetable.cpp
+source    cntpredictivesearch.cpp
+source    cntsqlsearch.cpp
 
 LIBRARY         euser.lib 
 LIBRARY         efsrv.lib 
@@ -101,6 +111,7 @@ LIBRARY     	libc.lib
 LIBRARY     	libm.lib
 
 OPTION ARMCC --visibility_inlines_hidden
+
 
 EPOCALLOWDLLDATA
 STDCPP

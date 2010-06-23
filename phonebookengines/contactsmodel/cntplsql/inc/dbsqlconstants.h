@@ -20,6 +20,7 @@
 
 #include <cntdef.hrh>
 
+
 const TInt KInitialValue = -1;
 const TInt KNumOfTables = 16;
 const TInt KNumColInPrefTable = 6;
@@ -28,25 +29,28 @@ const TInt KNumColInGroupTable = 3;
 const TInt KNumColInCommTable = 5;
 const TInt KNumColInPredSearchTable = 7;
 const TInt KNumColInPresenceTable = 5;
+// TODO: qwerty-mail tables are not yet added here
 
 // tables in the contact database 
-_LIT(KSqlContactTableName,"contact");
-_LIT(KSqlContactGroupTableName,"groups");
-_LIT(KSqlContactPrefTableName,"preferences");
-_LIT(KSqlContactCommAddrTableName,"comm_addr");
-_LIT(KSqlContactPredSearchTable0,"predictivesearch0");
-_LIT(KSqlContactPredSearchTable1,"predictivesearch1");
-_LIT(KSqlContactPredSearchTable2,"predictivesearch2");
-_LIT(KSqlContactPredSearchTable3,"predictivesearch3");
-_LIT(KSqlContactPredSearchTable4,"predictivesearch4");
-_LIT(KSqlContactPredSearchTable5,"predictivesearch5");
-_LIT(KSqlContactPredSearchTable6,"predictivesearch6");
-_LIT(KSqlContactPredSearchTable7,"predictivesearch7");
-_LIT(KSqlContactPredSearchTable8,"predictivesearch8");
-_LIT(KSqlContactPredSearchTable9,"predictivesearch9");
-_LIT(KSqlContactPredSearchTable10,"predictivesearch10");
-_LIT(KSqlContactPredSearchTable11,"predictivesearch11");
+_LIT(KSqlContactTableName, "contact");
+_LIT(KSqlContactGroupTableName, "groups");
+_LIT(KSqlContactPrefTableName, "preferences");
+_LIT(KSqlContactCommAddrTableName, "comm_addr");
+_LIT(KSqlContactPredSearchTable0, "predictivesearch0");
+_LIT(KSqlContactPredSearchTable1, "predictivesearch1");
+_LIT(KSqlContactPredSearchTable2, "predictivesearch2");
+_LIT(KSqlContactPredSearchTable3, "predictivesearch3");
+_LIT(KSqlContactPredSearchTable4, "predictivesearch4");
+_LIT(KSqlContactPredSearchTable5, "predictivesearch5");
+_LIT(KSqlContactPredSearchTable6, "predictivesearch6");
+_LIT(KSqlContactPredSearchTable7, "predictivesearch7");
+_LIT(KSqlContactPredSearchTable8, "predictivesearch8");
+_LIT(KSqlContactPredSearchTable9, "predictivesearch9");
+_LIT(KSqlContactPredSearchTable10, "predictivesearch10");
+_LIT(KSqlContactPredSearchTable11, "predictivesearch11");
 _LIT(KSqlContactPresenceTableName, "presence");
+// There are also 44 qwerty-mail tables (qm0..qm43)
+
 
 enum TDatabaseTables
 	{
@@ -66,6 +70,7 @@ enum TDatabaseTables
 	KContactPredSearchTable9Name,
 	KContactPredSearchTable10Name,
 	KContactPredSearchTable11Name
+	// TODO: qwerty-mail tables are not yet added here
 	};
 
 // columns for contact table
@@ -375,7 +380,35 @@ _LIT(KPresenceCreateStmnt,
 "CREATE TABLE presence (contact_id INTEGER NOT NULL,\
 account_uri VARCHAR(255),service_name VARCHAR(255),\
 status INTEGER, status_msg VARCHAR(255),\
-CONSTRAINT contactid_fk FOREIGN KEY (contact_id) REFERENCES contact(contact_id) ON DELETE CASCADE);"); 
+CONSTRAINT contactid_fk FOREIGN KEY (contact_id) REFERENCES contact(contact_id) ON DELETE CASCADE);");
+
+
+// Predictive search for qwerty mail tables
+// columns
+_LIT(KPredSearchQwertyMailContactId, "contact_id");
+_LIT(KPredSearchQwertyMailNameAsNumber, "n");
+_LIT(KPredSearchQwertyMailNameAsNumber2, "n2");
+_LIT(KPredSearchQwertyMailNameAsNumber3, "n3");
+_LIT(KPredSearchQwertyMailNameAsNumber4, "n4");
+_LIT(KPredSearchQwertyMailNameAsNumber5, "n5");
+_LIT(KPredSearchQwertyMailNameAsNumber6, "n6");
+_LIT(KPredSearchQwertyMailNameAsNumber7, "n7");
+_LIT(KPredSearchQwertyMailFirstName, "first_name");
+_LIT(KPredSearchQwertyMailLastName, "last_name");
+
+// parameters
+_LIT(KPredSearchQwertyMailContactIdParam, ":contact_id");
+_LIT(KPredSearchQwertyMailNameAsNumberParam, ":n");
+_LIT(KPredSearchQwertyMailNameAsNumberParam2, ":n2");
+_LIT(KPredSearchQwertyMailNameAsNumberParam3, ":n3");
+_LIT(KPredSearchQwertyMailNameAsNumberParam4, ":n4");
+_LIT(KPredSearchQwertyMailNameAsNumberParam5, ":n5");
+_LIT(KPredSearchQwertyMailNameAsNumberParam6, ":n6");
+_LIT(KPredSearchQwertyMailNameAsNumberParam7, ":n7");
+_LIT(KPredSearchQwertyMailFirstNameParam, ":first_name");
+_LIT(KPredSearchQwertyMailLastNameParam, ":last_name");
+
+
 // Condition strings for searching id
 _LIT(KSelectCondition_SearchForEqual,   "%S == :SeekId");
 

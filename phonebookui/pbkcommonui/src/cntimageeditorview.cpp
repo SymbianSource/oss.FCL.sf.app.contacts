@@ -20,6 +20,10 @@
 
 #include <hblabel.h>
 #include <xqaiwrequest.h>
+#include <xqaiwdecl.h>
+
+#include "cntdebug.h"
+
 #include <thumbnailmanager_qt.h>
 #include <hbaction.h>
 #include <hbview.h>
@@ -31,10 +35,6 @@
 #include <QStandardItemModel>
 
 const char *CNT_IMAGE_XML = ":/xml/contacts_if.docml";
-
-#define FETCHER_SERVICE "photos"
-#define FETCHER_INTERFACE "com.nokia.symbian.IImageFetch"
-#define FETCHER_OPERATION "fetch()"
 
 /*!
 Constructor
@@ -83,6 +83,8 @@ Destructor
 */
 CntImageEditorView::~CntImageEditorView()
 {
+    CNT_ENTRY
+    
     mView->deleteLater();
 
     delete mAvatar;
@@ -95,6 +97,8 @@ CntImageEditorView::~CntImageEditorView()
     mRemoveImage = 0;
     delete mModel;
     mModel = 0;
+    
+    CNT_EXIT
 }
 
 /*!
@@ -180,7 +184,39 @@ Open camera and get new image for contact
 */
 void CntImageEditorView::openCamera()
 {
+    CNT_ENTRY
+    
+    if (mRequest)
+    {
+        delete mRequest;
+        mRequest = 0;
+    }
+    
+    mRequest = mAppManager.create(XQI_CAMERA_CAPTURE, "capture(int,QVariantMap)", false);
+    if ( mRequest ) 
+    {
+        int mode = 0; //image mode
+        
+        QVariantMap map;
+        map.insert(XQCAMERA_INDEX, 0);
+        map.insert(XQCAMERA_QUALITY, 0);
+        map.insert(XQCAMERA_MODE_SWITCH, false);
+        map.insert(XQCAMERA_INDEX_SWITCH, false);
+        map.insert(XQCAMERA_QUALITY_CHANGE, true);
+        
+        // Set function parameters
+        QList<QVariant> args;
+        args << mode;
+        args << map;
+        mRequest->setArguments(args);
+        
+        connect(mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(handleImageChange(const QVariant&)));
+        connect(mRequest, SIGNAL(requestError(int,const QString&)), this, SLOT(handleError(int,const QString&)));
 
+        mRequest->send();
+    }
+    
+    CNT_EXIT
 }
 
 /*!
@@ -194,7 +230,7 @@ void CntImageEditorView::openGallery()
         mRequest = 0;
     }
     
-    mRequest = mAppManager.create(FETCHER_SERVICE, FETCHER_INTERFACE, FETCHER_OPERATION, true);
+    mRequest = mAppManager.create(XQI_IMAGE_FETCH, XQOP_IMAGE_FETCH, true);
     if ( mRequest ) 
     {
         connect(mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(handleImageChange(const QVariant&)));
@@ -247,23 +283,29 @@ Set the selected image as new QContactAvatar::SubTypeImage
 */
 void CntImageEditorView::handleImageChange(const QVariant &value)
 {
+    CNT_ENTRY_ARGS("image path = " << value.toString())
+    
     if(value.canConvert<QString>())
     {
         CntImageUtility imageUtility;
         if(imageUtility.isMassStorageAvailable())
         {
+            CNT_LOG_ARGS("mass storage available")
             /* Copy image and create thumbnail
              * When contact image removed only copy is deleted
              */
             QString imagepath;
             if(imageUtility.createImage(value.toString(),imagepath))
             {
+                
                 // If image already assigned, delete
                 QString filePath=mAvatar->imageUrl().toString();
                 if(!filePath.isEmpty()
                    && imageUtility.isImageRemovable(filePath))
                     imageUtility.removeImage(filePath);
             
+                CNT_LOG_ARGS("image created, image = " << filePath)
+                
                 mAvatar->setImageUrl(QUrl(imagepath));
                 mThumbnailManager->getThumbnail(imagepath);
                 mRemoveImage->setEnabled(true);
@@ -277,10 +319,14 @@ void CntImageEditorView::handleImageChange(const QVariant &value)
             mRemoveImage->setEnabled(true);
         }
     }
+    
+    CNT_EXIT
 }
 
 void CntImageEditorView::thumbnailReady(const QPixmap& pixmap, void *data, int id, int error)
 {
+    CNT_ENTRY_ARGS("error code = " << error)
+    
     Q_UNUSED(data);
     Q_UNUSED(id);
     if (!error)
@@ -290,6 +336,8 @@ void CntImageEditorView::thumbnailReady(const QPixmap& pixmap, void *data, int i
         mImageLabel->clear();
         mImageLabel->setIcon(icon);
     }
+    
+    CNT_EXIT
 }
 
 void CntImageEditorView::setOrientation(Qt::Orientation orientation)
@@ -327,3 +375,9 @@ void CntImageEditorView::listViewActivated(const QModelIndex &index)
         }
     }
 }
+
+void CntImageEditorView::handleError(int errorCode, const QString& errorMessage)
+{
+    CNT_LOG_ARGS("error code = " << errorCode << "errorMessage=" << errorMessage)
+}
+

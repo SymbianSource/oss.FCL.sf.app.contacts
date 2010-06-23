@@ -21,6 +21,7 @@
 #include <hbaction.h>
 #include <hblabel.h>
 #include <hbaction.h>
+#include <hblineedit.h>
 #include <hbmainwindow.h>
 #include <hblistviewitem.h>
 #include <hblistview.h>
@@ -28,7 +29,6 @@
 #include <hbstaticvkbhost.h>
 #include <QGraphicsLinearLayout>
 #include <qcontactid.h>
-#include <QDebug>
 #include <cntlistmodel.h>
 #include "cntfetchcontactsview.h"
 
@@ -55,27 +55,13 @@ mIndexFeedback(NULL)
     mSearchPanel->setVisible(false);
     mSearchPanel->setCancelEnabled(false);
     connect(mSearchPanel, SIGNAL(criteriaChanged(QString)), this, SLOT(setFilter(QString)));
-
+    
+    HbLineEdit *editor = static_cast<HbLineEdit*>(mSearchPanel->primitive("lineedit"));
+    editor->setInputMethodHints(Qt::ImhNoPredictiveText);
+    
     mLayout = new QGraphicsLinearLayout(Qt::Vertical);
     
     mContainerWidget = new HbWidget();
-
-    // set up the list with all contacts
-    QList<QContactSortOrder> sortOrders;
-    QContactSortOrder sortOrderFirstName;
-    sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName, QContactName::FieldFirstName);
-    sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
-    sortOrders.append(sortOrderFirstName);
-
-    QContactSortOrder sortOrderLastName;
-    sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName, QContactName::FieldLastName);
-    sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
-    sortOrders.append(sortOrderLastName);
-
-    QContactDetailFilter contactsFilter;
-    contactsFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
-    contactsFilter.setValue(QString(QLatin1String(QContactType::TypeContact)));
-    mCntModel = new CntListModel(mManager, contactsFilter, sortOrders, false);
 }
 
 CntFetchContacts::~CntFetchContacts()
@@ -130,8 +116,14 @@ void CntFetchContacts::displayContacts(DisplayType aType, HbAbstractItemView::Se
         
         mLayout->addItem(mSearchPanel);
         mContainerWidget->setLayout(mLayout);
-        mContainerWidget->setPreferredHeight(mListView->mainWindow()->size().height());
+        
+        // Main window is NULL in unit tests
+        HbMainWindow* window = mListView->mainWindow();
+        if (window) {
+            mContainerWidget->setPreferredHeight(mListView->mainWindow()->size().height());
+        }
         mContainerWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+                
         break;
     }
 
@@ -154,7 +146,7 @@ void CntFetchContacts::setFilter(const QString &filterString)
     detailfilter.setMatchFlags(QContactFilter::MatchStartsWith);
     detailfilter.setValue(searchList);
     
-    mCntModel->setFilterAndSortOrder(detailfilter);
+    mCntModel->setFilter(detailfilter);
 
     markMembersInView();
 
@@ -213,12 +205,16 @@ void CntFetchContacts::handleUserResponse(HbAction* action)
     if (popup && userCanceled) {
         mCurrentlySelected.clear();
         
-        // Notify that the user canceled.
         mWasCanceled = true;
     }
     else {
         mWasCanceled = false;
     }
+    
+    mPopup->setVisible(false);
+    mListView->setModel(NULL);
+    delete mCntModel;
+    mCntModel = NULL;
     
     emit clicked();
 }
@@ -261,6 +257,13 @@ void CntFetchContacts::doInitialize(HbAbstractItemView::SelectionMode aMode,
     if (!mPopup) {
         mPopup = new HbDialog;
     }
+
+    QContactDetailFilter contactsFilter;
+    contactsFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
+    contactsFilter.setValue(QString(QLatin1String(QContactType::TypeContact)));
+    if (!mCntModel) {
+        mCntModel = new CntListModel(mManager, contactsFilter, false);
+    }
     
     if (!mListView) {
         mListView = new HbListView(mPopup);
@@ -294,6 +297,11 @@ void CntFetchContacts::doInitialize(HbAbstractItemView::SelectionMode aMode,
         }
 
         mCntModel->showMyCard(false);
+    }
+    
+    // Handle the case where the model was removed for the list view
+    if (!mListView->model()) {
+        mListView->setModel(mCntModel);
     }
 }
 
@@ -336,7 +344,7 @@ void CntFetchContacts::showPopup()
 
 void CntFetchContacts::markMembersInView()
 {
-    // if there are no contacts matching the current filter,
+    // If there are no contacts matching the current filter,
     // show "no matching contacts" label
     if (mCntModel->rowCount() == 0) {
         if (!mEmptyListLabel) {

@@ -321,6 +321,7 @@ void CntHistoryModel::initializeLogsModel()
             this, SLOT(logsRowsRemoved(const QModelIndex &, int, int)));
     connect(d->m_AbstractLogsModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), 
                 this, SLOT(logsDataChanged(const QModelIndex &, const QModelIndex &)));
+    connect(d->m_AbstractLogsModel, SIGNAL(modelReset()), this, SLOT(handleLogsReset()));
 
 }
 
@@ -472,6 +473,36 @@ void CntHistoryModel::logsDataChanged(const QModelIndex& first, const QModelInde
         foreach( QList<int> l, batches )
             emit dataChanged( index(l.first(), 0), index(l.last(), 0) );
     }
+}
+
+/*
+ * Clear all call logs after receiving a reset model
+ * signal from logs model
+ */
+void CntHistoryModel::handleLogsReset()
+{
+    // Remove all call logs
+    QList<HItemPointer> values = d->m_logsMap.values();
+    foreach(HItemPointer p, values) {
+        d->m_List.removeOne( p );
+    }
+    
+    d->m_logsMap.clear();
+    
+    //read first call events if any and start listening for more 
+    for ( int i = 0; i < d->m_AbstractLogsModel->rowCount(); ++i ) {
+        LogsEvent* event = qVariantValue<LogsEvent*>(
+                d->m_AbstractLogsModel->data(d->m_AbstractLogsModel->index(i, 0), LogsModel::RoleFullEvent) );
+        
+        if ( event ) {
+            HItemPointer item = HItemPointer(new HistoryItem());
+            readLogEvent(event, *item);
+            d->m_logsMap.insert(i, item);
+            d->m_List.append( item );
+        }
+    }
+    
+    sortAndRefresh();
 }
 
 /*!

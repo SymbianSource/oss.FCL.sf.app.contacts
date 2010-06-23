@@ -43,6 +43,9 @@ public slots:
     void launchContactCard(QContact contact);
     void launchAssignContactCard(QContact contact, QContactDetail detail);
 
+protected slots:
+    virtual void closeApp();
+
 private:
     CntServiceHandler *mServiceHandler;
 };

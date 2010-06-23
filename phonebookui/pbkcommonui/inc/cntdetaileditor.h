@@ -67,12 +67,7 @@ public:
 private:    
     HbDocumentLoader* document();
     
-#ifdef PBK_UNIT_TEST
-public:
-#else
 private:
-#endif
-
     QPointer<HbDataForm>           mDataForm;
     CntDetailEditorModel           *mDataFormModel;
     QPointer<HbGroupBox>           mHeader;
@@ -84,5 +79,7 @@ private:
     HbAction                       *mSoftkey;
     HbAction                       *mCancel;
     CntViewParameters               mArgs;
+    
+    friend class TestCntDetailEditor;
     };
 #endif /* CNTDETAILEDITOR_H_ */

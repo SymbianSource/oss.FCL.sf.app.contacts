@@ -32,11 +32,10 @@
 class HbView;
 class HbListView;
 class HbGroupBox;
-class HbTextItem;
+class HbLabel;
 class HbDocumentLoader;
 class HbSearchPanel;
 class HbStaticVkbHost;
-class QGraphicsLinearLayout;
 class CntExtensionManager;
 class CntFetchContacts;
 
@@ -49,10 +48,7 @@ public:
     CntNamesViewPrivate(CntExtensionManager &extensionManager);
     virtual ~CntNamesViewPrivate();
 
-public slots:
-    void showBanner( const QString aText );
-    void hideBanner();
-    
+public slots:    
     void showFinder();
     void hideFinder();
     void setFilter(const QString &filterString);
@@ -82,7 +78,6 @@ public slots:
     void importSim();
     
     void handleContactAddition(const QList<QContactLocalId> & aAddedList);
-    void handleContactChanged(const QList<QContactLocalId> & aChangedList);
     void handleContactRemoval(const QList<QContactLocalId> & aRemovedList);
     void handleSelfContactIdChange(const QContactLocalId & aOldId, const QContactLocalId & aNewId);
     
@@ -93,16 +88,15 @@ public:
     
 private:
     void disableDeleteAction();
+    void focusLineEdit();
+    void setFocusedContact();
+    void setScrollPosition();
     
 public:
     CntNamesView *q_ptr;
     
 public:  // lazy initializations
     HbListView *list();
-    HbTextItem *emptyLabel();
-    HbGroupBox *groupBox();
-    HbSearchPanel *search();
-    QGraphicsLinearLayout *layout();
     HbDocumentLoader *document();
     
 private:
@@ -111,13 +105,13 @@ private:
     CntListModel*               mListModel;
     HbView*                     mView;
     HbListView*                 mListView;
-    HbTextItem*                 mEmptyList;
+    HbLabel*                    mEmptyList;
     HbGroupBox*                 mBanner;
     HbSearchPanel*              mSearchPanel;
     HbDocumentLoader*           mLoader;
-    QGraphicsLinearLayout*      mLayout;
     HbStaticVkbHost*            mVirtualKeyboard;
     HbAction*                   mSoftkey;
+    HbAction*                   mNamesAction;
     CntActionMenuBuilder*       mMenuBuilder;
     HbAction*                   mImportSim;
     HbAction*                   mNewContact;
@@ -127,6 +121,7 @@ private:
     bool                        mIsDefault;
     int                         mId;
     QActionGroup*               mActionGroup;
+    QContactLocalId             mFocusedContact;
 };
 
 #endif /* CNTABSTRACTLISTVIEW_H_ */

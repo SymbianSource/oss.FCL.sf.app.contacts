@@ -23,10 +23,13 @@
 #include <f32file.h> //RFs
 #include <d32dbms.h>  //RDbNamedDatabase,RDbView 
 
+#include "cntmaptileservice.h"
+
 // maptile database column names
 _LIT( NCntColUid, "cntuid" );
 _LIT( NCntColFilePath, "filepath" );
 _LIT( NColSource, "source" );
+_LIT( NColMaptileStatus, "fetchingstatus" );
 
 // maptile lookup database name
 _LIT( KMapTileLookupDatabaseName, "mylocationsmaptilelookup.db" );
@@ -40,8 +43,10 @@ _LIT( KLookupDbPath, "c:\\mylocations\\" );
 const TInt KColumncntUid = 1;
 // source type column number
 const TInt KColumnSource = 2;
-// source type column number
+// maptile image path column number
 const TInt KColumnFilePath = 3;
+// maptile status column number
+const TInt KColumnMapTileFetchingStatus = 4;
 
 
 /**
@@ -56,27 +61,11 @@ public:
     // Source type
     TUint32 iSource;
     
-    // Landmark uid in the landmarks database
-    TUint32 iLmId;
-    
-    // Uid of the Contact
-    TUint32 icntUid; 
-    
     // File Path
     TFileName iFilePath;
-};
-
-/**
- *  Defines uid source type
- */
-enum TUidSourceType
-{
-    /** Uid Source type contacts default/prefered address */
-    ESourceContactsPref  = 3,
-    /** Uid Source type contacts work address */
-    ESourceContactsWork,
-    /** Uid Source type contacts home address */
-    ESourceContactsHome,
+    
+    //Map tile fetching status
+    TUint32 iFetchingStatus;    
 };
 
 /**
@@ -112,16 +101,31 @@ public:
     * The source iUid is passed in the lookup item
     */
     void FindEntryL( TLookupItem& aLookupItem );
-
-private:
     
+   /**
+    * Finds number of address associated with an contact id.
+    * @param[in] aId The contact id .
+    * @return Number of address a contact has.
+    */
+    int FindNumberOfAddressL( int& aId );
+
+#ifdef CNTMAPTILESERVICE_UNIT_TEST
+public:
+#else     
+private:
+#endif  
     // default constructor
     CLookupMapTileDatabase();
     
     // Second phase constructor
     void ConstructL( const TDesC& aLookupTableName );
+
     
+#ifdef CNTMAPTILESERVICE_UNIT_TEST
+public:
+#else     
 private:
+#endif  
     
     // Handle to the items database
     RDbNamedDatabase iItemsDatabase;
@@ -136,7 +140,6 @@ private:
     TBool iDatabaseExists;
 
 };
-
 
 #endif  // __MAPTILEDBLOOKUPTABLE_H__`
 

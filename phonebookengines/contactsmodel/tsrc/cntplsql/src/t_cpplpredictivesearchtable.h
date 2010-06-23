@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: Unit test class for character to key mappings
+* Description: Unit test class for testing 12-key predictive search table
 *
 */
 
@@ -25,13 +25,19 @@
 #include "cntdef.h" // TContactItemId
 
 //  FORWARD DECLARATIONS
-class CPplPredictiveSearchTable;
+class CPplPredictiveSearchTableBase;
+class C12keyPredictiveSearchTable;
+class CQwertyPredictiveSearchTable;
+class CPredictiveSearchSettingsTable;
+class CPredictiveSearchSynchronizer;
+class CContactItem;
+
 
 //  CONSTANTS
 
 //  CLASS DEFINITION
 /**
- * Tester class for CPcsKeyMap.
+ * Tester class for C12keyPredictiveSearchTable.
  */
 NONSHARABLE_CLASS( UT_CPplPredictiveSearchTable ): public CEUnitTestSuiteClass
     {
@@ -56,7 +62,10 @@ NONSHARABLE_CLASS( UT_CPplPredictiveSearchTable ): public CEUnitTestSuiteClass
     private: // Test case setup and teardown
 
         void SetupL();
-        void Setup2L();
+        void SetupSyncL();
+		void SetupSyncJust12keyExistsL();
+		void SetupLanguageChangesL();
+		void UseSpecificDbL(const TDesC& aDbFile);
         void Teardown();
 
     private: // Test functions
@@ -64,6 +73,7 @@ NONSHARABLE_CLASS( UT_CPplPredictiveSearchTable ): public CEUnitTestSuiteClass
 		void UT_DummyL();
         void UT_CreateInDbLL();
         void UT_CreateInDbManyContactsL();
+		void UT_CreateInDbWithHashAndStarL();
         void UT_UpdateLL();
         void UT_UpdateLBothFieldsL();
         void UT_SearchL();
@@ -74,7 +84,9 @@ NONSHARABLE_CLASS( UT_CPplPredictiveSearchTable ): public CEUnitTestSuiteClass
         void UT_CheckIfTableExistsL();
         void UT_CheckIfTableExists2L();
         void UT_SynchronizeTableL();
+		void UT_SynchronizeTableJust12keyExistsL();
 		void UT_DeleteTablesL();
+		void UT_LanguageChangesL();
         void UT_TokenizeNamesL();
 		void UT_WriteToDbL();
 		void UT_ConvertToHexL();
@@ -114,12 +126,12 @@ NONSHARABLE_CLASS( UT_CPplPredictiveSearchTable ): public CEUnitTestSuiteClass
 		TInt64 UpperLimitL(const TDesC& aString) const;
 		TInt64 ConvertToNbrL(const TDesC& aString, TChar aPadChar) const;
 
-		TInt CPplContactItemManager_DoesPredSearchTableExistL();
-		void CPplContactItemManager_DeletePredSearchTablesL();
-
     private:    // Data
 
-        CPplPredictiveSearchTable* iTable;
+		C12keyPredictiveSearchTable* iTable; // Owned
+		CQwertyPredictiveSearchTable* iPredSearchQwertyTable; // Owned 
+		CPredictiveSearchSettingsTable* iPredSearchSettingsTable; // Owned
+		CPredictiveSearchSynchronizer* iPredictiveSearchSynchronizer; // Owned
         
         RSqlDatabase iDB;
 

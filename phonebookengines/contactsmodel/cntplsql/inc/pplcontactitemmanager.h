@@ -16,8 +16,6 @@
 */
 
 
-
-
 /**
  @file
  @internalComponent
@@ -37,7 +35,12 @@
 
 class CPplTableBase;
 class CPplPreferencesPersistor;
-class CPplPredictiveSearchTable;
+class CPplPredictiveSearchTableBase;
+class C12keyPredictiveSearchTable;
+class CQwertyPredictiveSearchTable;
+class CPredictiveSearchSettingsTable;
+class CPredictiveSearchSynchronizer;
+
 
 /**
 The CPplContactItemManager implements the MLplPersistenceBroker.
@@ -81,7 +84,10 @@ public:
 	void RecreatePredSearchTablesL();
 
 private:
-	CPplContactItemManager(RSqlDatabase& aDatabase, MLplTransactionManager& aTransactionManager, CLplContactProperties&  aContactProperties, RPplIccContactStore& aIccContactStore);
+	CPplContactItemManager(RSqlDatabase& aDatabase,
+						   MLplTransactionManager& aTransactionManager,
+						   CLplContactProperties& aContactProperties,
+						   RPplIccContactStore& aIccContactStore);
 	void ConstructL();
 	static void CleanupOperationRollbackL(TAny* aDatabase);
 	
@@ -91,24 +97,26 @@ private:
 	TInt NameFieldIndex(const CContactItemField& aNameField) const;
 	void DeleteInLowDiskConditionL(CPplTableBase* aTable, CContactItem* aContactItem);
 
-	TBool DoesPredSearchTableExistL() const;
-	void CreatePredSearchTablesL();
-	void DeletePredSearchTablesL();
-
 private:
-	RSqlDatabase&				iDatabase;				// CPplContactItemManager does not own the RSqlDatabase object
-	MLplTransactionManager& 	iTransactionManager;
-	TUint						iSessionId;
-	CCntSqlStatement* 			iSelectStatement;
-	CLplContactProperties&  	iContactProperties;
-	CPplTableBase* 				iContactTable;
-	CPplTableBase* 				iGroupTable;	
-	CPplTableBase* 				iCommAddrTable;
-	CPplPredictiveSearchTable*   	iPredSearchTable;
-	CPplTableBase*              iPresenceTable;
-	CPplPreferencesPersistor*	iPreferencePersistor;
-	RPplIccContactStore&        iIccContactStore;
+	RSqlDatabase&				  iDatabase; // CPplContactItemManager does not own the RSqlDatabase object
+	MLplTransactionManager& 	  iTransactionManager;
+	TUint						  iSessionId;
+	CCntSqlStatement* 			  iSelectStatement;
+	CLplContactProperties&  	  iContactProperties;
+	CPplTableBase* 				  iContactTable;
+	CPplTableBase* 				  iGroupTable;	
+	CPplTableBase* 			      iCommAddrTable;
+	C12keyPredictiveSearchTable*  iPredSearch12keyTable;
+	CQwertyPredictiveSearchTable* iPredSearchQwertyTable;
+	CPredictiveSearchSettingsTable* iPredSearchSettingsTable;
+	CPplTableBase*                iPresenceTable;
+	CPplPreferencesPersistor*     iPreferencePersistor;
+	RPplIccContactStore&          iIccContactStore;
 	//RColumboSession             iColSession;
+	CPredictiveSearchSynchronizer* iPredictiveSearchSynchronizer; // Owned
+
+	// For unit testing
+	friend class UT_CPplPredictiveSearchTable;
 };
 
 #endif // __PPLCONTACTITEMMANAGER_H__

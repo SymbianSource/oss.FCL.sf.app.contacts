@@ -17,9 +17,9 @@
 #include "cntemaileditorviewitem.h"
 #include "cntdetailmodelitem.h"
 #include "cntdetailconst.h"
+#include "cntcommondetailviewitem.h"
 
 #include <qcontactdetail.h>
-#include <qgraphicslinearlayout.h>
 #include <qcontactemailaddress.h>
 #include <qgraphicslinearlayout.h>
 #include <hbwidget.h>
@@ -35,9 +35,7 @@
 
 CntEmailEditorViewItem::CntEmailEditorViewItem( QGraphicsItem* aParent ) :
 CntDetailViewItem( aParent ),
-mBox(NULL),
-mEdit(NULL),
-mLayout(NULL)
+mItem(NULL)
     {
     }
 
@@ -53,43 +51,31 @@ HbAbstractViewItem* CntEmailEditorViewItem::createItem()
 
 HbWidget* CntEmailEditorViewItem::createCustomWidget()
     {
-    connect(itemView()->mainWindow(), SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(changeOrientation(Qt::Orientation)));
-    mLayout = new QGraphicsLinearLayout( itemView()->mainWindow()->orientation() );
-    HbWidget* widget = new HbWidget();
-    mBox = new HbComboBox();
-    mEdit = new HbLineEdit();
-    mEdit->setMaxLength( CNT_EMAIL_EDITOR_MAXLENGTH );
-    mEdit->setInputMethodHints(Qt::ImhPreferLowercase);
+    mItem = new CntCommonDetailViewItem(this);
+    mItem->editor()->setMaxLength( CNT_EMAIL_EDITOR_MAXLENGTH );
+    mItem->editor()->setInputMethodHints(Qt::ImhPreferLowercase);
     
-    widget->setLayout( mLayout );
-    mLayout->addItem( mBox );
-    mLayout->addItem( mEdit );
-        
-    mLayout->setStretchFactor(mBox, 2);
-    mLayout->setStretchFactor(mEdit, 2);
-    
-    connect( mBox, SIGNAL(currentIndexChanged(int)), this, SLOT(indexChanged(int)) );
-    connect( mEdit, SIGNAL(textChanged(QString)),this, SLOT(textChanged(QString)) );
-        
-        
     HbDataFormModel* model = static_cast<HbDataFormModel*>(itemView()->model());
     CntDetailModelItem* item = static_cast<CntDetailModelItem*>( model->itemFromIndex(modelIndex()) );
     QContactDetail detail = item->detail();
     
-    mEdit->setInputMethodHints( Qt::ImhEmailCharactersOnly );
+    mItem->editor()->setInputMethodHints( Qt::ImhEmailCharactersOnly );
     
     constructSubTypeModel( detail.contexts() );
     
     QContactEmailAddress address = detail;
     QString d = address.emailAddress();
-    mEdit->setText( address.emailAddress() );
+    mItem->editor()->setText( address.emailAddress() );
     
-    return widget;
+    connect( mItem->comboBox(), SIGNAL(currentIndexChanged(int)), this, SLOT(indexChanged(int)) );
+    connect( mItem->editor(), SIGNAL(textChanged(QString)),this, SLOT(textChanged(QString)) );
+        
+    return mItem;
     }
     
 void CntEmailEditorViewItem::indexChanged( int aIndex )
     {
-    QString context = mBox->itemData( aIndex, DetailContext ).toString();
+    QString context = mItem->comboBox()->itemData( aIndex, DetailContext ).toString();
         
     // check that if current QContactDetail contains the changed subtype
     HbDataFormModel* model = static_cast<HbDataFormModel*>(itemView()->model());
@@ -112,13 +98,6 @@ void CntEmailEditorViewItem::textChanged( QString aText )
     QContactEmailAddress address = item->detail();
     address.setEmailAddress( aText );
     item->setDetail( address );
-    }
-
-void CntEmailEditorViewItem::changeOrientation(Qt::Orientation aOrient)
-    {
-        if (mLayout) {
-            mLayout->setOrientation(aOrient);
-        }
     }
 
 void CntEmailEditorViewItem::constructSubTypeModel( QStringList aContext )
@@ -149,7 +128,7 @@ void CntEmailEditorViewItem::constructSubTypeModel( QStringList aContext )
     work->setData(CNT_EMAIL_EDITOR_MAXLENGTH, DetailMaxLength);
     model->appendRow(work);
     
-    mBox->setModel( model );
+    mItem->comboBox()->setModel( model );
     
     QString context = aContext.isEmpty() ? "" : aContext.first();
     // search the selected index to be set
@@ -157,7 +136,7 @@ void CntEmailEditorViewItem::constructSubTypeModel( QStringList aContext )
         {
         if ( model->item(i)->data( DetailContext ).toString() == context )
             {
-            mBox->setCurrentIndex( i );
+            mItem->comboBox()->setCurrentIndex( i );
             break;
             }
         }

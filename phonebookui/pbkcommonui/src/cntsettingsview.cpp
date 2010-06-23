@@ -19,7 +19,9 @@
 #include <hbview.h>
 #include <hbdataform.h>
 #include <hbaction.h>
+#include "cntdebug.h"
 #include "cntsettingsview.h"
+#include "cntsettingsmodel.h"
 
 const char *CNT_SETTINGS_XML = ":/xml/contacts_settings.docml";
 
@@ -30,32 +32,43 @@ mForm( NULL ),
 mViewMgr( NULL ),
 mModel( NULL )
 {
+    CNT_ENTRY
+    
     bool ok;
     document()->load(CNT_SETTINGS_XML, &ok);
     if (!ok) {
         qFatal("Unable to read %S", CNT_SETTINGS_XML);
-    }    
-    mModel = new CntDefaultSettingsModel(); // default implementation
+    }
     
     mView = static_cast<HbView*> (document()->findWidget(QString("view")));
     mForm = static_cast<HbDataForm*> (document()->findWidget(QString("dataForm")));
     mForm->setItemRecycling(true);
+    
+    mModel = new CntSettingsModel();
     mForm->setModel( mModel );
     
     mBack = new HbAction(Hb::BackNaviAction, mView);
-    connect( mBack, SIGNAL(triggered()), this, SLOT(back()) );       
+    connect( mBack, SIGNAL(triggered()), this, SLOT(back()) );
+    
+    CNT_EXIT
 }
 
 CntSettingsView::~CntSettingsView()
 {
+    CNT_ENTRY
+    
     mView->deleteLater();
     delete mForm;
     delete mModel;
     delete mDoc;
-}
     
+    CNT_EXIT
+}
+
 void CntSettingsView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
 {
+    CNT_ENTRY
+    
     mViewMgr = aMgr;
     mArgs = aArgs;
     
@@ -63,7 +76,7 @@ void CntSettingsView::activate( CntAbstractViewManager* aMgr, const CntViewParam
         mView->setNavigationAction(mBack);
     }
     
-    mModel->loadSettings();
+    CNT_EXIT
 }
 
 void CntSettingsView::deactivate()
@@ -87,14 +100,21 @@ int CntSettingsView::viewId() const
 
 void CntSettingsView::back()
 {
-    mModel->saveSettings();
+    CNT_ENTRY
+    
     mViewMgr->back( mArgs );
+    
+    CNT_EXIT
 }
 HbDocumentLoader* CntSettingsView::document() 
 {
+    CNT_ENTRY
+    
     if ( !mDoc )
     {
         mDoc = new HbDocumentLoader();
     }
+    
+    CNT_EXIT
     return mDoc;
 }

@@ -41,20 +41,19 @@
 
 #include "cntdisplaylabel.h"
 #include <qtcontacts.h>
-#include <centralrepository.h>
-#include <cntcenrepkeys.h>
-
-const TUint32 KOrderLastFirst = 0x00000000;
-const TUint32 KOrderLastCommaFirst = 0x00000001;
-const TUint32 KOrderFirstLast = 0x00000002;
 
 /*! 
  * Constructor
  */
 
 CntDisplayLabel::CntDisplayLabel() :
-    m_nameOrder(KOrderFirstLast)
+m_settings(NULL),
+m_nameOrder(CntOrderFirstLast)
 {
+#ifdef SYMBIAN_BACKEND_USE_SQLITE
+    m_settings = new CntCenrep(KCntNameOrdering, *this);
+    m_nameOrder = m_settings->getValue();
+#endif
     setDisplayLabelDetails();
 }
 
@@ -63,6 +62,7 @@ CntDisplayLabel::CntDisplayLabel() :
  */
 CntDisplayLabel::~CntDisplayLabel()
 {
+    delete m_settings;
 }
 
 /*! 
@@ -80,15 +80,19 @@ void CntDisplayLabel::setDisplayLabelDetails()
     //Display label details
     //Contact
     //Preferred details
+    m_contactDisplayLabelDetails.clear();
+    m_groupDisplayLabelDetails.clear();
     QList<QPair<QLatin1String, QLatin1String> > contactPrefferedDisplayLabelDetails;
     QLatin1String firstLatin(QContactName::FieldFirstName);
     QLatin1String secondLatin(QContactName::FieldLastName);
     
-    if (m_nameOrder == KOrderLastFirst || m_nameOrder == KOrderLastCommaFirst) {
+#ifdef SYMBIAN_BACKEND_USE_SQLITE    
+    if (m_nameOrder == CntOrderLastFirst || m_nameOrder == CntOrderLastCommaFirst) {
         firstLatin = QLatin1String(QContactName::FieldLastName);
         secondLatin = QLatin1String(QContactName::FieldFirstName);
     }
-
+#endif
+    
     contactPrefferedDisplayLabelDetails.append(qMakePair(QLatin1String(QContactName::DefinitionName), firstLatin));
     contactPrefferedDisplayLabelDetails.append(qMakePair(QLatin1String(QContactName::DefinitionName), secondLatin));
     m_contactDisplayLabelDetails.append(contactPrefferedDisplayLabelDetails);
@@ -110,11 +114,18 @@ void CntDisplayLabel::setDisplayLabelDetails()
  * \a error On return, contains the possible error.
  * \return synthesised display label 
  */
-QString CntDisplayLabel::synthesizedDisplayLabel(const QContact& contact, QContactManager::Error* error) const
+QString CntDisplayLabel::synthesizedDisplayLabel(const QContact& contact, QContactManager::Error* error)
 {
     QString displayLabel;
     *error = QContactManager::NoError;
     
+#ifdef SYMBIAN_BACKEND_USE_SQLITE
+    int value = m_settings->getValue();
+    if (value != -1 && value != m_nameOrder) {
+        m_nameOrder = value;
+        setDisplayLabelDetails();
+    }
+#endif
     //contact
     if(contact.type() == QContactType::TypeContact) {
         displayLabel = generateDisplayLabel(contact, m_contactDisplayLabelDetails);    
@@ -141,6 +152,8 @@ QString CntDisplayLabel::synthesizedDisplayLabel(const QContact& contact, QConta
  */
 QString CntDisplayLabel::generateDisplayLabel( const QContact &contact, const QList<QList<QPair<QLatin1String, QLatin1String> > > detailList) const
 {
+    // Default to empty display label. It is up to the client to create a
+    // localised presentation of a contact without a name.
     QString displayLabel("");
     
     //loop through the details and create display label
@@ -162,20 +175,13 @@ QString CntDisplayLabel::generateDisplayLabel( const QContact &contact, const QL
                 if(!label.isEmpty())
                 {
                     // Inlcude a comma if needed in the display label
-                    if (m_nameOrder == KOrderLastCommaFirst)
+                    if (m_nameOrder == CntOrderLastCommaFirst)
                         displayLabel.append(comma());
                     displayLabel.append(delimiter());                        
                     displayLabel.append(label);
                 }
             }
         }
-    }
-
-    //no display label, set default value
-    if(displayLabel.isEmpty())
-    {
-        //should the unnamned be read from somewhere?
-        displayLabel = unNamned();
     }
     
     return displayLabel;
@@ -189,14 +195,6 @@ QString CntDisplayLabel::delimiter() const
 {
     //this will be variated in the future.
     return " ";
-}
-
-/*!
- * return the name used for unknown contacts
- */
-QString CntDisplayLabel::unNamned() const
-{
-    return "Unnamed";
 }
 
 /*!
@@ -223,3 +221,71 @@ QString CntDisplayLabel::comma() const
 {
     return ",";
 }
+
+#ifdef SYMBIAN_BACKEND_USE_SQLITE
+
+void CntDisplayLabel::updateNameOrdering()
+{
+    emit displayLabelChanged();
+}
+
+CntCenrep::CntCenrep(const TUint32 aKey, CntDisplayLabel& aDisplayLabel) :
+    CActive(EPriorityStandard),
+    iCenrep(NULL),
+    iDisplayLabel(&aDisplayLabel),
+    iKey(aKey)
+{   
+    TRAPD(error, iCenrep = CRepository::NewL(KCRUiContacts));
+    
+    if ( error == KErrNone ) {
+        CActiveScheduler::Add(this);
+        
+        // initial subscription and process current property value
+        iCenrep->NotifyRequest(iKey, iStatus );
+        SetActive();
+    }
+    
+    iValue = getValue();
+}
+
+CntCenrep::~CntCenrep()
+{
+    Cancel();
+    delete iCenrep;
+}
+
+int CntCenrep::getValue()
+{    
+    TInt value;
+    if (iCenrep && iCenrep->Get(iKey, value) == KErrNone) {
+        return value;
+    } else {
+        return -1;
+    }
+}
+
+void CntCenrep::DoCancel()
+{
+    if (iCenrep)
+        iCenrep->NotifyCancel(iKey);
+}
+
+TInt CntCenrep::RunError(TInt aError)
+{
+    return aError;
+}
+
+void CntCenrep::RunL()
+{
+    // resubscribe before processing new value to prevent missing updates
+    iCenrep->NotifyRequest(iKey, iStatus );
+    SetActive();
+    
+    int value = getValue();
+    if (value != -1 && value != iValue) {
+        iValue = value;
+        iDisplayLabel->updateNameOrdering();
+    }
+}
+
+#endif

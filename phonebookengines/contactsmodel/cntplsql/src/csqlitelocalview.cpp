@@ -644,17 +644,19 @@ void CContactLocalView::HandleDatabaseEventL(TContactDbObserverEvent aEvent)
 		switch(aEvent.iType)
 			{
 			case EContactDbObserverEventGroupChanged:
-				{
-				//Groups are a special case the base view may not contain the group
-				//but a sub view may be such a group and need to know its changed
-				//Local views can contain groups so this case carries on to the next so no break;
-				event.iEventType=TContactViewEvent::EGroupChanged;
-				event.iContactId=aEvent.iContactId;
-				NotifyObservers(event);
-				}
 			case EContactDbObserverEventContactChanged:
 			case EContactDbObserverEventOwnCardChanged:
-				{// Remove from old position, and notify.
+				{
+				if (aEvent.iType == EContactDbObserverEventGroupChanged)
+				    {
+	    			//Groups are a special case the base view may not contain the group
+    				//but a sub view may be such a group and need to know its changed
+				    event.iEventType=TContactViewEvent::EGroupChanged;
+				    event.iContactId=aEvent.iContactId;
+				    NotifyObservers(event);
+				    }
+				
+				// Remove from old position, and notify.
 				TRAPD(err,event.iInt=RemoveL(aEvent.iContactId));
 
                 if (err == KErrNone && event.iInt != KErrNotFound)

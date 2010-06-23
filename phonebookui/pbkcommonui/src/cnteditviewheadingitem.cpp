@@ -26,6 +26,9 @@
 #include <hbtoucharea.h>
 #include <hbinstantfeedback.h>
 #include <hbmainwindow.h>
+#include <xqsettingsmanager.h>
+#include <xqsettingskey.h>
+#include <cntuids.h>
 
 #include <QGraphicsSceneMouseEvent>
 
@@ -75,6 +78,7 @@ void CntEditViewHeadingItem::createPrimitives()
             mLabel->setText(text);
             mLabel->setMaximumLines(2);
             mLabel->setTextWrapping(Hb::TextWordWrap);
+            mLabel->setElideMode(Qt::ElideRight);
             style()->setItemName(mLabel, "text");
         }
     }
@@ -149,7 +153,7 @@ void CntEditViewHeadingItem::updatePrimitives()
     HbWidget::updatePrimitives();
 }
 
-void CntEditViewHeadingItem::setDetails(const QContact* contact)
+void CntEditViewHeadingItem::setDetails(const QContact* contact, bool myCard)
 {
     text.clear();
     second_text.clear();
@@ -160,29 +164,31 @@ void CntEditViewHeadingItem::setDetails(const QContact* contact)
 
     QContactName name = contact->detail<QContactName>();
 
-    QStringList nameList;
-    if (!name.prefix().isEmpty())
-    {
-        nameList << name.prefix();
+    XQSettingsManager settingsMng;
+    XQSettingsKey nameOrderKey(XQSettingsKey::TargetCentralRepository,
+                             KCRUiContacts.iUid,
+                             KCntNameOrdering);
+    int setting = settingsMng.readItemValue(nameOrderKey, XQSettingsManager::TypeInt).toInt();
+    QStringList nameList = QStringList();
+    QString last;
+    
+    switch( setting ) {
+        case CntOrderLastFirst:
+            nameList << name.prefix() << name.lastName() << name.firstName() << name.middleName() << name.suffix();
+            break;
+        case CntOrderLastCommaFirst:
+            if (!name.lastName().isEmpty())
+                last = name.lastName() + ",";
+            nameList << name.prefix() << last << name.firstName() << name.middleName() << name.suffix();
+            break;
+        default:    // Default to first name last name
+            nameList << name.prefix() << name.firstName() << name.middleName() << name.lastName() << name.suffix();
+            break;
     }
-    if (!name.firstName().isEmpty())
-    {
-        nameList << name.firstName();
-    }
-    if (!name.middleName().isEmpty())
-    {
-        nameList << name.middleName();
-    }
-    if (!name.lastName().isEmpty())
-    {
-        nameList << name.lastName();
-    }
-    if (!name.suffix().isEmpty())
-    {
-        nameList << name.suffix();
-    }
-    text = nameList.join(" ");
-
+    
+    nameList.removeAll("");
+    text = nameList.join(" ").trimmed();
+    
     if (!contact->detail<QContactNickname>().nickname().isEmpty())
     {
         second_text = contact->detail<QContactNickname>().nickname();
@@ -190,7 +196,14 @@ void CntEditViewHeadingItem::setDetails(const QContact* contact)
 
     if (text.isEmpty() && second_text.isEmpty())
     {
-        text = hbTrId("txt_phob_list_enter_name");
+        if (myCard)
+        {
+            text = hbTrId("txt_phob_list_enter_your_name");
+        }
+        else
+        {
+            text = hbTrId("txt_phob_list_enter_name");
+        }
     }
 
     recreatePrimitives();

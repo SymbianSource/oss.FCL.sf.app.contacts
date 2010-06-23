@@ -36,5 +36,7 @@
         <file alias="cnthistoryviewitem.css">style/cnthistoryviewitem.css</file>
         <file alias="cntlocationbutton.hbpushbutton.widgetml">style/cntlocationbutton.hbpushbutton.widgetml</file>
         <file alias="cntlocationbutton.css">style/cntlocationbutton.css</file>
+        <file alias="cntcommondetailviewitem.widgetml">style/cntcommondetailviewitem.widgetml</file>
+        <file alias="cntcommondetailviewitem.css">style/cntcommondetailviewitem.css</file>
     </qresource>
 </RCC>

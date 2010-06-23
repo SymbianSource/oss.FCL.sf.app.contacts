@@ -16,20 +16,21 @@
 */
 #include "cnturleditormodel.h"
 #include "cntdetailmodelitem.h"
+#include "cntdetailorderinghelper.h"
 
 #include <qcontacturl.h>
 
 CntUrlEditorModel::CntUrlEditorModel(QContact* aContact) :
     CntDetailEditorModel(aContact)
 {
-    QList<QContactUrl> urlList = mContact->details<QContactUrl>();
-    if (urlList.isEmpty()) {
+    mUrlList = CntDetailOrderingHelper::getOrderedUrls(*mContact);
+    if (mUrlList.isEmpty()) {
         QContactUrl url;
         url.setSubType(QContactUrl::SubTypeHomePage);
-        urlList.append(url);
+        mUrlList.append(url);
     }
 
-    foreach( QContactUrl contactUrl, urlList ) {
+    foreach( QContactUrl contactUrl, mUrlList ) {
         CntDetailModelItem* item = new CntDetailModelItem(contactUrl);
         appendDataFormItem(item, invisibleRootItem());
     }
@@ -43,7 +44,7 @@ void CntUrlEditorModel::insertDetailField()
 {
     QContactUrl url;
     url.setSubType(QContactUrl::SubTypeHomePage);
-        
+    mUrlList.append( url );
     appendDataFormItem( new CntDetailModelItem(url), invisibleRootItem() );
 }
 
@@ -55,7 +56,11 @@ void CntUrlEditorModel::saveContactDetails()
     for (int i(0); i < count; i++) {
         CntDetailModelItem* detail = static_cast<CntDetailModelItem*> (root->childAt(i));
         QContactDetail url = detail->detail();
-        mContact->saveDetail( &url );
+        
+        if ( !mUrlList.contains(url) )
+        {
+            mContact->saveDetail( &url );
+        }
         
         if ( url.value(QContactUrl::FieldUrl).isEmpty() )
         {

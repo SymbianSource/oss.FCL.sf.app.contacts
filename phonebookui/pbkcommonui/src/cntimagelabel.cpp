@@ -48,7 +48,7 @@ void CntImageLabel::gestureEvent(QGestureEvent* event)
             case Qt::GestureUpdated:
                 if (tap->tapStyleHint() == HbTapGesture::TapAndHold) 
                 {
-                    emit iconLongPressed(tap->position());
+                    emit iconLongPressed(tap->scenePosition());
                 }
                 break;
             default:

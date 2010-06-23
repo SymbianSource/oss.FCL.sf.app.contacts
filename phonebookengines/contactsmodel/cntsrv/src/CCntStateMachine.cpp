@@ -2538,20 +2538,26 @@ CCntStateMachine* CCntStateMachine::NewL(CPersistenceLayer& aPersistenceLayer, C
  @param aPersistenceLayer. The persistence layer that wraps up access to the database.
 */
 void CCntStateMachine::ConstructL(CPersistenceLayer& aPersistenceLayer)
-	{
-	iState = CStateClosed::NewL(*this, aPersistenceLayer);
-	CleanupStack::PushL(iState);
-	// The order in which states are appended must be in sync with
-	// the declaration order of the state enum.
-	iStateArray.AppendL(iState); 
-	CleanupStack::Pop(iState);
-	
-	iStateArray.AppendL(CStateTablesClosed::NewL(*this, aPersistenceLayer)); 
-	iStateArray.AppendL(CStateWritable	  ::NewL(*this, aPersistenceLayer));
-	iStateArray.AppendL(CStateOpening 	  ::NewL(*this, aPersistenceLayer));
-	iStateArray.AppendL(CStateTransaction ::NewL(*this, aPersistenceLayer));
-	iStateArray.AppendL(CStateBackupRestore::NewL(*this, aPersistenceLayer));
-	}
+    {
+    // The order in which states are appended must be in sync with
+    // the declaration order of the state enum.
+    for (TInt i = 0; i < 6; ++i)
+        {
+        CState* state;
+        switch (i)
+            {
+            case 0:  state = CStateClosed::NewL(*this, aPersistenceLayer); iState = state; break;
+            case 1:  state = CStateTablesClosed::NewL(*this, aPersistenceLayer); break;
+            case 2:  state = CStateWritable::NewL(*this, aPersistenceLayer); break;
+            case 3:  state = CStateOpening::NewL(*this, aPersistenceLayer); break;
+            case 4:  state = CStateTransaction::NewL(*this, aPersistenceLayer); break;
+            default: state = CStateBackupRestore::NewL(*this, aPersistenceLayer); 
+            }
+        CleanupStack::PushL(state);
+        iStateArray.AppendL(state); 
+        CleanupStack::Pop(state);
+        }	
+    }
 
 /**
  Get the current active state		

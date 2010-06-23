@@ -22,6 +22,7 @@
 #include "cnteditviewheadingitem.h"
 #include "cntimagelabel.h"
 
+#include <qtcontacts.h>
 #include <hbdocumentloader.h>
 #include <thumbnailmanager_qt.h>
 #include <hbabstractviewitem.h>
@@ -64,10 +65,16 @@ mContact( NULL )
     
     mSoftkey = new HbAction(Hb::BackNaviAction, mView);
     mDiscard = static_cast<HbAction*>( mDocument->findObject("cnt:discard") );
+    mDiscard->setParent(mView);
+
     mSave = static_cast<HbAction*>( mDocument->findObject("cnt:savecontact") );
+    mSave->setParent(mView);
+
     mDelete = static_cast<HbAction*>( mDocument->findObject("cnt:deletecontact") );
+    mDelete->setParent(mView);
     
     HbAction* add = static_cast<HbAction*>( mDocument->findObject("cnt:adddetail_options") );
+    add->setParent(mView);
 
     connect( add, SIGNAL(triggered()), this, SLOT(addDetailItem()) );
     connect( mDelete, SIGNAL(triggered()), this, SLOT(deleteContact()) );
@@ -86,7 +93,6 @@ CntEditViewPrivate::~CntEditViewPrivate()
 {
     mView->deleteLater();
     delete mDocument;
-    delete mListView;
     delete mModel;
     delete mContact;
     
@@ -126,14 +132,16 @@ void CntEditViewPrivate::activate( CntAbstractViewManager* aMgr, const CntViewPa
         
     QString myCard = mArgs.value( EMyCard ).toString();
     QString selectedAction = mArgs.value( ESelectedAction ).toString();
-    
     QVariant contact = aArgs.value( ESelectedContact );
-    mContact = new QContact( contact.value<QContact>() );
+    setSelectedContact( contact.value<QContact>() );
+        
     QContactLocalId localId = mContact->localId();
-    
     QContactManager* cm = mMgr->contactManager(SYMBIAN_BACKEND);
     QContactLocalId selfContactId = cm->selfContactId();
-    mIsMyCard = ( localId == selfContactId && localId != 0 ) || myCard == "myCard"; 
+    mIsMyCard = ( localId == selfContactId && localId != 0 ) || myCard == "myCard";
+    
+    if ( mHeading )
+        mHeading->setDetails( mContact, mIsMyCard );
 
     // if "MyCard", set slightly different heading and options menu
     if ( mIsMyCard )
@@ -166,10 +174,6 @@ void CntEditViewPrivate::activate( CntAbstractViewManager* aMgr, const CntViewPa
         mSave->setEnabled( false );
     }
     
-    mHeading->setDetails( mContact );
-    mModel = new CntEditViewListModel( mContact );
-    mListView->setModel( mModel );
-
     mThumbnailManager = new ThumbnailManager(this);
     mThumbnailManager->setMode(ThumbnailManager::Default);
     mThumbnailManager->setQualityPreference(ThumbnailManager::OptimizeForQuality);
@@ -335,7 +339,7 @@ void CntEditViewPrivate::deleteContact()
         QContactManager* cm = mMgr->contactManager( SYMBIAN_BACKEND );
         QString name = cm->synthesizedDisplayLabel( *mContact );
         HbMessageBox::question(HbParameterLengthLimiter(hbTrId("txt_phob_info_delete_1")).arg(name), this, SLOT(handleDeleteContact(HbAction*)), 
-                hbTrId("txt_phob_button_delete"), hbTrId("txt_common_button_cancel"));
+                hbTrId("txt_common_button_delete"), hbTrId("txt_common_button_cancel"));
     }
 }
 
@@ -392,21 +396,17 @@ void CntEditViewPrivate::saveChanges()
                 
                 QString name = mgr->synthesizedDisplayLabel( *mContact );
                 
+                emit contactUpdated(success);
+                
                 if ( success )
                 {
-                    HbDeviceNotificationDialog notificationDialog;
-                    notificationDialog.setTitle(HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contact_1_saved")).arg(name));
-                    notificationDialog.show();
+                    HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contact_1_saved")).arg(name));
                 }
                 else
                 {
                     //TODO: localization is missing
-                    HbDeviceNotificationDialog notificationDialog;
-                    notificationDialog.setTitle(qtTrId("SAVING FAILED!"));
-                    notificationDialog.show();
+                    HbDeviceNotificationDialog::notification(QString(),qtTrId("SAVING FAILED!"));
                 }
-                
-                emit contactUpdated(success);
                 
                 QVariant var;
                 var.setValue(*mContact);
@@ -431,21 +431,17 @@ void CntEditViewPrivate::saveChanges()
                 
                 QString name = mgr->synthesizedDisplayLabel( *mContact );
                 
+                emit contactUpdated( success );
+                
                 if ( success )
                 {
-                    HbDeviceNotificationDialog notificationDialog;
-                    notificationDialog.setTitle(HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contacts_1_updated")).arg(name));
-                    notificationDialog.show();
+                    HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contacts_1_updated")).arg(name));
                 }
                 else
                 {
                     //TODO: localization is missing
-                    HbDeviceNotificationDialog notificationDialog;
-                    notificationDialog.setTitle(qtTrId("SAVING FAILED!"));
-                    notificationDialog.show();
+                    HbDeviceNotificationDialog::notification(QString(),qtTrId("SAVING FAILED!"));
                 }
-                
-                emit contactUpdated( success );
                 
                 QVariant var;
                 var.setValue(*mContact);
@@ -627,6 +623,26 @@ void CntEditViewPrivate::removeDetail( CntEditViewItem* aDetail, const QModelInd
     mModel->removeItem( aDetail, aIndex );
     mSave->setEnabled( true );
     mDiscard->setEnabled( true );
+}
+
+void CntEditViewPrivate::setSelectedContact( QContact aContact )
+{
+    if ( mContact )
+    {
+        delete mContact;
+        mContact = NULL;
+    }
+    mContact = new QContact( aContact );
+    
+    if ( mModel )
+    {
+        delete mModel;
+        mModel = NULL;
+    }
+    mModel = new CntEditViewListModel( mContact );
+    
+    if ( mListView )
+        mListView->setModel( mModel );
 }
 // End of File
 

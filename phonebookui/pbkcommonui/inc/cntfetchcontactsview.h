@@ -82,9 +82,6 @@ signals:
     void clicked();
     
 private:
-    friend class TestCntFetchUtility;
-
-private:
     HbDialog*                          mPopup;
     HbSearchPanel*                     mSearchPanel;
     CntListModel*                      mCntModel;
@@ -102,6 +99,9 @@ private:
     HbAction*                          mPrimaryAction;
     HbAction*                          mSecondaryAction;
     HbIndexFeedback*                   mIndexFeedback;
+    
+    friend class TestCntFetchUtility;
+    friend class TestCntMyCardView;
     };
 
 #endif /* CntFetchContacts_H_ */

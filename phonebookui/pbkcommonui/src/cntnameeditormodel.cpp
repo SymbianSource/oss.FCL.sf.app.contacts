@@ -75,30 +75,47 @@ CntNameEditorModel::~CntNameEditorModel()
 void CntNameEditorModel::saveContactDetails()
 {
     HbDataFormModelItem* root = invisibleRootItem();
-    iName.setFirstName( root->childAt( 0 )->contentWidgetData("text").toString().trimmed() );
-    iName.setLastName( root->childAt( 1 )->contentWidgetData("text").toString().trimmed() );
-    iName.setMiddleName( root->childAt( 2 )->contentWidgetData("text").toString().trimmed() );
-    iNick.setNickname( root->childAt( 3 )->contentWidgetData("text").toString().trimmed() );
-    iName.setPrefix( root->childAt( 4 )->contentWidgetData("text").toString().trimmed() );
-    iName.setSuffix( root->childAt( 5 )->contentWidgetData("text").toString().trimmed() );
+    QString firstname = root->childAt( 0 )->contentWidgetData("text").toString().trimmed();
+    QString lastname = root->childAt( 1 )->contentWidgetData("text").toString().trimmed();
+    QString midname = root->childAt( 2 )->contentWidgetData("text").toString().trimmed();
+    QString nick = root->childAt( 3 )->contentWidgetData("text").toString().trimmed();
+    QString prefix = root->childAt( 4 )->contentWidgetData("text").toString().trimmed();
+    QString suffix = root->childAt( 5 )->contentWidgetData("text").toString().trimmed();
+
+    if ( firstname != iName.firstName() || 
+         lastname != iName.lastName() ||
+         midname != iName.middleName() ||
+         prefix != iName.prefix() ||
+         suffix != iName.suffix() )
+    {
+        iName.setFirstName( firstname );
+        iName.setLastName( lastname );
+        iName.setMiddleName( midname );
+        iName.setPrefix( prefix );
+        iName.setSuffix( suffix );
+        mContact->saveDetail( &iName );    
+    }
     
-    mContact->saveDetail( &iName );
-    mContact->saveDetail( &iNick );
+    if ( nick != iNick.nickname() )
+    {
+        iNick.setNickname( nick );
+        mContact->saveDetail( &iNick );
+    }
     
     // remove empty details
-    if (iName.firstName().isEmpty() &&
-            iName.lastName().isEmpty() &&
-            iName.middleName().isEmpty() &&
-            iName.prefix().isEmpty() &&
-            iName.suffix().isEmpty())
-            {
-            mContact->removeDetail( &iName );
-            }
+    if (firstname.isEmpty() &&
+        lastname.isEmpty() &&
+        midname.isEmpty() &&
+        prefix.isEmpty() &&
+        suffix.isEmpty())
+    {
+    mContact->removeDetail( &iName );
+    }
     
-    if(iNick.nickname().isEmpty())
-        {
+    if( nick.isEmpty())
+    {
         mContact->removeDetail( &iNick );
-        }
+    }
 }
 
 QContactDetail CntNameEditorModel::detail() const

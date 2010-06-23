@@ -36,6 +36,7 @@ CntNoteEditorModel::~CntNoteEditorModel()
 void CntNoteEditorModel::insertDetailField()
 {
     QContactNote emptyNote;
+    mNoteList.append( emptyNote );
     appendDataFormItem( new CntDetailModelItem(emptyNote), invisibleRootItem() );
 }
 
@@ -46,10 +47,14 @@ void CntNoteEditorModel::saveContactDetails()
     int count( root->childCount() );
     for ( int i(0); i < count; i++ ) {
         CntDetailModelItem* detail = static_cast<CntDetailModelItem*>( root->childAt(i) );
-        QContactDetail note = detail->detail();
-        mContact->saveDetail( &note );
+        QContactNote note = detail->detail();
         
-        if ( note.value(QContactNote::FieldNote).isEmpty() )
+        if ( !mNoteList.contains(note) )
+        {
+            mContact->saveDetail( &note );
+        }
+        
+        if ( note.note().isEmpty() )
         {
             mContact->removeDetail( &note );
         }

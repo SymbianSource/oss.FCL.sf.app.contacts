@@ -443,7 +443,8 @@ void CPplContactTable::WriteContactItemL(const CContactItem& aItem, TCntSqlState
     			User::LeaveIfError(stmnt.BindText(KParamIndex, textToSet));
 			    }			}
 		else if (field.StorageType() == KStorageTypeText &&  // the field is textual
-				 field.TextStorage()->Text().Length() )      // ignore empty fields
+				 field.TextStorage()->Text().Length() &&     // ignore empty fields
+				 custFiltFields != NULL)
 			{
 			// the field is not stored in contact table but potentially maps to a hint
 			hint.UpdateHintL(field, *custFiltFields);

@@ -18,7 +18,7 @@ DEPENDPATH += . \
     src
 
 INCLUDEPATH +=  ../pbkcommonui/inc \
-                ../inc
+                ../../inc
                 
 INCLUDEPATH += ../../phonebookengines/cntimageutility/inc
 

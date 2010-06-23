@@ -23,11 +23,13 @@
 #include <hbscrollbar.h>
 #include <hbdocumentloader.h>
 #include <hbaction.h>
-#include <cntlistmodel.h>
+#include "cntlistmodel.h"
 
 const char *CNT_SELECTION_LISTVIEW_UI_XML = ":/xml/contacts_list.docml";
 
-CntBaseSelectionView::CntBaseSelectionView() : QObject()
+CntBaseSelectionView::CntBaseSelectionView() : 
+QObject(),
+mDocument(NULL)
 {
     mDocument = new HbDocumentLoader();
     
@@ -72,24 +74,12 @@ void CntBaseSelectionView::activate( CntAbstractViewManager* aMgr, const CntView
         //setOrientation(window->orientation());
     }
     
-    QContactSortOrder sortOrderFirstName;
-    sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,QContactName::FieldFirstName);
-    sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
-
-    QContactSortOrder sortOrderLastName;
-    sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,QContactName::FieldLastName);
-    sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
-
-    QList<QContactSortOrder> sortOrders;
-    sortOrders.append(sortOrderFirstName);
-    sortOrders.append(sortOrderLastName);
-    
     QContactDetailFilter filter;
     filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
     QString typeContact = QContactType::TypeContact;
     filter.setValue(typeContact);
 
-    mListModel = new CntListModel(mMgr->contactManager(SYMBIAN_BACKEND), filter, sortOrders);
+    mListModel = new CntListModel(mMgr->contactManager(SYMBIAN_BACKEND), filter);
     mListModel->showMyCard( false );
     
     mListView->setModel( mListModel );

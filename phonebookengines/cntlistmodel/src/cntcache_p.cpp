@@ -25,6 +25,8 @@
 #include "cntcache_p.h"
 #include "cntinfoprovider.h"
 #include "cntdefaultinfoprovider.h"
+#include "cntpresenceinfoprovider.h"
+#include <cntdebug.h>
 
 // maximum amount of info and icon jobs respectively -- if there are more jobs,
 // then the oldest job is skipped and the client informed that this happened
@@ -46,14 +48,16 @@ static const int NoIconRequest = -1;
  */
 CntCacheThread::CntCacheThread()
     : mContactManager(new QContactManager()),
+      mStarted(false),
       mJobLoopRunning(false),
       mPostponeJobs(false),
       mIconRequestId(NoIconRequest)
 {
-    DP_IN("CntCacheThread::CntCacheThread()");
+    CNT_ENTRY
 
     // create static provider plugins
     mDataProviders.insert(new CntDefaultInfoProvider(), ContactInfoAllFields);
+    mDataProviders.insert(new CntPresenceInfoProvider(), ContactInfoIcon2Field);
     // TODO: create more static provider plugins
 
     // TODO: load dynamic provider plugins using QPluginLoader
@@ -76,11 +80,7 @@ CntCacheThread::CntCacheThread()
     connect(mThumbnailManager, SIGNAL(thumbnailReady(QPixmap, void *, int, int)),
              this, SLOT(onIconReady(QPixmap, void *, int, int)));
 
-    // this thread should interfere as little as possible with more time-critical tasks,
-    // like updating the UI during scrolling
-    start(QThread::IdlePriority);
-
-    DP_OUT("CntCacheThread::CntCacheThread()");
+    CNT_EXIT
 }
 
 /*!
@@ -88,8 +88,9 @@ CntCacheThread::CntCacheThread()
  */
 CntCacheThread::~CntCacheThread()
 {
-    DP_IN("CntCacheThread::~CntCacheThread()");
-
+    CNT_ENTRY
+    
+    delete mContactManager;
     disconnect(this);
 
     mJobMutex.lock();
@@ -103,11 +104,10 @@ CntCacheThread::~CntCacheThread()
         mIconRequestId = NoIconRequest;
     }
 
-    QMapIterator<CntInfoProvider*, ContactInfoFields> i(mDataProviders);
-    while (i.hasNext()) {
-        i.next();
-        delete i.key();
-    }
+    delete mThumbnailManager;
+    mThumbnailManager = NULL;
+
+    qDeleteAll(mDataProviders.keys());
     mDataProviders.clear();
 
     mJobMutex.unlock();
@@ -115,7 +115,7 @@ CntCacheThread::~CntCacheThread()
     exit();
     wait();
 
-    DP_OUT("CntCacheThread::~CntCacheThread()");
+    CNT_EXIT
 }
 
 /*!
@@ -123,9 +123,11 @@ CntCacheThread::~CntCacheThread()
  */
 void CntCacheThread::run()
 {
-    DP_IN("CntCacheThread::run()");
+    CNT_ENTRY
+
     exec();
-    DP_OUT("CntCacheThread::run()");
+
+    CNT_EXIT
 }
 
 /*!
@@ -136,11 +138,18 @@ void CntCacheThread::run()
  */
 void CntCacheThread::scheduleInfoJob(int contactId)
 {
-    DP_IN("CntCacheThread::scheduleInfoJob(" << contactId << ")");
+    CNT_ENTRY_ARGS( contactId )
 
     Q_ASSERT(contactId > 0 && !mInfoJobs.contains(contactId));
 
     mJobMutex.lock();
+
+    if (!mStarted) {
+        // this thread should interfere as little as possible with more time-critical tasks,
+        // like updating the UI during scrolling
+        start(QThread::IdlePriority);
+        mStarted = true;
+    }
 
     if (!mJobLoopRunning) {
         // new job => restart job loop
@@ -151,11 +160,11 @@ void CntCacheThread::scheduleInfoJob(int contactId)
     if (mInfoJobs.count() >= CntMaxInfoJobs) {
         // the queue of jobs is full, so remove the oldest job
         mCancelledInfoJobs.append(mInfoJobs.takeFirst());
-        DP("CntCacheThread::scheduleInfoJob() :" << mCancelledInfoJobs.last() << "removed from joblist");
+        CNT_LOG_ARGS( mCancelledInfoJobs.last() << "removed from joblist" )
     }
 
     mInfoJobs.append(contactId);
-    DP("CntCacheThread::scheduleInfoJob() :" << contactId << "appended @" << mInfoJobs.indexOf(contactId));
+    CNT_LOG_ARGS( contactId << "appended @" << mInfoJobs.indexOf(contactId) );
 
     // since this job has now been scheduled, remove it from the list of
     // cancelled jobs in case it is there
@@ -163,7 +172,7 @@ void CntCacheThread::scheduleInfoJob(int contactId)
 
     mJobMutex.unlock();
 
-    DP_OUT("CntCacheThread::scheduleInfoJob(" << contactId << ")");
+    CNT_EXIT
 }
 
 /*!
@@ -174,7 +183,7 @@ void CntCacheThread::scheduleInfoJob(int contactId)
  */
 void CntCacheThread::scheduleIconJob(const QString& iconName)
 {
-    DP_IN("CntCacheThread::scheduleIconJob(" << iconName << ")");
+    CNT_ENTRY_ARGS( iconName )
 
     mJobMutex.lock();
 
@@ -189,11 +198,11 @@ void CntCacheThread::scheduleIconJob(const QString& iconName)
     if (mIconJobs.count() >= CntMaxIconJobs) {
         // the queue of jobs is full, so remove the oldest job
         mCancelledIconJobs.append(mIconJobs.takeLast());
-        DP("CntCacheThread::scheduleIconJob() :" << mCancelledIconJobs.last() << "removed from joblist");
+        CNT_LOG_ARGS( mCancelledIconJobs.last() << "removed from joblist" );
     }
 
     mIconJobs.append(iconName);
-    DP("CntCacheThread::scheduleIconJob() :" << iconName << "appended @" << mIconJobs.indexOf(iconName));
+    CNT_LOG_ARGS( iconName << "appended @" << mIconJobs.indexOf(iconName) );
 
     // since this job has now been rescheduled, remove it from the list of
     // cancelled jobs in case it is there
@@ -201,7 +210,7 @@ void CntCacheThread::scheduleIconJob(const QString& iconName)
 
     mJobMutex.unlock();
 
-    DP_OUT("CntCacheThread::scheduleIconJob(" << iconName << ")");
+    CNT_EXIT
 }
 
 /*!
@@ -210,11 +219,11 @@ void CntCacheThread::scheduleIconJob(const QString& iconName)
  */
 void CntCacheThread::postponeJobs()
 {
-    DP_IN("CntCacheThread::postponeJobs()");
+    CNT_ENTRY
     
     mPostponeJobs = true;
     
-    DP_OUT("CntCacheThread::postponeJobs()");
+    CNT_EXIT
 }
 
 /*!
@@ -239,14 +248,13 @@ bool CntCacheThread::event(QEvent* event)
  */
 void CntCacheThread::doAllJobs()
 {
-    DP_IN("CntCacheThread::doAllJobs()");
+    CNT_ENTRY
 
     forever {
         mJobMutex.lock();
         int infoJobs = mInfoJobs.count();
         int iconJobs = mIconJobs.count();
         int totalJobs = infoJobs + iconJobs + mCancelledInfoJobs.count() + mCancelledIconJobs.count();
-        DP_IN("CntCacheThread::doAllJobs() : infojobs=" << infoJobs << ", iconjobs=" << iconJobs << ",icon_request=" << mIconRequestId << ", cancelledinfojobs=" << mCancelledInfoJobs.count() << ", cancellediconjobs=" << mCancelledIconJobs.count());
 
         if (totalJobs == 0 || totalJobs == iconJobs && mIconRequestId != NoIconRequest || mPostponeJobs) {
             if (mPostponeJobs) {
@@ -254,7 +262,6 @@ void CntCacheThread::doAllJobs()
                 mPostponeJobs = false;
                 if (totalJobs > 0) {
                     QTimer::singleShot(PostponeJobsMilliSeconds, this, SLOT(doAllJobs()));
-                    DP("CntCacheThread::doAllJobs() : postponing for" << PostponeJobsMilliSeconds << "ms");
                 }
                 else {
                     mJobLoopRunning = false;
@@ -267,7 +274,6 @@ void CntCacheThread::doAllJobs()
             mJobMutex.unlock();
 
             if (totalJobs == 0) {
-                DP("CntCacheThread::doAllJobs() : emitting all jobs done");
                 emit allJobsDone();
             }
 
@@ -282,18 +288,11 @@ void CntCacheThread::doAllJobs()
             mJobMutex.unlock();
     
             // fetch qcontact
-            QStringList definitionRestrictions;
-            definitionRestrictions.append(QContactName::DefinitionName);
-            definitionRestrictions.append(QContactAvatar::DefinitionName);
-            definitionRestrictions.append(QContactPhoneNumber::DefinitionName);
-            definitionRestrictions.append(QContactOrganization::DefinitionName);
             QContactFetchHint restrictions;
-            restrictions.setDetailDefinitionsHint(definitionRestrictions);
             restrictions.setOptimizationHints(QContactFetchHint::NoRelationships);
 			QContact contact = mContactManager->contact(contactId, restrictions);
 
             // request contact info from providers
-            DP("CntCacheThread::doAllJobs() : fetching info for" << contact.displayLabel() << " (id=" << contactId << ")");
             QMapIterator<CntInfoProvider*, ContactInfoFields> i(mDataProviders);
             while (i.hasNext()) {
                 i.next();
@@ -305,7 +304,6 @@ void CntCacheThread::doAllJobs()
         else if (iconJobs > 0 && mIconRequestId == NoIconRequest) {
             // request icon from thumbnail manager
             QString iconName = mIconJobs.takeFirst();
-            DP("CntCacheThread::doAllJobs() : fetching icon" << iconName);
             mIconRequestId = mThumbnailManager->getThumbnail(iconName, NULL, 0);
             mIconRequestName = iconName;
             mJobMutex.unlock();
@@ -314,13 +312,11 @@ void CntCacheThread::doAllJobs()
             if (mCancelledInfoJobs.count() > 0) {
                 int contactId = mCancelledInfoJobs.takeLast();
                 mJobMutex.unlock();
-                DP("CntCacheThread::doAllJobs() : emitting cancelled info job" << contactId);
                 emit infoCancelled(contactId);
             }
             else if (mCancelledIconJobs.count() > 0) {
                 QString iconName = mCancelledIconJobs.takeFirst();
                 mJobMutex.unlock();
-                DP("CntCacheThread::doAllJobs() : emitting cancelled icon job" << iconName);
                 emit iconCancelled(iconName);
             }
         }
@@ -329,7 +325,7 @@ void CntCacheThread::doAllJobs()
         HbApplication::processEvents();
     }
 
-    DP_OUT("CntCacheThread::doAllJobs()");
+    CNT_EXIT
 }
 
 /*!
@@ -339,7 +335,7 @@ void CntCacheThread::doAllJobs()
 void CntCacheThread::onInfoFieldReady(CntInfoProvider* sender, int contactId,
                                       ContactInfoField field, const QString& text)
 {
-    DP_IN("CntCacheThread::onInfoFieldReady( CntInfoProvider*," << contactId << "," << field << "," << text << ")");
+    CNT_ENTRY
 
     // there can be 3rd party providers, so we cannot blindly trust them;
     // info is emitted only if:
@@ -349,11 +345,10 @@ void CntCacheThread::onInfoFieldReady(CntInfoProvider* sender, int contactId,
     if (mDataProviders.contains(sender)
         && ((field & (field - 1)) == 0)
         && ((field & mDataProviders.value(sender)) != 0)) {
-        DP("CntCacheThread::onInfoFieldReady(" << contactId << "," << field << "," << text << ") : emitting infoFieldUpdated()");
         emit infoFieldUpdated(contactId, field, text);
     }
 
-    DP_OUT("CntCacheThread::onInfoFieldReady(" << contactId << "," << field << "," << text << ")");
+    CNT_EXIT
 }
 
 /*!
@@ -362,7 +357,9 @@ void CntCacheThread::onInfoFieldReady(CntInfoProvider* sender, int contactId,
  */
 void CntCacheThread::onIconReady(const QPixmap& pixmap, void *data, int id, int error)
 {
-    DP_IN("CntCacheThread::onIconReady( QPixMap, void*, " << id << "," << error << ")");
+    CNT_ENTRY
+
+    Q_UNUSED(id);
     Q_UNUSED(data);
 
     mJobMutex.lock();
@@ -376,9 +373,8 @@ void CntCacheThread::onIconReady(const QPixmap& pixmap, void *data, int id, int 
     mJobMutex.unlock();
 
     if (error == 0) {
-        DP("CntCacheThread::onIconReady() : emitting iconUpdated(" << mIconRequestName << ")");
         emit iconUpdated(mIconRequestName, HbIcon(pixmap));
     }
 
-    DP_OUT("CntCacheThread::onIconReady( QPixMap, void*, " << id << "," << error << ")");
+    CNT_EXIT
 }

@@ -16,19 +16,20 @@
 */
 #include "cntemaileditormodel.h"
 #include "cntdetailmodelitem.h"
+#include "cntdetailorderinghelper.h"
 #include <qcontactemailaddress.h>
 
 CntEmailEditorModel::CntEmailEditorModel( QContact* aContact ) :
 CntDetailEditorModel( aContact )
     {
-    QList<QContactEmailAddress> addr = mContact->details<QContactEmailAddress>();
-    if ( addr.isEmpty() )
+    mAddressList = CntDetailOrderingHelper::getOrderedEmailAccounts(*mContact);
+    if ( mAddressList.isEmpty() )
         {
         QContactEmailAddress newAddr;
-        addr.append( newAddr );
+        mAddressList.append( newAddr );
         }
     
-    foreach ( QContactEmailAddress email, addr )
+    foreach ( QContactEmailAddress email, mAddressList )
         {
         CntDetailModelItem* item = new CntDetailModelItem( email );
         appendDataFormItem( item, invisibleRootItem() );
@@ -41,6 +42,8 @@ CntEmailEditorModel::~CntEmailEditorModel()
 
 void CntEmailEditorModel::insertDetailField()
 {
+    // don't put this one in mAddressList since that list is used
+    // to check if there's new items
     QContactEmailAddress newAddr;
     CntDetailModelItem* item = new CntDetailModelItem( newAddr );
     appendDataFormItem( item, invisibleRootItem() );
@@ -52,9 +55,13 @@ void CntEmailEditorModel::saveContactDetails()
     int count( root->childCount() );
     for ( int i(0); i < count; i++ ) {
         CntDetailModelItem* item = static_cast<CntDetailModelItem*>( root->childAt(i) );
-        QContactDetail address = item->detail();
-        mContact->saveDetail( &address );
-        
+        QContactEmailAddress address = item->detail();
+        if ( !mAddressList.contains(address) && !address.emailAddress().isEmpty() )
+        {
+            mContact->saveDetail( &address );
+            // this is not currently necessary since view is closed after this call.
+            mAddressList.append( address );
+        }
         if ( address.value(QContactEmailAddress::FieldEmailAddress).isEmpty() ) {
             mContact->removeDetail( &address );
         }

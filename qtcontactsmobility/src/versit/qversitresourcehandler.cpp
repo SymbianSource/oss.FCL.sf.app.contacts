@@ -132,8 +132,7 @@ bool QVersitDefaultResourceHandler::loadResource(const QString& location,
     if (location.isEmpty())
         return false;
     QFile file(location);
-    file.open(QIODevice::ReadOnly);
-    if (!file.isReadable())
+    if (!file.open(QIODevice::ReadOnly) || !file.isReadable())
         return false;
     *contents = file.readAll();
     return contents->size() > 0;

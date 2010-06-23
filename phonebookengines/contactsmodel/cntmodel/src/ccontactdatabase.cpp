@@ -4804,11 +4804,12 @@ void CContactDatabase::HandleDbObserverEventGroupOrContactAddedL(const TContactD
 				TContactItemId actualId;
 				TUid contactType = KNullUid;
 				TBool deleted = EFalse;
+				TBool found = EFalse;
 	
         		MLplCollection& collection = FactoryL()->GetCollectorL();
-				TRAP(error, collection.SeekContactL(aContactId,actualId,contactType,deleted));
+				TRAP(error, found = collection.SeekContactL(aContactId,actualId,contactType,deleted));
 				
-				if (CheckSortError(error)==EFalse)
+				if (found && CheckSortError(error)==EFalse)
 					{
 					if (CheckType(contactType))
 						{

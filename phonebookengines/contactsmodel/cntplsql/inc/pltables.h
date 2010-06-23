@@ -42,6 +42,7 @@
 
 class CPcsKeyMap;
 
+
 /**
 The CPplTableBase class forms the base class for all SQLite tables in the
 Persistence Layer. It implements default behaviour for some basic operations.
@@ -305,25 +306,55 @@ private:
 
 
 /**
-The CPplPredictiveSearchTable class contains numeric representation of the
-fields that are checked in predictive search.
+The CPplPredictiveSearchTableBase is a base class for keymap-specific predictive
+search tables that contain numeric representation of the fields that are checked
+in predictive search.
 */
-NONSHARABLE_CLASS(CPplPredictiveSearchTable) : public CPplTableBase
+NONSHARABLE_CLASS(CPplPredictiveSearchTableBase) : public CPplTableBase
 	{
 public:
-	static CPplPredictiveSearchTable* NewL(RSqlDatabase& aDatabase);
-	static CPplPredictiveSearchTable* NewLC(RSqlDatabase& aDatabase);
-	~CPplPredictiveSearchTable();
+	virtual ~CPplPredictiveSearchTableBase();
 
 public: // From CPplTableBase
 	void CreateInDbL(CContactItem& aItem);
 	void UpdateL(const CContactItem& aItem);
 	void DeleteL(const CContactItem& aItem, TBool& aLowDiskErrorOccurred);
-	void CreateTableL();
+	virtual void CreateTableL() = 0;
+
+public: // New pure virtual functions
+	virtual QList<QChar> FillAllTables() const = 0;
+
+private: // New pure virtual functions
+	virtual HBufC* TableNameL(const QChar aCh) const = 0;
+	virtual TBool IsValidChar(const QChar aChar) const = 0;
+
+	virtual void FillKeyboardSpecificFieldsL(RSqlStatement& aSqlStatement,
+											 QStringList aTokens) = 0;
+
+private: // New virtual functions
+	virtual QStringList
+		GetTableSpecificFields(const CContactItem& aItem,
+							   TBool& aMandatoryFieldsPresent) const;
+
+public:
+	// Return next table's name, ownership is transferred
+	HBufC* GetNextTableNameL(QList<QChar>& aTables) const;
+
+protected:
+	void ConstructL();
+	CPplPredictiveSearchTableBase(RSqlDatabase& aDatabase,
+								  TInt aMaxTokens,
+								  TInt aMaxTokenLength);
+
+	QList<QChar> DetermineTables(QStringList aTokens) const;
+
+	// aFirstName ownership is not transferred
+	// aLastName ownership is not transferred
+	QStringList GetTokens(QStringList aNonTokenizedFields,
+						  HBufC* aFirstName,
+						  HBufC* aLastName) const;
 
 private:
-	void ConstructL();
-	CPplPredictiveSearchTable(RSqlDatabase& aDatabase);
 	void WriteToDbL(const CContactItem& aItem);
 
 	// aFirstNameAsNbr OUT: Pointer to first name converted to numbers,
@@ -340,29 +371,14 @@ private:
 					 HBufC** aFirstName,
 					 HBufC** aLastName) const;
 
-	QList<TChar> DetermineTables(QStringList aTokens) const;
-
 	// aString ownership is not transferred
 	void AddTokens(HBufC* aString, QStringList& aTokens) const;
 
-	TBool IsValidChar(QChar aChar) const;
-
-	// aFirstName ownership is not transferred
-	// aLastName ownership is not transferred
-	QStringList GetNumericTokens(HBufC* aFirstName, HBufC* aLastName) const;
 	void GetNextToken(QStringList& aSource, QStringList& aDestination) const;
 	void DeleteFromAllTablesL(TContactItemId aContactId,
 							  TBool& aLowDiskErrorOccurred) const;
 
-	QList<TChar> FillAllTables() const;
-
-	// Return next table's name, ownership is transferred
-	HBufC* GetNextTableNameL(QList<TChar>& aTables) const;
-	const TDesC& TableNameL(TChar aCh) const;
-
-	quint64 ConvertToHex(QString aToken) const;
-
-private:
+protected:
 	// Owned
 	CCntSqlStatement* iInsertStmnt;
 	// Owned
@@ -371,10 +387,14 @@ private:
 	CPcsKeyMap*		  iKeyMap;
 
 	RSqlDatabase&	  iDatabase;
-	
-	// For unit testing
-	friend class UT_CPplPredictiveSearchTable;
+
+	// Max amount of tokens that can be stored into predictive search table
+	const TInt		  iMaxTokens;
+
+	// Max length of a single token that can be stored into predictive search table
+	const TInt		  iMaxTokenLength;
 	};
+
 
 NONSHARABLE_CLASS(CPplPresenceTable) : public CPplTableBase
     {

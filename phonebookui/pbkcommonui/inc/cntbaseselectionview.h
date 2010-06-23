@@ -18,8 +18,8 @@
 #ifndef CNTBASESELECTIONVIEW_H
 #define CNTBASESELECTIONVIEW_H
 
-#include "cntabstractviewmanager.h"
-#include "cntabstractview.h"
+#include <cntabstractviewmanager.h>
+#include <cntabstractview.h>
 #include "cntglobal.h"
 
 class HbListView;

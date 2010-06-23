@@ -144,4 +144,6 @@ EXPORTS
 	_ZThn8_NK18CntContactCardView9isDefaultEv @ 143 NONAME
 	_ZThn8_NK20CntBaseSelectionView4viewEv @ 144 NONAME
 	_ZThn8_NK20CntBaseSelectionView9isDefaultEv @ 145 NONAME
+	_ZN21CntDefaultViewManager7cleanupEv @ 146 NONAME
+	_ZN21CntDefaultViewManager8closeAppEv @ 147 NONAME
 

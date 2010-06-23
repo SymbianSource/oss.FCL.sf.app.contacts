@@ -75,6 +75,8 @@ private:
  */
 class CntCache : public QObject
 {
+    friend class TestCntCache;
+    friend class TestCntListModel;
     Q_OBJECT
 public:
     static CntCache* instance();
@@ -101,6 +103,7 @@ private slots:
     void onNewIcon(const QString& iconName, const HbIcon& icon);
     void onIconCancelled(const QString& iconName);
     void onShutdown();
+    void updateContactsInCache(const QList<QContactLocalId>& contactIds);
     void removeContactsFromCache(const QList<QContactLocalId>& contactIds);
     void scheduleOneReadAheadItem();
 

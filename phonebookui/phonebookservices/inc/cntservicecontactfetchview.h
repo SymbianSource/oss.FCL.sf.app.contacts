@@ -35,7 +35,7 @@ public:
     int viewId() const { return serviceContactFetchView; }
     
 public slots:
-    void aboutToOpenView(const CntViewParameters viewParameters);
+    void aboutToOpenView(CntAbstractViewManager* aMgr, const CntViewParameters viewParameters);
     void aboutToCloseView();
     void cancelFetch();
 

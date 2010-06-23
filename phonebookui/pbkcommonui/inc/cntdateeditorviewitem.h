@@ -48,12 +48,10 @@ private slots:
     void handleEditDate( HbAction *aAction );
     
     
-#ifdef PBK_UNIT_TEST
-public:
-#else
 private:
-#endif
     HbPushButton* mButton;
     QLocale mLocale;
+    
+    friend class T_DateEditorTest;
     };
 #endif /* CNTDATEEDITORVIEWITEM_H_ */

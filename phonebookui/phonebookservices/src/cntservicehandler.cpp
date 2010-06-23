@@ -137,11 +137,13 @@ void CntServiceHandler::editCreateNew(const QString &vCardFile)
     QContact contact;
     QVersitReader reader;
     QFile file(vCardFile);
-    file.open(QIODevice::ReadOnly);
+
+    if (!file.open(QIODevice::ReadOnly))
+        return;
     reader.setDevice(&file);
-    
     reader.startReading();
     reader.waitForFinished();
+
     // Use the resulting document(s)...
     QVersitContactImporter importer;
     QList<QVersitDocument> versitDocuments = reader.results();

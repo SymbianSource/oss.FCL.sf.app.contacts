@@ -12,7 +12,7 @@
                 <contentsmargins bottom="var(hb-param-margin-gene-bottom)" left="var(hb-param-margin-gene-left)" right="var(hb-param-margin-gene-right)" top="0un"/>
                 <enums name="elideMode" value="ElideNone"/>
                 <string locid="txt_phob_info_create_own_card_to_share_it_with_fri" name="plainText"/>
-                <fontspec name="fontSpec" role="Primary" textheight="0"/>
+                <fontspec name="fontSpec" role="Primary"/>
             </widget>
             <widget name="cnt_button_new" type="HbPushButton">
                 <string locid="txt_phob_button_create_new" name="text"/>

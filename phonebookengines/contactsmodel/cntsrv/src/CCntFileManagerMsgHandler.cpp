@@ -37,6 +37,7 @@
 #include <cntviewstore.h>
 #include "cntviewprivate.h"
 #include "cviewsubsessions.h"
+#include "cntpredictivesearch.h"
 
 const TInt KCntFileManagerIpcCodes[] =
 	{
@@ -57,6 +58,7 @@ const TInt KCntFileManagerIpcCodes[] =
 	ECntFetchTemplateIds,
 	ECntFetchGroupIdLists,
 	ECntSearchResultList,
+	ECntPredictiveSearchList,
 	ECntFilesSize,
 	ECntGetDefinitionsForExistingView
 	};
@@ -73,9 +75,18 @@ CCntFileManagerMsgHandler::CCntFileManagerMsgHandler(CCntSession& aSession)
 :CCntMsgHandler(aSession)
 	{		
 	}
-	
+
+// ----------------------------------------------------------------------------
+// CntPredictiveSearch::ConstructL
+// ----------------------------------------------------------------------------
+void CCntFileManagerMsgHandler::ConstructL()
+    {
+    predictiveSearch = CntPredictiveSearch::NewL();
+    }
+
 CCntFileManagerMsgHandler::~CCntFileManagerMsgHandler()
 	{
+    delete predictiveSearch;
 	}
 
 /**
@@ -388,7 +399,37 @@ void CCntFileManagerMsgHandler::FetchGroupIdListsL(const RMessage2& aMessage)
 		}
 	}
 	
+void CCntFileManagerMsgHandler::FetchPredictiveSearchResultsL(const RMessage2& aMessage)
+    {
+    const TInt KSqlQueryMaxLen = aMessage.GetDesLengthL(1); 
+    HBufC* searchQuery = HBufC::NewLC(KSqlQueryMaxLen);
+    TPtr searchQueryPtr(searchQuery->Des());
+    aMessage.ReadL(1, searchQueryPtr);
+    
+    CheckForManagerL();
+    HBufC* newPredictiveQuery = predictiveSearch->CreateSQLQueryL(*searchQuery, 1 );
+    CleanupStack::PushL(newPredictiveQuery);
+    CBufSeg* buffer = iManager->GetPersistenceLayer().ContactProperties().DetailsListL(newPredictiveQuery->Des());
+    if (aMessage.GetDesMaxLength(0) >= buffer->Size())
+        {
+        TInt offset = 0;
+        while (offset < buffer->Size())
+            {
+            TPtr8 ptr = buffer->Ptr(offset);
+            aMessage.WriteL(0, ptr, offset);
+            offset += ptr.Size();
+            }
+        aMessage.Complete(KErrNone);
+        }
+    else
+        {
+        aMessage.Complete(buffer->Size());
+        }
 
+    delete buffer;
+    CleanupStack::PopAndDestroy(); //searchQuery*/
+    CleanupStack::PopAndDestroy(); //newPredictiveQuery
+    }
 void CCntFileManagerMsgHandler::FetchSearchResultsL(const RMessage2& aMessage)
     {
     const TInt KSqlQueryMaxLen = aMessage.GetDesLengthL(1); 

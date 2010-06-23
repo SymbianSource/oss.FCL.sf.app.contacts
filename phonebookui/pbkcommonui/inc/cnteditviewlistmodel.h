@@ -96,11 +96,7 @@ private:
     void removeItem( KLookupKey aKey );
     void insertSeparator();
     
-#ifdef PBK_UNIT_TEST
-public:
-#else
 private:
-#endif
     QList<CntEditViewItem*> mItemList;
     CntExtensionManager* mManager;
     CntEditViewItemBuilder* mBuilder;
@@ -109,5 +105,7 @@ private:
     
     QMap<KLookupKey, int> mLookupTable;
     QMap<QString, KLookupKey> mLookupMap;
+    
+    friend class TestCntEditView;
     };
 #endif /* CNTEDITVIEWLISTMODEL_H_ */

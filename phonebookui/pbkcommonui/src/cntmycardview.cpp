@@ -18,6 +18,7 @@
 #include "cntmycardview.h"
 #include "cntfetchcontactsview.h"
 #include "cntglobal.h"
+#include <qtcontacts.h>
 #include <hbpushbutton.h>
 #include <hbaction.h>
 #include <hbview.h>
@@ -158,11 +159,10 @@ void CntMyCardView::handleMultiCardSelection()
 
     if ( !mFetchView->wasCanceled() && !selectedContacts.isEmpty() ) {
         QList<QContactLocalId> selectedContactsList = selectedContacts.values();
-        manager->setSelfContactId(selectedContactsList.front());
-
-        QContact contact = mViewManager->contactManager(SYMBIAN_BACKEND)->contact(selectedContactsList.front());
+        QContact contact = manager->contact(selectedContactsList.front());
         removeFromGroup(&contact);
-
+        
+        manager->setSelfContactId( contact.localId() );
         showPreviousView();
     }
 }

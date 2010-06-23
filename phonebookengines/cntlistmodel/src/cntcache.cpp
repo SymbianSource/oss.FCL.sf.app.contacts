@@ -19,6 +19,7 @@
 #include <hbapplication.h>
 #include <qtcontacts.h>
 #include <qcontactmanager.h>
+#include <cntdebug.h>
 #include "cntcache.h"
 #include "cntcache_p.h"
 #include "cntinfoprovider.h"
@@ -64,7 +65,7 @@ CntCache::CntCache()
       mNextIconCacheOrder(CacheOrderStartValue),
       mEmittedContactId(-1)
 {
-    DP_IN("CntCache::CntCache()");
+    CNT_ENTRY
 
     // listen to worker updates
     connect(mWorker, SIGNAL(infoFieldUpdated(int, const ContactInfoField&, const QString&)),
@@ -76,13 +77,13 @@ CntCache::CntCache()
     connect(mWorker, SIGNAL(allJobsDone()), this, SLOT(scheduleOneReadAheadItem()));
 
     // listen to the database for changes to contacts
-    connect(mContactManager, SIGNAL(contactsChanged(const QList<QContactLocalId>&)), this, SLOT(removeContactsFromCache(const QList<QContactLocalId>&)));
+    connect(mContactManager, SIGNAL(contactsChanged(const QList<QContactLocalId>&)), this, SLOT(updateContactsInCache(const QList<QContactLocalId>&)));
     connect(mContactManager, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), this, SLOT(removeContactsFromCache(const QList<QContactLocalId>&)));
 
     // shutdown only when the whole application shuts down
     connect(HbApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(onShutdown()));
 
-    DP_OUT("CntCache::CntCache()");
+    CNT_EXIT
 }
 
 /*!
@@ -90,12 +91,19 @@ CntCache::CntCache()
  */
 CntCache::~CntCache()
 {
-    DP_IN("CntCache::~CntCache()");
+    CNT_ENTRY
 
     delete mWorker;
     delete mContactManager;
+    
+    qDeleteAll(mInfoCache);
+    mInfoCache.clear();
+    qDeleteAll(mIconCache);
+    mIconCache.clear();
 
-    DP_OUT("CntCache::~CntCache()");
+    mInstance = NULL;
+
+    CNT_EXIT
 }
 
 /*! 
@@ -115,7 +123,7 @@ CntCache::~CntCache()
  */
 CntContactInfo CntCache::fetchContactInfo(int row, const QList<QContactLocalId>& idList)
 {
-    DP_IN("CntCache::fetchContactInfo(" << row << ", idlist[" << idList.count() << "])");
+    CNT_ENTRY_ARGS(row << "/" << idList.count())
 
     Q_ASSERT(row >= 0 && row < idList.count());
 
@@ -180,38 +188,25 @@ CntContactInfo CntCache::fetchContactInfo(int row, const QList<QContactLocalId>&
         }
     }
 
-    // cache read-ahead -- items near this fetched item should also be in cache
-    // updateReadAhead(row, idList);
-
-    DP_OUT("CntCache::fetchContactInfo(" << row << ", idlist[" << idList.count() << "]) : name =" << name);
+    CNT_EXIT_ARGS("name:" << name << "sec:" << text)
 
     return CntContactInfo(contactId, name, text, icons[0], icons[1]);
 }
 
 /*! 
-    Clears the cache - both names and icons. This function can be useful
-    for example if application goes to the background and memory needs to
-    be freed, or if the format of contact names change.
+    Clears the cache of names (not icons). This function can be useful
+    for example when the format of contact names changes.
  */
 void CntCache::clearCache()
 {
-    DP_IN("CntCache::clearCache()");
+    CNT_ENTRY
 
     // clear info cache
-    foreach (CntInfoCacheItem* item, mInfoCache) {
-        delete item;
-    }
+    qDeleteAll(mInfoCache);
     mInfoCache.clear();
     mNextInfoCacheOrder = CacheOrderStartValue;
 
-    // clear icon cache
-    foreach (CntIconCacheItem* item, mIconCache) {
-        delete item;
-    }
-    mIconCache.clear();
-    mNextIconCacheOrder = CacheOrderStartValue;
-
-    DP_OUT("CntCache::clearCache()");
+    CNT_EXIT
 }
 
 /*! 
@@ -225,7 +220,7 @@ void CntCache::clearCache()
  */
 void CntCache::onNewInfo(int contactId, const ContactInfoField& infoField, const QString& infoValue)
 {
-    DP_IN("CntCache::onNewInfo(" << contactId << "," << infoField << "," << infoValue << ")");
+    CNT_ENTRY_ARGS( "id:" << contactId   << "infotype:" << infoField   << "infovalue:" << infoValue )
 
     Q_ASSERT(infoField == ContactInfoTextField || infoField == ContactInfoIcon1Field || infoField == ContactInfoIcon2Field);
 
@@ -266,11 +261,16 @@ void CntCache::onNewInfo(int contactId, const ContactInfoField& infoField, const
                     hasNewInfo = true;
                 }
             }
+            else if (iconName.startsWith("qtg_", Qt::CaseInsensitive)) {
+                CntIconCacheItem* iconItem = createIconCacheItem(iconName);
+                onNewIcon(iconName, HbIcon(iconName)); 
+                hasNewInfo = true;
+            }
             else {
-               CntIconCacheItem* iconItem = createIconCacheItem(iconName);
-               iconItem->contactIds.insert(contactId);
-               mWorker->scheduleIconJob(iconName);
-               hasNewInfo = false;
+                CntIconCacheItem* iconItem = createIconCacheItem(iconName);
+                iconItem->contactIds.insert(contactId);
+                mWorker->scheduleIconJob(iconName);
+                hasNewInfo = false;
             }
         }
         else {
@@ -279,11 +279,10 @@ void CntCache::onNewInfo(int contactId, const ContactInfoField& infoField, const
     }
 
     if (hasNewInfo) {
-        DP("CntCache::onNewInfo() : new info => emitting contactInfoUpdated(" << contactId << ")");
         emitContactInfoUpdated(contactId);
     }
 
-    DP_OUT("CntCache::onNewInfo(" << contactId << "," << infoField << "," << infoValue << ")");
+    CNT_EXIT
 }
 
 /*! 
@@ -292,17 +291,16 @@ void CntCache::onNewInfo(int contactId, const ContactInfoField& infoField, const
  */
 void CntCache::onInfoCancelled(int contactId)
 {
-    DP_IN("CntCache::onInfoCancelled(" << contactId << ")");
+    CNT_ENTRY_ARGS( "id:" << contactId )
 
     if (mInfoCache.contains(contactId)) {
         CntInfoCacheItem* item = mInfoCache.take(contactId);
         delete item;
     }
 
-    DP("CntCache::onInfoCancelled() : info cancelled => emitting contactInfoUpdated(" << contactId << ")");
     emitContactInfoUpdated(contactId);
 
-    DP_OUT("CntCache::onInfoCancelled(" << contactId << ")");
+    CNT_EXIT
 }
 
 /*! 
@@ -312,7 +310,7 @@ void CntCache::onInfoCancelled(int contactId)
  */
 void CntCache::onNewIcon(const QString& iconName, const HbIcon& icon)
 {
-    DP_IN("CntCache::onNewIcon(" << iconName << ", HbIcon)");
+    CNT_ENTRY_ARGS( iconName )
 
     QSet<int> contactsToNotify;
 
@@ -325,11 +323,10 @@ void CntCache::onNewIcon(const QString& iconName, const HbIcon& icon)
     }
 
     foreach (int contactId, contactsToNotify) {
-        DP("CntCache::onNewIcon() : new icon => emitting contactInfoUpdated(" << contactId << ")");
         emitContactInfoUpdated(contactId);
     }
 
-    DP_OUT("CntCache::onNewIcon(" << iconName << ", HbIcon)");
+    CNT_EXIT
 }
 
 /*! 
@@ -338,7 +335,7 @@ void CntCache::onNewIcon(const QString& iconName, const HbIcon& icon)
  */
 void CntCache::onIconCancelled(const QString& iconName)
 {
-    DP_IN("CntCache::onIconCancelled(" << iconName << ")");
+    CNT_ENTRY_ARGS( iconName )
 
     QSet<int> contactsToNotify;
 
@@ -350,11 +347,36 @@ void CntCache::onIconCancelled(const QString& iconName)
     }
 
     foreach (int contactId, contactsToNotify) {
-        DP("CntCache::onIconCancelled() : icon cancelled => emitting contactInfoUpdated(" << contactId << ")");
         emitContactInfoUpdated(contactId);
     }
 
-    DP_OUT("CntCache::onIconCancelled(" << iconName << ")");
+    CNT_EXIT
+}
+
+/*! 
+    Update contacts in cache.
+    
+    /param contactIds ids of the contact that will be updated
+ */
+void CntCache::updateContactsInCache(const QList<QContactLocalId>& contactIds)
+{
+    CNT_ENTRY
+
+    QString name;
+
+    foreach (QContactLocalId contactId, contactIds) {
+        if (mInfoCache.contains(contactId) && fetchContactName(contactId, name)) {
+            CntInfoCacheItem* infoItem = mInfoCache.value(contactId);
+            infoItem->name = name;
+            mWorker->scheduleInfoJob(contactId);
+        }
+    }
+
+    foreach (QContactLocalId contactId, contactIds) {
+        emitContactInfoUpdated(contactId);
+    }
+
+    CNT_EXIT
 }
 
 /*! 
@@ -364,7 +386,7 @@ void CntCache::onIconCancelled(const QString& iconName)
  */
 void CntCache::removeContactsFromCache(const QList<QContactLocalId>& contactIds)
 {
-    DP_IN("CntCache::removeContactsFromCache(idList[" << contactIds.count() << "])");
+    CNT_ENTRY
 
     foreach (QContactLocalId contactId, contactIds) {
         if (mInfoCache.contains(contactId)) {
@@ -377,7 +399,7 @@ void CntCache::removeContactsFromCache(const QList<QContactLocalId>& contactIds)
         emitContactInfoUpdated(contactId);
     }
 
-    DP_OUT("CntCache::removeContactsFromCache(idList[" << contactIds.count() << "])");
+    CNT_EXIT
 }
 
 /*! 
@@ -390,8 +412,9 @@ void CntCache::removeContactsFromCache(const QList<QContactLocalId>& contactIds)
  */
 bool CntCache::fetchContactName(int contactId, QString& contactName)
 {
+    CNT_ENTRY_ARGS( contactId )
+
     bool foundContact = false;
-    DP_IN("CntCache::fetchContactName(" << contactId << "," << contactName << ")");
 
     QContactFetchHint nameOnlyFetchHint;
     QStringList details;
@@ -402,13 +425,9 @@ bool CntCache::fetchContactName(int contactId, QString& contactName)
     if (mContactManager->error() == QContactManager::NoError) {
         contactName = contact.displayLabel();
         foundContact = true;
-        // TODO: this can be removed once qt mobility is updated (~wk20/10)
-        if (contactName == "Unnamed") {
-            contactName = "";
-        }
     }
     
-    DP_OUT("CntCache::fetchContactName(" << contactId << "," << contactName << ") : " << foundContact);
+    CNT_EXIT_ARGS( foundContact )
     
     return foundContact;
 }
@@ -422,7 +441,8 @@ bool CntCache::fetchContactName(int contactId, QString& contactName)
  */
 void CntCache::updateReadAheadCache(int mostRecentRow, const QList<QContactLocalId>& idList)
 {
-    DP_IN("CntCache::updateReadAheadCache(" << mostRecentRow << ", idList[" << idList.count() << "] )");
+    CNT_ENTRY_ARGS( mostRecentRow )
+
     int row;
 
     mReadAheadCache.clear();
@@ -456,7 +476,7 @@ void CntCache::updateReadAheadCache(int mostRecentRow, const QList<QContactLocal
         }
     }
 
-    DP_OUT("CntCache::updateReadAheadCache(" << mostRecentRow << ", idList[" << idList.count() << "] )");
+   CNT_EXIT
 }
 
 /*! 
@@ -464,7 +484,7 @@ void CntCache::updateReadAheadCache(int mostRecentRow, const QList<QContactLocal
  */
 void CntCache::scheduleOneReadAheadItem()
 {
-    DP_IN("CntCache::scheduleOneReadAheadItem()");
+    CNT_ENTRY
 
     QString name;
     
@@ -485,7 +505,7 @@ void CntCache::scheduleOneReadAheadItem()
         }
     }
 
-    DP_OUT("CntCache::scheduleOneReadAheadItem()");
+    CNT_EXIT
 }
 
 /*! 
@@ -497,7 +517,7 @@ void CntCache::scheduleOneReadAheadItem()
  */
 CntInfoCacheItem* CntCache::createInfoCacheItem(int contactId)
 {
-    DP_IN("CntCache::createInfoCacheItem(" << contactId << ")");
+    CNT_ENTRY_ARGS( contactId )
 
     if (mInfoCache.count() >= InfoCacheSize) {
         // cache is full, so remove the oldest contact
@@ -528,7 +548,7 @@ CntInfoCacheItem* CntCache::createInfoCacheItem(int contactId)
     item->contactId = contactId;
     mInfoCache.insert(contactId, item);
     
-    DP_OUT("CntCache::createInfoCacheItem(" << contactId << ")");
+    CNT_EXIT
 
     return item;
 }
@@ -542,7 +562,7 @@ CntInfoCacheItem* CntCache::createInfoCacheItem(int contactId)
  */
 CntIconCacheItem* CntCache::createIconCacheItem(const QString& iconName)
 {
-    DP_IN("CntCache::createIconCacheItem(" << iconName << ")");
+    CNT_ENTRY_ARGS( iconName )
 
     if (mIconCache.count() >= IconCacheSize) {
         // cache is full, so remove the oldest icon
@@ -574,7 +594,7 @@ CntIconCacheItem* CntCache::createIconCacheItem(const QString& iconName)
     item->isFetched = false;
     mIconCache.insert(iconName, item);
 
-    DP_OUT("CntCache::createIconCacheItem(" << iconName << ")");
+    CNT_EXIT
 
     return item;
 }
@@ -586,9 +606,13 @@ CntIconCacheItem* CntCache::createIconCacheItem(const QString& iconName)
  */
 void CntCache::emitContactInfoUpdated(int contactId)
 {
+	CNT_ENTRY_ARGS( contactId )
+
     mEmittedContactId = contactId;
     emit contactInfoUpdated(contactId);
     mEmittedContactId = -1;
+
+	CNT_EXIT
 }
 
 /*! 
@@ -596,7 +620,11 @@ void CntCache::emitContactInfoUpdated(int contactId)
  */
 void CntCache::onShutdown()
 {
+	CNT_ENTRY
+
     delete this;
+
+	CNT_EXIT
 }
 
 

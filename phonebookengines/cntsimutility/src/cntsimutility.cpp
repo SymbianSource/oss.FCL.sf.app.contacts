@@ -18,6 +18,13 @@
 #include <mmtsy_names.h>
 #include <startupdomainpskeys.h>
 #include <e32property.h>
+#include <centralrepository.h>
+
+// Number of keys used in central repository to keep latest import date
+// from SIM card: 5 IMSI strings and 5 dates. 
+const int KCenRepKeysNumber = 10; 
+const int KIMSISize = 15;
+const int KCenRepUid = 0x200315A8;
 
 CntSimUtility::CntSimUtility(StoreType type, int& error, QObject *parent)
     : QObject(parent),
@@ -165,6 +172,130 @@ int CntSimUtility::setFdnStatus(bool activated)
     m_etelPhone.SetFdnSetting(status, fdnStatus);
     User::WaitForRequest(status);
     return status.Int();
+}
+
+QDateTime CntSimUtility::getLastImportTime(int& error)
+{
+    error = KErrNone;
+    if (!isSimInserted()) {
+        error = KErrAccessDenied;
+        return QDateTime();
+    }
+    
+    // get IMSI
+    TBuf<KIMSISize> imsiBuf;
+    TRequestStatus reqStatus;
+    m_etelPhone.GetSubscriberId(reqStatus, imsiBuf);
+    User::WaitForRequest(reqStatus);
+    if (reqStatus.Int() != KErrNone) {
+        error = reqStatus.Int();
+        return QDateTime();
+    }
+    
+    CRepository* cenrep = NULL;
+    TRAPD(err, cenrep = CRepository::NewL(TUid::Uid(KCenRepUid)));
+    if (err != KErrNone) {
+        error = err;
+        return QDateTime();
+    }
+    
+    // find current IMSI in the stored values
+    int lastImportDate = 0;
+    for (int i = 1; i <= KCenRepKeysNumber; i+=2) {
+        TBuf<KIMSISize> storedImsiBuf;
+        if (cenrep->Get(i, storedImsiBuf) == KErrNone) {
+            if (storedImsiBuf.Compare(imsiBuf) == 0) {
+                if (cenrep->Get(i+1, lastImportDate) == KErrNone) {
+                    break;
+                }
+            }
+        }
+    }
+    delete cenrep;
+    cenrep = NULL;
+    
+    if (lastImportDate == 0) {
+        error = KErrNotFound;
+        return QDateTime();
+    }
+    
+    QDateTime retLastImportDate;
+    retLastImportDate.setTime_t(lastImportDate);
+    return retLastImportDate;
+}
+
+void CntSimUtility::setLastImportTime(int& error)
+{
+    error = KErrNone;
+    if (!isSimInserted()) {
+        error = KErrAccessDenied;
+        return;
+    }
+    
+    // get IMSI
+    TBuf<KIMSISize> imsiBuf;
+    TRequestStatus reqStatus;
+    m_etelPhone.GetSubscriberId(reqStatus, imsiBuf);
+    User::WaitForRequest(reqStatus);
+    if (reqStatus.Int() != KErrNone) {
+        error = reqStatus.Int();
+        return;
+    }
+    
+    CRepository* cenrep = NULL;
+    TRAPD(err, cenrep = CRepository::NewL(TUid::Uid(KCenRepUid)));
+    if (err != KErrNone) {
+        error = err;
+        return;
+    }
+     
+    // find current IMSI in the stored values
+    int lastImportDate = QDateTime::currentDateTime().toTime_t();
+    bool importDateUpdated = false;
+    for (int i = 1; i <= KCenRepKeysNumber; i+=2) {
+        TBuf<KIMSISize> storedImsiBuf;
+        if (cenrep->Get(i, storedImsiBuf) == KErrNone) {
+            if (storedImsiBuf.Compare(imsiBuf) == 0) {
+                //current IMSI already stored, update import date
+                if (cenrep->Set(i+1, lastImportDate) != KErrNone) {
+                    error = KErrAccessDenied;
+                }
+                importDateUpdated = true;
+                break;
+            }
+        }
+    }
+    
+    if (!importDateUpdated) {
+        int oldestDate = 0;
+        int key = 0;
+        // contacts were not imported from this SIM before,
+        // find oldest import date and replace it
+        for (int j = 2; j <= KCenRepKeysNumber; j+=2) {
+            int date;
+            if (cenrep->Get(j, date) == KErrNone) {
+                if (date >= oldestDate ) {
+                    oldestDate = date;
+                    key = j;
+                }
+            }
+        }
+    
+        if (key == 0) {
+            error = KErrAccessDenied;
+        }
+        else {
+            if (cenrep->Set(key, lastImportDate) != KErrNone) {
+                error = KErrAccessDenied;
+            }
+            if (cenrep->Set(key-1, imsiBuf) != KErrNone) {
+                error = KErrAccessDenied;
+            }
+        }
+    }
+    
+    delete cenrep;
+    cenrep = NULL;
 }
 
 bool CntSimUtility::startGetSimInfo()

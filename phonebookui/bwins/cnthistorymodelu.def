@@ -34,4 +34,5 @@ EXPORTS
 	?findIndices@CntHistoryModel@@AAE?AV?$QList@V?$QList@H@@@@ABV?$QList@H@@@Z @ 33 NONAME ; class QList<class QList<int> > CntHistoryModel::findIndices(class QList<int> const &)
 	??_ECntHistoryModel@@UAE@I@Z @ 34 NONAME ; CntHistoryModel::~CntHistoryModel(unsigned int)
 	?displayRoleData@CntHistoryModel@@ABE?AVQVariant@@ABVHistoryItem@@@Z @ 35 NONAME ; class QVariant CntHistoryModel::displayRoleData(class HistoryItem const &) const
+	?handleLogsReset@CntHistoryModel@@AAEXXZ @ 36 NONAME ; void CntHistoryModel::handleLogsReset(void)
 

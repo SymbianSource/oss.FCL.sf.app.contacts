@@ -11,20 +11,21 @@
 #
 # Contributors:
 #
-# Description: 
+# Description: App for testing Contacts highway UI services
 #
 
 TEMPLATE = app
 TARGET =
 DEPENDPATH += .
 INCLUDEPATH += .
+INCLUDEPATH += ../../../../inc
 
 CONFIG += hb
 
 LIBS+=-lhbcore -lxqservice -lqtcontacts -lcntlistmodel
 
 # Input
-INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
+INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE 
 
 HEADERS += testpbkservices.h
 

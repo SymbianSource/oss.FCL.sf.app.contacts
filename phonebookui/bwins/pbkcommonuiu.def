@@ -118,4 +118,6 @@ EXPORTS
 	?removeCurrentView@CntDefaultViewManager@@AAEXXZ @ 117 NONAME ; void CntDefaultViewManager::removeCurrentView(void)
 	?viewId@CntContactCardView@@UBEHXZ @ 118 NONAME ; int CntContactCardView::viewId(void) const
 	?removeEffect@CntViewNavigator@@QAEXABH@Z @ 119 NONAME ; void CntViewNavigator::removeEffect(int const &)
+	?cleanup@CntDefaultViewManager@@AAEXXZ @ 120 NONAME ; void CntDefaultViewManager::cleanup(void)
+	?closeApp@CntDefaultViewManager@@MAEXXZ @ 121 NONAME ; void CntDefaultViewManager::closeApp(void)
 

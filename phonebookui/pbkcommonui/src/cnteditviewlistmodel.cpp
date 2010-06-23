@@ -60,6 +60,13 @@ mContact( aContact )
 
 CntEditViewListModel::~CntEditViewListModel()
 {
+    // Delete the separator item separately if it hasn't been added to the list
+    if (mSeparator && mItemList.indexOf(mSeparator) == -1)
+    {
+        delete mSeparator;
+        mSeparator = NULL;
+    }
+    
     qDeleteAll( mItemList );
     
     delete mBuilder;
@@ -106,9 +113,7 @@ void CntEditViewListModel::removeItem( CntEditViewItem* aItem, const QModelIndex
     {
         beginRemoveRows( aIndex.parent(), index, index );
         // remove item from item list
-        int count = mItemList.count();
         CntEditViewItem* item = mItemList.takeAt( index );
-        count = mItemList.count();
         
         // get detailed information
         QContactDetail detail = item->data(ERoleContactDetail).value<QContactDetail>();
@@ -121,6 +126,9 @@ void CntEditViewListModel::removeItem( CntEditViewItem* aItem, const QModelIndex
         // we can't remove address template, so the mapping for address always points to address detail
         KLookupKey lookupKey = mLookupMap.value( detail.definitionName() );
         removeItem( lookupKey );
+        
+        delete item;
+        
         endRemoveRows();
         
         // Remove separator item if needed
@@ -128,33 +136,46 @@ void CntEditViewListModel::removeItem( CntEditViewItem* aItem, const QModelIndex
         {
             int separatorIndex = mItemList.indexOf( mSeparator );
             beginRemoveRows( aIndex.parent(), separatorIndex, separatorIndex );
-            mItemList.removeAt( mItemList.indexOf(mSeparator) );
+            mItemList.removeAt( separatorIndex );
             removeItem( ESeparator  );
+            
+            delete mSeparator;
+            mSeparator = NULL;
+            
             endRemoveRows();
         }
-        
         
         // Check if the removed item is -1 in lookuptable and if it needs a template
         int lookupValue = mLookupTable.value( lookupKey );
         if ( lookupValue == -1 )
         {
-            beginResetModel();
-            
             if ( detail.definitionName() == QContactPhoneNumber::DefinitionName )
+            {
+                beginInsertRows(aIndex.parent(), index, index);
                 insertItem( EPhonenumber, mBuilder->phoneNumberItems(*mContact) );
-            
+                endInsertRows();
+            }
             else if ( detail.definitionName() == QContactEmailAddress::DefinitionName )
+            {
+                beginInsertRows(aIndex.parent(), index, index);
                 insertItem( EEmailAddress, mBuilder->emailAddressItems(*mContact) );
-            
+                endInsertRows();
+            }
             else if ( detail.definitionName() == QContactAddress::DefinitionName )
+            {
+                // special case: unlike the others, address template isn't in the same index as the last deleted detail
+                int emailIndex = mLookupTable.value( EEmailAddress );
+                beginInsertRows(aIndex.parent(), emailIndex + 1, emailIndex + 1);
                 insertItem( EAddressTemplate, mBuilder->addressItems(*mContact) );
-            
+                endInsertRows();
+            }
             else if ( detail.definitionName() == QContactUrl::DefinitionName )
+            {
+                beginInsertRows(aIndex.parent(), index, index);
                 insertItem( EUrl, mBuilder->urlItems(*mContact) );
-            
-            endResetModel();
+                endInsertRows();
+            }
         }
-        delete item;
     }
 }
 
@@ -292,14 +313,17 @@ void CntEditViewListModel::refresh()
 
 bool CntEditViewListModel::isEmptyItem( CntEditViewItem* aItem )
 {
-    QContactDetail d = aItem->data( ERoleContactDetail ).value<QContactDetail>();
-    QStringList fields = aItem->data( ERoleContactDetailFields ).toStringList();
-    
-    foreach ( QString field, fields )
+    if ( aItem )
     {
-        if ( !d.value(field).isEmpty() )
+        QContactDetail d = aItem->data( ERoleContactDetail ).value<QContactDetail>();
+        QStringList fields = aItem->data( ERoleContactDetailFields ).toStringList();
+        
+        foreach ( QString field, fields )
         {
-            return false;
+            if ( !d.value(field).isEmpty() )
+            {
+                return false;
+            }
         }
     }
     return true;

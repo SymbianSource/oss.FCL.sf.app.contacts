@@ -19,39 +19,12 @@
 
 #include <cntabstractview.h>
 #include <QObject>
-#include <hbdataformmodel.h>
 
 class HbAction;
 class HbView;
 class HbDataForm;
-class HbDataFormModelItem;
 class HbDocumentLoader;
-
-class CntSettingsModel : public HbDataFormModel
-{
-    Q_OBJECT
-    
-public:
-    virtual ~CntSettingsModel(){}
-    virtual void saveSettings() = 0;
-    virtual void loadSettings() = 0;
-};
-
-class CntDefaultSettingsModel : public CntSettingsModel
-{
-    Q_OBJECT
-    
-public:
-    CntDefaultSettingsModel();
-    ~CntDefaultSettingsModel();
-    
-public:
-    void saveSettings();
-    void loadSettings();
-    
-private:
-    HbDataFormModelItem* mOrder;
-};
+class CntSettingsModel;
 
 class CntSettingsView : public QObject, public CntAbstractView
 {
@@ -67,7 +40,7 @@ protected: // From CntAbstractView
     bool isDefault() const;
     HbView* view() const;
     int viewId() const;
-    
+
 private slots:
     void back();
     
@@ -85,7 +58,7 @@ private:
     
     CntSettingsModel* mModel;
     
-    friend class TestCntEditView;
+    friend class TestCntSettings;
 };
 #endif
 

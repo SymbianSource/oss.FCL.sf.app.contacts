@@ -19,7 +19,6 @@
 #define CNTGROUPEDITORMODEL_H_
 #include "cntdetaileditormodel.h"
 #include <qtcontacts.h>
-#include "cntglobal.h"
 
 class HbDataFormModelItem;
 QTM_BEGIN_NAMESPACE

@@ -26,10 +26,6 @@
 #include <qcontactmanager.h>
 #include "cntinfoprovider.h"
 
-#define DP( s );
-#define DP_IN( s );
-#define DP_OUT( s );
-
 class ThumbnailManager;
 
 QTM_USE_NAMESPACE
@@ -94,6 +90,7 @@ public:
  */
 class CntCacheThread : public QThread
 {
+    friend class TestCntCache;
     Q_OBJECT
 public:
     CntCacheThread();
@@ -126,6 +123,7 @@ private:
     QMap<CntInfoProvider*, ContactInfoFields> mDataProviders;
 
     QMutex mJobMutex;                       // guards access to the job lists
+    bool mStarted;                          // true when thread has been started
     bool mJobLoopRunning;                   // true from when job loop event has been posted until job loop exits
     int mPostponeJobs;                      // set to true by client if it needs the CPU
     QList<int> mInfoJobs;                   // list of all info jobs

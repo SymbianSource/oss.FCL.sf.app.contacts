@@ -23,15 +23,15 @@
 #include <digia/eunit/eunitmacros.h>
 
 //  FORWARD DECLARATIONS
-class CPcsKeyMap;
+class C12keyKeyMap;
 
 //  CONSTANTS
 
 //  CLASS DEFINITION
 /**
- * Tester class for CPcsKeyMap.
+ * Tester class for C12keyKeyMap.
  */
-NONSHARABLE_CLASS( UT_CPcsKeyMap ): public CEUnitTestSuiteClass
+NONSHARABLE_CLASS(UT_CPcsKeyMap): public CEUnitTestSuiteClass
     {
     public: // Constructors and destructors
 
@@ -59,14 +59,19 @@ NONSHARABLE_CLASS( UT_CPcsKeyMap ): public CEUnitTestSuiteClass
     private: // Test methods
     
         void UT_NewLL();
-        void UT_GetNumericKeyStringL();
-        void UT_GetNumericKeyStringSeparatorL();
-        void UT_GetNumericKeyStringWithNumbersL();
-        void UT_GetNumericKeyStringWithSpecialCharactersL();
+        void UT_GetMappedStringL();
+        void UT_GetMappedStringSeparatorL();
+        void UT_GetMappedStringWithNumbersL();
+        void UT_GetMappedStringWithSpecialCharactersL();
+		void UT_GetMappedStringThaiLanguageOneCharL();
+        void UT_GetMappedStringThaiLanguageL();
+        void UT_GetMappedStringThaiLanguageEmptyResultL();
+        void UT_GetNumericLimitsL();
+		void UT_GetNumericLimitsLongInputL();
 
     private:    // Data
 
-        CPcsKeyMap* iKeyMap;
+        C12keyKeyMap* iKeyMap;
 
         EUNIT_DECLARE_TEST_TABLE;
     };

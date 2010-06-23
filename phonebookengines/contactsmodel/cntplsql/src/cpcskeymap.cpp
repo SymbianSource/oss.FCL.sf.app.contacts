@@ -16,96 +16,25 @@
 
 // INCLUDE FILES
 #include "cpcskeymap.h"
+#include <QChar>
+#include <QString>
 
 #if defined(USE_ORBIT_KEYMAP)
-
-// If defined, only the currently used language's keymap is used
-//#define USE_ONLY_DEFAULT_LANG_KEYMAP
-
-
-#include <QLocale>
-#include <hbinputlanguage.h>
 #include <hbinputkeymap.h>
 #include <hbinputkeymapfactory.h>
 #endif // #if defined(USE_ORBIT_KEYMAP)
 
+// This macro suppresses log writes
+//#define NO_PRED_SEARCH_LOGS
+#include "predictivesearchlog.h"
 
-#if defined(_DEBUG)
-#include <e32debug.h> // RDebug
-
-#define PRINT(x)			RDebug::Print(x)
-#define PRINT1(x,y)			RDebug::Print(x,y)
-#define PRINT2(x,y,z)		RDebug::Print(x,y,z)
-#define PRINT3(w,x,y,z)		RDebug::Print(w,x,y,z)
-#else // #if defined(_DEBUG)
-#define PRINT(x)            
-#define PRINT1(x,y)         
-#define PRINT2(x,y,z)       
-#define PRINT3(w,x,y,z)
-#endif // #if defined(_DEBUG)
-
-
-#define KSpaceChar      ' '
-
-#if defined(USE_ORBIT_KEYMAP)
-#define KSeparatorChar  ' '
-#endif // #if defined(USE_ORBIT_KEYMAP)
+const QChar KSpaceChar = ' ';
 
 // Separator character stored in predictive search table columns
-_LIT(KSeparator, " ");
-
-#if defined(USE_ORBIT_KEYMAP)
-// How many keys have mappings in ITU-T keypad (keys 0..9, * and # have mappings)
-const TInt KAmountOfKeys = 12;
-
-// The first key of the keyboard has value zero ('1' in the 12-key virtual keypad) 
-enum TKeyId
-    {
-    EKey1 = 0,
-    EKey2,
-    EKey3,
-    EKey4,
-    EKey5,
-    EKey6,
-    EKey7,
-    EKey8,
-    EKey9,
-	EKey0,
-	EKeyStar,
-	EKeyHash,
-	ELastKey = EKeyHash
-    };
-
-const QChar KStar = '*';
-const QChar KPlus = '+';
-const QChar KHash = '#';
-#endif // #if defined(USE_ORBIT_KEYMAP)
-
-// * key is mapped to this
-const TChar KMappedCharForStar = 'a';
-// # key is mapped to this
-const TChar KMappedCharForHash = 'b';
-// Unmapped (unknown) characters are replaced with this
-const TChar KPadChar = 'f';
+const QChar KSeparatorChar = ' ';
 
 
 // ============================== MEMBER FUNCTIONS ============================
-
-// ----------------------------------------------------------------------------
-// CPcsKeyMap::NewL
-// ----------------------------------------------------------------------------
-CPcsKeyMap* CPcsKeyMap::NewL()
-	{
-    PRINT(_L("Enter CPcsKeyMap::NewL"));
-    
-    CPcsKeyMap* self = new (ELeave) CPcsKeyMap();
-    CleanupStack::PushL(self);
-    self->ConstructL();
-    CleanupStack::Pop(self);
-
-    PRINT(_L("End CPcsKeyMap::NewL"));
-    return self;
-	}
 
 // ----------------------------------------------------------------------------
 // CPcsKeyMap::~CPcsKeyMap
@@ -117,40 +46,93 @@ CPcsKeyMap::~CPcsKeyMap()
     }
 
 // ----------------------------------------------------------------------------
-// CPcsKeyMap::GetNumericKeyStringL
-// If aPlainConversion is EFalse, supports sub-string searches and space is
-// converted to a separator character (not zero).
+// CPcsKeyMap::GetMappedStringL
 // ----------------------------------------------------------------------------
-HBufC* CPcsKeyMap::GetNumericKeyStringL(const TDesC& aSource,
-                                        TBool aPlainConversion) const
+HBufC* CPcsKeyMap::GetMappedStringL(const TDesC& aSource) const
     {
-    PRINT1(_L("Enter CPcsKeyMap::GetNumericKeyStringL input '%S'"), &aSource);
+    PRINT1(_L("Enter CPcsKeyMap::GetMappedStringL input '%S'"), &aSource);
 
-    TInt length = aSource.Length();
-    HBufC* destination = HBufC::NewL(length);
-    TPtr ptr = destination->Des();
+	QString source((QChar*)aSource.Ptr(), aSource.Length());
+	QString result;
+	TInt err(KErrNone);
+	QT_TRYCATCH_ERROR(err, result = GetMappedString(source));
+	User::LeaveIfError(err);
 
-    for (TInt i = 0; i < aSource.Length(); ++i)
-        {
-        if (!aPlainConversion && aSource[i] == KSpaceChar)
-            {
-            ptr.Append(KSeparator);
-            }
-        else
-            {
-#if defined(USE_ORBIT_KEYMAP)
-            ptr.Append(KeyForCharacter(aSource[i]));
-#else
-			TChar a = aSource[i];
-			TChar b = a.GetUpperCase();
-			ptr.Append(GetNumericValueForChar(b));
-#endif
-            }
-        }
+    HBufC* destination = HBufC::NewL(result.length());
+	destination->Des().Copy(result.utf16());
 
-    PRINT1(_L("End CPcsKeyMap::GetNumericKeyStringL result '%S'"), destination);
+    PRINT1(_L("End CPcsKeyMap::GetMappedStringL result '%S'"), destination);
     return destination;
     }
+
+// ----------------------------------------------------------------------------
+// CPcsKeyMap::GetMappedString
+// ----------------------------------------------------------------------------
+QString CPcsKeyMap::GetMappedString(QString aSource) const
+	{
+#if defined(WRITE_PRED_SEARCH_LOGS)
+	const int KLogLength = 30;
+	TBuf<KLogLength> log(aSource.left(KLogLength).utf16());
+	PRINT1(_L("Enter CPcsKeyMap::GetMappedString input '%S'"), &log);
+#endif
+
+	QString destination;
+	TBool skipHashStar = DetermineSpecialCharBehaviour(aSource);
+	TInt length = aSource.length();
+
+    for (int i = 0; i < length; ++i)
+        {
+        if (aSource[i] == KSpaceChar)
+            {
+            destination.append(KSeparatorChar);
+            }
+        else
+			{
+			QChar ch(0);
+#if defined(USE_ORBIT_KEYMAP)
+            ch = MappedKeyForChar(aSource[i]);
+#else
+            ch = UseHardcodedKeyMap(aSource[i]);            
+#endif
+			if (!ShouldSkipChar(ch, skipHashStar))
+				{
+				destination.append(ch);
+				}
+			}
+		}
+#if defined(WRITE_PRED_SEARCH_LOGS)
+	log = destination.left(KLogLength).utf16();
+	PRINT1(_L("End CPcsKeyMap::GetMappedString result '%S'"), &log);
+#endif
+    return destination;
+	}
+
+// ----------------------------------------------------------------------------
+// CPcsKeyMap::GetNumericLimitsL
+// In order to speed up the execution, caller should convert search pattern
+// with a one call to CPcsKeyMap::GetMappedStringL() and then pass the tokens
+// to CPcsKeyMap::GetNumericLimitsL().
+// So it is expected that aString contains only certain characters.
+// ----------------------------------------------------------------------------
+TInt CPcsKeyMap::GetNumericLimits(QString aString,
+								  QString& aLowerLimit,
+								  QString& aUpperLimit) const
+	{
+	PRINT(_L("CPcsKeyMap::GetNumericLimits"));
+	if (aString.length() > iMaxKeysStoredInDb)
+		{
+		QString truncated = aString.left(iMaxKeysStoredInDb);
+		aString = truncated;
+		}
+
+	TInt err = ComputeValue(aString, EFalse, aLowerLimit);
+	if (err == KErrNone)
+		{
+		err = ComputeValue(aString, ETrue, aUpperLimit);
+		}
+	PRINT1(_L("End CPcsKeyMap::GetNumericLimits ret=%d"), err);
+	return err;
+	}
 
 #if defined(USE_ORBIT_KEYMAP)
 // ----------------------------------------------------------------------------
@@ -162,79 +144,146 @@ QChar CPcsKeyMap::Separator() const
     }
 
 // ----------------------------------------------------------------------------
-// CPcsKeyMap::CPcsKeyMap
-// Fill QList with empty strings
+// CPcsKeyMap::SetHardcodedCharacters
+// Default implementation selects only the current default language.
 // ----------------------------------------------------------------------------
-CPcsKeyMap::CPcsKeyMap() :
-    iKeyMapping() 
+QList<HbInputLanguage> CPcsKeyMap::SelectLanguages()
 	{
+	QList<HbInputLanguage> languages;
+	HbInputLanguage inputLanguage(QLocale::system().language()); 
+	languages << inputLanguage;
+	return languages;
+	}
+
+// ----------------------------------------------------------------------------
+// CPcsKeyMap::SetHardcodedCharacters
+// Default implementation does nothing
+// ----------------------------------------------------------------------------
+void CPcsKeyMap::SetHardcodedCharacters()
+	{
+	}
+#endif // #if defined(USE_ORBIT_KEYMAP)
+
+// ----------------------------------------------------------------------------
+// CPcsKeyMap::DetermineSpecialCharBehaviour
+// Default implementation
+// ----------------------------------------------------------------------------
+TBool CPcsKeyMap::DetermineSpecialCharBehaviour(QString /*aSource*/) const
+	{
+	return EFalse;
+	}
+
+// ----------------------------------------------------------------------------
+// CPcsKeyMap::ShouldSkipChar
+// Default implementation
+// ----------------------------------------------------------------------------
+TBool CPcsKeyMap::ShouldSkipChar(QChar /*aChar*/, TBool /*aSkipHashStar*/) const
+	{
+	return EFalse;
 	}
 
 // ----------------------------------------------------------------------------
 // CPcsKeyMap::ConstructL
 // ----------------------------------------------------------------------------
+#if defined(USE_ORBIT_KEYMAP)
+void CPcsKeyMap::ConstructL(HbKeyboardType aKeyboardType)
+#else
 void CPcsKeyMap::ConstructL()
+#endif
 	{
+	PRINT(_L("Enter CPcsKeyMap::ConstructL"));
+
+#if defined(USE_ORBIT_KEYMAP)
 	TInt err(KErrNone);
-	QT_TRYCATCH_ERROR(err, ContructKeyboardMappings());
-    if (err != KErrNone)
+	QT_TRYCATCH_ERROR(err,
+		{
+		InitKeyMappings();
+		SetHardcodedCharacters();
+		ConstructLanguageMappings(aKeyboardType);
+		});
+	if (err != KErrNone)
         {
-        PRINT1(_L("ContructKeyboardMappings threw exception, err=%d"), err);
+        PRINT1(_L("CPcsKeyMap::ConstructL exception, err=%d"), err);
         User::Leave(err);
+        }
+#endif
+
+	PRINT(_L("End CPcsKeyMap::ConstructL"));
+	}
+
+// ----------------------------------------------------------------------------
+// CPcsKeyMap::CPcsKeyMap
+// ----------------------------------------------------------------------------
+#if defined(USE_ORBIT_KEYMAP)
+CPcsKeyMap::CPcsKeyMap(TInt aAmountOfKeys,
+					   QChar aPadChar,
+					   TInt aMaxKeysStoredInDb) :
+	iKeyMapping(),
+	iAmountOfKeys(aAmountOfKeys),
+	iPadChar(aPadChar),
+	iMaxKeysStoredInDb(aMaxKeysStoredInDb)
+	{
+	}
+#else // #if defined(USE_ORBIT_KEYMAP)
+CPcsKeyMap::CPcsKeyMap(TInt /*aAmountOfKeys*/,
+					   QChar /*aPadChar*/,
+					   TInt aMaxKeysStoredInDb) :
+	iMaxKeysStoredInDb(aMaxKeysStoredInDb)
+	{
+	}
+#endif // #if defined(USE_ORBIT_KEYMAP)
+
+#if defined(USE_ORBIT_KEYMAP)
+// ----------------------------------------------------------------------------
+// CPcsKeyMap::InitKeyMappings
+// Put string for each key into iKeyMapping.
+// ----------------------------------------------------------------------------
+void CPcsKeyMap::InitKeyMappings()
+	{
+    PRINT(_L("Enter CPcsKeyMap::InitKeyMappings"));
+
+	for (TInt i = 0; i < iAmountOfKeys; ++i)
+        {
+        iKeyMapping << QString("");
         }
 	}
 
 // ----------------------------------------------------------------------------
-// CPcsKeyMap::ContructKeyboardMappings
-// Fetch keymap for every language/country pair present.
-// Even though most languages map *, + and # to 1-key, they are here mapped to
-// the distinct *-key or #-key of the 12-key ITU-T keypad.
+// CPcsKeyMap::ConstructLanguageMappings
+// Fetch keymap for selected languages.
 // ----------------------------------------------------------------------------
-void CPcsKeyMap::ContructKeyboardMappings()
+void CPcsKeyMap::ConstructLanguageMappings(HbKeyboardType aKeyboardType) 
 	{
-    PRINT(_L("Enter CPcsKeyMap::ContructKeyboardMappings"));
+    PRINT(_L("Enter CPcsKeyMap::ConstructLanguageMappings"));
 
-	for (TInt i = 0; i < KAmountOfKeys; ++i)
-        {
-        iKeyMapping << QString("");
-        }
-	
-	iKeyMapping[EKeyStar].append(KStar);
-	iKeyMapping[EKeyStar].append(KPlus);
-	iKeyMapping[EKeyHash].append(KHash);
-	iHardcodedChars.append(KStar);
-	iHardcodedChars.append(KPlus);
-	iHardcodedChars.append(KHash);
-
-#if defined(_DEBUG)
+#if defined(WRITE_PRED_SEARCH_LOGS)
     TInt count(0);
 #endif
-    QList<HbInputLanguage> languages;
-#if defined(USE_ONLY_DEFAULT_LANG_KEYMAP)
-	HbInputLanguage inputLanguage(QLocale::system().language()); 
-	languages << inputLanguage;
-#else
-    languages = AvailableLanguages();
-#endif
+
+	QList<HbInputLanguage> languages = SelectLanguages();
+    PRINT1(_L("build keymap from %d language(s)"), languages.count());
+
 	TInt languageCount = languages.size();
 	for (TInt lang = 0; lang < languageCount; ++lang)
 		{
         PRINT2(_L("(%d) handle language %d"), lang, languages[lang].language());
 		if (IsLanguageSupported(languages[lang].language()))
 			{
-/*			PRINT2(_L("Constructing keymap for lang=%d,var=%d"),
+			PRINT2(_L("Constructing keymap for lang=%d,var=%d"),
 				   languages[lang].language(),
-				   languages[lang].variant()); */
+				   languages[lang].variant());
 			const HbKeymap* keymap =
 				HbKeymapFactory::instance()->keymap(languages[lang].language(),
                                                     languages[lang].variant());
 			if (keymap)
 			    {
-				for (TInt key = EKey1; key <= ELastKey; ++key) 
+				for (TInt key = 0; key < iAmountOfKeys; ++key)
                     {
-//                    PRINT1(_L("handle key(enum value %d)"), key); // test
-                    const HbMappedKey* mappedKey = keymap->keyForIndex(HbKeyboardVirtual12Key, key);
-					// mappedKey can be NULL, as most languages don't have mapping for EKeyStar, EKeyHash
+                    PRINT1(_L("handle key(enum value %d)"), key); // test
+                    const HbMappedKey* mappedKey = keymap->keyForIndex(aKeyboardType, key);
+					// 12-key: Most languages don't have mapping for EKeyStar, EKeyHash.
+					// QWERTY: Different languages have different amount of keys,
+					// so mappedKey can be NULL.
                     if (mappedKey)
                         {
 						const QString lowerCase = mappedKey->characters(HbModifierNone); // "abc2.."
@@ -248,13 +297,24 @@ void CPcsKeyMap::ContructKeyboardMappings()
 							if (!iKeyMapping[key].contains(ch) &&
 								!iHardcodedChars.contains(ch))
 								{
-/*								PRINT3(_L("CPcsKeyMap: map key(%d) <-> char='%c'(0x%x)"),
-									   KeyIdToNumber(key),
-									   ch.toAscii(),
-									   ch.toAscii()); */
-#if defined(_DEBUG)
+#if defined(WRITE_PRED_SEARCH_LOGS)
+								char ascChar = ch.toAscii();
+								TChar logChar(ArrayIndexToMappedChar(key).unicode());
+	
+								if (ascChar == 0) // ch can't be represented in ASCII
+									{
+									PRINT2(_L("CPcsKeyMap: map key(%c) <-> char=0x%x"),
+									       logChar, ch);
+									}
+								else
+									{
+									PRINT3(_L("CPcsKeyMap: map key(%c) <-> char='%c'(0x%x)"),
+										   logChar,
+										   ascChar,
+										   ascChar);
+									}
 								++count;
-#endif
+#endif // #if defined(WRITE_PRED_SEARCH_LOGS)
 								iKeyMapping[key] += ch;
 								}
 							}
@@ -268,45 +328,10 @@ void CPcsKeyMap::ContructKeyboardMappings()
 			}
 		}
 
-#if defined(_DEBUG)
-    PRINT1(_L("End CPcsKeyMap::ContructKeyboardMappings keymap has %d chars"), count);
+#if defined(WRITE_PRED_SEARCH_LOGS)
+    PRINT1(_L("End CPcsKeyMap::ConstructLanguageMappings keymap has %d chars"), count);
 #endif
 	}
-
-// ----------------------------------------------------------------------------
-// CPcsKeyMap::AvailableLanguages
-// Put default language at the beginning of the language list, so that
-// ContructKeyboardMappingsL handles it first. 
-// ----------------------------------------------------------------------------
-QList<HbInputLanguage> CPcsKeyMap::AvailableLanguages() const
-    {
-    PRINT(_L("Enter CPcsKeyMap::AvailableLanguages"));
-
-	QList<HbInputLanguage> languages = HbKeymapFactory::availableLanguages();
-
-#if 1 // This code would make sure the default language is at the beginning of
-	  // list of available languages. But since there is resource leak, the code
-	  // is currently commented out until the leak is fixed.
-	QLocale::Language currentLanguage = QLocale::system().language();
-    if (!IsLanguageSupported(currentLanguage))
-        {
-        PRINT(_L("current lang not supported, use english")); //test
-        currentLanguage = QLocale::English;
-        }
-    HbInputLanguage defaultLanguage(currentLanguage);    
-    if (languages.contains(defaultLanguage))
-        {
-        PRINT(_L("remove default lang")); //test
-        languages.removeOne(defaultLanguage);
-        }
-    PRINT(_L("insert default lang as first lang")); //test
-    languages.prepend(defaultLanguage); // THIS LEAKS RESOURCES!
-#endif
-
-    PRINT1(_L("End CPcsKeyMap::AvailableLanguages found %d languages"),
-           languages.count());
-    return languages;
-    }
 
 // ----------------------------------------------------------------------------
 // CPcsKeyMap::IsLanguageSupported
@@ -317,170 +342,26 @@ TBool CPcsKeyMap::IsLanguageSupported(QLocale::Language aLanguage) const
 	}
 
 // ----------------------------------------------------------------------------
-// CPcsKeyMap::KeyForCharacter
+// CPcsKeyMap::MappedKeyForChar
 // Loop all QStrings of iKeyMapping to find one containing the character.
-// If the character is not mapped, use the character itself.
+// If the character is not mapped, use pad character.
 // ----------------------------------------------------------------------------
-TChar CPcsKeyMap::KeyForCharacter(const TChar& aChar) const
+const QChar CPcsKeyMap::MappedKeyForChar(const QChar aChar) const
 	{
-    TUint charValue(aChar);
-    QChar ch(charValue);
-    for (TInt index = 0; index < KAmountOfKeys; ++index) 
+    for (TInt index = 0; index < iAmountOfKeys; ++index) 
         {
-        if (iKeyMapping[index].contains(ch))
+        if (iKeyMapping[index].contains(aChar))
             {
-            return ArrayIndexToNumberChar(index);
+			return ArrayIndexToMappedChar(index);
             }
         }
 
-    PRINT2(_L("CPcsKeyMap::KeyForCharacter no mapping for char '%c' (0x%x)"),
-           (TUint)aChar, (TUint)aChar);
-	return KPadChar;
-    }
-
-#if defined(_DEBUG)
-// ----------------------------------------------------------------------------
-// CPcsKeyMap::KeyIdToNumber
-// Map Orbit API's key id to the number that the key results when pressed. 
-// ----------------------------------------------------------------------------
-TInt CPcsKeyMap::KeyIdToNumber(TInt aKeyId) const
-	{
-	switch (aKeyId)
-		{
-		case EKey1:
-		case EKey2:
-		case EKey3:
-		case EKey4:
-		case EKey5:
-		case EKey6:
-		case EKey7:
-		case EKey8:
-		case EKey9:
-		case EKeyStar:
-		case EKeyHash:
-			return aKeyId + 1;
-		case EKey0:
-			return 0;
-		default:
-		    PRINT1(_L("CPcsKeyMap::KeyIdToNumber invalid index %d"), aKeyId);
-			User::Panic(_L("CPcsKeyMap::KeyIdToNumber"), KErrArgument);
-			return 0;
-		}
-	}
+#if _DEBUG
+	TUint ch = aChar.unicode();
+	PRINT2(_L("CPcsKeyMap::MappedKeyForChar no mapping for char '%c' (0x%x)"),
+		   ch, ch);
 #endif
-
-// ----------------------------------------------------------------------------
-// CPcsKeyMap::ArrayIndexToNumberChar
-// Map index of iKeyMapping list, to the number char that the mapping is for.
-// ----------------------------------------------------------------------------
-TChar CPcsKeyMap::ArrayIndexToNumberChar(TInt aArrayIndex) const
-	{
-	__ASSERT_DEBUG(aArrayIndex < KAmountOfKeys,
-				   User::Panic(_L("CPcsKeyMap::ArrayIndexToNumberChar"),
-				   KErrOverflow));
-	switch (aArrayIndex)
-		{
-		case EKey0:
-			return '0';
-		case EKeyStar:
-			return KMappedCharForStar;
-		case EKeyHash:
-			return KMappedCharForHash;
-		default:
-			return aArrayIndex + '1';
-		}
-	}
-#else // #if defined(USE_ORBIT_KEYMAP)
-CPcsKeyMap::CPcsKeyMap()
-	{
-	}
-
-void CPcsKeyMap::ConstructL()
-	{
-	}
-
-TChar CPcsKeyMap::GetNumericValueForChar(TChar input) const
-    {
-	TChar ret = '0';
-    switch (input)
-        {
-        case 'A': 
-        case 'B': 
-        case 'C':
-            ret = '2';
-            break;
-
-        case 'D': 
-        case 'E':
-        case 'F':
-            ret = '3';
-            break;
-            
-        case 'G': 
-        case 'H':
-        case 'I':
-            ret = '4';
-            break;
-
-        case 'J': 
-        case 'K': 
-        case 'L':
-            ret = '5';
-            break;
-
-        case 'M': 
-        case 'N': 
-        case 'O':
-            ret = '6';
-            break;
-      
-        case 'P': 
-        case 'Q':
-        case 'R': 
-        case 'S':
-            ret = '7';
-            break;
-
-        case 'T':
-        case 'U': 
-        case 'V':
-            ret = '8';
-            break;
-
-        case 'W':
-        case 'X':
-        case 'Y': 
-        case 'Z':
-            ret = '9';
-            break;
-
-		case '*':
-		case '+':
-		    ret = KMappedCharForStar;
-		    break;
-		    
-		case '#':
-		    ret = KMappedCharForHash;
-		    break;
-
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-        case ' ':
-            ret = input; // Numbers and space
-            break;
-
-		default: // Other (unknown) chars
-		    ret = KPadChar;
-        }
-    return ret;    
+	return iPadChar;
     }
 #endif // #if defined(USE_ORBIT_KEYMAP)
 

@@ -63,24 +63,22 @@ CntCompanyEditorModel::~CntCompanyEditorModel()
 void CntCompanyEditorModel::saveContactDetails()
 {
     HbDataFormModelItem* root = invisibleRootItem();
-    if (!root->childAt(0)->contentWidgetData("text").toString().isEmpty())
-        mCompany.setName( root->childAt(0)->contentWidgetData("text").toString() );
-    else
-        mCompany.setName(QString());
-    if (!root->childAt(1)->contentWidgetData("text").toString().isEmpty())
-        mCompany.setTitle( root->childAt(1)->contentWidgetData("text").toString() );
-    else
-        mCompany.setTitle(QString());
-    if (!root->childAt(2)->contentWidgetData("text").toString().isEmpty())
-        mCompany.setDepartment( root->childAt(2)->contentWidgetData("text").toString().split(", ") );
-    else
-        mCompany.setDepartment(QStringList());
-    if (!root->childAt(3)->contentWidgetData("text").toString().isEmpty())
-        mCompany.setAssistantName( root->childAt(3)->contentWidgetData("text").toString() );
-    else
-        mCompany.setAssistantName(QString());
+    QString name = root->childAt(0)->contentWidgetData("text").toString();
+    QString title = root->childAt(1)->contentWidgetData("text").toString();
+    QString department = root->childAt(2)->contentWidgetData("text").toString();
+    QString assistant = root->childAt(3)->contentWidgetData("text").toString();
     
-    mContact->saveDetail( &mCompany );
+    if ( mCompany.name() != name ||
+         mCompany.title() != title || 
+         mCompany.department().join(", ") != department ||
+         mCompany.assistantName() != assistant )
+    {
+        mCompany.setName( name );
+        mCompany.setTitle( title );
+        mCompany.setDepartment( department.split(", ") );
+        mCompany.setAssistantName( assistant );
+        mContact->saveDetail( &mCompany );
+    }
     
     if ( mCompany.name().isEmpty() && 
          mCompany.title().isEmpty() &&

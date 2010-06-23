@@ -50,7 +50,6 @@
 #include <driveinfo.h>
 
 #include <qtcontacts.h>
-#include <qcontactname.h>
 
 #include "cntsymbianengine.h"
 #include "qcontactchangeset.h"
@@ -111,6 +110,9 @@ CntSymbianEngine::CntSymbianEngine(const QMap<QString, QString>& parameters, QCo
 #endif
         m_relationship     = new CntRelationship(m_dataBase->contactDatabase(), m_managerUri);
         m_displayLabel     = new CntDisplayLabel();
+#ifdef SYMBIAN_BACKEND_USE_SQLITE
+        connect(m_displayLabel, SIGNAL(displayLabelChanged()), this, SIGNAL(dataChanged()));
+#endif
     }
 }
 
@@ -148,6 +150,11 @@ QList<QContactLocalId> CntSymbianEngine::contactIds(
         // Remove possible false positives
         if(!filterSupported && *error == QContactManager::NotSupportedError)
             {
+            //fetch all contacts
+            *error = QContactManager::NoError;
+            result = m_contactFilter->contacts(QContactFilter(),sortOrders, filterSupported, error);
+            
+            //slow filtering
             result = slowFilter(filter, result, error);
             
             //slow sorting until it's supported in SQL requests
@@ -168,7 +175,7 @@ QList<QContactLocalId> CntSymbianEngine::contactIds(
             }
         }
 #endif
-
+    
     return result;
 }
 
@@ -241,13 +248,14 @@ QContact CntSymbianEngine::contact(const QContactLocalId& contactId, const QCont
             QContactManagerEngine::setContactRelationships(contact, relationships);
         }
     }
+    
     return *QScopedPointer<QContact>(contact);
 }
 
 bool CntSymbianEngine::saveContact(QContact* contact, QContactManager::Error* error)
 {
     QContactChangeSet changeSet;
-    TBool ret = doSaveContact(contact, changeSet, error);
+    bool ret = doSaveContact(contact, changeSet, error);
     changeSet.emitSignals(this);
     return ret;
 }
@@ -865,6 +873,12 @@ bool CntSymbianEngine::setSelfContactId(const QContactLocalId& contactId, QConta
         return false;
     }
 
+    QContactManager::Error e;
+    QContactLocalId selfCntId = selfContactId( &e ); // err ignored
+   
+    QContactChangeSet changeSet;
+    QOwnCardPair ownCard(selfCntId, contactId);
+    
     TContactItemId id(contactId);
     CContactItem* symContact = 0;
     TRAPD(err,
@@ -872,6 +886,15 @@ bool CntSymbianEngine::setSelfContactId(const QContactLocalId& contactId, QConta
         m_dataBase->contactDatabase()->SetOwnCardL(*symContact);
         );
     delete symContact;
+    
+    if(err == KErrNone)
+       {
+       m_dataBase->appendContactEmitted(id);
+       
+       changeSet.setOldAndNewSelfContactId(ownCard);
+       changeSet.emitSignals( this );
+       }
+    
     CntSymbianTransformError::transformError(err, error);
     return (err==KErrNone);
 }

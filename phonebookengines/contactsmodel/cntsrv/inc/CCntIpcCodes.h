@@ -38,6 +38,7 @@
 
 // To be removed. Should be defined in a header file
 #define KCntSearchResultList 99
+#define KCntPredictiveSearchList 98
 
 /**
 Contacts database filename maximum length.  Used to police descriptors on Client
@@ -111,7 +112,10 @@ enum TCntClientIpcCodes
     ECntSearchResultList = KCntSearchResultList,  // Do not change this enum value
                                                   // and do not add anything immediately
                                                   // after this.
-	// ---- Read User Data capability ----
+    ECntPredictiveSearchList = KCntPredictiveSearchList,     // Do not change this enum value
+                                                    // and do not add anything immediately
+                                                    // after this.
+                                                    // ---- Read User Data capability ----
 	ECntOpenDataBase= KCapabilityReadUserData,
 	ECntReOpenDbTables,
 	ECntCreateView,

@@ -27,12 +27,14 @@
 #include <hblineedit.h>
 #include <hbinputeditorinterface.h>
 #include <hbinputstandardfilters.h>
+#include <cntdebug.h>
 
 const char *CNT_DETAILEDITOR_XML = ":/xml/contacts_detail_editor.docml";
 
 CntDetailEditor::CntDetailEditor( int aId ) :
     QObject(),
     mDataFormModel(NULL),
+    mHeader(NULL),   
     mId(aId),
     mView(NULL),
     mLoader(NULL),   
@@ -73,7 +75,7 @@ void CntDetailEditor::setViewId( int aId )
 
 void CntDetailEditor::setInsertAction( const QString aInsert )
 {
-    HbAction* insert = new HbAction( aInsert );
+    HbAction* insert = new HbAction( aInsert, mView );
     mView->menu()->insertAction(mCancel, insert);
     connect( insert, SIGNAL(triggered()), this, SLOT(insertField()) );
 }
@@ -84,7 +86,8 @@ void CntDetailEditor::activate( CntAbstractViewManager* aMgr, const CntViewParam
     mArgs = aArgs; //don't loose the params while swiching between editview and editorviews.
     
     mCancel = static_cast<HbAction*>(document()->findObject("cnt:discardchanges"));
-    mView->menu()->addAction( mCancel );
+    mCancel->setParent(mView);
+    mView->menu()->addAction(mCancel);
     connect( mCancel, SIGNAL(triggered()), this, SLOT(discardChanges()) );
     
     if ( mView->navigationAction() != mSoftkey) {
@@ -96,11 +99,11 @@ void CntDetailEditor::activate( CntAbstractViewManager* aMgr, const CntViewParam
     {
         selectedContact = aArgs.value(ESelectedGroupContact).value<QContact>();
         connect( mDataForm, SIGNAL(itemShown(const QModelIndex&)), this, SLOT(handleItemShown(const QModelIndex&)) );
-
     }
     else
     {
         selectedContact = aArgs.value(ESelectedContact).value<QContact>();
+        connect( mDataForm, SIGNAL(itemShown(const QModelIndex&)), this, SLOT(handleItemShown(const QModelIndex&)) );
     }
     mEditorFactory->setupEditorView(*this, selectedContact);
     
@@ -156,6 +159,12 @@ void CntDetailEditor::handleItemShown(const QModelIndex& aIndex )
             HbLineEdit* edit = static_cast<HbLineEdit*>( viewItem->dataItemContentWidget() );
             edit->setInputMethodHints( Qt::ImhDialableCharactersOnly );
         }
+    }
+    else
+    {
+        HbDataFormViewItem* viewItem = static_cast<HbDataFormViewItem*>(mDataForm->itemByIndex( aIndex ));
+        HbLineEdit* edit = static_cast<HbLineEdit*>( viewItem->dataItemContentWidget() );
+        edit->setInputMethodHints( Qt::ImhNoPredictiveText );
     }
 }
 

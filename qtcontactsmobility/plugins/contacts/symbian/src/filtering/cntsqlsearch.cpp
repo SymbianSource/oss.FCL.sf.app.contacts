@@ -104,11 +104,11 @@ CntSqlSearch::CntSqlSearch()
 //  "0010023004560" -> tokens "001" and "23004560")
 //
 // 6: "10", "1000"
-// Two tokens, last token ends zero.
+// One token, ends with zero.
 // In this case, query should look-up first toke and number ("10", "1000").
 
 QString CntSqlSearch::CreatePredictiveSearch(const QString &pattern)
-	{
+	{    
 	int len = pattern.length();
         QString newPattern = ChangeStringPadings(pattern);
 	// For best performance, handle 1 digit case first
@@ -246,29 +246,29 @@ QStringList CntSqlSearch::GetTokens(const QString& pattern) const
 // pattern length is between KMinimumSearchPatternLength...KLimitLength
 QString CntSqlSearch::CreateQuery(const QString& pattern) const
 	{
-        QStringList tokens = GetTokens(pattern);
+	QStringList tokens = GetTokens(pattern);
 	if (tokens.count() < KTwoTokens)
+        {
+	    if (TestPattern(pattern, CntSqlSearch::ZerosEndOfFirstToken))
             {
-            if( TestPattern(pattern, CntSqlSearch::ZerosEndOfFirstToken))
-                {
-                return TwoDifferentTokensSearch(pattern, tokens);  // Case 6
-                }
-            else
-                {
-                return ExactMatchSearch(pattern) + Order(tokens); // Case 2
-                }
+            return TwoDifferentTokensSearch(pattern, tokens);  // Case 6
             }
+        else
+            {
+            return ExactMatchSearch(pattern) + Order(tokens); // Case 2
+            }
+        }
 	else
-	    {
-            if (tokens.at(0) == tokens.at(1))
-                {
-                return IdenticalTokensSearch(pattern, tokens); // Case 3
-                }
-            else
-                {
-                return IntersectionSearch(pattern, tokens); // Case 4
-                }
+        {
+        if (tokens.at(0) == tokens.at(1))
+            {
+            return IdenticalTokensSearch(pattern, tokens); // Case 3
             }
+        else
+            {
+            return IntersectionSearch(pattern, tokens); // Case 4
+            }
+        }
 	}
 
 QString CntSqlSearch::ExactMatchSearch(const QString& pattern) const
@@ -325,8 +325,8 @@ This query works if both tokens have just one digit (e.g. "102", but not "1023")
 // Find the exact match, or a column whose value is within
 // lower..upper(exclusive) and another column whose value is within
 // lower2..upper2(exclusive).
-// In this case the limits are is different, so there are 12 combinations the
-// two values can exist in four columns:
+// In this case the limits are different, so there are 12 combinations the two
+// values can exist in four columns:
 // 
 // (column = X  AND column2 = Y) OR
 // (column = X  AND column3 = Y) OR
@@ -503,7 +503,7 @@ QString CntSqlSearch::ExactMatch(const QString& pattern, QString table) const
 	//
 	// Which means:
 	// (NOT(NOT(N>lower  && < N<upper)  AND NOT(N2>lower && < N2<upper) AND
-	//      NOT(N3>lower && < N3<upper) AND NOT(N>lower && < N<upper))
+	//      NOT(N3>lower && < N3<upper) AND NOT(N4>lower && < N4<upper))
 	//
 	// As KColumn1 is most likely to contain a match, "NOT(KColumn1)" is more
 	// likely to be false than "NOT(KColumn2)" etc. So put KColumn1 first in the

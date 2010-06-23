@@ -13,7 +13,7 @@ symbian: {
     TARGET.UID3 = 0x2002AC7B
   
     INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
-  
+	
     INCLUDEPATH += inc
     INCLUDEPATH += rss
     INCLUDEPATH += $$SOURCE_DIR/contacts
@@ -61,7 +61,7 @@ symbian: {
         inc/filtering/cntfilterdefault.h \
         inc/filtering/cntfilterintersection.h \
         inc/filtering/cntfilterunion.h \   				
-				inc/filtering/cntabstractcontactsorter.h \
+        inc/filtering/cntabstractcontactsorter.h \
         inc/filtering/cntabstractcontactfilter.h \
         inc/filtering/cntsymbianfilterdbms.h \
         inc/filtering/cntsymbianfiltersql.h \

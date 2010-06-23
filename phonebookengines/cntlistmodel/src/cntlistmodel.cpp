@@ -17,6 +17,7 @@
 #include "cntlistmodel_p.h"
 #include "cntlistmodel.h"
 #include "cntcache.h"
+#include "cntdebug.h"
 
 #include <qtcontacts.h>
 #include <QSet>
@@ -25,6 +26,8 @@
 #include <hbindexfeedback.h>
 #include <hbframebackground.h>
 #include <hbframedrawer.h>
+#include <xqsettingsmanager.h> // for reading cenrep keys
+#include <xqsettingskey.h>
 
 const uint dummyMyCardId = 0;
 
@@ -33,27 +36,28 @@ const uint dummyMyCardId = 0;
  * to the default persisted store.
  */
 CntListModel::CntListModel(const QContactFilter& contactFilter,
-                         const QList<QContactSortOrder>& contactSortOrders,
                          bool showMyCard,
                          QObject *parent)
     : QAbstractListModel(parent)
 {
-    mDefaultIcon = HbIcon("qtg_large_avatar");
-    mDefaultMyCardIcon = HbIcon("qtg_large_mycard");
+    CNT_ENTRY
+    m_defaultIcon = HbIcon("qtg_large_avatar");
+    m_defaultMyCardIcon = HbIcon("qtg_large_mycard");
 
-    d = new CntListModelData(contactFilter, contactSortOrders, showMyCard);
+    d = new CntListModelData(contactFilter, showMyCard);
     d->m_contactManager = new QContactManager;
-    d->ownedContactManager = true;
+    d->m_ownedContactManager = true;
     d->m_cache = CntCache::instance();
     connect(d->m_cache, SIGNAL(contactInfoUpdated(QContactLocalId)), this, SLOT(handleContactInfoUpdated(QContactLocalId)));
-    d->mMyCardId = d->m_contactManager->selfContactId();
+    d->m_myCardId = d->m_contactManager->selfContactId();
     if (doConstruct() != QContactManager::NoError) {
         throw("exception");
     }
+    CNT_EXIT
 }
 
 /*!
- * Construct a new MobCntModel object using manager as the QContactManager
+ * Construct a new CntListModel object using manager as the QContactManager
  * instance to communicate with the contacts database.
  *
  * \param manager A QContactManager instance to be used for
@@ -61,22 +65,24 @@ CntListModel::CntListModel(const QContactFilter& contactFilter,
  */
 CntListModel::CntListModel(QContactManager* manager,
                          const QContactFilter& contactFilter,
-                         const QList<QContactSortOrder>& contactSortOrders,
                          bool showMyCard,
                          QObject *parent)
     : QAbstractListModel(parent)
 {
-    mDefaultIcon = HbIcon("qtg_large_avatar");
-    mDefaultMyCardIcon = HbIcon("qtg_large_mycard");
+    CNT_ENTRY
+    m_defaultIcon = HbIcon("qtg_large_avatar");
+    m_defaultMyCardIcon = HbIcon("qtg_large_mycard");
+    m_defaultMyCardIcon = HbIcon("qtg_large_mycard");
 
-    d = new CntListModelData(contactFilter, contactSortOrders, showMyCard);
+    d = new CntListModelData(contactFilter, showMyCard);
     d->m_contactManager = manager;
     d->m_cache = CntCache::instance();
     connect(d->m_cache, SIGNAL(contactInfoUpdated(QContactLocalId)), this, SLOT(handleContactInfoUpdated(QContactLocalId)));
-    d->mMyCardId = d->m_contactManager->selfContactId();
+    d->m_myCardId = d->m_contactManager->selfContactId();     
     if (doConstruct() != QContactManager::NoError) {
         throw("exception");
     }
+    CNT_EXIT
 }
 
 CntListModel::~CntListModel()
@@ -93,6 +99,7 @@ CntListModel::~CntListModel()
  */
 QVariant CntListModel::data(const QModelIndex &index, int role) const
 {
+    CNT_ENTRY
     int row = index.row();
 
     // check that row is ok
@@ -102,22 +109,22 @@ QVariant CntListModel::data(const QModelIndex &index, int role) const
     }
     
     // update current contact if needed
-    if (row != d->currentRow ) {
-        if (d->contactIds[row] == dummyMyCardId) {
+    if (row != d->m_currentRow ) {
+        if (d->m_contactIds[row] == dummyMyCardId) {
             // row contains dummy MyCard, so create dummy CntContactInfo
-            d->currentContact = CntContactInfo();
+            d->m_currentContact = CntContactInfo();
         }
         else {
-            d->currentContact = d->m_cache->fetchContactInfo(row, d->contactIds);
+            d->m_currentContact = d->m_cache->fetchContactInfo(row, d->m_contactIds);
         }
-        d->currentRow = row;
+        d->m_currentRow = row;
     }
     
     if (role == Qt::DisplayRole) {
         return dataForDisplayRole(row);
     }
     else if (role == Hb::IndexFeedbackRole) {
-        if (row == 0 && (d->mMyCardId == d->contactIds[0] || dummyMyCardId == d->contactIds[0])) {
+        if (row == 0 && (d->m_myCardId == d->m_contactIds[0] || dummyMyCardId == d->m_contactIds[0])) {
             // do not include MyCard in index feedback
             return QVariant();
         }
@@ -126,23 +133,23 @@ QVariant CntListModel::data(const QModelIndex &index, int role) const
         }
     }
     else if (role == Qt::BackgroundRole) {
-        if (d->mMyCardId == d->contactIds[row] || dummyMyCardId == d->contactIds[row]) {
+        if (d->m_myCardId == d->m_contactIds[row] || dummyMyCardId == d->m_contactIds[row]) {
             return HbFrameBackground("qtg_fr_list_parent_normal", HbFrameDrawer::NinePieces);
         }
     }
     else if (role == Qt::DecorationRole) {
         QList<QVariant> icons;
-        HbIcon avatar = d->currentContact.icon1();
-        HbIcon statusIcon = d->currentContact.icon2();
+        HbIcon avatar = d->m_currentContact.icon1();
+        HbIcon statusIcon = d->m_currentContact.icon2();
     
         if (!avatar.isNull()) {
             icons.append(avatar);
         }
-        else if (d->mMyCardId == d->contactIds[row] || dummyMyCardId == d->contactIds[row]) {
-            icons.append(mDefaultMyCardIcon);
+        else if (d->m_myCardId == d->m_contactIds[row] || dummyMyCardId == d->m_contactIds[row]) {
+            icons.append(m_defaultMyCardIcon);
         }
         else {
-            icons.append(mDefaultIcon);
+            icons.append(m_defaultIcon);
         }
 
         if (!statusIcon.isNull()) {
@@ -151,7 +158,7 @@ QVariant CntListModel::data(const QModelIndex &index, int role) const
 
         return icons;
     }
-
+    CNT_EXIT
     return QVariant();
 }
 
@@ -163,15 +170,15 @@ QVariant CntListModel::data(const QModelIndex &index, int role) const
  */
 int CntListModel::rowCount(const QModelIndex& /*parent*/) const
 {
-    return d->contactIds.count();
+    return d->m_contactIds.count();
 }
 
 /*!
  * Read a full contact entry from the database for the given model
  * index value. Only the row part of the index information will be
- * read. This is just an overload of MobCntModel::contact() that
+ * read. This is just an overload of CntListModel::contact() that
  * supports old behaviour and calls:
- *      MobCntModel::contact(int row);
+ *      CntListModel::contact(int row);
  *
  * The entry at the requested row will have its full contact information
  * (all fields) read from the database and returned as a QContact instance.
@@ -216,15 +223,12 @@ QContactManager& CntListModel::contactManager() const
  * \param contactFilter New contact filter.
  * \param contactSortOrders New sort order.
  */
-void CntListModel::setFilterAndSortOrder(const QContactFilter& contactFilter,
-                           const QList<QContactSortOrder>& contactSortOrders)
+void CntListModel::setFilter(const QContactFilter& contactFilter)
 {
-    d->filter = contactFilter;
-    // keep current sort order if new one isn't given
-    if (contactSortOrders.count()) {
-        d->sortOrders = contactSortOrders;
-    }
-    d->currentRow = -1;
+    CNT_ENTRY
+    
+    d->m_filter = contactFilter;
+    d->m_currentRow = -1;
     
     //refresh model
     updateContactIdsArray();
@@ -232,6 +236,61 @@ void CntListModel::setFilterAndSortOrder(const QContactFilter& contactFilter,
     beginResetModel();
     reset();
     endResetModel();
+    
+    CNT_EXIT
+}
+
+void CntListModel::setSortOrder()
+{
+    XQSettingsKey nameOrderKey(XQSettingsKey::TargetCentralRepository,
+                         KCRUiContacts.iUid,
+                         KCntNameOrdering);
+    XQSettingsManager settingsMng;
+    int order = settingsMng.readItemValue(nameOrderKey, XQSettingsManager::TypeInt).toInt();
+
+    QContactSortOrder sortOrderFirstName;
+    sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,
+        QContactName::FieldFirstName);
+    sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
+
+    QContactSortOrder sortOrderLastName;
+    sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,
+        QContactName::FieldLastName);
+    sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
+
+    QList<QContactSortOrder> sortOrders;
+    if (order == CntOrderLastFirst || order == CntOrderLastCommaFirst) {
+        sortOrders.append(sortOrderLastName);
+        sortOrders.append(sortOrderFirstName);
+    } else {
+        sortOrders.append(sortOrderFirstName);
+        sortOrders.append(sortOrderLastName);
+    }
+    
+    QContactSortOrder sortOrderOrg;
+    sortOrderOrg.setDetailDefinitionName(QContactOrganization::DefinitionName,
+        QContactOrganization::FieldName);
+    sortOrders.append(sortOrderOrg);
+    
+    d->m_sortOrders = sortOrders;
+}
+
+void CntListModel::refreshModel()
+{
+    CNT_ENTRY
+    
+    setSortOrder();
+    d->m_cache->clearCache();
+    d->m_currentRow = -1;
+    
+    //refresh model
+    updateContactIdsArray();
+
+    beginResetModel();
+    reset();
+    endResetModel();
+    
+    CNT_EXIT
 }
 
 /*!
@@ -241,36 +300,38 @@ void CntListModel::setFilterAndSortOrder(const QContactFilter& contactFilter,
  */
 void CntListModel::showMyCard(bool enabled)
 {
-    if (d->showMyCard == enabled) {
+    CNT_ENTRY
+    if (d->m_showMyCard == enabled) {
         return;
     }
     
-    QContactLocalId myCardId = d->mMyCardId;
+    QContactLocalId myCardId = d->m_myCardId;
     if (enabled) {
         //add MyCard to the list
         if (myCardId <= 0) {
             // create a placeholder for MyCard
-            d->contactIds.insert(0, dummyMyCardId);
+            d->m_contactIds.insert(0, dummyMyCardId);
         }
         else {
-            d->contactIds.insert(0, myCardId);
+            d->m_contactIds.insert(0, myCardId);
         }
     }
     else {
         // remove MyCard from the list
         if (myCardId <= 0) {
-            d->contactIds.removeOne(dummyMyCardId);
+            d->m_contactIds.removeOne(dummyMyCardId);
         }
         else {
-            d->contactIds.removeOne(myCardId);
+            d->m_contactIds.removeOne(myCardId);
         }
     }
-    d->showMyCard = enabled;
-    d->currentRow = -1;
+    d->m_showMyCard = enabled;
+    d->m_currentRow = -1;
 
     beginResetModel();
     reset();
     endResetModel();
+    CNT_EXIT
 }
 
 /*!
@@ -280,7 +341,7 @@ void CntListModel::showMyCard(bool enabled)
  */
 bool CntListModel::myCardStatus() const
 {
-    return d->showMyCard;
+    return d->m_showMyCard;
 }
 
 /*!
@@ -290,7 +351,7 @@ bool CntListModel::myCardStatus() const
  */
 QContactLocalId CntListModel::myCardId() const
 {
-    return d->mMyCardId;
+    return d->m_myCardId;
 }
 
 /*!
@@ -300,6 +361,8 @@ QContactLocalId CntListModel::myCardId() const
  */
 int CntListModel::doConstruct()
 {
+    CNT_ENTRY
+    
     int error = initializeData();
     
     // Attach database notifications to handlers.
@@ -307,22 +370,28 @@ int CntListModel::doConstruct()
     connect(d->m_contactManager, SIGNAL(contactsChanged(const QList<QContactLocalId>&)), this, SLOT(handleChanged(const QList<QContactLocalId>&)));
     connect(d->m_contactManager, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), this, SLOT(handleRemoved(const QList<QContactLocalId>&)));
     connect(d->m_contactManager, SIGNAL(selfContactIdChanged(const QContactLocalId&, const QContactLocalId&)), this, SLOT(handleMyCardChanged(const QContactLocalId&, const QContactLocalId&)));
-
+    connect(d->m_contactManager, SIGNAL(dataChanged()), this, SLOT(refreshModel()));
+    
+    CNT_EXIT
     return error;
 }
 
 /*!
- * Initializes d->contactIds to contain contact Ids from the database.
+ * Initializes d->m_contactIds to contain contact Ids from the database.
  * 
  * \return Error status
  */
 int CntListModel::initializeData()
 {
+    CNT_ENTRY
     int error(QContactManager::NoError);
+    
+    setSortOrder();
 
     // Get a list of all contact IDs in the database.
     updateContactIdsArray();
 
+    CNT_EXIT
     return error;
 }
 
@@ -333,22 +402,24 @@ int CntListModel::initializeData()
  */
 void CntListModel::updateContactIdsArray()
 {
-    d->contactIds = d->m_contactManager->contactIds(d->filter,
-            d->sortOrders);
+    CNT_ENTRY
+    d->m_contactIds = d->m_contactManager->contactIds(d->m_filter,
+            d->m_sortOrders);
                       
     //find MyCard contact and move it to the first position
-    QContactLocalId myCardId = d->mMyCardId;
+    QContactLocalId myCardId = d->m_myCardId;
     if (myCardId > 0) {
         // MyCard exists
-        d->contactIds.removeOne(myCardId);
-        if (d->showMyCard) {
-            d->contactIds.insert(0, myCardId);
+        d->m_contactIds.removeOne(myCardId);
+        if (d->m_showMyCard) {
+            d->m_contactIds.insert(0, myCardId);
         }
     } 
-    else if (d->showMyCard) {
+    else if (d->m_showMyCard) {
         // create a placeholder for MyCard
-        d->contactIds.insert(0, dummyMyCardId);
+        d->m_contactIds.insert(0, dummyMyCardId);
     }
+    CNT_EXIT
 }
 
 /*!
@@ -364,11 +435,12 @@ void CntListModel::updateContactIdsArray()
  */
 QContact CntListModel::contact(int row) const
 {
-    if (!validRowId(row) || d->contactIds[row] == dummyMyCardId) {
+    CNT_ENTRY
+    if (!validRowId(row) || d->m_contactIds[row] == dummyMyCardId) {
         return QContact();
     }
-
-    return d->m_contactManager->contact(d->contactIds[row]);
+    CNT_EXIT
+    return d->m_contactManager->contact(d->m_contactIds[row]);
 }
 
 /*!
@@ -390,7 +462,7 @@ bool CntListModel::validRowId(int row) const
  */
 int CntListModel::rowId(const QContactLocalId &contactId) const
 {
-    return d->contactIds.indexOf(contactId);
+    return d->m_contactIds.indexOf(contactId);
 }
 
 /*!
@@ -402,16 +474,17 @@ int CntListModel::rowId(const QContactLocalId &contactId) const
  */
 QVariant CntListModel::dataForDisplayRole(int row) const
 {
+    CNT_ENTRY
     QStringList list;
     QString name;
     QString infoText;
     bool isSelfContact = false;
     bool isNonEmptySelfContact = false;
     
-    QContactLocalId id = d->contactIds[row];
-    if (d->mMyCardId == id || dummyMyCardId == id) {
+    QContactLocalId id = d->m_contactIds[row];
+    if (d->m_myCardId == id || dummyMyCardId == id) {
         isSelfContact = true;
-        if (d->currentContact.id() == -1) {
+        if (d->m_currentContact.id() == -1) {
             // empty card
             name = hbTrId("txt_phob_dblist_mycard");
             infoText = hbTrId("txt_phob_dblist_mycard_val_create_my_identity");
@@ -422,11 +495,11 @@ QVariant CntListModel::dataForDisplayRole(int row) const
     }
 
     if (!isSelfContact || isNonEmptySelfContact) {
-        name = d->currentContact.name();
+        name = d->m_currentContact.name();
         if (name.isEmpty()) {
             name = hbTrId("txt_phob_list_unnamed");
         }
-        infoText = d->currentContact.text();
+        infoText = d->m_currentContact.text();
     }
     
     list << name;
@@ -434,7 +507,7 @@ QVariant CntListModel::dataForDisplayRole(int row) const
     if (!isNonEmptySelfContact) {
         list << infoText;
     }
-    
+    CNT_EXIT
     return list;
 }
 
@@ -445,10 +518,12 @@ QVariant CntListModel::dataForDisplayRole(int row) const
  */
 void CntListModel::handleAdded(const QList<QContactLocalId>& contactIds)
 {
+    CNT_ENTRY
+    
     //if contacts are added already, no need to do anything
     bool newContacts = false;
     for (int k = 0; k < contactIds.count() && !newContacts; k++) { 
-        if(!d->contactIds.contains(contactIds.at(k))) {
+        if(!d->m_contactIds.contains(contactIds.at(k))) {
             newContacts = true;
         }
     }
@@ -457,15 +532,15 @@ void CntListModel::handleAdded(const QList<QContactLocalId>& contactIds)
     }
 
     //invalidate cached contact
-    d->currentRow = -1;
+    d->m_currentRow = -1;
     
-    QList<QContactLocalId> oldIdList = d->contactIds;
+    QList<QContactLocalId> oldIdList = d->m_contactIds;
     updateContactIdsArray();
     
     //Find all new contacts (=rows)
     QList<int> newRows;
-    for(int i = 0; i < d->contactIds.count(); i++) {
-        if (!oldIdList.contains(d->contactIds.at(i))) {
+    for(int i = 0; i < d->m_contactIds.count(); i++) {
+        if (!oldIdList.contains(d->m_contactIds.at(i))) {
             newRows.append(i);
         }
     }
@@ -483,6 +558,7 @@ void CntListModel::handleAdded(const QList<QContactLocalId>& contactIds)
         reset();
         endResetModel();
     }
+    CNT_EXIT
 }
 
 /*!
@@ -492,12 +568,14 @@ void CntListModel::handleAdded(const QList<QContactLocalId>& contactIds)
  */
 void CntListModel::handleChanged(const QList<QContactLocalId>& contactIds)
 {
+    CNT_ENTRY
+    
     if (contactIds.count() == 0) {
         return;
     }
     
     //invalidate cached contact
-    d->currentRow = -1; 
+    d->m_currentRow = -1; 
 
     int firstChangedContactPosBefore = rowId(contactIds.at(0));  
     updateContactIdsArray();
@@ -517,6 +595,8 @@ void CntListModel::handleChanged(const QList<QContactLocalId>& contactIds)
         reset();
         endResetModel();
     }
+    
+    CNT_EXIT
 }
 
 /*!
@@ -526,8 +606,10 @@ void CntListModel::handleChanged(const QList<QContactLocalId>& contactIds)
  */
 void CntListModel::handleRemoved(const QList<QContactLocalId>& contactIds)
 {
+    CNT_ENTRY
+    
     bool removeContacts = false;
-    QList<QContactLocalId> idList = d->contactIds;
+    QList<QContactLocalId> idList = d->m_contactIds;
     for (int k = 0; k < contactIds.count() && !removeContacts; k++) {
         if(idList.contains(contactIds.at(k))) {
             removeContacts = true;
@@ -546,14 +628,14 @@ void CntListModel::handleRemoved(const QList<QContactLocalId>& contactIds)
     }
     
     // invalidate cached contact
-    d->currentRow = -1;
+    d->m_currentRow = -1;
         
     bool removeMyCard(false);
     int myCardRow = -1;
-    if (contactIds.contains(d->mMyCardId)) {
+    if (contactIds.contains(d->m_myCardId)) {
         removeMyCard = true;
-        myCardRow = rowId(d->mMyCardId);    
-        d->mMyCardId = 0;
+        myCardRow = rowId(d->m_myCardId);    
+        d->m_myCardId = 0;
     }
     
     int removeRowsCount=removeRows.count();
@@ -561,7 +643,7 @@ void CntListModel::handleRemoved(const QList<QContactLocalId>& contactIds)
     for(int j = 0; j < removeRows.count(); j++) {
         if (removeMyCard 
              && removeRows.at(j) == myCardRow 
-             && d->showMyCard) {
+             && d->m_showMyCard) {
             QModelIndex index = createIndex(0, 0);
             emit dataChanged(index, index);
             removeRowsCount--;
@@ -575,13 +657,15 @@ void CntListModel::handleRemoved(const QList<QContactLocalId>& contactIds)
     
     // check row count in new list
     // if there is a mismatch, probable late events. reset model
-    QList<QContactLocalId> updatedIdList = d->contactIds;
+    QList<QContactLocalId> updatedIdList = d->m_contactIds;
     int rowsRemoved = idList.count() - updatedIdList.count();
     if (rowsRemoved != removeRowsCount) {
         beginResetModel();
         reset();
         endResetModel();
     }
+    
+    CNT_EXIT
 }
 
 /*!
@@ -590,31 +674,21 @@ void CntListModel::handleRemoved(const QList<QContactLocalId>& contactIds)
  * \param oldId Id of the old MyCard.
  * \param newId Id of the new MyCard.
  */
-void CntListModel::handleMyCardChanged(const QContactLocalId& oldId, const QContactLocalId& newId)
+void CntListModel::handleMyCardChanged(const QContactLocalId& /*oldId*/, const QContactLocalId& newId)
 {
-    int row = rowId(newId);
-
+    CNT_ENTRY
+    
     //invalidate cached contact
-    d->currentRow = -1;
-    d->mMyCardId = newId;
+    d->m_currentRow = -1;
+    d->m_myCardId = newId;
 
-    // if the new mycard was taken from an existing contact,
-    // notify views that that row was removed
-    if (row > 0) {
-        beginRemoveRows(QModelIndex(), row, row);
-        endRemoveRows();
-    }
     updateContactIdsArray();
     
-    // if old mycard is not 0, it means it probably appears in the list
-    if (oldId > 0 && rowId(oldId) > 0) {
-        beginInsertRows(QModelIndex(), rowId(oldId), rowId(oldId));
-        endInsertRows();    
-    }
+    beginResetModel();
+    reset();
+    endResetModel();
     
-    // notify views that mycard was updated
-    QModelIndex index = createIndex(rowId(newId), 0);
-    emit dataChanged(index, index);
+    CNT_EXIT
 }
 
 /*!
@@ -625,9 +699,13 @@ void CntListModel::handleMyCardChanged(const QContactLocalId& oldId, const QCont
 */
 void CntListModel::handleContactInfoUpdated(QContactLocalId contactId)
 {
+    CNT_ENTRY
+    
     QModelIndex index = createIndex(rowId(contactId), 0);
-    if (index.row() == d->currentRow) {
-        d->currentRow = -1;
+    if (index.row() == d->m_currentRow) {
+        d->m_currentRow = -1;
     }
     emit dataChanged(index, index);
+    
+    CNT_EXIT
 }

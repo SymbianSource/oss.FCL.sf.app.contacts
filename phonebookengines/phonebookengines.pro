@@ -31,7 +31,5 @@ SUBDIRS += cntactions
 SUBDIRS += cntmaptileservice
 SUBDIRS += cntsimutility
 SUBDIRS += cntimageutility
-	
-#SUBDIRS += cntlistmodel/tsrc/mt_mobcntmodel
 
 CONFIG += ordered

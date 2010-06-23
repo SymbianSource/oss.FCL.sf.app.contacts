@@ -59,6 +59,12 @@ CntServiceViewManager::~CntServiceViewManager()
 /*Remove all views*/
 }
 
+void CntServiceViewManager::closeApp()
+{
+    // quit happens when returnValueDelivered signal is returned
+    // from service handler, see constructor.
+}
+
 /*!
 Launch fetch service view.
 */

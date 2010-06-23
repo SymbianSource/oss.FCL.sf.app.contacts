@@ -46,15 +46,12 @@ public:
 public: // From CntAbstractView
     void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
     void deactivate();
-    bool isDefault() const { return false; }
-    HbView* view() const { return mView; }
-    int viewId() const { return myCardView; }
     
-#ifdef PBK_UNIT_TEST
-public slots:
-#else
+    inline bool isDefault() const { return false; }
+    inline HbView* view() const { return mView; }
+    inline int viewId() const { return myCardView; }
+    
 private slots:
-#endif
     void showPreviousView();
     void openNameEditor();
     void openMyCardSelectionView(); 
@@ -72,6 +69,8 @@ private:
     HbView*                   mView; // own
     HbAction*                 mSoftkey;
     CntFetchContacts*         mFetchView;
+    
+    friend class TestCntMyCardView;
 };
 
 #endif /* CNTMYCARDVIEW_H_ */

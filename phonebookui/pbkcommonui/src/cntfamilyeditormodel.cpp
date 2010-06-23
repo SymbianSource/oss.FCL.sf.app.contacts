@@ -29,8 +29,7 @@ CntFamilyEditorModel::CntFamilyEditorModel(QContact* aContact) :
     }
 
     mFamily = familyList.first();
-    QStringList children = mFamily.children();
-
+    
     HbDataFormModelItem* spouseItem = new HbDataFormModelItem(HbDataFormModelItem::TextItem,
         hbTrId("txt_phob_formlabel_spouse"));
     spouseItem->setContentWidgetData("text", mFamily.spouse());
@@ -38,7 +37,7 @@ CntFamilyEditorModel::CntFamilyEditorModel(QContact* aContact) :
 
     HbDataFormModelItem* childrenItem = new HbDataFormModelItem(HbDataFormModelItem::TextItem,
         hbTrId("txt_phob_formlabel_children"));
-    childrenItem->setContentWidgetData("text", children.join(", "));
+    childrenItem->setContentWidgetData("text", mFamily.children().join(", "));
     childrenItem->setContentWidgetData("maxLength", CNT_CHILDREN_MAXLENGTH);
 
     HbDataFormModelItem* root = invisibleRootItem();
@@ -53,14 +52,23 @@ CntFamilyEditorModel::~CntFamilyEditorModel()
 void CntFamilyEditorModel::saveContactDetails()
 {
     HbDataFormModelItem* root = invisibleRootItem();
-    mFamily.setSpouse( root->childAt(0)->contentWidgetData("text").toString() );
-
+    QString spouse = root->childAt(0)->contentWidgetData("text").toString();
     QString children = root->childAt(1)->contentWidgetData("text").toString();
-    mFamily.setChildren( children.split(", ", QString::SkipEmptyParts) );
     
-    if ( !mFamily.isEmpty() ) {
+    if ( spouse != mFamily.spouse() || children != mFamily.children().join(", "))
+    {
+        mFamily.setSpouse( spouse );
+        QString children = root->childAt(1)->contentWidgetData("text").toString();
+        mFamily.setChildren( children.split(", ", QString::SkipEmptyParts) );
+        
         mContact->saveDetail( &mFamily );
     }
+    
+    if ( mFamily.spouse().isEmpty() && mFamily.children().isEmpty() )
+    {
+        mContact->removeDetail( &mFamily );
+    }
+    
 }
 
 QContactDetail CntFamilyEditorModel::detail() const

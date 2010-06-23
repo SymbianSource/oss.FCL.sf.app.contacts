@@ -53,7 +53,9 @@ headers.sources = inc/cntdef.h\
                   inc/cntmodel.rh\
                   inc/cntdef.hrh\
                   inc/cntviewstore.h\
-                  cntvcard/cntvcard.h
+                  inc/cntpredictivesearch.h\
+                  cntvcard/cntvcard.h\
+                 
 
 for(header, headers.sources):BLD_INF_RULES.prj_exports += "$$header $$deploy.path$$headers.path/$$basename(header)"
 

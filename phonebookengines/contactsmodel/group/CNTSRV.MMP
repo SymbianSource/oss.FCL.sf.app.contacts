@@ -24,8 +24,9 @@ TARGETTYPE    exe
 
 CAPABILITY   readuserdata  writeuserdata   protserv
 
-UID		0x10004019 0x10003A73
-VENDORID 0x70000001
+UID				0x10004019 0x10003A73
+VENDORID 		0x70000001
+EPOCSTACKSIZE	0x14000
 
 //MACRO __VERBOSE_DEBUG__
 //MACRO __STATE_MACHINE_DEBUG__
@@ -80,6 +81,3 @@ LIBRARY		cntplsql.lib
 #else
 LIBRARY		cntpldbms.lib
 #endif
-
-
-

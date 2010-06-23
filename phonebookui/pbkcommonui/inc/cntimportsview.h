@@ -33,7 +33,6 @@ class CntAbstractViewManager;
 class HbView;
 class HbAction;
 class QStandardItemModel;
-class SimUtility;
 class HbDialog;
 
 QTM_BEGIN_NAMESPACE

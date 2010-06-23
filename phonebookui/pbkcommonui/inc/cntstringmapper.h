@@ -55,9 +55,9 @@ public:
         mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeLandline, "", "qtg_small_landline"));
         mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextHome, "qtg_small_landline_home"));
         mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextWork, "qtg_small_landline_work"));
-        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, "", "qtg_small_fax"));
-        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextHome, "qtg_small_fax_home"));
-        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextWork, "qtg_small_fax_work"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeFax, "", "qtg_small_fax"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeFax, QContactDetail::ContextHome, "qtg_small_fax_home"));
+        mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeFax, QContactDetail::ContextWork, "qtg_small_fax_work"));
         mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypePager, "", "qtg_small_pager"));
         mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeCar, "", "qtg_small_car"));
         mContactEditorIconList.append(Loc(QContactPhoneNumber::SubTypeAssistant, "", "qtg_small_assistant"));
@@ -86,9 +86,9 @@ public:
         mContactEditorLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, "", hbTrId("txt_phob_dblist_internet_telephone")));
         mContactEditorLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_internet_telephone_home")));
         mContactEditorLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_internet_telephone_work")));
-        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, "", hbTrId("txt_phob_dblist_fax")));
-        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_fax_home")));
-        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_fax_work")));
+        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeFax, "", hbTrId("txt_phob_dblist_fax")));
+        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeFax, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_fax_home")));
+        mContactEditorLocList.append(Loc(QContactPhoneNumber::SubTypeFax, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_fax_work")));
         mContactEditorLocList.append(Loc(QContactOnlineAccount::SubTypeSip, "", hbTrId("txt_phob_dblist_ptt")));
 
         //editor list item specific menu items
@@ -116,9 +116,9 @@ public:
         mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, "",hbTrId("txt_phob_menu_edit_phone")));
         mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextHome, hbTrId("txt_phob_menu_edit_phone_home")));
         mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextWork, hbTrId("txt_phob_menu_edit_phone_work")));
-        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, "", hbTrId("txt_phob_menu_edit_fax")));
-        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextHome, hbTrId("txt_phob_menu_edit_fax_home")));
-        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextWork, hbTrId("txt_phob_menu_edit_fax_work")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeFax, "", hbTrId("txt_phob_menu_edit_fax")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeFax, QContactDetail::ContextHome, hbTrId("txt_phob_menu_edit_fax_home")));
+        mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypeFax, QContactDetail::ContextWork, hbTrId("txt_phob_menu_edit_fax_work")));
         mContactEditorEditLocList.append(Loc(QContactPhoneNumber::SubTypePager, "", hbTrId("txt_phob_menu_edit_pager")));
         mContactEditorEditLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, "", hbTrId("txt_phob_menu_edit_internet_telephone")));
         mContactEditorEditLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextHome, hbTrId("txt_phob_menu_edit_internet_telephone_home")));
@@ -155,9 +155,9 @@ public:
         mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, "",hbTrId("txt_phob_menu_delete_phone")));
         mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextHome, hbTrId("txt_phob_menu_delete_phone_home")));
         mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextWork, hbTrId("txt_phob_menu_delete_phone_work")));
-        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, "", hbTrId("txt_phob_menu_delete_fax")));
-        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextHome, hbTrId("txt_phob_menu_delete_fax_home")));
-        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextWork, hbTrId("txt_phob_menu_delete_fax_work")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeFax, "", hbTrId("txt_phob_menu_delete_fax")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeFax, QContactDetail::ContextHome, hbTrId("txt_phob_menu_delete_fax_home")));
+        mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypeFax, QContactDetail::ContextWork, hbTrId("txt_phob_menu_delete_fax_work")));
         mContactEditorDelLocList.append(Loc(QContactPhoneNumber::SubTypePager, "", hbTrId("txt_phob_menu_delete_pager")));
         mContactEditorDelLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, "", hbTrId("txt_phob_menu_delete_internet_telephone")));
         mContactEditorDelLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextHome, hbTrId("txt_phob_menu_delete_internet_telephone_home")));
@@ -195,9 +195,9 @@ public:
         mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, "",hbTrId("txt_phob_menu_call_phone")));
         mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextHome, hbTrId("txt_phob_menu_call_phone_home")));
         mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextWork, hbTrId("txt_phob_menu_call_phone_work")));
-        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, "", hbTrId("txt_phob_menu_fax")));
-        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextHome, hbTrId("txt_phob_menu_fax_home")));
-        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextWork, hbTrId("txt_phob_menu_fax_work")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeFax, "", hbTrId("txt_phob_menu_fax")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeFax, QContactDetail::ContextHome, hbTrId("txt_phob_menu_fax_home")));
+        mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypeFax, QContactDetail::ContextWork, hbTrId("txt_phob_menu_fax_work")));
         mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::SubTypePager, "", hbTrId("txt_phob_menu_call_pager")));
         mItemSpecificMenuLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, "", hbTrId("txt_phob_menu_call_internet_call")));
         mItemSpecificMenuLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextHome, hbTrId("txt_phob_menu_call_internet_call_home")));
@@ -226,9 +226,9 @@ public:
         mContactCardLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, "",hbTrId("txt_phob_dblist_call_phone")));
         mContactCardLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_call_phone_home")));
         mContactCardLocList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_call_phone_work")));
-        mContactCardLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, "", hbTrId("txt_phob_dblist_fax")));
-        mContactCardLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_fax_home")));
-        mContactCardLocList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_fax_work")));
+        mContactCardLocList.append(Loc(QContactPhoneNumber::SubTypeFax, "", hbTrId("txt_phob_dblist_fax")));
+        mContactCardLocList.append(Loc(QContactPhoneNumber::SubTypeFax, QContactDetail::ContextHome, hbTrId("txt_phob_dblist_fax_home")));
+        mContactCardLocList.append(Loc(QContactPhoneNumber::SubTypeFax, QContactDetail::ContextWork, hbTrId("txt_phob_dblist_fax_work")));
         mContactCardLocList.append(Loc(QContactPhoneNumber::SubTypePager, "", hbTrId("txt_phob_dblist_call_pager")));
         mContactCardLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, "", hbTrId("txt_phob_formlabel_internet_telephone")));
         mContactCardLocList.append(Loc(QContactOnlineAccount::SubTypeSipVoip, QContactDetail::ContextHome, hbTrId("txt_phob_formlabel_internet_telephone_home")));
@@ -251,9 +251,9 @@ public:
         mContactCardIconList.append(Loc(QContactPhoneNumber::SubTypeLandline, "", "qtg_large_call_landline"));
         mContactCardIconList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextHome, "qtg_large_call_landline_home"));
         mContactCardIconList.append(Loc(QContactPhoneNumber::SubTypeLandline, QContactDetail::ContextWork, "qtg_large_call_landline_work"));
-        mContactCardIconList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, "", "qtg_large_call_fax"));
-        mContactCardIconList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextHome, "qtg_large_call_fax_home"));
-        mContactCardIconList.append(Loc(QContactPhoneNumber::SubTypeFacsimile, QContactDetail::ContextWork, "qtg_large_call_fax_work"));
+        mContactCardIconList.append(Loc(QContactPhoneNumber::SubTypeFax, "", "qtg_large_call_fax"));
+        mContactCardIconList.append(Loc(QContactPhoneNumber::SubTypeFax, QContactDetail::ContextHome, "qtg_large_call_fax_home"));
+        mContactCardIconList.append(Loc(QContactPhoneNumber::SubTypeFax, QContactDetail::ContextWork, "qtg_large_call_fax_work"));
         mContactCardIconList.append(Loc(QContactPhoneNumber::SubTypePager, "", "qtg_large_call_pager"));
         mContactCardIconList.append(Loc(QContactPhoneNumber::SubTypeCar, "", "qtg_large_call_car"));
         mContactCardIconList.append(Loc(QContactPhoneNumber::SubTypeAssistant, "", "qtg_large_call_assistant"));

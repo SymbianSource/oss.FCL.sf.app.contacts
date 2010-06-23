@@ -17,9 +17,10 @@
     <widget name="view" type="HbView">
         <widget name="content" role="HbView:widget" type="HbWidget">
         	<widget name="listView" type="HbListView">
-                <widget name="listItemPrototype" role="HbListView:prototype" type="HbListViewItem">
-                    <enums name="graphicsSize" value="Image"/>
+                <widget name="listItemPrototype" role="HbAbstractView:prototype" type="HbListViewItem">
+                    <enums name="graphicsSize" value="Thumbnail"/>
                     <string name="state" value="normal"/>
+                    <fontspec name="fontSpec" role="Primary" textheight="26.8"/>
                 </widget>
                 <sizehint height="47.7612un" type="PREFERRED" width="35.8209un"/>
             </widget>
@@ -67,15 +68,15 @@
                 <bool name="visible" value="TRUE"/>
             </widget>
             <layout type="anchor">
-            	<anchoritem src="editViewImage" srcEdge="LEFT" spacing="0.0un" dst="" dstEdge="LEFT"/>
-                <anchoritem src="editViewImage" srcEdge="TOP" spacing="0.0un" dst="" dstEdge="TOP"/>
-                <anchoritem src="editViewImage" srcEdge="RIGHT" spacing="0.0un" dst="editViewHeading" dstEdge="LEFT"/>
-                <anchoritem src="editViewHeading" srcEdge="TOP" spacing="0.0un" dst="" dstEdge="TOP"/>
-                <anchoritem src="editViewHeading" srcEdge="BOTTOM" spacing="0.0un" dst="listView" dstEdge="TOP"/>
-                <anchoritem src="editViewHeading" srcEdge="RIGHT" spacing="0.0un" dst="" dstEdge="RIGHT"/>
-                <anchoritem src="listView" srcEdge="LEFT" dst="editViewHeading" dstEdge="LEFT"/>
-                <anchoritem src="listView" srcEdge="RIGHT" dst="editViewHeading" dstEdge="RIGHT"/>
-                <anchoritem src="listView" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM"/>
+                <anchoritem dst="" dstEdge="TOP" spacing="0un" src="editViewHeading" srcEdge="TOP"/>
+                <anchoritem dst="listView" dstEdge="TOP" spacing="0un" src="editViewHeading" srcEdge="BOTTOM"/>
+                <anchoritem dst="" dstEdge="RIGHT" spacing="0un" src="editViewHeading" srcEdge="RIGHT"/>
+                <anchoritem dst="editViewHeading" dstEdge="RIGHT" spacing="0un" src="listView" srcEdge="RIGHT"/>
+                <anchoritem dst="" dstEdge="BOTTOM" spacing="0un" src="listView" srcEdge="BOTTOM"/>
+                <anchoritem dst="editViewHeading" dstEdge="LEFT" spacing="0un" src="listView" srcEdge="LEFT"/>
+                <anchoritem dst="editViewHeading" dstEdge="LEFT" spacing="var(hb-param-margin-gene-left)" src="editViewImage" srcEdge="RIGHT"/>
+                <anchoritem dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-left)" src="editViewImage" srcEdge="LEFT"/>
+                <anchoritem dst="" dstEdge="TOP" spacing="-var(hb-param-margin-gene-top)" src="editViewImage" srcEdge="TOP"/>
             </layout>
         </widget>
     </section>

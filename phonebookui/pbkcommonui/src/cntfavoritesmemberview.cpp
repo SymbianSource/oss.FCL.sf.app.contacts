@@ -120,8 +120,6 @@ void CntFavoritesMemberView::activate( CntAbstractViewManager* aMgr, const CntVi
         createModel();
     }
 
-    mFavoriteListView->setModel(mModel);
-
     connect(mFavoriteListView, SIGNAL(activated (const QModelIndex&)), this,
             SLOT(openContact(const QModelIndex&)));
 }
@@ -200,21 +198,7 @@ void CntFavoritesMemberView::createModel()
     rFilter.setRelatedContactRole(QContactRelationship::First);
     rFilter.setRelatedContactId(mContact->id());
 
-    QContactSortOrder sortOrderFirstName;
-    sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,
-        QContactName::FieldFirstName);
-    sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
-
-    QContactSortOrder sortOrderLastName;
-    sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,
-        QContactName::FieldLastName);
-    sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
-
-    QList<QContactSortOrder> sortOrders;
-    sortOrders.append(sortOrderFirstName);
-    sortOrders.append(sortOrderLastName);
-
-    mModel = new CntListModel(getContactManager(), rFilter, sortOrders, false);
+    mModel = new CntListModel(mViewManager->contactManager(SYMBIAN_BACKEND), rFilter, false);
     mFavoriteListView->setModel(mModel);
 }
 

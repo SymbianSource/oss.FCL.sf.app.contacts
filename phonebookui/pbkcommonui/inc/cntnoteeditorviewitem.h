@@ -40,13 +40,11 @@ public:
 public slots:
     void textChanged(const QString &text);
     
-#ifdef PBK_UNIT_TEST
-public:
-#else
 private:
-#endif
     HbLineEdit* mEdit;
     QGraphicsLinearLayout* mLayout;
+    
+    friend class T_NoteEditorTest;
     };
 
 #endif /* CNTNOTEEDITORVIEWITEM_H_ */

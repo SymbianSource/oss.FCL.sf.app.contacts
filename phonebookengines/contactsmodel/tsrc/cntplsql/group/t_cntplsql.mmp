@@ -35,17 +35,27 @@ MACRO           EUNIT_UNIT_TEST_COVERAGE
 SOURCEPATH      ../src
 SOURCE          dllmain.cpp
 SOURCE          t_cpcskeymap.cpp
+SOURCE          t_cqwertykeymap.cpp
 SOURCE          t_cpplpredictivesearchtable.cpp
+SOURCE          t_cqwertypredictivesearchtable.cpp
+SOURCE          t_cpredictivesearchsettingstable.cpp
  
 // Code that is tested
 SOURCEPATH      ../../../cntplsql/src
 SOURCE          cpcskeymap.cpp
+SOURCE          c12keykeymap.cpp
+SOURCE          cqwertykeymap.cpp
 SOURCE          cpplpredictivesearchtable.cpp
+SOURCE          c12keypredictivesearchtable.cpp
+SOURCE          cqwertypredictivesearchtable.cpp
+SOURCE          cpredictivesearchsettingstable.cpp
+SOURCE          cpredictivesearchsynchronizer.cpp
 // Other required code
 SOURCE          cntsqlprovider.cpp
 
 USERINCLUDE     ../../../cntplsql/inc
 USERINCLUDE     ../../../cntsrv/inc
+
 
 APP_LAYER_SYSTEMINCLUDE
 #if defined ( OS_LAYER_SYSTEMINCLUDE )

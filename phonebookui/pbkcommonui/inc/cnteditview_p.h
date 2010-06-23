@@ -42,6 +42,7 @@ class QAction;
 class HbMenu;
 
 QTM_BEGIN_NAMESPACE
+class QContact;
 class QContactDetail;
 class QContactId;
 QTM_END_NAMESPACE
@@ -94,6 +95,7 @@ private:
     void addDetail( CntEditViewItem* aDetail );
     void editDetail( CntEditViewItem* aDetail );
     void removeDetail( CntEditViewItem* aDetail, const QModelIndex& aIndex );
+    void setSelectedContact( QContact aContact );
     
 public:
     HbView* mView;

@@ -21,11 +21,16 @@
 
 #include <cntuiextensionfactory.h>
 #include <cntuigroupsupplier.h>
+#include <cntuids.h>
+#include <xqsettingskey.h>
 
 #include <QIcon>
 #include <qtcontacts.h>
 #include <hbglobal.h>
 #include <hbiconitem.h>
+
+// CONTSTANTS
+const int CntNamesLengthLimit = 30;
 
 /*!
 Constructor
@@ -45,7 +50,6 @@ Destructor
 */
 CntCollectionListModel::~CntCollectionListModel()
 {
-    
 }
 
 /*!
@@ -173,33 +177,51 @@ void CntCollectionListModel::initializeStaticGroups()
         sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
 
         QList<QContactSortOrder> sortOrders;
-        sortOrders.append(sortOrderFirstName);
-        sortOrders.append(sortOrderLastName);
-
+        XQSettingsKey nameOrderKey(XQSettingsKey::TargetCentralRepository,
+            KCRUiContacts.iUid,
+            KCntNameOrdering);
+        int order = mSettings.readItemValue(nameOrderKey, XQSettingsManager::TypeInt).toInt();
+        if (order == CntOrderFirstLast)
+        {
+            sortOrders.append(sortOrderFirstName);
+            sortOrders.append(sortOrderLastName);
+        } 
+        else
+        {
+            sortOrders.append(sortOrderLastName);
+            sortOrders.append(sortOrderFirstName);
+        }
         // group members and their count
-       QList<QContactLocalId> groupMemberIds = mContactManager->contactIds(rFilter, sortOrders);
+        QList<QContactLocalId> groupMemberIds = mContactManager->contactIds(rFilter, sortOrders);
 
-       if (!groupMemberIds.isEmpty())
-       {
-           QStringList nameList;
-           for(int i = 0;i < groupMemberIds.count();i++)
-           {
-               QContact contact = mContactManager->contact(groupMemberIds.at(i));
-               QString memberName = contact.displayLabel();
-               nameList << memberName;
-               if (nameList.join(", ").length() > 30)
-               {
-                   break;
-               }
-           }
-           QString names = nameList.join(", ");
-           displayList.append(names);
-           displayList.append(hbTrId("(%1)").arg(groupMemberIds.count()));
-       }
-       else
-       {
-           displayList.append(hbTrId("txt_phob_dblist_favorites_val_no_favorites_selecte"));
-       }
+        if (!groupMemberIds.isEmpty())
+        {
+            QStringList nameList;
+            for(int i = 0;i < groupMemberIds.count();i++)
+            {
+                QContact contact = mContactManager->contact(groupMemberIds.at(i));
+                QString memberName = contact.displayLabel();
+                if (memberName.isEmpty())
+                {
+                    memberName = hbTrId("txt_phob_dblist_unnamed");
+                }
+                
+                // Incase the format is LastnameCommaFirstname, remove the commas
+                memberName = memberName.replace(", ", " ");
+                nameList << memberName;
+                if (nameList.join(", ").length() > CntNamesLengthLimit)
+                {
+                    break;
+                }
+            }
+            QString names = nameList.join(", ").trimmed();
+            displayList.append(names);
+            displayList.append(hbTrId("(%1)").arg(groupMemberIds.count()));
+        }
+        else
+        {
+            displayList.append(hbTrId("txt_phob_dblist_favorites_val_no_favorites_selecte"));
+        }
     }
     else
     {
@@ -309,8 +331,20 @@ void CntCollectionListModel::initializeUserGroups()
             sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
 
             QList<QContactSortOrder> sortOrders;
-            sortOrders.append(sortOrderFirstName);
-            sortOrders.append(sortOrderLastName);
+            XQSettingsKey nameOrderKey(XQSettingsKey::TargetCentralRepository,
+                KCRUiContacts.iUid,
+                KCntNameOrdering);
+            int order = mSettings.readItemValue(nameOrderKey, XQSettingsManager::TypeInt).toInt();
+            if (order == CntOrderFirstLast)
+            {
+                sortOrders.append(sortOrderFirstName);
+                sortOrders.append(sortOrderLastName);
+            } 
+            else
+            {
+                sortOrders.append(sortOrderLastName);
+                sortOrders.append(sortOrderFirstName);
+            }
 
             // group members and their count
             QList<QContactLocalId> groupMemberIds = mContactManager->contactIds(rFilter, sortOrders);
@@ -322,30 +356,37 @@ void CntCollectionListModel::initializeUserGroups()
                 {
                     QContact contact = mContactManager->contact(groupMemberIds.at(i));
                     QString memberName = contact.displayLabel();
+                    if (memberName.isEmpty())
+                    {
+                        memberName = hbTrId("txt_phob_dblist_unnamed");
+                    }
+                        
+                    // Incase the format is LastnameCommaFirstname, remove the commas
+                    memberName = memberName.replace(", ", " ");
                     nameList << memberName;
-                    if (nameList.join(", ").length() > 30)
+                    if (nameList.join(", ").length() > CntNamesLengthLimit)
                     {
                         break;
                     }
                 }
-                QString names = nameList.join(", ");
+                QString names = nameList.join(", ").trimmed();
                 displayList.append(names);
                 displayList.append(hbTrId("(%1)").arg(groupMemberIds.count()));
             }
             else
             {
-                displayList.append(hbTrId("No members selected"));
+                displayList.append(hbTrId("txt_phob_dblist_val_no_members_selected"));
             }
             dataList.append(displayList);
 
             // Default if no image for group 
             bool icon = false;
             QList<QContactAvatar> details = contact.details<QContactAvatar>();
-            for (int i = 0;i < details.count();i++)
+            for (int k = 0;k < details.count();k++)
             {
-                if (details.at(i).imageUrl().isValid())
+                if (details.at(k).imageUrl().isValid())
                 {
-                    dataList.append(QStringList(details.at(i).imageUrl().toString()));
+                    dataList.append(QStringList(details.at(k).imageUrl().toString()));
                     icon = true;
                     break;
                 }

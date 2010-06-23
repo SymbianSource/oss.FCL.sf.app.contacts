@@ -22,6 +22,7 @@
 #include <QAbstractListModel>
 #include <qmobilityglobal.h>
 #include <cntuigroupsupplier.h>
+#include <xqsettingsmanager.h>
 
 class CntExtensionManager;
 
@@ -73,6 +74,7 @@ private:
     CntExtensionManager&                       mExtensionManager;
     QSharedDataPointer<CntCollectionListData>  mDataPointer;
     QContactManager                           *mContactManager;
+    XQSettingsManager                          mSettings;
     int                                        mFavoriteGroupId;
     
 };

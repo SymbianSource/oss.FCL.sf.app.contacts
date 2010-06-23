@@ -32,7 +32,7 @@
     } while(0)
 
 
-void TestMobCntActions::initTestCase()
+void TestCntActions::initTestCase()
 {
     int error = qRegisterMetaType<QContactAction::State>();
 	//create manager
@@ -40,12 +40,12 @@ void TestMobCntActions::initTestCase()
 	    
 }
 
-void TestMobCntActions::cleanupTestCase()
+void TestCntActions::cleanupTestCase()
 {
     delete m_manager;
 }
 
-void TestMobCntActions::init()
+void TestCntActions::init()
 {
     //delete all contacts from the database
     QList<QContactLocalId> contacts = m_manager->contactIds();
@@ -53,10 +53,10 @@ void TestMobCntActions::init()
     m_manager->removeContacts(contacts, &errorMap);
 }
 
-void TestMobCntActions::cleanup()
+void TestCntActions::cleanup()
 {}
 
-void TestMobCntActions::emptyContactNoActionSupport()
+void TestCntActions::emptyContactNoActionSupport()
 {
     QContact contact;
     m_manager->saveContact(&contact);
@@ -66,7 +66,7 @@ void TestMobCntActions::emptyContactNoActionSupport()
     QVERIFY(actions.count() == 0);
 }
 
-void TestMobCntActions::phonenumberCallSupport()
+void TestCntActions::phonenumberCallSupport()
 {
     QContact contact;
     
@@ -110,7 +110,7 @@ void TestMobCntActions::phonenumberCallSupport()
     delete callAction;
 }
 
-void TestMobCntActions::phonenumberNoCallSupport()
+void TestCntActions::phonenumberNoCallSupport()
 {
     QContact contact;
     m_manager->saveContact(&contact);
@@ -127,7 +127,7 @@ void TestMobCntActions::phonenumberNoCallSupport()
     QVERIFY(actions.contains("call", Qt::CaseInsensitive) == false);
 }
 
-void TestMobCntActions::phonenumberMessageSupport()
+void TestCntActions::phonenumberMessageSupport()
 {
     QContact contact;
     
@@ -170,7 +170,7 @@ void TestMobCntActions::phonenumberMessageSupport()
     delete messageAction;
 }
 
-void TestMobCntActions::phonenumberNoMessageSupport()
+void TestCntActions::phonenumberNoMessageSupport()
 {
     QContactPhoneNumber faxNumber;
     faxNumber.setNumber("555111222");
@@ -186,7 +186,7 @@ void TestMobCntActions::phonenumberNoMessageSupport()
     QVERIFY(isSupportDetail == false);
 }
 
-void TestMobCntActions::phonenumberVideoCallSupport()
+void TestCntActions::phonenumberVideoCallSupport()
 {
     QContact contact;
     
@@ -230,7 +230,7 @@ void TestMobCntActions::phonenumberVideoCallSupport()
     delete videoCallAction;
 }
 
-void TestMobCntActions::phonenumberNoVideoCallSupport()
+void TestCntActions::phonenumberNoVideoCallSupport()
 {
     QContact contact;
     m_manager->saveContact(&contact);
@@ -246,7 +246,7 @@ void TestMobCntActions::phonenumberNoVideoCallSupport()
     QVERIFY(actions.contains("videocall", Qt::CaseInsensitive) == false);
 }
 
-void TestMobCntActions::emailSupport()
+void TestCntActions::emailSupport()
 {
     QContact contact;
     QContactEmailAddress email;
@@ -289,7 +289,7 @@ void TestMobCntActions::emailSupport()
     delete emailAction;
 }
 
-void TestMobCntActions::noEmailSupport()
+void TestCntActions::noEmailSupport()
 {
     QContact contact;
     m_manager->saveContact(&contact);
@@ -305,7 +305,7 @@ void TestMobCntActions::noEmailSupport()
     QVERIFY(actions.contains("email", Qt::CaseInsensitive) == false);
 }
 
-void TestMobCntActions::urlSupport()
+void TestCntActions::urlSupport()
 {
     QContact contact;
     QContactUrl url;
@@ -348,7 +348,7 @@ void TestMobCntActions::urlSupport()
     delete urlAction;
 }
 
-void TestMobCntActions::noUrlSupport()
+void TestCntActions::noUrlSupport()
 {
     QContact contact;
     m_manager->saveContact(&contact);
@@ -364,4 +364,4 @@ void TestMobCntActions::noUrlSupport()
     QVERIFY(actions.contains("url", Qt::CaseInsensitive) == false);
 }
 
-QTEST_MAIN(TestMobCntActions);
+//QTEST_MAIN(TestCntActions);

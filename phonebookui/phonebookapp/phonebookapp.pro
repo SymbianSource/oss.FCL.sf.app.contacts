@@ -22,15 +22,13 @@
 TEMPLATE = app
 TARGET = phonebook
 
-ICON = resources/phonebook.svg
-
 #DEFINES += BUILD_QTCONTACTS
 
 DEPENDPATH += .
 INCLUDEPATH += .
-INCLUDEPATH += ../inc
+INCLUDEPATH += ../../inc
 INCLUDEPATH += ../pbkcommonui/inc
-INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
+INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE 
 
 MOC_DIR = moc
 
@@ -61,7 +59,9 @@ symbian: {
         # Skip the UID2/3 thing
         TARGET.UID3 = 0x20022EF9
         TARGET.EPOCSTACKSIZE = 0x14000
-        TARGET.EPOCHEAPSIZE = 0x1000 0xA00000 
+        TARGET.EPOCHEAPSIZE = 0x1000 0xA00000
+        
+        SKINICON = qtg_large_phonebook 
 
         :BLD_INF_RULES.prj_exports += "resources/phonebook.splashml \epoc32\release\winscw\udeb\z\resource\hb\splashml\phonebook.splashml
         :BLD_INF_RULES.prj_exports += "resources/phonebook.splashml \epoc32\data\z\resource\hb\splashml\phonebook.splashml

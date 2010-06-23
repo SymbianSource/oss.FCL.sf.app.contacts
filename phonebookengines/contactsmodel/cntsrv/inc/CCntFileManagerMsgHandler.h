@@ -27,7 +27,7 @@
 #define CNTFILEMANAGERMSGHANDLER_H
 
 class CCntMsgHandler;
-
+class CntPredictiveSearch;
 /**
 CCntFileManagerMsgHandler class handles all file related operations. It uses
 a message handling method to handle the incoming op code.
@@ -46,6 +46,7 @@ public:
 	
 private:
 	CCntFileManagerMsgHandler(CCntSession& aSession);
+	void ConstructL();
 	
 public:
 	// Delegates to the appropriate CCntDbManagerController method.
@@ -66,6 +67,7 @@ public:
 	void FetchTemplateIdsL(const RMessage2& aMessage);
 	void FetchGroupIdListsL(const RMessage2& aMessage);
 	void FetchSearchResultsL(const RMessage2& aMessage); 
+	void FetchPredictiveSearchResultsL(const RMessage2& aMessage);
 	
 	// Non-CRUD file operations
 	void RecoverDbL(const RMessage2& aMessage);
@@ -86,6 +88,9 @@ public:
 
 private:
 	void FileOpenCreateReplaceL(const RMessage2& aMessage, TCntFileMode aMode);
+	
+private:
+	CntPredictiveSearch* predictiveSearch;
 	};
 	
 #endif

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:  Unit test class for testing CPcsKeyMap
+* Description:  Unit test class for testing 12-key predictive search table
 *
 */
 
@@ -19,32 +19,25 @@
 #include "t_cpplpredictivesearchtable.h"
 #include "pltables.h"
 #include "dbsqlconstants.h"
-#include "cpcskeymap.h" // USE_ORBIT_KEYMAP macro
+#include "c12keykeymap.h"
+#include "c12keypredictivesearchtable.h"
+#include "cqwertypredictivesearchtable.h"
+#include "cpredictivesearchsettingstable.h"
+#include "cpredictivesearchsynchronizer.h"
+#include "t_predictivesearchtabledefs.h"
+#include "predictivesearchlog.h"
 
 //  SYSTEM INCLUDES
 #include <digia/eunit/eunitmacros.h>
-#include <f32file.h> // added for setup2L() 
+#include <f32file.h> // CFileMan
 
 // Used to create HbKeymapFactory singleton to get rid of resource leak
 #include <QLocale>
 #include <hbinputkeymapfactory.h>
 
 
-// Database file
-_LIT(KDBFile, "c:\\unittest.db");
-
-_LIT(KDBFileWithoutPredSearch, "c:\\contacts_without_pred_search_tables.db");
-
-const TContactItemId KTestContactId = 20;
-const TContactItemId KTestContactId2 = 85;
-const TContactItemId KTestContactId3 = 7001;
-const TContactItemId KTestContactId4 = 56030;
-
-_LIT(KTestFirstName, "123");
-_LIT(KTestLastName, "45678");
-
-// Must have same value as KMaxDigits in cpplpredictivesearchtable.cpp
-const TInt KMaxDigits = 15;
+// Must have same value as KMaxTokenLength in c12keypredictivesearchtable.cpp
+const TInt KMaxTokenLength = 15;
 
 
 const TInt KTableCount = 12;
@@ -52,6 +45,8 @@ const TInt KTableCount = 12;
 // Must have same value as KConversionError in cpplpredictivesearchtable.cpp
 const quint64 KConversionError = 0xeeeeeeeeeeeeeee;
     
+
+
 
 // -----------------------------------------------------------------------------
 // UT_CPplPredictiveSearchTable::NewL
@@ -135,17 +130,59 @@ void UT_CPplPredictiveSearchTable::SetupL()
     // If this causes KErrAlreadyExists, iDB won't be fully constructed
 	iDB.Create(KDBFile);
 
-	iTable = CPplPredictiveSearchTable::NewL(iDB);
+	iTable = C12keyPredictiveSearchTable::NewL(iDB);
+	iPredSearchQwertyTable = CQwertyPredictiveSearchTable::NewL(iDB);
+	iPredSearchSettingsTable = CPredictiveSearchSettingsTable::NewL(iDB);
 	// Create (empty) predictive search tables to DB
 	iTable->CreateTableL();
+	iPredSearchQwertyTable->CreateTableL();
+    iPredSearchSettingsTable->CreateTableL();
+    
+    iPredictiveSearchSynchronizer =
+        CPredictiveSearchSynchronizer::NewL(iDB,
+                                            *iTable,
+                                            *iPredSearchQwertyTable,
+                                            *iPredSearchSettingsTable);  
+#if defined(USE_ORBIT_KEYMAP)
+    HbKeymapFactory::instance();
+#endif
 	}
     
 // -----------------------------------------------------------------------------
-// UT_CPplPredictiveSearchTable::Setup2L
+// UT_CPplPredictiveSearchTable::SetupSyncL
 // For synchronize tables test case
 // -----------------------------------------------------------------------------
 //
-void UT_CPplPredictiveSearchTable::Setup2L()
+void UT_CPplPredictiveSearchTable::SetupSyncL()
+    {
+	UseSpecificDbL(KDBFileWithoutPredSearch);
+    }
+
+// -----------------------------------------------------------------------------
+// UT_CPplPredictiveSearchTable::SetupSyncJust12keyExistsL
+// For synchronize tables test case
+// -----------------------------------------------------------------------------
+//
+void UT_CPplPredictiveSearchTable::SetupSyncJust12keyExistsL()
+    {
+	UseSpecificDbL(KDBFile12keyButNoQwerty);
+    }
+
+// -----------------------------------------------------------------------------
+// UT_CPplPredictiveSearchTable::SetupLanguageChangesL
+// For UT_LanguageChangesL case
+// -----------------------------------------------------------------------------
+//
+void UT_CPplPredictiveSearchTable::SetupLanguageChangesL()
+    {
+	UseSpecificDbL(KDBFileOtherLanguage);
+    }
+
+// -----------------------------------------------------------------------------
+// UT_CPplPredictiveSearchTable::UseSpecificDbL
+// -----------------------------------------------------------------------------
+//
+void UT_CPplPredictiveSearchTable::UseSpecificDbL(const TDesC& aDbFile)
     {
     // Copy an existing DB file that does not contain predictive search tables
     // to a DB file that will be used in test.
@@ -153,15 +190,23 @@ void UT_CPplPredictiveSearchTable::Setup2L()
     User::LeaveIfError(fs.Connect());
     CFileMan* fm = CFileMan::NewL(fs);
     CleanupStack::PushL(fm);
-    
-    _LIT(KSourceFile, "c:\\Copy of contacts_without_pred_search_tables.db");
-    User::LeaveIfError(fm->Copy(KSourceFile, KDBFileWithoutPredSearch));
+
+    User::LeaveIfError(fm->Copy(aDbFile, KDBFile));
     CleanupStack::PopAndDestroy(fm);
     fs.Close();
     
     
-    User::LeaveIfError(iDB.Open(KDBFileWithoutPredSearch));
-    iTable = CPplPredictiveSearchTable::NewL(iDB);
+    User::LeaveIfError(iDB.Open(KDBFile));
+
+    iTable = C12keyPredictiveSearchTable::NewL(iDB);
+    iPredSearchQwertyTable = CQwertyPredictiveSearchTable::NewL(iDB);
+	iPredSearchSettingsTable = CPredictiveSearchSettingsTable::NewL(iDB);
+
+    iPredictiveSearchSynchronizer =
+        CPredictiveSearchSynchronizer::NewL(iDB,
+                                            *iTable,
+                                            *iPredSearchQwertyTable,
+                                            *iPredSearchSettingsTable);
     }
 
 // -----------------------------------------------------------------------------
@@ -170,8 +215,17 @@ void UT_CPplPredictiveSearchTable::Setup2L()
 //
 void UT_CPplPredictiveSearchTable::Teardown()
     {
+    delete iPredictiveSearchSynchronizer;
+    iPredictiveSearchSynchronizer = NULL;
+
     delete iTable;
 	iTable = NULL;
+	
+	delete iPredSearchQwertyTable;
+	iPredSearchQwertyTable = NULL;
+
+	delete iPredSearchSettingsTable;
+	iPredSearchSettingsTable = NULL;
 
 	iDB.Close(); // Must close DB before it can be deleted
 	RSqlDatabase::Delete(KDBFile);
@@ -180,7 +234,7 @@ void UT_CPplPredictiveSearchTable::Teardown()
 
 // TEST CASES
 
-// Dummy case to see if the first case always results a resource leak
+// Dummy case to see if the first case always results a resource leak (2 heap cells)
 void UT_CPplPredictiveSearchTable::UT_DummyL()
     {    
     // The first test case that writes to tables, seems to cause resource leak
@@ -196,7 +250,7 @@ void UT_CPplPredictiveSearchTable::UT_CreateInDbLL()
     {
     CheckItemCountL(); // all empty
     AddContactL(KTestFirstName, KTestLastName, KTestContactId);
-    CheckItemCountL(0, 1, 0, 0, 1); // table 1 and 4 have one entry
+    CheckItemCountL(0, 1, 0, 0, 1); // Tables 1 and 4 have one entry
     }
 
 // -----------------------------------------------------------------------------
@@ -239,6 +293,17 @@ void UT_CPplPredictiveSearchTable::UT_CreateInDbManyContactsL()
 	AddContactL(KNullDesC, _L("  22 22 2 2 222222"), ++id);
 	// Adds contact to table 2
 	CheckItemCountL(0, 4, 4, 0, 0, 3, 2, 1, 1);
+	}
+
+// -----------------------------------------------------------------------------
+// UT_CPplPredictiveSearchTable::UT_CreateInDbWithHashAndStarL
+// -----------------------------------------------------------------------------
+//
+void UT_CPplPredictiveSearchTable::UT_CreateInDbWithHashAndStarL()
+    {
+	AddContactL(_L(" # * +"), _L(" +*# **"), KTestContactId);
+	AddContactL(_L("*"), _L("+355"), KTestContactId2); 
+    CheckItemCountL(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1);
 	}
 
 // -----------------------------------------------------------------------------
@@ -503,7 +568,7 @@ void UT_CPplPredictiveSearchTable::UT_DeleteLL()
     }
 
 // -----------------------------------------------------------------------------
-// UT_CPplPredictiveSearchTable::UT_DeleteLL
+// UT_CPplPredictiveSearchTable::UT_DeleteContactsL
 // Delete contacts one-by-one from the table that has multiple contacts
 // -----------------------------------------------------------------------------
 //
@@ -614,10 +679,9 @@ void UT_CPplPredictiveSearchTable::UT_CheckIfTableExistsL()
     // Create DB, but do not create pred search table in it
     iDB.Create(KDBFile);
 
-    TInt err = CPplContactItemManager_DoesPredSearchTableExistL();
-    EUNIT_ASSERT_EQUALS(-311, err);
+    EUNIT_ASSERT_EQUALS(EFalse,
+        iPredictiveSearchSynchronizer->CheckIfPredSearchTableExistsL(KSqlContactPredSearchTable0));
 
-    
     iDB.Close(); // Must close DB before it can be deleted
     RSqlDatabase::Delete(KDBFile);
     }
@@ -629,8 +693,8 @@ void UT_CPplPredictiveSearchTable::UT_CheckIfTableExistsL()
 //
 void UT_CPplPredictiveSearchTable::UT_CheckIfTableExists2L()
     {
-	TInt err = CPplContactItemManager_DoesPredSearchTableExistL();
-	EUNIT_ASSERT_EQUALS(KErrNone, err);
+    EUNIT_ASSERT_EQUALS(ETrue,
+        iPredictiveSearchSynchronizer->CheckIfPredSearchTableExistsL(KSqlContactPredSearchTable0));
     }
 
 
@@ -640,102 +704,32 @@ void UT_CPplPredictiveSearchTable::UT_CheckIfTableExists2L()
 // search tables!
 // If Orbit keymap is used, this test case leaks resources,
 // otherwise it does not leak.
-
-/* Create DB and other tables, except pred search table. Add some contacts to DB
-   but do not write them to (non-existing) pred search table.
-   
-   Or just create DB and all tables, then add contacts, and delete pred.search
-   tables.
-   Close database and open it, to see that pred search tables are created. */
 void UT_CPplPredictiveSearchTable::UT_SynchronizeTableL()
     {
-///////// copied from CPplContactItemManager::SynchronizePredSearchTableL ////////
-    iTable->CreateTableL();
-    _LIT(KSelectAllContactsFormat, "SELECT %S,%S,%S FROM %S;");
-    TInt bufSize = KSelectAllContactsFormat().Length() +
-                   KContactId().Length() +
-                   KContactFirstName().Length() +
-                   KContactCompanyName().Length() +
-                   KSqlContactTableName().Length();
-    HBufC* sqlStatement = HBufC::NewLC(bufSize);
-    sqlStatement->Des().AppendFormat(KSelectAllContactsFormat,
-        &KContactId,
-        &KContactFirstName,
-        &KContactLastName,
-        &KSqlContactTableName);
-
-    RSqlStatement stmnt;
-    CleanupClosePushL(stmnt);
-    stmnt.PrepareL(iDB, *sqlStatement);
-
-    const TInt KContactIdIndex = 0;
-    const TInt KFirstNameIndex = 1;
-    const TInt KLastNameIndex = 2;
-    TInt err(KErrNone);
-    while ((err = stmnt.Next()) == KSqlAtRow)
-        {
-        TInt id = KUidContactCardValue;
-        TUid uid;
-        uid.iUid = id;
-        CContactItem* contact = CContactItem::NewLC(uid);
-        contact->SetId(stmnt.ColumnInt(KContactIdIndex));
-
-        // If first name exists, write it to contact item
-        TPtrC firstName;
-        if (stmnt.ColumnText(KFirstNameIndex, firstName) == KErrNone)
-            {
-            CContactItemField* field =
-                CContactItemField::NewLC(KStorageTypeText, KUidContactFieldGivenName);
-            CContactTextField* textfield = field->TextStorage();
-            textfield->SetTextL(firstName);
-            contact->AddFieldL(*field); // Takes ownership
-            CleanupStack::Pop(field);
-            }
-
-        TPtrC lastName;
-        if (stmnt.ColumnText(KLastNameIndex, lastName) == KErrNone)
-            {
-            CContactItemField* field =
-                CContactItemField::NewLC(KStorageTypeText, KUidContactFieldFamilyName);
-            CContactTextField* textfield = field->TextStorage();
-            textfield->SetTextL(lastName);
-            contact->AddFieldL(*field); // Takes ownership
-            CleanupStack::Pop(field);
-            }
-        iTable->CreateInDbL(*contact);
-        CleanupStack::PopAndDestroy(contact);
-        }
-
-    // Leave if we didn't complete going through the results properly
-    if (err != KSqlAtEnd)
-        {
-        User::Leave(err);
-        }
-    CleanupStack::PopAndDestroy(&stmnt);
-    CleanupStack::PopAndDestroy(sqlStatement);    
-///////// end - copied from CPplContactItemManager::SynchronizePredSearchTableL //////////
-    
-
-    delete iTable;
-    iTable = NULL;
-	iDB.Close(); // Must close DB before it can be deleted
-
-	RSqlDatabase::Delete(KDBFileWithoutPredSearch);
+	iPredictiveSearchSynchronizer->SynchronizeTablesL();
     }
+
+void UT_CPplPredictiveSearchTable::UT_SynchronizeTableJust12keyExistsL()
+	{
+	iPredictiveSearchSynchronizer->SynchronizeTablesL();
+	}
 
 void UT_CPplPredictiveSearchTable::UT_DeleteTablesL()
 	{
 	// Delete tables
-	CPplContactItemManager_DeletePredSearchTablesL();
-
+	iPredictiveSearchSynchronizer->DeletePredSearchTablesL();
 
 	// Check tables have been deleted
-	TInt err = CPplContactItemManager_DoesPredSearchTableExistL();
-	EUNIT_ASSERT_EQUALS(-311, err);
-
+	EUNIT_ASSERT_EQUALS(EFalse,
+        iPredictiveSearchSynchronizer->CheckIfPredSearchTableExistsL(KSqlContactPredSearchTable0));
 
 	// Try to delete tables when they do not exist
-	CPplContactItemManager_DeletePredSearchTablesL();
+	iPredictiveSearchSynchronizer->DeletePredSearchTablesL();
+	}
+
+void UT_CPplPredictiveSearchTable::UT_LanguageChangesL()
+	{
+	iPredictiveSearchSynchronizer->SynchronizeTablesL();
 	}
 
 void UT_CPplPredictiveSearchTable::UT_TokenizeNamesL()
@@ -744,23 +738,35 @@ void UT_CPplPredictiveSearchTable::UT_TokenizeNamesL()
     _LIT(KLastNames, "12355 987 402");
     HBufC* fn = KFirstNames().AllocLC();
     HBufC* ln = KLastNames().AllocLC();
+    QStringList emptyList;
 
     // This constant must have same value as declared in cpplpredictivesearchtable.cpp
     const TInt KMaxTokens = 4; 
-    QStringList tokens = iTable->GetNumericTokens(fn, ln);
+    QStringList tokens = iTable->GetTokens(emptyList, fn, ln);
     EUNIT_ASSERT_EQUALS(KMaxTokens, tokens.count());
     tokens.clear();
         
-    tokens = iTable->GetNumericTokens(NULL, ln);
+    tokens = iTable->GetTokens(emptyList, NULL, ln);
     EUNIT_ASSERT_EQUALS(3, tokens.count());
     tokens.clear();
     
-    tokens = iTable->GetNumericTokens(fn, NULL);
+    tokens = iTable->GetTokens(emptyList, fn, NULL);
     EUNIT_ASSERT_EQUALS(4, tokens.count());
     tokens.clear();
 
-    tokens = iTable->GetNumericTokens(NULL, NULL);
+    tokens = iTable->GetTokens(emptyList, NULL, NULL);
     EUNIT_ASSERT_EQUALS(0, tokens.count());
+    tokens.clear();
+
+    QStringList mailList;
+    mailList << "mail.addr1";
+    mailList << "mail.addr2";
+    tokens = iTable->GetTokens(mailList, NULL, NULL);
+    EUNIT_ASSERT_EQUALS(2, tokens.count());
+    tokens.clear();
+    
+    tokens = iTable->GetTokens(mailList, fn, ln);
+    EUNIT_ASSERT_EQUALS(4, tokens.count());
     tokens.clear();
     
     CleanupStack::PopAndDestroy(ln);
@@ -954,7 +960,7 @@ UT_CPplPredictiveSearchTable::DoPredictiveSearchL(const TDesC& aSearchString)
 		_LIT(KSearchFormat, "SELECT contact_id FROM %S WHERE \
 (nbr>%ld AND nbr<%ld) OR (nbr2>%ld AND nbr2<%ld) OR (nbr3>%ld AND nbr3<%ld) OR (nbr4>%ld AND nbr4<%ld);");
 		TInt KNbrColumns = 4;
-		TInt KSpaceForLimits = KNbrColumns * 2 * (KMaxDigits + 2); // Two extra for decimal representation of max 15 hex digits
+		TInt KSpaceForLimits = KNbrColumns * 2 * (KMaxTokenLength + 2); // Two extra for decimal representation of max 15 hex digits
 		select = HBufC::NewLC(KSearchFormat().Length() +
 							  KSqlContactPredSearchTable11().Length() +
 							  KSpaceForLimits);
@@ -1032,12 +1038,12 @@ TInt64 UT_CPplPredictiveSearchTable::UpperLimitL(const TDesC& aString) const
 TInt64 UT_CPplPredictiveSearchTable::ConvertToNbrL(const TDesC& aString,
 												   TChar aPadChar) const
 	{
-	HBufC* nbrBuffer = HBufC::NewLC(KMaxDigits);
-	TPtrC p = aString.Left(KMaxDigits);
+	HBufC* nbrBuffer = HBufC::NewLC(KMaxTokenLength);
+	TPtrC p = aString.Left(KMaxTokenLength);
 	TPtr nbrPtr = nbrBuffer->Des();
 	nbrPtr.Append(p);
-	// Append pad chars until length is KMaxDigits
-	while (nbrPtr.Length() < KMaxDigits)
+	// Append pad chars until length is KMaxTokenLength
+	while (nbrPtr.Length() < KMaxTokenLength)
 		{
 		nbrPtr.Append(aPadChar);
 		}	
@@ -1050,64 +1056,6 @@ TInt64 UT_CPplPredictiveSearchTable::ConvertToNbrL(const TDesC& aString,
 
 //	RDebug::Print(_L("UT_CPplPredictiveSearchTable::ConvertToNbrL result 0x%lx"), nbrValue);        
 	return nbrValue;
-	}
-
-// This function has code copied from CPplContactItemManager::DoesPredSearchTableExistL
-TInt UT_CPplPredictiveSearchTable::CPplContactItemManager_DoesPredSearchTableExistL()
-	{
-	// SQLite does not have SHOW TABLES command, so try to search from
-    // predictive search table.
-    _LIT(KCheckIfTableExistsFormat, "SELECT %S FROM %S;");
-    TInt bufSize = KCheckIfTableExistsFormat().Length() +
-                   KPredSearchContactId().Length() +
-                   KSqlContactPredSearchTable11().Length();
-    HBufC* sqlStatement = HBufC::NewLC(bufSize);
-    sqlStatement->Des().AppendFormat(KCheckIfTableExistsFormat,
-        &KPredSearchContactId,
-        &KSqlContactPredSearchTable0);
-
-    RSqlStatement stmnt;
-    CleanupClosePushL(stmnt);
-    // If table does not exist, leaves with -311
-    // If table exists, does not leave
-    TRAPD(err, stmnt.PrepareL(iDB, *sqlStatement));    
-    CleanupStack::PopAndDestroy(&stmnt);
-    CleanupStack::PopAndDestroy(sqlStatement);
-	return err;
-	}
-
-// This function has code copied from CPplContactItemManager::DeletePredSearchTablesL
-void UT_CPplPredictiveSearchTable::CPplContactItemManager_DeletePredSearchTablesL()
-	{
-    const TDesC* KTableNames[KTableCount] =
-        {
-        &KSqlContactPredSearchTable0,
-        &KSqlContactPredSearchTable1,
-        &KSqlContactPredSearchTable2,
-        &KSqlContactPredSearchTable3,
-        &KSqlContactPredSearchTable4,
-        &KSqlContactPredSearchTable5,
-        &KSqlContactPredSearchTable6,
-        &KSqlContactPredSearchTable7,
-        &KSqlContactPredSearchTable8,
-        &KSqlContactPredSearchTable9,
-        &KSqlContactPredSearchTable10,
-        &KSqlContactPredSearchTable11
-        };
-
-	// IF EXISTS suppresses error that would occur if table does not exist
-	_LIT(KDropTable, "DROP TABLE IF EXISTS %S;");
-    for (TInt i = 0; i < KTableCount; ++i)
-        {
-        HBufC* dropTableCommand = HBufC::NewLC(KDropTable().Length() +
-            // All table names are of same length
-            KTableNames[i]->Length());
-        TPtr ptr = dropTableCommand->Des();
-        ptr.Format(KDropTable, KTableNames[i]);
-
-		User::LeaveIfError(iDB.Exec(*dropTableCommand));
-        CleanupStack::PopAndDestroy(dropTableCommand);
-        }
 	}
 
 
@@ -1139,6 +1087,13 @@ EUNIT_TEST(
     "FUNCTIONALITY",
     SetupL, UT_CreateInDbManyContactsL, Teardown )
 
+EUNIT_TEST(
+	"CreateInDbL - test contacts with *,+,# characters",
+    "UT_CPplPredictiveSearchTable",
+    "CreateInDbL",
+    "FUNCTIONALITY",
+    SetupL, UT_CreateInDbWithHashAndStarL, Teardown )
+	
 EUNIT_TEST(
     "UpdateL - test updating FN",
     "UT_CPplPredictiveSearchTable",
@@ -1191,30 +1146,44 @@ EUNIT_TEST(
 EUNIT_TEST(
     "Check if predictive search table exists (table does not exist)",
     "UT_CPplPredictiveSearchTable",
-    "",
+    "DoesPredSearchTableExistL",
     "FUNCTIONALITY",
     SetupL, UT_CheckIfTableExistsL, Teardown )
 
 EUNIT_TEST(
     "Check if predictive search table exists (table exists)",
     "UT_CPplPredictiveSearchTable",
-    "",
+    "DoesPredSearchTableExistL",
     "FUNCTIONALITY",
     SetupL, UT_CheckIfTableExists2L, Teardown )
 
 EUNIT_TEST(
-    "Synchronize table",
+    "Synchronize DB w/o pred.search tables",
     "UT_CPplPredictiveSearchTable",
-    "",
+    "CreatePredSearchTablesL",
     "FUNCTIONALITY",
-    Setup2L, UT_SynchronizeTableL, Teardown )
+    SetupSyncL, UT_SynchronizeTableL, Teardown )
+
+EUNIT_TEST(
+    "Synchronize DB with 12-key, but w/o QWERTY tables",
+    "UT_CPplPredictiveSearchTable",
+    "CreatePredSearchTablesL",
+    "FUNCTIONALITY",
+    SetupSyncJust12keyExistsL, UT_SynchronizeTableJust12keyExistsL, Teardown )
 
 EUNIT_TEST(
     "Delete predictive search tables",
     "UT_CPplPredictiveSearchTable",
-    "CPplContactItemManager::DeletePredSearchTablesL",
+    "DeletePredSearchTablesL",
     "FUNCTIONALITY",
     SetupL, UT_DeleteTablesL, Teardown )
+
+EUNIT_TEST(
+	"Language changes: re-create QWERTY tables",
+    "UT_CPplPredictiveSearchTable",
+    "DeletePredSearchTablesL",
+    "FUNCTIONALITY",
+    SetupLanguageChangesL, UT_LanguageChangesL, Teardown )
 
 EUNIT_TEST(
     "Tokenize names",

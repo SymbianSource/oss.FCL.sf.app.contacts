@@ -22,7 +22,7 @@
 #include <QSharedPointer>
 #include <QMap>
 #include <QDateTime>
-#include <qcontactmanager.h>
+#include <qtcontacts.h>
 
 #ifdef PBK_UNIT_TEST
 #include "stub_classes.h"

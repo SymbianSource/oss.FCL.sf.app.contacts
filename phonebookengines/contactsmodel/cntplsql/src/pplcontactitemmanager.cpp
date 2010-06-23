@@ -26,6 +26,11 @@
 #include "cntsqlprovider.h"
 #include "dbsqlconstants.h"
 #include "cntpersistenceutility.h"
+#include "c12keypredictivesearchtable.h"
+#include "cqwertypredictivesearchtable.h"
+#include "cpredictivesearchsettingstable.h"
+#include "cpredictivesearchsynchronizer.h"
+#include "predictivesearchlog.h"
 //#include "cntmetadataoperation.h"
 #include <cntdef.h>
 #include <sqldb.h>
@@ -34,6 +39,9 @@
 // TODO: The code related to predictive search table is placed inside this
 // macro. Uncomment the below line to get the table into use.
 #define USE_PRED_SEARCH_TABLE
+
+// If this macro is defined, then pred.search qwerty tables are used
+#define USE_QWERTY_PRED_SEARCH_TABLE
 
 
 /**
@@ -63,10 +71,16 @@ CPplContactItemManager::~CPplContactItemManager()
 	delete iContactTable;
 	delete iCommAddrTable;
 #if defined(USE_PRED_SEARCH_TABLE)
-	RDebug::Print(_L("delete pred search table"));
-	delete iPredSearchTable;
+	PRINT(_L("delete pred search table objects"));
+	delete iPredictiveSearchSynchronizer;
+	delete iPredSearch12keyTable;
+#if defined(USE_QWERTY_PRED_SEARCH_TABLE)
+	delete iPredSearchQwertyTable;
+	delete iPredSearchSettingsTable;
 #endif
-    delete 	iPresenceTable; 
+	PRINT(_L("delete pred search table objects - done"));
+#endif
+    delete iPresenceTable; 
 	delete iGroupTable;
 	delete iPreferencePersistor;
 	//iColSession.Close();
@@ -129,9 +143,13 @@ TContactItemId CPplContactItemManager::CreateL(CContactItem& aItem, TUint aSessi
 	iGroupTable->CreateInDbL(aItem);	
 	iCommAddrTable->CreateInDbL(aItem);
 #if defined(USE_PRED_SEARCH_TABLE)
-	RDebug::Print(_L("add new contact to pred search table"));
-	iPredSearchTable->CreateInDbL(aItem);
-	RDebug::Print(_L("add new contact to pred search table - done"));
+	PRINT(_L("add new contact to pred search tables"));
+	iPredSearch12keyTable->CreateInDbL(aItem);
+#if defined(USE_QWERTY_PRED_SEARCH_TABLE)
+	iPredSearchQwertyTable->CreateInDbL(aItem);
+	iPredSearchSettingsTable->CreateInDbL(aItem);
+#endif
+	PRINT(_L("add new contact to pred search tables - done"));
 #endif
 
    	TContactItemId groupId = iIccContactStore.CreateInDbL(aItem, aSessionId);
@@ -322,9 +340,13 @@ void CPplContactItemManager::UpdateL(CContactItem& aItem, TUint aSessionId, TBoo
 	iGroupTable->UpdateL(aItem);	
 	iCommAddrTable->UpdateL(aItem);
 #if defined(USE_PRED_SEARCH_TABLE)
-	RDebug::Print(_L("update contact in pred search table"));
-	iPredSearchTable->UpdateL(aItem);
-	RDebug::Print(_L("update contact in pred search table - done"));
+	PRINT(_L("update contact in pred search tables"));
+	iPredSearch12keyTable->UpdateL(aItem);
+#if defined(USE_QWERTY_PRED_SEARCH_TABLE)
+	iPredSearchQwertyTable->UpdateL(aItem);
+	iPredSearchSettingsTable->UpdateL(aItem);
+#endif
+	PRINT(_L("update contact in pred search tables - done"));
 #endif
 
 	if(controlTransaction)
@@ -376,7 +398,7 @@ CContactItem* CPplContactItemManager::DeleteLC(TContactItemId  aItemId, TUint aS
 
 	TBool lowDisk = EFalse;
 	CContactItem* savedContactItem = static_cast<CPplContactTable*>(iContactTable)->DeleteLC(aItemId, lowDisk);
-	if(lowDisk) 
+	if (lowDisk) 
 		{
 		CleanupStack::PopAndDestroy(savedContactItem); // this was returned from the first call, but not deleted in the db
 		TInt err = iDatabase.GetReserveAccess();
@@ -398,27 +420,40 @@ CContactItem* CPplContactItemManager::DeleteLC(TContactItemId  aItemId, TUint aS
 
 	lowDisk = EFalse;	
 	iGroupTable->DeleteL(*savedContactItem, lowDisk);	
-	if(lowDisk) 
+	if (lowDisk) 
 		{
 		DeleteInLowDiskConditionL(iGroupTable, savedContactItem);
 		}
 
 	lowDisk = EFalse;
 	iCommAddrTable->DeleteL(*savedContactItem, lowDisk);	
-	if(lowDisk) 
+	if (lowDisk) 
 		{
 		DeleteInLowDiskConditionL(iCommAddrTable, savedContactItem);
 		}
 
 #if defined(USE_PRED_SEARCH_TABLE)
-	RDebug::Print(_L("delete contact from pred search table"));
+	PRINT(_L("delete contact from pred search tables"));
 	lowDisk = EFalse;
-    iPredSearchTable->DeleteL(*savedContactItem, lowDisk);
-    if(lowDisk) 
+    iPredSearch12keyTable->DeleteL(*savedContactItem, lowDisk);
+    if (lowDisk) 
 		{
-		DeleteInLowDiskConditionL(iPredSearchTable, savedContactItem);
+		DeleteInLowDiskConditionL(iPredSearch12keyTable, savedContactItem);
 		}
-	RDebug::Print(_L("delete contact from pred search table - done"));
+	lowDisk = EFalse;
+#if defined(USE_QWERTY_PRED_SEARCH_TABLE)
+	iPredSearchQwertyTable->DeleteL(*savedContactItem, lowDisk);
+    if (lowDisk) 
+		{
+		DeleteInLowDiskConditionL(iPredSearchQwertyTable, savedContactItem);
+		}
+	iPredSearchSettingsTable->DeleteL(*savedContactItem, lowDisk);
+    if (lowDisk) 
+		{
+		DeleteInLowDiskConditionL(iPredSearchSettingsTable, savedContactItem);
+		}
+#endif
+	PRINT(_L("delete contact from pred search tables - done"));
 #endif
   
     //Fake checking read access to ICCEntry store to keep BC.
@@ -533,11 +568,24 @@ void CPplContactItemManager::ConstructL()
 	iCommAddrTable = CPplCommAddrTable::NewL(iDatabase, iContactProperties);
 	iGroupTable = CPplGroupsTable::NewL(iDatabase);
 	iPreferencePersistor = CPplPreferencesPersistor::NewL(iDatabase);
+
 #if defined(USE_PRED_SEARCH_TABLE)
-	RDebug::Print(_L("create CPplPredictiveSearchTable object"));
-	iPredSearchTable = CPplPredictiveSearchTable::NewL(iDatabase);
-	RDebug::Print(_L("create CPplPredictiveSearchTable object - done"));
-#endif
+	PRINT(_L("create C12keyPredictiveSearchTable object"));
+	iPredSearch12keyTable = C12keyPredictiveSearchTable::NewL(iDatabase);
+#if defined(USE_QWERTY_PRED_SEARCH_TABLE)
+	PRINT(_L("create CQwertyPredictiveSearchTable object"));
+	iPredSearchQwertyTable = CQwertyPredictiveSearchTable::NewL(iDatabase);
+	PRINT(_L("create CPredictiveSearchSettingsTable object"));
+	iPredSearchSettingsTable = CPredictiveSearchSettingsTable::NewL(iDatabase);
+
+	iPredictiveSearchSynchronizer =
+		CPredictiveSearchSynchronizer::NewL(iDatabase,
+											*iPredSearch12keyTable,
+											*iPredSearchQwertyTable,
+											*iPredSearchSettingsTable);
+#endif // #if defined(USE_QWERTY_PRED_SEARCH_TABLE)
+#endif // #if defined(USE_PRED_SEARCH_TABLE)
+
 	iPresenceTable = CPplPresenceTable::NewL(iDatabase); 
 	
 	// Connect to metadata server
@@ -610,7 +658,7 @@ void CPplContactItemManager::CreateTablesL()
 
 	TBool controlTransaction = !(iTransactionManager.IsTransactionActive());
 	
-	if(controlTransaction)
+	if (controlTransaction)
 		{
 		StartTransactionL(0);
 		}
@@ -620,13 +668,17 @@ void CPplContactItemManager::CreateTablesL()
 	iCommAddrTable->CreateTableL();
 	iPreferencePersistor->CreateTableL();
 #if defined(USE_PRED_SEARCH_TABLE)
-	RDebug::Print(_L("create pred search table to DB"));	
-	iPredSearchTable->CreateTableL();
-	RDebug::Print(_L("create pred search table to DB - done"));	
+	PRINT(_L("create pred search tables to DB"));	
+	iPredSearch12keyTable->CreateTableL();
+#if defined(USE_QWERTY_PRED_SEARCH_TABLE)
+	iPredSearchQwertyTable->CreateTableL();
+	iPredSearchSettingsTable->CreateTableL();
+#endif
+	PRINT(_L("create pred search tables to DB - done"));	
 #endif
 	iPresenceTable->CreateTableL(); 
 	
-	if(controlTransaction)
+	if (controlTransaction)
 		{
 		CommitTransactionL();
 		}			
@@ -712,12 +764,12 @@ CContactIdArray* CPplContactItemManager::GroupIdListL()
 	const TInt KIdx = iSelectStatement->ParameterIndex(KContactId);
 	
 	TInt err;
-	while((err = selectStatement.Next()) == KSqlAtRow)
+	while ((err = selectStatement.Next()) == KSqlAtRow)
 		{
 		idArray->AddL(selectStatement.ColumnInt(KIdx));	
 		}
 
-	if(err != KSqlAtEnd)
+	if (err != KSqlAtEnd)
 		{
 		User::Leave(err);
 		}
@@ -763,7 +815,7 @@ CBufSeg* CPplContactItemManager::DetailsListL(const TDesC& aSearchQuery) const
     stream.WriteInt32L(0);
     stream.Close();
 
-    if(err != KSqlAtEnd)
+    if (err != KSqlAtEnd)
         {
         User::Leave(err);
         }
@@ -774,7 +826,6 @@ CBufSeg* CPplContactItemManager::DetailsListL(const TDesC& aSearchQuery) const
     
     return array;
     }
-
 
 /**
 Utility method used to rthe prefered card template id
@@ -792,162 +843,17 @@ void CPplContactItemManager::SetCardTemplatePrefIdL(TInt aCardTemplatePrefId)
 	iPreferencePersistor->SetPreferredCardTemplateIdL(aCardTemplatePrefId);
 	}
 
-// If predictive search tables do not exist, generate them using data from
-// contacts table.
 void CPplContactItemManager::SynchronizePredSearchTableL()
 	{
-#if !defined(USE_PRED_SEARCH_TABLE)
-	return;
+#if defined(USE_PRED_SEARCH_TABLE)
+	iPredictiveSearchSynchronizer->SynchronizeTablesL();
 #endif
-	RDebug::Print(_L("CPplContactItemManager::SynchronizePredSearchTableL"));
-
-	if (!DoesPredSearchTableExistL())
-		{
-		CreatePredSearchTablesL();
-		}
 	}
 
 void CPplContactItemManager::RecreatePredSearchTablesL()
 	{
-	DeletePredSearchTablesL();
-	CreatePredSearchTablesL();
-	}
-
-void CPplContactItemManager::CreatePredSearchTablesL()
-	{
-	RDebug::Print(_L("CPplContactItemManager::CreatePredSearchTablesL"));
-
-	iPredSearchTable->CreateTableL();
-	_LIT(KSelectAllContactsFormat, "SELECT %S,%S,%S FROM %S;");
-	TInt bufSize = KSelectAllContactsFormat().Length() +
-				   KContactId().Length() +
-				   KContactFirstName().Length() +
-				   KContactLastName().Length() +
-				   KSqlContactTableName().Length();
-	HBufC* sqlStatement = HBufC::NewLC(bufSize);
-	sqlStatement->Des().AppendFormat(KSelectAllContactsFormat,
-		&KContactId,
-		&KContactFirstName,
-		&KContactLastName,
-		&KSqlContactTableName);
-
-	RSqlStatement stmnt;
-	CleanupClosePushL(stmnt);
-	RDebug::Print(_L("CreatePredSearchTablesL prepare SQL statement"));
-    stmnt.PrepareL(iDatabase, *sqlStatement);
-
-	const TInt KContactIdIndex = 0;
-	const TInt KFirstNameIndex = 1;
-	const TInt KLastNameIndex = 2;
-	TInt err(KErrNone);
-    while ((err = stmnt.Next()) == KSqlAtRow)
-        {
-		RDebug::Print(_L("CreatePredSearchTablesL create CContactItem"));
-
-		TInt id = KUidContactCardValue;
-		TUid uid;
-		uid.iUid = id;
-		CContactItem* contact = CContactItem::NewLC(uid);
-		contact->SetId(stmnt.ColumnInt(KContactIdIndex));
-
-		// If first name exists, write it to contact item
-		TPtrC firstName;
-		if (stmnt.ColumnText(KFirstNameIndex, firstName) == KErrNone)
-			{
-			CContactItemField* field =
-				CContactItemField::NewLC(KStorageTypeText, KUidContactFieldGivenName);
-			CContactTextField* textfield = field->TextStorage();
-			textfield->SetTextL(firstName);
-			contact->AddFieldL(*field); // Takes ownership
-			CleanupStack::Pop(field);
-			}
-
-		TPtrC lastName;
-		if (stmnt.ColumnText(KLastNameIndex, lastName) == KErrNone)
-			{
-			CContactItemField* field =
-				CContactItemField::NewLC(KStorageTypeText, KUidContactFieldFamilyName);
-			CContactTextField* textfield = field->TextStorage();
-			textfield->SetTextL(lastName);
-			contact->AddFieldL(*field); // Takes ownership
-			CleanupStack::Pop(field);
-			}
-		RDebug::Print(_L("CreatePredSearchTablesL create entry to tables"));
-		iPredSearchTable->CreateInDbL(*contact);
-		CleanupStack::PopAndDestroy(contact);
-        }
-
-    // Leave if we didn't complete going through the results properly
-    if (err != KSqlAtEnd)
-        {
-		RDebug::Print(_L("CreatePredSearchTablesL SQL err=%d"), err);
-        User::Leave(err);
-        }
-    CleanupStack::PopAndDestroy(&stmnt);
-	CleanupStack::PopAndDestroy(sqlStatement);
-
-	RDebug::Print(_L("CPplContactItemManager::CreatePredSearchTablesL ends"));
-	}
-
-TBool CPplContactItemManager::DoesPredSearchTableExistL() const
-	{
-	RDebug::Print(_L("CPplContactItemManager::DoesPredSearchTableExistL"));
-
-	_LIT(KSelectContactIdsFormat, "SELECT %S FROM %S;");
-	TInt bufSize = KSelectContactIdsFormat().Length() +
-				   KPredSearchContactId().Length() +
-				   KSqlContactPredSearchTable0().Length();
-	HBufC* sqlStatement = HBufC::NewLC(bufSize);
-	sqlStatement->Des().AppendFormat(KSelectContactIdsFormat,
-		&KPredSearchContactId,
-		&KSqlContactPredSearchTable0);
-
-	RSqlStatement stmnt;
-	CleanupClosePushL(stmnt);
-	// If predictive search table does not exist, leaves with -311.
-    // If it exists, does not leave.
-    TRAPD(err, stmnt.PrepareL(iDatabase, *sqlStatement));
-	RDebug::Print(_L("err=%d"), err );
-
-	CleanupStack::PopAndDestroy(&stmnt);
-	CleanupStack::PopAndDestroy(sqlStatement);
-
-	RDebug::Print(_L("CPplContactItemManager::DoesPredSearchTableExistL return %d"),
-				  err == KErrNone );
-	return err == KErrNone;
-	}
-
-void CPplContactItemManager::DeletePredSearchTablesL()
-	{
-	RDebug::Print(_L("CPplContactItemManager::DeletePredSearchTablesL"));
-
-	const TInt KTableCount = 10;
-    const TDesC* KTableNames[KTableCount] =
-        {
-        &KSqlContactPredSearchTable0,
-        &KSqlContactPredSearchTable1,
-        &KSqlContactPredSearchTable2,
-        &KSqlContactPredSearchTable3,
-        &KSqlContactPredSearchTable4,
-        &KSqlContactPredSearchTable5,
-        &KSqlContactPredSearchTable6,
-        &KSqlContactPredSearchTable7,
-        &KSqlContactPredSearchTable8,
-        &KSqlContactPredSearchTable9
-        };
-
-	// IF EXISTS suppresses error that would occur if table does not exist
-	_LIT(KDropTable, "DROP TABLE IF EXISTS %S;");
-    for (TInt i = 0; i < KTableCount; ++i)
-        {
-        HBufC* dropTableCommand = HBufC::NewLC(KDropTable().Length() +
-            // All table names are of same length
-            KTableNames[i]->Length());
-        TPtr ptr = dropTableCommand->Des();
-        ptr.Format(KDropTable, KTableNames[i]);
-
-		User::LeaveIfError(iDatabase.Exec(*dropTableCommand));
-        CleanupStack::PopAndDestroy(dropTableCommand);
-        }
-	RDebug::Print(_L("CPplContactItemManager::DeletePredSearchTablesL ends"));
+#if defined(USE_PRED_SEARCH_TABLE)
+	iPredictiveSearchSynchronizer->DeletePredSearchTablesL();
+	iPredictiveSearchSynchronizer->CreatePredSearchTablesL();
+#endif
 	}

@@ -128,10 +128,10 @@ private:
     QString                     mTitle;
     QString                     mValueText;
     QString                     mAction;
+    QContactActionDescriptor    mActionDescriptor;
     QContactDetail              mDetail;
     Qt::TextElideMode           mValueTextElideMode;
     bool                        mIsFocusable;
-    QContactActionDescriptor    mActionDescriptor;
     QString                     mLongPressText;
     
 public:

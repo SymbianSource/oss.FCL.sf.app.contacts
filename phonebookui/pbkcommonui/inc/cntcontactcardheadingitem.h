@@ -31,13 +31,17 @@ class QGestureEvent;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
+class QContactName;
 QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
 
 class CntContactCardHeadingItem : public HbWidget
 {
+    friend class TestCntContactCardHeadingItem;
+    
     Q_OBJECT
+    
     Q_PROPERTY( QString first_line_text READ getFirstLineText )
     Q_PROPERTY( QString primary_text READ getPrimaryText )
     Q_PROPERTY( QString second_line_text READ getSecondLineText )
@@ -57,7 +61,7 @@ public:
     void setDetails(const QContact* contact);
     void setIcon(const HbIcon newIcon);
     void setGroupDetails(const QContact* contact);
-    void setSecondaryIcon(bool favoriteContact);
+    void setFavoriteStatus(bool favoriteContact);
 
 signals:
     void clicked();
@@ -67,6 +71,7 @@ signals:
 public slots:
     void processLongPress(const QPointF &point);
     void processShortPress(const QPointF &point);
+    void setOnlineStatus(bool online);
 
 protected:
     void gestureEvent(QGestureEvent* event);
@@ -78,11 +83,8 @@ private slots:
 private:
     void initGesture();
     
-#ifdef PBK_UNIT_TEST
-public:
-#else
-private:
-#endif
+    void setSecondaryIcon();
+
     bool isNickName(const QContact* contact);
     bool isCompanyName(const QContact* contact);
 
@@ -94,12 +96,9 @@ private:
 
     HbIcon getIcon() const { return icon; }
     HbIcon getSecondaryIcon() const { return secondaryIcon; }
+    QString createNameText(const QContactName name);
 
-#ifdef PBK_UNIT_TEST
-public:
-#else
 private:
-#endif
     HbIconItem              *mIcon;
     HbIconItem              *mSecondaryIcon;
     HbTextItem              *mFirstLineText;
@@ -117,6 +116,9 @@ private:
     QString                 tinyMarqueeText;
     HbIcon                  icon;
     HbIcon                  secondaryIcon;
+    
+    bool                    mIsFavorite;
+    bool                    mIsOnline;
 };
 
 #endif // CNTHEADINGWIDGET_H

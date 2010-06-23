@@ -34,4 +34,5 @@ EXPORTS
 	_ZNK15CntHistoryModel8rowCountERK11QModelIndex @ 33 NONAME
 	_ZTI15CntHistoryModel @ 34 NONAME
 	_ZTV15CntHistoryModel @ 35 NONAME
+	_ZN15CntHistoryModel15handleLogsResetEv @ 36 NONAME
 

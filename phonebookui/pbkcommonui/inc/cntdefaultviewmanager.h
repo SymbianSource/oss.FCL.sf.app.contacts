@@ -55,6 +55,12 @@ private slots:
     void deleteOldView();
     void switchView( const CntViewParameters aArgs, QFlags<Hb::ViewSwitchFlag> flags );
     
+protected slots:
+    virtual void closeApp();
+    
+private:
+    void cleanup();
+        
 private:
     CntAbstractViewFactory*      mFactory;
     CntAbstractView*             mCurrent;

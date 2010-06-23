@@ -39,6 +39,9 @@ public:
     void saveContactDetails();
     void insertDetailField();
     QContactDetail detail() const;
+    
+private:
+    QList<QContactNote> mNoteList;
     };
 
 #endif /* CNTNOTEEDITORMODEL_H_ */

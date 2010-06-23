@@ -14,48 +14,64 @@
 * Description:  
 *
 */
-#include "cntsettingsview.h"
-#include <hbdataformmodelitem.h>
-#include <hbglobal.h>
 
-CntDefaultSettingsModel::CntDefaultSettingsModel()
+#include "cntsettingsmodel.h"
+#include <cntuids.h>
+#include <qstringlist.h>
+#include <xqsettingskey.h>
+#include "cntdebug.h"
+
+CntSettingsModel::CntSettingsModel() :
+HbDataFormModel()
 {
+    //create a model class    
+    HbDataFormModelItem* ord = new HbDataFormModelItem(HbDataFormModelItem::ComboBoxItem, hbTrId("txt_phob_setlabel_name_display_order"));
+    
     QStringList orderList;
+    // This order should be maintained as per the UI spec
     orderList.append( hbTrId("txt_phob_setlabel_name_display_order_val_last_name") );
     orderList.append( hbTrId("txt_phob_setlabel_name_display_order_val_last_name_separator") );
     orderList.append( hbTrId("txt_phob_setlabel_name_display_order_val_first_nam") );
-    /*
-    QStringList showList;
-    showList.append(hbTrId("txt_phob_setlabel_show_val_status_update"));
-    showList.append(hbTrId("txt_phob_setlabel_show_val_name_and_phonenumber"));
-    showList.append(hbTrId("txt_phob_setlabel_show_val_name_only"));
-    */
-    mOrder = new HbDataFormModelItem(HbDataFormModelItem::ComboBoxItem,  hbTrId("txt_phob_setlabel_name_display_order"));
-    mOrder->setContentWidgetData( "items", orderList );
-
-    /*
-    HbDataFormModelItem* show = new HbDataFormModelItem( HbDataFormModelItem::ComboBoxItem, hbTrId("txt_phob_setlabel_show") );
-    show->setContentWidgetData( "items", showList );
-    */
     
-    appendDataFormItem( mOrder, invisibleRootItem() );
-    /* appendDataFormItem( show, invisibleRootItem() );
-     */
-}
+    ord->setContentWidgetData( "items", orderList );
+    appendDataFormItem(ord, invisibleRootItem());
+    mNameOrderkey = new XQSettingsKey(XQSettingsKey::TargetCentralRepository,
+                             KCRUiContacts.iUid,
+                             KCntNameOrdering);
+    int settingValue = mSettings.readItemValue(*mNameOrderkey, XQSettingsManager::TypeInt).toInt();
 
-CntDefaultSettingsModel::~CntDefaultSettingsModel()
-{
+    if (settingValue == CntOrderLastFirst) {
+        ord->setContentWidgetData("currentIndex", 0 );
+    } else if (settingValue == CntOrderLastCommaFirst) {
+        ord->setContentWidgetData("currentIndex", 1 );
+    } else if (settingValue == CntOrderFirstLast) {
+        ord->setContentWidgetData("currentIndex", 2 );
+    }
     
+    connect(this, SIGNAL(dataChanged(QModelIndex , QModelIndex)), this, SLOT(handleDataChanged(QModelIndex , QModelIndex)));
 }
 
-void CntDefaultSettingsModel::saveSettings()
+CntSettingsModel::~CntSettingsModel()
 {
-    QString selected = mOrder->contentWidgetData( "currentText" ).toString();
-    
+    delete mNameOrderkey;
 }
 
-void CntDefaultSettingsModel::loadSettings()
+void CntSettingsModel::handleDataChanged(QModelIndex topLeft, QModelIndex bottomRight)
 {
-    mOrder->setContentWidgetData("currentText", hbTrId("txt_phob_setlabel_name_display_order_val_last_name_separator") );
+    Q_UNUSED(bottomRight)
+    bool written(true);
+            
+    if (topLeft.row() == 0) {
+        int selected = itemFromIndex(topLeft)->contentWidgetData( "currentIndex" ).toInt();
+        if (selected == 0) {
+            written = mSettings.writeItemValue(*mNameOrderkey, QVariant(CntOrderLastFirst));
+        } else if (selected == 1) {
+            written = mSettings.writeItemValue(*mNameOrderkey, QVariant(CntOrderLastCommaFirst));
+        } else if (selected == 2) {
+            written = mSettings.writeItemValue(*mNameOrderkey, QVariant(CntOrderFirstLast));
+        }
+        if (!written) {
+            CNT_LOG_ARGS(QString("failed writting cenrep key"))
+        }
+    }
 }
-// End of File
