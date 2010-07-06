@@ -107,6 +107,7 @@ void CntAddressModel::createAddressItems( HbDataFormModelItem* aGroup, QContactA
     HbDataFormModelItem* postal = new HbDataFormModelItem( HbDataFormModelItem::TextItem, hbTrId("txt_phob_formlabel_postal_codezip_code"));
     postal->setContentWidgetData( "text", aAddress->postcode() );
     postal->setContentWidgetData( "maxLength", CNT_POSTCODE_MAXLENGTH );
+    postal->setContentWidgetData( "preferDigits", true);
     
     HbDataFormModelItem* city = new HbDataFormModelItem( HbDataFormModelItem::TextItem, hbTrId("txt_phob_formlabel_city"));
     city->setContentWidgetData( "text", aAddress->locality() );

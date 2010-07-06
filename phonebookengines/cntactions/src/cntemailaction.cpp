@@ -18,18 +18,23 @@
 #include "cntemailaction.h"
 
 #include <qcontactemailaddress.h>
-#include <xqservicerequest.h>
+#include <xqaiwdeclplat.h>
+#include <xqaiwrequest.h>
 #include <qcontactphonenumber.h>
 #include <qcontactfilters.h>
+
+static const QString EMAIL_SEND_TO_KEY = "to";
 
 //Action class
 CntEmailAction::CntEmailAction() : 
     CntAction("email")
 {
+    mRequest = m_AppManager.create(XQI_EMAIL_MESSAGE_SEND, "send(QVariant)", true);
 }
 
 CntEmailAction::~CntEmailAction()
 {
+    delete mRequest;
 }
 
 QContactFilter CntEmailAction::contactFilter(const QVariant& value) const
@@ -60,14 +65,63 @@ CntEmailAction* CntEmailAction::clone() const
 void CntEmailAction::performAction()
 {
     QVariant retValue;
-    emitResult(GeneralError, retValue);
-    
-    /*
-    QString service("com.nokia.services.telephony");
-    QString type("dial(QString,int)");
-    
-    performNumberAction(service, type);
-    */
+
+    if (mRequest)
+    {
+        QMap<QString, QVariant> map;
+        QStringList recipients;
+        QList<QVariant> data;
+
+        // If detail exists use it.
+        if (m_detail.definitionName() == QContactEmailAddress::DefinitionName)
+        {
+            const QContactEmailAddress &email = static_cast<const QContactEmailAddress &>(m_detail);
+
+            recipients.append(email.emailAddress());
+            map.insert(EMAIL_SEND_TO_KEY, recipients);
+            data.append(map);
+
+            mRequest->setArguments(data);
+            mRequest->send(retValue);
+            emitResult(mRequest->lastError(), retValue);
+        }
+
+        // If no detail, pick preferred.
+        // Todo : Temporary fix. Remove setting preferred when selection popup feature available.
+        else if (m_detail.isEmpty())
+        {
+            QContactDetail detail = m_contact.preferredDetail(m_actionName);
+            QContactEmailAddress email;
+
+            // If preferred is empty pick first email.
+            if(detail.isEmpty())
+            {
+                email = m_contact.detail<QContactEmailAddress>();
+            }
+            else
+            {
+                email = static_cast<QContactEmailAddress>(detail);
+            }
+
+            recipients.append(email.emailAddress());
+            map.insert(EMAIL_SEND_TO_KEY, recipients);
+            data.append(map);			
+
+            mRequest->setArguments(data);
+            mRequest->send(retValue);
+            emitResult(mRequest->lastError(), retValue);
+        }
+        else
+        {
+            emitResult(GeneralError, retValue);
+        }
+    }
+
+    // Service not found.
+    else
+    {
+        emitResult(GeneralError, retValue);
+    }
 }
 
 

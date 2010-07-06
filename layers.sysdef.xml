@@ -12,6 +12,7 @@
         <unit unitID="phonebooksync" bldFile="&layer_real_source_path;/pimprotocols/phonebooksync/group" name="phonebooksync" mrp=""/>
         <unit unitID="pbap" bldFile="&layer_real_source_path;/pimprotocols/pbap/group" name="pbap" mrp=""/>
         <unit unitID="mtpcontactdp" bldFile="&layer_real_source_path;/pimprotocols/mtpcontactdp/group" name="mtpcontactdp" mrp="" filter="!sf_build"/>
+        <unit unitID="contactwidgethsplugin" bldFile="&layer_real_source_path;/contactwidgethsplugin" name="contactwidgethsplugin" mrp="" proFile="contactwidgethsplugin.pro"/>
       </module>
       
     </layer>

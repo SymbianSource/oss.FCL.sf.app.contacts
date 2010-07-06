@@ -21,7 +21,7 @@
 #include <locationservicedefines.h>
 #include <qvaluespacepublisher.h>
 #include <qvaluespacesubscriber.h>
-
+#include <qfile.h>
 #include "cntmaptileservice.h"
 #include "cntmaptiledblookuptable.h"
 
@@ -34,6 +34,8 @@ const TInt KEnableLocationFeature           = 0x1;
 const char *CNT_MAPTILE_STATUS_RECEIVER = "/maptilestatuspublisher/name";
 const char *CNT_MAPTILE_STATUS_PUBLISHER = "/cntmaptilepublisher";
 
+const char*  CNT_PORTRAIT_MAPTILE_IMAGE = "_Vertical";
+const char*  CNT_LANDSCAPE_MAPTILE_IMAGE = "_Contact_Horizontal";
 
 // -----------------------------------------------------------------------------
 // CntMapTileService::CntMapTileService()
@@ -111,7 +113,11 @@ bool CntMapTileService::isLocationFeatureEnabled()
 // Gets the maptile image path associated with a contact.
 // -----------------------------------------------------------------------------
 //
-int CntMapTileService::getMapTileImage( int contactId , ContactAddressType sourceType, QString& imagePath )    
+int CntMapTileService::getMapTileImage( 
+                                 int contactId , 
+                                 ContactAddressType sourceType, 
+                                 QString& imagePath,
+                                 Qt::Orientations orientation )    
 {
     
     TLookupItem lookupItem;
@@ -132,7 +138,22 @@ int CntMapTileService::getMapTileImage( int contactId , ContactAddressType sourc
             //Get the image path
             QString imageFile((QChar*)lookupItem.iFilePath.Ptr(),
                     lookupItem.iFilePath.Length());
+            if( orientation == Qt::Vertical )
+            {
+                imageFile.append( CNT_PORTRAIT_MAPTILE_IMAGE );
+            }
+            else
+            { 
+                imageFile.append( CNT_LANDSCAPE_MAPTILE_IMAGE );
+            }
             imagePath = imageFile;
+            
+            //Check if File exists
+            if ( !QFile::exists( imagePath ) )
+            {
+                imagePath.clear();
+                maptileStatus = MapTileFetchingUnknownError;
+            }
         }
         else if( maptileStatus == MapTileFetchingNetworkError ||
                     maptileStatus == MapTileFetchingInProgress )

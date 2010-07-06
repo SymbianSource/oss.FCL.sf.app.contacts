@@ -479,6 +479,7 @@ void CntImportsView::importFetchResultReceivedADN()
                 }
                
                contact.setType(QContactType::TypeContact);
+               setPreferredDetails(&contact);
                mSaveSimContactsList.append(contact);
                 
             }
@@ -646,6 +647,7 @@ void CntImportsView::importFetchResultReceivedSDN()
               }
               
                contact.setType(QContactType::TypeContact);
+               setPreferredDetails(&contact);
                mSaveSimContactsListSDN.append(contact);
                 
             }
@@ -708,6 +710,27 @@ void CntImportsView::adnCacheStatusReady(CntSimUtility::CacheStatus& cacheStatus
             //and show error note
             simInfoErrorMessage(KErrAccessDenied);
         }
+    }
+}
+
+void CntImportsView::setPreferredDetails( QContact *aContact )
+{
+    QList<QContactPhoneNumber> numberList( aContact->details<QContactPhoneNumber>() );
+    //set preferred number for call if there is only one phone number
+    if ( aContact->preferredDetail("call").isEmpty() && numberList.count() == 1 )
+    {
+        aContact->setPreferredDetail( "call", numberList.first() );
+    }
+    //set preferred number for message if there is only one mobile phone number
+    if ( aContact->preferredDetail("message").isEmpty() && numberList.count() == 1 )
+    {      
+        aContact->setPreferredDetail( "message", numberList.first() );
+    }
+    //set preferred number for message if there is only one email address
+    QList<QContactEmailAddress> emailList( aContact->details<QContactEmailAddress>() );
+    if ( aContact->preferredDetail("email").isEmpty() && emailList.count() == 1 )
+    {      
+        aContact->setPreferredDetail( "email", emailList.first() );
     }
 }
 

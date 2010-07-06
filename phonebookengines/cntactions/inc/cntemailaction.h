@@ -20,6 +20,8 @@
 
 #include "cntaction.h"
 
+class XQAiwRequest;
+
 class CntEmailAction : public CntAction
 {
     Q_OBJECT
@@ -33,6 +35,8 @@ public:
     QList<QContactDetail> supportedDetails(const QContact& contact) const;
     CntEmailAction* clone() const;
     void performAction();
+private:
+    XQAiwRequest    *mRequest;
 };
 
 #endif

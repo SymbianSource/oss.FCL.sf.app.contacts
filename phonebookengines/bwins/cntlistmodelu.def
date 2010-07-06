@@ -35,4 +35,8 @@ EXPORTS
 	??1CntListModel@@UAE@XZ @ 34 NONAME ; CntListModel::~CntListModel(void)
 	?tr@CntListModel@@SA?AVQString@@PBD0H@Z @ 35 NONAME ; class QString CntListModel::tr(char const *, char const *, int)
 	?handleMyCardChanged@CntListModel@@AAEXABI0@Z @ 36 NONAME ; void CntListModel::handleMyCardChanged(unsigned int const &, unsigned int const &)
+	?handleRemovedRelationship@CntListModel@@AAEXABV?$QList@I@@@Z @ 37 NONAME ; void CntListModel::handleRemovedRelationship(class QList<unsigned int> const &)
+	?handleAddedRelationship@CntListModel@@AAEXABV?$QList@I@@@Z @ 38 NONAME ; void CntListModel::handleAddedRelationship(class QList<unsigned int> const &)
+	?handleRowSettingChanged@CntListModel@@AAEXABVXQSettingsKey@@ABVQVariant@@@Z @ 39 NONAME ; void CntListModel::handleRowSettingChanged(class XQSettingsKey const &, class QVariant const &)
+	?updateRelationships@CntListModel@@AAEXXZ @ 40 NONAME ; void CntListModel::updateRelationships(void)
 

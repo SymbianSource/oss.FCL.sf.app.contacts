@@ -110,10 +110,14 @@ public:
     * @param contactId  Contact id     
     * @param sourceType Source address type( Preferred, Home , Work address )
     * @param imagePath  Maptile image path associated with the contact id
+    * @param orientation Application current ui orientation.   
     *      
     * @return Returns the maptile fetching status.
     */
-    int getMapTileImage( int Id, ContactAddressType sourceType, QString& imagePath  );   
+    int getMapTileImage( int Id, 
+                         ContactAddressType sourceType, 
+                         QString& imagePath,
+                         Qt::Orientations orientation = Qt::Vertical );   
     
 public slots: 
     /**

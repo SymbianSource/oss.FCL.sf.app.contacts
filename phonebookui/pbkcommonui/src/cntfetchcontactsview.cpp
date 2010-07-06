@@ -36,14 +36,14 @@
 Given a contact manager, CntFetchContacts is responsible for 
 retrieving a set of contacts, if any were chosen by the user. 
 */
-CntFetchContacts::CntFetchContacts(QContactManager *aManager) :
+CntFetchContacts::CntFetchContacts(QContactManager &aManager) :
 QObject(),
 mPopup(NULL),
 mCntModel(NULL),
 mListView(NULL),
 mEmptyListLabel(NULL),
 mSelectionMode(HbAbstractItemView::MultiSelection),
-mManager(aManager),
+mManager(&aManager),
 mWasCanceled(false),
 mLabel(NULL),
 mVirtualKeyboard(NULL),
@@ -98,38 +98,12 @@ void CntFetchContacts::setDetails(QString aTitle, QString aButtonText)
 Brings up a list of contacts, awaiting user response. This function is asynchronous.
 When a response is given, a clicked signal will be sent.
 */
-void CntFetchContacts::displayContacts(DisplayType aType, HbAbstractItemView::SelectionMode aMode, QSet<QContactLocalId> aContacts)
+void CntFetchContacts::displayContacts(HbAbstractItemView::SelectionMode aMode,
+                                                   QSet<QContactLocalId> aContacts)
 {
-    switch (aType) {
-    case view:
-    {
-        // TODO Currently only services will need a view 
-        break;
-    }
-
-    case popup:
-    {
-        doInitialize(aMode,aContacts);
-        markMembersInView();
-        connectSignal();
-        showPopup();
-        
-        mLayout->addItem(mSearchPanel);
-        mContainerWidget->setLayout(mLayout);
-        
-        // Main window is NULL in unit tests
-        HbMainWindow* window = mListView->mainWindow();
-        if (window) {
-            mContainerWidget->setPreferredHeight(mListView->mainWindow()->size().height());
-        }
-        mContainerWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-                
-        break;
-    }
-
-    default:
-        break;
-    }
+    doInitialize(aMode,aContacts);
+    markMembersInView();
+    showPopup();
 }
 
 QSet<QContactLocalId> CntFetchContacts::getSelectedContacts() const
@@ -197,12 +171,13 @@ void CntFetchContacts::handleKeypadClose()
     }
 }
 
+/*!
+Notify client that we're done.
+*/
 void CntFetchContacts::handleUserResponse(HbAction* action)
 {
-    HbDialog *popup = static_cast<HbDialog*>(sender());
-    
     bool userCanceled = (action == mSecondaryAction); 
-    if (popup && userCanceled) {
+    if (userCanceled) {
         mCurrentlySelected.clear();
         
         mWasCanceled = true;
@@ -252,8 +227,6 @@ void CntFetchContacts::doInitialize(HbAbstractItemView::SelectionMode aMode,
     mSelectionMode = aMode;
     mCurrentlySelected = aContacts;
 
-    mSearchPanel->setVisible(true);
-
     if (!mPopup) {
         mPopup = new HbDialog;
     }
@@ -282,7 +255,7 @@ void CntFetchContacts::doInitialize(HbAbstractItemView::SelectionMode aMode,
         mIndexFeedback->setItemView(mListView);
 
         // Note that the layout takes ownership of the item(s) it contains.
-        if (!mCntModel->rowCount()) {
+        if (mCntModel->rowCount()== 0) {
             mListView->setVisible(false);
             if (!mEmptyListLabel) {
                 mEmptyListLabel = new HbTextItem(hbTrId("txt_phob_info_no_matching_contacts"));
@@ -303,12 +276,20 @@ void CntFetchContacts::doInitialize(HbAbstractItemView::SelectionMode aMode,
     if (!mListView->model()) {
         mListView->setModel(mCntModel);
     }
-}
-
-void CntFetchContacts::connectSignal()
-{
+    
+    // Main window is NULL in unit tests
+    HbMainWindow* window = mListView->mainWindow();
+    if (window) {
+        mContainerWidget->setPreferredHeight(mListView->mainWindow()->size().height());
+    }
+    mContainerWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    
+    mSearchPanel->setVisible(true);
+    mLayout->addItem(mSearchPanel);
+    mContainerWidget->setLayout(mLayout);
+    
     connect(mListView, SIGNAL(activated(const QModelIndex&)),
-            this, SLOT(memberSelectionChanged(const QModelIndex&)));
+            this, SLOT(memberSelectionChanged(const QModelIndex&)), Qt::UniqueConnection);
 }
 
 void CntFetchContacts::showPopup()

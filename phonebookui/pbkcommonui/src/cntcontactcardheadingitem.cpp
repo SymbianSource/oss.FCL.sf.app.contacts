@@ -62,6 +62,7 @@ void CntContactCardHeadingItem::createPrimitives()
         if (!mIcon && mainWindow()->orientation() != Qt::Horizontal)
         {
             mIcon = new HbIconItem(this);
+            mIcon->setAlignment(Qt::AlignCenter);
             mIcon->setIcon(icon);
             style()->setItemName(mIcon, "icon");
         }
@@ -348,7 +349,7 @@ QString CntContactCardHeadingItem::createNameText(const QContactName name)
 {
     XQSettingsManager settingsMng;
     XQSettingsKey nameOrderKey(XQSettingsKey::TargetCentralRepository,
-                             KCRUiContacts.iUid,
+                             KCRCntSettings.iUid,
                              KCntNameOrdering);
     int setting = settingsMng.readItemValue(nameOrderKey, XQSettingsManager::TypeInt).toInt();
     
@@ -380,7 +381,7 @@ void CntContactCardHeadingItem::setGroupDetails(const QContact* contact)
     icon.clear();
 
     // icon label
-    icon = HbIcon("qtg_large_custom");
+    icon = HbIcon("qtg_large_add_group_picture");
 
     QContactName contactName = contact->detail( QContactName::DefinitionName );
     QString groupName = contactName.value( QContactName::FieldCustomLabel );

@@ -22,6 +22,7 @@
 #include "cntextensionmanager.h"
 #include "cntglobal.h"
 #include "cntfavourite.h"
+#include "cntdebug.h"
 
 #include <cntuiextensionfactory.h>
 #include <cntuigroupsupplier.h>
@@ -120,6 +121,8 @@ Called when activating the view
 */
 void CntCollectionView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
 {
+    CNT_ENTRY
+    
     Q_UNUSED(aArgs)
     
     if (mView->navigationAction() != mSoftkey)
@@ -156,8 +159,10 @@ void CntCollectionView::activate( CntAbstractViewManager* aMgr, const CntViewPar
     mModel = new CntCollectionListModel(getContactManager(), mExtensionManager, this);
     mListView->setModel(mModel);
     
-    mFetchView = new CntFetchContacts(mViewManager->contactManager( SYMBIAN_BACKEND ));
+    mFetchView = new CntFetchContacts(*mViewManager->contactManager( SYMBIAN_BACKEND ));
     connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleNewGroupMembers()));
+    
+    CNT_EXIT
 }
 
 void CntCollectionView::deactivate()
@@ -341,9 +346,7 @@ void CntCollectionView::handleNewGroup(HbAction* action)
         QString groupNameCreated(mHandledContact->displayLabel());
         mFetchView->setDetails(HbParameterLengthLimiter(hbTrId("txt_phob_title_members_of_1_group")).arg(groupNameCreated),
                                hbTrId("txt_common_button_save"));
-        mFetchView->displayContacts(CntFetchContacts::popup,
-                                    HbAbstractItemView::MultiSelection,
-                                    contactsSet);
+        mFetchView->displayContacts(HbAbstractItemView::MultiSelection, contactsSet);
     }
 }
 

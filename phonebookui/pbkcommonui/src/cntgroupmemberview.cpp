@@ -66,7 +66,6 @@ CntGroupMemberView::CntGroupMemberView() :
     mFetchView(NULL),
     mAvatar(NULL)
 {
-
     mDocument = new CntDocumentLoader;
     
     bool ok;
@@ -202,13 +201,13 @@ void CntGroupMemberView::activate( CntAbstractViewManager* aMgr, const CntViewPa
     
     createModel();
     
-    if (mArgs.value(ESelectedAction).toString() == "save")
+    if (mArgs.value(ESelectedAction).toString() == CNT_SAVE_ACTION)
     {
         QString name = getContactManager()->synthesizedDisplayLabel(*mGroupContact);
         HbNotificationDialog::launchDialog(HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_new_group_1_created").arg(name)));
     }
     
-    mFetchView = new CntFetchContacts(mViewManager->contactManager( SYMBIAN_BACKEND ));
+    mFetchView = new CntFetchContacts(*mViewManager->contactManager( SYMBIAN_BACKEND ));
     connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleManageMembers()));
 }
 
@@ -223,15 +222,7 @@ void CntGroupMemberView::showPreviousView()
     QContact contact = mViewManager->contactManager( SYMBIAN_BACKEND )->contact(mGroupContact->localId());
     if ( contact != *mGroupContact )
     {
-        QList<QContactAvatar> details = mGroupContact->details<QContactAvatar>();
-        for (int i = 0; i < details.count(); i++)
-        {
-            if (!details.at(i).imageUrl().isEmpty())
-            {
-                getContactManager()->saveContact(mGroupContact);
-                break;
-            }
-        }
+        getContactManager()->saveContact(mGroupContact);
     }
     mViewManager->back(mArgs);
 }
@@ -259,14 +250,12 @@ void CntGroupMemberView::manageMembers()
     QString groupName(groupContactName.value( QContactName::FieldCustomLabel ));
     
     if (!mFetchView) {
-        mFetchView = new CntFetchContacts(mViewManager->contactManager( SYMBIAN_BACKEND ));
+        mFetchView = new CntFetchContacts(*mViewManager->contactManager( SYMBIAN_BACKEND ));
         connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleManageMembers()));
     }
     mFetchView->setDetails(HbParameterLengthLimiter(hbTrId("txt_phob_title_members_of_1_group")).arg(groupName),
                            hbTrId("txt_common_button_save"));
-    mFetchView->displayContacts(CntFetchContacts::popup,
-                                HbAbstractItemView::MultiSelection,
-                                contactsSet);
+    mFetchView->displayContacts(HbAbstractItemView::MultiSelection, contactsSet);
 }
 
 void CntGroupMemberView::handleManageMembers()
@@ -297,12 +286,6 @@ void CntGroupMemberView::handleManageMembers()
     if (!removedMemberships.isEmpty()) {
         getContactManager()->removeRelationships(removedMemberships, &errors);
     }
-    
-    // delete the model and recreate it with relationship changes
-    delete mModel;
-    mModel = 0;
-    
-    createModel();
 }
 
 void CntGroupMemberView::createModel()
@@ -311,7 +294,6 @@ void CntGroupMemberView::createModel()
     rFilter.setRelationshipType(QContactRelationship::HasMember);
     rFilter.setRelatedContactRole(QContactRelationship::First);
     rFilter.setRelatedContactId(mGroupContact->id());
-
 
     mModel = new CntListModel(getContactManager(), rFilter, false);
     mListView->setModel(mModel);
@@ -421,12 +403,6 @@ void CntGroupMemberView::removeFromGroup(const QModelIndex &index)
     relationship.setFirst(mGroupContact->id());
     relationship.setSecond(selectedContact.id());
     getContactManager()->removeRelationship(relationship);
-    
-    // delete the model and recreate it with relationship changes
-    delete mModel;
-    mModel = NULL;
-    
-    createModel();
 }
 
 void CntGroupMemberView::editContact(const QModelIndex &index)
@@ -512,16 +488,19 @@ void CntGroupMemberView::removeImage()
     {
         if (!mAvatar->imageUrl().isEmpty())
         {
-            mGroupContact->removeDetail(mAvatar);
+            bool success = mGroupContact->removeDetail(mAvatar);
             // Check if image removable.
             CntImageUtility imageUtility;
             if(imageUtility.isImageRemovable(mAvatar->imageUrl().toString()))
             {
                 imageUtility.removeImage(mAvatar->imageUrl().toString());
             }
+            mAvatar->setImageUrl(QUrl());
+            mImageLabel->clear();
+            mImageLabel->setIcon(HbIcon("qtg_large_add_group_picture"));
+            mHeadingItem->setIcon(HbIcon("qtg_large_add_group_picture"));
             mViewManager->contactManager( SYMBIAN_BACKEND )->saveContact(mGroupContact);
-            mHeadingItem->setIcon(HbIcon("qtg_large_avatar"));
-        }
+       }
     }
 }
 

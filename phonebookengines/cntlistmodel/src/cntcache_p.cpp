@@ -35,10 +35,12 @@ static const int CntMaxInfoJobs = 20;
 static const int CntMaxIconJobs = 20;
 // amount of milliseconds to postpone the jobs if the UI is very active
 static const int PostponeJobsMilliSeconds = 300;
-// the event for starting to do all the outstanding jobs
-static const QEvent::Type DoAllJobsEvent = QEvent::User;
+// the event for starting to process all outstanding jobs
+static const QEvent::Type ProcessJobsEvent = QEvent::User;
 // the id that states that no icon is currently pending from thumbnail manager
 static const int NoIconRequest = -1;
+// the id that states that there is no job with that key
+static const int NoSuchJob = -1;
     
 // TODO: Provide a way (cenrep keys?) for UI to set which provider to use for
 //       what info field (and what info fields are indeed even in use).
@@ -49,7 +51,7 @@ static const int NoIconRequest = -1;
 CntCacheThread::CntCacheThread()
     : mContactManager(new QContactManager()),
       mStarted(false),
-      mJobLoopRunning(false),
+      mProcessingJobs(false),
       mPostponeJobs(false),
       mIconRequestId(NoIconRequest)
 {
@@ -136,35 +138,47 @@ void CntCacheThread::run()
     
     /param contactId the contact for which the info is wanted
  */
-void CntCacheThread::scheduleInfoJob(int contactId)
+void CntCacheThread::scheduleInfoJob(int contactId, int priority)
 {
     CNT_ENTRY_ARGS( contactId )
 
-    Q_ASSERT(contactId > 0 && !mInfoJobs.contains(contactId));
+    if (contactId <= 0)
+        return;
 
     mJobMutex.lock();
 
+    int index = infoJobIndex(contactId);
+    if (index != NoSuchJob) {
+        // if the job already exists, update the priority
+        if (priority < mInfoJobs.at(index).second) {
+            mInfoJobs[index] = QPair<int,int>(contactId,priority);
+        }
+        mJobMutex.unlock();
+        return;
+    }
+
     if (!mStarted) {
-        // this thread should interfere as little as possible with more time-critical tasks,
+        // starting the event loop; minimum priority is used as this thread
+        // should interfere as little as possible with more time-critical tasks,
         // like updating the UI during scrolling
         start(QThread::IdlePriority);
         mStarted = true;
     }
 
-    if (!mJobLoopRunning) {
-        // new job => restart job loop
-        mJobLoopRunning = true;
-        HbApplication::instance()->postEvent(this, new QEvent(DoAllJobsEvent));
+    if (!mProcessingJobs) {
+        // new job => start processing jobs
+        mProcessingJobs = true;
+        HbApplication::instance()->postEvent(this, new QEvent(ProcessJobsEvent));
     }
     
     if (mInfoJobs.count() >= CntMaxInfoJobs) {
         // the queue of jobs is full, so remove the oldest job
-        mCancelledInfoJobs.append(mInfoJobs.takeFirst());
+        mCancelledInfoJobs.append(mInfoJobs.takeFirst().first);
         CNT_LOG_ARGS( mCancelledInfoJobs.last() << "removed from joblist" )
     }
 
-    mInfoJobs.append(contactId);
-    CNT_LOG_ARGS( contactId << "appended @" << mInfoJobs.indexOf(contactId) );
+    mInfoJobs.append(QPair<int,int>(contactId, priority));
+    CNT_LOG_ARGS( contactId << "(prio:" << priority << ") appended @" << (mInfoJobs.count() - 1) );
 
     // since this job has now been scheduled, remove it from the list of
     // cancelled jobs in case it is there
@@ -181,28 +195,39 @@ void CntCacheThread::scheduleInfoJob(int contactId)
     
     /param iconName the name of the icon to be fetched
  */
-void CntCacheThread::scheduleIconJob(const QString& iconName)
+void CntCacheThread::scheduleIconJob(const QString& iconName, int priority)
 {
     CNT_ENTRY_ARGS( iconName )
 
+    if (iconName.isEmpty())
+        return;
+
     mJobMutex.lock();
 
-    Q_ASSERT(!iconName.isEmpty() && !mIconJobs.contains(iconName));
+    int index = iconJobIndex(iconName);
+    if (index != NoSuchJob) {
+        // if the job already exists, update the priority
+        if (priority < mIconJobs.at(index).second) {
+            mIconJobs[index] = QPair<QString,int>(iconName,priority);
+        }
+        mJobMutex.unlock();
+        return;
+    }
 
-    if (!mJobLoopRunning) {
+    if (!mProcessingJobs) {
         // new job, so restart job loop
-        mJobLoopRunning = true;
-        HbApplication::instance()->postEvent(this, new QEvent(DoAllJobsEvent));
+        mProcessingJobs = true;
+        HbApplication::instance()->postEvent(this, new QEvent(ProcessJobsEvent));
     }
 
     if (mIconJobs.count() >= CntMaxIconJobs) {
         // the queue of jobs is full, so remove the oldest job
-        mCancelledIconJobs.append(mIconJobs.takeLast());
+        mCancelledIconJobs.append(mIconJobs.takeLast().first);
         CNT_LOG_ARGS( mCancelledIconJobs.last() << "removed from joblist" );
     }
 
-    mIconJobs.append(iconName);
-    CNT_LOG_ARGS( iconName << "appended @" << mIconJobs.indexOf(iconName) );
+    mIconJobs.append(QPair<QString,int>(iconName, priority));
+    CNT_LOG_ARGS( iconName << "(prio:" << priority << ") appended @" << (mIconJobs.count() - 1) );
 
     // since this job has now been rescheduled, remove it from the list of
     // cancelled jobs in case it is there
@@ -232,8 +257,8 @@ void CntCacheThread::postponeJobs()
  */
 bool CntCacheThread::event(QEvent* event)
 {
-    if (event->type() == DoAllJobsEvent) {
-        doAllJobs();
+    if (event->type() == ProcessJobsEvent) {
+        processJobs();
         return true;
     }
 
@@ -241,12 +266,12 @@ bool CntCacheThread::event(QEvent* event)
 }
 
 /*!
-    Does the jobs. The loop runs until all jobs are done. It pauses
-    for a while if new info jobs appear -- this means that the UI is
-    updating and so the CPU is yielded to the UI. If there are again
-    new jobs after the pause, then it pauses again, and so on.
+    Processes all scheduled jobs. The loop runs until all jobs are done.
+    It pauses for a while if new info jobs appear -- this means that the
+    UI is updating and so the CPU is yielded to the UI. If there are
+    again new jobs after the pause, then it pauses again, and so on.
  */
-void CntCacheThread::doAllJobs()
+void CntCacheThread::processJobs()
 {
     CNT_ENTRY
 
@@ -261,14 +286,14 @@ void CntCacheThread::doAllJobs()
                 // client has requested a pause in activies (e.g. due to high UI activity)
                 mPostponeJobs = false;
                 if (totalJobs > 0) {
-                    QTimer::singleShot(PostponeJobsMilliSeconds, this, SLOT(doAllJobs()));
+                    QTimer::singleShot(PostponeJobsMilliSeconds, this, SLOT(processJobs()));
                 }
                 else {
-                    mJobLoopRunning = false;
+                    mProcessingJobs = false;
                 }
             }
             else {
-                mJobLoopRunning = false;
+                mProcessingJobs = false;
             }
 
             mJobMutex.unlock();
@@ -280,11 +305,11 @@ void CntCacheThread::doAllJobs()
             break;
         }
 
-        bool doInfoJobs = infoJobs > 0 && (iconJobs == 0 || mIconRequestId != NoIconRequest || qrand() % (infoJobs + iconJobs) < infoJobs);
+        bool doInfoJob = infoJobs > 0; // && (iconJobs == 0 || mIconRequestId != NoIconRequest || qrand() % (infoJobs + iconJobs) < infoJobs);
         
-        if (doInfoJobs) {
+        if (doInfoJob) {
             // get next job
-            int contactId = mInfoJobs.takeLast();
+            int contactId = takeNextInfoJob();
             mJobMutex.unlock();
     
             // fetch qcontact
@@ -303,7 +328,7 @@ void CntCacheThread::doAllJobs()
         }
         else if (iconJobs > 0 && mIconRequestId == NoIconRequest) {
             // request icon from thumbnail manager
-            QString iconName = mIconJobs.takeFirst();
+            QString iconName  = takeNextIconJob();
             mIconRequestId = mThumbnailManager->getThumbnail(iconName, NULL, 0);
             mIconRequestName = iconName;
             mJobMutex.unlock();
@@ -364,10 +389,10 @@ void CntCacheThread::onIconReady(const QPixmap& pixmap, void *data, int id, int 
 
     mJobMutex.lock();
     Q_ASSERT(id == mIconRequestId && !mIconRequestName.isEmpty());
-    if (!mJobLoopRunning) {
+    if (!mProcessingJobs) {
         // job loop quit while waiting for this icon, so restart it
-        mJobLoopRunning = true;
-        HbApplication::instance()->postEvent(this, new QEvent(DoAllJobsEvent));
+        mProcessingJobs = true;
+        HbApplication::instance()->postEvent(this, new QEvent(ProcessJobsEvent));
     }
     mIconRequestId = NoIconRequest;
     mJobMutex.unlock();
@@ -377,4 +402,90 @@ void CntCacheThread::onIconReady(const QPixmap& pixmap, void *data, int id, int 
     }
 
     CNT_EXIT
+}
+
+/*!
+    Finds out the index of an info job in the job list. Job mutex must be held when calling this function.
+
+    \return index of the contact in the job list, or NoSuchJob if no job is scheduled for the contact
+ */
+int CntCacheThread::infoJobIndex(int contactId)
+{
+    int jobCount = mInfoJobs.count();
+    for (int i = 0; i < jobCount; ++i) {
+        if (mInfoJobs.at(i).first == contactId) {
+            return i;
+        }
+    }
+    
+    return NoSuchJob;
+}
+
+/*!
+    Picks the next job from the info job list (the one with the highest priority).
+
+    \return the id of the contact for which the info should be fetched
+ */
+int CntCacheThread::takeNextInfoJob()
+{
+    int selectionIndex = -1;
+    int selectionPriority = -1;
+
+    int jobCount = mInfoJobs.count();
+    if (jobCount == 0) {
+        return NoSuchJob;
+    }
+
+    for (int i = 0; i < jobCount; ++i) {
+        int jobPriority = mInfoJobs.at(i).second;
+        if (jobPriority < selectionPriority || selectionPriority == -1) {
+            selectionIndex = i;
+            selectionPriority = jobPriority;
+        }
+    }
+    
+    return mInfoJobs.takeAt(selectionIndex).first;
+}
+
+/*!
+    Picks the next job from the icon job list (the one with the highest priority).
+
+    \return the name of the icon that should be fetched
+ */
+QString CntCacheThread::takeNextIconJob()
+{
+    int selectionIndex = -1;
+    int selectionPriority = -1;
+
+    int jobCount = mIconJobs.count();
+    if (jobCount == 0) {
+        return QString();
+    }
+
+    for (int i = 0; i < jobCount; ++i) {
+        int jobPriority = mIconJobs.at(i).second;
+        if (jobPriority < selectionPriority || selectionPriority == -1) {
+            selectionIndex = i;
+            selectionPriority = jobPriority;
+        }
+    }
+    
+    return mIconJobs.takeAt(selectionIndex).first;
+}
+
+/*!
+    Finds out the index of an icon job in the job list. Job mutex must be held when calling this function.
+
+    \return index of the icon in the job list, or NoSuchJob if a job for the icon is not scheduled.
+ */
+int CntCacheThread::iconJobIndex(QString iconName)
+{
+    int jobCount = mIconJobs.count();
+    for (int i = 0; i < jobCount; ++i) {
+        if (mIconJobs.at(i).first == iconName) {
+            return i;
+        }
+    }
+    
+    return NoSuchJob;
 }

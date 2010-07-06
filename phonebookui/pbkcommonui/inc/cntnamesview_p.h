@@ -35,9 +35,10 @@ class HbGroupBox;
 class HbLabel;
 class HbDocumentLoader;
 class HbSearchPanel;
-class HbStaticVkbHost;
+class HbShrinkingVkbHost;
 class CntExtensionManager;
 class CntFetchContacts;
+class HbMenu;
 
 class CntNamesViewPrivate : public QObject
 {
@@ -52,9 +53,6 @@ public slots:
     void showFinder();
     void hideFinder();
     void setFilter(const QString &filterString);
-    
-    void handleKeypadOpen();
-    void handleKeypadClose();
     
     void handleExtensionAction();
     
@@ -72,7 +70,7 @@ public slots:
     void showContextMenu(HbAbstractViewItem* aItem, QPointF aPoint);
     void showSettings();
     
-    void executeAction( QContact& aContact, QString aAction );
+     void executeAction( QContact& aContact, QContactDetail aDetail, QString aAction );
     void actionExecuted( CntActionLauncher* aAction );
     void handleDeleteContact( HbAction* aAction );
     void importSim();
@@ -87,10 +85,9 @@ public:
     void deactivate();
     
 private:
-    void disableDeleteAction();
+    void changeDeleteActionStatus();
     void focusLineEdit();
-    void setFocusedContact();
-    void setScrollPosition();
+    void setScrollPosition(int focusedContact);
     
 public:
     CntNamesView *q_ptr;
@@ -109,7 +106,7 @@ private:
     HbGroupBox*                 mBanner;
     HbSearchPanel*              mSearchPanel;
     HbDocumentLoader*           mLoader;
-    HbStaticVkbHost*            mVirtualKeyboard;
+    HbShrinkingVkbHost*         mVirtualKeyboard;
     HbAction*                   mSoftkey;
     HbAction*                   mNamesAction;
     CntActionMenuBuilder*       mMenuBuilder;
@@ -121,7 +118,8 @@ private:
     bool                        mIsDefault;
     int                         mId;
     QActionGroup*               mActionGroup;
-    QContactLocalId             mFocusedContact;
+	HbMenu*                     mMenu;
+	bool                        mFilterChanged;
 };
 
 #endif /* CNTABSTRACTLISTVIEW_H_ */

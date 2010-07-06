@@ -17,6 +17,7 @@
 #include "cntdetaileditor.h"
 #include "cnteditorfactory.h"
 #include "cntgroupeditormodel.h"
+#include "cntglobal.h"
 #include <cntviewparams.h>
 #include <hbmenu.h>
 #include <hbaction.h>
@@ -110,7 +111,7 @@ void CntDetailEditor::activate( CntAbstractViewManager* aMgr, const CntViewParam
     mDataForm->setItemRecycling(true);
 
     // add new field if required
-    if ( aArgs.value(ESelectedAction).toString() == "add" )
+    if ( aArgs.value(ESelectedAction).toString() == CNT_ADD_ACTION )
     {
         mDataFormModel->insertDetailField();
     }
@@ -165,6 +166,12 @@ void CntDetailEditor::handleItemShown(const QModelIndex& aIndex )
         HbDataFormViewItem* viewItem = static_cast<HbDataFormViewItem*>(mDataForm->itemByIndex( aIndex ));
         HbLineEdit* edit = static_cast<HbLineEdit*>( viewItem->dataItemContentWidget() );
         edit->setInputMethodHints( Qt::ImhNoPredictiveText );
+        
+        HbDataFormModelItem* modelItem = mDataFormModel->itemFromIndex( aIndex );
+        if (modelItem->contentWidgetData( "preferDigits" ).toBool())
+        {
+            edit->setInputMethodHints( Qt::ImhPreferNumbers );
+        }
     }
 }
 

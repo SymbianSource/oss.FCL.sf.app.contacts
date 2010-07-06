@@ -51,6 +51,15 @@
                 <contentsmargins bottom="var(hb-param-margin-gene-middle-vertical)" left="var(hb-param-margin-gene-left)" right="var(hb-param-margin-gene-right)" top="var(hb-param-margin-gene-middle-vertical)"/>
                 <fontspec name="fontSpec" role="Secondary" textheight="23.45"/>
             </widget>
+            <widget name="maptilePreferenceWidget" type="HbLabel">
+                <contentsmargins bottom="var(hb-param-margin-gene-bottom)" left="var(hb-param-margin-gene-left)" right="var(hb-param-margin-gene-right)" top="0un"/>
+            </widget>
+            <widget name="maptileHomeWidget" type="HbLabel">
+                <contentsmargins bottom="var(hb-param-margin-gene-bottom)" left="var(hb-param-margin-gene-left)" right="var(hb-param-margin-gene-right)" top="0un"/>
+            </widget>
+            <widget name="maptileWorkWidget" type="HbLabel">
+                <contentsmargins bottom="var(hb-param-margin-gene-bottom)" left="var(hb-param-margin-gene-left)" right="var(hb-param-margin-gene-right)" top="0un"/>
+            </widget>
         </widget>
         <widget name="viewToolbar" role="HbView:toolBar" type="HbToolBar">
             <ref object="cnt:edit" role="HbToolBar:addAction"/>

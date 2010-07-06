@@ -85,6 +85,7 @@ enum CntContactCardPosition
         EAddressHome,
         EAddressWork,
         ECompanyDetails,
+        EAssistantName,
         EBirthday,
         EAnniversary,
         ERingtone,

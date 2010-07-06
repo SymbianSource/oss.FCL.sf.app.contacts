@@ -66,7 +66,7 @@ QList<QContactDetail> CntMessageAction::supportedDetails(const QContact& contact
 
 void CntMessageAction::performAction()
 {
-    QString service("com.nokia.services.hbserviceprovider.conversationview");
+    QString service("com.nokia.symbian.IMessageSend");
     QString type("send(QString,qint32,QString)");
     
     performNumberAction(service, type);

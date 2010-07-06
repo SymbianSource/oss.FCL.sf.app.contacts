@@ -57,6 +57,7 @@ void CntEditViewHeadingItem::createPrimitives()
         if (!mIcon && mainWindow()->orientation() != Qt::Horizontal)
         {
             mIcon = new HbIconItem(this);
+            mIcon->setAlignment(Qt::AlignCenter);
             mIcon->setIcon(icon);
             style()->setItemName(mIcon, "icon");
         }
@@ -166,7 +167,7 @@ void CntEditViewHeadingItem::setDetails(const QContact* contact, bool myCard)
 
     XQSettingsManager settingsMng;
     XQSettingsKey nameOrderKey(XQSettingsKey::TargetCentralRepository,
-                             KCRUiContacts.iUid,
+                             KCRCntSettings.iUid,
                              KCntNameOrdering);
     int setting = settingsMng.readItemValue(nameOrderKey, XQSettingsManager::TypeInt).toInt();
     QStringList nameList = QStringList();

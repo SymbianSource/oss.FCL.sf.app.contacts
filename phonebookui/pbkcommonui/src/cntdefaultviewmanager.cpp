@@ -127,10 +127,6 @@ void CntDefaultViewManager::back(const CntViewParameters aArgs)
         mArgs.insert( k, aArgs.value(k) );
     }
     mArgs.insert(EViewId, back );
-//    mArgs.insert(ESelectedAction, aArgs.value(ESelectedAction));
-//    mArgs.insert(ESelectedContact, aArgs.value(ESelectedContact));
-//    mArgs.insert(ESelectedGroupContact, aArgs.value(ESelectedGroupContact));
-//    mArgs.insert(ESelectedDetail, aArgs.value(ESelectedDetail));
 
     if (mArgs.value(EViewId).toInt() != noView)
     {

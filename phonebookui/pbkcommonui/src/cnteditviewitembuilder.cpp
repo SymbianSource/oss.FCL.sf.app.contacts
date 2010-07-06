@@ -21,6 +21,7 @@
 #include "cntstringmapper.h"
 #include "cntdetailorderinghelper.h"
 #include <hbnumbergrouping.h>
+#include <QDir>
 
 CntEditViewItemBuilder::CntEditViewItemBuilder() :
 mMap( new CntStringMapper() )
@@ -391,6 +392,28 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::familyDetails(QContact& aContact
         detailItem->addText( children );
         list.append( detailItem );
     }
+    return list;
+}
+
+QList<CntEditViewItem*> CntEditViewItemBuilder::ringtoneDetails(QContact& aContact)
+{
+    QList<CntEditViewItem*> list;
+    // Ring Tone
+    QContactRingtone ringtone = aContact.detail<QContactRingtone>();
+    QUrl ringtoneUrl = ringtone.audioRingtoneUrl();
+    if ( !ringtoneUrl.isEmpty() )
+    {
+        CntEditViewDetailItem* detailItem = new CntEditViewDetailItem(
+                ringtone,
+                QContactRingtone::FieldAudioRingtoneUrl,
+                ringToneFetcherView);
+        detailItem->addText( hbTrId("txt_phob_formlabel_ringing_tone") );
+        QFileInfo ringtoneFileInfo(ringtoneUrl.toString());
+        QString ringtoneFileName = ringtoneFileInfo.fileName();
+        detailItem->addText( ringtoneFileName);        
+        list.append( detailItem );
+    }
+        
     return list;
 }
 

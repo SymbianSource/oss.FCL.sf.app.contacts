@@ -47,6 +47,8 @@ private:
     void constructPhoneNumber(CntDetailModelItem* aItem, QString aSubType, QStringList aContext );
     void constructOnlineAccount( CntDetailModelItem* aItem, QString aSubType, QStringList aContext );
   
+    bool isOnlineAccount( QString aSubtype );
+    
 private:
     CntCommonDetailViewItem*   mItem; // Ownership transfered
     

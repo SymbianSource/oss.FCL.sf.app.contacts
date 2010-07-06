@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration xmlns="http://www.s60.com/xml/confml/1" name="Contacts" version="1">
-  <feature ref="KCRUiContacts" name="Contacts app ui settings">
+  <feature ref="KCRCntSettings" name="Contacts app ui settings">
     <desc>Contacts app ui settings</desc>
     <setting ref="KCntNameOrdering" name="Name ordering in lists" type="selection">
       <desc>Displays name label order in names lists</desc>
@@ -8,6 +8,11 @@
       <option name="name order Lastname, Firstname" value="1"/>
       <option name="name order Firstname Lastname" value="2"/>
     </setting>
+    <setting ref="KCntNameListRowSetting" name="Row presentation in names list" type="selection">
+      <desc>One or two rows in the name list item</desc>
+      <option name="one row: name only" value="0"/>
+      <option name="two rows: name and phone number" value="1"/>
+    </setting>    
   </feature>
   
   <feature ref="KSimImport" name="">
@@ -24,9 +29,10 @@
   </feature>
   
   <data>
-    <KCRUiContacts>
+    <KCRCntSettings>
       <KCntNameOrdering>2</KCntNameOrdering>
-    </KCRUiContacts>
+      <KCntNameListRowSetting>1</KCntNameListRowSetting>
+    </KCRCntSettings>
     <KSimImport>
       <KImportSim1Date>0</KImportSim1Date>
       <KImportSim2Date>0</KImportSim2Date>
@@ -36,9 +42,10 @@
     </KSimImport>
   </data>
   <rfs>
-    <KCRUiContacts>
+    <KCRCntSettings>
       <KCntNameOrdering>true</KCntNameOrdering>
-    </KCRUiContacts>
+      <KCntNameListRowSetting>true</KCntNameListRowSetting>
+    </KCRCntSettings>
     <KSimImport>
       <KImportSim1Imsi>false</KImportSim1Imsi>
       <KImportSim1Date>false</KImportSim1Date>

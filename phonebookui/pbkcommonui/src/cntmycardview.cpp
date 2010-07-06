@@ -100,7 +100,7 @@ void CntMyCardView::activate(CntAbstractViewManager* aMgr, const CntViewParamete
     }
     
     if (!mFetchView) {
-        mFetchView = new CntFetchContacts(mViewManager->contactManager( SYMBIAN_BACKEND ));
+        mFetchView = new CntFetchContacts(*mViewManager->contactManager( SYMBIAN_BACKEND ));
         connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleMultiCardSelection()));
     }
 }
@@ -146,9 +146,7 @@ void CntMyCardView::openMyCardSelectionView()
     // Display a list of contacts to choose a mycard from.
     mFetchView->setDetails(hbTrId("txt_phob_title_select_contact"), "");
     QSet<QContactLocalId> emptyContactsSet;
-    mFetchView->displayContacts(CntFetchContacts::popup,
-                                HbAbstractItemView::SingleSelection,
-                                emptyContactsSet);
+    mFetchView->displayContacts(HbAbstractItemView::SingleSelection, emptyContactsSet);
 }
 
 void CntMyCardView::handleMultiCardSelection()

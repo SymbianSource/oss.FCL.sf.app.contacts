@@ -1,0 +1,23 @@
+
+HbPushButton
+{
+    fixed-width:  9.0un;
+    fixed-height: 9.0un;
+}
+
+HbPushButton::icon
+{
+    fixed-width:  8.0un;
+    fixed-height: 8.0un;
+}
+
+HbPushButtonSpacer
+{
+    fixed-width: 0.0un;
+    fixed-height: 0.0un;
+}
+
+
+
+
+

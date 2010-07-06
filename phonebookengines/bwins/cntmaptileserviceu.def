@@ -8,12 +8,12 @@ EXPORTS
 	?trUtf8@CntMapTileService@@SA?AVQString@@PBD0H@Z @ 7 NONAME ; class QString CntMapTileService::trUtf8(char const *, char const *, int)
 	?trUtf8@CntMapTileService@@SA?AVQString@@PBD0@Z @ 8 NONAME ; class QString CntMapTileService::trUtf8(char const *, char const *)
 	?qt_metacast@CntMapTileService@@UAEPAXPBD@Z @ 9 NONAME ; void * CntMapTileService::qt_metacast(char const *)
-	?isLocationFeatureEnabled@CntMapTileService@@QAE_NXZ @ 10 NONAME ; bool CntMapTileService::isLocationFeatureEnabled(void)
-	?setMaptileStatus@CntMapTileService@@QAEXXZ @ 11 NONAME ; void CntMapTileService::setMaptileStatus(void)
-	?maptileFetchingStatusUpdate@CntMapTileService@@IAEXHHH@Z @ 12 NONAME ; void CntMapTileService::maptileFetchingStatusUpdate(int, int, int)
-	?tr@CntMapTileService@@SA?AVQString@@PBD0@Z @ 13 NONAME ; class QString CntMapTileService::tr(char const *, char const *)
-	?readEntryFromMaptileDataBase@CntMapTileService@@AAEHHW4ContactAddressType@1@AAVTLookupItem@@AAH@Z @ 14 NONAME ; int CntMapTileService::readEntryFromMaptileDataBase(int, enum CntMapTileService::ContactAddressType, class TLookupItem &, int &)
-	?getMapTileImage@CntMapTileService@@QAEHHW4ContactAddressType@1@AAVQString@@@Z @ 15 NONAME ; int CntMapTileService::getMapTileImage(int, enum CntMapTileService::ContactAddressType, class QString &)
+	?getMapTileImage@CntMapTileService@@QAEHHW4ContactAddressType@1@AAVQString@@V?$QFlags@W4Orientation@Qt@@@@@Z @ 10 NONAME ; int CntMapTileService::getMapTileImage(int, enum CntMapTileService::ContactAddressType, class QString &, class QFlags<enum Qt::Orientation>)
+	?isLocationFeatureEnabled@CntMapTileService@@QAE_NXZ @ 11 NONAME ; bool CntMapTileService::isLocationFeatureEnabled(void)
+	?setMaptileStatus@CntMapTileService@@QAEXXZ @ 12 NONAME ; void CntMapTileService::setMaptileStatus(void)
+	?maptileFetchingStatusUpdate@CntMapTileService@@IAEXHHH@Z @ 13 NONAME ; void CntMapTileService::maptileFetchingStatusUpdate(int, int, int)
+	?tr@CntMapTileService@@SA?AVQString@@PBD0@Z @ 14 NONAME ; class QString CntMapTileService::tr(char const *, char const *)
+	?readEntryFromMaptileDataBase@CntMapTileService@@AAEHHW4ContactAddressType@1@AAVTLookupItem@@AAH@Z @ 15 NONAME ; int CntMapTileService::readEntryFromMaptileDataBase(int, enum CntMapTileService::ContactAddressType, class TLookupItem &, int &)
 	?getStaticMetaObject@CntMapTileService@@SAABUQMetaObject@@XZ @ 16 NONAME ; struct QMetaObject const & CntMapTileService::getStaticMetaObject(void)
 	?metaObject@CntMapTileService@@UBEPBUQMetaObject@@XZ @ 17 NONAME ; struct QMetaObject const * CntMapTileService::metaObject(void) const
 	?staticMetaObject@CntMapTileService@@2UQMetaObject@@B @ 18 NONAME ; struct QMetaObject const CntMapTileService::staticMetaObject

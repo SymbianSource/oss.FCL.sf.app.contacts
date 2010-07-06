@@ -31,12 +31,21 @@
 #endif
 #endif
 
-
 // Format: qtcontacts:<managerid>:<key>=<value>&<key>=<value>
-const QString SYMBIAN_BACKEND     = "qtcontacts:symbian:";
-const QString SIM_BACKEND         = "qtcontacts:symbiansim:";
-const QString SIM_BACKEND_ADN     = "qtcontacts:symbiansim:store=ADN";
-const QString SIM_BACKEND_SDN     = "qtcontacts:symbiansim:store=SDN";
+static const QString SYMBIAN_BACKEND     = "qtcontacts:symbian:";
+static const QString SIM_BACKEND         = "qtcontacts:symbiansim:";
+static const QString SIM_BACKEND_ADN     = "qtcontacts:symbiansim:store=ADN";
+static const QString SIM_BACKEND_SDN     = "qtcontacts:symbiansim:store=SDN";
 
+/*
+ * Contact action definitions used in the view parameters to inform views
+ * of what action took place. Views also use this defintions to tell what
+ * action they performed on a contact
+ */
+#define CNT_EDIT_ACTION         "edit"
+#define CNT_CREATE_ACTION       "create"
+#define CNT_ADD_ACTION          "add"
+#define CNT_FOCUS_ACTION        "focus"
+#define CNT_SAVE_ACTION         "save"
 
 #endif // CNTGLOBAL_H

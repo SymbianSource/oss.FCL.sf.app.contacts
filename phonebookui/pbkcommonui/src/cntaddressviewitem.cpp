@@ -83,8 +83,8 @@ HbWidget* CntAddressViewItem::createCustomWidget()
     
         HbPushButton* mLocationButton = new HbPushButton(this);
         mLocationButton->setObjectName("cntlocationbutton");
-        mLocationButton->setIcon(HbIcon("qtg_mono_location"));
         mLocationButton->setText( hbTrId("txt_phob_button_select_location") );
+        mLocationButton->setTextAlignment( Qt::AlignCenter );
     
         connect(mLocationButton, SIGNAL(clicked()), this, SLOT(launchLocationPicker()));
     

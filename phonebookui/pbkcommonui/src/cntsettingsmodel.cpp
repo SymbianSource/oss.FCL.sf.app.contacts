@@ -22,10 +22,23 @@
 #include "cntdebug.h"
 
 CntSettingsModel::CntSettingsModel() :
-HbDataFormModel()
+HbDataFormModel(),
+mNameOrderkey(NULL),
+mNameListRowSettingkey(NULL)
 {
-    //create a model class    
-    HbDataFormModelItem* ord = new HbDataFormModelItem(HbDataFormModelItem::ComboBoxItem, hbTrId("txt_phob_setlabel_name_display_order"));
+    // Create name ordering setting item
+    createNameOrderSettingsItem();
+    
+    // Create names list row (1-row or 2-rows) setting item
+    createNamesListRowSettingItem();
+    
+    connect(this, SIGNAL(dataChanged(QModelIndex , QModelIndex)), this, SLOT(handleDataChanged(QModelIndex , QModelIndex)));
+}
+
+void CntSettingsModel::createNameOrderSettingsItem()
+{
+    HbDataFormModelItem* ord = new HbDataFormModelItem(HbDataFormModelItem::ComboBoxItem, hbTrId(
+    "txt_phob_setlabel_name_display_order"));
     
     QStringList orderList;
     // This order should be maintained as per the UI spec
@@ -36,8 +49,8 @@ HbDataFormModel()
     ord->setContentWidgetData( "items", orderList );
     appendDataFormItem(ord, invisibleRootItem());
     mNameOrderkey = new XQSettingsKey(XQSettingsKey::TargetCentralRepository,
-                             KCRUiContacts.iUid,
-                             KCntNameOrdering);
+                            KCRCntSettings.iUid,
+                            KCntNameOrdering);
     int settingValue = mSettings.readItemValue(*mNameOrderkey, XQSettingsManager::TypeInt).toInt();
 
     if (settingValue == CntOrderLastFirst) {
@@ -47,13 +60,36 @@ HbDataFormModel()
     } else if (settingValue == CntOrderFirstLast) {
         ord->setContentWidgetData("currentIndex", 2 );
     }
+}
+
+void CntSettingsModel::createNamesListRowSettingItem()
+{
+    HbDataFormModelItem* rowSetting = new HbDataFormModelItem(HbDataFormModelItem::ComboBoxItem, hbTrId(
+        "txt_phob_setlabel_show"));
     
-    connect(this, SIGNAL(dataChanged(QModelIndex , QModelIndex)), this, SLOT(handleDataChanged(QModelIndex , QModelIndex)));
+    QStringList rowSettingList;
+    // This order should be maintained as per the UI spec
+    rowSettingList.append( hbTrId("txt_phob_setlabel_show_val_name_only") );
+    rowSettingList.append( hbTrId("txt_phob_setlabel_show_val_name_and_phonenumber") );
+
+    rowSetting->setContentWidgetData( "items", rowSettingList );
+    appendDataFormItem(rowSetting, invisibleRootItem());
+    mNameListRowSettingkey = new XQSettingsKey(XQSettingsKey::TargetCentralRepository,
+                            KCRCntSettings.iUid,
+                            KCntNameListRowSetting);
+    int settingValue = mSettings.readItemValue(*mNameListRowSettingkey, XQSettingsManager::TypeInt).toInt();
+    
+    if (settingValue == CntOneRowNameOnly) {
+        rowSetting->setContentWidgetData("currentIndex", 0 );
+    } else if (settingValue == CntTwoRowsNameAndPhoneNumber) {
+        rowSetting->setContentWidgetData("currentIndex", 1 );
+    }    
 }
 
 CntSettingsModel::~CntSettingsModel()
 {
     delete mNameOrderkey;
+    delete mNameListRowSettingkey;
 }
 
 void CntSettingsModel::handleDataChanged(QModelIndex topLeft, QModelIndex bottomRight)
@@ -69,6 +105,17 @@ void CntSettingsModel::handleDataChanged(QModelIndex topLeft, QModelIndex bottom
             written = mSettings.writeItemValue(*mNameOrderkey, QVariant(CntOrderLastCommaFirst));
         } else if (selected == 2) {
             written = mSettings.writeItemValue(*mNameOrderkey, QVariant(CntOrderFirstLast));
+        }
+        if (!written) {
+            CNT_LOG_ARGS(QString("failed writting cenrep key"))
+        }
+    }
+    else if (topLeft.row() == 1) {
+        int selected = itemFromIndex(topLeft)->contentWidgetData( "currentIndex" ).toInt();
+        if (selected == 0) {
+            written = mSettings.writeItemValue(*mNameListRowSettingkey, QVariant(CntOneRowNameOnly));
+        } else if (selected == 1) {
+            written = mSettings.writeItemValue(*mNameListRowSettingkey, QVariant(CntTwoRowsNameAndPhoneNumber));
         }
         if (!written) {
             CNT_LOG_ARGS(QString("failed writting cenrep key"))

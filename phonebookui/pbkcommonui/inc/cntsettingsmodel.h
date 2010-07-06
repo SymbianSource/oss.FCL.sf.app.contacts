@@ -35,12 +35,17 @@ public:
     CntSettingsModel();
     ~CntSettingsModel();
 
+private:
+    void createNameOrderSettingsItem();
+    void createNamesListRowSettingItem();
+
 private slots:
     void handleDataChanged(QModelIndex topLeft, QModelIndex bottomRight);
     
 private:
     XQSettingsManager mSettings;
     XQSettingsKey *mNameOrderkey;
+    XQSettingsKey *mNameListRowSettingkey;
 };
 
 #endif

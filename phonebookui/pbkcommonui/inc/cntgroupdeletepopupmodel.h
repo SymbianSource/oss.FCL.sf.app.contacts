@@ -22,6 +22,8 @@
 #include <QAbstractListModel>
 #include <qmobilityglobal.h>
 
+class ThumbnailManager;
+
 QTM_BEGIN_NAMESPACE
 class QContactManager;
 class QContact;
@@ -36,7 +38,10 @@ public:
     ~CntGroupPopupListData() { }
 
 public:
+    QContactManager    *mContactManager;
+    ThumbnailManager   *mThumbnailManager;
     QList<QVariantList> mDataList;
+    QMap<int,int>       mIconRequests;
 };
 
 class CntGroupDeletePopupModel : public QAbstractListModel
@@ -49,15 +54,16 @@ public:
     
 public:
     void initializeGroupsList();
-    bool isFavoriteGroupCreated();
     int favoriteGroupId();
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role) const;
     QContact contact(QModelIndex &index) const ;
     
+private slots:
+    void onIconReady(const QPixmap& pixmap, void *data, int id, int error);
+    
 private:
-    QContactManager                           *mContactManager;
-    QSharedDataPointer<CntGroupPopupListData>  mDataPointer;
+    QSharedDataPointer<CntGroupPopupListData>  d;
     int                                        mFavoriteGroupId;
 };
 

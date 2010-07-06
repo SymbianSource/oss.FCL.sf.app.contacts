@@ -18,30 +18,25 @@
 #ifndef CNTCOLLECTIONLISTMODEL_H
 #define CNTCOLLECTIONLISTMODEL_H
 
-#include <QSharedData>
 #include <QAbstractListModel>
+#include <QSharedData>
 #include <qmobilityglobal.h>
-#include <cntuigroupsupplier.h>
+#include <cntviewparams.h>
+#include <hbicon.h>
 #include <xqsettingsmanager.h>
 
+class CntCollectionListModelWorker;
+class CntCollectionListModelData;
+class CntCollectionItem;
+
 class CntExtensionManager;
+class CntExtensionGroupCallback;
 
 QTM_BEGIN_NAMESPACE
 class QContactManager;
 QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
-
-class CntCollectionListData : public QSharedData
-{
-public:
-    CntCollectionListData() { }
-    ~CntCollectionListData() { }
-
-public:
-    QList<QVariantList> mDataList;
-    QMap<int, CntUiGroupSupplier*> mExtensions; // row, plugin
-};
 
 class CntCollectionListModel : public QAbstractListModel
 {
@@ -51,34 +46,38 @@ public:
     CntCollectionListModel(QContactManager *manager, CntExtensionManager &extensionManager, QObject *parent = 0);
     ~CntCollectionListModel();
     
-public:
-    QVariant data(const QModelIndex &index, int role) const;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+public: // from QAbstractItemModel
+    QVariant data(const QModelIndex& index, int role) const;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const;
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
+    
+public:
     void removeGroup(int localId);
     bool isExtensionGroup(const QModelIndex &index);
     CntViewParameters extensionGroupActivated(int row);
     void extensionGroupLongPressed(int row, const QPointF& coords, CntExtensionGroupCallback* interface);
     
-#ifdef PBK_UNIT_TEST
-public:
-#else
 private:
-#endif
     void doConstruct();
     void initializeStaticGroups();
     void initializeExtensions();
     void initializeUserGroups();
     
-private:
-    CntExtensionManager&                       mExtensionManager;
-    QSharedDataPointer<CntCollectionListData>  mDataPointer;
-    QContactManager                           *mContactManager;
-    XQSettingsManager                          mSettings;
-    int                                        mFavoriteGroupId;
+    QVariant displayRoleData(const CntCollectionItem& item) const;
+    QVariant decorationRoleData(const CntCollectionItem& item) const;
     
+    bool validateRowIndex(const int index) const;
+    
+private slots:
+    void informationUpdated(int row, const QString& secondRowText, int memberCount);
+    void onIconReady(const QPixmap& pixmap, void *data, int id, int error);
+    
+private:
+    QSharedDataPointer<CntCollectionListModelData>  d;
+    CntCollectionListModelWorker                   *mThread;
+    XQSettingsManager                               mSettings;
+    
+    friend class TestCntCollectionListModel;
 };
 
 #endif // CNTCOLLECTIONLISTMODEL_H
-
-// EOF

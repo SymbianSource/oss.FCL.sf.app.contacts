@@ -31,7 +31,7 @@ class CntContactCardDataContainer: public QObject
 
 public:
     CntContactCardDataContainer(QContact* contact, QObject *parent = 0, bool myCard = false,
-            CntMapTileService* maptile = NULL );
+            CntMapTileService* maptile = NULL, Qt::Orientations orientation = Qt::Vertical );
     virtual ~CntContactCardDataContainer();
 
 public:
@@ -63,6 +63,7 @@ private:
     CntStringMapper                 mStringMapper;
     bool                            mLocationFeatureEnabled;
     CntMapTileService*              mMaptileInterface;
+    Qt::Orientations                mOrientation;
 };
 
 #endif /* CNTCOMMLAUNCHERLISTMODEL_H_ */

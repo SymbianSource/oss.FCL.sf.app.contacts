@@ -74,6 +74,7 @@ protected:
 private:
     void showWaitNote();
     void showSimImportResults() const;
+    void setPreferredDetails( QContact *aContact );
         
 #ifdef PBK_UNIT_TEST
 public slots:

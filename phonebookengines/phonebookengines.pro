@@ -23,9 +23,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += cntfindplugin 
-SUBDIRS += contactsmodel
 SUBDIRS += cntsortplugin
-SUBDIRS += ../qtcontactsmobility
 SUBDIRS += cntlistmodel 
 SUBDIRS += cntactions 
 SUBDIRS += cntmaptileservice

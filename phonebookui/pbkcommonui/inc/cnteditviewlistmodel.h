@@ -71,7 +71,7 @@ class CntEditViewListModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    CntEditViewListModel( QContact* aContact ); // ownership not transferred
+    CntEditViewListModel( QContact& aContact ); // ownership not transferred
     ~CntEditViewListModel();
     
 public: // From QAbstractListModel
@@ -86,7 +86,8 @@ public:
     void refreshExtensionItems();
     void allInUseFields( CntViewIdList& aList );
     QModelIndex itemIndex( QContactDetail aDetail ) const;
-    
+    void updateRingtone();
+        
 private:
     void refresh();
     void loadPluginItems( CntEditViewItemSupplier* aSupplier );
@@ -101,7 +102,7 @@ private:
     CntExtensionManager* mManager;
     CntEditViewItemBuilder* mBuilder;
     CntEditViewItem* mSeparator;
-    QContact* mContact; // not owned
+    QContact& mContact;
     
     QMap<KLookupKey, int> mLookupTable;
     QMap<QString, KLookupKey> mLookupMap;

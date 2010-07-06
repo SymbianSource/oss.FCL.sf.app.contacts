@@ -84,16 +84,25 @@ void CntContactCardDetailItem::createPrimitives()
         mIcon = 0;
     }
 
-    
-    if (!mSecondaryIcon)
+    if (!secondaryIcon.isNull())
     {
-        mSecondaryIcon = new HbIconItem(this);
-        mSecondaryIcon->setFlags(HbIcon::Colorized);
-        style()->setItemName(mSecondaryIcon, "secondaryIcon");
+        if (!mSecondaryIcon)
+        {
+            mSecondaryIcon = new HbIconItem(this);
+            mSecondaryIcon->setFlags(HbIcon::Colorized);
+            style()->setItemName(mSecondaryIcon, "secondaryIcon");
+        }
+        mSecondaryIcon->setIcon(secondaryIcon);
+        mSecondaryIcon->setColor(HbColorScheme::color("qtc_view_normal"));
     }
-    mSecondaryIcon->setIcon(secondaryIcon);
-    mSecondaryIcon->setColor(HbColorScheme::color("qtc_view_normal"));
-
+    else
+    {
+        if (mSecondaryIcon)
+        {
+            delete mSecondaryIcon;
+        }
+        mSecondaryIcon = 0;
+    }
     
     if (!mFirstLineText)
     {
@@ -247,18 +256,18 @@ void CntContactCardDetailItem::setDetails(CntContactCardDataItem* aDataItem)
 }
 
 //To update the secondary icon item
-void CntContactCardDetailItem::setSecondaryIconItem( HbIcon aIcon )
+void CntContactCardDetailItem::setSecondaryIconItem(HbIcon aIcon)
 {
     secondaryIcon.clear();
     secondaryIcon = aIcon;
-    if ( !mSecondaryIcon )
+    if (!mSecondaryIcon)
     {
         mSecondaryIcon = new HbIconItem(this);
         mSecondaryIcon->setFlags(HbIcon::Colorized);
         style()->setItemName(mSecondaryIcon, "secondaryIcon");
     }
     mSecondaryIcon->setIcon(secondaryIcon);
-    mSecondaryIcon->setColor(HbColorScheme::color("foreground"));
+    mSecondaryIcon->setColor(HbColorScheme::color("qtc_view_normal"));
 }
 
 int CntContactCardDetailItem::index()

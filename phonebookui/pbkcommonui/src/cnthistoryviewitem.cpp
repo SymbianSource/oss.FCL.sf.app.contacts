@@ -53,9 +53,9 @@ HbAbstractViewItem* CntHistoryViewItem::createItem()
 //---------------------------------------------------------------
 void CntHistoryViewItem::updateChildItems()
 {
-    int flags = modelIndex().data(CntHistoryModel::FlagsRole).toInt();
-    mIncoming = flags & CntHistoryModel::Incoming ? true : false;
-    mNewMessage = flags & CntHistoryModel::Unseen ? true : false;
+    int flags = modelIndex().data(CntFlagsRole).toInt();
+    mIncoming = flags & CntIncoming ? true : false;
+    mNewMessage = flags & CntUnseen ? true : false;
 
     if (mNewMessage)
     {
@@ -91,10 +91,6 @@ void CntHistoryViewItem::pressStateChanged(bool pressed, bool animate)
             // focus frame position can't be read from widgetml, we set it manually
             QRectF frameRect = HbWidget::primitive("frame")->boundingRect();
             QPointF framePoint = HbWidget::primitive("frame")->pos();
-            
-            // W12:
-            //QRectF frameRect = primitive(HbStyle::P_ItemViewItem_frame)->boundingRect();
-            //QPointF framePoint = primitive(HbStyle::P_ItemViewItem_frame)->pos();
             
             frameRect.moveTo(framePoint);
             

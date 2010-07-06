@@ -64,9 +64,7 @@ void CntPhoneNumberViewItem::indexChanged( int aIndex )
         contextList << context;
     
     // check if we switched to QContactOnlineAccount subtype
-    if ( subType == QContactOnlineAccount::SubTypeSip || 
-         subType == QContactOnlineAccount::SubTypeSipVoip ||
-         subType == QContactOnlineAccount::SubTypeVideoShare )
+    if ( isOnlineAccount(subType) )
         {
         qDebug() << "QContactOnlineAccount(" << subType << ")";
         constructOnlineAccount( item, subType, contextList );
@@ -132,11 +130,10 @@ HbWidget* CntPhoneNumberViewItem::createCustomWidget()
         }
     
     mItem->editor()->setText( value );
+    constructSubtypeModel( subType, context );
     
     connect( mItem->comboBox(), SIGNAL(currentIndexChanged(int)), this, SLOT(indexChanged(int)) );
     connect( mItem->editor(), SIGNAL(textChanged(QString)),this, SLOT(textChanged(QString)) );
-    
-    constructSubtypeModel( subType, context );
     
     return mItem;
     }
@@ -169,7 +166,6 @@ void CntPhoneNumberViewItem::constructPhoneNumber( CntDetailModelItem* aItem, QS
         number.setContexts( aContext );
         aItem->setDetail( number );
         }
-    qDebug() << mItem->editor()->text();
     }
 
 void CntPhoneNumberViewItem::constructOnlineAccount( CntDetailModelItem* aItem, QString aSubType, QStringList aContext )
@@ -201,7 +197,6 @@ void CntPhoneNumberViewItem::constructOnlineAccount( CntDetailModelItem* aItem, 
         account.setAccountUri( mItem->editor()->text() );
         aItem->setDetail( account );
         }
-    qDebug() << mItem->editor()->text();
     }
 
 void CntPhoneNumberViewItem::constructSubtypeModel( QString aSubType, QStringList aContext )
@@ -337,8 +332,26 @@ void CntPhoneNumberViewItem::constructSubtypeModel( QString aSubType, QStringLis
              model->item(i)->data( DetailContext ).toString() == context )
             {
             mItem->comboBox()->setCurrentIndex( i );
+            if ( isOnlineAccount( aSubType ) )
+            {
+                mItem->editor()->setMaxLength( CNT_ONLINEACCOUNT_EDITOR_MAXLENGTH );
+                mItem->editor()->setInputMethodHints( Qt::ImhUrlCharactersOnly );
+            }
+            else
+            {
+                mItem->editor()->setInputMethodHints( Qt::ImhDialableCharactersOnly );
+                mItem->editor()->setMaxLength( CNT_PHONENUMBER_EDITOR_MAXLENGTH );
+            }
+                
             break;
             }
         }
     }
+
+bool CntPhoneNumberViewItem::isOnlineAccount( QString aSubtype )
+{
+    return (aSubtype == QContactOnlineAccount::SubTypeSip || 
+            aSubtype == QContactOnlineAccount::SubTypeSipVoip ||
+            aSubtype == QContactOnlineAccount::SubTypeVideoShare );
+}
 // End of File

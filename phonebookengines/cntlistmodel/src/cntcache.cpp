@@ -31,6 +31,8 @@ CntCache* CntCache::mInstance = NULL;
 static const int CacheOrderStartValue = 1;
 // for avoiding wrap around with cache orders
 static const int MaxCacheOrderValue = 10000000;
+// number of items to read quickly when a new instance is requested or cache is cleared
+static const int ItemsToReadUrgently = 12;
 // number of items to read ahead into cache; this number is for one direction
 static const int ItemsToCacheAhead = 24;
 // cache size for info items (name, text, icon1name, icon2name)
@@ -44,18 +46,6 @@ static const int IconsInCntContactInfo = 2;
 static const QString EmptyTextField = " ";
 
 /*!
-    Provides a pointer to the CntCache singleton instance.
- */
-CntCache* CntCache::instance()
-{
-    if (mInstance == NULL) {
-        mInstance = new CntCache();
-    }
-
-    return mInstance;
-}
-
-/*!
     Creates the CntCache singleton instance.
  */
 CntCache::CntCache()
@@ -63,7 +53,8 @@ CntCache::CntCache()
       mWorker(new CntCacheThread()),
       mNextInfoCacheOrder(CacheOrderStartValue),
       mNextIconCacheOrder(CacheOrderStartValue),
-      mEmittedContactId(-1)
+      mEmittedContactId(-1),
+      mUrgentContacts(0)
 {
     CNT_ENTRY
 
@@ -106,6 +97,22 @@ CntCache::~CntCache()
     CNT_EXIT
 }
 
+/*!
+    Provides a pointer to the CntCache singleton instance.
+ */
+CntCache* CntCache::instance()
+{
+    if (mInstance == NULL) {
+        mInstance = new CntCache();
+    }
+
+    // whenever a client requests an instance the client will want to get all info
+    // for the first couple of contacts (~a screenfull) as fast as possible
+    mInstance->mUrgentContacts = ItemsToReadUrgently;
+
+    return mInstance;
+}
+
 /*! 
     Fetches information about a contact: name, text (e.g. phone number or
     social status) and two icons (e.g. avatar, presence). Previously cached
@@ -134,10 +141,17 @@ CntContactInfo CntCache::fetchContactInfo(int row, const QList<QContactLocalId>&
     int contactId = idList.at(row);
 
     if (contactId != mEmittedContactId) {
-        // this request comes from the UI in response to some scrolling activity =>
+        // this request comes from the UI when a new view is created or in response to
+        // some scrolling activity; in the former case, the client should
+        // have set urgencymode on, but in the latter case:
         // 1) postpone all jobs so the UI can use as much of the CPU as possible
         // 2) update read ahead cache to contain all IDs of all items near this item
-        mWorker->postponeJobs();
+        if (mUrgentContacts > 0) {
+            --mUrgentContacts;
+        }
+        else {
+            mWorker->postponeJobs();
+        }
         updateReadAheadCache(row, idList);
     }
 
@@ -157,19 +171,22 @@ CntContactInfo CntCache::fetchContactInfo(int row, const QList<QContactLocalId>&
                         // this id to the list of contacts that want to be
                         // notified when the icon is received
                         iconItem->contactIds.insert(contactId);
+                        // also reschedule it
+                        mWorker->scheduleIconJob(iconName, row);
                     }
                 }
                 else {
                     // needed icon is not in cache, so schedule it for retrieval
                     CntIconCacheItem* iconItem = createIconCacheItem(iconName);
                     iconItem->contactIds.insert(contactId);
-                    mWorker->scheduleIconJob(iconName);
+                    mWorker->scheduleIconJob(iconName, row);
                 }
             }
         }
 
         // update cache order
         infoItem->cacheOrder = mNextInfoCacheOrder++;
+        infoItem->latestRow = row;
 
         name = infoItem->name;
         text = infoItem->text;
@@ -182,9 +199,10 @@ CntContactInfo CntCache::fetchContactInfo(int row, const QList<QContactLocalId>&
             CntInfoCacheItem* item = createInfoCacheItem(contactId);
             item->name = name;
             item->text = text;
+            item->latestRow = row;
 
             // ask the worker thread to fetch the information asynchronously
-            mWorker->scheduleInfoJob(contactId);
+            mWorker->scheduleInfoJob(contactId, row);
         }
     }
 
@@ -205,6 +223,7 @@ void CntCache::clearCache()
     qDeleteAll(mInfoCache);
     mInfoCache.clear();
     mNextInfoCacheOrder = CacheOrderStartValue;
+    mUrgentContacts = ItemsToReadUrgently;
 
     CNT_EXIT
 }
@@ -234,10 +253,7 @@ void CntCache::onNewInfo(int contactId, const ContactInfoField& infoField, const
     }
     else if (infoField == ContactInfoTextField) {
         // update cache with new text for contact
-        if (!infoValue.isEmpty())
-            mInfoCache.value(contactId)->text = infoValue;
-        else
-            mInfoCache.value(contactId)->text = " ";
+        mInfoCache.value(contactId)->text = infoValue;
         hasNewInfo = true;
     }
     else {
@@ -269,7 +285,13 @@ void CntCache::onNewInfo(int contactId, const ContactInfoField& infoField, const
             else {
                 CntIconCacheItem* iconItem = createIconCacheItem(iconName);
                 iconItem->contactIds.insert(contactId);
-                mWorker->scheduleIconJob(iconName);
+				if (mInfoCache.contains(contactId)) {
+                	mWorker->scheduleIconJob(iconName, mInfoCache.value(contactId)->latestRow);
+				}
+				else {
+					// less important icon, since this contact is not in cache
+                	mWorker->scheduleIconJob(iconName, 100000);
+				}
                 hasNewInfo = false;
             }
         }
@@ -368,7 +390,7 @@ void CntCache::updateContactsInCache(const QList<QContactLocalId>& contactIds)
         if (mInfoCache.contains(contactId) && fetchContactName(contactId, name)) {
             CntInfoCacheItem* infoItem = mInfoCache.value(contactId);
             infoItem->name = name;
-            mWorker->scheduleInfoJob(contactId);
+            mWorker->scheduleInfoJob(contactId, infoItem->latestRow);
         }
     }
 
@@ -420,6 +442,7 @@ bool CntCache::fetchContactName(int contactId, QString& contactName)
     QStringList details;
     details << QContactDisplayLabel::DefinitionName;
     nameOnlyFetchHint.setDetailDefinitionsHint(details);
+    nameOnlyFetchHint.setOptimizationHints(QContactFetchHint::NoRelationships);
     QContact contact = mContactManager->contact(contactId, nameOnlyFetchHint);
     
     if (mContactManager->error() == QContactManager::NoError) {
@@ -467,7 +490,7 @@ void CntCache::updateReadAheadCache(int mostRecentRow, const QList<QContactLocal
             int contactId = idList.at(row);
             if (!mInfoCache.contains(contactId)) {
                 // contact is not in cache, so put the id to items to read into cache
-                mReadAheadCache.append(contactId);
+                mReadAheadCache.append(QPair<int,int>(contactId,row));
             }
             else {
                 // contact is in cache; update cache order as we want to keep this item in cache
@@ -487,9 +510,11 @@ void CntCache::scheduleOneReadAheadItem()
     CNT_ENTRY
 
     QString name;
-    
+
+    // pick the first contact from the read ahead cache and schedule it
     while (mReadAheadCache.count() > 0) {
-        int contactId = mReadAheadCache.takeFirst();
+        int contactId = mReadAheadCache.first().first;
+        int contactRow = mReadAheadCache.takeFirst().second;
         if (!mInfoCache.contains(contactId)) {
             // contact is not in cache, so schedule it for retreival
             if (fetchContactName(contactId, name)) {
@@ -497,9 +522,10 @@ void CntCache::scheduleOneReadAheadItem()
                 CntInfoCacheItem* item = createInfoCacheItem(contactId);
                 item->name = name;
                 item->text = EmptyTextField;
+                item->latestRow = contactRow;
     
                 // schedule the info for retrieval
-                mWorker->scheduleInfoJob(contactId);
+                mWorker->scheduleInfoJob(contactId, contactRow);
                 break;
             }
         }

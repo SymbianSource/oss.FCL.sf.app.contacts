@@ -29,6 +29,7 @@
 QTM_USE_NAMESPACE
 
 class CntListModelData;
+class XQSettingsKey;
 
 /*!
  * CntListModel is a list model view for contacts database
@@ -81,6 +82,7 @@ private:
     bool validRowId(int row) const;
     int rowId(const QContactLocalId &contactId) const;
     QVariant dataForDisplayRole(int row) const;
+    void updateRelationships();
 
 private slots:
     void handleAdded(const QList<QContactLocalId>& contactIds);
@@ -88,7 +90,10 @@ private slots:
     void handleRemoved(const QList<QContactLocalId>& contactIds);
     void handleMyCardChanged(const QContactLocalId& oldId, const QContactLocalId& newId);
     void handleContactInfoUpdated(QContactLocalId contactId);
+    void handleAddedRelationship(const QList<QContactLocalId>& contactIds);
+    void handleRemovedRelationship(const QList<QContactLocalId>& contactIds);
     void refreshModel();
+    void handleRowSettingChanged(const XQSettingsKey& key, const QVariant& value);
 
 private:
     QSharedDataPointer<CntListModelData>  d;

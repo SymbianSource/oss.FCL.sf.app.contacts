@@ -24,7 +24,7 @@
 /*
 *   Contacts application's central repository Uid used for global settings
 */
-const TUid KCRUiContacts = {0x2002FF54};
+const TUid KCRCntSettings = {0x2002FF54};
 
 /*
 *   Key value used to store the name ordering setting i.e
@@ -32,11 +32,25 @@ const TUid KCRUiContacts = {0x2002FF54};
 */
 const TUint32 KCntNameOrdering = 0x00000001;
 
+/*
+*   Key value used to store the setting how each row is presented
+*   in the names list: one row with a name, 2 rows with a name in the 
+*   first row and phone number in the second, etc.
+*/
+const TUint32 KCntNameListRowSetting = 0x00000002;
+
 // name order enumerations
 enum CntNameOrder {
     CntOrderLastFirst = 0x0,
     CntOrderLastCommaFirst = 0x1,
     CntOrderFirstLast = 0x2
 };
+
+// name list row enumerations
+enum CntNameListRowSetting {
+    CntOneRowNameOnly = 0x0,
+    CntTwoRowsNameAndPhoneNumber = 0x1
+};
+
 
 #endif

@@ -112,12 +112,13 @@ private:
     QContactManager* mContactManager;             // for fetching contact names and for getting
                                                   // notifications about changes to contacts
     CntCacheThread* mWorker;                      // the background thread that does the actual fetching
-    QList<int> mReadAheadCache;                   // cache with set of IDs to prefetch (they are likely to be needed soon)
+    QList< QPair<int,int> > mReadAheadCache;      // cache with set of contacts to prefetch (they are likely to be needed soon)
     QHash<int,CntInfoCacheItem*> mInfoCache;      // cache with contact info, indexed by contact ids
     QHash<QString,CntIconCacheItem*> mIconCache;  // cache with icons, indexed by icon name
     int mNextInfoCacheOrder;                      // cache order for the next item to be updated/inserted in info cache
     int mNextIconCacheOrder;                      // cache order for the next item to be updated/inserted in icon cache
     int mEmittedContactId;                        // id of the last contact emitted to UI
+    int mUrgentContacts;                          // the number of contacts left that need to be fetched asap
 };
 
 #endif

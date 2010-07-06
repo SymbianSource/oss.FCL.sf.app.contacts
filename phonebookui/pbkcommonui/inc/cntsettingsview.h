@@ -26,6 +26,9 @@ class HbDataForm;
 class HbDocumentLoader;
 class CntSettingsModel;
 
+/**
+* View class for displaying and changing settings in phonebook
+*/
 class CntSettingsView : public QObject, public CntAbstractView
 {
     Q_OBJECT

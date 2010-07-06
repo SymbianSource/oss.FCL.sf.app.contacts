@@ -36,9 +36,7 @@
 CntEditView::CntEditView() : d_ptr(new CntEditViewPrivate())
 {
     Q_D( CntEditView );
-    connect( d_ptr, SIGNAL(contactUpdated(bool)), this, SIGNAL(contactUpdated(bool)) );
-    connect( d_ptr, SIGNAL(contactRemoved(bool)), this, SIGNAL(contactRemoved(bool)) );
-    connect( d_ptr, SIGNAL(changesDiscarded()), this, SIGNAL(changesDiscarded()) );
+    d->q_ptr = this;
 }
 
 CntEditView::~CntEditView()

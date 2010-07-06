@@ -1,38 +1,27 @@
 EXPORTS
-	?initializeModel@CntHistoryModel@@AAEXXZ @ 1 NONAME ; void CntHistoryModel::initializeModel(void)
-	?rowCount@CntHistoryModel@@UBEHABVQModelIndex@@@Z @ 2 NONAME ; int CntHistoryModel::rowCount(class QModelIndex const &) const
-	?clearHistory@CntHistoryModel@@QAEXXZ @ 3 NONAME ; void CntHistoryModel::clearHistory(void)
-	?logsRowsRemoved@CntHistoryModel@@AAEXABVQModelIndex@@HH@Z @ 4 NONAME ; void CntHistoryModel::logsRowsRemoved(class QModelIndex const &, int, int)
-	??1CntHistoryModel@@UAE@XZ @ 5 NONAME ; CntHistoryModel::~CntHistoryModel(void)
-	?messageAdded@CntHistoryModel@@AAEXAAVMsgItem@@@Z @ 6 NONAME ; void CntHistoryModel::messageAdded(class MsgItem &)
-	?qt_metacast@CntHistoryModel@@UAEPAXPBD@Z @ 7 NONAME ; void * CntHistoryModel::qt_metacast(char const *)
-	?validateRowIndex@CntHistoryModel@@ABE_NH@Z @ 8 NONAME ; bool CntHistoryModel::validateRowIndex(int) const
+	?doDataChanged@CntHistoryModel@@AAEXABVQModelIndex@@0@Z @ 1 NONAME ; void CntHistoryModel::doDataChanged(class QModelIndex const &, class QModelIndex const &)
+	?doEndInsertRows@CntHistoryModel@@AAEXXZ @ 2 NONAME ; void CntHistoryModel::doEndInsertRows(void)
+	?rowCount@CntHistoryModel@@UBEHABVQModelIndex@@@Z @ 3 NONAME ; int CntHistoryModel::rowCount(class QModelIndex const &) const
+	?clearHistory@CntHistoryModel@@QAEXXZ @ 4 NONAME ; void CntHistoryModel::clearHistory(void)
+	?doBeginInsertRows@CntHistoryModel@@AAEXABVQModelIndex@@HH@Z @ 5 NONAME ; void CntHistoryModel::doBeginInsertRows(class QModelIndex const &, int, int)
+	??1CntHistoryModel@@UAE@XZ @ 6 NONAME ; CntHistoryModel::~CntHistoryModel(void)
+	?doEndRemoveRows@CntHistoryModel@@AAEXXZ @ 7 NONAME ; void CntHistoryModel::doEndRemoveRows(void)
+	?qt_metacast@CntHistoryModel@@UAEPAXPBD@Z @ 8 NONAME ; void * CntHistoryModel::qt_metacast(char const *)
 	?metaObject@CntHistoryModel@@UBEPBUQMetaObject@@XZ @ 9 NONAME ; struct QMetaObject const * CntHistoryModel::metaObject(void) const
-	?messageChanged@CntHistoryModel@@AAEXAAVMsgItem@@@Z @ 10 NONAME ; void CntHistoryModel::messageChanged(class MsgItem &)
-	?readLogEvent@CntHistoryModel@@AAEXPAVLogsEvent@@AAVHistoryItem@@@Z @ 11 NONAME ; void CntHistoryModel::readLogEvent(class LogsEvent *, class HistoryItem &)
-	?qt_metacall@CntHistoryModel@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 12 NONAME ; int CntHistoryModel::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?messagesReady@CntHistoryModel@@AAEXAAV?$QList@VMsgItem@@@@@Z @ 13 NONAME ; void CntHistoryModel::messagesReady(class QList<class MsgItem> &)
-	?staticMetaObject@CntHistoryModel@@2UQMetaObject@@B @ 14 NONAME ; struct QMetaObject const CntHistoryModel::staticMetaObject
-	?readMsgEvent@CntHistoryModel@@AAEXAAVMsgItem@@AAVHistoryItem@@@Z @ 15 NONAME ; void CntHistoryModel::readMsgEvent(class MsgItem &, class HistoryItem &)
-	?decorationRoleData@CntHistoryModel@@ABE?AVQVariant@@ABVHistoryItem@@@Z @ 16 NONAME ; class QVariant CntHistoryModel::decorationRoleData(class HistoryItem const &) const
-	?sort@CntHistoryModel@@UAEXHW4SortOrder@Qt@@@Z @ 17 NONAME ; void CntHistoryModel::sort(int, enum Qt::SortOrder)
-	?messageDeleted@CntHistoryModel@@AAEXAAVMsgItem@@@Z @ 18 NONAME ; void CntHistoryModel::messageDeleted(class MsgItem &)
-	?trUtf8@CntHistoryModel@@SA?AVQString@@PBD0@Z @ 19 NONAME ; class QString CntHistoryModel::trUtf8(char const *, char const *)
-	?backgroundRoleData@CntHistoryModel@@ABE?AVQVariant@@ABVHistoryItem@@@Z @ 20 NONAME ; class QVariant CntHistoryModel::backgroundRoleData(class HistoryItem const &) const
-	?tr@CntHistoryModel@@SA?AVQString@@PBD0H@Z @ 21 NONAME ; class QString CntHistoryModel::tr(char const *, char const *, int)
-	?tr@CntHistoryModel@@SA?AVQString@@PBD0@Z @ 22 NONAME ; class QString CntHistoryModel::tr(char const *, char const *)
-	?getStaticMetaObject@CntHistoryModel@@SAABUQMetaObject@@XZ @ 23 NONAME ; struct QMetaObject const & CntHistoryModel::getStaticMetaObject(void)
-	?initializeLogsModel@CntHistoryModel@@AAEXXZ @ 24 NONAME ; void CntHistoryModel::initializeLogsModel(void)
-	?trUtf8@CntHistoryModel@@SA?AVQString@@PBD0H@Z @ 25 NONAME ; class QString CntHistoryModel::trUtf8(char const *, char const *, int)
-	?sortAndRefresh@CntHistoryModel@@QAEXW4SortOrder@Qt@@@Z @ 26 NONAME ; void CntHistoryModel::sortAndRefresh(enum Qt::SortOrder)
-	?logsDataChanged@CntHistoryModel@@AAEXABVQModelIndex@@0@Z @ 27 NONAME ; void CntHistoryModel::logsDataChanged(class QModelIndex const &, class QModelIndex const &)
-	?markAllAsSeen@CntHistoryModel@@QAEXXZ @ 28 NONAME ; void CntHistoryModel::markAllAsSeen(void)
-	??0CntHistoryModel@@QAE@IPAVQContactManager@QtMobility@@PAVQObject@@@Z @ 29 NONAME ; CntHistoryModel::CntHistoryModel(unsigned int, class QtMobility::QContactManager *, class QObject *)
-	?data@CntHistoryModel@@UBE?AVQVariant@@ABVQModelIndex@@H@Z @ 30 NONAME ; class QVariant CntHistoryModel::data(class QModelIndex const &, int) const
-	?logsRowsInserted@CntHistoryModel@@AAEXABVQModelIndex@@HH@Z @ 31 NONAME ; void CntHistoryModel::logsRowsInserted(class QModelIndex const &, int, int)
-	?initializeMsgModel@CntHistoryModel@@AAEXXZ @ 32 NONAME ; void CntHistoryModel::initializeMsgModel(void)
-	?findIndices@CntHistoryModel@@AAE?AV?$QList@V?$QList@H@@@@ABV?$QList@H@@@Z @ 33 NONAME ; class QList<class QList<int> > CntHistoryModel::findIndices(class QList<int> const &)
-	??_ECntHistoryModel@@UAE@I@Z @ 34 NONAME ; CntHistoryModel::~CntHistoryModel(unsigned int)
-	?displayRoleData@CntHistoryModel@@ABE?AVQVariant@@ABVHistoryItem@@@Z @ 35 NONAME ; class QVariant CntHistoryModel::displayRoleData(class HistoryItem const &) const
-	?handleLogsReset@CntHistoryModel@@AAEXXZ @ 36 NONAME ; void CntHistoryModel::handleLogsReset(void)
+	?doBeginRemoveRows@CntHistoryModel@@AAEXABVQModelIndex@@HH@Z @ 10 NONAME ; void CntHistoryModel::doBeginRemoveRows(class QModelIndex const &, int, int)
+	?qt_metacall@CntHistoryModel@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 11 NONAME ; int CntHistoryModel::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?staticMetaObject@CntHistoryModel@@2UQMetaObject@@B @ 12 NONAME ; struct QMetaObject const CntHistoryModel::staticMetaObject
+	?sort@CntHistoryModel@@UAEXHW4SortOrder@Qt@@@Z @ 13 NONAME ; void CntHistoryModel::sort(int, enum Qt::SortOrder)
+	?trUtf8@CntHistoryModel@@SA?AVQString@@PBD0@Z @ 14 NONAME ; class QString CntHistoryModel::trUtf8(char const *, char const *)
+	?d_func@CntHistoryModel@@ABEPBVCntHistoryModelPrivate@@XZ @ 15 NONAME ; class CntHistoryModelPrivate const * CntHistoryModel::d_func(void) const
+	?tr@CntHistoryModel@@SA?AVQString@@PBD0H@Z @ 16 NONAME ; class QString CntHistoryModel::tr(char const *, char const *, int)
+	?tr@CntHistoryModel@@SA?AVQString@@PBD0@Z @ 17 NONAME ; class QString CntHistoryModel::tr(char const *, char const *)
+	?getStaticMetaObject@CntHistoryModel@@SAABUQMetaObject@@XZ @ 18 NONAME ; struct QMetaObject const & CntHistoryModel::getStaticMetaObject(void)
+	?d_func@CntHistoryModel@@AAEPAVCntHistoryModelPrivate@@XZ @ 19 NONAME ; class CntHistoryModelPrivate * CntHistoryModel::d_func(void)
+	?trUtf8@CntHistoryModel@@SA?AVQString@@PBD0H@Z @ 20 NONAME ; class QString CntHistoryModel::trUtf8(char const *, char const *, int)
+	?sortAndRefresh@CntHistoryModel@@QAEXW4SortOrder@Qt@@@Z @ 21 NONAME ; void CntHistoryModel::sortAndRefresh(enum Qt::SortOrder)
+	?markAllAsSeen@CntHistoryModel@@QAEXXZ @ 22 NONAME ; void CntHistoryModel::markAllAsSeen(void)
+	??0CntHistoryModel@@QAE@IPAVQContactManager@QtMobility@@PAVQObject@@@Z @ 23 NONAME ; CntHistoryModel::CntHistoryModel(unsigned int, class QtMobility::QContactManager *, class QObject *)
+	?data@CntHistoryModel@@UBE?AVQVariant@@ABVQModelIndex@@H@Z @ 24 NONAME ; class QVariant CntHistoryModel::data(class QModelIndex const &, int) const
+	??_ECntHistoryModel@@UAE@I@Z @ 25 NONAME ; CntHistoryModel::~CntHistoryModel(unsigned int)
 

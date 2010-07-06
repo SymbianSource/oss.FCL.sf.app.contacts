@@ -36,4 +36,8 @@ EXPORTS
 	_ZNK12CntListModel8rowCountERK11QModelIndex @ 35 NONAME
 	_ZTI12CntListModel @ 36 NONAME
 	_ZTV12CntListModel @ 37 NONAME
+	_ZN12CntListModel19updateRelationshipsEv @ 38 NONAME
+	_ZN12CntListModel23handleAddedRelationshipERK5QListIjE @ 39 NONAME
+	_ZN12CntListModel23handleRowSettingChangedERK13XQSettingsKeyRK8QVariant @ 40 NONAME
+	_ZN12CntListModel25handleRemovedRelationshipERK5QListIjE @ 41 NONAME
 

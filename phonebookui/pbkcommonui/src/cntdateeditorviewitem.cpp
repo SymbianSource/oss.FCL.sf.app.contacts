@@ -77,7 +77,7 @@ HbWidget* CntDateEditorViewItem::createCustomWidget()
     CntDetailModelItem* item = static_cast<CntDetailModelItem*>( model->itemFromIndex(modelIndex()) );
 
     QContactDetail detail = item->detail();
-    QString text("No date set"); // loc missing
+    QString text(hbTrId("txt_phob_formlabel_val_formlabel_val_no_date_set"));
 
     if ( detail.definitionName() == QContactBirthday::DefinitionName )
     {

@@ -42,7 +42,7 @@ CntListModel::CntListModel(const QContactFilter& contactFilter,
 {
     CNT_ENTRY
     m_defaultIcon = HbIcon("qtg_large_avatar");
-    m_defaultMyCardIcon = HbIcon("qtg_large_mycard");
+    m_defaultMyCardIcon = HbIcon("qtg_large_avatar_mycard");
 
     d = new CntListModelData(contactFilter, showMyCard);
     d->m_contactManager = new QContactManager;
@@ -71,8 +71,7 @@ CntListModel::CntListModel(QContactManager* manager,
 {
     CNT_ENTRY
     m_defaultIcon = HbIcon("qtg_large_avatar");
-    m_defaultMyCardIcon = HbIcon("qtg_large_mycard");
-    m_defaultMyCardIcon = HbIcon("qtg_large_mycard");
+    m_defaultMyCardIcon = HbIcon("qtg_large_avatar_mycard");
 
     d = new CntListModelData(contactFilter, showMyCard);
     d->m_contactManager = manager;
@@ -138,25 +137,31 @@ QVariant CntListModel::data(const QModelIndex &index, int role) const
         }
     }
     else if (role == Qt::DecorationRole) {
-        QList<QVariant> icons;
-        HbIcon avatar = d->m_currentContact.icon1();
-        HbIcon statusIcon = d->m_currentContact.icon2();
+        if (d->m_currentRowSetting == CntTwoRowsNameAndPhoneNumber) {
+            //icon fits only if user selected 2 rows in each name list item
+            QList<QVariant> icons;
+            HbIcon avatar = d->m_currentContact.icon1();
+            HbIcon statusIcon = d->m_currentContact.icon2();
+        
+            if (!avatar.isNull()) {
+                icons.append(avatar);
+            }
+            else if (d->m_myCardId == d->m_contactIds[row] || dummyMyCardId == d->m_contactIds[row]) {
+                icons.append(m_defaultMyCardIcon);
+            }
+            else {
+                icons.append(m_defaultIcon);
+            }
     
-        if (!avatar.isNull()) {
-            icons.append(avatar);
-        }
-        else if (d->m_myCardId == d->m_contactIds[row] || dummyMyCardId == d->m_contactIds[row]) {
-            icons.append(m_defaultMyCardIcon);
+            if (!statusIcon.isNull()) {
+                icons.append(statusIcon);
+            }
+    
+            return icons;
         }
         else {
-            icons.append(m_defaultIcon);
+            return QVariant();
         }
-
-        if (!statusIcon.isNull()) {
-            icons.append(statusIcon);
-        }
-
-        return icons;
     }
     CNT_EXIT
     return QVariant();
@@ -227,8 +232,7 @@ void CntListModel::setFilter(const QContactFilter& contactFilter)
 {
     CNT_ENTRY
     
-    d->m_filter = contactFilter;
-    d->m_currentRow = -1;
+    d->setFilter(contactFilter);
     
     //refresh model
     updateContactIdsArray();
@@ -243,7 +247,7 @@ void CntListModel::setFilter(const QContactFilter& contactFilter)
 void CntListModel::setSortOrder()
 {
     XQSettingsKey nameOrderKey(XQSettingsKey::TargetCentralRepository,
-                         KCRUiContacts.iUid,
+                         KCRCntSettings.iUid,
                          KCntNameOrdering);
     XQSettingsManager settingsMng;
     int order = settingsMng.readItemValue(nameOrderKey, XQSettingsManager::TypeInt).toInt();
@@ -266,11 +270,6 @@ void CntListModel::setSortOrder()
         sortOrders.append(sortOrderFirstName);
         sortOrders.append(sortOrderLastName);
     }
-    
-    QContactSortOrder sortOrderOrg;
-    sortOrderOrg.setDetailDefinitionName(QContactOrganization::DefinitionName,
-        QContactOrganization::FieldName);
-    sortOrders.append(sortOrderOrg);
     
     d->m_sortOrders = sortOrders;
 }
@@ -371,6 +370,17 @@ int CntListModel::doConstruct()
     connect(d->m_contactManager, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), this, SLOT(handleRemoved(const QList<QContactLocalId>&)));
     connect(d->m_contactManager, SIGNAL(selfContactIdChanged(const QContactLocalId&, const QContactLocalId&)), this, SLOT(handleMyCardChanged(const QContactLocalId&, const QContactLocalId&)));
     connect(d->m_contactManager, SIGNAL(dataChanged()), this, SLOT(refreshModel()));
+    connect(d->m_contactManager, SIGNAL(relationshipsAdded(const QList<QContactLocalId>&)), this, SLOT(handleAddedRelationship(const QList<QContactLocalId>&)));
+    connect(d->m_contactManager, SIGNAL(relationshipsRemoved(const QList<QContactLocalId>&)), this, SLOT(handleRemovedRelationship(const QList<QContactLocalId>&)));
+    
+    // Get current setting how to show an item in the name list and subscribe for changes
+    d->m_Settings = new XQSettingsManager;
+    d->m_NameListRowSettingkey = new XQSettingsKey(XQSettingsKey::TargetCentralRepository,
+                            KCRCntSettings.iUid,
+                            KCntNameListRowSetting);
+    d->m_currentRowSetting = d->m_Settings->readItemValue(*d->m_NameListRowSettingkey, XQSettingsManager::TypeInt).toInt();
+    d->m_Settings->startMonitoring(*d->m_NameListRowSettingkey, XQSettingsManager::TypeInt);
+    connect(d->m_Settings, SIGNAL(valueChanged(const XQSettingsKey&, const QVariant&)), this, SLOT(handleRowSettingChanged(const XQSettingsKey&, const QVariant&)));
     
     CNT_EXIT
     return error;
@@ -505,7 +515,10 @@ QVariant CntListModel::dataForDisplayRole(int row) const
     list << name;
     
     if (!isNonEmptySelfContact) {
-        list << infoText;
+        if (d->m_currentRowSetting == CntTwoRowsNameAndPhoneNumber) {
+            //add additional text only if user wants 2 rows in each name list item
+            list << infoText;
+        }
     }
     CNT_EXIT
     return list;
@@ -692,6 +705,96 @@ void CntListModel::handleMyCardChanged(const QContactLocalId& /*oldId*/, const Q
 }
 
 /*!
+ * Handle added relationships. 
+ *
+ * \param contactIds Ids of contacts added (group id and contact ids).
+ */
+void CntListModel::handleAddedRelationship(const QList<QContactLocalId>& contactIds)
+{
+    CNT_ENTRY
+
+    if (contactIds.contains(d->m_groupId)) {
+        foreach (QContactLocalId id, contactIds) {
+            if (!d->m_contactIds.contains(id)) {
+                // at least one new contact id has been added to this group,
+                // so update the model
+                updateRelationships();
+                break;
+            }
+        }
+    }
+
+    CNT_EXIT
+}
+
+/*!
+ * Handle removed relationships. 
+ *
+ * \param contactIds Ids of contacts removed from a relationship (group id and contact ids).
+ */
+void CntListModel::handleRemovedRelationship(const QList<QContactLocalId>& contactIds)
+{
+    CNT_ENTRY
+
+    if (contactIds.contains(d->m_groupId)) {
+        foreach (QContactLocalId id, contactIds) {
+            if (d->m_contactIds.contains(id)) {
+                // at least one new contact id has been removed from this group,
+                // so update the model
+                updateRelationships();
+                break;
+            }
+        }
+    }
+
+    CNT_EXIT
+}
+
+/*!
+ * Updates the model to reflect changes in the relationships.
+ */
+void CntListModel::updateRelationships()
+{
+    CNT_ENTRY
+
+    //invalidate cached contact
+    d->m_currentRow = -1;
+    
+    QList<QContactLocalId> oldIdList = d->m_contactIds;
+    updateContactIdsArray();
+    
+    // find all changed rows
+    QList<int> newRows, removedRows;
+    for (int i = 0; i < d->m_contactIds.count(); i++) {
+        if (!oldIdList.contains(d->m_contactIds.at(i))) {
+            newRows.append(i);
+        }
+    }
+    for (int i = 0; i < oldIdList.count(); i++) {
+        if (!d->m_contactIds.contains(oldIdList.at(i))) {
+            removedRows.append(i);
+        }
+    }
+
+    // currently only one-row-changes are handled with beginInsertRows/beginRemoveRows
+    // if there are more than one change, the whole model is reset
+    if (removedRows.count() == 1 && newRows.count() == 0) {
+        beginRemoveRows(QModelIndex(), removedRows.at(0), removedRows.at(0));
+        endRemoveRows();
+    }
+    else if (newRows.count() == 1 && removedRows.count() == 0) {
+        beginInsertRows(QModelIndex(), newRows.at(0), newRows.at(0));
+        endInsertRows();
+    }
+    else {
+        beginResetModel();
+        endResetModel();
+    }
+
+    CNT_EXIT
+}
+
+/*!
 * Notify views that info for a contact has become
 * available or has changed.
 *
@@ -708,4 +811,22 @@ void CntListModel::handleContactInfoUpdated(QContactLocalId contactId)
     emit dataChanged(index, index);
     
     CNT_EXIT
+}
+
+/*!
+* Handle a change how name list item should be represented
+*
+* \param key Central repository key
+* \param value New value in the key
+*/
+void CntListModel::handleRowSettingChanged(const XQSettingsKey& /*key*/, const QVariant& value)
+{
+    bool ok = false;
+    int newSetting = value.toInt(&ok);
+    if (ok) {
+        d->m_currentRowSetting = newSetting;
+        beginResetModel();
+        reset();
+        endResetModel();
+    }
 }

@@ -34,14 +34,10 @@
 #include <msghistory.h>
 #include <msgitem.h>
 #include <hbextendedlocale.h>
+#include "cnthistorymodel.h"
+#include "cnthistorymodelconsts.h"
 
 QTM_USE_NAMESPACE
-
-// Constants
-#define MISSED_CALL_ICON "qtg_small_missed_call"
-#define DAILED_CALL_ICON "qtg_small_sent"
-#define RECEIVED_CALL_ICON "qtg_small_received"
-#define MESSAGE_ICON "qtg_small_message"
 
 class HistoryItem
 {   
@@ -74,37 +70,52 @@ public:
 
 typedef QSharedPointer<HistoryItem> HItemPointer;
 
-class CntHistoryModelData : public QSharedData
+class CntHistoryModelPrivate : public QObject
 {
+    Q_OBJECT
+    Q_DECLARE_PUBLIC(CntHistoryModel)
+    
 public:
-    CntHistoryModelData(QContactLocalId contactId, QContactManager* manager)
-        : QSharedData(),
-          m_logsModel(NULL),
-          m_logsFilter(NULL),
-          m_AbstractLogsModel(NULL),
-          m_msgHistory(NULL),
-          m_contactId(contactId),
-          m_contactManager(manager),
-          m_isMyCard(false),
-          m_isMarkedAsSeen(false),
-          m_initLogs(false),
-          m_extendedLocale(HbExtendedLocale::system())
-          {}
-    ~CntHistoryModelData()
-    {
-        if (m_logsModel) {
-            delete m_logsModel;
-            m_logsModel = NULL;
-        }
-        if (m_logsFilter) {
-            delete m_logsFilter;
-            m_logsFilter = NULL;
-        }
-        if (m_msgHistory) {
-            delete m_msgHistory;
-            m_msgHistory = NULL;
-        }
-    };
+    CntHistoryModelPrivate(QContactLocalId contactId, QContactManager* manager);
+    ~CntHistoryModelPrivate();
+
+public:
+    QVariant data(const QModelIndex& index, int role) const;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const;
+    void sort(int column = 0, Qt::SortOrder order = Qt::AscendingOrder);
+    void clearHistory();
+    void markAllAsSeen();
+    
+public:
+    CntHistoryModel *q_ptr;
+    
+public:
+    void initializeModel();
+    QVariant displayRoleData(const HistoryItem& item) const;
+    QVariant decorationRoleData(const HistoryItem& item) const;
+    QVariant backgroundRoleData(const HistoryItem& item) const;
+    QVariant conversationIdRoleData(const int row) const;
+    
+    // Utility finctions
+    void readLogEvent(LogsEvent* event, HistoryItem& item);
+    void readMsgEvent(MsgItem& event, HistoryItem& item);
+    void initializeLogsModel();
+    void initializeMsgModel();
+    bool validateRowIndex(const int index) const;
+    QList< QList<int> > findIndices( const QList< int >& indices );
+    
+public slots:
+    // Logs model slots
+    void logsRowsInserted(const QModelIndex& parent, int first, int last);
+    void logsRowsRemoved(const QModelIndex& parent, int first, int last);
+    void logsDataChanged(const QModelIndex& first, const QModelIndex& last);
+    void handleLogsReset();
+    
+    // Messaging model slots
+    void messagesReady(QList<MsgItem>& msgs);
+    void messageAdded(MsgItem& msg);
+    void messageChanged(MsgItem& msg);
+    void messageDeleted(MsgItem& msg);
     
 public:
     LogsModel* m_logsModel;

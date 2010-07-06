@@ -178,7 +178,8 @@ public:
         mContactEditorDelLocList.append(Loc(QContactUrl::DefinitionName, QContactDetail::ContextHome, hbTrId("txt_phob_menu_delete_url_home")));
         mContactEditorDelLocList.append(Loc(QContactUrl::DefinitionName, QContactDetail::ContextWork, hbTrId("txt_phob_menu_delete_url_work")));
         mContactEditorDelLocList.append(Loc(QContactOrganization::DefinitionName, "", hbTrId("txt_phob_menu_delete_company_details")));     
-             
+        mContactEditorDelLocList.append(Loc(QContactRingtone::DefinitionName, "", hbTrId("txt_phob_menu_delete_ringing_tone")));
+        
         //contact card item specific menu 
         mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::DefinitionName, "", hbTrId("txt_phob_menu_call_mobile")));
         mItemSpecificMenuLocList.append(Loc(QContactPhoneNumber::DefinitionName, QContactDetail::ContextHome, hbTrId("txt_phob_menu_call_mobile_home")));

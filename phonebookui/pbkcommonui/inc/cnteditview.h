@@ -35,7 +35,7 @@ public:
     ~CntEditView();
     
 signals:
-    void contactUpdated(bool aSuccess);
+    void contactUpdated(int aSuccess);
     void contactRemoved(bool aSuccess);
     void changesDiscarded();
     

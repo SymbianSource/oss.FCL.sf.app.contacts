@@ -29,9 +29,9 @@ INCLUDEPATH += .
 INCLUDEPATH += ../../inc
 INCLUDEPATH += ../../phonebookengines/cntimageutility/inc
 INCLUDEPATH += ../../phonebookengines/cntsimutility/inc
+INCLUDEPATH += ../cnthistorymodel/inc
 
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
-
 
 MOC_DIR = moc
 
@@ -72,6 +72,8 @@ HEADERS += \
     inc/cntbaseselectionview.h \
     inc/cntcollectionview.h \
     inc/cntcollectionlistmodel.h \
+    inc/cntcollectionlistmodel_p.h \
+    inc/cntcollectionlistmodelworker.h \
     inc/cntdetailpopup.h \
     inc/cntimageeditorview.h \
     inc/cntfavoritesmemberview.h \
@@ -134,6 +136,9 @@ HEADERS += \
     inc/cntsettingsmodel.h \
     inc/cntcommondetailviewitem.h \
     ../../inc/cntdebug.h \
+    inc/cntactionpopup_p.h \
+    inc/cntactionpopup.h
+    
     
     
 SOURCES += \
@@ -145,6 +150,7 @@ SOURCES += \
     src/cntbaseselectionview.cpp \
     src/cntcollectionview.cpp \
     src/cntcollectionlistmodel.cpp \
+    src/cntcollectionlistmodelworker.cpp \
     src/cntdetailpopup.cpp \
     src/cntimageeditorview.cpp \
     src/cntfavoritesmemberview.cpp \
@@ -203,8 +209,9 @@ SOURCES += \
     src/cntpresencelistener.cpp \
     src/cntdetailorderinghelper.cpp \
     src/cntsettingsmodel.cpp \
-    src/cntcommondetailviewitem.cpp
-    
+    src/cntcommondetailviewitem.cpp \
+    src/cntactionpopup_p.cpp \
+    src/cntactionpopup.cpp
     
 RESOURCES += resources\pbkcommonui.qrc
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<hswidgetmanifest>
+    <uri>contactwidgethsplugin</uri>
+    <title>Contact</title>
+    <description>Contact widget.</description>
+    <icon>qtg_large_friend</icon>
+    <hidden>false</hidden>
+    <servicexml>contactwidgethsplugin.xml</servicexml>
+</hswidgetmanifest>

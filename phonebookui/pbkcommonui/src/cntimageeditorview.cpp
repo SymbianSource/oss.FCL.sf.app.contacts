@@ -140,6 +140,10 @@ void CntImageEditorView::activate( CntAbstractViewManager* aMgr, const CntViewPa
         {
         mAvatar = new QContactAvatar();
         mRemoveImage->setEnabled(false);
+        if (mContact->type() == QContactType::TypeGroup)
+            {
+            mImageLabel->setIcon(HbIcon("qtg_large_add_group_picture"));
+            }
         }
     
     // set up the list
@@ -273,7 +277,10 @@ void CntImageEditorView::removeImage()
         
         mAvatar->setImageUrl(QUrl());
         mImageLabel->clear();
-        mImageLabel->setIcon(HbIcon("qtg_large_add_contact_picture"));
+        if (mContact->type() == QContactType::TypeGroup)
+            mImageLabel->setIcon(HbIcon("qtg_large_add_group_picture"));
+        else
+            mImageLabel->setIcon(HbIcon("qtg_large_add_contact_picture"));
         mRemoveImage->setEnabled(false);
     }
 }

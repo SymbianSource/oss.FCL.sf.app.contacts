@@ -84,8 +84,6 @@ void CntPhoneNumberModel::saveContactDetails()
             
             if ( detail.value(QContactPhoneNumber::FieldNumber).isEmpty() )
             {
-                // this won't change the pointer value if the detail does not exists in contact.
-                // But, this is the situation in wk20...
                 mContact->removeDetail( &detail );
             }
         }

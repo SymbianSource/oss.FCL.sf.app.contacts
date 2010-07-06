@@ -21,6 +21,7 @@
 #include "cntdetailpopup.h"
 #include "cnteditviewheadingitem.h"
 #include "cntimagelabel.h"
+#include "cntglobal.h"
 
 #include <qtcontacts.h>
 #include <hbdocumentloader.h>
@@ -36,6 +37,9 @@
 #include <hbframebackground.h>
 #include <hbparameterlengthlimiter.h>
 #include <hbdevicenotificationdialog.h>
+#include <xqaiwrequest.h>
+#include <xqaiwdecl.h>
+#include <QDir>
 
 const char *CNT_EDIT_XML = ":/xml/contacts_ev.docml";
 
@@ -43,7 +47,9 @@ CntEditViewPrivate::CntEditViewPrivate() :
 mModel( NULL ),
 mImageLabel( NULL ),
 mThumbnailManager( NULL ),
-mContact( NULL )
+mContact( NULL ),
+mReq(0),
+mMenu(NULL)
 {
     mDocument = new CntDocumentLoader;
     
@@ -95,7 +101,10 @@ CntEditViewPrivate::~CntEditViewPrivate()
     delete mDocument;
     delete mModel;
     delete mContact;
-    
+    if (mMenu) 
+    {
+        delete mMenu;
+    }
     delete mThumbnailManager;
 }
 
@@ -133,8 +142,11 @@ void CntEditViewPrivate::activate( CntAbstractViewManager* aMgr, const CntViewPa
     QString myCard = mArgs.value( EMyCard ).toString();
     QString selectedAction = mArgs.value( ESelectedAction ).toString();
     QVariant contact = aArgs.value( ESelectedContact );
+    
     setSelectedContact( contact.value<QContact>() );
-        
+    mModel = new CntEditViewListModel( *mContact );
+    mListView->setModel( mModel );
+    
     QContactLocalId localId = mContact->localId();
     QContactManager* cm = mMgr->contactManager(SYMBIAN_BACKEND);
     QContactLocalId selfContactId = cm->selfContactId();
@@ -168,7 +180,7 @@ void CntEditViewPrivate::activate( CntAbstractViewManager* aMgr, const CntViewPa
     }
 
     // save and discard disabled if no changes found
-    if ( (*mContact) == cm->contact( mContact->localId()) )
+    if ( *mContact == cm->contact( mContact->localId()) )
     {
         mDiscard->setEnabled( false );
         mSave->setEnabled( false );
@@ -212,6 +224,10 @@ void CntEditViewPrivate::activated( const QModelIndex& aIndex )
     {
         item->activated(this);
     }
+    else if( item->data(ERoleEditorViewId) == ringToneFetcherView )
+    {
+       fetchTone();
+    }
     else
     {
         // open editor view
@@ -224,6 +240,7 @@ void CntEditViewPrivate::activated( const QModelIndex& aIndex )
         mArgs.insert(ESelectedAction, QString() );
         mMgr->changeView( mArgs );
     }
+    
 }
 
 void CntEditViewPrivate::longPressed( HbAbstractViewItem* aItem, const QPointF& aCoords )
@@ -239,26 +256,38 @@ void CntEditViewPrivate::longPressed( HbAbstractViewItem* aItem, const QPointF& 
     // only detail items are able to show context specific menu
     else
     {
-        HbMenu* menu = createPopup( aItem->modelIndex(), item );
-        menu->setAttribute( Qt::WA_DeleteOnClose, true );
-        menu->setPreferredPos( aCoords );
-        menu->setModal( true );
-        menu->open( this, SLOT(handleMenuAction(HbAction*)) );
+        if (mMenu) 
+        {
+            delete mMenu;
+        }
+        mMenu = createPopup( aItem->modelIndex(), item );
+        mMenu->setPreferredPos( aCoords );
+        mMenu->setModal( true );
+        mMenu->open( this, SLOT(handleMenuAction(HbAction*)) );
     }
 }
 
 void CntEditViewPrivate::handleMenuAction( HbAction* aAction )
 {
+    HbMenu *menu = static_cast<HbMenu*>(sender());
     int row = aAction->data().toInt();
-    QModelIndex index = mModel->index(row, 0);
-    CntEditViewItem* item = mModel->itemAt( index );
+    mIndex = mModel->index(row, 0);
+    CntEditViewItem* item = mModel->itemAt( mIndex );
     if ( aAction )
     {
         switch ( aAction->property("menu").toInt() )  
         {
         case HbAction::EditRole:
         {
-            editDetail( item );
+            if( item->data(ERoleEditorViewId) == ringToneFetcherView )
+                {
+                fetchTone();
+                menu->close();
+                }
+            else
+                {
+                editDetail( item );
+                }
         }
         break;
         
@@ -270,7 +299,7 @@ void CntEditViewPrivate::handleMenuAction( HbAction* aAction )
         
         case HbAction::DeleteRole:
         {
-            removeDetail( item, index );
+          removeDetail( item, mIndex );
         }
         break;
         
@@ -306,24 +335,88 @@ void CntEditViewPrivate::handleAddDetailItem(HbAction *aAction)
             case emailEditorView:
             case urlEditorView:
             case noteEditorView:
-                mArgs.insert( ESelectedAction, "add" );
+                mArgs.insert( ESelectedAction, CNT_ADD_ACTION );
+                changeEditorView();
                 break;
             case addressEditorView:
             case dateEditorView:
             case companyEditorView:
             case familyDetailEditorView:
-                mArgs.insert( ESelectedAction, "focus" );
-                break;
+                mArgs.insert( ESelectedAction, CNT_FOCUS_ACTION );
+                changeEditorView();
+                break;            
+            case ringToneFetcherView:
+                fetchTone();
+                break;                
             default:
-                break;
-            }
-            QVariant var;
-            var.setValue(*mContact);
-            mArgs.insert(ESelectedContact, var);
-            mMgr->changeView( mArgs );
+                break;                
+            }            
         }
     }
 }
+
+void CntEditViewPrivate::changeEditorView()
+{
+        QVariant var;
+        var.setValue(*mContact);
+        mArgs.insert(ESelectedContact, var);
+        mMgr->changeView( mArgs );   
+}
+
+// Call IToneFetch Service
+void CntEditViewPrivate::fetchTone()
+{
+        if(mReq)
+         {
+             delete mReq;
+             mReq = 0;
+         }
+             //launch media fetcher
+         mReq = mAppMgr.create(XQI_TONE_FETCH, XQOP_TONE_FETCH, true); // read strings from header file constants
+         if (!mReq)
+         {
+           return;
+         }
+         else
+         {
+             connect(mReq, SIGNAL( requestOk( const QVariant&)), SLOT( ringToneFetchHandleOk(const QVariant&)) );
+             connect(mReq, SIGNAL( requestError( int,const QString&)), SLOT(ringToneFetchHandleError(int,const QString&)) );
+         }
+         
+         // Make the request
+         mReq->send();
+}
+
+void CntEditViewPrivate::ringToneFetchHandleOk(const QVariant &result)
+{
+          
+    QContactRingtone ringtone = mContact->detail<QContactRingtone>();
+    QUrl ringtoneUrl = ringtone.audioRingtoneUrl();
+    QFileInfo ringtoneFileInfo(ringtoneUrl.toString());
+    QString ringtoneFileName = ringtoneFileInfo.fileName();
+     // Contact can have only one ringtone at a time
+     // remove existing ringtone detail if any
+     
+     if(!(ringtone.isEmpty()))
+         {
+         mContact->removeDetail(&ringtone);
+         }
+     
+     ringtone.setAudioRingtoneUrl(result.value<QString>());
+     mContact->saveDetail( &ringtone );
+     mModel->updateRingtone();
+     mSave->setEnabled( true );
+     mDiscard->setEnabled( true );
+     
+}
+ 
+void CntEditViewPrivate::ringToneFetchHandleError(int errorCode, const QString& errorMessage)
+{
+    Q_UNUSED(errorCode);
+    Q_UNUSED(errorMessage);
+    
+}
+
 
 void CntEditViewPrivate::deleteContact()
 {
@@ -331,8 +424,8 @@ void CntEditViewPrivate::deleteContact()
     {
         HbMessageBox::question(hbTrId("txt_phob_dialog_remove_all_personal_data_from_my_c"), this, 
                 SLOT(handleDeleteContact(HbAction*)), 
-                hbTrId("txt_phob_button_clear"), 
-                hbTrId("txt_common_button_cancel"));
+                hbTrId("txt_common_button_yes"), 
+                hbTrId("txt_common_button_no"));
     }
     else
     {
@@ -345,12 +438,14 @@ void CntEditViewPrivate::deleteContact()
 
 void CntEditViewPrivate::handleDeleteContact(HbAction *action)
 {
+    Q_Q(CntEditView);
+    
     HbMessageBox *dlg = static_cast<HbMessageBox*>(sender());
     if(dlg && action == dlg->actions().first())
     {
         QContactManager* cm = mMgr->contactManager( SYMBIAN_BACKEND );
 
-        emit contactRemoved(cm->removeContact( mContact->localId() ));
+        emit q->contactRemoved(cm->removeContact( mContact->localId() ));
         
         mMgr->back( mArgs );
     }
@@ -358,7 +453,9 @@ void CntEditViewPrivate::handleDeleteContact(HbAction *action)
 
 void CntEditViewPrivate::discardChanges()
 {
-    emit changesDiscarded();
+    Q_Q(CntEditView);
+    
+    emit q->changesDiscarded();
     
     // get a fresh one from backend.
     QContactManager* mgr = mMgr->contactManager(SYMBIAN_BACKEND);
@@ -375,6 +472,8 @@ void CntEditViewPrivate::discardChanges()
 
 void CntEditViewPrivate::saveChanges()
 {
+    Q_Q(CntEditView);
+
     QContactManager* mgr = mMgr->contactManager( SYMBIAN_BACKEND );
     bool isSavedContact = mContact->localId() > 0;
     
@@ -382,7 +481,9 @@ void CntEditViewPrivate::saveChanges()
     if ( (*mContact) != mgr->contact(mContact->localId()) || !isSavedContact )
     {
         int detailCount = mContact->details().count();
-            
+         
+        setPreferredDetails( mContact );
+        
         // If its a new contact
         if ( !isSavedContact )
         {
@@ -395,15 +496,19 @@ void CntEditViewPrivate::saveChanges()
                 }
                 
                 QString name = mgr->synthesizedDisplayLabel( *mContact );
-                
-                emit contactUpdated(success);
+                if (name.isEmpty())
+                {
+                    name = hbTrId("txt_phob_dblist_unnamed");
+                }
                 
                 if ( success )
                 {
+                    emit q->contactUpdated(1);
                     HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contact_1_saved")).arg(name));
                 }
                 else
                 {
+                    emit q->contactUpdated(0);
                     //TODO: localization is missing
                     HbDeviceNotificationDialog::notification(QString(),qtTrId("SAVING FAILED!"));
                 }
@@ -411,7 +516,13 @@ void CntEditViewPrivate::saveChanges()
                 QVariant var;
                 var.setValue(*mContact);
                 mArgs.insert(ESelectedContact, var);
-            }        
+                mArgs.insert(ESelectedAction, CNT_CREATE_ACTION);
+            }
+            else
+            {
+                // nothing happened to the contact. Flags should be used
+                emit q->contactUpdated(-2);
+            }
         }
         else
         {
@@ -423,22 +534,27 @@ void CntEditViewPrivate::saveChanges()
                 QContact c = mgr->contact( mContact->localId() );
                 
                 bool success = mgr->removeContact( mContact->localId() );
-                emit contactRemoved(success);
+                emit q->contactRemoved(success);
             }
             else
             {
                 bool success = mgr->saveContact(mContact);
                 
                 QString name = mgr->synthesizedDisplayLabel( *mContact );
-                
-                emit contactUpdated( success );
+                if (name.isEmpty())
+                {
+                    name = hbTrId("txt_phob_dblist_unnamed");
+                }
                 
                 if ( success )
-                {
+                {   
+                    emit q->contactUpdated(1);
                     HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contacts_1_updated")).arg(name));
+                    mArgs.insert(ESelectedAction, CNT_EDIT_ACTION);           
                 }
                 else
                 {
+                    emit q->contactUpdated(0);
                     //TODO: localization is missing
                     HbDeviceNotificationDialog::notification(QString(),qtTrId("SAVING FAILED!"));
                 }
@@ -451,11 +567,46 @@ void CntEditViewPrivate::saveChanges()
     }
     else
     {
-        emit changesDiscarded();
+        emit q->changesDiscarded();
     }
     
     mMgr->back( mArgs );
 }
+
+void CntEditViewPrivate::setPreferredDetails( QContact* aContact )
+{
+    QList<QContactPhoneNumber> numberList( aContact->details<QContactPhoneNumber>() );
+    //set preferred number for call if there is only one phone number
+    if ( aContact->preferredDetail("call").isEmpty() && numberList.count() == 1 )
+    {
+        aContact->setPreferredDetail( "call", numberList.first() );
+    }
+    //set preferred number for message if there is only one mobile phone number
+    if ( aContact->preferredDetail("message").isEmpty() && numberList.count() >= 1 )
+    {
+        int mobileNumbers = 0;
+        int mobileNumberIndex = -1;
+        for (int i = 0; i < numberList.count(); i++)
+        {
+            if (numberList.at(i).subTypes().count() && numberList.at(i).subTypes().first() == QContactPhoneNumber::SubTypeMobile)
+            {
+                mobileNumbers++;
+                mobileNumberIndex = i;
+            }      
+        }
+        if ( mobileNumbers == 1 )
+        {
+            aContact->setPreferredDetail( "message", numberList.at(mobileNumberIndex) );
+        }
+    }
+    QList<QContactEmailAddress> emailList( aContact->details<QContactEmailAddress>() );
+    //set preferred number for email if there is only one email address
+    if ( aContact->preferredDetail("email").isEmpty() && emailList.count() == 1 )
+    {
+        aContact->setPreferredDetail( "email", emailList.first() );
+    }   
+}
+
 
 void CntEditViewPrivate::openNameEditor()
 {
@@ -515,8 +666,7 @@ void CntEditViewPrivate::thumbnailReady( const QPixmap& pixmap, void *data, int 
     Q_UNUSED(id);
     if (!error)
     {
-        QIcon qicon(pixmap);
-        HbIcon icon(qicon);
+        HbIcon icon(pixmap);
         mHeading->setIcon(icon);
         
         mImageLabel->clear();
@@ -599,7 +749,7 @@ void CntEditViewPrivate::addDetail( CntEditViewItem* aDetail )
     QVariant var;
     var.setValue(*mContact);
     viewParameters.insert(ESelectedContact, var);
-    viewParameters.insert(ESelectedAction, "add" );
+    viewParameters.insert(ESelectedAction, CNT_ADD_ACTION );
                                             
     mMgr->changeView( viewParameters );
 }
@@ -633,6 +783,8 @@ void CntEditViewPrivate::setSelectedContact( QContact aContact )
         mContact = NULL;
     }
     mContact = new QContact( aContact );
+    /*
+    mListView->setModel( NULL );
     
     if ( mModel )
     {
@@ -643,6 +795,7 @@ void CntEditViewPrivate::setSelectedContact( QContact aContact )
     
     if ( mListView )
         mListView->setModel( mModel );
+        */
 }
 // End of File
 

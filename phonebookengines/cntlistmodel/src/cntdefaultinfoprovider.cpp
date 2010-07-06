@@ -56,15 +56,11 @@ void CntDefaultInfoProvider::requestInfo(const QContact& contact, ContactInfoFie
                 number = numbers.at(0).number();
         }
 
-        if (!number.isEmpty()) {
-            emit infoFieldReady(this, contact.localId(), ContactInfoTextField, number);
-        }
+        emit infoFieldReady(this, contact.localId(), ContactInfoTextField, number);
     }
 
     if (requestedInfo & ContactInfoIcon1Field) {
         QString imageUrl = contact.detail<QContactAvatar>().imageUrl().toString();
-        if (!imageUrl.isEmpty()) {
-            emit infoFieldReady(this, contact.localId(), ContactInfoIcon1Field, imageUrl);
-        }
+        emit infoFieldReady(this, contact.localId(), ContactInfoIcon1Field, imageUrl);
     }
 }
