@@ -67,6 +67,19 @@ void CVPbkGroupCardHandler::ConstructL()
 // ----------------------------------------------------------------------------
 CVPbkGroupCardHandler::~CVPbkGroupCardHandler()
     {
+    // The code that started iWait must know if this instance has been deleted.
+    if ( iDestroyed )
+        {
+        *iDestroyed = ETrue;
+        }
+    
+    if ( iSelfPtr )
+        {
+        *iSelfPtr = NULL;
+        }
+    
+    delete iRetrieveOp;
+    
     if ( iWait )
         {
         if( iWait->IsStarted() )
@@ -122,18 +135,13 @@ CParserProperty* CVPbkGroupCardHandler::CreateXGroupPropertyL(const MVPbkStoreCo
     CDesCArrayFlat* desArray=new (ELeave)CDesCArrayFlat(totalGroupsInContact);
     CleanupStack::PushL(desArray);
 
-    //Append all the Group Names of contact to X-CATEGORIES field value. 
-    for ( TInt m = 0 ; m < totalGroupsInContact ; m++ )
+    //Append all the Group Names of contact to X-CATEGORIES field value.
+    TBool thisDestroyed = EFalse;
+    for ( TInt m = 0 ; m < totalGroupsInContact && !thisDestroyed ; m++ )
         {                  
-        const  MVPbkContactLink& groupLink = (*groupIdArray)[m];                                             
-        iData.GetContactManager().RetrieveContactL( groupLink, *this );
-        //wait for ContactRetrieve operation to complete, to get storecontact for the current group link
-        if( ! (iWait->IsStarted()) )
-            {
-            iWait->Start();
-            }
-
-        if (iTargetStore)
+        const  MVPbkContactLink& groupLink = (*groupIdArray)[m];
+        thisDestroyed = RetrieveContactL( groupLink, *this );
+        if (!thisDestroyed && iTargetStore)
             {
             MVPbkContactGroup* contactGrp = iTargetStore->Group();
             if(contactGrp)
@@ -177,18 +185,13 @@ void CVPbkGroupCardHandler::DeleteContactFromGroupsL()
     groupIdsCount = groupIds->Count();    
     const MVPbkContactLink* contactLink = iStore->CreateLinkLC();
 
-    //Remove the contact from all the Groups it belongs. 
-    for(TInt i = 0;i < groupIdsCount;i++)
+    //Remove the contact from all the Groups it belongs.
+    TBool thisDestroyed = EFalse;
+    for(TInt i = 0;i < groupIdsCount && !thisDestroyed;i++)
         {
         const MVPbkContactLink& groupLink = (*groupIds)[i];
-        iData.GetContactManager().RetrieveContactL( groupLink, *this );
-        //wait for Retrieve operation to complete,to get storecontact for the current group link
-        if( ! (iWait->IsStarted()) )
-            {
-            iWait->Start();
-            }
-
-        if (iTargetStore)
+        thisDestroyed = RetrieveContactL( groupLink, *this );
+        if (!thisDestroyed && iTargetStore)
             { 
             MVPbkContactGroup* contactGrp = iTargetStore->Group();
             if(contactGrp)
@@ -235,15 +238,10 @@ void CVPbkGroupCardHandler::CreateNewGroupFromContactL(TPtr16& aGroupLabel)
         
         //Retrieve group store
         const MVPbkContactLink* grpContactLink = groupItem->CreateLinkLC();
-        iData.GetContactManager().RetrieveContactL( *grpContactLink, *this );
-        //wait for Retrieve operation to complete, to get storecontact for the current group link
-        if( ! (iWait->IsStarted()) )
-            {
-            iWait->Start();
-            }
+        TBool thisDestroyed = RetrieveContactL( *grpContactLink, *this );
         CleanupStack::PopAndDestroy();// to clean grpContactLink
 
-        if (iTargetStore)
+        if (!thisDestroyed && iTargetStore)
             {
             const MVPbkContactLink* contactLink = iStore->CreateLinkLC();
             groupItem->AddContactL(*contactLink);
@@ -263,7 +261,13 @@ void CVPbkGroupCardHandler::CreateNewGroupFromContactL(TPtr16& aGroupLabel)
                 {
                 iContactsGroupsMap = new(ELeave) RPtrHashMap<TDesC16, MVPbkStoreContact>();
                 }
-            iContactsGroupsMap->Insert(grpName, iTargetStore);
+            // iContactsGroupsMap takes the ownership of iTargetStore
+            TInt res = iContactsGroupsMap->Insert(grpName, iTargetStore);
+            if ( res != KErrNone )
+                {
+                delete iTargetStore;
+                }
+            iTargetStore = NULL;
             CleanupStack::Pop(); // To pop up grpName
             }
         }   
@@ -274,10 +278,12 @@ void CVPbkGroupCardHandler::CreateNewGroupFromContactL(TPtr16& aGroupLabel)
 // ----------------------------------------------------------------------------
 // CVPbkGroupCardHandler::DecodeContactGroupInVCardL
 // ----------------------------------------------------------------------------
-void CVPbkGroupCardHandler::DecodeContactGroupInVCardL(TPtr16 aValue)
+void CVPbkGroupCardHandler::DecodeContactGroupInVCardL(TPtr16 aValue,
+        CVPbkGroupCardHandler** aSelfPointer )
     {        
     if(iStore == NULL)
-        return; 
+        return;
+    iSelfPtr = aSelfPointer;
     const MVPbkContactLink* contactLink = iStore->CreateLinkLC();
 
     TInt newLinePos = aValue.Find(KVersitTokencrlf());
@@ -290,7 +296,8 @@ void CVPbkGroupCardHandler::DecodeContactGroupInVCardL(TPtr16 aValue)
 
     DeleteContactFromGroupsL(); //Delete the contact from the Groups it belongs
 
-    while(!endGrpValue)
+    TBool destroyed = EFalse;
+    while(!endGrpValue && !destroyed)
         {        
         semiColonPos = aValue.Find( KSemiColon() );
         if(semiColonPos == KErrNotFound)
@@ -322,16 +329,26 @@ void CVPbkGroupCardHandler::DecodeContactGroupInVCardL(TPtr16 aValue)
             if(groupContactItemId != NULL)
                 { 
                 storeContact->LockL(*this);
+                iDestroyed = &destroyed;
                 //wait for Lock operation to complete
                 if( ! (iWait->IsStarted()) )
                     {
                     iWait->Start();
                     }
-                groupContactItemId->AddContactL(*contactLink);
-                storeContact->CommitL(*this);  // save Group modifications.
-                if( ! (iWait->IsStarted()) )
+                if ( !destroyed )
                     {
-                    iWait->Start();
+                    iDestroyed = NULL;
+                    groupContactItemId->AddContactL(*contactLink);
+                    storeContact->CommitL(*this);  // save Group modifications.
+                    iDestroyed = &destroyed;
+                    if( ! (iWait->IsStarted()) )
+                        {
+                        iWait->Start();
+                        }
+                    if ( !destroyed )
+                        {
+                        iDestroyed = NULL;
+                        }
                     }
                 }
             else
@@ -349,8 +366,9 @@ void CVPbkGroupCardHandler::DecodeContactGroupInVCardL(TPtr16 aValue)
 
     CleanupStack::PopAndDestroy(); // For contactLink 
 
-    if(iStore)
+    if(!destroyed)
         {
+        iSelfPtr = NULL;
         delete iStore;
         iStore = NULL;
         }
@@ -359,7 +377,9 @@ void CVPbkGroupCardHandler::DecodeContactGroupInVCardL(TPtr16 aValue)
 // ----------------------------------------------------------------------------
 // CVPbkGroupCardHandler::BuildContactGroupsHashMapL
 // ----------------------------------------------------------------------------
-void CVPbkGroupCardHandler::BuildContactGroupsHashMapL(MVPbkContactStore& aTargetContactStore)
+void CVPbkGroupCardHandler::BuildContactGroupsHashMapL(
+        MVPbkContactStore& aTargetContactStore, 
+        CVPbkGroupCardHandler** aSelfPointer)
     {
     //Get all the Group Links in current VPBK
     MVPbkContactLinkArray* groupLinks = aTargetContactStore.ContactGroupsLC();
@@ -367,23 +387,20 @@ void CVPbkGroupCardHandler::BuildContactGroupsHashMapL(MVPbkContactStore& aTarge
     if( (groupLinks == NULL || iContactsGroupsMap != NULL))
         return;
 
+    iSelfPtr = aSelfPointer;
+    
     iContactsGroupsMap = new(ELeave) RPtrHashMap<TDesC16, MVPbkStoreContact>();
 
     TInt groupCount = 0;
     groupCount = groupLinks->Count();
 
     // Get Group Name and Group store, store these values into Hash Table.
-    for(TInt i = 0;i < groupCount;i++)
+    TBool thisDestroyed = EFalse;
+    for(TInt i = 0;i < groupCount && !thisDestroyed;i++)
         {
         const MVPbkContactLink& groupLink = (*groupLinks)[i];
-        iData.GetContactManager().RetrieveContactL( groupLink, *this );
-        //wait for Retrieve operation to complete, to get storecontact for the current group link
-        if( ! (iWait->IsStarted()) )
-            {
-            iWait->Start();
-            }
-
-        if (iTargetStore)
+        thisDestroyed = RetrieveContactL( groupLink, *this );
+        if (!thisDestroyed && iTargetStore)
             {
             MVPbkContactGroup* contactGrp = iTargetStore->Group();
             if(contactGrp)
@@ -391,30 +408,64 @@ void CVPbkGroupCardHandler::BuildContactGroupsHashMapL(MVPbkContactStore& aTarge
                 TPtrC16 contactGroupName;
                 contactGroupName.Set( contactGrp->GroupLabel());
                 HBufC16* grpName = contactGroupName.AllocLC();
-                iContactsGroupsMap->Insert(grpName, iTargetStore);
+                // iContactsGroupsMap takes the ownership of iTargetStore
+                TInt res = iContactsGroupsMap->Insert(grpName, iTargetStore);
+                if ( res != KErrNone )
+                    {
+                    delete iTargetStore;
+                    }
+                iTargetStore = NULL;
                 CleanupStack::Pop();  //grpName
                 }       
             }    
         }// End of for loop
 
     CleanupStack::PopAndDestroy(); //for groupLinks
+    
+    if ( !thisDestroyed )
+        {
+        iSelfPtr = NULL;
+        }
+    }
+
+// ----------------------------------------------------------------------------
+// CVPbkGroupCardHandler::RetrieveContactL
+// ----------------------------------------------------------------------------
+TBool CVPbkGroupCardHandler::RetrieveContactL( const MVPbkContactLink& aLink,
+            MVPbkSingleContactOperationObserver& aObserver)
+    {
+    delete iTargetStore;
+    iTargetStore = NULL;
+    iRetrieveOp = iData.GetContactManager().RetrieveContactL( aLink, aObserver );
+    
+    TBool destroyed = EFalse;
+    // Set iDestroyed to point to stack variable that is accessed from
+    // destructor.
+    iDestroyed = &destroyed; 
+    //wait for GetContactGroupStoreL operation to complete,to get storecontact
+    if( ! (iWait->IsStarted()) )
+        {
+        iWait->Start();
+        }
+    
+    if ( !destroyed )
+        {
+        // Reset pointer to stack variable.
+        iDestroyed = NULL;
+        delete iRetrieveOp;
+        iRetrieveOp = NULL;
+        }
+    return destroyed; 
     }
 
 // ----------------------------------------------------------------------------
 // CVPbkGroupCardHandler::VPbkSingleContactOperationComplete
 // ----------------------------------------------------------------------------
 void CVPbkGroupCardHandler::VPbkSingleContactOperationComplete(
-        MVPbkContactOperationBase& aOperation,
+        MVPbkContactOperationBase& /*aOperation*/,
         MVPbkStoreContact* aContact)
     {
     iTargetStore = aContact;
-
-    MVPbkContactOperationBase* operation = &aOperation;
-    if ( operation )
-        {
-        delete operation;
-        operation = NULL;
-        }
 
     if( iWait->IsStarted() )
         iWait->AsyncStop();
@@ -425,16 +476,8 @@ void CVPbkGroupCardHandler::VPbkSingleContactOperationComplete(
 // CVPbkGroupCardHandler::VPbkSingleContactOperationFailed
 // ----------------------------------------------------------------------------
 void CVPbkGroupCardHandler::VPbkSingleContactOperationFailed
-(MVPbkContactOperationBase& aOperation, TInt /*aError*/)
+(MVPbkContactOperationBase& /*aOperation*/, TInt /*aError*/)
     {
-    iTargetStore = NULL; //To Handle in Error case
-    MVPbkContactOperationBase* operation = &aOperation;
-    if ( operation )
-        {
-        delete operation;
-        operation = NULL;
-        }
-
     if( iWait->IsStarted() )
         iWait->AsyncStop();
     }
@@ -443,15 +486,20 @@ void CVPbkGroupCardHandler::VPbkSingleContactOperationFailed
 // CVPbkGroupCardHandler::GetContactGroupStoreL
 // Retrieve the contact store of group contact
 // ----------------------------------------------------------------------------
-void CVPbkGroupCardHandler::GetContactGroupStoreL(const MVPbkContactLink& aContactLink)
+void CVPbkGroupCardHandler::GetContactGroupStoreL(
+        const MVPbkContactLink& aContactLink, 
+        CVPbkGroupCardHandler** aSelfPointer)
     {
-    iData.GetContactManager().RetrieveContactL( aContactLink, *this );
-    //wait for GetContactGroupStoreL operation to complete,to get storecontact
-    if( ! (iWait->IsStarted()) )
+    iSelfPtr = aSelfPointer;
+    delete iStore;
+    iStore = NULL;
+    if ( !RetrieveContactL( aContactLink, *this ) )
         {
-        iWait->Start();
-        }
-    iStore = iTargetStore;
+        iSelfPtr = NULL;
+        // iStore takes the ownership.
+        iStore = iTargetStore;
+        iTargetStore = NULL;
+        }        
     }
 
 // ----------------------------------------------------------------------------

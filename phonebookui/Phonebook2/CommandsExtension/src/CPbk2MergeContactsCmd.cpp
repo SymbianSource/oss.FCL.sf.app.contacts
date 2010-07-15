@@ -39,6 +39,7 @@
 #include <CPbk2StoreProperty.h>
 #include <Pbk2StoreProperty.hrh>
 #include <Pbk2ProcessDecoratorFactory.h>
+#include <MPbk2ContactNameFormatter.h>
 
 #include <CPbk2MergeConflictsDlg.h>
 #include <CPbk2MergePhotoConflictDlg.h>
@@ -395,13 +396,8 @@ void CPbk2MergeContactsCmd::FinalizeMergeL()
     iMergedContact = store.CreateNewContactLC();
     CleanupStack::Pop();
     
-    TInt mergedFieldsCount = iMergeResolver->CountMerged();
-    // add merged fields
-    for ( TInt i = 0; i < mergedFieldsCount; i++ )
-        {
-        MVPbkStoreContactField& field = iMergeResolver->GetMergedAt( i );
-        AddFieldToMergedContactL( field );
-        }
+    // the conflict thumbnail data's field, used for comparing
+    MVPbkStoreContactField* thumbnailPicField = NULL;
     
     TInt conflictCount = iMergeResolver->CountConflicts();
     // add conflicted fields
@@ -418,9 +414,35 @@ void CPbk2MergeContactsCmd::FinalizeMergeL()
         for ( TInt j = 0; j < newFields; j++ )
             {
             MVPbkStoreContactField* field = fields[ j ];
+            const MVPbkFieldType* fieldType = field->BestMatchingFieldType();
+            
+            // assign value to thumnailPicField with the field's value
+            if ( fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_THUMBNAILPIC )
+                {
+                thumbnailPicField = field;
+                }
             AddFieldToMergedContactL( *field );
-            }
+            } 
         fields.Close();
+        }
+    
+    TInt mergedFieldsCount = iMergeResolver->CountMerged();
+        
+    // add merged fields
+    for ( TInt i = 0; i < mergedFieldsCount; i++ )
+        {
+        MVPbkStoreContactField& field = iMergeResolver->GetMergedAt( i );
+        const MVPbkFieldType* fieldType = field.BestMatchingFieldType();
+        
+        // avoid merging filePath when the two field unmatched to a contact
+        if ( fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_CALLEROBJIMG && thumbnailPicField )
+            {
+            if ( !thumbnailPicField->ParentContact().IsSame( field.ParentContact() ) )
+                {
+                continue;
+                }
+            }
+        AddFieldToMergedContactL( field );
         }
     
     iContactToCommit = new ( ELeave ) CArrayPtrFlat<MVPbkStoreContact>( 1 );
@@ -439,25 +461,12 @@ void CPbk2MergeContactsCmd::ShowContactsMergedNoteL()
     CleanupStack::PushL( strings );
     
     HBufC* prompt = NULL;
-    if ( (iFirstContactString->Length() > 0 || iSecondContactString->Length() > 0)
-            && iMergedContactString->Length() > 0 )
+
+    if ( ( iFirstContactString->Compare( *unnamed ) || iSecondContactString->Compare( *unnamed ) )
+            && iMergedContactString->Compare( *unnamed ) )
         {
-        if ( 0 != iFirstContactString->Length() )
-            {
-            strings->AppendL( *iFirstContactString );
-            }
-        else
-            {
-            strings->AppendL( *unnamed );
-            }
-        if ( 0 != iSecondContactString->Length() )
-            {
-            strings->AppendL( *iSecondContactString );
-            }
-        else
-            {
-            strings->AppendL( *unnamed );
-            }
+        strings->AppendL( *iFirstContactString );
+        strings->AppendL( *iSecondContactString );
         strings->AppendL( *iMergedContactString );
 
         prompt = StringLoader::LoadLC( R_QTN_PHOB_NOTE_CONTACTS_WERE_MERGED, *strings );
@@ -483,48 +492,16 @@ void CPbk2MergeContactsCmd::ShowContactsMergedNoteL()
 //
 HBufC* CPbk2MergeContactsCmd::ContactAsStringL( MVPbkStoreContact* aStoreContact )
     {
-    _LIT(KResultFormat, "%S %S");
-    TPtrC firstName( KNullDesC() );
-    TPtrC lastName( KNullDesC() );
-	
     MVPbkStoreContactFieldCollection& fields = aStoreContact->Fields();
-    for ( TInt i(0); i < fields.FieldCount(); ++i )
-        {
-        MVPbkStoreContactField& field = fields.FieldAt( i );
-        const MVPbkFieldType* fieldType = field.BestMatchingFieldType();
-        if ( fieldType )
-            {
-            if ( fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_FIRSTNAME )
-                {
-                MVPbkContactFieldData& data = field.FieldData();
-                __ASSERT_DEBUG( data.DataType() == EVPbkFieldStorageTypeText, Panic( EPbk2WrongTypeOfData ) );
-                MVPbkContactFieldTextData& textData = MVPbkContactFieldTextData::Cast( data );
-                firstName.Set( textData.Text() );
-                }
-            else if ( fieldType->FieldTypeResId() == R_VPBK_FIELD_TYPE_LASTNAME )
-                {
-                MVPbkContactFieldData& data = field.FieldData();
-                __ASSERT_DEBUG( data.DataType() == EVPbkFieldStorageTypeText, Panic( EPbk2WrongTypeOfData ) );
-                MVPbkContactFieldTextData& textData = MVPbkContactFieldTextData::Cast( data );
-                lastName.Set( textData.Text() );        
-                }
-            }
-        }
-    
     HBufC* result = NULL;
-    if ( firstName.Length() > 0 && lastName.Length() > 0 )
+    const TInt KDefaultListFormatting = 
+            MPbk2ContactNameFormatter::EDisableCompanyNameSeparator;
+    result = Phonebook2::Pbk2AppUi()->
+            ApplicationServices().NameFormatter().GetContactTitleL( fields, KDefaultListFormatting );
+    if( !result )
         {
-        result = HBufC::NewL( firstName.Length() + lastName.Length() + KResultFormat().Length() );
-        TPtr resAsDes = result->Des();
-        resAsDes.Format( KResultFormat, &firstName, &lastName );
-        }
-    else if ( firstName.Length() > 0 )
-        {
-        result = firstName.AllocL(); 
-        }    
-    else
-        {
-        result = lastName.AllocL();
+        result = StringLoader::LoadLC( R_QTN_PHOB_UNNAMED );
+        CleanupStack::Pop( result );
         }
     return result;
     }

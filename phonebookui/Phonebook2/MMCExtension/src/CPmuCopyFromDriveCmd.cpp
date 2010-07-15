@@ -28,6 +28,7 @@
 #include <MPbk2ContactNameFormatter.h>
 #include <CPbk2StoreProperty.h>
 #include <CPbk2StorePropertyArray.h>
+#include <CPbk2ApplicationServices.h>
 #include <MPbk2StoreValidityInformer.h>
 #include <MPbk2AppUi.h>
 #include <MPbk2ApplicationServices.h>
@@ -45,6 +46,7 @@
 #include <VPbkContactStoreUris.h>
 #include <MVPbkContactStoreProperties.h>
 #include <CVPbkContactStoreUriArray.h>
+#include <MVPbkContactStoreInfo.h>
 
 // System includes
 #include <pathinfo.h>
@@ -145,7 +147,8 @@ TBool IsValidStoreL
 //
 CPmuCopyFromMmcCmd::CPmuCopyFromMmcCmd( MPbk2ContactUiControl& aUiControl ) :
         CActive( EPriorityStandard ),
-        iUiControl( &aUiControl )
+        iUiControl( &aUiControl ),
+        iCheckDuplicates( ETrue )
     {
     CActiveScheduler::Add( this );
     }
@@ -163,6 +166,7 @@ CPmuCopyFromMmcCmd::~CPmuCopyFromMmcCmd()
     delete iDecorator;
     delete iImportOperation;
     delete iVCardEngine;
+    Release( iAppServices );
     }
 
 // --------------------------------------------------------------------------
@@ -186,18 +190,20 @@ CPmuCopyFromMmcCmd* CPmuCopyFromMmcCmd::NewL
 //
 inline void CPmuCopyFromMmcCmd::ConstructL()
     {
+    iAppServices = CPbk2ApplicationServices::InstanceL();
+    
     iVCardEngine = CVPbkVCardEng::NewL
-        ( Phonebook2::Pbk2AppUi()->ApplicationServices().ContactManager() );
+        ( iAppServices->ContactManager() );
     iDecorator = Pbk2ProcessDecoratorFactory::CreateProgressDialogDecoratorL
         ( R_PMU_COPY_PROGRESS_NOTE, EFalse );
 
+    
     CPbk2StoreConfiguration* storeConfig = CPbk2StoreConfiguration::NewL();
     CleanupStack::PushL( storeConfig );
-    iTargetStore = Phonebook2::Pbk2AppUi()->ApplicationServices().
-        ContactManager().ContactStoresL().Find(
+    iTargetStore = iAppServices->ContactManager().ContactStoresL().Find(
             storeConfig->DefaultSavingStoreL() );
-
     CleanupStack::PopAndDestroy( storeConfig );
+    iCheckDuplicates = ( iTargetStore->StoreInfo().NumberOfContactsL() > 0 );
 
     // set the default contacts path
     iContactsPath = PathInfo::MemoryCardContactsPath();
@@ -287,13 +293,11 @@ void CPmuCopyFromMmcCmd::ExecuteLD()
     CleanupStack::PushL( this );
 
     if ( !iTargetStore ||
-          !IsValidStoreL( Phonebook2::Pbk2AppUi()->ApplicationServices().
-            StoreValidityInformer(), iTargetStore ) )
+          !IsValidStoreL( iAppServices->StoreValidityInformer(), iTargetStore ) )
         {
         // if target store not available finish command
         ShowStoreNotAvailableNoteL
-            ( Phonebook2::Pbk2AppUi()->ApplicationServices().
-                StoreProperties() );
+            ( iAppServices->StoreProperties() );
         iCommandObserver->CommandFinished(*this);
         }
     else
@@ -304,7 +308,7 @@ void CPmuCopyFromMmcCmd::ExecuteLD()
             }
         else
             {
-            Phonebook2::Pbk2AppUi()->ApplicationServices().ContactManager().
+            iAppServices->ContactManager().
                 FsSession().GetDir(
                     iContactsPath,
                     KEntryAttNormal | KEntryAttMatchMask,
@@ -417,6 +421,8 @@ void CPmuCopyFromMmcCmd::ProcessDismissed( TInt /*aCancelCode*/ )
     {
     Cancel();
 
+    delete iImportOperation;
+    iImportOperation = NULL;
     iState = EPmuCopyFromMmcCmdComplete;
     IssueRequest();
     }
@@ -437,11 +443,22 @@ void CPmuCopyFromMmcCmd::CopyNextL()
         NULL );
 
     User::LeaveIfError( 
-        iReadStream.Open( Phonebook2::Pbk2AppUi()->ApplicationServices().
-            ContactManager().FsSession(),
+        iReadStream.Open( iAppServices->ContactManager().FsSession(),
                 parse.FullName(), EFileRead ) );
-    iImportOperation =
-        iVCardEngine->ImportVCardL( *iTargetStore, iReadStream, *this );
+    
+    // Duplicate checking is one of the major performance bottlenecks in
+    // contact importing. ImportVCardForSyncL ignores the duplicate check so
+    // it is used if the target store is empty before importing.
+    if ( iCheckDuplicates )
+        {
+        iImportOperation =
+                iVCardEngine->ImportVCardL( *iTargetStore, iReadStream, *this );
+        }
+    else
+        {
+        iImportOperation =
+            iVCardEngine->ImportVCardForSyncL( *iTargetStore, iReadStream, *this );
+        }
     ++iCurrentContactIndex;
     iDecorator->ProcessAdvance( 1 );
     }
@@ -527,8 +544,7 @@ TBool CPmuCopyFromMmcCmd::IsDefaultStorePhoneMemoryL() const
     TBool ret = EFalse;
 
     const TVPbkContactStoreUriPtr uri =
-        Phonebook2::Pbk2AppUi()->ApplicationServices().
-            StoreConfiguration().DefaultSavingStoreL();
+            iAppServices->StoreConfiguration().DefaultSavingStoreL();
 
     TVPbkContactStoreUriPtr phoneMemoryUri
         ( VPbkContactStoreUris::DefaultCntDbUri() );

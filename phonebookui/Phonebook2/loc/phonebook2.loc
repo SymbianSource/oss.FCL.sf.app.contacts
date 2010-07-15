@@ -1721,12 +1721,19 @@
 //
 #define qtn_phob_note_contacts_hidden       "Contacts created to memory: %U"
 
-//d:Prompt text for copying the context of the SIM to Phonebook.
+//d:Prompt text for copying the context of the SIM to Phonebook when a new 
+//d:SIM card is detected
 //l:popup_note_window
 //w:
 //r:3.1
 //
 #define qtn_simp_note_new_sim_copy          "New SIM inserted. Copy SIM numbers to Phonebook?"
+
+//d:Prompt text for copying the context of the SIM to Phonebook.
+//l:popup_note_window
+//r:5.2
+//
+#define qtn_simp_note_copy_all_sim          "Copy all SIM contacts to Phone memory?"
 
 //d:Prompt for default Message number.
 //l:list_double_pane_t1_cp2
@@ -2288,4 +2295,12 @@
 //w:
 //r:5.01
 #define qtn_phob_field_no_personal_tone "According to profile"
+
+
+//d:"Sim memory" sub menu item text for copying all SIM contacts to phonememory
+//l:list_single_popup_submenu_pane_t1
+//r:5.2
+//
+#define qtn_phob_opt_sub_copy_all "Copy all to phone"
+
 // End of File

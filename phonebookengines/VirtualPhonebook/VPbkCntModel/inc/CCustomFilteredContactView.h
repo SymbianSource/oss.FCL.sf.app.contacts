@@ -75,6 +75,8 @@ NONSHARABLE_CLASS( CCustomFilteredContactView ): public CViewBase,
          */
         ~CCustomFilteredContactView();
 
+        void SetFieldTypeSelector( const MVPbkFieldTypeSelector* aFieldTypeSelector );
+        
     public: // Interface
 
         /**

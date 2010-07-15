@@ -15,23 +15,19 @@
 */
 
 #include "pbk2contactviewdoublelistboxdataelement.h"
-#include <MVPbkContactLink.h>
 
 // --------------------------------------------------------------------------
 // CPbk2ContactViewDoubleListboxDataElement::NewLC
 // --------------------------------------------------------------------------
 //
-CPbk2ContactViewDoubleListboxDataElement* CPbk2ContactViewDoubleListboxDataElement::NewL(
-        MVPbkContactLink* aLink,
-        TInt aListIndex)
+CPbk2ContactViewDoubleListboxDataElement* 
+CPbk2ContactViewDoubleListboxDataElement::NewLC()
     {
     CPbk2ContactViewDoubleListboxDataElement* self =
-        new ( ELeave ) CPbk2ContactViewDoubleListboxDataElement(aListIndex);
+        new ( ELeave ) CPbk2ContactViewDoubleListboxDataElement();
 
     CleanupStack::PushL(self);
     self->ConstructL();
-    self->iLink = aLink;
-    CleanupStack::Pop(self);
     return self;
     }
 
@@ -39,9 +35,7 @@ CPbk2ContactViewDoubleListboxDataElement* CPbk2ContactViewDoubleListboxDataEleme
 // CPbk2ContactViewDoubleListboxDataElement::CPbk2ContactViewDoubleListboxDataElement
 // --------------------------------------------------------------------------
 //
-inline CPbk2ContactViewDoubleListboxDataElement::CPbk2ContactViewDoubleListboxDataElement(
-        TInt aListIndex)
-: iListIndex( aListIndex )    
+inline CPbk2ContactViewDoubleListboxDataElement::CPbk2ContactViewDoubleListboxDataElement()
     {
     iTexts.Reset();
     iIcons.Reset();
@@ -65,7 +59,6 @@ CPbk2ContactViewDoubleListboxDataElement::~CPbk2ContactViewDoubleListboxDataElem
     {
     iTexts.DeleteAll();
     delete iEmptyBuffer;
-    delete iLink;
     }
 
 // --------------------------------------------------------------------------

@@ -147,4 +147,12 @@ RESOURCE LBUF r_psu2_standard_number_character_map
     txt = "1234567890*+pw#";
     }    
 
+// --------------------------------------------------------------------------
+// Copy all SIM query text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_simp_note_copy_all_sim
+    {
+    buf = qtn_simp_note_copy_all_sim;
+    }
 // End of File

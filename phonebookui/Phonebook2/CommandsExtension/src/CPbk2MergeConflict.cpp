@@ -79,6 +79,16 @@ CPbk2MergeConflict::CPbk2MergeConflict()
     }
 
 // --------------------------------------------------------------------------
+// CPbk2MergeConflict::~CPbk2MergeConflict
+// --------------------------------------------------------------------------
+//
+CPbk2MergeConflict::~CPbk2MergeConflict()
+    {
+    delete iDisplayFieldFirst;
+    delete iDisplayFieldSecond;    
+    }
+
+// --------------------------------------------------------------------------
 // CPbk2MergeConflict::NewL
 // --------------------------------------------------------------------------
 //
@@ -140,6 +150,18 @@ void CPbk2MergeConflict::AddFields(
     }
 
 // --------------------------------------------------------------------------
+// CPbk2MergeConflict::AddDisplayFields
+// --------------------------------------------------------------------------
+//
+void CPbk2MergeConflict::AddDisplayFields(  
+        HBufC* aDisplayFieldFirst, 
+        HBufC* aDisplayFieldSecond )
+    {
+    iDisplayFieldFirst = aDisplayFieldFirst;
+    iDisplayFieldSecond = aDisplayFieldSecond;
+    }
+
+// --------------------------------------------------------------------------
 // CPbk2MergeConflict::GetLabelLC
 // --------------------------------------------------------------------------
 //
@@ -159,6 +181,7 @@ HBufC* CPbk2MergeConflict::GetTextLC( EPbk2ConflictedNumber aNumber )
     __ASSERT_ALWAYS( iFieldFirst && iFieldSecond, Panic( EPbk2NotInitialized ) );
     
     const MVPbkStoreContactField* field;
+    HBufC* retText = NULL;
     
     if( aNumber == EPbk2ConflictedFirst )
         {
@@ -169,7 +192,28 @@ HBufC* CPbk2MergeConflict::GetTextLC( EPbk2ConflictedNumber aNumber )
         field = iFieldSecond;
         }
     
-    const MVPbkContactFieldData& data = field->FieldData();
+    //Prefer display texts if both available 
+    if( iDisplayFieldFirst && iDisplayFieldSecond )
+        {
+        retText = aNumber==EPbk2ConflictedFirst ? 
+            iDisplayFieldFirst->AllocLC() : iDisplayFieldSecond->AllocLC();
+        }
+    else
+        {
+        retText = GetContentTextLC( aNumber , field);    
+        }
+    return retText;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2MergeConflict::GetContentTextLC
+// --------------------------------------------------------------------------
+//
+HBufC* CPbk2MergeConflict::GetContentTextLC( 
+        EPbk2ConflictedNumber aNumber,
+        const MVPbkStoreContactField* aField )
+    {
+    const MVPbkContactFieldData& data = aField->FieldData();
     TVPbkFieldStorageType storageType = data.DataType();
    
     HBufC* retText = NULL;
@@ -205,7 +249,7 @@ HBufC* CPbk2MergeConflict::GetTextLC( EPbk2ConflictedNumber aNumber )
             Panic( EPbk2UnexpectedCase );
         }
     TPtr ptr = retText->Des();
-    CustomizeTextValueL( *field, ptr );
+    CustomizeTextValueL( *aField, ptr );
     return retText;
     }
 

@@ -43,6 +43,7 @@ SOURCE          CPsu2UIExtensionPlugin.cpp
 SOURCE          CPsu2CopyToSimCmd.cpp
 SOURCE          CPsu2LaunchViewCmd.cpp
 SOURCE          CPsu2CopyFromPbkCmd.cpp
+SOURCE          CPsu2CopyAllToPbkCmd.cpp
 
 // Views
 SOURCE          CPsu2NameListViewBase.cpp

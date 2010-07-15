@@ -42,7 +42,8 @@ CPbk2DoubleListboxModelCmdDecorator* CPbk2DoubleListboxModelCmdDecorator::NewL(
 		TPbk2IconId aDefaultIconId )
 	{
 	CPbk2DoubleListboxModelCmdDecorator* self = 
-				new(ELeave)CPbk2DoubleListboxModelCmdDecorator( aIconArray, aEmptyIconId, aDefaultIconId);
+				new(ELeave)CPbk2DoubleListboxModelCmdDecorator( 
+				        aIconArray, aEmptyIconId, aDefaultIconId);
 	CleanupStack::PushL( self );
 	self->ConstructL();
 	CleanupStack::Pop();
@@ -60,8 +61,6 @@ CPbk2DoubleListboxModelCmdDecorator::CPbk2DoubleListboxModelCmdDecorator(
 		TPbk2IconId aDefaultIconId )
 : CPbk2ListboxModelCmdDecorator( aIconArray, aEmptyIconId, aDefaultIconId )
 	{
-
-
 	}
 
 // --------------------------------------------------------------------------
@@ -80,7 +79,8 @@ CPbk2DoubleListboxModelCmdDecorator::~CPbk2DoubleListboxModelCmdDecorator()
 void CPbk2DoubleListboxModelCmdDecorator::ConstructL()
     {
     CPbk2ListboxModelCmdDecorator::ConstructL();
-    iElement = CPbk2ContactViewDoubleListboxDataElement::NewL();
+    iElement = CPbk2ContactViewDoubleListboxDataElement::NewLC();
+    CleanupStack::Pop( iElement );
     }
 
 // --------------------------------------------------------------------------
@@ -103,7 +103,8 @@ TPtrC CPbk2DoubleListboxModelCmdDecorator::MdcaPoint( TInt aIndex ) const
 		TPtrC name( item.NameForUi() );
 		
 		//check if we have a mycard command item
-		TAny* object = item.ControlCmdItemExtension( TUid::Uid( KPbk2ControlCmdItemExtensionUID ) );
+		TAny* object = item.ControlCmdItemExtension( 
+		        TUid::Uid( KPbk2ControlCmdItemExtensionUID ) );
 		if(  object )
 			{
 			MPbk2DoubleListboxCmdItemExtension* extension = 
@@ -116,13 +117,16 @@ TPtrC CPbk2DoubleListboxModelCmdDecorator::MdcaPoint( TInt aIndex ) const
 				//   [trailing icon]
 				
 				// fetch status text
-				iElement->SetText( MPbk2DoubleListboxDataElement::EStatusText, NULL, 
+				iElement->SetText( 
+				        MPbk2DoubleListboxDataElement::EStatusText, 
+				        NULL, 
 				        MPbk2DoubleListboxDataElement::ETypeGenericText );
                 TRAPD( err, extension->FormatDataL( *iElement ) );
 				if( !err )
 				    {
 					// get icon index
-					iconIndex = iIconArray.FindIcon( iElement->IconId( MPbk2DoubleListboxDataElement::EThumbnail ) );
+					iconIndex = iIconArray.FindIcon( iElement->IconId( 
+					        MPbk2DoubleListboxDataElement::EThumbnail ) );
 					// if icon is not found, use default
 					if( iconIndex < 0 )
 						{
@@ -133,7 +137,8 @@ TPtrC CPbk2DoubleListboxModelCmdDecorator::MdcaPoint( TInt aIndex ) const
 					iBuffer.Append( name );
 				
 					// status
-                    TPtr status( iElement->TextPtr( MPbk2DoubleListboxDataElement::EStatusText ) );
+                    TPtr status( iElement->TextPtr( 
+                            MPbk2DoubleListboxDataElement::EStatusText ) );
                     //if status text exists
                     if( status.Compare( KNullDesC ) != 0 )
                         {

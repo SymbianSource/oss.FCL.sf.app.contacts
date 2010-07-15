@@ -22,6 +22,7 @@
 // Constants
 #include <e32cons.h>
 #define KCCAContactorServiceLoggerFile CCA_L("ccacontactorservice.txt")
+#define KCCAMAXBUFFSIZE 100
 _LIT( KCCAContactorServiceResourceFileName, "\\resource\\ccacontactorservicersc.rsc" );
 _LIT( KColon, ":" );
 

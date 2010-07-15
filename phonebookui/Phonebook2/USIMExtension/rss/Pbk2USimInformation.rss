@@ -19,6 +19,7 @@
 #include "Pbk2USIMUIUID.h"
 #include <Pbk2ContentIdentifiers.hrh>
 
+
 // --------------------------------------------------------------------------
 // Extension information
 // --------------------------------------------------------------------------
@@ -53,7 +54,7 @@ RESOURCE PHONEBOOK2_EXTENSION_INFORMATION
             parentMenu = R_PHONEBOOK2_NAMESLIST_OTHER_MEMORIES_MENU_PLACEHOLDER;
             prevCommand = EPbk2CmdOtherMemoriesPlaceholderFirst;
             menuPane = r_psu2_sim_memory_menu_pane;
-            },
+            },     
         PHONEBOOK2_EXTENSION_MENU_RESOURCE
             {
             // Name list view: "My numbers" menu item
@@ -64,6 +65,16 @@ RESOURCE PHONEBOOK2_EXTENSION_INFORMATION
             prevCommand = EPsu2CmdFirstSimMemoryMenuItem;
             menuPane = r_psu2_sim_memory_own_number_menu_pane;
             },
+       PHONEBOOK2_EXTENSION_MENU_RESOURCE
+            {
+            // Name list view: "Copy all to phone" menu item
+            version = 0;
+            viewId = EPbk2NamesListViewId;
+            menuFilteringFlags = 0;
+            parentMenu = r_psu2_cascading_sim_memory_menu_pane;
+            prevCommand = EPsu2CmdLaunchOwnNumberView;
+            menuPane = r_psu2_sim_memory_copy_all_to_phonememory;
+            },    
         PHONEBOOK2_EXTENSION_MENU_RESOURCE
             {
             // Name list view: "Service dialing numbers" menu item
@@ -71,7 +82,7 @@ RESOURCE PHONEBOOK2_EXTENSION_INFORMATION
             viewId = EPbk2NamesListViewId;
             menuFilteringFlags = 0;
             parentMenu = r_psu2_cascading_sim_memory_menu_pane;
-            prevCommand = EPsu2CmdLaunchOwnNumberView;
+            prevCommand = EPsu2CmdCopyToContacts; 
             menuPane = r_psu2_sim_memory_sdn_menu_pane;
             },
         PHONEBOOK2_EXTENSION_MENU_RESOURCE
@@ -161,6 +172,23 @@ RESOURCE MENU_PANE r_psu2_cascading_sim_memory_menu_pane
             }
         };
     }
+
+// --------------------------------------------------------------------------
+// Copy all SIM contacts menu pane
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_psu2_sim_memory_copy_all_to_phonememory
+    {
+    items =
+        {
+        MENU_ITEM
+            {
+            command = EPsu2CmdCopyToContacts;
+            txt = qtn_phob_opt_sub_copy_all; 
+            }
+        };
+    }
+
 
 // --------------------------------------------------------------------------
 // Own/My numbers launch menu pane

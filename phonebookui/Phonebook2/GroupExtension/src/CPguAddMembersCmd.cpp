@@ -114,6 +114,12 @@ CPguAddMembersCmd::~CPguAddMembersCmd()
         iFilteredView->RemoveObserver( *this );
         delete iFilteredView;
         }
+    else
+        {
+        Phonebook2::Pbk2AppUi()->
+            ApplicationServices().ViewSupplier().
+            AllContactsViewL()->RemoveObserver( *this );
+        }
     if( iUiControl )
         {
         iUiControl->RegisterCommand( NULL );
@@ -415,11 +421,9 @@ void CPguAddMembersCmd::ContactRemovedFromView
 // --------------------------------------------------------------------------
 //
 void CPguAddMembersCmd::ContactViewError
-        ( MVPbkContactViewBase& PBK2_DEBUG_ONLY( aView ),
+        ( MVPbkContactViewBase&/*aView */,
         TInt aError, TBool /*aErrorNotified*/ )
     {
-    __ASSERT_DEBUG( iFilteredView == &aView, Panic( EInvalidView ) );
-
     FinishCommand( aError );
     }
 
@@ -635,11 +639,23 @@ void CPguAddMembersCmd::HandleContactLockedEventL()
     {
     delete iFilteredView;
     iFilteredView = NULL;
-    iFilteredView = CVPbkFilteredContactView::NewL
-        ( *Phonebook2::Pbk2AppUi()->ApplicationServices().ViewSupplier().
-          AllContactsViewL(), *this, *this,
-          Phonebook2::Pbk2AppUi()->ApplicationServices().ContactManager().
-            FieldTypes() );
+    MPbk2ApplicationServices& appServices = Phonebook2::Pbk2AppUi()->ApplicationServices();
+    TInt count = KErrNotFound;
+    if ( !iContactsInGroup && iContactGroup )
+        {
+        iContactsInGroup = iContactGroup->ItemsContainedLC();
+        CleanupStack::Pop(); // iContactsInGroup
+        }
+    if ( iContactsInGroup )
+        {
+        count = iContactsInGroup->Count();
+        }
+    if ( count > 0 || count == KErrNotFound )
+        {
+        iFilteredView = CVPbkFilteredContactView::NewL
+            ( *appServices.ViewSupplier().AllContactsViewL(), *this, *this,
+                    appServices.ContactManager().FieldTypes() );
+        }
 
     DoLaunchFetchDialogL();
     }
@@ -652,8 +668,18 @@ void CPguAddMembersCmd::DoLaunchFetchDialogL()
     {
     CPbk2FetchDlg::TParams params;
     params.iResId = R_PBK2_MULTIPLE_ENTRY_FETCH_NO_GROUPS_DLG;
-    // Fetch dlg uses this view instead of AllNameslistView
-    params.iNamesListView = iFilteredView;
+    if ( iFilteredView )
+        {
+        // Fetch dlg uses this view instead of AllNameslistView
+        params.iNamesListView = iFilteredView;
+        }
+    else
+        {
+        MVPbkContactViewBase* view = Phonebook2::Pbk2AppUi()
+            ->ApplicationServices().ViewSupplier().AllContactsViewL();
+        view->AddObserverL( *this );
+        params.iNamesListView = view;
+        }
     params.iFlags = CPbk2FetchDlg::EFetchMultiple;
     params.iNaviPaneId = R_PBK2_GROUP_MEMBER_FETCH_NAVILABEL;
 

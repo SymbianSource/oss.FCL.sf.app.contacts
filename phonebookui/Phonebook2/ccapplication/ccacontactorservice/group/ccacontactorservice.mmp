@@ -57,7 +57,7 @@ END
 APP_LAYER_SYSTEMINCLUDE
 SYSTEMINCLUDE         /epoc32/include/ecom
 
-LIBRARY               cone.lib
+LIBRARY               cone.lib eikcore.lib eikcoctl.lib
 LIBRARY               ws32.lib
 LIBRARY               euser.lib
 LIBRARY               efsrv.lib

@@ -25,7 +25,6 @@
 #include <TPbk2IconId.h>
 
 //FORWARD
-class MVPbkContactLink;
 
 // CLASS DECLARATION
 
@@ -38,15 +37,11 @@ NONSHARABLE_CLASS( CPbk2ContactViewDoubleListboxDataElement ) :
         public MPbk2DoubleListboxDataElement
     {
 public: // constructor and destructor
-    static CPbk2ContactViewDoubleListboxDataElement* NewL(
-            MVPbkContactLink* aLink = NULL,
-            TInt aListIndex = KErrNotFound );
+    static CPbk2ContactViewDoubleListboxDataElement* NewLC();
     ~CPbk2ContactViewDoubleListboxDataElement();
 
     TPtr TextPtr(
             MPbk2DoubleListboxDataElement::TTextDataElementItems aIndex) const;
-    inline const MVPbkContactLink* ContactLink();
-    inline TInt ListIndex();
     
 public: // from MPbk2DoubleListboxDataElement
     const TPbk2IconId& IconId( 
@@ -64,7 +59,7 @@ public: // from MPbk2DoubleListboxDataElement
             HBufC* aBuffer,
             MPbk2DoubleListboxDataElement::TTextDataType aType );
 private:
-    inline CPbk2ContactViewDoubleListboxDataElement(TInt aListIndex);
+    inline CPbk2ContactViewDoubleListboxDataElement();
     inline void ConstructL();
 
 private:
@@ -73,23 +68,7 @@ private:
     TFixedArray<TTextDataType, 2 > iTextType;
     /// Own
     HBufC* iEmptyBuffer;
-    /// Own: for data cache
-    MVPbkContactLink* iLink;
-    /// for data cache
-    TInt iListIndex;
     };
-
-inline const MVPbkContactLink* 
-CPbk2ContactViewDoubleListboxDataElement::ContactLink()
-    {
-    return iLink;
-    }
-
-inline TInt CPbk2ContactViewDoubleListboxDataElement::ListIndex()
-    {
-    return iListIndex;
-    }
-
 
 #endif // PBK2CONTACTVIEWDOUBLELISTBOXDATAELEMENT_H
 

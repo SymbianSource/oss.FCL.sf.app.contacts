@@ -58,6 +58,8 @@ namespace {
 
 // LOCAL FUNCTIONS
 
+_LIT( KTabChar, "\t" );
+
 /**
  * Returns icon array from given list box.
  *
@@ -702,14 +704,20 @@ void CPbk2ContactViewListBox::HandlePopupCharacter( CWindowGc* aGc, const TRect&
         textLayout.LayoutText(layout.Rect(), AknLayoutScalable_Apps::popup_navstr_preview_pane_t1(0).LayoutLine());
 
         TPtrC desc(Model()->ItemTextArray()->MdcaPoint(View()->TopItemIndex()));
+		
+        //Add "if-clause" to avaid the error that argument of Mid() out of range.
+        TInt index = desc.Find( KTabChar );
+        if ( index != KErrNotFound && index < desc.Length()-1 )
+            {
+            HBufC* buf = desc.Mid( index + 1, 1 ).AllocL();           
 
-        HBufC* buf = desc.Mid(desc.Find(_L("\t")) + 1, 1).AllocL();
-        TPtr textPtr = buf->Des();
-        textPtr.UpperCase();
-        
-        textLayout.DrawText(*gc, textPtr, ETrue, normal );
-        
-        delete buf;
+            TPtr textPtr = buf->Des();
+            textPtr.UpperCase();
+
+            textLayout.DrawText( *gc, textPtr, ETrue, normal );
+
+            delete buf;
+            }
         }
     }
 // End of File

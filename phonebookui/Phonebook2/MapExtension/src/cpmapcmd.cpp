@@ -87,7 +87,7 @@
 _LIT( KGeoSeparator, ",");
 const TInt KGeoSeparatorLength = 1;
 const TReal32 KGeoHorizontalAccuracy = 0;
-const TInt KGeoMaxSize = 50;
+const TInt KGeoMaxSize = 60;
 const TInt KGeoFormatWidth = 11;
 
 // --------------------------------------------------------------------------
@@ -343,46 +343,50 @@ TPbk2FieldGroupId CPmapCmd::GetAddressIfIsAlone()
 	for( TInt idx = 0; idx < count; idx++)
 		{
 		MVPbkStoreContactField& field = arrFields.FieldAt(idx);
-		TArray<TVPbkFieldVersitProperty> arrProp = field.BestMatchingFieldType()->VersitProperties();
-		for( TInt idx2 = 0; idx2 < arrProp.Count(); idx2++)
-			{
-			if( arrProp[idx2].Name() == EVPbkVersitNameADR  )
-				{
-				if( arrProp[idx2].Parameters().Contains( EVPbkVersitParamHOME ) )
-					{
-					if( grupId == EPbk2FieldGroupIdNone )
-						{
-						grupId = EPbk2FieldGroupIdHomeAddress;
-						}
-					else if( grupId != EPbk2FieldGroupIdHomeAddress )
-						{
-						return EPbk2FieldGroupIdNone;
-						}
-					}
-				else if( arrProp[idx2].Parameters().Contains( EVPbkVersitParamWORK ) )
-					{
-					if( grupId == EPbk2FieldGroupIdNone )
-						{
-						grupId = EPbk2FieldGroupIdCompanyAddress;
-						}
-					else if( grupId != EPbk2FieldGroupIdCompanyAddress )
-						{
-						return EPbk2FieldGroupIdNone;
-						}
-					}
-				else
-					{
-					if( grupId == EPbk2FieldGroupIdNone )
-						{
-						grupId = EPbk2FieldGroupIdPostalAddress;
-						}
-					else if( grupId != EPbk2FieldGroupIdPostalAddress )
-						{
-						return EPbk2FieldGroupIdNone;
-						}
-					}
-				}
-			}
+		const MVPbkFieldType* type = field.BestMatchingFieldType();
+		if ( type )
+		    {
+            TArray<TVPbkFieldVersitProperty> arrProp = type->VersitProperties();
+            for (TInt idx2 = 0; idx2 < arrProp.Count(); idx2++ )
+                {
+                if ( arrProp[idx2].Name() == EVPbkVersitNameADR )
+                    {
+                    if ( arrProp[idx2].Parameters().Contains( EVPbkVersitParamHOME ) )
+                        {
+                        if ( grupId == EPbk2FieldGroupIdNone )
+                            {
+                            grupId = EPbk2FieldGroupIdHomeAddress;
+                            }
+                        else if ( grupId != EPbk2FieldGroupIdHomeAddress )
+                            {
+                            return EPbk2FieldGroupIdNone;
+                            }
+                        }
+                    else if ( arrProp[idx2].Parameters().Contains( EVPbkVersitParamWORK ) )
+                        {
+                        if ( grupId == EPbk2FieldGroupIdNone )
+                            {
+                            grupId = EPbk2FieldGroupIdCompanyAddress;
+                            }
+                        else if ( grupId != EPbk2FieldGroupIdCompanyAddress )
+                            {
+                            return EPbk2FieldGroupIdNone;
+                            }
+                        }
+                    else
+                        {
+                        if ( grupId == EPbk2FieldGroupIdNone )
+                            {
+                            grupId = EPbk2FieldGroupIdPostalAddress;
+                            }
+                        else if ( grupId != EPbk2FieldGroupIdPostalAddress )
+                            {
+                            return EPbk2FieldGroupIdNone;
+                            }
+                        }
+                    }
+                }
+		    }
 		}
     
 	return grupId;
@@ -686,38 +690,41 @@ void CPmapCmd::FillLandmarkL(CPosLandmark& aLandmark, TVPbkFieldTypeParameter aA
 				{
 				continue;
 				}
-			
-			TArray<TVPbkFieldVersitProperty> arrProp = field.BestMatchingFieldType()->VersitProperties();
-			for( TInt idx2 = 0; idx2 < arrProp.Count(); idx2++)
-				{
-				if( arrProp[idx2].Name() == EVPbkVersitNameADR && 
-					( arrProp[idx2].Parameters().Contains(aAddressType) ||
-					  ( aAddressType == EVPbkVersitParamPREF && 
-					    !arrProp[idx2].Parameters().Contains(EVPbkVersitParamHOME) &&
-					    !arrProp[idx2].Parameters().Contains(EVPbkVersitParamWORK) ) ) )
-					{
-					if( arrProp[idx2].SubField() == EVPbkVersitSubFieldCountry )
-						{
-						aLandmark.SetPositionFieldL( EPositionFieldCountry, dataText );
-						continue;
-						}
-					else if( arrProp[idx2].SubField() == EVPbkVersitSubFieldLocality )
-						{
-						aLandmark.SetPositionFieldL( EPositionFieldCity, dataText );
-						continue;
-						}
-					else if( arrProp[idx2].SubField() == EVPbkVersitSubFieldStreet )
-						{
-						aLandmark.SetPositionFieldL( EPositionFieldStreet, dataText );
-						continue;
-						}
-					else if( arrProp[idx2].SubField() == EVPbkVersitSubFieldPostalCode )
-						{
-						aLandmark.SetPositionFieldL( EPositionFieldPostalCode, dataText );
-						continue;
-						}
-					}
-				}
+			const MVPbkFieldType* type = field.BestMatchingFieldType();
+			if ( type )
+			    {
+			    TArray<TVPbkFieldVersitProperty> arrProp = type->VersitProperties();
+                for (TInt idx2 = 0; idx2 < arrProp.Count(); idx2++ )
+                    {
+                    if ( arrProp[idx2].Name() == EVPbkVersitNameADR
+                        && (arrProp[idx2].Parameters().Contains( aAddressType )
+                            || (aAddressType == EVPbkVersitParamPREF
+                                && !arrProp[idx2].Parameters().Contains( EVPbkVersitParamHOME )
+                                && !arrProp[idx2].Parameters().Contains( EVPbkVersitParamWORK ))) )
+                        {
+                        if ( arrProp[idx2].SubField() == EVPbkVersitSubFieldCountry )
+                            {
+                            aLandmark.SetPositionFieldL( EPositionFieldCountry, dataText );
+                            continue;
+                            }
+                        else if ( arrProp[idx2].SubField() == EVPbkVersitSubFieldLocality )
+                            {
+                            aLandmark.SetPositionFieldL( EPositionFieldCity, dataText );
+                            continue;
+                            }
+                        else if ( arrProp[idx2].SubField() == EVPbkVersitSubFieldStreet )
+                            {
+                            aLandmark.SetPositionFieldL( EPositionFieldStreet, dataText );
+                            continue;
+                            }
+                        else if ( arrProp[idx2].SubField() == EVPbkVersitSubFieldPostalCode )
+                            {
+                            aLandmark.SetPositionFieldL( EPositionFieldPostalCode, dataText );
+                            continue;
+                            }
+                        }
+                    }
+			    }
 			}
 		}
 	}
@@ -811,24 +818,26 @@ TBool CPmapCmd::FillGeoLandmarkL(
 			}
 		const TDesC& dataText =
 		    MVPbkContactFieldTextData::Cast( fieldData ).Text();
-		TInt countProps =
-			field.BestMatchingFieldType()->VersitProperties().Count();
-		TArray<TVPbkFieldVersitProperty> props =
-			field.BestMatchingFieldType()->VersitProperties();
-		for ( TInt idx2 = 0; idx2 < countProps; idx2++ )
-			{
-		    if ( ( props[ idx2 ].Parameters().Contains( EVPbkVersitParamHOME ) &&
-		         aAddressType == EVPbkVersitParamHOME ) ||
-			     ( props[ idx2 ].Parameters().Contains( EVPbkVersitParamWORK ) &&
-		           aAddressType == EVPbkVersitParamWORK ) ||
-		           ( !props[ idx2 ].Parameters().Contains( EVPbkVersitParamHOME ) &&
-		             !props[ idx2 ].Parameters().Contains( EVPbkVersitParamWORK ) &&
-		             aAddressType == EVPbkVersitParamPREF ) )
-		    	{
-			    result = DoFillGeoLandmarkL( aLandmark, dataText );
-			    break;
-		    	}
-			}
+		const MVPbkFieldType* type = field.BestMatchingFieldType();
+		if ( type )
+		    {
+		    TInt countProps = type->VersitProperties().Count();
+            TArray<TVPbkFieldVersitProperty> props = type->VersitProperties();
+            for (TInt idx2 = 0; idx2 < countProps; idx2++ )
+                {
+                if ( (props[idx2].Parameters().Contains( EVPbkVersitParamHOME )
+                    && aAddressType == EVPbkVersitParamHOME)
+                    || (props[idx2].Parameters().Contains( EVPbkVersitParamWORK ) 
+                        && aAddressType == EVPbkVersitParamWORK)
+                    || (!props[idx2].Parameters().Contains( EVPbkVersitParamHOME )
+                        && !props[idx2].Parameters().Contains( EVPbkVersitParamWORK ) 
+                        && aAddressType == EVPbkVersitParamPREF) )
+                    {
+                    result = DoFillGeoLandmarkL( aLandmark, dataText );
+                    break;
+                    }
+                }
+		    }
 		}
 	return result;
 	}
@@ -846,7 +855,7 @@ TBool CPmapCmd::DoFillGeoLandmarkL(
 		{
 		TReal64 latitude = 0;
 		TReal64 logitude = 0;
-		TLex lexLatitude( aDataText.Left( aDataText.Length() - separator ) );
+        TLex lexLatitude( aDataText.Left( separator ) );
 		TLex lexLogitude( aDataText.Right( aDataText.Length()
 				- separator - KGeoSeparatorLength ) );
 		if ( lexLatitude.Val( latitude ) == KErrNone
@@ -855,8 +864,14 @@ TBool CPmapCmd::DoFillGeoLandmarkL(
 			TLocality loc( TCoordinate( latitude, logitude ),
 					KGeoHorizontalAccuracy );
 			aLandmark.SetPositionL( loc );
-			result = ETrue;
-			}
+            TInt separator2 = aDataText.Right( aDataText.Length() - separator - KGeoSeparatorLength ).Find( KGeoSeparator );
+            if(separator2 != KErrNotFound)
+                {
+                separator += separator2;
+                aLandmark.SetPositionFieldL(EPositionFieldCountryCode,aDataText.Right( aDataText.Length() - separator - (KGeoSeparatorLength * 2) ));
+                }
+            result = ETrue;
+            }
 		}
 	return result;
 	}
@@ -894,6 +909,16 @@ void CPmapCmd::EditorAssignFromMapsL(TVPbkFieldTypeParameter aAddressType)
 		iMapView->AddLandmarksToShowL( landmarks );
 		iNoAddress = EFalse;
 		}
+    else
+        {
+        landmark->SetPositionFieldL(EPositionFieldCity,KNullDesC16);
+        TLocality tempLoc;
+        tempLoc.SetCoordinate(-0.0,-0.0);
+        landmark->SetPositionL(tempLoc);
+        
+        landmarks.AppendL( landmark );
+        iMapView->AddLandmarksToShowL( landmarks );
+        }
 
 	iMapView->SelectFromMapL( iStatus );
 	iCurrentMapLaunchedByState = EMapAssignFromMaps;
@@ -907,11 +932,13 @@ void CPmapCmd::EditorAssignFromMapsL(TVPbkFieldTypeParameter aAddressType)
 // --------------------------------------------------------------------------
 //
 void CPmapCmd::UpdateCoordsL( 
-		TLocality& aLocality,
+        const CPosLandmark& aLandmark,
 		TVPbkFieldTypeParameter aAddressType )
 	{
-	TReal64 latitude = aLocality.Latitude();
-	TReal64 longitude = aLocality.Longitude();
+    TLocality locality;
+    aLandmark.GetPosition(locality);   
+    TReal64 latitude = locality.Latitude();
+    TReal64 longitude = locality.Longitude();
 	RBuf geoData;
 	RBuf textNumber;
 	CleanupClosePushL( geoData );
@@ -924,6 +951,14 @@ void CPmapCmd::UpdateCoordsL(
 	geoData += KGeoSeparator();
 	textNumber.Num( longitude, format );
 	geoData += textNumber;
+
+    if(aLandmark.IsPositionFieldAvailable( EPositionFieldCountryCode ))
+        {
+        TPtrC countryCode;
+        aLandmark.GetPositionField(EPositionFieldCountryCode,countryCode);
+        geoData += KGeoSeparator();
+        geoData += countryCode;
+        }
 	CleanupStack::PopAndDestroy( &textNumber );
 	
 	TBool updated = EFalse;
@@ -932,28 +967,30 @@ void CPmapCmd::UpdateCoordsL(
 	for( TInt idx = 0; idx < count; idx++)
 		{
 		MVPbkStoreContactField& field = arrFields.FieldAt(idx);
-		TInt countProps =
-		    field.BestMatchingFieldType()->VersitProperties().Count();
-		TArray<TVPbkFieldVersitProperty> props =
-		    field.BestMatchingFieldType()->VersitProperties();
-		for ( TInt idx2 = 0; idx2 < countProps; idx2++ )
-		    {
-		    if ( props[ idx2 ].Name() == EVPbkVersitNameGEO &&
-		    	 ( ( props[ idx2 ].Parameters().Contains( EVPbkVersitParamHOME ) &&
-                   aAddressType == EVPbkVersitParamHOME ) ||
-		    	   ( props[ idx2 ].Parameters().Contains( EVPbkVersitParamWORK ) &&
-                     aAddressType == EVPbkVersitParamWORK ) ||
-                     ( !props[ idx2 ].Parameters().Contains( EVPbkVersitParamHOME ) &&
-                       !props[ idx2 ].Parameters().Contains( EVPbkVersitParamWORK ) &&
-                       aAddressType == EVPbkVersitParamPREF ) ) )
-		        {
-		        MVPbkContactFieldData& fieldData = field.FieldData();
-		        MVPbkContactFieldTextData& data = 
-		            MVPbkContactFieldTextData::Cast( fieldData );
-		        data.SetTextL( geoData );
-		        updated = ETrue;
-		        break;
-		        }
+		const MVPbkFieldType* type = field.BestMatchingFieldType();
+		if ( type )
+		    {		    
+		    TInt countProps = type->VersitProperties().Count();
+            TArray<TVPbkFieldVersitProperty> props = type->VersitProperties();
+            for (TInt idx2 = 0; idx2 < countProps; idx2++ )
+                {
+                if ( props[idx2].Name() == EVPbkVersitNameGEO
+                    && ((props[idx2].Parameters().Contains( EVPbkVersitParamHOME ) 
+                        && aAddressType == EVPbkVersitParamHOME)
+                        || (props[idx2].Parameters().Contains( EVPbkVersitParamWORK ) 
+                            && aAddressType == EVPbkVersitParamWORK)
+                        || (!props[idx2].Parameters().Contains( EVPbkVersitParamHOME )
+                            && !props[idx2].Parameters().Contains( EVPbkVersitParamWORK ) 
+                            && aAddressType == EVPbkVersitParamPREF)) )
+                    {
+                    MVPbkContactFieldData& fieldData = field.FieldData();
+                    MVPbkContactFieldTextData& data =
+                        MVPbkContactFieldTextData::Cast( fieldData );
+                    data.SetTextL( geoData );
+                    updated = ETrue;
+                    break;
+                    }
+                }
 		    }
 		}
 	
@@ -1052,36 +1089,40 @@ void CPmapCmd::UpdateFieldL(
 		for( TInt idx = 0; idx < count; idx++)
 			{
 			MVPbkStoreContactField& field = arrFields.FieldAt(idx);
-			TArray<TVPbkFieldVersitProperty> arrProp = field.BestMatchingFieldType()->VersitProperties();
-			for( TInt idx2 = 0; idx2 < arrProp.Count(); idx2++)
-				{
-				if( arrProp[idx2].Name() == EVPbkVersitNameADR && 
-					arrProp[idx2].SubField() == aVersitSubField &&
-					( arrProp[idx2].Parameters().Contains(aAddressType) ||
-					  ( aAddressType == EVPbkVersitParamPREF && 
-						!arrProp[idx2].Parameters().Contains(EVPbkVersitParamHOME) &&
-						!arrProp[idx2].Parameters().Contains(EVPbkVersitParamWORK) ) ) )
-					{
-					MVPbkContactFieldData& fieldData = field.FieldData();
-					if( fieldData.DataType() != EVPbkFieldStorageTypeText )
-						{
-						continue;
-						}
-					MVPbkContactFieldTextData& data = 
-					   MVPbkContactFieldTextData::Cast( fieldData );
-					if ( aLandmark.IsPositionFieldAvailable( aPositionField ) )
-						{
-						data.SetTextL( textData );
-						}
-					else
-						{
-						data.SetTextL( KNullDesC() );
-						}
-					
-					updated = ETrue;
-					continue;
-					}
-				}
+			const MVPbkFieldType* type = field.BestMatchingFieldType();
+			if ( type )
+			    {
+                TArray<TVPbkFieldVersitProperty> arrProp = type->VersitProperties();
+                for (TInt idx2 = 0; idx2 < arrProp.Count(); idx2++ )
+                    {
+                    if ( arrProp[idx2].Name() == EVPbkVersitNameADR
+                        && arrProp[idx2].SubField() == aVersitSubField
+                        && (arrProp[idx2].Parameters().Contains( aAddressType )
+                            || (aAddressType == EVPbkVersitParamPREF
+                                && !arrProp[idx2].Parameters().Contains( EVPbkVersitParamHOME )
+                                && !arrProp[idx2].Parameters().Contains( EVPbkVersitParamWORK ))) )
+                        {
+                        MVPbkContactFieldData& fieldData = field.FieldData();
+                        if ( fieldData.DataType() != EVPbkFieldStorageTypeText )
+                            {
+                            continue;
+                            }
+                        MVPbkContactFieldTextData& data =
+                            MVPbkContactFieldTextData::Cast( fieldData );
+                        if ( aLandmark.IsPositionFieldAvailable( aPositionField ) )
+                            {
+                            data.SetTextL( textData );
+                            }
+                        else
+                            {
+                            data.SetTextL( KNullDesC() );
+                            }
+
+                        updated = ETrue;
+                        continue;
+                        }
+                    }
+			    }
 			}
 		}
 	
@@ -1135,13 +1176,17 @@ TBool CPmapCmd::IsAddressInContact()
 	for( TInt idx = 0; idx < count; idx++)
 		{
 		MVPbkStoreContactField& field = arrFields.FieldAt(idx);
-		TArray<TVPbkFieldVersitProperty> arrProp = field.BestMatchingFieldType()->VersitProperties();
-		for( TInt idx2 = 0; idx2 < arrProp.Count(); idx2++)
-			{
-			if( arrProp[idx2].Name() == EVPbkVersitNameADR  )
-				{
-				return ETrue;
-				}
+		const MVPbkFieldType* type = field.BestMatchingFieldType();
+		if ( type )
+		    {
+		    TArray<TVPbkFieldVersitProperty> arrProp = type->VersitProperties();
+		    for( TInt idx2 = 0; idx2 < arrProp.Count(); idx2++)
+			    {
+			    if( arrProp[idx2].Name() == EVPbkVersitNameADR  )
+			    	{
+				    return ETrue;
+				    }
+			    }
 			}
 		}
 	return EFalse;
@@ -1373,7 +1418,7 @@ void CPmapCmd::HandleSelectiOnAssignFromMapsL()
             
             if( geocoordsExist )
                 {
-                UpdateCoordsL( locality, iAddressType );
+                UpdateCoordsL( *result, iAddressType);
                 }
             if ( !iEditorControl )
                 {
@@ -1558,7 +1603,7 @@ void CPmapCmd::HandleSelectiOnShowOnMapsL()
 
         if ( geocoordsExist )
             {
-            UpdateCoordsL( locality, iAddressType );
+            UpdateCoordsL( *result, iAddressType );
             }
         if ( !iEditorControl )
             {

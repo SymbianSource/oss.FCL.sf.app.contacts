@@ -131,6 +131,9 @@ private: // Implementation
     void AddConflictL( 
             const MVPbkStoreContactField& aFieldFirst,
             const MVPbkStoreContactField& aFieldSecond );
+    HBufC* SyncDisplayFieldLC(
+            const MVPbkStoreContactField& aField );
+    HBufC* LocaliseSyncDisplayFieldLC( const TDesC& aContent );
     void AddAddressConflictL( TPbk2FieldGroupId aGroupId );
     TInt FindConflictByFieldL( const MVPbkStoreContactField& aField );
     void PrintFieldL(const MVPbkStoreContactField & aField);

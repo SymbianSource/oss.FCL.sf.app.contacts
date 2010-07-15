@@ -34,6 +34,7 @@
 #include <MVPbkContactOperationBase.h>
 #include <CVPbkContactManager.h>
 #include <MVPbkStoreContactFieldCollection.h>
+#include <vpbkeng.rsg>
 
 // System includes
 #include <vcard.h>
@@ -43,7 +44,6 @@
 #include <VPbkStoreUriLiterals.h>
 _LIT8( KPropXSelf, "X-SELF" );
 _LIT8( KPropXCategories, "X-CATEGORIES");
-_LIT8( KPropXIMPP, "X-IMPP");
 _LIT(KColon, ":");
 
 CVPbkVCardImporter* CVPbkVCardImporter::NewL(
@@ -346,16 +346,19 @@ TBool CVPbkVCardImporter::SaveDataL( CVPbkVCardContactFieldData& aData )
          aData.Uid() == TUid::Uid( KVersitPropertyCDesCArrayUid ) )
         {
         const TDesC& value = converter.GetDesCData( aData );
-        TInt pos = value.Find(KColon);
-        if( 0 == pos && 0 == GetCurrentProperty()->Name().Compare(KPropXIMPP()) )
+        if ( aData.FieldType().FieldTypeResId() == R_VPBK_FIELD_TYPE_IMPP )
             {
-            // If the service name is NULL and it's a IMPP field, don't save the data.
-            // e.g.:
-            // (1) If the value is YAHOO:peterpan@yahoo.com, YAHOO is the service name
-            // (2) If the value is :peterpan@yahoo.com, the service name is NULL
-            isSaved = EFalse;
+            TInt pos = value.Find(KColon);
+            if( 0 == pos )
+                {
+                // If the service name is NULL and it's a IMPP field, don't save the data.
+                // e.g.:
+                // (1) If the value is YAHOO:peterpan@yahoo.com, YAHOO is the service name
+                // (2) If the value is :peterpan@yahoo.com, the service name is NULL
+                isSaved = EFalse;
+                }
             }
-        else
+        if ( isSaved )
             {
             SaveL( aData, value );
             }

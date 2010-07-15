@@ -777,9 +777,18 @@ TBool CPbk2AdaptiveSearchGridFiller::IsActualTitleEmpty( const MVPbkViewContact&
     {
     TBool result = ETrue;
     const TInt fieldCount = aContact.Fields().FieldCount();
-    for ( TInt i = ENameFirstPart; i <= ENameSecondPart && i < fieldCount; ++i)
-        {     
-        const MVPbkBaseContactField& field = aContact.Fields().FieldAt( i );
+    if ( fieldCount > ENameCompanyPart )
+        {
+        const MVPbkBaseContactField& field = aContact.Fields().FieldAt( ENameCompanyPart );
+        if ( iNameFormatter.IsTitleField( field ) )
+            {
+            return EFalse;
+            }
+        }
+   
+    if ( fieldCount > ENameFirstPart ) 
+        {
+        const MVPbkBaseContactField& field = aContact.Fields().FieldAt( ENameFirstPart );
         if ( iNameFormatter.IsTitleField( field ) )
             {
             const MVPbkContactFieldData& fieldData = field.FieldData();
@@ -799,7 +808,6 @@ TBool CPbk2AdaptiveSearchGridFiller::IsActualTitleEmpty( const MVPbkViewContact&
                     if ( firstNonSpaceChar != length )
                         {
                         result = EFalse;
-                        break;
                         }
                     }   
                 }

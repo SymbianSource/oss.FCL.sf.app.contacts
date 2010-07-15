@@ -36,6 +36,7 @@
 #include "CVPbkVCardParserParamArray.h"
 #include "CVPbkVCardData.h"
 
+class MVPbkContactOperationBase;
 
 //Group Card Example
 
@@ -90,25 +91,31 @@ public:
     /**
      * Set the contactLink as Group Store Contact
      * @param  aContactLink  VPBK contact Link
-     *								
+     * @param aSelfPointer The self pointer is set to NULL if this instance is
+     *                     deleted while this function is running.								
      */
-    void GetContactGroupStoreL(const MVPbkContactLink& aContactLink);
+    void GetContactGroupStoreL(const MVPbkContactLink& aContactLink, 
+            CVPbkGroupCardHandler** aSelfPointer = NULL);
 
     /**
      * Decodes the Current Group Card Field to add the contact to exisiting group Or New Group.
      * @param  aValue  Value parm of the Group Card Property
-     *								
+     * @param aSelfPointer The self pointer is set to NULL if this instance is
+     *                     deleted while this function is running.								
      */
-    void DecodeContactGroupInVCardL(TPtr16 aValue);
+    void DecodeContactGroupInVCardL(TPtr16 aValue, 
+            CVPbkGroupCardHandler** aSelfPointer = NULL);
 
     /**
      * Builds the Hash Table with Key as "Group Name" and "VBPK Store Pointer" as Value.
      * This table is used to Find whether a Group is existing or not in current VPBK.
      * @param  aTargetContactStore  VPBK ContactStore.
-     *								
+     * @param aSelfPointer The self pointer is set to NULL if this instance is
+     *                     deleted while this function is running.							
      */
 
-    void BuildContactGroupsHashMapL(MVPbkContactStore& aTargetContactStore);
+    void BuildContactGroupsHashMapL(MVPbkContactStore& aTargetContactStore, 
+            CVPbkGroupCardHandler** aSelfPointer = NULL);
 
     /**
      * Remvoes the Contact from all the Groups it belongs. This Api is called as part of DecodeContactGroupInVcardL() before 
@@ -131,8 +138,10 @@ private:
     CVPbkGroupCardHandler(CVPbkVCardData& aData);
 
     //Second Phase Construction
-    void ConstructL();    
-
+    void ConstructL();
+    //Synchronizes Virtual Phonebook RetrieveContactL 
+    TBool RetrieveContactL( const MVPbkContactLink& aLink,
+            MVPbkSingleContactOperationObserver& aObserver);
 public:  
 
     //From MVPbkSingleContactOperationObserver         
@@ -178,6 +187,15 @@ private:
     MVPbkStoreContact * iTargetStore;
     //Own: Hash Table to store Group Names.
     RPtrHashMap<TDesC16, MVPbkStoreContact> *iContactsGroupsMap;
+    //Own: The operation handle
+    MVPbkContactOperationBase* iRetrieveOp;
+    //Own: For setting client's pointer to NULL if this instance is
+    //     deleted during the nested activescheduler loop.
+    CVPbkGroupCardHandler** iSelfPtr;
+    //Own: Used for checking that has this instance deleted during
+    //     the nested activescheduler loop i.e member data can not
+    //     be accessed anymore if this instance has been deleted.
+    TBool* iDestroyed;
     };
 
 #endif // CVPbkGroupCardHandler_H

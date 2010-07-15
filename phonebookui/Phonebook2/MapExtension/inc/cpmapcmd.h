@@ -191,11 +191,11 @@ class CPmapCmd : public CActive,
         /**
          * Updates Contact geocoordinates.
          *
-         * @param  aLocality 		object have geocoordinates.
+         * @param  aLandmark        fields returned from Maps API.
          * @param  aAddressType 	Address type.
          */
         void UpdateCoordsL(
-				TLocality& aLocality,
+                const CPosLandmark& aLandmark,
 				TVPbkFieldTypeParameter aAddressType );
         
         /**

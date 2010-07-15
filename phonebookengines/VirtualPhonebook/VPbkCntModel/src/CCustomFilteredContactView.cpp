@@ -69,6 +69,17 @@ void CCustomFilteredContactView::ConstructL(
     }
 
 // --------------------------------------------------------------------------
+// CCustomFilteredContactView::SetFieldTypeSelector
+// --------------------------------------------------------------------------
+//
+void CCustomFilteredContactView::SetFieldTypeSelector( 
+        const MVPbkFieldTypeSelector* aFieldTypeSelector )
+    {
+    iFieldTypeSelector = aFieldTypeSelector;
+    }
+
+
+// --------------------------------------------------------------------------
 // CCustomFilteredContactView::~CCustomFilteredContactView
 // --------------------------------------------------------------------------
 //

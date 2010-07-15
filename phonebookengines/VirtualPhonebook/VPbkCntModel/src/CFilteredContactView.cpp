@@ -378,9 +378,26 @@ void CFilteredContactView::DoInitializeViewL(
         const CFieldFactory& fieldFactory = Store().FieldFactory();
 
         // Copy construct the filter
-        iFilter = CVPbkFieldTypeSelector::NewL(
+        CVPbkFieldTypeSelector* filter = CVPbkFieldTypeSelector::NewL(
                 *aViewDefinition.FieldTypeFilter() );
-
+        if ( iFilter )
+            {
+            delete iFilter;
+            iFilter = NULL;
+            }
+        
+        iFilter = filter;
+        filter = NULL;
+        
+        // whenever a new iFilter created, set it as new fieldTypeSelector
+        // iCustomFilteredView, to avoid such case that new iFilter created
+        // but iCustomFilteredView is still the old one using the old iFilter,
+        // it will panic since the old iFilter is deleted.
+        if ( iCustomFilteredView )
+            {
+            iCustomFilteredView->SetFieldTypeSelector( iFilter );
+            }
+        
         iNativeFilter = ConvertFieldTypeFilterL
             ( *iFilter, fieldFactory, iFs, iCustomFilteringNeeded );
         }
@@ -397,9 +414,18 @@ void CFilteredContactView::DoInitializeViewL(
         // Construction of the iCustomFilteredView should be done in two
         // phases. Due to that there is dependencies between views in this
         // and iCustomFilteredView class.
-        iCustomFilteredView =
-            new (ELeave) CCustomFilteredContactView( Store(), iFilter,
+
+        CCustomFilteredContactView* customFilteredView = new (ELeave) CCustomFilteredContactView( Store(), iFilter,
                 *this, aViewDefinition.ContactSelector() );
+        
+        if ( iCustomFilteredView )
+            {
+            delete iCustomFilteredView;
+            iCustomFilteredView = NULL;
+            }
+        iCustomFilteredView = customFilteredView;
+        customFilteredView = NULL;
+        
         ConstructBaseViewsL( aViewDefinition, *iCustomFilteredView,
                 aViewSortOrder );
 
@@ -642,6 +668,7 @@ void CFilteredContactView::ConstructBaseViewsL
         }
     else
         {
+     
         iBaseView = CContactLocalView::NewL( *iNativeObserver,
                 Store().NativeDatabase(), aViewSortOrder,
                 KVPbkDefaultContactViewPrefs );

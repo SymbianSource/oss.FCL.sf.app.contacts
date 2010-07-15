@@ -328,6 +328,11 @@ void CPbk2AiwSelectionProvider::CreateConfigurationPackageL
         ( EGenericParamContactLinkArray, aInParamList );
     CleanupStack::PushL( linkBuffer );
 
+    // StatusPane Id
+    HBufC8* statusPaneId = PackParameterToBufferL
+        ( EGenericParamUnspecified, aInParamList );
+    CleanupStack::PushL( statusPaneId );
+        
     // Title pane
     HBufC* titlePaneText = ClientTitlePaneL();
     CleanupStack::PushL( titlePaneText );
@@ -340,6 +345,7 @@ void CPbk2AiwSelectionProvider::CreateConfigurationPackageL
     length += Pbk2IPCPackage::CountPackageSize( iDefaultPrioritiesBuffer );
     length += Pbk2IPCPackage::CountPackageSize( iContactViewFilterBuffer );
     length += Pbk2IPCPackage::CountPackageSize( titlePaneText );
+    length += Pbk2IPCPackage::CountPackageSize( statusPaneId );
 
     delete iConfigurationPackage;
     iConfigurationPackage = NULL;
@@ -353,10 +359,11 @@ void CPbk2AiwSelectionProvider::CreateConfigurationPackageL
     Pbk2IPCPackage::ExternalizeL( iDefaultPrioritiesBuffer, writeStream );
     Pbk2IPCPackage::ExternalizeL( iContactViewFilterBuffer, writeStream );
     Pbk2IPCPackage::ExternalizeL( titlePaneText, writeStream );
+    Pbk2IPCPackage::ExternalizeL( statusPaneId, writeStream );
     writeStream.CommitL();
 
     CleanupStack::PopAndDestroy( &writeStream );
-    CleanupStack::PopAndDestroy( 3 ); // titlePaneText, linkBuffer,
+    CleanupStack::PopAndDestroy( 4 ); // titlePaneText, statusPaneId, linkBuffer,
                                       // storeUriBuffer
     }
 

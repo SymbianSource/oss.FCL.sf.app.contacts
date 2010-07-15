@@ -263,6 +263,16 @@ class TPbk2ServerMessageDataRetriever
          * @return  The client orientation settings.
          */
         TInt GetOrietationTypeL(const RMessage2& aMessage ) const;
+        
+        
+        /**
+         * Gets StatusPane ID that should be used by the ServerApplication
+         *
+         * @param aMessage              The message to retrieve data from.
+         * @return  valid StatusPane ID or 0 if it was not sent.
+         */
+        TInt TPbk2ServerMessageDataRetriever::GetStatusPaneIdL
+                ( const RMessage2& aMessage ) const;
     };
 
 #endif // TPBK2SERVERMESSAGEDATARETRIEVER_H

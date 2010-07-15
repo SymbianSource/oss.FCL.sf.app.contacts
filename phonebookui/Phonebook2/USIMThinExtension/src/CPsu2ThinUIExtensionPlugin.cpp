@@ -171,6 +171,14 @@ void CPsu2ThinUIExtensionPlugin::DynInitMenuPaneL
                 // "Fixed Dialing" item
                 DimMenuItem( *aMenuPane, EPsu2CmdLaunchFixedDialingView );
                 }
+            if ( iStoreChecker &&
+                 !iStoreChecker->IsContactsAvailabe( 
+                         VPbkContactStoreUris::SimGlobalAdnUri())  && 
+                 !iStoreChecker->IsContactsAvailabe(
+                         VPbkContactStoreUris::SimGlobalSdnUri())   )
+                {
+                DimMenuItem( *aMenuPane, EPsu2CmdCopyToContacts );
+                }
             break;
             }
         default:

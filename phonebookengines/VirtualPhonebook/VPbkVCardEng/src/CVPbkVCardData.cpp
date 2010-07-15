@@ -36,6 +36,7 @@
 
 #include <barsread.h>
 #include <vcard.h>
+#include <versittls.h>
 
 namespace 
     {
@@ -126,6 +127,7 @@ inline void CVPbkVCardData::ConstructL()
         {
         User::LeaveIfError( res );
         }
+    iVersitTlsData = &CVersitTlsData::VersitTlsDataL();
     }
 
 CVPbkVCardData* CVPbkVCardData::NewL(CVPbkContactManager& aContactManager)
@@ -139,6 +141,10 @@ CVPbkVCardData* CVPbkVCardData::NewL(CVPbkContactManager& aContactManager)
     
 CVPbkVCardData::~CVPbkVCardData()
     {
+    if (iVersitTlsData)
+        {
+        iVersitTlsData->VersitTlsDataClose();
+        }
     delete iCopyPolicyManager;
     iParamIdNameMappings.ResetAndDestroy();
     iVNameIdNameMappings.ResetAndDestroy();

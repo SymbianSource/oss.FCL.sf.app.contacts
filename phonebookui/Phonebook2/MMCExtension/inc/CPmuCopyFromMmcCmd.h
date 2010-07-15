@@ -32,6 +32,7 @@ class MVPbkContactLinkArray;
 class MVPbkContactStore;
 class CVPbkVCardEng;
 class MVPbkContactOperationBase;
+class CPbk2ApplicationServices;
 
 /**
  * Phonebook 2 MMC UI extension copy from MMC command object.
@@ -124,6 +125,10 @@ class CPmuCopyFromMmcCmd : public CActive,
         TInt iState;
         /// Own: Path to contacts in memory card
         TFileName iContactsPath;
+        /// Own: A handle to app services singleton
+        CPbk2ApplicationServices* iAppServices;
+        /// Own: ETrue if import must check duplicates.
+        TBool iCheckDuplicates;
 
     };
 

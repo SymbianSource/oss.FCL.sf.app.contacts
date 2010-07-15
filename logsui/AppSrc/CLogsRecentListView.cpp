@@ -526,7 +526,20 @@ void CLogsRecentListView::DoActivateL(
         {
         // Just to make sure the inputblocker is not on
         RemoveInputBlocker();
-        CurrentModel()->DoActivateL( MLogsModel::EResetAndRefresh );
+        TRAPD( err, CurrentModel()->DoActivateL( MLogsModel::EResetAndRefresh ));   
+        if( err ) 
+            {
+            iCoeEnv->HandleError( err );
+            }
+        if( err == KErrDiskFull )
+            {
+            RWsSession& wsSession = CCoeEnv::Static()->WsSession();  
+            TApaTask logsui( wsSession );
+            TInt wgId = CCoeEnv::Static()->RootWin().WindowGroupId();
+            logsui.SetWgId( wgId );
+            logsui.KillTask();  
+            return;	
+            }
         
         // By default on gaining foreground, just refresh the list. So when active applications list, 
         // keylock or some note (like when plugin in the charger) is shown the list doesn't flicker. 
@@ -847,6 +860,15 @@ void CLogsRecentListView::HandleGainingForeground()
                 if( err ) 
                     {
                     iCoeEnv->HandleError( err );
+                    }
+                if( err == KErrDiskFull )
+                    {
+                    RWsSession& wsSession = CCoeEnv::Static()->WsSession();  
+                    TApaTask logsui( wsSession );
+                    TInt wgId = CCoeEnv::Static()->RootWin().WindowGroupId();
+                    logsui.SetWgId( wgId );
+                    logsui.KillTask();  
+                    return;
                     }
                 
                 // By default on gaining foreground, just refresh the list. So when active applications list, 

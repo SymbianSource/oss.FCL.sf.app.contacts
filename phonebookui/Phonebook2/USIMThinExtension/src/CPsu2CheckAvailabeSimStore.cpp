@@ -77,6 +77,8 @@ CPsu2CheckAvailabeSimStore::~CPsu2CheckAvailabeSimStore()
         VPbkContactStoreUris::SimGlobalOwnNumberUri() );
     iValidSourceStoreUris->AppendL( 
         VPbkContactStoreUris::SimGlobalSdnUri() );  
+    iValidSourceStoreUris->AppendL( 
+           VPbkContactStoreUris::SimGlobalAdnUri() );  
         
     iStoreList = &Phonebook2::Pbk2AppUi()->ApplicationServices().
                     ContactManager().ContactStoresL();

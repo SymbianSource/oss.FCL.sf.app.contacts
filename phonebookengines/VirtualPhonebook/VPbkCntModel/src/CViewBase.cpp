@@ -246,7 +246,7 @@ TInt CViewBase::IndexOfLinkL(const MVPbkContactLink& aContactLink) const
     {
     TInt result = KErrNotFound;
 
-    if (&aContactLink.ContactStore() == &ContactStore())
+    if (&aContactLink.ContactStore() == &ContactStore() && iView )
         {
         const CContactLink& link = static_cast<const CContactLink&>(aContactLink);
         result = iView->FindL(link.ContactId());
@@ -773,8 +773,16 @@ void CViewBase::InitializeViewL(
         const CVPbkContactViewDefinition& aViewDefinition,
         const MVPbkFieldTypeList& aSortOrder )
     {
-    iCurrentContact = CViewContact::NewL( *this, aSortOrder );
-
+    
+    CViewContact* vievContact = CViewContact::NewL( *this, aSortOrder );
+    if ( iCurrentContact )
+        {
+        delete iCurrentContact;
+        iCurrentContact = NULL;
+        }
+    iCurrentContact = vievContact;
+    vievContact = NULL;
+    
     RContactViewSortOrder viewSortOrder = CreateSortOrderL( aSortOrder );
     CleanupClosePushL( viewSortOrder );
 
@@ -795,8 +803,15 @@ void CViewBase::InitializeViewL(
 
     CleanupStack::PopAndDestroy(); // viewSortOrder
 
-    iEventLink = CContactLink::NewLC( iParentStore, KNullContactId );
-    CleanupStack::Pop( iEventLink );
+    CContactLink* contactLink= CContactLink::NewLC( iParentStore, KNullContactId );
+    CleanupStack::Pop( contactLink );
+    if ( iEventLink )
+        {
+        delete iEventLink;
+        iEventLink = NULL;
+        }
+    iEventLink = contactLink;
+    contactLink = NULL;
     }
 
 // --------------------------------------------------------------------------

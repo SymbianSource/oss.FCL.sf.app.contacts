@@ -302,6 +302,9 @@ RESOURCE DIALOG r_psu2_fdn_numberquery_dialog
                 label = qtn_fdn_enter_number_to_call;
                 control= EDWIN
                     {
+                    numeric_keymap = EAknEditorStandardNumberModeKeymap;
+                    allowed_input_modes = EAknEditorNumericInputMode;
+                    default_input_mode = EAknEditorNumericInputMode;
                     };
                 };
             }

@@ -147,6 +147,8 @@ class CPbk2ItemFetcher : public CBase,
         TBool iUseDeviceConfig;
         /// Own: Communication address select phase
         MPbk2ServicePhase* iCommAddressSelectPhase;
+        /// Holds the StatusPane Id that needs to be used
+        TInt iStatusPaneId;
     };
 
 #endif // CPBK2ITEMFETCHER_H

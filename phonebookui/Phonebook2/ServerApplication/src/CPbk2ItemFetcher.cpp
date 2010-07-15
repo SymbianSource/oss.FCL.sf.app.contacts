@@ -74,6 +74,23 @@ void SetTitlePaneL
     titlePaneOperator.SetTitlePaneL( titlePaneText ); // takes ownership
     }
 
+
+/**
+ * Change the StatusPane layout to use the mentioned StatusPane ID.
+ *
+ * @param aStatusPaneId     StatusPane ID
+ */
+void SetStatusPaneL( TInt aStatusPaneId )
+    {
+    CEikStatusPane* statusPane =
+            CEikonEnv::Static()->AppUiFactory()->StatusPane();
+    
+    if ( statusPane && 0 != aStatusPaneId )
+        {
+        statusPane->SwitchLayoutL( aStatusPaneId );        
+        }                    
+    }
+
 struct TMap
     {
     TAiwCommAddressSelectType aiwType;
@@ -205,7 +222,8 @@ CPbk2ItemFetcher::CPbk2ItemFetcher
         ( MPbk2UiServiceObserver& aObserver,
           TPbk2FetchType aFetchType ) :
             iObserver( aObserver ),
-            iFetchType( aFetchType )
+            iFetchType( aFetchType ),
+            iStatusPaneId( 0 )
     {
     PBK2_DEBUG_PRINT( PBK2_DEBUG_STRING
         ("CPbk2ItemFetcher::CPbk2ItemFetcher()") );
@@ -263,6 +281,8 @@ inline void CPbk2ItemFetcher::ConstructL( const RMessage2& aMessage )
 
     // Set title pane
     SetTitlePaneL( dataRetriever, flags, aMessage );
+    
+    iStatusPaneId = dataRetriever.GetStatusPaneIdL( aMessage );
 
     iPreselectedContacts = dataRetriever.GetPreselectedContactLinksL
         ( aMessage, appUi.ApplicationServices().ContactManager() );
@@ -674,6 +694,9 @@ void CPbk2ItemFetcher::LaunchAddressSelectPhaseL
     iAddressSelectPhase = NULL;
     delete iCommAddressSelectPhase;
     iCommAddressSelectPhase = NULL;
+    
+    //Restore the appropriate StatusPane
+    SetStatusPaneL( iStatusPaneId );
     
     if ( iCommAddressSelectType != VPbkFieldTypeSelectorFactory::EEmptySelector )
         {

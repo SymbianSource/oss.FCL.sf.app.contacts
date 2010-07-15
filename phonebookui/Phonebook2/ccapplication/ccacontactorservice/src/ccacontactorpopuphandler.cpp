@@ -88,6 +88,27 @@ TDesC& CCCAContactorPopupHandler::LaunchPopupL(
     // Set contactlink
     inParamList.AppendL(TAiwGenericParam(EGenericParamContactLinkArray,
         TAiwVariant(aContactLinkArray)));
+    
+    //Append the current status pane id
+    //this will also be used by Pbk2ServerApplication
+    //This is kind of a new implementation which will pave way
+    //for the applications to use the required statuspane that they
+    //prefer. 
+    //since its not feasible to add any new AIW functionality
+    //we will follow this approach.
+    CEikStatusPane* statusPane =
+            CEikonEnv::Static()->AppUiFactory()->StatusPane();
+    
+    if ( statusPane )
+        {
+        TInt currentstatuspane = statusPane->CurrentLayoutResId();        
+        TBuf<KCCAMAXBUFFSIZE> numBuf;
+        numBuf.AppendNum( currentstatuspane );
+        
+        inParamList.AppendL(TAiwGenericParam(EGenericParamUnspecified,
+                    TAiwVariant( numBuf )));
+        }
+        
 
     iServiceHandler->ExecuteServiceCmdL(KAiwCmdSelect, inParamList,
         iServiceHandler->OutParamListL(), 0, this);

@@ -64,6 +64,7 @@ const TInt KPreselectedContactsPosition( 1 );
 const TInt KAddressSelectFilterBuffer( 2 );
 const TInt KContactViewFilterBuffer( 3 );
 const TInt KTitlePaneTextPosition( 4 );
+const TInt KStatusPaneIdPosition( 5 );
 const TInt KDefaultPrioritiesPosition( 2 );
 const TInt KOrientationType( 5 );
 
@@ -511,6 +512,7 @@ HBufC* TPbk2ServerMessageDataRetriever::GetTitlePaneTextL
 
         CleanupStack::PopAndDestroy( &readStream );
         CleanupStack::PopAndDestroy( configuration );
+        
         }
 
     return titlePaneText;
@@ -909,6 +911,42 @@ TInt TPbk2ServerMessageDataRetriever::GetOrietationTypeL( const RMessage2& aMess
         CleanupStack::PopAndDestroy( configuration );
         }
     return orientationType;
+    }
+
+// --------------------------------------------------------------------------
+// TPbk2ServerMessageDataRetriever::GetStatusPaneIdL
+// --------------------------------------------------------------------------
+//
+TInt TPbk2ServerMessageDataRetriever::GetStatusPaneIdL
+        ( const RMessage2& aMessage ) const
+    {
+    TInt statusPaneId( 0 );
+    HBufC8* statusPaneIdInText = NULL;
+    TInt length = aMessage.GetDesLengthL( KConfigurationPackageSlot );
+    
+    if ( length > 0 )
+        {
+        HBufC8* configuration = HBufC8::NewLC( length );
+        TPtr8 ptr = configuration->Des();
+        aMessage.ReadL( KConfigurationPackageSlot, ptr );
+        RDesReadStream readStream( ptr );
+        readStream.PushL();
+
+        TRAPD( error, Pbk2IPCPackage::InternalizeL
+            ( statusPaneIdInText, readStream, KStatusPaneIdPosition ) );        
+        
+        if ( KErrNone == error && statusPaneIdInText )
+            {
+            TLex8 aLex(*statusPaneIdInText);        
+            error = aLex.Val( statusPaneId );
+            delete statusPaneIdInText;
+            }
+            
+        CleanupStack::PopAndDestroy( &readStream );
+        CleanupStack::PopAndDestroy( configuration );
+        }
+
+    return statusPaneId;
     }
     
 // End of File

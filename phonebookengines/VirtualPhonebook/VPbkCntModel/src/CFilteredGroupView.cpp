@@ -142,9 +142,18 @@ void CFilteredGroupView::DoInitializeViewL(
     // Construction of the iCustomFilteredView should be done in two 
     // phases. Due to that there is dependencies between views in this 
     // and iCustomFilteredView class.
-    iCustomFilteredView = 
+    CCustomFilteredGroupView* customFilteredView = 
         new (ELeave) CCustomFilteredGroupView( Store(), iFilter, 
             *this );
+    
+    if ( iCustomFilteredView )
+        {
+        delete iCustomFilteredView;
+        iCustomFilteredView = NULL;
+        }
+    iCustomFilteredView = customFilteredView;
+    customFilteredView = NULL;
+    
     ConstructBaseViewsL( aViewDefinition, *iCustomFilteredView, 
             aViewSortOrder );
             

@@ -27,6 +27,7 @@
 #include <MVPbkStoreContact.h>
 #include <MVPbkContactStore.h>
 #include <MVPbkContactStoreProperties.h>
+#include <MVPbkContactStoreProperties2.h>
 #include <CVPbkContactLinkArray.h>
 #include <MVPbkContactCopyPolicy.h>
 #include <MVPbkContactLink.h>
@@ -93,11 +94,25 @@ void CVPbkImportToStoreOperation::ConstructL( TVPbkImportCardType aType,
         }
 
     iSavedContacts = CVPbkContactLinkArray::NewL();
+    
    // Handle Owncard during Sync
     if(aSync)
 	    {
-	    iOwncardHandler = CVPbkOwnCardHandler::NewL(aData);	
-	    iGroupcardHandler = CVPbkGroupCardHandler::NewL(aData);
+        MVPbkContactStoreProperties& prop = 
+                const_cast<MVPbkContactStoreProperties&>(
+                        iTargetStore.StoreProperties());
+        if ( prop.SupportsContactGroups() )
+            {
+            iGroupcardHandler = CVPbkGroupCardHandler::NewL(aData);
+            }
+        MVPbkContactStoreProperties2* prop2 = 
+                    static_cast<MVPbkContactStoreProperties2*>( 
+                            prop.ContactStorePropertiesExtension( 
+                                    KMVPbkContactStorePropertiesExtension2Uid ) );
+        if ( prop2 && prop2->SupportsOwnContact() )
+            {
+            iOwncardHandler = CVPbkOwnCardHandler::NewL(aData);
+            }
 	    }
     }
 
@@ -354,25 +369,50 @@ void CVPbkImportToStoreOperation::HandleContactSavedL(
 	        {
 	    	iOwncardHandler->SetAsOwnContactL(aResults->At(0));
 	    	}
+		
+     TBool destroyed = EFalse;
      if(iGroupcardHandler && ((CVPbkVCardImporter *)iOperationImpl)->IsGroupcard())
          {
-         iGroupcardHandler->BuildContactGroupsHashMapL(iTargetStore);
-         iGroupcardHandler->GetContactGroupStoreL(aResults->At(0));
-         iGroupcardHandler->DecodeContactGroupInVCardL(((CVPbkVCardImporter *)iOperationImpl)->GetGroupcardvalue());
+         // CVPbkGroupCardHandler uses nested activescheduler loop to make
+         // async requests synchronous (why?). Hence it is possible that when 
+         // the execution returns from BuildContactGroupsHashMapL, 
+         // GetContactGroupStoreL or DecodeContactGroupInVCardL this instance
+         // has already been deleted and member data can not be accessed
+         // anymore. User can e.g cancel restoring contacts in which case
+         // import operation will be deleted before it is completed.
+         // Self pointer is used to check this.
+         CVPbkGroupCardHandler* groupcardHandler = iGroupcardHandler;  
+         groupcardHandler->BuildContactGroupsHashMapL(iTargetStore, &groupcardHandler);
+         if ( groupcardHandler )
+             {
+             groupcardHandler->GetContactGroupStoreL(aResults->At(0), &groupcardHandler );
+             }
+         if ( groupcardHandler )
+             {
+             groupcardHandler->DecodeContactGroupInVCardL(
+                     ((CVPbkVCardImporter *)iOperationImpl)->GetGroupcardvalue(), 
+                     &groupcardHandler);
+             }
+         else
+             {
+             destroyed = ETrue;
+             }
          }
     CleanupStack::PopAndDestroy(); // aResults
 
-    if ( curUnsavedCount == 0 )
+    if ( !destroyed )
         {
-        // Try to read the next entry, if one existed
-        iOperationImpl->StartL();
+        if ( curUnsavedCount == 0 )
+            {
+            // Try to read the next entry, if one existed
+            iOperationImpl->StartL();
+            }
+        else
+            {
+            CommitNextContactL();
+            iOperationImpl->StartL();
+            }
         }
-    else
-        {
-        CommitNextContactL();
-        iOperationImpl->StartL();
-        }
-
     }
 
 // ---------------------------------------------------------------------------

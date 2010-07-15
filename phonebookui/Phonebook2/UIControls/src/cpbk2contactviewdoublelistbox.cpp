@@ -125,7 +125,7 @@ CPbk2ContactViewListBoxModel* CPbk2ContactViewDoubleListBox::DoCreateModelL(
         		CPbk2ContactViewListBoxModel::TParams params )
 	{
 	return CPbk2ContactViewDoubleListBoxModel::NewL( 
-	        params, iThumbManager, iView );
+	        params, iThumbManager );
 	}
 
 

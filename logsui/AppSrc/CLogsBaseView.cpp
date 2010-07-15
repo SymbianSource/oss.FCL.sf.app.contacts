@@ -1352,6 +1352,7 @@ void CLogsBaseView::HandleListBoxEventL(
                 {
                 TInt commandId( Cba()->ButtonGroup()->CommandId(
                         CEikButtonGroupContainer::EMiddleSoftkeyPosition ) );
+                ConstructDelayedL( EFalse );               
                 ProcessCommandL( commandId );
                 break;
                 }

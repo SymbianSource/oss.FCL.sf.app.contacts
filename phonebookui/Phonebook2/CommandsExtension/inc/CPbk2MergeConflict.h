@@ -42,6 +42,11 @@ public: // Construction and destruction
      */
     static CPbk2MergeConflict* NewL();
     
+    /**
+     * Destructor.
+     */
+    ~CPbk2MergeConflict();
+    
 private: // Construction
     CPbk2MergeConflict();
     
@@ -55,6 +60,17 @@ public: // Implementation
     void AddFields(  
             const MVPbkStoreContactField& aFieldFirst, 
             const MVPbkStoreContactField& aFieldSecond );
+
+    /**
+     * Adds display fields into conflict. For special fields, normally not needed.
+     * If not provided normal field values used for display. Takes ownership.
+     *
+     * @param aDisplayFieldFirst     First display field.
+     * @param aDisplayFieldSecond    Second display field.
+     */
+    void AddDisplayFields(  
+            HBufC* aDisplayFieldFirst, 
+            HBufC* aDisplayFieldSecond );
     
     /**
      * Gets fields from conflict.
@@ -75,12 +91,19 @@ public: // CPbk2MergeConflictBase
 
 private: // methods
     void CustomizeTextValueL( const MVPbkStoreContactField& aField, TDes& aBuf );
+    HBufC* GetContentTextLC( 
+            EPbk2ConflictedNumber aNumber, 
+            const MVPbkStoreContactField* aField );
     
 private: //Data
     // Not own: First field
     const MVPbkStoreContactField* iFieldFirst;
     // Not own: Second field
     const MVPbkStoreContactField* iFieldSecond;
+    //own: optional display value 
+    HBufC* iDisplayFieldFirst;
+    //own: optional display value 
+    HBufC* iDisplayFieldSecond;    
     // Not own: Chosen field
     const MVPbkStoreContactField* iChosenField;
     // Own: Conflict type

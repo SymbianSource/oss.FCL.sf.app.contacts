@@ -13,6 +13,11 @@
 *
 * Description:  Phonebook 2 copy "new SIM" contacts to phone memory.
 *
+* NOTE: CPsu2CopySimContactsCmd contains a lot of similar code to this class.
+* Reason is that there is no clear place to share common SIM related code between 
+* USIMThinExtension.dll and USIMExtension.dll. This is a potential place for
+* future refactoring. 
+*
 */
 
 

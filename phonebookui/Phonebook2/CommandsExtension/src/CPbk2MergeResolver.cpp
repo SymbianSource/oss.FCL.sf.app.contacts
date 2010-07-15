@@ -31,6 +31,12 @@
 #include <MVPbkContactFieldDateTimeData.h>
 #include <MVPbkContactFieldUriData.h>
 #include <MVPbkContactFieldBinaryData.h>
+#include <vpbkeng.rsg>
+#include <VPbkSyncConstants.h>
+#include <Pbk2UIControls.rsg>
+
+// System includes
+#include <AknUtils.h>
 
 // Debugging headers
 #include <Pbk2Debug.h>
@@ -694,10 +700,74 @@ void CPbk2MergeResolver::AddConflictL(
     CPbk2MergeConflict* conflictNew = CPbk2MergeConflict::NewL();
     CleanupStack::PushL( conflictNew );
     conflictNew->AddFields( aFieldFirst, aFieldSecond );
+
+    //For sync get possibly localised display fields 
+    if( aFieldFirst.BestMatchingFieldType()->FieldTypeResId() == R_VPBK_FIELD_TYPE_SYNCCLASS )
+        {
+        HBufC* first = SyncDisplayFieldLC( aFieldFirst );
+        if( first )
+            {    
+            HBufC* second = SyncDisplayFieldLC( aFieldSecond );
+            if( second )
+                {
+                conflictNew->AddDisplayFields( first, second );
+                CleanupStack::Pop( 2, first );    
+                }
+            else
+                {
+                CleanupStack::PopAndDestroy( first );
+                }
+            }
+        }
+
     iConflicts.AppendL( conflictNew );
     CleanupStack::Pop( conflictNew );
     
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING( "CPbk2MergeResolver::AddConflictL - Conflict created" ) );
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2MergeResolver::SyncDisplayFieldLC
+// --------------------------------------------------------------------------
+//
+HBufC* CPbk2MergeResolver::SyncDisplayFieldLC(
+        const MVPbkStoreContactField& aField )
+    {
+    HBufC* field = NULL;
+    TVPbkFieldStorageType dataType = aField.FieldData().DataType();
+
+    if ( dataType == EVPbkFieldStorageTypeText )
+         {
+         const MVPbkContactFieldTextData& textData =
+               MVPbkContactFieldTextData::Cast( aField.FieldData() );
+         field = LocaliseSyncDisplayFieldLC( textData.Text() );
+         }
+
+    return field;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2MergeResolver::LocaliseSyncDisplayFieldL
+// --------------------------------------------------------------------------
+//
+HBufC* CPbk2MergeResolver::LocaliseSyncDisplayFieldLC( const TDesC& aContent )
+    {
+    HBufC* txt = NULL;
+
+    if ( !aContent.CompareF( KVPbkContactSyncPublic ) )
+        {
+        txt = CCoeEnv::Static()->AllocReadResourceLC( R_QTN_CALE_CONFIDENT_PUBLIC );
+        }
+    else if ( !aContent.CompareF( KVPbkContactSyncNoSync ) )
+        {
+        txt = CCoeEnv::Static()->AllocReadResourceLC( R_QTN_CALE_CONFIDENT_NONE );
+        }
+    else
+        {
+        txt = CCoeEnv::Static()->AllocReadResourceLC( R_QTN_CALE_CONFIDENT_PRIVATE );
+        }
+
+    return txt;
     }
 
 // --------------------------------------------------------------------------

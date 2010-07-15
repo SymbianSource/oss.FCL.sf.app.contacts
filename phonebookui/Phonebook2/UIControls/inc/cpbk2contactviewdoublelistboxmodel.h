@@ -26,8 +26,6 @@
 class CPbk2ThumbnailManager;
 class MPbk2ContactUiControlDoubleListboxExtension;
 class CPbk2ContactViewDoubleListboxDataElement;
-class CDataElementCache;
-class MPbk2FilteredViewStack;
 
 // CLASS DECLARATION
 
@@ -47,8 +45,7 @@ public:  // Constructors and destructor
      */
      static CPbk2ContactViewDoubleListBoxModel* NewL(
             CPbk2ContactViewListBoxModel::TParams& aParams,
-            CPbk2ThumbnailManager& aThumbManager,
-            MPbk2FilteredViewStack& aFilteredViewStack );
+            CPbk2ThumbnailManager& aThumbManager );
 
     /**
      * Destructor.
@@ -64,8 +61,7 @@ protected:
      */
     CPbk2ContactViewDoubleListBoxModel(
         CPbk2ContactViewListBoxModel::TParams& aParams,
-        CPbk2ThumbnailManager& aThumbManager,
-        MPbk2FilteredViewStack& aFilteredViewStack );
+        CPbk2ThumbnailManager& aThumbManager );
 
 protected: // new 
     
@@ -93,17 +89,15 @@ protected: // new
      */
     void AppendIconIndexIfFound( const TPbk2IconId& aIconId ) const;
 
-    void FormatBufferForElementDataL(
-        CPbk2ContactViewDoubleListboxDataElement& aDataElement, 
-        TInt aIndex ) const;
-
     void AppendThumbnailL( 
             CPbk2ContactViewDoubleListboxDataElement& aDataElement, 
-            TInt aIndex ) const;
+            TInt aIndex,
+            const MVPbkContactLink& aLink ) const;
     
     void FetchDataFromExtension(
             CPbk2ContactViewDoubleListboxDataElement& aDataElement,
-            TInt aIndex ) const;
+            TInt aIndex,
+            const MVPbkContactLink& aLink ) const;
     
 public: // From CPbk2ContactViewListBoxModel
     void FormatBufferL( 
@@ -120,11 +114,6 @@ private:	//data
 	/// Ref
 	MPbk2ContactUiControlDoubleListboxExtension* iDoubleListExtensionPoint;
 	
-	/// Own:
-	CDataElementCache* iDataElementCache;
-	
-	/// Ref
-	MPbk2FilteredViewStack& iFilteredViewStack;
     };
 
 #endif // CPBK2CONTACTVIEWDOUBLELISTBOXMODEL_H

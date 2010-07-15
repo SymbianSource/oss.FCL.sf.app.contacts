@@ -28,22 +28,26 @@
 #include <CVPbkContactManager.h>
 #include <MVPbkFieldType.h>
 #include <MVPbkContactFieldData.h>
+#include <MVPbkContactFieldUriData.h>
+#include <MVPbkContactFieldTextData.h>
 #include <MVPbkSingleContactOperationObserver.h>
+#include "CVPbkDefaultAttribute.h"
+const TInt KGranularity = 4;
 
 namespace{
-	#ifdef _DEBUG
+    #ifdef _DEBUG
        
-	enum TPanic
-		{
-		EPanicInvalidState = 1,
-		EPanicInvalidToRetrieve,
-		EPanicInvalidToLock,
-		EPanicInvalidToCommit,
-		EPanicInvalidToUpdate,
+    enum TPanic
+        {
+        EPanicInvalidState = 1,
+        EPanicInvalidToRetrieve,
+        EPanicInvalidToLock,
+        EPanicInvalidToCommit,
+        EPanicInvalidToUpdate,
         };
 
     void Panic(TPanic aPanic)
-    	{
+        {
         _LIT(KPanicCat, "CVPbkImportToContactsMergeOperation");
         User::Panic(KPanicCat, aPanic);
         }
@@ -56,15 +60,15 @@ namespace{
 // ---------------------------------------------------------------------------
 //
 CVPbkImportToContactsMergeOperation::CVPbkImportToContactsMergeOperation(
-		const MVPbkContactLink& aReplaceContact,
-		MVPbkSingleContactOperationObserver& aObserver,
-		MVPbkContactStore& aTargetStore,
-		CVPbkVCardData& aData
-		)
+        const MVPbkContactLink& aReplaceContact,
+        MVPbkSingleContactOperationObserver& aObserver,
+        MVPbkContactStore& aTargetStore,
+        CVPbkVCardData& aData
+        )
         :   CActive( EPriorityStandard ),
-        	iState ( EImport ),
-        	iTargetStore( aTargetStore ),
-        	iReplaceContact( aReplaceContact ),
+            iState ( EImport ),
+            iTargetStore( aTargetStore ),
+            iReplaceContact( aReplaceContact ),
             iObserver( aObserver ),
             iData(aData)
     {
@@ -134,7 +138,16 @@ CVPbkImportToContactsMergeOperation::~CVPbkImportToContactsMergeOperation()
         }
     if(iVPbkOperation)
         delete iVPbkOperation;
-
+    if( iSetAttributeOperation )
+        {
+        delete iSetAttributeOperation;
+        iSetAttributeOperation = NULL;
+        }
+    if( iDefaultAttributes )
+        {
+        delete iDefaultAttributes;
+        iDefaultAttributes = NULL;
+        }
     iImportedContacts.ResetAndDestroy();
 
     CActive::Cancel();
@@ -168,56 +181,65 @@ void CVPbkImportToContactsMergeOperation::Cancel()
 // ---------------------------------------------------------------------------
 //
 void CVPbkImportToContactsMergeOperation::RunL()
-	{
-	if ( iStatus == KErrNone)
-		{
-		switch( iState )
-			{
-			case ERetrieve:
-				{
-				RetrieveContactL();
-				break;
-				}				
-			case ELock:
-				{
-				LockContactL();
-				break;
-				}
-			case EReplaceFields:
-				{
-				UpdateContactL();
-				break;
-				}						
-			case ECommit:
-				{
-				CommitContactL();
-				break;
-				}
-			case EReRetrieve:
-				{
-				ReRetrieveContactL();
-				break;
-				}				
-			case EComplete:
-			    {
-
-			    if(iGroupcardHandler && ((CVPbkVCardImporter *)iOperationImpl)->IsGroupcard())
-			        {
-			        iGroupcardHandler->BuildContactGroupsHashMapL(iContact->ParentStore());
-			        const MVPbkContactLink* contact = iContact->CreateLinkLC();
-			        iGroupcardHandler->GetContactGroupStoreL(*contact);
-			        CleanupStack::PopAndDestroy(); // For contact
-			        iGroupcardHandler->DecodeContactGroupInVCardL(((CVPbkVCardImporter *)iOperationImpl)->GetGroupcardvalue());
-			        }
-			    iObserver.VPbkSingleContactOperationComplete( *this, iContact );
-			    iContact = NULL;
-			    break;
-			    }
-			default:
-				__ASSERT_DEBUG( EFalse, Panic(EPanicInvalidState) );
-			}
-		}
-	}
+    {
+    if ( iStatus == KErrNone)
+        {
+        switch( iState )
+            {
+            case ERetrieve:
+                {
+                RetrieveContactL();
+                break;
+                }
+            case    ELock:
+                {
+                LockContactL();
+                break;
+                }
+            case EUpdateContact:
+                {
+                UpdateContactL();
+                break;
+                }
+            case EReplaceFields:
+                {
+                ReplaceFieldL( *(iImportedContacts[0]), *iContact );
+                break;
+                }
+            case ESetAttributes:
+                {
+                SetNextL();
+                break;
+                }
+            case ECommit:
+                {
+                CommitContactL();
+                break;
+                }
+            case EReRetrieve:
+                {
+                ReRetrieveContactL();
+                break;
+                }
+            case EComplete:
+                {
+                if(iGroupcardHandler && ((CVPbkVCardImporter *)iOperationImpl)->IsGroupcard())
+                    {
+                    iGroupcardHandler->BuildContactGroupsHashMapL(iContact->ParentStore());
+                    const MVPbkContactLink* contact = iContact->CreateLinkLC();
+                    iGroupcardHandler->GetContactGroupStoreL(*contact);
+                    CleanupStack::PopAndDestroy(); // For contact
+                    iGroupcardHandler->DecodeContactGroupInVCardL(((CVPbkVCardImporter *)iOperationImpl)->GetGroupcardvalue());
+                    }
+                iObserver.VPbkSingleContactOperationComplete( *this, iContact );
+                iContact = NULL;
+                break;
+                }
+            default:
+                __ASSERT_DEBUG( EFalse, Panic(EPanicInvalidState) );
+            }
+        }
+    }
 
 // ---------------------------------------------------------------------------
 // CVPbkImportToContactsMergeOperation::RunError
@@ -225,10 +247,10 @@ void CVPbkImportToContactsMergeOperation::RunL()
 // ---------------------------------------------------------------------------
 //
 TInt CVPbkImportToContactsMergeOperation::RunError( TInt aError )
-	{
-	HandleError( aError );
-	return KErrNone;
-	}
+    {
+    HandleError( aError );
+    return KErrNone;
+    }
 
 // ---------------------------------------------------------------------------
 // CVPbkImportToContactsMergeOperation::DoCancel
@@ -236,10 +258,10 @@ TInt CVPbkImportToContactsMergeOperation::RunError( TInt aError )
 // ---------------------------------------------------------------------------
 //
 void CVPbkImportToContactsMergeOperation::DoCancel()
-	{
-	delete iOperationImpl;
-	iOperationImpl = NULL;
-	}
+    {
+    delete iOperationImpl;
+    iOperationImpl = NULL;
+    }
 
 // ---------------------------------------------------------------------------
 // From class MVPbkImportOperationObserver
@@ -359,25 +381,25 @@ void CVPbkImportToContactsMergeOperation::VPbkSingleContactOperationFailed(
 // ---------------------------------------------------------------------------
 //
 void CVPbkImportToContactsMergeOperation::ContactOperationCompleted(
-		TContactOpResult aResult)
-	{
-	delete aResult.iStoreContact;
-	switch( iState )
-		{
-		case ELock:
-			{
-			NextState( EReplaceFields );
-			break;
-			}
-		case ECommit:
-			{
-			NextState( EReRetrieve );
-			break;
-			}			
-		default:
-			__ASSERT_DEBUG( EFalse, Panic(EPanicInvalidState) );
-		}
-	}
+        TContactOpResult aResult)
+    {
+    delete aResult.iStoreContact;
+    switch( iState )
+        {
+        case ELock:
+            {
+            NextState( EUpdateContact );
+            break;
+            }
+        case ECommit:
+            {
+            NextState( EReRetrieve );
+            break;
+            }
+        default:
+            __ASSERT_DEBUG( EFalse, Panic(EPanicInvalidState) );
+        }
+    }
 
 // ---------------------------------------------------------------------------
 // CVPbkImportToContactsMergeOperation::ContactOperationFailed
@@ -385,111 +407,134 @@ void CVPbkImportToContactsMergeOperation::ContactOperationCompleted(
 // ---------------------------------------------------------------------------
 //
 void CVPbkImportToContactsMergeOperation::ContactOperationFailed(
-		TContactOp /*aOpCode*/, TInt aErrorCode, TBool /*aErrorNotified*/)
-	{
-	HandleError( aErrorCode );
-	}
+        TContactOp    /*aOpCode*/, TInt aErrorCode, TBool /*aErrorNotified*/)
+    {
+    HandleError( aErrorCode );
+    }
 
 // ---------------------------------------------------------------------------
 // CVPbkImportToContactsMergeOperation::HandleError
 // ---------------------------------------------------------------------------
 //
 void CVPbkImportToContactsMergeOperation::HandleError(TInt aError)
-	{
-	iObserver.VPbkSingleContactOperationFailed( *this, aError );
-	}
+    {
+    iObserver.VPbkSingleContactOperationFailed( *this, aError );
+    }
 
 // ---------------------------------------------------------------------------
 // CVPbkImportToContactsMergeOperation::RetrieveContactL
 // ---------------------------------------------------------------------------
 //
 inline void CVPbkImportToContactsMergeOperation::RetrieveContactL()
-	{
-	iVPbkOperation = iData.GetContactManager().RetrieveContactL(iReplaceContact,*this );
-	}
+    {
+    iVPbkOperation = iData.GetContactManager().RetrieveContactL(iReplaceContact,*this );
+    }
 
 // ---------------------------------------------------------------------------
 // CVPbkImportToContactsMergeOperation::ReRetrieveContactL
 // ---------------------------------------------------------------------------
 //
 inline void CVPbkImportToContactsMergeOperation::ReRetrieveContactL()
-	{
-	__ASSERT_DEBUG( iContact, Panic(EPanicInvalidToRetrieve) );
-	
-	MVPbkContactLink* link = iContact->CreateLinkLC(); 
-	iVPbkOperation = iData.GetContactManager().RetrieveContactL( *link, *this );
-	CleanupStack::PopAndDestroy();
-	}
+    {
+    __ASSERT_DEBUG( iContact, Panic(EPanicInvalidToRetrieve) );
+    
+    MVPbkContactLink* link = iContact->CreateLinkLC(); 
+    iVPbkOperation = iData.GetContactManager().RetrieveContactL( *link, *this );
+    CleanupStack::PopAndDestroy();
+    }
 
 // ---------------------------------------------------------------------------
 // CVPbkImportToContactsMergeOperation::LockContactL
 // ---------------------------------------------------------------------------
 //
 inline void CVPbkImportToContactsMergeOperation::LockContactL()
-	{
-	__ASSERT_DEBUG( iContact, Panic(EPanicInvalidToLock) );
-	iContact->LockL( *this );
-	}
+    {
+    __ASSERT_DEBUG( iContact, Panic(EPanicInvalidToLock) );
+    iContact->LockL( *this );
+    }
 
 // ---------------------------------------------------------------------------
 // CVPbkImportToContactsMergeOperation::CommitContactL
 // ---------------------------------------------------------------------------
 //
 inline void CVPbkImportToContactsMergeOperation::CommitContactL()
-	{
-	__ASSERT_DEBUG( iContact, Panic(EPanicInvalidToCommit) );
-	
-	iContact->CommitL( *this );
-	}
+    {
+    __ASSERT_DEBUG( iContact, Panic(EPanicInvalidToCommit) );
+    
+    iContact->CommitL( *this );
+    }
 
 // ---------------------------------------------------------------------------
 // CVPbkImportToContactsMergeOperation::UpdateContactL
 // ---------------------------------------------------------------------------
 //
 inline void CVPbkImportToContactsMergeOperation::UpdateContactL()
-	{
-	__ASSERT_DEBUG( iContact, Panic(EPanicInvalidToUpdate) );
-	__ASSERT_DEBUG( iImportedContacts.Count()>0, Panic(EPanicInvalidToUpdate) );
-	__ASSERT_DEBUG( iImportedContacts[0], Panic(EPanicInvalidToUpdate) );
-	
-	TRAPD( err, ReplaceContactL( *(iImportedContacts[0]), *iContact ));
-	
-	
-	// whether commit succeds or fails, we continue,
-	// update iImportedContacts right away
-	delete iImportedContacts[0];
-	iImportedContacts.Remove(0);	
-	
-	if ( err != KErrNone )
-		{
-		HandleError( err );
-		}
-	else
-		{
-		NextState( ECommit );
-		}
-	}
+    {
+    __ASSERT_DEBUG( iContact, Panic(EPanicInvalidToUpdate) );
+    __ASSERT_DEBUG( iImportedContacts.Count()>0, Panic(EPanicInvalidToUpdate) );
+    __ASSERT_DEBUG( iImportedContacts[0], Panic(EPanicInvalidToUpdate) );
+    iContact->RemoveAllFields();
+    iCurrentFieldIndex = 0;
+    iFieldCount = iImportedContacts[0]->Fields().FieldCount();
+
+    ReplaceFieldL( *(iImportedContacts[0]), *iContact );
+    }
 
 // ---------------------------------------------------------------------------
 // From class MVPbkImportOperationObserver
 // ---------------------------------------------------------------------------
 //
-inline void CVPbkImportToContactsMergeOperation::ReplaceContactL(
-		const MVPbkStoreContact& aSrc,
-		MVPbkStoreContact& aTarget )
-	{
-	aTarget.RemoveAllFields();
-	
-	const MVPbkStoreContactFieldCollection& sourceFields = aSrc.Fields();
-    const TInt sourceFieldCount = sourceFields.FieldCount();
-    for ( TInt i = 0; i < sourceFieldCount; ++i )
+void CVPbkImportToContactsMergeOperation::ReplaceFieldL(
+        const MVPbkStoreContact& aSrc,
+        MVPbkStoreContact& aTarget )
+    {
+    if( iCurrentFieldIndex < iFieldCount )
         {
-        const MVPbkFieldType* type = 
-            sourceFields.FieldAt(i).BestMatchingFieldType();
+        const MVPbkStoreContactFieldCollection& sourceFields = aSrc.Fields();
+        const MVPbkFieldType* type = sourceFields.FieldAt(iCurrentFieldIndex).BestMatchingFieldType();
         if ( type )
             {
-            CopyFieldL( sourceFields.FieldAt(i), *type, aTarget );
+            TRAPD( err,
+                CopyFieldL( sourceFields.FieldAt(iCurrentFieldIndex), *type, aTarget );
+                // Check whether the sorce field has attribute,
+                // If the sorce field has attribute, set attribute to the target contact's field
+                TInt type = EVPbkDefaultTypeUndefined + 1;
+                if( iData.AttributeManagerL().HasFieldAttributeL( CVPbkDefaultAttribute::Uid(), 
+                    sourceFields.FieldAt(iCurrentFieldIndex) ) )
+                    {
+                    GetDefaultAttributsL( sourceFields.FieldAt(iCurrentFieldIndex) );
+                    if( iDefaultAttributes && iDefaultAttributes->Count() > 0 )
+                        {
+                        SetNextL();
+                        }
+                    }
+                else
+                    {
+                    if( ++iCurrentFieldIndex < iFieldCount )
+                        {
+                        ReplaceFieldL(aSrc, aTarget);
+                        }
+                    else
+                        {
+                        delete iImportedContacts[0];
+                        iImportedContacts.Remove(0);
+                        NextState( ECommit );
+                        }
+                    }
+                );
+            if( err != KErrNone )
+                {
+                delete iImportedContacts[0];
+                iImportedContacts.Remove(0);
+                HandleError( err );
+                }
             }
+        }
+    else
+        {
+        delete iImportedContacts[0];
+        iImportedContacts.Remove(0);
+        NextState( ECommit );
         }
     }
 
@@ -513,8 +558,80 @@ inline void CVPbkImportToContactsMergeOperation::CopyFieldL(
         }
     newField->FieldData().CopyL(aSourceField.FieldData());
     aTargetContact.AddFieldL(newField);
-    CleanupStack::Pop(); // newField	
-	}
+    CleanupStack::Pop(); // newField
+    }
+
+// --------------------------------------------------------------------------
+// CVPbkImportToContactsMergeOperation::GetDefaultAttributsL
+// Gets the attributes from aField.
+// --------------------------------------------------------------------------
+//
+void CVPbkImportToContactsMergeOperation::GetDefaultAttributsL( const MVPbkStoreContactField& aField )
+    {
+    delete iDefaultAttributes;
+    iDefaultAttributes = NULL;
+    iDefaultAttributes = new( ELeave ) CArrayFixFlat<TVPbkDefaultType>( KGranularity );
+    TInt type = EVPbkDefaultTypeUndefined + 1;
+    while( EVPbkLastDefaultType != type )
+        {
+        CVPbkDefaultAttribute* attr = CVPbkDefaultAttribute::NewL( (TVPbkDefaultType)type );
+        CleanupStack::PushL( attr );
+
+        if( iData.AttributeManagerL().HasFieldAttributeL( *attr, aField ) )
+            {
+            iDefaultAttributes->AppendL( (TVPbkDefaultType)type );
+            }
+        
+        CleanupStack::PopAndDestroy( attr );
+        type++;
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CVPbkImportToContactsMergeOperation::NextAttribute
+// Gets next attribute from the array. The array is processed backwards.
+// --------------------------------------------------------------------------
+//
+inline TVPbkDefaultType CVPbkImportToContactsMergeOperation::NextAttribute()
+    {
+    TVPbkDefaultType attribute = EVPbkDefaultTypeUndefined;
+    TInt count = 0;
+    if ( iDefaultAttributes )
+        {
+        count = iDefaultAttributes->Count();
+        }
+
+    if ( count > 0 )
+        {
+        attribute = iDefaultAttributes->At( count - 1 ); // zero-based
+        iDefaultAttributes->Delete( count -1 ); // zero-based
+        }
+    return attribute;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2DefaultAttributeProcess::SetNextL
+// --------------------------------------------------------------------------
+//
+void CVPbkImportToContactsMergeOperation::SetNextL()
+    {
+    TVPbkDefaultType attributeType = NextAttribute();
+    if ( attributeType != EVPbkDefaultTypeUndefined )
+        {
+        delete iSetAttributeOperation;
+        iSetAttributeOperation = NULL;
+        CVPbkDefaultAttribute* attr = CVPbkDefaultAttribute::NewL( attributeType );
+        CleanupStack::PushL( attr );
+        iSetAttributeOperation = iData.AttributeManagerL().SetFieldAttributeL(iContact->Fields().FieldAt(iCurrentFieldIndex), *attr, *this);
+        CleanupStack::PopAndDestroy( attr );
+        }
+    else
+        {
+        // Finished
+        ++iCurrentFieldIndex;
+        NextState( EReplaceFields );
+        }
+    }
 
 // ---------------------------------------------------------------------------
 // CVPbkImportToContactsMergeOperation::NextState
@@ -526,6 +643,34 @@ void CVPbkImportToContactsMergeOperation::NextState( TState aNextState )
     TRequestStatus* status = &iStatus;
     User::RequestComplete( status, KErrNone );
     SetActive();
+    }
+
+// --------------------------------------------------------------------------
+// CVPbkImportToContactsMergeOperation::AttributeOperationComplete
+// --------------------------------------------------------------------------
+//
+void CVPbkImportToContactsMergeOperation::AttributeOperationComplete( MVPbkContactOperationBase& aOperation )
+    {
+    if( &aOperation == iSetAttributeOperation )
+        {
+        NextState( ESetAttributes );
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CVPbkImportToContactsMergeOperation::AttributeOperationFailed
+// --------------------------------------------------------------------------
+//
+void CVPbkImportToContactsMergeOperation::AttributeOperationFailed(
+        MVPbkContactOperationBase& aOperation,
+        TInt aError )
+    {
+    if( &aOperation == iSetAttributeOperation )
+        {
+        delete iImportedContacts[0];
+        iImportedContacts.Remove(0);
+        HandleError( aError );
+        }
     }
 
 // End of file

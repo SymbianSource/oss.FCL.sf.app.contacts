@@ -157,7 +157,6 @@ void CSpbPhoneNumberParser::SolvePhoneNumberL( MVPbkStoreContact& aContact )
                         //default number found
                         number.CreateL( textData->Text() );
                         hasDefaultNumberField = ETrue;
-                        break;
                         }
                     const TPtrC phoneNumber( textData->Text() );
                     // we need count phonenumbers same way how this is implemented in CCA
@@ -180,12 +179,17 @@ void CSpbPhoneNumberParser::SolvePhoneNumberL( MVPbkStoreContact& aContact )
         {
             number.CreateL( (*phoneNumberArray)[0] );
         }
-
+    
     CleanupStack::PopAndDestroy( phoneNumberArray );
     CleanupStack::PopAndDestroy( attribute );
-	
-    // no number was found
-    if( numberCount > 1 )
+    
+    if( hasDefaultNumberField || numberCount <= 1 )
+        {
+        // inform the observer
+        iContent.PhoneNumberUpdatedL( 
+            number, CSpbContentProvider::ETypePhoneNumber );
+        }
+    else
         {
         // contact has multiple numbers and no default
         TBuf<12> count;
@@ -193,13 +197,7 @@ void CSpbPhoneNumberParser::SolvePhoneNumberL( MVPbkStoreContact& aContact )
         iContent.PhoneNumberUpdatedL( 
             count, CSpbContentProvider::ETypePhoneNumberMultiple );
         }
-    else
-        {
-        // inform the observer
-        iContent.PhoneNumberUpdatedL( 
-            number, CSpbContentProvider::ETypePhoneNumber );
-        }
-
+    
     number.Close();
     }
 

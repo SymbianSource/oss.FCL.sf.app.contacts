@@ -27,7 +27,7 @@
 class CVPbkVCardFieldTypeProperty;
 class CVPbkVCardIdNameMapping;
 class MVPbkFieldTypeList;
-class CParserVCard;
+class CVersitTlsData;
 class CVPbkContactCopyPolicyManager;
 class MVPbkContactCopyPolicy;
 class CVPbkContactManager;
@@ -118,7 +118,10 @@ NONSHARABLE_CLASS(CVPbkVCardData) : public CBase
         VPbkEngUtils::CTextStore* iTextStore;        
         
         //  Own: Array to hold those fields masked during a beamed export
-         CDesC8ArrayFlat* iMaskedFieldsArray;
+        CDesC8ArrayFlat* iMaskedFieldsArray;
+        // Own: A handle to singleton for performance reasons.
+        // See CVersitTlsData documentation. 
+        CVersitTlsData* iVersitTlsData;
     };
 
 #endif // CVPBKVCARDDATA_H

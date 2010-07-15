@@ -31,6 +31,8 @@
 #include "CPsu2ServiceDialingInfoView.h"
 #include "CPsu2FixedDialingInfoView.h"
 #include "CPsu2ContactEditorExtension.h"
+#include "CPsu2CopyAllToPbkCmd.h"
+
 #include <MPbk2ContactUiControl.h>
 #include <CPbk2StorePropertyArray.h>
 #include <CPbk2AppViewBase.h>
@@ -57,6 +59,8 @@
 #include <vwsdef.h>
 #include <csxhelp/phob.hlp.hrh>
 #include <avkon.hrh>
+
+#include <MPbk2CommandHandler.h>
 
 // --------------------------------------------------------------------------
 // CPsu2UIExtensionPlugin::CPsu2UIExtensionPlugin
@@ -246,8 +250,12 @@ MPbk2Command* CPsu2UIExtensionPlugin::CreatePbk2CommandForIdL
             result = CPsu2CopyFromPbkCmd::NewL( *target, aUiControl, const_cast<CPsu2UIExtensionPlugin*>( this ) );
             break;
             }
+        case EPsu2CmdCopyToContacts:
+            {
+            result = CPsu2CopyAllToPbkCmd::NewL();
+            }
         }
-
+  
     return result;
     }
 
