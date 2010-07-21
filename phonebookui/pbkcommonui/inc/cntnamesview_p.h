@@ -70,9 +70,9 @@ public slots:
     void showContextMenu(HbAbstractViewItem* aItem, QPointF aPoint);
     void showSettings();
     
-     void executeAction( QContact& aContact, QContactDetail aDetail, QString aAction );
+    void executeAction( QContact& aContact, QContactDetail aDetail, QString aAction );
     void actionExecuted( CntActionLauncher* aAction );
-    void handleDeleteContact( HbAction* aAction );
+    void handleDeleteContact( int aAction );
     void importSim();
     
     void handleContactAddition(const QList<QContactLocalId> & aAddedList);

@@ -26,6 +26,7 @@
 #include <hbtoucharea.h>
 #include <hbinstantfeedback.h>
 #include <hbmainwindow.h>
+#include <hbeffect.h>
 #include <xqsettingsmanager.h>
 #include <xqsettingskey.h>
 #include <cntuids.h>
@@ -38,11 +39,13 @@ CntEditViewHeadingItem::CntEditViewHeadingItem(QGraphicsItem *parent) :
     mLabel(NULL),
     mSecondLabel(NULL),
     mFrameItem(NULL),
+    mFocusItem(NULL),
     mIconTouchArea(NULL),
     mIconFocused(false),
     mTextFocused(false)
 {
-
+    HbEffect::add("icon", "groupbox_icon_click", "iconclick");
+    setProperty("state", "normal");
 }
 
 CntEditViewHeadingItem::~CntEditViewHeadingItem()
@@ -113,12 +116,22 @@ void CntEditViewHeadingItem::createPrimitives()
     if (!mFrameItem)
     {
         mFrameItem = new HbFrameItem(this);
-        mFrameItem->frameDrawer().setFrameGraphicsName("qtg_fr_groupbox");
+        mFrameItem->frameDrawer().setFrameGraphicsName("qtg_fr_groupbox_normal");
         mFrameItem->frameDrawer().setFrameType(HbFrameDrawer::NinePieces);
         mFrameItem->setZValue(-2);
         style()->setItemName(mFrameItem, "background");
     }
 
+    if (!mFocusItem)
+    {
+       mFocusItem = new HbFrameItem(this);
+       mFocusItem->frameDrawer().setFrameGraphicsName("qtg_fr_groupbox_pressed");
+       mFocusItem->frameDrawer().setFrameType(HbFrameDrawer::NinePieces);
+       mFocusItem->setZValue(-1);
+       mFocusItem->setVisible(false);
+       style()->setItemName(mFocusItem, "highlight");
+    }
+    
     if (!mIconTouchArea)
     {
         mIconTouchArea = new HbTouchArea(this);
@@ -152,6 +165,20 @@ void CntEditViewHeadingItem::recreatePrimitives()
 void CntEditViewHeadingItem::updatePrimitives()
 {
     HbWidget::updatePrimitives();
+    if (mTextFocused)
+    {
+       mFocusItem->setVisible(true);
+       setProperty("state", "pressed");
+    }
+    else if (mIconFocused)
+    {
+       HbEffect::start(mIcon, QString("icon"), QString("iconclick"));
+    }
+    else
+    {
+       mFocusItem->setVisible(false);
+       setProperty("state", "normal");
+    }
 }
 
 void CntEditViewHeadingItem::setDetails(const QContact* contact, bool myCard)
@@ -171,16 +198,18 @@ void CntEditViewHeadingItem::setDetails(const QContact* contact, bool myCard)
                              KCntNameOrdering);
     int setting = settingsMng.readItemValue(nameOrderKey, XQSettingsManager::TypeInt).toInt();
     QStringList nameList = QStringList();
-    QString last;
+    QString last_first;
     
     switch( setting ) {
         case CntOrderLastFirst:
             nameList << name.prefix() << name.lastName() << name.firstName() << name.middleName() << name.suffix();
             break;
         case CntOrderLastCommaFirst:
-            if (!name.lastName().isEmpty())
-                last = name.lastName() + ",";
-            nameList << name.prefix() << last << name.firstName() << name.middleName() << name.suffix();
+            if (!name.firstName().isEmpty() && !name.lastName().isEmpty())
+                last_first = name.lastName() + ", " + name.firstName();
+            else
+                last_first = !name.firstName().isEmpty() ? name.firstName() : name.lastName();
+            nameList << name.prefix() << last_first << name.middleName() << name.suffix();
             break;
         default:    // Default to first name last name
             nameList << name.prefix() << name.firstName() << name.middleName() << name.lastName() << name.suffix();
@@ -231,10 +260,12 @@ void CntEditViewHeadingItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     if (mIconTouchArea->rect().contains(event->pos()))
     {
         mIconFocused = true;
+        updatePrimitives();
     }
     else if (rect().contains(event->pos()))
     {
         mTextFocused = true;
+        updatePrimitives();
     }
 
     event->accept();
@@ -249,6 +280,7 @@ void CntEditViewHeadingItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     else if ((!rect().contains(event->pos()) || mIconTouchArea->rect().contains(event->pos())) && mTextFocused)
     {
         mTextFocused = false;
+        updatePrimitives();
     }
     event->accept();
 }
@@ -259,11 +291,13 @@ void CntEditViewHeadingItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     if (mIconTouchArea->rect().contains(event->pos()) && mIconFocused)
     {
         mIconFocused = false;
+        updatePrimitives();
         emit iconClicked();
     }
     else if (rect().contains(event->pos()) && !mIconTouchArea->rect().contains(event->pos()) && mTextFocused)
     {
         mTextFocused = false;
+        updatePrimitives();
         emit textClicked();
     }
     event->accept();

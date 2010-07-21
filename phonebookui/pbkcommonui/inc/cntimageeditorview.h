@@ -31,6 +31,7 @@ class ThumbnailManager;
 class HbAction;
 class QStandardItemModel;
 class QModelIndex;
+class CntSaveManager;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -75,6 +76,7 @@ private slots:
     void setOrientation(Qt::Orientation orientation);
     void listViewActivated(const QModelIndex &index);
     void handleError(int errorCode, const QString& errorMessage);
+    void saveContact();
 
 
 #ifdef PBK_UNIT_TEST
@@ -95,6 +97,7 @@ private:
     HbDocumentLoader         mDocumentLoader;
     HbListView              *mListView; // owned by layout
     QStandardItemModel      *mModel; // own
+    CntSaveManager          *mSaveManager; // own
     
     CntViewParameters       mArgs;
 };

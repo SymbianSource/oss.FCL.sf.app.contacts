@@ -70,7 +70,7 @@ private slots:
     void handleManageMembers();
     void editGroup();
     void deleteGroup();
-    void handleDeleteGroup(HbAction *action);
+    void handleDeleteGroup(int action);
     
     void showContextMenu(HbAbstractViewItem *item, const QPointF &coords);
     void handleMenu(HbAction* action);

@@ -25,6 +25,7 @@
 
 class CntServiceHandler;
 class CntAbstractViewManager;
+class CntAbstractServiceProvider;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -47,13 +48,13 @@ public slots:
     void doViewActivated(CntAbstractViewManager* aMgr, const CntViewParameters aArgs);
 
 public:
-    CntServiceAssignContactCardView(CntServiceHandler *aServiceHandler);
+    CntServiceAssignContactCardView( CntAbstractServiceProvider& aServiceController );
     ~CntServiceAssignContactCardView();
 
     int viewId() const { return serviceAssignContactCardView; }
 
 private:
-    CntServiceHandler       *mServiceHandler;
+    CntAbstractServiceProvider& mProvider;
     CntAbstractViewManager  *mViewManager;
     QContact                mContact;
     QContactDetail          mDetail;

@@ -30,7 +30,7 @@
                 <string name="alignment" value="AlignCenter"/>
                 <string name="aspectRatioMode" value="KeepAspectRatio"/>
                 <sizehint height="30.5un" type="FIXED" width="30.5un"/>
-                <icon iconName="qtg_large_add_contact_picture" name="icon"/>
+                <icon iconName="qtg_large_add_group_picture" name="icon"/>
                 <sizepolicy horizontalPolicy="Fixed" horizontalStretch="0" verticalPolicy="Fixed" verticalStretch="0"/>
             </widget>
             

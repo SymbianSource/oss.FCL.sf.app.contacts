@@ -20,6 +20,11 @@
 #include <prcpresencebuddyinfo_qt.h>
 #include <prcpresencereader_qt.h>
 
+/*!
+    Presence listener for contact card. It provides aggregated
+    presence information for a contact and separately for each
+    valid QContactOnlineAccount.
+*/
 CntPresenceListener::CntPresenceListener(const QContact& contact, QObject* parent) :
     QObject(parent),
     mReader(NULL),
@@ -30,12 +35,22 @@ CntPresenceListener::CntPresenceListener(const QContact& contact, QObject* paren
                            this, SLOT(handlePresenceUpdate(bool, PrcPresenceBuddyInfoQt*)));
 }
 
+/*!
+    Destructor
+*/
 CntPresenceListener::~CntPresenceListener()
 {
     delete mReader;
     mReader = NULL;
 }
 
+/*!
+    Subscribes all valid QContactOnlineAccounts to receive status updates from presence cache and
+    returns initial presence statuses for each of the accounts.
+
+    \param combinedOnlineStatus aggregated online status
+    \return QMap with account specific (for example "sip:sip@sip.com") online information
+*/
 QMap<QString, bool> CntPresenceListener::initialPresences(bool &combinedOnlineStatus)
 {
     QMap<QString, bool> initialMap;
@@ -67,7 +82,14 @@ QMap<QString, bool> CntPresenceListener::initialPresences(bool &combinedOnlineSt
     
     return initialMap;
 }
+
+/*!
+    Private slot that handles emitting changes for separate accounts along
+    with the aggregated information.
     
+    \param aSuccess information if the request/update was succesful
+    \param aPresenceBuddyInfo the account that got updated
+*/
 void CntPresenceListener::handlePresenceUpdate(bool aSuccess, PrcPresenceBuddyInfoQt* aPresenceBuddyInfo)
 {
     if (aSuccess && aPresenceBuddyInfo != NULL)
@@ -90,14 +112,20 @@ void CntPresenceListener::handlePresenceUpdate(bool aSuccess, PrcPresenceBuddyIn
                 }
             }
             
-            // emit the combined presence status
+            // emit the aggregated presence status
             emit fullPresenceUpdated(parsePresence(buddies));
             
             qDeleteAll(buddies);
         }
     }
 }
-    
+
+/*!
+    Returns the aggregated online status.
+
+    \param buddyList list of accounts to parse the aggregated status from
+    \return bool true if any of the accounts is online
+*/
 bool CntPresenceListener::parsePresence(QList<PrcPresenceBuddyInfoQt*> buddyList)
 {
     foreach (PrcPresenceBuddyInfoQt* buddy, buddyList)

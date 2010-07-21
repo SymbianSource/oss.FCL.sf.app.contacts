@@ -22,23 +22,23 @@
 #include "cntcontactcardview.h"
 
 class CntServiceHandler;
+class CntAbstractServiceProvider;
 
 class CntServiceContactCardView : public CntContactCardView
 {
     Q_OBJECT
 
-private slots:
-
-    void doShowPreviousView();
-
 public:
-    CntServiceContactCardView(CntServiceHandler *aServiceHandler);
+    CntServiceContactCardView( CntAbstractServiceProvider& aServiceProvider );
     ~CntServiceContactCardView();
 
     int viewId() const { return serviceContactCardView; }
     
+private slots:
+    void closeContactCard();
+
 private:
-    CntServiceHandler *mServiceHandler;
+    CntAbstractServiceProvider& mProvider;
    
 };
 

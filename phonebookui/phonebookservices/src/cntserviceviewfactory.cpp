@@ -17,16 +17,19 @@
 
 #include "cntserviceviewfactory.h"
 #include "cntabstractview.h"
+
+
 #include "cntserviceeditview.h"
-#include "cntservicesubeditview.h"
-#include "cntservicecontactfetchview.h"
 #include "cntservicecontactselectionview.h"
+
 #include "cntservicecontactcardview.h"
+#include "cntservicecontactfetchview.h"
 #include "cntserviceassigncontactcardview.h"
 
-CntServiceViewFactory::CntServiceViewFactory(CntServiceHandler* aHandler) : 
+
+CntServiceViewFactory::CntServiceViewFactory( CntAbstractServiceProvider& aServiceProvider ) : 
 CntDefaultViewFactory(),
-mService( aHandler )
+mProvider( aServiceProvider )
 {
 }
 
@@ -38,26 +41,23 @@ CntAbstractView* CntServiceViewFactory::createView( int aViewId )
 {
     switch ( aViewId )
     {
-    // contact fetch service view (fetching contacts from for example messaging)
+    // contact fetch service view (for eg. requested by messaging)
     case serviceContactFetchView:
-        return new CntServiceContactFetchView( mService );
-    
+        return new CntServiceContactFetchView( mProvider );
+
     // contact selection service view (selecting contact to edit when updating existing contact)
     case serviceContactSelectionView:
-        return new CntServiceContactSelectionView( mService );
+        return new CntServiceContactSelectionView( mProvider );
             
     case serviceEditView:
-        return new CntServiceEditView( mService );
-        
-    case serviceSubEditView:
-        return new CntServiceSubEditView( mService );
-    
+        return new CntServiceEditView( mProvider );
+
     case serviceContactCardView:
-        return new CntServiceContactCardView( mService );
+        return new CntServiceContactCardView( mProvider );
             
     case serviceAssignContactCardView:
-        return new CntServiceAssignContactCardView( mService );
-        
+        return new CntServiceAssignContactCardView( mProvider );
+
     default:
         return CntDefaultViewFactory::createView( aViewId );
     }

@@ -52,6 +52,28 @@ bool CntActionLauncher::execute( QContact aContact, QContactDetail aDetail )
     
     return executed;
     }
+
+bool CntActionLauncher::execute( QContact aContact, QContactDetail aDetail, QVariantMap aParameters )
+    {
+    bool executed = false;
+    QList<QContactActionDescriptor> all = QContactAction::actionDescriptors(mAction, "symbian");
+    mContactAction = QContactAction::action( all.first() );
+    if ( mContactAction )
+        {
+        if (aContact.preferredDetail(mAction).isEmpty() && (mAction == "call" || mAction == "message" || mAction == "email"))
+            {
+            aContact.setPreferredDetail(mAction, aDetail);
+            //return value will be ignored because we cannot do anything if it fails.
+            mContactManager->saveContact(&aContact);
+            }
+        
+        connect(mContactAction, SIGNAL(stateChanged(QContactAction::State)),
+                this, SLOT(progress(QContactAction::State)));
+        executed = mContactAction->invokeAction( aContact, aDetail, aParameters );
+        }
+    
+    return executed;
+    }
  
 /*!
 Launch dynamic action

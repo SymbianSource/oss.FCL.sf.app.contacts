@@ -88,6 +88,14 @@ int main(int argc, char *argv[])
     mainLayout->addItem(button, row, 1);
     row++;
 
+    button = new HbPushButton("Edit create new - number with subtype");
+    QObject::connect(button, SIGNAL(pressed()), service, SLOT(launchEditCreateNew_numberWithSubtype()));
+    mainLayout->addItem(button, row, 0);
+    button = new HbPushButton("old");
+    QObject::connect(button, SIGNAL(pressed()), service, SLOT(launchEditCreateNew_numberWithSubtype_old()));
+    mainLayout->addItem(button, row, 1);
+    row++;    
+    
     button = new HbPushButton("Edit create new - email");
     QObject::connect(button, SIGNAL(pressed()), service, SLOT(launchEditCreateNew_email()));
     mainLayout->addItem(button, row, 0);
@@ -104,6 +112,14 @@ int main(int argc, char *argv[])
     mainLayout->addItem(button, row, 1);
     row++;
 
+    button = new HbPushButton("Edit create new - onlineAccount with subtype");
+    bool res = QObject::connect(button, SIGNAL(pressed()), service, SLOT(launchEditCreateNew_onlineAccountWithSubtype()));
+    mainLayout->addItem(button, row, 0);
+    button = new HbPushButton("old");
+    res = QObject::connect(button, SIGNAL(pressed()), service, SLOT(launchEditCreateNew_onlineAccountWithSubtype_old()));
+    mainLayout->addItem(button, row, 1);
+    row++;
+    
     button = new HbPushButton("Launch editor with vCard");
     QObject::connect(button, SIGNAL(pressed()), service, SLOT(launchEditorVCard()));
     mainLayout->addItem(button, row, 0);
@@ -119,6 +135,14 @@ int main(int argc, char *argv[])
     mainLayout->addItem(button, row, 0);
     button = new HbPushButton("old");
     QObject::connect(button, SIGNAL(pressed()), service, SLOT(launchEditUpdateExisting_number_old()));
+    mainLayout->addItem(button, row, 1);
+    row++;
+    
+    button = new HbPushButton("Edit/update existing - number with subtype");
+    QObject::connect(button, SIGNAL(pressed()), service, SLOT(launchEditUpdateExisting_numberWithSubtype()));
+    mainLayout->addItem(button, row, 0);
+    button = new HbPushButton("old");
+    QObject::connect(button, SIGNAL(pressed()), service, SLOT(launchEditUpdateExisting_numberWithSubtype_old()));
     mainLayout->addItem(button, row, 1);
     row++;
 
@@ -138,6 +162,14 @@ int main(int argc, char *argv[])
     mainLayout->addItem(button, row, 1);
     row++;
 
+    button = new HbPushButton("Edit/update existing - onlineAccount with subtype");
+    QObject::connect(button, SIGNAL(pressed()), service, SLOT(launchEditUpdateExisting_onlineAccountWithSubtype()));
+    mainLayout->addItem(button, row, 0);
+    button = new HbPushButton("old");
+    QObject::connect(button, SIGNAL(pressed()), service, SLOT(launchEditUpdateExisting_onlineAccountWithSubtype_old()));
+    mainLayout->addItem(button, row, 1);
+    row++;
+    
     // CONTACT CARD ==========================================================
 
     button = new HbPushButton("Launch contact card");

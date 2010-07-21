@@ -31,6 +31,11 @@ QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
 
+/**
+    Presence listener for contact card. It provides aggregated
+    presence information for a contact and separately for each
+    valid QContactOnlineAccount.
+*/
 class CntPresenceListener : public QObject
 {
     friend class TestCntPresenceListener;
@@ -50,7 +55,9 @@ private:
     bool parsePresence(QList<PrcPresenceBuddyInfoQt*> buddyList);
     
 signals:
-    void accountPresenceUpdated(QString accountUri, bool online);
+    /// account-specific presence status
+    void accountPresenceUpdated(const QString& accountUri, bool online);
+    /// aggregated presence status for this contact
     void fullPresenceUpdated(bool online);
     
 private:

@@ -58,6 +58,7 @@ public: // From CntExtensionGroupCallback
 
 private slots:
     void showPreviousView();
+    void showNamesViewWithFinder();
     void openGroup(const QModelIndex &index);
     
     void showContextMenu(HbAbstractViewItem *item, const QPointF &coords);
@@ -70,7 +71,7 @@ private slots:
     void refreshDataModel();
     
     void deleteGroup(QContact group);
-    void handleDeleteGroup(HbAction* action);
+    void handleDeleteGroup(int action);
     
     void deleteGroups();
     void handleDeleteGroups(HbAction* action);

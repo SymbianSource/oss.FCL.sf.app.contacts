@@ -17,12 +17,14 @@
 
 #include "cntimageeditorview.h"
 #include "cntimageutility.h"
+#include "cntsavemanager.h"
 
 #include <hblabel.h>
 #include <xqaiwrequest.h>
 #include <xqaiwdecl.h>
 
 #include "cntdebug.h"
+#include "cntglobal.h"
 
 #include <thumbnailmanager_qt.h>
 #include <hbaction.h>
@@ -31,8 +33,11 @@
 #include <hblistview.h>
 #include <hblistviewitem.h>
 #include <hbframebackground.h>
+#include <hbdevicenotificationdialog.h>
+#include <hbparameterlengthlimiter.h>
 
 #include <QStandardItemModel>
+#include <QApplication>
 
 const char *CNT_IMAGE_XML = ":/xml/contacts_if.docml";
 
@@ -40,13 +45,14 @@ const char *CNT_IMAGE_XML = ":/xml/contacts_if.docml";
 Constructor
 */
 CntImageEditorView::CntImageEditorView() :
-        mContact(NULL),
-        mAvatar(NULL),
-        mImageLabel(NULL),
-        mRequest(NULL),
-        mViewManager(NULL),
-        mListView(NULL),
-        mModel(NULL)
+    mContact(NULL),
+    mAvatar(NULL),
+    mImageLabel(NULL),
+    mRequest(NULL),
+    mViewManager(NULL),
+    mListView(NULL),
+    mModel(NULL),
+    mSaveManager(NULL)
 {
     bool ok = false;
     mDocumentLoader.load(CNT_IMAGE_XML, &ok);
@@ -76,6 +82,9 @@ CntImageEditorView::CntImageEditorView() :
     
     connect( mThumbnailManager, SIGNAL(thumbnailReady(QPixmap, void*, int, int)),
         this, SLOT(thumbnailReady(QPixmap, void*, int, int)) );
+    
+    // closing the application from task swapper or end key will cause the contact to be saved
+    connect( qApp, SIGNAL(aboutToQuit()), this, SLOT(saveContact()));
 }
 
 /*!
@@ -88,15 +97,17 @@ CntImageEditorView::~CntImageEditorView()
     mView->deleteLater();
 
     delete mAvatar;
-    mAvatar = 0;
+    mAvatar = NULL;
     delete mContact;
-    mContact = 0;
+    mContact = NULL;
     delete mRequest;
-    mRequest = 0;
+    mRequest = NULL;
     delete mRemoveImage;
-    mRemoveImage = 0;
+    mRemoveImage = NULL;
     delete mModel;
-    mModel = 0;
+    mModel = NULL;
+    delete mSaveManager;
+    mSaveManager = NULL;
     
     CNT_EXIT
 }
@@ -120,6 +131,24 @@ void CntImageEditorView::activate( CntAbstractViewManager* aMgr, const CntViewPa
     }
     
     mContact = new QContact(mArgs.value(ESelectedContact).value<QContact>());
+    
+    QString myCard = mArgs.value( EMyCard ).toString();
+    QContactLocalId localId = mContact->localId();
+    QContactLocalId selfContactId = mViewManager->contactManager(SYMBIAN_BACKEND)->selfContactId();
+    bool isMyCard = ( localId == selfContactId && localId != 0 ) || !myCard.isEmpty();
+    
+    if (isMyCard)
+    {
+        mSaveManager = new CntSaveManager(CntSaveManager::EMyCard);
+    }
+    else if (mContact->type() == QContactType::TypeGroup)
+    {
+        mSaveManager = new CntSaveManager(CntSaveManager::EGroup);
+    }
+    else
+    {
+        mSaveManager = new CntSaveManager();
+    }
     
     // set the correct image if the contact already has an image set
     mImageLabel = static_cast<HbLabel*>(mDocumentLoader.findWidget(QString("cnt_image_label")));
@@ -196,7 +225,7 @@ void CntImageEditorView::openCamera()
         mRequest = 0;
     }
     
-    mRequest = mAppManager.create(XQI_CAMERA_CAPTURE, "capture(int,QVariantMap)", false);
+    mRequest = mAppManager.create(XQI_CAMERA_CAPTURE, XQOP_CAMERA_CAPTURE, false);
     if ( mRequest ) 
     {
         int mode = 0; //image mode
@@ -385,6 +414,47 @@ void CntImageEditorView::listViewActivated(const QModelIndex &index)
 
 void CntImageEditorView::handleError(int errorCode, const QString& errorMessage)
 {
+    Q_UNUSED(errorCode);
+    Q_UNUSED(errorMessage);
     CNT_LOG_ARGS("error code = " << errorCode << "errorMessage=" << errorMessage)
+}
+
+void CntImageEditorView::saveContact()
+{
+    mContact->saveDetail(mAvatar);
+
+    if ( mAvatar->imageUrl().isEmpty())
+    {
+        mContact->removeDetail(mAvatar);
+    }
+    
+    QString name = mViewManager->contactManager(SYMBIAN_BACKEND)->synthesizedDisplayLabel(*mContact);
+    
+    if (name.isEmpty())
+    {
+        name = hbTrId("txt_phob_list_unnamed");
+    }
+    
+    CntSaveManager::CntSaveResult result = mSaveManager->saveContact(mContact, mViewManager->contactManager(SYMBIAN_BACKEND));
+    
+    if (mContact->type() != QContactType::TypeGroup)
+    {
+        switch (result)
+        {
+        case CntSaveManager::ESaved:
+            HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contact_1_saved")).arg(name));
+            break;
+        case CntSaveManager::EUpdated:
+            HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contacts_1_updated")).arg(name));
+            break;
+        case CntSaveManager::EFailed:
+            HbDeviceNotificationDialog::notification(QString(),hbTrId("SAVING FAILED!"));
+            break;
+        case CntSaveManager::EDeleted:
+        case CntSaveManager::ENothingDone:
+        default:
+            break;
+        }
+    }
 }
 

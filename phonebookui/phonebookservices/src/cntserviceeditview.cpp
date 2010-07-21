@@ -16,11 +16,13 @@
 */
 
 #include "cntserviceeditview.h"
-#include "cntservicehandler.h"
+#include <cntservicescontact.h>
 #include <QCoreApplication>
 
-CntServiceEditView::CntServiceEditView(CntServiceHandler *aServiceHandler ) : CntEditView(),
-mServiceHandler(aServiceHandler)
+
+CntServiceEditView::CntServiceEditView( CntAbstractServiceProvider& aServiceProvider )
+: CntEditView(),
+mProvider( aServiceProvider )
 {   
     connect( this, SIGNAL(contactUpdated(int)), this, SLOT(doContactUpdated(int)) );
     connect( this, SIGNAL(contactRemoved(bool)), this, SLOT(doContactRemoved(bool)) );
@@ -33,67 +35,25 @@ CntServiceEditView::~CntServiceEditView()
 
 void CntServiceEditView::doContactUpdated(int aSuccess)
 {
-    connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
-    mServiceHandler->completeEdit(aSuccess);
+    int retValue = aSuccess ? KCntServicesReturnValueContactSaved : KCntServicesReturnValueContactNotModified;
+    QVariant variant;
+    variant.setValue(retValue);
+    mProvider.CompleteServiceAndCloseApp(variant);
 }
 
 void CntServiceEditView::doContactRemoved(bool aSuccess)
 {
-    connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
-    int retValue = aSuccess ? -1 : 0;
-    mServiceHandler->completeEdit(retValue);
+    int retValue = aSuccess ? KCntServicesReturnValueContactDeleted : KCntServicesReturnValueContactNotModified;
+    QVariant variant;
+    variant.setValue(retValue);
+    mProvider.CompleteServiceAndCloseApp(variant);
 }
 
 void CntServiceEditView::doChangesDiscarded()
 {
-    connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
-    mServiceHandler->completeEdit(0);
+    QVariant variant;
+    variant.setValue(KCntServicesReturnValueContactNotModified);
+    mProvider.CompleteServiceAndCloseApp(variant);
 }
-
-//
-///*!
-//Saves the contact
-//*/
-//void CntServiceEditView::aboutToCloseView()
-//{
-//    int result = 0;
-//    // save contact if there is one
-//    if (contact() && !contact()->isEmpty())
-//    {
-//        bool isSaved = contactManager()->saveContact(contact());
-//        if (isSaved)
-//        {
-//            result = 1;
-//        }
-//    }
-//    
-//    connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
-//    mServiceHandler->completeEdit(result);
-//}
-//
-///*!
-//Cancel all changes made and return to the application editor was opened from
-//*/
-//void CntServiceEditView::discardAllChanges()
-//{
-//    connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
-//    mServiceHandler->completeEdit(0);
-//}
-//
-///*
-//Handle signals emitted from CntCommands, only used for delete command for now.
-//*/
-//int CntServiceEditView::handleExecutedCommand(QString aCommand, const QContact &aContact)
-//{
-//    Q_UNUSED(aContact);
-//    int result=-1;
-//    if (aCommand == "delete")
-//    {
-//        connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
-//        mServiceHandler->completeEdit(result);
-//        result = 0;
-//    }
-//    return result;
-//}
 
 // EOF

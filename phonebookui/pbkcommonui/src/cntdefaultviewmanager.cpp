@@ -209,24 +209,19 @@ void CntDefaultViewManager::deleteOldView()
     if (mOldView)
     {
         mOldView->deactivate();
-        
-        // Due to something strange in wk16, this check will fail occationally and cause
-        // a memory leak... most likely when opening edit view for the first time
-        if (mCurrent == NULL || !mOldView->view()->isVisible())
+
+        mMainWindow->removeView(mOldView->view());
+
+        if (!mOldView->isDefault())
         {
-            mMainWindow->removeView(mOldView->view());
-            
-            if (!mOldView->isDefault())
-            {
-                delete mOldView;
-                mOldView = NULL;
-            }
-            // If view id is not in defaults list, it means that view has changed
-            // its opinnion about preserving state to true.
-            else if ( !mDefaults.contains(mOldView->viewId()) ) 
-            {
-                mDefaults.insert( mOldView->viewId(), mOldView );
-            }
+            delete mOldView;
+            mOldView = NULL;
+        }
+        // If view id is not in defaults list, it means that view has changed
+        // its opinnion about preserving state to true.
+        else if ( !mDefaults.contains(mOldView->viewId()) ) 
+        {
+            mDefaults.insert( mOldView->viewId(), mOldView );
         }
     }
 

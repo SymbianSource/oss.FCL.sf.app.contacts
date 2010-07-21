@@ -46,16 +46,24 @@ public:
     CntCollectionListModel(QContactManager *manager, CntExtensionManager &extensionManager, QObject *parent = 0);
     ~CntCollectionListModel();
     
-public: // from QAbstractItemModel
+public:
+    // from QAbstractItemModel
     QVariant data(const QModelIndex& index, int role) const;
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
+    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex());
     
 public:
+    // removing and adding groups
     void removeGroup(int localId);
+    void addGroup(int localId);
+    
+    // extension (plugin) group handling
     bool isExtensionGroup(const QModelIndex &index);
     CntViewParameters extensionGroupActivated(int row);
     void extensionGroupLongPressed(int row, const QPointF& coords, CntExtensionGroupCallback* interface);
+    
+    QModelIndex indexOfGroup(int localId);
     
 private:
     void doConstruct();
@@ -69,8 +77,9 @@ private:
     bool validateRowIndex(const int index) const;
     
 private slots:
-    void informationUpdated(int row, const QString& secondRowText, int memberCount);
+    void informationUpdated(int id, const QString& secondRowText, int memberCount);
     void onIconReady(const QPixmap& pixmap, void *data, int id, int error);
+    void extensionGroupsReady();
     
 private:
     QSharedDataPointer<CntCollectionListModelData>  d;

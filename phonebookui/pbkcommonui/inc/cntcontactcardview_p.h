@@ -98,7 +98,7 @@ private slots:
     void sendBusinessCard();
     void addToGroup();
     void deleteContact();
-    void handleDeleteContact(HbAction *action);
+    void handleDeleteContact(int action);
     void setAsFavorite();
     void removeFromFavorite();
     void actionExecuted(CntActionLauncher* aAction);
@@ -123,7 +123,9 @@ private slots:
 	void setMaptileLabel( HbLabel*& mapLabel, const HbIcon& icon );
 	void updateMaptileImage();
 	HbLabel* loadMaptileLabel( int addressType );
-    
+	
+	// Presence related function
+	void updateItemPresence(const QString& accountUri, bool online);
 	    
 public:
     CntContactCardView* q_ptr;    
@@ -166,6 +168,8 @@ private:
     QContactAvatar              *mAvatar;
     bool                        mIsHandlingMenu;
     QMap<QString, CntContactCardDetailItem*> mPreferredItems;
+    /// maps a QContactOnlineAccount (for example "sip:sip@sip.com") to a detail item
+    QMap<QString, CntContactCardDetailItem*> mPresenceItems;
     int                         mFavoriteGroupId;
     CntDocumentLoader           *mLoader;
     QContactAction              *mContactAction;

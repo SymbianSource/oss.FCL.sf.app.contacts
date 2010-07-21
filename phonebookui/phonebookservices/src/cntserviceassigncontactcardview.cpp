@@ -16,7 +16,8 @@
 */
 
 #include "cntserviceassigncontactcardview.h"
-#include "cntservicehandler.h"
+#include "cntabstractserviceprovider.h"
+#include "cntdebug.h"
 
 #include <hbaction.h>
 #include <hbdialog.h>
@@ -32,14 +33,16 @@
 Constructor, initialize member variables.
 \a viewManager is the parent that creates this view. \a parent is a pointer to parent QGraphicsItem (by default this is 0)
 */
-CntServiceAssignContactCardView::CntServiceAssignContactCardView(CntServiceHandler *aServiceHandler) : 
+CntServiceAssignContactCardView::CntServiceAssignContactCardView( CntAbstractServiceProvider& aServiceProvider ) : 
     CntContactCardView(),
-    mServiceHandler(aServiceHandler)
+mProvider( aServiceProvider )
 {
+    CNT_ENTRY
     connect(this, SIGNAL(backPressed()), this, SLOT(doCloseView()));
     connect(this, SIGNAL(viewActivated(CntAbstractViewManager*, QContactDetail)), this, SLOT(doViewActivated(CntAbstractViewManager*,QContactDetail)));
     
     addActionsToToolBar();
+    CNT_EXIT
 }
 
 /*!
@@ -47,7 +50,8 @@ Destructor
 */
 CntServiceAssignContactCardView::~CntServiceAssignContactCardView()
 {
-
+    CNT_ENTRY
+    CNT_EXIT
 }
 
 /*!
@@ -55,9 +59,11 @@ Add actions to the toolbar
 */
 void CntServiceAssignContactCardView::addActionsToToolBar()
 {
+    CNT_ENTRY
     view()->toolBar()->clearActions();  
     HbAction* addToContact = view()->toolBar()->addAction("txt_phob_button_add_to_contacts");
     connect(addToContact, SIGNAL(triggered()), this, SLOT(addToContacts()));
+    CNT_EXIT
 }
 
 /*!
@@ -65,6 +71,7 @@ Opens the Add to Contacts popup
 */
 void CntServiceAssignContactCardView::addToContacts()
 {  
+    CNT_ENTRY
     HbDialog *popup = new HbDialog();
     popup->setDismissPolicy(HbDialog::NoDismiss);
     popup->setHeadingWidget(new HbLabel(hbTrId("txt_phob_title_add_to_contacts"), popup));
@@ -82,6 +89,7 @@ void CntServiceAssignContactCardView::addToContacts()
     popup->setContentWidget(buttonWidget);
     
     popup->setSecondaryAction(new HbAction(hbTrId("txt_common_button_cancel"), popup));
+    CNT_EXIT
 }
 
 /*!
@@ -89,12 +97,14 @@ Create a new contact with the detail
 */
 void CntServiceAssignContactCardView::saveNew()
 {
+    CNT_ENTRY
     CntViewParameters viewParameters;
     viewParameters.insert(EViewId, serviceEditView);
     QVariant var;
     var.setValue(mContact);
     viewParameters.insert(ESelectedContact, var);
     mViewManager->changeView(viewParameters);
+    CNT_EXIT
 }
 
 /*!
@@ -102,12 +112,14 @@ Update an existing contact with the detail
 */
 void CntServiceAssignContactCardView::updateExisting()
 {
+    CNT_ENTRY
     CntViewParameters viewParameters;
     viewParameters.insert(EViewId, serviceContactSelectionView);
     QVariant var;
     var.setValue(mDetail);
     viewParameters.insert(ESelectedDetail, var);
     mViewManager->changeView(viewParameters);
+    CNT_EXIT
 }
 
 /*!
@@ -115,9 +127,11 @@ Called after the view has been activated
 */
 void CntServiceAssignContactCardView::doViewActivated(CntAbstractViewManager* aMgr, const CntViewParameters aArgs)
 {
+    CNT_ENTRY
     mViewManager = aMgr;
     mContact = aArgs.value(ESelectedContact).value<QContact>();
     mDetail = aArgs.value(ESelectedDetail).value<QContactDetail>();
+    CNT_EXIT
 }
 
 /*!
@@ -125,7 +139,9 @@ Close the view (quits the service as well)
 */
 void CntServiceAssignContactCardView::doCloseView()
 {
+    CNT_ENTRY
     qApp->quit();
+    CNT_EXIT
 }
 
 // end of file

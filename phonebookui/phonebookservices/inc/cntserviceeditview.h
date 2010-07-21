@@ -20,6 +20,7 @@
 
 #include <QObject>
 #include "cnteditview.h"
+#include "cntabstractserviceprovider.h"
 
 class CntServiceHandler;
 
@@ -30,7 +31,7 @@ Q_OBJECT
 
 public:
 
-    CntServiceEditView(CntServiceHandler *aServiceHandler );
+    CntServiceEditView( CntAbstractServiceProvider& aServiceProvider );
     ~CntServiceEditView();
 
     int viewId() const { return serviceEditView; }
@@ -41,7 +42,7 @@ private slots:
     void doChangesDiscarded();
 
 private:
-    CntServiceHandler *mServiceHandler;
+    CntAbstractServiceProvider& mProvider;
     
 };
 

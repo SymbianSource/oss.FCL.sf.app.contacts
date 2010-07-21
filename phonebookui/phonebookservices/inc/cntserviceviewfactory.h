@@ -21,18 +21,18 @@
 #include "cntabstractviewfactory.h"
 
 class CntAbstractView;
-class CntServiceHandler;
+class CntAbstractServiceProvider;
 
 class CntServiceViewFactory : public CntDefaultViewFactory
 {
 public:
-    CntServiceViewFactory( CntServiceHandler* aService ); 
+    CntServiceViewFactory( CntAbstractServiceProvider& aServiceProvider ); 
     ~CntServiceViewFactory();
     
 public:
     CntAbstractView* createView( int aViewId );
     
 private:
-    CntServiceHandler* mService;
+    CntAbstractServiceProvider& mProvider;
 };
 #endif /* CNTSERVICEVIEWFACTORY_H_ */

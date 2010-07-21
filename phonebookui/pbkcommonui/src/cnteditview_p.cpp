@@ -21,6 +21,7 @@
 #include "cntdetailpopup.h"
 #include "cnteditviewheadingitem.h"
 #include "cntimagelabel.h"
+#include "cntsavemanager.h"
 #include "cntglobal.h"
 
 #include <qtcontacts.h>
@@ -39,17 +40,21 @@
 #include <hbdevicenotificationdialog.h>
 #include <xqaiwrequest.h>
 #include <xqaiwdecl.h>
-#include <QDir>
+#include <cntservicescontact.h>
+
+#include <QFileInfo>
+#include <QApplication>
 
 const char *CNT_EDIT_XML = ":/xml/contacts_ev.docml";
 
 CntEditViewPrivate::CntEditViewPrivate() :
-mModel( NULL ),
-mImageLabel( NULL ),
-mThumbnailManager( NULL ),
-mContact( NULL ),
-mReq(0),
-mMenu(NULL)
+    mModel( NULL ),
+    mImageLabel( NULL ),
+    mThumbnailManager( NULL ),
+    mContact( NULL ),
+    mReq(0),
+    mMenu(NULL),
+    mSaveManager(NULL)
 {
     mDocument = new CntDocumentLoader;
     
@@ -93,19 +98,30 @@ mMenu(NULL)
     connect( mHeading, SIGNAL(iconClicked()), this, SLOT(openImageEditor()) );
     connect( mListView, SIGNAL(activated(const QModelIndex&)), this, SLOT(activated(const QModelIndex&)) );
     connect( mListView, SIGNAL(longPressed(HbAbstractViewItem*,const QPointF&)), this, SLOT(longPressed(HbAbstractViewItem*,const QPointF&)) );
+    
+    // closing the application from task swapper or end key will cause the contact to be saved
+    connect( qApp, SIGNAL(aboutToQuit()), this, SLOT(saveChanges()));
 }
 
 CntEditViewPrivate::~CntEditViewPrivate()
 {
     mView->deleteLater();
+    
     delete mDocument;
+    mDocument = NULL;
     delete mModel;
+    mModel = NULL;
     delete mContact;
+    mContact = NULL;
     if (mMenu) 
     {
         delete mMenu;
+        mMenu = NULL;
     }
     delete mThumbnailManager;
+    mThumbnailManager = NULL;
+    delete mSaveManager;
+    mSaveManager = NULL;
 }
 
 void CntEditViewPrivate::setOrientation(Qt::Orientation orientation)
@@ -150,7 +166,16 @@ void CntEditViewPrivate::activate( CntAbstractViewManager* aMgr, const CntViewPa
     QContactLocalId localId = mContact->localId();
     QContactManager* cm = mMgr->contactManager(SYMBIAN_BACKEND);
     QContactLocalId selfContactId = cm->selfContactId();
-    mIsMyCard = ( localId == selfContactId && localId != 0 ) || myCard == "myCard";
+    mIsMyCard = ( localId == selfContactId && localId != 0 ) || !myCard.isEmpty();
+    
+    if (mIsMyCard)
+    {
+        mSaveManager = new CntSaveManager(CntSaveManager::EMyCard);
+    }
+    else
+    {
+        mSaveManager = new CntSaveManager();
+    }
     
     if ( mHeading )
         mHeading->setDetails( mContact, mIsMyCard );
@@ -423,25 +448,28 @@ void CntEditViewPrivate::deleteContact()
     if ( mIsMyCard )
     {
         HbMessageBox::question(hbTrId("txt_phob_dialog_remove_all_personal_data_from_my_c"), this, 
-                SLOT(handleDeleteContact(HbAction*)), 
-                hbTrId("txt_common_button_yes"), 
-                hbTrId("txt_common_button_no"));
+                SLOT(handleDeleteContact(int)), 
+                HbMessageBox::Yes | HbMessageBox::No);
     }
     else
     {
         QContactManager* cm = mMgr->contactManager( SYMBIAN_BACKEND );
         QString name = cm->synthesizedDisplayLabel( *mContact );
-        HbMessageBox::question(HbParameterLengthLimiter(hbTrId("txt_phob_info_delete_1")).arg(name), this, SLOT(handleDeleteContact(HbAction*)), 
-                hbTrId("txt_common_button_delete"), hbTrId("txt_common_button_cancel"));
+        if (name.isEmpty())
+        {
+            name = hbTrId("txt_phob_list_unnamed");
+        }
+        
+        HbMessageBox::question(HbParameterLengthLimiter(hbTrId("txt_phob_info_delete_1")).arg(name), this, SLOT(handleDeleteContact(int)), 
+                HbMessageBox::Delete | HbMessageBox::Cancel);
     }
 }
 
-void CntEditViewPrivate::handleDeleteContact(HbAction *action)
+void CntEditViewPrivate::handleDeleteContact(int action)
 {
     Q_Q(CntEditView);
-    
-    HbMessageBox *dlg = static_cast<HbMessageBox*>(sender());
-    if(dlg && action == dlg->actions().first())
+
+    if(action == HbMessageBox::Yes || action == HbMessageBox::Delete)
     {
         QContactManager* cm = mMgr->contactManager( SYMBIAN_BACKEND );
 
@@ -473,140 +501,49 @@ void CntEditViewPrivate::discardChanges()
 void CntEditViewPrivate::saveChanges()
 {
     Q_Q(CntEditView);
-
-    QContactManager* mgr = mMgr->contactManager( SYMBIAN_BACKEND );
-    bool isSavedContact = mContact->localId() > 0;
     
-    // if the contact is really changed or a new one
-    if ( (*mContact) != mgr->contact(mContact->localId()) || !isSavedContact )
+    QString name = mMgr->contactManager(SYMBIAN_BACKEND)->synthesizedDisplayLabel(*mContact);
+    
+    if (name.isEmpty())
     {
-        int detailCount = mContact->details().count();
-         
-        setPreferredDetails( mContact );
-        
-        // If its a new contact
-        if ( !isSavedContact )
-        {
-            if ( detailCount > 2 )
-            {
-                bool success = mgr->saveContact( mContact );
-                if ( success && mIsMyCard )
-                {
-                    mgr->setSelfContactId( mContact->localId() );
-                }
-                
-                QString name = mgr->synthesizedDisplayLabel( *mContact );
-                if (name.isEmpty())
-                {
-                    name = hbTrId("txt_phob_dblist_unnamed");
-                }
-                
-                if ( success )
-                {
-                    emit q->contactUpdated(1);
-                    HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contact_1_saved")).arg(name));
-                }
-                else
-                {
-                    emit q->contactUpdated(0);
-                    //TODO: localization is missing
-                    HbDeviceNotificationDialog::notification(QString(),qtTrId("SAVING FAILED!"));
-                }
-                
-                QVariant var;
-                var.setValue(*mContact);
-                mArgs.insert(ESelectedContact, var);
-                mArgs.insert(ESelectedAction, CNT_CREATE_ACTION);
-            }
-            else
-            {
-                // nothing happened to the contact. Flags should be used
-                emit q->contactUpdated(-2);
-            }
-        }
-        else
-        {
-            // contact details has been cleared out.
-            if ( detailCount <= 4 )
-            {
-                // get the contact from database, it should have the name still in it,
-                // and show the delete notification to user
-                QContact c = mgr->contact( mContact->localId() );
-                
-                bool success = mgr->removeContact( mContact->localId() );
-                emit q->contactRemoved(success);
-            }
-            else
-            {
-                bool success = mgr->saveContact(mContact);
-                
-                QString name = mgr->synthesizedDisplayLabel( *mContact );
-                if (name.isEmpty())
-                {
-                    name = hbTrId("txt_phob_dblist_unnamed");
-                }
-                
-                if ( success )
-                {   
-                    emit q->contactUpdated(1);
-                    HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contacts_1_updated")).arg(name));
-                    mArgs.insert(ESelectedAction, CNT_EDIT_ACTION);           
-                }
-                else
-                {
-                    emit q->contactUpdated(0);
-                    //TODO: localization is missing
-                    HbDeviceNotificationDialog::notification(QString(),qtTrId("SAVING FAILED!"));
-                }
-                
-                QVariant var;
-                var.setValue(*mContact);
-                mArgs.insert(ESelectedContact, var);           
-            }
-        }
+        name = hbTrId("txt_phob_list_unnamed");
     }
-    else
+    
+    CntSaveManager::CntSaveResult result = mSaveManager->saveContact(mContact, mMgr->contactManager(SYMBIAN_BACKEND));
+    
+    QVariant var;
+    
+    switch (result)
     {
-        emit q->changesDiscarded();
+    case CntSaveManager::ESaved:
+        emit q->contactUpdated(KCntServicesReturnValueContactSaved);
+        HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contact_1_saved")).arg(name));
+        var.setValue(*mContact);
+        mArgs.insert(ESelectedContact, var);
+        mArgs.insert(ESelectedAction, CNT_CREATE_ACTION);
+        break;
+    case CntSaveManager::EUpdated:
+        emit q->contactUpdated(KCntServicesReturnValueContactSaved);
+        HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contacts_1_updated")).arg(name));
+        var.setValue(*mContact);
+        mArgs.insert(ESelectedContact, var);
+        mArgs.insert(ESelectedAction, CNT_EDIT_ACTION);
+        break;
+    case CntSaveManager::EFailed:
+        emit q->contactUpdated(KCntServicesReturnValueContactNotModified);
+        HbDeviceNotificationDialog::notification(QString(),hbTrId("SAVING FAILED!"));
+        break;
+    case CntSaveManager::EDeleted:
+        emit q->contactUpdated(KCntServicesReturnValueContactDeleted);
+        break;
+    case CntSaveManager::ENothingDone:
+    default:
+        emit q->contactUpdated(KCntServicesReturnValueContactNotModified);
+        break;
     }
     
     mMgr->back( mArgs );
 }
-
-void CntEditViewPrivate::setPreferredDetails( QContact* aContact )
-{
-    QList<QContactPhoneNumber> numberList( aContact->details<QContactPhoneNumber>() );
-    //set preferred number for call if there is only one phone number
-    if ( aContact->preferredDetail("call").isEmpty() && numberList.count() == 1 )
-    {
-        aContact->setPreferredDetail( "call", numberList.first() );
-    }
-    //set preferred number for message if there is only one mobile phone number
-    if ( aContact->preferredDetail("message").isEmpty() && numberList.count() >= 1 )
-    {
-        int mobileNumbers = 0;
-        int mobileNumberIndex = -1;
-        for (int i = 0; i < numberList.count(); i++)
-        {
-            if (numberList.at(i).subTypes().count() && numberList.at(i).subTypes().first() == QContactPhoneNumber::SubTypeMobile)
-            {
-                mobileNumbers++;
-                mobileNumberIndex = i;
-            }      
-        }
-        if ( mobileNumbers == 1 )
-        {
-            aContact->setPreferredDetail( "message", numberList.at(mobileNumberIndex) );
-        }
-    }
-    QList<QContactEmailAddress> emailList( aContact->details<QContactEmailAddress>() );
-    //set preferred number for email if there is only one email address
-    if ( aContact->preferredDetail("email").isEmpty() && emailList.count() == 1 )
-    {
-        aContact->setPreferredDetail( "email", emailList.first() );
-    }   
-}
-
 
 void CntEditViewPrivate::openNameEditor()
 {

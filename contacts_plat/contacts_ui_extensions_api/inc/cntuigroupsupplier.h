@@ -24,9 +24,18 @@
 /**
  * UI extension class that supplies groups to phonebook groups UI.
  */
-class CntUiGroupSupplier
+class CntUiGroupSupplier : public QObject
 {
- public:
+public:
+    CntUiGroupSupplier() {}
+
+    /**
+     * Returns true if this supplier should be handled asynchronously and
+     * false otherwise.
+     *
+     * @return bool, asynchronity
+     */  
+    virtual bool isAsynch() const = 0;
 
     /**
      * Returns number of groups provided by the extension.
@@ -49,6 +58,14 @@ class CntUiGroupSupplier
     {
         return NULL;
     }
+
+signals:
+    /**
+     * Asynchronous suppliers should re-implement this signal and emit it
+     * once group loading is ready.
+     */  
+    void groupsReady();
+
 protected:
     // prevent deleting by client
     virtual ~CntUiGroupSupplier() {}

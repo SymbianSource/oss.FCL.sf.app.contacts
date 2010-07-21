@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:
+* Description: Data container & constants for "phonebookservices" Qt Highway services.
 *
 */
 
@@ -22,21 +22,27 @@
 #include <QString>
 #include <xqserviceipcmarshal.h>
 
-/*Supported actions*/
+//Action filter definitions:
+
+/// Action filter that DOES NOT filter away based on supported action.
 const QString KCntActionAll("all");
+/// Action filter for showing only contacts that support calling.
 const QString KCntActionCall("call");
+/// Action filter for showing only contacts that suppport SMS sending.
 const QString KCntActionSms("sms");
+// Action filter for showing only contacts that support emailing.
 const QString KCntActionEmail("email");
 
-/*Supported filters*/
-const QString KCntFilterDisplayAll("all");
-const QString KCntFilterDisplayFavorites("favorites");
 
-/*Supported Fetch Selection Modes*/
-const QString KCntNoSelectionMode("No Selection");
-const QString KCntSingleSelectionMode("SingleSelect");
-const QString KCntMultiSelectionMode("MultiSelect");
+/// Return values from editing service
+const int KCntServicesReturnValueContactSaved       = 1;
+const int KCntServicesReturnValueContactDeleted     = -1;
+const int KCntServicesReturnValueContactNotModified = 0;
 
+
+/**
+ * A data container class to be used with "phonebookservices" Qt Highway services.
+ */
 class CntServicesContact
 {
 public:
@@ -69,6 +75,23 @@ template <typename Stream> inline void CntServicesContact::deserialize(Stream &s
 }
 
 typedef QList<CntServicesContact> CntServicesContactList;
+
+//-------------------------------------------------------------------
+// These are DEPRECATED and will be removed soon:
+
+/// @deprecated
+const QString KCntFilterDisplayAll("all");
+/// @deprecated
+const QString KCntFilterDisplayFavorites("favorites");
+
+/// @deprecated
+const QString KCntNoSelectionMode("No Selection");
+/// @deprecated
+const QString KCntSingleSelectionMode("SingleSelect");
+/// @deprecated
+const QString KCntMultiSelectionMode("MultiSelect");
+
+//-------------------------------------------------------------------
 
 Q_DECLARE_USER_METATYPE(CntServicesContact)
 Q_DECLARE_USER_METATYPE_NO_OPERATORS(CntServicesContactList)

@@ -112,7 +112,12 @@ void CntHistoryView::activate( CntAbstractViewManager* aMgr, const CntViewParame
     
     // Set history view heading
     HbGroupBox* groupBox = static_cast<HbGroupBox*>(docLoader()->findWidget(QString("groupBox")));
-    groupBox->setHeading(hbTrId("txt_phob_subtitle_history_with_1").arg(mContact->displayLabel()));
+    QString name = mContact->displayLabel();
+    if (name.isEmpty())
+    {
+        name = hbTrId("txt_phob_list_unnamed");
+    }
+    groupBox->setHeading(hbTrId("txt_phob_subtitle_history_with_1").arg(name));
     
     //construct listview
     mHistoryListView = static_cast<HbListView*>(docLoader()->findWidget(QString("listView")));
@@ -171,19 +176,21 @@ void CntHistoryView::clearHistory()
 {
     // Ask the use if they want to clear the history
     QString name = mContact->displayLabel();
+    if (name.isEmpty())
+    {
+        name = hbTrId("txt_phob_list_unnamed");
+    }
     
     HbMessageBox::question(HbParameterLengthLimiter(hbTrId("txt_phob_info_clear_communications_history_with_1")).arg(name), this, 
-            SLOT(handleClearHistory(HbAction*)), hbTrId("txt_common_button_delete"), hbTrId("txt_common_button_cancel"));
+            SLOT(handleClearHistory(int)), HbMessageBox::Delete | HbMessageBox::Cancel);
 }
 
 /*
 Handle the selected action for clearing history
 */
-void CntHistoryView::handleClearHistory(HbAction *action)
+void CntHistoryView::handleClearHistory(int action)
 {
-    HbMessageBox *note = static_cast<HbMessageBox*>(sender());
-    
-    if (note && action == note->actions().first())
+    if (action == HbMessageBox::Delete)
     {
         mHistoryModel->clearHistory();
     }

@@ -144,6 +144,9 @@ CntNamesViewPrivate::~CntNamesViewPrivate()
 {
     CNT_ENTRY
     
+    delete mFetchView;
+    mFetchView = NULL;
+    
     delete mListModel;
     mListModel = NULL;
 
@@ -212,6 +215,11 @@ void CntNamesViewPrivate::activate(CntAbstractViewManager* aMgr, const CntViewPa
         setScrollPosition(aArgs.value(ESelectedContact).value<QContact>().localId());
     }
    
+    if ( aArgs.value( EFinder ).toString() == "show" )
+    {
+        showFinder();
+    }
+
     CNT_EXIT
 }
 
@@ -219,9 +227,13 @@ void CntNamesViewPrivate::deactivate()
 {
     CNT_ENTRY
     
-    if (!(mView->visibleItems() & Hb::AllItems))
+    // in UTs there is no mainwindow and therefore calling HbView::visibleItems() would cause a crash
+    if (mView->mainWindow() != NULL)
     {
-        hideFinder();
+        if (!(mView->visibleItems() & Hb::AllItems))
+        {
+            hideFinder();
+        }
     }
 
     delete mMenuBuilder;
@@ -398,11 +410,15 @@ void CntNamesViewPrivate::deleteContact(QContact& aContact)
     
     QContactManager* manager = mViewManager->contactManager( SYMBIAN_BACKEND );
     QString name = manager->synthesizedDisplayLabel(aContact);
+    if (name.isEmpty())
+    {
+        name = hbTrId("txt_phob_list_unnamed");
+    }
     
     mHandledContactId = aContact.localId();
     
-    HbMessageBox::question(HbParameterLengthLimiter(hbTrId("txt_phob_info_delete_1")).arg(name), this, SLOT(handleDeleteContact(HbAction*)),
-            hbTrId("txt_common_button_delete"), hbTrId("txt_common_button_cancel"));
+    HbMessageBox::question(HbParameterLengthLimiter(hbTrId("txt_phob_info_delete_1")).arg(name), this, SLOT(handleDeleteContact(int)),
+            HbMessageBox::Delete | HbMessageBox::Cancel);
     
     CNT_EXIT
 }
@@ -514,13 +530,11 @@ void CntNamesViewPrivate::actionExecuted(CntActionLauncher* aAction)
     CNT_EXIT
 }
 
-void CntNamesViewPrivate::handleDeleteContact( HbAction* aAction )
+void CntNamesViewPrivate::handleDeleteContact( int aAction )
 {
     CNT_ENTRY
     
-    HbMessageBox *note = static_cast<HbMessageBox*>(sender());
-    
-    if (note && aAction == note->actions().first())
+    if (aAction == HbMessageBox::Delete)
     {
         mViewManager->contactManager( SYMBIAN_BACKEND )->removeContact(mHandledContactId);
     }

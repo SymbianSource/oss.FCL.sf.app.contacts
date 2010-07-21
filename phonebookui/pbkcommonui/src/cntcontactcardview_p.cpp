@@ -247,8 +247,10 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
     // presence listener
     mPresenceListener = new CntPresenceListener(*mContact);
     connect(mPresenceListener, SIGNAL(fullPresenceUpdated(bool)), mHeadingItem, SLOT(setOnlineStatus(bool)));
+    connect(mPresenceListener, SIGNAL(accountPresenceUpdated(const QString&, bool)), 
+            this, SLOT(updateItemPresence(const QString&, bool)));
     bool online;
-    mPresenceListener->initialPresences(online);
+    QMap<QString, bool> presences = mPresenceListener->initialPresences(online);
     mHeadingItem->setOnlineStatus(online);
 
     mImageLabel = static_cast<CntImageLabel*>(document()->findWidget("cnt_contactcard_image"));
@@ -301,6 +303,25 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
             {
                 dataItem->setSecondaryIcon(HbIcon("qtg_mono_favourites"));
                 mPreferredItems.insert(dataItem->action(), item);
+            }
+            
+            if (dataItem->detail().definitionName() == QContactOnlineAccount::DefinitionName)
+            {
+                for (int i = 0;i < presences.keys().count();i++)
+                {
+                    QString fullAccount = presences.keys().at(i);
+                    QContactOnlineAccount account = dataItem->detail();
+                    QString currentFullAccount = account.serviceProvider() + ':' + account.accountUri();
+                    if (fullAccount == currentFullAccount)
+                    {
+                        if (presences.values().at(i))
+                        {
+                            dataItem->setSecondaryIcon(HbIcon("qtg_small_online"));
+                        }
+                        mPresenceItems.insert(fullAccount, item);
+                        break;
+                    }
+                }
             }
          
             item->setDetails(dataItem);
@@ -644,6 +665,27 @@ HbLabel* CntContactCardViewPrivate::loadMaptileLabel( int addressType )
     return maptileLabel;
 }
 
+/*
+* Update the presence status icon of action item with the given accountUri
+*/
+void CntContactCardViewPrivate::updateItemPresence(const QString& accountUri, bool online)
+{
+    CntContactCardDetailItem* item = mPresenceItems.value(accountUri);
+    
+    if (item)
+    {
+        if (online)
+        {
+            mDataContainer->dataItem(item->index())->setSecondaryIcon(HbIcon("qtg_small_online"));
+        }
+        else
+        {
+            mDataContainer->dataItem(item->index())->setSecondaryIcon(HbIcon());
+        }
+        item->setDetails(mDataContainer->dataItem(item->index()));
+    }
+}
+
 void CntContactCardViewPrivate::thumbnailReady(const QPixmap& pixmap, void *data, int id, int error)
 {
     CNT_ENTRY
@@ -670,7 +712,7 @@ void CntContactCardViewPrivate::sendToHs()
     QVariantHash preferences;
     preferences["contactId"] = mContact->id().localId();
     
-    XQServiceRequest snd("com.nokia.services.hsapplication.IHomeScreenClient",
+    XQServiceRequest snd("com.nokia.symbian.IHomeScreenClient",
                          "addWidget(QString,QVariantHash)"
                          ,false);
     snd << QString("contactwidgethsplugin");
@@ -722,21 +764,24 @@ Delete contact
 void CntContactCardViewPrivate::deleteContact()
 {    
     QString name = contactManager()->synthesizedDisplayLabel(*mContact);
+    if (name.isEmpty())
+    {
+        name = hbTrId("txt_phob_list_unnamed");
+    }
     
-    HbMessageBox::question(HbParameterLengthLimiter(hbTrId("txt_phob_info_delete_1")).arg(name), this, SLOT(handleDeleteContact(HbAction*)),
-            hbTrId("txt_common_button_delete"), hbTrId("txt_common_button_cancel"));
+    HbMessageBox::question(HbParameterLengthLimiter(hbTrId("txt_phob_info_delete_1")).arg(name), this, SLOT(handleDeleteContact(int)),
+            HbMessageBox::Delete | HbMessageBox::Cancel);
 }
 
 /*!
 Handle action for deleting a contact
 */
-void CntContactCardViewPrivate::handleDeleteContact(HbAction *action)
+void CntContactCardViewPrivate::handleDeleteContact(int action)
 {
-    HbMessageBox *note = static_cast<HbMessageBox*>(sender());
-    
-    if (note && action == note->actions().first())
+    if (action == HbMessageBox::Delete)
     {
-        contactManager()->removeContact(mContact->localId());
+        contactManager()->removeContact(mContact->localId());  
+        emit backPressed();  
         mViewManager->back( mArgs );
     }
 }

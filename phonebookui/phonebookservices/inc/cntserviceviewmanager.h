@@ -26,28 +26,17 @@
 
 class CntBaseView;
 class CntServiceHandler;
+class CntAbstractServiceProvider;
 
 class CntServiceViewManager : public CntDefaultViewManager
 {
     Q_OBJECT
 
 public:
-    CntServiceViewManager(HbMainWindow *mainWindow, CntServiceHandler *aHandler);
+    CntServiceViewManager(HbMainWindow *mainWindow, CntAbstractServiceProvider& aProvider );
     ~CntServiceViewManager();
-    
-public slots:
-    void handleFetch(const QString &title, const QString &action, const QString &filter);
-    void launchFetch(const QString &title, const QString &action, const QString &filter, const QString &mode = KCntMultiSelectionMode);
-    void launchEditor(QContact contact);
-    void launchContactSelection(QContactDetail detail);
-    void launchContactCard(QContact contact);
-    void launchAssignContactCard(QContact contact, QContactDetail detail);
-
 protected slots:
     virtual void closeApp();
-
-private:
-    CntServiceHandler *mServiceHandler;
 };
 
 #endif // CNTSERVICEVIEWMANAGER_H

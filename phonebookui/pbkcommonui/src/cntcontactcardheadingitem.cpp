@@ -16,6 +16,7 @@
 */
 
 #include "cntcontactcardheadingitem.h"
+#include "cntdebug.h"
 
 #include <qtcontacts.h>
 #include <QGraphicsSceneMouseEvent>
@@ -30,6 +31,8 @@
 #include <hbaction.h>
 #include <hbmainwindow.h>
 #include <hbtapgesture.h>
+#include <hbeffect.h>
+#include <hbinstantfeedback.h>
 #include <cntuids.h>
 #include <xqsettingsmanager.h>
 #include <xqsettingskey.h>
@@ -48,6 +51,7 @@ CntContactCardHeadingItem::CntContactCardHeadingItem(QGraphicsItem *parent) :
     mIsFavorite(false),
     mIsOnline(false)
 {
+    HbEffect::add("icon", "groupbox_icon_click", "iconclick");
 }
 
 CntContactCardHeadingItem::~CntContactCardHeadingItem()
@@ -198,7 +202,7 @@ void CntContactCardHeadingItem::createPrimitives()
     if (!mFrameItem)
     {
         mFrameItem = new HbFrameItem(this);
-        mFrameItem->frameDrawer().setFrameGraphicsName("qtg_fr_groupbox");
+        mFrameItem->frameDrawer().setFrameGraphicsName("qtg_fr_groupbox_normal");
         mFrameItem->frameDrawer().setFrameType(HbFrameDrawer::NinePieces);
         mFrameItem->setZValue(-2);
         style()->setItemName(mFrameItem, "background");
@@ -213,6 +217,10 @@ void CntContactCardHeadingItem::createPrimitives()
     if ( mainWindow()->orientation() != Qt::Horizontal)
     {
         initGesture();
+    }
+    else
+    {
+        ungrabGesture(Qt::TapGesture);
     }
 }
 
@@ -354,16 +362,18 @@ QString CntContactCardHeadingItem::createNameText(const QContactName name)
     int setting = settingsMng.readItemValue(nameOrderKey, XQSettingsManager::TypeInt).toInt();
     
     QStringList nameList;
-    QString last;
+    QString last_first;
     
     switch( setting ) {
         case CntOrderLastFirst:
             nameList << name.prefix() << name.lastName() << name.firstName() << name.middleName() << name.suffix();
             break;
         case CntOrderLastCommaFirst:
-            if (!name.lastName().isEmpty())
-                last = name.lastName() + ",";
-            nameList << name.prefix() << last << name.firstName() << name.middleName() << name.suffix();
+            if (!name.firstName().isEmpty() && !name.lastName().isEmpty())
+                last_first = name.lastName() + ", " + name.firstName();
+            else
+                last_first = !name.firstName().isEmpty() ? name.firstName() : name.lastName();
+            nameList << name.prefix() << last_first << name.middleName() << name.suffix();
             break;
         default:    // Default to first name last name
             nameList << name.prefix() << name.firstName() << name.middleName() << name.lastName() << name.suffix();
@@ -432,9 +442,17 @@ void CntContactCardHeadingItem::gestureEvent(QGestureEvent* event)
             case Qt::GestureUpdated:
                 if (tap->tapStyleHint() == HbTapGesture::TapAndHold && mIcon->rect().contains(mapFromScene(tap->position()))) 
                 {
+                    HbEffect::cancel(mIcon, QString("iconclick"));
                     processLongPress(tap->position());
                 }
                 break;
+            case Qt::GestureStarted:
+                if (tap->tapStyleHint() == HbTapGesture::Tap && mIcon->rect().contains(mapFromScene(tap->position())))
+                {
+                    HbInstantFeedback::play(HbFeedback::Basic);
+                    HbEffect::start(mIcon, QString("icon"), QString("iconclick"));
+                }
+                
             default:
                 break;
         }

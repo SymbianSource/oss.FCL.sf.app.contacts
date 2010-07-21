@@ -439,9 +439,9 @@ bool CntCache::fetchContactName(int contactId, QString& contactName)
     bool foundContact = false;
 
     QContactFetchHint nameOnlyFetchHint;
-    QStringList details;
+    /*QStringList details;
     details << QContactDisplayLabel::DefinitionName;
-    nameOnlyFetchHint.setDetailDefinitionsHint(details);
+    nameOnlyFetchHint.setDetailDefinitionsHint(details);*/
     nameOnlyFetchHint.setOptimizationHints(QContactFetchHint::NoRelationships);
     QContact contact = mContactManager->contact(contactId, nameOnlyFetchHint);
     
@@ -648,7 +648,7 @@ void CntCache::onShutdown()
 {
 	CNT_ENTRY
 
-    delete this;
+    deleteLater();
 
 	CNT_EXIT
 }

@@ -33,6 +33,7 @@ QTM_USE_NAMESPACE
 class CntCollectionListModelWorker : public QThread
 {
     Q_OBJECT
+    friend class TestCntCollectionListModelWorker;
     
 public:
     CntCollectionListModelWorker(QString unnamed, QString noFavs, QString noMembers, int sortOrder);
@@ -41,14 +42,14 @@ public:
     void run();
     bool event(QEvent *event);
     
-    void scheduleJob(int row, int id);
+    void scheduleJob(int id);
 
 private:
     void processJobs();
-    void fetchInformation(int row, int id);
+    void fetchInformation(int id);
     
 signals:
-    void fetchDone(int row, const QString& secondRowText, int memberCount);
+    void fetchDone(int id, const QString& secondRowText, int memberCount);
     
 private:
     bool                        mStarted;
@@ -56,7 +57,7 @@ private:
     bool                        mStopped;
     QMutex                      mMutex;
     
-    QList< QPair<int,int> >     mJobs;
+    QList<int>                  mJobs;
 
     QContactManager            *mManager;
     

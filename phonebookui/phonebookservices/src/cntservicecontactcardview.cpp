@@ -16,18 +16,20 @@
 */
 
 #include "cntservicecontactcardview.h"
-#include "cntservicehandler.h"
-#include <QCoreApplication>
+#include "cntabstractserviceprovider.h"
+#include "cntdebug.h"
 
 /*!
 Constructor, initialize member variables.
 \a viewManager is the parent that creates this view. \a parent is a pointer to parent QGraphicsItem (by default this is 0)
 */
-CntServiceContactCardView::CntServiceContactCardView(CntServiceHandler *aServiceHandler) : 
+CntServiceContactCardView::CntServiceContactCardView( CntAbstractServiceProvider& aServiceProvider ) : 
     CntContactCardView(),
-    mServiceHandler(aServiceHandler)
+    mProvider( aServiceProvider )
 {
-    connect(this, SIGNAL(backPressed()), this, SLOT(doShowPreviousView()));
+    CNT_ENTRY
+    connect(this, SIGNAL(backPressed()), this, SLOT(closeContactCard()));
+    CNT_EXIT
 }
 
 /*!
@@ -35,17 +37,21 @@ Destructor
 */
 CntServiceContactCardView::~CntServiceContactCardView()
 {
-
+    CNT_ENTRY
+    CNT_EXIT
 }
 
 /*!
 Close the view (quits the service as well)
 */
-void CntServiceContactCardView::doShowPreviousView()
+void CntServiceContactCardView::closeContactCard()
 {
-    int result = -2;
-    connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
-    mServiceHandler->completeEdit(result);
+    CNT_ENTRY
+    int retValue = -2; // Dummy return value. Not relevant.
+    QVariant variant;
+    variant.setValue(retValue);
+    mProvider.CompleteServiceAndCloseApp(variant);
+    CNT_EXIT
 }
 
 // end of file

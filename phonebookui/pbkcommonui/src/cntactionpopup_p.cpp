@@ -40,6 +40,7 @@ mCancelAction(NULL)
     mListView = new HbListView(this);
     mListModel = new QStandardItemModel(this);
     setAttribute(Qt::WA_DeleteOnClose, true);
+    mDataItemList.clear();
 }
 
 CntActionPopupPrivate::~CntActionPopupPrivate()
@@ -169,12 +170,13 @@ bool CntActionPopupPrivate::showActionPopup(QString action)
     {
         buildEmailActionPopup();
     }
-    else
+    
+    if(mDataItemList.count())
     {
-        return false;
+        showPopup();
+        return true;
     }
-    showPopup();
-    return true; 
+    return false; 
     
 }
 
@@ -194,6 +196,10 @@ void CntActionPopupPrivate::showPopup()
     mListView->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Maximum );
     
     QString contactName = mContact->displayLabel();
+    if (contactName.isEmpty())
+    {
+        contactName = hbTrId("txt_phob_list_unnamed");
+    }
     HbLabel *label = new HbLabel();
     label->setPlainText(contactName);
     

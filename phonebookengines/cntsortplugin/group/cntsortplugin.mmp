@@ -34,8 +34,6 @@ SOURCE          csortkeyarray.cpp
 
 USERINCLUDE     ../group
 APP_LAYER_SYSTEMINCLUDE
-// Symbian uses #include <ecom.h> in cntviewsortplugin.h
-SYSTEMINCLUDE   /epoc32/include/ecom
 
 START RESOURCE  101f85a9.rss
 TARGET          cntsortplugin

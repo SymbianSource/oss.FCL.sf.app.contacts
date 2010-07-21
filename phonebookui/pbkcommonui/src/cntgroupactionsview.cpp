@@ -16,6 +16,10 @@
 */
 
 #include "cntgroupactionsview.h"
+#include "cntactionlauncher.h"
+#include "cntglobal.h"
+
+#include <cntactionpopup.h>
 
 #include <hblistview.h>
 #include <hbmenu.h>
@@ -39,7 +43,8 @@ CntGroupActionsView::CntGroupActionsView() :
 mGroupContact(NULL),
 mModel(NULL),
 mViewManager(NULL),
-mListView(NULL)
+mListView(NULL),
+mPopupCount(0)
 {
     bool ok = false;
     mDocumentLoader.load(CNT_GROUPACTIONSVIEW_XML, &ok);
@@ -120,9 +125,11 @@ void CntGroupActionsView::activate( CntAbstractViewManager* aMgr, const CntViewP
     mGroupContact = new QContact(aArgs.value(ESelectedGroupContact).value<QContact>());
     mViewManager = aMgr;
 
-    QContactName groupContactName = mGroupContact->detail( QContactName::DefinitionName );
-    QString groupName(groupContactName.value( QContactName::FieldCustomLabel ));
-    
+    QString groupName = mGroupContact->displayLabel();
+    if (groupName.isEmpty())
+    {
+        groupName = hbTrId("txt_phob_list_unnamed");
+    }
     
     //group box
     HbGroupBox* groupBox = static_cast<HbGroupBox *>(mDocumentLoader.findWidget(QString("groupBox")));
@@ -145,24 +152,27 @@ void CntGroupActionsView::activate( CntAbstractViewManager* aMgr, const CntViewP
     
     QContactPhoneNumber confCallNumber = mGroupContact->detail<QContactPhoneNumber>();
     if(!confCallNumber.number().isEmpty())
-        {
+    {
         /*
          * Internationalization support, activate the following code 
          * when support available from Orbit
          */
         //populatelist(hbTrId("txt_phob_dblist_conference_call"), HbIcon("qtg_large_call_group"),HbNumberGrouping::formatPhoneNumber(confCallNumber.number()));
-        populatelist(hbTrId("txt_phob_dblist_conference_call"), HbIcon("qtg_large_call_group"),confCallNumber.number());
-        }
+        populatelist(hbTrId("txt_phob_dblist_conference_call"), HbIcon("qtg_large_call_group"),confCallNumber.number(),"call");
+    }
       
-    populatelist(hbTrId("txt_phob_dblist_send_message"),HbIcon("qtg_large_message_group"),hbTrId("txt_phob_dblist_send_message_val_members"));
-    populatelist(hbTrId("txt_phob_dblist_email"),HbIcon("qtg_large_email_group"),hbTrId("txt_phob_dblist_send_message_val_members"));
+    populatelist(hbTrId("txt_phob_dblist_send_message"),HbIcon("qtg_large_message_group"),hbTrId("txt_phob_dblist_send_message_val_members"),"message");
+    populatelist(hbTrId("txt_phob_dblist_email"),HbIcon("qtg_large_email_group"),hbTrId("txt_phob_dblist_send_message_val_members"),"email");
     
     mListView->setModel(mModel);
     mListView->setSelectionMode(HbAbstractItemView::NoSelection);
     
+    connect(mListView, SIGNAL(activated(const QModelIndex&)),
+                this, SLOT(listItemSelected(const QModelIndex&)));
+    
 }
 
-void CntGroupActionsView:: populatelist(QString primaryText,HbIcon icon,QString secondaryText)
+void CntGroupActionsView::populatelist(QString primaryText,HbIcon icon,QString secondaryText,QString action)
 {
     QList<QStandardItem*> items;
     QStandardItem *labelItem = new QStandardItem();
@@ -173,7 +183,115 @@ void CntGroupActionsView:: populatelist(QString primaryText,HbIcon icon,QString 
     
     labelItem->setData(textList, Qt::DisplayRole);
     labelItem->setData(icon, Qt::DecorationRole);
+    labelItem->setData(action, Qt::UserRole+1);
     
     items << labelItem ;
     mModel->appendRow(items);
 }
+
+void CntGroupActionsView::listItemSelected(const QModelIndex &index)
+{
+    if (index.isValid()) {
+        //reset flags
+        mPopupCount=0;
+        mActionParams.clear();
+        
+        QString action = mModel->item(index.row())->data(Qt::UserRole+1).toString();
+        
+        //conference call
+        if (action.compare("call", Qt::CaseInsensitive) == 0 ) {
+            CntActionLauncher* other = new CntActionLauncher(*mViewManager->contactManager(SYMBIAN_BACKEND), action);
+            connect(other, SIGNAL(actionExecuted(CntActionLauncher*)), this, SLOT(actionExecuted(CntActionLauncher*)));
+            other->execute(*mGroupContact, QContactDetail());
+        }
+        //group email, message
+        else {
+            QContactRelationshipFilter relationshipFilter;
+            relationshipFilter.setRelationshipType(QContactRelationship::HasMember);
+            relationshipFilter.setRelatedContactRole(QContactRelationship::First);
+            relationshipFilter.setRelatedContactId(mGroupContact->id());   
+            QList<QContactLocalId> groupMembers = mViewManager->contactManager(SYMBIAN_BACKEND)->contactIds(relationshipFilter);
+            
+            for (int i = 0;i<groupMembers.count();i++) {
+                QContact contact = mViewManager->contactManager(SYMBIAN_BACKEND)->contact(groupMembers.at(i));
+                QContactDetail preferredDetail = contact.preferredDetail(action);
+                //use preferred detail if exits
+                if (!preferredDetail.isEmpty()) {
+                    if(action.compare("message", Qt::CaseInsensitive) == 0) {
+                        QContactPhoneNumber phoneNumber = contact.detail<QContactPhoneNumber>();
+                        mActionParams.append(phoneNumber.number());
+                    }
+                    else {
+                        QContactEmailAddress email = contact.detail<QContactEmailAddress>();
+                        mActionParams.append(email.emailAddress());
+                    }
+                }
+                else {
+                    CntActionPopup *actionPopup = new CntActionPopup(&contact);
+                    if(actionPopup->showActionPopup(action)) {
+                        //increment actionpopup counter
+                        mPopupCount++;
+                        
+                        connect( actionPopup, SIGNAL(executeContactAction(QContact&, QContactDetail, QString)), this, 
+                                                    SLOT(executeAction(QContact&, QContactDetail, QString)));
+                        connect(actionPopup, SIGNAL(actionPopupCancelPressed()), this, SLOT(actionCancelled()));
+                    }
+                    else {
+                        delete actionPopup;
+                    }
+                }
+            }
+            //no popup dialog, execute action
+            if (mPopupCount==0) {
+                QVariantMap map;
+                QVariant params;
+                params.setValue(mActionParams);
+                map.insert(action,params);
+                CntActionLauncher* other = new CntActionLauncher(*mViewManager->contactManager(SYMBIAN_BACKEND), action);
+                connect(other, SIGNAL(actionExecuted(CntActionLauncher*)), this, SLOT(actionExecuted(CntActionLauncher*)));
+                other->execute(*mGroupContact, QContactDetail(), map);
+            }
+        }
+    }
+}
+
+void CntGroupActionsView::executeAction(QContact& contact, QContactDetail detail, QString action)
+{
+    Q_UNUSED(contact);
+    
+    if (action.compare("message", Qt::CaseInsensitive) == 0) {
+        QContactPhoneNumber phoneNumber = static_cast<QContactPhoneNumber>(detail);
+        mActionParams.append(phoneNumber.number());
+    }
+    else if (action.compare("email", Qt::CaseInsensitive) == 0) {
+        QContactEmailAddress email = static_cast<QContactEmailAddress>(detail);
+        mActionParams.append(email.emailAddress());
+    }
+    
+    //actionpopup executed, decrement counter
+    mPopupCount--;
+    if (mPopupCount==0) {
+        QVariantMap map;
+        QVariant params;
+        params.setValue(mActionParams);
+        map.insert(action,params);
+        
+        CntActionLauncher* other = new CntActionLauncher(*mViewManager->contactManager(SYMBIAN_BACKEND), action);
+        connect(other, SIGNAL(actionExecuted(CntActionLauncher*)), this, SLOT(actionExecuted(CntActionLauncher*)));
+        other->execute(*mGroupContact, QContactDetail(), map);
+        }
+}
+
+void CntGroupActionsView::actionCancelled()
+{
+    //actionpopup cancelled, decrement counter
+    mPopupCount--;
+}
+
+
+void CntGroupActionsView::actionExecuted(CntActionLauncher* aAction)
+{
+    //cleanup
+    aAction->deleteLater();
+}
+

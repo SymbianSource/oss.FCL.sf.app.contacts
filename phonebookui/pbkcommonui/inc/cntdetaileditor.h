@@ -31,6 +31,7 @@ class HbMenu;
 class HbView;
 class HbAction;
 class CntEditorFactory;
+class CntSaveManager;
 
 class CntDetailEditor : public QObject,
                         public CntAbstractView
@@ -46,6 +47,8 @@ private slots:
     void discardChanges();
     void insertField();
     void handleItemShown(const QModelIndex& aIndex );
+    
+    void saveContact();
     
 public:
     void setViewId( int aId );
@@ -79,6 +82,7 @@ private:
     HbAction                       *mSoftkey;
     HbAction                       *mCancel;
     CntViewParameters               mArgs;
+    CntSaveManager                 *mSaveManager; // own
     
     friend class TestCntDetailEditor;
     };

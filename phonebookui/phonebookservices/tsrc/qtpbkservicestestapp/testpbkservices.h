@@ -47,20 +47,28 @@ public slots:
     // EDIT - create new
     void launchEditCreateNew_number();
     void launchEditCreateNew_number_old();
+    void launchEditCreateNew_numberWithSubtype();
+    void launchEditCreateNew_numberWithSubtype_old();    
     void launchEditCreateNew_email();
     void launchEditCreateNew_email_old();
     void launchEditCreateNew_onlineAccount();
     void launchEditCreateNew_onlineAccount_old();
+    void launchEditCreateNew_onlineAccountWithSubtype();
+    void launchEditCreateNew_onlineAccountWithSubtype_old();
     void launchEditorVCard();
     void launchEditorVCard_old();
 
     // EDIT - update existing
     void launchEditUpdateExisting_number();
     void launchEditUpdateExisting_number_old();
+    void launchEditUpdateExisting_numberWithSubtype();
+    void launchEditUpdateExisting_numberWithSubtype_old();    
     void launchEditUpdateExisting_email();
     void launchEditUpdateExisting_email_old();
     void launchEditUpdateExisting_onlineAccount();
     void launchEditUpdateExisting_onlineAccount_old();
+    void launchEditUpdateExisting_onlineAccountWithSubtype();
+    void launchEditUpdateExisting_onlineAccountWithSubtype_old();
 
     // CONTACT CARD
     void launchContactCard();
@@ -82,9 +90,9 @@ public:
 private:
     void launchMultiFetch( bool aNewInterface, QString aAction );
     void launchSingleFetch( bool aNewInterface, QString aAction );
-    void launchEditCreateNew( bool aNewInterface, QString aDetailType, QString aFieldContent );
+    void launchEditCreateNew( bool aNewInterface, QString aDetailType, QString aFieldContent, QString aDetailSubtype = QString() );
     void launchEditorVCard( bool aNewInterface );
-    void launchEditUpdateExisting( bool aNewInterface, QString aDetailType, QString aDetailValue );
+    void launchEditUpdateExisting( bool aNewInterface, QString aDetailType, QString aDetailValue, QString aDetailSubtype = QString());
     void launchContactCard( bool aNewInterface );
     void launchContactCard( bool aNewInterface, QString aDetailType, QString aDetailValue );
 

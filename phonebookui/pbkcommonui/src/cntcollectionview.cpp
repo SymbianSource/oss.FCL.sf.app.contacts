@@ -98,7 +98,7 @@ CntCollectionView::CntCollectionView(CntExtensionManager &extensionManager) :
     groups->setChecked(true);
     
     mFindAction = static_cast<HbAction*>(mDocumentLoader.findObject("cnt:find"));
-    mFindAction->setEnabled(false);
+    connect(mFindAction, SIGNAL(triggered()), this, SLOT(showNamesViewWithFinder()));
     mExtensionAction = static_cast<HbAction*> (mDocumentLoader.findObject("cnt:activity"));
 }
 
@@ -159,9 +159,6 @@ void CntCollectionView::activate( CntAbstractViewManager* aMgr, const CntViewPar
     mModel = new CntCollectionListModel(getContactManager(), mExtensionManager, this);
     mListView->setModel(mModel);
     
-    mFetchView = new CntFetchContacts(*mViewManager->contactManager( SYMBIAN_BACKEND ));
-    connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleNewGroupMembers()));
-    
     CNT_EXIT
 }
 
@@ -184,6 +181,16 @@ Go back to previous view
 void CntCollectionView::showPreviousView()
 {
     CntViewParameters viewParameters;
+    mViewManager->back(viewParameters);
+}
+
+/*!
+Go back to previous view
+*/
+void CntCollectionView::showNamesViewWithFinder()
+{
+    CntViewParameters viewParameters;
+    viewParameters.insert(EFinder, "show");
     mViewManager->back(viewParameters);
 }
 
@@ -257,7 +264,7 @@ void CntCollectionView::showContextMenu(HbAbstractViewItem *item, const QPointF 
     else
     {
         int id = item->modelIndex().data(Qt::UserRole).toInt();
-        QVariant data( item->modelIndex().row() );
+        QVariant data( id );
 
         int favoriteGrpId = CntFavourite::favouriteGroupId(mViewManager->contactManager(SYMBIAN_BACKEND));
         
@@ -280,22 +287,20 @@ void CntCollectionView::showContextMenu(HbAbstractViewItem *item, const QPointF 
 
 void CntCollectionView::handleMenu(HbAction* action)
 {
-    int row = action->data().toInt();
     HbMenu *menuItem = static_cast<HbMenu*>(sender());
-    QModelIndex index = mModel->index(row, 0);
-    
-    int id = index.data(Qt::UserRole).toInt();
     
     if ( action == menuItem->actions().first() )
-        {
+    {
+        int id = action->data().toInt();
+        QModelIndex index = mModel->indexOfGroup(id);
         openGroup(index);
-        }
+    }
     else if (action == menuItem->actions().at(1))
-        {
-        
+    {
+        int id = action->data().toInt();
         QContact groupContact = getContactManager()->contact(id);
         deleteGroup(groupContact);
-        }
+    }
 }
 
 
@@ -343,7 +348,17 @@ void CntCollectionView::handleNewGroup(HbAction* action)
         QSet<QContactLocalId> contactsSet = contactsList.toSet();
 
         // Select some contact(s) to add to the group
-        QString groupNameCreated(mHandledContact->displayLabel());
+        QString groupNameCreated = mHandledContact->displayLabel();
+        if (groupNameCreated.isEmpty())
+        {
+            groupNameCreated = hbTrId("txt_phob_list_unnamed");
+        }
+        
+        if (!mFetchView)
+        {
+            mFetchView = new CntFetchContacts(*mViewManager->contactManager( SYMBIAN_BACKEND ));
+            connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleNewGroupMembers()));
+        }
         mFetchView->setDetails(HbParameterLengthLimiter(hbTrId("txt_phob_title_members_of_1_group")).arg(groupNameCreated),
                                hbTrId("txt_common_button_save"));
         mFetchView->displayContacts(HbAbstractItemView::MultiSelection, contactsSet);
@@ -353,8 +368,12 @@ void CntCollectionView::handleNewGroup(HbAction* action)
 void CntCollectionView::handleNewGroupMembers()
 {
     mSelectedContactsSet = mFetchView->getSelectedContacts();
+    
     if ( !mFetchView->wasCanceled() && mSelectedContactsSet.size() ) {
         saveNewGroup(mHandledContact);
+        
+        delete mFetchView;
+        mFetchView = NULL;
 
         CntViewParameters viewParameters;
         viewParameters.insert(EViewId, groupMemberView);
@@ -363,13 +382,22 @@ void CntCollectionView::handleNewGroupMembers()
         viewParameters.insert(ESelectedGroupContact, var);
         mViewManager->changeView(viewParameters);
     }
+    else
+    {
+        // Add the new group 
+        mModel->addGroup(mHandledContact->localId());
+        mDeleteGroupsAction->setEnabled(true);
+        
+        delete mFetchView;
+        mFetchView = NULL;
+    }
     
-    QString groupNameCreated(mHandledContact->displayLabel());
+    QString groupNameCreated = mHandledContact->displayLabel();
+    if (groupNameCreated.isEmpty())
+    {
+        groupNameCreated = hbTrId("txt_phob_list_unnamed");
+    }
     HbNotificationDialog::launchDialog(HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_new_group_1_created")).arg(groupNameCreated));
-
-    // Refresh the page 
-    refreshDataModel();
-    mDeleteGroupsAction->setEnabled(true);
 
     delete mHandledContact;
     mHandledContact = NULL;
@@ -388,20 +416,22 @@ void CntCollectionView::deleteGroup(QContact group)
 {
     mHandledContact = new QContact(group);
     QString name = mHandledContact->displayLabel();
+    if (name.isEmpty())
+    {
+        name = hbTrId("txt_phob_list_unnamed");
+    }
 
     HbLabel *headingLabel = new HbLabel();
     headingLabel->setPlainText(HbParameterLengthLimiter(hbTrId("txt_phob_dialog_delete_1_group")).arg(name));
           
     HbMessageBox::question(hbTrId("txt_phob_dialog_only_group_will_be_removed_contac")
-            , this, SLOT(handleDeleteGroup(HbAction*)),
-                hbTrId("txt_common_button_delete"), hbTrId("txt_common_button_cancel"), headingLabel);
+            , this, SLOT(handleDeleteGroup(int)), HbMessageBox::Delete | HbMessageBox::Cancel,
+                headingLabel);
 }
 
-void CntCollectionView::handleDeleteGroup(HbAction* action)
+void CntCollectionView::handleDeleteGroup(int action)
 {
-    HbMessageBox *note = static_cast<HbMessageBox*>(sender());
-    
-    if (note && action == note->actions().first())
+    if (action == HbMessageBox::Delete)
     {
         getContactManager()->removeContact(mHandledContact->localId());
         mModel->removeGroup(mHandledContact->localId());

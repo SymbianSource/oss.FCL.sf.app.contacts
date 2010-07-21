@@ -19,12 +19,14 @@
 
 #include <hbinstantfeedback.h>
 #include <hbtapgesture.h>
+#include <hbeffect.h>
 #include <QGraphicsSceneMouseEvent>
 
 CntImageLabel::CntImageLabel(QGraphicsItem *parent) :
     HbLabel(parent)
 {
     grabGesture(Qt::TapGesture);
+    HbEffect::add(this, "groupbox_icon_click", "iconclick");
 }
 
 CntImageLabel::~CntImageLabel()
@@ -38,6 +40,9 @@ void CntImageLabel::gestureEvent(QGestureEvent* event)
     {    
         switch (tap->state()) 
         {
+            case Qt::GestureStarted:
+                HbEffect::start(this, QString("iconclick"));
+                break;
             case Qt::GestureFinished:
                 if (tap->tapStyleHint() == HbTapGesture::Tap)
                 {
@@ -48,8 +53,9 @@ void CntImageLabel::gestureEvent(QGestureEvent* event)
             case Qt::GestureUpdated:
                 if (tap->tapStyleHint() == HbTapGesture::TapAndHold) 
                 {
+                    HbEffect::cancel(this, QString("iconclick"));
                     emit iconLongPressed(tap->scenePosition());
-                }
+                }      
                 break;
             default:
                 break;

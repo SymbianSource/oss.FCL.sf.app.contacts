@@ -50,6 +50,7 @@ public:
      * Overriden method to draw the custom item in the list view
      */
     void updateChildItems();
+    bool event(QEvent* e);
     
     bool getIncoming() const { return mIncoming; }
     bool isNewMessage() const { return mNewMessage; }

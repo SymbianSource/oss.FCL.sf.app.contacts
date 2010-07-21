@@ -116,10 +116,11 @@ QContactActionDescriptor CntAction::actionDescriptor() const
 }
 
 
-bool CntAction::invokeAction(const QContact& contact, const QContactDetail& detail, const QVariantMap& /*parameters*/)
+bool CntAction::invokeAction(const QContact& contact, const QContactDetail& detail, const QVariantMap& data)
 {
 	m_contact = contact;
 	m_detail  = detail;
+	m_data = data;
 	
 	QTimer::singleShot(1, this, SLOT(performAction()));
 	m_state = QContactAction::ActiveState;
@@ -159,28 +160,38 @@ bool CntAction::actionDescriptionSupported(const QContactActionDescriptor& descr
 //common code to perform a call, videocall and message action
 void CntAction::performNumberAction(const QString &interface, const QString &operation)
 {
-    XQApplicationManager appMng;
     QVariantList args;
     QVariant retValue;
     
     // TODO: Using XQApplicationManager is not working with calls
     // The factory method cannot create a request. Find out why
-    bool isCallAction = m_actionName == "call";
+    bool isCallAction = (m_actionName == "call" || m_actionName == "videocall");
     XQServiceRequest snd(interface, operation, false);
 
     delete m_request;
     m_request = NULL;
-    m_request = appMng.create(interface, operation, false); // not embedded
+    m_request = m_AppManager.create(interface, operation, false); // not embedded
+    
     if (!isCallAction) {
         if (!m_request) {
             emitResult(GeneralError, retValue);
             return;
         }
     }
-	
+    
+    //QContactType == TypeGroup
+    if (QContactType::TypeGroup == m_contact.type()) {
+        QContactPhoneNumber conferenceCall = m_contact.detail<QContactPhoneNumber>();
+        args << conferenceCall.number() << m_contact.localId() << m_contact.displayLabel();
+        
+        // TODO remove once call action works
+        snd << conferenceCall.number() << m_contact.localId() << m_contact.displayLabel();
+        snd.send(retValue);
+        emitResult(snd.latestError(), retValue);
+    }
+    //QContactType == TypeContact
     //detail exist use it
-	if (m_detail.definitionName() == QContactPhoneNumber::DefinitionName)
-	{
+    else if (m_detail.definitionName() == QContactPhoneNumber::DefinitionName) {
 		const QContactPhoneNumber &phoneNumber = static_cast<const QContactPhoneNumber &>(m_detail);
 		
 		args << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
@@ -188,29 +199,29 @@ void CntAction::performNumberAction(const QString &interface, const QString &ope
 		// TODO remove once call action works
 		if (isCallAction) {
             snd << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
-            emitResult(snd.send(retValue), retValue);
-	    } else {
+            snd.send(retValue);
+            emitResult(snd.latestError(), retValue);
+	    } 
+		else {
 	       m_request->setArguments(args);
-	       m_request->setSynchronous(true);
-           emitResult(m_request->send(retValue), retValue);
+	       m_request->send(retValue);
+           emitResult(m_request->lastError(), retValue);
 	    }
 	}
-	
-	//if no detail, pick preferred
-	else if(m_detail.isEmpty())
+    //QContactType == TypeContact
+    //if no detail, pick preferred
+	else if (m_detail.isEmpty())
 	{
 		QContactDetail detail = m_contact.preferredDetail(m_actionName);
 		QContactPhoneNumber phoneNumber;
 	
 		//if preferred is empty pick first phonenumber
-		if(detail.isEmpty())
-		{
+		if (detail.isEmpty()) {
 			phoneNumber = m_contact.detail<QContactPhoneNumber>();
 		}
 		
 		//if not empty, cast detail to phonenumber
-		else
-		{
+		else {
 			phoneNumber = static_cast<QContactPhoneNumber>(detail);
 		}
 		
@@ -219,17 +230,17 @@ void CntAction::performNumberAction(const QString &interface, const QString &ope
         // TODO remove once call action works
         if (isCallAction) {
             snd << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
-            emitResult(snd.send(retValue), retValue);
-        } else {
+            snd.send(retValue);
+            emitResult(snd.latestError(), retValue);
+        }
+        else {
             m_request->setArguments(args);
-            m_request->setSynchronous(true);
-            emitResult(m_request->send(retValue), retValue);
+            m_request->send(retValue);
+            emitResult(m_request->lastError(), retValue);
         }
 	}
-	
 	//else return an error
-	else
-	{
+	else {
 		emitResult(GeneralError, retValue);
 	}
 }
@@ -244,11 +255,11 @@ void CntAction::emitResult(int errorCode, const QVariant &retValue)
         m_result.insert("XQAiwRequest Error", m_request->lastError());
 	}
 	
-	if (errorCode == 0){
+	if (errorCode == 0) {
 		m_state = QContactAction::FinishedState;
 	}
 	
-	else{
+	else {
 		m_state = QContactAction::FinishedWithErrorState;
 	}
 	

@@ -38,6 +38,7 @@ enum CntViewParamId
     ESelectedDetail,
     ESelectionMode,
     EMyCard,
+    EFinder,
 	ECustomParam = 100
 };
 

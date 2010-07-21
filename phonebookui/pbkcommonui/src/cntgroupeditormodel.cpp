@@ -31,7 +31,7 @@ CntGroupEditorModel::CntGroupEditorModel(QContact* aContact) :
         nameDetails.append(emptyName);
     }
     
-    QList<QContactPhoneNumber> numberDetails = CntDetailOrderingHelper::getOrderedSupportedPhoneNumbers(*mContact);
+    QList<QContactPhoneNumber> numberDetails = mContact->details<QContactPhoneNumber>();
     if (numberDetails.isEmpty())
     {
         QContactPhoneNumber emptyNumber;

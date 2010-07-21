@@ -21,26 +21,26 @@
 #include <QObject>
 
 #include "cntbaseselectionview.h"
+#include "cntabstractserviceprovider.h"
 
-class CntServiceHandler;
 
 class CntServiceContactFetchView : public CntBaseSelectionView
 {
     Q_OBJECT
 
 public:
-    CntServiceContactFetchView( CntServiceHandler *aServiceHandler );
+    CntServiceContactFetchView( CntAbstractServiceProvider& aServiceProvider );
     ~CntServiceContactFetchView();
 
     int viewId() const { return serviceContactFetchView; }
     
 public slots:
     void aboutToOpenView(CntAbstractViewManager* aMgr, const CntViewParameters viewParameters);
-    void aboutToCloseView();
+    void closeFetchView();
     void cancelFetch();
 
 private:
-    CntServiceHandler *mServiceHandler;
+    CntAbstractServiceProvider& mProvider;
 };
 
 #endif /* CNTSERVICECONTACTFETCHVIEW_H */

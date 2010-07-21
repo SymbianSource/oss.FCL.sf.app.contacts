@@ -137,8 +137,8 @@ HEADERS += \
     inc/cntcommondetailviewitem.h \
     ../../inc/cntdebug.h \
     inc/cntactionpopup_p.h \
-    inc/cntactionpopup.h
-    
+    inc/cntactionpopup.h \
+    inc/cntsavemanager.h
     
     
 SOURCES += \
@@ -211,7 +211,8 @@ SOURCES += \
     src/cntsettingsmodel.cpp \
     src/cntcommondetailviewitem.cpp \
     src/cntactionpopup_p.cpp \
-    src/cntactionpopup.cpp
+    src/cntactionpopup.cpp \
+    src/cntsavemanager.cpp
     
 RESOURCES += resources\pbkcommonui.qrc
 

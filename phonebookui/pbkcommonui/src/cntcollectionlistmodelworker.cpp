@@ -109,12 +109,11 @@ bool CntCollectionListModelWorker::event(QEvent *event)
 }
 
 /*!
-    Schedule an asynch job for the given row (model) and contact id.
+    Schedule an asynch job for the given contact id.
 
-    \param row the row in the model
-    \param id the QContactLocalId of the group in the given row
+    \param id the QContactLocalId of the group
 */
-void CntCollectionListModelWorker::scheduleJob(int row, int id)
+void CntCollectionListModelWorker::scheduleJob(int id)
 {
     CNT_ENTRY
     
@@ -134,7 +133,7 @@ void CntCollectionListModelWorker::scheduleJob(int row, int id)
         HbApplication::instance()->postEvent(this, new QEvent(QEvent::User));
     }
 
-    mJobs.append(QPair<int,int>(row, id));
+    mJobs.append(id);
     
     mMutex.unlock();
     
@@ -163,12 +162,10 @@ void CntCollectionListModelWorker::processJobs()
         else
         {
             // get next job
-            QPair<int,int> pair = mJobs.takeFirst();
-            int row = pair.first;
-            int id = pair.second;
+            int id = mJobs.takeFirst();
 
             mMutex.unlock();
-            fetchInformation(row, id);
+            fetchInformation(id);
         }
 
         HbApplication::processEvents();
@@ -182,10 +179,9 @@ void CntCollectionListModelWorker::processJobs()
     and the amount of contacts in the group. Emits the result as a signal for
     CntCollectionListModel to handle.
 
-    \param row the row in the model
     \param id the QContactLocalId of the group in the given row
 */
-void CntCollectionListModelWorker::fetchInformation(int row, int id)
+void CntCollectionListModelWorker::fetchInformation(int id)
 {
     CNT_ENTRY
     
@@ -238,9 +234,9 @@ void CntCollectionListModelWorker::fetchInformation(int row, int id)
         for(int i = 0;i < groupMemberIds.count();i++)
         {
             QContactFetchHint nameOnlyFetchHint;
-            QStringList details;
+            /*QStringList details;
             details << QContactDisplayLabel::DefinitionName;
-            nameOnlyFetchHint.setDetailDefinitionsHint(details);
+            nameOnlyFetchHint.setDetailDefinitionsHint(details);*/
             nameOnlyFetchHint.setOptimizationHints(QContactFetchHint::NoRelationships);
 
             QContact contact = mManager->contact(groupMemberIds.at(i), nameOnlyFetchHint);
@@ -275,7 +271,7 @@ void CntCollectionListModelWorker::fetchInformation(int row, int id)
         }
     }
 
-    emit fetchDone(row, secondLineText, memberCount);
+    emit fetchDone(id, secondLineText, memberCount);
     
     CNT_EXIT
 }

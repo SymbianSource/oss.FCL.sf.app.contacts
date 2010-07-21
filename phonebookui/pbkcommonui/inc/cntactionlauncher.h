@@ -34,6 +34,7 @@ public:
     
 public:
     bool execute( QContact aContact, QContactDetail aDetail );
+    bool execute( QContact aContact, QContactDetail aDetail, QVariantMap aParameters );
     bool execute( QContact aContact, QContactDetail aDetail, QContactActionDescriptor aActionDescriptor );
     
 signals:

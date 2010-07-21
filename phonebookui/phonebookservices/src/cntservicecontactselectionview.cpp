@@ -17,15 +17,15 @@
 
 #include "cntservicecontactselectionview.h"
 
+#include <cntservicescontact.h>
 #include <QCoreApplication>
 #include <QModelIndex>
-#include "cntservicehandler.h"
 #include <hblistview.h>
 #include <cntlistmodel.h>
 
-CntServiceContactSelectionView::CntServiceContactSelectionView(CntServiceHandler *aServiceHandler):
+CntServiceContactSelectionView::CntServiceContactSelectionView( CntAbstractServiceProvider& aServiceProvider ):
 CntBaseSelectionView(),
-mServiceHandler(aServiceHandler)
+mProvider( aServiceProvider )
 {
     connect(mListView, SIGNAL(activated(const QModelIndex&)), this, SLOT(onListViewActivated(const QModelIndex&)));
     connect( this, SIGNAL(viewClosed()), this, SLOT(aboutToCloseView()) );
@@ -37,6 +37,7 @@ CntServiceContactSelectionView::~CntServiceContactSelectionView()
 
 }
 
+// An item in the selection list has been clicked
 void CntServiceContactSelectionView::onListViewActivated(const QModelIndex &aIndex)
 {
     QContact contact = mListModel->contact(aIndex);
@@ -52,8 +53,9 @@ void CntServiceContactSelectionView::onListViewActivated(const QModelIndex &aInd
 
 void CntServiceContactSelectionView::aboutToCloseView()
 {
-    connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
-    mServiceHandler->completeEdit(0);
+    QVariant variant;
+    variant.setValue(KCntServicesReturnValueContactNotModified);
+    mProvider.CompleteServiceAndCloseApp(variant);
 }
 
 void CntServiceContactSelectionView::aboutToOpenView(CntAbstractViewManager* aMgr, const CntViewParameters viewParameters)

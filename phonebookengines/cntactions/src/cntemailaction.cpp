@@ -29,12 +29,10 @@ static const QString EMAIL_SEND_TO_KEY = "to";
 CntEmailAction::CntEmailAction() : 
     CntAction("email")
 {
-    mRequest = m_AppManager.create(XQI_EMAIL_MESSAGE_SEND, "send(QVariant)", true);
 }
 
 CntEmailAction::~CntEmailAction()
 {
-    delete mRequest;
 }
 
 QContactFilter CntEmailAction::contactFilter(const QVariant& value) const
@@ -65,61 +63,81 @@ CntEmailAction* CntEmailAction::clone() const
 void CntEmailAction::performAction()
 {
     QVariant retValue;
-
-    if (mRequest)
-    {
+    delete m_request;
+    m_request = NULL;
+    m_request = m_AppManager.create(XQI_EMAIL_MESSAGE_SEND, "send(QVariant)", true);
+    
+    if (m_request) {
         QMap<QString, QVariant> map;
         QStringList recipients;
         QList<QVariant> data;
 
+        //QContactType == TypeGroup
+        if (QContactType::TypeGroup == m_contact.type()) {
+            QStringList emails;
+            QVariant value = m_data.value("email");
+            if (value.canConvert<QStringList>()) {
+                emails = value.toStringList();
+            }
+            
+            if (!emails.isEmpty()) {
+                for (int i=0;i<emails.count();i++) {
+                    recipients.append(emails.at(i));
+                }
+                map.insert(EMAIL_SEND_TO_KEY, recipients);
+                data.append(map);
+
+                m_request->setArguments(data);
+                m_request->send(retValue);
+                emitResult(m_request->lastError(), retValue);
+            }
+            else {
+                emitResult(GeneralError, retValue);
+            }
+        }
+        //QContactType == TypeContact
         // If detail exists use it.
-        if (m_detail.definitionName() == QContactEmailAddress::DefinitionName)
-        {
+        else if (m_detail.definitionName() == QContactEmailAddress::DefinitionName) {
             const QContactEmailAddress &email = static_cast<const QContactEmailAddress &>(m_detail);
 
             recipients.append(email.emailAddress());
             map.insert(EMAIL_SEND_TO_KEY, recipients);
             data.append(map);
 
-            mRequest->setArguments(data);
-            mRequest->send(retValue);
-            emitResult(mRequest->lastError(), retValue);
+            m_request->setArguments(data);
+            m_request->send(retValue);
+            emitResult(m_request->lastError(), retValue);
         }
 
         // If no detail, pick preferred.
         // Todo : Temporary fix. Remove setting preferred when selection popup feature available.
-        else if (m_detail.isEmpty())
-        {
+        else if (m_detail.isEmpty()) {
             QContactDetail detail = m_contact.preferredDetail(m_actionName);
             QContactEmailAddress email;
 
             // If preferred is empty pick first email.
-            if(detail.isEmpty())
-            {
+            if (detail.isEmpty()) {
                 email = m_contact.detail<QContactEmailAddress>();
             }
-            else
-            {
+            else {
                 email = static_cast<QContactEmailAddress>(detail);
             }
 
             recipients.append(email.emailAddress());
             map.insert(EMAIL_SEND_TO_KEY, recipients);
-            data.append(map);			
+            data.append(map);
 
-            mRequest->setArguments(data);
-            mRequest->send(retValue);
-            emitResult(mRequest->lastError(), retValue);
+            m_request->setArguments(data);
+            m_request->send(retValue);
+            emitResult(m_request->lastError(), retValue);
         }
-        else
-        {
+        else {
             emitResult(GeneralError, retValue);
         }
     }
 
     // Service not found.
-    else
-    {
+    else {
         emitResult(GeneralError, retValue);
     }
 }

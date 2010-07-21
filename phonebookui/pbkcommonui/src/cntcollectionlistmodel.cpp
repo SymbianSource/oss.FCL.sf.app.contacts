@@ -108,7 +108,7 @@ QVariant CntCollectionListModel::data(const QModelIndex& index, int role) const
     
     if (!p->fetched)
     {
-        mThread->scheduleJob(row, p->id);
+        mThread->scheduleJob(p->id);
         p->fetched = true;
     }
     
@@ -163,6 +163,32 @@ bool CntCollectionListModel::removeRows(int row, int count, const QModelIndex &p
 }
 
 /*!
+    Adds a row to the model. This is called from addGroup(int localId), so no
+    real logic in here.
+
+    \param row the first row which is added
+    \param count amount of rows to be added (not supported)
+    \param parent not used as all items share the same parent
+    \return success of the operation
+*/
+bool CntCollectionListModel::insertRows(int row, int count, const QModelIndex &parent)
+{
+    Q_UNUSED(count);
+    Q_UNUSED(parent);
+    
+    if ( !validateRowIndex(row) )
+    {
+        return false;
+    }
+    
+    beginInsertRows(parent, row, row);
+
+    endInsertRows();
+
+    return true;
+}
+
+/*!
     Remove given group from the model. Ignore plugin groups.
 
     \param localId QContactLocalId of the group that should be removed
@@ -177,6 +203,87 @@ void CntCollectionListModel::removeGroup(int localId)
         {
             removeRow(i);
             break;
+        }
+    }
+    
+    CNT_EXIT
+}
+
+/*!
+    Add a new group to the model. This also takes care of putting it in the
+    correct row.
+
+    \param localId QContactLocalId of the group that should be added
+*/
+void CntCollectionListModel::addGroup(int localId)
+{
+    CNT_ENTRY
+    
+    QContactDetailFilter groupFilter;
+    groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
+    groupFilter.setValue(QString(QLatin1String(QContactType::TypeGroup)));
+
+    QContactSortOrder sortOrderGroupName;
+    sortOrderGroupName.setDetailDefinitionName(QContactName::DefinitionName,
+        QContactName::FieldCustomLabel);
+    sortOrderGroupName.setCaseSensitivity(Qt::CaseInsensitive);
+
+    QList<QContactSortOrder> groupsOrder;
+    groupsOrder.append(sortOrderGroupName);
+
+    QList<QContactLocalId> groupContactIds = d->mContactManager->contactIds(groupFilter, groupsOrder);
+    
+    int row = 1;
+    
+    for (int i = 0;i < groupContactIds.count();i++)
+    {
+        if (groupContactIds.at(i) == localId)
+        {
+            row += d->mExtensions.count();
+            
+            CollectionItemPointer item(new CntCollectionItem());
+            
+            QContactFetchHint noRelationshipsFetchHint;
+            noRelationshipsFetchHint.setOptimizationHints(QContactFetchHint::NoRelationships);
+            
+            QContact contact = d->mContactManager->contact(groupContactIds.at(i), noRelationshipsFetchHint);
+            QContactName contactName = contact.detail<QContactName>();
+            QString groupName = contactName.customLabel();
+            
+            if (groupName.isNull())
+            {
+                item->groupName = hbTrId("txt_phob_dblist_unnamed");
+            }
+            else
+            {
+                item->groupName = groupName;
+            }
+
+            item->icon = HbIcon("qtg_large_custom");
+            
+            QList<QContactAvatar> details = contact.details<QContactAvatar>();
+            for (int k = 0;k < details.count();k++)
+            {
+                if (details.at(k).imageUrl().isValid())
+                {
+                    int id = d->mThumbnailManager->getThumbnail(details.at(k).imageUrl().toString());
+                    d->mIconRequests.insert(id, groupContactIds.at(i));
+                    break;
+                }
+            }
+            
+            // contact Id for identification
+            item->id = groupContactIds.at(i);
+            item->secondLineText = " ";
+            item->memberCount = -1;
+
+            d->mList.insert(row, item);
+            insertRow(row);
+            break;
+        }
+        else if (groupContactIds.at(i) != d->mFavoriteGroupId)
+        {
+            row++;
         }
     }
     
@@ -247,6 +354,25 @@ void CntCollectionListModel::extensionGroupLongPressed(int row, const QPointF& c
 }
 
 /*!
+    Get the index for a given group id.
+
+    \param localId the id of the group
+    \return QModelIndex of the group
+*/
+QModelIndex CntCollectionListModel::indexOfGroup(int localId)
+{
+    for (int i = 0;i < d->mList.count();i++)
+    {
+        if (d->mList.at(i)->id == localId && !d->mList.at(i)->isPlugin)
+        {
+            return index(i);
+        }
+    }
+    
+    return QModelIndex();
+}
+
+/*!
     Initialize different groups.
 */
 void CntCollectionListModel::doConstruct()
@@ -295,24 +421,31 @@ void CntCollectionListModel::initializeExtensions()
         CntUiGroupSupplier* groupSupplier = d->mExtensionManager.pluginAt(i)->groupSupplier();
         if (groupSupplier)
         {
-            for(int j = 0;j < groupSupplier->groupCount();j++)
+            if (groupSupplier->isAsynch())
             {
-                const CntUiExtensionGroup& group = groupSupplier->groupAt(j);
-                
-                CollectionItemPointer item(new CntCollectionItem());
-                
-                item->groupName = group.name();
-                item->secondLineText = group.extraText();
-                item->memberCount = group.memberCount();
-                item->icon = HbIcon(group.groupIcon());
-                item->secondaryIcon = HbIcon(group.extraIcon());
-                
-                item->id = group.serviceId();
-                item->isPlugin = true;
-                item->fetched = true;
-                
-                d->mExtensions.insert(rowCount(), groupSupplier);
-                d->mList.append(item);
+                connect(groupSupplier, SIGNAL(groupsReady()), this, SLOT(extensionGroupsReady()));
+            }
+            else
+            {
+                for (int j = 0;j < groupSupplier->groupCount();j++)
+                {
+                    const CntUiExtensionGroup& group = groupSupplier->groupAt(j);
+                    
+                    CollectionItemPointer item(new CntCollectionItem());
+                    
+                    item->groupName = group.name();
+                    item->secondLineText = group.extraText();
+                    item->memberCount = group.memberCount();
+                    item->icon = HbIcon(group.groupIcon());
+                    item->secondaryIcon = HbIcon(group.extraIcon());
+                    
+                    item->id = group.serviceId();
+                    item->isPlugin = true;
+                    item->fetched = true;
+                    
+                    d->mExtensions.insert(rowCount(), groupSupplier);
+                    d->mList.append(item);
+                }
             }
         }
     }
@@ -371,7 +504,7 @@ void CntCollectionListModel::initializeUserGroups()
                 if (details.at(k).imageUrl().isValid())
                 {
                     int id = d->mThumbnailManager->getThumbnail(details.at(k).imageUrl().toString());
-                    d->mIconRequests.insert(id, rowCount());
+                    d->mIconRequests.insert(id, groupContactIds.at(i));
                     break;
                 }
             }
@@ -450,17 +583,25 @@ bool CntCollectionListModel::validateRowIndex(const int index) const
     \param secondRowText text to be shown in the second row
     \param memberCount the amount of members the group has (shown in text-3 in HbListViewItem)
 */
-void CntCollectionListModel::informationUpdated(int row, const QString& secondRowText, int memberCount)
+void CntCollectionListModel::informationUpdated(int id, const QString& secondRowText, int memberCount)
 {
     CNT_ENTRY
     
-    CollectionItemPointer item = d->mList.at(row);
-    
-    item->secondLineText = secondRowText;
-    item->memberCount = memberCount;
-    
-    int idx = d->mList.indexOf(item);
-    emit dataChanged(index(idx, 0), index(idx, 0));
+    for (int i = 0;i < d->mList.count();i++)
+    {
+        if (d->mList.at(i)->id == id && !d->mList.at(i)->isPlugin)
+        {
+            CollectionItemPointer item = d->mList.at(i);
+            
+            item->secondLineText = secondRowText;
+            item->memberCount = memberCount;
+            
+            int idx = d->mList.indexOf(item);
+            emit dataChanged(index(idx, 0), index(idx, 0));
+            
+            break;
+        }
+    }
     
     CNT_EXIT
 }
@@ -482,15 +623,77 @@ void CntCollectionListModel::onIconReady(const QPixmap& pixmap, void *data, int 
     
     if (error == 0)
     {
-        int row = d->mIconRequests.take(id);
+        int localId = d->mIconRequests.take(id);
         
-        CollectionItemPointer item = d->mList.at(row);
-        
-        item->icon = HbIcon(pixmap);
-        
-        int idx = d->mList.indexOf(item);
-        emit dataChanged(index(idx, 0), index(idx, 0));
+        for (int i = 0;i < d->mList.count();i++)
+        {
+            if (d->mList.at(i)->id == localId && !d->mList.at(i)->isPlugin)
+            {
+                CollectionItemPointer item = d->mList.at(i);
+                
+                item->icon = HbIcon(pixmap);
+                
+                int idx = d->mList.indexOf(item);
+                emit dataChanged(index(idx, 0), index(idx, 0));
+                
+                break;
+            }
+        }
     }
 
     CNT_EXIT
+}
+
+/*!
+    Slot to handle asynchronously initiated extension groups. As
+    these are added right after the static favorites group, this takes
+    also care of updating the mapping between row and CntUiGroupSuppliers
+    in case there was already some synchronously loaded extension groups.
+*/
+void CntCollectionListModel::extensionGroupsReady()
+{
+    CntUiGroupSupplier* groupSupplier = static_cast<CntUiGroupSupplier*>(sender());
+    
+    int addedCount = groupSupplier->groupCount();
+    
+    if (addedCount > 0)
+    {
+        QList<int> rowList = d->mExtensions.keys();
+        QList<CntUiGroupSupplier*> supplierList = d->mExtensions.values();
+        
+        d->mExtensions.clear();
+        
+        for (int i = 0;i < rowList.count();i++)
+        {
+            int row = rowList.at(i) + addedCount;
+            CntUiGroupSupplier* supplier = supplierList.at(i);
+            
+            d->mExtensions.insert(row, supplier);
+        }
+        
+        
+        beginInsertRows(QModelIndex(), 1, groupSupplier->groupCount());
+        
+        for (int j = 0;j < groupSupplier->groupCount();j++)
+        {
+            const CntUiExtensionGroup& group = groupSupplier->groupAt(j);
+            
+            CollectionItemPointer item(new CntCollectionItem());
+            
+            item->groupName = group.name();
+            item->secondLineText = group.extraText();
+            item->memberCount = group.memberCount();
+            item->icon = HbIcon(group.groupIcon());
+            item->secondaryIcon = HbIcon(group.extraIcon());
+            
+            item->id = group.serviceId();
+            item->isPlugin = true;
+            item->fetched = true;
+            
+            d->mExtensions.insert(1 + j, groupSupplier);
+            d->mList.insert(1 + j, item);
+        }
+        
+        endInsertRows();
+    }
 }

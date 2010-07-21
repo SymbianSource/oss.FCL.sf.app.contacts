@@ -23,35 +23,44 @@ INCLUDEPATH +=  ../pbkcommonui/inc \
 INCLUDEPATH += ../../phonebookengines/cntimageutility/inc
 
 INCLUDEPATH += . \
-    inc
+    inc \
+    ../../inc
 
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 
 MOC_DIR = moc
 
 # Input
-HEADERS += inc/cntservicemainwindow.h \
-           inc/cntserviceviewmanager.h \
-           inc/cntservicehandler.h \
+HEADERS += inc/cntserviceviewmanager.h \
+           inc/cntserviceproviderold.h \
+           inc/cntserviceproviderold2.h \
            inc/cntservicecontactfetchview.h \
            inc/cntservicecontactselectionview.h \
            inc/cntserviceeditview.h \
            inc/cntservicecontactcardview.h \
-           inc/cntservicesubeditview.h \
            inc/cntserviceassigncontactcardview.h \
-           inc/cntserviceviewfactory.h 
+           inc/cntserviceviewfactory.h \
+           inc/cntservices.h \
+           inc/cntabstractserviceprovider.h \
+           inc/cntserviceproviderfetch.h \
+           inc/cntserviceproviderviewing.h \
+           inc/cntserviceprovideredit.h \
+           inc/cntserviceviewparams.h
 
 SOURCES += src/main.cpp \
-           src/cntservicemainwindow.cpp \
            src/cntserviceviewmanager.cpp \
-           src/cntservicehandler.cpp \
+           src/cntserviceproviderold.cpp \
+           src/cntserviceproviderold2.cpp \
            src/cntservicecontactfetchview.cpp \
            src/cntservicecontactselectionview.cpp \
            src/cntserviceeditview.cpp \
            src/cntservicecontactcardview.cpp \
-           src/cntservicesubeditview.cpp \
            src/cntserviceassigncontactcardview.cpp \
-           src/cntserviceviewfactory.cpp
+           src/cntserviceviewfactory.cpp \
+           src/cntservices.cpp \
+           src/cntserviceproviderfetch.cpp \
+           src/cntserviceproviderviewing.cpp \
+           src/cntserviceprovideredit.cpp
 
 # capability
 TARGET.CAPABILITY = CAP_APPLICATION

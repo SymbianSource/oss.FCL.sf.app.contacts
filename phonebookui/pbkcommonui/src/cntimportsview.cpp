@@ -168,7 +168,7 @@ void CntImportsView::activate(CntAbstractViewManager* aMgr, const CntViewParamet
                     mAdnStorePresent = true;
                     mAdnEntriesPresent = true;
                     mWaitingForAdnCache = true;
-                    connect(mAdnSimUtility, SIGNAL(adnCacheStatusReady(SimUtility::CacheStatus&, int)), this, SLOT(adnCacheStatusReady(SimUtility::CacheStatus&, int)));
+                    connect(mAdnSimUtility, SIGNAL(adnCacheStatusReady(CntSimUtility::CacheStatus&, int)), this, SLOT(adnCacheStatusReady(CntSimUtility::CacheStatus&, int)));
                     if (!mAdnSimUtility->notifyAdnCacheStatus()) {
                         mAdnStorePresent = false;
                         mAdnEntriesPresent = false;
@@ -322,6 +322,7 @@ void CntImportsView::onListViewActivated(const QModelIndex &index)
 
 bool CntImportsView::startSimImport()
 {
+
     bool started = false;
 
     delete mFetchRequestADN;

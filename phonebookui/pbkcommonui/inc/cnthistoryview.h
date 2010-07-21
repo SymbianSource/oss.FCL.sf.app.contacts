@@ -51,7 +51,7 @@ public: // From CntAbstractView
 public slots:
     void updateScrollingPosition();
     void clearHistory();
-    void handleClearHistory(HbAction *action);
+    void handleClearHistory(int action);
     void itemActivated(const QModelIndex &index);
     void showPreviousView();
     void showClearHistoryMenu();

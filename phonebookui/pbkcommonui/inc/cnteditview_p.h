@@ -43,6 +43,7 @@ class HbAction;
 class QAction;
 class HbMenu;
 class XQAiwRequest;
+class CntSaveManager;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -76,7 +77,7 @@ private slots:
     void addDetailItem();
     void handleAddDetailItem(HbAction *aAction);
     void deleteContact();
-    void handleDeleteContact(HbAction *action);
+    void handleDeleteContact(int action);
     void discardChanges();
     void saveChanges();
     
@@ -89,7 +90,6 @@ private slots:
     void ringToneFetchHandleError(int errorCode, const QString& errorMessage);
     void ringToneFetchHandleOk(const QVariant &result);
 
-    
 private:
     void loadAvatar();
     HbMenu* createPopup( const QModelIndex aIndex, CntEditViewItem* aDetail );
@@ -97,7 +97,6 @@ private:
     void editDetail( CntEditViewItem* aDetail );
     void removeDetail( CntEditViewItem* aDetail, const QModelIndex& aIndex );
     void setSelectedContact( QContact aContact );
-    void setPreferredDetails( QContact* aContact );
     void fetchTone();
     void changeEditorView();
     
@@ -128,6 +127,7 @@ private:
     XQAiwRequest* mReq;
     XQApplicationManager mAppMgr;
     HbMenu *mMenu;
+    CntSaveManager* mSaveManager; // own
 
 };
 #endif /* CNTEDITVIEW_P_H_ */

@@ -21,6 +21,7 @@
 #include <QObject>
 
 #include "cntbaseselectionview.h"
+#include "cntabstractserviceprovider.h"
 
 class QModelIndex;
 class CntServiceHandler;
@@ -30,7 +31,7 @@ class CntServiceContactSelectionView : public CntBaseSelectionView
     Q_OBJECT
 
 public:
-    CntServiceContactSelectionView(CntServiceHandler *aServiceHandler);
+    CntServiceContactSelectionView( CntAbstractServiceProvider& aServiceProvider );
     ~CntServiceContactSelectionView();
 
     int viewId() const { return serviceContactSelectionView; }
@@ -41,7 +42,7 @@ public slots:
     void aboutToCloseView();
         
 private:
-    CntServiceHandler *mServiceHandler;
+    CntAbstractServiceProvider& mProvider;
     QContactDetail     mDetail;
 };
 

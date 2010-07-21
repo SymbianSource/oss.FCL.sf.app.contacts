@@ -21,9 +21,11 @@
 #include "cntmainwindow.h"
 #include "cntappservicehandler.h"
 #include "cntglobal.h"
+#include "cntdebug.h"
 
 int main(int argc, char **argv)
 {
+    qInstallMsgHandler(MSG_HANDLER);
 
     HbApplication a( argc, argv );
 

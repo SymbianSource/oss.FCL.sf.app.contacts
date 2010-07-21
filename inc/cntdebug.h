@@ -23,6 +23,7 @@
 #include <QtGlobal> // qDebug()
 
 // #define TRACK_MEMORY_LEAKS
+// #define CNT_TRACE2FILE
 
 /*!
     \def CNT_UNUSED(name)
@@ -349,8 +350,7 @@
     by the streaming operator <<.
 */
 
-
-#ifdef _DEBUG
+#if defined (_DEBUG) || defined (CNT_TRACE2FILE)
     #define CNT_UNUSED(name)
     #define CNT_STATIC_ENTRY qDebug() << __PRETTY_FUNCTION__ << "entry";
     #define CNT_STATIC_ENTRY_ARGS(args) qDebug() << __PRETTY_FUNCTION__ << "entry," << args;
@@ -360,6 +360,9 @@
     #define CNT_EXIT_ARGS(args) qDebug() << __PRETTY_FUNCTION__ << "exit," << args;
     #define CNT_LOG qDebug() << __PRETTY_FUNCTION__ << "this" << (void *)this;
     #define CNT_LOG_ARGS(args) qDebug() << __PRETTY_FUNCTION__ << args;
+    #define CNT_WARNING(args) qWarning() << __PRETTY_FUNCTION__ << args;
+    #define CNT_CRITICAL(args) qCritical() << __PRETTY_FUNCTION__ << args;
+    #define CNT_FATAL(args) qFatal() << __PRETTY_FUNCTION__ << args;
 #else
     #define CNT_UNUSED(name) Q_UNUSED(name)
     #define CNT_STATIC_ENTRY
@@ -370,8 +373,11 @@
     #define CNT_EXIT_ARGS(args)
     #define CNT_LOG
     #define CNT_LOG_ARGS(args)
-#endif // _DEBUG
-
+    #define CNT_WARNING(args)
+    #define CNT_CRITICAL(args)
+    #define CNT_FATAL(args)
+#endif // _DEBUG || CNT_TRACE2FILE
+    
 // for tracing memory leaks
 #ifdef TRACK_MEMORY_LEAKS
     #include <hbapplication.h>
@@ -405,5 +411,69 @@
     #define CNT_TRACK_QOBJECTLIFE(obj)
     #define CNT_TRACK_QOBJECTLIVES(obj)
 #endif
+
+// filter phonebook app traces
+#ifdef CNT_TRACE2FILE
+    #include <QFile>
+    #include <QTextStream>
+    static void cntCustomLog2File(QtMsgType type, const char *msg)
+    {   
+        QFile logFile("c:/cnt_logs.log");
+        if (!logFile.open(QIODevice::Append | QIODevice::Text))
+        {
+            qFatal("error opening c:/cnt_logs.log file");
+            return;
+        }
+
+        QTextStream out(&logFile);
+        switch (type)
+        {
+            case QtDebugMsg:
+                out << "[CNT] Debug: " << msg;
+                break;
+            case QtWarningMsg:
+                out << "[CNT] Warning: " << msg;
+                break;
+            case QtCriticalMsg:
+                out << "[CNT] Critical: " << msg;
+                break;
+            case QtFatalMsg:
+                out << "[CNT] Fatal: " << msg;
+                abort();
+                break;
+            default:
+                out << "[CNT] No Log Selection Type: " << msg;
+                break;
+        }
+    }
+    #define MSG_HANDLER cntCustomLog2File
+#else
+    #ifdef Q_OS_SYMBIAN
+        #include <e32debug.h>
+        static void cntCustomLog(QtMsgType type, const char *msg)
+        {
+            switch (type) {
+                case QtDebugMsg:
+                    RDebug::Printf("[CNT] Debug: %s\n", msg);
+                    break;
+                case QtWarningMsg:
+                    RDebug::Printf("[CNT] Warning: %s\n", msg);
+                    break;
+                case QtCriticalMsg:
+                    RDebug::Printf("[CNT] Critical: %s\n", msg);
+                    break;
+                case QtFatalMsg:
+                    RDebug::Printf("[CNT] Fatal: %s\n", msg);
+                    abort();
+                    break;
+                default:
+                    break;
+            }
+        }
+        #define MSG_HANDLER cntCustomLog
+    #else
+        #define MSG_HANDLER 0
+    #endif  // Q_OS_SYMBIAN
+#endif  // CNT_TRACE2FILE
 
 #endif // CNTDEBUG_H

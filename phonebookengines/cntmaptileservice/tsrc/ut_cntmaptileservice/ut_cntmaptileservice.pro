@@ -40,7 +40,6 @@ symbian:
     :BLD_INF_RULES.prj_exports += "data/preferredaddressmap.png /epoc32/winscw/c/maptiletest/preferredaddressmap.png"
     :BLD_INF_RULES.prj_exports += "data/workaddressmap.png /epoc32/winscw/c/maptiletest/workaddressmap.png"
     :BLD_INF_RULES.prj_exports += "data/homeaddressmap.png /epoc32/winscw/c/maptiletest/homeaddressmap.png"
-    SYSTEMINCLUDEPATH += \epoc32\include\stdapis
 }
 
 SOURCES += src/testrunner.cpp

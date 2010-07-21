@@ -35,8 +35,6 @@ public:
     QList<QContactDetail> supportedDetails(const QContact& contact) const;
     CntEmailAction* clone() const;
     void performAction();
-private:
-    XQAiwRequest    *mRequest;
 };
 
 #endif

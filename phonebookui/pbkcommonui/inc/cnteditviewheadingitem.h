@@ -76,6 +76,7 @@ private:
     HbTextItem              *mLabel;
     HbTextItem              *mSecondLabel;
     HbFrameItem             *mFrameItem;
+    HbFrameItem             *mFocusItem;
     HbTouchArea             *mIconTouchArea;
 
     bool                     mIconFocused;

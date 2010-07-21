@@ -138,6 +138,28 @@ void testPbkServices::launchEditCreateNew_number_old()
     CNT_EXIT
 }
 
+void testPbkServices::launchEditCreateNew_numberWithSubtype()
+{
+    CNT_ENTRY
+    launchEditCreateNew(
+        true,                                // aNewInterface
+        QContactPhoneNumber::DefinitionName, // aDetailType
+        "1234567",                           // aFieldContent
+        QContactPhoneNumber::SubTypeLandline); //aDetailSubtype
+    CNT_EXIT
+}
+
+void testPbkServices::launchEditCreateNew_numberWithSubtype_old()
+{
+    CNT_ENTRY
+    launchEditCreateNew(
+        false,                               // aNewInterface
+        QContactPhoneNumber::DefinitionName, // aDetailType
+        "1234567",                          // aFieldContent
+        QContactPhoneNumber::SubTypeLandline); //aDetailSubtype
+    CNT_EXIT
+}
+
 void testPbkServices::launchEditCreateNew_email()
 {
     CNT_ENTRY
@@ -178,6 +200,28 @@ void testPbkServices::launchEditCreateNew_onlineAccount_old()
     CNT_EXIT
 }
 
+void testPbkServices::launchEditCreateNew_onlineAccountWithSubtype()
+{
+    CNT_ENTRY
+    launchEditCreateNew(
+        true,                                  // aNewInterface
+        QContactOnlineAccount::DefinitionName, // aDetailType
+        "provider:account@provider.com",                // aFieldContent
+        QContactOnlineAccount::SubTypeImpp); // aDetailSubtype
+    CNT_EXIT
+}
+
+void testPbkServices::launchEditCreateNew_onlineAccountWithSubtype_old()
+{
+    CNT_ENTRY
+    launchEditCreateNew(
+        false,                                  // aNewInterface
+        QContactOnlineAccount::DefinitionName, // aDetailType
+        "provider:account@provider.com",                // aFieldContent
+        QContactOnlineAccount::SubTypeImpp); // aDetailSubtype
+    CNT_EXIT
+}
+
 void testPbkServices::launchEditorVCard()
 {
     CNT_ENTRY
@@ -211,6 +255,28 @@ void testPbkServices::launchEditUpdateExisting_number_old()
         false,                               // aNewInterface
         QContactPhoneNumber::DefinitionName, // aDetailType
         "1234567");                          // aDetailValue
+    CNT_EXIT
+}
+
+void testPbkServices::launchEditUpdateExisting_numberWithSubtype()
+{
+    CNT_ENTRY
+    launchEditUpdateExisting(
+        true,                                // aNewInterface
+        QContactPhoneNumber::DefinitionName, // aDetailType
+        "1234567",                           // aDetailValue
+        QContactPhoneNumber::SubTypeLandline);// aDetailSubtype 
+    CNT_EXIT
+}
+
+void testPbkServices::launchEditUpdateExisting_numberWithSubtype_old()
+{
+    CNT_ENTRY
+    launchEditUpdateExisting(
+        false,                               // aNewInterface
+        QContactPhoneNumber::DefinitionName, // aDetailType
+        "1234567",                           // aDetailValue
+        QContactPhoneNumber::SubTypeLandline);// aDetailSubtype    
     CNT_EXIT
 }
 
@@ -251,6 +317,28 @@ void testPbkServices::launchEditUpdateExisting_onlineAccount_old()
         false,                                 // aNewInterface
         QContactOnlineAccount::DefinitionName, // aDetailType
         "account@provider.com");               // aDetailValue
+    CNT_EXIT
+}
+
+void testPbkServices::launchEditUpdateExisting_onlineAccountWithSubtype()
+{
+    CNT_ENTRY
+    launchEditUpdateExisting(
+        true,                                  // aNewInterface
+        QContactOnlineAccount::DefinitionName, // aDetailType
+        "provider:account@provider.com",       // aDetailValue
+        QContactOnlineAccount::SubTypeImpp); // aDetailSubtype              
+    CNT_EXIT
+}
+
+void testPbkServices::launchEditUpdateExisting_onlineAccountWithSubtype_old()
+{
+    CNT_ENTRY
+    launchEditUpdateExisting(
+        false,                                 // aNewInterface
+        QContactOnlineAccount::DefinitionName, // aDetailType
+        "provider:account@provider.com",       // aDetailValue
+        QContactOnlineAccount::SubTypeImpp); // aDetailSubtype    
     CNT_EXIT
 }
 
@@ -431,8 +519,8 @@ void testPbkServices::launchMultiFetch( bool aNewInterface, QString aAction )
     XQApplicationManager appMng;
     if ( aNewInterface )
     {
-        QString interface("com.nokia.symbian.IContactFetch"); 
-        QString operation("multiFetch(QString,QString,QString)");
+        QString interface("com.nokia.symbian.IContactsFetch"); 
+        QString operation("multiFetch(QString,QString)");
         // There are two kinds of create() methods in XQApplicationManager. The one with four arguments
         // takes the service name also. The one with three arguments (used below) does not take the service name.
         // The interface name is enough for finding the correct provider at run time.
@@ -477,8 +565,8 @@ void testPbkServices::launchSingleFetch( bool aNewInterface, QString aAction )
     XQApplicationManager appMng;
     if ( aNewInterface )
     {
-        QString interface("com.nokia.symbian.IContactFetch"); 
-        QString operation("singleFetch(QString,QString,QString)");
+        QString interface("com.nokia.symbian.IContactsFetch"); 
+        QString operation("singleFetch(QString,QString)");
         // There are two kinds of create() methods in XQApplicationManager. The one with four arguments
         // takes the service name also. The one with three arguments (used below) does not take the service name.
         // The interface name is enough for finding the correct provider at run time.
@@ -517,7 +605,7 @@ void testPbkServices::launchSingleFetch( bool aNewInterface, QString aAction )
     CNT_EXIT
 }
 
-void testPbkServices::launchEditCreateNew( bool aNewInterface, QString aDetailType, QString aFieldContent )
+void testPbkServices::launchEditCreateNew( bool aNewInterface, QString aDetailType, QString aFieldContent, QString aDetailSubtype )
 {
     CNT_ENTRY
     delete mRequest;
@@ -526,9 +614,14 @@ void testPbkServices::launchEditCreateNew( bool aNewInterface, QString aDetailTy
     QVariantList args; 
     XQApplicationManager appMng;
     QString operation("editCreateNew(QString,QString)");
+    if ( !aDetailSubtype.isEmpty() )
+    {
+        operation = "editCreateNew(QString,QString,QString)";
+    }
+    
     if ( aNewInterface )
     {
-        QString interface("com.nokia.symbian.IContactFetch"); 
+        QString interface("com.nokia.symbian.IContactsFetch"); 
         // service name is not needed
         mRequest = appMng.create( interface, operation, true); // embedded
     }
@@ -548,6 +641,10 @@ void testPbkServices::launchEditCreateNew( bool aNewInterface, QString aDetailTy
         
         args << aDetailType;
         args << aFieldContent;
+        if ( !aDetailSubtype.isEmpty() )
+        {
+            args << aDetailSubtype;
+        }
         
         mRequest->setArguments(args); 
         mRequest->send();
@@ -570,7 +667,7 @@ void testPbkServices::launchEditorVCard( bool aNewInterface )
     XQApplicationManager appMng;
     if ( aNewInterface )
     {
-        QString interface("com.nokia.symbian.IContactEdit"); 
+        QString interface("com.nokia.symbian.IContactsEdit"); 
         QString operation("editCreateNewFromVCard(QString)");
         // service name is not needed
         mRequest = appMng.create( interface, operation, true); // embedded 
@@ -603,7 +700,7 @@ void testPbkServices::launchEditorVCard( bool aNewInterface )
     CNT_EXIT
 }
 
-void testPbkServices::launchEditUpdateExisting( bool aNewInterface, QString aDetailType, QString aDetailValue )
+void testPbkServices::launchEditUpdateExisting( bool aNewInterface, QString aDetailType, QString aDetailValue, QString aDetailSubtype )
 {
     CNT_ENTRY
     delete mRequest;
@@ -612,9 +709,14 @@ void testPbkServices::launchEditUpdateExisting( bool aNewInterface, QString aDet
     QVariantList args; 
     XQApplicationManager appMng;
     QString operation("editUpdateExisting(QString,QString)");
+    if ( !aDetailSubtype.isEmpty() )
+    {
+        operation = "editUpdateExisting(QString,QString,QString)";
+    }
+        
     if ( aNewInterface )
     {
-        QString interface("com.nokia.symbian.IContactEdit");
+        QString interface("com.nokia.symbian.IContactsEdit");
         // service name is not needed
         mRequest = appMng.create(interface, operation, true); // embedded 
     }
@@ -633,6 +735,10 @@ void testPbkServices::launchEditUpdateExisting( bool aNewInterface, QString aDet
         
         args << aDetailType;
         args << aDetailValue;
+        if ( !aDetailSubtype.isEmpty() )
+        {
+            args << aDetailSubtype;
+        }
         
         mRequest->setArguments(args); 
         mRequest->send();
@@ -670,7 +776,7 @@ void testPbkServices::launchContactCard( bool aNewInterface )
     XQApplicationManager appMng;
     if ( aNewInterface )
     {
-        QString interface("com.nokia.symbian.IContactView");
+        QString interface("com.nokia.symbian.IContactsView");
         QString operation("openContactCard(int)");
         // interface name is not needed
         mRequest = appMng.create( interface, operation, true); // embedded 
@@ -711,8 +817,8 @@ void testPbkServices::launchContactCard( bool aNewInterface, QString aDetailType
     XQApplicationManager appMng;
     if ( aNewInterface )
     {
-        QString interface("com.nokia.symbian.IContactView");
-        QString operation("openContactCard(QString,QString)");
+        QString interface("com.nokia.symbian.IContactsView");
+        QString operation("openTemporaryContactCard(QString,QString)");
         // service name is not needed
         mRequest = appMng.create(interface, operation, true); // embedded 
     }

@@ -17,7 +17,9 @@
 #include "cntdetaileditor.h"
 #include "cnteditorfactory.h"
 #include "cntgroupeditormodel.h"
+#include "cntsavemanager.h"
 #include "cntglobal.h"
+
 #include <cntviewparams.h>
 #include <hbmenu.h>
 #include <hbaction.h>
@@ -29,6 +31,12 @@
 #include <hbinputeditorinterface.h>
 #include <hbinputstandardfilters.h>
 #include <cntdebug.h>
+#include <hbscrollarea.h>
+#include <hbscrollbar.h>
+#include <hbdevicenotificationdialog.h>
+#include <hbparameterlengthlimiter.h>
+
+#include <QApplication>
 
 const char *CNT_DETAILEDITOR_XML = ":/xml/contacts_detail_editor.docml";
 
@@ -41,7 +49,8 @@ CntDetailEditor::CntDetailEditor( int aId ) :
     mLoader(NULL),   
     mViewManager(NULL),
     mEditorFactory(NULL),
-    mCancel(NULL)
+    mCancel(NULL),
+    mSaveManager(NULL)
 {
     bool ok;
     document()->load(CNT_DETAILEDITOR_XML, &ok);
@@ -57,16 +66,27 @@ CntDetailEditor::CntDetailEditor( int aId ) :
     
     mSoftkey = new HbAction(Hb::BackNaviAction, mView);
     connect( mSoftkey, SIGNAL(triggered()), this, SLOT(saveChanges()) );
+    
+    // closing the application from task swapper or end key will cause the contact to be saved
+    connect( qApp, SIGNAL(aboutToQuit()), this, SLOT(saveContact()));
 }
 
 CntDetailEditor::~CntDetailEditor()
 {
     mView->deleteLater();
+    
     delete mDataForm;
+    mDataForm = NULL;
     delete mDataFormModel;
+    mDataFormModel = NULL;
     delete mHeader;
+    mHeader = NULL;
     delete mLoader;
+    mLoader = NULL;
     delete mEditorFactory;
+    mEditorFactory = NULL;
+    delete mSaveManager;
+    mSaveManager = NULL;
 }
 
 void CntDetailEditor::setViewId( int aId )
@@ -108,6 +128,24 @@ void CntDetailEditor::activate( CntAbstractViewManager* aMgr, const CntViewParam
     }
     mEditorFactory->setupEditorView(*this, selectedContact);
     
+    QString myCard = mArgs.value( EMyCard ).toString();
+    QContactLocalId localId = selectedContact.localId();
+    QContactLocalId selfContactId = mViewManager->contactManager(SYMBIAN_BACKEND)->selfContactId();
+    bool isMyCard = ( localId == selfContactId && localId != 0 ) || !myCard.isEmpty();
+    
+    if (isMyCard)
+    {
+        mSaveManager = new CntSaveManager(CntSaveManager::EMyCard);
+    }
+    else if ( mId == groupEditorView )
+    {
+        mSaveManager = new CntSaveManager(CntSaveManager::EGroup);
+    }
+    else
+    {
+        mSaveManager = new CntSaveManager();
+    }
+    
     mDataForm->setItemRecycling(true);
 
     // add new field if required
@@ -115,6 +153,9 @@ void CntDetailEditor::activate( CntAbstractViewManager* aMgr, const CntViewParam
     {
         mDataFormModel->insertDetailField();
     }
+    mDataForm->setVerticalScrollBarPolicy(HbScrollArea::ScrollBarAsNeeded); 
+    mDataForm->setScrollingStyle(HbScrollArea::PanWithFollowOn);
+    mDataForm->verticalScrollBar()->setInteractive(true);
 }
 
 void CntDetailEditor::deactivate()
@@ -160,6 +201,12 @@ void CntDetailEditor::handleItemShown(const QModelIndex& aIndex )
             HbLineEdit* edit = static_cast<HbLineEdit*>( viewItem->dataItemContentWidget() );
             edit->setInputMethodHints( Qt::ImhDialableCharactersOnly );
         }
+        else
+        {
+            HbDataFormViewItem* viewItem = static_cast<HbDataFormViewItem*>(mDataForm->itemByIndex( aIndex ));
+            HbLineEdit* edit = static_cast<HbLineEdit*>( viewItem->dataItemContentWidget() );
+            edit->setInputMethodHints( Qt::ImhNoPredictiveText );
+        }
     }
     else
     {
@@ -184,6 +231,10 @@ void CntDetailEditor::discardChanges()
     mViewManager->back( mArgs );
 }
 
+/*!
+    Saves all changes made to details (type of details depends on
+    in which editor we are) of a contact. Doesn't save the contact.
+*/
 void CntDetailEditor::saveChanges()
 {
     mDataFormModel->saveContactDetails();
@@ -206,6 +257,46 @@ void CntDetailEditor::saveChanges()
     }
     
     mViewManager->back( mArgs );
+}
+
+/*!
+    First saves all changes made to details (type of details depends on
+    in which editor we are) of a contact and then saves the contact. This
+    is only called when phonebook is being closed either from task swapper
+    or by end key.
+*/
+void CntDetailEditor::saveContact()
+{
+    mDataFormModel->saveContactDetails();
+    
+    QString name = mViewManager->contactManager(SYMBIAN_BACKEND)->synthesizedDisplayLabel(*mDataFormModel->contact());
+    
+    if (name.isEmpty())
+    {
+        name = hbTrId("txt_phob_list_unnamed");
+    }
+    
+    CntSaveManager::CntSaveResult result = mSaveManager->saveContact(mDataFormModel->contact(), mViewManager->contactManager(SYMBIAN_BACKEND));
+    
+    if (mId != groupEditorView)
+    {
+        switch (result)
+        {
+        case CntSaveManager::ESaved:
+            HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contact_1_saved")).arg(name));
+            break;
+        case CntSaveManager::EUpdated:
+            HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contacts_1_updated")).arg(name));
+            break;
+        case CntSaveManager::EFailed:
+            HbDeviceNotificationDialog::notification(QString(),hbTrId("SAVING FAILED!"));
+            break;
+        case CntSaveManager::EDeleted:
+        case CntSaveManager::ENothingDone:
+        default:
+            break;
+        }
+    }
 }
 
 void CntDetailEditor::setHeader(QString aHeader)

@@ -15,6 +15,13 @@
 *
 */
 
+#include "cntfetchcontactsview.h"
+
+#include <cntlistmodel.h>
+
+#include <QGraphicsLinearLayout>
+
+#include <qcontactid.h>
 #include <hbdialog.h>
 #include <hbscrollbar.h>
 #include <hbindexfeedback.h>
@@ -27,29 +34,25 @@
 #include <hblistview.h>
 #include <hbsearchpanel.h>
 #include <hbstaticvkbhost.h>
-#include <QGraphicsLinearLayout>
-#include <qcontactid.h>
-#include <cntlistmodel.h>
-#include "cntfetchcontactsview.h"
 
 /*!
 Given a contact manager, CntFetchContacts is responsible for 
 retrieving a set of contacts, if any were chosen by the user. 
 */
 CntFetchContacts::CntFetchContacts(QContactManager &aManager) :
-QObject(),
-mPopup(NULL),
-mCntModel(NULL),
-mListView(NULL),
-mEmptyListLabel(NULL),
-mSelectionMode(HbAbstractItemView::MultiSelection),
-mManager(&aManager),
-mWasCanceled(false),
-mLabel(NULL),
-mVirtualKeyboard(NULL),
-mPrimaryAction(NULL),
-mSecondaryAction(NULL),
-mIndexFeedback(NULL)
+    QObject(),
+    mPopup(NULL),
+    mCntModel(NULL),
+    mListView(NULL),
+    mEmptyListLabel(NULL),
+    mSelectionMode(HbAbstractItemView::MultiSelection),
+    mManager(&aManager),
+    mWasCanceled(false),
+    mLabel(NULL),
+    mVirtualKeyboard(NULL),
+    mPrimaryAction(NULL),
+    mSecondaryAction(NULL),
+    mIndexFeedback(NULL)
 {
     mSearchPanel = new HbSearchPanel();
     mSearchPanel->setVisible(false);
@@ -68,12 +71,6 @@ CntFetchContacts::~CntFetchContacts()
 {
     delete mCntModel;
     mCntModel = NULL;
-    
-    delete mVirtualKeyboard;
-    mVirtualKeyboard = NULL;
-    
-    delete mIndexFeedback;
-    mIndexFeedback = NULL;
 }
 
 /*!
@@ -91,6 +88,9 @@ void CntFetchContacts::setDetails(QString aTitle, QString aButtonText)
     
     if (!mLabel) {
         mLabel = new HbLabel(aTitle);
+    }
+    else {
+        mLabel->setPlainText(aTitle);
     }
 }
 
@@ -130,7 +130,7 @@ void CntFetchContacts::setFilter(const QString &filterString)
         if (mEmptyListLabel) {
             qreal searchHeight = mSearchPanel->size().height();
             HbLabel* heading = static_cast<HbLabel*>(mPopup->headingWidget());
-            qreal heightToSet =  mPopup->size().height() - mVirtualKeyboard->keyboardArea().height() - searchHeight - heading->size().height();
+            qreal heightToSet =  mPopup->size().height() - mVirtualKeyboard->keyboardArea().height() - searchHeight;
             mEmptyListLabel->setMaximumHeight(heightToSet);
             mEmptyListLabel->setVisible(true);
             mLayout->insertItem(0, mEmptyListLabel);
@@ -153,10 +153,10 @@ void CntFetchContacts::handleKeypadOpen()
 {
     qreal searchHeight = mSearchPanel->size().height();
     HbLabel* heading = static_cast<HbLabel*>(mPopup->headingWidget());
-    qreal heightToSet =  mPopup->size().height() - mVirtualKeyboard->keyboardArea().height() - searchHeight - heading->size().height();
+    qreal heightToSet =  mPopup->size().height() - mVirtualKeyboard->keyboardArea().height() - searchHeight;
 
     if (mEmptyListLabel) {
-        mEmptyListLabel->setMaximumHeight( heightToSet - mEmptyListLabel->size().height() );
+        mEmptyListLabel->setMaximumHeight(heightToSet);
     }
     
     mListView->setMaximumHeight(heightToSet);
@@ -217,6 +217,8 @@ void CntFetchContacts::memberSelectionChanged(const QModelIndex &index)
     // Check for the case where there is a cancel button only. If so, 
     // after selecting any contact, should dismiss the dialog immediately.
     if (mButtonText.isEmpty() && mSelectionMode == HbAbstractItemView::SingleSelection) {
+        disconnect(mVirtualKeyboard, SIGNAL(keypadOpened()), this, SLOT(handleKeypadOpen()));
+        disconnect(mVirtualKeyboard, SIGNAL(keypadClosed()), this, SLOT(handleKeypadClose()));
         mPopup->close();
     }
 }
@@ -229,6 +231,7 @@ void CntFetchContacts::doInitialize(HbAbstractItemView::SelectionMode aMode,
 
     if (!mPopup) {
         mPopup = new HbDialog;
+        mPopup->setAttribute(Qt::WA_DeleteOnClose, true);
     }
 
     QContactDetailFilter contactsFilter;
@@ -311,12 +314,12 @@ void CntFetchContacts::showPopup()
     mPopup->setHeadingWidget(mLabel);
 
     if (!mButtonText.isEmpty() && !mPrimaryAction) {
-        mPrimaryAction = new HbAction(hbTrId(mButtonText.toAscii()));
+        mPrimaryAction = new HbAction(mButtonText, mPopup);
         mPopup->addAction(mPrimaryAction);
     }
     
     if (!mSecondaryAction) {
-        mSecondaryAction = new HbAction(hbTrId("txt_common_button_cancel"));
+        mSecondaryAction = new HbAction(hbTrId("txt_common_button_cancel"), mPopup);
         mPopup->addAction(mSecondaryAction);
     }
 

@@ -33,8 +33,6 @@ SOURCE          cntfindplugin.cpp
 
 USERINCLUDE     ../group
 APP_LAYER_SYSTEMINCLUDE
-// Symbian uses #include <ecom.h> in cntviewfindconfig.h
-SYSTEMINCLUDE   /epoc32/include/ecom
 
 START RESOURCE  101f85f4.rss
 TARGET          cntfindplugin

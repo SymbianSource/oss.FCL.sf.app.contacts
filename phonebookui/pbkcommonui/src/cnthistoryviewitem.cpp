@@ -20,6 +20,7 @@
 #include <cnthistorymodel.h>
 #include <hbframedrawer.h>
 #include <hbframeitem.h>
+#include <QGraphicsWidget>
 
 #define NEW_EVENT_FRAME "qtg_fr_list_new_item"
 #define INCOMING_FOCUS_FRAME "qtg_fr_convlist_received_pressed"
@@ -117,4 +118,26 @@ void CntHistoryViewItem::pressStateChanged(bool pressed, bool animate)
         }
     }
 }
+
+bool CntHistoryViewItem::event(QEvent* e)
+{
+    bool result;
+    if (e->type() == QEvent::GraphicsSceneResize)
+    {
+        // HbAbstractItemView has a performance improvement when drawing backrounds but seems
+        // to screw the layout of history view items. This workaround fixes the issue. There should
+        // be minimal performance drawbacks since GraphicsSceneResize events are quite few.
+        // TODO: Remove this once Orbit changes their implementation. Not known when
+        QGraphicsWidget *frame = static_cast<QGraphicsWidget*>(primitive("frame"));
+        QRectF frameGeometry = frame->geometry();
+        result = HbListViewItem::event(e);
+        frame->setGeometry(frameGeometry);
+    } 
+    else
+    {
+        result = HbListViewItem::event(e);
+    }
+    return result;
+}
+
 // EOF

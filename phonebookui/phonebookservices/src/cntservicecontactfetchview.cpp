@@ -19,7 +19,7 @@
 
 #include <cntservicescontact.h>
 #include <cntlistmodel.h>
-#include "cntservicehandler.h"
+#include "cntserviceviewparams.h"
 
 #include <hbmenu.h>
 #include <hbview.h>
@@ -29,15 +29,15 @@
 
 #include <QCoreApplication>
 
-CntServiceContactFetchView::CntServiceContactFetchView(CntServiceHandler *aServiceHandler):
+CntServiceContactFetchView::CntServiceContactFetchView( CntAbstractServiceProvider& aServiceProvider ):
 CntBaseSelectionView(),
-mServiceHandler(aServiceHandler)
-{
+mProvider( aServiceProvider )
+    {
     HbAction* cancel = static_cast<HbAction*>( mDocument->findObject( "cnt:cancel" ) );
     mView->menu()->addAction( cancel );
     
     connect(cancel,  SIGNAL(triggered()), this, SLOT(cancelFetch()) );
-    connect( this, SIGNAL(viewClosed()), this, SLOT(aboutToCloseView()) );
+    connect( this, SIGNAL(viewClosed()), this, SLOT(closeFetchView()) );
     connect( this, SIGNAL(viewOpened(CntAbstractViewManager*, const CntViewParameters)), this, SLOT(aboutToOpenView(CntAbstractViewManager*, const CntViewParameters)) );
 }
 
@@ -47,13 +47,16 @@ CntServiceContactFetchView::~CntServiceContactFetchView()
 
 
 void CntServiceContactFetchView::cancelFetch()
-{
-    connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
+    {
     CntServicesContactList serviceList;
-    mServiceHandler->completeFetch(serviceList);
-}
+    QVariant variant;
+    variant.setValue(serviceList);
+    mProvider.CompleteServiceAndCloseApp(variant);
+    }
 
-void CntServiceContactFetchView::aboutToCloseView()
+
+
+void CntServiceContactFetchView::closeFetchView()
 {
     CntServicesContactList serviceList;
     QContactManager* mgr = mMgr->contactManager(SYMBIAN_BACKEND);
@@ -90,8 +93,9 @@ void CntServiceContactFetchView::aboutToCloseView()
         serviceList.append(servicesContact);
     }
 
-    connect(mServiceHandler, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
-    mServiceHandler->completeFetch(serviceList);
+    QVariant variant;
+    variant.setValue(serviceList);
+    mProvider.CompleteServiceAndCloseApp(variant);
 }
 
 void CntServiceContactFetchView::aboutToOpenView(CntAbstractViewManager* aMgr, const CntViewParameters aArgs)
@@ -99,12 +103,17 @@ void CntServiceContactFetchView::aboutToOpenView(CntAbstractViewManager* aMgr, c
     mMgr = aMgr;
     
     // Set title of the view.
-    QString title = aArgs.value(CntServiceHandler::ETitle).toString();
+    QString title = aArgs.value(KCntServiceViewParamTitle).toString();
     mView->setTitle(title);
     
     // Set action filter
-    QString filter = aArgs.value(CntServiceHandler::EFilter).toString();
-    QString action = aArgs.value(CntServiceHandler::EAction).toString();
+    QString action = aArgs.value(ESelectedAction).toString();
+    // ESelectedAction is defined in cntviewparams.h
+
+    // Has never been implemented.
+    //QString filterStr = aArgs.value(KCntServiceViewParamFilter).toString();
+    // KCntServiceViewParamFilter is defined in cntserviceviewparams.h
+
     if (action == KCntActionSms)
         {
             QContactActionFilter actionFilter;

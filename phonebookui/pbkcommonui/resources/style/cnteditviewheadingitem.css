@@ -46,6 +46,13 @@ CntEditViewHeadingItem::background{
     bottom:0.0un;
 }
 
+CntEditViewHeadingItem::highlight{
+    left:0.0un;
+    right:0.0un;
+    top:0.0un;
+    bottom:0.0un;
+}
+
 CntEditViewHeadingItem::iconArea{
     left:0.0un;
     right:0.0un;

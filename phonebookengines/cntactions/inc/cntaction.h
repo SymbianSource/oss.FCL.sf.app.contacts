@@ -79,6 +79,7 @@ protected:
 	QVariantMap m_result; 		//result returned to client
 	QContact m_contact;    		//contact passed to invokeAction
 	QContactDetail m_detail; 	//detail passed to invokeAction
+	QVariantMap m_data; 	//data passed to invokeAction
 	QContactAction::State m_state;
 	XQAiwRequest* m_request;
     XQApplicationManager    m_AppManager;

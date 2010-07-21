@@ -206,9 +206,6 @@ void CntGroupMemberView::activate( CntAbstractViewManager* aMgr, const CntViewPa
         QString name = getContactManager()->synthesizedDisplayLabel(*mGroupContact);
         HbNotificationDialog::launchDialog(HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_new_group_1_created").arg(name)));
     }
-    
-    mFetchView = new CntFetchContacts(*mViewManager->contactManager( SYMBIAN_BACKEND ));
-    connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleManageMembers()));
 }
 
 void CntGroupMemberView::deactivate()
@@ -246,8 +243,12 @@ void CntGroupMemberView::manageMembers()
     mOriginalGroupMembers = getContactManager()->contactIds(membersFilter);
     
     QSet<QContactLocalId> contactsSet = mOriginalGroupMembers.toSet();
-    QContactName groupContactName = mGroupContact->detail( QContactName::DefinitionName );
-    QString groupName(groupContactName.value( QContactName::FieldCustomLabel ));
+
+    QString groupName = mGroupContact->displayLabel();
+    if (groupName.isEmpty())
+    {
+        groupName = hbTrId("txt_phob_list_unnamed");
+    }
     
     if (!mFetchView) {
         mFetchView = new CntFetchContacts(*mViewManager->contactManager( SYMBIAN_BACKEND ));
@@ -286,6 +287,9 @@ void CntGroupMemberView::handleManageMembers()
     if (!removedMemberships.isEmpty()) {
         getContactManager()->removeRelationships(removedMemberships, &errors);
     }
+    
+    delete mFetchView;
+    mFetchView = 0;
 }
 
 void CntGroupMemberView::createModel()
@@ -311,18 +315,21 @@ void CntGroupMemberView::editGroup()
 void CntGroupMemberView::deleteGroup()
 {
     QString groupName = mGroupContact->displayLabel();
+    if (groupName.isNull())
+    {
+        groupName = hbTrId("txt_phob_list_unnamed");
+    }
+    
     HbLabel *headingLabel = new HbLabel();
     headingLabel->setPlainText(HbParameterLengthLimiter(hbTrId("txt_phob_dialog_delete_1_group")).arg(groupName));
     
-    HbMessageBox::question(hbTrId("txt_phob_dialog_only_group_will_be_removed_contac"), this, SLOT(handleDeleteGroup(HbAction*)),
-            hbTrId("txt_common_button_delete"), hbTrId("txt_common_button_cancel"), headingLabel);
+    HbMessageBox::question(hbTrId("txt_phob_dialog_only_group_will_be_removed_contac"), this, SLOT(handleDeleteGroup(int)),
+            HbMessageBox::Delete | HbMessageBox::Cancel, headingLabel);
 }
 
-void CntGroupMemberView::handleDeleteGroup(HbAction *action)
+void CntGroupMemberView::handleDeleteGroup(int action)
 {
-    HbDialog *popup = static_cast<HbDialog*>(sender());
-    
-    if (popup && action == popup->actions().first())
+    if (action == HbMessageBox::Delete)
     {
         getContactManager()->removeContact(mGroupContact->localId());
         showPreviousView();
