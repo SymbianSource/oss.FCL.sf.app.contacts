@@ -17,6 +17,8 @@
 #ifndef __CONTACTWIDGETHSPLUGIN_IBY__
 #define __CONTACTWIDGETHSPLUGIN_IBY__
 
+#include <data_caging_paths_for_iby.hrh>
+
 // -------- contactwidgethsplugin
 file=ABI_DIR\BUILD_DIR\contactwidgethsplugin.dll                                        SHARED_LIB_DIR\contactwidgethsplugin.dll
 data=ZPRIVATE\20022f35\import\widgetregistry\2002C353\contactwidgethsplugin.qtplugin	private\20022f35\import\widgetregistry\2002C353\contactwidgethsplugin.qtplugin
@@ -24,5 +26,7 @@ data=ZPRIVATE\20022f35\import\widgetregistry\2002C353\contactwidgethsplugin.mani
 data=ZPRIVATE\20022f35\import\widgetregistry\2002C353\contactwidgethsplugin.xml         private\20022f35\import\widgetregistry\2002C353\contactwidgethsplugin.xml
 
 data=ZPRIVATE\20022f35\import\widgetregistry\2002C353\qtg_large_friend.svg              private\20022f35\import\widgetregistry\2002C353\qtg_large_friend.svg
+
+data=DATAZ_\APP_RESOURCE_DIR\contactwidgethsplugin.rsc                                  APP_RESOURCE_DIR\contactwidgethsplugin.rsc
 
 #endif //__CONTACTWIDGETHSPLUGIN_IBY__

@@ -41,6 +41,9 @@
 #include "commlauncherwidget.h"
 #include "ihswidgetpreferenceservice.h"
  
+const QString translationsPath = "/resource/qt/translations/";
+const QString translationsFile = "contactwidgethsplugin";
+
 const QString defaultAvatar = "qtg_large_avatar";
 const QString addContactAvatar = "qtg_small_add";
 const QString normalFrameName = "qtg_fr_hsshortcut_normal";
@@ -79,7 +82,7 @@ ContactWidgetHs::ContactWidgetHs(QGraphicsItem *parent, Qt::WindowFlags flags )
   mTranslator(0)
 {
     // Localization file loading   
-	mTranslator = new HbTranslator();
+	mTranslator = new HbTranslator(translationsPath, translationsFile);
 	mTranslator->loadCommon();    
     
     // UI creation done in onInitialize()
@@ -579,7 +582,11 @@ void ContactWidgetHs::onShow()
 */
 void ContactWidgetHs::onHide()
 {
-    qDebug() << "ContactWidgetHs::onHide()";	
+    qDebug() << "ContactWidgetHs::onHide()";
+    // close the launcher if it's open
+    if (mLauncher->isVisible()) {
+        mLauncher->close();
+    }
 }
 
 

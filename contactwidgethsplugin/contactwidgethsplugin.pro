@@ -18,8 +18,7 @@ TEMPLATE = lib
 CONFIG += plugin hb mobility
 MOBILITY = serviceframework contacts
 
-TRANSLATIONS = common.ts
-TRANSLATIONS += contactwidgethsplugin.ts
+TRANSLATIONS = contactwidgethsplugin.ts
 
 win32: PLUGIN_SUBDIR = /hsresources/import/widgetregistry/2002C353
 symbian: PLUGIN_SUBDIR = /private/20022F35/import/widgetregistry/2002C353
@@ -57,11 +56,10 @@ symbian: plugin { # copy qtstub and manifest
     BLD_INF_RULES.prj_exports += "./resource/contactwidgethsplugin.manifest z:$$PLUGIN_SUBDIR/contactwidgethsplugin.manifest"
     # xml files for emulator, sisx and hw rom
     BLD_INF_RULES.prj_exports += "./resource/contactwidgethsplugin.xml z:$$PLUGIN_SUBDIR/contactwidgethsplugin.xml"
-    # copy resources graphics png, svg
-    BLD_INF_RULES.prj_exports += "./resource/qtg_large_friend.svg z:$$PLUGIN_SUBDIR/qtg_large_friend.svg"
 
     # copy iby file
-    BLD_INF_RULES.prj_exports += "./rom/contactwidgeths.iby CORE_APP_LAYER_IBY_EXPORT_PATH( contactwidgeths.iby )"
+    BLD_INF_RULES.prj_exports += "./rom/contactwidgeths.iby CORE_APP_LAYER_IBY_EXPORT_PATH(contactwidgeths.iby)"
+    BLD_INF_RULES.prj_exports += "./rom/contactwidgeths_resources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(contactwidgeths_resources.iby)"
 }
 
 symbian {

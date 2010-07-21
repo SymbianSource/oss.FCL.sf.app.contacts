@@ -522,11 +522,6 @@ void CommLauncherWidget::keyPressEvent(QKeyEvent *event)
         // Call key initializes a call
         makeCall();
         event->accept();
-    } else if (event->key() == Qt::Key_No || event->key() == Qt::Key_Select) {
-        // End key and Select key close the communication launcher and 
-        // forward the key event to HbPopup
-        close();
-        HbPopup::keyPressEvent(event);
     } else {
         HbPopup::keyPressEvent(event);
     } 
