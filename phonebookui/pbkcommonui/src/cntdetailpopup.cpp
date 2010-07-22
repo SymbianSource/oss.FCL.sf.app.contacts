@@ -42,7 +42,7 @@ CntDetailPopup::CntDetailPopup(QGraphicsItem *parent,  CntViewIdList aList ):
     addListItem("qtg_small_url_address", hbTrId("txt_phob_list_url"), urlEditorView);
     addListItem("qtg_small_location", hbTrId("txt_phob_list_address"), addressEditorView );
     addListItem("qtg_small_note", hbTrId("txt_phob_list_note"), noteEditorView);
-    addListItem("qtg_small_sound", hbTrId("txt_phob_list_personal_ringing_tone"), noView );
+    addListItem("qtg_small_sound", hbTrId("txt_phob_list_personal_ringing_tone"), ringToneFetcherView );
     addListItem("qtg_small_calendar", hbTrId("txt_phob_list_date"), dateEditorView);
     addListItem("qtg_small_company_details", hbTrId("txt_phob_list_company_details"), companyEditorView);
     addListItem("qtg_small_family", hbTrId("txt_phob_list_family"), familyDetailEditorView);

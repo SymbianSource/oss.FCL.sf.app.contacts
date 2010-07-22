@@ -24,6 +24,7 @@
 #include <hbview.h>
 #include <hbmessagebox.h>
 #include <hbaction.h>
+#include <xqappmgr.h>
 #include <xqservicerequest.h>
 #include <cnthistorymodel.h>
 #include <hbparameterlengthlimiter.h>
@@ -43,7 +44,8 @@ CntHistoryView::CntHistoryView() :
     mHistoryModel(NULL),
     mDocumentLoader(NULL),
     mViewMgr(NULL),
-    mContact(NULL)
+    mContact(NULL),
+    mRequest(NULL)
 {
     bool ok = false;
     
@@ -58,6 +60,9 @@ CntHistoryView::CntHistoryView() :
         mBackKey = new HbAction(Hb::BackNaviAction, mView);
         mView->setNavigationAction(mBackKey);        
         connect(mBackKey, SIGNAL(triggered()), this, SLOT(showPreviousView()));
+        
+        HbMenu* viewMenu = static_cast<HbMenu*>(docLoader()->findObject("viewMenu") );
+        viewMenu->setParent(mView);
     }
     else
     {
@@ -84,6 +89,9 @@ CntHistoryView::~CntHistoryView()
         delete mContact;
         mContact = NULL;
     }
+    
+    delete mRequest;
+    mRequest = NULL;
 }
 
 /*!
@@ -135,6 +143,7 @@ void CntHistoryView::activate( CntAbstractViewManager* aMgr, const CntViewParame
     
     // Connect the menu options to respective slots
     mClearHistory = static_cast<HbAction*>(docLoader()->findObject("cnt:clearhistory"));
+    mClearHistory->setParent(mView);
     connect(mClearHistory, SIGNAL(triggered()), this, SLOT(clearHistory()));
     showClearHistoryMenu();
     
@@ -164,7 +173,7 @@ void CntHistoryView::clearHistory()
     QString name = mContact->displayLabel();
     
     HbMessageBox::question(HbParameterLengthLimiter(hbTrId("txt_phob_info_clear_communications_history_with_1")).arg(name), this, 
-            SLOT(handleClearHistory(HbAction*)), hbTrId("txt_phob_button_delete"), hbTrId("txt_common_button_cancel"));
+            SLOT(handleClearHistory(HbAction*)), hbTrId("txt_common_button_delete"), hbTrId("txt_common_button_cancel"));
 }
 
 /*
@@ -186,32 +195,58 @@ emitted signal
  */
 void CntHistoryView::itemActivated(const QModelIndex &index)
 {
-    int flags = index.data(CntHistoryModel::FlagsRole).toInt();
+    int flags = index.data(CntFlagsRole).toInt();
+    
+    bool createRequest(false);
+    
+    QString interface;
+    QString operation;
+    QVariantList args;
     
     // If the list item is a call log a call is made to that item
-    if (flags & CntHistoryModel::CallLog) {
+    if ( flags & CntCallLog ) {
         // Make a call
-        QVariant v = index.data(CntHistoryModel::PhoneNumberRole);
-        if (!v.isValid())
-            return;
+        QVariant number = index.data(CntPhoneNumberRole);
         
+        if ( number.isValid() ) {        
+            interface = "com.nokia.symbian.ICallDial";
+            operation = "dial(QString)";
+            args << number;
+            createRequest = true;
+        }
+        
+        // TODO: Using XQApplicationManager is not working with calls
+        // The factory method cannot create a request. Find out why
+        createRequest = false;
         QString service("com.nokia.symbian.ICallDial");
         QString type("dial(QString)");
-        XQServiceRequest snd(service, type, false);
-        snd << v.toString();
+        XQServiceRequest snd(interface, operation, false);
+        snd << number.toString();
         snd.send();
-    }
-    else if (flags & CntHistoryModel::Message) {
-        // Open conversation view
-        QVariant v = index.data(CntHistoryModel::PhoneNumberRole);
-        if (!v.isValid())
-            return;
         
-        QString service("com.nokia.services.hbserviceprovider.conversationview");
-        QString type("send(QString,qint32,QString)");
-        XQServiceRequest snd(service, type, false);       
-        snd << v.toString() << mContact->localId() << mContact->displayLabel();
-        snd.send();
+    } else if ( flags & CntMessage ) {
+        // Open conversation view
+        QVariant id = index.data(CntConverstaionIdRole);
+        
+        if ( id.isValid() ) {
+            interface = "com.nokia.symbian.IMessageView";
+            operation = "view(int)";
+            args << id;
+            createRequest = true;
+        }
+    }
+    
+    if ( createRequest ) {
+        XQApplicationManager appMng;
+    
+        delete mRequest;
+        mRequest = NULL;
+        mRequest = appMng.create(interface, operation, false); // not embedded
+        
+        if ( mRequest ) {
+            mRequest->setArguments(args); 
+            mRequest->send();
+        }
     }
 }
 

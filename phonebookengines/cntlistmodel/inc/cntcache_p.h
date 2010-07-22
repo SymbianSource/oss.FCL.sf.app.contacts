@@ -26,10 +26,6 @@
 #include <qcontactmanager.h>
 #include "cntinfoprovider.h"
 
-#define DP( s );
-#define DP_IN( s );
-#define DP_OUT( s );
-
 class ThumbnailManager;
 
 QTM_USE_NAMESPACE
@@ -60,6 +56,7 @@ class CntInfoCacheItem
 public:
     int cacheOrder;
     int contactId;
+    int latestRow;
     QString name;
     QString text;
     QString icons[2];
@@ -94,14 +91,15 @@ public:
  */
 class CntCacheThread : public QThread
 {
+    friend class TestCntCache;
     Q_OBJECT
 public:
     CntCacheThread();
     ~CntCacheThread();
 
     void run();
-    void scheduleInfoJob(int contactId);
-    void scheduleIconJob(const QString& iconName);
+    void scheduleInfoJob(int contactId, int priority);
+    void scheduleIconJob(const QString& iconName, int priority);
     void postponeJobs();
     bool event(QEvent *event);
 
@@ -116,7 +114,13 @@ private slots:
     void onInfoFieldReady(CntInfoProvider* sender, int contactId,
                           ContactInfoField field, const QString& text);
     void onIconReady(const QPixmap& pixmap, void *data, int id, int error);
-    void doAllJobs();
+    void processJobs();
+
+private:
+    int infoJobIndex(int contactId);
+    int takeNextInfoJob();
+    int iconJobIndex(QString iconName);
+    QString takeNextIconJob();
 
 private:
     QContactManager* mContactManager;       // for fetching QContact objects
@@ -126,11 +130,12 @@ private:
     QMap<CntInfoProvider*, ContactInfoFields> mDataProviders;
 
     QMutex mJobMutex;                       // guards access to the job lists
-    bool mJobLoopRunning;                   // true from when job loop event has been posted until job loop exits
+    bool mStarted;                          // true when thread has been started
+    bool mProcessingJobs;                   // true from when job loop event has been posted until job loop exits
     int mPostponeJobs;                      // set to true by client if it needs the CPU
-    QList<int> mInfoJobs;                   // list of all info jobs
+    QList< QPair<int,int> > mInfoJobs;      // list of all info jobs and their priorities
     QList<int> mCancelledInfoJobs;          // list of all cancelled info jobs
-    QList<QString> mIconJobs;               // list of all icon jobs
+    QList< QPair<QString,int> > mIconJobs;  // list of all icon jobs and their priorities
     QList<QString> mCancelledIconJobs;      // list of all cancelled icon jobs
     int mIconRequestId;                     // the id for the last request to thumbnail manager
     QString mIconRequestName;               // the name of the icon last requested from thumbnail manager

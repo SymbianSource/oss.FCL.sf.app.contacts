@@ -20,7 +20,7 @@
 
 #include <QSharedData>
 #include <qtcontacts.h>
-
+#include <cntmaptileservice.h>
 #include "cntstringmapper.h"
 
 class CntContactCardDataItem;
@@ -30,7 +30,8 @@ class CntContactCardDataContainer: public QObject
     Q_OBJECT    
 
 public:
-    CntContactCardDataContainer(QContact* contact, QObject *parent = 0, bool myCard = false);
+    CntContactCardDataContainer(QContact* contact, QObject *parent = 0, bool myCard = false,
+            CntMapTileService* maptile = NULL, Qt::Orientations orientation = Qt::Vertical );
     virtual ~CntContactCardDataContainer();
 
 public:
@@ -61,7 +62,8 @@ private:
     int                             mSeparatorIndex;
     CntStringMapper                 mStringMapper;
     bool                            mLocationFeatureEnabled;
-
+    CntMapTileService*              mMaptileInterface;
+    Qt::Orientations                mOrientation;
 };
 
 #endif /* CNTCOMMLAUNCHERLISTMODEL_H_ */

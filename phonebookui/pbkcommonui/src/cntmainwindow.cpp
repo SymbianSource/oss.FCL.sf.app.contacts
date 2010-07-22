@@ -15,18 +15,18 @@
 *
 */
 
-
-
-
 #include "cntmainwindow.h"
 #include "cntdefaultviewmanager.h"
 #include "cntviewnavigator.h"
 #include <QCoreApplication>
+#include <cntdebug.h>
 
 CntMainWindow::CntMainWindow(QWidget *parent, int defaultView)
     : HbMainWindow(parent),
     mViewManager(NULL)
 {
+    CNT_ENTRY
+
     if (defaultView != noView)
     {
         CntViewNavigator* navigator = new CntViewNavigator(this);
@@ -45,12 +45,18 @@ CntMainWindow::CntMainWindow(QWidget *parent, int defaultView)
         viewParameters.insert(EViewId, defaultView);
         mViewManager->changeView( viewParameters );
     }
+
+    CNT_EXIT
 }
 
 CntMainWindow::~CntMainWindow()
 {
+    CNT_ENTRY
+
     delete mViewManager;
-    mViewManager=0;
+    mViewManager = NULL;
+
+    CNT_EXIT
 }
 
 /*
@@ -61,15 +67,12 @@ void CntMainWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Yes || event->key() == Qt::Key_No)
     {
-        emit keyPressed(event);
+       emit keyPressed(event);
     }
     else
     {
         HbMainWindow::keyPressEvent(event);
     }
 }
-
-
-//
 
 // end of file

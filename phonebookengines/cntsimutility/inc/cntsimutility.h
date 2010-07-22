@@ -19,6 +19,8 @@
 
 #include <qglobal.h>
 #include <QObject>
+#include <QDateTime>
+
 #include <etelmm.h>
 #include <rmmcustomapi.h>
 #include <secuisecuritysettings.h> 
@@ -111,7 +113,9 @@ public:
 	bool verifyPin2Code();
 	bool isFdnActive();
 	int setFdnStatus(bool activated);
-
+	QDateTime getLastImportTime(int& error);
+	void setLastImportTime(int& error);
+	
 	//async request
 	bool startGetSimInfo();
 	bool startGetAvailableStores();

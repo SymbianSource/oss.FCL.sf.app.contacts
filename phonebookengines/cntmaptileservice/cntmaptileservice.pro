@@ -24,7 +24,8 @@ TARGET = cntmaptileservice
 
 CONFIG += dll
 CONFIG += hb
-    
+CONFIG += mobility
+MOBILITY = publishsubscribe
 
 DEPENDPATH += .
 INCLUDEPATH += .
@@ -36,7 +37,7 @@ MOC_DIR = moc
 DEFINES += CNTMAPTILESERVICEDLL
 
 INTERNAL_PUBLIC_HEADERS +=  inc/cntmaptileservice.h        
-
+INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE 
 # Input
 HEADERS +=  $$INTERNAL_PUBLIC_HEADERS \
            ./inc/cntmaptiledblookuptable.h  
@@ -60,8 +61,12 @@ symbian:
            -ledbms  \
            -lbafl \
            -lcentralrepository \
-           -leuser
+           -leuser \
+           -lefsrv
    
+        myCrml.sources = ./conf/cntmaptilepublisher.qcrml
+        myCrml.path = c:/resource/qt/crml
+        DEPLOYMENT += myCrml
 
 }  
 
@@ -72,3 +77,10 @@ DEPLOYMENT += exportheaders
 
 # This is for new exporting system coming in garden
 for(header, headers.sources):BLD_INF_RULES.prj_exports += "$$header $$deploy.path$$headers.path/$$basename(header)"
+defBlock = \      
+	"$${LITERAL_HASH}if defined(EABI)" \
+		"DEFFILE  ../eabi/cntmaptileservice.def" \
+    "$${LITERAL_HASH}else" \
+        "DEFFILE  ../bwins/cntmaptileservice.def" \
+	"$${LITERAL_HASH}endif"
+MMP_RULES += defBlock

@@ -33,7 +33,6 @@ class CntAbstractViewManager;
 class HbView;
 class HbAction;
 class QStandardItemModel;
-class SimUtility;
 class HbDialog;
 
 QTM_BEGIN_NAMESPACE
@@ -75,6 +74,7 @@ protected:
 private:
     void showWaitNote();
     void showSimImportResults() const;
+    void setPreferredDetails( QContact *aContact );
         
 #ifdef PBK_UNIT_TEST
 public slots:

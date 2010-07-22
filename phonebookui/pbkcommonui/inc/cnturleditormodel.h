@@ -39,5 +39,8 @@ public:
     void saveContactDetails();
     void insertDetailField();
     QContactDetail detail() const;
+    
+private:
+    QList<QContactUrl> mUrlList;
     };
 #endif /* CNTURLEDITORMODEL_H_ */

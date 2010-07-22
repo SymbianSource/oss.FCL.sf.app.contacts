@@ -19,16 +19,20 @@
 
 #include <QAbstractListModel>
 #include <QSharedData>
-#include <qtcontacts.h>
+#include <qmobilityglobal.h>
+#include <qcontactid.h>
+#include "cntglobal.h"
 
+#include "cnthistorymodelconsts.h"
 #include "cnthistorymodelglobal.h"
+
+QTM_BEGIN_NAMESPACE
+class QContactManager;
+QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
 
-class CntHistoryModelData;
-class LogsEvent;
-class HistoryItem;
-class MsgItem;
+class CntHistoryModelPrivate;
 
 /*!
  * CntHistoryModel is a model used to fetch conversation history
@@ -44,34 +48,6 @@ class CNTHISTORYMODEL_EXPORT CntHistoryModel : public QAbstractListModel
     Q_OBJECT
     
 public:
-    enum Attributes
-        {
-        Incoming = 1,
-        Outgoing = 2,
-        Unseen = 4,
-        Seen = 8,
-        Attachment = 16
-        };
-    
-    enum ItemType
-        {
-        CallLog = 32,
-        Message = 64
-        };
-    enum Icon
-        {
-        MissedCall = 128,
-        ReceivedCall = 256,
-        DialledCall = 512
-        };
-    
-    enum CustomRoles
-        {
-        FlagsRole = Qt::UserRole + 1,
-        PhoneNumberRole
-        };
-    
-public:
     CntHistoryModel(QContactLocalId contactId,
                     QContactManager* manager,
                     QObject *parent = 0);
@@ -81,40 +57,26 @@ public: // from QAbstractTableModel/QAbstractItemModel
     QVariant data(const QModelIndex& index, int role) const;
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
     void sort(int column = 0, Qt::SortOrder order = Qt::AscendingOrder);
+
+public:
     void clearHistory();
     void markAllAsSeen();
     void sortAndRefresh(Qt::SortOrder order = Qt::AscendingOrder);
-    
-private:
-    void initializeModel();
-    QVariant displayRoleData(const HistoryItem& item) const;
-    QVariant decorationRoleData(const HistoryItem& item) const;
-    QVariant backgroundRoleData(const HistoryItem& item) const;
-    
-    // Utility finctions
-    void readLogEvent(LogsEvent* event, HistoryItem& item);
-    void readMsgEvent(MsgItem& event, HistoryItem& item);
-    void initializeLogsModel();
-    void initializeMsgModel();
-    bool validateRowIndex(const int index) const;
-    QList< QList<int> > findIndices( const QList< int >& indices );
 
-private slots:
-    // Logs model slots
-    void logsRowsInserted(const QModelIndex& parent, int first, int last);
-    void logsRowsRemoved(const QModelIndex& parent, int first, int last);
-    void logsDataChanged(const QModelIndex& first, const QModelIndex& last);
-    
-    // Messaging model slots
-    void messagesReady(QList<MsgItem>& msgs);
-    void messageAdded(MsgItem& msg);
-    void messageChanged(MsgItem& msg);
-    void messageDeleted(MsgItem& msg);
+private:
+    void doBeginInsertRows(const QModelIndex &parent, int first, int last);
+    void doEndInsertRows();
+    void doBeginRemoveRows(const QModelIndex &parent, int first, int last);
+    void doEndRemoveRows();
+    void doDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
     
 private:
-	QSharedDataPointer<CntHistoryModelData> d;
+	CntHistoryModelPrivate* const d_ptr;
+    Q_DECLARE_PRIVATE_D(d_ptr, CntHistoryModel)
+    Q_DISABLE_COPY(CntHistoryModel)
     
-    // Testing related friend definitions    
+    // Testing related friend definitions
     friend class TestCntHistoryModel;
 };
+
 #endif

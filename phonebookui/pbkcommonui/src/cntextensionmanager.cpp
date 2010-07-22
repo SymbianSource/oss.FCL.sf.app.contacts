@@ -46,9 +46,9 @@ CntUiExtensionFactory* CntExtensionManager::pluginAt( int index)
     QPluginLoader* pluginLoader = mPlugins[index];
     QObject *plugin = pluginLoader->instance();
     if (plugin)
-        {
-            return qobject_cast<CntUiExtensionFactory*>(plugin);
-        }
+    {
+        return qobject_cast<CntUiExtensionFactory*>(plugin);
+    }
     return NULL;
 }
 
@@ -86,29 +86,29 @@ void CntExtensionManager::loadExtensionPlugins()
     
     QDir pluginsDir(CNT_UI_EXTENSION_PLUGIN_DIRECTORY);
     foreach (QString fileName, pluginsDir.entryList(QDir::Files))
-        {
+    {
         // Create plugin loader
         QPluginLoader* pluginLoader = new QPluginLoader( 
                 pluginsDir.absoluteFilePath(fileName));
         if ( pluginLoader->load() )
-            {
+        {
             QObject *plugin = pluginLoader->instance();
             if (plugin)
-                {
-                CntUiExtensionFactory* interface = qobject_cast<CntUiExtensionFactory*>(plugin);        
+            {
+                CntUiExtensionFactory* interface = qobject_cast<CntUiExtensionFactory*>(plugin); 
+                
                 if ( interface )
-                    {
+                {
                     mPlugins.append(pluginLoader);
-                    }
+                }
+                // If plugin loader did not load our plugin, unload the loader
+                else
+                {
+                    pluginLoader->unload();
                 }
             }
-        // If plugin loader was not for our plugins, delete loader handle
-        if ( !mPlugins.contains( pluginLoader ) )
-            {
-            pluginLoader->unload();
-            delete pluginLoader;
-            }
         }
+    }
     mPluginsLoaded = true;
 }
 
@@ -116,10 +116,9 @@ void CntExtensionManager::unloadExtensionPlugins()
 {
     // Unload plugins and clear plugin array
     foreach (QPluginLoader* pluginLoader, mPlugins)
-        {
+    {
         pluginLoader->unload();
-        delete pluginLoader;
-        }   
+    }   
     mPlugins.clear();  
     mPluginsLoaded = false;  
 }

@@ -32,13 +32,13 @@
 class HbView;
 class HbListView;
 class HbGroupBox;
-class HbTextItem;
+class HbLabel;
 class HbDocumentLoader;
 class HbSearchPanel;
-class HbStaticVkbHost;
-class QGraphicsLinearLayout;
+class HbShrinkingVkbHost;
 class CntExtensionManager;
 class CntFetchContacts;
+class HbMenu;
 
 class CntNamesViewPrivate : public QObject
 {
@@ -49,16 +49,10 @@ public:
     CntNamesViewPrivate(CntExtensionManager &extensionManager);
     virtual ~CntNamesViewPrivate();
 
-public slots:
-    void showBanner( const QString aText );
-    void hideBanner();
-    
+public slots:    
     void showFinder();
     void hideFinder();
     void setFilter(const QString &filterString);
-    
-    void handleKeypadOpen();
-    void handleKeypadClose();
     
     void handleExtensionAction();
     
@@ -76,13 +70,12 @@ public slots:
     void showContextMenu(HbAbstractViewItem* aItem, QPointF aPoint);
     void showSettings();
     
-    void executeAction( QContact& aContact, QString aAction );
+     void executeAction( QContact& aContact, QContactDetail aDetail, QString aAction );
     void actionExecuted( CntActionLauncher* aAction );
     void handleDeleteContact( HbAction* aAction );
     void importSim();
     
     void handleContactAddition(const QList<QContactLocalId> & aAddedList);
-    void handleContactChanged(const QList<QContactLocalId> & aChangedList);
     void handleContactRemoval(const QList<QContactLocalId> & aRemovedList);
     void handleSelfContactIdChange(const QContactLocalId & aOldId, const QContactLocalId & aNewId);
     
@@ -92,17 +85,15 @@ public:
     void deactivate();
     
 private:
-    void disableDeleteAction();
+    void changeDeleteActionStatus();
+    void focusLineEdit();
+    void setScrollPosition(int focusedContact);
     
 public:
     CntNamesView *q_ptr;
     
 public:  // lazy initializations
     HbListView *list();
-    HbTextItem *emptyLabel();
-    HbGroupBox *groupBox();
-    HbSearchPanel *search();
-    QGraphicsLinearLayout *layout();
     HbDocumentLoader *document();
     
 private:
@@ -111,13 +102,13 @@ private:
     CntListModel*               mListModel;
     HbView*                     mView;
     HbListView*                 mListView;
-    HbTextItem*                 mEmptyList;
+    HbLabel*                    mEmptyList;
     HbGroupBox*                 mBanner;
     HbSearchPanel*              mSearchPanel;
     HbDocumentLoader*           mLoader;
-    QGraphicsLinearLayout*      mLayout;
-    HbStaticVkbHost*            mVirtualKeyboard;
+    HbShrinkingVkbHost*         mVirtualKeyboard;
     HbAction*                   mSoftkey;
+    HbAction*                   mNamesAction;
     CntActionMenuBuilder*       mMenuBuilder;
     HbAction*                   mImportSim;
     HbAction*                   mNewContact;
@@ -127,6 +118,8 @@ private:
     bool                        mIsDefault;
     int                         mId;
     QActionGroup*               mActionGroup;
+	HbMenu*                     mMenu;
+	bool                        mFilterChanged;
 };
 
 #endif /* CNTABSTRACTLISTVIEW_H_ */

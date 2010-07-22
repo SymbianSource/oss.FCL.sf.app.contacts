@@ -20,8 +20,6 @@
 #include <QGraphicsSceneResizeEvent>
 #include <QStringList>
 #include <QStandardItemModel>
-#include <hblistview.h>
-#include <hblistviewitem.h>
 #include <QDebug>
 #include <QKeyEvent>
 #include <QDir>
@@ -39,13 +37,18 @@
 #include <hbparameterlengthlimiter.h>
 #include <hbframeitem.h>
 #include <hbframedrawer.h>
+#include <hbselectiondialog.h>
+#include <hblistview.h>
+#include <hblistviewitem.h>
 #include <shareui.h>
 #include <thumbnailmanager_qt.h>
 #include <cntmaptileservice.h>  //For maptile processing
 #include <qversitcontactexporter.h>
 #include <qversitwriter.h>
 #include <xqservicerequest.h>
+#include <QTimer>  //Progress indication icon
 
+#include <cntdebug.h>
 #include "cntcontactcarddatacontainer.h"
 #include "cntcontactcarddetailitem.h"
 #include "cntcontactcardheadingitem.h"
@@ -58,11 +61,15 @@
 #include "cntimageutility.h"
 #include "cntfavourite.h"
 #include "cntactionlauncher.h"
-#include <hbselectiondialog.h>
+#include "cntpresencelistener.h"
+#include "cntactionpopup.h"
 
+#define CNT_MAPTILE_PROGRESS_TIMER  100 //100 msec
+#define CNT_UNKNOWN_MAPTILE_STATUS  -1
 
 const char *CNT_CONTACTCARDVIEW_XML = ":/xml/contacts_contactcard.docml";
-
+const char *CNT_MAPTILE_INPROGRESS_ICON = "qtg_anim_small_loading_1";
+const char *CNT_MAPTILE_SEARCH_STOP_ICON = "qtg_mono_search_stop";
 /*!
 Constructor, initialize member variables.
 \a viewManager is the parent that creates this view. \a parent is a pointer to parent QGraphicsItem (by default this is 0)
@@ -78,7 +85,6 @@ CntContactCardViewPrivate::CntContactCardViewPrivate() :
     mHeadingItem(NULL),
     mThumbnailManager(NULL),
     mAvatar(NULL),
-    mIsHandlingMenu(false),
     mFavoriteGroupId(-1),
     mLoader(NULL),
     mContactAction(NULL),
@@ -87,7 +93,10 @@ CntContactCardViewPrivate::CntContactCardViewPrivate() :
     mVCardIcon(NULL),
     mShareUi(NULL),
     mAcceptSendKey(true),
-    mSendKeyListModel(NULL)
+    mSendKeyListModel(NULL),
+    mPresenceListener(NULL),
+    mMaptile(NULL),
+	mProgressTimer(NULL)
 {
     bool ok;
     document()->load(CNT_CONTACTCARDVIEW_XML, &ok);
@@ -110,6 +119,18 @@ CntContactCardViewPrivate::CntContactCardViewPrivate() :
     mBackKey = new HbAction(Hb::BackNaviAction, mView);
     mView->setNavigationAction(mBackKey);  
     connect(mBackKey, SIGNAL(triggered()), this, SLOT(showPreviousView()));
+	
+    mProgressTimer = new QTimer(this);
+    mProgressTimer->setSingleShot(true);
+    connect(mProgressTimer, SIGNAL(timeout()),this, SLOT(updateSpinningIndicator())); 
+
+    mMaptile = new CntMapTileService;
+    if( mMaptile->isLocationFeatureEnabled() )
+    {
+        //Connect for maptile status evenet
+        QObject::connect( mMaptile, SIGNAL(maptileFetchingStatusUpdate(int, 
+            int,int)),this,SLOT(mapTileStatusReceived(int,int,int)));
+    }
 }
 
 /*!
@@ -131,18 +152,38 @@ CntContactCardViewPrivate::~CntContactCardViewPrivate()
     delete mLoader;
     mLoader = NULL;
     
-    if (mVCardIcon) {
+    if (mVCardIcon) 
+    {
         delete mVCardIcon;
         mVCardIcon = NULL;
     }
     
-    if (mShareUi) {
+    if (mShareUi) 
+    {
         delete mShareUi;
         mShareUi = NULL;
     }
     
     delete mSendKeyListModel;
     mSendKeyListModel = NULL;
+    
+    delete mPresenceListener;
+    mPresenceListener = NULL;
+	delete mMaptile;
+    mMaptile = NULL;
+    
+    delete mProgressTimer;
+    mProgressTimer = NULL;
+    
+    //delete maptile label memory
+    for ( int index = 0; index < mMaptileLabelList.count(); index++ )
+    {
+        if( mMaptileLabelList[index] )
+        {
+           delete mMaptileLabelList[index];
+           mMaptileLabelList[index] = NULL ;
+        }
+    }
 }
 
 /*!
@@ -156,15 +197,7 @@ void CntContactCardViewPrivate::showPreviousView()
     QContact contact = contactManager()->contact(mContact->localId());
     if ( contact != *mContact )
     {
-        QList<QContactAvatar> details = mContact->details<QContactAvatar>();
-        for (int i = 0; i < details.count(); i++)
-        {
-            if (!details.at(i).imageUrl().isEmpty())
-            {
-                contactManager()->saveContact(mContact);
-                break;
-            }
-        }
+        contactManager()->saveContact(mContact);
     }
        
     mViewManager->back( mArgs );
@@ -175,6 +208,8 @@ Activates a default view and setup name label texts
 */
 void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const CntViewParameters aArgs)
 {   
+    CNT_ENTRY
+    
     mViewManager = aMgr;
     mArgs = aArgs;
     
@@ -208,6 +243,13 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
     mHeadingItem->setDetails(mContact);
     connect(mHeadingItem, SIGNAL(passLongPressed(const QPointF&)), this, SLOT(drawMenu(const QPointF&)));
     connect(mHeadingItem, SIGNAL(passShortPressed(const QPointF&)), this, SLOT(doChangeImage()));
+    
+    // presence listener
+    mPresenceListener = new CntPresenceListener(*mContact);
+    connect(mPresenceListener, SIGNAL(fullPresenceUpdated(bool)), mHeadingItem, SLOT(setOnlineStatus(bool)));
+    bool online;
+    mPresenceListener->initialPresences(online);
+    mHeadingItem->setOnlineStatus(online);
 
     mImageLabel = static_cast<CntImageLabel*>(document()->findWidget("cnt_contactcard_image"));
     connect(mImageLabel, SIGNAL(iconClicked()), this, SLOT(doChangeImage()));
@@ -226,7 +268,8 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
     }
     
     // data
-    mDataContainer = new CntContactCardDataContainer(mContact, NULL, myCard);
+    mDataContainer = new CntContactCardDataContainer( 
+            mContact, NULL, myCard, mMaptile, mView->mainWindow()->orientation() );
 
     // scroll area + container widget
     mScrollArea = static_cast<HbScrollArea*>(document()->findWidget(QString("scrollArea")));
@@ -279,26 +322,64 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
         {
             //map support (image only)
             if (pos >= CntContactCardDataItem::EAddress && pos <= CntContactCardDataItem::EAddressWork && !dataItem->icon().isNull())
-            {         
-                HbLabel* iconLabel = new HbLabel(mView);
-                iconLabel->setIcon(dataItem->icon());
+            {        
+                int addressType = CntMapTileService::AddressPreference;
                 
-                int width = dataItem->icon().width();
-                int height = dataItem->icon().height();    
-                
-                //HbLabel setPreferredSize is not working properly,
-                //so added minimum , maximum size to fix the issue
-                iconLabel->setPreferredSize(QSizeF(width,height));
-                iconLabel->setMinimumSize(QSizeF(width, height));
-                iconLabel->setMaximumSize(QSizeF(width, height));
-                iconLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
-                                    QSizePolicy::Fixed));            
-                mContainerLayout->addItem(iconLabel);
+                if( pos == CntContactCardDataItem::EAddressHome  )
+                {
+                    addressType  = CntMapTileService::AddressHome;
+                }
+                else if( pos == CntContactCardDataItem::EAddressWork )
+                {
+                    addressType  = CntMapTileService::AddressWork;
+                }
+                  
+                HbLabel* maptileLabel = loadMaptileLabel( addressType );
+                setMaptileLabel( maptileLabel, dataItem->icon() );
+                mContainerLayout->addItem(  maptileLabel );
+                mMaptileLabelList.insert( addressType, maptileLabel );
             } 
             //other details
             else
             {    
                 CntContactCardDetailItem* item = new CntContactCardDetailItem(index, mContainerWidget, false);
+				//To check whether maptile status  icon is set with the address 
+                if( ( dataItem->titleText() == hbTrId("txt_phob_formlabel_address") ||
+                      dataItem->titleText() == hbTrId("txt_phob_formlabel_address_home")||  
+                      dataItem->titleText() == hbTrId("txt_phob_formlabel_address_work") ) &&
+                      dataItem->secondaryIcon().iconName() == QString(CNT_MAPTILE_INPROGRESS_ICON) )
+                    
+                {
+                    //Information for displaying maptile fetching progress bar.
+                    //Memory will be deleted from the queue.
+                    CntContactCardMapTileDetail* detail = new CntContactCardMapTileDetail;
+                    if( detail )
+                    {
+                        detail->mContactId = mContact->id().localId();
+                            
+                        if( dataItem->titleText() == hbTrId("txt_phob_formlabel_address") )
+                        {
+                               detail->mAddressType = CntMapTileService::AddressPreference;
+                        }
+                        else if ( dataItem->titleText() ==  hbTrId("txt_phob_formlabel_address_home") )
+                        {
+                               detail->mAddressType = CntMapTileService::AddressHome;
+                        }
+                        else if( dataItem->titleText() ==  hbTrId("txt_phob_formlabel_address_work") )
+                        {
+                               detail->mAddressType = CntMapTileService::AddressWork;
+                        }
+                        
+                        detail->mProgressCount = 0;
+                        detail->mDetailItem =  item;
+                        detail->maptileStatus = CNT_UNKNOWN_MAPTILE_STATUS;
+                        mAddressList.append( detail );  
+                    }
+                    
+                    //Update the spinning indicator
+                    updateSpinningIndicator();
+                    
+                }
                 item->setDetails(dataItem);
                 mContainerLayout->addItem(item);
             }
@@ -312,48 +393,273 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
         if( favouriteGroupId != 0 )
         {
             setAsFavorite = CntFavourite::isMemberOfFavouriteGroup( contactManager(), mContact );
-            mHeadingItem->setSecondaryIcon( setAsFavorite ); // if contact is part of favourites group
+            mHeadingItem->setFavoriteStatus( setAsFavorite ); // if contact is part of favourites group
         }
         qobject_cast<HbAction *>(document()->findObject("cnt:setasfavorite"))->setVisible( !setAsFavorite );
         qobject_cast<HbAction *>(document()->findObject("cnt:removefromfavorite"))->setVisible( setAsFavorite );
     }
-        
-    // Menu items
-    connect(qobject_cast<HbAction *>(document()->findObject("cnt:sendbusinesscard")), SIGNAL(triggered()),
-                this, SLOT (sendBusinessCard()));
-    connect(qobject_cast<HbAction *>(document()->findObject("cnt:deletecontact")), SIGNAL(triggered()),
-                this, SLOT (deleteContact()));
-    connect(qobject_cast<HbAction *>(document()->findObject("cnt:setasfavorite")), SIGNAL(triggered()),
-                this, SLOT (setAsFavorite()));
-    connect(qobject_cast<HbAction *>(document()->findObject("cnt:removefromfavorite")), SIGNAL(triggered()),
-                this, SLOT (removeFromFavorite()));    
-    connect(qobject_cast<HbAction *>(document()->findObject("cnt:placecontacttohs")), SIGNAL(triggered()),
-                this, SLOT (sendToHs()));
+    document()->findWidget("viewToolbar")->setParent(mView);
+    document()->findWidget("viewMenu")->setParent(mView);
     
-    // Toolbar items
-    connect(qobject_cast<HbAction *>(document()->findObject("cnt:edit")), SIGNAL(triggered()),
-                this, SLOT(editContact()));
-    connect(qobject_cast<HbAction *>(document()->findObject("cnt:history")), SIGNAL(triggered()),
-                this, SLOT(viewHistory()));
-    connect(qobject_cast<HbAction *>(document()->findObject("cnt:sendMyCard")), SIGNAL(triggered()),
-                this, SLOT (sendBusinessCard()));
- 
+    // Menu items
+    connectAction("cnt:sendbusinesscard", SLOT(sendBusinessCard()));
+    connectAction("cnt:deletecontact", SLOT(deleteContact()));
+    connectAction("cnt:setasfavorite", SLOT(setAsFavorite()));
+    connectAction("cnt:removefromfavorite", SLOT(removeFromFavorite()));
+    connectAction("cnt:placecontacttohs", SLOT(sendToHs()));
+    connectAction("cnt:edit", SLOT(editContact()));
+    connectAction("cnt:history", SLOT(viewHistory()));
+    connectAction("cnt:sendMyCard", SLOT(sendBusinessCard()));
+    connectAction("cnt:activityStream", NULL);      // placeholder until this action is implemented (needed to avoid memory leak)
+    
     emit viewActivated( mViewManager, aArgs );
+
+    CNT_EXIT
+}
+
+/*
+    Connects the action with a slot and also sets the view as the parent for the action.
+ */
+void CntContactCardViewPrivate::connectAction(QString actionName, const char* slot)
+{
+    HbAction *action = qobject_cast<HbAction *>(document()->findObject(actionName));
+    if (action) {
+        action->setParent(mView);
+        if (slot != NULL) {
+            connect(action, SIGNAL(triggered()), this, slot);
+        }
+    }
+}
+
+/*
+    Updates the maptile fetching spinning indicator icon
+ */
+void CntContactCardViewPrivate::updateSpinningIndicator()
+{
+    //Check all address details( Preferred, Home, Work )
+    for( int index = 0 ; index < mAddressList.count(); )
+    {
+        //Maptile status not received update the rotating icon
+        if( mAddressList[index]->maptileStatus == CNT_UNKNOWN_MAPTILE_STATUS )
+        {
+             QString iconName("qtg_anim_small_loading_");
+             mAddressList[index]->mProgressCount = mAddressList[index]->mProgressCount % 10 + 1;
+             iconName.append(QVariant(mAddressList[index]->mProgressCount).toString());
+             
+             HbIcon icon(iconName);
+             mAddressList[index]->mDetailItem->setSecondaryIconItem( icon );
+             mAddressList[index]->mDetailItem->update();   
+             mProgressTimer->start(CNT_MAPTILE_PROGRESS_TIMER); 
+             index++;
+        }
+        else
+        {
+            //Maptile status received. Show the maptile image if available
+            CntMapTileService::ContactAddressType sourceAddressType =
+                    static_cast <CntMapTileService::ContactAddressType>( mAddressList[index]->mAddressType );
+             
+            QContactLocalId contactId = mContact->id().localId();
+             
+            if( mAddressList[index]->mDetailItem != NULL )
+            {
+                 if( mAddressList[index]->maptileStatus == CntMapTileService::MapTileFetchingCompleted )
+                 {
+ 
+                     //Read the maptile path and update the image
+                     QString imagePath;
+                     mMaptile->getMapTileImage( 
+                                contactId, sourceAddressType, imagePath, mView->mainWindow()->orientation() );
+					 
+                     if( !imagePath.isEmpty() )
+                     {
+                         //Empty icon. Clear the inprogress  icon
+                         HbIcon emptyIcon;
+                         mAddressList[index]->mDetailItem->setSecondaryIconItem( emptyIcon );
+                         
+                         HbIcon icon( imagePath );
+                         
+                         HbLabel* maptileLabel = loadMaptileLabel( sourceAddressType );
+                         setMaptileLabel( maptileLabel, icon );
+                         mMaptileLabelList.insert( sourceAddressType, maptileLabel );
+                        
+                         //find the index of the item and insert maptile in the next index 
+                         for( int itemIndex = 0 ; itemIndex < mContainerLayout->count(); itemIndex++ )
+                         {
+                             if( mContainerLayout->itemAt(itemIndex) == mAddressList[index]->mDetailItem )
+                             {
+                                 mContainerLayout->insertItem( itemIndex+1, maptileLabel );
+                                 break;
+                             }
+                         }
+                         
+                     }
+                     else
+                     {
+                         //Maptile image not available. Show the search stop icon
+                         setMaptileSearchStopIcon( index );
+                     }
+                 }
+                 else
+                 {
+                     //Maptile fetching failed. Show the search stop icon
+                     setMaptileSearchStopIcon( index );
+                 }
+                 
+                 delete mAddressList[index];
+                 mAddressList.removeAt(index);
+            }
+            else
+            {
+                 //increment the index now
+                 index++;
+            }
+        }
+    }
+}
+
+/*
+* Sets the search stop icon to secondary icon item
+*/
+void CntContactCardViewPrivate::setMaptileSearchStopIcon( int index )
+{
+    if( index < mAddressList.count() )
+    {
+        QString iconName(CNT_MAPTILE_SEARCH_STOP_ICON);
+        HbIcon icon(iconName);
+        mAddressList[index]->mDetailItem->setSecondaryIconItem( icon );
+        mAddressList[index]->mDetailItem->update();  
+    }
+}
+
+/*
+* Slot to receive the maptile status information
+*/
+void CntContactCardViewPrivate::mapTileStatusReceived( int contactid, int addressType, int status)
+{
+    //Update the maptile status information for all 3( Preferred, Work, Home ) address
+    for( int index = 0 ; index < mAddressList.count(); index++  )
+    {
+        if( mAddressList[index]->mContactId == contactid &&  
+                 mAddressList[index]->mAddressType == addressType )
+        {
+            mAddressList[index]->maptileStatus = status;
+        }
+    }
+    
+    updateSpinningIndicator();
+}
+
+/*
+* Updates correct maptile image when screen orientation changes.
+*/
+void CntContactCardViewPrivate::updateMaptileImage()
+{
+    //If there is no maptile displayed, return immediately
+    if( mMaptileLabelList.count() > 0 )
+    {
+        QContactLocalId contactId = mContact->id().localId();
+        
+        QList<QContactAddress> addressDetails = mContact->details<QContactAddress>();
+        
+        //address
+        QString contextHome(QContactAddress::ContextHome.operator QString());
+        QString contextWork(QContactAddress::ContextWork.operator QString());
+        CntMapTileService::ContactAddressType sourceAddressType 
+                                             = CntMapTileService::AddressPreference;
+        
+        QString imagePath;
+        
+        for ( int i = 0; i < addressDetails.count(); i++ )
+        {
+            if ( !addressDetails[i].contexts().isEmpty() && 
+                   addressDetails[i].contexts().at(0) == contextHome )
+            {
+                sourceAddressType = CntMapTileService::AddressHome;
+            }
+            else if ( !addressDetails[i].contexts().isEmpty() && 
+                         addressDetails[i].contexts().at(0) == contextWork )
+            {
+                sourceAddressType = CntMapTileService::AddressWork;
+            }
+            
+            int status = mMaptile->getMapTileImage( 
+                                             contactId, 
+                                             sourceAddressType, 
+                                             imagePath, 
+                                             mView->mainWindow()->orientation() );
+            if( !imagePath.isEmpty() )
+            {
+                HbIcon icon( imagePath );
+                HbLabel* label = mMaptileLabelList.value( sourceAddressType );
+                if( label )
+                {
+                    setMaptileLabel( label, icon );
+                }
+            }
+        }
+    }
+}
+
+
+/*
+* Asscoiate the maptile label widget with maptile image
+*/
+void CntContactCardViewPrivate::setMaptileLabel( HbLabel*& mapLabel, const HbIcon& icon )
+{
+    mapLabel->clear();
+    mapLabel->setIcon( icon );
+    
+    int width = icon.width();
+    int height = icon.height();    
+                    
+    //HbLabel setPreferredSize is not working properly,
+    //so added minimum , maximum size to fix the issue
+    mapLabel->setPreferredSize(QSizeF(width,height));
+    mapLabel->setMinimumSize(QSizeF(width, height));
+    mapLabel->setMaximumSize(QSizeF(width, height));
+    mapLabel->setSizePolicy(QSizePolicy( QSizePolicy::Fixed,
+                        QSizePolicy::Fixed));            
+}
+
+/*
+* Load the maptile label based on the address type
+*/
+HbLabel* CntContactCardViewPrivate::loadMaptileLabel( int addressType )
+{
+    HbLabel* maptileLabel = NULL ;
+    
+    if( addressType == CntMapTileService::AddressPreference )
+    {
+        maptileLabel = static_cast<HbLabel*>(document()->findWidget(QString("maptilePreferenceWidget")));
+    }
+    else if( addressType == CntMapTileService::AddressHome  )
+    {
+        maptileLabel  = static_cast<HbLabel*>(document()->findWidget(QString("maptileHomeWidget")));
+    }
+    else if( addressType == CntMapTileService::AddressWork )
+    {
+        maptileLabel  = static_cast<HbLabel*>(document()->findWidget(QString("maptileWorkWidget")));
+    }
+                            
+    return maptileLabel;
 }
 
 void CntContactCardViewPrivate::thumbnailReady(const QPixmap& pixmap, void *data, int id, int error)
 {
+    CNT_ENTRY
+    
     Q_UNUSED(data);
     Q_UNUSED(id);
     if (!error)
     {
-        QIcon qicon(pixmap);
-        HbIcon icon(qicon);
+        HbIcon icon(pixmap);
         mHeadingItem->setIcon(icon);
-        mVCardIcon = new HbIcon(qicon);
+        mVCardIcon = new HbIcon(pixmap);
         mImageLabel->clear();
         mImageLabel->setIcon(icon);
     }
+    
+    CNT_EXIT
 }
 
 /*!
@@ -397,7 +703,7 @@ void CntContactCardViewPrivate::setAsFavorite()
     
     qobject_cast<HbAction *>(document()->findObject("cnt:removefromfavorite"))->setVisible(true);
     qobject_cast<HbAction *>(document()->findObject("cnt:setasfavorite"))->setVisible(false);
-    mHeadingItem->setSecondaryIcon(true);  
+    mHeadingItem->setFavoriteStatus(true);  
 }
 
 void CntContactCardViewPrivate::removeFromFavorite()
@@ -407,7 +713,7 @@ void CntContactCardViewPrivate::removeFromFavorite()
 
     qobject_cast<HbAction *>(document()->findObject("cnt:removefromfavorite"))->setVisible(false);
     qobject_cast<HbAction *>(document()->findObject("cnt:setasfavorite"))->setVisible(true);
-    mHeadingItem->setSecondaryIcon(false); 
+    mHeadingItem->setFavoriteStatus(false); 
 }
 
 /*!
@@ -418,7 +724,7 @@ void CntContactCardViewPrivate::deleteContact()
     QString name = contactManager()->synthesizedDisplayLabel(*mContact);
     
     HbMessageBox::question(HbParameterLengthLimiter(hbTrId("txt_phob_info_delete_1")).arg(name), this, SLOT(handleDeleteContact(HbAction*)),
-            hbTrId("txt_phob_button_delete"), hbTrId("txt_common_button_cancel"));
+            hbTrId("txt_common_button_delete"), hbTrId("txt_common_button_cancel"));
 }
 
 /*!
@@ -431,8 +737,7 @@ void CntContactCardViewPrivate::handleDeleteContact(HbAction *action)
     if (note && action == note->actions().first())
     {
         contactManager()->removeContact(mContact->localId());
-        mArgs.insert(EViewId, namesView);
-        mViewManager->changeView( mArgs );
+        mViewManager->back( mArgs );
     }
 }
 
@@ -516,6 +821,8 @@ void CntContactCardViewPrivate::setOrientation(Qt::Orientation orientation)
         // reading "landscape" section
         document()->load(CNT_CONTACTCARDVIEW_XML, "landscape");
     }
+	//Update the maptile image
+	updateMaptileImage();
 }
 
 /*!
@@ -528,10 +835,10 @@ void CntContactCardViewPrivate::onItemActivated()
     QString action = mDataContainer->dataItem(index)->action();
     // Check if action is internal
     QList<QContactActionDescriptor> actionDescriptors = QContactAction::actionDescriptors(action, "symbian", 1);
-    if(0 < actionDescriptors.count())
+    if (0 < actionDescriptors.count())
     {
         // These actions are considered internal(vendor=symbian and version=1)
-        executeAction(*mContact, mDataContainer->dataItem(index)->detail(), action);
+        executeAction(*mContact, mDataContainer->dataItem(index)->detail(), action, item);
     }
     else
     {
@@ -543,11 +850,36 @@ void CntContactCardViewPrivate::onItemActivated()
 /*!
 Execute the call / message / email action
 */
-void CntContactCardViewPrivate::executeAction(QContact& aContact, QContactDetail aDetail, QString aAction)
+void CntContactCardViewPrivate::executeAction(QContact& aContact, const QContactDetail& aDetail, const QString& aAction, CntContactCardDetailItem* aItem)
 {
-    CntActionLauncher* other = new CntActionLauncher( aAction );
+    CntActionLauncher* other = new CntActionLauncher(*contactManager(), aAction);
     connect(other, SIGNAL(actionExecuted(CntActionLauncher*)), this, SLOT(actionExecuted(CntActionLauncher*)));
-    other->execute(aContact, aDetail);
+    if (aItem && aContact.preferredDetail(aAction).isEmpty())
+    {
+        setPreferredAction(aAction, aDetail, aItem);
+    }
+    other->execute(aContact, aDetail);  
+}
+
+
+/*!
+Execute the call / message / email action
+*/
+void CntContactCardViewPrivate::executeAction(QContact& aContact, const QContactDetail& aDetail, const QString& aAction)
+{ 
+    //TODO: need refactoring
+    CntContactCardDetailItem* detailItem = NULL;
+    for (int index = 0; index < mDataContainer->itemCount(); index++)
+    {
+        QContactDetail detail = mDataContainer->dataItem(index)->detail();
+        QString action = mDataContainer->dataItem(index)->action();
+        if (detail == aDetail && action == aAction)
+        {
+            detailItem = static_cast<CntContactCardDetailItem*>(mContainerLayout->itemAt(index));
+        }
+    }
+    executeAction(aContact, aDetail, aAction, detailItem);
+    mAcceptSendKey=true;
 }
 
 /*!
@@ -555,23 +887,14 @@ Execute dynamic action
 */
 void CntContactCardViewPrivate::executeDynamicAction(QContact& aContact, QContactDetail aDetail, QContactActionDescriptor aActionDescriptor)
 {
-    CntActionLauncher* other = new CntActionLauncher( );
-    connect(other, SIGNAL(actionExecuted(CntAction*)), this, SLOT(actionExecuted(CntAction*)));
+    CntActionLauncher* other = new CntActionLauncher(*contactManager());
+    connect(other, SIGNAL(actionExecuted(CntActionLauncher*)), this, SLOT(actionExecuted(CntActionLauncher*)));
     other->execute(aContact, aDetail, aActionDescriptor);
 }
 
 void CntContactCardViewPrivate::actionExecuted(CntActionLauncher* aAction)
 {
     aAction->deleteLater();
-}
-
-/*!
-Set selected detail as preferred for selected action
-*/
-void CntContactCardViewPrivate::setPreferredAction(const QString &aAction, const QContactDetail &aDetail)
-{
-    mContact->setPreferredDetail(aAction, aDetail);
-    contactManager()->saveContact(mContact);
 }
 
 /*!
@@ -695,13 +1018,13 @@ void CntContactCardViewPrivate::handleMenuAction(HbAction* aAction)
     
     if ( name == "communicationAction" )
     {
-        executeAction( *mContact, detail, action );
+        executeAction(*mContact, detail, action, item);
     }
 
     if ( name == "videoCommunicationAction" )
     {
         //service name latter on should come from service table.
-        executeAction( *mContact, detail, "videocall" );
+        executeAction(*mContact, detail, "videocall", item);
     }
     if ( name == "dynamicAction" )
     {             
@@ -710,27 +1033,40 @@ void CntContactCardViewPrivate::handleMenuAction(HbAction* aAction)
     
     if ( name == "preferredAction" )
     {
-        setPreferredAction(action, detail);
-                    
-        if (mPreferredItems.contains(action))
-        {
-            CntContactCardDetailItem *oldItem = mPreferredItems.value(action);
-            mDataContainer->dataItem(oldItem->index())->setSecondaryIcon(HbIcon());
-            oldItem->setDetails(mDataContainer->dataItem(oldItem->index()));
-        }
-            
-        mDataContainer->dataItem(item->index())->setSecondaryIcon(HbIcon("qtg_mono_favourites"));
-        item->setDetails(mDataContainer->dataItem(item->index()));
-        
-        mPreferredItems.insert(action, item);
+        setPreferredAction(action, detail, item);
     }
 }
 
+/*!
+Set selected detail as preferred for selected action in detail item
+*/
+void CntContactCardViewPrivate::setPreferredAction(const QString &aAction, const QContactDetail &aDetail, CntContactCardDetailItem *aDetailItem)
+{
+    if (aAction == "call" || aAction == "message" || aAction == "email")
+    {
+        mContact->setPreferredDetail(aAction, aDetail);
+        contactManager()->saveContact(mContact);
+        if (mPreferredItems.contains(aAction))
+        {
+           CntContactCardDetailItem *oldItem = mPreferredItems.value(aAction);
+           mDataContainer->dataItem(oldItem->index())->setSecondaryIcon(HbIcon());
+           oldItem->setDetails(mDataContainer->dataItem(oldItem->index()));
+        }
+        
+        mDataContainer->dataItem(aDetailItem->index())->setSecondaryIcon(HbIcon("qtg_mono_favourites"));
+        aDetailItem->setDetails(mDataContainer->dataItem(aDetailItem->index()));
+        
+        mPreferredItems.insert(aAction, aDetailItem);
+    }
+}
+
+
 void CntContactCardViewPrivate::handleSendBusinessCard( HbAction* aAction )
 {
+    Q_UNUSED(aAction);
     qDebug() << "CntContactCardViewPrivate::handleSendBusinessCard - IN";
     QList<QContact> list;
-    /* if ( aAction && aAction->objectName() == "cancel" )
+    /*if ( aAction && aAction->objectName() == "cancel" )
     {
         QContact tmpContact( *mContact );
         foreach ( QContactAvatar a, tmpContact.details<QContactAvatar>() )
@@ -743,14 +1079,13 @@ void CntContactCardViewPrivate::handleSendBusinessCard( HbAction* aAction )
     {
         list.append( *mContact );
     }*/
-    
     QContact tmpContact( *mContact );
     foreach ( QContactAvatar a, tmpContact.details<QContactAvatar>() )
     {
         tmpContact.removeDetail( &a );
     }
     list.append( tmpContact );
-      
+    
     QString tempDir = QDir::tempPath().append("/tempcntvcard");
     QDir dir(tempDir);
            
@@ -758,7 +1093,10 @@ void CntContactCardViewPrivate::handleSendBusinessCard( HbAction* aAction )
     if (!dir.exists()) 
     {
         // Create a temp directory
-        QDir::temp().mkdir("tempcntvcard");
+        if (!QDir::temp().mkdir("tempcntvcard"))
+        {
+            return;
+        }
     } 
     else 
     {    
@@ -846,7 +1184,10 @@ void CntContactCardViewPrivate::doRemoveImage()
                     imageUtility.removeImage(filePath);
                 }
             }
-            mHeadingItem->setIcon(HbIcon("qtg_large_avatar"));
+            mAvatar->setImageUrl(QUrl());
+            mImageLabel->clear();
+            mImageLabel->setIcon(HbIcon("qtg_large_add_contact_picture"));
+            mHeadingItem->setIcon(HbIcon("qtg_large_add_contact_picture"));
             contactManager()->saveContact(mContact);
         }
     }
@@ -857,12 +1198,6 @@ Draw the image specific content menu
 */
 void CntContactCardViewPrivate::drawMenu(const QPointF &aCoords)
 {
-    if (mIsHandlingMenu) return;
-    
-    // To avoid re-drawing the menu and causing a crash due to 
-    // multiple emitted signals, set state that we are handling the signal
-    mIsHandlingMenu = true;
-    
     HbMenu *menu = new HbMenu();
     menu->addAction(hbTrId("txt_phob_menu_change_picture"), this, SLOT(doChangeImage()) );
     if (mAvatar)
@@ -872,7 +1207,7 @@ void CntContactCardViewPrivate::drawMenu(const QPointF &aCoords)
     menu->setAttribute( Qt::WA_DeleteOnClose );
     menu->setPreferredPos( aCoords );
     menu->open();
-    }
+}
 
 /*!
 Return the pointer to the document loader
@@ -904,100 +1239,50 @@ void CntContactCardViewPrivate::keyPressed(QKeyEvent *event)
 
 void CntContactCardViewPrivate::sendKeyPressed()
 {   
-    QContactDetail preferredDetail = mContact->preferredDetail("call");
-    if (!preferredDetail.isEmpty())
+    int count = 0;
+    for (int index = 0; index < mDataContainer->itemCount(); index++)
     {
-        executeAction(*mContact, preferredDetail, "call"); 
+        CntContactCardDataItem* dataItem = mDataContainer->dataItem(index);
+        if (dataItem->action().compare("call", Qt::CaseInsensitive) == 0)
+        {
+            count++;
+        }
     }
-    else 
-    {   
-        if(!mSendKeyListModel)
+    if (!count)
+    {
+        XQServiceRequest snd("com.nokia.services.logsservices.starter", "start(int,bool)", false);
+        snd << 0; // all calls
+        snd << true; // show dialpad
+        snd.send();
+    }
+    else
+    {
+        QContactDetail preferredDetail = mContact->preferredDetail("call");
+        if (!preferredDetail.isEmpty())
         {
-            mSendKeyListModel = new QStandardItemModel();
+            executeAction(*mContact, preferredDetail, "call", NULL); 
         }
-        mSendKeyListModel->clear();
-        for (int index = 0; index < mDataContainer->itemCount(); index++)
+        else if (count == 1 )
         {
-            CntContactCardDataItem* dataItem = mDataContainer->dataItem(index);
-            if (dataItem->action().compare("call", Qt::CaseInsensitive) == 0)
-            {
-                QStandardItem *labelItem = new QStandardItem();
-                QStringList textList;
-                textList << dataItem->titleText() << dataItem->valueText();
-                labelItem->setData(textList, Qt::DisplayRole);
-                labelItem->setData(dataItem->icon(), Qt::DecorationRole);
-                labelItem->setData(index, Qt::UserRole);
-                mSendKeyListModel->appendRow(labelItem);
-            }
+           mContact->setPreferredDetail("call", mContact->details<QContactPhoneNumber>().first());
+           executeAction( *mContact, mContact->details<QContactPhoneNumber>().first(), "call", NULL); 
         }
-  
-        if (mSendKeyListModel->rowCount() == 0)
-        {
-            XQServiceRequest snd("com.nokia.services.logsservices.starter", "start(int,bool)", false);
-            snd << 0; // all calls
-            snd << true; // show dialpad
-            snd.send();
-        }
-        else if (mSendKeyListModel->rowCount() ==1 )
-        {
-            QContactDetail detail = mDataContainer->dataItem(0)->detail();
-            executeAction( *mContact, detail, "call" ); 
-        }
-        else if (mSendKeyListModel->rowCount() >= 2 && mAcceptSendKey)
-        {
+        else if(count >= 2 && mAcceptSendKey)
+        {   
             mAcceptSendKey = false;
+            CntActionPopup *actionPopup = new CntActionPopup(mContact);
+            actionPopup->showActionPopup("call");
+            connect( actionPopup, SIGNAL(executeContactAction(QContact&, QContactDetail, QString)), this, 
+                    SLOT(executeAction(QContact&, QContactDetail, QString)));   
+            connect( actionPopup, SIGNAL(actionPopupCancelPressed()), this, 
+                                SLOT(sendKeyCancelSlot()));   
             
-            // Instantiate a dialog        
-            mSendKeyPopup = new HbSelectionDialog();
-            mSendKeyPopup->clearActions(); 
-            mSendKeyPopup->setAttribute(Qt::WA_DeleteOnClose, true);
-            mSendKeyPopup->setDismissPolicy(HbPopup::NoDismiss);
-            mSendKeyPopup->setTimeout(HbPopup::NoTimeout);
-            mSendKeyPopup->setModal(true);
-            
-            HbListView* listView = new HbListView(mSendKeyPopup);
-            listView->setModel(mSendKeyListModel);
-            listView->setScrollingStyle(HbScrollArea::PanWithFollowOn);
-            listView->setFrictionEnabled(true);
-            
-            connect(listView, SIGNAL(activated (const QModelIndex&)), this,
-                SLOT(launchSendKeyAction(const QModelIndex&)));
-            
-            QString contactName = mContact->displayLabel();
-        
-            HbLabel *headingText = new HbLabel(mSendKeyPopup);
-            headingText->setPlainText(contactName);
-            
-            mSendKeyPopup->setHeadingWidget(headingText);
-            mSendKeyPopup->setContentWidget(listView);
-            
-            HbAction *cancelAction = new HbAction(hbTrId("txt_phob_button_cancel"), mSendKeyPopup);
-            mSendKeyPopup->addAction(cancelAction);
-            
-            // Launch dialog asyncronously
-            mSendKeyPopup->open(this, SLOT(sendKeyDialogSlot(HbAction*)));
         }
     }
 }
 
-void CntContactCardViewPrivate::sendKeyDialogSlot(HbAction* action)
-{
-    Q_UNUSED(action);
-    mAcceptSendKey = true;
-}
-
-void CntContactCardViewPrivate::launchSendKeyAction(const QModelIndex &index)
+void CntContactCardViewPrivate::sendKeyCancelSlot()
 {
     mAcceptSendKey = true;
-    mSendKeyPopup->close();
-    if (index.isValid())
-    {
-        int row = index.row();
-        int selectedDetail = mSendKeyListModel->item(index.row())->data(Qt::UserRole).toInt();
-        executeAction(*mContact, mDataContainer->dataItem(selectedDetail)->detail(), "call");
-    }
 }
-
-
-
 // end of file

@@ -30,6 +30,9 @@
 #include <hbaction.h>
 #include <hbmainwindow.h>
 #include <hbtapgesture.h>
+#include <cntuids.h>
+#include <xqsettingsmanager.h>
+#include <xqsettingskey.h>
 
 CntContactCardHeadingItem::CntContactCardHeadingItem(QGraphicsItem *parent) :
     HbWidget(parent),
@@ -41,7 +44,9 @@ CntContactCardHeadingItem::CntContactCardHeadingItem(QGraphicsItem *parent) :
     mSecondaryText(NULL),
     mMarqueeItem(NULL),
     mFrameItem(NULL),
-    mPictureArea(NULL)
+    mPictureArea(NULL),
+    mIsFavorite(false),
+    mIsOnline(false)
 {
 }
 
@@ -57,6 +62,7 @@ void CntContactCardHeadingItem::createPrimitives()
         if (!mIcon && mainWindow()->orientation() != Qt::Horizontal)
         {
             mIcon = new HbIconItem(this);
+            mIcon->setAlignment(Qt::AlignCenter);
             mIcon->setIcon(icon);
             style()->setItemName(mIcon, "icon");
         }
@@ -71,22 +77,22 @@ void CntContactCardHeadingItem::createPrimitives()
     }
     
     if (!secondaryIcon.isNull())
+    {
+        if (!mSecondaryIcon)
         {
-            if (!mSecondaryIcon)
-            {
-                mSecondaryIcon = new HbIconItem(this);
-                mSecondaryIcon->setIcon(secondaryIcon);
-                style()->setItemName(mSecondaryIcon, "secondary_icon");
-            }
+            mSecondaryIcon = new HbIconItem(this);
+            mSecondaryIcon->setIcon(secondaryIcon);
+            style()->setItemName(mSecondaryIcon, "secondary_icon");
         }
-        else
+    }
+    else
+    {
+        if (mSecondaryIcon)
         {
-            if (mSecondaryIcon)
-            {
-                delete mSecondaryIcon;
-            }
-            mSecondaryIcon = 0;
+            delete mSecondaryIcon;
         }
+        mSecondaryIcon = 0;
+    }
 
     if (!firstLineText.isNull())
     {
@@ -95,6 +101,7 @@ void CntContactCardHeadingItem::createPrimitives()
             mFirstLineText = new HbTextItem(this);
             mFirstLineText->setText(firstLineText);
             mFirstLineText->setMaximumLines(1);
+            mFirstLineText->setElideMode(Qt::ElideRight);
             style()->setItemName(mFirstLineText, "first_line_text");
         }
     }
@@ -115,6 +122,7 @@ void CntContactCardHeadingItem::createPrimitives()
             mPrimaryText->setText(primaryText);
             mPrimaryText->setMaximumLines(2);
             mPrimaryText->setTextWrapping(Hb::TextWordWrap);
+            mPrimaryText->setElideMode(Qt::ElideRight);
             style()->setItemName(mPrimaryText, "primary_text");
         }
     }
@@ -222,22 +230,17 @@ void CntContactCardHeadingItem::setIcon(const HbIcon newIcon)
     }
 }
 
-void CntContactCardHeadingItem::setSecondaryIcon(bool favoriteContact)
+void CntContactCardHeadingItem::setFavoriteStatus(bool favoriteContact)
 {
-    secondaryIcon.clear();
-
-    if (favoriteContact)
+    if (favoriteContact != mIsFavorite)
     {
-        secondaryIcon = HbIcon("qtg_small_favorite");
-        createPrimitives();
-        mSecondaryIcon->setIcon(secondaryIcon);
+        mIsFavorite = favoriteContact;
+        
+        if (!mIsOnline)
+        {
+            setSecondaryIcon();
+        }
     }
-    else
-    {
-        createPrimitives();
-    }
-    repolish();
-
 }
 
 void CntContactCardHeadingItem::recreatePrimitives()
@@ -299,6 +302,7 @@ void CntContactCardHeadingItem::setDetails(const QContact* contact)
     secondaryText.clear();
     icon.clear();
     tinyMarqueeText.clear();
+    secondaryIcon.clear();
 
     // icon label
     icon = HbIcon("qtg_large_add_contact_picture");
@@ -308,10 +312,7 @@ void CntContactCardHeadingItem::setDetails(const QContact* contact)
     // name label
     if (isNickName(contact) || isCompanyName(contact))
     {
-        // prefix, first, middle, last and suffix
-        QStringList nameList;
-        nameList << name.prefix() << name.firstName() << name.middleName() << name.lastName() << name.suffix();
-        firstLineText = nameList.join(" ").trimmed();
+        firstLineText = createNameText(name);
         if (firstLineText.isEmpty())
         {
             firstLineText = hbTrId("txt_phob_list_unnamed");
@@ -319,10 +320,7 @@ void CntContactCardHeadingItem::setDetails(const QContact* contact)
     }
     else
     {
-        // prefix, first, middle, last and suffix
-        QStringList nameList;
-        nameList << name.prefix() << name.firstName() << name.middleName() << name.lastName() << name.suffix();
-        primaryText = nameList.join(" ").trimmed();
+        primaryText = createNameText(name);
         if (primaryText.isEmpty())
         {
             primaryText = hbTrId("txt_phob_list_unnamed");
@@ -347,6 +345,35 @@ void CntContactCardHeadingItem::setDetails(const QContact* contact)
     recreatePrimitives();
 }
 
+QString CntContactCardHeadingItem::createNameText(const QContactName name)
+{
+    XQSettingsManager settingsMng;
+    XQSettingsKey nameOrderKey(XQSettingsKey::TargetCentralRepository,
+                             KCRCntSettings.iUid,
+                             KCntNameOrdering);
+    int setting = settingsMng.readItemValue(nameOrderKey, XQSettingsManager::TypeInt).toInt();
+    
+    QStringList nameList;
+    QString last;
+    
+    switch( setting ) {
+        case CntOrderLastFirst:
+            nameList << name.prefix() << name.lastName() << name.firstName() << name.middleName() << name.suffix();
+            break;
+        case CntOrderLastCommaFirst:
+            if (!name.lastName().isEmpty())
+                last = name.lastName() + ",";
+            nameList << name.prefix() << last << name.firstName() << name.middleName() << name.suffix();
+            break;
+        default:    // Default to first name last name
+            nameList << name.prefix() << name.firstName() << name.middleName() << name.lastName() << name.suffix();
+            break;
+    }
+    
+    nameList.removeAll("");
+    return nameList.join(" ").trimmed();
+}
+
 void CntContactCardHeadingItem::setGroupDetails(const QContact* contact)
 {
     firstLineText.clear();
@@ -354,7 +381,7 @@ void CntContactCardHeadingItem::setGroupDetails(const QContact* contact)
     icon.clear();
 
     // icon label
-    icon = HbIcon("qtg_large_custom");
+    icon = HbIcon("qtg_large_add_group_picture");
 
     QContactName contactName = contact->detail( QContactName::DefinitionName );
     QString groupName = contactName.value( QContactName::FieldCustomLabel );
@@ -377,6 +404,16 @@ void CntContactCardHeadingItem::processLongPress(const QPointF &point)
 void CntContactCardHeadingItem::processShortPress(const QPointF &point)
 {
     emit passShortPressed(point);
+}
+
+void CntContactCardHeadingItem::setOnlineStatus(bool online)
+{
+    if (online != mIsOnline)
+    {
+        mIsOnline = online;
+        
+        setSecondaryIcon();
+    }
 }
 
 void CntContactCardHeadingItem::gestureEvent(QGestureEvent* event)
@@ -409,11 +446,6 @@ void CntContactCardHeadingItem::gestureEvent(QGestureEvent* event)
     }
 }
 
-void CntContactCardHeadingItem::initGesture()
-{
-    grabGesture(Qt::TapGesture);
-}
-
 QVariant CntContactCardHeadingItem::itemChange(GraphicsItemChange change, const QVariant &value)
 {      
     if (change == QGraphicsItem::ItemSceneHasChanged)
@@ -438,6 +470,32 @@ void CntContactCardHeadingItem::orientationChanged(Qt::Orientation)
     repolish();
 }
 
+void CntContactCardHeadingItem::initGesture()
+{
+    grabGesture(Qt::TapGesture);
+}
+
+void CntContactCardHeadingItem::setSecondaryIcon()
+{
+    if (mIsOnline)
+    {
+        secondaryIcon = HbIcon("qtg_small_online");
+        createPrimitives();
+        mSecondaryIcon->setIcon(secondaryIcon);
+    }
+    else if (!mIsOnline && mIsFavorite)
+    {
+        secondaryIcon = HbIcon("qtg_small_favorite");
+        createPrimitives();
+        mSecondaryIcon->setIcon(secondaryIcon);
+    }
+    else
+    {
+        secondaryIcon.clear();
+        createPrimitives();
+    }
+
+    repolish();
+}
 
 // EOF
-

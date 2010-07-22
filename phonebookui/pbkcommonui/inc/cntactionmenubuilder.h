@@ -21,10 +21,12 @@
 #include <QObject>
 #include <hbmenu.h>
 #include <qtcontactsglobal.h>
+#include <qtcontacts.h>
 
 class CntStringMapper;
 QTM_BEGIN_NAMESPACE
 class QContact;
+class QContactDetail;
 QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
@@ -46,7 +48,7 @@ signals:
     void openContact( QContact& aContact );
     void editContact( QContact& aContact );
     void deleteContact( QContact& aContact );
-    void performContactAction( QContact& aContact, QString aAction );
+    void performContactAction( QContact& aContact, QContactDetail contactDetail, const QString& aAction );
     
 private slots:
     void emitOpenContact();
@@ -55,6 +57,7 @@ private slots:
     void emitCallContact();
     void emitSmsContact();
     void emitMailContact();
+    void emitContactaction(QContact& aContact, QContactDetail contactDetail, QString aAction);
     
 #ifdef PBK_UNIT_TEST
 public:

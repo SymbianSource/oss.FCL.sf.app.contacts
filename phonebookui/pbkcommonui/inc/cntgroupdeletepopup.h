@@ -19,7 +19,7 @@
 #define CNTGROUPDELETEPOPUP_H
 
 #include <QObject>
-#include <hbdialog.h>
+#include <hbselectiondialog.h>
 #include <qmobilityglobal.h>
 #include <qcontactid.h>
 #include "cntgroupdeletepopupmodel.h"
@@ -32,7 +32,7 @@ QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
 
-class CntGroupDeletePopup : public HbDialog
+class CntGroupDeletePopup : public HbSelectionDialog
 {
     Q_OBJECT
 

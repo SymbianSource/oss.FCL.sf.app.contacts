@@ -16,8 +16,10 @@
 */
 #include "cntgroupeditormodel.h"
 #include "cntdetailconst.h"
+#include "cntdetailorderinghelper.h"
 #include <qcontactname.h>
 #include <qcontactphonenumber.h>
+#include "cntglobal.h"
 
 CntGroupEditorModel::CntGroupEditorModel(QContact* aContact) :
     CntDetailEditorModel(aContact)
@@ -29,7 +31,7 @@ CntGroupEditorModel::CntGroupEditorModel(QContact* aContact) :
         nameDetails.append(emptyName);
     }
     
-    QList<QContactPhoneNumber> numberDetails = mContact->details<QContactPhoneNumber>();
+    QList<QContactPhoneNumber> numberDetails = CntDetailOrderingHelper::getOrderedSupportedPhoneNumbers(*mContact);
     if (numberDetails.isEmpty())
     {
         QContactPhoneNumber emptyNumber;

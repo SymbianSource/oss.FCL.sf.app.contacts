@@ -25,8 +25,11 @@
 #include <QString>
 #include <QVariantMap>
 
+#include <xqappmgr.h>
+
 QTM_USE_NAMESPACE
 
+class XQAiwRequest;
 
 class CntAction : public QContactAction
 {
@@ -65,9 +68,8 @@ private slots:
 public:   
     //returns whether the actionDescription is supported by this action
     bool actionDescriptionSupported(const QContactActionDescriptor& descriptor) const;
-    void performNumberAction(const QString &service, const QString &type);
+    void performNumberAction(const QString &interface, const QString &operation);
     void emitResult(int errorCode, const QVariant &retValue);
-    
     
 protected:
     QString m_actionName;
@@ -78,6 +80,8 @@ protected:
 	QContact m_contact;    		//contact passed to invokeAction
 	QContactDetail m_detail; 	//detail passed to invokeAction
 	QContactAction::State m_state;
+	XQAiwRequest* m_request;
+    XQApplicationManager    m_AppManager;
 };
 
 #endif //MOBCNTACTION_H

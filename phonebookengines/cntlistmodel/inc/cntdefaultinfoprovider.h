@@ -31,7 +31,9 @@ QTM_USE_NAMESPACE
  */
 class CntDefaultInfoProvider : public CntInfoProvider
 {
+    friend class TestCntDefaultInfoProvider;
     Q_OBJECT
+    
 public:
     QString id() const { return "default"; };
     ContactInfoFields supportedFields() const;

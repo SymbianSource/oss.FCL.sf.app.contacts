@@ -36,14 +36,9 @@ public:
     int viewId() const { return serviceEditView; }
 
 private slots:
-    void doContactUpdated(bool aSuccess);
+    void doContactUpdated(int aSuccess);
     void doContactRemoved(bool aSuccess);
     void doChangesDiscarded();
-    
-//public slots:
-//    void aboutToCloseView();
-//    int handleExecutedCommand(QString aCommand, const QContact &aContact);
-//    void discardAllChanges();
 
 private:
     CntServiceHandler *mServiceHandler;

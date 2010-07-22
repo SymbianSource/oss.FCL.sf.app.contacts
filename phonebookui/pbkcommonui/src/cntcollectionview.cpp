@@ -22,6 +22,7 @@
 #include "cntextensionmanager.h"
 #include "cntglobal.h"
 #include "cntfavourite.h"
+#include "cntdebug.h"
 
 #include <cntuiextensionfactory.h>
 #include <cntuigroupsupplier.h>
@@ -120,6 +121,8 @@ Called when activating the view
 */
 void CntCollectionView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
 {
+    CNT_ENTRY
+    
     Q_UNUSED(aArgs)
     
     if (mView->navigationAction() != mSoftkey)
@@ -156,8 +159,10 @@ void CntCollectionView::activate( CntAbstractViewManager* aMgr, const CntViewPar
     mModel = new CntCollectionListModel(getContactManager(), mExtensionManager, this);
     mListView->setModel(mModel);
     
-    mFetchView = new CntFetchContacts(mViewManager->contactManager( SYMBIAN_BACKEND ));
+    mFetchView = new CntFetchContacts(*mViewManager->contactManager( SYMBIAN_BACKEND ));
     connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleNewGroupMembers()));
+    
+    CNT_EXIT
 }
 
 void CntCollectionView::deactivate()
@@ -300,6 +305,9 @@ void CntCollectionView::newGroup()
     HbInputDialog *popup = new HbInputDialog();
     popup->setAttribute(Qt::WA_DeleteOnClose, true);
     
+    HbLineEdit *lineEdit = popup->lineEdit();
+    lineEdit->setInputMethodHints(Qt::ImhNoPredictiveText);
+    
     popup->setPromptText(hbTrId("txt_phob_title_new_group_name"));
     popup->clearActions();
     HbAction* primaryAction = new HbAction(hbTrId("txt_phob_button_create"));
@@ -336,11 +344,9 @@ void CntCollectionView::handleNewGroup(HbAction* action)
 
         // Select some contact(s) to add to the group
         QString groupNameCreated(mHandledContact->displayLabel());
-        mFetchView->setDetails(HbParameterLengthLimiter(hbTrId("txt_phob_subtitle_1_group")).arg(groupNameCreated),
+        mFetchView->setDetails(HbParameterLengthLimiter(hbTrId("txt_phob_title_members_of_1_group")).arg(groupNameCreated),
                                hbTrId("txt_common_button_save"));
-        mFetchView->displayContacts(CntFetchContacts::popup,
-                                    HbAbstractItemView::MultiSelection,
-                                    contactsSet);
+        mFetchView->displayContacts(HbAbstractItemView::MultiSelection, contactsSet);
     }
 }
 
@@ -388,7 +394,7 @@ void CntCollectionView::deleteGroup(QContact group)
           
     HbMessageBox::question(hbTrId("txt_phob_dialog_only_group_will_be_removed_contac")
             , this, SLOT(handleDeleteGroup(HbAction*)),
-                hbTrId("txt_phob_button_delete"), hbTrId("txt_common_button_cancel"), headingLabel);
+                hbTrId("txt_common_button_delete"), hbTrId("txt_common_button_cancel"), headingLabel);
 }
 
 void CntCollectionView::handleDeleteGroup(HbAction* action)

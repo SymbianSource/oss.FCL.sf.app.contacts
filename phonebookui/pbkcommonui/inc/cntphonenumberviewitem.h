@@ -23,10 +23,8 @@
 
 class HbWidget;
 class HbAbstractViewItem;
-class HbComboBox;
-class HbLineEdit;
+class CntCommonDetailViewItem;
 class CntDetailModelItem;
-class QGraphicsLinearLayout;
 
 class CntPhoneNumberViewItem : public CntDetailViewItem
     {
@@ -43,20 +41,17 @@ public:
 public slots:
     void indexChanged( int aIndex );    // HbComboBox index changed
     void textChanged( QString aText );  // HbLineEdit text changed
-    void changeOrientation(Qt::Orientation aOrient);
-    
+   
 private:
     void constructSubtypeModel( QString aSubType, QStringList aContext );
     void constructPhoneNumber(CntDetailModelItem* aItem, QString aSubType, QStringList aContext );
     void constructOnlineAccount( CntDetailModelItem* aItem, QString aSubType, QStringList aContext );
   
-#ifdef PBK_UNIT_TEST
-public:
-#else
+    bool isOnlineAccount( QString aSubtype );
+    
 private:
-#endif
-    HbComboBox*             mBox;
-    HbLineEdit*             mEdit;
-    QGraphicsLinearLayout*  mLayout;
+    CntCommonDetailViewItem*   mItem; // Ownership transfered
+    
+    friend class T_NumberEditorTest;
     };
 #endif /* CNTPHONENUMBERVIEWITEM_H_ */

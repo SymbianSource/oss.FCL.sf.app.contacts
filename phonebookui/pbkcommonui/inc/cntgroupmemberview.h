@@ -88,6 +88,8 @@ private slots:
     
 private:
     QContactManager* getContactManager();
+    void setRelationship(QSet<QContactLocalId>        &aLocalId,
+                         QList<QContactRelationship>  &aRelationshipList);
     
 private:
     QContact*                   mGroupContact; // own

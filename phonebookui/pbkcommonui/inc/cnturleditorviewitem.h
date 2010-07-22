@@ -23,7 +23,8 @@
 #include <hbwidget.h>
 #include <hbcombobox.h>
 #include <hblineedit.h>
-#include <qgraphicslinearlayout.h>
+
+class CntCommonDetailViewItem;
 
 class CntUrlEditorViewItem : public CntDetailViewItem
     {
@@ -40,19 +41,14 @@ public:
 public slots:
     void indexChanged( int aIndex );    // HbComboBox index changed
     void textChanged( QString aText );  // HbLineEdit text changed
-    void changeOrientation(Qt::Orientation aOrient);
     
 private:
     void constructSubTypeModel( QStringList aContext );
     
-#ifdef PBK_UNIT_TEST
-public:
-#else
 private:
-#endif
-    HbComboBox*             mBox;
-    HbLineEdit*             mEdit;
-    QGraphicsLinearLayout*  mLayout; 
+    CntCommonDetailViewItem*    mItem;
+    
+    friend class T_UrlEditorTest;
     };
 
 #endif /* CNTURLEDITORVIEWITEM_H_ */

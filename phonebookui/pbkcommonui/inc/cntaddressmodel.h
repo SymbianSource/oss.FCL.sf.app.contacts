@@ -22,6 +22,7 @@
 #include <hbdataformmodelitem.h>
 #include <qtcontacts.h>
 #include "cntglobal.h"
+#include <cntmaptileservice.h>
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -42,18 +43,17 @@ public:
     
 private:
     void createAddressItems( HbDataFormModelItem* aGroup, QContactAddress* aAddress );
-    void saveAddressItems( HbDataFormModelItem* aGroup, QContactAddress* aAddress );
+    bool saveAddressItems( HbDataFormModelItem* aGroup, QContactAddress* aAddress );
     bool isAddressEmpty( QContactAddress* aAddress ) const;
 private:
     QContactAddress *mAddress;
     QContactAddress *mAddressHome;
     QContactAddress *mAddressWork;
     
-#ifdef PBK_UNIT_TEST
-public:
-#else
 protected:
-#endif
     bool mIsLocationPickerEnabled;
+    CntMapTileService* mMaptileInterface;
+	
+    friend class T_AddressEditorTest;
     };
 #endif /* CNTDETAILADDRESSEDITORMODEL_H_ */

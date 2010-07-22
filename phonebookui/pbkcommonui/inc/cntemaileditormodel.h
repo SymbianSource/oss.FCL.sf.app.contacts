@@ -23,6 +23,7 @@
 
 QTM_BEGIN_NAMESPACE
 class QContact;
+class QContactEmailAddress;
 QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
@@ -39,6 +40,9 @@ public:
     void insertDetailField();
     
     QContactDetail detail() const;
+    
+private:
+    QList<QContactEmailAddress> mAddressList;
     };
 
 #endif /* CNTEMAILEDITORMODEL_H_ */

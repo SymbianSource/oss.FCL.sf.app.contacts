@@ -23,7 +23,7 @@ QTM_USE_NAMESPACE
 
 Q_DECLARE_METATYPE(QContactAction::State)
 
-class TestMobCntActions : public QObject
+class TestCntActions : public QObject
 {
     Q_OBJECT
 

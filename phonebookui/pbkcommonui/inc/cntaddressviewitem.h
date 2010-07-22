@@ -32,11 +32,7 @@ public:
     CntAddressViewItem( QGraphicsItem* aParent = 0 );
     ~CntAddressViewItem();
 
-#ifdef PBK_UNIT_TEST
-public slots:
-#else
 private slots:
-#endif    
     void launchLocationPicker();
     
 public:
@@ -45,13 +41,10 @@ public:
     
     bool canSetModelIndex( const QModelIndex &index ) const;
     
-#ifdef PBK_UNIT_TEST
-public:
-#else
 private:
-#endif    
     void handleLocationChange(const QVariant& aValue );
 
+    friend class T_AddressEditorTest;
 };
 
 #endif /* CNTADDRESSVIEWITEM_H_ */

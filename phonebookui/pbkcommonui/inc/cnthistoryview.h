@@ -27,6 +27,7 @@ class HbView;
 class QModelIndex;
 class HbAction;
 class HbDocumentLoader;
+class XQAiwRequest;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -74,7 +75,7 @@ private:
     QContact*                   mContact; // own
     HbAction*                   mClearHistory;  // not own
     CntViewParameters           mArgs;
-    
+    XQAiwRequest*               mRequest;    
 };
 
 #endif // CNTHISTORYVIEW_H

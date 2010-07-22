@@ -74,6 +74,8 @@ private slots:
     void thumbnailReady( const QPixmap& pixmap, void *data, int id, int error );
     void setOrientation(Qt::Orientation orientation);
     void listViewActivated(const QModelIndex &index);
+    void handleError(int errorCode, const QString& errorMessage);
+
 
 #ifdef PBK_UNIT_TEST
 public:

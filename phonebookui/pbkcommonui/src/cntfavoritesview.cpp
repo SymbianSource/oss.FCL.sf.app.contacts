@@ -88,11 +88,11 @@ void CntFavoritesView::openSelectionPopup()
     QSet<QContactLocalId> emptySet;
     
     if (!mFetchView) {
-        mFetchView = new CntFetchContacts(getContactManager());
+        mFetchView = new CntFetchContacts(*getContactManager());
         connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleMemberSelection()));
     }
     mFetchView->setDetails(hbTrId("txt_phob_subtitle_favorites"), hbTrId("txt_common_button_save"));
-    mFetchView->displayContacts(CntFetchContacts::popup, HbAbstractItemView::MultiSelection, emptySet);
+    mFetchView->displayContacts(HbAbstractItemView::MultiSelection, emptySet);
 }
 
 void CntFavoritesView::handleMemberSelection()

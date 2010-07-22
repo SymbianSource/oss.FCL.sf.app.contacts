@@ -26,6 +26,7 @@
 
 QTM_BEGIN_NAMESPACE
 class QContact;
+class QContactPhoneNumber;
 QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
@@ -42,5 +43,10 @@ public:
     void saveContactDetails();
     void insertDetailField();
     QContactDetail detail() const;
+    
+private:
+    QList<QContactDetail> mNumberList;
+    QContactPhoneNumber mMobileTemplate;
+    QContactPhoneNumber mLandlineTemplate;
     };
 #endif /* CNTPHONENUMBERMODELITEM_H_ */

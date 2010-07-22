@@ -24,6 +24,8 @@
 #include "cntglobal.h"
 #include <qtcontacts.h>
 #include <cnteditviewitemcallback.h>
+#include <xqappmgr.h>
+#include <qabstractitemmodel.h>
 
 class CntAbstractViewManager;
 class CntEditViewListModel;
@@ -40,8 +42,10 @@ class HbView;
 class HbAction;
 class QAction;
 class HbMenu;
+class XQAiwRequest;
 
 QTM_BEGIN_NAMESPACE
+class QContact;
 class QContactDetail;
 class QContactId;
 QTM_END_NAMESPACE
@@ -61,11 +65,6 @@ public:
 public: // From CntEditViewItemCallback
     void openView(CntViewParameters& viewParams);
     void requestRefresh();
-    
-signals:
-    void contactUpdated(bool aSuccess);
-    void contactRemoved(bool aSuccess);
-    void changesDiscarded();
     
 public:
     CntEditView* q_ptr;
@@ -87,6 +86,9 @@ private slots:
     void setOrientation(Qt::Orientation aOrientation);
     void handleMenuAction( HbAction* aAction );
     void setScrollPosition();
+    void ringToneFetchHandleError(int errorCode, const QString& errorMessage);
+    void ringToneFetchHandleOk(const QVariant &result);
+
     
 private:
     void loadAvatar();
@@ -94,6 +96,10 @@ private:
     void addDetail( CntEditViewItem* aDetail );
     void editDetail( CntEditViewItem* aDetail );
     void removeDetail( CntEditViewItem* aDetail, const QModelIndex& aIndex );
+    void setSelectedContact( QContact aContact );
+    void setPreferredDetails( QContact* aContact );
+    void fetchTone();
+    void changeEditorView();
     
 public:
     HbView* mView;
@@ -112,9 +118,16 @@ public:
     HbAction* mDiscard;
     HbAction* mDelete;
     HbAction* mSave;
+    QModelIndex mIndex;
     
 private:
     Q_DECLARE_PUBLIC(CntEditView)
     friend class TestCntEditView;
+ 
+private:
+    XQAiwRequest* mReq;
+    XQApplicationManager mAppMgr;
+    HbMenu *mMenu;
+
 };
 #endif /* CNTEDITVIEW_P_H_ */

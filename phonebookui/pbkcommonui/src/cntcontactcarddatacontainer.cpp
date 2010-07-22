@@ -17,6 +17,7 @@
 
 #include "cntcontactcarddatacontainer.h"
 #include "cntcontactcarddataitem.h"
+#include "cntdetailorderinghelper.h"
 #include <cntmaptileservice.h> //For fetching maptile
 #include "cntuiactionextension.h"
 
@@ -26,6 +27,7 @@
 #include <hbicon.h>
 #include <cntviewparams.h>
 #include <QLocale>
+#include <QDir>
 
 #include "cntstringmapper.h"
 #include <hbnumbergrouping.h>
@@ -44,7 +46,13 @@ namespace
 /*!
 Constructor
 */
-CntContactCardDataContainer::CntContactCardDataContainer(QContact* contact, QObject *parent, bool myCard) : mContact(contact), mSeparatorIndex(-1)
+CntContactCardDataContainer::CntContactCardDataContainer( 
+  QContact* contact, QObject *parent, bool myCard, CntMapTileService* maptile, Qt::Orientations orientation ) :
+                                                            mContact(contact), 
+                                                            mSeparatorIndex(-1),
+                                                            mLocationFeatureEnabled(false), 
+                                                            mMaptileInterface(maptile),
+                                                            mOrientation( orientation )
 {
     Q_UNUSED(parent);
     if (contact->type() == QContactType::TypeGroup)
@@ -91,7 +99,7 @@ void CntContactCardDataContainer::initializeActionsData(bool myCard)
             extendedActions << action;
     }
 
-    QList<QContactPhoneNumber> details = mContact->details<QContactPhoneNumber>();
+    QList<QContactPhoneNumber> details = CntDetailOrderingHelper::getOrderedSupportedPhoneNumbers(*mContact);
     for (int i = 0; i < details.count(); i++)
     { 
         //call
@@ -193,11 +201,12 @@ void CntContactCardDataContainer::initializeActionsData(bool myCard)
             mDataItemList.append(dataItem);
         }
     }
-
+    QList<QContactDetail> allDetails = mContact->details();
+    
     if(!myCard && extendedActions.count())
     {
         // Do not create actions for details in my card
-        for (int i = 0; i < details.count(); i++)
+        for (int i = 0; i < allDetails.count(); i++)
         {
             for(int j = 0; j < extendedActions.count(); j++)
             {
@@ -206,9 +215,9 @@ void CntContactCardDataContainer::initializeActionsData(bool myCard)
                 {
                     // Different implementations(vendor, version) for same actions handled in loop
                     QContactAction* contactAction = QContactAction::action(actionDescriptors.at(l));
-                    if(contactAction->isDetailSupported(details[i], *mContact))
+                    if(contactAction->isDetailSupported(allDetails[i], *mContact))
                     {
-                        const QContactDetail detail = details.at(i);
+                        const QContactDetail detail = allDetails.at(i);
                         QVariantMap map = contactAction->metaData();
                         if(map.contains(KCntUiActionMetaTitleText) || map.contains(KCntUiActionMetaTitleTextDetail))
                         {
@@ -356,7 +365,7 @@ Initialize contact details which not include actions.
 void CntContactCardDataContainer::initializeDetailsData()
 {
     //sip & internet call
-    QList<QContactOnlineAccount> onlinedDetails = mContact->details<QContactOnlineAccount>();
+    QList<QContactOnlineAccount> onlinedDetails = CntDetailOrderingHelper::getOrderedSupportedOnlineAccounts(*mContact);
     for (int i = 0; i < onlinedDetails.count(); i++)
     {
         QContactOnlineAccount online(onlinedDetails.at(i));
@@ -379,7 +388,10 @@ void CntContactCardDataContainer::initializeDetailsData()
     QString contextHome(QContactAddress::ContextHome.operator QString());
     QString contextWork(QContactAddress::ContextWork.operator QString());
     CntMapTileService::ContactAddressType sourceAddressType;  
-    mLocationFeatureEnabled = CntMapTileService::isLocationFeatureEnabled() ;
+    if( mMaptileInterface )
+    {
+        mLocationFeatureEnabled = mMaptileInterface->isLocationFeatureEnabled() ;
+    }
 
     QList<QContactAddress> addressDetails = mContact->details<QContactAddress>();
     for (int i = 0; i < addressDetails.count(); i++)
@@ -422,25 +434,51 @@ void CntContactCardDataContainer::initializeDetailsData()
             address.append(addressDetails[i].region());
         if (!addressDetails[i].country().isEmpty())
             address.append(addressDetails[i].country());
-                
+	    bool maptileAvailable = false;
+		QString imageFile;
+		
+		if( mLocationFeatureEnabled && mMaptileInterface )
+        {
+        
+            QContactLocalId contactId = mContact->id().localId();
+            
+			      //Get the maptile image path
+            int status = mMaptileInterface->getMapTileImage(
+                        contactId, sourceAddressType, imageFile, mOrientation );
+                 
+            if( status == CntMapTileService::MapTileFetchingInProgress || status == 
+                    CntMapTileService::MapTileFetchingNetworkError )
+            {
+                //Load the progress indicator icon
+                QString iconName("qtg_anim_small_loading_1");
+                HbIcon inProgressIcon(iconName);
+                dataItem->setSecondaryIcon( inProgressIcon );
+            }
+            else if( status == CntMapTileService::MapTileFetchingUnknownError || 
+                        status == CntMapTileService::MapTileFetchingInvalidAddress  )
+            {
+                //Load the search stop icon
+                QString iconName("qtg_mono_search_stop");
+                HbIcon stopIcon(iconName);
+                dataItem->setSecondaryIcon( stopIcon );
+            }
+            else if( status == CntMapTileService::MapTileFetchingCompleted )
+            {
+                maptileAvailable = true;
+            }
+        }
         dataItem->setValueText(address.join(" "));
         dataItem->setContactDetail(addressDetails[i]);
         addSeparator(itemCount());
         mDataItemList.append(dataItem);
         
         //Check whether location feature enabled
-        if (mLocationFeatureEnabled)
+        if ( mLocationFeatureEnabled && maptileAvailable && !imageFile.isNull() )
         {
-            QContactLocalId contactId = mContact->id().localId();
-         
-            //Get the maptile image path
-            QString imageFile = CntMapTileService::getMapTileImage(contactId, sourceAddressType);
-        
-		        if ( !imageFile.isNull() )
-		        {   
-		            //Display the maptile image
-                HbIcon icon(imageFile);
-                
+            //Display the maptile image
+            HbIcon icon(imageFile);
+            if( !icon.isNull() )
+            {
                 CntContactCardDataItem* dataItem = new CntContactCardDataItem(QString(), position, false);
                 dataItem->setIcon(icon);
                 addSeparator(itemCount());
@@ -455,11 +493,33 @@ void CntContactCardDataContainer::initializeDetailsData()
     {
         CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_company_details"), CntContactCardDataItem::ECompanyDetails, false);
         QStringList companyList;
-        companyList << organizationDetails[i].title() << organizationDetails[i].name() << organizationDetails[i].department();
-        dataItem->setValueText(companyList.join(" ").trimmed());
-        dataItem->setContactDetail(organizationDetails[i]);  
-        addSeparator(itemCount());
-        mDataItemList.append(dataItem);
+        if (!organizationDetails[i].title().isEmpty())
+            companyList.append(organizationDetails[i].title());
+        if (!organizationDetails[i].name().isEmpty())
+            companyList.append(organizationDetails[i].name());
+        if (!organizationDetails[i].department().isEmpty())
+            companyList.append(organizationDetails[i].department());
+        if (companyList.count()>0)
+        {
+            dataItem->setValueText(companyList.join(" ").trimmed());
+            dataItem->setContactDetail(organizationDetails[i]);
+            addSeparator(itemCount());
+            mDataItemList.append(dataItem);
+        }
+    }
+    
+    //assistant name
+    for (int i = 0; i < organizationDetails.count(); i++)
+    {
+        QString assistant = organizationDetails[i].assistantName();
+        if (!assistant.isEmpty())
+        {
+            CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_assistant"), CntContactCardDataItem::EAssistantName, false);
+            dataItem->setValueText(assistant);
+            dataItem->setContactDetail(organizationDetails[i]);
+            addSeparator(itemCount());
+            mDataItemList.append(dataItem);
+        }
     }
             
     //birthday
@@ -491,7 +551,9 @@ void CntContactCardDataContainer::initializeDetailsData()
         if (!ringtoneDetails.at(i).audioRingtoneUrl().isEmpty())
         {
             CntContactCardDataItem* dataItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_ringing_tone"), CntContactCardDataItem::ERingtone, false);
-            dataItem->setValueText(ringtoneDetails[i].audioRingtoneUrl().toString());
+            QFileInfo ringtoneFileInfo(ringtoneDetails[i].audioRingtoneUrl().toString());
+            QString ringtoneFileName = ringtoneFileInfo.fileName();    
+            dataItem->setValueText(ringtoneFileName);
             dataItem->setContactDetail(ringtoneDetails[i]);  
             addSeparator(itemCount());
             mDataItemList.append(dataItem);
@@ -655,15 +717,15 @@ int CntContactCardDataContainer::getPosition(const QString& aId, const QString& 
     {
         position = CntContactCardDataItem::ECallPhoneWork;
     }
-    else if (aId == QContactPhoneNumber::SubTypeFacsimile && aContext.isEmpty() && !dynamicAction)
+    else if (aId == QContactPhoneNumber::SubTypeFax && aContext.isEmpty() && !dynamicAction)
     {
         position = CntContactCardDataItem::ECallFax;
     }
-    else if (aId == QContactPhoneNumber::SubTypeFacsimile && aContext == QContactDetail::ContextHome && !dynamicAction)
+    else if (aId == QContactPhoneNumber::SubTypeFax && aContext == QContactDetail::ContextHome && !dynamicAction)
     {
         position = CntContactCardDataItem::ECallFaxHome;
     }
-    else if (aId == QContactPhoneNumber::SubTypeFacsimile && aContext == QContactDetail::ContextWork && !dynamicAction)
+    else if (aId == QContactPhoneNumber::SubTypeFax && aContext == QContactDetail::ContextWork && !dynamicAction)
     {
         position = CntContactCardDataItem::ECallFaxWork;
     }
@@ -788,7 +850,7 @@ int CntContactCardDataContainer::getPosition(const QString& aId, const QString& 
     }
     else if (!dynamicAction)
     {
-        position = CntContactCardDataItem::EOther;
+        position = CntContactCardDataItem::ENotSupported;
     }
     else
     {

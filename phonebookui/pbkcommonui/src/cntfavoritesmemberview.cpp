@@ -37,11 +37,11 @@
 const char *CNT_FAVORITESMEMBERVIEW_XML = ":/xml/contacts_favmember.docml";
 
 CntFavoritesMemberView::CntFavoritesMemberView() :
-mContact(NULL),
-mModel(NULL),
-mFavoriteListView(NULL), 
-mViewManager(NULL),
-mFetchView(NULL)
+    mContact(NULL),
+    mModel(NULL),
+    mFavoriteListView(NULL), 
+    mViewManager(NULL),
+    mFetchView(NULL)
 {
     bool ok = false;
     mDocumentLoader.load(CNT_FAVORITESMEMBERVIEW_XML, &ok);
@@ -120,8 +120,6 @@ void CntFavoritesMemberView::activate( CntAbstractViewManager* aMgr, const CntVi
         createModel();
     }
 
-    mFavoriteListView->setModel(mModel);
-
     connect(mFavoriteListView, SIGNAL(activated (const QModelIndex&)), this,
             SLOT(openContact(const QModelIndex&)));
 }
@@ -140,13 +138,11 @@ void CntFavoritesMemberView::manageFavorites()
     mOriginalGroupMembers = getContactManager()->contactIds(membersFilter).toSet();
     
     if (!mFetchView) {
-        mFetchView = new CntFetchContacts(getContactManager());
+        mFetchView = new CntFetchContacts(*getContactManager());
         connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleManageFavorites()));
     }
     mFetchView->setDetails(hbTrId("txt_phob_subtitle_favorites"), hbTrId("txt_common_button_save"));
-    mFetchView->displayContacts(CntFetchContacts::popup,
-                                HbAbstractItemView::MultiSelection,
-                                mOriginalGroupMembers);
+    mFetchView->displayContacts(HbAbstractItemView::MultiSelection, mOriginalGroupMembers);
 }
 
 void CntFavoritesMemberView::handleManageFavorites()
@@ -186,11 +182,6 @@ void CntFavoritesMemberView::handleManageFavorites()
             }
         }
     }
-    
-    // delete the model and recreate it with relationship changes
-    delete mModel;
-    mModel = 0;
-    createModel();
 }
 
 void CntFavoritesMemberView::createModel()
@@ -200,21 +191,7 @@ void CntFavoritesMemberView::createModel()
     rFilter.setRelatedContactRole(QContactRelationship::First);
     rFilter.setRelatedContactId(mContact->id());
 
-    QContactSortOrder sortOrderFirstName;
-    sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,
-        QContactName::FieldFirstName);
-    sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
-
-    QContactSortOrder sortOrderLastName;
-    sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,
-        QContactName::FieldLastName);
-    sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
-
-    QList<QContactSortOrder> sortOrders;
-    sortOrders.append(sortOrderFirstName);
-    sortOrders.append(sortOrderLastName);
-
-    mModel = new CntListModel(getContactManager(), rFilter, sortOrders, false);
+    mModel = new CntListModel(mViewManager->contactManager(SYMBIAN_BACKEND), rFilter, false);
     mFavoriteListView->setModel(mModel);
 }
 
@@ -337,7 +314,7 @@ void CntFavoritesMemberView::sendToHs(const QModelIndex &index)
     QVariantHash preferences;
     preferences["contactId"] = mModel->contact(index).id().localId();
     
-    XQServiceRequest snd("com.nokia.services.hsapplication.IHomeScreenClient",
+    XQServiceRequest snd("com.nokia.symbian.IHomeScreenClient",
                          "addWidget(QString,QVariantHash)",
                          false);
     snd << QString("contactwidgethsplugin");

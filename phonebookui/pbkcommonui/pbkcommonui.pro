@@ -26,9 +26,10 @@ QT += sql
 
 DEPENDPATH += .
 INCLUDEPATH += .
-INCLUDEPATH += ../inc
+INCLUDEPATH += ../../inc
 INCLUDEPATH += ../../phonebookengines/cntimageutility/inc
 INCLUDEPATH += ../../phonebookengines/cntsimutility/inc
+INCLUDEPATH += ../cnthistorymodel/inc
 
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 
@@ -47,7 +48,7 @@ symbian: {
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntviewparams.h APP_LAYER_PLATFORM_EXPORT_PATH(cntviewparams.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntabstractview.h APP_LAYER_PLATFORM_EXPORT_PATH(cntabstractview.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntabstractviewmanager.h APP_LAYER_PLATFORM_EXPORT_PATH(cntabstractviewmanager.h)"
-        :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntcenrepkeys.h APP_LAYER_PLATFORM_EXPORT_PATH(cntcenrepkeys.h)"
+        :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntuids.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuids.h)"
 
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntuiextensionfactory.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuiextensionfactory.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntuigroupsupplier.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuigroupsupplier.h)"
@@ -71,6 +72,8 @@ HEADERS += \
     inc/cntbaseselectionview.h \
     inc/cntcollectionview.h \
     inc/cntcollectionlistmodel.h \
+    inc/cntcollectionlistmodel_p.h \
+    inc/cntcollectionlistmodelworker.h \
     inc/cntdetailpopup.h \
     inc/cntimageeditorview.h \
     inc/cntfavoritesmemberview.h \
@@ -127,7 +130,16 @@ HEADERS += \
     inc/cntimagelabel.h \
     inc/cntfetchcontactsview.h \
     inc/cntimportsview.h \
-    inc/cntsettingsview.h
+    inc/cntsettingsview.h \
+    inc/cntpresencelistener.h \
+    inc/cntdetailorderinghelper.h \
+    inc/cntsettingsmodel.h \
+    inc/cntcommondetailviewitem.h \
+    ../../inc/cntdebug.h \
+    inc/cntactionpopup_p.h \
+    inc/cntactionpopup.h
+    
+    
     
 SOURCES += \
 	src/cntviewnavigator.cpp \
@@ -138,6 +150,7 @@ SOURCES += \
     src/cntbaseselectionview.cpp \
     src/cntcollectionview.cpp \
     src/cntcollectionlistmodel.cpp \
+    src/cntcollectionlistmodelworker.cpp \
     src/cntdetailpopup.cpp \
     src/cntimageeditorview.cpp \
     src/cntfavoritesmemberview.cpp \
@@ -193,7 +206,12 @@ SOURCES += \
     src/cntimportsview.cpp \
     src/cntfetchcontactsview.cpp \
     src/cntsettingsview.cpp \
-    src/cntsettingsmodel.cpp
+    src/cntpresencelistener.cpp \
+    src/cntdetailorderinghelper.cpp \
+    src/cntsettingsmodel.cpp \
+    src/cntcommondetailviewitem.cpp \
+    src/cntactionpopup_p.cpp \
+    src/cntactionpopup.cpp
     
 RESOURCES += resources\pbkcommonui.qrc
 
@@ -207,9 +225,17 @@ LIBS+= -lhbcore \
        -lqtversit \
        -lcntimageutility \
        -lcntsimutility \
-       -lshareui
+       -lshareui \
+       -lpresencecacheqt \
+       -lxqsettingsmanager
 
 # capability
 TARGET.CAPABILITY = CAP_GENERAL_DLL
-
+defBlock = \      
+	"$${LITERAL_HASH}if defined(EABI)" \
+		"DEFFILE  ../eabi/pbkcommonui.def" \
+    "$${LITERAL_HASH}else" \
+        "DEFFILE  ../bwins/pbkcommonui.def" \
+	"$${LITERAL_HASH}endif"
+MMP_RULES += defBlock
 

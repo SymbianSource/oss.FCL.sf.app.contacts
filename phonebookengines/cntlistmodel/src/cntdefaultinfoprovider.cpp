@@ -19,6 +19,7 @@
 
 #include <qtcontacts.h>
 #include "cntdefaultinfoprovider.h"
+#include <hbglobal.h>
 
 /*!
     /return the info fields supported by this provider
@@ -48,18 +49,18 @@ void CntDefaultInfoProvider::requestInfo(const QContact& contact, ContactInfoFie
         }
         else
         {
-            number = contact.detail<QContactPhoneNumber>().number();
+            QList<QContactPhoneNumber> numbers = contact.details<QContactPhoneNumber>();
+            if (numbers.count() > 1)
+                number = hbTrId("txt_phob_dblist_val_ln_numbers", numbers.count());
+            else if (numbers.count() == 1)
+                number = numbers.at(0).number();
         }
 
-        if (!number.isEmpty()) {
-            emit infoFieldReady(this, contact.localId(), ContactInfoTextField, number);
-        }
+        emit infoFieldReady(this, contact.localId(), ContactInfoTextField, number);
     }
 
     if (requestedInfo & ContactInfoIcon1Field) {
         QString imageUrl = contact.detail<QContactAvatar>().imageUrl().toString();
-        if (!imageUrl.isEmpty()) {
-            emit infoFieldReady(this, contact.localId(), ContactInfoIcon1Field, imageUrl);
-        }
+        emit infoFieldReady(this, contact.localId(), ContactInfoIcon1Field, imageUrl);
     }
 }

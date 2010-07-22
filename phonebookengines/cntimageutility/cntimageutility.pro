@@ -37,4 +37,11 @@ HEADERS += inc/cntimageutilityglobal.h \
 
 SOURCES += src/cntimageutility.cpp
 
-LIBS += -lplatformenv
+LIBS += -lplatformenv -lefsrv
+defBlock = \      
+	"$${LITERAL_HASH}if defined(EABI)" \
+		"DEFFILE  ../eabi/cntimageutility.def" \
+    "$${LITERAL_HASH}else" \
+        "DEFFILE  ../bwins/cntimageutility.def" \
+	"$${LITERAL_HASH}endif"
+MMP_RULES += defBlock

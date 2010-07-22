@@ -46,13 +46,8 @@ class CntFetchContacts : public QObject
     Q_OBJECT
 
 public:
-    CntFetchContacts(QContactManager *aManager);
+    CntFetchContacts(QContactManager &aManager);
     ~CntFetchContacts();
-    
-    enum DisplayType {
-        view,
-        popup
-    };
     
 private slots:
     void memberSelectionChanged(const QModelIndex &index);
@@ -65,7 +60,8 @@ private slots:
     void handleUserResponse(HbAction* action);
     
 public:
-    void displayContacts(DisplayType aType, HbAbstractItemView::SelectionMode aMode, QSet<QContactLocalId> aContacts);
+    void displayContacts(HbAbstractItemView::SelectionMode aMode,
+                                     QSet<QContactLocalId> aContacts);
     
     QSet<QContactLocalId> getSelectedContacts() const;
     bool wasCanceled() const;
@@ -74,16 +70,12 @@ public:
 private:
     void doInitialize(HbAbstractItemView::SelectionMode aMode,
                                   QSet<QContactLocalId> aContacts);
-    void connectSignal();
     void showPopup();
     void markMembersInView();
     
 signals:
     void clicked();
     
-private:
-    friend class TestCntFetchUtility;
-
 private:
     HbDialog*                          mPopup;
     HbSearchPanel*                     mSearchPanel;
@@ -102,6 +94,9 @@ private:
     HbAction*                          mPrimaryAction;
     HbAction*                          mSecondaryAction;
     HbIndexFeedback*                   mIndexFeedback;
+    
+    friend class TestCntFetchUtility;
+    friend class TestCntMyCardView;
     };
 
 #endif /* CntFetchContacts_H_ */

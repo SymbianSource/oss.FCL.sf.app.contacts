@@ -47,13 +47,13 @@ PRJ_EXPORTS
 // Default View Definition store
 ../inc/cntviewstore.h SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(cntviewstore.h)
 
-// Documentation
-../documentation/contacts_connectivityapi.doc	/epoc32/engdoc/cntmodel/contacts_connectivityapi.doc
-../documentation/contacts_current_itemapi.doc	/epoc32/engdoc/cntmodel/contacts_current_itemapi.doc
-../documentation/contacts_group_supportapi.doc		/epoc32/engdoc/cntmodel/contacts_group_supportapi.doc
-../documentation/contacts_multiple_templatesapi.doc	/epoc32/engdoc/cntmodel/contacts_multiple_templatesapi.doc
-../documentation/contacts_own_card_supportapi.doc	/epoc32/engdoc/cntmodel/contacts_own_card_supportapi.doc
-../documentation/contacts_sorting_view_supportapi.doc	/epoc32/engdoc/cntmodel/contacts_sorting_view_supportapi.doc
+// Documentation (not exported until re-contributed to Symbian Foundation)
+// ../documentation/contacts_connectivityapi.doc	/epoc32/engdoc/cntmodel/contacts_connectivityapi.doc
+// ../documentation/contacts_current_itemapi.doc	/epoc32/engdoc/cntmodel/contacts_current_itemapi.doc
+// ../documentation/contacts_group_supportapi.doc		/epoc32/engdoc/cntmodel/contacts_group_supportapi.doc
+// ../documentation/contacts_multiple_templatesapi.doc	/epoc32/engdoc/cntmodel/contacts_multiple_templatesapi.doc
+// ../documentation/contacts_own_card_supportapi.doc	/epoc32/engdoc/cntmodel/contacts_own_card_supportapi.doc
+// ../documentation/contacts_sorting_view_supportapi.doc	/epoc32/engdoc/cntmodel/contacts_sorting_view_supportapi.doc
 
 PRJ_MMPFILES
 

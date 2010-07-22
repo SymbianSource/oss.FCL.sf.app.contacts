@@ -47,8 +47,7 @@ public:
     QList<CntEditViewItem*> dateDetails(QContact& aContact);
     QList<CntEditViewItem*> noteDetails(QContact& aContact);
     QList<CntEditViewItem*> familyDetails(QContact& aContact);
-    
-    //QList<CntEditViewItem*> ringtoneDetails();
+    QList<CntEditViewItem*> ringtoneDetails(QContact& aContact);
     //QList<CntEditViewItem*> synchronizationDetails();
     bool isTemplateItem( const QString& aDefinition );
     void removeDetail( QContact& aContact, QContactDetail& aDefinition, QStringList aFields );

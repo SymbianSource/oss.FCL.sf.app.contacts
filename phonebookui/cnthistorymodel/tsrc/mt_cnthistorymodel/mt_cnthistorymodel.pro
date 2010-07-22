@@ -15,30 +15,30 @@
 #
 
 TEMPLATE = app
-TARGET = 
 
-QT += sql
-QT += testlib
+MOC_DIR = moc
+
+QT += testlib xml core
 CONFIG  += qtestlib hb
 DEFINES += PBK_UNIT_TEST \
            CNTHISTORYMODEL_NO_EXPORT
 
 DEPENDPATH += .
 INCLUDEPATH += .
-INCLUDEPATH += ../inc
 
-INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
+INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE 
 	
 # Input
-HEADERS += mt_cnthistorymodel.h \
-           stub_classes.h \
-           ../../inc/cnthistorymodelglobal.h \
-           ../../inc/cnthistorymodel_p.h \
-           ../../inc/cnthistorymodel.h
+HEADERS += ../../inc/*.h
+HEADERS += mt_cnthistorymodel.h
+HEADERS += stub_classes.h
+HEADERS += testrunner.h
            
-SOURCES += stub_classes.cpp \
-           ../../src/cnthistorymodel.cpp \
-           mt_cnthistorymodel.cpp
+SOURCES += ../../src/*.cpp
+SOURCES += main.cpp
+SOURCES += stub_classes.cpp
+SOURCES += mt_cnthistorymodel.cpp
+SOURCES += testrunner.cpp
            
 LIBS += -lQtContacts \
         -lmsghistory

@@ -24,6 +24,7 @@
 #include <QKeyEvent>
 #include <QGraphicsSceneResizeEvent>
 #include "cntglobal.h"
+#include <cntmaptileservice.h>
 
 class HbView;
 class HbScrollArea;
@@ -36,6 +37,7 @@ class ThumbnailManager;
 class CntContactCardDataContainer;
 class CntContactCardHeadingItem;
 class CntContactCardDetailItem;
+class CntContactCardDataItem;
 class CntImageLabel;
 class CntActionLauncher;
 class XQServiceRequest;
@@ -43,6 +45,8 @@ class ShareUi;
 class QStandardItemModel;
 class QModelIndex;
 class HbSelectionDialog;
+class CntPresenceListener;
+class HbLabel;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -52,6 +56,22 @@ class QContactAction;
 QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
+
+//To store the maptile request information
+class CntContactCardMapTileDetail 
+{
+public:
+    //Contact id 
+    int mContactId;
+    //Address type( preferred, home, work )
+    int mAddressType;
+    //Maptile status
+    int maptileStatus;
+    //Maptile progress icon animation count
+    int mProgressCount;
+    //Detial item containg contact address details
+    CntContactCardDetailItem* mDetailItem;
+};
 
 class CntContactCardViewPrivate : public QObject
 {
@@ -67,11 +87,11 @@ public slots:
     void editContact();
 	void viewHistory();
     void onLongPressed(const QPointF &aCoords);
-    void setPreferredAction(const QString &aAction, const QContactDetail &aDetail);
+    void setPreferredAction(const QString &aAction, const QContactDetail &aDetail, CntContactCardDetailItem *aDetailItem);
     void thumbnailReady(const QPixmap& pixmap, void *data, int id, int error);
     void drawMenu(const QPointF &aCoords);
     void sendToHs();
-    
+    void mapTileStatusReceived(int contactid, int addressType, int status);
     void keyPressed(QKeyEvent *event);
 
 private slots:
@@ -89,10 +109,22 @@ private slots:
     
     void handleMenuAction(HbAction* aAction);
     void handleSendBusinessCard( HbAction* aAction );
-    void sendKeyDialogSlot(HbAction* action);
+    void executeAction(QContact& aContact, const QContactDetail& aDetail, const QString& aAction);
+    void sendKeyCancelSlot();
     
-    void launchSendKeyAction(const QModelIndex &index);
+#ifdef PBK_UNIT_TEST
+public slots:
+#else
+private slots:
+#endif    
+    // Maptile related functions
+	void updateSpinningIndicator();
+	void setMaptileSearchStopIcon( int index );
+	void setMaptileLabel( HbLabel*& mapLabel, const HbIcon& icon );
+	void updateMaptileImage();
+	HbLabel* loadMaptileLabel( int addressType );
     
+	    
 public:
     CntContactCardView* q_ptr;    
     void activate(CntAbstractViewManager* aMgr, const CntViewParameters aArgs);
@@ -111,7 +143,8 @@ public:
 #else
 private:
 #endif
-    void executeAction(QContact& aContact, QContactDetail aDetail, QString aAction);
+    void connectAction(QString actionName, const char* slot);
+    void executeAction(QContact& aContact, const QContactDetail& aDetail, const QString& aAction, CntContactCardDetailItem* aItem);
     void executeDynamicAction(QContact& aContact, QContactDetail aDetail, QContactActionDescriptor aActionDescriptor);
     
     void sendKeyPressed();
@@ -145,7 +178,11 @@ private:
     bool                        mAcceptSendKey;
     QStandardItemModel*         mSendKeyListModel;
     HbSelectionDialog*          mSendKeyPopup;
-    
+    CntPresenceListener*        mPresenceListener; // own
+    CntMapTileService           *mMaptile;
+    QTimer                      *mProgressTimer;
+    QList <CntContactCardMapTileDetail*> mAddressList;
+    QMap <int, HbLabel*>        mMaptileLabelList;
 };
 
 #endif // CNTCOMMLAUNCHERVIEW_H

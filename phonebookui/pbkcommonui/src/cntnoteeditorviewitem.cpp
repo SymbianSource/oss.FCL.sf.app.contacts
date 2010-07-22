@@ -59,7 +59,8 @@ HbWidget* CntNoteEditorViewItem::createCustomWidget()
     HbWidget* widget = new HbWidget();
     
     mEdit = new HbLineEdit();
-    connect( mEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)) );
+    mEdit->setInputMethodHints(Qt::ImhNoPredictiveText);
+    
     mEdit->setMaxLength( CNT_NOTE_EDITOR_MAXLENGTH );
     mEdit->setMinRows( CNT_NOTE_EDITOR_MIN_ROWCOUNT );
     mEdit->setText( detail.note() );
@@ -69,6 +70,7 @@ HbWidget* CntNoteEditorViewItem::createCustomWidget()
     mLayout->addItem(mEdit);
     widget->setLayout( mLayout );
     
+    connect( mEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)) );
     return widget;
     }
 // End of File

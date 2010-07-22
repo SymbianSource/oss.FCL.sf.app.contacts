@@ -75,6 +75,7 @@ enum CntViewId
     historyView,
     importsView,
     settingsView,
+    ringToneFetcherView,
     customPhonebookView = 100, // reserved for internal view plugins, DO NOT USE THESE
     customView = 200 // for all other view plugins
 };

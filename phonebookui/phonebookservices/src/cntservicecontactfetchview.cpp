@@ -38,7 +38,7 @@ mServiceHandler(aServiceHandler)
     
     connect(cancel,  SIGNAL(triggered()), this, SLOT(cancelFetch()) );
     connect( this, SIGNAL(viewClosed()), this, SLOT(aboutToCloseView()) );
-    connect( this, SIGNAL(viewOpened(const CntViewParameters)), this, SLOT(aboutToOpenView(const CntViewParameters)) );
+    connect( this, SIGNAL(viewOpened(CntAbstractViewManager*, const CntViewParameters)), this, SLOT(aboutToOpenView(CntAbstractViewManager*, const CntViewParameters)) );
 }
 
 CntServiceContactFetchView::~CntServiceContactFetchView()
@@ -94,8 +94,10 @@ void CntServiceContactFetchView::aboutToCloseView()
     mServiceHandler->completeFetch(serviceList);
 }
 
-void CntServiceContactFetchView::aboutToOpenView(const CntViewParameters aArgs)
+void CntServiceContactFetchView::aboutToOpenView(CntAbstractViewManager* aMgr, const CntViewParameters aArgs)
 {
+    mMgr = aMgr;
+    
     // Set title of the view.
     QString title = aArgs.value(CntServiceHandler::ETitle).toString();
     mView->setTitle(title);
@@ -107,19 +109,19 @@ void CntServiceContactFetchView::aboutToOpenView(const CntViewParameters aArgs)
         {
             QContactActionFilter actionFilter;
             actionFilter.setActionName("message");
-            mListModel->setFilterAndSortOrder(actionFilter);
+            mListModel->setFilter(actionFilter);
         }
         else if (action == KCntActionCall)
         {
             QContactActionFilter actionFilter;
             actionFilter.setActionName("call");
-            mListModel->setFilterAndSortOrder(actionFilter);
+            mListModel->setFilter(actionFilter);
         }
         else if (action == KCntActionEmail)
         {
             QContactActionFilter actionFilter;
             actionFilter.setActionName("email");
-            mListModel->setFilterAndSortOrder(actionFilter);
+            mListModel->setFilter(actionFilter);
         }
         else
         {
@@ -127,7 +129,7 @@ void CntServiceContactFetchView::aboutToOpenView(const CntViewParameters aArgs)
             filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
             QString typeContact = QContactType::TypeContact;
             filter.setValue(typeContact);
-            mListModel->setFilterAndSortOrder(filter);
+            mListModel->setFilter(filter);
         }
 
         // hide my card if it's not set

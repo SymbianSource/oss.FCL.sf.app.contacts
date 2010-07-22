@@ -17,6 +17,7 @@
 #include "cntphonenumbermodel.h"
 #include "cntdetailconst.h"
 #include "cntdetailmodelitem.h"
+#include "cntdetailorderinghelper.h"
 #include <hbdataformmodelitem.h>
 #include <QDebug>
 
@@ -26,22 +27,26 @@ CntDetailEditorModel( aContact )
     setParent( aParent );
     
     QList<QContactDetail> all;
-    foreach ( QContactDetail detail, mContact->details<QContactPhoneNumber>() )
+    foreach ( QContactDetail detail, CntDetailOrderingHelper::getOrderedSupportedPhoneNumbers(*mContact) )
+    {
         all.append( detail );
+        mNumberList.append( detail );
+    }
     
-    foreach ( QContactDetail detail, mContact->details<QContactOnlineAccount>() )
+    foreach ( QContactDetail detail, CntDetailOrderingHelper::getOrderedSupportedOnlineAccounts(*mContact) )
+    {
         all.append( detail );
+        mNumberList.append( detail );
+    }
     
     // if there's no details, add 
     if ( all.isEmpty() )
         {
-        QContactPhoneNumber mobileNumber;
-        mobileNumber.setSubTypes( QContactPhoneNumber::SubTypeMobile );
-        all.append( mobileNumber );
+        mMobileTemplate.setSubTypes( QContactPhoneNumber::SubTypeMobile );
+        all.append( mMobileTemplate );
 
-        QContactPhoneNumber landLineNumber;
-        landLineNumber.setSubTypes( QContactPhoneNumber::SubTypeLandline );
-        all.append( landLineNumber );
+        mLandlineTemplate.setSubTypes( QContactPhoneNumber::SubTypeLandline );
+        all.append( mLandlineTemplate );
         }
             
     HbDataFormModelItem* root = invisibleRootItem();
@@ -68,17 +73,30 @@ void CntPhoneNumberModel::saveContactDetails()
     for ( int i = 0; i < count; i++ ) {
         CntDetailModelItem* item = static_cast<CntDetailModelItem*>( root->childAt(i) );
         QContactDetail detail = item->detail();
-        mContact->saveDetail( &detail );
         
         if ( detail.definitionName() == QContactPhoneNumber::DefinitionName )
         {
+            QContactPhoneNumber number = detail;
+            if ( !mNumberList.contains(detail) )
+            {
+                mContact->saveDetail( &detail );
+            }
+            
             if ( detail.value(QContactPhoneNumber::FieldNumber).isEmpty() )
+            {
                 mContact->removeDetail( &detail );
+            }
         }
         
         if ( detail.definitionName() == QContactOnlineAccount::DefinitionName )
         {
-            if ( detail.value(QContactOnlineAccount::FieldAccountUri).isEmpty() )
+            QContactOnlineAccount account = detail;
+            if ( !mNumberList.contains(detail) && !account.accountUri().isEmpty() )
+            {
+                mContact->saveDetail( &detail );
+            }
+            
+            if ( account.accountUri().isEmpty() )
             {
                 mContact->removeDetail( &detail );
             }

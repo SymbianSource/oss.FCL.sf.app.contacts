@@ -16,20 +16,31 @@
 */
 
 #include "cntgroupdeletepopupmodel.h"
+#include "cntfavourite.h"
 
+#include <thumbnailmanager_qt.h>
 #include <qtcontacts.h>
 #include <hbglobal.h>
+#include <hbicon.h>
 
 /*!
 Constructor
 */
 CntGroupDeletePopupModel::CntGroupDeletePopupModel(QContactManager *manager, QObject *parent)
     : QAbstractListModel(parent),
-    mContactManager(manager),
     mFavoriteGroupId(-1)
 {
-    mDataPointer = new CntGroupPopupListData();
-    isFavoriteGroupCreated();
+    d = new CntGroupPopupListData();
+    d->mContactManager = manager;
+    
+    mFavoriteGroupId = CntFavourite::createFavouriteGroup( d->mContactManager );
+    
+    d->mThumbnailManager = new ThumbnailManager(this);
+    d->mThumbnailManager->setMode(ThumbnailManager::Default);
+    d->mThumbnailManager->setQualityPreference(ThumbnailManager::OptimizeForPerformance);
+    d->mThumbnailManager->setThumbnailSize(ThumbnailManager::ThumbnailSmall);
+    connect(d->mThumbnailManager, SIGNAL(thumbnailReady(QPixmap, void *, int, int)),
+             this, SLOT(onIconReady(QPixmap, void *, int, int)));
 }
 
 /*!
@@ -37,7 +48,12 @@ Destructor
 */
 CntGroupDeletePopupModel::~CntGroupDeletePopupModel()
 {
-    
+    foreach (int id, d->mIconRequests.keys())
+    {
+        d->mThumbnailManager->cancelRequest(id);
+    }
+
+    d->mIconRequests.clear();
 }
 
 /*!
@@ -57,7 +73,7 @@ void CntGroupDeletePopupModel::initializeGroupsList()
     QList<QContactSortOrder> groupsOrder;
     groupsOrder.append(sortOrderGroupName);
 
-    QList<QContactLocalId> groupContactIds = mContactManager->contactIds(groupFilter, groupsOrder);
+    QList<QContactLocalId> groupContactIds = d->mContactManager->contactIds(groupFilter, groupsOrder);
 
     if (!groupContactIds.isEmpty())
     {
@@ -68,7 +84,7 @@ void CntGroupDeletePopupModel::initializeGroupsList()
             // group name
             QStringList displayList;
             
-            QContact contact = mContactManager->contact(groupContactIds.at(i));
+            QContact contact = d->mContactManager->contact(groupContactIds.at(i));
             QContactName contactName = contact.detail<QContactName>();
             QString groupName = contactName.customLabel();
             if(groupContactIds.at(i) != mFavoriteGroupId )
@@ -88,37 +104,24 @@ void CntGroupDeletePopupModel::initializeGroupsList()
                 // contact Id for identification
                 dataList.append(groupContactIds.at(i));
                 
-                mDataPointer->mDataList.append(dataList);
+                // Default if no image for group
+                dataList.append(HbIcon("qtg_large_custom"));
+                
+                QList<QContactAvatar> details = contact.details<QContactAvatar>();
+                for (int k = 0;k < details.count();k++)
+                {
+                   if (details.at(k).imageUrl().isValid())
+                   {
+                       int id = d->mThumbnailManager->getThumbnail(details.at(k).imageUrl().toString());
+                       d->mIconRequests.insert(id, rowCount());
+                       break;
+                   }
+                }
+
+                d->mDataList.append(dataList);
             }
         }
     }
-}
-
-bool CntGroupDeletePopupModel::isFavoriteGroupCreated()
-{
-    bool favoriteGroupCreated = false;
-    QContactDetailFilter groupFilter;
-    groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
-    groupFilter.setValue(QString(QLatin1String(QContactType::TypeGroup)));
-
-    QList<QContactLocalId> groupContactIds = mContactManager->contactIds(groupFilter);
-    
-    if (!groupContactIds.isEmpty())
-    {
-        for(int i = 0;i < groupContactIds.count();i++)
-        {
-            QContact contact = mContactManager->contact(groupContactIds.at(i));
-            QContactName contactName = contact.detail<QContactName>();
-            QString groupName = contactName.customLabel();
-            if(groupName.compare("Favorites") == 0)
-            {
-                favoriteGroupCreated = true;
-                mFavoriteGroupId = groupContactIds.at(i);
-                break;
-            }
-        }
-    }
-    return favoriteGroupCreated;
 }
 
 int CntGroupDeletePopupModel::favoriteGroupId()
@@ -132,7 +135,7 @@ Returns the number of rows in the model
 int CntGroupDeletePopupModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return mDataPointer->mDataList.count();
+    return d->mDataList.count();
 }
 /*!
 Returns data for given index with a given role
@@ -146,12 +149,17 @@ QVariant CntGroupDeletePopupModel::data(const QModelIndex &index, int role) cons
         return QVariant();
     }
     
-    QVariantList values = mDataPointer->mDataList.at(row);
+    QVariantList values = d->mDataList.at(row);
     
     if (role == Qt::DisplayRole)
     {
         QStringList list = values[0].toStringList();        
         return QVariant(list);
+    }
+    
+    else if (role == Qt::DecorationRole)
+    {
+        return values[2];
     }
     
     else if (role == Qt::UserRole)
@@ -166,7 +174,30 @@ QVariant CntGroupDeletePopupModel::data(const QModelIndex &index, int role) cons
 QContact CntGroupDeletePopupModel::contact(QModelIndex &index) const
 {
     int row = index.row();
-    QVariantList values = mDataPointer->mDataList.at(row);
+    QVariantList values = d->mDataList.at(row);
     int groupId = values[1].toInt();
-    return mContactManager->contact( groupId );
+    return d->mContactManager->contact( groupId );
+}
+
+void CntGroupDeletePopupModel::onIconReady(const QPixmap& pixmap, void *data, int id, int error)
+{
+    Q_UNUSED(data);
+    
+    if (error == 0)
+    {
+        int row = d->mIconRequests.take(id);
+        
+        QVariantList values = d->mDataList.at(row);
+        QVariantList newValues;
+        
+        newValues.append(values[0]);
+        newValues.append(values[1]);
+        newValues.append(HbIcon(pixmap));
+        
+        d->mDataList.removeAt(row);
+        
+        d->mDataList.insert(row, newValues);
+        
+        emit dataChanged(index(row, 0), index(row, 0));
+    }
 }

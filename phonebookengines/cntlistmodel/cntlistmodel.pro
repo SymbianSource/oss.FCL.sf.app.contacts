@@ -35,7 +35,7 @@ TARGET.UID3 = 0x20026FC3
 
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 INCLUDEPATH += inc
-INCLUDEPATH += ../inc
+INCLUDEPATH += ../../inc
 
 
 INTERNAL_PUBLIC_HEADERS += \
@@ -47,24 +47,36 @@ HEADERS += $$INTERNAL_PUBLIC_HEADERS \
            inc/cntcache.h \
            inc/cntcache_p.h \
            inc/cntinfoprovider.h \
-           inc/cntdefaultinfoprovider.h
+           inc/cntdefaultinfoprovider.h \
+           inc/cntpresenceinfoprovider.h \
+           ../../inc/cntdebug.h
 
 SOURCES += src/cntlistmodel.cpp \
            src/cntcache.cpp \
            src/cntcache_p.cpp \
-           src/cntdefaultinfoprovider.cpp
+           src/cntdefaultinfoprovider.cpp \
+           src/cntpresenceinfoprovider.cpp
     
 LIBS += -lQtContacts \
         -lhbcore \
-        -lthumbnailmanagerqt
-
+        -lthumbnailmanagerqt \
+        -lpresencecacheqt \
+        -lxqsettingsmanager
+        
 deploy.path = /
 headers.sources = $$INTERNAL_PUBLIC_HEADERS
-headers.path = epoc32/include/app #change this to internal folder
+headers.path = /epoc32/include/app #change this to internal folder
 DEPLOYMENT += exportheaders
 
 # This is for new exporting system coming in garden
 for(header, headers.sources):BLD_INF_RULES.prj_exports += "$$header $$deploy.path$$headers.path/$$basename(header)"
 
+defBlock = \      
+	"$${LITERAL_HASH}if defined(EABI)" \
+		"DEFFILE  ../eabi/cntlistmodel.def" \
+    "$${LITERAL_HASH}else" \
+        "DEFFILE  ../bwins/cntlistmodel.def" \
+	"$${LITERAL_HASH}endif"
+MMP_RULES += defBlock
 
 

@@ -1,4 +1,20 @@
 EXPORTS
-	_ZN17CntMapTileService15getMapTileImageEiNS_18ContactAddressTypeE @ 1 NONAME
-	_ZN17CntMapTileService24isLocationFeatureEnabledEv @ 2 NONAME
+	_ZN17CntMapTileService11qt_metacallEN11QMetaObject4CallEiPPv @ 1 NONAME
+	_ZN17CntMapTileService11qt_metacastEPKc @ 2 NONAME
+	_ZN17CntMapTileService12publishValueEiNS_18ContactAddressTypeEi @ 3 NONAME
+	_ZN17CntMapTileService15getMapTileImageEiNS_18ContactAddressTypeER7QString6QFlagsIN2Qt11OrientationEE @ 4 NONAME
+	_ZN17CntMapTileService16setMaptileStatusEv @ 5 NONAME
+	_ZN17CntMapTileService16staticMetaObjectE @ 6 NONAME DATA 16
+	_ZN17CntMapTileService19getStaticMetaObjectEv @ 7 NONAME
+	_ZN17CntMapTileService24isLocationFeatureEnabledEv @ 8 NONAME
+	_ZN17CntMapTileService27maptileFetchingStatusUpdateEiii @ 9 NONAME
+	_ZN17CntMapTileService28readEntryFromMaptileDataBaseEiNS_18ContactAddressTypeER11TLookupItemRi @ 10 NONAME
+	_ZN17CntMapTileServiceC1Ev @ 11 NONAME
+	_ZN17CntMapTileServiceC2Ev @ 12 NONAME
+	_ZN17CntMapTileServiceD0Ev @ 13 NONAME
+	_ZN17CntMapTileServiceD1Ev @ 14 NONAME
+	_ZN17CntMapTileServiceD2Ev @ 15 NONAME
+	_ZNK17CntMapTileService10metaObjectEv @ 16 NONAME
+	_ZTI17CntMapTileService @ 17 NONAME
+	_ZTV17CntMapTileService @ 18 NONAME
 

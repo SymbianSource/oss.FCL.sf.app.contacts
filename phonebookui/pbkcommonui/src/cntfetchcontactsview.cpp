@@ -21,6 +21,7 @@
 #include <hbaction.h>
 #include <hblabel.h>
 #include <hbaction.h>
+#include <hblineedit.h>
 #include <hbmainwindow.h>
 #include <hblistviewitem.h>
 #include <hblistview.h>
@@ -28,7 +29,6 @@
 #include <hbstaticvkbhost.h>
 #include <QGraphicsLinearLayout>
 #include <qcontactid.h>
-#include <QDebug>
 #include <cntlistmodel.h>
 #include "cntfetchcontactsview.h"
 
@@ -36,14 +36,14 @@
 Given a contact manager, CntFetchContacts is responsible for 
 retrieving a set of contacts, if any were chosen by the user. 
 */
-CntFetchContacts::CntFetchContacts(QContactManager *aManager) :
+CntFetchContacts::CntFetchContacts(QContactManager &aManager) :
 QObject(),
 mPopup(NULL),
 mCntModel(NULL),
 mListView(NULL),
 mEmptyListLabel(NULL),
 mSelectionMode(HbAbstractItemView::MultiSelection),
-mManager(aManager),
+mManager(&aManager),
 mWasCanceled(false),
 mLabel(NULL),
 mVirtualKeyboard(NULL),
@@ -55,27 +55,13 @@ mIndexFeedback(NULL)
     mSearchPanel->setVisible(false);
     mSearchPanel->setCancelEnabled(false);
     connect(mSearchPanel, SIGNAL(criteriaChanged(QString)), this, SLOT(setFilter(QString)));
-
+    
+    HbLineEdit *editor = static_cast<HbLineEdit*>(mSearchPanel->primitive("lineedit"));
+    editor->setInputMethodHints(Qt::ImhNoPredictiveText);
+    
     mLayout = new QGraphicsLinearLayout(Qt::Vertical);
     
     mContainerWidget = new HbWidget();
-
-    // set up the list with all contacts
-    QList<QContactSortOrder> sortOrders;
-    QContactSortOrder sortOrderFirstName;
-    sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName, QContactName::FieldFirstName);
-    sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
-    sortOrders.append(sortOrderFirstName);
-
-    QContactSortOrder sortOrderLastName;
-    sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName, QContactName::FieldLastName);
-    sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
-    sortOrders.append(sortOrderLastName);
-
-    QContactDetailFilter contactsFilter;
-    contactsFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
-    contactsFilter.setValue(QString(QLatin1String(QContactType::TypeContact)));
-    mCntModel = new CntListModel(mManager, contactsFilter, sortOrders, false);
 }
 
 CntFetchContacts::~CntFetchContacts()
@@ -112,32 +98,12 @@ void CntFetchContacts::setDetails(QString aTitle, QString aButtonText)
 Brings up a list of contacts, awaiting user response. This function is asynchronous.
 When a response is given, a clicked signal will be sent.
 */
-void CntFetchContacts::displayContacts(DisplayType aType, HbAbstractItemView::SelectionMode aMode, QSet<QContactLocalId> aContacts)
+void CntFetchContacts::displayContacts(HbAbstractItemView::SelectionMode aMode,
+                                                   QSet<QContactLocalId> aContacts)
 {
-    switch (aType) {
-    case view:
-    {
-        // TODO Currently only services will need a view 
-        break;
-    }
-
-    case popup:
-    {
-        doInitialize(aMode,aContacts);
-        markMembersInView();
-        connectSignal();
-        showPopup();
-        
-        mLayout->addItem(mSearchPanel);
-        mContainerWidget->setLayout(mLayout);
-        mContainerWidget->setPreferredHeight(mListView->mainWindow()->size().height());
-        mContainerWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-        break;
-    }
-
-    default:
-        break;
-    }
+    doInitialize(aMode,aContacts);
+    markMembersInView();
+    showPopup();
 }
 
 QSet<QContactLocalId> CntFetchContacts::getSelectedContacts() const
@@ -154,7 +120,7 @@ void CntFetchContacts::setFilter(const QString &filterString)
     detailfilter.setMatchFlags(QContactFilter::MatchStartsWith);
     detailfilter.setValue(searchList);
     
-    mCntModel->setFilterAndSortOrder(detailfilter);
+    mCntModel->setFilter(detailfilter);
 
     markMembersInView();
 
@@ -205,20 +171,25 @@ void CntFetchContacts::handleKeypadClose()
     }
 }
 
+/*!
+Notify client that we're done.
+*/
 void CntFetchContacts::handleUserResponse(HbAction* action)
 {
-    HbDialog *popup = static_cast<HbDialog*>(sender());
-    
     bool userCanceled = (action == mSecondaryAction); 
-    if (popup && userCanceled) {
+    if (userCanceled) {
         mCurrentlySelected.clear();
         
-        // Notify that the user canceled.
         mWasCanceled = true;
     }
     else {
         mWasCanceled = false;
     }
+    
+    mPopup->setVisible(false);
+    mListView->setModel(NULL);
+    delete mCntModel;
+    mCntModel = NULL;
     
     emit clicked();
 }
@@ -256,10 +227,15 @@ void CntFetchContacts::doInitialize(HbAbstractItemView::SelectionMode aMode,
     mSelectionMode = aMode;
     mCurrentlySelected = aContacts;
 
-    mSearchPanel->setVisible(true);
-
     if (!mPopup) {
         mPopup = new HbDialog;
+    }
+
+    QContactDetailFilter contactsFilter;
+    contactsFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
+    contactsFilter.setValue(QString(QLatin1String(QContactType::TypeContact)));
+    if (!mCntModel) {
+        mCntModel = new CntListModel(mManager, contactsFilter, false);
     }
     
     if (!mListView) {
@@ -279,7 +255,7 @@ void CntFetchContacts::doInitialize(HbAbstractItemView::SelectionMode aMode,
         mIndexFeedback->setItemView(mListView);
 
         // Note that the layout takes ownership of the item(s) it contains.
-        if (!mCntModel->rowCount()) {
+        if (mCntModel->rowCount()== 0) {
             mListView->setVisible(false);
             if (!mEmptyListLabel) {
                 mEmptyListLabel = new HbTextItem(hbTrId("txt_phob_info_no_matching_contacts"));
@@ -295,12 +271,25 @@ void CntFetchContacts::doInitialize(HbAbstractItemView::SelectionMode aMode,
 
         mCntModel->showMyCard(false);
     }
-}
-
-void CntFetchContacts::connectSignal()
-{
+    
+    // Handle the case where the model was removed for the list view
+    if (!mListView->model()) {
+        mListView->setModel(mCntModel);
+    }
+    
+    // Main window is NULL in unit tests
+    HbMainWindow* window = mListView->mainWindow();
+    if (window) {
+        mContainerWidget->setPreferredHeight(mListView->mainWindow()->size().height());
+    }
+    mContainerWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    
+    mSearchPanel->setVisible(true);
+    mLayout->addItem(mSearchPanel);
+    mContainerWidget->setLayout(mLayout);
+    
     connect(mListView, SIGNAL(activated(const QModelIndex&)),
-            this, SLOT(memberSelectionChanged(const QModelIndex&)));
+            this, SLOT(memberSelectionChanged(const QModelIndex&)), Qt::UniqueConnection);
 }
 
 void CntFetchContacts::showPopup()
@@ -336,7 +325,7 @@ void CntFetchContacts::showPopup()
 
 void CntFetchContacts::markMembersInView()
 {
-    // if there are no contacts matching the current filter,
+    // If there are no contacts matching the current filter,
     // show "no matching contacts" label
     if (mCntModel->rowCount() == 0) {
         if (!mEmptyListLabel) {

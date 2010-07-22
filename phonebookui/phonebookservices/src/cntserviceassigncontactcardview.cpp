@@ -37,7 +37,7 @@ CntServiceAssignContactCardView::CntServiceAssignContactCardView(CntServiceHandl
     mServiceHandler(aServiceHandler)
 {
     connect(this, SIGNAL(backPressed()), this, SLOT(doCloseView()));
-    connect(this, SIGNAL(viewActivated(QContact, QContactDetail)), this, SLOT(doViewActivated(QContact,QContactDetail)));
+    connect(this, SIGNAL(viewActivated(CntAbstractViewManager*, QContactDetail)), this, SLOT(doViewActivated(CntAbstractViewManager*,QContactDetail)));
     
     addActionsToToolBar();
 }

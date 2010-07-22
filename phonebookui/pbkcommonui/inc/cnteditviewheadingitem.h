@@ -35,6 +35,8 @@ QTM_USE_NAMESPACE
 
 class CntEditViewHeadingItem : public HbWidget
 {
+    friend class TestCntEditViewHeadingItem;
+    
     Q_OBJECT
     Q_PROPERTY( QString text READ getText )
     Q_PROPERTY( QString second_text READ getSecond_text )
@@ -58,7 +60,7 @@ public:
     void createPrimitives();
     void recreatePrimitives();
     void updatePrimitives();
-    void setDetails(const QContact* contact);
+    void setDetails(const QContact* contact, bool myCard);
 
     QString getText() const { return text; }
     QString getSecond_text() const { return second_text; }
@@ -69,11 +71,7 @@ public:
 private slots:
     void orientationChanged(Qt::Orientation);
 
-#ifdef PBK_UNIT_TEST
-public:
-#else
 private:
-#endif
     HbIconItem              *mIcon;
     HbTextItem              *mLabel;
     HbTextItem              *mSecondLabel;

@@ -33,6 +33,10 @@
 #include <QGraphicsLinearLayout>
 #include <hbframebackground.h>
 #include <hbabstractviewitem.h>
+#include <hbextendedlocale.h>
+#include <hbparameterlengthlimiter.h>
+#include <hblistviewitem.h>
+#include <hbstringutil.h>
 
 const char *CNT_IMPORT_UI_XML = ":/xml/contacts_sim.docml";
 const int KTimerValue = 1; // used as 1 msec timer for saving ADN contacts from SIM   
@@ -124,6 +128,7 @@ void CntImportsView::activate(CntAbstractViewManager* aMgr, const CntViewParamet
     //ADN store
     int error = -1;
     mAdnSimUtility = new CntSimUtility(CntSimUtility::AdnStore, error);
+    
     if (error != 0) 
     {
         delete mAdnSimUtility; 
@@ -209,7 +214,7 @@ void CntImportsView::activate(CntAbstractViewManager* aMgr, const CntViewParamet
     frame.setFrameGraphicsName("qtg_fr_list_normal");
     frame.setFrameType(HbFrameDrawer::NinePieces);
     mListView->itemPrototypes().first()->setDefaultFrame(frame);
-    
+    mListView->listItemPrototype()->setStretchingStyle(HbListViewItem::StretchLandscape);
     mListView->setUniformItemSizes(true);
     
     connect(mListView, SIGNAL(activated (const QModelIndex&)),
@@ -256,7 +261,17 @@ void CntImportsView::activate(CntAbstractViewManager* aMgr, const CntViewParamet
     {   
         // SIM card is present
         //ADN entries or SDN entries are there
-        simList << simImport ;        
+        simList << simImport;
+        int error = 0;
+        QDateTime date = mAdnSimUtility->getLastImportTime(error);
+        if (error == 0) {
+            HbExtendedLocale locale = HbExtendedLocale::system();
+            QString dateStr = locale.format(date.date(), r_qtn_date_usual);
+            QString dateStrLocaleDigits = HbStringUtil::convertDigits(dateStr); 
+            QString dateStrFull = 
+                HbParameterLengthLimiter(hbTrId("txt_phob_dblist_import_from_1_val_updated_1")).arg(dateStrLocaleDigits);
+            simList << dateStrFull;
+        }
     }
     importSimItem->setData(simList, Qt::DisplayRole);
     importSimItem->setData(HbIcon("qtg_large_sim"), Qt::DecorationRole);   
@@ -310,9 +325,14 @@ bool CntImportsView::startSimImport()
     bool started = false;
 
     delete mFetchRequestADN;
-    mFetchRequestADN = 0;
+    mContactSimManagerADN = mViewManager->contactManager(SIM_BACKEND_ADN);
+    mFetchRequestADN = new QContactFetchRequest;
+    mFetchRequestADN->setManager(mContactSimManagerADN);   
+    
     delete mFetchRequestSDN;
-    mFetchRequestSDN = 0;
+    mContactSimManagerSDN = mViewManager->contactManager(SIM_BACKEND_SDN);
+    mFetchRequestSDN = new QContactFetchRequest;
+    mFetchRequestSDN->setManager(mContactSimManagerSDN);        
         
     if (mWaitingForAdnCache)
     {
@@ -323,18 +343,11 @@ bool CntImportsView::startSimImport()
     {
         if(mAdnStorePresent)
         {
-            mContactSimManagerADN = mViewManager->contactManager(SIM_BACKEND_ADN);
-            mFetchRequestADN = new QContactFetchRequest;
-            mFetchRequestADN->setManager(mContactSimManagerADN);
             connect(mFetchRequestADN, SIGNAL(resultsAvailable()), this, SLOT(importFetchResultReceivedADN()));
         }
       
         if(mSdnStorePresent)
         {
-            mContactSimManagerSDN = mViewManager->contactManager(SIM_BACKEND_SDN);
-            // SDN store fetch request
-            mFetchRequestSDN = new QContactFetchRequest;
-            mFetchRequestSDN->setManager(mContactSimManagerSDN);
             connect(mFetchRequestSDN, SIGNAL(resultsAvailable()), this, SLOT(importFetchResultReceivedSDN()));
         }
         
@@ -376,10 +389,47 @@ void CntImportsView::stopSimImport()
         mFetchRequestSDN->cancel();
     }
     
+    // save import time
+    int error = 0;
+    mAdnSimUtility->setLastImportTime(error);
+    
+    //update sim import row with last import time
+    if (error == 0) {
+        QList<QStandardItem*> importSimItems = mModel->takeRow(0);
+        QStandardItem* importSimItem = 0;
+        if (importSimItems.count() > 0) {
+            importSimItem = importSimItems.at(0);
+        }
+        
+        if (importSimItem != 0) {
+            QDateTime date = mAdnSimUtility->getLastImportTime(error);
+            if (error == 0) {
+                QStringList simList;
+                QString simImport(hbTrId("txt_phob_dblist_import_from_sim"));
+                simList << simImport;
+                
+                HbExtendedLocale locale = HbExtendedLocale::system();
+                QString dateStr = locale.format(date.date(), r_qtn_date_usual);
+                QString dateStrLocaleDigits = HbStringUtil::convertDigits(dateStr);
+                QString dateStrFull = 
+                    HbParameterLengthLimiter(hbTrId("txt_phob_dblist_import_from_1_val_updated_1")).arg(dateStrLocaleDigits);
+                simList << dateStrFull;
+                
+                importSimItem->setData(simList, Qt::DisplayRole);
+                importSimItem->setData(HbIcon("qtg_large_sim"), Qt::DecorationRole);
+            }
+            mModel->insertRow(0, importSimItem);
+            mListView->reset();
+        }
+    }
 }
 
 void CntImportsView::importFetchResultReceivedADN()
 {
+    //save import time
+    int error = 0;
+    mAdnSimUtility->setLastImportTime(error);
+
     QList<QContact> simContactsList = mFetchRequestADN->contacts();
     if (simContactsList.isEmpty())
     {
@@ -429,6 +479,7 @@ void CntImportsView::importFetchResultReceivedADN()
                 }
                
                contact.setType(QContactType::TypeContact);
+               setPreferredDetails(&contact);
                mSaveSimContactsList.append(contact);
                 
             }
@@ -446,7 +497,6 @@ void CntImportsView::importFetchResultReceivedADN()
             mFetchIsDone = true;
             mSaveCount = 0;    
         }
-    
     }
 }
 
@@ -541,6 +591,10 @@ void CntImportsView::fetchSDNContacts()
 
 void CntImportsView::importFetchResultReceivedSDN()
 {
+    //save import time
+    int error = 0;
+    mAdnSimUtility->setLastImportTime(error);
+
     QList<QContact> simContactsListSDN = mFetchRequestSDN->contacts();
     if (simContactsListSDN.isEmpty())
     {
@@ -593,6 +647,7 @@ void CntImportsView::importFetchResultReceivedSDN()
               }
               
                contact.setType(QContactType::TypeContact);
+               setPreferredDetails(&contact);
                mSaveSimContactsListSDN.append(contact);
                 
             }
@@ -655,6 +710,27 @@ void CntImportsView::adnCacheStatusReady(CntSimUtility::CacheStatus& cacheStatus
             //and show error note
             simInfoErrorMessage(KErrAccessDenied);
         }
+    }
+}
+
+void CntImportsView::setPreferredDetails( QContact *aContact )
+{
+    QList<QContactPhoneNumber> numberList( aContact->details<QContactPhoneNumber>() );
+    //set preferred number for call if there is only one phone number
+    if ( aContact->preferredDetail("call").isEmpty() && numberList.count() == 1 )
+    {
+        aContact->setPreferredDetail( "call", numberList.first() );
+    }
+    //set preferred number for message if there is only one mobile phone number
+    if ( aContact->preferredDetail("message").isEmpty() && numberList.count() == 1 )
+    {      
+        aContact->setPreferredDetail( "message", numberList.first() );
+    }
+    //set preferred number for message if there is only one email address
+    QList<QContactEmailAddress> emailList( aContact->details<QContactEmailAddress>() );
+    if ( aContact->preferredDetail("email").isEmpty() && emailList.count() == 1 )
+    {      
+        aContact->setPreferredDetail( "email", emailList.first() );
     }
 }
 

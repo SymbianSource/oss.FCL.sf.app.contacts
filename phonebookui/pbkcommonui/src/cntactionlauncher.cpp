@@ -16,9 +16,13 @@
 */
 #include "cntactionlauncher.h"
 
-CntActionLauncher::CntActionLauncher( QString aAction ) : QObject(),
+/*!
+Action launcher. Caller should delete the instance.
+*/
+CntActionLauncher::CntActionLauncher( QContactManager& aContactManager, QString aAction ) : QObject(),
 mAction( aAction ),
-mContactAction( NULL )
+mContactAction( NULL ),
+mContactManager( &aContactManager )
     {
     }
 
@@ -27,28 +31,43 @@ CntActionLauncher::~CntActionLauncher()
     delete mContactAction;
     }
     
-void CntActionLauncher::execute( QContact aContact, QContactDetail aDetail )
+bool CntActionLauncher::execute( QContact aContact, QContactDetail aDetail )
     {
+    bool executed = false;
     QList<QContactActionDescriptor> all = QContactAction::actionDescriptors(mAction, "symbian");
     mContactAction = QContactAction::action( all.first() );
     if ( mContactAction )
         {
+        if (aContact.preferredDetail(mAction).isEmpty() && (mAction == "call" || mAction == "message" || mAction == "email"))
+            {
+            aContact.setPreferredDetail(mAction, aDetail);
+            //return value will be ignored because we cannot do anything if it fails.
+            mContactManager->saveContact(&aContact);
+            }
+        
         connect(mContactAction, SIGNAL(stateChanged(QContactAction::State)),
                 this, SLOT(progress(QContactAction::State)));
-        mContactAction->invokeAction( aContact, aDetail );
+        executed = mContactAction->invokeAction( aContact, aDetail );
         }
+    
+    return executed;
     }
  
 /*!
 Launch dynamic action
 */
-void CntActionLauncher::execute( QContact aContact, QContactDetail aDetail, QContactActionDescriptor aActionDescriptor )
+bool CntActionLauncher::execute( QContact aContact, QContactDetail aDetail, QContactActionDescriptor aActionDescriptor )
 {
+    bool executed = false;
     // detail might be empty -> in that case engine uses the preferred detail for the selected action
     mContactAction = QContactAction::action( aActionDescriptor );
-    connect(mContactAction, SIGNAL(stateChanged(QContactAction::State)),
+    if ( mContactAction )
+    {
+        connect(mContactAction, SIGNAL(stateChanged(QContactAction::State)),
                 this, SLOT(progress(QContactAction::State)));
-    mContactAction->invokeAction( aContact, aDetail );
+        executed = mContactAction->invokeAction( aContact, aDetail );
+    }
+    return executed;
 }
 
 void CntActionLauncher::progress( QContactAction::State status )

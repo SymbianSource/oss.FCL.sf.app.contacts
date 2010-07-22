@@ -18,6 +18,7 @@
 #include "cntmycardview.h"
 #include "cntfetchcontactsview.h"
 #include "cntglobal.h"
+#include <qtcontacts.h>
 #include <hbpushbutton.h>
 #include <hbaction.h>
 #include <hbview.h>
@@ -99,7 +100,7 @@ void CntMyCardView::activate(CntAbstractViewManager* aMgr, const CntViewParamete
     }
     
     if (!mFetchView) {
-        mFetchView = new CntFetchContacts(mViewManager->contactManager( SYMBIAN_BACKEND ));
+        mFetchView = new CntFetchContacts(*mViewManager->contactManager( SYMBIAN_BACKEND ));
         connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleMultiCardSelection()));
     }
 }
@@ -145,9 +146,7 @@ void CntMyCardView::openMyCardSelectionView()
     // Display a list of contacts to choose a mycard from.
     mFetchView->setDetails(hbTrId("txt_phob_title_select_contact"), "");
     QSet<QContactLocalId> emptyContactsSet;
-    mFetchView->displayContacts(CntFetchContacts::popup,
-                                HbAbstractItemView::SingleSelection,
-                                emptyContactsSet);
+    mFetchView->displayContacts(HbAbstractItemView::SingleSelection, emptyContactsSet);
 }
 
 void CntMyCardView::handleMultiCardSelection()
@@ -158,11 +157,10 @@ void CntMyCardView::handleMultiCardSelection()
 
     if ( !mFetchView->wasCanceled() && !selectedContacts.isEmpty() ) {
         QList<QContactLocalId> selectedContactsList = selectedContacts.values();
-        manager->setSelfContactId(selectedContactsList.front());
-
-        QContact contact = mViewManager->contactManager(SYMBIAN_BACKEND)->contact(selectedContactsList.front());
+        QContact contact = manager->contact(selectedContactsList.front());
         removeFromGroup(&contact);
-
+        
+        manager->setSelfContactId( contact.localId() );
         showPreviousView();
     }
 }

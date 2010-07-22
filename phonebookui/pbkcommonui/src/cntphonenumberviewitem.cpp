@@ -17,30 +17,27 @@
 #include "cntdetailconst.h"
 #include "cntphonenumberviewitem.h"
 #include "cntdetailmodelitem.h"
+#include "cntcommondetailviewitem.h"
 #include "cntdetaileditormodel.h"
 
 #include <qdebug.h>
-#include <qgraphicslinearlayout.h>
 #include <qcontactphonenumber.h>
 #include <qcontactonlineaccount.h>
 #include <qcontactdetail.h>
 #include <qstandarditemmodel.h>
 
-#include <hbwidget.h>
 #include <hbmainwindow.h>
+#include <hbcombobox.h>
+#include <hblineedit.h>
 #include <hbabstractviewitem.h>
 #include <hbabstractitemview.h>
 #include <hbdataformmodelitem.h>
 #include <hbdataformmodel.h>
-#include <hbcombobox.h>
-#include <hblineedit.h>
 #include <hbinputstandardfilters.h>
 
 CntPhoneNumberViewItem::CntPhoneNumberViewItem( QGraphicsItem* aParent ) : 
 CntDetailViewItem( aParent ),
-mBox(NULL),
-mEdit(NULL),
-mLayout(NULL)
+    mItem(NULL)
     {
     }
 
@@ -55,8 +52,8 @@ HbAbstractViewItem* CntPhoneNumberViewItem::createItem()
 
 void CntPhoneNumberViewItem::indexChanged( int aIndex )
     {
-    QString subType = mBox->itemData( aIndex, DetailSubType ).toString();
-    QString context = mBox->itemData( aIndex, DetailContext ).toString();
+    QString subType = mItem->comboBox()->itemData( aIndex, DetailSubType ).toString();
+    QString context = mItem->comboBox()->itemData( aIndex, DetailContext ).toString();
     
     // check that if current QContactDetail contains the changed subtype
     HbDataFormModel* model = static_cast<HbDataFormModel*>(itemView()->model());
@@ -67,9 +64,7 @@ void CntPhoneNumberViewItem::indexChanged( int aIndex )
         contextList << context;
     
     // check if we switched to QContactOnlineAccount subtype
-    if ( subType == QContactOnlineAccount::SubTypeSip || 
-         subType == QContactOnlineAccount::SubTypeSipVoip ||
-         subType == QContactOnlineAccount::SubTypeVideoShare )
+    if ( isOnlineAccount(subType) )
         {
         qDebug() << "QContactOnlineAccount(" << subType << ")";
         constructOnlineAccount( item, subType, contextList );
@@ -102,31 +97,9 @@ void CntPhoneNumberViewItem::textChanged( QString aText )
         }
     }
 
-void CntPhoneNumberViewItem::changeOrientation(Qt::Orientation aOrient)
-{
-    if (mLayout) {
-        mLayout->setOrientation(aOrient);
-    }
-}
-
 HbWidget* CntPhoneNumberViewItem::createCustomWidget()
     {
-    connect(itemView()->mainWindow(), SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(changeOrientation(Qt::Orientation)));
-    mLayout = new QGraphicsLinearLayout( itemView()->mainWindow()->orientation() );
-    HbWidget* widget = new HbWidget();
-    mBox = new HbComboBox();
-    mEdit = new HbLineEdit();
-    
-    widget->setLayout( mLayout );
-
-    mLayout->addItem( mBox );
-    mLayout->addItem( mEdit );
-    
-    mLayout->setStretchFactor(mBox, 2);
-    mLayout->setStretchFactor(mEdit, 2);
-    
-    connect( mBox, SIGNAL(currentIndexChanged(int)), this, SLOT(indexChanged(int)) );
-    connect( mEdit, SIGNAL(textChanged(QString)),this, SLOT(textChanged(QString)) );
+    mItem = new CntCommonDetailViewItem(this);
     
     HbDataFormModel* model = static_cast<HbDataFormModel*>(itemView()->model());
     CntDetailModelItem* item = static_cast<CntDetailModelItem*>( model->itemFromIndex(modelIndex()) );
@@ -138,7 +111,7 @@ HbWidget* CntPhoneNumberViewItem::createCustomWidget()
     QString value;
     if ( detail.definitionName() == QContactPhoneNumber::DefinitionName )
         {
-        mEdit->setMaxLength( CNT_PHONENUMBER_EDITOR_MAXLENGTH );
+        mItem->editor()->setMaxLength( CNT_PHONENUMBER_EDITOR_MAXLENGTH );
         QContactPhoneNumber phone = detail;
         subType = phone.subTypes().isEmpty() ? "" : phone.subTypes().first();
         if ( !phone.contexts().isEmpty() )
@@ -148,7 +121,7 @@ HbWidget* CntPhoneNumberViewItem::createCustomWidget()
     
     if ( detail.definitionName() == QContactOnlineAccount::DefinitionName )
         {
-        mEdit->setMaxLength( CNT_ONLINEACCOUNT_EDITOR_MAXLENGTH );
+        mItem->editor()->setMaxLength( CNT_ONLINEACCOUNT_EDITOR_MAXLENGTH );
         QContactOnlineAccount account = detail;
         subType = account.subTypes().isEmpty() ? "" : account.subTypes().first();
         if (!account.contexts().isEmpty())
@@ -156,16 +129,19 @@ HbWidget* CntPhoneNumberViewItem::createCustomWidget()
         value = account.accountUri();
         }
     
-    mEdit->setText( value );
+    mItem->editor()->setText( value );
     constructSubtypeModel( subType, context );
     
-    return widget;        
+    connect( mItem->comboBox(), SIGNAL(currentIndexChanged(int)), this, SLOT(indexChanged(int)) );
+    connect( mItem->editor(), SIGNAL(textChanged(QString)),this, SLOT(textChanged(QString)) );
+    
+    return mItem;
     }
 
 void CntPhoneNumberViewItem::constructPhoneNumber( CntDetailModelItem* aItem, QString aSubType, QStringList aContext )
     {
-    mEdit->setInputMethodHints( Qt::ImhDialableCharactersOnly );
-    mEdit->setMaxLength( CNT_PHONENUMBER_EDITOR_MAXLENGTH );
+    mItem->editor()->setInputMethodHints( Qt::ImhDialableCharactersOnly );
+    mItem->editor()->setMaxLength( CNT_PHONENUMBER_EDITOR_MAXLENGTH );
             
     QContactDetail detail = aItem->detail();
     
@@ -190,13 +166,12 @@ void CntPhoneNumberViewItem::constructPhoneNumber( CntDetailModelItem* aItem, QS
         number.setContexts( aContext );
         aItem->setDetail( number );
         }
-    qDebug() << mEdit->text();
     }
 
 void CntPhoneNumberViewItem::constructOnlineAccount( CntDetailModelItem* aItem, QString aSubType, QStringList aContext )
     {
-    mEdit->setMaxLength( CNT_ONLINEACCOUNT_EDITOR_MAXLENGTH );
-    mEdit->setInputMethodHints( Qt::ImhUrlCharactersOnly );
+    mItem->editor()->setMaxLength( CNT_ONLINEACCOUNT_EDITOR_MAXLENGTH );
+    mItem->editor()->setInputMethodHints( Qt::ImhUrlCharactersOnly );
     
     QContactDetail detail = aItem->detail();
     // check if the detail type needs to changed
@@ -211,7 +186,7 @@ void CntPhoneNumberViewItem::constructOnlineAccount( CntDetailModelItem* aItem, 
         QContactOnlineAccount account;
         account.setSubTypes( aSubType );
         account.setContexts( aContext );
-        account.setAccountUri( mEdit->text() );
+        account.setAccountUri( mItem->editor()->text() );
         aItem->setDetail( account );
         }
     else
@@ -219,10 +194,9 @@ void CntPhoneNumberViewItem::constructOnlineAccount( CntDetailModelItem* aItem, 
         QContactOnlineAccount account = detail;
         account.setSubTypes( aSubType );
         account.setContexts( aContext );
-        account.setAccountUri( mEdit->text() );
+        account.setAccountUri( mItem->editor()->text() );
         aItem->setDetail( account );
         }
-    qDebug() << mEdit->text();
     }
 
 void CntPhoneNumberViewItem::constructSubtypeModel( QString aSubType, QStringList aContext )
@@ -234,7 +208,7 @@ void CntPhoneNumberViewItem::constructSubtypeModel( QString aSubType, QStringLis
         
     QString subTypeMobile = QContactPhoneNumber::SubTypeMobile;
     QString subTypeLandline = QContactPhoneNumber::SubTypeLandline;
-    QString subTypeFax = QContactPhoneNumber::SubTypeFacsimile;
+    QString subTypeFax = QContactPhoneNumber::SubTypeFax;
     QString subTypePager = QContactPhoneNumber::SubTypePager;
     QString subTypeCarPhone = QContactPhoneNumber::SubTypeCar;
     QString subTypeDtmf = QContactPhoneNumber::SubTypeDtmfMenu;
@@ -348,7 +322,7 @@ void CntPhoneNumberViewItem::constructSubtypeModel( QString aSubType, QStringLis
     sip->setData(CNT_ONLINEACCOUNT_EDITOR_MAXLENGTH, DetailMaxLength);
     model->appendRow(sip);
          
-    mBox->setModel( model );
+    mItem->comboBox()->setModel( model );
     
     // search the selected index to be set
     QString context = aContext.isEmpty() ? "" : aContext.first();
@@ -357,9 +331,27 @@ void CntPhoneNumberViewItem::constructSubtypeModel( QString aSubType, QStringLis
         if ( model->item(i)->data( DetailSubType ).toString() == aSubType &&
              model->item(i)->data( DetailContext ).toString() == context )
             {
-            mBox->setCurrentIndex( i );
+            mItem->comboBox()->setCurrentIndex( i );
+            if ( isOnlineAccount( aSubType ) )
+            {
+                mItem->editor()->setMaxLength( CNT_ONLINEACCOUNT_EDITOR_MAXLENGTH );
+                mItem->editor()->setInputMethodHints( Qt::ImhUrlCharactersOnly );
+            }
+            else
+            {
+                mItem->editor()->setInputMethodHints( Qt::ImhDialableCharactersOnly );
+                mItem->editor()->setMaxLength( CNT_PHONENUMBER_EDITOR_MAXLENGTH );
+            }
+                
             break;
             }
         }
     }
+
+bool CntPhoneNumberViewItem::isOnlineAccount( QString aSubtype )
+{
+    return (aSubtype == QContactOnlineAccount::SubTypeSip || 
+            aSubtype == QContactOnlineAccount::SubTypeSipVoip ||
+            aSubtype == QContactOnlineAccount::SubTypeVideoShare );
+}
 // End of File

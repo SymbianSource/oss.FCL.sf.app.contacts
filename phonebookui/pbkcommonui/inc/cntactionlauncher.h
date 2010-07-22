@@ -29,12 +29,12 @@ class CntActionLauncher : public QObject
     Q_OBJECT
     
 public:
-    CntActionLauncher( QString aAction = QString() );
+    CntActionLauncher( QContactManager& aContactManager, QString aAction = QString() );
     ~CntActionLauncher();
     
 public:
-    void execute( QContact aContact, QContactDetail aDetail );
-    void execute( QContact aContact, QContactDetail aDetail, QContactActionDescriptor aActionDescriptor );
+    bool execute( QContact aContact, QContactDetail aDetail );
+    bool execute( QContact aContact, QContactDetail aDetail, QContactActionDescriptor aActionDescriptor );
     
 signals:
     void actionExecuted( CntActionLauncher* aAction );
@@ -45,5 +45,6 @@ private slots:
 private:
     QString mAction;
     QContactAction* mContactAction;
+    QContactManager* mContactManager;
     };
 #endif /* CNTACTION_H_ */

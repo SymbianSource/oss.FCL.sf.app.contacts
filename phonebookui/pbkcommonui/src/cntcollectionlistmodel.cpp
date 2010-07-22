@@ -16,247 +16,317 @@
 */
 
 #include "cntcollectionlistmodel.h"
+#include "cntcollectionlistmodel_p.h"
+#include "cntcollectionlistmodelworker.h"
 #include "cntextensionmanager.h"
 #include "cntfavourite.h"
+#include "cntdebug.h"
 
 #include <cntuiextensionfactory.h>
 #include <cntuigroupsupplier.h>
+#include <cntuids.h>
+#include <xqsettingskey.h>
 
-#include <QIcon>
 #include <qtcontacts.h>
 #include <hbglobal.h>
-#include <hbiconitem.h>
+#include <hbicon.h>
+
+#include <thumbnailmanager_qt.h>
 
 /*!
-Constructor
+    Constructor
 */
 CntCollectionListModel::CntCollectionListModel(QContactManager *manager, CntExtensionManager &extensionManager, QObject *parent)
-    : QAbstractListModel(parent),
-    mExtensionManager(extensionManager),
-    mContactManager(manager),
-    mFavoriteGroupId(-1)
+    : QAbstractListModel(parent)
 {
-    mDataPointer = new CntCollectionListData();
+    CNT_ENTRY
+    
+    d = new CntCollectionListModelData(extensionManager);
+    d->mContactManager = manager;
+    
+    XQSettingsKey nameOrderKey(XQSettingsKey::TargetCentralRepository,
+            KCRCntSettings.iUid,
+            KCntNameOrdering);
+    int order = mSettings.readItemValue(nameOrderKey, XQSettingsManager::TypeInt).toInt();
+    QString unnamed = hbTrId("txt_phob_dblist_unnamed");
+    QString noFavs = hbTrId("txt_phob_dblist_favorites_val_no_favorites_selecte");
+    QString noMembers = hbTrId("txt_phob_dblist_val_no_members_selected");
+    mThread = new CntCollectionListModelWorker(unnamed, noFavs, noMembers, order);
+    connect(mThread, SIGNAL(fetchDone(int, const QString&, int)), this, SLOT(informationUpdated(int, const QString&, int)));
+    
+    d->mThumbnailManager = new ThumbnailManager(this);
+    d->mThumbnailManager->setMode(ThumbnailManager::Default);
+    d->mThumbnailManager->setQualityPreference(ThumbnailManager::OptimizeForPerformance);
+    d->mThumbnailManager->setThumbnailSize(ThumbnailManager::ThumbnailSmall);
+    connect(d->mThumbnailManager, SIGNAL(thumbnailReady(QPixmap, void *, int, int)),
+             this, SLOT(onIconReady(QPixmap, void *, int, int)));
+    
     doConstruct();
+    
+    CNT_EXIT
 }
 
 /*!
-Destructor
+    Destructor
+    
+    Cancels any pending icon requests for the Thumbnailmanager
 */
 CntCollectionListModel::~CntCollectionListModel()
 {
+    CNT_ENTRY
     
+    foreach (int id, d->mIconRequests.keys())
+    {
+        d->mThumbnailManager->cancelRequest(id);
+    }
+
+    d->mIconRequests.clear();
+    
+    delete mThread;
+    
+    CNT_EXIT
 }
 
 /*!
-Returns data for given index with a given role
+    Returns requested data for a given index and role. Schedules fetching 2nd row text and
+    member count when called for the first time.
+
+    \param index the QModelIndex of the list item
+    \param role the requested role
+    \return QVariant with requested data
 */
-QVariant CntCollectionListModel::data(const QModelIndex &index, int role) const
+QVariant CntCollectionListModel::data(const QModelIndex& index, int role) const
 {
     int row = index.row();
     
-    if (row < 0)
-    {
+    if ( !validateRowIndex(row) )
         return QVariant();
+    
+    CollectionItemPointer p = d->mList.at(row);
+    if ( p.isNull() )
+        return QVariant();
+    
+    if (!p->fetched)
+    {
+        mThread->scheduleJob(row, p->id);
+        p->fetched = true;
     }
     
-    QVariantList values = mDataPointer->mDataList.at(row);
-    
-    if (role == Qt::DisplayRole)
-    {
-        QStringList list = values[0].toStringList();        
-        return QVariant(list);
+    switch( role )
+    {       
+        case Qt::DisplayRole:
+            return displayRoleData(*p);
+        case Qt::DecorationRole:
+            return decorationRoleData(*p);
+        case Qt::UserRole:
+            return p->id;
+        default:
+            return QVariant();
     }
-     
-    else if (role == Qt::DecorationRole)
-    {
-        QVariantList icons;
-        for (int i = 0;i < values[1].toStringList().count();i++)
-        {
-            HbIcon icon(values[1].toStringList().at(i));
-            icons.append(icon);
-        }
-        return QVariant(icons);
-    }
-    
-    else if (role == Qt::UserRole)
-    {
-        int contactId = values[2].toInt();
-        return QVariant(contactId);
-    }
-
-    return QVariant();
 }
 
 /*!
-Returns the number of rows in the model
+    Returns the item count of the model
+
+    \param parent not used as all items share the same parent
+    \return the current row count
 */
-int CntCollectionListModel::rowCount(const QModelIndex &parent) const
+int CntCollectionListModel::rowCount(const QModelIndex& parent) const
 {
-    Q_UNUSED(parent);
-    return mDataPointer->mDataList.count();
+    Q_UNUSED(parent)
+    return d->mList.count();
 }
 
 /*!
-Removes given rows from the model
+    Removes given row from the model, only supports removing one row at the time
+
+    \param row the first row which is removed
+    \param count amount of rows to be removed (not supported)
+    \param parent not used as all items share the same parent
+    \return success of the operation
 */
 bool CntCollectionListModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     Q_UNUSED(count);
     Q_UNUSED(parent);
-    if (row < 0 || row > rowCount())
+    
+    if ( !validateRowIndex(row) )
     {
         return false;
     }
     
     beginRemoveRows(parent, row, row);
-    mDataPointer->mDataList.removeAt(row);
+    d->mList.removeAt(row);
     endRemoveRows();
 
     return true;
 }
 
 /*!
-Remove given group from the model
+    Remove given group from the model. Ignore plugin groups.
+
+    \param localId QContactLocalId of the group that should be removed
 */
 void CntCollectionListModel::removeGroup(int localId)
 {
+    CNT_ENTRY
+    
     for (int i = 0;i < rowCount();i++)
     {
-        // extension items have 4 items in the list, we don't allow those to be deleted from here
-        if (mDataPointer->mDataList.at(i)[2] == localId && mDataPointer->mDataList.at(i).count() < 4)
+        if (!d->mList.at(i)->isPlugin && d->mList.at(i)->id == localId)
         {
             removeRow(i);
             break;
         }
     }
+    
+    CNT_EXIT
 }
 
 /*!
-Initialize the data, both static (favorites, online) and user defined groups
+    Check if list item at given index is coming from an extension plugin or not.
+
+    \param index the QModelIndex of the list item
+    \return success of the operation
+*/
+bool CntCollectionListModel::isExtensionGroup(const QModelIndex &index)
+{
+    int row = index.row();
+    if ( !validateRowIndex(row) )
+    {
+        return false;
+    }
+    
+    return d->mList.at(row)->isPlugin;
+}
+
+/*!
+    Called when a list item from a plugin is activated. Used for view switching.
+
+    \param row the row of the activated plugin item
+    \return view parameters used for view switching
+*/
+CntViewParameters CntCollectionListModel::extensionGroupActivated(int row)
+{
+    CntViewParameters params;
+    for(int i = 0;i < d->mExtensions.value(row)->groupCount();i++)
+    {
+        CntUiExtensionGroup& group = d->mExtensions.value(row)->groupAt(i);
+        if (group.serviceId() == d->mList.at(row)->id)
+        {
+            group.activated(params);
+            break;
+        }
+    }
+    return params;
+}
+
+/*!
+    Called when a list item from a plugin is long pressed. Callback is done asynch, as HbMenu usage
+    is assumed.
+
+    \param row the row of the long pressed plugin item
+    \param coords the coordinates of the long tap gesture
+    \param interface callback interface for asynch handling
+*/
+void CntCollectionListModel::extensionGroupLongPressed(int row, const QPointF& coords, CntExtensionGroupCallback* interface)
+{
+    CNT_ENTRY
+    
+    for(int i = 0;i < d->mExtensions.value(row)->groupCount();i++)
+    {
+        CntUiExtensionGroup& group = d->mExtensions.value(row)->groupAt(i);
+        if (group.serviceId() == d->mList.at(row)->id)
+        {
+            group.longPressed(coords, interface);
+            break;
+        }
+    }
+    
+    CNT_EXIT
+}
+
+/*!
+    Initialize different groups.
 */
 void CntCollectionListModel::doConstruct()
 {
+    CNT_ENTRY
+    
     initializeStaticGroups();
     initializeExtensions();
     initializeUserGroups();
+    
+    CNT_EXIT
 }
 
 /*!
-Initialize static groups
+    Initialize static group(s), only favorites for now.
 */
 void CntCollectionListModel::initializeStaticGroups()
 {
+    CNT_ENTRY
     
-    QVariantList dataList;
-    QStringList displayList;
-    displayList.append(hbTrId("txt_phob_dblist_favorites"));
+    CollectionItemPointer item(new CntCollectionItem());
     
-    mFavoriteGroupId = CntFavourite::createFavouriteGroup( mContactManager );
+    item->groupName = hbTrId("txt_phob_dblist_favorites");
     
-    if(mFavoriteGroupId != -1)
-    {
-        QContact favoriteGroup =  mContactManager->contact(mFavoriteGroupId);
-        QContactRelationshipFilter rFilter;
-        rFilter.setRelationshipType(QContactRelationship::HasMember);
-        rFilter.setRelatedContactRole(QContactRelationship::First);
-        rFilter.setRelatedContactId(favoriteGroup.id());
-       
-        QContactSortOrder sortOrderFirstName;
-        sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,
-            QContactName::FieldFirstName);
-        sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
-
-        QContactSortOrder sortOrderLastName;
-        sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,
-            QContactName::FieldLastName);
-        sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
-
-        QList<QContactSortOrder> sortOrders;
-        sortOrders.append(sortOrderFirstName);
-        sortOrders.append(sortOrderLastName);
-
-        // group members and their count
-       QList<QContactLocalId> groupMemberIds = mContactManager->contactIds(rFilter, sortOrders);
-
-       if (!groupMemberIds.isEmpty())
-       {
-           QStringList nameList;
-           for(int i = 0;i < groupMemberIds.count();i++)
-           {
-               QContact contact = mContactManager->contact(groupMemberIds.at(i));
-               QString memberName = contact.displayLabel();
-               nameList << memberName;
-               if (nameList.join(", ").length() > 30)
-               {
-                   break;
-               }
-           }
-           QString names = nameList.join(", ");
-           displayList.append(names);
-           displayList.append(hbTrId("(%1)").arg(groupMemberIds.count()));
-       }
-       else
-       {
-           displayList.append(hbTrId("txt_phob_dblist_favorites_val_no_favorites_selecte"));
-       }
-    }
-    else
-    {
-       displayList.append(hbTrId("txt_phob_dblist_favorites_val_no_favorites_selecte"));
-    }
+    d->mFavoriteGroupId = CntFavourite::createFavouriteGroup( d->mContactManager );
     
-    dataList.append(displayList);
-    dataList.append(QStringList("qtg_large_favourites"));
-    dataList.append(mFavoriteGroupId);
-    mDataPointer->mDataList.append(dataList);
+    item->icon = HbIcon("qtg_large_favourites");
+    item->id = d->mFavoriteGroupId;
+    item->secondLineText = " ";
+    item->memberCount = -1;
+    
+    d->mList.append(item);
+    
+    CNT_EXIT
 }
 
 /*!
-Initialize extension groups
+    Initialize extension groups from plugins.
 */
 void CntCollectionListModel::initializeExtensions()
 {
-    for(int i = 0;i < mExtensionManager.pluginCount();i++)
+    CNT_ENTRY
+    
+    for(int i = 0;i < d->mExtensionManager.pluginCount();i++)
     {
-        CntUiGroupSupplier* groupSupplier = mExtensionManager.pluginAt(i)->groupSupplier();
+        CntUiGroupSupplier* groupSupplier = d->mExtensionManager.pluginAt(i)->groupSupplier();
         if (groupSupplier)
         {
             for(int j = 0;j < groupSupplier->groupCount();j++)
             {
                 const CntUiExtensionGroup& group = groupSupplier->groupAt(j);
-
-                QVariantList dataList;
                 
-                QStringList displayList;
-                displayList.append(group.name());
-                displayList.append(group.extraText());
-                if (group.memberCount() > 0)
-                {
-                    displayList.append(hbTrId("(%1)").arg(group.memberCount()));
-                }
-                dataList.append(displayList);
+                CollectionItemPointer item(new CntCollectionItem());
                 
-                QStringList decorationList;
-                decorationList.append(group.groupIcon());
-                decorationList.append(group.extraIcon());
-                dataList.append(decorationList);
+                item->groupName = group.name();
+                item->secondLineText = group.extraText();
+                item->memberCount = group.memberCount();
+                item->icon = HbIcon(group.groupIcon());
+                item->secondaryIcon = HbIcon(group.extraIcon());
                 
-                dataList.append(group.serviceId());
-                dataList.append(true); // for checking if this is from an extension
+                item->id = group.serviceId();
+                item->isPlugin = true;
+                item->fetched = true;
                 
-                mDataPointer->mExtensions.insert(rowCount(), groupSupplier);
-                mDataPointer->mDataList.append(dataList);
+                d->mExtensions.insert(rowCount(), groupSupplier);
+                d->mList.append(item);
             }
         }
     }
+    
+    CNT_EXIT
 }
 
 /*!
-Initialize user defined groups
+    Initialize user defined custom groups.
 */
 void CntCollectionListModel::initializeUserGroups()
 {
+    CNT_ENTRY
+    
     QContactDetailFilter groupFilter;
     groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
     groupFilter.setValue(QString(QLatin1String(QContactType::TypeGroup)));
@@ -269,144 +339,158 @@ void CntCollectionListModel::initializeUserGroups()
     QList<QContactSortOrder> groupsOrder;
     groupsOrder.append(sortOrderGroupName);
 
-    QList<QContactLocalId> groupContactIds = mContactManager->contactIds(groupFilter, groupsOrder);
+    QList<QContactLocalId> groupContactIds = d->mContactManager->contactIds(groupFilter, groupsOrder);
 
     for(int i = 0;i < groupContactIds.count();i++)
     {
-        QVariantList dataList;
-
-        // group name
-        QStringList displayList;
-
-        QContact contact = mContactManager->contact(groupContactIds.at(i));
-        QContactName contactName = contact.detail<QContactName>();
-        QString groupName = contactName.customLabel();
-        if(groupContactIds.at(i) != mFavoriteGroupId )
+        if(groupContactIds.at(i) != d->mFavoriteGroupId )
         {
+            CollectionItemPointer item(new CntCollectionItem());
+            
+            QContactFetchHint noRelationshipsFetchHint;
+            noRelationshipsFetchHint.setOptimizationHints(QContactFetchHint::NoRelationships);
+            
+            QContact contact = d->mContactManager->contact(groupContactIds.at(i), noRelationshipsFetchHint);
+            QContactName contactName = contact.detail<QContactName>();
+            QString groupName = contactName.customLabel();
+            
             if (groupName.isNull())
             {
-                QString unnamed(hbTrId("txt_phob_dblist_unnamed"));
-                displayList.append(unnamed);
+                item->groupName = hbTrId("txt_phob_dblist_unnamed");
             }
             else
             {
-                displayList.append(groupName);
-            }    
-
-            QContactRelationshipFilter rFilter;
-            rFilter.setRelationshipType(QContactRelationship::HasMember);
-            rFilter.setRelatedContactRole(QContactRelationship::First);
-            rFilter.setRelatedContactId(contact.id());
-
-            QContactSortOrder sortOrderFirstName;
-            sortOrderFirstName.setDetailDefinitionName(QContactName::DefinitionName,
-                    QContactName::FieldFirstName);
-            sortOrderFirstName.setCaseSensitivity(Qt::CaseInsensitive);
-
-            QContactSortOrder sortOrderLastName;
-            sortOrderLastName.setDetailDefinitionName(QContactName::DefinitionName,
-                    QContactName::FieldLastName);
-            sortOrderLastName.setCaseSensitivity(Qt::CaseInsensitive);
-
-            QList<QContactSortOrder> sortOrders;
-            sortOrders.append(sortOrderFirstName);
-            sortOrders.append(sortOrderLastName);
-
-            // group members and their count
-            QList<QContactLocalId> groupMemberIds = mContactManager->contactIds(rFilter, sortOrders);
-
-            if (!groupMemberIds.isEmpty())
-            {
-                QStringList nameList;
-                for(int i = 0;i < groupMemberIds.count();i++)
-                {
-                    QContact contact = mContactManager->contact(groupMemberIds.at(i));
-                    QString memberName = contact.displayLabel();
-                    nameList << memberName;
-                    if (nameList.join(", ").length() > 30)
-                    {
-                        break;
-                    }
-                }
-                QString names = nameList.join(", ");
-                displayList.append(names);
-                displayList.append(hbTrId("(%1)").arg(groupMemberIds.count()));
+                item->groupName = groupName;
             }
-            else
-            {
-                displayList.append(hbTrId("No members selected"));
-            }
-            dataList.append(displayList);
 
-            // Default if no image for group 
-            bool icon = false;
+            item->icon = HbIcon("qtg_large_custom");
+            
             QList<QContactAvatar> details = contact.details<QContactAvatar>();
-            for (int i = 0;i < details.count();i++)
+            for (int k = 0;k < details.count();k++)
             {
-                if (details.at(i).imageUrl().isValid())
+                if (details.at(k).imageUrl().isValid())
                 {
-                    dataList.append(QStringList(details.at(i).imageUrl().toString()));
-                    icon = true;
+                    int id = d->mThumbnailManager->getThumbnail(details.at(k).imageUrl().toString());
+                    d->mIconRequests.insert(id, rowCount());
                     break;
                 }
             }
-            if(!icon)
-            {
-                dataList.append(QStringList("qtg_large_custom"));
-            }
-
+            
             // contact Id for identification
-            dataList.append(groupContactIds.at(i));
+            item->id = groupContactIds.at(i);
+            item->secondLineText = " ";
+            item->memberCount = -1;
 
-            mDataPointer->mDataList.append(dataList);
+            d->mList.append(item);
         }
     }
+    
+    CNT_EXIT
 }
 
+/*!
+    Get Qt::DisplayRole data from a CntCollectionItem.
 
-bool CntCollectionListModel::isExtensionGroup(const QModelIndex &index)
+    \param item the collection item from where data is read
+    \return QVariant containing the requested data
+*/
+QVariant CntCollectionListModel::displayRoleData(const CntCollectionItem& item) const
 {
-    int row = index.row();
-    if (row < 0)
+    QStringList list;
+
+    list << item.groupName << item.secondLineText;
+    
+    if (item.memberCount > 0)
     {
-        return false;
+        list << QString("(%1)").arg(item.memberCount);
+    }
+    else if (item.memberCount < 0)
+    {
+        list << " ";
     }
     
-    QVariantList values = mDataPointer->mDataList.at(row);
-    
-    if(values.count() > 3)
-    {
-        return true;
-    }
-    
-    return false;
+    return QVariant(list);
 }
 
-CntViewParameters CntCollectionListModel::extensionGroupActivated(int row)
+/*!
+    Get Qt::DecorationRole data from a CntCollectionItem.
+
+    \param item the collection item from where data is read
+    \return QVariant containing the requested data
+*/
+QVariant CntCollectionListModel::decorationRoleData(const CntCollectionItem& item) const
 {
-    CntViewParameters params;
-    for(int i = 0;i < mDataPointer->mExtensions.value(row)->groupCount();i++)
+    QList<QVariant> icons;
+    icons << item.icon;
+    
+    if (!item.secondaryIcon.isNull())
     {
-        CntUiExtensionGroup& group = mDataPointer->mExtensions.value(row)->groupAt(i);
-        if (group.serviceId() == mDataPointer->mDataList.at(row)[2].toInt())
-        {
-            group.activated(params);
-            break;
-        }
+        icons << item.secondaryIcon;
     }
-    return params;
+    
+    return QVariant(icons);
 }
 
-void CntCollectionListModel::extensionGroupLongPressed(int row, const QPointF& coords, CntExtensionGroupCallback* interface)
+/*!
+    Check if the given index is valid or not.
+
+    \param index the row to be checked
+    \return index validity
+*/
+bool CntCollectionListModel::validateRowIndex(const int index) const
 {
-    for(int i = 0;i < mDataPointer->mExtensions.value(row)->groupCount();i++)
-    {
-        CntUiExtensionGroup& group = mDataPointer->mExtensions.value(row)->groupAt(i);
-        if (group.serviceId() == mDataPointer->mDataList.at(row)[2].toInt())
-        {
-            group.longPressed(coords, interface);
-            break;
-        }
-    }
+    return (index < rowCount() && index >= 0);
 }
 
+/*!
+    Update CollectionItem at the given row with the new information and notify the list
+    about the change.
+
+    \param row the row receiving the updated information
+    \param secondRowText text to be shown in the second row
+    \param memberCount the amount of members the group has (shown in text-3 in HbListViewItem)
+*/
+void CntCollectionListModel::informationUpdated(int row, const QString& secondRowText, int memberCount)
+{
+    CNT_ENTRY
+    
+    CollectionItemPointer item = d->mList.at(row);
+    
+    item->secondLineText = secondRowText;
+    item->memberCount = memberCount;
+    
+    int idx = d->mList.indexOf(item);
+    emit dataChanged(index(idx, 0), index(idx, 0));
+    
+    CNT_EXIT
+}
+
+/*!
+    Update CollectionItem mapped to this request (id) with the new icon and notify the list
+    about the change.
+
+    \param pixmap requested icon
+    \param data not used
+    \param id the id of the request
+    \param error 0 if no error happened
+*/
+void CntCollectionListModel::onIconReady(const QPixmap& pixmap, void *data, int id, int error)
+{
+    CNT_ENTRY
+    
+    Q_UNUSED(data);
+    
+    if (error == 0)
+    {
+        int row = d->mIconRequests.take(id);
+        
+        CollectionItemPointer item = d->mList.at(row);
+        
+        item->icon = HbIcon(pixmap);
+        
+        int idx = d->mList.indexOf(item);
+        emit dataChanged(index(idx, 0), index(idx, 0));
+    }
+
+    CNT_EXIT
+}

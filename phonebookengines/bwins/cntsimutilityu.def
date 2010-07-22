@@ -25,4 +25,6 @@ EXPORTS
 	?staticMetaObject@CntSimUtility@@2UQMetaObject@@B @ 24 NONAME ; struct QMetaObject const CntSimUtility::staticMetaObject
 	?RequestCompleted@CntSimUtility@@QAEXH@Z @ 25 NONAME ; void CntSimUtility::RequestCompleted(int)
 	??1CntSimUtility@@UAE@XZ @ 26 NONAME ; CntSimUtility::~CntSimUtility(void)
+	?getLastImportTime@CntSimUtility@@QAE?AVQDateTime@@AAH@Z @ 27 NONAME ; class QDateTime CntSimUtility::getLastImportTime(int &)
+	?setLastImportTime@CntSimUtility@@QAEXAAH@Z @ 28 NONAME ; void CntSimUtility::setLastImportTime(int &)
 

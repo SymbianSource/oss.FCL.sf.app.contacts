@@ -16,7 +16,7 @@
 */
 
 #include <QGraphicsLayout>
-#include <QDebug>
+#include "cntdebug.h"
 
 #include "cntcontactcarddetailitem.h"
 #include "cntcontactcarddataitem.h"
@@ -33,7 +33,6 @@
 #include <QGestureEvent>
 #include <hbtapgesture.h>
 
-const int CNT_CONTACTCARD_TEXT_MAX_ROWCOUNT = 1;
 const int CNT_CONTACTCARD_Z_FRAME = -1;
 const int CNT_CONTACTCARD_Z_FOCUS = -2;
 
@@ -85,16 +84,25 @@ void CntContactCardDetailItem::createPrimitives()
         mIcon = 0;
     }
 
-    
-    if (!mSecondaryIcon)
+    if (!secondaryIcon.isNull())
     {
-        mSecondaryIcon = new HbIconItem(this);
-        mSecondaryIcon->setFlags(HbIcon::Colorized);
-        style()->setItemName(mSecondaryIcon, "secondaryIcon");
+        if (!mSecondaryIcon)
+        {
+            mSecondaryIcon = new HbIconItem(this);
+            mSecondaryIcon->setFlags(HbIcon::Colorized);
+            style()->setItemName(mSecondaryIcon, "secondaryIcon");
+        }
+        mSecondaryIcon->setIcon(secondaryIcon);
+        mSecondaryIcon->setColor(HbColorScheme::color("qtc_view_normal"));
     }
-    mSecondaryIcon->setIcon(secondaryIcon);
-    mSecondaryIcon->setColor(HbColorScheme::color("foreground"));
-
+    else
+    {
+        if (mSecondaryIcon)
+        {
+            delete mSecondaryIcon;
+        }
+        mSecondaryIcon = 0;
+    }
     
     if (!mFirstLineText)
     {
@@ -154,7 +162,8 @@ void CntContactCardDetailItem::initGesture()
 
 void CntContactCardDetailItem::gestureEvent(QGestureEvent* event)
 {
-    qDebug() << "CntContactCardDetailItem::gestureEvent - IN";
+    CNT_ENTRY
+    
     if (HbTapGesture *tap = qobject_cast<HbTapGesture *>(event->gesture(Qt::TapGesture))) 
     {
         switch(tap->state()) 
@@ -194,7 +203,8 @@ void CntContactCardDetailItem::gestureEvent(QGestureEvent* event)
     {
         event->ignore();
     }
-    qDebug() << "CntContactCardDetailItem::gestureEvent - OUT";
+    
+    CNT_EXIT
 }
 
 void CntContactCardDetailItem::onLongPress(const QPointF &point)
@@ -226,15 +236,15 @@ void CntContactCardDetailItem::setDetails(CntContactCardDataItem* aDataItem)
     mValueTextElideMode = aDataItem->elideMode();
 
     if (aDataItem->icon() != icon)
-        {
+    {
         icon.clear();
         icon = aDataItem->icon();
-        }
+    }
     if (aDataItem->secondaryIcon() != secondaryIcon)
-        {
+    {
         secondaryIcon.clear();
         secondaryIcon = aDataItem->secondaryIcon();
-        }
+    }
    
     text.clear();
     text = aDataItem->titleText();
@@ -243,6 +253,21 @@ void CntContactCardDetailItem::setDetails(CntContactCardDataItem* aDataItem)
     valueText = aDataItem->valueText();
 
     recreatePrimitives();
+}
+
+//To update the secondary icon item
+void CntContactCardDetailItem::setSecondaryIconItem(HbIcon aIcon)
+{
+    secondaryIcon.clear();
+    secondaryIcon = aIcon;
+    if (!mSecondaryIcon)
+    {
+        mSecondaryIcon = new HbIconItem(this);
+        mSecondaryIcon->setFlags(HbIcon::Colorized);
+        style()->setItemName(mSecondaryIcon, "secondaryIcon");
+    }
+    mSecondaryIcon->setIcon(secondaryIcon);
+    mSecondaryIcon->setColor(HbColorScheme::color("qtc_view_normal"));
 }
 
 int CntContactCardDetailItem::index()

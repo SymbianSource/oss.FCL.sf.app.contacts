@@ -29,7 +29,7 @@ TARGET.CAPABILITY = CAP_GENERAL_DLL
 TARGET.EPOCALLOWDLLDATA = 1
 TARGET.UID3 = 0x2002B3F5
 
-INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
+INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE 
 INCLUDEPATH += inc
 
 HEADERS += inc/simutilityglobal.h \
@@ -42,4 +42,12 @@ SOURCES += src/cntsimutility.cpp \
 LIBS += -letel \
         -letelmm \
         -lsecui \
-        -lcustomapi
+        -lcustomapi \
+        -lcentralrepository
+defBlock = \      
+	"$${LITERAL_HASH}if defined(EABI)" \
+		"DEFFILE  ../eabi/cntsimutility.def" \
+    "$${LITERAL_HASH}else" \
+        "DEFFILE  ../bwins/cntsimutility.def" \
+	"$${LITERAL_HASH}endif"
+MMP_RULES += defBlock

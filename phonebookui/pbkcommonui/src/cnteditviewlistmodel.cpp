@@ -22,8 +22,9 @@
 #include "cnteditviewdetailitem.h"
 #include "cnteditviewitembuilder.h"
 #include <cntviewparams.h>
+#include <QDir>
 
-CntEditViewListModel::CntEditViewListModel( QContact* aContact ) :
+CntEditViewListModel::CntEditViewListModel( QContact& aContact ) :
 mContact( aContact )
 {
     mLookupTable.insert( EPhonenumber,    -1 );
@@ -48,6 +49,7 @@ mContact( aContact )
     mLookupMap.insert( QContactOrganization::DefinitionName,    ECompany);
     mLookupMap.insert( QContactBirthday::DefinitionName,        EDate );
     mLookupMap.insert( QContactAnniversary::DefinitionName,     EDate);
+    mLookupMap.insert( QContactRingtone::DefinitionName,        ERingingTone);
     mLookupMap.insert( QContactNote::DefinitionName,            ENote);
     mLookupMap.insert( QContactFamily::DefinitionName,          EFamily);
     
@@ -60,12 +62,52 @@ mContact( aContact )
 
 CntEditViewListModel::~CntEditViewListModel()
 {
+    // Delete the separator item separately if it hasn't been added to the list
+    if (mSeparator && mItemList.indexOf(mSeparator) == -1)
+    {
+        delete mSeparator;
+        mSeparator = NULL;
+    }
+    
     qDeleteAll( mItemList );
+    mItemList.clear();
     
     delete mBuilder;
+    mBuilder = NULL;
     delete mManager;
+    mManager = NULL;
 }
  
+void CntEditViewListModel::updateRingtone()
+{
+    beginResetModel();
+    KLookupKey key = mLookupMap.value( QContactRingtone::DefinitionName );
+    int index = mLookupTable.value( key );
+    if ( index != -1 )
+    {
+         // fetch the detail item
+        QContactRingtone ringtone = mContact.detail<QContactRingtone>();
+        QUrl ringtoneUrl = ringtone.audioRingtoneUrl();
+        if ( !ringtoneUrl.isEmpty() )
+        {
+            CntEditViewDetailItem* detailItem = new CntEditViewDetailItem(
+                    ringtone,
+                    QContactRingtone::FieldAudioRingtoneUrl,
+                    ringToneFetcherView);
+            detailItem->addText( hbTrId("txt_phob_formlabel_ringing_tone") );
+            QFileInfo ringtoneFileInfo(ringtoneUrl.toString());
+            QString ringtoneFileName = ringtoneFileInfo.fileName();
+            detailItem->addText( ringtoneFileName); 
+            mItemList.replace(index, detailItem );
+        }
+    }   
+    else
+    {
+        insertDetailItem( key, mBuilder->ringtoneDetails(mContact) );
+    }
+    endResetModel();
+}
+
 int CntEditViewListModel::rowCount( const QModelIndex& aParent ) const
 {
     Q_UNUSED( aParent );
@@ -106,21 +148,22 @@ void CntEditViewListModel::removeItem( CntEditViewItem* aItem, const QModelIndex
     {
         beginRemoveRows( aIndex.parent(), index, index );
         // remove item from item list
-        int count = mItemList.count();
         CntEditViewItem* item = mItemList.takeAt( index );
-        count = mItemList.count();
         
         // get detailed information
         QContactDetail detail = item->data(ERoleContactDetail).value<QContactDetail>();
         QStringList fields = item->data(ERoleContactDetailFields).toStringList();
         
         // remove the detail from QContact
-        mBuilder->removeDetail( *mContact, detail, fields );
+        mBuilder->removeDetail( mContact, detail, fields );
         
         // Update lookup table. Note, in case of QContactAddress,
         // we can't remove address template, so the mapping for address always points to address detail
         KLookupKey lookupKey = mLookupMap.value( detail.definitionName() );
         removeItem( lookupKey );
+        
+        delete item;
+        
         endRemoveRows();
         
         // Remove separator item if needed
@@ -128,33 +171,46 @@ void CntEditViewListModel::removeItem( CntEditViewItem* aItem, const QModelIndex
         {
             int separatorIndex = mItemList.indexOf( mSeparator );
             beginRemoveRows( aIndex.parent(), separatorIndex, separatorIndex );
-            mItemList.removeAt( mItemList.indexOf(mSeparator) );
+            mItemList.removeAt( separatorIndex );
             removeItem( ESeparator  );
+            
+            delete mSeparator;
+            mSeparator = NULL;
+            
             endRemoveRows();
         }
-        
         
         // Check if the removed item is -1 in lookuptable and if it needs a template
         int lookupValue = mLookupTable.value( lookupKey );
         if ( lookupValue == -1 )
         {
-            beginResetModel();
-            
             if ( detail.definitionName() == QContactPhoneNumber::DefinitionName )
-                insertItem( EPhonenumber, mBuilder->phoneNumberItems(*mContact) );
-            
+            {
+                beginInsertRows(aIndex.parent(), index, index);
+                insertItem( EPhonenumber, mBuilder->phoneNumberItems(mContact) );
+                endInsertRows();
+            }
             else if ( detail.definitionName() == QContactEmailAddress::DefinitionName )
-                insertItem( EEmailAddress, mBuilder->emailAddressItems(*mContact) );
-            
+            {
+                beginInsertRows(aIndex.parent(), index, index);
+                insertItem( EEmailAddress, mBuilder->emailAddressItems(mContact) );
+                endInsertRows();
+            }
             else if ( detail.definitionName() == QContactAddress::DefinitionName )
-                insertItem( EAddressTemplate, mBuilder->addressItems(*mContact) );
-            
+            {
+                // special case: unlike the others, address template isn't in the same index as the last deleted detail
+                int emailIndex = mLookupTable.value( EEmailAddress );
+                beginInsertRows(aIndex.parent(), emailIndex + 1, emailIndex + 1);
+                insertItem( EAddressTemplate, mBuilder->addressItems(mContact) );
+                endInsertRows();
+            }
             else if ( detail.definitionName() == QContactUrl::DefinitionName )
-                insertItem( EUrl, mBuilder->urlItems(*mContact) );
-            
-            endResetModel();
+            {
+                beginInsertRows(aIndex.parent(), index, index);
+                insertItem( EUrl, mBuilder->urlItems(mContact) );
+                endInsertRows();
+            }
         }
-        delete item;
     }
 }
 
@@ -176,7 +232,7 @@ void CntEditViewListModel::refreshExtensionItems()
     for ( int i(0); i < count; i++ )
     {
         CntUiExtensionFactory* factory = mManager->pluginAt(i);
-        CntEditViewItemSupplier* supplier = factory->editViewItemSupplier( *mContact );
+        CntEditViewItemSupplier* supplier = factory->editViewItemSupplier( mContact );
         if (supplier)
         {
             loadPluginItems( supplier );
@@ -197,7 +253,7 @@ void CntEditViewListModel::allInUseFields( CntViewIdList& aList )
                 case EAddressDetail:
                 {
                     // Considered to be in use if all address contexts have been added
-                    QList<QContactAddress> addrList = mContact->details<QContactAddress>();
+                    QList<QContactAddress> addrList = mContact.details<QContactAddress>();
                     if ( addrList.count() >= 3 ) // no context, context home, context work
                         aList.append( addressEditorView );
                 }
@@ -206,7 +262,7 @@ void CntEditViewListModel::allInUseFields( CntViewIdList& aList )
                 case ECompany:
                 {
                     // Considered in use if some details and assistant exists
-                    QContactOrganization org = mContact->detail( QContactOrganization::DefinitionName );
+                    QContactOrganization org = mContact.detail( QContactOrganization::DefinitionName );
                     if ( !org.assistantName().isEmpty() && 
                         (!org.name().isEmpty() || !org.department().isEmpty() || !org.title().isEmpty()) )
                         aList.append( companyEditorView );
@@ -215,8 +271,8 @@ void CntEditViewListModel::allInUseFields( CntViewIdList& aList )
                 
                 case EDate:
                 {
-                    QContactBirthday bd = mContact->detail( QContactBirthday::DefinitionName );
-                    QContactAnniversary anniversary = mContact->detail( QContactAnniversary::DefinitionName );
+                    QContactBirthday bd = mContact.detail( QContactBirthday::DefinitionName );
+                    QContactAnniversary anniversary = mContact.detail( QContactAnniversary::DefinitionName );
                     // considered as in use when both birthday and anniversary has a valid date
                     if ( bd.date().isValid() && anniversary.originalDate().isValid() )
                         aList.append( dateEditorView );
@@ -225,7 +281,7 @@ void CntEditViewListModel::allInUseFields( CntViewIdList& aList )
                     
                 case EFamily:
                 {
-                    QContactFamily family = mContact->detail( QContactFamily::DefinitionName );
+                    QContactFamily family = mContact.detail( QContactFamily::DefinitionName );
                     if ( !family.children().isEmpty() && !family.spouse().isEmpty() )
                         aList.append( familyDetailEditorView );
                 }
@@ -233,11 +289,11 @@ void CntEditViewListModel::allInUseFields( CntViewIdList& aList )
                 
                 case ERingingTone:
                 {
-                    /*
-                    QContactRingtone tone = mContact->detail( QContactRingtone::DefinitionName );
+                    
+                    QContactRingtone tone = mContact.detail( QContactRingtone::DefinitionName );
                     if ( !tone.audioRingtoneUrl().isEmpty() )
-                        aList.append( ringingToneEditor );
-                    */
+                        aList.append( ringToneFetcherView );
+                    
                 }
                 break;
                 
@@ -252,10 +308,12 @@ QModelIndex CntEditViewListModel::itemIndex( QContactDetail aDetail ) const
 {
     QModelIndex itemIndex;
     for ( int i(0); i < mItemList.count(); i++ ) {
-        QVariant data = mItemList.at(i)->data( ERoleContactDetail );
+        CntEditViewItem* item = mItemList.at( i );
+        QVariant data = item->data( ERoleContactDetail );
         if ( data.value<QContactDetail>() == aDetail )
         {
             itemIndex = index( i ); 
+            break;
         }
     }
     return itemIndex;
@@ -265,41 +323,45 @@ void CntEditViewListModel::refresh()
 {
     beginResetModel();
     
-    insertItem( EPhonenumber, mBuilder->phoneNumberItems(*mContact) );
-    insertItem( EEmailAddress, mBuilder->emailAddressItems(*mContact) );
-    insertItem( EAddressTemplate, mBuilder->addressItems(*mContact) );
-    insertItem( EUrl, mBuilder->urlItems(*mContact) );
+    insertItem( EPhonenumber, mBuilder->phoneNumberItems(mContact) );
+    insertItem( EEmailAddress, mBuilder->emailAddressItems(mContact) );
+    insertItem( EAddressTemplate, mBuilder->addressItems(mContact) );
+    insertItem( EUrl, mBuilder->urlItems(mContact) );
         
     int count = mManager->pluginCount();
     for ( int i(0); i < count; i++ )
     {
         CntUiExtensionFactory* factory = mManager->pluginAt(i);
-        CntEditViewItemSupplier* supplier = factory->editViewItemSupplier( *mContact );
+        CntEditViewItemSupplier* supplier = factory->editViewItemSupplier( mContact );
         if (supplier)
         {
             loadPluginItems( supplier );
         }
     }
         
-    insertDetailItem( EAddressDetail, mBuilder->addressDetails(*mContact) );
-    insertDetailItem( ECompany, mBuilder->companyDetails(*mContact) );
-    insertDetailItem( EDate, mBuilder->dateDetails(*mContact) );
-    insertDetailItem( ENote, mBuilder->noteDetails(*mContact) );
-    insertDetailItem( EFamily, mBuilder->familyDetails(*mContact) );
+    insertDetailItem( EAddressDetail, mBuilder->addressDetails(mContact) );
+    insertDetailItem( ECompany, mBuilder->companyDetails(mContact) );
+    insertDetailItem( EDate, mBuilder->dateDetails(mContact) );
+    insertDetailItem( ENote, mBuilder->noteDetails(mContact) );
+    insertDetailItem( EFamily, mBuilder->familyDetails(mContact) );
+    insertDetailItem( ERingingTone, mBuilder->ringtoneDetails(mContact) );
     
     endResetModel();
 }
 
 bool CntEditViewListModel::isEmptyItem( CntEditViewItem* aItem )
 {
-    QContactDetail d = aItem->data( ERoleContactDetail ).value<QContactDetail>();
-    QStringList fields = aItem->data( ERoleContactDetailFields ).toStringList();
-    
-    foreach ( QString field, fields )
+    if ( aItem )
     {
-        if ( !d.value(field).isEmpty() )
+        QContactDetail d = aItem->data( ERoleContactDetail ).value<QContactDetail>();
+        QStringList fields = aItem->data( ERoleContactDetailFields ).toStringList();
+        
+        foreach ( QString field, fields )
         {
-            return false;
+            if ( !d.value(field).isEmpty() )
+            {
+                return false;
+            }
         }
     }
     return true;
@@ -409,6 +471,10 @@ void CntEditViewListModel::insertSeparator()
     if ( mItemList.indexOf(mSeparator) == -1 )
     {
         QList<CntEditViewItem*> list;
+        if (!mSeparator)
+        {
+            mSeparator = new CntEditViewSeparator();
+        }
         list << mSeparator;
         insertItem( ESeparator, list );
     }

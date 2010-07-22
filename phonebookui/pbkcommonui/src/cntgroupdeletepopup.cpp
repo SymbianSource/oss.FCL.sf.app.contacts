@@ -20,10 +20,11 @@
 #include <hbgroupbox.h>
 #include <hbaction.h>
 #include <hblistview.h>
+#include <hblistviewitem.h>
 #include <qtcontacts.h>
 
 CntGroupDeletePopup::CntGroupDeletePopup(QContactManager *manager, QGraphicsItem *parent):
-    HbDialog(parent),
+    HbSelectionDialog(parent),
     mListView(0),
     mContactManager(manager),
     mModel(0)
@@ -56,6 +57,10 @@ void CntGroupDeletePopup::populateListOfGroup()
     mListView->setFrictionEnabled(true);
     mListView->setScrollingStyle(HbScrollArea::PanWithFollowOn);
     
+    HbListViewItem *prototype = mListView->listItemPrototype();
+    prototype->setGraphicsSize(HbListViewItem::Thumbnail);
+    prototype->setStretchingStyle(HbListViewItem::StretchLandscape);
+    
     setContentWidget(mListView);
     
     setTimeout(HbDialog::NoTimeout);
@@ -63,6 +68,7 @@ void CntGroupDeletePopup::populateListOfGroup()
     setModal(true);
     setAttribute(Qt::WA_DeleteOnClose, true);
     
+    clearActions(); 
     HbAction *mPrimaryAction = new HbAction(hbTrId("txt_phob_button_delete_selected"), this);
     addAction(mPrimaryAction);
     

@@ -48,6 +48,9 @@ public:
     void recreatePrimitives();
     void updatePrimitives();
     void setDetails(CntContactCardDataItem* aDataItem);
+    //To update the secondary icon item. Used for
+    //maptile progress icon updation.
+    void setSecondaryIconItem( HbIcon aIcon );
     int index();
 
 public slots:
@@ -63,11 +66,7 @@ private:
     HbIcon getIcon() const { return icon; }
     HbIcon getSecondaryIcon() const { return secondaryIcon; }
 
-#ifdef PBK_UNIT_TEST
-public:
-#else
 private:
-#endif
     HbIconItem              *mIcon;
     HbIconItem              *mSecondaryIcon;
     HbTextItem              *mFirstLineText;
@@ -84,7 +83,8 @@ private:
     QString                 valueText;
     HbIcon                  icon;
     HbIcon                  secondaryIcon;
+    
+friend class TestCntContactCardDetailItem;
 };
 
 #endif // CNTCOMMLAUNCHERDETAILITEM_H
-

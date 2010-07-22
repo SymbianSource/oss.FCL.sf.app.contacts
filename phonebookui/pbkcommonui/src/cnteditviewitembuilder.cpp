@@ -19,7 +19,9 @@
 #include "cnteditviewdetailitem.h"
 #include "cntviewparams.h"
 #include "cntstringmapper.h"
+#include "cntdetailorderinghelper.h"
 #include <hbnumbergrouping.h>
+#include <QDir>
 
 CntEditViewItemBuilder::CntEditViewItemBuilder() :
 mMap( new CntStringMapper() )
@@ -34,7 +36,7 @@ CntEditViewItemBuilder::~CntEditViewItemBuilder()
 QList<CntEditViewItem*> CntEditViewItemBuilder::phoneNumberItems(QContact& aContact)
 {
     QList<CntEditViewItem*> list;
-    QList<QContactPhoneNumber> numbers = aContact.details<QContactPhoneNumber>();
+    QList<QContactPhoneNumber> numbers = CntDetailOrderingHelper::getOrderedSupportedPhoneNumbers(aContact);
     // template for editor launcher
     if ( numbers.isEmpty() ) 
     {
@@ -52,16 +54,14 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::phoneNumberItems(QContact& aCont
     {
         foreach ( QContactPhoneNumber number, numbers )
         {
-            if ( !number.subTypes().isEmpty() )
-            {
             QString context = number.contexts().isEmpty() ? "" : number.contexts().first();
             QString subtype = number.subTypes().first();
-            
+
             CntEditViewDetailItem* detailItem = new CntEditViewDetailItem(
                     number,
                     QContactPhoneNumber::FieldNumber,
                     phoneNumberEditorView);
-            
+
             detailItem->addIcon( mMap->getContactEditorIconString(subtype, context) );
             detailItem->addText( mMap->getContactEditorLocString(subtype, context) );
             /*
@@ -71,11 +71,10 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::phoneNumberItems(QContact& aCont
             //detailItem->addText( HbNumberGrouping::formatPhoneNumber(number.number())); 
             detailItem->addText( number.number());
             list.append( detailItem );
-            }
         }
     }
     
-    QList<QContactOnlineAccount> urls = aContact.details<QContactOnlineAccount>();
+    QList<QContactOnlineAccount> urls = CntDetailOrderingHelper::getOrderedSupportedOnlineAccounts(aContact);
     // template for editor launcher
     if ( !urls.isEmpty() ) 
     {
@@ -113,6 +112,7 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::phoneNumberItems(QContact& aCont
                 else
                 {
                     /* Other subtypes of QContactOnlineAccount are not supported by UI */
+                    delete detailItem;
                 }
             }
         }
@@ -124,7 +124,7 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::phoneNumberItems(QContact& aCont
 QList<CntEditViewItem*> CntEditViewItemBuilder::emailAddressItems(QContact& aContact)
 {
     QList<CntEditViewItem*> list;
-    QList<QContactEmailAddress> emails = aContact.details<QContactEmailAddress>();
+    QList<QContactEmailAddress> emails = CntDetailOrderingHelper::getOrderedEmailAccounts(aContact);
     // template for editor launcher
     if ( emails.isEmpty() ) 
     {
@@ -190,7 +190,7 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::addressItems(QContact& aContact)
 QList<CntEditViewItem*> CntEditViewItemBuilder::urlItems(QContact& aContact)
 {
     QList<CntEditViewItem*> list;
-    QList<QContactUrl> urls = aContact.details<QContactUrl>();
+    QList<QContactUrl> urls = CntDetailOrderingHelper::getOrderedUrls(aContact);
     // template for editor launcher
     if ( urls.isEmpty() ) 
     {
@@ -392,6 +392,28 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::familyDetails(QContact& aContact
         detailItem->addText( children );
         list.append( detailItem );
     }
+    return list;
+}
+
+QList<CntEditViewItem*> CntEditViewItemBuilder::ringtoneDetails(QContact& aContact)
+{
+    QList<CntEditViewItem*> list;
+    // Ring Tone
+    QContactRingtone ringtone = aContact.detail<QContactRingtone>();
+    QUrl ringtoneUrl = ringtone.audioRingtoneUrl();
+    if ( !ringtoneUrl.isEmpty() )
+    {
+        CntEditViewDetailItem* detailItem = new CntEditViewDetailItem(
+                ringtone,
+                QContactRingtone::FieldAudioRingtoneUrl,
+                ringToneFetcherView);
+        detailItem->addText( hbTrId("txt_phob_formlabel_ringing_tone") );
+        QFileInfo ringtoneFileInfo(ringtoneUrl.toString());
+        QString ringtoneFileName = ringtoneFileInfo.fileName();
+        detailItem->addText( ringtoneFileName);        
+        list.append( detailItem );
+    }
+        
     return list;
 }
 

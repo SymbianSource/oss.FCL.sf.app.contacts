@@ -17,7 +17,7 @@
 TEMPLATE = app
 TARGET = 
 
-QT += testlib
+QT += testlib sql xml
 CONFIG  += qtestlib
 #DEFINES += PBK_UNIT_TEST
 
@@ -26,14 +26,19 @@ INCLUDEPATH += .
 
 symbian:
 {
-	INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
+	INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE 
 	
 	# Input
-	HEADERS += mt_cntactions.h 
+	HEADERS += testrunner.h
+	HEADERS += mt_cntactions.h
+	
+	SOURCES += main.cpp
+	SOURCES += testrunner.cpp
 	SOURCES += mt_cntactions.cpp
 	
 	TARGET.CAPABILITY = ALL -TCB
   
   LIBS += -lQtContacts 
+  
 }
 

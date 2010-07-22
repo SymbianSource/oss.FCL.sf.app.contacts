@@ -32,33 +32,29 @@ TARGET.CAPABILITY = CAP_GENERAL_DLL
 TARGET.EPOCALLOWDLLDATA = 1
 TARGET.UID3 = 0x2002E6EC
 
-QT += sql
-
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
+INCLUDEPATH += ../../inc
 INCLUDEPATH += inc
-INCLUDEPATH += ../inc
-INCLUDEPATH += ../../logsui/logsengine/inc
-#INCLUDEPATH += /sf/app/messaging/msg_plat/msg_conversation_model_api/inc
-
-
-INTERNAL_PUBLIC_HEADERS += \
-    inc/cnthistorymodelglobal.h \
-    inc/cnthistorymodel.h        
 
 HEADERS += \
-    $$INTERNAL_PUBLIC_HEADERS \
+    inc/cnthistorymodelglobal.h \
+    inc/cnthistorymodelconsts.h \
+    inc/cnthistorymodel.h \
     inc/cnthistorymodel_p.h 
 
-SOURCES += src/cnthistorymodel.cpp
+SOURCES += \
+    src/cnthistorymodel_p.cpp \
+    src/cnthistorymodel.cpp
     
 LIBS += -llogsengine \
         -lQtContacts \
         -lmsghistory
-                 
-deploy.path = /
-headers.sources = $$INTERNAL_PUBLIC_HEADERS
-headers.path = epoc32/include/app
-DEPLOYMENT += exportheaders
 
-# This is for new exporting system coming in garden
-for(header, headers.sources):BLD_INF_RULES.prj_exports += "$$header $$deploy.path$$headers.path/$$basename(header)"
+defBlock = \      
+    "$${LITERAL_HASH}if defined(EABI)" \
+        "DEFFILE  ../eabi/cnthistorymodel.def" \
+    "$${LITERAL_HASH}else" \
+        "DEFFILE  ../bwins/cnthistorymodel.def" \
+    "$${LITERAL_HASH}endif"
+
+MMP_RULES += defBlock

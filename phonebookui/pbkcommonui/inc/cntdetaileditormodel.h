@@ -41,6 +41,8 @@ public:
     inline QContact* contact() const;
     virtual QContactDetail detail() const = 0;
     
+    // Note that this method should not save anything if there's nothing to change.
+    // In otherwords, don't change the mContact pointer if not needed.
     virtual void saveContactDetails() = 0;
     virtual void insertDetailField(){}
     

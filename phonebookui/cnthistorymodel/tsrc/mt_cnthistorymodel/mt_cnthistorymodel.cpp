@@ -23,11 +23,12 @@
 
 void TestCntHistoryModel::init()
 {
+    qRegisterMetaType<QModelIndex>("QModelIndex");
     cm = new QContactManager("symbian");
     model = new CntHistoryModel(1, cm);
-    model->d->m_List.clear();
-    model->d->m_logsMap.clear();
-    model->d->m_msgMap.clear();
+    model->d_ptr->m_List.clear();
+    model->d_ptr->m_logsMap.clear();
+    model->d_ptr->m_msgMap.clear();
 }
 
 void TestCntHistoryModel::cleanup()
@@ -39,36 +40,36 @@ void TestCntHistoryModel::cleanup()
 void TestCntHistoryModel::testLogsInsertions()
 {   
     QSignalSpy spy( model, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
-    model->logsRowsInserted(QModelIndex(), 0, 0);
+    model->d_ptr->logsRowsInserted(QModelIndex(), 0, 0);
     
     QVERIFY(model->rowCount() == 1);
-    QVERIFY(model->d->m_logsMap.count() == 1);
+    QVERIFY(model->d_ptr->m_logsMap.count() == 1);
     QVERIFY(spy.count() == 1);
 }
 
 void TestCntHistoryModel::testLogsRemovals()
 {
-    model->logsRowsInserted(QModelIndex(), 0, 0);
+    model->d_ptr->logsRowsInserted(QModelIndex(), 0, 0);
     
     QSignalSpy spy( model, SIGNAL(rowsRemoved(const QModelIndex &, int, int)));
-    model->logsRowsRemoved(QModelIndex(), 0, 0);
+    model->d_ptr->logsRowsRemoved(QModelIndex(), 0, 0);
     QVERIFY(model->rowCount() == 0);
-    QVERIFY(model->d->m_logsMap.count() == 0);
+    QVERIFY(model->d_ptr->m_logsMap.count() == 0);
     QVERIFY(spy.count() == 1);
     
     // Remove the same item
     QSignalSpy spy1( model, SIGNAL(rowsRemoved(const QModelIndex &, int, int)));
-    model->logsRowsRemoved(QModelIndex(), 0, 0);
+    model->d_ptr->logsRowsRemoved(QModelIndex(), 0, 0);
     QVERIFY(spy1.count() == 0);
 }
 
 void TestCntHistoryModel::testLogsUpdates()
 {
-    model->logsRowsInserted(QModelIndex(), 0, 0);
+    model->d_ptr->logsRowsInserted(QModelIndex(), 0, 0);
     
     QSignalSpy spy( model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)));
-    QModelIndex in = model->d->m_AbstractLogsModel->index(0,0);
-    model->logsDataChanged(in, in);
+    QModelIndex in = model->d_ptr->m_AbstractLogsModel->index(0,0);
+    model->d_ptr->logsDataChanged(in, in);
     QVERIFY(spy.count() == 1);
 }
 
@@ -86,20 +87,20 @@ void TestCntHistoryModel::testMsgInsertions()
     msgs.append(msg3);
     
     QSignalSpy spy( model, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
-    model->messagesReady(msgs);
+    model->d_ptr->messagesReady(msgs);
     
     QVERIFY(model->rowCount() == 3);
-    QVERIFY(model->d->m_msgMap.count() == 3);
-    QVERIFY(model->d->m_msgMap.contains(111));
-    QVERIFY(model->d->m_msgMap.contains(222));
-    QVERIFY(model->d->m_msgMap.contains(333));
+    QVERIFY(model->d_ptr->m_msgMap.count() == 3);
+    QVERIFY(model->d_ptr->m_msgMap.contains(111));
+    QVERIFY(model->d_ptr->m_msgMap.contains(222));
+    QVERIFY(model->d_ptr->m_msgMap.contains(333));
     QVERIFY(spy.count() == 1);
     
     MsgItem msg;
     QSignalSpy spy2( model, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
-    model->messageAdded(msg);
+    model->d_ptr->messageAdded(msg);
     QVERIFY(model->rowCount() == 4);
-    QVERIFY(model->d->m_msgMap.count() == 4);
+    QVERIFY(model->d_ptr->m_msgMap.count() == 4);
     QVERIFY(spy2.count() == 1);
     
 }
@@ -116,18 +117,18 @@ void TestCntHistoryModel::testMsgRemovals()
     msgs.append(msg1);
     msgs.append(msg2);
     msgs.append(msg3);
-    model->messagesReady(msgs);
+    model->d_ptr->messagesReady(msgs);
     
     QSignalSpy spy( model, SIGNAL(rowsRemoved(const QModelIndex &, int, int)));
-    model->messageDeleted(msg2);
-    QVERIFY(!model->d->m_msgMap.contains(222));
+    model->d_ptr->messageDeleted(msg2);
+    QVERIFY(!model->d_ptr->m_msgMap.contains(222));
     QVERIFY(model->rowCount() == 2);
     QVERIFY(spy.count() == 1);
     
     // Increase code coverage
     HItemPointer p;
-    model->d->m_msgMap.insert(333, p);
-    model->messageDeleted(msg3);
+    model->d_ptr->m_msgMap.insert(333, p);
+    model->d_ptr->messageDeleted(msg3);
 }
 
 void TestCntHistoryModel::testMsgUpdates()
@@ -142,36 +143,36 @@ void TestCntHistoryModel::testMsgUpdates()
     msgs.append(msg1);
     msgs.append(msg2);
     msgs.append(msg3);
-    model->messagesReady(msgs);
+    model->d_ptr->messagesReady(msgs);
     
     QSignalSpy spy( model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)));
     QString s("test message");
     msg2.setBody(s);
-    model->messageChanged(msg2);
-    QVERIFY(model->d->m_msgMap.value(222)->message == s);
+    model->d_ptr->messageChanged(msg2);
+    QVERIFY(model->d_ptr->m_msgMap.value(222)->message == s);
     QVERIFY(spy.count() == 1);
     
     // Increase code coverage
     HItemPointer p;
-    model->d->m_msgMap.insert(333, p);
-    model->messageChanged(msg3);
+    model->d_ptr->m_msgMap.insert(333, p);
+    model->d_ptr->messageChanged(msg3);
 }
 
 void TestCntHistoryModel::testReadLogEvent()
 {
     LogsEvent event;
     HItemPointer item(new HistoryItem);
-    model->readLogEvent(&event, *item);
+    model->d_ptr->readLogEvent(&event, *item);
     
     QVERIFY(event.time() == item->timeStamp);
-    QVERIFY(item->flags & CntHistoryModel::Incoming);
+    QVERIFY(item->flags & CntIncoming);
     QVERIFY(event.number() == item->number);
-    QVERIFY(item->flags & CntHistoryModel::CallLog);
+    QVERIFY(item->flags & CntCallLog);
     QVERIFY(!item->message.isEmpty());
     
     // Increase code coverage
-    model->d->m_isMyCard = true;
-    model->readLogEvent(&event, *item);
+    model->d_ptr->m_isMyCard = true;
+    model->d_ptr->readLogEvent(&event, *item);
 }
 
 void TestCntHistoryModel::testReadMsgEvent()
@@ -185,19 +186,19 @@ void TestCntHistoryModel::testReadMsgEvent()
     msg.setTimeStamp(d.toTime_t());
     
     HItemPointer item(new HistoryItem);
-    model->readMsgEvent(msg, *item);
+    model->d_ptr->readMsgEvent(msg, *item);
     
     QVERIFY(item->timeStamp == d);
     QVERIFY(item->message == body);
-    QVERIFY(item->flags & CntHistoryModel::Message);
+    QVERIFY(item->flags & CntMessage);
     QVERIFY(item->number == QString("123456"));
-    QVERIFY(item->flags & CntHistoryModel::Incoming);
+    QVERIFY(item->flags & CntIncoming);
 }
 
 void TestCntHistoryModel::testRoles()
 {
     MsgItem msg;
-    model->messageAdded(msg);
+    model->d_ptr->messageAdded(msg);
     
     QModelIndex modelIndex = model->index(0, 0);
     QVERIFY(modelIndex.isValid());
@@ -207,7 +208,7 @@ void TestCntHistoryModel::testRoles()
     QVERIFY(var.isValid());
     
     // FlagsRole
-    var = modelIndex.data(CntHistoryModel::FlagsRole);
+    var = modelIndex.data(CntFlagsRole);
     QVERIFY(var.type() == QVariant::Int);
     
     // Display role
@@ -215,7 +216,7 @@ void TestCntHistoryModel::testRoles()
     QVERIFY(var.type() == QVariant::StringList);
     
     // PhoneNumberRole
-    var = modelIndex.data(CntHistoryModel::PhoneNumberRole);
+    var = modelIndex.data(CntPhoneNumberRole);
     QVERIFY(var.type() == QVariant::String);
 
     // BackgroundRole
@@ -236,7 +237,7 @@ void TestCntHistoryModel::testRoles()
     QVERIFY(!modelIndex.isValid());
     
     // Stored history item is null
-    model->d->m_List.first().clear();
+    model->d_ptr->m_List.first().clear();
     modelIndex = model->index(0, 0);
     var = model->data(modelIndex, Qt::DisplayRole);
     QVERIFY(var.type() == QVariant::Invalid);
@@ -262,13 +263,11 @@ void TestCntHistoryModel::testSorting()
         dt = dt.addMSecs(delta.at(i));
         p.data()->timeStamp = dt.toLocalTime();
         if ( i % 2 )
-            p.data()->flags |= CntHistoryModel::CallLog;
+            p.data()->flags |= CntCallLog;
         else
-            p.data()->flags |= CntHistoryModel::Message;
-        
-        qDebug() << "Flag: " << p.data()->flags;
-        qDebug() << "Delta: " << delta.at(i);
-        model->d->m_List.append(p);
+            p.data()->flags |= CntMessage;
+
+        model->d_ptr->m_List.append(p);
     } 
     
     // Sort ascending
@@ -276,10 +275,10 @@ void TestCntHistoryModel::testSorting()
     model->sortAndRefresh(Qt::AscendingOrder);
     
     QVERIFY(spy.count() == 1);    
-    HItemPointer current = model->d->m_List.first();
-    for(int i=1; i<model->d->m_List.count(); i++) {
-        QVERIFY(current.data()->timeStamp <= model->d->m_List.at(i).data()->timeStamp);
-        current = model->d->m_List.at(i);
+    HItemPointer current = model->d_ptr->m_List.first();
+    for(int i=1; i<model->d_ptr->m_List.count(); i++) {
+        QVERIFY(current.data()->timeStamp <= model->d_ptr->m_List.at(i).data()->timeStamp);
+        current = model->d_ptr->m_List.at(i);
     }
     
     // Sort descending
@@ -287,16 +286,16 @@ void TestCntHistoryModel::testSorting()
     model->sortAndRefresh(Qt::DescendingOrder);
     
     QVERIFY(spy1.count() == 1);    
-    current = model->d->m_List.last();
-    for(int i=model->d->m_List.count(); i<1; i--) {
-        QVERIFY(current.data()->timeStamp >= model->d->m_List.at(i).data()->timeStamp);
-        current = model->d->m_List.at(i);
+    current = model->d_ptr->m_List.last();
+    for(int i=model->d_ptr->m_List.count(); i<1; i--) {
+        QVERIFY(current.data()->timeStamp >= model->d_ptr->m_List.at(i).data()->timeStamp);
+        current = model->d_ptr->m_List.at(i);
     }
 }
 
 void TestCntHistoryModel::testClear()
 {
-    model->logsRowsInserted(QModelIndex(), 0, 0);
+    model->d_ptr->logsRowsInserted(QModelIndex(), 0, 0);
     
     // Clear history with log
     QSignalSpy spy( model, SIGNAL( rowsRemoved(const QModelIndex &, int, int)));
@@ -313,18 +312,15 @@ void TestCntHistoryModel::testClear()
 void TestCntHistoryModel::testMarkSeen()
 {
     // Mark history as seen
-    QVERIFY(!model->d->m_isMarkedAsSeen);
+    QVERIFY(!model->d_ptr->m_isMarkedAsSeen);
     model->markAllAsSeen();
-    QVERIFY(model->d->m_isMarkedAsSeen);
+    QVERIFY(model->d_ptr->m_isMarkedAsSeen);
     
     // NOT TESTING! Increasing code coverage
     model->markAllAsSeen();
-    model->d->m_isMarkedAsSeen = false;
-    model->d->m_isMyCard = true;
-    model->initializeMsgModel();
+    model->d_ptr->m_isMarkedAsSeen = false;
+    model->d_ptr->m_isMyCard = true;
+    model->d_ptr->initializeMsgModel();
     model->markAllAsSeen();
     model->clearHistory();
 }
-
-QTEST_MAIN(TestCntHistoryModel);
-

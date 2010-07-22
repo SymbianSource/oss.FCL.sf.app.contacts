@@ -26,28 +26,67 @@
 
 class HbMainWindow;
 
+/**
+ * Launches phonebookservices highway services, for functional testing.
+ */
 class testPbkServices : public QObject
 {
     Q_OBJECT
 
 public slots:
-    void launchFetch();
+    // FETCH
+    void launchMultiFetch();
+    void launchMultiFetch_old();
+    void launchMultiFetch_sms();
+    void launchMultiFetch_sms_old();
+    void launchMultiFetch_email();
+    void launchMultiFetch_email_old();
     void launchSingleFetch();
-    void launchSmsFilteredFetch();
-    void launchEmailFilteredFetch();
-    void launchEditorNumber();
-    void launchEditorEmail();
-    void launchEditorOnlineAccount();
+    void launchSingleFetch_old();
+
+    // EDIT - create new
+    void launchEditCreateNew_number();
+    void launchEditCreateNew_number_old();
+    void launchEditCreateNew_email();
+    void launchEditCreateNew_email_old();
+    void launchEditCreateNew_onlineAccount();
+    void launchEditCreateNew_onlineAccount_old();
     void launchEditorVCard();
-    void launchUpdateEditorNumber();
-    void launchUpdateEditorEmail();
-    void launchUpdateEditorOnlineAccount();
+    void launchEditorVCard_old();
+
+    // EDIT - update existing
+    void launchEditUpdateExisting_number();
+    void launchEditUpdateExisting_number_old();
+    void launchEditUpdateExisting_email();
+    void launchEditUpdateExisting_email_old();
+    void launchEditUpdateExisting_onlineAccount();
+    void launchEditUpdateExisting_onlineAccount_old();
+
+    // CONTACT CARD
+    void launchContactCard();
+    void launchContactCard_old();
+    void launchContactCardNumber();
+    void launchContactCardNumber_old();
+    void launchContactCardEmail();
+    void launchContactCardEmail_old();
+    void launchContactCardOnlineAccount();
+    void launchContactCardOnlineAccount_old();
+
     void onEditCompleted(const QVariant& value);
     void onRequestCompleted(const QVariant& value);
 
 public:
     testPbkServices(HbMainWindow *aParent);
     ~testPbkServices();
+
+private:
+    void launchMultiFetch( bool aNewInterface, QString aAction );
+    void launchSingleFetch( bool aNewInterface, QString aAction );
+    void launchEditCreateNew( bool aNewInterface, QString aDetailType, QString aFieldContent );
+    void launchEditorVCard( bool aNewInterface );
+    void launchEditUpdateExisting( bool aNewInterface, QString aDetailType, QString aDetailValue );
+    void launchContactCard( bool aNewInterface );
+    void launchContactCard( bool aNewInterface, QString aDetailType, QString aDetailValue );
 
 private:
 

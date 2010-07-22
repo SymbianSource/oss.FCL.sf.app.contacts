@@ -29,10 +29,10 @@
 QTM_USE_NAMESPACE
 
 class CntListModelData;
-class CntListModel;
+class XQSettingsKey;
 
 /*!
- * MobCntModel is a list model view for contacts database
+ * CntListModel is a list model view for contacts database
  * content. It will cache contacts database entries to be
  * displayed on the screen.
  *
@@ -43,16 +43,14 @@ class CntListModel;
 class CNTLISTMODEL_EXPORT CntListModel : public QAbstractListModel
 {
     Q_OBJECT
-    friend class TestMobCntModel;
+    friend class TestCntListModel;
 
 public:
     CntListModel(const QContactFilter& contactFilter = QContactFilter(),
-                const QList<QContactSortOrder>& contactSortOrders = QList<QContactSortOrder>(),
                 bool showMyCard = true,
                 QObject *parent = 0);
     CntListModel(QContactManager* manager,
                 const QContactFilter& contactFilter = QContactFilter(),
-                const QList<QContactSortOrder>& contactSortOrders = QList<QContactSortOrder>(),
                 bool showMyCard = true,
                 QObject *parent = 0);
     ~CntListModel();
@@ -62,20 +60,20 @@ public: // from QAbstractTableModel/QAbstractItemModel
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
 public:
-    QContact contact(const QModelIndex &index) const;
-    QModelIndex indexOfContact(const QContact &contact) const;
-    QContactManager& contactManager() const;
-    void setFilterAndSortOrder(const QContactFilter& contactFilter = QContactFilter(),
-                               const QList<QContactSortOrder>& contactSortOrders = QList<QContactSortOrder>());
-    void showMyCard(bool enabled);
-    bool myCardStatus() const;
-    QContactLocalId myCardId() const;
+	QContact contact(const QModelIndex &index) const;
+	QModelIndex indexOfContact(const QContact &contact) const;
+	QContactManager& contactManager() const;
+	void setFilter(const QContactFilter& contactFilter = QContactFilter());
+	void showMyCard(bool enabled);
+	bool myCardStatus() const;
+	QContactLocalId myCardId() const;
 	
 private:
     // Construction helpers
     int doConstruct();
     int initializeData();
     void updateContactIdsArray();
+    void setSortOrder();
 
     // Data manipulation
     QContact contact(int row) const;
@@ -84,18 +82,23 @@ private:
     bool validRowId(int row) const;
     int rowId(const QContactLocalId &contactId) const;
     QVariant dataForDisplayRole(int row) const;
+    void updateRelationships();
 
-protected slots:
+private slots:
     void handleAdded(const QList<QContactLocalId>& contactIds);
     void handleChanged(const QList<QContactLocalId>& contactIds);
     void handleRemoved(const QList<QContactLocalId>& contactIds);
     void handleMyCardChanged(const QContactLocalId& oldId, const QContactLocalId& newId);
     void handleContactInfoUpdated(QContactLocalId contactId);
+    void handleAddedRelationship(const QList<QContactLocalId>& contactIds);
+    void handleRemovedRelationship(const QList<QContactLocalId>& contactIds);
+    void refreshModel();
+    void handleRowSettingChanged(const XQSettingsKey& key, const QVariant& value);
 
 private:
     QSharedDataPointer<CntListModelData>  d;
-    HbIcon                               mDefaultIcon;
-    HbIcon                               mDefaultMyCardIcon;
+    HbIcon                               m_defaultIcon;
+    HbIcon                               m_defaultMyCardIcon;
 };
 
 #endif
