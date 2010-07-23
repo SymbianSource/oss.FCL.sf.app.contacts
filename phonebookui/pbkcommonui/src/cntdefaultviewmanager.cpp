@@ -113,14 +113,14 @@ void CntDefaultViewManager::setViewNavigator( CntViewNavigator* aNavigator )
     CNT_EXIT
 }
 
-void CntDefaultViewManager::back(const CntViewParameters aArgs)
+void CntDefaultViewManager::back(const CntViewParameters aArgs, bool toRoot)
 {
     CNT_ENTRY
     
     mArgs.clear();
     
     QFlags<Hb::ViewSwitchFlag> flags;
-    int back = mNavigator->back( flags );
+    int back = mNavigator->back( flags, toRoot );
 
     foreach( int k, aArgs.keys() )
     {
@@ -132,7 +132,8 @@ void CntDefaultViewManager::back(const CntViewParameters aArgs)
     {
         switchView( mArgs, flags );
     }
-    else {
+    else 
+    {
         // exiting application
         cleanup();
         closeApp();
@@ -263,4 +264,10 @@ void CntDefaultViewManager::switchView(const CntViewParameters aArgs, QFlags<Hb:
     
     CNT_EXIT
 }
+
+int CntDefaultViewManager::currentViewId()
+{
+    return mCurrent->viewId();
+}
+
 // End of File

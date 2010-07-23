@@ -90,7 +90,8 @@ private:
     HbAction*                   mSoftkey; // owned by view
     HbListView*                 mListView; // owned by layout
     int                         mPopupCount;
-    QStringList                 mActionParams;
+    QStringList                 mEmailActionParams;
+    QVariantMap                 mMessageActionParams;
 };
 
 #endif // CNTGROUPACTIONSVIEW_H

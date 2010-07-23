@@ -30,9 +30,12 @@
 #include <hbparameterlengthlimiter.h>
 #include <hbmainwindow.h>
 #include <hbframebackground.h>
+#include <QTimer>
+#include <qtcontacts.h>
 
 #include "cnthistoryviewitem.h"
 #include "cntglobal.h"
+#include "cntdebug.h"
 
 const char *CNT_HISTORYVIEW_XML = ":/xml/contacts_history.docml";
 
@@ -99,6 +102,9 @@ CntHistoryView::~CntHistoryView()
  */
 void CntHistoryView::deactivate()
 {
+    QContactManager* cm = mViewMgr->contactManager(SYMBIAN_BACKEND);
+    disconnect(cm, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)),
+            this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
 }
 
 /**
@@ -108,6 +114,8 @@ void CntHistoryView::activate( CntAbstractViewManager* aMgr, const CntViewParame
 {
     mViewMgr = aMgr;
     mArgs = aArgs;
+    
+    QContactManager* cm = mViewMgr->contactManager(SYMBIAN_BACKEND);
     mContact = new QContact(mArgs.value(ESelectedContact).value<QContact>());
     
     // Set history view heading
@@ -130,8 +138,7 @@ void CntHistoryView::activate( CntAbstractViewManager* aMgr, const CntViewParame
     // Connect listview items to respective slots
     connect(mHistoryListView, SIGNAL(activated(const QModelIndex &)),
                       this,  SLOT(itemActivated(const QModelIndex &)));
-    mHistoryModel = new CntHistoryModel(mContact->localId(),
-                                        mViewMgr->contactManager(SYMBIAN_BACKEND));
+    mHistoryModel = new CntHistoryModel(mContact->localId(), cm);
     mHistoryListView->setModel(mHistoryModel); //ownership is not taken
     
     //start listening to the events amount changing in the model
@@ -155,6 +162,9 @@ void CntHistoryView::activate( CntAbstractViewManager* aMgr, const CntViewParame
     HbMainWindow* mainWindow = mView->mainWindow();
     connect(mainWindow, SIGNAL(orientationChanged(Qt::Orientation)), 
             this, SLOT(updateScrollingPosition()));
+    
+    connect(cm, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), 
+        this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
 }
 
 /*!
@@ -220,16 +230,16 @@ void CntHistoryView::itemActivated(const QModelIndex &index)
             operation = "dial(QString)";
             args << number;
             createRequest = true;
+            
+            // TODO: Using XQApplicationManager is not working with calls
+            // The factory method cannot create a request. Find out why
+            createRequest = false;
+            QString service("com.nokia.symbian.ICallDial");
+            QString type("dial(QString,int)");
+            XQServiceRequest snd(interface, operation, false);
+            snd << number.toString() << mContact->localId();
+            snd.send();
         }
-        
-        // TODO: Using XQApplicationManager is not working with calls
-        // The factory method cannot create a request. Find out why
-        createRequest = false;
-        QString service("com.nokia.symbian.ICallDial");
-        QString type("dial(QString)");
-        XQServiceRequest snd(interface, operation, false);
-        snd << number.toString();
-        snd.send();
         
     } else if ( flags & CntMessage ) {
         // Open conversation view
@@ -266,6 +276,27 @@ void CntHistoryView::showPreviousView()
     var.setValue(*mContact);
     mArgs.insert(ESelectedContact, var);
     mViewMgr->back( mArgs );
+}
+
+/*!
+Go back to the root view
+*/
+void CntHistoryView::showRootView()
+{   
+    mViewMgr->back( mArgs, true );
+}
+
+
+void CntHistoryView::contactDeletedFromOtherSource(const QList<QContactLocalId>& contactIds)
+{
+    CNT_ENTRY
+    if ( contactIds.contains(mContact->localId()) )
+    {
+        // Do not switch to the previous view immediately. List views are
+        // not updated properly if this is not done in the event loop
+        QTimer::singleShot(0, this, SLOT(showRootView()));
+    }
+    CNT_EXIT
 }
 
 /*!

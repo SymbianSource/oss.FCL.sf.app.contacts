@@ -21,6 +21,7 @@
 #include "cntdocumentloader.h"
 #include "cnteditviewheadingitem.h"
 #include "cntcontactcardheadingitem.h"
+#include "cntfetchmarkall.h"
 #include "cntimagelabel.h"
 
 CntDocumentLoader::CntDocumentLoader()
@@ -58,6 +59,14 @@ QObject *CntDocumentLoader::createObject(const QString &type, const QString &nam
        {
            result->setObjectName(name);
        }
+    }
+    else if ( type == "CntFetchMarkAll" )
+    {
+        result = new CntFetchMarkAll();
+        if ( result )
+        {
+            result->setObjectName(name);
+        }
     }
     else
     {

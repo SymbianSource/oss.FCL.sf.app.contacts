@@ -25,6 +25,8 @@
 #include <xqappmgr.h>
 
 class HbMainWindow;
+class HbAction;
+class HbDialog;
 
 /**
  * Launches phonebookservices highway services, for functional testing.
@@ -100,6 +102,7 @@ private:
 
     XQAiwRequest         *mRequest; 
     HbMainWindow         *mMainWindow;
+    HbDialog             *mPopup;
 
 };
 

@@ -23,6 +23,7 @@
 #include "cntimagelabel.h"
 #include "cntsavemanager.h"
 #include "cntglobal.h"
+#include "cntdebug.h"
 
 #include <qtcontacts.h>
 #include <hbdocumentloader.h>
@@ -44,6 +45,7 @@
 
 #include <QFileInfo>
 #include <QApplication>
+#include <QTimer>
 
 const char *CNT_EDIT_XML = ":/xml/contacts_ev.docml";
 
@@ -52,7 +54,7 @@ CntEditViewPrivate::CntEditViewPrivate() :
     mImageLabel( NULL ),
     mThumbnailManager( NULL ),
     mContact( NULL ),
-    mReq(0),
+    mReq(NULL),
     mMenu(NULL),
     mSaveManager(NULL)
 {
@@ -140,6 +142,8 @@ void CntEditViewPrivate::setOrientation(Qt::Orientation orientation)
 
 void CntEditViewPrivate::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
 {
+    CNT_ENTRY
+    
     mMgr = aMgr;
     mArgs = aArgs;
     
@@ -220,6 +224,8 @@ void CntEditViewPrivate::activate( CntAbstractViewManager* aMgr, const CntViewPa
             this, SLOT(thumbnailReady(QPixmap, void*, int, int)) );
 
     loadAvatar();
+    
+    CNT_EXIT
 }
 
 void CntEditViewPrivate::deactivate()
@@ -346,10 +352,12 @@ void CntEditViewPrivate::handleAddDetailItem(HbAction *aAction)
 {
     CntDetailPopup *popup = static_cast<CntDetailPopup*>(sender());
     
-    if (popup && aAction != popup->actions().first())
+    if (popup && aAction != popup->actions().first() && popup->selectedItems().count())
     {
-        int id = popup->selectedDetail();
-        
+        int row = popup->selectedItems().first().toInt();
+        QModelIndex index = popup->model()->index(row, 0);
+        int id = popup->model()->data(index, Qt::UserRole).toInt();
+
         if (id != noView )
         {
             mArgs.insert(EViewId, id );
@@ -454,7 +462,7 @@ void CntEditViewPrivate::deleteContact()
     else
     {
         QContactManager* cm = mMgr->contactManager( SYMBIAN_BACKEND );
-        QString name = cm->synthesizedDisplayLabel( *mContact );
+        QString name = cm->synthesizedContactDisplayLabel( *mContact );
         if (name.isEmpty())
         {
             name = hbTrId("txt_phob_list_unnamed");
@@ -473,9 +481,11 @@ void CntEditViewPrivate::handleDeleteContact(int action)
     {
         QContactManager* cm = mMgr->contactManager( SYMBIAN_BACKEND );
 
+        disconnect(cm, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)),
+                this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
         emit q->contactRemoved(cm->removeContact( mContact->localId() ));
         
-        mMgr->back( mArgs );
+        mMgr->back( mArgs, true );
     }
 }
 
@@ -487,22 +497,30 @@ void CntEditViewPrivate::discardChanges()
     
     // get a fresh one from backend.
     QContactManager* mgr = mMgr->contactManager(SYMBIAN_BACKEND);
-    mContact = new QContact(mgr->contact( mContact->localId() ));
+    setSelectedContact( mgr->contact( mContact->localId()) );
     
     QVariant var;
     var.setValue(*mContact);
     
     CntViewParameters viewParameters;
     viewParameters.insert(ESelectedContact, var);
-            
-    mMgr->back( viewParameters );
-}
+    
+    if ( mArgs.value( EExtraAction ).toString() == CNT_ROOT_ACTION )
+    {
+        mMgr->back( viewParameters, true );
+    }
+    else
+    {
+        mMgr->back( viewParameters );
+    }
+       
+}   
 
 void CntEditViewPrivate::saveChanges()
 {
     Q_Q(CntEditView);
     
-    QString name = mMgr->contactManager(SYMBIAN_BACKEND)->synthesizedDisplayLabel(*mContact);
+    QString name = mMgr->contactManager(SYMBIAN_BACKEND)->synthesizedContactDisplayLabel(*mContact);
     
     if (name.isEmpty())
     {
@@ -512,6 +530,7 @@ void CntEditViewPrivate::saveChanges()
     CntSaveManager::CntSaveResult result = mSaveManager->saveContact(mContact, mMgr->contactManager(SYMBIAN_BACKEND));
     
     QVariant var;
+    bool backToRoot(false);
     
     switch (result)
     {
@@ -534,15 +553,21 @@ void CntEditViewPrivate::saveChanges()
         HbDeviceNotificationDialog::notification(QString(),hbTrId("SAVING FAILED!"));
         break;
     case CntSaveManager::EDeleted:
-        emit q->contactUpdated(KCntServicesReturnValueContactDeleted);
+        emit q->contactRemoved(true);
+        backToRoot = true;
         break;
     case CntSaveManager::ENothingDone:
     default:
         emit q->contactUpdated(KCntServicesReturnValueContactNotModified);
         break;
     }
+
+    if ( mArgs.value( EExtraAction ).toString() == CNT_ROOT_ACTION )
+    {
+        backToRoot = true;
+    }
     
-    mMgr->back( mArgs );
+    mMgr->back( mArgs, backToRoot );
 }
 
 void CntEditViewPrivate::openNameEditor()
@@ -607,7 +632,7 @@ void CntEditViewPrivate::thumbnailReady( const QPixmap& pixmap, void *data, int 
         mHeading->setIcon(icon);
         
         mImageLabel->clear();
-        mImageLabel->setIcon(icon);
+        mImageLabel->setIcon(pixmap);
     }
 }
 
@@ -681,14 +706,15 @@ HbMenu* CntEditViewPrivate::createPopup( const QModelIndex aIndex, CntEditViewIt
 void CntEditViewPrivate::addDetail( CntEditViewItem* aDetail )
 {
     QVariant id = aDetail->data( ERoleEditorViewId );
-    CntViewParameters viewParameters;
-    viewParameters.insert(EViewId, id.toInt());
+    
+    mArgs.insert(EViewId, id.toInt());
+    mArgs.insert(ESelectedAction, CNT_ADD_ACTION );
     QVariant var;
     var.setValue(*mContact);
-    viewParameters.insert(ESelectedContact, var);
-    viewParameters.insert(ESelectedAction, CNT_ADD_ACTION );
-                                            
-    mMgr->changeView( viewParameters );
+    
+    mArgs.insert(ESelectedContact, var);
+                                        
+    mMgr->changeView( mArgs );
 }
 
 void CntEditViewPrivate::editDetail( CntEditViewItem* aDetail )
@@ -720,19 +746,37 @@ void CntEditViewPrivate::setSelectedContact( QContact aContact )
         mContact = NULL;
     }
     mContact = new QContact( aContact );
-    /*
-    mListView->setModel( NULL );
     
-    if ( mModel )
-    {
-        delete mModel;
-        mModel = NULL;
-    }
-    mModel = new CntEditViewListModel( mContact );
-    
-    if ( mListView )
-        mListView->setModel( mModel );
-        */
+    QContactManager* cm = mMgr->contactManager( SYMBIAN_BACKEND );
+    connect(cm, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), 
+        this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)), Qt::UniqueConnection);
 }
+
+void CntEditViewPrivate::contactDeletedFromOtherSource(const QList<QContactLocalId>& contactIds)
+{
+    CNT_ENTRY
+    
+    if ( contactIds.contains(mContact->localId()) )
+    {
+        // Do not switch to the previous view immediately. List views are
+        // not updated properly if this is not done in the event loop
+        QTimer::singleShot(0, this, SLOT(showRootView()));
+    }
+    
+    CNT_EXIT
+}
+
+void CntEditViewPrivate::showRootView()
+{
+    CNT_ENTRY
+    
+    Q_Q(CntEditView);
+    
+    emit q->contactRemoved(true);
+    mMgr->back( mArgs, true );
+    
+    CNT_EXIT
+}
+
 // End of File
 

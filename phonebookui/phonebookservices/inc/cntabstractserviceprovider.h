@@ -29,7 +29,7 @@ class CntAbstractServiceProvider
 public:
 
     /*!
-     Complete the Qt Highway service (through a QqServiceProvider instance).
+     Complete the Qt Highway service (through a XQServiceProvider instance).
      Closes the app after the completing is done (message sending to client is done).
      */
     virtual void CompleteServiceAndCloseApp(const QVariant& retValue) = 0;

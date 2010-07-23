@@ -34,7 +34,7 @@ public:
     
     /* New API */
     virtual void changeView( const CntViewParameters aArgs ) = 0;
-    virtual void back( const CntViewParameters aArgs ) = 0;
+    virtual void back( const CntViewParameters aArgs, bool toRoot = false ) = 0;
     
     virtual QContactManager* contactManager( const QString& aType ) = 0;
 };

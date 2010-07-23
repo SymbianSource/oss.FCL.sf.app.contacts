@@ -71,6 +71,10 @@ HbWidget* CntNoteEditorViewItem::createCustomWidget()
     widget->setLayout( mLayout );
     
     connect( mEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)) );
+    
+    // Naming UI components for automation testability
+    QString editorObjName = detail.definitionName() + " line edit %1";
+    mEdit->setObjectName(editorObjName.arg(modelIndex().row()));
     return widget;
     }
 // End of File

@@ -16,7 +16,7 @@
 */
 
 #include "cntgroupmemberview.h"
-#include "cntfetchcontactsview.h"
+#include "cntfetchcontactpopup.h"
 #include "cntcontactcardheadingitem.h"
 #include "cntglobal.h"
 #include "cntimagelabel.h"
@@ -36,6 +36,7 @@
 #include <thumbnailmanager_qt.h>
 #include <cntlistmodel.h>
 #include <hbmainwindow.h>
+#include <xqservicerequest.h>
 
 #include "cntdocumentloader.h"
 
@@ -63,7 +64,6 @@ CntGroupMemberView::CntGroupMemberView() :
     mModel(NULL),
     mImageLabel(NULL), 
     mListView(NULL),
-    mFetchView(NULL),
     mAvatar(NULL)
 {
     mDocument = new CntDocumentLoader;
@@ -124,13 +124,10 @@ CntGroupMemberView::~CntGroupMemberView()
     mView->deleteLater();
     
     delete mGroupContact;
-    mGroupContact = 0;
+    mGroupContact = NULL;
     
     delete mModel;
-    mModel = 0;
-    
-    delete mFetchView;
-    mFetchView = 0;
+    mModel = NULL;
     
     delete mAvatar;
     mAvatar = NULL;
@@ -203,7 +200,7 @@ void CntGroupMemberView::activate( CntAbstractViewManager* aMgr, const CntViewPa
     
     if (mArgs.value(ESelectedAction).toString() == CNT_SAVE_ACTION)
     {
-        QString name = getContactManager()->synthesizedDisplayLabel(*mGroupContact);
+        QString name = getContactManager()->synthesizedContactDisplayLabel(*mGroupContact);
         HbNotificationDialog::launchDialog(HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_new_group_1_created").arg(name)));
     }
 }
@@ -240,56 +237,46 @@ void CntGroupMemberView::manageMembers()
     membersFilter.setRelationshipType(QContactRelationship::HasMember);
     membersFilter.setRelatedContactRole(QContactRelationship::First);
     membersFilter.setRelatedContactId(mGroupContact->id());   
+    
     mOriginalGroupMembers = getContactManager()->contactIds(membersFilter);
     
-    QSet<QContactLocalId> contactsSet = mOriginalGroupMembers.toSet();
-
-    QString groupName = mGroupContact->displayLabel();
+    QContactName contactName = mGroupContact->detail( QContactName::DefinitionName );
+    QString groupName = contactName.value( QContactName::FieldCustomLabel );
     if (groupName.isEmpty())
     {
         groupName = hbTrId("txt_phob_list_unnamed");
     }
     
-    if (!mFetchView) {
-        mFetchView = new CntFetchContacts(*mViewManager->contactManager( SYMBIAN_BACKEND ));
-        connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleManageMembers()));
-    }
-    mFetchView->setDetails(HbParameterLengthLimiter(hbTrId("txt_phob_title_members_of_1_group")).arg(groupName),
-                           hbTrId("txt_common_button_save"));
-    mFetchView->displayContacts(HbAbstractItemView::MultiSelection, contactsSet);
+    CntFetchContactPopup* popup = CntFetchContactPopup::createMultiSelectionPopup(
+            HbParameterLengthLimiter(hbTrId("txt_phob_title_members_of_1_group")).arg(groupName),
+            hbTrId("txt_common_button_save"),
+            *mViewManager->contactManager(SYMBIAN_BACKEND));
+    connect( popup, SIGNAL(fetchReady(QSet<QContactLocalId>)),this, SLOT(handleManageMembers(QSet<QContactLocalId>)) );
+    popup->setSelectedContacts( mOriginalGroupMembers.toSet() );
+    popup->showPopup();
 }
 
-void CntGroupMemberView::handleManageMembers()
+void CntGroupMemberView::handleManageMembers(QSet<QContactLocalId> aIds)
 {
-    
-    QSet<QContactLocalId> selectedContacts = mFetchView->getSelectedContacts();
-    
-    if (mFetchView->wasCanceled()) {
-        delete mFetchView;
-        mFetchView = 0;
-        return;
-    }
-
     QList<QContactRelationship> removedMemberships;
     QList<QContactRelationship> addedMemberships;
 
-    QSet<QContactLocalId> removedMembers = mOriginalGroupMembers.toSet() - selectedContacts;
+    QSet<QContactLocalId> removedMembers = mOriginalGroupMembers.toSet() - aIds;
     setRelationship(removedMembers, removedMemberships);
 
-    QSet<QContactLocalId> addedMembers = selectedContacts - mOriginalGroupMembers.toSet();
+    QSet<QContactLocalId> addedMembers = aIds - mOriginalGroupMembers.toSet();
     setRelationship(addedMembers, addedMemberships);
     
     QMap<int, QContactManager::Error> errors;
-    if (!addedMemberships.isEmpty()) {
+    if (!addedMemberships.isEmpty()) 
+    {
         getContactManager()->saveRelationships(&addedMemberships, &errors);
     }
     
-    if (!removedMemberships.isEmpty()) {
+    if (!removedMemberships.isEmpty()) 
+    {
         getContactManager()->removeRelationships(removedMemberships, &errors);
     }
-    
-    delete mFetchView;
-    mFetchView = 0;
 }
 
 void CntGroupMemberView::createModel()
@@ -314,7 +301,8 @@ void CntGroupMemberView::editGroup()
 
 void CntGroupMemberView::deleteGroup()
 {
-    QString groupName = mGroupContact->displayLabel();
+    QContactName contactName = mGroupContact->detail( QContactName::DefinitionName );
+    QString groupName = contactName.value( QContactName::FieldCustomLabel );
     if (groupName.isNull())
     {
         groupName = hbTrId("txt_phob_list_unnamed");
@@ -352,14 +340,17 @@ void CntGroupMemberView::showContextMenu(HbAbstractViewItem *aItem, const QPoint
     HbAction *removeFromGroupAction = 0;
     HbAction *openContactAction = 0;
     HbAction *editContactAction = 0;
+    HbAction *sendToHsAction = 0;
 
     openContactAction = menu->addAction(hbTrId("txt_common_menu_open"));
     editContactAction = menu->addAction(hbTrId("txt_common_menu_edit"));
     removeFromGroupAction = menu->addAction(hbTrId("txt_phob_menu_remove_from_group"));
+    sendToHsAction = menu->addAction(hbTrId("txt_phob_menu_send_to_homescreen"));
     
     openContactAction->setData( data );
     editContactAction->setData( data );
     removeFromGroupAction->setData( data );
+    sendToHsAction->setData( data );
 
     menu->open(this, SLOT(handleMenu(HbAction*)));
 }
@@ -382,15 +373,34 @@ void CntGroupMemberView::handleMenu(HbAction* action)
         {
         removeFromGroup(index);
         }
+    else if (action == menuItem->actions().at(3))
+        {
+        sendToHs(index);
+        }
 }
 
+/*!
+Called after user clicked on the listview.
+*/
+void CntGroupMemberView::sendToHs(const QModelIndex &index)
+{
+    QVariantHash preferences;
+    preferences["contactId"] = mModel->contact(index).id().localId();
+    
+    XQServiceRequest snd("com.nokia.symbian.IHomeScreenClient",
+                         "addWidget(QString,QVariantHash)",
+                         false);
+    snd << QString("contactwidgethsplugin");
+    snd << preferences;
+    snd.send();
+}
 
 /*!
 Called after user clicked on the listview.
 */
 void CntGroupMemberView::showContactView(const QModelIndex &index)
 {
-    mArgs.insert(EViewId, commLauncherView);
+    mArgs.insert(EViewId, contactCardView);
     QVariant var;
     var.setValue(mModel->contact(index));
     mArgs.insert(ESelectedContact, var);
@@ -429,12 +439,11 @@ void CntGroupMemberView::thumbnailReady(const QPixmap& pixmap, void *data, int i
     Q_UNUSED(error);
     if (!error)
     {
-        QIcon qicon(pixmap);
-        HbIcon icon(qicon);
+        HbIcon icon(pixmap);
         mHeadingItem->setIcon(icon);
         
         mImageLabel->clear();
-        mImageLabel->setIcon(icon);
+        mImageLabel->setIcon(pixmap);
     }
 }
 
@@ -504,7 +513,7 @@ void CntGroupMemberView::removeImage()
             }
             mAvatar->setImageUrl(QUrl());
             mImageLabel->clear();
-            mImageLabel->setIcon(HbIcon("qtg_large_add_group_picture"));
+            mImageLabel->setAvatarIcon(HbIcon("qtg_large_add_group_picture"));
             mHeadingItem->setIcon(HbIcon("qtg_large_add_group_picture"));
             mViewManager->contactManager( SYMBIAN_BACKEND )->saveContact(mGroupContact);
        }

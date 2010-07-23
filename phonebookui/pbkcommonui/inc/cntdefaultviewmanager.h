@@ -47,8 +47,11 @@ public:
     
 public: // From CntAbstractViewManager
     void changeView( const CntViewParameters aArgs );
-    void back( const CntViewParameters aArgs );
+    void back( const CntViewParameters aArgs, bool toRoot = false );
     QContactManager* contactManager( const QString& aType );
+
+public:
+    int currentViewId();
     
 private slots:
     void removeCurrentView();

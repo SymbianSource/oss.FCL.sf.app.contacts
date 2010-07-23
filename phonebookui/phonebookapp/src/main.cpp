@@ -15,19 +15,19 @@
 *
 */
 
-#include <hbapplication.h>
 #include <QTranslator>
 #include <QLocale>
 #include "cntmainwindow.h"
 #include "cntappservicehandler.h"
 #include "cntglobal.h"
 #include "cntdebug.h"
+#include "cntapplication.h"
 
 int main(int argc, char **argv)
 {
     qInstallMsgHandler(MSG_HANDLER);
 
-    HbApplication a( argc, argv );
+    CntApplication a( argc, argv );
 
     QTranslator translator;
     QString lang = QLocale::system().name();

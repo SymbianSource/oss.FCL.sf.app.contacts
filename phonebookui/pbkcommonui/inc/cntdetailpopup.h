@@ -19,46 +19,29 @@
 #define CNTDETAILPOPUP_H
 
 #include <QObject>
-#include <hbdialog.h>
+#include <hbselectiondialog.h>
 #include <cntviewparams.h>
 
 class QStandardItemModel;
-class HbListView;
 
 typedef QList<int> CntViewIdList;
 
-class CntDetailPopup : public HbDialog
+class CntDetailPopup : public HbSelectionDialog
 {
+    friend class TestCntDetailPopup;
     Q_OBJECT
+    
 public:
     static void selectDetail( CntViewIdList aList, QObject *receiver = 0, const char *member = 0 );
-    int selectedDetail();
 
-#ifdef PBK_UNIT_TEST
-public slots:
-#else
-private slots:
-#endif
-    void listItemSelected(QModelIndex index);
-
-#ifdef PBK_UNIT_TEST
-public:
-#else
 private:
-#endif
     CntDetailPopup(QGraphicsItem *parent,  CntViewIdList aList );
     ~CntDetailPopup();
 
     void addListItem(QString aIcon, QString label, int aId);
 
-#ifdef PBK_UNIT_TEST
-public:
-#else
 private:
-#endif
     QStandardItemModel  *mListModel;
-    HbListView          *mListView;
-    int                  mSelectedDetail;
     CntViewIdList        mViewIdList;
 };
 

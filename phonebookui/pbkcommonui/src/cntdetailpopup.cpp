@@ -18,23 +18,13 @@
 #include "cntdetailpopup.h"
 
 #include <hblabel.h>
-#include <hbgroupbox.h>
-#include <hbaction.h>
-#include <qtcontacts.h>
-#include <hblistview.h>
-#include <hblistviewitem.h>
 #include <QStandardItemModel>
 
-QTM_USE_NAMESPACE
-
 CntDetailPopup::CntDetailPopup(QGraphicsItem *parent,  CntViewIdList aList ):
-    HbDialog(parent),
+    HbSelectionDialog(parent),
     mListModel(NULL),
-    mListView(NULL),
-    mSelectedDetail(0),
     mViewIdList( aList )
 {
-    mListView = new HbListView(this);
     mListModel = new QStandardItemModel(this);
 
     addListItem("qtg_small_mobile", hbTrId("txt_phob_list_number"), phoneNumberEditorView );
@@ -47,41 +37,21 @@ CntDetailPopup::CntDetailPopup(QGraphicsItem *parent,  CntViewIdList aList ):
     addListItem("qtg_small_company_details", hbTrId("txt_phob_list_company_details"), companyEditorView);
     addListItem("qtg_small_family", hbTrId("txt_phob_list_family"), familyDetailEditorView);
     
-    mListView->setModel(mListModel);
-    mListView->setSelectionMode(HbAbstractItemView::NoSelection);
-    // ownership of prototype is not transferred
-    HbListViewItem* prototype = mListView->listItemPrototype();
-    prototype->setGraphicsSize( HbListViewItem::SmallIcon );
-    
     HbLabel *label = new HbLabel(this);    
     label->setPlainText(hbTrId("txt_phob_title_add_field"));
 
     setHeadingWidget(label);
-    setContentWidget(mListView);
-
-    HbAction *cancelAction = new HbAction(hbTrId("txt_common_button_cancel"), this);
-    addAction(cancelAction);
     setTimeout(HbDialog::NoTimeout);
     setDismissPolicy(HbDialog::NoDismiss);
     setAttribute(Qt::WA_DeleteOnClose, true);
     setModal(true);
-
-    connect(mListView, SIGNAL(activated(const QModelIndex&)), this, SLOT(listItemSelected(QModelIndex)));
+    setSelectionMode(HbAbstractItemView::SingleSelection);
+    setModel(mListModel);
 }
 
 CntDetailPopup::~CntDetailPopup()
 {
-}
-
-void CntDetailPopup::listItemSelected(QModelIndex index)
-{
-    mSelectedDetail = mListModel->item(index.row())->data(Qt::UserRole).toInt();
-    close();
-}
-
-int CntDetailPopup::selectedDetail()
-{
-    return mSelectedDetail;
+    
 }
 
 void CntDetailPopup::selectDetail( CntViewIdList aList, QObject *receiver, const char *member  )

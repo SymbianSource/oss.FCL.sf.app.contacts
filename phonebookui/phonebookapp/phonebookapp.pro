@@ -44,6 +44,7 @@ SERVICE.FILE = service_conf.xml
 SERVICE.OPTIONS = embeddable
 
 # Input
+HEADERS += inc/cntapplication.h
 HEADERS += inc/cntinterface.h
 HEADERS += inc/cntappservicehandler.h
 

@@ -16,7 +16,7 @@
 */
 
 #include "cntmycardview.h"
-#include "cntfetchcontactsview.h"
+#include "cntfetchcontactpopup.h"
 #include "cntglobal.h"
 #include <qtcontacts.h>
 #include <hbpushbutton.h>
@@ -28,8 +28,7 @@ const char *CNT_MYCARD_UI_XML = ":/xml/contacts_mc.docml";
 
 CntMyCardView::CntMyCardView() :
     mContact(NULL),
-    mViewManager(NULL),
-    mFetchView(NULL)
+    mViewManager(NULL)
 {
     bool ok = false;
     mDocumentLoader.load(CNT_MYCARD_UI_XML, &ok);
@@ -53,10 +52,7 @@ CntMyCardView::~CntMyCardView()
     mView->deleteLater();
     
     delete mContact;
-    mContact = 0;
-    
-    delete mFetchView;
-    mFetchView = NULL;
+    mContact = NULL;
 }
 
 /*!
@@ -130,6 +126,7 @@ void CntMyCardView::openNameEditor()
     QVariant var;
     var.setValue(*mContact);
     viewParameters.insert(ESelectedContact, var);
+    viewParameters.insert(EExtraAction, CNT_ROOT_ACTION);
     mViewManager->changeView(viewParameters);
 }
 
@@ -138,33 +135,24 @@ Opens the my card selection view
 */
 void CntMyCardView::openMyCardSelectionView()
 {
-    // Display a list of contacts to choose a mycard from.
-    if (!mFetchView) {
-        mFetchView = new CntFetchContacts(*mViewManager->contactManager( SYMBIAN_BACKEND ));
-        connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleMultiCardSelection()));
-    }
-    mFetchView->setDetails(hbTrId("txt_phob_title_select_contact"), "");
-    QSet<QContactLocalId> emptyContactsSet;
-    mFetchView->displayContacts(HbAbstractItemView::SingleSelection, emptyContactsSet);
+    CntFetchContactPopup* popup = CntFetchContactPopup::createSingleSelectionPopup(
+            hbTrId("txt_phob_title_select_contact"),
+            *mViewManager->contactManager(SYMBIAN_BACKEND));
+    connect( popup, SIGNAL(fetchReady(QSet<QContactLocalId>)), this, SLOT(handleMultiCardSelection(QSet<QContactLocalId>)));
+    popup->showPopup();
 }
 
-void CntMyCardView::handleMultiCardSelection()
+void CntMyCardView::handleMultiCardSelection( QSet<QContactLocalId> aIds )
 {
     QContactManager* manager = mViewManager->contactManager( SYMBIAN_BACKEND );
 
-    QSet<QContactLocalId> selectedContacts = mFetchView->getSelectedContacts();
-
-    if ( !mFetchView->wasCanceled() && !selectedContacts.isEmpty() ) {
-        QList<QContactLocalId> selectedContactsList = selectedContacts.values();
+    if ( !aIds.isEmpty() ) {
+        QList<QContactLocalId> selectedContactsList = aIds.values();
         QContact contact = manager->contact(selectedContactsList.front());
         removeFromGroup(&contact);
         
         manager->setSelfContactId( contact.localId() );
         showPreviousView();
-    }
-    else {
-        delete mFetchView;
-        mFetchView = NULL;
     }
 }
 

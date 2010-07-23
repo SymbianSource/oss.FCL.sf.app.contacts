@@ -16,7 +16,7 @@
 */
 
 #include "cntfavoritesmemberview.h"
-#include "cntfetchcontactsview.h"
+#include "cntfetchcontactpopup.h"
 #include "cntglobal.h"
 
 #include <hblistview.h>
@@ -137,16 +137,26 @@ void CntFavoritesMemberView::manageFavorites()
     membersFilter.setRelatedContactId(mContact->id());   
     mOriginalGroupMembers = getContactManager()->contactIds(membersFilter).toSet();
     
+    /*
     if (!mFetchView) {
         mFetchView = new CntFetchContacts(*getContactManager());
         connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleManageFavorites()));
     }
     mFetchView->setDetails(hbTrId("txt_phob_subtitle_favorites"), hbTrId("txt_common_button_save"));
     mFetchView->displayContacts(HbAbstractItemView::MultiSelection, mOriginalGroupMembers);
+    */
+    CntFetchContactPopup* popup = CntFetchContactPopup::createMultiSelectionPopup(
+            hbTrId("txt_phob_subtitle_favorites"), 
+            hbTrId("txt_common_button_save"),
+            *getContactManager());
+    connect( popup, SIGNAL(fetchReady(QSet<QContactLocalId>)), this, SLOT(handleManageFavorites(QSet<QContactLocalId>)) );
+    popup->setSelectedContacts( mOriginalGroupMembers );
+    popup->showPopup();
 }
 
-void CntFavoritesMemberView::handleManageFavorites()
+void CntFavoritesMemberView::handleManageFavorites(QSet<QContactLocalId> aIds)
 {
+/*
     QSet<QContactLocalId> selectedContacts = mFetchView->getSelectedContacts();
     bool saveChanges = !mFetchView->wasCanceled();
 
@@ -156,11 +166,11 @@ void CntFavoritesMemberView::handleManageFavorites()
     if (!saveChanges) {
         return;
     }
-
+*/
     for (int i = 0; i < 2; ++i) {
         // first iteration processes added members, second removed members
-        QSet<QContactLocalId> members = (i == 0 ? selectedContacts - mOriginalGroupMembers
-                                                : mOriginalGroupMembers - selectedContacts);
+        QSet<QContactLocalId> members = (i == 0 ? aIds - mOriginalGroupMembers
+                                                : mOriginalGroupMembers - aIds);
         QList<QContactRelationship> memberships;
 
         foreach (QContactLocalId id, members) {
@@ -261,7 +271,7 @@ void CntFavoritesMemberView::openContact(const QModelIndex &index)
     QContact selectedContact = mModel->contact(index);
     
     CntViewParameters viewParameters;
-    viewParameters.insert(EViewId, commLauncherView);
+    viewParameters.insert(EViewId, contactCardView);
     QVariant var;
     var.setValue(selectedContact);
     viewParameters.insert(ESelectedContact, var);
@@ -280,6 +290,9 @@ void CntFavoritesMemberView::editContact(const QModelIndex &index)
     QVariant var;
     var.setValue(selectedContact);
     viewParameters.insert(ESelectedContact, var);
+    QVariant varGroup;
+    varGroup.setValue(*mContact);
+    viewParameters.insert(ESelectedGroupContact, varGroup);
     mViewManager->changeView(viewParameters);
 }
 

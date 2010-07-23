@@ -27,114 +27,117 @@ EXPORTS
 	??1CntEditView@@UAE@XZ @ 26 NONAME ; CntEditView::~CntEditView(void)
 	?qt_metacast@CntBaseSelectionView@@UAEPAXPBD@Z @ 27 NONAME ; void * CntBaseSelectionView::qt_metacast(char const *)
 	?metaObject@CntBaseSelectionView@@UBEPBUQMetaObject@@XZ @ 28 NONAME ; struct QMetaObject const * CntBaseSelectionView::metaObject(void) const
-	?backPressed@CntContactCardView@@IAEXXZ @ 29 NONAME ; void CntContactCardView::backPressed(void)
-	?qt_metacall@CntViewNavigator@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 30 NONAME ; int CntViewNavigator::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?activate@CntBaseSelectionView@@UAEXPAVCntAbstractViewManager@@V?$QMap@HVQVariant@@@@@Z @ 31 NONAME ; void CntBaseSelectionView::activate(class CntAbstractViewManager *, class QMap<int, class QVariant>)
-	?tr@CntDefaultViewManager@@SA?AVQString@@PBD0H@Z @ 32 NONAME ; class QString CntDefaultViewManager::tr(char const *, char const *, int)
-	?viewId@CntEditView@@UBEHXZ @ 33 NONAME ; int CntEditView::viewId(void) const
-	?qt_metacast@CntContactCardView@@UAEPAXPBD@Z @ 34 NONAME ; void * CntContactCardView::qt_metacast(char const *)
-	?activate@CntEditView@@UAEXPAVCntAbstractViewManager@@V?$QMap@HVQVariant@@@@@Z @ 35 NONAME ; void CntEditView::activate(class CntAbstractViewManager *, class QMap<int, class QVariant>)
-	?viewClosed@CntBaseSelectionView@@IAEXXZ @ 36 NONAME ; void CntBaseSelectionView::viewClosed(void)
-	?showActionPopup@CntActionPopup@@QAE_NVQString@@@Z @ 37 NONAME ; bool CntActionPopup::showActionPopup(class QString)
-	?trUtf8@CntActionPopup@@SA?AVQString@@PBD0@Z @ 38 NONAME ; class QString CntActionPopup::trUtf8(char const *, char const *)
-	?keyPressed@CntMainWindow@@IAEXPAVQKeyEvent@@@Z @ 39 NONAME ; void CntMainWindow::keyPressed(class QKeyEvent *)
-	?tr@CntBaseSelectionView@@SA?AVQString@@PBD0H@Z @ 40 NONAME ; class QString CntBaseSelectionView::tr(char const *, char const *, int)
-	?metaObject@CntContactCardView@@UBEPBUQMetaObject@@XZ @ 41 NONAME ; struct QMetaObject const * CntContactCardView::metaObject(void) const
-	??0CntViewNavigator@@QAE@PAVQObject@@@Z @ 42 NONAME ; CntViewNavigator::CntViewNavigator(class QObject *)
-	?d_func@CntContactCardView@@ABEPBVCntContactCardViewPrivate@@XZ @ 43 NONAME ; class CntContactCardViewPrivate const * CntContactCardView::d_func(void) const
-	?trUtf8@CntBaseSelectionView@@SA?AVQString@@PBD0H@Z @ 44 NONAME ; class QString CntBaseSelectionView::trUtf8(char const *, char const *, int)
-	?getStaticMetaObject@CntBaseSelectionView@@SAABUQMetaObject@@XZ @ 45 NONAME ; struct QMetaObject const & CntBaseSelectionView::getStaticMetaObject(void)
-	??0CntDefaultViewManager@@QAE@PAVHbMainWindow@@@Z @ 46 NONAME ; CntDefaultViewManager::CntDefaultViewManager(class HbMainWindow *)
-	?getStaticMetaObject@CntActionPopup@@SAABUQMetaObject@@XZ @ 47 NONAME ; struct QMetaObject const & CntActionPopup::getStaticMetaObject(void)
-	?next@CntViewNavigator@@QAEXABHAAV?$QFlags@W4ViewSwitchFlag@Hb@@@@@Z @ 48 NONAME ; void CntViewNavigator::next(int const &, class QFlags<enum Hb::ViewSwitchFlag> &)
-	?createView@CntDefaultViewFactory@@UAEPAVCntAbstractView@@H@Z @ 49 NONAME ; class CntAbstractView * CntDefaultViewFactory::createView(int)
-	?qt_metacast@CntEditView@@UAEPAXPBD@Z @ 50 NONAME ; void * CntEditView::qt_metacast(char const *)
-	?contactRemoved@CntEditView@@IAEX_N@Z @ 51 NONAME ; void CntEditView::contactRemoved(bool)
-	?d_func@CntActionPopup@@ABEPBVCntActionPopupPrivate@@XZ @ 52 NONAME ; class CntActionPopupPrivate const * CntActionPopup::d_func(void) const
-	?trUtf8@CntContactCardView@@SA?AVQString@@PBD0@Z @ 53 NONAME ; class QString CntContactCardView::trUtf8(char const *, char const *)
-	?metaObject@CntActionPopup@@UBEPBUQMetaObject@@XZ @ 54 NONAME ; struct QMetaObject const * CntActionPopup::metaObject(void) const
-	?staticMetaObject@CntDefaultViewManager@@2UQMetaObject@@B @ 55 NONAME ; struct QMetaObject const CntDefaultViewManager::staticMetaObject
-	?removeException@CntViewNavigator@@QAEXABH@Z @ 56 NONAME ; void CntViewNavigator::removeException(int const &)
-	?trUtf8@CntViewNavigator@@SA?AVQString@@PBD0@Z @ 57 NONAME ; class QString CntViewNavigator::trUtf8(char const *, char const *)
-	?metaObject@CntMainWindow@@UBEPBUQMetaObject@@XZ @ 58 NONAME ; struct QMetaObject const * CntMainWindow::metaObject(void) const
-	??_ECntMainWindow@@UAE@I@Z @ 59 NONAME ; CntMainWindow::~CntMainWindow(unsigned int)
-	?metaObject@CntDefaultViewManager@@UBEPBUQMetaObject@@XZ @ 60 NONAME ; struct QMetaObject const * CntDefaultViewManager::metaObject(void) const
-	?back@CntViewNavigator@@QAEABHAAV?$QFlags@W4ViewSwitchFlag@Hb@@@@@Z @ 61 NONAME ; int const & CntViewNavigator::back(class QFlags<enum Hb::ViewSwitchFlag> &)
-	?changeView@CntDefaultViewManager@@UAEXV?$QMap@HVQVariant@@@@@Z @ 62 NONAME ; void CntDefaultViewManager::changeView(class QMap<int, class QVariant>)
-	??_ECntContactCardView@@UAE@I@Z @ 63 NONAME ; CntContactCardView::~CntContactCardView(unsigned int)
-	?staticMetaObject@CntViewNavigator@@2UQMetaObject@@B @ 64 NONAME ; struct QMetaObject const CntViewNavigator::staticMetaObject
-	?qt_metacall@CntContactCardView@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 65 NONAME ; int CntContactCardView::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?qt_metacall@CntMainWindow@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 66 NONAME ; int CntMainWindow::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?trUtf8@CntMainWindow@@SA?AVQString@@PBD0@Z @ 67 NONAME ; class QString CntMainWindow::trUtf8(char const *, char const *)
-	?staticMetaObject@CntMainWindow@@2UQMetaObject@@B @ 68 NONAME ; struct QMetaObject const CntMainWindow::staticMetaObject
-	??1CntContactCardView@@UAE@XZ @ 69 NONAME ; CntContactCardView::~CntContactCardView(void)
-	?isDefault@CntContactCardView@@UBE_NXZ @ 70 NONAME ; bool CntContactCardView::isDefault(void) const
-	?qt_metacall@CntActionPopup@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 71 NONAME ; int CntActionPopup::qt_metacall(enum QMetaObject::Call, int, void * *)
-	??0CntBaseSelectionView@@QAE@XZ @ 72 NONAME ; CntBaseSelectionView::CntBaseSelectionView(void)
-	??0CntMainWindow@@QAE@PAVQWidget@@H@Z @ 73 NONAME ; CntMainWindow::CntMainWindow(class QWidget *, int)
-	??1CntActionPopup@@UAE@XZ @ 74 NONAME ; CntActionPopup::~CntActionPopup(void)
-	?viewId@CntContactCardView@@UBEHXZ @ 75 NONAME ; int CntContactCardView::viewId(void) const
-	?removeEffect@CntViewNavigator@@QAEXABH@Z @ 76 NONAME ; void CntViewNavigator::removeEffect(int const &)
-	?getStaticMetaObject@CntContactCardView@@SAABUQMetaObject@@XZ @ 77 NONAME ; struct QMetaObject const & CntContactCardView::getStaticMetaObject(void)
-	?back@CntDefaultViewManager@@UAEXV?$QMap@HVQVariant@@@@@Z @ 78 NONAME ; void CntDefaultViewManager::back(class QMap<int, class QVariant>)
-	?activate@CntContactCardView@@UAEXPAVCntAbstractViewManager@@V?$QMap@HVQVariant@@@@@Z @ 79 NONAME ; void CntContactCardView::activate(class CntAbstractViewManager *, class QMap<int, class QVariant>)
-	?staticMetaObject@CntActionPopup@@2UQMetaObject@@B @ 80 NONAME ; struct QMetaObject const CntActionPopup::staticMetaObject
-	?staticMetaObject@CntEditView@@2UQMetaObject@@B @ 81 NONAME ; struct QMetaObject const CntEditView::staticMetaObject
-	?viewOpened@CntBaseSelectionView@@IAEXPAVCntAbstractViewManager@@V?$QMap@HVQVariant@@@@@Z @ 82 NONAME ; void CntBaseSelectionView::viewOpened(class CntAbstractViewManager *, class QMap<int, class QVariant>)
-	?isDefault@CntEditView@@UBE_NXZ @ 83 NONAME ; bool CntEditView::isDefault(void) const
-	??_ECntViewNavigator@@UAE@I@Z @ 84 NONAME ; CntViewNavigator::~CntViewNavigator(unsigned int)
-	?trUtf8@CntContactCardView@@SA?AVQString@@PBD0H@Z @ 85 NONAME ; class QString CntContactCardView::trUtf8(char const *, char const *, int)
-	?addException@CntViewNavigator@@QAEXABH0@Z @ 86 NONAME ; void CntViewNavigator::addException(int const &, int const &)
-	?closeApp@CntDefaultViewManager@@MAEXXZ @ 87 NONAME ; void CntDefaultViewManager::closeApp(void)
-	?deactivate@CntBaseSelectionView@@UAEXXZ @ 88 NONAME ; void CntBaseSelectionView::deactivate(void)
-	?d_func@CntEditView@@ABEPBVCntEditViewPrivate@@XZ @ 89 NONAME ; class CntEditViewPrivate const * CntEditView::d_func(void) const
-	?setViewFactory@CntDefaultViewManager@@QAEXPAVCntAbstractViewFactory@@@Z @ 90 NONAME ; void CntDefaultViewManager::setViewFactory(class CntAbstractViewFactory *)
-	?getStaticMetaObject@CntViewNavigator@@SAABUQMetaObject@@XZ @ 91 NONAME ; struct QMetaObject const & CntViewNavigator::getStaticMetaObject(void)
-	?tr@CntViewNavigator@@SA?AVQString@@PBD0@Z @ 92 NONAME ; class QString CntViewNavigator::tr(char const *, char const *)
-	?trUtf8@CntActionPopup@@SA?AVQString@@PBD0H@Z @ 93 NONAME ; class QString CntActionPopup::trUtf8(char const *, char const *, int)
-	?tr@CntViewNavigator@@SA?AVQString@@PBD0H@Z @ 94 NONAME ; class QString CntViewNavigator::tr(char const *, char const *, int)
-	?tr@CntActionPopup@@SA?AVQString@@PBD0H@Z @ 95 NONAME ; class QString CntActionPopup::tr(char const *, char const *, int)
-	?qt_metacast@CntDefaultViewManager@@UAEPAXPBD@Z @ 96 NONAME ; void * CntDefaultViewManager::qt_metacast(char const *)
-	?qt_metacall@CntDefaultViewManager@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 97 NONAME ; int CntDefaultViewManager::qt_metacall(enum QMetaObject::Call, int, void * *)
-	??0CntEditView@@QAE@XZ @ 98 NONAME ; CntEditView::CntEditView(void)
-	?qt_metacast@CntViewNavigator@@UAEPAXPBD@Z @ 99 NONAME ; void * CntViewNavigator::qt_metacast(char const *)
-	?view@CntContactCardView@@UBEPAVHbView@@XZ @ 100 NONAME ; class HbView * CntContactCardView::view(void) const
-	?tr@CntContactCardView@@SA?AVQString@@PBD0H@Z @ 101 NONAME ; class QString CntContactCardView::tr(char const *, char const *, int)
-	?tr@CntContactCardView@@SA?AVQString@@PBD0@Z @ 102 NONAME ; class QString CntContactCardView::tr(char const *, char const *)
-	?tr@CntEditView@@SA?AVQString@@PBD0@Z @ 103 NONAME ; class QString CntEditView::tr(char const *, char const *)
-	?d_func@CntContactCardView@@AAEPAVCntContactCardViewPrivate@@XZ @ 104 NONAME ; class CntContactCardViewPrivate * CntContactCardView::d_func(void)
-	?metaObject@CntViewNavigator@@UBEPBUQMetaObject@@XZ @ 105 NONAME ; struct QMetaObject const * CntViewNavigator::metaObject(void) const
-	?staticMetaObject@CntContactCardView@@2UQMetaObject@@B @ 106 NONAME ; struct QMetaObject const CntContactCardView::staticMetaObject
-	?tr@CntBaseSelectionView@@SA?AVQString@@PBD0@Z @ 107 NONAME ; class QString CntBaseSelectionView::tr(char const *, char const *)
-	?trUtf8@CntBaseSelectionView@@SA?AVQString@@PBD0@Z @ 108 NONAME ; class QString CntBaseSelectionView::trUtf8(char const *, char const *)
-	?switchView@CntDefaultViewManager@@AAEXV?$QMap@HVQVariant@@@@V?$QFlags@W4ViewSwitchFlag@Hb@@@@@Z @ 109 NONAME ; void CntDefaultViewManager::switchView(class QMap<int, class QVariant>, class QFlags<enum Hb::ViewSwitchFlag>)
-	?deactivate@CntEditView@@UAEXXZ @ 110 NONAME ; void CntEditView::deactivate(void)
-	?contactManager@CntDefaultViewManager@@UAEPAVQContactManager@QtMobility@@ABVQString@@@Z @ 111 NONAME ; class QtMobility::QContactManager * CntDefaultViewManager::contactManager(class QString const &)
-	?addEffect@CntViewNavigator@@QAEXABH0@Z @ 112 NONAME ; void CntViewNavigator::addEffect(int const &, int const &)
-	??_ECntActionPopup@@UAE@I@Z @ 113 NONAME ; CntActionPopup::~CntActionPopup(unsigned int)
-	?d_func@CntActionPopup@@AAEPAVCntActionPopupPrivate@@XZ @ 114 NONAME ; class CntActionPopupPrivate * CntActionPopup::d_func(void)
-	?metaObject@CntEditView@@UBEPBUQMetaObject@@XZ @ 115 NONAME ; struct QMetaObject const * CntEditView::metaObject(void) const
-	?contactUpdated@CntEditView@@IAEXH@Z @ 116 NONAME ; void CntEditView::contactUpdated(int)
-	??1CntDefaultViewManager@@UAE@XZ @ 117 NONAME ; CntDefaultViewManager::~CntDefaultViewManager(void)
-	??0CntContactCardView@@QAE@XZ @ 118 NONAME ; CntContactCardView::CntContactCardView(void)
-	?deactivate@CntContactCardView@@UAEXXZ @ 119 NONAME ; void CntContactCardView::deactivate(void)
-	?getStaticMetaObject@CntDefaultViewManager@@SAABUQMetaObject@@XZ @ 120 NONAME ; struct QMetaObject const & CntDefaultViewManager::getStaticMetaObject(void)
-	?trUtf8@CntViewNavigator@@SA?AVQString@@PBD0H@Z @ 121 NONAME ; class QString CntViewNavigator::trUtf8(char const *, char const *, int)
-	?qt_metacall@CntEditView@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 122 NONAME ; int CntEditView::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?tr@CntEditView@@SA?AVQString@@PBD0H@Z @ 123 NONAME ; class QString CntEditView::tr(char const *, char const *, int)
-	?getStaticMetaObject@CntEditView@@SAABUQMetaObject@@XZ @ 124 NONAME ; struct QMetaObject const & CntEditView::getStaticMetaObject(void)
-	??1CntViewNavigator@@UAE@XZ @ 125 NONAME ; CntViewNavigator::~CntViewNavigator(void)
-	?qt_metacast@CntMainWindow@@UAEPAXPBD@Z @ 126 NONAME ; void * CntMainWindow::qt_metacast(char const *)
-	?trUtf8@CntEditView@@SA?AVQString@@PBD0@Z @ 127 NONAME ; class QString CntEditView::trUtf8(char const *, char const *)
-	?isDefault@CntBaseSelectionView@@UBE_NXZ @ 128 NONAME ; bool CntBaseSelectionView::isDefault(void) const
-	??1CntBaseSelectionView@@UAE@XZ @ 129 NONAME ; CntBaseSelectionView::~CntBaseSelectionView(void)
-	?tr@CntMainWindow@@SA?AVQString@@PBD0H@Z @ 130 NONAME ; class QString CntMainWindow::tr(char const *, char const *, int)
-	?createPluginView@CntDefaultViewFactory@@AAEPAVCntAbstractView@@H@Z @ 131 NONAME ; class CntAbstractView * CntDefaultViewFactory::createPluginView(int)
-	??_ECntEditView@@UAE@I@Z @ 132 NONAME ; CntEditView::~CntEditView(unsigned int)
-	??0CntActionPopup@@QAE@PAVQContact@QtMobility@@@Z @ 133 NONAME ; CntActionPopup::CntActionPopup(class QtMobility::QContact *)
-	?executeContactAction@CntActionPopup@@IAEXAAVQContact@QtMobility@@VQContactDetail@3@VQString@@@Z @ 134 NONAME ; void CntActionPopup::executeContactAction(class QtMobility::QContact &, class QtMobility::QContactDetail, class QString)
-	?getStaticMetaObject@CntMainWindow@@SAABUQMetaObject@@XZ @ 135 NONAME ; struct QMetaObject const & CntMainWindow::getStaticMetaObject(void)
-	?tr@CntDefaultViewManager@@SA?AVQString@@PBD0@Z @ 136 NONAME ; class QString CntDefaultViewManager::tr(char const *, char const *)
-	?removeCurrentView@CntDefaultViewManager@@AAEXXZ @ 137 NONAME ; void CntDefaultViewManager::removeCurrentView(void)
-	?actionPopupCancelPressed@CntActionPopup@@IAEXXZ @ 138 NONAME ; void CntActionPopup::actionPopupCancelPressed(void)
+	?back@CntDefaultViewManager@@UAEXV?$QMap@HVQVariant@@@@_N@Z @ 29 NONAME ; void CntDefaultViewManager::back(class QMap<int, class QVariant>, bool)
+	?backPressed@CntContactCardView@@IAEXXZ @ 30 NONAME ; void CntContactCardView::backPressed(void)
+	?qt_metacall@CntViewNavigator@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 31 NONAME ; int CntViewNavigator::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?activate@CntBaseSelectionView@@UAEXPAVCntAbstractViewManager@@V?$QMap@HVQVariant@@@@@Z @ 32 NONAME ; void CntBaseSelectionView::activate(class CntAbstractViewManager *, class QMap<int, class QVariant>)
+	?tr@CntDefaultViewManager@@SA?AVQString@@PBD0H@Z @ 33 NONAME ; class QString CntDefaultViewManager::tr(char const *, char const *, int)
+	?viewId@CntEditView@@UBEHXZ @ 34 NONAME ; int CntEditView::viewId(void) const
+	?qt_metacast@CntContactCardView@@UAEPAXPBD@Z @ 35 NONAME ; void * CntContactCardView::qt_metacast(char const *)
+	?activate@CntEditView@@UAEXPAVCntAbstractViewManager@@V?$QMap@HVQVariant@@@@@Z @ 36 NONAME ; void CntEditView::activate(class CntAbstractViewManager *, class QMap<int, class QVariant>)
+	?viewClosed@CntBaseSelectionView@@IAEXXZ @ 37 NONAME ; void CntBaseSelectionView::viewClosed(void)
+	?showActionPopup@CntActionPopup@@QAE_NVQString@@@Z @ 38 NONAME ; bool CntActionPopup::showActionPopup(class QString)
+	?trUtf8@CntActionPopup@@SA?AVQString@@PBD0@Z @ 39 NONAME ; class QString CntActionPopup::trUtf8(char const *, char const *)
+	?keyPressed@CntMainWindow@@IAEXPAVQKeyEvent@@@Z @ 40 NONAME ; void CntMainWindow::keyPressed(class QKeyEvent *)
+	?tr@CntBaseSelectionView@@SA?AVQString@@PBD0H@Z @ 41 NONAME ; class QString CntBaseSelectionView::tr(char const *, char const *, int)
+	?metaObject@CntContactCardView@@UBEPBUQMetaObject@@XZ @ 42 NONAME ; struct QMetaObject const * CntContactCardView::metaObject(void) const
+	??0CntViewNavigator@@QAE@PAVQObject@@@Z @ 43 NONAME ; CntViewNavigator::CntViewNavigator(class QObject *)
+	?d_func@CntContactCardView@@ABEPBVCntContactCardViewPrivate@@XZ @ 44 NONAME ; class CntContactCardViewPrivate const * CntContactCardView::d_func(void) const
+	?trUtf8@CntBaseSelectionView@@SA?AVQString@@PBD0H@Z @ 45 NONAME ; class QString CntBaseSelectionView::trUtf8(char const *, char const *, int)
+	?getStaticMetaObject@CntBaseSelectionView@@SAABUQMetaObject@@XZ @ 46 NONAME ; struct QMetaObject const & CntBaseSelectionView::getStaticMetaObject(void)
+	??0CntDefaultViewManager@@QAE@PAVHbMainWindow@@@Z @ 47 NONAME ; CntDefaultViewManager::CntDefaultViewManager(class HbMainWindow *)
+	?actionPopupCancelPressed@CntActionPopup@@IAEXXZ @ 48 NONAME ; void CntActionPopup::actionPopupCancelPressed(void)
+	?getStaticMetaObject@CntActionPopup@@SAABUQMetaObject@@XZ @ 49 NONAME ; struct QMetaObject const & CntActionPopup::getStaticMetaObject(void)
+	?next@CntViewNavigator@@QAEXABHAAV?$QFlags@W4ViewSwitchFlag@Hb@@@@@Z @ 50 NONAME ; void CntViewNavigator::next(int const &, class QFlags<enum Hb::ViewSwitchFlag> &)
+	?createView@CntDefaultViewFactory@@UAEPAVCntAbstractView@@H@Z @ 51 NONAME ; class CntAbstractView * CntDefaultViewFactory::createView(int)
+	?qt_metacast@CntEditView@@UAEPAXPBD@Z @ 52 NONAME ; void * CntEditView::qt_metacast(char const *)
+	??0CntContactCardView@@QAE@_N@Z @ 53 NONAME ; CntContactCardView::CntContactCardView(bool)
+	?contactRemoved@CntEditView@@IAEX_N@Z @ 54 NONAME ; void CntEditView::contactRemoved(bool)
+	?d_func@CntActionPopup@@ABEPBVCntActionPopupPrivate@@XZ @ 55 NONAME ; class CntActionPopupPrivate const * CntActionPopup::d_func(void) const
+	?trUtf8@CntContactCardView@@SA?AVQString@@PBD0@Z @ 56 NONAME ; class QString CntContactCardView::trUtf8(char const *, char const *)
+	?metaObject@CntActionPopup@@UBEPBUQMetaObject@@XZ @ 57 NONAME ; struct QMetaObject const * CntActionPopup::metaObject(void) const
+	?staticMetaObject@CntDefaultViewManager@@2UQMetaObject@@B @ 58 NONAME ; struct QMetaObject const CntDefaultViewManager::staticMetaObject
+	?removeException@CntViewNavigator@@QAEXABH@Z @ 59 NONAME ; void CntViewNavigator::removeException(int const &)
+	?trUtf8@CntViewNavigator@@SA?AVQString@@PBD0@Z @ 60 NONAME ; class QString CntViewNavigator::trUtf8(char const *, char const *)
+	?metaObject@CntMainWindow@@UBEPBUQMetaObject@@XZ @ 61 NONAME ; struct QMetaObject const * CntMainWindow::metaObject(void) const
+	??_ECntMainWindow@@UAE@I@Z @ 62 NONAME ; CntMainWindow::~CntMainWindow(unsigned int)
+	?metaObject@CntDefaultViewManager@@UBEPBUQMetaObject@@XZ @ 63 NONAME ; struct QMetaObject const * CntDefaultViewManager::metaObject(void) const
+	?changeView@CntDefaultViewManager@@UAEXV?$QMap@HVQVariant@@@@@Z @ 64 NONAME ; void CntDefaultViewManager::changeView(class QMap<int, class QVariant>)
+	??_ECntContactCardView@@UAE@I@Z @ 65 NONAME ; CntContactCardView::~CntContactCardView(unsigned int)
+	?staticMetaObject@CntViewNavigator@@2UQMetaObject@@B @ 66 NONAME ; struct QMetaObject const CntViewNavigator::staticMetaObject
+	?qt_metacall@CntContactCardView@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 67 NONAME ; int CntContactCardView::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?qt_metacall@CntMainWindow@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 68 NONAME ; int CntMainWindow::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?trUtf8@CntMainWindow@@SA?AVQString@@PBD0@Z @ 69 NONAME ; class QString CntMainWindow::trUtf8(char const *, char const *)
+	?staticMetaObject@CntMainWindow@@2UQMetaObject@@B @ 70 NONAME ; struct QMetaObject const CntMainWindow::staticMetaObject
+	?isDefault@CntContactCardView@@UBE_NXZ @ 71 NONAME ; bool CntContactCardView::isDefault(void) const
+	??1CntContactCardView@@UAE@XZ @ 72 NONAME ; CntContactCardView::~CntContactCardView(void)
+	?qt_metacall@CntActionPopup@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 73 NONAME ; int CntActionPopup::qt_metacall(enum QMetaObject::Call, int, void * *)
+	??0CntBaseSelectionView@@QAE@XZ @ 74 NONAME ; CntBaseSelectionView::CntBaseSelectionView(void)
+	??0CntMainWindow@@QAE@PAVQWidget@@H@Z @ 75 NONAME ; CntMainWindow::CntMainWindow(class QWidget *, int)
+	??1CntActionPopup@@UAE@XZ @ 76 NONAME ; CntActionPopup::~CntActionPopup(void)
+	?viewId@CntContactCardView@@UBEHXZ @ 77 NONAME ; int CntContactCardView::viewId(void) const
+	?removeEffect@CntViewNavigator@@QAEXABH@Z @ 78 NONAME ; void CntViewNavigator::removeEffect(int const &)
+	?getStaticMetaObject@CntContactCardView@@SAABUQMetaObject@@XZ @ 79 NONAME ; struct QMetaObject const & CntContactCardView::getStaticMetaObject(void)
+	?activate@CntContactCardView@@UAEXPAVCntAbstractViewManager@@V?$QMap@HVQVariant@@@@@Z @ 80 NONAME ; void CntContactCardView::activate(class CntAbstractViewManager *, class QMap<int, class QVariant>)
+	?staticMetaObject@CntActionPopup@@2UQMetaObject@@B @ 81 NONAME ; struct QMetaObject const CntActionPopup::staticMetaObject
+	?staticMetaObject@CntEditView@@2UQMetaObject@@B @ 82 NONAME ; struct QMetaObject const CntEditView::staticMetaObject
+	?viewOpened@CntBaseSelectionView@@IAEXPAVCntAbstractViewManager@@V?$QMap@HVQVariant@@@@@Z @ 83 NONAME ; void CntBaseSelectionView::viewOpened(class CntAbstractViewManager *, class QMap<int, class QVariant>)
+	?isDefault@CntEditView@@UBE_NXZ @ 84 NONAME ; bool CntEditView::isDefault(void) const
+	??_ECntViewNavigator@@UAE@I@Z @ 85 NONAME ; CntViewNavigator::~CntViewNavigator(unsigned int)
+	?trUtf8@CntContactCardView@@SA?AVQString@@PBD0H@Z @ 86 NONAME ; class QString CntContactCardView::trUtf8(char const *, char const *, int)
+	?addException@CntViewNavigator@@QAEXABH0@Z @ 87 NONAME ; void CntViewNavigator::addException(int const &, int const &)
+	?closeApp@CntDefaultViewManager@@MAEXXZ @ 88 NONAME ; void CntDefaultViewManager::closeApp(void)
+	?deactivate@CntBaseSelectionView@@UAEXXZ @ 89 NONAME ; void CntBaseSelectionView::deactivate(void)
+	?d_func@CntEditView@@ABEPBVCntEditViewPrivate@@XZ @ 90 NONAME ; class CntEditViewPrivate const * CntEditView::d_func(void) const
+	?setViewFactory@CntDefaultViewManager@@QAEXPAVCntAbstractViewFactory@@@Z @ 91 NONAME ; void CntDefaultViewManager::setViewFactory(class CntAbstractViewFactory *)
+	?getStaticMetaObject@CntViewNavigator@@SAABUQMetaObject@@XZ @ 92 NONAME ; struct QMetaObject const & CntViewNavigator::getStaticMetaObject(void)
+	?tr@CntViewNavigator@@SA?AVQString@@PBD0@Z @ 93 NONAME ; class QString CntViewNavigator::tr(char const *, char const *)
+	?trUtf8@CntActionPopup@@SA?AVQString@@PBD0H@Z @ 94 NONAME ; class QString CntActionPopup::trUtf8(char const *, char const *, int)
+	?tr@CntViewNavigator@@SA?AVQString@@PBD0H@Z @ 95 NONAME ; class QString CntViewNavigator::tr(char const *, char const *, int)
+	?tr@CntActionPopup@@SA?AVQString@@PBD0H@Z @ 96 NONAME ; class QString CntActionPopup::tr(char const *, char const *, int)
+	?qt_metacast@CntDefaultViewManager@@UAEPAXPBD@Z @ 97 NONAME ; void * CntDefaultViewManager::qt_metacast(char const *)
+	?qt_metacall@CntDefaultViewManager@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 98 NONAME ; int CntDefaultViewManager::qt_metacall(enum QMetaObject::Call, int, void * *)
+	??0CntEditView@@QAE@XZ @ 99 NONAME ; CntEditView::CntEditView(void)
+	?qt_metacast@CntViewNavigator@@UAEPAXPBD@Z @ 100 NONAME ; void * CntViewNavigator::qt_metacast(char const *)
+	?view@CntContactCardView@@UBEPAVHbView@@XZ @ 101 NONAME ; class HbView * CntContactCardView::view(void) const
+	?addToContacts@CntContactCardView@@IAEXXZ @ 102 NONAME ; void CntContactCardView::addToContacts(void)
+	?tr@CntContactCardView@@SA?AVQString@@PBD0H@Z @ 103 NONAME ; class QString CntContactCardView::tr(char const *, char const *, int)
+	?addRoot@CntViewNavigator@@QAEXABH@Z @ 104 NONAME ; void CntViewNavigator::addRoot(int const &)
+	?tr@CntContactCardView@@SA?AVQString@@PBD0@Z @ 105 NONAME ; class QString CntContactCardView::tr(char const *, char const *)
+	?tr@CntEditView@@SA?AVQString@@PBD0@Z @ 106 NONAME ; class QString CntEditView::tr(char const *, char const *)
+	?d_func@CntContactCardView@@AAEPAVCntContactCardViewPrivate@@XZ @ 107 NONAME ; class CntContactCardViewPrivate * CntContactCardView::d_func(void)
+	?metaObject@CntViewNavigator@@UBEPBUQMetaObject@@XZ @ 108 NONAME ; struct QMetaObject const * CntViewNavigator::metaObject(void) const
+	?staticMetaObject@CntContactCardView@@2UQMetaObject@@B @ 109 NONAME ; struct QMetaObject const CntContactCardView::staticMetaObject
+	?tr@CntBaseSelectionView@@SA?AVQString@@PBD0@Z @ 110 NONAME ; class QString CntBaseSelectionView::tr(char const *, char const *)
+	?trUtf8@CntBaseSelectionView@@SA?AVQString@@PBD0@Z @ 111 NONAME ; class QString CntBaseSelectionView::trUtf8(char const *, char const *)
+	?switchView@CntDefaultViewManager@@AAEXV?$QMap@HVQVariant@@@@V?$QFlags@W4ViewSwitchFlag@Hb@@@@@Z @ 112 NONAME ; void CntDefaultViewManager::switchView(class QMap<int, class QVariant>, class QFlags<enum Hb::ViewSwitchFlag>)
+	?deactivate@CntEditView@@UAEXXZ @ 113 NONAME ; void CntEditView::deactivate(void)
+	?contactManager@CntDefaultViewManager@@UAEPAVQContactManager@QtMobility@@ABVQString@@@Z @ 114 NONAME ; class QtMobility::QContactManager * CntDefaultViewManager::contactManager(class QString const &)
+	?addEffect@CntViewNavigator@@QAEXABH0@Z @ 115 NONAME ; void CntViewNavigator::addEffect(int const &, int const &)
+	??_ECntActionPopup@@UAE@I@Z @ 116 NONAME ; CntActionPopup::~CntActionPopup(unsigned int)
+	?d_func@CntActionPopup@@AAEPAVCntActionPopupPrivate@@XZ @ 117 NONAME ; class CntActionPopupPrivate * CntActionPopup::d_func(void)
+	?metaObject@CntEditView@@UBEPBUQMetaObject@@XZ @ 118 NONAME ; struct QMetaObject const * CntEditView::metaObject(void) const
+	?contactUpdated@CntEditView@@IAEXH@Z @ 119 NONAME ; void CntEditView::contactUpdated(int)
+	??1CntDefaultViewManager@@UAE@XZ @ 120 NONAME ; CntDefaultViewManager::~CntDefaultViewManager(void)
+	?deactivate@CntContactCardView@@UAEXXZ @ 121 NONAME ; void CntContactCardView::deactivate(void)
+	?getStaticMetaObject@CntDefaultViewManager@@SAABUQMetaObject@@XZ @ 122 NONAME ; struct QMetaObject const & CntDefaultViewManager::getStaticMetaObject(void)
+	?trUtf8@CntViewNavigator@@SA?AVQString@@PBD0H@Z @ 123 NONAME ; class QString CntViewNavigator::trUtf8(char const *, char const *, int)
+	?qt_metacall@CntEditView@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 124 NONAME ; int CntEditView::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?tr@CntEditView@@SA?AVQString@@PBD0H@Z @ 125 NONAME ; class QString CntEditView::tr(char const *, char const *, int)
+	?getStaticMetaObject@CntEditView@@SAABUQMetaObject@@XZ @ 126 NONAME ; struct QMetaObject const & CntEditView::getStaticMetaObject(void)
+	??1CntViewNavigator@@UAE@XZ @ 127 NONAME ; CntViewNavigator::~CntViewNavigator(void)
+	?qt_metacast@CntMainWindow@@UAEPAXPBD@Z @ 128 NONAME ; void * CntMainWindow::qt_metacast(char const *)
+	?trUtf8@CntEditView@@SA?AVQString@@PBD0@Z @ 129 NONAME ; class QString CntEditView::trUtf8(char const *, char const *)
+	?isDefault@CntBaseSelectionView@@UBE_NXZ @ 130 NONAME ; bool CntBaseSelectionView::isDefault(void) const
+	?back@CntViewNavigator@@QAEABHAAV?$QFlags@W4ViewSwitchFlag@Hb@@@@_N@Z @ 131 NONAME ; int const & CntViewNavigator::back(class QFlags<enum Hb::ViewSwitchFlag> &, bool)
+	??1CntBaseSelectionView@@UAE@XZ @ 132 NONAME ; CntBaseSelectionView::~CntBaseSelectionView(void)
+	?tr@CntMainWindow@@SA?AVQString@@PBD0H@Z @ 133 NONAME ; class QString CntMainWindow::tr(char const *, char const *, int)
+	?createPluginView@CntDefaultViewFactory@@AAEPAVCntAbstractView@@H@Z @ 134 NONAME ; class CntAbstractView * CntDefaultViewFactory::createPluginView(int)
+	??_ECntEditView@@UAE@I@Z @ 135 NONAME ; CntEditView::~CntEditView(unsigned int)
+	??0CntActionPopup@@QAE@PAVQContact@QtMobility@@@Z @ 136 NONAME ; CntActionPopup::CntActionPopup(class QtMobility::QContact *)
+	?executeContactAction@CntActionPopup@@IAEXAAVQContact@QtMobility@@VQContactDetail@3@VQString@@@Z @ 137 NONAME ; void CntActionPopup::executeContactAction(class QtMobility::QContact &, class QtMobility::QContactDetail, class QString)
+	?getStaticMetaObject@CntMainWindow@@SAABUQMetaObject@@XZ @ 138 NONAME ; struct QMetaObject const & CntMainWindow::getStaticMetaObject(void)
+	?tr@CntDefaultViewManager@@SA?AVQString@@PBD0@Z @ 139 NONAME ; class QString CntDefaultViewManager::tr(char const *, char const *)
+	?removeCurrentView@CntDefaultViewManager@@AAEXXZ @ 140 NONAME ; void CntDefaultViewManager::removeCurrentView(void)
+	?currentViewId@CntDefaultViewManager@@QAEHXZ @ 141 NONAME ; int CntDefaultViewManager::currentViewId(void)
 

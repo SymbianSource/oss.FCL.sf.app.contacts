@@ -125,7 +125,8 @@ void CntGroupActionsView::activate( CntAbstractViewManager* aMgr, const CntViewP
     mGroupContact = new QContact(aArgs.value(ESelectedGroupContact).value<QContact>());
     mViewManager = aMgr;
 
-    QString groupName = mGroupContact->displayLabel();
+    QContactName contactName = mGroupContact->detail( QContactName::DefinitionName );
+    QString groupName = contactName.value( QContactName::FieldCustomLabel );        
     if (groupName.isEmpty())
     {
         groupName = hbTrId("txt_phob_list_unnamed");
@@ -194,7 +195,8 @@ void CntGroupActionsView::listItemSelected(const QModelIndex &index)
     if (index.isValid()) {
         //reset flags
         mPopupCount=0;
-        mActionParams.clear();
+        mEmailActionParams.clear();
+        mMessageActionParams.clear();
         
         QString action = mModel->item(index.row())->data(Qt::UserRole+1).toString();
         
@@ -219,11 +221,11 @@ void CntGroupActionsView::listItemSelected(const QModelIndex &index)
                 if (!preferredDetail.isEmpty()) {
                     if(action.compare("message", Qt::CaseInsensitive) == 0) {
                         QContactPhoneNumber phoneNumber = contact.detail<QContactPhoneNumber>();
-                        mActionParams.append(phoneNumber.number());
+                        mMessageActionParams.insert(phoneNumber.number(),QVariant(contact.displayLabel()));
                     }
                     else {
                         QContactEmailAddress email = contact.detail<QContactEmailAddress>();
-                        mActionParams.append(email.emailAddress());
+                        mEmailActionParams.append(email.emailAddress());
                     }
                 }
                 else {
@@ -245,7 +247,12 @@ void CntGroupActionsView::listItemSelected(const QModelIndex &index)
             if (mPopupCount==0) {
                 QVariantMap map;
                 QVariant params;
-                params.setValue(mActionParams);
+                if (action.compare("message", Qt::CaseInsensitive) == 0) {
+                    params.setValue(mMessageActionParams);
+                }
+                else if (action.compare("email", Qt::CaseInsensitive) == 0) {
+                    params.setValue(mEmailActionParams);
+                }
                 map.insert(action,params);
                 CntActionLauncher* other = new CntActionLauncher(*mViewManager->contactManager(SYMBIAN_BACKEND), action);
                 connect(other, SIGNAL(actionExecuted(CntActionLauncher*)), this, SLOT(actionExecuted(CntActionLauncher*)));
@@ -261,11 +268,11 @@ void CntGroupActionsView::executeAction(QContact& contact, QContactDetail detail
     
     if (action.compare("message", Qt::CaseInsensitive) == 0) {
         QContactPhoneNumber phoneNumber = static_cast<QContactPhoneNumber>(detail);
-        mActionParams.append(phoneNumber.number());
+        mMessageActionParams.insert(phoneNumber.number(),QVariant(contact.displayLabel()));
     }
     else if (action.compare("email", Qt::CaseInsensitive) == 0) {
         QContactEmailAddress email = static_cast<QContactEmailAddress>(detail);
-        mActionParams.append(email.emailAddress());
+        mEmailActionParams.append(email.emailAddress());
     }
     
     //actionpopup executed, decrement counter
@@ -273,7 +280,12 @@ void CntGroupActionsView::executeAction(QContact& contact, QContactDetail detail
     if (mPopupCount==0) {
         QVariantMap map;
         QVariant params;
-        params.setValue(mActionParams);
+        if (action.compare("message", Qt::CaseInsensitive) == 0) {
+            params.setValue(mMessageActionParams);
+        }
+        else if (action.compare("email", Qt::CaseInsensitive) == 0) {
+            params.setValue(mEmailActionParams);
+        }
         map.insert(action,params);
         
         CntActionLauncher* other = new CntActionLauncher(*mViewManager->contactManager(SYMBIAN_BACKEND), action);

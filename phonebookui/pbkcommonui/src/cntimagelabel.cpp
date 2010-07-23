@@ -17,21 +17,115 @@
 
 #include "cntimagelabel.h"
 
+#include <QPainter>
+#include <QGraphicsDropShadowEffect>
+
 #include <hbinstantfeedback.h>
 #include <hbtapgesture.h>
 #include <hbeffect.h>
-#include <QGraphicsSceneMouseEvent>
+#include <hbdeviceprofile.h>
+#include <hbiconitem.h>
+#include <hbicon.h>
+#include <hbstyle.h>
 
+static const qreal ImageRounding = 1.5; // units 
+
+/*
+ * Imagel label for landscape views.
+ */
 CntImageLabel::CntImageLabel(QGraphicsItem *parent) :
-    HbLabel(parent)
+    HbWidget(parent)
 {
+    setFlag(QGraphicsItem::ItemHasNoContents, false);
+    
+    mDefaultAvatar = new HbIconItem(this);
+    style()->setItemName(mDefaultAvatar, "icon");
+    mDefaultAvatar->setAlignment(Qt::AlignCenter);
+   
     grabGesture(Qt::TapGesture);
     HbEffect::add(this, "groupbox_icon_click", "iconclick");
+    
+    //shadow effect
+    QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(this);
+    effect->setColor(QColor(0, 0, 0, 150));
+    effect->setBlurRadius(5);
+    effect->setOffset(3);
+    setGraphicsEffect(effect);
 }
 
 CntImageLabel::~CntImageLabel()
 {
 
+}
+
+void CntImageLabel::setIcon(const QPixmap &pixmap)
+{
+    mPixmap = pixmap;
+    
+    if (!mPixmap.isNull()) 
+    {
+       mDefaultAvatar->setVisible(false);
+       mDefaultAvatar->setIcon(HbIcon());
+    } 
+    else 
+    {
+       mDefaultAvatar->setIconName(QLatin1String("qtg_large_add_contact_picture"));
+       mDefaultAvatar->setVisible(true);
+    }
+    
+    update();
+}
+
+void CntImageLabel::setAvatarIcon(const HbIcon &icon)
+{
+    mIcon = icon;
+    
+    if (mIcon.isNull()) 
+    {
+        mDefaultAvatar->setVisible(false);
+        mDefaultAvatar->setIcon(HbIcon());
+    } 
+    else 
+    {
+        mDefaultAvatar->setIcon(icon);
+        mDefaultAvatar->setVisible(true);
+    }
+}
+
+HbIcon CntImageLabel::avatarIcon() const
+{
+    return mIcon;
+}
+
+void CntImageLabel::clear()
+{
+    mIcon.clear();
+    mPixmap = NULL;
+    mDefaultAvatar->setIconName(QLatin1String("qtg_large_add_contact_picture"));
+    mDefaultAvatar->setVisible(true);
+}
+
+void CntImageLabel::paint(QPainter* painter,
+    const QStyleOptionGraphicsItem* option,
+    QWidget* widget)
+{
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+    
+    if (mPixmap.isNull())
+    {
+        return;
+    }
+    else
+    {
+        painter->save();
+        QPainterPath clip;
+        qreal rounding = ImageRounding * HbDeviceProfile::profile(this).unitValue();
+        clip.addRoundRect(rect(), rounding, rounding);
+        painter->setClipPath(clip);
+        painter->drawPixmap(rect().toRect(), mPixmap);
+        painter->restore();
+    } 
 }
 
 void CntImageLabel::gestureEvent(QGestureEvent* event)

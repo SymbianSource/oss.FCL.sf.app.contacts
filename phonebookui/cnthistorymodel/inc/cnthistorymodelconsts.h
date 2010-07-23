@@ -20,10 +20,8 @@
 enum Attributes
     {
     CntIncoming = 1,
-    CntOutgoing = 2,
-    CntUnseen = 4,
-    CntSeen = 8,
-    CntAttachment = 16
+    CntUnseen = 2,
+    CntAttachment = 4
     };
 
 enum ItemType

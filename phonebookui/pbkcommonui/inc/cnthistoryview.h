@@ -20,6 +20,7 @@
 
 #include <QObject>
 #include <cntabstractview.h>
+#include <qcontactid.h>
 
 class HbListView;
 class CntHistoryModel;
@@ -55,6 +56,8 @@ public slots:
     void itemActivated(const QModelIndex &index);
     void showPreviousView();
     void showClearHistoryMenu();
+    void showRootView();
+    void contactDeletedFromOtherSource(const QList<QContactLocalId>& contactIds);
     
     
     

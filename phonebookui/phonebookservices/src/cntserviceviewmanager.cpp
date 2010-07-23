@@ -39,8 +39,9 @@ CntServiceViewManager::~CntServiceViewManager()
 
 void CntServiceViewManager::closeApp()
 {
-    // quit happens when returnValueDelivered signal is returned
-    // from service handler, see constructor.
+    // Quit happens when returnValueDelivered signal from XQServiceProver
+    // is caught from service handler.
+    emit applicationClosed();
 }
 
 // end of file

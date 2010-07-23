@@ -34,14 +34,13 @@ Constructor, initialize member variables.
 \a viewManager is the parent that creates this view. \a parent is a pointer to parent QGraphicsItem (by default this is 0)
 */
 CntServiceAssignContactCardView::CntServiceAssignContactCardView( CntAbstractServiceProvider& aServiceProvider ) : 
-    CntContactCardView(),
-mProvider( aServiceProvider )
+    CntContactCardView(true),
+    mProvider( aServiceProvider )
 {
     CNT_ENTRY
     connect(this, SIGNAL(backPressed()), this, SLOT(doCloseView()));
-    connect(this, SIGNAL(viewActivated(CntAbstractViewManager*, QContactDetail)), this, SLOT(doViewActivated(CntAbstractViewManager*,QContactDetail)));
-    
-    addActionsToToolBar();
+    connect(this, SIGNAL(viewActivated(CntAbstractViewManager*, const CntViewParameters)), this, SLOT(doViewActivated(CntAbstractViewManager*,const CntViewParameters)));
+    connect(this, SIGNAL(addToContacts()), this, SLOT(addToContacts()));
     CNT_EXIT
 }
 
@@ -55,40 +54,47 @@ CntServiceAssignContactCardView::~CntServiceAssignContactCardView()
 }
 
 /*!
-Add actions to the toolbar
-*/
-void CntServiceAssignContactCardView::addActionsToToolBar()
-{
-    CNT_ENTRY
-    view()->toolBar()->clearActions();  
-    HbAction* addToContact = view()->toolBar()->addAction("txt_phob_button_add_to_contacts");
-    connect(addToContact, SIGNAL(triggered()), this, SLOT(addToContacts()));
-    CNT_EXIT
-}
-
-/*!
 Opens the Add to Contacts popup
 */
 void CntServiceAssignContactCardView::addToContacts()
 {  
     CNT_ENTRY
-    HbDialog *popup = new HbDialog();
+    
+    HbDialog* popup = new HbDialog();
     popup->setDismissPolicy(HbDialog::NoDismiss);
-    popup->setHeadingWidget(new HbLabel(hbTrId("txt_phob_title_add_to_contacts"), popup));
+    popup->setHeadingWidget(
+            new HbLabel(hbTrId("txt_phob_title_add_to_contacts"), popup));
     popup->setAttribute(Qt::WA_DeleteOnClose);
+    popup->setTimeout( HbPopup::NoTimeout );
+    popup->addAction(
+            new HbAction(hbTrId("txt_common_button_cancel"), popup));
 
-    HbWidget *buttonWidget = new HbWidget(popup);
-    QGraphicsLinearLayout *layout = new QGraphicsLinearLayout(Qt::Vertical);
-    HbPushButton *addButton = new HbPushButton(hbTrId("txt_missing_list_save_as_a_new_contact"), buttonWidget);
+    HbWidget* buttonWidget = new HbWidget(popup);
+    QGraphicsLinearLayout* layout = new QGraphicsLinearLayout(Qt::Vertical);
+    
+    HbPushButton* addButton = new HbPushButton(buttonWidget);
+    addButton->setStretched(true);
+    addButton->setText(hbTrId("txt_phob_button_save_as_a_new_contact"));
+    HbIcon plusIcon("qtg_mono_plus");
+    addButton->setIcon(plusIcon);
+    connect(addButton, SIGNAL(clicked()), popup, SLOT(close()));
     connect(addButton, SIGNAL(clicked()), this, SLOT(saveNew()));
-    HbPushButton *updateButton = new HbPushButton(hbTrId("txt_missing_list_update_existing_contact"), buttonWidget);
+    
+    HbPushButton* updateButton = new HbPushButton(buttonWidget);
+    updateButton->setStretched(true);
+    updateButton->setText(hbTrId("txt_phob_button_update_existing_contact"));
+    updateButton->setIcon(plusIcon);
+    connect(updateButton, SIGNAL(clicked()), popup, SLOT(close()));
     connect(updateButton, SIGNAL(clicked()), this, SLOT(updateExisting()));
+    
     layout->addItem(addButton);
     layout->addItem(updateButton);
+    
     buttonWidget->setLayout(layout);
     popup->setContentWidget(buttonWidget);
+
+    popup->open();
     
-    popup->setSecondaryAction(new HbAction(hbTrId("txt_common_button_cancel"), popup));
     CNT_EXIT
 }
 
@@ -100,6 +106,8 @@ void CntServiceAssignContactCardView::saveNew()
     CNT_ENTRY
     CntViewParameters viewParameters;
     viewParameters.insert(EViewId, serviceEditView);
+    QContactName contactName = mContact.detail<QContactName>();
+    mContact.removeDetail(&contactName);
     QVariant var;
     var.setValue(mContact);
     viewParameters.insert(ESelectedContact, var);

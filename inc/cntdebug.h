@@ -23,7 +23,8 @@
 #include <QtGlobal> // qDebug()
 
 // #define TRACK_MEMORY_LEAKS
-// #define CNT_TRACE2FILE
+// #define TRACES
+// #define TRACE2FILE
 
 /*!
     \def CNT_UNUSED(name)
@@ -350,7 +351,13 @@
     by the streaming operator <<.
 */
 
-#if defined (_DEBUG) || defined (CNT_TRACE2FILE)
+// traces for debug builds by default, or if
+// TRACES macro is defined
+#if defined (_DEBUG) && !defined (TRACES)
+#define TRACES
+#endif
+
+#if defined (TRACES) || defined (TRACE2FILE)
     #define CNT_UNUSED(name)
     #define CNT_STATIC_ENTRY qDebug() << __PRETTY_FUNCTION__ << "entry";
     #define CNT_STATIC_ENTRY_ARGS(args) qDebug() << __PRETTY_FUNCTION__ << "entry," << args;
@@ -376,7 +383,7 @@
     #define CNT_WARNING(args)
     #define CNT_CRITICAL(args)
     #define CNT_FATAL(args)
-#endif // _DEBUG || CNT_TRACE2FILE
+#endif // TRACES || TRACE2FILE
     
 // for tracing memory leaks
 #ifdef TRACK_MEMORY_LEAKS
@@ -413,7 +420,7 @@
 #endif
 
 // filter phonebook app traces
-#ifdef CNT_TRACE2FILE
+#ifdef TRACE2FILE
     #include <QFile>
     #include <QTextStream>
     static void cntCustomLog2File(QtMsgType type, const char *msg)
@@ -474,6 +481,6 @@
     #else
         #define MSG_HANDLER 0
     #endif  // Q_OS_SYMBIAN
-#endif  // CNT_TRACE2FILE
+#endif  // TRACE2FILE
 
 #endif // CNTDEBUG_H

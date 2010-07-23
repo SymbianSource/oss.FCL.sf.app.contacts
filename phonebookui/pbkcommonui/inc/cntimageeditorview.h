@@ -19,12 +19,12 @@
 #define CNTIMAGEEDITORVIEW_H
 
 #include <QObject>
-#include <hbdocumentloader.h>
+#include <cntdocumentloader.h>
 #include <xqappmgr.h>
 
 #include <cntabstractview.h>
 
-class HbLabel;
+class CntImageLabel;
 class HbListView;
 class XQAiwRequest;
 class ThumbnailManager;
@@ -86,7 +86,7 @@ private:
 #endif
     QContact                *mContact; // own
     QContactAvatar          *mAvatar; // own
-    HbLabel                 *mImageLabel; // owned by layout
+    CntImageLabel           *mImageLabel; // owned by layout
     XQAiwRequest            *mRequest; // own
     XQApplicationManager     mAppManager;
     ThumbnailManager        *mThumbnailManager; // own
@@ -94,7 +94,7 @@ private:
     HbAction                *mSoftkey; // owned by view
     HbAction                *mRemoveImage; // own
     CntAbstractViewManager  *mViewManager;
-    HbDocumentLoader         mDocumentLoader;
+    CntDocumentLoader        mDocumentLoader;
     HbListView              *mListView; // owned by layout
     QStandardItemModel      *mModel; // own
     CntSaveManager          *mSaveManager; // own

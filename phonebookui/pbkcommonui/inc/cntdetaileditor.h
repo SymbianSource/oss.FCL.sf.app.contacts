@@ -49,6 +49,8 @@ private slots:
     void handleItemShown(const QModelIndex& aIndex );
     
     void saveContact();
+    void contactDeletedFromOtherSource(const QList<QContactLocalId>& contactIds);
+    void showRootView();
     
 public:
     void setViewId( int aId );

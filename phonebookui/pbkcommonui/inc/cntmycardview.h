@@ -19,12 +19,11 @@
 #define CNTMYCARDVIEW_H_
 
 #include <QObject>
+#include <QSet>
 #include <hbdocumentloader.h>
-
 #include <cntabstractview.h>
 
 class CntAbstractViewManager;
-class CntFetchContacts;
 class HbView;
 class HbAction;
 
@@ -55,7 +54,7 @@ private slots:
     void showPreviousView();
     void openNameEditor();
     void openMyCardSelectionView(); 
-    void handleMultiCardSelection();
+    void handleMultiCardSelection(QSet<QContactLocalId> aIds);
     void setOrientation(Qt::Orientation orientation);
 
 private: 
@@ -68,7 +67,6 @@ private:
     HbDocumentLoader          mDocumentLoader;
     HbView*                   mView; // own
     HbAction*                 mSoftkey;
-    CntFetchContacts*         mFetchView;
     
     friend class TestCntMyCardView;
 };

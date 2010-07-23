@@ -16,7 +16,7 @@
 */
 
 #include "cntcollectionview.h"
-#include "cntfetchcontactsview.h"
+#include "cntfetchcontactpopup.h"
 #include "cntgroupdeletepopup.h"
 #include "cntcollectionlistmodel.h"
 #include "cntextensionmanager.h"
@@ -61,7 +61,6 @@ CntCollectionView::CntCollectionView(CntExtensionManager &extensionManager) :
     mNewGroupAction(NULL),
     mDeleteGroupsAction(NULL),
     mHandledContact(NULL),
-    mFetchView(NULL),
     mActionGroup(NULL)
 {
     bool ok = false;
@@ -111,9 +110,6 @@ CntCollectionView::~CntCollectionView()
     
     delete mHandledContact;
     mHandledContact = NULL;
-    
-    delete mFetchView;
-    mFetchView = NULL;
 }
 
 /*!
@@ -190,7 +186,7 @@ Go back to previous view
 void CntCollectionView::showNamesViewWithFinder()
 {
     CntViewParameters viewParameters;
-    viewParameters.insert(EFinder, "show");
+    viewParameters.insert(EExtraAction, CNT_FIND_ACTION);
     mViewManager->back(viewParameters);
 }
 
@@ -234,7 +230,7 @@ void CntCollectionView::openGroup(const QModelIndex &index)
             else
             {
                 CntViewParameters viewParameters;
-                viewParameters.insert(EViewId, FavoritesMemberView);
+                viewParameters.insert(EViewId, favoritesMemberView);
                 QVariant var;
                 var.setValue(favoriteGroup);
                 viewParameters.insert(ESelectedGroupContact, var);
@@ -354,29 +350,29 @@ void CntCollectionView::handleNewGroup(HbAction* action)
             groupNameCreated = hbTrId("txt_phob_list_unnamed");
         }
         
-        if (!mFetchView)
-        {
-            mFetchView = new CntFetchContacts(*mViewManager->contactManager( SYMBIAN_BACKEND ));
-            connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleNewGroupMembers()));
-        }
-        mFetchView->setDetails(HbParameterLengthLimiter(hbTrId("txt_phob_title_members_of_1_group")).arg(groupNameCreated),
-                               hbTrId("txt_common_button_save"));
-        mFetchView->displayContacts(HbAbstractItemView::MultiSelection, contactsSet);
+        CntFetchContactPopup* popup = CntFetchContactPopup::createMultiSelectionPopup(
+                HbParameterLengthLimiter(hbTrId("txt_phob_title_members_of_1_group")).arg(groupNameCreated),
+                hbTrId("txt_common_button_save"),
+                *mViewManager->contactManager(SYMBIAN_BACKEND));
+        connect( popup, SIGNAL(fetchReady(QSet<QContactLocalId>)), this, SLOT(handleNewGroupMembers(QSet<QContactLocalId>)) );
+        connect( popup, SIGNAL(fetchCancelled()), this, SLOT(handleCancelGroupMembers()) );
+        
+        popup->setSelectedContacts( contactsSet );
+        popup->showPopup();
     }
 }
 
-void CntCollectionView::handleNewGroupMembers()
+void CntCollectionView::handleNewGroupMembers( QSet<QContactLocalId> aIds )
 {
-    mSelectedContactsSet = mFetchView->getSelectedContacts();
-    
-    if ( !mFetchView->wasCanceled() && mSelectedContactsSet.size() ) {
+    mSelectedContactsSet = aIds;
+
+    if ( aIds.size() > 0 )
+    {
         saveNewGroup(mHandledContact);
         
-        delete mFetchView;
-        mFetchView = NULL;
-
         CntViewParameters viewParameters;
         viewParameters.insert(EViewId, groupMemberView);
+        
         QVariant var;
         var.setValue(*mHandledContact);
         viewParameters.insert(ESelectedGroupContact, var);
@@ -384,14 +380,23 @@ void CntCollectionView::handleNewGroupMembers()
     }
     else
     {
-        // Add the new group 
         mModel->addGroup(mHandledContact->localId());
         mDeleteGroupsAction->setEnabled(true);
-        
-        delete mFetchView;
-        mFetchView = NULL;
     }
+    notifyNewGroup();
+}
+
+void CntCollectionView::handleCancelGroupMembers()
+{
+    mSelectedContactsSet.clear();
+    mModel->addGroup(mHandledContact->localId());
+    mDeleteGroupsAction->setEnabled(true);
     
+    notifyNewGroup();
+}
+
+void CntCollectionView::notifyNewGroup()
+{
     QString groupNameCreated = mHandledContact->displayLabel();
     if (groupNameCreated.isEmpty())
     {
@@ -406,8 +411,10 @@ void CntCollectionView::handleNewGroupMembers()
 void CntCollectionView::refreshDataModel()
 {
     mListView->setModel(0);
+    
     delete mModel;
-    mModel = 0;
+    mModel = NULL;
+    
     mModel = new CntCollectionListModel(getContactManager(), mExtensionManager, this);
     mListView->setModel(mModel);
 }

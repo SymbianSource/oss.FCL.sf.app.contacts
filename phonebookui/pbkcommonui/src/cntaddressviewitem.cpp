@@ -70,25 +70,21 @@ HbWidget* CntAddressViewItem::createCustomWidget()
     HbDataFormModelItem::DataItemType itemType = static_cast<HbDataFormModelItem::DataItemType>( 
               modelIndex().data(HbDataFormModelItem::ItemTypeRole).toInt());
     
-    HbWidget* widget = new HbWidget();
+    HbWidget* widget = NULL;
+    
     if( itemType ==  HbDataFormModelItem::CustomItemBase )
     {
-        QGraphicsLinearLayout* layout = new QGraphicsLinearLayout(Qt::Horizontal);
-        widget->setLayout(layout);
+        HbPushButton* locationButton = new HbPushButton(this);
+        
+        // Naming UI components for automation testability
+        locationButton->setObjectName("Select location button");
+        locationButton->setText( hbTrId("txt_phob_button_select_location") );
+        locationButton->setTextAlignment( Qt::AlignCenter );
+        locationButton->setContentsMargins(0,0,0,0);
     
-        HbStyleLoader::registerFilePath(":/style/cntlocationbutton.css");
-        HbStyleLoader::registerFilePath(":/style/cntlocationbutton.hbpushbutton.widgetml");
-        HbDataForm* form = static_cast<HbDataForm*> (itemView());
-        HbDataFormModel* model = static_cast<HbDataFormModel*> (form->model());
+        connect(locationButton, SIGNAL(clicked()), this, SLOT(launchLocationPicker()));
     
-        HbPushButton* mLocationButton = new HbPushButton(this);
-        mLocationButton->setObjectName("cntlocationbutton");
-        mLocationButton->setText( hbTrId("txt_phob_button_select_location") );
-        mLocationButton->setTextAlignment( Qt::AlignCenter );
-    
-        connect(mLocationButton, SIGNAL(clicked()), this, SLOT(launchLocationPicker()));
-    
-        layout->addItem(mLocationButton);
+        widget = locationButton;
         
     }
     return widget;
@@ -151,6 +147,6 @@ void CntAddressViewItem::handleLocationChange(const QVariant& aValue)
    
 }
 
- Q_IMPLEMENT_USER_METATYPE(QLocationPickerItem)
+Q_IMPLEMENT_USER_METATYPE(QLocationPickerItem)
 
 // End of File

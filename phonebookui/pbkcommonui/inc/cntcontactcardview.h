@@ -38,12 +38,13 @@ class QTPBK_EXPORT CntContactCardView : public QObject, public CntAbstractView
     Q_OBJECT
     
 public:
-    CntContactCardView();
+    CntContactCardView(bool isTemporary = false);
     ~CntContactCardView();
   
 signals:
     void backPressed();  
     void viewActivated(CntAbstractViewManager* aMgr, const CntViewParameters aArgs);
+    void addToContacts();
     
 public: // From CntAbstractView
     void activate(CntAbstractViewManager* aMgr, const CntViewParameters aArgs);

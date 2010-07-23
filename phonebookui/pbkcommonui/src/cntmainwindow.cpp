@@ -19,23 +19,31 @@
 #include "cntdefaultviewmanager.h"
 #include "cntviewnavigator.h"
 #include <QCoreApplication>
+#include <xqaiwrequest.h>
+#include <xqaiwdecl.h>
+#include <xqappmgr.h>
+#include <logsservices.h>
 #include <cntdebug.h>
 
 CntMainWindow::CntMainWindow(QWidget *parent, int defaultView)
     : HbMainWindow(parent),
-    mViewManager(NULL)
+    mViewManager(NULL),
+    mDefaultView(defaultView)
 {
     CNT_ENTRY
-
+    
     if (defaultView != noView)
     {
         CntViewNavigator* navigator = new CntViewNavigator(this);
-        navigator->addException( editView, namesView );
-        navigator->addException( FavoritesMemberView, collectionView );
+        navigator->addException( favoritesMemberView, collectionView );
         navigator->addEffect( groupMemberView, groupActionsView );
         navigator->addEffect( groupActionsView, groupMemberView );
-        navigator->addEffect( commLauncherView, historyView );
-        navigator->addEffect( historyView, commLauncherView );
+        navigator->addEffect( contactCardView, historyView );
+        navigator->addEffect( historyView, contactCardView );
+        navigator->addRoot( namesView );
+        navigator->addRoot( collectionView );
+        navigator->addRoot( groupMemberView );
+        navigator->addRoot( favoritesMemberView );
                 
         mViewManager = new CntDefaultViewManager( this );
         mViewManager->setViewNavigator( navigator );
@@ -65,9 +73,29 @@ CntMainWindow::~CntMainWindow()
  */
 void CntMainWindow::keyPressEvent(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_Yes || event->key() == Qt::Key_No)
+    if (event->key() == Qt::Key_Yes && mDefaultView != noView)
     {
-       emit keyPressed(event);
+        if (mViewManager->currentViewId() == contactCardView)
+        {
+            emit keyPressed(event);
+        }
+        else
+        {
+            XQApplicationManager appManager;   
+            XQAiwRequest* request = appManager.create("com.nokia.symbian.ILogsView", "show(QVariantMap)", false);
+            
+            if (request)
+            {
+                QList<QVariant> args;
+                QVariantMap map;
+                map.insert("view_index", QVariant(int(LogsServices::ViewAll)));
+                map.insert("show_dialpad", QVariant(true));
+                map.insert("dialpad_text", QVariant(QString()));
+                args.append(QVariant(map));
+                request->setArguments(args);
+                request->send();
+            }
+        }
     }
     else
     {

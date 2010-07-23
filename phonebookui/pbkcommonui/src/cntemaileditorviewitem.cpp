@@ -69,7 +69,13 @@ HbWidget* CntEmailEditorViewItem::createCustomWidget()
     
     connect( mItem->comboBox(), SIGNAL(currentIndexChanged(int)), this, SLOT(indexChanged(int)) );
     connect( mItem->editor(), SIGNAL(textChanged(QString)),this, SLOT(textChanged(QString)) );
-        
+    
+    // Naming UI components for automation testability
+    QString editorObjName = detail.definitionName() + " line edit %1";
+    mItem->editor()->setObjectName(editorObjName.arg(modelIndex().row()));
+    
+    QString comboBoxObjName = detail.definitionName() + " combo box %1";
+    mItem->comboBox()->setObjectName(comboBoxObjName.arg(modelIndex().row()));
     return mItem;
     }
     

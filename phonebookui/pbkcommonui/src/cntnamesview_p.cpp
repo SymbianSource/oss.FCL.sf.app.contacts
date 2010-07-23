@@ -17,15 +17,15 @@
 
 #include "cntnamesview_p.h"
 #include "cntactionlauncher.h"
-#include "cntfetchcontactsview.h"
+#include "cntfetchcontactpopup.h"
 #include "cntextensionmanager.h"
 #include "cntglobal.h"
 #include "cntdebug.h"
+#include "cntapplication.h"
 
 #include <cntuiextensionfactory.h>
 #include <cntuisocialextension.h>
 
-#include <qapplication.h>
 #include <hbabstractviewitem.h>
 #include <hbaction.h>
 #include <hbmenu.h>
@@ -64,7 +64,6 @@ CntNamesViewPrivate::CntNamesViewPrivate(CntExtensionManager &extensionManager) 
     mNamesAction(NULL),
     mMenuBuilder(NULL),
     mHandledContactId(0),
-    mFetchView(NULL),
     mIsDefault(true),
     mId( namesView ),
     mActionGroup(NULL),
@@ -137,15 +136,27 @@ CntNamesViewPrivate::CntNamesViewPrivate(CntExtensionManager &extensionManager) 
     connect(mSearchPanel, SIGNAL(exitClicked()), this, SLOT(hideFinder()));
     connect(mSearchPanel, SIGNAL(criteriaChanged(QString)), this, SLOT(setFilter(QString)));
     
+    HbMainWindow* win = mView->mainWindow();
+    CntApplication* cntApp = static_cast<CntApplication*>(qApp);
+    connect(win, SIGNAL(viewReady()), cntApp, SIGNAL(applicationReady()));
+    
+#ifdef __WINS__
+    mView->menu()->addAction("Change Orientation", this, SLOT(switchOrientation()) );
+#endif
     CNT_EXIT
+}
+
+void CntNamesViewPrivate::switchOrientation()
+{
+    HbMainWindow* win = mView->mainWindow();
+    Qt::Orientation orientation = win->orientation();
+    
+    win->setOrientation( orientation == Qt::Horizontal ? Qt::Vertical : Qt::Horizontal );
 }
 
 CntNamesViewPrivate::~CntNamesViewPrivate()
 {
     CNT_ENTRY
-    
-    delete mFetchView;
-    mFetchView = NULL;
     
     delete mListModel;
     mListModel = NULL;
@@ -215,27 +226,29 @@ void CntNamesViewPrivate::activate(CntAbstractViewManager* aMgr, const CntViewPa
         setScrollPosition(aArgs.value(ESelectedContact).value<QContact>().localId());
     }
    
-    if ( aArgs.value( EFinder ).toString() == "show" )
+    if ( aArgs.value( EExtraAction ).toString() == CNT_FIND_ACTION  )
     {
         showFinder();
     }
-
+    
     CNT_EXIT
 }
 
 void CntNamesViewPrivate::deactivate()
 {
     CNT_ENTRY
-    
+    HbMainWindow* win = mView->mainWindow();
     // in UTs there is no mainwindow and therefore calling HbView::visibleItems() would cause a crash
-    if (mView->mainWindow() != NULL)
+    if ( win != NULL)
     {
         if (!(mView->visibleItems() & Hb::AllItems))
         {
             hideFinder();
         }
+    
+        CntApplication* cntApp = static_cast<CntApplication*>(qApp);
+        disconnect(win, SIGNAL(viewReady()), cntApp, SIGNAL(applicationReady()));
     }
-
     delete mMenuBuilder;
     mMenuBuilder = NULL;
     
@@ -409,7 +422,7 @@ void CntNamesViewPrivate::deleteContact(QContact& aContact)
     CNT_ENTRY
     
     QContactManager* manager = mViewManager->contactManager( SYMBIAN_BACKEND );
-    QString name = manager->synthesizedDisplayLabel(aContact);
+    QString name = manager->synthesizedContactDisplayLabel(aContact);
     if (name.isEmpty())
     {
         name = hbTrId("txt_phob_list_unnamed");
@@ -426,36 +439,26 @@ void CntNamesViewPrivate::deleteContact(QContact& aContact)
 void CntNamesViewPrivate::deleteMultipleContacts()
 {
     CNT_ENTRY
+    CntFetchContactPopup* popup = CntFetchContactPopup::createMultiSelectionPopup(
+            hbTrId("txt_phob_title_delete_contacts"),
+            hbTrId("txt_common_button_delete"),
+            *mViewManager->contactManager(SYMBIAN_BACKEND));
+    connect(popup, SIGNAL(fetchReady(QSet<QContactLocalId>)), 
+            this, SLOT(handleDeleteMultipleContacts(QSet<QContactLocalId>)) );
     
-    if (!mFetchView) {
-        mFetchView = new CntFetchContacts(*mViewManager->contactManager( SYMBIAN_BACKEND ));
-        connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleDeleteMultipleContacts()));
-    }
-
-    mFetchView->setDetails(hbTrId("txt_phob_title_delete_contacts"),hbTrId("txt_common_button_delete"));
-    QSet<QContactLocalId> emptyContactsSet;
-
-    // Pop up a list of contacts for deletion
-    mFetchView->displayContacts(HbAbstractItemView::MultiSelection, emptyContactsSet);
+    popup->showPopup();
     CNT_EXIT
 }
 
-void CntNamesViewPrivate::handleDeleteMultipleContacts()
+void CntNamesViewPrivate::handleDeleteMultipleContacts( QSet<QContactLocalId> aIds )
 {
     CNT_ENTRY
     
-    QSet<QContactLocalId> selectedContacts = mFetchView->getSelectedContacts();
-
     QContactManager* manager = mViewManager->contactManager( SYMBIAN_BACKEND );
-    if ( !mFetchView->wasCanceled() && !selectedContacts.isEmpty() ) {
-        foreach ( QContactLocalId id, selectedContacts.values() )
-        {
-            manager->removeContact( id );
-        }
+    foreach ( QContactLocalId id, aIds )
+    {
+        manager->removeContact( id );
     }
-
-    delete mFetchView;
-    mFetchView = NULL;
     
     CNT_EXIT
 }
@@ -475,7 +478,7 @@ void CntNamesViewPrivate::showContactView( QContact& aContact )
     CNT_ENTRY
     
     CntViewParameters args;
-    args.insert(EViewId, commLauncherView);
+    args.insert(EViewId, contactCardView);
     if (aContact.localId() == mListModel->myCardId() && aContact.details().count() <= 4)
     {
         args.insert(EViewId, myCardView);

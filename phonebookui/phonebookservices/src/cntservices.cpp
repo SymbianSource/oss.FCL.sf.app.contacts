@@ -19,8 +19,10 @@
 #include "cntglobal.h"
 #include "cntdebug.h"
 #include <cntabstractviewmanager.h>
+#include "cntserviceviewmanager.h"
 #include "cntimageutility.h"
 #include "cntserviceviewparams.h"
+#include <cntservicescontact.h>
 
 #include <hbview.h>
 #include <hblistview.h>
@@ -37,7 +39,7 @@
 CntServices::CntServices() :
 mViewManager(NULL),
 mCurrentProvider(NULL),
-mIsQuitable(true)
+mIsQuittable(true)
 {
     CNT_ENTRY
 
@@ -73,6 +75,8 @@ void CntServices::setViewManager( CntAbstractViewManager& aViewManager )
 {
     CNT_LOG
     mViewManager = &aViewManager;
+    CntServiceViewManager* srvMng = static_cast<CntServiceViewManager*>(mViewManager);
+    connect(srvMng, SIGNAL(applicationClosed()), this, SLOT(terminateService()));
 }
 
 
@@ -112,9 +116,16 @@ void CntServices::multiFetch(
     CNT_EXIT
 }
 
-
 void CntServices::editCreateNew(const QString &definitionName, const QString &value,
-    CntAbstractServiceProvider& aServiceProvider)
+    CntAbstractServiceProvider& aServiceProvider, bool defaultForOnlineAccountIsImpp )
+{
+    CNT_ENTRY
+    editCreateNew( definitionName, value, QString(), aServiceProvider, defaultForOnlineAccountIsImpp);
+    CNT_EXIT
+}
+
+void CntServices::editCreateNew(const QString &definitionName, const QString &value, const QString& subType,
+    CntAbstractServiceProvider& aServiceProvider, bool defaultForOnlineAccountIsImpp )
 {
     CNT_ENTRY
     mCurrentProvider = &aServiceProvider;
@@ -122,25 +133,32 @@ void CntServices::editCreateNew(const QString &definitionName, const QString &va
     QContact contact;
     
     if (definitionName == QContactPhoneNumber::DefinitionName)
-        {
+    {
         QContactPhoneNumber phoneNumber;
         phoneNumber.setNumber(value);
-        phoneNumber.setSubTypes(QContactPhoneNumber::SubTypeMobile);
-        contact.saveDetail(&phoneNumber);
-        }
-    else if (definitionName == QContactEmailAddress::DefinitionName)
+        if (!subType.isEmpty())
         {
+            phoneNumber.setSubTypes(subType);
+        }
+        else
+        {
+            phoneNumber.setSubTypes(QContactPhoneNumber::SubTypeMobile); // Mobile is the default if subtype is not given.
+        }
+         contact.saveDetail(&phoneNumber);
+    }
+    else if (definitionName == QContactEmailAddress::DefinitionName)
+    {
         QContactEmailAddress email;
         email.setEmailAddress(value);
+        // Email addresses can't have subtypes.
         contact.saveDetail(&email);
-        }
+    }
     else if (definitionName == QContactOnlineAccount::DefinitionName)
-        {
+    {
         QContactOnlineAccount account;
-        account.setAccountUri(value);
-        account.setSubTypes(QContactOnlineAccount::SubTypeSipVoip);
+        fillOnlineAccount( account, value, subType, defaultForOnlineAccountIsImpp);
         contact.saveDetail(&account);
-        }    
+    }    
 
     // Launch editor now
     CntViewParameters params;
@@ -212,9 +230,16 @@ void CntServices::editCreateNewFromVCard(const QString &vCardFile,
     CNT_EXIT
 }
 
-
 void CntServices::editUpdateExisting(const QString &definitionName, const QString &value,
-    CntAbstractServiceProvider& aServiceProvider )
+    CntAbstractServiceProvider& aServiceProvider, bool defaultForOnlineAccountIsImpp )
+{
+    CNT_ENTRY
+    editUpdateExisting( definitionName, value, QString(), aServiceProvider, defaultForOnlineAccountIsImpp );
+    CNT_EXIT
+}
+
+void CntServices::editUpdateExisting(const QString &definitionName, const QString &value, const QString& subType,
+    CntAbstractServiceProvider& aServiceProvider, bool defaultForOnlineAccountIsImpp )
 {
     CNT_ENTRY
     mCurrentProvider = &aServiceProvider;
@@ -225,20 +250,27 @@ void CntServices::editUpdateExisting(const QString &definitionName, const QStrin
     {
         QContactPhoneNumber phoneNumber;
         phoneNumber.setNumber(value);
-        phoneNumber.setSubTypes(QContactPhoneNumber::SubTypeMobile);
+        if (!subType.isEmpty())
+        {        
+            phoneNumber.setSubTypes(subType);
+        }
+        else
+        {
+            phoneNumber.setSubTypes(QContactPhoneNumber::SubTypeMobile);    
+        }
         detail = phoneNumber;
     }
     else if (definitionName == QContactEmailAddress::DefinitionName)
     {
         QContactEmailAddress email;
         email.setEmailAddress(value);
+        // Email addresses can't have subtypes.
         detail = email;
     }
     else if (definitionName == QContactOnlineAccount::DefinitionName)
     {
         QContactOnlineAccount account;
-        account.setAccountUri(value);
-        account.setSubTypes(QContactOnlineAccount::SubTypeSipVoip);
+        fillOnlineAccount( account, value, subType, defaultForOnlineAccountIsImpp);
         detail = account;
     }
 
@@ -299,6 +331,10 @@ void CntServices::launchTemporaryContactCard(const QString &definitionName, cons
     QContact contact;
     QContactDetail detail;
     
+    QContactName name;
+    name.setFirstName(hbTrId("txt_phob_list_unknown"));
+    contact.saveDetail(&name);
+    
     if (definitionName == QContactPhoneNumber::DefinitionName)
     {
         QContactPhoneNumber phoneNumber;
@@ -337,6 +373,26 @@ void CntServices::launchTemporaryContactCard(const QString &definitionName, cons
 }
 
 
+void CntServices::setQuittable(bool quittable)
+{
+    mIsQuittable = quittable;
+}
+
+void CntServices::quitApp()
+{
+    CNT_ENTRY
+   
+    // Only embedded applications should be exited once a client
+    // disconnects. At the moments QtHighWay has unresolved issues
+    // when closing non-embedded applications. Error ou1cimx1#472852
+    // has more info
+    if ( mIsQuittable ) 
+    {
+       qApp->quit();
+    }   
+    CNT_EXIT
+}
+
 void CntServices::removeNotSupportedDetails(QContact& contact)
 {
     CNT_ENTRY
@@ -351,8 +407,6 @@ void CntServices::removeNotSupportedDetails(QContact& contact)
     }
     CNT_EXIT
 }
-
-
 
 void CntServices::removeNotSupportedFields(QContact& contact)
 {
@@ -415,6 +469,41 @@ void CntServices::removeNotSupportedFields(QContact& contact)
     CNT_EXIT
 }
 
+void CntServices::fillOnlineAccount( QContactOnlineAccount& account, const QString& value,
+    const QString& subType, bool defaultForOnlineAccountIsImpp )
+    {
+        // The value should normally consist of two parts:
+        //    <service provider>:<user ID>
+        // for eg. "serviceprovider:jack@serviceprovider.com"
+        QStringList accountDetails = value.split(":");
+        if (accountDetails.count() == 1)
+        {
+            // For some reason it only had one part, so we're assuming it's the user ID.
+            account.setAccountUri(accountDetails.at(0));
+        }
+        else if (accountDetails.count() >= 2)
+        {
+            account.setServiceProvider(accountDetails.at(0));        
+            account.setAccountUri(accountDetails.at(1)); // the user ID
+        }
+
+        if (!subType.isEmpty())
+        {        
+            account.setSubTypes(subType);
+        }
+        else
+        {
+            if (defaultForOnlineAccountIsImpp)
+            {
+                account.setSubTypes( QContactOnlineAccount::SubTypeImpp );
+            }
+            else
+            {
+                account.setSubTypes( QContactOnlineAccount::SubTypeSipVoip );
+            }
+        }
+    }
+
 // This method is inherited from CntAbstractServiceProvider
 void CntServices::CompleteServiceAndCloseApp(const QVariant& retValue)
 {
@@ -426,26 +515,18 @@ void CntServices::CompleteServiceAndCloseApp(const QVariant& retValue)
     CNT_EXIT
 }
 
-void CntServices::setQuitable(bool quitable)
-{
-    mIsQuitable = quitable;
-}
-
-void CntServices::quitApp()
+void CntServices::terminateService()
 {
     CNT_ENTRY
-   
-    // Only embedded applications should be exited once a client
-    // disconnects. At the moments QtHighWay has unresolved issues
-    // when closing non-embedded applications. Error ou1cimx1#472852
-    // has more info
-    if ( mIsQuitable ) 
-    {
-       qApp->quit();
-    }
-   
+    if (  mCurrentProvider )
+        {
+        // Complete the service with KCntServicesTerminated return value
+        QVariant var(KCntServicesTerminated);
+        mCurrentProvider->CompleteServiceAndCloseApp( var );
+        }
     CNT_EXIT
 }
 
 Q_IMPLEMENT_USER_METATYPE(CntServicesContact)
 Q_IMPLEMENT_USER_METATYPE_NO_OPERATORS(CntServicesContactList)
+

@@ -34,9 +34,6 @@
            
             <widget name="editViewImage" type="CntImageLabel">
                 <bool name="visible" value="FALSE"/>
-                <contentsmargins bottom="2.0un" left="2.0un" right="2.0un" top="2.0un"/>
-                <string name="alignment" value="AlignCenter"/>
-                <string name="aspectRatioMode" value="KeepAspectRatio"/>
                 <sizehint height="30.5un" type="FIXED" width="30.5un"/>
                 <icon iconName="qtg_large_add_contact_picture" name="icon"/>
                 <sizepolicy horizontalPolicy="Fixed" horizontalStretch="0" verticalPolicy="Fixed" verticalStretch="0"/>
@@ -72,9 +69,9 @@
             	<anchoritem src="groupBox" srcEdge="LEFT" spacing="0.0un" dst="" dstEdge="LEFT"/>
             	<anchoritem src="groupBox" srcEdge="RIGHT" spacing="0.0un" dst="" dstEdge="RIGHT"/>
             	<anchoritem src="groupBox" srcEdge="TOP" spacing="0.0un" dst="" dstEdge="TOP"/>
-                <anchoritem src="editViewImage" srcEdge="LEFT" spacing="0.0un" dst="" dstEdge="LEFT"/>
-                <anchoritem src="editViewImage" srcEdge="TOP" spacing="0.0un" dst="groupBox" dstEdge="BOTTOM"/>
-                <anchoritem src="editViewImage" srcEdge="RIGHT" spacing="0.0un" dst="editViewHeading" dstEdge="LEFT"/>
+                <anchoritem src="editViewImage" srcEdge="LEFT" spacing="-var(hb-param-margin-gene-left)" dst="" dstEdge="LEFT"/>
+                <anchoritem src="editViewImage" srcEdge="TOP" spacing="-var(hb-param-margin-gene-top)" dst="groupBox" dstEdge="BOTTOM"/>
+                <anchoritem src="editViewImage" srcEdge="RIGHT" spacing="var(hb-param-margin-gene-right)" dst="editViewHeading" dstEdge="LEFT"/>
                 <anchoritem src="editViewHeading" srcEdge="TOP" spacing="0.0un" dst="groupBox" dstEdge="BOTTOM"/>
                 <anchoritem src="editViewHeading" srcEdge="BOTTOM" spacing="0.0un" dst="listView" dstEdge="TOP"/>
                 <anchoritem src="editViewHeading" srcEdge="RIGHT" spacing="0.0un" dst="" dstEdge="RIGHT"/>

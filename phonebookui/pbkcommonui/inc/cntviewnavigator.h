@@ -50,7 +50,7 @@ public:
     /*!
      * Back view returns the previous view
      */
-    const int& back( QFlags<Hb::ViewSwitchFlag> &flags );
+    const int& back( QFlags<Hb::ViewSwitchFlag> &flags, bool toRoot );
     
     /*!
      * Add exceptions to next/back mechanism. Function will use the aBack argument
@@ -65,10 +65,16 @@ public:
     void addEffect( const int& aCurrent, const int& aBack );
     void removeEffect( const int& aCurrent );
     
+    /*!
+     * Set a view as a root view.
+     */
+    void addRoot( const int& aCurrent );
+    
 private:
     QStack<int> iViewStack;
     QMap< int, int > iExceptions;
     QMap< int, int > iEffects;
+    QList<int> iRoots;
     int iTop;
 };
 #endif /* CNTVIEWNAVIGATOR_H_ */

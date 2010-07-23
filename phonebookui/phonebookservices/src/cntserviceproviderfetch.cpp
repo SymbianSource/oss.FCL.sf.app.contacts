@@ -46,7 +46,7 @@ void CntServiceProviderFetch::multiFetch(const QString &title, const QString &ac
 {
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuitable(requestInfo().isEmbedded());
+    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.multiFetch( title, action, *this );
     CNT_EXIT
 }
@@ -55,7 +55,7 @@ void CntServiceProviderFetch::singleFetch(const QString &title, const QString &a
 {
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuitable(requestInfo().isEmbedded());
+    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.singleFetch( title, action, *this );
     CNT_EXIT
 }
@@ -63,9 +63,9 @@ void CntServiceProviderFetch::singleFetch(const QString &title, const QString &a
 void CntServiceProviderFetch::CompleteServiceAndCloseApp(const QVariant& retValue)
 {
     CNT_ENTRY
-    connect(this, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
     if ( mCurrentRequestIndex != 0 )
     {
+        connect(this, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
         const bool success = completeRequest(mCurrentRequestIndex, retValue);
         if ( !success )
         {

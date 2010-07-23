@@ -22,6 +22,7 @@
 #include <hbframebackground.h>
 
 #include "cnthistorymodel_p.h"
+#include "cntdebug.h"
 
 
 // Unnamed namespace for helper functions
@@ -35,6 +36,33 @@ namespace
     bool lessThan(const HItemPointer& t1, const HItemPointer& t2)
     {
         return ((*t1).timeStamp < (*t2).timeStamp);
+    }
+    
+#ifdef TRACES
+#define LOG_ITEM(i) logItem(i)
+#else
+#define LOG_ITEM(i)
+#endif
+    
+    void logItem(const HistoryItem& item)
+    {
+        QStringList l;
+        
+        l << item.message << item.number << item.timeStamp.toString() << item.title;
+        l << (item.flags & CntIncoming ? "incoming" : "outgoing");
+        l << (item.flags & CntUnseen ? "unseen" : "seen");
+        l << (item.flags & CntAttachment ? "attachment" : "");
+        l << (item.flags & CntCallLog ? "call" : "message");
+        if (item.flags & CntReceivedCall)
+            l << "recieved";
+        else if (item.flags & CntMissedCall)
+            l << "missed";
+        else if (item.flags & CntDialledCall)
+            l << "dialled";
+        
+        l.removeAll("");
+        
+        qDebug() << l;
     }
 }
 
@@ -382,16 +410,20 @@ void CntHistoryModelPrivate::readLogEvent(LogsEvent* event, HistoryItem& item)
         }
     }
 
-    if ( event->direction() == LogsEvent::DirOut )
-        item.flags |= CntOutgoing;
-    else
+    if ( event->direction() == LogsEvent::DirMissed
+        || event->direction() == LogsEvent::DirIn ) {
         item.flags |= CntIncoming;
+    } else {
+        item.flags &= ~CntIncoming;
+    }
     
     item.message = bodyText;
     item.title = title;
     item.timeStamp = event->time().toLocalTime();
     item.flags |= CntCallLog;
     item.number = QString(event->number());
+    
+    LOG_ITEM(item);
 }
 
 /*!
@@ -604,7 +636,7 @@ void CntHistoryModelPrivate::readMsgEvent(MsgItem& event, HistoryItem& item)
         else
             item.flags &= ~CntUnseen;
     } else if ( event.direction() == MsgItem::MsgDirectionOutgoing )
-        item.flags |= CntOutgoing;
+        item.flags &= ~CntIncoming;
     
     // Attachment
     if (event.isAttributeSet(MsgItem::MsgAttributeAttachment))
@@ -623,6 +655,8 @@ void CntHistoryModelPrivate::readMsgEvent(MsgItem& event, HistoryItem& item)
     }
     
     item.timeStamp = event.timeStamp().toLocalTime();
+    
+    LOG_ITEM(item);
 }
 
 /*!

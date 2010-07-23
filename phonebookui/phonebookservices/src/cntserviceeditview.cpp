@@ -18,7 +18,7 @@
 #include "cntserviceeditview.h"
 #include <cntservicescontact.h>
 #include <QCoreApplication>
-
+#include "cntdebug.h"
 
 CntServiceEditView::CntServiceEditView( CntAbstractServiceProvider& aServiceProvider )
 : CntEditView(),
@@ -35,25 +35,37 @@ CntServiceEditView::~CntServiceEditView()
 
 void CntServiceEditView::doContactUpdated(int aSuccess)
 {
+    CNT_ENTRY_ARGS(aSuccess)
+    
     int retValue = aSuccess ? KCntServicesReturnValueContactSaved : KCntServicesReturnValueContactNotModified;
     QVariant variant;
     variant.setValue(retValue);
     mProvider.CompleteServiceAndCloseApp(variant);
+    
+    CNT_EXIT
 }
 
 void CntServiceEditView::doContactRemoved(bool aSuccess)
 {
+    CNT_ENTRY_ARGS(aSuccess)
+            
     int retValue = aSuccess ? KCntServicesReturnValueContactDeleted : KCntServicesReturnValueContactNotModified;
     QVariant variant;
     variant.setValue(retValue);
     mProvider.CompleteServiceAndCloseApp(variant);
+    
+    CNT_EXIT
 }
 
 void CntServiceEditView::doChangesDiscarded()
 {
+    CNT_ENTRY
+    
     QVariant variant;
     variant.setValue(KCntServicesReturnValueContactNotModified);
     mProvider.CompleteServiceAndCloseApp(variant);
+    
+    CNT_EXIT
 }
 
 // EOF

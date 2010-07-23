@@ -29,7 +29,6 @@ class HbAction;
 class HbView;
 class HbListView;
 class CntCollectionListModel;
-class CntFetchContacts;
 class QModelIndex;
 class QActionGroup;
 class HbAbstractViewItem;
@@ -66,7 +65,9 @@ private slots:
     
     void newGroup();
     void handleNewGroup(HbAction* action);
-    void handleNewGroupMembers();
+    void handleNewGroupMembers( QSet<QContactLocalId> aMembers );
+    void handleCancelGroupMembers();
+    void notifyNewGroup();
     
     void refreshDataModel();
     
@@ -96,7 +97,6 @@ private:
     HbAction*               mDeleteGroupsAction; // owned by view
     
     QContact*               mHandledContact; // own, needed for asynchronous popups
-    CntFetchContacts*       mFetchView;
     QSet<QContactLocalId>   mSelectedContactsSet;
     
     QActionGroup*           mActionGroup;

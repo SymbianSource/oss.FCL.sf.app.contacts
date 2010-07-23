@@ -46,7 +46,10 @@
 #include <qversitcontactexporter.h>
 #include <qversitwriter.h>
 #include <xqservicerequest.h>
+#include <xqaiwrequest.h>
+#include <xqaiwdecl.h>
 #include <QTimer>  //Progress indication icon
+#include <logsservices.h>
 
 #include <cntdebug.h>
 #include "cntcontactcarddatacontainer.h"
@@ -74,7 +77,7 @@ const char *CNT_MAPTILE_SEARCH_STOP_ICON = "qtg_mono_search_stop";
 Constructor, initialize member variables.
 \a viewManager is the parent that creates this view. \a parent is a pointer to parent QGraphicsItem (by default this is 0)
 */
-CntContactCardViewPrivate::CntContactCardViewPrivate() :
+CntContactCardViewPrivate::CntContactCardViewPrivate(bool isTemporary) :
     QObject(), 
     mScrollArea(NULL),
     mContainerWidget(NULL),
@@ -90,13 +93,16 @@ CntContactCardViewPrivate::CntContactCardViewPrivate() :
     mContactAction(NULL),
     mBackKey(NULL),
     mImageLabel(NULL),
+    mRequest(NULL),
     mVCardIcon(NULL),
     mShareUi(NULL),
     mAcceptSendKey(true),
     mSendKeyListModel(NULL),
     mPresenceListener(NULL),
     mMaptile(NULL),
-	mProgressTimer(NULL)
+	mProgressTimer(NULL),
+	mIsTemporary(isTemporary),
+	mIsExecutingAction(false)
 {
     bool ok;
     document()->load(CNT_CONTACTCARDVIEW_XML, &ok);
@@ -119,7 +125,7 @@ CntContactCardViewPrivate::CntContactCardViewPrivate() :
     mBackKey = new HbAction(Hb::BackNaviAction, mView);
     mView->setNavigationAction(mBackKey);  
     connect(mBackKey, SIGNAL(triggered()), this, SLOT(showPreviousView()));
-	
+    
     mProgressTimer = new QTimer(this);
     mProgressTimer->setSingleShot(true);
     connect(mProgressTimer, SIGNAL(timeout()),this, SLOT(updateSpinningIndicator())); 
@@ -169,7 +175,11 @@ CntContactCardViewPrivate::~CntContactCardViewPrivate()
     
     delete mPresenceListener;
     mPresenceListener = NULL;
-	delete mMaptile;
+	
+    delete mRequest;
+    mRequest = NULL;
+    
+    delete mMaptile;
     mMaptile = NULL;
     
     delete mProgressTimer;
@@ -195,12 +205,20 @@ void CntContactCardViewPrivate::showPreviousView()
     
     //save the contact if avatar has been changed.
     QContact contact = contactManager()->contact(mContact->localId());
-    if ( contact != *mContact )
+    if ( contact != *mContact && contactManager()->error() == QContactManager::NoError)
     {
         contactManager()->saveContact(mContact);
     }
-       
+    
     mViewManager->back( mArgs );
+}
+
+/*!
+Activates the root view
+*/
+void CntContactCardViewPrivate::showRootView()
+{
+    mViewManager->back( mArgs, true );
 }
 
 /*
@@ -212,8 +230,6 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
     
     mViewManager = aMgr;
     mArgs = aArgs;
-    
-    mView->installEventFilter(this);
     
     HbMainWindow* window = mView->mainWindow();
     connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
@@ -234,6 +250,12 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
     {
         mView->toolBar()->removeAction(static_cast<HbAction*>(document()->findObject(QString("cnt:sendMyCard"))));
     }
+    if (mIsTemporary)
+    {
+        mView->menu()->clearActions();
+        mView->toolBar()->clearActions();
+        mView->toolBar()->addAction(static_cast<HbAction*>(document()->findObject(QString("cnt:addtocontact"))));
+    }
     
     // add heading widget to the content
     QGraphicsWidget *c = document()->findWidget(QString("content"));
@@ -241,8 +263,21 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
 
     mHeadingItem = static_cast<CntContactCardHeadingItem*>(document()->findWidget(QString("cnt_contactcard_heading")));
     mHeadingItem->setDetails(mContact);
-    connect(mHeadingItem, SIGNAL(passLongPressed(const QPointF&)), this, SLOT(drawMenu(const QPointF&)));
-    connect(mHeadingItem, SIGNAL(passShortPressed(const QPointF&)), this, SLOT(doChangeImage()));
+    
+    mImageLabel = static_cast<CntImageLabel*>(document()->findWidget("cnt_contactcard_image"));
+         
+    if (!mIsTemporary)
+    {
+        connect(mHeadingItem, SIGNAL(passLongPressed(const QPointF&)), this, SLOT(drawMenu(const QPointF&)));
+        connect(mHeadingItem, SIGNAL(passShortPressed(const QPointF&)), this, SLOT(doChangeImage())); 
+        connect(mImageLabel, SIGNAL(iconClicked()), this, SLOT(doChangeImage()));
+        connect(mImageLabel, SIGNAL(iconLongPressed(const QPointF&)), this, SLOT(drawMenu(const QPointF&)));
+    }
+    else
+    {
+        mHeadingItem->ungrabGesture(Qt::TapGesture);
+        mImageLabel->ungrabGesture(Qt::TapGesture);
+    }
     
     // presence listener
     mPresenceListener = new CntPresenceListener(*mContact);
@@ -253,9 +288,7 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
     QMap<QString, bool> presences = mPresenceListener->initialPresences(online);
     mHeadingItem->setOnlineStatus(online);
 
-    mImageLabel = static_cast<CntImageLabel*>(document()->findWidget("cnt_contactcard_image"));
-    connect(mImageLabel, SIGNAL(iconClicked()), this, SLOT(doChangeImage()));
-    connect(mImageLabel, SIGNAL(iconLongPressed(const QPointF&)), this, SLOT(drawMenu(const QPointF&)));
+   
     
     // avatar
     QList<QContactAvatar> details = mContact->details<QContactAvatar>();
@@ -297,8 +330,12 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
             CntContactCardDetailItem* item = new CntContactCardDetailItem(index, mContainerWidget);
 
             connect(item, SIGNAL(clicked()), this, SLOT(onItemActivated()));
-            connect(item, SIGNAL(longPressed(const QPointF&)), this, SLOT(onLongPressed(const QPointF&)));
-   
+            
+            if (!mIsTemporary)
+            {
+                connect(item, SIGNAL(longPressed(const QPointF&)), this, SLOT(onLongPressed(const QPointF&)));
+            }
+            
             if (mContact->isPreferredDetail(dataItem->action(), dataItem->detail()))
             {
                 dataItem->setSecondaryIcon(HbIcon("qtg_mono_favourites"));
@@ -376,7 +413,7 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
                     CntContactCardMapTileDetail* detail = new CntContactCardMapTileDetail;
                     if( detail )
                     {
-                        detail->mContactId = mContact->id().localId();
+                        detail->mContactId = mContact->localId();
                             
                         if( dataItem->titleText() == hbTrId("txt_phob_formlabel_address") )
                         {
@@ -416,8 +453,8 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
             setAsFavorite = CntFavourite::isMemberOfFavouriteGroup( contactManager(), mContact );
             mHeadingItem->setFavoriteStatus( setAsFavorite ); // if contact is part of favourites group
         }
-        qobject_cast<HbAction *>(document()->findObject("cnt:setasfavorite"))->setVisible( !setAsFavorite );
-        qobject_cast<HbAction *>(document()->findObject("cnt:removefromfavorite"))->setVisible( setAsFavorite );
+        static_cast<HbAction *>(document()->findObject("cnt:setasfavorite"))->setVisible( !setAsFavorite );
+        static_cast<HbAction *>(document()->findObject("cnt:removefromfavorite"))->setVisible( setAsFavorite );
     }
     document()->findWidget("viewToolbar")->setParent(mView);
     document()->findWidget("viewMenu")->setParent(mView);
@@ -431,7 +468,14 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
     connectAction("cnt:edit", SLOT(editContact()));
     connectAction("cnt:history", SLOT(viewHistory()));
     connectAction("cnt:sendMyCard", SLOT(sendBusinessCard()));
+    connectAction("cnt:addtocontact", SLOT(onAddedToContacts()));
     connectAction("cnt:activityStream", NULL);      // placeholder until this action is implemented (needed to avoid memory leak)
+    
+    // disabled until this action is implemented 
+    static_cast<HbAction *>(document()->findObject("cnt:activityStream"))->setEnabled(false);
+        
+    connect(contactManager(), SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), 
+        this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
     
     emit viewActivated( mViewManager, aArgs );
 
@@ -479,7 +523,7 @@ void CntContactCardViewPrivate::updateSpinningIndicator()
             CntMapTileService::ContactAddressType sourceAddressType =
                     static_cast <CntMapTileService::ContactAddressType>( mAddressList[index]->mAddressType );
              
-            QContactLocalId contactId = mContact->id().localId();
+            QContactLocalId contactId = mContact->localId();
              
             if( mAddressList[index]->mDetailItem != NULL )
             {
@@ -578,7 +622,7 @@ void CntContactCardViewPrivate::updateMaptileImage()
     //If there is no maptile displayed, return immediately
     if( mMaptileLabelList.count() > 0 )
     {
-        QContactLocalId contactId = mContact->id().localId();
+        QContactLocalId contactId = mContact->localId();
         
         QList<QContactAddress> addressDetails = mContact->details<QContactAddress>();
         
@@ -698,7 +742,7 @@ void CntContactCardViewPrivate::thumbnailReady(const QPixmap& pixmap, void *data
         mHeadingItem->setIcon(icon);
         mVCardIcon = new HbIcon(pixmap);
         mImageLabel->clear();
-        mImageLabel->setIcon(icon);
+        mImageLabel->setIcon(pixmap);
     }
     
     CNT_EXIT
@@ -710,7 +754,7 @@ Place contact to homescreen as widget
 void CntContactCardViewPrivate::sendToHs()
 {
     QVariantHash preferences;
-    preferences["contactId"] = mContact->id().localId();
+    preferences["contactId"] = mContact->localId();
     
     XQServiceRequest snd("com.nokia.symbian.IHomeScreenClient",
                          "addWidget(QString,QVariantHash)"
@@ -718,6 +762,27 @@ void CntContactCardViewPrivate::sendToHs()
     snd << QString("contactwidgethsplugin");
     snd << preferences;
     snd.send();
+
+    /* 
+    if (mRequest)
+    {
+        delete mRequest;
+        mRequest = 0;
+    }
+         
+    mRequest = mAppManager.create("com.nokia.symbian.IHomeScreenClient", "addWidget(QString,QVariantHash)", false);
+    
+    if (mRequest)
+    {
+        QList<QVariant> args;
+        QVariantHash preferences;
+        preferences["contactId"] = mContact->localId();
+        args << preferences;
+        args << QString("contactwidgethsplugin");
+        mRequest->setArguments(args);
+        mRequest->send();
+    }
+    */
 }
 
 /*!
@@ -763,7 +828,7 @@ Delete contact
 */
 void CntContactCardViewPrivate::deleteContact()
 {    
-    QString name = contactManager()->synthesizedDisplayLabel(*mContact);
+    QString name = contactManager()->synthesizedContactDisplayLabel(*mContact);
     if (name.isEmpty())
     {
         name = hbTrId("txt_phob_list_unnamed");
@@ -780,9 +845,12 @@ void CntContactCardViewPrivate::handleDeleteContact(int action)
 {
     if (action == HbMessageBox::Delete)
     {
+        disconnect(contactManager(), SIGNAL(contactsRemoved(const QList<QContactLocalId>&)),
+                this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
+        
         contactManager()->removeContact(mContact->localId());  
         emit backPressed();  
-        mViewManager->back( mArgs );
+        mViewManager->back( mArgs, true );
     }
 }
 
@@ -804,7 +872,7 @@ Deactivate the view
 */
 void CntContactCardViewPrivate::deactivate()
 {
-    mView->removeEventFilter(this);    
+    
 }
 
 /*!
@@ -812,7 +880,8 @@ Send the business card / my card
 */
 void CntContactCardViewPrivate::sendBusinessCard()
 {
-    qDebug() << "CntContactCardViewPrivate::sendBusinessCard - IN";
+    CNT_ENTRY
+    
     // Check if the contact has an image.
     QList<QContactAvatar> avatars = mContact->details<QContactAvatar>();
     bool imageExists( false );
@@ -845,10 +914,11 @@ void CntContactCardViewPrivate::sendBusinessCard()
     
     if ( !imageExists )
     {
-        qDebug() << "CntContactCardViewPrivate::sendBusinessCard without image";
+        CNT_LOG_ARGS("snd vCard without image")
         handleSendBusinessCard( NULL ); // no image
     }
-    qDebug() << "CntContactCardViewPrivate::sendBusinessCard - OUT";
+    
+    CNT_EXIT
 }
 
 /*!
@@ -897,6 +967,15 @@ Execute the call / message / email action
 */
 void CntContactCardViewPrivate::executeAction(QContact& aContact, const QContactDetail& aDetail, const QString& aAction, CntContactCardDetailItem* aItem)
 {
+    if (mIsExecutingAction)
+    {
+        return;
+    }
+    else
+    {
+        mIsExecutingAction = true;
+    }
+    
     CntActionLauncher* other = new CntActionLauncher(*contactManager(), aAction);
     connect(other, SIGNAL(actionExecuted(CntActionLauncher*)), this, SLOT(actionExecuted(CntActionLauncher*)));
     if (aItem && aContact.preferredDetail(aAction).isEmpty())
@@ -921,6 +1000,7 @@ void CntContactCardViewPrivate::executeAction(QContact& aContact, const QContact
         if (detail == aDetail && action == aAction)
         {
             detailItem = static_cast<CntContactCardDetailItem*>(mContainerLayout->itemAt(index));
+            break;
         }
     }
     executeAction(aContact, aDetail, aAction, detailItem);
@@ -932,6 +1012,15 @@ Execute dynamic action
 */
 void CntContactCardViewPrivate::executeDynamicAction(QContact& aContact, QContactDetail aDetail, QContactActionDescriptor aActionDescriptor)
 {
+    if (mIsExecutingAction)
+    {
+        return;
+    }
+    else
+    {
+        mIsExecutingAction = true;
+    }
+    
     CntActionLauncher* other = new CntActionLauncher(*contactManager());
     connect(other, SIGNAL(actionExecuted(CntActionLauncher*)), this, SLOT(actionExecuted(CntActionLauncher*)));
     other->execute(aContact, aDetail, aActionDescriptor);
@@ -940,6 +1029,7 @@ void CntContactCardViewPrivate::executeDynamicAction(QContact& aContact, QContac
 void CntContactCardViewPrivate::actionExecuted(CntActionLauncher* aAction)
 {
     aAction->deleteLater();
+    mIsExecutingAction = false;
 }
 
 /*!
@@ -1108,8 +1198,9 @@ void CntContactCardViewPrivate::setPreferredAction(const QString &aAction, const
 
 void CntContactCardViewPrivate::handleSendBusinessCard( HbAction* aAction )
 {
+    CNT_ENTRY
     Q_UNUSED(aAction);
-    qDebug() << "CntContactCardViewPrivate::handleSendBusinessCard - IN";
+    
     QList<QContact> list;
     /*if ( aAction && aAction->objectName() == "cancel" )
     {
@@ -1165,12 +1256,12 @@ void CntContactCardViewPrivate::handleSendBusinessCard( HbAction* aAction )
     // The vCard version needs to be 2.1 due to backward compatiblity when sending 
     if (exporter.exportContacts(list, QVersitDocument::VCard21Type))
     {
-        qDebug() << "CntContactCardViewPrivate::handleSendBusinessCard, VCard21Type";
+        CNT_LOG_ARGS("VCard21Type");
         QList<QVersitDocument> docs = exporter.documents();
         QFile f(vCardPath);
         if ( f.open(QIODevice::WriteOnly) ) 
         {
-            qDebug() << "CntContactCardViewPrivate::handleSendBusinessCard write VCard";
+            CNT_LOG_ARGS("write VCard");
             // Start creating the vCard
             QVersitWriter writer;
             writer.setDevice(&f);
@@ -1187,7 +1278,8 @@ void CntContactCardViewPrivate::handleSendBusinessCard( HbAction* aAction )
             mShareUi->send(l,false);
         }
     }
-    qDebug() << "CntContactCardViewPrivate::handleSendBusinessCard - OUT";
+    
+    CNT_EXIT
 }
 
 
@@ -1231,7 +1323,7 @@ void CntContactCardViewPrivate::doRemoveImage()
             }
             mAvatar->setImageUrl(QUrl());
             mImageLabel->clear();
-            mImageLabel->setIcon(HbIcon("qtg_large_add_contact_picture"));
+            mImageLabel->setAvatarIcon(HbIcon("qtg_large_add_contact_picture"));
             mHeadingItem->setIcon(HbIcon("qtg_large_add_contact_picture"));
             contactManager()->saveContact(mContact);
         }
@@ -1295,22 +1387,36 @@ void CntContactCardViewPrivate::sendKeyPressed()
     }
     if (!count)
     {
-        XQServiceRequest snd("com.nokia.services.logsservices.starter", "start(int,bool)", false);
-        snd << 0; // all calls
-        snd << true; // show dialpad
-        snd.send();
+        if (mRequest)
+        {
+            delete mRequest;
+            mRequest = 0;
+        }
+             
+        mRequest = mAppManager.create("com.nokia.symbian.ILogsView", "show(QVariantMap)", false);
+        
+        if (mRequest)
+        {
+            QList<QVariant> args;
+            QVariantMap map;
+            map.insert("view_index", QVariant(int(LogsServices::ViewAll)));
+            map.insert("show_dialpad", QVariant(true));
+            map.insert("dialpad_text", QVariant(QString()));
+            args.append(QVariant(map));
+            mRequest->setArguments(args);
+            mRequest->send();
+        }
     }
     else
     {
         QContactDetail preferredDetail = mContact->preferredDetail("call");
         if (!preferredDetail.isEmpty())
         {
-            executeAction(*mContact, preferredDetail, "call", NULL); 
+            executeAction(*mContact, preferredDetail, "call"); 
         }
         else if (count == 1 )
         {
-           mContact->setPreferredDetail("call", mContact->details<QContactPhoneNumber>().first());
-           executeAction( *mContact, mContact->details<QContactPhoneNumber>().first(), "call", NULL); 
+            executeAction( *mContact, mContact->details<QContactPhoneNumber>().first(), "call"); 
         }
         else if(count >= 2 && mAcceptSendKey)
         {   
@@ -1320,8 +1426,11 @@ void CntContactCardViewPrivate::sendKeyPressed()
             connect( actionPopup, SIGNAL(executeContactAction(QContact&, QContactDetail, QString)), this, 
                     SLOT(executeAction(QContact&, QContactDetail, QString)));   
             connect( actionPopup, SIGNAL(actionPopupCancelPressed()), this, 
-                                SLOT(sendKeyCancelSlot()));   
-            
+                    SLOT(sendKeyCancelSlot()));
+        }
+        else
+        {
+            //ignore
         }
     }
 }
@@ -1330,4 +1439,20 @@ void CntContactCardViewPrivate::sendKeyCancelSlot()
 {
     mAcceptSendKey = true;
 }
+
+void CntContactCardViewPrivate::onAddedToContacts()
+{
+    emit addToContacts();
+}
+
+void CntContactCardViewPrivate::contactDeletedFromOtherSource(const QList<QContactLocalId>& contactIds)
+{
+    if ( contactIds.contains(mContact->localId()) )
+    {
+        // Do not switch to the previous view immediately. List views are
+        // not updated properly if this is not done in the event loop
+        QTimer::singleShot(0, this, SLOT(showRootView()));
+    }
+}
+
 // end of file

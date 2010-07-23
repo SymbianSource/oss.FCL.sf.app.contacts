@@ -80,6 +80,7 @@ private slots:
     void handleDeleteContact(int action);
     void discardChanges();
     void saveChanges();
+    void showRootView();
     
     void openNameEditor();
     void openImageEditor();
@@ -89,6 +90,7 @@ private slots:
     void setScrollPosition();
     void ringToneFetchHandleError(int errorCode, const QString& errorMessage);
     void ringToneFetchHandleOk(const QVariant &result);
+    void contactDeletedFromOtherSource(const QList<QContactLocalId>& contactIds);
 
 private:
     void loadAvatar();

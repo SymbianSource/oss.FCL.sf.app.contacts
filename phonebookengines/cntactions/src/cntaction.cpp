@@ -165,20 +165,9 @@ void CntAction::performNumberAction(const QString &interface, const QString &ope
     
     // TODO: Using XQApplicationManager is not working with calls
     // The factory method cannot create a request. Find out why
-    bool isCallAction = (m_actionName == "call" || m_actionName == "videocall");
+    //bool isCallAction = (m_actionName == "call" || m_actionName == "videocall");
     XQServiceRequest snd(interface, operation, false);
 
-    delete m_request;
-    m_request = NULL;
-    m_request = m_AppManager.create(interface, operation, false); // not embedded
-    
-    if (!isCallAction) {
-        if (!m_request) {
-            emitResult(GeneralError, retValue);
-            return;
-        }
-    }
-    
     //QContactType == TypeGroup
     if (QContactType::TypeGroup == m_contact.type()) {
         QContactPhoneNumber conferenceCall = m_contact.detail<QContactPhoneNumber>();
@@ -196,17 +185,9 @@ void CntAction::performNumberAction(const QString &interface, const QString &ope
 		
 		args << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
 	    
-		// TODO remove once call action works
-		if (isCallAction) {
-            snd << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
-            snd.send(retValue);
-            emitResult(snd.latestError(), retValue);
-	    } 
-		else {
-	       m_request->setArguments(args);
-	       m_request->send(retValue);
-           emitResult(m_request->lastError(), retValue);
-	    }
+        snd << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
+        snd.send(retValue);
+        emitResult(snd.latestError(), retValue);
 	}
     //QContactType == TypeContact
     //if no detail, pick preferred
@@ -227,17 +208,9 @@ void CntAction::performNumberAction(const QString &interface, const QString &ope
 		
 		args << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
 
-        // TODO remove once call action works
-        if (isCallAction) {
-            snd << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
-            snd.send(retValue);
-            emitResult(snd.latestError(), retValue);
-        }
-        else {
-            m_request->setArguments(args);
-            m_request->send(retValue);
-            emitResult(m_request->lastError(), retValue);
-        }
+        snd << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
+        snd.send(retValue);
+        emitResult(snd.latestError(), retValue);
 	}
 	//else return an error
 	else {

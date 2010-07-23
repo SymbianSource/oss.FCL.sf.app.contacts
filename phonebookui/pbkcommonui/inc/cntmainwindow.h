@@ -50,6 +50,7 @@ public:
 protected:
 #endif
     CntDefaultViewManager        *mViewManager;
+    int                          mDefaultView;
 
 };
 

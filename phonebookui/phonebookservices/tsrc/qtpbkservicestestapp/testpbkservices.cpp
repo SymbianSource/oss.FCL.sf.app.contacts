@@ -28,16 +28,17 @@
 #include <hbview.h>
 #include <QGraphicsLinearLayout>
 #include <QDebug>
+#include <HbAction>
 
 #include "cntdebug.h"
 
 
-testPbkServices::testPbkServices(HbMainWindow *aParent)
+testPbkServices::testPbkServices(HbMainWindow *aParent) :
+mRequest(NULL),
+mMainWindow(aParent),
+mPopup(NULL)
 {
-    mRequest=NULL;
-    mMainWindow=aParent;
     setParent(aParent);
-
 }
 
 testPbkServices::~testPbkServices()
@@ -484,26 +485,26 @@ void testPbkServices::onRequestCompleted(const QVariant& value)
             listWidget->addItem( contactId );
 
             }
-            HbDialog *popup = new HbDialog();
-            popup->setAttribute(Qt::WA_DeleteOnClose, true);
+            mPopup = new HbDialog();
+            mPopup->setAttribute(Qt::WA_DeleteOnClose, true);
 
             // Set dismiss policy that determines what tap events will cause the popup
             // to be dismissed
-            popup->setDismissPolicy(HbDialog::NoDismiss);
+            mPopup->setDismissPolicy(HbDialog::NoDismiss);
+            mPopup->setModal(true);
 
             // Set the label as heading widget
-            popup->setHeadingWidget(new HbLabel(tr("Contact")));
+            mPopup->setHeadingWidget(new HbLabel(tr("Contact")));
 
             // Set a list widget as content widget in the popup
-            popup->setContentWidget(listWidget);
-
-            // Sets the primary action and secondary action
-            //popup.setPrimaryAction(new HbAction(tr("Ok"),&popup));
-            //popup.setSecondaryAction(new HbAction(tr("Cancel"),&popup));
+            mPopup->setContentWidget(listWidget);
+            
+            // Add an OK action to dismiss the popup
+            HbAction *okAction = new HbAction(tr("Ok"), mPopup);
+            mPopup->addAction(okAction);
 
             // Launch popup asyncronously
-            popup->setTimeout(15000);
-            popup->open();
+            mPopup->open();
     }
     CNT_EXIT
 }

@@ -135,15 +135,37 @@ ContactWidgetHs::ContactWidgetHs(QGraphicsItem *parent, Qt::WindowFlags flags )
 */
 ContactWidgetHs::~ContactWidgetHs()
 {
-    delete mLauncher;
-    delete mContactManager;
-    delete mAppManager;
-    delete mAvatar;	
-    // Deleting request cancels all pending requests 
-    delete mContactSelectRequest;
-    //,,first cancel?
-    delete mThumbnailManager;
-    delete mTranslator;
+	if (mLauncher) 
+		{
+		delete mLauncher;
+		}
+    if (mContactManager)
+    	{
+    	delete mContactManager;
+    	}
+    if (mAppManager)
+    	{
+    	delete mAppManager;
+    	}
+    if (mAvatar)
+    	{
+    	delete mAvatar;
+    	}
+    
+    // Deleting request cancels all pending requests
+    if (mContactSelectRequest)
+    	{
+    	delete mContactSelectRequest;
+    	}
+    
+    if (mThumbnailManager)
+    	{
+    	delete mThumbnailManager;
+    	}
+    if (mTranslator)
+    	{
+    	delete mTranslator;
+    	}
 }
 
 /*!
@@ -240,17 +262,38 @@ bool ContactWidgetHs::setContactImage(QPixmap& inputPixmap)
     painter.end();
     qDebug() << "setContactImage av 2"; //,,             
 
+    int maxSize = (inputPixmap.width() > inputPixmap.height() ? inputPixmap.width():inputPixmap.height());
+    int minSize = (inputPixmap.width() < inputPixmap.height() ? inputPixmap.width():inputPixmap.height());
+    int sizeFrom = maxSize - minSize;
     // We may draw the icon when thumnail processing is still in progress, 
     // so can't show the thumbnail yet.
 	if (inputPixmap.width()>0) {
+		if (inputPixmap.width() < inputPixmap.height())
+		{
+  		QPixmap pm3 = inputPixmap.copy(0,sizeFrom/2,minSize,minSize);
+  		QPixmap pm2 = pm3.scaled( QSize(contactIconSize, contactIconSize), Qt::KeepAspectRatio );
+  		qDebug() << "pm2 " << pm2.width() << " " << pm2.height();
+  		avatarPixmap = pm2; 
+		}
+		else if (inputPixmap.width() > inputPixmap.height())
+		{
+  		QPixmap pm3 = inputPixmap.copy(sizeFrom/2,0,minSize,minSize);
+  		QPixmap pm2 = pm3.scaled( QSize(contactIconSize, contactIconSize), Qt::KeepAspectRatio );
+  		qDebug() << "pm2 " << pm2.width() << " " << pm2.height();
+  		avatarPixmap = pm2; 
+    }else
+    {
 		QPixmap pm2 = inputPixmap.scaled( QSize(contactIconSize, contactIconSize), Qt::IgnoreAspectRatio );
 		qDebug() << "pm2 " << pm2.width() << " " << pm2.height();
 		avatarPixmap = pm2; //
+    }
 	} 
     
     HbIcon *avatarIcon = new HbIcon(QIcon(avatarPixmap));
        
     mAvatarIconItem->setIcon(*avatarIcon);
+    mAvatarIconItem->setSize(QSize(contactIconSize, contactIconSize));
+    mAvatarIconItem->setAspectRatioMode(Qt::KeepAspectRatio);
         
     // Then display the new image
     update();
@@ -414,7 +457,21 @@ QString ContactWidgetHs::getContactDisplayName(QContact& contact)
 */
 void ContactWidgetHs::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (event && event->type() == QEvent::GraphicsSceneMousePress) {
+	Q_UNUSED(event);
+}
+
+/*!
+    \fn void ContactWidgetHs::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+
+    Widget start is triggered from release \a event.
+    \sa 
+*/
+void ContactWidgetHs::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+{
+	qDebug() << "mouseReleaseEvent event->type() = " << (int)event->type();
+
+	//Q_UNUSED(event);
+    if (event && event->type() == QEvent::GraphicsSceneMouseRelease) {
         // If the widget doesn't have contact yet and
         // there are contacts, select one.    
         if (mContactLocalId == unUsedContactId) {
@@ -445,17 +502,6 @@ void ContactWidgetHs::mousePressEvent(QGraphicsSceneMouseEvent *event)
             qDebug() << "after exec rect() " << mLauncherRect;
         }
     }
-}
-
-/*!
-    \fn void ContactWidgetHs::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
-
-    Widget start is triggered from release \a event.
-    \sa 
-*/
-void ContactWidgetHs::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
-{
-    Q_UNUSED(event);
 }
 
 
@@ -751,7 +797,17 @@ void ContactWidgetHs::onContactsRemoved( const QList<QContactLocalId> &contactId
     for(i=0; i<contactIds.count(); i++) {
         if (contactIds.at(i) == mContactLocalId) {
             qDebug() << "-deleting widget with removed contact " << mContactLocalId;
-            // TODO this deletes the widget. Can we always delete the object immediately?
+
+            mAvatarIconItem->deleteLater();
+            mContactNameLabel->deleteLater();
+            mAppManager->deleteLater();
+            mLauncher->deleteLater();
+            mContactLocalId = unUsedContactId;
+            delete mAvatar;
+            mContactHasAvatarDetail = false;
+            mContactManager->deleteLater();
+            mThumbnailManager->deleteLater();
+            
             emit finished();
             break;
         }

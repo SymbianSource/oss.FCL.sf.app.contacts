@@ -17,6 +17,7 @@
         <file alias="contacts_collections.docml" >contacts_collections.docml</file>
         <file alias="contacts_groupmembers.docml" >contacts_groupmembers.docml</file>
         <file alias="contacts_detail_editor.docml" >contacts_detail_editor.docml</file>
+        <file alias="contacts_fetchdialog.docml" >contacts_fetchdialog.docml</file>
 		<file alias="contacts_settings.docml" >contacts_settings.docml</file>
     </qresource>
     <qresource prefix="/style">
@@ -34,9 +35,12 @@
         <file alias="cntcontactcardheadingitem_color.css">style/cntcontactcardheadingitem_color.css</file>
         <file alias="cnthistoryviewitem.widgetml">style/cnthistoryviewitem.widgetml</file>
         <file alias="cnthistoryviewitem.css">style/cnthistoryviewitem.css</file>
-        <file alias="cntlocationbutton.hbpushbutton.widgetml">style/cntlocationbutton.hbpushbutton.widgetml</file>
-        <file alias="cntlocationbutton.css">style/cntlocationbutton.css</file>
         <file alias="cntcommondetailviewitem.widgetml">style/cntcommondetailviewitem.widgetml</file>
         <file alias="cntcommondetailviewitem.css">style/cntcommondetailviewitem.css</file>
+        <file alias="cntimagelabel.widgetml">style/cntimagelabel.widgetml</file>
+        <file alias="cntimagelabel.css">style/cntimagelabel.css</file>
+        <file alias="cntfetchmarkall.widgetml">style/cntfetchmarkall.widgetml</file>
+        <file alias="cntfetchmarkall.css">style/cntfetchmarkall.css</file>
+        <file alias="cntfetchmarkall_color.css">style/cntfetchmarkall_color.css</file>
     </qresource>
 </RCC>

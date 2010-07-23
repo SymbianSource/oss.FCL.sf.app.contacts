@@ -25,6 +25,7 @@
 #include <QGraphicsSceneResizeEvent>
 #include "cntglobal.h"
 #include <cntmaptileservice.h>
+#include <xqappmgr.h>
 
 class HbView;
 class HbScrollArea;
@@ -47,6 +48,7 @@ class QModelIndex;
 class HbSelectionDialog;
 class CntPresenceListener;
 class HbLabel;
+class XQAiwRequest;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -79,7 +81,7 @@ class CntContactCardViewPrivate : public QObject
     Q_DECLARE_PUBLIC(CntContactCardView)
 
 public:
-    CntContactCardViewPrivate();
+    CntContactCardViewPrivate(bool isTemporary);
     virtual ~CntContactCardViewPrivate();    
 
 public slots:
@@ -91,6 +93,7 @@ public slots:
     void thumbnailReady(const QPixmap& pixmap, void *data, int id, int error);
     void drawMenu(const QPointF &aCoords);
     void sendToHs();
+    void onAddedToContacts();
     void mapTileStatusReceived(int contactid, int addressType, int status);
     void keyPressed(QKeyEvent *event);
 
@@ -106,11 +109,13 @@ private slots:
     void showPreviousView();
     void doChangeImage();
     void doRemoveImage();
+    void showRootView();
     
     void handleMenuAction(HbAction* aAction);
     void handleSendBusinessCard( HbAction* aAction );
     void executeAction(QContact& aContact, const QContactDetail& aDetail, const QString& aAction);
     void sendKeyCancelSlot();
+    void contactDeletedFromOtherSource(const QList<QContactLocalId>& contactIds);
     
 #ifdef PBK_UNIT_TEST
 public slots:
@@ -138,7 +143,7 @@ signals:
     void preferredUpdated();
     void backPressed();
     void viewActivated(CntAbstractViewManager* aMgr, const CntViewParameters aArgs);
-
+    void addToContacts();
     
 #ifdef PBK_UNIT_TEST
 public:
@@ -175,7 +180,9 @@ private:
     QContactAction              *mContactAction;
     HbAction                    *mBackKey;
     CntImageLabel               *mImageLabel;
+    XQApplicationManager        mAppManager;
 	XQServiceRequest            *mHighwayService;
+	XQAiwRequest                *mRequest; // own
     HbIcon                      *mVCardIcon;
     CntViewParameters           mArgs;
     ShareUi                     *mShareUi;
@@ -187,6 +194,8 @@ private:
     QTimer                      *mProgressTimer;
     QList <CntContactCardMapTileDetail*> mAddressList;
     QMap <int, HbLabel*>        mMaptileLabelList;
+    bool                        mIsTemporary;
+    bool                        mIsExecutingAction;
 };
 
 #endif // CNTCOMMLAUNCHERVIEW_H

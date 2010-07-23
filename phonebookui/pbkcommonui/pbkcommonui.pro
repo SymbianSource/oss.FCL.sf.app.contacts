@@ -29,6 +29,7 @@ INCLUDEPATH += .
 INCLUDEPATH += ../../inc
 INCLUDEPATH += ../../phonebookengines/cntimageutility/inc
 INCLUDEPATH += ../../phonebookengines/cntsimutility/inc
+INCLUDEPATH += ../phonebookapp/inc
 INCLUDEPATH += ../cnthistorymodel/inc
 
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
@@ -128,7 +129,8 @@ HEADERS += \
     inc/cntgroupdeletepopup.h \
     inc/cntextensionmanager.h \
     inc/cntimagelabel.h \
-    inc/cntfetchcontactsview.h \
+    inc/cntfetchcontactpopup.h \
+    inc/cntfetchmarkall.h \
     inc/cntimportsview.h \
     inc/cntsettingsview.h \
     inc/cntpresencelistener.h \
@@ -204,7 +206,8 @@ SOURCES += \
     src/cntextensionmanager.cpp \
     src/cntimagelabel.cpp \
     src/cntimportsview.cpp \
-    src/cntfetchcontactsview.cpp \
+    src/cntfetchcontactpopup.cpp \
+    src/cntfetchmarkall.cpp \
     src/cntsettingsview.cpp \
     src/cntpresencelistener.cpp \
     src/cntdetailorderinghelper.cpp \
@@ -214,7 +217,7 @@ SOURCES += \
     src/cntactionpopup.cpp \
     src/cntsavemanager.cpp
     
-RESOURCES += resources\pbkcommonui.qrc
+RESOURCES += resources/pbkcommonui.qrc
 
 LIBS+= -lhbcore \
        -lxqservice \

@@ -47,7 +47,7 @@ void CntViewNavigator::next( const int& aId, QFlags<Hb::ViewSwitchFlag> &flags )
     iViewStack.push( aId );
 }
 
-const int& CntViewNavigator::back( QFlags<Hb::ViewSwitchFlag> &flags )
+const int& CntViewNavigator::back( QFlags<Hb::ViewSwitchFlag> &flags, bool toRoot )
 {
     qDebug() << "CntViewNavigator::back() - IN";
     iTop = noView;
@@ -59,8 +59,23 @@ const int& CntViewNavigator::back( QFlags<Hb::ViewSwitchFlag> &flags )
     {
         int top = iViewStack.top();
         
+        // If we need to go to the latest root view
+        if ( toRoot )
+        {
+            while ( !iViewStack.isEmpty() ) 
+            {
+                int current = iViewStack.top();
+                
+                if ( iRoots.contains( current ) )
+                {
+                    iTop = current;
+                    break;
+                }
+                iViewStack.pop();
+            }
+        }
         // If any exception defined for the current (top) view
-        if ( iExceptions.contains( top ) ) 
+        else if ( iExceptions.contains( top ) ) 
         {
             iTop = iExceptions.value( top );
             // cleanup the history until the exception value is found
@@ -121,6 +136,11 @@ void CntViewNavigator::removeEffect( const int& aCurrent )
     {
         iEffects.remove( aCurrent );
     }
+}
+
+void CntViewNavigator::addRoot( const int& aCurrent )
+{
+    iRoots.append( aCurrent );
 }
     
 // End of File

@@ -65,9 +65,26 @@ public:
      * @param definitionName The field type
      * @param value The value for the field.
      * @param aServiceProvider The service provider
+     * @param defaultForOnlineAccountIsImpp If no subtype is given, default
+     *          for QContactOnlineAccount is QContactOnlineAccount::SubTypeImpp. If false, then
+     *          the default is QContactOnlineAccount::SubTypeSipVoip.
      */
     void editCreateNew(const QString &definitionName, const QString &value,
-        CntAbstractServiceProvider& aServiceProvider );
+        CntAbstractServiceProvider& aServiceProvider, bool defaultForOnlineAccountIsImpp = true );
+
+    /**
+     * Launch editor for creating a new contact with a given detail and subtype.
+     * If the given subtype string is empty, then QContactPhoneNumber::SubTypeMobile is used.
+     * @param definitionName The field type
+     * @param value The value for the field.
+     * @param subType The subtype for the field. (for eg. QContactPhoneNumber::SubTypeLandline)
+     * @param aServiceProvider The service provider
+     * @param defaultForOnlineAccountIsImpp If no subtype is given, default
+     *          for QContactOnlineAccount is QContactOnlineAccount::SubTypeImpp. If false, then
+     *          the default is QContactOnlineAccount::SubTypeSipVoip.
+     */
+    void editCreateNew(const QString &definitionName, const QString &value, const QString& subType,
+        CntAbstractServiceProvider& aServiceProvider, bool defaultForOnlineAccountIsImpp = true );
 
     /**
      * Launch editor for creating a new contact based on vCard file indicated in arg.
@@ -85,7 +102,21 @@ public:
      * @param aServiceProvider The service provider
      */
     void editUpdateExisting(const QString &definitionName, const QString &value,
-        CntAbstractServiceProvider& aServiceProvider );
+        CntAbstractServiceProvider& aServiceProvider, bool defaultForOnlineAccountIsImpp = true );
+
+    /**
+     * User can first choose a contact, and then an editor is opened.
+     * A new detail is provided by caller and it will be prefilled in the editor.
+     * @param definitionName The field type
+     * @param value The value for the field.
+     * @param subType The subtype for the field. (for eg. QContactPhoneNumber::SubTypeLandline)
+     * @param aServiceProvider The service provider
+     * @param defaultForOnlineAccountIsImpp If no subtype is given, default
+     *          for QContactOnlineAccount is QContactOnlineAccount::SubTypeImpp. If false, then
+     *          the default is QContactOnlineAccount::SubTypeSipVoip.
+     */
+    void editUpdateExisting(const QString &definitionName, const QString &value, const QString& subType,
+        CntAbstractServiceProvider& aServiceProvider, bool defaultForOnlineAccountIsImpp = true );
 
     /**
      * Open the editor for an existing contact.'
@@ -113,20 +144,25 @@ public:
         CntAbstractServiceProvider& aServiceProvider );
     
     /**
-     * Set the flag that allows quiting the application explicitly
+     * Set the flag that allows quitting the application explicitly
      * using the quitApp slot. By default the value is always true.
      */
-    void setQuitable(bool quitable);
+    void setQuittable(bool quittable);
         
 public slots:
     /**
      * Quit the application
      */
     void quitApp();
+    /**
+     * Terminate a service
+     */
+    void terminateService();
     
 private:
     void removeNotSupportedFields(QContact& contact);
     void removeNotSupportedDetails(QContact& contact);
+    void fillOnlineAccount( QContactOnlineAccount& account, const QString& value, const QString& subType, bool defaultForOnlineAccountIsImpp);
 
 private: // from CntAbstractServiceProvider
     void CompleteServiceAndCloseApp(const QVariant& retValue);
@@ -134,7 +170,7 @@ private:
     CntAbstractViewManager* mViewManager; // not owned
     QStringList m_definitionNames;
     CntAbstractServiceProvider* mCurrentProvider; // not owned
-    bool mIsQuitable;
+    bool mIsQuittable;
 };
 
 #endif /* CNTSERVICES_H */

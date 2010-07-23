@@ -47,5 +47,7 @@ static const QString SIM_BACKEND_SDN     = "qtcontacts:symbiansim:store=SDN";
 #define CNT_ADD_ACTION          "add"
 #define CNT_FOCUS_ACTION        "focus"
 #define CNT_SAVE_ACTION         "save"
+#define CNT_FIND_ACTION         "find"
+#define CNT_ROOT_ACTION         "root"
 
 #endif // CNTGLOBAL_H

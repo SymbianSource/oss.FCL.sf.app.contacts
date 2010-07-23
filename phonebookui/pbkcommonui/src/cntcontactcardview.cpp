@@ -20,12 +20,13 @@
 
 #include <hbview.h>
 
-CntContactCardView::CntContactCardView() : d_ptr(new CntContactCardViewPrivate())
+CntContactCardView::CntContactCardView(bool isTemporary) : d_ptr(new CntContactCardViewPrivate(isTemporary))
 {
     Q_D(CntContactCardView);
     connect(d_ptr, SIGNAL(backPressed()), this, SIGNAL(backPressed()));
     connect(d_ptr, SIGNAL(viewActivated(CntAbstractViewManager*, const CntViewParameters)), 
             this, SIGNAL(viewActivated(CntAbstractViewManager*, const CntViewParameters)));
+    connect(d_ptr, SIGNAL(addToContacts()), this, SIGNAL(addToContacts()));
 }
 
 /*!
@@ -62,7 +63,7 @@ bool CntContactCardView::isDefault() const
 
 int CntContactCardView::viewId() const 
 { 
-    return commLauncherView; 
+    return contactCardView; 
 }
 
 // end of file

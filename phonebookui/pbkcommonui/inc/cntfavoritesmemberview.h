@@ -44,7 +44,7 @@ public: // From CntAbstractView
     void deactivate();
     bool isDefault() const { return false; }
     HbView* view() const { return mView; }
-    int viewId() const { return FavoritesMemberView; }
+    int viewId() const { return favoritesMemberView; }
     void createModel();
     
 public:
@@ -58,7 +58,7 @@ private slots:
 #endif
 
     void manageFavorites();
-    void handleManageFavorites();
+    void handleManageFavorites(QSet<QContactLocalId> aIds);
     
     void onLongPressed (HbAbstractViewItem *item, const QPointF &coords);
     void handleMenu(HbAction* action);

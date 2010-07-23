@@ -16,9 +16,9 @@
 */
 
 #include <hbapplication.h>
+#include <hbmainwindow.h>
 #include <QTranslator>
 #include <QLocale>
-#include "cntmainwindow.h"
 #include "cntserviceproviderold.h"
 #include "cntserviceproviderold2.h"
 #include "cntserviceproviderfetch.h"
@@ -28,10 +28,13 @@
 #include "cntservices.h"
 #include "cntserviceviewmanager.h"
 #include "cntviewnavigator.h"
+#include "cntdebug.h"
 #include <cntviewparams.h>
 
 int main(int argc, char **argv)
 {
+    qInstallMsgHandler(MSG_HANDLER);
+    
     HbApplication a( argc, argv );
 
     QTranslator translator;
@@ -40,10 +43,12 @@ int main(int argc, char **argv)
     translator.load(path + "contacts_" + lang);
     a.installTranslator(&translator);
 
-    CntMainWindow mainWindow(NULL, noView); // no parent & "noView" as default view
+    HbMainWindow mainWindow;
 
     CntViewNavigator* navigator = new CntViewNavigator( &mainWindow );
     navigator->addException( serviceEditView, noView );
+    navigator->addEffect( serviceContactCardView, historyView );
+    navigator->addEffect( historyView, serviceContactCardView );
 
     // This object actually executes the services
     CntServices* services = new CntServices();

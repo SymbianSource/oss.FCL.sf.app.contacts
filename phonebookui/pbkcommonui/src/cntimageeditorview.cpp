@@ -18,6 +18,7 @@
 #include "cntimageeditorview.h"
 #include "cntimageutility.h"
 #include "cntsavemanager.h"
+#include "cntimagelabel.h"
 
 #include <hblabel.h>
 #include <xqaiwrequest.h>
@@ -151,7 +152,8 @@ void CntImageEditorView::activate( CntAbstractViewManager* aMgr, const CntViewPa
     }
     
     // set the correct image if the contact already has an image set
-    mImageLabel = static_cast<HbLabel*>(mDocumentLoader.findWidget(QString("cnt_image_label")));
+    mImageLabel = static_cast<CntImageLabel*>(mDocumentLoader.findWidget(QString("cnt_image_label")));
+    mImageLabel->ungrabGesture(Qt::TapGesture);
     QList<QContactAvatar> details = mContact->details<QContactAvatar>();
     if (details.count() > 0)
         {
@@ -171,7 +173,7 @@ void CntImageEditorView::activate( CntAbstractViewManager* aMgr, const CntViewPa
         mRemoveImage->setEnabled(false);
         if (mContact->type() == QContactType::TypeGroup)
             {
-            mImageLabel->setIcon(HbIcon("qtg_large_add_group_picture"));
+            mImageLabel->setAvatarIcon(HbIcon("qtg_large_add_group_picture"));
             }
         }
     
@@ -307,9 +309,9 @@ void CntImageEditorView::removeImage()
         mAvatar->setImageUrl(QUrl());
         mImageLabel->clear();
         if (mContact->type() == QContactType::TypeGroup)
-            mImageLabel->setIcon(HbIcon("qtg_large_add_group_picture"));
+            mImageLabel->setAvatarIcon(HbIcon("qtg_large_add_group_picture"));
         else
-            mImageLabel->setIcon(HbIcon("qtg_large_add_contact_picture"));
+            mImageLabel->setAvatarIcon(HbIcon("qtg_large_add_contact_picture"));
         mRemoveImage->setEnabled(false);
     }
 }
@@ -367,10 +369,8 @@ void CntImageEditorView::thumbnailReady(const QPixmap& pixmap, void *data, int i
     Q_UNUSED(id);
     if (!error)
     {
-        QIcon qicon(pixmap);
-        HbIcon icon(qicon);
         mImageLabel->clear();
-        mImageLabel->setIcon(icon);
+        mImageLabel->setIcon(pixmap);
     }
     
     CNT_EXIT
@@ -428,7 +428,7 @@ void CntImageEditorView::saveContact()
         mContact->removeDetail(mAvatar);
     }
     
-    QString name = mViewManager->contactManager(SYMBIAN_BACKEND)->synthesizedDisplayLabel(*mContact);
+    QString name = mViewManager->contactManager(SYMBIAN_BACKEND)->synthesizedContactDisplayLabel(*mContact);
     
     if (name.isEmpty())
     {

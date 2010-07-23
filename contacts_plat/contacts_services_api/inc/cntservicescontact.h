@@ -38,7 +38,7 @@ const QString KCntActionEmail("email");
 const int KCntServicesReturnValueContactSaved       = 1;
 const int KCntServicesReturnValueContactDeleted     = -1;
 const int KCntServicesReturnValueContactNotModified = 0;
-
+const int KCntServicesTerminated = -2;
 
 /**
  * A data container class to be used with "phonebookservices" Qt Highway services.

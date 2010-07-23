@@ -57,7 +57,7 @@ CntAbstractView* CntDefaultViewFactory::createView( int aId )
     {
     case namesView:
         return new CntNamesView(*mExtensionManager);
-    case commLauncherView:
+    case contactCardView:
         return new CntContactCardView();
     case myCardView:
         return new CntMyCardView();
@@ -67,7 +67,7 @@ CntAbstractView* CntDefaultViewFactory::createView( int aId )
         return new CntCollectionView(*mExtensionManager);
     case collectionFavoritesView:
         return new CntFavoritesView();
-    case FavoritesMemberView:
+    case favoritesMemberView:
         return new CntFavoritesMemberView();
     case editView:
 		return new CntEditView();

@@ -12,6 +12,9 @@
     <object name="cnt:activityStream" type="HbAction">
         <icon iconName="qtg_mono_person_activitystream" name="icon"/>
     </object>
+    <object name="cnt:addtocontact" type="HbAction">
+        <icon iconName="qtg_mono_add_to_contact" name="icon"/>
+    </object>
     <object name="cnt:sendbusinesscard" type="HbAction">
         <string locid="txt_phob_opt_send_as_a_business_card" name="text"/>
     </object>
@@ -33,10 +36,7 @@
             <widget name="cnt_contactcard_image" type="CntImageLabel">
                 <sizepolicy horizontalPolicy="Fixed" horizontalStretch="0" verticalPolicy="Fixed" verticalStretch="0"/>
                 <sizehint height="30.5un" type="FIXED" width="30.5un"/>
-                <contentsmargins bottom="2un" left="2un" right="2un" top="2un"/>
                 <bool name="visible" value="FALSE"/>
-                <string name="alignment" value="AlignCenter"/>
-                <string name="aspectRatioMode" value="KeepAspectRatio"/>
                 <icon iconName="qtg_large_add_contact_picture" name="icon"/>
             </widget>
             <widget name="scrollArea" type="HbScrollArea">
@@ -94,9 +94,9 @@
                 <bool name="visible" value="TRUE"/>
             </widget>
             <layout type="anchor">
-                <anchoritem dst="" dstEdge="LEFT" spacing="0un" src="cnt_contactcard_image" srcEdge="LEFT"/>
-                <anchoritem dst="" dstEdge="TOP" spacing="0un" src="cnt_contactcard_image" srcEdge="TOP"/>
-                <anchoritem dst="cnt_contactcard_heading" dstEdge="LEFT" spacing="0un" src="cnt_contactcard_image" srcEdge="RIGHT"/>
+                <anchoritem dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-left)" src="cnt_contactcard_image" srcEdge="LEFT"/>
+                <anchoritem dst="" dstEdge="TOP" spacing="-var(hb-param-margin-gene-top)" src="cnt_contactcard_image" srcEdge="TOP"/>
+                <anchoritem dst="cnt_contactcard_heading" dstEdge="LEFT" spacing="var(hb-param-margin-gene-right)" src="cnt_contactcard_image" srcEdge="RIGHT"/>
                 <anchoritem dst="" dstEdge="TOP" spacing="0un" src="cnt_contactcard_heading" srcEdge="TOP"/>
                 <anchoritem dst="scrollArea" dstEdge="TOP" spacing="0un" src="cnt_contactcard_heading" srcEdge="BOTTOM"/>
                 <anchoritem dst="" dstEdge="RIGHT" spacing="0un" src="cnt_contactcard_heading" srcEdge="RIGHT"/>

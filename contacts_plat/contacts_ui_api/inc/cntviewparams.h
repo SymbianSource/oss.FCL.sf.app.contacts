@@ -38,7 +38,7 @@ enum CntViewParamId
     ESelectedDetail,
     ESelectionMode,
     EMyCard,
-    EFinder,
+    EExtraAction,
 	ECustomParam = 100
 };
 
@@ -46,7 +46,7 @@ enum CntViewId
 {
     noView=0, //exit
     namesView,
-    commLauncherView,
+    contactCardView,
     serviceContactCardView,
     serviceAssignContactCardView,
     myCardView,
@@ -54,7 +54,7 @@ enum CntViewId
     serviceContactSelectionView,
     collectionView,
     collectionFavoritesView,
-    FavoritesMemberView,
+    favoritesMemberView,
     editView,
     serviceEditView,
     serviceSubEditView,

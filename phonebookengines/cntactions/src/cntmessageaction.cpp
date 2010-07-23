@@ -66,10 +66,60 @@ QList<QContactDetail> CntMessageAction::supportedDetails(const QContact& contact
 
 void CntMessageAction::performAction()
 {
-    QString service("com.nokia.symbian.IMessageSend");
-    QString type("send(QString,qint32,QString)");
+    QList<QVariant> data;
+    QVariant retValue;
     
-    performNumberAction(service, type);
+    delete m_request;
+    m_request = NULL;
+        
+    //QContactType == TypeGroup
+    if (QContactType::TypeGroup == m_contact.type()) {
+        QString interface("com.nokia.symbian.IMessageSend");
+        QString operation("send(QVariantMap,QString)");
+        m_request = m_AppManager.create(interface, operation, false); // not embedded
+        if (m_request==NULL) {
+            emitResult(GeneralError, retValue);
+            return;
+        }
+        
+        QVariantMap recipientMap;
+        QVariant value = m_data.value("message");
+        if (value.canConvert<QVariantMap>()) {
+            recipientMap = value.toMap();
+        }
+        if (!recipientMap.isEmpty()) {
+            data.append(recipientMap); //recipients
+            data.append(QString()); //body text
+            
+            m_request->setArguments(data);
+            m_request->send(retValue);
+            emitResult(m_request->lastError(), retValue);
+        }
+        else {
+            emitResult(GeneralError, retValue);
+        }
+    }
+    //QContactType == TypeContact
+    //detail exist use it
+    else if (m_detail.definitionName() == QContactPhoneNumber::DefinitionName) {
+        QString interface("com.nokia.symbian.IMessageSend");
+        QString operation("send(QString,qint32,QString)");
+        m_request = m_AppManager.create(interface, operation, false); // not embedded
+        if (m_request==NULL) {
+            emitResult(GeneralError, retValue);
+            return;
+        }
+        
+        const QContactPhoneNumber &phoneNumber = static_cast<const QContactPhoneNumber &>(m_detail);
+        data << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
+        
+        m_request->setArguments(data);
+        m_request->send(retValue);
+        emitResult(m_request->lastError(), retValue);
+    }
+    else {
+        emitResult(GeneralError, retValue);
+    }
 }
 
 

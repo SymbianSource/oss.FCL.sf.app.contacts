@@ -49,6 +49,10 @@ bool CntActionLauncher::execute( QContact aContact, QContactDetail aDetail )
                 this, SLOT(progress(QContactAction::State)));
         executed = mContactAction->invokeAction( aContact, aDetail );
         }
+    else
+        {
+        progress(QContactAction::FinishedWithErrorState);
+        }
     
     return executed;
     }
@@ -71,6 +75,10 @@ bool CntActionLauncher::execute( QContact aContact, QContactDetail aDetail, QVar
                 this, SLOT(progress(QContactAction::State)));
         executed = mContactAction->invokeAction( aContact, aDetail, aParameters );
         }
+    else
+        {
+        progress(QContactAction::FinishedWithErrorState);
+        }
     
     return executed;
     }
@@ -88,6 +96,10 @@ bool CntActionLauncher::execute( QContact aContact, QContactDetail aDetail, QCon
         connect(mContactAction, SIGNAL(stateChanged(QContactAction::State)),
                 this, SLOT(progress(QContactAction::State)));
         executed = mContactAction->invokeAction( aContact, aDetail );
+    }
+    else
+    {
+        progress(QContactAction::FinishedWithErrorState);
     }
     return executed;
 }

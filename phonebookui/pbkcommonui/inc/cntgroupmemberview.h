@@ -21,13 +21,12 @@
 #include <QObject>
 #include <QList>
 #include <hbdocumentloader.h>
-
+#include <QSet>
 #include <cntabstractview.h>
 
 class CntListModel;
 class CntAbstractViewManager;
 class CntContactCardHeadingItem;
-class CntFetchContacts;
 class HbView;
 class HbAction;
 class HbListView;
@@ -67,7 +66,7 @@ private slots:
     void showPreviousView();
     void openGroupActions();
     void manageMembers();
-    void handleManageMembers();
+    void handleManageMembers(QSet<QContactLocalId> aIds);
     void editGroup();
     void deleteGroup();
     void handleDeleteGroup(int action);
@@ -85,6 +84,7 @@ private slots:
     void createModel();
   
     void removeImage();
+    void sendToHs(const QModelIndex &index);
     
 private:
     QContactManager* getContactManager();
@@ -107,7 +107,6 @@ private:
     CntImageLabel*              mImageLabel;
     HbListView*                 mListView; // owned by layout
     HbDocumentLoader*           mDocument;
-    CntFetchContacts*           mFetchView;
     QList<QContactLocalId>      mOriginalGroupMembers;
     QContactAvatar*             mAvatar;
     CntViewParameters           mArgs;

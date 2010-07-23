@@ -37,6 +37,8 @@ public:
     ~CntServiceViewManager();
 protected slots:
     virtual void closeApp();
+signals:
+    void applicationClosed();
 };
 
 #endif // CNTSERVICEVIEWMANAGER_H

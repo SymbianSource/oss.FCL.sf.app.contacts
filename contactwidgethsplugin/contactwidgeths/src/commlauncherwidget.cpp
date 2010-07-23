@@ -113,7 +113,11 @@ CommLauncherWidget::CommLauncherWidget(QGraphicsItem *parent) :
 CommLauncherWidget::~CommLauncherWidget()
 {
     // Deleting request cancels all pending requests 
-    delete mRequest;
+    if (mRequest) {
+        delete mRequest;
+        mRequest = NULL;
+    }
+
 }
 
 /*!
@@ -518,12 +522,14 @@ void CommLauncherWidget::openPhonebookCreateNew()
 */
 void CommLauncherWidget::keyPressEvent(QKeyEvent *event)
 {
+	qDebug() << "keyPressEvent event=" << event->key();
     if (event->key() == Qt::Key_Yes) {
         // Call key initializes a call
         makeCall();
         event->accept();
     } else {
-        HbPopup::keyPressEvent(event);
+      close();
+      //HbPopup::keyPressEvent(event);
     } 
 }
 
@@ -543,4 +549,5 @@ int CommLauncherWidget::commLauncherWidth()
     
     return width;
 }
+
 

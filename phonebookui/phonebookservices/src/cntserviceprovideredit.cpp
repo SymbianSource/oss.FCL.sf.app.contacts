@@ -46,8 +46,17 @@ void CntServiceProviderEdit::editCreateNew(const QString& definitionName, const 
     {
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuitable(requestInfo().isEmbedded());
+    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.editCreateNew( definitionName, value, *this );
+    CNT_EXIT
+    }
+
+void CntServiceProviderEdit::editCreateNew(const QString& definitionName, const QString& value, const QString &subType)
+    {
+    CNT_ENTRY
+    mCurrentRequestIndex = setCurrentRequestAsync();
+    mServices.setQuittable(requestInfo().isEmbedded());
+    mServices.editCreateNew( definitionName, value, subType, *this );
     CNT_EXIT
     }
 
@@ -55,7 +64,7 @@ void CntServiceProviderEdit::editCreateNewFromVCard(const QString &vCardFile)
     {
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuitable(requestInfo().isEmbedded());
+    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.editCreateNewFromVCard( vCardFile, *this );
     CNT_EXIT
     }
@@ -64,7 +73,7 @@ void CntServiceProviderEdit::editExisting(int contactId)
     {
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuitable(requestInfo().isEmbedded());
+    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.editExisting( contactId, *this );
     CNT_EXIT
     }
@@ -73,11 +82,19 @@ void CntServiceProviderEdit::editUpdateExisting(const QString &definitionName, c
     {
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuitable(requestInfo().isEmbedded());
+    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.editUpdateExisting( definitionName, value, *this );
     CNT_EXIT
     }
 
+void CntServiceProviderEdit::editUpdateExisting(const QString &definitionName, const QString &value, const QString &subType)
+    {
+    CNT_ENTRY
+    mCurrentRequestIndex = setCurrentRequestAsync();
+    mServices.setQuittable(requestInfo().isEmbedded());
+    mServices.editUpdateExisting( definitionName, value, subType, *this );
+    CNT_EXIT
+    }
 
 void CntServiceProviderEdit::CompleteServiceAndCloseApp(const QVariant& retValue)
     {

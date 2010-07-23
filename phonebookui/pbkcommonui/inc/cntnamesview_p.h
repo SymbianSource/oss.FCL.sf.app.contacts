@@ -60,7 +60,7 @@ public slots:
     void deleteContact( QContact& aContact );
     void deleteMultipleContacts();
     
-    void handleDeleteMultipleContacts();
+    void handleDeleteMultipleContacts( QSet<QContactLocalId> aIds );
 
     void showPreviousView();
     void showCollectionView();
@@ -78,6 +78,9 @@ public slots:
     void handleContactAddition(const QList<QContactLocalId> & aAddedList);
     void handleContactRemoval(const QList<QContactLocalId> & aRemovedList);
     void handleSelfContactIdChange(const QContactLocalId & aOldId, const QContactLocalId & aNewId);
+    
+private slots:
+    void switchOrientation();
     
 public:
     bool isFinderVisible();
@@ -114,7 +117,6 @@ private:
     HbAction*                   mNewContact;
     QContactLocalId             mHandledContactId;
     HbAction*                   mMultipleDeleter;
-    CntFetchContacts*           mFetchView;
     bool                        mIsDefault;
     int                         mId;
     QActionGroup*               mActionGroup;

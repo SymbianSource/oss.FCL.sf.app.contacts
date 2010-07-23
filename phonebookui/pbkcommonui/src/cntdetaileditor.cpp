@@ -37,6 +37,7 @@
 #include <hbparameterlengthlimiter.h>
 
 #include <QApplication>
+#include <QTimer>
 
 const char *CNT_DETAILEDITOR_XML = ":/xml/contacts_detail_editor.docml";
 
@@ -126,6 +127,11 @@ void CntDetailEditor::activate( CntAbstractViewManager* aMgr, const CntViewParam
         selectedContact = aArgs.value(ESelectedContact).value<QContact>();
         connect( mDataForm, SIGNAL(itemShown(const QModelIndex&)), this, SLOT(handleItemShown(const QModelIndex&)) );
     }
+    
+    QContactManager* cm = mViewManager->contactManager(SYMBIAN_BACKEND);
+    connect(cm, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), 
+        this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
+    
     mEditorFactory->setupEditorView(*this, selectedContact);
     
     QString myCard = mArgs.value( EMyCard ).toString();
@@ -164,6 +170,10 @@ void CntDetailEditor::deactivate()
         QContactManager* mgr = mViewManager->contactManager(SYMBIAN_BACKEND);
         mgr->saveContact( mDataFormModel->contact() );
     }
+    
+    QContactManager *cm = mViewManager->contactManager(SYMBIAN_BACKEND);
+    disconnect(cm, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)),
+            this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
 }
     
 bool CntDetailEditor::isDefault() const
@@ -192,33 +202,42 @@ void CntDetailEditor::insertField()
 
 void CntDetailEditor::handleItemShown(const QModelIndex& aIndex )
 {
-    if ( mId == groupEditorView )
-    {
-        CntGroupEditorModel* groupModel = static_cast<CntGroupEditorModel*>( mDataFormModel );    
-        if ( groupModel->isConferenceNumber(aIndex) )
-        {
-            HbDataFormViewItem* viewItem = static_cast<HbDataFormViewItem*>(mDataForm->itemByIndex( aIndex ));
-            HbLineEdit* edit = static_cast<HbLineEdit*>( viewItem->dataItemContentWidget() );
-            edit->setInputMethodHints( Qt::ImhDialableCharactersOnly );
-        }
-        else
-        {
-            HbDataFormViewItem* viewItem = static_cast<HbDataFormViewItem*>(mDataForm->itemByIndex( aIndex ));
-            HbLineEdit* edit = static_cast<HbLineEdit*>( viewItem->dataItemContentWidget() );
-            edit->setInputMethodHints( Qt::ImhNoPredictiveText );
-        }
-    }
-    else
+    HbDataFormModelItem* modelItem = mDataFormModel->itemFromIndex( aIndex );
+    
+    if ( modelItem->type() == HbDataFormModelItem::TextItem ) 
     {
         HbDataFormViewItem* viewItem = static_cast<HbDataFormViewItem*>(mDataForm->itemByIndex( aIndex ));
         HbLineEdit* edit = static_cast<HbLineEdit*>( viewItem->dataItemContentWidget() );
-        edit->setInputMethodHints( Qt::ImhNoPredictiveText );
+        QString objName;
         
-        HbDataFormModelItem* modelItem = mDataFormModel->itemFromIndex( aIndex );
-        if (modelItem->contentWidgetData( "preferDigits" ).toBool())
+        if ( mId == groupEditorView )
         {
-            edit->setInputMethodHints( Qt::ImhPreferNumbers );
+            CntGroupEditorModel* groupModel = static_cast<CntGroupEditorModel*>( mDataFormModel );    
+            if ( groupModel->isConferenceNumber(aIndex) )
+            {
+                edit->setInputMethodHints( Qt::ImhDialableCharactersOnly );
+                objName = "Conference number line edit %1";
+            }
+            else
+            {
+                edit->setInputMethodHints( Qt::ImhNoPredictiveText );
+                objName = "Group name line edit %1";
+            }
         }
+        else
+        {
+            edit->setInputMethodHints( Qt::ImhNoPredictiveText );
+            
+            if (modelItem->contentWidgetData( "preferDigits" ).toBool())
+            {
+                edit->setInputMethodHints( Qt::ImhPreferNumbers );
+            }
+            
+            objName = mDataFormModel->detail().definitionName() + " line edit %1";
+        }
+        
+        // Naming UI components for automation testability
+        edit->setObjectName(objName.arg(aIndex.row()));
     }
 }
 
@@ -269,7 +288,7 @@ void CntDetailEditor::saveContact()
 {
     mDataFormModel->saveContactDetails();
     
-    QString name = mViewManager->contactManager(SYMBIAN_BACKEND)->synthesizedDisplayLabel(*mDataFormModel->contact());
+    QString name = mViewManager->contactManager(SYMBIAN_BACKEND)->synthesizedContactDisplayLabel(*mDataFormModel->contact());
     
     if (name.isEmpty())
     {
@@ -325,6 +344,30 @@ void CntDetailEditor::setDetails(CntDetailEditorModel* aModel, HbAbstractViewIte
 int CntDetailEditor::viewId() const
 {
     return mId;
+}
+
+/*!
+Go back to the root view
+*/
+void CntDetailEditor::showRootView()
+{   
+    mViewManager->back( mArgs, true );
+}
+
+
+void CntDetailEditor::contactDeletedFromOtherSource(const QList<QContactLocalId>& contactIds)
+{
+    CNT_ENTRY
+    
+    QContact normalContact = mArgs.value(ESelectedContact).value<QContact>();
+    QContact groupContact = mArgs.value(ESelectedGroupContact).value<QContact>();
+    if ( contactIds.contains(normalContact.localId()) || contactIds.contains(groupContact.localId()) )
+    {
+        // Do not switch to the previous view immediately. List views are
+        // not updated properly if this is not done in the event loop
+        QTimer::singleShot(0, this, SLOT(showRootView()));
+    }
+    CNT_EXIT
 }
 
 // End of File

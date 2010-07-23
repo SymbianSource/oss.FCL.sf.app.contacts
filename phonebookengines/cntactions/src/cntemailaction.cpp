@@ -108,29 +108,6 @@ void CntEmailAction::performAction()
             m_request->send(retValue);
             emitResult(m_request->lastError(), retValue);
         }
-
-        // If no detail, pick preferred.
-        // Todo : Temporary fix. Remove setting preferred when selection popup feature available.
-        else if (m_detail.isEmpty()) {
-            QContactDetail detail = m_contact.preferredDetail(m_actionName);
-            QContactEmailAddress email;
-
-            // If preferred is empty pick first email.
-            if (detail.isEmpty()) {
-                email = m_contact.detail<QContactEmailAddress>();
-            }
-            else {
-                email = static_cast<QContactEmailAddress>(detail);
-            }
-
-            recipients.append(email.emailAddress());
-            map.insert(EMAIL_SEND_TO_KEY, recipients);
-            data.append(map);
-
-            m_request->setArguments(data);
-            m_request->send(retValue);
-            emitResult(m_request->lastError(), retValue);
-        }
         else {
             emitResult(GeneralError, retValue);
         }

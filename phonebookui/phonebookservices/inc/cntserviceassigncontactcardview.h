@@ -40,7 +40,6 @@ class CntServiceAssignContactCardView : public CntContactCardView
 
 public slots:
     void doCloseView();
-    void addActionsToToolBar();
     void addToContacts();
     void saveNew();
     void updateExisting();

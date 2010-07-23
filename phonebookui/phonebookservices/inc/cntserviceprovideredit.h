@@ -49,6 +49,15 @@ public slots:  // operations offered to clients
     void editCreateNew(const QString& definitionName, const QString& value);
 
     /**
+     * Launch editor for creating a new contact with a given detail and subtype.
+     * If the given subtype string is empty, then QContactPhoneNumber::SubTypeMobile is used.
+     * @param definitionName The field type
+     * @param value The value for the field.
+     * @param subType The sub type for the field. (for eg. QContactPhoneNumber::SubTypeLandline)
+     */
+    void editCreateNew(const QString &definitionName, const QString &value, const QString &subType);
+
+    /**
      * Launch editor for creating a new contact based on vCard file indicated in arg.
      * @param vCardFile The vCard file name and path.
      */
@@ -67,6 +76,16 @@ public slots:  // operations offered to clients
      * @param value The value for the field.
      */
     void editUpdateExisting(const QString &definitionName, const QString &value);
+
+    /**
+     * User can first choose a contact, and then an editor is opened.
+     * A new detail is provided by caller and it will be prefilled in the editor.
+     * The detail sub type can also be given.
+     * @param definitionName The field type
+     * @param value The value for the field.
+     * @param subType The sub type for the field. (for eg. QContactPhoneNumber::SubTypeLandline)
+     */
+    void editUpdateExisting(const QString &definitionName, const QString &value, const QString &subType);
 
 private: // from CntAbstractServiceProvider
     void CompleteServiceAndCloseApp(const QVariant& retValue);

@@ -58,13 +58,27 @@ void CntDateEditorViewItem::clicked()
     if ( detail.definitionName() == QContactBirthday::DefinitionName )
     {
         QContactBirthday bd = detail;
-        editDate( bd.date(), hbTrId("txt_phob_formlabel_birthday") );
+        if (bd.date().isNull())
+        {
+            editDate( QDate::currentDate(), hbTrId("txt_phob_formlabel_birthday") );
+        }
+        else
+        {
+            editDate( bd.date(), hbTrId("txt_phob_formlabel_birthday") );
+        }
     }
 
     if ( detail.definitionName() == QContactAnniversary::DefinitionName )
     {
         QContactAnniversary anniversary = detail;
-        editDate( anniversary.originalDate(), hbTrId("txt_phob_formlabel_anniversary") );
+        if (anniversary.originalDate().isNull())
+        {
+            editDate( QDate::currentDate(), hbTrId("txt_phob_formlabel_anniversary") );
+        }
+        else
+        {
+            editDate( anniversary.originalDate(), hbTrId("txt_phob_formlabel_anniversary") );
+        }
     }
 }
 
@@ -78,9 +92,11 @@ HbWidget* CntDateEditorViewItem::createCustomWidget()
 
     QContactDetail detail = item->detail();
     QString text(hbTrId("txt_phob_formlabel_val_formlabel_val_no_date_set"));
+    QString buttonObjName;
 
     if ( detail.definitionName() == QContactBirthday::DefinitionName )
     {
+        buttonObjName = detail.definitionName() + " button";
         QContactBirthday birthday = detail;
         if ( !birthday.isEmpty() )
         {
@@ -90,6 +106,7 @@ HbWidget* CntDateEditorViewItem::createCustomWidget()
 
     if ( detail.definitionName() == QContactAnniversary::DefinitionName )
     {
+        buttonObjName = detail.definitionName() + " button";
         QContactAnniversary anniversary = detail;
         if ( !anniversary.isEmpty() )
         {
@@ -97,6 +114,8 @@ HbWidget* CntDateEditorViewItem::createCustomWidget()
         }
     }
     mButton->setText( text );
+    // Naming UI components for automation testability
+    mButton->setObjectName(buttonObjName);
     return mButton;
 }
 
