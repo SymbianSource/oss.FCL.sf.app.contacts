@@ -97,9 +97,9 @@ HEADERS += \
     inc/cnteditviewdetailitem.h \
     inc/cnteditviewheadingitem.h \
     inc/cntstringmapper.h \
-    inc/cntmycardselectionview.h \
     inc/cntmycardview.h \
     inc/cntgroupmemberview.h \
+    inc/cntgroupmemberview_p.h \
     inc/cntgroupactionsview.h \
     inc/cntgroupeditormodel.h \
     inc/cnthistoryview.h \
@@ -140,7 +140,8 @@ HEADERS += \
     ../../inc/cntdebug.h \
     inc/cntactionpopup_p.h \
     inc/cntactionpopup.h \
-    inc/cntsavemanager.h
+    inc/cntsavemanager.h \
+    inc/cntkeygrabber.h
     
     
 SOURCES += \
@@ -176,9 +177,9 @@ SOURCES += \
     src/cnteditviewdetailitem.cpp \
     src/cnteditviewheadingitem.cpp \
     src/cnteditviewseparator.cpp \
-    src/cntmycardselectionview.cpp \
     src/cntmycardview.cpp \
     src/cntgroupmemberview.cpp\
+    src/cntgroupmemberview_p.cpp\
     src/cntgroupactionsview.cpp \
     src/cntgroupeditormodel.cpp \
     src/cnthistoryview.cpp \
@@ -215,7 +216,26 @@ SOURCES += \
     src/cntcommondetailviewitem.cpp \
     src/cntactionpopup_p.cpp \
     src/cntactionpopup.cpp \
-    src/cntsavemanager.cpp
+    src/cntsavemanager.cpp \
+    src/cntkeygrabber.cpp
+
+DOCML += resources/contacts_contactcard.docml \
+         resources/contacts_ev.docml \
+         resources/contacts_mc.docml \
+         resources/contacts_if.docml \
+         resources/contacts_list.docml \
+         resources/contacts_namelist.docml \
+         resources/contacts_groupactions.docml \
+         resources/contacts_history.docml \
+         resources/contacts_editor.docml \
+         resources/contacts_sim.docml \
+         resources/contacts_favorite.docml \
+         resources/contacts_favmember.docml \
+         resources/contacts_collections.docml \
+         resources/contacts_groupmembers.docml \
+         resources/contacts_detail_editor.docml \
+         resources/contacts_fetchdialog.docml \
+         resources/contacts_settings.docml
     
 RESOURCES += resources/pbkcommonui.qrc
 

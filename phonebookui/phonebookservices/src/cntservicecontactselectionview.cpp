@@ -56,6 +56,8 @@ void CntServiceContactSelectionView::aboutToCloseView()
     QVariant variant;
     variant.setValue(KCntServicesReturnValueContactNotModified);
     mProvider.CompleteServiceAndCloseApp(variant);
+    CntViewParameters args;
+    mMgr->back( args );
 }
 
 void CntServiceContactSelectionView::aboutToOpenView(CntAbstractViewManager* aMgr, const CntViewParameters viewParameters)

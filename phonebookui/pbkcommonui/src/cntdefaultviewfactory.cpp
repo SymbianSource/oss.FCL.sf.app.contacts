@@ -34,7 +34,6 @@
 #include "cntgroupactionsview.h"
 #include "cnthistoryview.h"
 #include "cnteditview.h"
-#include "cntmycardselectionview.h"
 #include "cntimportsview.h"
 #include "cntsettingsview.h"
 #include "cntextensionmanager.h"
@@ -61,8 +60,6 @@ CntAbstractView* CntDefaultViewFactory::createView( int aId )
         return new CntContactCardView();
     case myCardView:
         return new CntMyCardView();
-    case myCardSelectionView:
-        return new CntMyCardSelectionView();
     case collectionView:
         return new CntCollectionView(*mExtensionManager);
     case collectionFavoritesView:

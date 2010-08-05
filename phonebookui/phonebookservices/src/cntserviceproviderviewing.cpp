@@ -60,18 +60,27 @@ void CntServiceProviderViewing::openTemporaryContactCard( QString aFieldName, QS
     CNT_EXIT
     }
 
+void CntServiceProviderViewing::openGroup( int aContactId )
+    {
+    CNT_ENTRY
+    mCurrentRequestIndex = setCurrentRequestAsync();
+    mServices.setQuittable(requestInfo().isEmbedded());
+    mServices.launchGroupMemberView( aContactId, *this );
+    CNT_EXIT
+    }
+
 void CntServiceProviderViewing::CompleteServiceAndCloseApp(const QVariant& retValue)
     {
     CNT_ENTRY
     connect(this, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
     if ( mCurrentRequestIndex != 0 )
-        {
+    {
         const bool success = completeRequest(mCurrentRequestIndex, retValue);
         if ( !success )
         {
             CNT_LOG_ARGS("Failed to complete highway request.");
         }
         mCurrentRequestIndex = 0;
-        }
+    }
     CNT_EXIT
     }

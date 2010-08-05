@@ -47,6 +47,8 @@
 #include <hbmessagebox.h>
 #include <hbparameterlengthlimiter.h>
 
+#include <QInputContext>
+
 const char *CNT_CONTACTLIST_XML = ":/xml/contacts_namelist.docml";
 static const int CNT_MIN_ROW_COUNT = 2;
 
@@ -186,6 +188,10 @@ void CntNamesViewPrivate::activate(CntAbstractViewManager* aMgr, const CntViewPa
     CNT_ENTRY
     
     mViewManager = aMgr;
+    if (mView->mainWindow() != NULL && !(mView->visibleItems() & Hb::AllItems))
+    {
+        hideFinder();
+    }
     
     if (!mListModel) {
         QContactDetailFilter filter;
@@ -238,14 +244,8 @@ void CntNamesViewPrivate::deactivate()
 {
     CNT_ENTRY
     HbMainWindow* win = mView->mainWindow();
-    // in UTs there is no mainwindow and therefore calling HbView::visibleItems() would cause a crash
     if ( win != NULL)
     {
-        if (!(mView->visibleItems() & Hb::AllItems))
-        {
-            hideFinder();
-        }
-    
         CntApplication* cntApp = static_cast<CntApplication*>(qApp);
         disconnect(win, SIGNAL(viewReady()), cntApp, SIGNAL(applicationReady()));
     }
@@ -277,6 +277,16 @@ void CntNamesViewPrivate::focusLineEdit()
     {
         editor->setText("");
         editor->setFocus();
+        
+        // This opens the VKB
+        QInputContext *ic = qApp->inputContext();
+        if (ic)
+        {
+            QEvent *event = new QEvent(QEvent::RequestSoftwareInputPanel);
+            ic->filterEvent(event);
+            delete event;
+        }
+
     }
 
     CNT_EXIT
@@ -320,6 +330,8 @@ void CntNamesViewPrivate::showFinder()
     mImportSim->setVisible(false);
     mNewContact->setVisible(false);
     mMultipleDeleter->setVisible(false);
+    HbAction* settings = static_cast<HbAction*>(document()->findObject("cnt:settings") );
+    settings->setVisible(false);
     
     CNT_EXIT
 }
@@ -327,9 +339,6 @@ void CntNamesViewPrivate::showFinder()
 void CntNamesViewPrivate::hideFinder()
 {
     CNT_ENTRY
-    
-    mVirtualKeyboard->closeKeypad();
-    mView->setMaximumHeight(-1);
     
     document()->load( CNT_CONTACTLIST_XML, "no_find" );
     mView->showItems(Hb::AllItems);
@@ -349,6 +358,8 @@ void CntNamesViewPrivate::hideFinder()
     mNewContact->setVisible(true);
     mImportSim->setVisible(true);
     mMultipleDeleter->setVisible(true);
+    HbAction* settings = static_cast<HbAction*>(document()->findObject("cnt:settings") );
+    settings->setVisible(true);
 
     CNT_EXIT    
 }
@@ -504,6 +515,7 @@ void CntNamesViewPrivate::showContextMenu(HbAbstractViewItem* aItem, QPointF aPo
         if (mMenu) 
         {
             delete mMenu;
+            mMenu = NULL;
         }
         mMenu = mMenuBuilder->actionMenu( contact, mListModel->myCardId() );
         mMenu->setPreferredPos( aPoint );

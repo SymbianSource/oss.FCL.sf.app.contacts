@@ -48,10 +48,7 @@ public:
     HbView* view() const;
     
     virtual int viewId() const = 0;
-    
-private slots:
-    void closeView();
-    
+
 protected:
     HbDocumentLoader* mDocument;
     HbListView* mListView;

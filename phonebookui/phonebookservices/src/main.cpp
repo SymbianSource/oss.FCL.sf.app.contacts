@@ -28,6 +28,7 @@
 #include "cntservices.h"
 #include "cntserviceviewmanager.h"
 #include "cntviewnavigator.h"
+#include "cntkeygrabber.h"
 #include "cntdebug.h"
 #include <cntviewparams.h>
 
@@ -44,6 +45,7 @@ int main(int argc, char **argv)
     a.installTranslator(&translator);
 
     HbMainWindow mainWindow;
+    CntKeyGrabber *keyGrabber = new CntKeyGrabber(&mainWindow, &mainWindow);
 
     CntViewNavigator* navigator = new CntViewNavigator( &mainWindow );
     navigator->addException( serviceEditView, noView );

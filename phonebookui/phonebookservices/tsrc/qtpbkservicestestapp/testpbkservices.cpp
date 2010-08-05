@@ -420,6 +420,67 @@ void testPbkServices::launchContactCardOnlineAccount_old()
     CNT_EXIT
 }
 
+void testPbkServices::launchGroupMemberView()
+{
+    CNT_ENTRY
+    delete mRequest;
+    mRequest=0;
+
+    // save test contact
+    QContactManager mgr("symbian");
+    QContact contact;
+    QContactName name;
+    QContactPhoneNumber number;
+    
+    name.setFirstName("Test_Contact");
+    number.setNumber("0202223344");
+    contact.saveDetail(&name);
+    contact.saveDetail(&number);
+    mgr.saveContact(&contact);
+    
+    // save test group
+    QString text("Work");
+    QContact groupContact;
+    groupContact.setType(QContactType::TypeGroup);
+    QContactName groupName;
+    groupName.setCustomLabel(text);
+    groupContact.saveDetail(&groupName);
+    mgr.saveContact(&groupContact);
+    QContactRelationship relationship;
+    relationship.setRelationshipType(QContactRelationship::HasMember);
+    relationship.setFirst(groupContact.id());
+    relationship.setSecond(contact.id());
+    // Save relationship
+    mgr.saveRelationship(&relationship);
+    
+    // get contact id
+    int id = groupContact.id().localId();
+        
+    QVariantList args; 
+    XQApplicationManager appMng;
+    QString interface("com.nokia.symbian.IContactsView");
+    QString operation("openGroup(int)");
+    // interface name is not needed
+    mRequest = appMng.create( interface, operation, true); // embedded 
+    if ( mRequest )
+    {    
+        CNT_LOG_ARGS("Request created.")
+        // Result handlers 
+        connect (mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(onRequestCompleted(const QVariant&)));
+        
+        args << id;
+        
+        mRequest->setArguments(args); 
+        mRequest->send();
+        CNT_LOG_ARGS("Request sent.")
+    }
+    else
+    {
+        CNT_LOG_ARGS("Failed to create request")
+    }
+    CNT_EXIT
+}
+
 void testPbkServices::onEditCompleted(const QVariant& value)
 {
     CNT_ENTRY

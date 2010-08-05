@@ -38,6 +38,7 @@ HEADERS += inc/cntserviceviewmanager.h \
            inc/cntservicecontactselectionview.h \
            inc/cntserviceeditview.h \
            inc/cntservicecontactcardview.h \
+           inc/cntservicegroupmemberview.h \
            inc/cntserviceassigncontactcardview.h \
            inc/cntserviceviewfactory.h \
            inc/cntservices.h \
@@ -55,6 +56,7 @@ SOURCES += src/main.cpp \
            src/cntservicecontactselectionview.cpp \
            src/cntserviceeditview.cpp \
            src/cntservicecontactcardview.cpp \
+           src/cntservicegroupmemberview.cpp \
            src/cntserviceassigncontactcardview.cpp \
            src/cntserviceviewfactory.cpp \
            src/cntservices.cpp \

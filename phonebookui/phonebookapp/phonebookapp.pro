@@ -64,8 +64,8 @@ symbian: {
         
         SKINICON = qtg_large_phonebook 
 
-        :BLD_INF_RULES.prj_exports += "resources/phonebook.splashml \epoc32\release\winscw\udeb\z\resource\hb\splashml\phonebook.splashml
-        :BLD_INF_RULES.prj_exports += "resources/phonebook.splashml \epoc32\data\z\resource\hb\splashml\phonebook.splashml
-        :BLD_INF_RULES.prj_exports += "resources/phonebook.docml \epoc32\release\winscw\udeb\z\resource\hb\splashml\phonebook.docml
-        :BLD_INF_RULES.prj_exports += "resources/phonebook.docml \epoc32\data\z\resource\hb\splashml\phonebook.docml
+        :BLD_INF_RULES.prj_exports += "resources/phonebook.splashml /epoc32/release/winscw/udeb/z/resource/hb/splashml/phonebook.splashml
+        :BLD_INF_RULES.prj_exports += "resources/phonebook.splashml /epoc32/data/z/resource/hb/splashml/phonebook.splashml
+        :BLD_INF_RULES.prj_exports += "resources/phonebook.docml /epoc32/release/winscw/udeb/z/resource/hb/splashml/phonebook.docml
+        :BLD_INF_RULES.prj_exports += "resources/phonebook.docml /epoc32/data/z/resource/hb/splashml/phonebook.docml
 }

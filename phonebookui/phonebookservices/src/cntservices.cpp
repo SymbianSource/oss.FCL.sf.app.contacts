@@ -293,7 +293,7 @@ CntAbstractServiceProvider& aServiceProvider)
     CntViewParameters params;
     params.insert(EViewId, serviceEditView);
 
-    QContact contact = mViewManager->contactManager(SYMBIAN_BACKEND)->contact(contactId);
+    QContact contact = contactManager()->contact(contactId);
     QVariant varContact;
     varContact.setValue(contact);
     params.insert(ESelectedContact, varContact);
@@ -308,8 +308,7 @@ void CntServices::launchContactCard(int aContactId,
     CNT_ENTRY
     mCurrentProvider = &aServiceProvider;
 
-    QContactManager manager("symbian");
-    QContact contact = manager.contact(aContactId);
+    QContact contact = contactManager()->contact(aContactId);
 
     // Launch Contact Card view
     CntViewParameters params;
@@ -372,6 +371,23 @@ void CntServices::launchTemporaryContactCard(const QString &definitionName, cons
     CNT_EXIT
 }
 
+void CntServices::launchGroupMemberView(int aContactId,
+    CntAbstractServiceProvider& aServiceProvider )
+{
+    CNT_ENTRY
+    mCurrentProvider = &aServiceProvider;
+
+    QContact contact = contactManager()->contact(aContactId);
+
+    // Launch Group member view
+    CntViewParameters params;
+    params.insert(EViewId, serviceGroupMemberView);
+    QVariant var;
+    var.setValue(contact);
+    params.insert(ESelectedGroupContact, var);
+    mViewManager->changeView( params );
+    CNT_EXIT
+}
 
 void CntServices::setQuittable(bool quittable)
 {
@@ -411,7 +427,6 @@ void CntServices::removeNotSupportedDetails(QContact& contact)
 void CntServices::removeNotSupportedFields(QContact& contact)
 {
     CNT_ENTRY
-    QContactManager cm("symbian");
     QList<QContactDetail>   removeList;
     
     // Not all fields are supported in symbian back-end
@@ -449,7 +464,10 @@ void CntServices::removeNotSupportedFields(QContact& contact)
                 if(phoneDetail.subTypes().contains(QContactPhoneNumber::SubTypeVoice)
                    || phoneDetail.subTypes().contains(QContactPhoneNumber::SubTypeMessagingCapable))
                 {
-                    detail.removeValue(QContactPhoneNumber::FieldSubTypes);
+                    // Default to subtype mobile
+                    QStringList l;
+                    l << QLatin1String(QContactPhoneNumber::SubTypeMobile);
+                    detail.setValue(QContactPhoneNumber::FieldSubTypes, l);
                     contact.saveDetail(&detail);
                 }
             }
@@ -509,9 +527,9 @@ void CntServices::CompleteServiceAndCloseApp(const QVariant& retValue)
 {
     CNT_ENTRY
     if (  mCurrentProvider )
-        {
+    {
         mCurrentProvider->CompleteServiceAndCloseApp( retValue );
-        }
+    }
     CNT_EXIT
 }
 
@@ -519,12 +537,19 @@ void CntServices::terminateService()
 {
     CNT_ENTRY
     if (  mCurrentProvider )
-        {
+    {
         // Complete the service with KCntServicesTerminated return value
         QVariant var(KCntServicesTerminated);
         mCurrentProvider->CompleteServiceAndCloseApp( var );
-        }
+    }
     CNT_EXIT
+}
+
+QContactManager* CntServices::contactManager()
+{
+    if ( mViewManager )
+        return mViewManager->contactManager(SYMBIAN_BACKEND);
+    return NULL;
 }
 
 Q_IMPLEMENT_USER_METATYPE(CntServicesContact)

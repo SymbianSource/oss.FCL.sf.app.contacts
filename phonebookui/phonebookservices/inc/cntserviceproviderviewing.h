@@ -53,6 +53,12 @@ public slots:  // operations offered to clients
      * @param aValue The value for the field.
      */
     void openTemporaryContactCard( QString aFieldName, QString aFieldValue );
+    
+    /**
+     * Opens Group Member View.
+     * @param aContactId
+     */
+    void openGroup( int aContactId );
 
 private: // from CntAbstractServiceProvider
     void CompleteServiceAndCloseApp(const QVariant& retValue);

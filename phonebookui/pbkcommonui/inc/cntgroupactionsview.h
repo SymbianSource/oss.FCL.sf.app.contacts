@@ -35,6 +35,7 @@ class CntActionLauncher;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
+class QContactAction;
 QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
@@ -49,6 +50,9 @@ public: // From CntAbstractView
     bool isDefault() const { return false; }
     HbView* view() const { return mView; }
     int viewId() const { return groupActionsView; }
+    
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
     
 public:
     CntGroupActionsView();
@@ -66,6 +70,7 @@ private slots:
     void executeAction(QContact&, QContactDetail, QString);
     void actionExecuted(CntActionLauncher* aAction);
     void actionCancelled();
+    void executeConferenceCallAction(QContact& aContact, const QContactDetail& aDetail, const QString& aAction);
 
 #ifdef PBK_UNIT_TEST
 public:
@@ -73,6 +78,7 @@ public:
 private:
 #endif      
     void populatelist(QString label,HbIcon icon, QString secondaryText, QString action);
+    bool sendKeyPressed();
    
 #ifdef PBK_UNIT_TEST
 public:
@@ -92,6 +98,7 @@ private:
     int                         mPopupCount;
     QStringList                 mEmailActionParams;
     QVariantMap                 mMessageActionParams;
+    bool                        mIsExecutingAction;
 };
 
 #endif // CNTGROUPACTIONSVIEW_H

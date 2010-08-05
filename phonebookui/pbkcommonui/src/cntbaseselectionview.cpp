@@ -52,7 +52,7 @@ mDocument(NULL)
     indexFeedback->setItemView(mListView);
     
     mSoftkey = new HbAction(Hb::BackNaviAction, mView);
-    connect( mSoftkey, SIGNAL(triggered()), this, SLOT(closeView()) );
+    connect( mSoftkey, SIGNAL(triggered()), this, SIGNAL(viewClosed()) );
 }
 
 CntBaseSelectionView::~CntBaseSelectionView()
@@ -103,14 +103,6 @@ bool CntBaseSelectionView::isDefault() const
 HbView* CntBaseSelectionView::view() const
 {
     return mView;
-}
-
-void CntBaseSelectionView::closeView()
-{
-    emit viewClosed();
-    
-    CntViewParameters args;
-    mMgr->back( args );
 }
 
 // EOF

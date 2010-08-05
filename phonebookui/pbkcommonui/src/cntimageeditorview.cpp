@@ -127,11 +127,19 @@ void CntImageEditorView::activate( CntAbstractViewManager* aMgr, const CntViewPa
     HbMainWindow* window = mView->mainWindow();
     if ( window )
     {
-    connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
-    setOrientation(window->orientation());
+        connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
+        setOrientation(window->orientation());
     }
     
-    mContact = new QContact(mArgs.value(ESelectedContact).value<QContact>());
+    if ( mArgs.contains(ESelectedContact))
+    {
+        mContact = new QContact(mArgs.value(ESelectedContact).value<QContact>());
+    }
+    
+    if ( mArgs.contains(ESelectedGroupContact) && !mContact ) 
+    {
+        mContact = new QContact(mArgs.value(ESelectedGroupContact).value<QContact>());
+    }
     
     QString myCard = mArgs.value( EMyCard ).toString();
     QContactLocalId localId = mContact->localId();
@@ -288,8 +296,18 @@ void CntImageEditorView::showPreviousView()
     QVariant var;
     var.setValue(*mContact);
     
-    mArgs.insert(ESelectedContact, var);
-    mArgs.insert(ESelectedGroupContact, var);
+    // If the arguments didn't originally contain "normal" contact,
+    // then the group contact should be updated. This case applies only
+    // when group image is edited
+    if ( !mArgs.contains(ESelectedContact) )
+    {
+        mArgs.insert(ESelectedGroupContact, var);
+    }
+    else
+    {
+        mArgs.insert(ESelectedContact, var);
+    }
+    
     mArgs.insert(ECustomParam, viewId());
     mViewManager->back( mArgs );
 }

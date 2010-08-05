@@ -22,10 +22,10 @@
 #include <hblistview.h>
 #include <hblistviewitem.h>
 #include <qtcontacts.h>
+#include <hbmainwindow.h>
 
 CntGroupDeletePopup::CntGroupDeletePopup(QContactManager *manager, QGraphicsItem *parent):
     HbSelectionDialog(parent),
-    mListView(0),
     mContactManager(manager),
     mModel(0)
 {
@@ -44,41 +44,30 @@ void CntGroupDeletePopup::populateListOfGroup()
     headingLabel->setHeading(hbTrId("txt_phob_opt_delete_groups"));
     
     setHeadingWidget(headingLabel);
-    
-    mListView = new HbListView(this);
-    
-    mModel->initializeGroupsList();
 
-    //Get the index of the contacts
-    // Set the select option for those contacts in the selectionModel
-    mListView->setModel(mModel);
-    // set the listview to multiSelection mode, this will bring MarkAll functionality (from Orbit)
-    mListView->setSelectionMode(HbAbstractItemView::MultiSelection);
-    mListView->setFrictionEnabled(true);
-    mListView->setScrollingStyle(HbScrollArea::PanWithFollowOn);
-    
-    HbListViewItem *prototype = mListView->listItemPrototype();
-    prototype->setGraphicsSize(HbListViewItem::Thumbnail);
-    prototype->setStretchingStyle(HbListViewItem::StretchLandscape);
-    
-    setContentWidget(mListView);
-    
-    setTimeout(HbDialog::NoTimeout);
-    setDismissPolicy(HbDialog::NoDismiss);
-    setModal(true);
-    setAttribute(Qt::WA_DeleteOnClose, true);
-    
+    setSelectionMode( HbAbstractItemView::MultiSelection );
+    mModel->initializeGroupsList();
+    setModel(mModel);
     clearActions(); 
     HbAction *mPrimaryAction = new HbAction(hbTrId("txt_phob_button_delete_selected"), this);
     addAction(mPrimaryAction);
     
     HbAction *mSecondaryAction = new HbAction(hbTrId("txt_common_button_cancel"), this);
     addAction(mSecondaryAction);
+    
+    setTimeout(HbDialog::NoTimeout);
+    setDismissPolicy(HbDialog::NoDismiss);
+    setAttribute(Qt::WA_DeleteOnClose, true);
+    setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum );
+    
+    qreal heightToSet = mainWindow()->layoutRect().height();
+    setMinimumHeight(heightToSet);
 }
 
 QList<QContactLocalId> CntGroupDeletePopup::deleteGroup() const
 {
-    QModelIndexList indexes = mListView->selectionModel()->selection().indexes();
+
+    QModelIndexList indexes = selectedModelIndexes();
     QList<QContactLocalId> selectionList;
     for (int i = 0; i < indexes.count(); i++)
     {

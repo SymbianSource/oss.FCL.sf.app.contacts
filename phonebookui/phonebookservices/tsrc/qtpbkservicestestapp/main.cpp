@@ -204,6 +204,13 @@ int main(int argc, char *argv[])
     mainLayout->addItem(button, row, 1);
     row++;
     
+    // Launch - Group Member View ==========================================================
+    
+    button = new HbPushButton("Launch group member view");
+    QObject::connect(button, SIGNAL(pressed()), service, SLOT(launchGroupMemberView()));
+    mainLayout->addItem(button, row, 0);
+    row++;
+    
     QGraphicsWidget *graphicsWidget = new QGraphicsWidget();
     graphicsWidget->setLayout(mainLayout);
     HbScrollArea *scrollArea = new HbScrollArea();

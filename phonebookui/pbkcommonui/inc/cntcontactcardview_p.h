@@ -25,7 +25,6 @@
 #include <QGraphicsSceneResizeEvent>
 #include "cntglobal.h"
 #include <cntmaptileservice.h>
-#include <xqappmgr.h>
 
 class HbView;
 class HbScrollArea;
@@ -48,7 +47,6 @@ class QModelIndex;
 class HbSelectionDialog;
 class CntPresenceListener;
 class HbLabel;
-class XQAiwRequest;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -82,7 +80,10 @@ class CntContactCardViewPrivate : public QObject
 
 public:
     CntContactCardViewPrivate(bool isTemporary);
-    virtual ~CntContactCardViewPrivate();    
+    virtual ~CntContactCardViewPrivate();
+    
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
 
 public slots:
     void onItemActivated();
@@ -95,7 +96,6 @@ public slots:
     void sendToHs();
     void onAddedToContacts();
     void mapTileStatusReceived(int contactid, int addressType, int status);
-    void keyPressed(QKeyEvent *event);
 
 private slots:
     void sendBusinessCard();
@@ -154,7 +154,7 @@ private:
     void executeAction(QContact& aContact, const QContactDetail& aDetail, const QString& aAction, CntContactCardDetailItem* aItem);
     void executeDynamicAction(QContact& aContact, QContactDetail aDetail, QContactActionDescriptor aActionDescriptor);
     
-    void sendKeyPressed();
+    bool sendKeyPressed();
 #ifdef PBK_UNIT_TEST
 public:
 #else
@@ -180,9 +180,7 @@ private:
     QContactAction              *mContactAction;
     HbAction                    *mBackKey;
     CntImageLabel               *mImageLabel;
-    XQApplicationManager        mAppManager;
-	XQServiceRequest            *mHighwayService;
-	XQAiwRequest                *mRequest; // own
+    XQServiceRequest            *mHighwayService;
     HbIcon                      *mVCardIcon;
     CntViewParameters           mArgs;
     ShareUi                     *mShareUi;

@@ -53,6 +53,7 @@ public slots:
     void importFetchResultReceivedADN();
     void importFetchResultReceivedSDN();
     void adnCacheStatusReady(CntSimUtility::CacheStatus& cacheStatus, int error);
+    void endKeyPressed();
      
 public:
 CntImportsView();
@@ -117,6 +118,7 @@ private :
     int mSdnStoreEntries;
     bool mSimError;
     bool mWaitingForAdnCache;
+    bool mImportInProgress;
 };
 
 #endif /* CNTIMPORTSVIEW_H_ */

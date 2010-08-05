@@ -81,6 +81,9 @@ public slots:
     void launchContactCardEmail_old();
     void launchContactCardOnlineAccount();
     void launchContactCardOnlineAccount_old();
+    
+    // GROUP MEMBER VIEW
+    void launchGroupMemberView();
 
     void onEditCompleted(const QVariant& value);
     void onRequestCompleted(const QVariant& value);

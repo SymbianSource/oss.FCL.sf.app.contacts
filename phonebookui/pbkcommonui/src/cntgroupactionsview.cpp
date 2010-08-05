@@ -34,7 +34,12 @@
 #include <cntlistmodel.h>
 #include <hbframebackground.h>
 #include <hbnumbergrouping.h>
+#include <QKeyEvent> 
+#include <qtcontacts.h>
+#include <hbmainwindow.h>
+#include "cntactionlauncher.h"
 
+#include <QEvent>
 #include <QStandardItemModel>
 
 const char *CNT_GROUPACTIONSVIEW_XML = ":/xml/contacts_groupactions.docml";
@@ -44,7 +49,8 @@ mGroupContact(NULL),
 mModel(NULL),
 mViewManager(NULL),
 mListView(NULL),
-mPopupCount(0)
+mPopupCount(0),
+mIsExecutingAction(false)
 {
     bool ok = false;
     mDocumentLoader.load(CNT_GROUPACTIONSVIEW_XML, &ok);
@@ -171,6 +177,11 @@ void CntGroupActionsView::activate( CntAbstractViewManager* aMgr, const CntViewP
     connect(mListView, SIGNAL(activated(const QModelIndex&)),
                 this, SLOT(listItemSelected(const QModelIndex&)));
     
+    HbMainWindow* window = mView->mainWindow();
+    if (window)
+    {
+        window->installEventFilter(this);
+    }
 }
 
 void CntGroupActionsView::populatelist(QString primaryText,HbIcon icon,QString secondaryText,QString action)
@@ -294,6 +305,51 @@ void CntGroupActionsView::executeAction(QContact& contact, QContactDetail detail
         }
 }
 
+bool CntGroupActionsView::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress && obj == mView->mainWindow())
+    {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() == Qt::Key_Yes)
+        {
+            return sendKeyPressed();
+        }
+    }
+    return false;
+}
+
+bool CntGroupActionsView::sendKeyPressed()
+{   
+    QList<QContactPhoneNumber> numberDetails = mGroupContact->details<QContactPhoneNumber>();
+    bool keyConsumed = false;
+        
+    // check if conference call number is present
+    if (!numberDetails.isEmpty()) 
+    { 
+        executeConferenceCallAction( *mGroupContact, mGroupContact->details<QContactPhoneNumber>().first(), "call");
+        
+        keyConsumed = true;
+    }
+    
+    return keyConsumed;
+}
+
+void CntGroupActionsView::executeConferenceCallAction(QContact& aContact, const QContactDetail& aDetail, const QString& aAction)
+{
+    if (mIsExecutingAction)
+    {
+        return;
+    }
+    else
+    {
+        mIsExecutingAction = true;
+    }
+    
+    CntActionLauncher* other = new CntActionLauncher(*mViewManager->contactManager(SYMBIAN_BACKEND), aAction);
+    connect(other, SIGNAL(actionExecuted(CntActionLauncher*)), this, SLOT(actionExecuted(CntActionLauncher*)));
+    other->execute(aContact, aDetail);  
+}
+
 void CntGroupActionsView::actionCancelled()
 {
     //actionpopup cancelled, decrement counter
@@ -305,5 +361,6 @@ void CntGroupActionsView::actionExecuted(CntActionLauncher* aAction)
 {
     //cleanup
     aAction->deleteLater();
+    mIsExecutingAction = false;
 }
 

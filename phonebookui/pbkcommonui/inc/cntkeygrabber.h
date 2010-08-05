@@ -15,29 +15,32 @@
 *
 */
 
-#ifndef CNTMAINWINDOW_H
-#define CNTMAINWINDOW_H
+#ifndef CNTKEYGRABBER_H
+#define CNTKEYGRABBER_H
 
-#include <hbmainwindow.h>
+#include <QObject>
 
 #include "cntglobal.h"
-#include <cntviewparams.h>
 
-class CntDefaultViewManager;
+class HbMainWindow;
+class XQAiwRequest;
 
-class QTPBK_EXPORT CntMainWindow : public HbMainWindow
+class QTPBK_EXPORT CntKeyGrabber : public QObject
 {
     Q_OBJECT
-    friend class TestCntMainWindow;
+    friend class TestCntKeyGrabber;
 
 public:
-    CntMainWindow(QWidget *parent=0, int defaultView = namesView);
-    virtual ~CntMainWindow();
+    CntKeyGrabber(HbMainWindow *window, QObject *parent = NULL);
+    ~CntKeyGrabber();
 
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
+    
 private:
-    CntDefaultViewManager        *mViewManager;
-    int                           mDefaultView;
+    HbMainWindow    *mMainWindow;
+    XQAiwRequest    *mRequest;
 
 };
 
-#endif // CNTMAINWINDOW_H
+#endif // CNTKEYGRABBER_H

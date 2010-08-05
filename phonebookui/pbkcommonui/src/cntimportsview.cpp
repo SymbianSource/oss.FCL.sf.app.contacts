@@ -37,6 +37,8 @@
 #include <hbparameterlengthlimiter.h>
 #include <hblistviewitem.h>
 #include <hbstringutil.h>
+#include <QCoreApplication>
+#include <hbdevicenotificationdialog.h>
 
 const char *CNT_IMPORT_UI_XML = ":/xml/contacts_sim.docml";
 const int KTimerValue = 1; // used as 1 msec timer for saving ADN contacts from SIM   
@@ -59,7 +61,8 @@ CntImportsView::CntImportsView() : mContactSimManagerADN(0),
     mAdnStoreEntries(0),
     mSdnStoreEntries(0),
     mSimError(0),
-    mWaitingForAdnCache(0)
+    mWaitingForAdnCache(0),
+    mImportInProgress(false)
 {
     bool ok = false;
     mDocumentLoader.load(CNT_IMPORT_UI_XML, &ok);
@@ -111,6 +114,7 @@ void CntImportsView::activate(CntAbstractViewManager* aMgr, const CntViewParamet
     Q_UNUSED(aArgs);
     //back button
     HbMainWindow* window = mView->mainWindow();
+          
     if (mView->navigationAction() != mSoftkey)
     {
         mView->setNavigationAction(mSoftkey);
@@ -290,6 +294,7 @@ void CntImportsView::activate(CntAbstractViewManager* aMgr, const CntViewParamet
     
     mListView->setModel(mModel);
     mListView->setSelectionMode(HbAbstractItemView::NoSelection);
+    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(endKeyPressed()));
 }
 
 void CntImportsView::simInfoErrorMessage(int infoError)
@@ -324,6 +329,7 @@ bool CntImportsView::startSimImport()
 {
 
     bool started = false;
+    mImportInProgress = true;
 
     delete mFetchRequestADN;
     mContactSimManagerADN = mViewManager->contactManager(SIM_BACKEND_ADN);
@@ -371,6 +377,7 @@ bool CntImportsView::startSimImport()
 void CntImportsView::stopSimImport()
 {
     mImportSimPopup->close();
+    mImportInProgress = false;
     if (mFetchIsDone)
     {
         // indicates that timer has been started
@@ -423,6 +430,7 @@ void CntImportsView::stopSimImport()
             mListView->reset();
         }
     }
+   
 }
 
 void CntImportsView::importFetchResultReceivedADN()
@@ -585,6 +593,7 @@ void CntImportsView::fetchSDNContacts()
         // no SDN contacts to fetch
         showSimImportResults();
         mImportSimPopup->close();
+        mImportInProgress = false;
         // Importing finished, go back to NamesView
         showPreviousView();
     }
@@ -603,6 +612,7 @@ void CntImportsView::importFetchResultReceivedSDN()
         showSimImportResults();
         mSaveSimContactsListSDN.clear(); 
         mImportSimPopup->close();
+        mImportInProgress = false;
         // Importing finished, go back to NamesView
         showPreviousView();
     }
@@ -669,6 +679,7 @@ void CntImportsView::importFetchResultReceivedSDN()
         showSimImportResults();
         mSaveSimContactsListSDN.clear(); 
         mImportSimPopup->close();
+        mImportInProgress = false;
         // Importing finished, go back to NamesView
         showPreviousView();
     }   
@@ -708,6 +719,7 @@ void CntImportsView::adnCacheStatusReady(CntSimUtility::CacheStatus& cacheStatus
         {
             //dismiss wait note
             mImportSimPopup->close();
+            mImportInProgress = false;
             //and show error note
             simInfoErrorMessage(KErrAccessDenied);
         }
@@ -734,5 +746,15 @@ void CntImportsView::setPreferredDetails( QContact *aContact )
         aContact->setPreferredDetail( "email", emailList.first() );
     }
 }
+
+void CntImportsView::endKeyPressed()
+{   
+    if(mImportInProgress && !mSimError)
+    {
+        QString results = hbTrId("txt_phob_dpophead_ln_contacts_imported").arg(mSaveCount).arg(mAdnStoreEntries + mSdnStoreEntries);
+        HbDeviceNotificationDialog::notification(QString(),results);
+    }    
+}
+
 
 // EOF

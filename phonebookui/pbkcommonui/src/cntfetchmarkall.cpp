@@ -59,10 +59,23 @@ void CntFetchMarkAll::setSelectedContactCount( int aSelectedCount )
 {
     mSelectionCount = aSelectedCount;
     mCounterLabel->setText( QString("%1/%2").arg(mSelectionCount).arg(mContactCount) );
+    
+    if ( mSelectionCount < mContactCount )
+    {
+        blockSignals( true );
+        mCheckBox->setCheckState( Qt::Unchecked );
+        blockSignals( false );
+    }
 }
 
 CntFetchMarkAll::~CntFetchMarkAll()
 {
+    delete mCheckBox;
+    mCheckBox = NULL;
+    delete mCounterLabel;
+    mCounterLabel = NULL;
+    delete mFrame;
+    mFrame = NULL;
 }
 
 // EOF

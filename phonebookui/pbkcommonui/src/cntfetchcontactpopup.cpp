@@ -83,6 +83,7 @@ mDoc( NULL )
 CntFetchContactPopup::~CntFetchContactPopup()
 {
     delete mDoc;
+    delete mModel;
 }
 
 CntFetchContactPopup* CntFetchContactPopup::createMultiSelectionPopup( QString aTitle, QString aAction, QContactManager& aManager )
@@ -212,7 +213,6 @@ void CntFetchContactPopup::contactsSelected(
     }
         
     mMarkAll->setSelectedContactCount( mIdList.size() );
-    
     CNT_EXIT
 }
 
@@ -370,6 +370,8 @@ void CntFetchContactPopup::loadLayout( Qt::Orientation aOrientation )
         {
             mHeading = new HbLabel( mTitle );
             mPopup->setHeadingWidget( mHeading );
+            qreal popupHeight = mPopup->mainWindow()->layoutRect().height();
+            mPopup->setMinimumHeight(popupHeight);
             mDoc->load( CNT_FETCHLIST_XML, multi ? "find_list" : "find_list_single");
         }
     }
@@ -384,6 +386,8 @@ void CntFetchContactPopup::loadLayout( Qt::Orientation aOrientation )
         {
             mHeading = new HbLabel( mTitle );
             mPopup->setHeadingWidget( mHeading );
+            qreal popupHeight = mPopup->mainWindow()->layoutRect().height();
+            mPopup->setMinimumHeight(popupHeight);
             mDoc->load( CNT_FETCHLIST_XML, multi ? "find_empty" : "find_empty_single" );
         }
      }

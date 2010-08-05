@@ -22,6 +22,7 @@
 #include "cntextensionmanager.h"
 #include "cntglobal.h"
 #include "cntfavourite.h"
+#include "cntdetailconst.h"
 #include "cntdebug.h"
 
 #include <cntuiextensionfactory.h>
@@ -30,7 +31,7 @@
 #include <hblistview.h>
 #include <hblistviewitem.h>
 #include <hbmenu.h>
-#include <hbnotificationdialog.h>
+#include <hbdevicenotificationdialog.h>
 #include <hbinputdialog.h>
 #include <hbdialog.h>
 #include <hbaction.h>
@@ -41,6 +42,7 @@
 #include <hbparameterlengthlimiter.h>
 
 #include <QActionGroup>
+#include <QApplication>
 #include <QList>
 
 const char *CNT_COLLECTIONVIEW_XML = ":/xml/contacts_collections.docml";
@@ -99,6 +101,8 @@ CntCollectionView::CntCollectionView(CntExtensionManager &extensionManager) :
     mFindAction = static_cast<HbAction*>(mDocumentLoader.findObject("cnt:find"));
     connect(mFindAction, SIGNAL(triggered()), this, SLOT(showNamesViewWithFinder()));
     mExtensionAction = static_cast<HbAction*> (mDocumentLoader.findObject("cnt:activity"));
+    
+    connect( qApp, SIGNAL(aboutToQuit()), this, SLOT(notifyNewGroup()));
 }
 
 /*!
@@ -308,6 +312,7 @@ void CntCollectionView::newGroup()
     
     HbLineEdit *lineEdit = popup->lineEdit();
     lineEdit->setInputMethodHints(Qt::ImhNoPredictiveText);
+    lineEdit->setMaxLength( CNT_GROUPNAME_MAXLENGTH );
     
     popup->setPromptText(hbTrId("txt_phob_title_new_group_name"));
     popup->clearActions();
@@ -397,15 +402,19 @@ void CntCollectionView::handleCancelGroupMembers()
 
 void CntCollectionView::notifyNewGroup()
 {
-    QString groupNameCreated = mHandledContact->displayLabel();
-    if (groupNameCreated.isEmpty())
+    if (mHandledContact != NULL)
     {
-        groupNameCreated = hbTrId("txt_phob_list_unnamed");
-    }
-    HbNotificationDialog::launchDialog(HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_new_group_1_created")).arg(groupNameCreated));
+        QString groupNameCreated = mHandledContact->displayLabel();
+        if (groupNameCreated.isEmpty())
+        {
+            groupNameCreated = hbTrId("txt_phob_list_unnamed");
+        }
+        HbDeviceNotificationDialog::notification(QString(), 
+                HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_new_group_1_created")).arg(groupNameCreated));
 
-    delete mHandledContact;
-    mHandledContact = NULL;
+        delete mHandledContact;
+        mHandledContact = NULL;
+    }
 }
 
 void CntCollectionView::refreshDataModel()

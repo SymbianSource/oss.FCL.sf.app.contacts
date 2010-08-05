@@ -23,6 +23,7 @@
 #include "cntservicecontactselectionview.h"
 
 #include "cntservicecontactcardview.h"
+#include "cntservicegroupmemberview.h"
 #include "cntservicecontactfetchview.h"
 #include "cntserviceassigncontactcardview.h"
 
@@ -57,6 +58,9 @@ CntAbstractView* CntServiceViewFactory::createView( int aViewId )
             
     case serviceAssignContactCardView:
         return new CntServiceAssignContactCardView( mProvider );
+        
+    case serviceGroupMemberView:
+        return new CntServiceGroupMemberView( mProvider );
 
     default:
         return CntDefaultViewFactory::createView( aViewId );

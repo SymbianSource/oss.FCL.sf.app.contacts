@@ -35,6 +35,7 @@ QTM_USE_NAMESPACE
 class CntGroupDeletePopup : public HbSelectionDialog
 {
     Q_OBJECT
+    friend class TestCntGroupDeletePopup;
 
 public:
     CntGroupDeletePopup(QContactManager *manager, QGraphicsItem *parent = 0);
@@ -43,12 +44,7 @@ public:
     void populateListOfGroup();
     QList<QContactLocalId> deleteGroup() const;
 
-#ifdef PBK_UNIT_TEST
-public:
-#else
 private:
-#endif
-    HbListView               *mListView;
     QContactManager          *mContactManager;
     CntGroupDeletePopupModel *mModel;  
 };

@@ -46,10 +46,7 @@
 #include <qversitcontactexporter.h>
 #include <qversitwriter.h>
 #include <xqservicerequest.h>
-#include <xqaiwrequest.h>
-#include <xqaiwdecl.h>
 #include <QTimer>  //Progress indication icon
-#include <logsservices.h>
 
 #include <cntdebug.h>
 #include "cntcontactcarddatacontainer.h"
@@ -66,6 +63,7 @@
 #include "cntactionlauncher.h"
 #include "cntpresencelistener.h"
 #include "cntactionpopup.h"
+#include "cntvcarddetailhandler.h"
 
 #define CNT_MAPTILE_PROGRESS_TIMER  100 //100 msec
 #define CNT_UNKNOWN_MAPTILE_STATUS  -1
@@ -93,7 +91,6 @@ CntContactCardViewPrivate::CntContactCardViewPrivate(bool isTemporary) :
     mContactAction(NULL),
     mBackKey(NULL),
     mImageLabel(NULL),
-    mRequest(NULL),
     mVCardIcon(NULL),
     mShareUi(NULL),
     mAcceptSendKey(true),
@@ -175,9 +172,6 @@ CntContactCardViewPrivate::~CntContactCardViewPrivate()
     
     delete mPresenceListener;
     mPresenceListener = NULL;
-	
-    delete mRequest;
-    mRequest = NULL;
     
     delete mMaptile;
     mMaptile = NULL;
@@ -232,10 +226,13 @@ void CntContactCardViewPrivate::activate(CntAbstractViewManager* aMgr, const Cnt
     mArgs = aArgs;
     
     HbMainWindow* window = mView->mainWindow();
-    connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
-    connect(window, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(keyPressed(QKeyEvent*)));
-    
-    setOrientation(window->orientation());
+    if (window)
+    {
+        connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
+        window->installEventFilter(this);
+        
+        setOrientation(window->orientation());
+    }
         
     QContact contact = aArgs.value(ESelectedContact).value<QContact>();
     mContact = new QContact( contact );
@@ -1247,12 +1244,19 @@ void CntContactCardViewPrivate::handleSendBusinessCard( HbAction* aAction )
         }   
     }
            
-    QString vCardName = QString(mContact->displayLabel().append(".vcf"));
+    QString vCardName;
+    if ( mContact->displayLabel().isEmpty() ) {
+        vCardName = hbTrId("txt_phob_list_unnamed").append(".vcf");
+    } else
+        vCardName = mContact->displayLabel().append(".vcf");
+    
     QString vCardPath = dir.absolutePath().append(QDir::separator());
     vCardPath.append(vCardName);
     vCardPath = QDir::toNativeSeparators(vCardPath);
-        
+    
     QVersitContactExporter exporter;
+    CntVCardDetailHandler hanlder;
+    exporter.setDetailHandler(&hanlder);
     // The vCard version needs to be 2.1 due to backward compatiblity when sending 
     if (exporter.exportContacts(list, QVersitDocument::VCard21Type))
     {
@@ -1337,7 +1341,7 @@ void CntContactCardViewPrivate::drawMenu(const QPointF &aCoords)
 {
     HbMenu *menu = new HbMenu();
     menu->addAction(hbTrId("txt_phob_menu_change_picture"), this, SLOT(doChangeImage()) );
-    if (mAvatar)
+    if (mAvatar && !mAvatar->imageUrl().isEmpty())
     {
         menu->addAction(hbTrId("txt_phob_menu_remove_image"), this, SLOT(doRemoveImage()) );
     }
@@ -1366,17 +1370,24 @@ QContactManager* CntContactCardViewPrivate::contactManager()
     return mViewManager->contactManager(SYMBIAN_BACKEND);
 }
 
-void CntContactCardViewPrivate::keyPressed(QKeyEvent *event)
+bool CntContactCardViewPrivate::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->key() == Qt::Key_Yes )
+    if (event->type() == QEvent::KeyPress && obj == mView->mainWindow())
     {
-        sendKeyPressed();
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() == Qt::Key_Yes)
+        {
+            return sendKeyPressed();
+        }
     }
+    return false;
 }
 
-void CntContactCardViewPrivate::sendKeyPressed()
+bool CntContactCardViewPrivate::sendKeyPressed()
 {   
     int count = 0;
+    bool keyConsumed = false;
+    
     for (int index = 0; index < mDataContainer->itemCount(); index++)
     {
         CntContactCardDataItem* dataItem = mDataContainer->dataItem(index);
@@ -1385,41 +1396,23 @@ void CntContactCardViewPrivate::sendKeyPressed()
             count++;
         }
     }
-    if (!count)
-    {
-        if (mRequest)
-        {
-            delete mRequest;
-            mRequest = 0;
-        }
-             
-        mRequest = mAppManager.create("com.nokia.symbian.ILogsView", "show(QVariantMap)", false);
-        
-        if (mRequest)
-        {
-            QList<QVariant> args;
-            QVariantMap map;
-            map.insert("view_index", QVariant(int(LogsServices::ViewAll)));
-            map.insert("show_dialpad", QVariant(true));
-            map.insert("dialpad_text", QVariant(QString()));
-            args.append(QVariant(map));
-            mRequest->setArguments(args);
-            mRequest->send();
-        }
-    }
-    else
+
+    if (count)
     {
         QContactDetail preferredDetail = mContact->preferredDetail("call");
         if (!preferredDetail.isEmpty())
         {
-            executeAction(*mContact, preferredDetail, "call"); 
+            keyConsumed = true;
+            executeAction(*mContact, preferredDetail, "call");
         }
         else if (count == 1 )
         {
+            keyConsumed = true;
             executeAction( *mContact, mContact->details<QContactPhoneNumber>().first(), "call"); 
         }
         else if(count >= 2 && mAcceptSendKey)
-        {   
+        {
+            keyConsumed = true;
             mAcceptSendKey = false;
             CntActionPopup *actionPopup = new CntActionPopup(mContact);
             actionPopup->showActionPopup("call");
@@ -1433,6 +1426,8 @@ void CntContactCardViewPrivate::sendKeyPressed()
             //ignore
         }
     }
+    
+    return keyConsumed;
 }
 
 void CntContactCardViewPrivate::sendKeyCancelSlot()

@@ -193,10 +193,6 @@ void CntDefaultViewManager::removeCurrentView()
     {
         connect(mMainWindow, SIGNAL(viewReady()), this, SLOT(deleteOldView()));
     }
-    else
-    {
-        mMainWindow->setInteractive( true );
-    }
     
     CNT_EXIT
 }
@@ -211,7 +207,8 @@ void CntDefaultViewManager::deleteOldView()
     {
         mOldView->deactivate();
 
-        mMainWindow->removeView(mOldView->view());
+        HbView* oldView = mOldView->view();
+        mMainWindow->removeView( oldView );
 
         if (!mOldView->isDefault())
         {
@@ -225,8 +222,6 @@ void CntDefaultViewManager::deleteOldView()
             mDefaults.insert( mOldView->viewId(), mOldView );
         }
     }
-
-    mMainWindow->setInteractive(true);
     
     CNT_EXIT
 }
@@ -234,8 +229,7 @@ void CntDefaultViewManager::deleteOldView()
 void CntDefaultViewManager::switchView(const CntViewParameters aArgs, QFlags<Hb::ViewSwitchFlag> flags)
 {
     CNT_ENTRY
-    
-    mMainWindow->setInteractive(false);
+
     int id = aArgs.value(EViewId).toInt();
     if ( id != noView )
     {

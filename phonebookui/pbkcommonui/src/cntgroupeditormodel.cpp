@@ -46,6 +46,7 @@ CntGroupEditorModel::CntGroupEditorModel(QContact* aContact) :
     iNumberItem = new HbDataFormModelItem(type, hbTrId("txt_phob_formlabel_conference_number"));
     
     iNameItem->setContentWidgetData("text", iGroupName.customLabel());
+    iNameItem->setContentWidgetData("maxLength", CNT_GROUPNAME_MAXLENGTH);
     iNumberItem->setContentWidgetData("text", iGroupConfCallNumber.number() );
     
     HbDataFormModelItem* root = invisibleRootItem();

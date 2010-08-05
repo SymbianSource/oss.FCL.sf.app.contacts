@@ -133,6 +133,14 @@ public:
      */
     void launchContactCard(int contactId,
         CntAbstractServiceProvider& aServiceProvider );
+    
+    /**
+     * Opens Group member view.
+     * @param contactId The contact ID
+     * @param aServiceProvider The service provider
+     */
+    void launchGroupMemberView(int contactId,
+        CntAbstractServiceProvider& aServiceProvider );
 
     /**
      * Opens Contact Card for non-saved contact.
@@ -163,6 +171,7 @@ private:
     void removeNotSupportedFields(QContact& contact);
     void removeNotSupportedDetails(QContact& contact);
     void fillOnlineAccount( QContactOnlineAccount& account, const QString& value, const QString& subType, bool defaultForOnlineAccountIsImpp);
+    QContactManager* contactManager();
 
 private: // from CntAbstractServiceProvider
     void CompleteServiceAndCloseApp(const QVariant& retValue);

@@ -18,11 +18,7 @@
 #include "cntmainwindow.h"
 #include "cntdefaultviewmanager.h"
 #include "cntviewnavigator.h"
-#include <QCoreApplication>
-#include <xqaiwrequest.h>
-#include <xqaiwdecl.h>
-#include <xqappmgr.h>
-#include <logsservices.h>
+#include "cntkeygrabber.h"
 #include <cntdebug.h>
 
 CntMainWindow::CntMainWindow(QWidget *parent, int defaultView)
@@ -31,6 +27,8 @@ CntMainWindow::CntMainWindow(QWidget *parent, int defaultView)
     mDefaultView(defaultView)
 {
     CNT_ENTRY
+    
+    CntKeyGrabber *keyGrabber = new CntKeyGrabber(this, this);
     
     if (defaultView != noView)
     {
@@ -65,42 +63,6 @@ CntMainWindow::~CntMainWindow()
     mViewManager = NULL;
 
     CNT_EXIT
-}
-
-/*
- * Lets let views handle send/end key press events, because if toolbar or menu has been focused
- * the view wont get the key press events
- */
-void CntMainWindow::keyPressEvent(QKeyEvent *event)
-{
-    if (event->key() == Qt::Key_Yes && mDefaultView != noView)
-    {
-        if (mViewManager->currentViewId() == contactCardView)
-        {
-            emit keyPressed(event);
-        }
-        else
-        {
-            XQApplicationManager appManager;   
-            XQAiwRequest* request = appManager.create("com.nokia.symbian.ILogsView", "show(QVariantMap)", false);
-            
-            if (request)
-            {
-                QList<QVariant> args;
-                QVariantMap map;
-                map.insert("view_index", QVariant(int(LogsServices::ViewAll)));
-                map.insert("show_dialpad", QVariant(true));
-                map.insert("dialpad_text", QVariant(QString()));
-                args.append(QVariant(map));
-                request->setArguments(args);
-                request->send();
-            }
-        }
-    }
-    else
-    {
-        HbMainWindow::keyPressEvent(event);
-    }
 }
 
 // end of file

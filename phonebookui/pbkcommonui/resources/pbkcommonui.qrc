@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RCC>
     <qresource prefix="/xml" >
-        <file alias="contacts_actions.docml" >contacts_actions.docml</file>
-        <file alias="contacts_contactcard.docml" >contacts_contactcard.docml</file>
-        <file alias="contacts_ev.docml" >contacts_ev.docml</file>
-        <file alias="contacts_mc.docml" >contacts_mc.docml</file>
-        <file alias="contacts_if.docml" >contacts_if.docml</file>
-        <file alias="contacts_list.docml" >contacts_list.docml</file>
-        <file alias="contacts_namelist.docml" >contacts_namelist.docml</file>
-        <file alias="contacts_groupactions.docml" >contacts_groupactions.docml</file>
-        <file alias="contacts_history.docml" >contacts_history.docml</file>
-        <file alias="contacts_editor.docml" >contacts_editor.docml</file>
-        <file alias="contacts_sim.docml">contacts_sim.docml</file>
-        <file alias="contacts_favorite.docml" >contacts_favorite.docml</file>
-        <file alias="contacts_favmember.docml" >contacts_favmember.docml</file>
-        <file alias="contacts_collections.docml" >contacts_collections.docml</file>
-        <file alias="contacts_groupmembers.docml" >contacts_groupmembers.docml</file>
-        <file alias="contacts_detail_editor.docml" >contacts_detail_editor.docml</file>
-        <file alias="contacts_fetchdialog.docml" >contacts_fetchdialog.docml</file>
-		<file alias="contacts_settings.docml" >contacts_settings.docml</file>
+        <file alias="contacts_contactcard.docml" >contacts_contactcard.docml.bin</file>
+        <file alias="contacts_ev.docml" >contacts_ev.docml.bin</file>
+        <file alias="contacts_mc.docml" >contacts_mc.docml.bin</file>
+        <file alias="contacts_if.docml" >contacts_if.docml.bin</file>
+        <file alias="contacts_list.docml" >contacts_list.docml.bin</file>
+        <file alias="contacts_namelist.docml" >contacts_namelist.docml.bin</file>
+        <file alias="contacts_groupactions.docml" >contacts_groupactions.docml.bin</file>
+        <file alias="contacts_history.docml" >contacts_history.docml.bin</file>
+        <file alias="contacts_editor.docml" >contacts_editor.docml.bin</file>
+        <file alias="contacts_sim.docml">contacts_sim.docml.bin</file>
+        <file alias="contacts_favorite.docml" >contacts_favorite.docml.bin</file>
+        <file alias="contacts_favmember.docml" >contacts_favmember.docml.bin</file>
+        <file alias="contacts_collections.docml" >contacts_collections.docml.bin</file>
+        <file alias="contacts_groupmembers.docml" >contacts_groupmembers.docml.bin</file>
+        <file alias="contacts_detail_editor.docml" >contacts_detail_editor.docml.bin</file>
+        <file alias="contacts_fetchdialog.docml" >contacts_fetchdialog.docml.bin</file>
+        <file alias="contacts_settings.docml" >contacts_settings.docml.bin</file>
     </qresource>
     <qresource prefix="/style">
         <file alias="cnteditviewlistitem.hblistviewitem.widgetml">style/cnteditviewlistitem.hblistviewitem.widgetml</file>

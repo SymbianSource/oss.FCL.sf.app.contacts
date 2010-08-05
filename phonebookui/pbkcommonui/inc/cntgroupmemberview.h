@@ -19,32 +19,14 @@
 #define CNTGROUPMEMBERVIEW_H
 
 #include <QObject>
-#include <QList>
-#include <hbdocumentloader.h>
-#include <QSet>
 #include <cntabstractview.h>
+#include "cntglobal.h"
 
-class CntListModel;
-class CntAbstractViewManager;
-class CntContactCardHeadingItem;
+class CntGroupMemberViewPrivate;
 class HbView;
-class HbAction;
-class HbListView;
-class HbAbstractViewItem;
-class ThumbnailManager;
-class QModelIndex;
-class CntImageLabel;
-class HbDocumentLoader;
 
-QTM_BEGIN_NAMESPACE
-class QContact;
-QTM_END_NAMESPACE
-
-QTM_USE_NAMESPACE
-
-class CntGroupMemberView : public QObject, public CntAbstractView
+class QTPBK_EXPORT CntGroupMemberView : public QObject, public CntAbstractView
 {
-    friend class TestCntGroupMemberView;
     Q_OBJECT
 
 public:
@@ -54,62 +36,17 @@ public:
 public: // From CntAbstractView
     void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
     void deactivate();
-    bool isDefault() const { return false; }
-    HbView* view() const { return mView; }
-    int viewId() const { return groupMemberView; }
+    bool isDefault() const;
+    HbView* view() const;
+    int viewId() const;
 
-public slots:
-    void setOrientation(Qt::Orientation orientation);
-
-
-private slots:
-    void showPreviousView();
-    void openGroupActions();
-    void manageMembers();
-    void handleManageMembers(QSet<QContactLocalId> aIds);
-    void editGroup();
-    void deleteGroup();
-    void handleDeleteGroup(int action);
-    
-    void showContextMenu(HbAbstractViewItem *item, const QPointF &coords);
-    void handleMenu(HbAction* action);
-
-    void showContactView(const QModelIndex &index);
-    void removeFromGroup(const QModelIndex &index);
-    void editContact(const QModelIndex &index);
-    void thumbnailReady(const QPixmap& pixmap, void *data, int id, int error);
-    void openImageEditor();
-    
-    void drawImageMenu(const QPointF &aCoords);
-    void createModel();
-  
-    void removeImage();
-    void sendToHs(const QModelIndex &index);
-    
+signals:
+    void backPressed();
+        
 private:
-    QContactManager* getContactManager();
-    void setRelationship(QSet<QContactLocalId>        &aLocalId,
-                         QList<QContactRelationship>  &aRelationshipList);
-    
-private:
-    QContact*                   mGroupContact; // own
-    CntAbstractViewManager*     mViewManager;
-    HbDocumentLoader            mDocumentLoader;
-    HbView*                     mView; // own
-    HbAction*                   mSoftkey; // owned by view
-    CntContactCardHeadingItem*  mHeadingItem; // owned by layout
-    ThumbnailManager*           mThumbnailManager; // own
-    HbAction*                   mManageAction; // owned by view
-    HbAction*                   mDeleteAction; // owned by view
-    HbAction*                   mShowActionsAction; // owned by view
-    HbAction*                   mEditGroupAction; // owned by view
-    CntListModel*               mModel; // own
-    CntImageLabel*              mImageLabel;
-    HbListView*                 mListView; // owned by layout
-    HbDocumentLoader*           mDocument;
-    QList<QContactLocalId>      mOriginalGroupMembers;
-    QContactAvatar*             mAvatar;
-    CntViewParameters           mArgs;
+    CntGroupMemberViewPrivate* const d_ptr;
+    Q_DECLARE_PRIVATE_D(d_ptr, CntGroupMemberView)
+    Q_DISABLE_COPY(CntGroupMemberView)
 };
 
 #endif // CNTGROUPMEMBERVIEW_H

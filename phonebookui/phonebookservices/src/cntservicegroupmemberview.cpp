@@ -15,7 +15,7 @@
 *
 */
 
-#include "cntservicecontactcardview.h"
+#include "cntservicegroupmemberview.h"
 #include "cntabstractserviceprovider.h"
 #include "cntdebug.h"
 #include <cntservicescontact.h>
@@ -24,19 +24,19 @@
 Constructor, initialize member variables.
 \a viewManager is the parent that creates this view. \a parent is a pointer to parent QGraphicsItem (by default this is 0)
 */
-CntServiceContactCardView::CntServiceContactCardView( CntAbstractServiceProvider& aServiceProvider ) : 
-    CntContactCardView(),
+CntServiceGroupMemberView::CntServiceGroupMemberView( CntAbstractServiceProvider& aServiceProvider ) : 
+    CntGroupMemberView(),
     mProvider( aServiceProvider )
 {
     CNT_ENTRY
-    connect(this, SIGNAL(backPressed()), this, SLOT(closeContactCard()));
+    connect(this, SIGNAL(backPressed()), this, SLOT(closeGroupMemberView()));
     CNT_EXIT
 }
 
 /*!
 Destructor
 */
-CntServiceContactCardView::~CntServiceContactCardView()
+CntServiceGroupMemberView::~CntServiceGroupMemberView()
 {
     CNT_ENTRY
     CNT_EXIT
@@ -45,7 +45,7 @@ CntServiceContactCardView::~CntServiceContactCardView()
 /*!
 Close the view (quits the service as well)
 */
-void CntServiceContactCardView::closeContactCard()
+void CntServiceGroupMemberView::closeGroupMemberView()
 {
     CNT_ENTRY
     QVariant variant;

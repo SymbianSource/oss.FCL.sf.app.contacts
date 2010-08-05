@@ -15,8 +15,7 @@
 *
 */
 
-#include <QTranslator>
-#include <QLocale>
+#include <hbtranslator.h>
 #include "cntmainwindow.h"
 #include "cntappservicehandler.h"
 #include "cntglobal.h"
@@ -29,11 +28,9 @@ int main(int argc, char **argv)
 
     CntApplication a( argc, argv );
 
-    QTranslator translator;
-    QString lang = QLocale::system().name();
-    QString path = "z:/resource/qt/translations/";
-    translator.load(path + "contacts_" + lang);
-    a.installTranslator(&translator);
+    //For translation, loading and installing translator
+    HbTranslator translator("contacts");
+    translator.loadCommon();
     
     CntAppServiceHandler serviceHandler;
     CntMainWindow mainWindow;
