@@ -36,7 +36,7 @@ QTM_USE_NAMESPACE
 /*
 * Class for showing popup for Call, Message and Email actions if preffered number is not set
 */
-class Q_DECL_EXPORT CntActionPopup : public QObject
+class QTPBK_EXPORT CntActionPopup : public QObject
 {
     Q_OBJECT
     
