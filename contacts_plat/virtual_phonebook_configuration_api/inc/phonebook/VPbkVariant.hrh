@@ -131,7 +131,12 @@ enum TVPbkLocalVariantFlags
     /**
      * Show email addresses in Send Message address selection.
      */
-    EVPbkLVShowEmailInSendMsg = 0x00100000
+    EVPbkLVShowEmailInSendMsg = 0x00100000,
+    
+    /**
+     * Sync contact group during vCard sync.
+     */    
+    EVPbkLVSyncGroupEnabled = 0x00200000
 	};
 
 

@@ -152,5 +152,22 @@ void CPbk2ContactEditorUIAddressField::SetControlTextL(const TDesC& aText)
     iControl->SetTextL(&aText);
     }
 
+// -----------------------------------------------------------------------------
+// CPbk2ContactEditorUIAddressField::ConsumesKeyEvent
+// -----------------------------------------------------------------------------
+//
+TBool CPbk2ContactEditorUIAddressField::ConsumesKeyEvent
+        ( const TKeyEvent& aKeyEvent, TEventCode aType )
+    {
+    TKeyResponse keyResponse = iControl->OfferKeyEventL( aKeyEvent, aType );
+
+    if ( EKeyWasConsumed == keyResponse )
+        {
+        return ETrue;
+        }
+            
+    return EFalse;
+    }   
+
 
 // End of File  

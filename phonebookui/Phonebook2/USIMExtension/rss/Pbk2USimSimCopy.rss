@@ -218,6 +218,152 @@ RESOURCE PSU2_COPY_TO_SIM_FIELDTYPE_MAPPINGS r_psu2_copy_to_sim_fieldtype_mappin
         };
     }
 
+// -----------------------------------------------------------------------------
+//   
+// R_PSU2_COPY_TO_USIM_FIELDTYPE_MAPPINGS
+// A array that defines the rules for copying fields to the usim
+// with additional numbers
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE PSU2_COPY_TO_SIM_FIELDTYPE_MAPPINGS r_psu2_copy_to_usim_fieldtype_mappings
+    {
+    items =
+        {
+        PSU2_COPY_TO_SIM_FIELDTYPE_MAPPING
+            {
+            // Source: all email types
+            sourceTypeSelector = VPBK_FIELD_TYPE_SELECTOR
+                {
+                versitProperties = 
+                    {
+                    VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameEMAIL;
+                        }
+                    };
+                };
+            // Target: USIM supports only general email
+            targetSimType = R_VPBK_FIELD_TYPE_EMAILGEN;
+            iBlockingError = KPsu2EMailFullError;
+            },
+        //To handle the situation of USIM supports more than one additional number.
+        PSU2_COPY_TO_SIM_FIELDTYPE_MAPPING
+            {
+            sourceTypeSelector = VPBK_FIELD_TYPE_SELECTOR
+                {
+                versitProperties = 
+                    {
+                        VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamHOME };
+                        }
+                    };
+                excludedParameters ={ EVPbkVersitParamFAX, EVPbkVersitParamWORK, 
+                        EVPbkVersitParamCELL, EVPbkVersitParamVIDEO };
+                };
+            // Target: USIM supports telephone( home )
+            targetSimType = R_VPBK_FIELD_TYPE_LANDPHONEHOME;
+            flags = 0;
+            },
+        PSU2_COPY_TO_SIM_FIELDTYPE_MAPPING
+            {
+            sourceTypeSelector = VPBK_FIELD_TYPE_SELECTOR
+                {
+                versitProperties = 
+                    {
+                    VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamWORK };
+                        }
+                    };
+                excludedParameters ={ EVPbkVersitParamFAX, EVPbkVersitParamHOME, 
+                        EVPbkVersitParamCELL, EVPbkVersitParamVIDEO };
+                };
+
+            // Target: USIM supports telephone( work )
+            targetSimType = R_VPBK_FIELD_TYPE_LANDPHONEWORK;
+            flags = 0;
+            },
+        PSU2_COPY_TO_SIM_FIELDTYPE_MAPPING
+            {
+            sourceTypeSelector = VPBK_FIELD_TYPE_SELECTOR
+                {
+                versitProperties = 
+                    {
+                    VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamFAX };
+                        },
+                    VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamFAX, EVPbkVersitParamHOME };
+                        },
+                    VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        parameters = { EVPbkVersitParamFAX,EVPbkVersitParamWORK};
+                        }
+                    };
+                excludedParameters ={ EVPbkVersitParamCELL, EVPbkVersitParamVIDEO };
+                };
+            // Target: USIM supports only fax general
+            targetSimType = R_VPBK_FIELD_TYPE_FAXNUMBERGEN;
+            flags = 0;
+            },
+        PSU2_COPY_TO_SIM_FIELDTYPE_MAPPING
+            {
+            // Source: all number types
+            sourceTypeSelector = VPBK_FIELD_TYPE_SELECTOR
+                {
+                versitProperties = 
+                    {
+                    VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameTEL;
+                        },
+                    VBK_FIELD_VERSIT_PROPERTY
+                        {            
+                        name = EVPbkVersitNameX;
+                        extensionName = "X-ASSISTANT-TEL";            
+                        }
+                    };
+                nonVersitType =
+                    {
+                    EVPbkNonVersitTypeDTMF
+                    };
+                };
+            // Target: SIM supports only mobile general
+            targetSimType = R_VPBK_FIELD_TYPE_MOBILEPHONEGEN;
+            flags = 0;
+            },
+        PSU2_COPY_TO_SIM_FIELDTYPE_MAPPING
+            {
+            // Source: nick name
+            sourceTypeSelector = VPBK_FIELD_TYPE_SELECTOR
+                {
+                versitProperties =
+                    {
+                    VBK_FIELD_VERSIT_PROPERTY
+                        {
+                        name = EVPbkVersitNameX;
+                        extensionName = "X-NICKNAME";
+                        }
+                    };
+                };
+            // Target: nick name
+            targetSimType = R_VPBK_FIELD_TYPE_SECONDNAME;
+            // Nick name can be truncated.
+            flags = KPsu2AllowedToTruncate;
+            iBlockingError = KPsu2SecondNameFullError;
+            }
+        };
+    }
+
 // End of File
 
 

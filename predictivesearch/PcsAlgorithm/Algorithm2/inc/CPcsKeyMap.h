@@ -18,24 +18,22 @@
 #ifndef __CPCS_KEY_MAP_ALGORITHM_2_H__
 #define __CPCS_KEY_MAP_ALGORITHM_2_H__
 
-// The macro is used for a hack which fix a problem of PtiEngine with Sonja keyboard.
-// The problem is that J/# key can't returned character code ('J', 'j', '#') 
-#define HACK_FOR_E72_J_KEY
 
 // INCLUDES
 #include <e32base.h>
-#include <PtiEngine.h>
-#include <PtiKeyMappings.h>
-#include <AvkonInternalCRKeys.h>
 #include <e32property.h>
+#include <PtiDefs.h>
+#include "CPcsDefs.h"
 
 class CPcsAlgorithm2;
-class     CPtiEngine;
+class CPsQuery;
+class CPtiEngine;
+class CPtiKeyMapData;
 
 class TKeyMappingData
     {
 public:
-    TPtiKey key; // key
+    TPtiKey iKey; // key
     RArray<TInt> iKeyMappingArray; // All the characters mapped to the key
     };
 
@@ -56,14 +54,15 @@ public:
     virtual ~CPcsKeyMap();
 
     /**
-     * Converts the alphanumeric string to numeric string
+     * Convert functions to get the key string from query and/or chars string
      */
-    void GetNumericKeyString(const TDesC& alphaNumericStr, TDes& numericStr);
+    void GetMixedKeyStringForQueryL(CPsQuery& aSrcQuery, TDes& aDestStr) const;
+    void GetMixedKeyStringForDataL(CPsQuery& aSrcQuery, const TDesC& aSrcData, TDes& aDestStr) const;
 
     /**
-     * Returns the numeric key id corresponding to a specific character		                          
+     * Returns the numeric key id corresponding to a specific character
      */
-    TInt KeyForCharacter(const TChar& aChar);
+    TPtiKey KeyForCharacter(TText aChar, TKeyboardModes aKbMode) const;
 
     /**
      * Returns ETrue if this language is supported
@@ -73,14 +72,19 @@ public:
     void ReconstructKeymapL();
     
     /**
-     * Returns the pool Id for a Character                               
+     * Returns the pool Id for a key
      */
-    TInt PoolIdForCharacter(TChar aChar);
+    TInt PoolIdForCharacter(TChar aChar, TKeyboardModes aKbMode );
     
     /**
-     * Returns total number of pools                                
+     * Returns total number of pools
      */
     TInt PoolCount();
+
+    /**
+     * Returns true if the characters "0" and " " are on the same key
+     */
+    TBool GetSpaceAndZeroOnSameKey( TKeyboardModes aMode );
 
 private:
 
@@ -95,41 +99,42 @@ private:
     void ConstructL(CPcsAlgorithm2* aAlgorithm);
 
     /**
+     * Set flags to indicate if space and zero are on same key.
+     * Keymappings must be constructed before calling this.
+     */
+    void SetSpaceAndZeroOnSameKey();
+    
+    /**
      * Helper function to construct keyboard specific mappings
      */
-    void ContructForItutKeyboardL(TLanguage aLanguage);
-    void ContructForHalfQwertyKeyboardL(TLanguage aLanguage);
-    void ContructFor4x10QwertyKeyboardL(TLanguage aLanguage);
+    void ConstructForItutKeyboardL();
+    void ConstructForQwertyKeyboardL(TPtiKeyboardType aKbType);
 
     /**
      * Helper function to populate Itut key mappings
      */
     void AddKeyMapforItutL(TLanguage aLanguage);
 
-    void AddDataForItutKeyboardL(CPtiKeyMappings* aPtiKeyMappings,
+    void AddDataForItutKeyboardL(CPtiKeyMapData* aPtiKeyMapData,
             TPtiKey aKey, TKeyMappingData& aKeyDataList);
     /**
      * Helper function to populate 4x10 Qwerty Keyboard  key mappings
      */
-    void AddKeyMapfor4x10QwertyKeyboardL(TLanguage aLanguage);
+    void AddKeyMapForQwertyKeyboardL(TLanguage aLanguage, TPtiKeyboardType aKbType);
 
-    void AddDataFor4x10QwertyKeyboardL(
-            CPtiQwertyKeyMappings* aPtiKeyMappings, TPtiKey aKey,
+    void AddDataForQwertyKeyboardL(
+            CPtiKeyMapData* aPtiKeyMapData, 
+            TPtiKeyboardType aKbType, 
+            TPtiKey aKey,
             TKeyMappingData& aKeyDataList);
     
-#ifdef HACK_FOR_E72_J_KEY
-    void AddDataFor4x10QwertyKeyboardE72HackL(); // Hack for E72 (J/# key)
-#endif  // HACK_FOR_E72_J_KEY
-    
     /**
-     * Helper function to populate alfQwerty Keyboard key mappings
+     * Create list of PTI keys for the given keyboard type
      */
-    void AddKeyMapforHalfQwertyKeyboardL(TLanguage aLanguage);
-
-    void AddDataForHalfQwertyKeyboardL(CPtiHalfQwertyKeyMappings* aPtiKeyMappings,
-            TPtiKey aKey, TKeyMappingData& aKeyDataList);
+    void CreateKeyListFromKeyBindingTable( RArray<TPtiKey>& aKeyArray, TPtiKeyboardType aKbType );
 
     void ResetKeyMap();
+    
     /**
      * Function to construct key mappings for a particula language
      * 
@@ -137,18 +142,15 @@ private:
     void ConstructKeymapL();
     
     /**
-     * Get the current keyboard type.
-     * @return current keyboard type.
+     * Select keyboard types according to available physical keyboard(s)
      */
-    TInt CurrentKeyBoardTypeL();
+    void SetupKeyboardTypesL();
     
     /**
      * 
-     * Construct keymap by type and language
-     * @ aKeyboardType, the current keyboard type.
-     * @ aLanguage, the keymap construct language.
+     * Construct keymaps
      */
-    void ConstructConcreteKeyMapL( TInt aKeyboardType, TLanguage aLanguage );
+    void ConstructConcreteKeyMapL();
     
     /**
      * 
@@ -156,35 +158,104 @@ private:
      * @ aKeyboardType, the current keyboard type.
      * @ aLanguage, the keymap construct language.
      */
-    void AddKeyMapforConcreteKeyboardL( TInt aKeyboardType, TLanguage aLanguage );
-    
+    void AddKeyMapforConcreteKeyboardL( TLanguage aLanguage );
+
     /**
      * In case the given character is a Chinese characer, give the first
      * character of it's first spelling using the current spelling mode.
      * Otherwise, the character is returned unmodified.
      */
     TChar FirstCharFromSpellingL( TChar aChar ) const;
+    
+    TInt PoolIdForKey(TPtiKey aKey, TKeyboardModes aKbMode) const;
+    
+    /**
+     * Gets predictive keyboard mapping data for given match mode.
+     * @param   aMode      Matching mode for which keymappings are asked. 
+     * @return  Mapping table for the given mode. NULL if asked for non-predictive mode.
+     */
+    const RPointerArray<TKeyMappingData>* KeyMappings( TKeyboardModes aMode ) const;
 
+    /**
+     * Resolve any ambiguity from the given keyboard mode.
+     * Keyboard mode "predictive default keyboard" will be replaced by 
+     * "ITU-T predictive" or "QWERTY predictive", depending on the configuration
+     * of the device. Predictive keyboard modes, which can't be supported
+     * in this device, are replaced with "non-predictive" mode.
+     */
+    TKeyboardModes ResolveKeyboardMode( TKeyboardModes aKbMode ) const;
+    
+    /**
+     * Get the default charcter for the given key in given keyboard.
+     * The default character is used to construct the compare string for
+     * predictive mode.
+     */
+    TText DefaultCharForKey( TPtiKey aKey, TKeyboardModes aKbMode ) const;
+    
 private:
+    /**
+     * PTI engine istance. Owned.
+     */
     CPtiEngine* iPtiEngine;
 
+    /**
+     * Algorithm instacne pointer. NOT owned.
+     */
     CPcsAlgorithm2* iAlgorithm;
+    
     /**
      * Array to hold the list of languages not supported
      */
     RArray<TLanguage> iLanguageNotSupported;
 
     /**
-     * Flag to indicate if Phone is Chinese variant 
+     * Type of keyboard used in ITU-T search mode. Typically this is standard ITU-T
+     * 12-key keypad.
      */
-    RArray<TPtiKey> iKeysForPoolFormation;
+    TPtiKeyboardType iItutKeyboardType;
 
     /**
-     * Contains all the keys and the characters mapped to each key
-     * own
+     * PTI keys of the ITU-T keyboard.
      */
-    RPointerArray<TKeyMappingData> iAllKeyMappingsPtrArr;
+    RArray<TPtiKey> iItutKeys;
+
+    /**
+     * Contains all the ITU-T keys and the characters mapped to each key. Owned.
+     */
+    RPointerArray<TKeyMappingData> iItutKeyMappings;
+
+    /**
+     * True if "0" and " " are on the same key in the ITU-T mode
+     */
+    TBool iSpaceAndZeroOnSameKeyOnItut;
     
+    /**
+     * Type of keyboard used in QWERTY search mode. Typically this is either 3x11 or 4x10 QWERTY
+     * or EPtiKeyboardNone if there's no any kind of QWERTY available. This may also be
+     * half-QWERTY.
+     */
+    TPtiKeyboardType iQwertyKeyboardType;
+
+    /**
+     * PTI keys of the QWERTY keyboard.
+     */
+    RArray<TPtiKey> iQwertyKeys;
+
+    /**
+     * Contains all the QWERTY keys and the characters mapped to each key. Owned.
+     */
+    RPointerArray<TKeyMappingData> iQwertyKeyMappings;
+    
+    /**
+     * True if "0" and " " are on the same key in the QWERTY mode
+     */
+    TBool iSpaceAndZeroOnSameKeyOnQwerty;
+    
+    /**
+     * Flag to indicate if the default multi-matching mode is ITU-T or QWERTY mode.
+     * ETrue, if ITU-T is defualt and EFalse if QWERTY is default.
+     */
+    TBool iItutIsDefault;
     };
 
 #endif // __CPCS_KEY_MAP_ALGORITHM_2_H__

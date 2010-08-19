@@ -544,23 +544,27 @@ TInt CCCAppCommLauncherMenuHandler::HandleNotifyL(
         TPtrC8 contactLink = param->Value().AsData();
 
         // Update the CCA parameter contact data
-        HBufC16* link16 = HBufC16::NewLC( contactLink.Length() );
-        link16->Des().Copy( contactLink );
-        iPlugin.AppEngine()->Parameter().SetContactDataL( link16->Des() );
-        // Set contact data flag to EContactLink, because the parameters returned from 
-        // phonebook AIW provider have conatct link but not contact id.
-        iPlugin.AppEngine()->Parameter().SetContactDataFlag( MCCAParameter::EContactLink );
-        CleanupStack::PopAndDestroy(1); // link16
+        TInt length = contactLink.Length();
+        if ( length > 0 )
+            {
+            HBufC16* link16 = HBufC16::NewLC( length );
+            link16->Des().Copy( contactLink );
+            iPlugin.AppEngine()->Parameter().SetContactDataL( link16->Des() );
+            // Set contact data flag to EContactLink, because the parameters returned from 
+            // phonebook AIW provider have conatct link but not contact id.
+            iPlugin.AppEngine()->Parameter().SetContactDataFlag( MCCAParameter::EContactLink );
+            CleanupStack::PopAndDestroy(1); // link16
 
-        // Inform the app engine of the contact event
-        iPlugin.AppEngine()->CCAppContactEventL();
+            // Inform the app engine of the contact event
+            iPlugin.AppEngine()->CCAppContactEventL();
 
-        // Update the commlauncher the UI contact data
-        iPlugin.ContactHandler().RefetchContactL();
-        iPlugin.Container().ContactsChangedL();
-        
-        //Update the Store
-        SetContactStore(iPlugin.ContactHandler().ContactStore());
+            // Update the commlauncher the UI contact data
+            iPlugin.ContactHandler().RefetchContactL();
+            iPlugin.Container().ContactsChangedL();
+            
+            //Update the Store
+            SetContactStore(iPlugin.ContactHandler().ContactStore());
+            }
         }
 
     if (errParam)

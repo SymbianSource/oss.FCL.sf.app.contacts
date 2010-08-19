@@ -428,11 +428,10 @@ void CLogsRecentListView::ViewDeactivated()
          
         // Reset array and set dirty which means refresh requested, 
         // will call StateChangedL with state EStateArrayReseted and update the listbox.
+        // Keep db connection.
         CurrentModel()->DoDeactivate( MLogsModel::ESkipClearing,
-                                      MLogsModel::EResetOnlyArrayWithDirty );
+                                      MLogsModel::EKeepDBConnection );
      
-        // On gaining foreground, do a clean read of events
-        iResetAndRefreshOnGainingForeground = MLogsModel::EResetAndRefresh;
         }       
     
     CAknView::ViewDeactivated();
@@ -513,14 +512,22 @@ void CLogsRecentListView::DoActivateL(
         // With MLogsModel::ECloseDBConnectionAndResetArray the connection to the database is
         // closed and event array will be deleted. Calls StateChangedL with state EStateArrayReseted 
         // which will update the listbox to empty state.
+        // Keep db connection
         CurrentModel()->DoDeactivate( MLogsModel::ENormalOperation,
-                                      MLogsModel::ECloseDBConnectionAndResetArray );
+                                      MLogsModel::EKeepDBConnection );
 
+        CurrentModel()->DoActivateL( MLogsModel::EResetAndRefresh );
         // Now we can enable bring-to-foreground on view activation:
         AppUi()->SetCustomControl(0); 
         AppUi()->HideInBackground(); 
-        // When coming back to foreground, do a clean read of events
-        iResetAndRefreshOnGainingForeground = MLogsModel::EResetAndRefresh; 
+        // If listbox needs to redraw,do it.
+        if( CurrentModel()->Count()>0 && 
+              ( iContainer->ListBox()->TopItemIndex() != EventListTop() ||
+                  iContainer->ListBox()->CurrentItemIndex() != EventListCurrent())) 
+             {
+                iContainer->ListBox()->DrawDeferred();
+             }
+       
         }
     else
         {
@@ -540,11 +547,19 @@ void CLogsRecentListView::DoActivateL(
             logsui.KillTask();  
             return;	
             }
-        
-        // By default on gaining foreground, just refresh the list. So when active applications list, 
-        // keylock or some note (like when plugin in the charger) is shown the list doesn't flicker. 
-        // When view is deactivated this is set to MLogsModel::EResetAndRefresh.
-        iResetAndRefreshOnGainingForeground = MLogsModel::ERefresh; 
+         
+        // Avoid the flicking when transfer to foreground from background.
+        if(LogsAppUi()->IsBackground())
+          {
+              iContainer->DrawNow();         
+              iEikonEnv->AppUiFactory()->StatusPane()->DrawNow(); 
+              LogsAppUi()->SetCustomControl(0);  
+          
+              CCoeEnv * env = CCoeEnv::Static();
+              env->WsSession().SetWindowGroupOrdinalPosition(env->RootWin().Identifier(),0);
+                            
+           }   
+
         }
     
     
@@ -644,8 +659,9 @@ void CLogsRecentListView::DoDeactivate()
             LOGS_DEBUG_PRINT(LOGS_DEBUG_STRING
                     ( "CLogsRecentListView::DoDeactivate - ReadingFinished" ));  
             ClearMissedCallNotifications();   //Clear cenrep new missed calls counter + notifications          
+            // Keep db connection
             CurrentModel()->DoDeactivate( MLogsModel::ENormalOperation,
-                                          MLogsModel::ECloseDBConnection );//ETrue: disconnect from db. This helps for EMSH-6JDFBV but
+                                          MLogsModel::EKeepDBConnection );//ETrue: disconnect from db. This helps for EMSH-6JDFBV but
                                               //reduces user's perceived performance for other views
                                               //(seems to keep clearing of missed duplicates process alive
                                               // so no need for EFalse here as it would increase probability of 
@@ -657,14 +673,15 @@ void CLogsRecentListView::DoDeactivate()
             {
             LOGS_DEBUG_PRINT(LOGS_DEBUG_STRING
                     ( "CLogsRecentListView::DoDeactivate - Reading interrupted" )); 
+            // Keep db connection
             CurrentModel()->DoDeactivate( MLogsModel::ESkipClearing,
-                                          MLogsModel::ECloseDBConnection );
+                                          MLogsModel::EKeepDBConnection );
             }    
         }
     else
         {
         CurrentModel()->DoDeactivate( MLogsModel::ENormalOperation,
-                                      MLogsModel::ECloseDBConnection );//ETrue: disconnect from db. This helps for EMSH-6JDFBV but
+                                      MLogsModel::EKeepDBConnection );//ETrue: disconnect from db. This helps for EMSH-6JDFBV but
                                               //reduces user's perceived performance for other views
                                               //EFalse: don't disconnect from db. This keeps read data cached in Logs.
         }
@@ -854,28 +871,7 @@ void CLogsRecentListView::HandleGainingForeground()
                     {
                     MenuBar()->StopDisplayingMenuBar();
                     }
-                
-                SetEventListCurrent( KErrNotFound );//just to make sure that UI does not try to read anything from eventarray                
-                TRAPD( err, model->DoActivateL( iResetAndRefreshOnGainingForeground ) );  
-                if( err ) 
-                    {
-                    iCoeEnv->HandleError( err );
-                    }
-                if( err == KErrDiskFull )
-                    {
-                    RWsSession& wsSession = CCoeEnv::Static()->WsSession();  
-                    TApaTask logsui( wsSession );
-                    TInt wgId = CCoeEnv::Static()->RootWin().WindowGroupId();
-                    logsui.SetWgId( wgId );
-                    logsui.KillTask();  
-                    return;
-                    }
-                
-                // By default on gaining foreground, just refresh the list. So when active applications list, 
-                // keylock or some note (like when plugin in the charger) is shown the list doesn't flicker. 
-                // When view is deactivated this is set to MLogsModel::EResetAndRefresh.
-                iResetAndRefreshOnGainingForeground = MLogsModel::ERefresh;
-                }
+                 }
             else
                 {
                 // Change ELogsNoChange_PbkUpdPending to ELogsNoChange now so there is no need to 
@@ -883,6 +879,8 @@ void CLogsRecentListView::HandleGainingForeground()
                 iFocusChangeControl = ELogsNoChange;
                 }
             }
+        // Sure "ClearMissedCallNotificationsL" is called.
+        ClearMissedCallNotificationsL();
         
         RemoveInputBlocker(); //just in case
         }                            
@@ -993,16 +991,18 @@ void CLogsRecentListView::HandleLosingForeground()
                 {
                  LOGS_DEBUG_PRINT(LOGS_DEBUG_STRING
                     ( "CLogsRecentListView::HandleLosingForeground - clear duplicates" ));      
+                 // Keep db connection
                 model->DoDeactivate( MLogsModel::ENormalOperation, 
-                                     MLogsModel::ECloseDBConnection );    //EFalse: don't disconnect from db 
+                                     MLogsModel::EKeepDBConnection );    //EFalse: don't disconnect from db 
                 }
             else    
                 {
                 LOGS_DEBUG_PRINT(LOGS_DEBUG_STRING
                     ( "CLogsRecentListView::HandleLosingForeground - skip clearing" )); 
                 //Other loss of foreground (call or AppKey). We'll not touch duplicate counters
+                // Keep db connection
                 model->DoDeactivate( MLogsModel::ESkipClearing, //Don't update db (for missed view)
-                                     MLogsModel::ECloseDBConnection );    //ETrue: disconnect from db in order to immediately to stop
+                                     MLogsModel::EKeepDBConnection );    //ETrue: disconnect from db in order to immediately to stop
                                                  //EFalse: don't disconnect from db                                     
                 }
             }
@@ -1094,7 +1094,9 @@ void CLogsRecentListView::StateChangedL( MLogsStateHolder* aHolder )
             iContainer->ControlExtension()->HandleAdditionalData( 
                 *CurrentModel(), 
                 *iContainer->ListBox() );
-            ClearMissedCallNotificationsL();
+            // Add condition check: To avoid Missing Call Note don't display ,do not call "ClearMissedCallNotificationsL" when logs is in background.
+            if(!LogsAppUi()->IsBackground())
+                ClearMissedCallNotificationsL();
             // When event reading is finished, remove inputblocker
             RemoveInputBlocker();
             }        
@@ -1271,5 +1273,17 @@ TInt CLogsRecentListView::HandleNotifyL(
     return result;    
     }
 
+void CLogsRecentListView::ViewActivatedL(const TVwsViewId& aPrevViewId,TUid aCustomMessageId,const TDesC8& aCustomMessage)
+    {
+    //To avoid the flicking when transfer to foreground from background,we control the view show manually.
+    if(LogsAppUi()->IsBackground()  &&     
+             LogsAppUi()->ActiveViewId() != LogsCurrentRecentViewId() )
+        {
+            LogsAppUi()->SetCustomControl(1);
+        }      
+    
+      CLogsBaseView::ViewActivatedL(aPrevViewId,aCustomMessageId,aCustomMessage);
+      
+    }
 
 //  End of File  

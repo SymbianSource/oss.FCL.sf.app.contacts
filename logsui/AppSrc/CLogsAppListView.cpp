@@ -160,6 +160,17 @@ void CLogsAppListView::DoActivateL( const TVwsViewId& aPrevViewId,
     
     // Just to make sure the inputblocker is not on
     RemoveInputBlocker();
+    
+    // Avoid the flicking when transfer to foreground from background.
+    if(LogsAppUi()->IsBackground())
+       {
+           iContainer->DrawNow();        
+           iEikonEnv->AppUiFactory()->StatusPane()->DrawNow();
+           LogsAppUi()->SetCustomControl(0); 
+       
+           CCoeEnv * env = CCoeEnv::Static();
+           env->WsSession().SetWindowGroupOrdinalPosition(env->RootWin().Identifier(),0); 
+       }
     }
 
 // ----------------------------------------------------------------------------
@@ -195,6 +206,18 @@ void CLogsAppListView::ConstructL()
 //
 CLogsAppListView::CLogsAppListView()
     {
+    }
+
+
+void CLogsAppListView::ViewActivatedL(const TVwsViewId& aPrevViewId,TUid aCustomMessageId,const TDesC8& aCustomMessage)
+    {
+    // To avoid the flicking when transfer to foreground from background,we control the view show manually.
+    if(LogsAppUi()->IsBackground()  &&
+            LogsAppUi()->ActiveViewId() != ELogAppListViewId)
+        {
+            LogsAppUi()->SetCustomControl(1);
+        }    
+    CLogsBaseView::ViewActivatedL(aPrevViewId,aCustomMessageId,aCustomMessage);
     }
 
 

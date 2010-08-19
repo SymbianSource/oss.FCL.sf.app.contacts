@@ -236,6 +236,16 @@ void CPbk2SingleContactDataAssigner::AcceptDelayedContactsL
     }
 
 // --------------------------------------------------------------------------
+// CPbk2SingleContactDataAssigner::DenyDelayedContactsL
+// --------------------------------------------------------------------------
+//
+void CPbk2SingleContactDataAssigner::DenyDelayedContactsL
+        ( const TDesC8& /*aContactLinkBuffer*/ )
+    {
+    // Do nothing
+    }
+
+// --------------------------------------------------------------------------
 // CPbk2SingleContactDataAssigner::ExitServiceL
 // --------------------------------------------------------------------------
 //

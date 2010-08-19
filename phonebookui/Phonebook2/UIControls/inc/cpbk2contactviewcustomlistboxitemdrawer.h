@@ -200,17 +200,7 @@ private: // defining reserved method.
 
 protected:
 
-#ifndef RD_TOUCH2
-    /**
-     * Draw the item background.
-     *
-     * Internal member, not intended for use.
-     *
-     * @param aRect Drawing area. 
-     */
-    void DrawCurrentItemRect(const TRect& aRect) const;
 
-#endif
     
     /** 
      * Array of properties.

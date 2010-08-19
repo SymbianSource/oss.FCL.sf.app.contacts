@@ -268,6 +268,16 @@ void CPbk2ContactAttributeAssigner::AcceptDelayedContactsL
     }
 
 // --------------------------------------------------------------------------
+// CPbk2ContactAttributeAssigner::DenyDelayedContactsL
+// --------------------------------------------------------------------------
+//
+void CPbk2ContactAttributeAssigner::DenyDelayedContactsL
+        ( const TDesC8& /*aContactLinkBuffer*/ )
+    {
+    // Do nothing
+    }
+
+// --------------------------------------------------------------------------
 // CPbk2ContactAttributeAssigner::ExitServiceL
 // --------------------------------------------------------------------------
 //

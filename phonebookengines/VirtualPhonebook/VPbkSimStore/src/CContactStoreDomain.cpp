@@ -36,6 +36,7 @@
 
 #include <barsc.h>
 #include <barsread.h>
+#include <featmgr.h>
 
 namespace VPbkSimStore {
 
@@ -80,10 +81,20 @@ void CContactStoreDomain::ConstructL(
     
     VPbkEngUtils::RLocalizedResourceFile resFile;
     resFile.OpenLC( iFs, KVPbkRomFileDrive, KDC_RESOURCE_FILES_DIR, KResFile );
-    
+    FeatureManager::InitializeLibL();
     TResourceReader resReader;
-    resReader.SetBuffer( resFile.AllocReadLC( 
-        R_VPBK_VERSIT_FIELD_TYPE_MAPPINGS ) );
+    
+    if ( !FeatureManager::FeatureSupported(
+            KFeatureIdFfTdClmcontactreplicationfromphonebooktousimcard ) )
+        {
+        resReader.SetBuffer( resFile.AllocReadLC(
+                R_VPBK_VERSIT_FIELD_TYPE_MAPPINGS ) );
+        }
+    else
+        {
+        resReader.SetBuffer( resFile.AllocReadLC(
+                R_VPBK_USIM_VERSIT_FIELD_TYPE_MAPPINGS ) );
+        }
     // Read versit types
     iFieldTypeMappings->InitVersitMappingsL( resReader );
     resReader.SetBuffer( resFile.AllocReadLC( 
@@ -153,6 +164,7 @@ CContactStoreDomain::~CContactStoreDomain()
     delete iContactStoreList;
     delete iTextStore;
     iFs.Close();
+    FeatureManager::UnInitializeLib();
     }
 
 // -----------------------------------------------------------------------------

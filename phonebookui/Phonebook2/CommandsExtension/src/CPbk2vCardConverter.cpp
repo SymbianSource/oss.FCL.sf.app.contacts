@@ -138,6 +138,7 @@ CPbk2vCardConverter::~CPbk2vCardConverter()
         delete iVcardFiles;
         }
     delete iVCardFile;
+    delete iRetrieveOperation;
     delete iVCardContact;
     iFileWriteStream.Close();
     delete iContactOperation;

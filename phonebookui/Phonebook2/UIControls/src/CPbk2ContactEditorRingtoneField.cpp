@@ -281,8 +281,15 @@ void CPbk2ContactEditorRingtoneField::AcceptL
 // -----------------------------------------------------------------------------
 //
 TBool CPbk2ContactEditorRingtoneField::ConsumesKeyEvent
-        ( const TKeyEvent& /*aKeyEvent*/, TEventCode /*aType*/ )
+        ( const TKeyEvent& aKeyEvent, TEventCode aType )
     {
+    TKeyResponse keyResponse = iControl->OfferKeyEventL( aKeyEvent, aType );
+
+    if ( EKeyWasConsumed == keyResponse )
+        {
+        return ETrue;
+        }
+            
     return EFalse;
     }   
 

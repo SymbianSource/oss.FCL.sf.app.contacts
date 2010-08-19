@@ -587,8 +587,18 @@ void CLogsBaseView::HandleViewActivation(const TVwsViewId& aNewlyActivatedViewId
                   aViewIdToBeDeactivated.iAppUid != TUid::Uid(KLogsAppUID3) )
             {
             // Reset array, will call StateChangedL with state EStateArrayReseted and update the listbox.
-            CurrentModel()->DoDeactivate( MLogsModel::ESkipClearing,
-                                          MLogsModel::EResetOnlyArray ); 
+            if ( (aNewlyActivatedViewId.iViewUid.iUid == EStmDialledListViewId )||
+                    (aNewlyActivatedViewId.iViewUid.iUid == EStmMissedListViewId )||
+                    (aNewlyActivatedViewId.iViewUid.iUid == EStmReceivedListViewId ))
+                {
+                CurrentModel()->DoDeactivate( MLogsModel::ESkipClearing,
+                                                          MLogsModel::EKeepDBConnection ); 
+                }
+            else
+                {
+                CurrentModel()->DoDeactivate( MLogsModel::ESkipClearing,
+                                                          MLogsModel::EResetOnlyArray ); 
+                }	
             DrawComponents();
             TRAP(err, CancelSaveToPbkL());
             }

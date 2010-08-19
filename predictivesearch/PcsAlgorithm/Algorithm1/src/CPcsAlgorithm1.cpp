@@ -908,68 +908,115 @@ TInt CPcsAlgorithm1::FindStoreUri ( const TDesC& aDataStore )
 // ----------------------------------------------------------------------------
 void CPcsAlgorithm1::UpdateCachingStatus(TDesC& aDataStore, TInt aStatus)
 {
-	PRINT ( _L("Enter CPcsAlgorithm1::UpdateCachingStatus") );
-	
-	// Handle data store update events
-	if ( aStatus == ECacheUpdateContactRemoved ||
-	     aStatus == ECacheUpdateContactModified ||
-	     aStatus == ECacheUpdateContactAdded )
-	    {
+    PRINT ( _L("Enter CPcsAlgorithm1::UpdateCachingStatus") );
+    PRINT2 ( _L("CPcsAlgorithm1::UpdateCachingStatus: Request received for URI=%S with status=%d"),
+             &aDataStore, aStatus );
+
+    // Handle data store update events
+    if ( aStatus == ECacheUpdateContactRemoved ||
+         aStatus == ECacheUpdateContactModified ||
+         aStatus == ECacheUpdateContactAdded )
+        {
         HandleCacheUpdated( static_cast<TCachingStatus>(aStatus) );
         return;
-	    }
-	
-	// If not a cache update event, then this event is related to the initial
-	// cache construction.
-	TInt index = FindStoreUri(aDataStore);
-	
-	iPcsCache[index]->UpdateCacheStatus(aStatus);
-	
-	// Check if any error occurred
-	// If so, update the cache status, Set the property and return
-	if ( aStatus < 0 )
-	{
-		SetCachingError(aDataStore, aStatus);
-		//return;
-	}
-	
-	// No error occurred
-	TCachingStatus status = ECachingComplete;
-	TBool atLeastOneStoreCachingCompleteWithErrors(EFalse);
-	for ( TInt i = 0; i < iPcsCache.Count(); i++ )
-	{
-		if ( iPcsCache[i]->GetCacheStatus() == ECachingComplete )
-		{
-	        continue;
-	    }
-		else if ( iPcsCache[i]->GetCacheStatus() == ECachingCompleteWithErrors )
-		{
-            atLeastOneStoreCachingCompleteWithErrors = ETrue;
-            continue;
-		}
-		else
-		{
-			status = ECachingInProgress;
-			break;
-		}
-	}
-	
-	if ( status == ECachingComplete )
-	{
-		// See if any error occurred while caching
-		// If so, change the status to ECachingCompleteWithErrors
-		if (( iCacheError != KErrNone ) || (atLeastOneStoreCachingCompleteWithErrors))
-			status = ECachingCompleteWithErrors;
-	}
-	
-	// Check if status changed
-	if ( status != iCacheStatus )
-	{
-		iCacheStatus = status;
-		RProperty::Set(KPcsInternalUidCacheStatus, EPsKeyCacheStatus, iCacheStatus );
-	}
-	
-	PRINT ( _L("End CPcsAlgorithm1::UpdateCachingStatus") );
+        }
+
+    // If not a cache update event, then this event is related to the initial
+    // cache construction.
+
+    // Check if any error occurred and update the cache error
+    if ( aStatus < 0 )
+    {
+        SetCachingError(aDataStore, aStatus);
+    }
+    else
+    {
+        TInt index = FindStoreUri(aDataStore);
+        iPcsCache[index]->UpdateCacheStatus(aStatus);
+    }
+
+    TCachingStatus status = ECachingNotStarted;
+    TUint countNotStarted = 0;
+    TUint countInProgress = 0;
+    TUint countCompleted = 0;
+    TUint countCompletedWithErrors = 0;
+    TInt cacheCount = iPcsCache.Count();
+    for ( TInt i = 0; i < cacheCount; i++ )
+    {
+        PRINT3 ( _L("CPcsAlgorithm1::UpdateCachingStatus: URI[%d]=%S, cache status=%d"),
+                 i, &iPcsCache[i]->GetURI(), iPcsCache[i]->GetCacheStatus() );
+
+        switch ( iPcsCache[i]->GetCacheStatus() )
+        {
+            case ECachingNotStarted:         
+            {
+                countNotStarted++;          
+                break;
+            }
+            case ECachingInProgress:         
+            {
+                countInProgress++;         
+                break;
+            }
+            case ECachingComplete:           
+            {
+                countCompleted++;           
+                break;
+            }
+            case ECachingCompleteWithErrors: 
+            {
+                countCompletedWithErrors++; 
+                break;
+            }
+            default:                         
+            { 
+                // Default completed state
+                countCompleted++;           
+                break;
+            }
+        }
+    }
+
+    // Calculate cumulative status according to single caches statuses
+    if ( countCompleted > 0 && ( countCompleted + countNotStarted ) == cacheCount )
+    {
+        // If at least one caching is finished
+        // set status to ECachingComplete or ECachingCompleteWithErrors
+        // according to iCacheError
+        status = ( iCacheError == KErrNone ) ? ECachingComplete : ECachingCompleteWithErrors;
+    }
+    else if ( countInProgress > 0 )
+    {
+        // Else if at least one caching is in progress,
+        // set status to ECachingInProgress
+        status = ECachingInProgress;
+    }
+    else if ( countCompletedWithErrors > 0 )
+    {
+        // Else if at least one caching is completed with errors, 
+        //set status to ECachingCompleteWithErrors
+        status = ECachingCompleteWithErrors;
+    }
+    else
+    {
+        // countNotStarted == cacheCount
+        // status is set to default ECachingNotStarted
+    }
+
+    PRINT1 ( _L("CPcsAlgorithm1::UpdateCachingStatus: Cumulative caching status is %d"),
+             status );
+
+    // Check if status changed
+    if ( status != iCacheStatus )
+    {
+        PRINT2 ( _L("CPcsAlgorithm1::UpdateCachingStatus: Cumulative caching changed: %d -> %d"),
+                 iCacheStatus, status );
+
+        iCacheStatus = status;
+        RProperty::Set(KPcsInternalUidCacheStatus, EPsKeyCacheStatus, iCacheStatus );
+    }
+
+    PRINT( _L("End CPcsAlgorithm1::UpdateCachingStatus") );
 }
 
 // ----------------------------------------------------------------------------
@@ -978,7 +1025,7 @@ void CPcsAlgorithm1::UpdateCachingStatus(TDesC& aDataStore, TInt aStatus)
 // ----------------------------------------------------------------------------
 void CPcsAlgorithm1::SetCachingError(const TDesC& aDataStore, TInt aError)
 {
-    PRINT2 ( _L("SetCachingError::URI %S ERROR %d"), &aDataStore, aError );
+    PRINT2 ( _L("CPcsAlgorithm1::SetCachingError: URI=%S, ERROR=%d"), &aDataStore, aError );
 
     iCacheError = aError;
     RProperty::Set( KPcsInternalUidCacheStatus, EPsKeyCacheError, iCacheError );
@@ -1326,9 +1373,35 @@ void CPcsAlgorithm1::GetAdaptiveGridL( const MDesCArray& aURIs,
     PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Request of Adaptive Grid for %d URI(s)"),
              aURIs.MdcaCount() );
 
+    if ( iCacheStatus != ECachingComplete )
+        {
+        PRINT ( _L("CPcsAlgorithm1::GetAdaptiveGridL: PCS Caching is not ready, returning empty Adaptive Grid") );
+        aAdaptiveGrid.Zero();
+        }
+    else
+        {
+        GetAdaptiveGridFromCacheL( aURIs, aCompanyName, aAdaptiveGrid );
+        }
+
+    PRINT ( _L("End CPcsAlgorithm1::GetAdaptiveGridL") );
+}
+
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm1::GetAdaptiveGridFromCacheL
+// 
+// ----------------------------------------------------------------------------
+void CPcsAlgorithm1::GetAdaptiveGridFromCacheL( const MDesCArray& aURIs,
+                                                const TBool aCompanyName,
+                                                TDes& aAdaptiveGrid )
+{
+    PRINT ( _L("Enter CPcsAlgorithm1::GetAdaptiveGridFromCacheL") );
+
+    PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridFromCacheL. Request of Adaptive Grid for %d URI(s)"),
+             aURIs.MdcaCount() );
+
     RArray<TInt> cacheIds;
     CleanupClosePushL( cacheIds );
-
+    
     // Create the list of the cache indexes that will form the Adaptive Grid
     for ( TInt i=0; i < aURIs.MdcaCount(); i++ )
     {
@@ -1337,7 +1410,7 @@ void CPcsAlgorithm1::GetAdaptiveGridL( const MDesCArray& aURIs,
         // If URI is a group URI skip it
         if ( CPcsAlgorithm1Utils::IsGroupUri( uri ) )
         {
-            PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Adaptive Grid for URI \"%S\" is not supported. Skipping"),
+            PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridFromCacheL. Adaptive Grid for URI \"%S\" is not supported. Skipping"),
                      &uri );
             continue;
         }
@@ -1345,18 +1418,18 @@ void CPcsAlgorithm1::GetAdaptiveGridL( const MDesCArray& aURIs,
         TInt cacheIndex = GetCacheIndex( uri );
         if ( cacheIndex == KErrNotFound )
         {
-            PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Cache for URI \"%S\" doesn't exist"),
+            PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridFromCacheL. Cache for URI \"%S\" doesn't exist"),
                      &uri );
             continue;
         }
 
-        PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Cache for URI \"%S\" will be used to form the Adaptive Grid"),
+        PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridFromCacheL. Cache for URI \"%S\" will be used to form the Adaptive Grid"),
                  &uri );
 
         cacheIds.AppendL( cacheIndex );
     }
 
-    PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Number of caches that will be used to form the grid is %d"),
+    PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridFromCacheL. Number of caches that will be used to form the grid is %d"),
              cacheIds.Count( ) );
 
     // Create the Adaptive Grid from the cache(s)
@@ -1368,7 +1441,7 @@ void CPcsAlgorithm1::GetAdaptiveGridL( const MDesCArray& aURIs,
         // Get the Adaptive Grid    
         cache->GetAdaptiveGridL( aCompanyName, aAdaptiveGrid );
 
-        PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Adaptive Grid: \"%S\" (No merge was needed)"),
+        PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridFromCacheL. Adaptive Grid: \"%S\" (No merge was needed)"),
                  &aAdaptiveGrid );
         }
     else if ( cacheIds.Count() > 1 ) // Merge if we have more than one cache
@@ -1394,7 +1467,7 @@ void CPcsAlgorithm1::GetAdaptiveGridL( const MDesCArray& aURIs,
             gridOnePtr.Zero();
             cache->GetAdaptiveGridL( aCompanyName, gridOnePtr );
 
-            PRINT2 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Adaptive Grid for cache \"%S\" is \"%S\""),
+            PRINT2 ( _L("CPcsAlgorithm1::GetAdaptiveGridFromCacheL. Adaptive Grid for cache \"%S\" is \"%S\""),
                      &cache->GetURI(), &gridOnePtr );
 
             // Loop through the characters of the Adaptive Grid for the cache
@@ -1421,7 +1494,7 @@ void CPcsAlgorithm1::GetAdaptiveGridL( const MDesCArray& aURIs,
             aAdaptiveGrid.Append( gridAll[i] );
             }
 
-        PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridL. Adaptive Grid: \"%S\" (Merge was done)"),
+        PRINT1 ( _L("CPcsAlgorithm1::GetAdaptiveGridFromCacheL. Adaptive Grid: \"%S\" (Merge was done)"),
                  &aAdaptiveGrid );
         
         CleanupStack::PopAndDestroy( gridOne );
@@ -1430,7 +1503,7 @@ void CPcsAlgorithm1::GetAdaptiveGridL( const MDesCArray& aURIs,
 
     CleanupStack::PopAndDestroy( &cacheIds ); // Close
     
-    PRINT ( _L("End CPcsAlgorithm1::GetAdaptiveGridL") );
+    PRINT ( _L("End CPcsAlgorithm1::GetAdaptiveGridFromCacheL") );
 }
 
 // ---------------------------------------------------------------------------------

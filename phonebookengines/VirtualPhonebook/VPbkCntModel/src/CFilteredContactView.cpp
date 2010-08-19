@@ -145,14 +145,8 @@ TBool RequiresCustomFiltering(
             for ( TInt matchPriority = 0;
                  matchPriority <= maxMatchPriority; ++matchPriority )
                 {
-                TBool versitIsMatched = matchingProperty->Matches(
-                       aFilterType->VersitProperties()[matchPriority]);
-                TBool excludedParmaterIsMatched =
-                       aFilterType->ExcludedParameters().
-                           ContainsAll(aFieldType.ExcludedParameters());
-                // if the FilterType is matched the Versit Property and
-                // the excludeParameter of FiledType, it needn't custom filter.
-                if ( versitIsMatched && excludedParmaterIsMatched )
+                if ( matchingProperty->Matches(
+                    aFilterType->VersitProperties()[matchPriority]) )
                     {
                     ret = EFalse;
                     break;

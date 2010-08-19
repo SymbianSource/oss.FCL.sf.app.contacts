@@ -100,7 +100,7 @@ private:
      * Bit 6 = Not used
      * Bit 7 = Not used
      */
-    TInt8 iDataMatchAttribute;
+    TUint8 iDataMatchAttribute;
     };
 
 #endif // __CPCS_POOL_ELEMENT_ALGORITHM_2_H__

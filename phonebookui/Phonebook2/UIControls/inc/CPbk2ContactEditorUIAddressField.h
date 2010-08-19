@@ -61,6 +61,7 @@ NONSHARABLE_CLASS(CPbk2ContactEditorUIAddressField) : public CPbk2ContactEditorU
         void ActivateL();
         TInt ControlId();
         TBool HandleCustomFieldCommandL(TInt aCommand);
+        TBool ConsumesKeyEvent( const TKeyEvent& aKeyEvent, TEventCode aType );
   
 
     private:

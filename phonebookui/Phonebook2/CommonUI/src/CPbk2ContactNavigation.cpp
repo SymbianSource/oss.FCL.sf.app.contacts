@@ -141,7 +141,14 @@ void CPbk2ContactNavigation::UpdateNaviIndicatorsL
         {
         decorator->SetNaviDecoratorObserver
             (  const_cast<CPbk2ContactNavigation*>( this ) );
-        decorator->MakeScrollButtonVisible( ETrue );
+        CAknNavigationDecorator::TControlType controlType = 
+            decorator->ControlType();
+        // Set ScrollButtonVisible to ETrue except
+        // the controlType is CAknNavigationDecorator::ENaviLabel
+        if( CAknNavigationDecorator::ENaviLabel != controlType )
+            {
+            decorator->MakeScrollButtonVisible( ETrue );
+            }
         }
 
     TInt index = 0;

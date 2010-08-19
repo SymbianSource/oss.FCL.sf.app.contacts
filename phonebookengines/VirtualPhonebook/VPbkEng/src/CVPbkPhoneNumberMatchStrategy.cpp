@@ -42,7 +42,14 @@
 
 #include "CVPbkPhoneNumberSequentialMatchStrategy.h"
 #include "CVPbkPhoneNumberParallelMatchStrategy.h"
+#include "CVPbkETelCntConverter.h"
 
+#include <cntdb.h>
+#include <ecom/ecom.h>
+
+#ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
+#include <cntphonenumparser.h>
+#endif
 // CONSTANTS
 // Unnamed namespace for local definitions
 namespace {
@@ -162,6 +169,11 @@ NONSHARABLE_CLASS(CVPbkPhoneNumberMatchStrategyImpl) :
         */
         void RefineDuplicatedNumbersL();
         
+        /**
+         * Load number parser plugin.
+        */
+        void LoadNumberParserPluginL();
+        
     private: // Data
         CVPbkPhoneNumberMatchStrategy& iParent;
         /// Ref: The contact manager instance to be used for searching.
@@ -210,6 +222,8 @@ NONSHARABLE_CLASS(CVPbkPhoneNumberMatchStrategyImpl) :
         TBool iDoubledContacts;
         /// type of iPhoneNumber
         TNumberType iPhoneNumberType;
+        // Own: parser
+        CContactPhoneNumberParser* iParser;
     };
 
 CVPbkPhoneNumberMatchStrategyImpl::CVPbkPhoneNumberMatchStrategyImpl(
@@ -268,6 +282,8 @@ inline void CVPbkPhoneNumberMatchStrategyImpl::ConstructL(
     	}
 
     CleanupStack::PopAndDestroy( &resFile );
+    
+    LoadNumberParserPluginL();
     }
 
 CVPbkPhoneNumberMatchStrategyImpl* CVPbkPhoneNumberMatchStrategyImpl::NewL(
@@ -300,6 +316,8 @@ CVPbkPhoneNumberMatchStrategyImpl::~CVPbkPhoneNumberMatchStrategyImpl()
     iNameTokensArray.ResetAndDestroy();
     iTempNameTokensArray.ResetAndDestroy();
     iStoresToMatch.Close();
+    delete iParser;
+    REComSession::FinalClose();
     }
 
 void CVPbkPhoneNumberMatchStrategyImpl::MatchL(const TDesC& aPhoneNumber)
@@ -762,21 +780,30 @@ TInt CVPbkPhoneNumberMatchStrategyImpl::FormatAndCheckNumberType( TDes& aNumber 
     _LIT( KOneZeroPattern, "0*" );
     _LIT( KTwoZerosPattern, "00*" );
     _LIT( KPlusPattern, "+*" );
+    _LIT( KPlusString, "+" );
     const TChar KPlus = TChar('+');
     const TChar KZero = TChar('0');
     const TChar KAsterisk = TChar('*');
     const TChar KHash = TChar('#');
     
-    for( TInt pos = 0; pos < aNumber.Length(); ++pos )
+    HBufC* numberBuf = HBufC::NewL( aNumber.Length() );
+    TPtr number = numberBuf->Des();
+    if ( iParser )
         {
-        TChar chr = aNumber[pos];
-        if ( !chr.IsDigit() && !( pos == 0 && chr == KPlus  )
-                && !( chr == KAsterisk ) && !( chr == KHash ) )
-            {
-            aNumber.Delete( pos, 1 );
-            --pos;
-            }
+        iParser->ExtractRawNumber( aNumber, number );
         }
+    TInt pos = aNumber.Find( number );
+    
+    if ( pos > 0 && aNumber[pos-1] == KPlus )
+        {
+        number.Insert( 0, KPlusString );
+        }
+    
+    if ( number.Length() > 0)
+        {
+        aNumber.Copy( number );
+        }
+    delete numberBuf;
     
 	TInt format;
 	
@@ -1106,6 +1133,21 @@ TBool CVPbkPhoneNumberMatchStrategyImpl::IsSimStore( const MVPbkContactStore& aS
         return ETrue;
         }
     return EFalse;
+    }
+
+void CVPbkPhoneNumberMatchStrategyImpl::LoadNumberParserPluginL()
+    {    
+    RImplInfoPtrArray   implInfoArray;
+    CleanupResetAndDestroyPushL( implInfoArray );
+    REComSession::ListImplementationsL( KUidEcomCntPhoneNumberParserInterface, 
+                                        implInfoArray );
+    // Load the first implementation found for KUidEcomCntPhoneNumberParserInterface 
+    const TInt count = implInfoArray.Count();
+    __ASSERT_ALWAYS( count > 0, User::Leave( KErrNotFound ) );
+    const TUid firstImplementationFound = implInfoArray[0]->ImplementationUid();
+    iParser = reinterpret_cast<CContactPhoneNumberParser*> 
+        ( CContactEcomPhoneNumberParser::NewL( firstImplementationFound ) );
+    CleanupStack::PopAndDestroy( &implInfoArray );
     }
 
 CVPbkPhoneNumberMatchStrategy::CVPbkPhoneNumberMatchStrategy()

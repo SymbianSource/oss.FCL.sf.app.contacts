@@ -373,6 +373,8 @@ class CPbk2ContactEditorDlgImpl : public CAknForm,
                 TEventCode aType );
         void RestorePrevNaviDecoratorL();
         void RestoreStatusPaneL(); 
+        static TInt DelayDlgDeleteCallBack( TAny* aCallBack );
+        void DelayDlgDelete();
 
     private: // Data structures
 
@@ -472,6 +474,8 @@ class CPbk2ContactEditorDlgImpl : public CAknForm,
         CAknNavigationDecorator* iPrevNaviDecorator;
         
         TInt iCurrentstatuspane;
+        /// Own: For asynchronously delete editordlg.
+        CIdle* iDelayDelete;
     };
 
 #endif // CPBK2CONTACTEDITORDLGIMPL_H

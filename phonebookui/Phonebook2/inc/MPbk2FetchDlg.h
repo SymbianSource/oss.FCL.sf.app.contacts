@@ -118,6 +118,13 @@ class MPbk2FetchDlg : public MPbk2ControlObserver
         virtual void SelectContactL(
                 const MVPbkContactLink& aLink,
                 TBool aSelected ) = 0;
+        /**
+         * Check whether selection is permitted
+         * 
+         * @return              Check result
+         */
+        virtual TBool IsSelectPermitted() = 0;
+
 
     protected: // Protected functions
 

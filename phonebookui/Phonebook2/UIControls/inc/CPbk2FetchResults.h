@@ -35,6 +35,7 @@ class MPbk2FetchDlg;
 class MPbk2FetchDlgPages;
 class MPbk2FetchDlgObserver;
 class MPbk2FetchResultsObserver;
+class CAknInputBlock;
 
 // CLASS DECLARATION
 
@@ -88,7 +89,15 @@ NONSHARABLE_CLASS(CPbk2FetchResults) : public CBase,
          */
         void AppendDelayedL(
                 const MVPbkContactLink& aLink );
-        
+
+        /**
+         * Deny to Append a delayed contact link to selection.
+         *
+         * @param aLink     The link to deny append.
+         */
+        void DenyAppendDelayedL(
+                const MVPbkContactLink& aLink );
+
         /**
          * Appends a contact link to fetch results.
          *
@@ -110,6 +119,10 @@ NONSHARABLE_CLASS(CPbk2FetchResults) : public CBase,
          */
         void ResetAndDestroy();
 
+        /**
+         * Wait operations to complete
+         */
+        void WaitOperationsCompleteL();
     public: // From MVPbkContactLinkArray
         TInt Count() const;
         const MVPbkContactLink& At(
@@ -233,6 +246,12 @@ NONSHARABLE_CLASS(CPbk2FetchResults) : public CBase,
         CArrayFixFlat<CFRConatactOperation*>* iOperationQueue;
         /// Own: Contact retrieve operation
         MVPbkContactOperationBase* iRetrieveOperation;
+        /// Own: Is it waiting the acceptance, initialized to EFalse
+        TBool iWaitingForDelayedAppend;
+        /// Own: Wait until finish contact store operation
+        CActiveSchedulerWait* iWaitForAllOperationComplete;
+        /// Own: User input blocker
+        CAknInputBlock* iInputBlock;
     };
 
 #endif // CPBK2FETCHRESULTS_H

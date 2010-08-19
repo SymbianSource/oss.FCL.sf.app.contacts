@@ -178,6 +178,14 @@ NONSHARABLE_CLASS(CPbk2ContactViewListBox) :
         void HandlePopupCharacter( CWindowGc* aGc,
                                    const TRect& aRectOfListBoxItem ) const;
 
+        /**
+         * Set the state of the Marking mode 
+         */
+        inline void SetMarkingModeState( TBool aActived )
+            {
+            iMarkingModeOn = aActived;
+            }
+
     public: // From MPbk2ClipListBoxText
         TBool ClipFromBeginning(
                 TDes& aBuffer,
@@ -226,6 +234,9 @@ NONSHARABLE_CLASS(CPbk2ContactViewListBox) :
 
         TBool IsContact( TInt aIndex ) const;
         
+    private:
+        void RecalcWidthInMarkingMode( TInt& aWidth, const CFont& aFont, TChar aChar );
+        
     private: // Data structures
         /// Data loaded from resources
         struct TResourceData
@@ -266,6 +277,8 @@ NONSHARABLE_CLASS(CPbk2ContactViewListBox) :
         CPbk2PredictiveSearchFilter &iSearchFilter;
         // ref: used fro checking command item count
         CCoeControl& iContainer;
+        // Flag to indicate whether Marking mode is active
+        TBool iMarkingModeOn;
         
     };
 

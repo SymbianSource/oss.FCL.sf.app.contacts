@@ -208,7 +208,8 @@ public: // From MPbk2ContactUiControl2
         TInt CalculateListboxIndex(TInt aCommandIndex) const;       
         void UnsubscribeCmdItemsVisibility() const;					
         void SubscribeCmdItemsVisibility();							
-        void HandleListboxEventL(TInt aEvent, TInt aListboxIndex, TBool aMantainFocus);  
+        void HandleListboxEventL(TInt aEvent, TInt aListboxIndex, TBool aMantainFocus);
+        TInt EnabledCommandCount() const; 
 
     private: // Data
         /// Ref: Parent coecontrol

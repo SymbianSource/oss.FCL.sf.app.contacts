@@ -21,6 +21,7 @@
 #include "CxSPViewActivator.h"
 #include <CxSPViewData.h>
 #include "CxSPViewInfo.h"
+#include <Pbk2ViewId.hrh>
 
 
 // System includes
@@ -137,17 +138,34 @@ void CxSPViewActivator::ActivateView2L(const RMessage2 &aMessage)
             newViewId = viewID;
             }
     
-        aMessage.Complete(err);
+        // If err is KErrNone or KErrNotFound, complete client's request with KErrNone. 
+        // The reason is even if client passed an invalid view id to xsp server, 
+        // the server will launch phonebook namelist view instead. 
+        if ( KErrNone == err || KErrNotFound == err )
+        	{
+            aMessage.Complete( KErrNone );
+        	}
+        else
+        	{
+            aMessage.Complete( err );
+        	}
     
-        if(err == KErrNone)
+        if( err == KErrNone )
             {
             // Make view id
-            const TVwsViewId viewId(TUid::Uid(KUid), TUid::Uid(newViewId));
+            const TVwsViewId viewId( TUid::Uid( KUid ), TUid::Uid( newViewId ) );
             // Activate the view
             static_cast<CAknViewAppUi*>(CCoeEnv::Static()->AppUi())->ActivateViewL(
                                                         viewId, CPbk2ViewState::Uid(), *paramBuf);
             }
-    
+        else if ( err == KErrNotFound )
+        	{
+            // Activate phonebook namelist view if valid view id can't be found
+            const TVwsViewId viewId( TUid::Uid( KUid ), TUid::Uid( EPbk2NamesListViewId ) );
+            static_cast<CAknViewAppUi*>( CCoeEnv::Static()->AppUi() )->ActivateViewL(
+                                                        viewId, CPbk2ViewState::Uid(), *paramBuf );        
+        	}
+        
         CleanupStack::PopAndDestroy();  // paramBuf;
         }
     }

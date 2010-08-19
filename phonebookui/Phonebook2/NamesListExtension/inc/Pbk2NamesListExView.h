@@ -32,6 +32,7 @@
 #include <coemain.h>
 
 #include <Pbk2Commands.hrh> 
+#include <aknmarkingmodeobserver.h>
 
 // FORWARD DECLARATIONS
 template<class ControlType> class CPbk2ControlContainer;
@@ -70,7 +71,8 @@ class CPbk2NamesListExView : public CBase,
                              public MCoeControlObserver,
                              public MEikListBoxObserver,
                              private MCoeForegroundObserver,
-                             public MPbk2UIExtensionView2
+                             public MPbk2UIExtensionView2,
+                             public MAknMarkingModeObserver
     {
     public: // Construction and destruction
 
@@ -161,6 +163,24 @@ class CPbk2NamesListExView : public CBase,
         void HandleControlEventL(
                 CCoeControl* aControl,
                 TCoeEvent aEventType );
+
+    public: // From MAknMarkingModeObserver 
+            
+        /**
+         * This method is called when marking mode is activated or deactivated.
+         * 
+         * @param aActivated @c ETrue if marking mode was activate, @c EFalse
+         *                   if marking mode was deactivated.
+         */
+        void MarkingModeStatusChanged( TBool aActivated );
+
+        /**
+         * This method is called just before marking mode is closed. Client can 
+         * either accept or decline closing.
+         * 
+         * @return @c ETrue if marking mode should be closed, otherwise @c EFalse.
+         */
+        TBool ExitMarkingMode() const;  
 
     private: // Implementation
         CPbk2NamesListExView( 
@@ -262,8 +282,10 @@ class CPbk2NamesListExView : public CBase,
         CSpbContentProvider&  iContentProvider;
         // Not own. CCA launcher connection
         MCCAConnection*& iCCAConnection;
-        /// Own: Context launcher
+        // Own: Context launcher
         CPbk2ContextLaunch* iContextLauncher;
+        // Flag to indicate whether Marking mode is active
+        TBool iMarkingModeOn;
     };
 
 #endif // CPBK2NAMESLISTEXVIEW_H

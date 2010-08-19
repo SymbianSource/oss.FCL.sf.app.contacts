@@ -331,7 +331,7 @@ NONSHARABLE_CLASS( CPbk2HandleMassUpdate ) : public CBase
        
        /**
         * Call this function to skip the showing of blocking progress note.
-		* When done MassUpdateSkipProgressNote( EFalse ) must be called to reset.
+        * When done MassUpdateSkipProgressNote( EFalse ) must be called to reset.
         */
       void MassUpdateSkipProgressNote( TBool aSkip );       
 
@@ -347,14 +347,14 @@ NONSHARABLE_CLASS( CPbk2HandleMassUpdate ) : public CBase
         static TInt HandleMassUpdateTimerCallBack(TAny* aAny);
 
     private:
-		CEikListBox& iListBox;
+        CEikListBox& iListBox;
         TBool iHandleMassUpdateDetected;
         TTime iHandleMassUpdateFirst;
         TTime iHandleMassUpdatePrev;
         TInt  iHandleMassUpdateCount;
         TBool iHandleMassUpdateSkipDialog;        
         CPeriodic* iHandleMassUpdateTimer;
-		CAknWaitDialog*  iHandleMassUpdateDialog;
+        CAknWaitDialog*  iHandleMassUpdateDialog;
     };
 
 // --------------------------------------------------------------------------
@@ -714,8 +714,8 @@ TBool CPbk2HandleMassUpdate::MassUpdateCheckThis()
 //
 TBool CPbk2HandleMassUpdate::MassUpdateDetected()
     {
-	return iHandleMassUpdateDetected;
-	}
+    return iHandleMassUpdateDetected;
+    }
 
 // --------------------------------------------------------------------------
 // CPbk2HandleMassUpdate::MassUpdateSkipProgressNote
@@ -877,7 +877,8 @@ EXPORT_C CPbk2NamesListControl::CPbk2NamesListControl
                 iNameFormatter( aNameFormatter ),
                 iStoreProperties( aStoreProperties ),
                 iAllowPointerEvents( ETrue ),
-                iOpeningCca( EFalse )
+                iOpeningCca( EFalse ),
+                iMarkingModeOn( EFalse )
     {
     }
 
@@ -935,7 +936,7 @@ CPbk2NamesListControl::~CPbk2NamesListControl()
         }
     iObservers.Reset();
     iCommandItems.ResetAndDestroy();
-	delete iCheckMassUpdate;
+    delete iCheckMassUpdate;
     delete iListBoxSelectionObserver;
     delete iStateFactory;
     delete iListBox;
@@ -1111,6 +1112,9 @@ inline void CPbk2NamesListControl::ConstructFromResourceL
     iListBox->SetObserver( this );
     iListBox->SetScrollEventObserver( this );
     iListBox->SetListBoxObserver(this);
+    
+    iListBox->SetMarkingModeObserver( this );
+    
     iUiExtension->SetContactUiControlUpdate( this );
     // set command item updater
     TAny* ext = iUiExtension->ContactUiControlExtensionExtension(
@@ -1201,9 +1205,6 @@ EXPORT_C void CPbk2NamesListControl::Reset()
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING("CPbk2NamesListControl::Reset(0x%x) - IN"),
         this );
 
-    // Unmark all contacts and reset the toolbar so that the Call button
-    // won't be dimmed
-    TRAP_IGNORE( ProcessCommandL( EAknUnmarkAll ) );
     // Reset find box
     TRAP_IGNORE( ResetFindL() );
     // Destroy all the filtered views from the stack
@@ -1220,6 +1221,9 @@ EXPORT_C void CPbk2NamesListControl::Reset()
     TRAP_IGNORE( iCurrentState->SetFocusedContactIndexL( firstContactIndex ) );
     //scroll listbox into beginning (ignore focus that may be below promotion items)
     iListBox->SetTopItemIndex(firstContactIndex);
+    
+    //cancel the marking mode
+    iListBox->SetMarkingMode( EFalse );
 
     // Switch to the background state. This enables the next state to avtivate fully (ActivateStateL()) once phonebook
     // comes from the background.
@@ -1487,7 +1491,7 @@ void CPbk2NamesListControl::HandlePointerEventL(
     {
     if( !iAllowPointerEvents )
         {
-		//Passing event to listbox needed even if iCurrentState would be skipped (fix for ou1cimx1#316139)
+        //Passing event to listbox needed even if iCurrentState would be skipped (fix for ou1cimx1#316139)
         iListBox->HandlePointerEventL( aPointerEvent ); 
         return;
         }
@@ -1685,7 +1689,7 @@ CArrayPtr<MVPbkContactStore>*
 void CPbk2NamesListControl::ClearMarks()
     {
     iCurrentState->ClearMarks();
-	ClearMarkedContactsInfo();
+    ClearMarkedContactsInfo();
     }
 
 // --------------------------------------------------------------------------
@@ -2089,7 +2093,7 @@ TAny* CPbk2NamesListControl::ContactViewObserverExtension( TUid aExtensionUid )
 // --------------------------------------------------------------------------
 //
 void CPbk2NamesListControl::FilteredContactRemovedFromView(
-		MVPbkContactViewBase& /*aView*/ )
+        MVPbkContactViewBase& /*aView*/ )
     {    
     DrawDeferred();
     }
@@ -2247,11 +2251,11 @@ void CPbk2NamesListControl::DoHandleContactViewReadyL
 //
 void CPbk2NamesListControl::DoHandleContactAdditionL( TInt aIndex )
     {
-	//Prevent messing with focus with always-on when Phonebook hidden in
-	//reseted state. Otherwise background-added contacts will change focus.
-	//This would cause Phonebook not to look like freshly started when opened again.
-	//And also make sure foreground-added contact will show the new contact
-	//even though the focus is not seen.
+    //Prevent messing with focus with always-on when Phonebook hidden in
+    //reseted state. Otherwise background-added contacts will change focus.
+    //This would cause Phonebook not to look like freshly started when opened again.
+    //And also make sure foreground-added contact will show the new contact
+    //even though the focus is not seen.
     if( (static_cast<CPbk2AppUi*>(
             CEikonEnv::Static()->AppUi()))->IsForeground() )
         {
@@ -2404,7 +2408,7 @@ void CPbk2NamesListControl::HandleContactAddedToBaseView
     TRAPD( res,
         {
         // This will reset back to base view, however retain original view
-		//when opening CCA
+        //when opening CCA
         if( !iOpeningCca ) 
             {
             iCurrentState->ResetFindL(); 
@@ -2428,8 +2432,11 @@ void CPbk2NamesListControl::HandleContactAddedToBaseView
             }
         else
             {              
-            Reset();
-            }	
+            if( !iMarkingModeOn )
+                {
+                Reset();
+                }
+            }
         }
 
     // Do not handle contact addition here (DoHandleContactAdditionL),
@@ -2542,9 +2549,29 @@ void CPbk2NamesListControl::AdaptiveSearchTextChanged( CAknSearchField* aSearchF
     TRAP_IGNORE(iCurrentState->HandleControlEventL( aSearchField, MCoeControlObserver::EEventStateChanged, ETrue));
     }
 
+
+// -----------------------------------------------------------------------------
+// CPbk2NamesListControl::MarkingModeStatusChanged
+// -----------------------------------------------------------------------------
+//
+void CPbk2NamesListControl::MarkingModeStatusChanged( TBool /*aActivated*/ )
+    {
+    }
+
+// -----------------------------------------------------------------------------
+// CPbk2NamesListControl::ExitMarkingMode
+// Called by avkon, if the return value is ETrue, 
+// the Marking mode will be canceled after any operation, 
+// otherwise the Marking mode keep active.
+// -----------------------------------------------------------------------------
+//
+TBool CPbk2NamesListControl::ExitMarkingMode() const
+    {
+    return ETrue;
+    }
+    
 // --------------------------------------------------------------------------
 // CPbk2NamesListControl::HandleForegroundEventL
-//
 // --------------------------------------------------------------------------
 //
 void CPbk2NamesListControl::HandleForegroundEventL(TBool aForeground)
@@ -2628,9 +2655,9 @@ EXPORT_C void CPbk2NamesListControl::HandleViewForegroundEventL( TBool aForegrou
 // ---------------------------------------------------------------------------
 //
 EXPORT_C void CPbk2NamesListControl::SetOpeningCca( TBool aIsOpening )
-	{
-	iOpeningCca = aIsOpening;
-	}
+    {
+    iOpeningCca = aIsOpening;
+    }
 
 // ---------------------------------------------------------------------------
 // CPbk2NamesListControlBgTask::CPbk2NamesListControlBgTask

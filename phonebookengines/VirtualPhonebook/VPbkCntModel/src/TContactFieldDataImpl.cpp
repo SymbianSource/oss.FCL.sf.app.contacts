@@ -176,7 +176,19 @@ void TContactFieldUriData::SetUriL(const TDesC& aUri)
                User::Leave(KErrNotSupported);
                }
             }
-        
+        else // If it is an IMPP field
+            {
+            TInt pos = aUri.Find(KColon);
+            // If the service name or the colon doesn't exist, let it leave the function.
+            // e.g.:
+            // (1) If the value is YAHOO:peterpan@yahoo.com, YAHOO is the service name
+            // (2) If the value is :peterpan@yahoo.com, the service name is NULL
+            // (3) If the value is peterpan@yahoo.com, neither the service name and the colon exists
+            if( 0 == pos || KErrNotFound == pos )
+                {
+                User::Leave(KErrNotSupported);
+                }
+            }
         }
     iCntModelField->TextStorage()->SetTextL(aUri);
     }

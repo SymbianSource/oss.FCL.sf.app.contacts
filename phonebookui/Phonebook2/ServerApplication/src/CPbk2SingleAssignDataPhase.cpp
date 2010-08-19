@@ -174,6 +174,16 @@ void CPbk2SingleAssignDataPhase::AcceptDelayedL
     }
 
 // --------------------------------------------------------------------------
+// CPbk2SingleAssignDataPhase::DenyDelayed
+// --------------------------------------------------------------------------
+//
+void CPbk2SingleAssignDataPhase::DenyDelayedL
+        ( const TDesC8& /*aContactLinkBuffer*/ )
+    {
+    // Nothing to do
+    }
+
+// --------------------------------------------------------------------------
 // CPbk2SingleAssignDataPhase::Results
 // --------------------------------------------------------------------------
 //
@@ -540,9 +550,16 @@ TBool CPbk2SingleAssignDataPhase::IsContactInSelectedMemoryL
 void CPbk2SingleAssignDataPhase::FinalizeL
         ( const MVPbkStoreContact* aStoreContact )
     {
+    TBool thisDestroyed = EFalse;
+    iDestroyedPtr = &thisDestroyed;
+        
     AppendResultL( aStoreContact );
-    DisplayNotesL();
-    iObserver.NextPhase( *this );
+    DisplayNotesL();    
+     
+    if ( !thisDestroyed )
+        {
+        iObserver.NextPhase( *this );
+        }    
     }
 
 // End of File

@@ -212,7 +212,7 @@ void CPbk2MergeConflictsDlg::HandleListBoxEventL( CEikListBox* /*aListBox*/, TLi
     {     
     if( AknLayoutUtils::PenEnabled() )  
         {
-        if ( aEventType == EEventItemSingleClicked )
+        if ( aEventType == EEventItemSingleClicked || aEventType == EEventEnterKeyPressed)
             {
             SwitchRadioButtonL();
             }

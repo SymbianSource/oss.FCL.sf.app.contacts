@@ -44,7 +44,7 @@ CPcsServer* CPcsServer::NewL()
     self->StartL(KPcsServerName);
     CleanupStack::Pop(); 
     
-    PRINT ( _L("End CPcsServer::NewL") );
+     PRINT ( _L("End CPcsServer::NewL") );
     
     return self;
 }
@@ -70,18 +70,17 @@ void CPcsServer::ConstructL()
 	iPcs = CPcsPluginInterface::NewL();
     
 	// Check if the phone is chinese feature id installed
-	iIsChineseVariant = IsChineseFeatureInitilizedL();
+	TBool isChineseVariant = IsChineseFeatureInitilizedL();
     // Create the plugin for the required algorithm
     // Matches the ECOM Plugin's display name definition in rss file
     // Check for the chinese feature id flag.
-	if(iIsChineseVariant) 
+	if(isChineseVariant) 
 	    {
 	    // Chinese variant phones. Use Algorithm 2
 	    PRINT ( _L("Enter CPcsServer::ConstructL() - Chinese Variant Phone Algorithm Instantiated") );
 	    TBuf<KAlgorithmNameMaxLen> algorithmName(KPcsAlgorithm_Chinese);
 	    iPcs->InstantiateAlgorithmL(algorithmName);
-	    
-	    
+	      
 	    }
 	else 
 	    {
@@ -151,12 +150,3 @@ TBool CPcsServer::IsChineseFeatureInitilizedL()
     
     return chineseFeatureInitialized;
 }
-
-// ----------------------------------------------------------------------------
-// CPcsServer::IsChineseVariant() const
-// Returns ETrue if there is Chinese variant feature in phone
-// ---------------------------------------------------------------------------- 
-TBool CPcsServer::IsChineseVariant() const
-    {
-    return iIsChineseVariant;
-    }

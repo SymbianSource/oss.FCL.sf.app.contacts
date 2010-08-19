@@ -909,16 +909,7 @@ void CPmapCmd::EditorAssignFromMapsL(TVPbkFieldTypeParameter aAddressType)
 		iMapView->AddLandmarksToShowL( landmarks );
 		iNoAddress = EFalse;
 		}
-    else
-        {
-        landmark->SetPositionFieldL(EPositionFieldCity,KNullDesC16);
-        TLocality tempLoc;
-        tempLoc.SetCoordinate(-0.0,-0.0);
-        landmark->SetPositionL(tempLoc);
-        
-        landmarks.AppendL( landmark );
-        iMapView->AddLandmarksToShowL( landmarks );
-        }
+    
 
 	iMapView->SelectFromMapL( iStatus );
 	iCurrentMapLaunchedByState = EMapAssignFromMaps;

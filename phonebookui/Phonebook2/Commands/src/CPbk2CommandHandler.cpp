@@ -511,13 +511,9 @@ inline void CPbk2CommandHandler::PerformStandardMenuFilteringL(
                 {
                 aMenuPane->SetItemDimmed( EPbk2CmdDeleteMe, ETrue );
                 }
-            if ( aControl.ContactsMarked() )
-                {
-                aMenuPane->SetItemSpecific( EPbk2CmdDeleteMe, EFalse );
-                }
             break;
             }
-
+        
         case R_PHONEBOOK2_NAMELIST_CALL_CONTACT_MENU:
             {
             // Weed out commands not meant to be used with marked items
@@ -548,7 +544,6 @@ inline void CPbk2CommandHandler::PerformStandardMenuFilteringL(
 
             if ( aControl.ContactsMarked() )
                 {
-                aMenuPane->SetItemDimmed( EPbk2CmdSend, ETrue );
                 aMenuPane->SetItemDimmed( EPbk2CmdGoToURL, ETrue );
                 }
             break;

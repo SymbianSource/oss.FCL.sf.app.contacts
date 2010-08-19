@@ -182,6 +182,16 @@ void CPbk2SelectSinglePropertyPhase::AcceptDelayedL
     }
 
 // --------------------------------------------------------------------------
+// CPbk2SelectSinglePropertyPhase::DenyDelayed
+// --------------------------------------------------------------------------
+//
+void CPbk2SelectSinglePropertyPhase::DenyDelayedL
+        ( const TDesC8& /*aContactLinkBuffer*/ )
+    {
+    // Nothing to do
+    }
+
+// --------------------------------------------------------------------------
 // CPbk2SelectSinglePropertyPhase::Results
 // --------------------------------------------------------------------------
 //

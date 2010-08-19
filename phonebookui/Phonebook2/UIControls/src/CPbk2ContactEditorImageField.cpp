@@ -292,8 +292,16 @@ void CPbk2ContactEditorImageField::AcceptL
 // -----------------------------------------------------------------------------
 //
 TBool CPbk2ContactEditorImageField::ConsumesKeyEvent
-        ( const TKeyEvent& /*aKeyEvent*/, TEventCode /*aType*/ )
+        ( const TKeyEvent& aKeyEvent, TEventCode aType )
     {
+    
+    TKeyResponse keyResponse = iControl->OfferKeyEventL( aKeyEvent, aType );
+
+    if ( EKeyWasConsumed == keyResponse )
+        {
+        return ETrue;
+        }
+            
     return EFalse;
     }   
 

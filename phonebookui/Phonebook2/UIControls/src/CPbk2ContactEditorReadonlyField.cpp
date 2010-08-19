@@ -25,6 +25,9 @@
 #include <Pbk2Commands.hrh>
 #include <MPbk2ContactEditorField2.h>
 #include <MPbk2ContactEditorUIField.h>
+#include <MVPbkStoreContactField.h>
+#include <MVPbkContactFieldData.h>
+
 
 /// Unnamed namespace for local definitions
 namespace
@@ -127,7 +130,7 @@ TKeyResponse CPbk2ContactEditorReadonlyField::OfferKeyEventL(
             case EKeyDelete:
             case EKeyBackspace:
                 {
-                if (iPbk2ContactEditorField)
+                if (iPbk2ContactEditorField && !iPbk2ContactEditorField->ContactField().FieldData().IsEmpty() )
                     {
                     MPbk2ContactEditorField2* tempContactEditorField =
                         reinterpret_cast<MPbk2ContactEditorField2*> (iPbk2ContactEditorField->ContactEditorFieldExtension(

@@ -19,6 +19,8 @@
 #include "CVPbkImportToContactsMergeOperation.h"
 #include "VPbkVCardEngError.h"
 #include "CVPbkVCardImporter.h"
+#include "CVPbkDefaultAttribute.h"
+#include "CVPbkLocalVariationManager.h"
 
 // Virtual Phonebook
 #include <MVPbkStoreContact.h>
@@ -31,7 +33,6 @@
 #include <MVPbkContactFieldUriData.h>
 #include <MVPbkContactFieldTextData.h>
 #include <MVPbkSingleContactOperationObserver.h>
-#include "CVPbkDefaultAttribute.h"
 const TInt KGranularity = 4;
 
 namespace{
@@ -223,7 +224,8 @@ void CVPbkImportToContactsMergeOperation::RunL()
                 }
             case EComplete:
                 {
-                if(iGroupcardHandler && ((CVPbkVCardImporter *)iOperationImpl)->IsGroupcard())
+                TBool isGroupCard = ((CVPbkVCardImporter *)iOperationImpl)->IsGroupcard();
+                if(iGroupcardHandler && isGroupCard)
                     {
                     iGroupcardHandler->BuildContactGroupsHashMapL(iContact->ParentStore());
                     const MVPbkContactLink* contact = iContact->CreateLinkLC();
@@ -231,6 +233,19 @@ void CVPbkImportToContactsMergeOperation::RunL()
                     CleanupStack::PopAndDestroy(); // For contact
                     iGroupcardHandler->DecodeContactGroupInVCardL(((CVPbkVCardImporter *)iOperationImpl)->GetGroupcardvalue());
                     }
+                
+                CVPbkLocalVariationManager* lvm = CVPbkLocalVariationManager::NewL(); 
+                TBool supportSyncGroupVcard = lvm->LocallyVariatedFeatureEnabled( EVPbkLVSyncGroupEnabled );
+                delete lvm;    
+                if (supportSyncGroupVcard && iGroupcardHandler && !isGroupCard)
+                    {
+                    iGroupcardHandler->BuildContactGroupsHashMapL(iContact->ParentStore());
+                    const MVPbkContactLink *aContact = iContact->CreateLinkLC();
+                    iGroupcardHandler->GetContactGroupStoreL(*aContact);
+                    CleanupStack::PopAndDestroy();
+                    iGroupcardHandler->DeleteContactFromGroupsL();
+                    }
+
                 iObserver.VPbkSingleContactOperationComplete( *this, iContact );
                 iContact = NULL;
                 break;

@@ -32,6 +32,7 @@
 #include <aknsfld.h>
 #include <eiklbo.h>
 #include "CPbk2ControlContainer.h"
+#include <aknmarkingmodeobserver.h>
 
 // FORWARD DECLARATIONS
 class MPbk2NamesListState;
@@ -78,7 +79,8 @@ class CPbk2NamesListControl : public CCoeControl,
                               public MEikListBoxObserver,
                               public MPbk2ControlContainerForegroundEventObserver,
                               public MPbk2CommandItemUpdater,
-                              public MVPbkContactViewObserverExtension 
+                              public MVPbkContactViewObserverExtension, 
+                              public MAknMarkingModeObserver
     {
     public: // Enumerations
 
@@ -129,27 +131,27 @@ class CPbk2NamesListControl : public CCoeControl,
                 CPbk2StorePropertyArray& aStoreProperties );
         
         /**
-		* Creates a new instance of this class.
-		*
-		* @param aResourceId       Id of the resource where the control
-		*                          is defined in.
-		* @param aContainer        This control's container.
-		* @param aManager          Virtual Phonebook contact manager.
-		* @param aView             The contact view.
-		* @param aNameFormatter    Name formatter.
-		* @param aStoreProperties  An array containg properties
-		*                          for the stores that are shown.
-		* @param aThumbManager	   Thumbnail manager for social phonebook	//TODO
-		* @return A new instance of this class.
-		*/
-	   IMPORT_C static CPbk2NamesListControl* NewL(
-			   TInt aResourceId,
-			   const CCoeControl* aContainer,
-			   CVPbkContactManager& aManager,
-			   MVPbkContactViewBase& aView,
-			   MPbk2ContactNameFormatter& aNameFormatter,
-			   CPbk2StorePropertyArray& aStoreProperties,
-			   CPbk2ThumbnailManager* aThumbManager );
+        * Creates a new instance of this class.
+        *
+        * @param aResourceId       Id of the resource where the control
+        *                          is defined in.
+        * @param aContainer        This control's container.
+        * @param aManager          Virtual Phonebook contact manager.
+        * @param aView             The contact view.
+        * @param aNameFormatter    Name formatter.
+        * @param aStoreProperties  An array containg properties
+        *                          for the stores that are shown.
+        * @param aThumbManager       Thumbnail manager for social phonebook    //TODO
+        * @return A new instance of this class.
+        */
+       IMPORT_C static CPbk2NamesListControl* NewL(
+               TInt aResourceId,
+               const CCoeControl* aContainer,
+               CVPbkContactManager& aManager,
+               MVPbkContactViewBase& aView,
+               MPbk2ContactNameFormatter& aNameFormatter,
+               CPbk2StorePropertyArray& aStoreProperties,
+               CPbk2ThumbnailManager* aThumbManager );
 
         /**
          * Constructor. Defined as public for custom control needs.
@@ -245,8 +247,8 @@ class CPbk2NamesListControl : public CCoeControl,
         /**
          * For special case: Call this function to skip showing the 
          * blocking progress note when mass update is going on in nameslistview.
-		 * When done, MassUpdateSkipProgressNote(EFalse) must always be
-		 * called to reset back to original state (even if a Leave would happen in between) 
+         * When done, MassUpdateSkipProgressNote(EFalse) must always be
+         * called to reset back to original state (even if a Leave would happen in between) 
          * @param aSkip - ETrue if progress note should not be displayed. EFalse reset to normal.
          */
         IMPORT_C void MassUpdateSkipProgressNote( TBool aSkip );
@@ -390,6 +392,25 @@ class CPbk2NamesListControl : public CCoeControl,
     public: // from MAdaptiveSearchTextObserver
 
         void AdaptiveSearchTextChanged( CAknSearchField* aSearchField );
+
+    public: // From MAknMarkingModeObserver 
+            
+        /**
+         * This method is called when marking mode is activated or deactivated.
+         * 
+         * @param aActivated @c ETrue if marking mode was activate, @c EFalse
+         *                   if marking mode was deactivated.
+         */
+        void MarkingModeStatusChanged( TBool aActivated );
+
+        /**
+         * This method is called just before marking mode is closed. Client can 
+         * either accept or decline closing.
+         * 
+         * @return @c ETrue if marking mode should be closed, otherwise @c EFalse.
+         */
+        TBool ExitMarkingMode() const;
+        
     private: // Implementation
         
         /**
@@ -443,7 +464,16 @@ class CPbk2NamesListControl : public CCoeControl,
         void RestoreMarkedContactsL();
         void ClearMarkedContactsInfo();
         
+    public:
+        inline void SetMarkingMode( TBool aActived )
+            {
+            iMarkingModeOn = aActived;
+            }
         
+        inline TBool GetMarkingMode() const
+            {
+            return iMarkingModeOn;
+            }
         
     private: // Data
         /// Ref: Current state
@@ -500,17 +530,19 @@ class CPbk2NamesListControl : public CCoeControl,
         // Wheter this control owns the thumbnail manager (iThumbManager) or not 
         TBool iOwnThumbManager;
         //OWN: double list box "handle"
-        CPbk2ContactViewDoubleListBox* 	iDoubleListBox;
+        CPbk2ContactViewDoubleListBox* iDoubleListBox;
         
         //Own: Selected/Marked Contacts
-        MVPbkContactLinkArray* iSelectedLinkArray;      
+        MVPbkContactLinkArray* iSelectedLinkArray;
            
         //Own: Background Task Handler     
         CPbk2NamesListControlBgTask* iBgTask;
         //Own: Mass update checker/handler
         CPbk2HandleMassUpdate* iCheckMassUpdate;
         //Own: Open Cca is in progress
-        TBool iOpeningCca;        
+        TBool iOpeningCca;
+        // Flag to indicate marking mode is active
+        TBool iMarkingModeOn;
     };
 
 #endif // CPBK2NAMESLISTCONTROL_H

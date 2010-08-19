@@ -52,7 +52,7 @@ class CPbk2CommandActivator :
         void ExecuteLD();
         void ResetUiControl(MPbk2ContactUiControl& aUiControl);
         void AddObserver( MPbk2CommandObserver& aObserver );
-                     
+        TAny* CommandExtension(TUid /*aExtensionUid*/);                     
     private: // MPbk2CommandObserver
         void CommandFinished( const MPbk2Command& aCommand );
 

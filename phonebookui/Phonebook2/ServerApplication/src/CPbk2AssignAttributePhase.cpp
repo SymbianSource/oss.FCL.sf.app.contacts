@@ -164,6 +164,16 @@ void CPbk2AssignAttributePhase::AcceptDelayedL
     }
 
 // --------------------------------------------------------------------------
+// CPbk2AssignAttributePhase::DenyDelayed
+// --------------------------------------------------------------------------
+//
+void CPbk2AssignAttributePhase::DenyDelayedL
+        ( const TDesC8& /*aContactLinkBuffer*/ )
+    {
+    // Nothing to do
+    }
+
+// --------------------------------------------------------------------------
 // CPbk2AssignAttributePhase::Results
 // --------------------------------------------------------------------------
 //

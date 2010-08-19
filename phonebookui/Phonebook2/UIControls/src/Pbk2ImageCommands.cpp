@@ -619,27 +619,34 @@ MPbk2BaseCommand* Pbk2ImageCommands::RemoveImageL(
         services.ContactManager() );
 	CleanupStack::PushL( imageManager );
 	
-    if( CAknQueryDialog::NewL()->ExecuteLD(
-            R_PHONEBOOK2_REMOVE_IMAGE_CONFIRMATION_DIALOG ) )
-        {
-        TPbk2StoreContactAnalyzer analyzer(
-            services.ContactManager(), aContact );
-        TInt imageIndex = analyzer.HasFieldL( R_PHONEBOOK2_IMAGE_SELECTOR );
+	const MVPbkFieldType* thumbType = services.ContactManager().FieldTypes().Find(
+	                R_VPBK_FIELD_TYPE_THUMBNAILPIC );
+	
+	// show a confirmation query if contact has an image
+	if (thumbType && imageManager->HasImage( *aContact, *thumbType ) )
+	    {
+	    if ( CAknQueryDialog::NewL()->ExecuteLD( 
+	            R_PHONEBOOK2_REMOVE_IMAGE_CONFIRMATION_DIALOG ) )
+	        {
+	        TPbk2StoreContactAnalyzer analyzer(
+	                services.ContactManager(), aContact );
+	        TInt imageIndex = analyzer.HasFieldL( R_PHONEBOOK2_IMAGE_SELECTOR );
         
-        if ( imageIndex != KErrNotFound )
-            {
-            //aContact->RemoveField( imageIndex );
-            //Instead of above we don't remove the field, just zero it's data
-            MVPbkContactFieldData& data(aContact->Fields().
-                FieldAt( imageIndex ).FieldData());
-            MVPbkContactFieldTextData::Cast( data ).SetTextL(KNullDesC);
-            }
+	        if ( imageIndex != KErrNotFound )
+	            {
+	            //aContact->RemoveField( imageIndex );
+	            //Instead of above we don't remove the field, just zero it's data
+	            MVPbkContactFieldData& data(aContact->Fields().
+	                    FieldAt( imageIndex ).FieldData());
+	            MVPbkContactFieldTextData::Cast( data ).SetTextL(KNullDesC);
+	            }
         
-        const MVPbkFieldType* thumbFieldType = ThumbnailFieldTypeL(services);
-        imageManager->RemoveImage( *aContact, *thumbFieldType );
-        }
+	        const MVPbkFieldType* thumbFieldType = ThumbnailFieldTypeL(services);
+	        imageManager->RemoveImage( *aContact, *thumbFieldType );
+	        }
+	    }
+	
     CleanupStack::PopAndDestroy( imageManager );
-
     CleanupStack::PopAndDestroy(); // services
     
     return NULL; // synchronous operation

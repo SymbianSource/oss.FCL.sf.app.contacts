@@ -88,11 +88,27 @@ void CVPbkSimContactBase::FindNextField(
     aLookup.SetPos( KErrNotFound );
     for ( ; i < count; ++i )
         {
-        if ( ConstFieldAt( i ).Type() == aLookup.Type() )
+        if( aLookup.Type() == EVPbkSimAdditionalNumber )
             {
-            aLookup.SetIndex( i );
-            aLookup.SetPos( i + 1 );
-            break;
+            const CVPbkSimCntField& field = ConstFieldAt( i );
+            if ( field.Type() == EVPbkSimAdditionalNumber1 
+                    || field.Type() == EVPbkSimAdditionalNumber2
+                    || field.Type() == EVPbkSimAdditionalNumber3
+                    || field.Type() == EVPbkSimAdditionalNumberLast ) // the same as EVPbkSimAdditionalNumber
+                {
+                aLookup.SetIndex( i );
+                aLookup.SetPos( i + 1 );
+                break;
+                }
+            }
+        else
+            {
+            if ( ConstFieldAt( i ).Type() == aLookup.Type() )
+                {
+                aLookup.SetIndex( i );
+                aLookup.SetPos( i + 1 );
+                break;
+                }
             }
         }
     }

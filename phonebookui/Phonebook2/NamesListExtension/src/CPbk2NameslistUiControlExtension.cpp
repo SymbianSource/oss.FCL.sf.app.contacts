@@ -371,6 +371,13 @@ void CPbk2NameslistUiControlExtension::MyCardEvent( TMyCardStatusEvent aEvent )
 			TRAP_IGNORE( AddMyCardThumbnailToIconArrayL() );
 			}
 		}
+    // Refresh mycard list item if thumbnail has changed
+    if( iCommandUpdater &&
+        ( aEvent == EStateThumbnailLoaded ||
+          aEvent == EStateThumbnailNotFound ) )
+        {
+        iCommandUpdater->UpdateCommandItem( EPbk2CmdOpenMyCard );
+        }
 	}
 
 // -----------------------------------------------------------------------------

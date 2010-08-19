@@ -178,6 +178,12 @@ class CVPbkSimContact : public CVPbkSimContactBase
     private:    // New functions
         /// Creates ETel contact from native fields
         void CreateETelContactL() const;
+        
+		/*
+		* Used to indentify the different additional number field types 
+		* according the order in the field array.
+		*/
+        void IndentifyAdditionalFields();
 
     private:    // Data
         /// The array for the fields

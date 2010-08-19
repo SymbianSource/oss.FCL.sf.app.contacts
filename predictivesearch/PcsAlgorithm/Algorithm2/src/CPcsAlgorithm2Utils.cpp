@@ -18,6 +18,7 @@
 // INCLUDES
 #include "CPcsAlgorithm2Utils.h"
 #include "CPsData.h"
+#include "CPsQuery.h"
 #include "CPcsDefs.h"
 #include "CPcsCache.h"
 #include <collate.h>
@@ -33,16 +34,15 @@ _LIT(KGroupIdUri, "cntdb://c:contacts.gdb?id=");
 // Merges all the respective data store result sets to single set in sorted order.
 // ----------------------------------------------------------------------------
 void CPcsAlgorithm2Utils::FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR_ARRAY>& aSearchResultsArr,
-                                                     RPointerArray<CPsData>& SearchResults)
+                                                     RPointerArray<CPsData>& aSearchResults)
     {
-    CleanupClosePushL( SearchResults );
-    
     TInt maxIndex = 0;
     TInt maxValue = aSearchResultsArr[maxIndex]->Count();
     TLinearOrder<CPsData> rule(CPcsAlgorithm2Utils::CompareDataBySortOrder);
 
     // Find the largest array in aSearchResultsArr
-    for (TInt i = 1; i < aSearchResultsArr.Count(); i++)
+    const TInt searchResultsArrCount = aSearchResultsArr.Count(); 
+    for (TInt i = 1; i < searchResultsArrCount; i++)
         {
         if (aSearchResultsArr[i]->Count() > maxValue)
             {
@@ -52,13 +52,15 @@ void CPcsAlgorithm2Utils::FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR
         }
 
     // Assign the largets array to searchresults 
-    for (TInt i = 0; i < aSearchResultsArr[maxIndex]->Count(); i++)
+    const TInt cnt = aSearchResultsArr[maxIndex]->Count();
+    for (TInt i = 0; i < cnt; i++)
         {
-        SearchResults.Append((*(aSearchResultsArr[maxIndex]))[i]);
+        aSearchResults.Append((*(aSearchResultsArr[maxIndex]))[i]);
         }
 
     // Merge the remaining result arrays to the largest array in sequential order
-    for (TInt i = 0; i < aSearchResultsArr.Count(); i++)
+
+    for (TInt i = 0; i < searchResultsArrCount; i++)
         {
         // Check if we are not copying again the largest array
         if ((i != maxIndex) && ((aSearchResultsArr[i])->Count() != 0))
@@ -66,11 +68,10 @@ void CPcsAlgorithm2Utils::FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR
             TInt numElements = (aSearchResultsArr[i])->Count();
             for (TInt j = 0; j < numElements; j++)
                 {
-                SearchResults.InsertInOrderAllowRepeatsL((*(aSearchResultsArr[i]))[j], rule);
+                aSearchResults.InsertInOrderAllowRepeatsL((*(aSearchResultsArr[i]))[j], rule);
                 }
             }
         }
-    CleanupStack::Pop();
     }
 
 // ----------------------------------------------------------------------------
@@ -121,7 +122,8 @@ TInt CPcsAlgorithm2Utils::CompareDataBySortOrder(const CPsData& aObject1,
     cache->GetIndexOrder(indexOrder);
 
     // Append sort order elements first
-    for (int i = 0; i < indexOrder.Count(); i++)
+    const TInt indexOrderCount1 = indexOrder.Count();
+    for (int i = 0; i < indexOrderCount1; i++)
         {
         TInt index = indexOrder[i];
         if (index < aObject1.DataElementCount() && aObject1.Data(index))
@@ -158,9 +160,10 @@ TInt CPcsAlgorithm2Utils::CompareDataBySortOrder(const CPsData& aObject1,
 
     // Get the index order based on sort order from the cache
     cache->GetIndexOrder(indexOrder);
+    const TInt indexOrderCount2 = indexOrder.Count();
 
     // Append sort order elements first
-    for (int i = 0; i < indexOrder.Count(); i++)
+    for (int i = 0; i < indexOrderCount2; i++)
         {
         TInt index = indexOrder[i];
         if (index < aObject2.DataElementCount() && aObject2.Data(index))
@@ -192,6 +195,27 @@ TInt CPcsAlgorithm2Utils::CompareDataBySortOrder(const CPsData& aObject1,
     data1.TrimAll();
     data2.TrimAll();
     return (CPcsAlgorithm2Utils::MyCompareC(data1, data2));
+    }
+
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm2Utils::CompareExact()
+// 
+// ----------------------------------------------------------------------------
+TBool CPcsAlgorithm2Utils::CompareExact(const TDesC& aFirst, const TDesC& aSecond)
+    {
+    return aFirst == aSecond;
+    }
+
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm2Utils::CompareLength()
+// 
+// ----------------------------------------------------------------------------
+TInt CPcsAlgorithm2Utils::CompareLength(const CPsQuery& aFirst, const CPsQuery& aSecond)
+    {
+    CPsQuery& first = const_cast<CPsQuery&> (aFirst);
+    CPsQuery& second = const_cast<CPsQuery&> (aSecond);
+    
+    return (first.Count() - second.Count());
     }
 
 // ----------------------------------------------------------------------------
@@ -231,6 +255,91 @@ TBool CPcsAlgorithm2Utils::IsGroupUri(TDesC& aURI)
         }
 
     return ETrue;
+    }
+
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm1Helper::FilterDataFieldsL()
+// Constructs a bit pattern using the required/supported data fields
+// For example, 6, 4 and 27 are supported fields <-- 00000111
+//              6 and 4 are required fields      <-- 00000011
+// Bit pattern returned is 00000011.
+// ----------------------------------------------------------------------------
+TUint8 CPcsAlgorithm2Utils::FilterDataFieldsL(const RArray<TInt>& aRequiredDataFields,
+                                              const RArray<TInt>& aSupportedDataFields)
+{
+    TUint8 filteredMatch = 0x0;
+   const TInt supportedDataFieldsCount = aSupportedDataFields.Count();
+   const TInt requiredDataFieldsCount = aRequiredDataFields.Count(); 
+    for ( TInt i = 0; i < supportedDataFieldsCount; i++ )
+    {
+        for ( TInt j = 0; j < requiredDataFieldsCount; j++ )
+        {
+            if ( aSupportedDataFields[i] == aRequiredDataFields[j] )
+            {
+                TUint8 val = 1 << i;
+                filteredMatch |= val;
+            }
+        }
+    }
+
+    return filteredMatch;
+}
+
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm2Utils::AppendMatchToSeqL
+// ----------------------------------------------------------------------------
+void CPcsAlgorithm2Utils::AppendMatchToSeqL( 
+        RPointerArray<TDesC>& aMatchSeq, const TDesC& aMatch )
+    {
+    HBufC* seq = aMatch.AllocLC();
+    seq->Des().UpperCase();
+    TIdentityRelation<TDesC> rule(CompareExact);
+    if ( aMatchSeq.Find(seq, rule) == KErrNotFound )
+        {
+        aMatchSeq.AppendL(seq);
+        CleanupStack::Pop( seq );
+        }
+    else 
+        {
+        CleanupStack::PopAndDestroy( seq );
+        }
+    }
+
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm2Utils::MatchesOverlap
+// Check if two match location items have overlapping indices.
+// ----------------------------------------------------------------------------
+TBool CPcsAlgorithm2Utils::MatchesOverlap( const TPsMatchLocation& aFirst, 
+                                           const TPsMatchLocation& aSecond )
+    {
+    TBool overlap = EFalse;
+    
+    if ( aFirst.index == aSecond.index )
+        {
+        overlap = ETrue;
+        }
+    else
+        {
+        // give arguments alias names where first begins before the second
+        TInt firstPos( aFirst.index );
+        TInt firstLen( aFirst.length );
+        TInt secondPos( aSecond.index );
+        if ( firstPos > secondPos )
+            {
+            firstPos = aSecond.index;
+            firstLen = aSecond.length;
+            secondPos = aFirst.index;
+            }
+        
+        // there is an overlap if the end of the first comes after
+        // beginning of the second
+        if ( firstPos + firstLen > secondPos )
+            {
+            overlap = ETrue;
+            }
+        }
+    
+    return overlap;
     }
 
 // End of File

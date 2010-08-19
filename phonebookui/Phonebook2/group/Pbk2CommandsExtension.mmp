@@ -87,7 +87,7 @@ TARGETPATH      ECOM_RESOURCE_DIR
 END
 
 // Include paths
-USERINCLUDE     ../CommandsExtension/inc
+USERINCLUDE     ../CommandsExtension/inc ../Commands/inc
 SYSTEMINCLUDE   ../inc
 SYSTEMINCLUDE     /epoc32/include/ecom  //RCL_ADD
 

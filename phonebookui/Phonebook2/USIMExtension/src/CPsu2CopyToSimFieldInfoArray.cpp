@@ -33,7 +33,7 @@
 #include <coemain.h>
 #include <barsread.h>
 #include <gsmerror.h>
-
+#include <featmgr.h>
 #include <VPbkEng.rsg>
 
 namespace
@@ -239,10 +239,19 @@ void CPsu2CopyToSimFieldInfoArray::ConstructL( RFs& aFs )
     RPbk2LocalizedResourceFile resFile( &aFs );
     resFile.OpenLC(KPbk2RomFileDrive,
         KDC_RESOURCE_FILES_DIR, KPsu2USimExtensionResFile);
-    
+    FeatureManager::InitializeLibL();
     TResourceReader reader;
-    reader.SetBuffer( 
-        resFile.AllocReadLC( R_PSU2_COPY_TO_SIM_FIELDTYPE_MAPPINGS ) );
+    if( !FeatureManager::FeatureSupported( 
+                    KFeatureIdFfTdClmcontactreplicationfromphonebooktousimcard ) )
+        {
+        reader.SetBuffer( 
+               resFile.AllocReadLC( R_PSU2_COPY_TO_SIM_FIELDTYPE_MAPPINGS ) );
+        }
+    else
+        {
+        reader.SetBuffer( 
+               resFile.AllocReadLC( R_PSU2_COPY_TO_USIM_FIELDTYPE_MAPPINGS ) );
+        }
     
     // Go through all mappings in resource and create a mapping array
     const TInt count = reader.ReadInt16();
@@ -299,6 +308,7 @@ CPsu2CopyToSimFieldInfoArray::~CPsu2CopyToSimFieldInfoArray()
     iInfoArray.Close();
     iMatchedTypes.Close();
     delete iNumberKeyMap;
+    FeatureManager::UnInitializeLib();
     }
 
 // -----------------------------------------------------------------------------
@@ -319,6 +329,25 @@ const TPsu2CopyToSimFieldInfo*
             }
         }
     return result;
+    }
+
+// -----------------------------------------------------------------------------
+// CPsu2CopyToSimFieldInfoArray::RemoveUnSupportedTargetTypeFieldInfo
+// -----------------------------------------------------------------------------
+//
+void CPsu2CopyToSimFieldInfoArray::RemoveUnSupportedFieldInfo( const MVPbkFieldTypeList& aSupportedTypes )
+    {
+    // Check all the field info in the iInfoArray, if the target of the fieldinfo 
+    // is not contained in the supportedTypes, Remove it from iInfoArray.
+    TInt i = iInfoArray.Count() - 1;
+    while( i >= 0 )
+        {
+        if( !aSupportedTypes.ContainsSame( iInfoArray[i].SimType()))
+            {
+            iInfoArray.Remove( i );
+            }
+        i --;
+        }
     }
     
 // -----------------------------------------------------------------------------

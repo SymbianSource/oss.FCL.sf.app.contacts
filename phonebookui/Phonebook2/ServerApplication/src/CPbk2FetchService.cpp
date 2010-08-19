@@ -276,13 +276,23 @@ void CPbk2FetchService::TryAcceptServiceL( const RMessage2& aMessage )
     TPckg<TBool> acceptedPkg( accepted );
     aMessage.ReadL( KAcceptServiceSlot, acceptedPkg );
 
-    if ( iUiService && accepted )
+    if ( iUiService )
         {
         HBufC8* buffer = HBufC8::NewLC(
             aMessage.GetDesMaxLengthL( KSelectedContactSlot ) );
         TPtr8 ptr = buffer->Des();
         aMessage.ReadL( KSelectedContactSlot, ptr );
-        iUiService->AcceptDelayedContactsL( *buffer );
+        
+        // If client accepts selected contact, call AcceptDelayedContacts
+        // Otherwise call DenyDelayedContactsL
+        if( accepted )
+            {
+            iUiService->AcceptDelayedContactsL( *buffer );
+            }
+        else
+            {
+            iUiService->DenyDelayedContactsL( *buffer );
+            }
         CleanupStack::PopAndDestroy(); // buffer
         }
 

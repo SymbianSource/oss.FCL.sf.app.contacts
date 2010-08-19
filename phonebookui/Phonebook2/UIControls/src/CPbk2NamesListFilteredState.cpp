@@ -1130,9 +1130,21 @@ void CPbk2NamesListFilteredState::AllowCommandsToShowThemselves( TBool aVisible 
 void CPbk2NamesListFilteredState::CmdItemVisibilityChanged( TInt aCmdItemId, TBool aVisible ) 
     {
     TInt cmdItemIndex = FindCommand(aCmdItemId);
-    TRAP_IGNORE( HandleCommandEventL(
+    TInt cmdListBoxIndex = EnabledCommandCount();
+    if( aVisible )
+        {
+        cmdListBoxIndex--;
+        }
+    // Update the HiddenSelection property of the command items.
+    TListItemProperties prop( iListBox.ItemDrawer()->Properties(cmdListBoxIndex) );
+    prop.SetHiddenSelection(aVisible);
+    TRAP_IGNORE(        
+        iListBox.ItemDrawer()->SetPropertiesL(cmdListBoxIndex, prop);
+    
+        HandleCommandEventL(
                 (aVisible ? EItemAdded : EItemRemoved),
-                 cmdItemIndex) );		
+                 cmdItemIndex);
+        );		
     }
 
 // --------------------------------------------------------------------------
@@ -1215,6 +1227,23 @@ void CPbk2NamesListFilteredState::UnmarkCommands() const
         {
         iListBox.View()->DeselectItem( i );
         }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2NamesListFilteredState::EnabledCommandCount
+// --------------------------------------------------------------------------
+//  
+TInt CPbk2NamesListFilteredState::EnabledCommandCount() const
+    {
+    TInt result = 0;
+    for ( TInt i = 0; i < iCommandItems.Count(); ++i )
+        {
+        if(iCommandItems[i]->IsEnabled())
+            {
+            result++;
+            }
+        }
+    return result;    
     }
 
 //  End of File

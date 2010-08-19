@@ -308,12 +308,19 @@ class CPcsAlgorithm1 : public CPcsPlugin,
         /**
         * launch plugins by idle
         */
-         void DoLaunchPluginsL();
+        void DoLaunchPluginsL();
         
         /**
         * launch plugins
         */
-         static TInt DoLaunchPluginsL(TAny* aPtr);
+        static TInt DoLaunchPluginsL(TAny* aPtr);
+
+        /**
+        * Get the Adaptive Grid data for one or more URIs
+        */
+        void GetAdaptiveGridFromCacheL( const MDesCArray& aURIs,
+                                        const TBool aCompanyName,
+                                        TDes& aAdaptiveGrid );
 
     private:
     

@@ -118,23 +118,10 @@ TAny* CPbk2CmdItemMyCard::ControlCmdItemExtension(
     return NULL;
     }
 
-void CPbk2CmdItemMyCard::MyCardEvent( MPbk2MyCardObserver::TMyCardStatusEvent aEvent )
+void CPbk2CmdItemMyCard::MyCardEvent( MPbk2MyCardObserver::TMyCardStatusEvent /*aEvent*/ )
     {
-	// always inform these
-    if( aEvent == EStateThumbnailLoaded ||
-    	aEvent == EStateThumbnailNotFound )
-    	{
-		if( iObserver )
-			{
-			iObserver->CmdItemVisibilityChanged( CommandId(), ETrue );
-			}
-    	}
-    // status change
-    else
-    	{
-		NotifyVisibiltyChange( IsEnabled() ) ;    
-    	}
-	}
+    NotifyVisibiltyChange( IsEnabled() );
+    }
 
 void CPbk2CmdItemMyCard::FormatDataL(
                 MPbk2DoubleListboxDataElement& aDataElement )

@@ -367,8 +367,8 @@ RESOURCE PBK2_CONTACT_CONTROL r_pbk2_spb_names_list_extension_control
             KPbk2ContactViewListControlDoubleRow;
     listbox = LISTBOX
         {
-        flags = EAknListBoxMarkableList | EAknListBoxLoopScrolling |
-                EAknListBoxShiftEnterMarks;
+        flags = EAknListBoxStylusMarkableList | EAknListBoxLoopScrolling |
+        EAknListBoxPointerMarkableList;    
         };
     iconArray = R_PBK2_CONTACT_LIST_ICONS;
     emptyIconId = PHONEBOOK2_ICON_ID

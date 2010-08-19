@@ -54,8 +54,7 @@ class CFindUtil;
 // CLASS DECLARATION
 class CPcsAlgorithm2 : public CPcsPlugin,
 public MDataStoreObserver,
-public MStoreListObserver,
-public MFindStringConverter
+public MStoreListObserver
     {
 public: 
 
@@ -80,7 +79,7 @@ public:
     void PerformSearchL(const CPsSettings& aPcsSettings,
         CPsQuery& aCondition,
         RPointerArray<CPsClientData>& aData,
-        RPointerArray<CPsPattern>& aPattern);							
+        RPointerArray<CPsPattern>& aPattern);
 
     /**
      * Search Function for input string
@@ -88,15 +87,15 @@ public:
     void SearchInputL(CPsQuery& aSearchQuery,
         TDesC& aSearchData,
         RPointerArray<TDesC>& aMatchSet,
-        RArray<TPsMatchLocation>& aMatchLocation );  
+        RArray<TPsMatchLocation>& aMatchLocation );
 
     
     /**
     * Performs search on a input string, and return result also as a string 
     */
     void  SearchMatchStringL( CPsQuery& aSearchQuery,
-                              TDesC& aSearchData,
-                              TDes& aMatch );     
+                                TDesC& aSearchData,
+                                TDes& aMatch );
     
     /**
      * Returns ETrue if this language is supported
@@ -118,12 +117,6 @@ public:
      */
     void ChangeSortOrderL(TDesC& aURI, RArray<TInt>& aSortOrder);
 
-    /**
-     * Get the Adaptive Grid for one or more URIs
-     */
-    void GetAdaptiveGridL( const MDesCArray& aURIs,
-                           const TBool aCompanyName,
-                           TDes& aAdaptiveGrid );
 
     // --------------------------------------------------------------------
 
@@ -134,22 +127,29 @@ public:
     /** 
      * Add a contact to the cache
      */
-    void AddData ( TDesC& aDataStore, CPsData* aData);
+    void AddData( TDesC& aDataStore, CPsData* aData );
 
     /** 
-     * Remove a contact from the cache based on contact id		
+     * Remove a contact from the cache based on contact id
      */
-    void RemoveData ( TDesC& aDataStore, TInt aItemId );
+    void RemoveData( TDesC& aDataStore, TInt aItemId );
 
     /**
      *  Removes all the contacts from a particular datastore
      */
-    void RemoveAll ( TDesC& aDataStore);
+    void RemoveAll( TDesC& aDataStore );
 
     /**
      * Updates the caching status for a particular datastore
      */
     void UpdateCachingStatus(TDesC& aDataStore, TInt aStatus);
+    
+    /**
+    * Get the Adaptive Grid for one or more URIs
+    */
+    void GetAdaptiveGridL( const MDesCArray& aURIs,
+                           const TBool aCompanyName,
+                           TDes& aAdaptiveGrid );
 
     // --------------------------------------------------------------------
 
@@ -160,12 +160,12 @@ public:
     /**
      * This method is called whenever any new store has been added
      */
-    void AddDataStore ( TDesC& aDataStore);
+    void AddDataStore( TDesC& aDataStore );
 
     /**
      * This method is called whenever a data store is removed
      */
-    void RemoveDataStore ( TDesC& aDataStore);
+    void RemoveDataStore( TDesC& aDataStore );
 
     // --------------------------------------------------------------------
 
@@ -174,7 +174,7 @@ public:
     /**
      * Returns the array index of cache (in iPcsCache) for a datastore
      */
-    TInt GetCacheIndex(TDesC& aDataStore);	
+    TInt GetCacheIndex(const TDesC& aDataStore);
 
     /** 
      * Return the cache instance at a specific array index
@@ -190,8 +190,14 @@ public:
     inline CPcsKeyMap* GetKeyMap() 
         { 
         return iKeyMap; 
-        };
+        }
 
+    inline CFindUtilChineseECE* FindUtilECE()
+        {
+        return iFindUtilECE;
+        }
+
+    void ReconstructCacheDataL();
 
 private:
 
@@ -215,48 +221,54 @@ private:
     void DefinePropertyL( TPcsInternalKeyCacheStatus aPsKey );
 
     /**
-     * Replace occurance of "0" in ITU-T mode with space
+     * Remove leading and trailing spaces of search query
      */
-    TBool  ReplaceZeroWithSpaceL(CPsQuery& aQuery);
+    void RemoveSpacesL( CPsQuery& aQuery );
+
+    /**
+     * Replace occurances of "0" in predictive mode with space
+     * if those are on the same button
+     */
+    TBool  ReplaceZeroWithSpaceL( CPsQuery& aQuery );
 
     /**
      * Search function helper
      */
-    void  DoSearchL(const CPsSettings& aPcsSettings,
-        CPsQuery& aCondition,
-        RPointerArray<CPsData>& searchResults,
-        RPointerArray<CPsPattern>& searchSeqs );		                       
+    void  DoSearchL( const CPsSettings& aPcsSettings,
+                     CPsQuery& aCondition,
+                     RPointerArray<CPsData>& aSearchResults,
+                     RPointerArray<CPsPattern>& aSearchSeqs );
 
     /**                
      * Search function helper
      */
-    void  DoSearchInputL(CPsQuery& aQuery,
-        TDesC& aData,
-        RPointerArray<TDesC>& searchSeqs,
-        RArray<TPsMatchLocation>& aMatchLocation );	 
+    void  DoSearchInputL( CPsQuery& aQuery,
+                          const TDesC& aData,
+                          RPointerArray<TDesC>& aSearchSeqs,
+                          RArray<TPsMatchLocation>& aMatchLocation );
 
     /**
      * Returns the index corresponding a URI in iDataStoreUri
      */
-    TInt FindStoreUri ( TDesC& aDataStoreUri );
+    TInt FindStoreUri( const TDesC& aDataStoreUri );
 
     /**
      * Function to return all cached content
      */
-    void GetAllContentsL(const CPsSettings& aPcsSettings,	                    
-        RPointerArray<CPsData>& searchResults );
+    void GetAllContentsL( const CPsSettings& aPcsSettings,
+                          RPointerArray<CPsData>& aSearchResults );
 
     /**
      * Checks if search is on groups
-     * Return ETrue if there is a valid group URI        
+     * Return ETrue if there is a valid group URI
      */
-    TBool IsGroupSearchL ( CPsSettings& aSettings,
-        RArray<TInt>& aGroupIdArray );						 
+    TBool IsGroupSearchL( CPsSettings& aSettings,
+        RArray<TInt>& aGroupIdArray );
 
     /**
      * Utility function to replace groups uri with that of contacts uri
      */
-    void ReplaceGroupsUriL ( CPsSettings& aSettings );							 
+    void ReplaceGroupsUriL( CPsSettings& aSettings );
 
     /**
      * Filters the search results array for groups
@@ -266,8 +278,8 @@ private:
 
     /**
      * Get the list of contact ids that belong to a group.
-     */							 	           
-    void GetContactsInGroupL ( TInt aGroupId, 
+     */
+    void GetContactsInGroupL( TInt aGroupId, 
         RArray<TInt>& aGroupContactIds );
 
     /**
@@ -275,31 +287,30 @@ private:
      * @param aURI - The data store URI for which sort order is required
      * @param aSortOrder - The persisted sort order from the cenrep
      */
-    void ReadSortOrderFromCenRepL ( TDesC& aURI, 
+    void ReadSortOrderFromCenRepL( const TDesC& aURI, 
         RArray<TInt>& aSortOrder );
 
     /** Write sort order for a data store to the central repository
      * @param aURI - The data store URI for which sort order is to be persisted
      * @param aSortOrder - The sort order to be persisted	
      */
-    void WriteSortOrderToCenRepL ( TDesC& aURI, 
-        RArray<TInt>& aSortOrder );	
+    void WriteSortOrderToCenRepL( const TDesC& aURI, 
+        RArray<TInt>& aSortOrder );
 
     /**
      * Utility function that sets the caching error value
-     */                             
-    void SetCachingError ( TDesC& aDataStore, 
-        TInt aError );	
+     */
+    void SetCachingError( const TDesC& aDataStore, TInt aError );
 
     /**
-     * Write the content required by client 
+     * Write the content required by client
      */
-    CPsClientData* WriteClientDataL ( CPsData& aPsData );	
+    CPsClientData* WriteClientDataL( CPsData& aPsData );
 
     /**
      * Function to return data base URI for an internal identifier
-     */		                     
-    TDesC& GetUriForIdL( TUint8 aUriId );	
+     */
+    const TDesC& GetUriForIdL( TUint8 aUriId );
 
     /**
      * Inform clients about update happened on the cache
@@ -316,45 +327,18 @@ private:
     */
      static TInt DoLaunchPluginsL(TAny* aPtr);
 
-public:    
-
-    inline TInt GetFirstNameIndex() 
-        { 
-        return iFirstNameIndex; 
-        }
-
-    inline TInt GetLastNameIndex()
-        { 
-        return iLastNameIndex; 
-        }
-
-    inline CFindUtilChineseECE* FindUtilECE()
-        {
-        return iFindUtilECE;
-        }
-
-    inline CFindUtil* FindUtil()
-        {
-        return iFindUtil;
-        }
-
-    void ReconstructCacheDataL();
-
-public: // From MFindStringConverter
-    void Converter(const TDesC& aSourStr, TDes& aDestStr);
-
 private:
 
     /**
      * Instance of contacts cache
      * Own
      */
-    RPointerArray<CPcsCache>   iPcsCache; 
+    RPointerArray<CPcsCache> iPcsCache;
 
     /**
      * Keeps the count of caches
      */
-    TUint8 iCacheCount; 
+    TUint8 iCacheCount;
 
     /**
      * Instance of key map
@@ -387,13 +371,6 @@ private:
     // Own: Find util used to match contacts and construct character grid
     CFindUtilChineseECE* iFindUtilECE;
 
-    // Own: Find util used to match contacts and construct character grid
-    CFindUtil* iFindUtil;
-
-    // keep the index for Firstname and Lastname
-    TInt iFirstNameIndex;
-    TInt iLastNameIndex;
-    
     /**
     * plugin laucher, make the plugin instantiation async
     */

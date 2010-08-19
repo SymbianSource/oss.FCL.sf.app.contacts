@@ -38,6 +38,8 @@
 #include <centralrepository.h>
 #include <featmgr.h>
 #include <AknFepInternalCRKeys.h>
+#include <akncheckboxsettingpage.h>
+#include <sysutil.h>
 
 //Pbk2Debug
 #include "Pbk2Debug.h"
@@ -309,6 +311,26 @@ void CPbk2SettingsListControl::LaunchMemorySelectionSettingPageL()
         //Edit selection setting item 
         //result is ETrue if OK pressed
         result = iSelectionSettingItem->EditItemL();
+        
+        TBool driveSpaceFull( EFalse );
+        driveSpaceFull = SysUtil::FFSSpaceBelowCriticalLevelL( &CCoeEnv::Static()->FsSession() );
+        if ( driveSpaceFull )
+            {
+            //If the disk is full, a write operation cannot complete. So restore 
+            //the previous state.
+            iEikonEnv->HandleError(KErrDiskFull);
+            CSelectionItemList& oldItem( iSettingListState->ItemListState() );
+            CSelectionItemList& item( iSettingListState->SelectionItemList() );
+            TInt count = item.Count();
+            for ( TInt i(0); i < count; ++i )
+                {
+                TBool select = oldItem.At(i)->SelectionStatus();
+                item.At(i)->SetSelectionStatus( select );
+                }
+            iSelectionSettingItem->RestoreStateL();
+            result = EFalse;
+            }
+        
         if ( result )
             {
             //Is selection setting list changed by user

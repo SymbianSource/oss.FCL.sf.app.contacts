@@ -207,14 +207,14 @@ CPbk2ContactEditorDlgImpl::~CPbk2ContactEditorDlgImpl()
         }
     
     if( iAppServices )
-    	{
-    	iAppServices->StoreObservationRegister().DeregisterStoreEvents( *this );
-    	}
+        {
+        iAppServices->StoreObservationRegister().DeregisterStoreEvents( *this );
+        }
     else
-    	{
-    	Phonebook2::Pbk2AppUi()->ApplicationServices().
-    	        StoreObservationRegister().DeregisterStoreEvents( *this );
-    	}
+        {
+        Phonebook2::Pbk2AppUi()->ApplicationServices().
+                StoreObservationRegister().DeregisterStoreEvents( *this );
+        }
               
     if ( iEikonEnv && iContextMenuBar )
         {
@@ -237,12 +237,13 @@ CPbk2ContactEditorDlgImpl::~CPbk2ContactEditorDlgImpl()
     delete iEditorExtension;
     delete iUiFieldArray;
     Release(iExtensionManager);
-	delete iTitleText;    
+    delete iTitleText;    
     iTitleText = NULL;
     delete iStoredTitlePaneText;
     iStoredTitlePaneText = NULL;
 
     delete iConverter;
+    delete iDelayDelete;
     }
 
 // --------------------------------------------------------------------------
@@ -256,7 +257,7 @@ CPbk2ContactEditorDlgImpl* CPbk2ContactEditorDlgImpl::NewL(
         MPbk2EditedContactObserver& aContactObserver,
         MPbk2ContactEditorStrategy& aEditorStrategy,
         MPbk2ContactEditorContactRelocator& aRelocator)
-    {	
+    {    
     CPbk2ContactEditorDlgImpl* self =
         new ( ELeave ) CPbk2ContactEditorDlgImpl(aParams, aContact,
             aFieldProperties, aContactObserver,
@@ -272,24 +273,24 @@ CPbk2ContactEditorDlgImpl* CPbk2ContactEditorDlgImpl::NewL(
 // --------------------------------------------------------------------------
 //
 CPbk2ContactEditorDlgImpl* CPbk2ContactEditorDlgImpl::NewL(
-		TPbk2ContactEditorParams& aParams,
-		CPbk2PresentationContact& aContact,
-		CPbk2FieldPropertyArray& aFieldProperties,
-		MPbk2EditedContactObserver& aContactObserver,
-		MPbk2ContactEditorStrategy& aEditorStrategy,
-		MPbk2ContactEditorContactRelocator& aRelocator,
-		MPbk2ApplicationServices* aAppServices,
-		HBufC* aTitleText )
-	{
-	CPbk2ContactEditorDlgImpl* self =
-		new ( ELeave ) CPbk2ContactEditorDlgImpl(aParams, aContact,
-			aFieldProperties, aContactObserver,
-			aEditorStrategy, aRelocator, aAppServices, aTitleText );
-	CleanupStack::PushL(self);
-	self->ConstructL();
-	CleanupStack::Pop(self);
-	return self;
-	}
+        TPbk2ContactEditorParams& aParams,
+        CPbk2PresentationContact& aContact,
+        CPbk2FieldPropertyArray& aFieldProperties,
+        MPbk2EditedContactObserver& aContactObserver,
+        MPbk2ContactEditorStrategy& aEditorStrategy,
+        MPbk2ContactEditorContactRelocator& aRelocator,
+        MPbk2ApplicationServices* aAppServices,
+        HBufC* aTitleText )
+    {
+    CPbk2ContactEditorDlgImpl* self =
+        new ( ELeave ) CPbk2ContactEditorDlgImpl(aParams, aContact,
+            aFieldProperties, aContactObserver,
+            aEditorStrategy, aRelocator, aAppServices, aTitleText );
+    CleanupStack::PushL(self);
+    self->ConstructL();
+    CleanupStack::Pop(self);
+    return self;
+    }
 
 // --------------------------------------------------------------------------
 // CPbk2ContactEditorDlgImpl::ConstructL
@@ -335,20 +336,20 @@ void CPbk2ContactEditorDlgImpl::ConstructL()
     // iContact's store becomes unavailable.
     
     /*
-	 * Use iAppServices if provided. This is to enable editor use outside from pbk2 context
-	 */
+     * Use iAppServices if provided. This is to enable editor use outside from pbk2 context
+     */
     if( iAppServices )
-    	{
-    	iAppServices->StoreObservationRegister().RegisterStoreEventsL( *this );
-    	iNameFormatter = &iAppServices->NameFormatter();
-    	}
+        {
+        iAppServices->StoreObservationRegister().RegisterStoreEventsL( *this );
+        iNameFormatter = &iAppServices->NameFormatter();
+        }
     else
-    	{
-    	Phonebook2::Pbk2AppUi()->ApplicationServices().
-			StoreObservationRegister().RegisterStoreEventsL( *this );
-    	iNameFormatter =
-    	        &Phonebook2::Pbk2AppUi()->ApplicationServices().NameFormatter();
-    	}
+        {
+        Phonebook2::Pbk2AppUi()->ApplicationServices().
+            StoreObservationRegister().RegisterStoreEventsL( *this );
+        iNameFormatter =
+                &Phonebook2::Pbk2AppUi()->ApplicationServices().NameFormatter();
+        }
 
    
     StoreTitlePaneTextL();
@@ -357,24 +358,24 @@ void CPbk2ContactEditorDlgImpl::ConstructL()
     iExtensionManager = CPbk2UIExtensionManager::InstanceL();
     
     /*
-	 * Use iAppServices if provided. This is to enable editor use outside from pbk2 context
-	 */
+     * Use iAppServices if provided. This is to enable editor use outside from pbk2 context
+     */
     CVPbkContactManager* manager = NULL;
     if( iAppServices )
-    	{
-    	manager = &iAppServices->ContactManager();
-    	}
+        {
+        manager = &iAppServices->ContactManager();
+        }
     else
-    	{
-    	manager = &Phonebook2::Pbk2AppUi()->ApplicationServices().ContactManager();
-    	}
+        {
+        manager = &Phonebook2::Pbk2AppUi()->ApplicationServices().ContactManager();
+        }
     
     iEditorExtension = iExtensionManager->FactoryL()->
         CreatePbk2ContactEditorExtensionL( *manager, iContact, *this );
 
     iFieldFactory = CPbk2ContactEditorFieldFactory::NewL(*this, *iEditorExtension);
     iUiFieldArray = CPbk2ContactEditorFieldArray::NewL(
-    *manager, iContact, *this, *iFieldFactory, iAppServices );	
+    *manager, iContact, *this, *iFieldFactory, iAppServices );    
     
     iUseState = EUseReady;
     }
@@ -781,7 +782,7 @@ void CPbk2ContactEditorDlgImpl::PreLayoutDynInitL()
     iEditorExtension->ModifyButtonGroupContainerL(ButtonGroupContainer());
 
     ConstructNaviPaneL();
-	UpdateTitleL();
+    UpdateTitleL();
     UpdateTitlePictureL();
     }
 
@@ -1158,6 +1159,37 @@ void CPbk2ContactEditorDlgImpl::ExecuteAddressDlgL(
     iAddressView = NULL;
     iParams.iActiveView = TPbk2ContactEditorParams::EEditorView;
     UpdateControlsL();
+    
+    // The if-expression refers to the situation that need to
+    // delete editor dialog after address dialog exit completely,
+    // such as the store-unavailable situation    
+    if ( iDelayDelete )
+        {
+        iDelayDelete->Start( TCallBack( &DelayDlgDeleteCallBack, this ) );
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ContactEditorDlgImpl::DelayDlgDeleteCallBack
+// --------------------------------------------------------------------------
+//
+TInt CPbk2ContactEditorDlgImpl::DelayDlgDeleteCallBack( TAny* aCallBack )
+    {
+    static_cast<CPbk2ContactEditorDlgImpl*>( aCallBack )->DelayDlgDelete();
+    return EFalse;    
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2ContactEditorDlgImpl::DelayDlgDelete
+// --------------------------------------------------------------------------
+//
+void CPbk2ContactEditorDlgImpl::DelayDlgDelete()
+    {
+    // Need to inform editor-observer that contact editing is
+    // aborted, at the same time, exit editor dialog directly 
+    // without saving the changes.
+    iContactObserver.ContactEditingAborted();
+    delete this;
     }
 
 // --------------------------------------------------------------------------
@@ -1934,7 +1966,7 @@ void CPbk2ContactEditorDlgImpl::ContactEditorOperationCompleted
 //
 void CPbk2ContactEditorDlgImpl::CloseDialog()
 	{
-    // Ignor error and close editor without further user interaction
+    // Ignore error and close editor without further user interaction
     MVPbkContactObserver::TContactOpResult exitResult;
     exitResult.iExtension = NULL;
     exitResult.iStoreContact = NULL;
@@ -1957,7 +1989,7 @@ void CPbk2ContactEditorDlgImpl::CloseDialog()
         }
       
     ContactEditorOperationCompleted(exitResult, exitParams);
-	}
+    }
 
 // --------------------------------------------------------------------------
 // CPbk2ContactEditorDlgImpl::ContactEditorOperationFailed
@@ -2329,24 +2361,22 @@ void CPbk2ContactEditorDlgImpl::StoreUnavailable
     {
     if ( &aContactStore == &iContact.ParentStore() )
         {
-        /*
-		 * Use iAppServices if provided. This is to enable editor use outside from pbk2 context
-		 */
+        // Use iAppServices if provided. This is to enable editor use outside from pbk2 context		
         const CPbk2StoreProperty* property = NULL;
         if( iAppServices )
-        	{
-        	property =
-					iAppServices->StoreProperties().FindProperty
-							( aContactStore.StoreProperties().Uri() );
-        	}
+            {
+            property =
+                    iAppServices->StoreProperties().FindProperty
+                            ( aContactStore.StoreProperties().Uri() );
+            }
         else
-        	{
-        	property =
-					Phonebook2::Pbk2AppUi()->ApplicationServices().
-						StoreProperties().FindProperty
-							( aContactStore.StoreProperties().Uri() );
-        	}
-        
+            {
+            property =
+                    Phonebook2::Pbk2AppUi()->ApplicationServices().
+                        StoreProperties().FindProperty
+                            ( aContactStore.StoreProperties().Uri() );
+            }
+
 
         TPtrC storeName;
         if ( property )
@@ -2358,11 +2388,26 @@ void CPbk2ContactEditorDlgImpl::StoreUnavailable
         // Cannot do anything about that
         TRAP_IGNORE( ShowStoreNotAvailableNoteL( storeName ) );
 
-        // Close editor if store which came unavailable is iContact's store
-        iContactObserver.ContactEditingAborted();
-        // TryExitL is not called because it would call OkToExitL
-        // which is not wanted
-        delete this;
+        // If the address dialog is opened, delete address dialog first,
+        // then after address dialog exit completely, delete the editor dialog
+        // via DelayDlgDeleteCallBack; if there isn't the address dialog, 
+        // delete editor dialog directly.         
+        if (iAddressView )
+            {
+            // Create the CIdle object to delete editor dialog later.
+            if ( !iDelayDelete )
+                {
+                iDelayDelete = CIdle::NewL( CActive::EPriorityStandard );
+                }
+            delete iAddressView;
+            }
+       else
+            {
+            // At the store unavailable situation, informs editor observer 
+            // that contact editing is aborted without saving the changes.
+            iContactObserver.ContactEditingAborted();
+            delete this;
+            }
         }
     }
 
@@ -2475,24 +2520,24 @@ void CPbk2ContactEditorDlgImpl::UpdateTitleL()
         switch (iParams.iActiveView)
             {
             case TPbk2ContactEditorParams::EEditorAddressView:
-            	if( !iTitleText )
-            		{
-            		title = StringLoader::LoadL(R_QTN_PHOB_HEADER_ADDRESS);
-            		}
+                if( !iTitleText )
+                    {
+                    title = StringLoader::LoadL(R_QTN_PHOB_HEADER_ADDRESS);
+                    }
                 break;
             case TPbk2ContactEditorParams::EEditorAddressHomeView:
-            	if( !iTitleText )
-            		{
-            		title = StringLoader::LoadL(
-            				R_QTN_PHOB_HEADER_ADDRESS_HOME);
-            		}
+                if( !iTitleText )
+                    {
+                    title = StringLoader::LoadL(
+                            R_QTN_PHOB_HEADER_ADDRESS_HOME);
+                    }
                 break;
             case TPbk2ContactEditorParams::EEditorAddressOfficeView:
-            	if( !iTitleText )
-            		{
-            		title = StringLoader::LoadL(
-            				R_QTN_PHOB_HEADER_ADDRESS_WORK);
-            		}
+                if( !iTitleText )
+                    {
+                    title = StringLoader::LoadL(
+                            R_QTN_PHOB_HEADER_ADDRESS_WORK);
+                    }
                 break;
             case TPbk2ContactEditorParams::EEditorView:
                 {
@@ -2529,10 +2574,10 @@ void CPbk2ContactEditorDlgImpl::UpdateTitleL()
                         }
                     }
                 if( !iTitleText )
-                	{
-                	title = iNameFormatter->GetContactTitleOrNullL(iStoreContact->Fields(),
-                			KEditorNameFormatFlags);
-                	}
+                    {
+                    title = iNameFormatter->GetContactTitleOrNullL(iStoreContact->Fields(),
+                            KEditorNameFormatFlags);
+                    }
                 break;
                 }
             default:
@@ -2541,20 +2586,20 @@ void CPbk2ContactEditorDlgImpl::UpdateTitleL()
         
         // if custom title text is provided
         if( iTitleText )
-        	{
-        	iTitlePane->SetTextL( iTitleText->Des() );
-        	}
+            {
+            iTitlePane->SetTextL( iTitleText->Des() );
+            }
         else 
-        	{
-        	 if (title)
-				{
-				iTitlePane->SetText(title);
-				}
-			else
-				{
-				iTitlePane->SetTextL(iEditorStrategy.DefaultTitle());
-				}
-        	}
+            {
+             if (title)
+                {
+                iTitlePane->SetText(title);
+                }
+            else
+                {
+                iTitlePane->SetTextL(iEditorStrategy.DefaultTitle());
+                }
+            }
         }
     CEikStatusPane* statusPane = iAvkonAppUi->StatusPane();
     
@@ -2580,24 +2625,24 @@ void CPbk2ContactEditorDlgImpl::UpdateTitlePictureL()
         // Update picture in title pane
         
         /*
-		 * Use iAppServices if provided. This is to enable editor use outside from pbk2 context
-		 */
+         * Use iAppServices if provided. This is to enable editor use outside from pbk2 context
+         */
         CEikImage* image = NULL;
         if( iAppServices )
-        	{
-        	image =
-				Pbk2TitlePanePictureFactory::CreateTitlePanePictureLC
-					( &iContact.StoreContact(),
-							iAppServices->StoreProperties() );
-        	}
+            {
+            image =
+                Pbk2TitlePanePictureFactory::CreateTitlePanePictureLC
+                    ( &iContact.StoreContact(),
+                            iAppServices->StoreProperties() );
+            }
         else
-        	{
-        	image =
-				Pbk2TitlePanePictureFactory::CreateTitlePanePictureLC
-					( &iContact.StoreContact(),
-					  Phonebook2::Pbk2AppUi()->ApplicationServices().
-						StoreProperties() );
-        	}
+            {
+            image =
+                Pbk2TitlePanePictureFactory::CreateTitlePanePictureLC
+                    ( &iContact.StoreContact(),
+                      Phonebook2::Pbk2AppUi()->ApplicationServices().
+                        StoreProperties() );
+            }
         
         
         // ownership of the picture is transfered to title pane
@@ -2687,7 +2732,7 @@ void CPbk2ContactEditorDlgImpl::ExitApplication(
 
         // Dialog is closed so there is nothing to do if
         // HandleCommandL leaves. 
-		TRAP_IGNORE(CEikonEnv::Static()->EikAppUi()->HandleCommandL(aCommandId)); 
+        TRAP_IGNORE(CEikonEnv::Static()->EikAppUi()->HandleCommandL(aCommandId)); 
         }
     }
 
@@ -2981,9 +3026,9 @@ void CPbk2ContactEditorDlgImpl::CmdDoneL(
                         CloseDialog();
                         }
                     else
-                    	{
-                    	iExitRecord.Clear( EExitOrdered );
-                    	}
+                        {
+                        iExitRecord.Clear( EExitOrdered );
+                        }
                     }
                 }
             }
@@ -3360,8 +3405,8 @@ TBool CPbk2ContactEditorDlgImpl::IsCheckPointEvent(
 //    
 void CPbk2ContactEditorDlgImpl::CheckCurrentFieldTextL( 
         CPbk2ContactEditorArrayItem* aCurrentField,
-		const TKeyEvent& aKeyEvent, 
-		TEventCode aType )
+        const TKeyEvent& aKeyEvent, 
+        TEventCode aType )
     {
     MPbk2ContactEditorField* editorField = aCurrentField->ContactEditorField();
     if ( editorField )

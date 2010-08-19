@@ -199,6 +199,16 @@ void CPbk2AttributeAddressSelectPhase::AcceptDelayedL
     }
 
 // --------------------------------------------------------------------------
+// CPbk2AttributeAddressSelectPhase::DenyDelayed
+// --------------------------------------------------------------------------
+//
+void CPbk2AttributeAddressSelectPhase::DenyDelayedL
+        ( const TDesC8& /*aContactLinkBuffer*/ )
+    {
+    // Nothing to deny
+    }
+
+// --------------------------------------------------------------------------
 // CPbk2AttributeAddressSelectPhase::Results
 // --------------------------------------------------------------------------
 //

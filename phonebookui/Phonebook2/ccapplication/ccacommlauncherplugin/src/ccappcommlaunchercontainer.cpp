@@ -576,57 +576,233 @@ void CCCAppCommLauncherContainer::HandleListBoxEventL(
         iHasBeenDragged = EFalse;
         }
 
-    if ( executeContactAction && iPlugin.CommandState().IsRunning() )
+    if ( executeContactAction && iPlugin.CommandState().IsRunning()  )
         {
         executeContactAction = EFalse;
         }
 
-    if (executeContactAction)
+    if ( executeContactAction )
         {
+        SetInputBlockerL();
+        
         VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector
             contactActionType = iPlugin.Container().SelectedCommunicationMethod();
         
         if ( contactActionType
         		== VPbkFieldTypeSelectorFactory::EFindOnMapSelector )
         	{
-            if ( !iLongTap )
-                {
-                DoShowMapCmdL( (TPbk2CommandId)EPbk2ExtensionShowOnMap );
-                }
-            else
-                {
-                iLongTap = EFalse;
-                }
+            HandleFindOnMapContactActionL();           
         	}
         else
         	{
-            TPtrC fullName;
-
-            iPlugin.ContactHandler().ContactFieldItemDataL(
-                CCmsContactFieldItem::ECmsFullName, fullName);
-
-            TUint paramFlag = CCAContactorService::TCSParameter::EEnableDefaults;
-
-            CCAContactorService::TCSParameter param(
-                contactActionType,
-                *iPlugin.ContactHandler().ContactIdentifierLC(),//contactlinkarray
-                paramFlag,
-                fullName);
+            HandleGenericContactActionL( contactActionType );
+            }
         
-            iPlugin.ExecuteServiceL(param);
+        RemoveInputBlocker();
+        }
+    }
+
+// ----------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::HandleFindOnMapContactActionL()
+// ----------------------------------------------------------------------------
+//
+void CCCAppCommLauncherContainer::HandleFindOnMapContactActionL()
+    {
+    if ( !iLongTap )
+        {
+        DoShowMapCmdL( (TPbk2CommandId)EPbk2ExtensionShowOnMap );
+        }
+    else
+        {
+        iLongTap = EFalse;
+        }
+    }
+
+// ----------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::HandleGenericContactActionL()
+// ----------------------------------------------------------------------------
+//
+void CCCAppCommLauncherContainer::HandleGenericContactActionL(
+    VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aActionType )
+    {
+    TPtrC fullName;
+    iPlugin.ContactHandler().ContactFieldItemDataL(
+        CCmsContactFieldItem::ECmsFullName, fullName );  
+    
+    //contactlinkarray
+    HBufC8* contactIdentifier = iPlugin.ContactHandler().ContactIdentifierLC();
+    
+    TBool fieldSelectionReq(ETrue);
+    TPtrC selectedField;
+    if ( VPbkFieldTypeSelectorFactory::EVoiceCallSelector == aActionType )
+        {
+        fieldSelectionReq = IsVoiceCallFieldSelectionAmbiguous( aActionType, selectedField );        
+        }   
+    
+    
+    if( fieldSelectionReq ) 
+        {
+        ExecuteContactActionServiceWithFieldSelectionL( 
+            aActionType, 
+            *contactIdentifier,
+            fullName );
+        }
+    else
+        {
+        // Speed up contact action by skipping slow field selection operation
+        ExecuteContactActionServiceWithoutFieldSelectionL(
+            aActionType,
+            *contactIdentifier,
+            fullName,
+            selectedField );          
+        }
+    
+    //The Timer can be started after user selected any call item
+    if ( iPlugin.ContactorService()->IsSelected() && 
+        ( aActionType == VPbkFieldTypeSelectorFactory::EVoiceCallSelector ||
+          aActionType == VPbkFieldTypeSelectorFactory::EVideoCallSelector ||
+          aActionType == VPbkFieldTypeSelectorFactory::EVOIPCallSelector) )
+        {
+        iPlugin.StartTimerL();
+        }
+    
+    CleanupStack::PopAndDestroy(1);// contactlinkarray
+    }
+
+// ----------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::IsVoiceCallFieldSelectionAmbiguous()
+// ----------------------------------------------------------------------------
+//
+TBool CCCAppCommLauncherContainer::IsVoiceCallFieldSelectionAmbiguous(
+    VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aActionType,
+    TPtrC& aSelectedField )
+    {
+    CCCAppCommLauncherContactHandler& handler = iPlugin.ContactHandler();
+    
+    if ( HasContactSingleAddress( aActionType, handler ) )
+        {
+        RPointerArray<CCmsContactField>& fields = handler.ContactFieldDataArray();
+        
+        for( TInt i=0; i < fields.Count(); i++ ) 
+            {
+            CCmsContactField* field = fields[i];
             
-            //The Timer can be started after user selected any call item
-            if ( iPlugin.ContactorService()->IsSelected() && 
-                (contactActionType == VPbkFieldTypeSelectorFactory::EVoiceCallSelector ||
-                 contactActionType == VPbkFieldTypeSelectorFactory::EVideoCallSelector ||
-                 contactActionType == VPbkFieldTypeSelectorFactory::EVOIPCallSelector) )
+            if ( HasFieldOnlyOneItem( *field ) &&
+                 IsVoiceCallType( *field ) ) 
                 {
-                iPlugin.StartTimerL();
-                }
-            
-            CleanupStack::PopAndDestroy(1);// contactlinkarray
+                const CCmsContactFieldItem* fieldItem = NULL;
+                
+                TInt error = KErrNone;
+                TRAP( error, fieldItem = &field->ItemL( 0 ) );
+                
+                if( error == KErrNone ) 
+                    {
+                    aSelectedField.Set(fieldItem->Data());
+                    //Its safe to exit here
+                    //Making of Voice Call is not tedious
+                    //we have only one number
+                    return EFalse;
+                    }                   
+                }           
             }
         }
+    
+    return ETrue;
+    }
+
+// ----------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::HasContactSingleAddress()
+// ----------------------------------------------------------------------------
+//
+TBool CCCAppCommLauncherContainer::HasContactSingleAddress(
+    VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aActionType,
+    CCCAppCommLauncherContactHandler& aHandler )
+    {
+    TInt amount = aHandler.AddressAmount( aActionType );
+    if( 1 == amount )
+        {
+        return ETrue;
+        }
+    
+    return EFalse;
+    }
+
+// ----------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::HasFieldOnlyOneItem()
+// ----------------------------------------------------------------------------
+//
+TBool CCCAppCommLauncherContainer::HasFieldOnlyOneItem( const CCmsContactField& field ) const
+    {
+    const RPointerArray<CCmsContactFieldItem>& items = field.Items();
+    
+    if ( 1 == items.Count() )
+        {
+        return ETrue;
+        }
+    
+    return EFalse;
+    }
+
+// ----------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::IsVoiceCallType()
+// ----------------------------------------------------------------------------
+//
+TBool CCCAppCommLauncherContainer::IsVoiceCallType( const CCmsContactField& field ) const
+    {
+    CCmsContactFieldItem::TCmsContactField fieldType = field.Type();
+    
+    if( fieldType == CCmsContactFieldItem::ECmsLandPhoneGeneric ||
+        fieldType == CCmsContactFieldItem::ECmsLandPhoneHome ||
+        fieldType == CCmsContactFieldItem::ECmsLandPhoneWork ||
+        fieldType == CCmsContactFieldItem::ECmsMobilePhoneGeneric ||
+        fieldType == CCmsContactFieldItem::ECmsMobilePhoneHome ||
+        fieldType == CCmsContactFieldItem::ECmsMobilePhoneWork  )
+        {    
+        return ETrue;
+        }
+    
+    return EFalse;
+    }
+
+
+// ----------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::ExecuteContactActionServiceWithFieldSelectionL()
+// ----------------------------------------------------------------------------
+//
+void CCCAppCommLauncherContainer::ExecuteContactActionServiceWithFieldSelectionL( 
+    VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aActionType,
+    TDesC8& aContactIdentifier,
+    TDesC& aFullName )
+    {
+    TUint paramFlag = CCAContactorService::TCSParameter::EEnableDefaults;
+
+    CCAContactorService::TCSParameter param(
+        aActionType,
+        aContactIdentifier,
+        paramFlag,
+        aFullName );
+    
+    iPlugin.ExecuteServiceL(param);    
+    }
+
+// ----------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::ExecuteContactActionServiceWithoutFieldSelectionL()
+// ----------------------------------------------------------------------------
+//
+void CCCAppCommLauncherContainer::ExecuteContactActionServiceWithoutFieldSelectionL( 
+    VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aActionType,
+    TDesC8& aContactIdentifier,
+    TDesC& aFullName,
+    TDesC& aSelectedField )
+    {
+    CCAContactorService::TCSParameter param(
+        aActionType,
+        aContactIdentifier,
+        CCAContactorService::TCSParameter::EUseFieldParam,
+        aFullName,
+        aSelectedField );
+    
+    iPlugin.ExecuteServiceL(param);
     }
 
 // ----------------------------------------------------------------------------
@@ -915,4 +1091,39 @@ const TInt CCCAppCommLauncherContainer::GetListBoxItemAmount() const
 	{
 	return iModel->MdcaCount();
 	}
+
+//-----------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::SetInputBlockerL()
+//-----------------------------------------------------------------------------
+//
+void CCCAppCommLauncherContainer::SetInputBlockerL()
+     {
+     if (!iInputBlocker)
+         {
+         iInputBlocker = CAknInputBlock::NewCancelHandlerLC( this );
+         CleanupStack::Pop( iInputBlocker );   
+         iInputBlocker->SetCancelDelete( iInputBlocker );
+         }
+     } 
+
+// --------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::RemoveInputBlockerL
+// --------------------------------------------------------------------------
+//
+void CCCAppCommLauncherContainer::RemoveInputBlocker()
+    {
+    if (iInputBlocker)
+        {
+        iInputBlocker->Cancel();
+        }
+    }
+
+// --------------------------------------------------------------------------
+// CCCAppCommLauncherContainer::AknInputBlockCancel
+// --------------------------------------------------------------------------
+//
+void CCCAppCommLauncherContainer::AknInputBlockCancel()
+     {
+     iInputBlocker = NULL;
+     }
 // End of File

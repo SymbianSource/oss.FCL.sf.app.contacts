@@ -95,15 +95,16 @@ CPcsContactStore* CPcsContactStore::NewL(CVPbkContactManager&  aContactManager,
 // ---------------------------------------------------------------------------------
 CPcsContactStore::CPcsContactStore():
     CActive( CActive::EPriorityLow ),
-    iAllContactLinksCount(0),
-    iFetchedContactCount(0),
-    iContactViewReady(EFalse)
+    iInitialContactCount( 0 ),
+    iFetchBlockLowerNumber( 0 ),
+    iFetchBlockUpperNumber( 0 ),
+    iVPbkCallbackCount( 0 ),
+    iContactViewReady( EFalse )
 {
     PRINT ( _L("Enter CPcsContactStore::CPcsContactStore") );
     CActiveScheduler::Add( this );
     PRINT ( _L("End CPcsContactStore::CPcsContactStore") );
 }
-
 
 // ---------------------------------------------------------------------------------
 // CPcsContactStore::ConstructL() 
@@ -135,7 +136,7 @@ void CPcsContactStore::ConstructL(CVPbkContactManager&  aContactManager,
     
     // Initial state
 	iNextState = ECreateView;
-	IssueRequest();
+	IssueRequest( 0 );
 	
     FeatureManager::InitializeLibL();
     if( FeatureManager::FeatureSupported( KFeatureIdffContactsMycard ) )
@@ -155,26 +156,19 @@ CPcsContactStore::~CPcsContactStore()
 	PRINT ( _L("Enter CPcsContactStore::~CPcsContactStore") );
 	
 	delete iContactViewBase;
-	iContactViewBase = NULL;
-	
 	delete iSortOrder;
-	iSortOrder = NULL;
-	
-    delete iSimContactItems;
-    iSimContactItems = NULL ;
-     
+    delete iSimContactItems;   
 	delete iWait;
-	iWait = NULL;
-	
 	delete iUri;
-	iUri = NULL;
 	
 	iTimer.Cancel();
     iTimer.Close();
 	iFieldsToCache.Close();	
 	
 	iFs.Close();
-	
+
+	iInitialContactLinks.ResetAndDestroy();
+    
 	if(IsActive())
 	{
 		Deque();
@@ -185,7 +179,6 @@ CPcsContactStore::~CPcsContactStore()
 	PRINT ( _L("End CPcsContactStore::~CPcsContactStore") );
 }
 
-
 // ---------------------------------------------------------------------------------
 // Handles addition/deletion/modification of contacts
 // ---------------------------------------------------------------------------------
@@ -193,43 +186,36 @@ void CPcsContactStore::HandleStoreEventL(MVPbkContactStore& aContactStore,
                 TVPbkContactStoreEvent aStoreEvent)
 {
    	PRINT ( _L("Enter CPcsContactStore::HandleStoreEventL") );
-
-	switch (aStoreEvent.iEventType) 
-	{
+   	
+    PRINT2 ( _L("CPcsContactStore::HandleStoreEventL: URI=%S, event TVPbkContactStoreEventType::%d received"),
+             &*iUri, aStoreEvent.iEventType);
+   	        
+    switch (aStoreEvent.iEventType) 
+    {
 		case TVPbkContactStoreEvent::EContactAdded:
+        case TVPbkContactStoreEvent::EGroupAdded:
 		{
-		    PRINT ( _L("Add contact/group event received") );
-		    
 		    // Observer will be notified once the cache update is complete
 		    iOngoingCacheUpdate = ECacheUpdateContactAdded;
 		                    
 		    iContactManager->RetrieveContactL( *(aStoreEvent.iContactLink), *this );
 			break;
 		}
-		
+
         case TVPbkContactStoreEvent::EUnknownChanges:
-            {
-            iObserver->RemoveAll( *iUri );
+        {
+            iObserver->RemoveAll( *iUri );      
+            // To indicate that contact view is not ready when unknown changes happens 
             iContactViewReady = EFalse;
             iContactViewBase->AddObserverL(*this);
-            }
             break;
+        }
 
 		case TVPbkContactStoreEvent::EContactDeleted:
+        case TVPbkContactStoreEvent::EGroupDeleted:
 		case TVPbkContactStoreEvent::EContactChanged:
-		case TVPbkContactStoreEvent::EGroupDeleted:
 		case TVPbkContactStoreEvent::EGroupChanged:
 		{
-		    if ( aStoreEvent.iEventType == TVPbkContactStoreEvent::EContactChanged ||
-		         aStoreEvent.iEventType == TVPbkContactStoreEvent::EGroupChanged ) 
-		    {
-		    	PRINT ( _L("Change contact/group event received") );
-		    }
-		    else 
-		    {
-		    	PRINT ( _L("Delete contact/group event received") );
-		    }
-			
 			CVPbkContactIdConverter* converter = NULL;
 			
 		    TRAPD ( err, converter = CVPbkContactIdConverter::NewL( aContactStore ) );
@@ -295,83 +281,97 @@ TDesC& CPcsContactStore::GetStoreUri()
 }
 
 // ---------------------------------------------------------------------------
+//  Check next state of state machine for contacts retrieval and perform
+//  transition
+// --------------------------------------------------------------------------- 
+void CPcsContactStore::CheckNextState()
+{
+    PRINT5 ( _L("CPcsContactStore::CheckNextState(state %d) %d:(%d..%d)/%d"),
+             iNextState, iVPbkCallbackCount,
+             iFetchBlockLowerNumber, iFetchBlockUpperNumber, iInitialContactCount );
+
+    if ( iNextState == EComplete )
+    {
+        return;
+    }
+
+    // If during the caching of the contacts initially in the view we get some
+    // contact events for other contact operations from the user, then it can
+    // happen at the end of the caching process that iCallbackCount > iAllContactLinksCount.
+    // We assume that it can never be that at the end of the caching it results
+    // iCallbackCount < iAllContactLinksCount.
+
+    // Check if caching is complete
+    if( iFetchBlockUpperNumber == iInitialContactCount       // All contacts initially in the view were fetched
+        && iVPbkCallbackCount >= iInitialContactCount )        // We got at least the same amount of callbacks
+    {
+        iObserver->UpdateCachingStatus(*iUri, ECachingComplete);
+        iNextState = EComplete;
+        IssueRequest( 0 );
+    }
+    // We could have a number of callbacks that is the same of the fetched contacts
+    // from the view even before we get the all the callbacks for the fetched contacts.
+    // This can happen for instance if a contact is added by the user.
+    // With the following condition it will happen just that the fetching of more
+    // contacts from the initial view is happening before all the callbacks for
+    // those are received.
+    else if ( iVPbkCallbackCount >= iFetchBlockUpperNumber ) // Fetch next block
+    {
+        iObserver->UpdateCachingStatus(*iUri, ECachingInProgress);
+        iNextState = EFetchContactBlock;
+        // Delay the next fetch since contact fetch is CPU intensive,
+        // this will give other threads a chance to use CPU
+        IssueRequest( KTimerInterval ); // 100 milliseconds
+    }
+    else
+    {
+    // Otherwise, just pass through.
+    }
+
+}
+
+// ---------------------------------------------------------------------------
 //  Callback Method. Called when one Retrieve operation is complete
 // --------------------------------------------------------------------------- 
 void CPcsContactStore::VPbkSingleContactOperationComplete(
         MVPbkContactOperationBase& aOperation, MVPbkStoreContact* aContact)
-{    
-    iFetchedContactCount++;
+{
+    PRINT ( _L("Enter CPcsContactStore::VPbkSingleContactOperationComplete") );
 
-			       
+    // We get this incremented even during add/del of contacts during caching
+    iVPbkCallbackCount++;
+    
 	// Handle the fetched contact....
 	TRAPD(err, HandleRetrievedContactL(aContact) );
 	if( err != KErrNone)
 	{
 		iObserver->UpdateCachingStatus(*iUri, err);
 	}
-	
+
 	MVPbkContactOperationBase* Opr = &aOperation;
 	if ( Opr )
 	{
 		delete Opr;
 		Opr = NULL;
 	}
-	
-	// Update the iNextState variable to proper state
-	if( iFetchedContactCount == iAllContactLinksCount )
-	{
-	    // Fetch complete
-	    // Update the caching status
-		iObserver->UpdateCachingStatus(*iUri, ECachingComplete);
-		iNextState = EComplete;
-		IssueRequest();
-	}
-	else if ( (iFetchedContactCount % KLinksToFetchInOneGo) == 0 )
-	{
-	    // Fetch next block
-		iNextState = EFetchContactBlock;
-        // Delay the next fetch since contact fetch is CPU intensive,
-        // this will give other threads a chance to use CPU
-	    if(!IsActive())
-	        {
-            iTimer.After( iStatus, KTimerInterval); // 100 milliseconds
-            SetActive();
-	        }
 
-	}
-	
+	CheckNextState();
+
+    PRINT ( _L("End CPcsContactStore::VPbkSingleContactOperationComplete") );
 }
     
 // ---------------------------------------------------------------------------
-//  Callback Method.Called when one Retrieve operation fails.
+//  Callback Method. Called when one Retrieve operation fails.
 // ---------------------------------------------------------------------------
 void CPcsContactStore::VPbkSingleContactOperationFailed(
         MVPbkContactOperationBase& /*aOperation*/, TInt /*aError*/ )
 {
   	PRINT ( _L("Enter CPcsContactStore::VPbkSingleContactOperationFailed") );
-	iFetchedContactCount++;
 
-	// Update the iNextState variable to proper state
-	if( iFetchedContactCount == iAllContactLinksCount )
-	{
-		// Fetch complete
-		iObserver->UpdateCachingStatus(*iUri, ECachingComplete);
-		iNextState = EComplete;
-		IssueRequest();
-	}
-	else if ( (iFetchedContactCount % KLinksToFetchInOneGo) == 0 ) 
-	{
-		// Fetch next block
-		iNextState = EFetchContactBlock;
-        // Delay the next fetch since contact fetch is CPU intensive,
-        // this will give other threads a chance to use CPU
-        if(!IsActive())
-            {
-            iTimer.After( iStatus, KTimerInterval); // 100 milliseconds
-            SetActive();
-            }
-	}
-	
+  	iVPbkCallbackCount++;
+
+	CheckNextState();
+
 	PRINT ( _L("End CPcsContactStore::VPbkSingleContactOperationFailed") );
 }
 
@@ -399,10 +399,9 @@ void CPcsContactStore::HandleRetrievedContactL(MVPbkStoreContact* aContact)
         CleanupStack::PopAndDestroy( aContact );
         return;
     }
-   
+
 	CPsData* phoneContact = CPsData::NewL();
 
-	
 	// Fill the contact id
 	CVPbkContactIdConverter* converter = NULL;
 	TRAPD ( err, converter = CVPbkContactIdConverter::NewL( aContact->ParentStore() ) );
@@ -410,7 +409,7 @@ void CPcsContactStore::HandleRetrievedContactL(MVPbkStoreContact* aContact)
 	if ( err == KErrNotSupported )
 	{
 		// simdb domain
-		PRINT ( _L("SIM domain data received") );
+		PRINT ( _L("CPcsContactStore::HandleRetrievedContactL: SIM domain data received") );
 		
         // Set the contact link 
         HBufC8* extnInfo = tmpLink->PackLC();
@@ -519,13 +518,11 @@ void CPcsContactStore::HandleRetrievedContactL(MVPbkStoreContact* aContact)
 void CPcsContactStore::GetDataForSingleContactL( MVPbkBaseContact& aContact,
                                                  CPsData* aPhoneData )
 {      
-
     for(TInt i =0; i < iFieldsToCache.Count(); i++)
     {
 	    aPhoneData->SetDataL(i, KNullDesC);
 		AddContactFieldsL( aContact, iFieldsToCache[i], aPhoneData);			
     }
-	
 }
 
 // ---------------------------------------------------------------------------
@@ -587,27 +584,58 @@ void CPcsContactStore::AddContactFieldsL( MVPbkBaseContact& aContact,
 }
 
 // ---------------------------------------------------------------------------
+// Fetches all the initial contact links from vpbk 
+// --------------------------------------------------------------------------- 
+void CPcsContactStore::FetchAllInitialContactLinksL()
+{
+    PRINT2 ( _L("CPcsContactStore::FetchAllInitialContactLinksL: URI=%S. Fetching %d contact links"),
+             &*iUri, iInitialContactCount );
+
+    __LATENCY_MARK ( _L("CPcsContactStore::FetchAllInitialContactLinksL ==== fetch contact links start") );
+    
+    for(TInt cnt = 0; cnt < iInitialContactCount; cnt++)
+    {
+        // Get the contact link
+        MVPbkContactLink* tempLink = iContactViewBase->CreateLinkLC(cnt);
+        iInitialContactLinks.AppendL( tempLink );
+        CleanupStack::Pop();
+    }
+
+    __LATENCY_MARKEND ( _L("CPcsContactStore::FetchAllInitialContactLinksL ==== fetch contact links end") );                          
+
+    // No callback to wait for next state
+    iObserver->UpdateCachingStatus(*iUri, ECachingInProgress);
+    iNextState = EFetchContactBlock;
+    IssueRequest( 0 );
+}
+
+// ---------------------------------------------------------------------------
 // Fetches the data from the vpbk using the contact links 
 // --------------------------------------------------------------------------- 
-void CPcsContactStore::FetchlinksL()
-{		
-
-	PRINT1 ( _L("CPcsContactStore::Total contacts downloaded = %d"),
-	          iFetchedContactCount );
-	
-    TInt blockCount = iFetchedContactCount + KLinksToFetchInOneGo;
+void CPcsContactStore::FetchContactsBlockL()
+{
+    iFetchBlockLowerNumber = iFetchBlockUpperNumber;
+    iFetchBlockUpperNumber += KLinksToFetchInOneGo;
+    if ( iFetchBlockUpperNumber > iInitialContactCount )
+    {
+        iFetchBlockUpperNumber = iInitialContactCount;
+    }
     
-    if( blockCount >= iAllContactLinksCount)
-    	blockCount = iAllContactLinksCount;
-    
-	for(TInt cnt = iFetchedContactCount; cnt < blockCount; cnt++)
-	{	
-		// Retrieve the contact 
-		MVPbkContactLink* tempLink =iContactViewBase->CreateLinkLC(cnt);
-		iContactManager->RetrieveContactL( *tempLink, *this );
-		CleanupStack::PopAndDestroy(); // tempLink
-	}
+    PRINT2 ( _L("CPcsContactStore::FetchContactsBlockL: Fetched %d contacts, fetching more until %d"),
+             iFetchBlockLowerNumber, iFetchBlockUpperNumber );
 
+    for(TInt cnt = iFetchBlockLowerNumber; cnt < iFetchBlockUpperNumber; cnt++)
+    {
+        // Retrieve the contact
+        iContactManager->RetrieveContactL( *iInitialContactLinks[cnt], *this );
+    }
+
+    // Destroy the array of temporary contact links when all
+    // contacts from the initial view are retrieved
+    if (iFetchBlockUpperNumber == iInitialContactCount)
+    {
+        iInitialContactLinks.ResetAndDestroy();
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -617,37 +645,42 @@ void CPcsContactStore::ContactViewReady(
                 MVPbkContactViewBase& aView ) 
 {
     PRINT ( _L("Enter CPcsContactStore::ContactViewReady") );
+
     iFs.Close();
     aView.RemoveObserver(*this);
     // Get the total number of contacts for this view
-    TRAPD(err,iAllContactLinksCount = aView.ContactCountL());
+    TRAPD(err, iInitialContactCount = aView.ContactCountL());
     
     if(err != KErrNone)
     {
-    	PRINT( _L("CPcsContactStore::ContactViewReady - Unable to obtain contact count"));
+    	PRINT( _L("CPcsContactStore::ContactViewReady: Unable to obtain Contacts count"));
+        iObserver->UpdateCachingStatus(*iUri, ECachingCompleteWithErrors);
     	iNextState = EComplete;
-   		IssueRequest();
+   		IssueRequest( 0 );
    		return;
     }
     
-    PRINT1 ( _L("Total number of contacts for this view: %d"), iAllContactLinksCount);
-    if( iAllContactLinksCount == 0)
+    PRINT1 ( _L("CPcsContactStore::ContactViewReady: Total number of contacts for this view: %d"),
+            iInitialContactCount );
+    if(iInitialContactCount == 0)
     {
-        // No Contactsb to cache, hence update the status accordingly
+        // No Contacts to cache, hence update the status accordingly
     	iObserver->UpdateCachingStatus(*iUri, ECachingComplete);
     	iNextState = EComplete;
-   		IssueRequest();
+   		IssueRequest( 0 );
    		return;
     }
-    iFetchedContactCount = 0;
+    iFetchBlockLowerNumber = 0;
+    iFetchBlockUpperNumber = 0;
+    iVPbkCallbackCount = 0;
     
     // Change the iNextState to fetch the contacts 
-    if( iContactViewReady == EFalse)
+    if(iContactViewReady == EFalse)
     {
     	iObserver->UpdateCachingStatus(*iUri, ECachingInProgress);
     	iContactViewReady = ETrue;
-    	iNextState = EFetchContactBlock;
-   		IssueRequest();
+    	iNextState = EFetchAllLinks;
+   		IssueRequest( 0 );
     }
 	
 	PRINT ( _L("End CPcsContactStore::ContactViewReady") );
@@ -657,22 +690,28 @@ void CPcsContactStore::ContactViewReady(
 // Implements the view unavailable function of MVPbkContactViewObserver
 // --------------------------------------------------------------------------- 
 void CPcsContactStore::ContactViewUnavailable(
-                MVPbkContactViewBase& /*aView*/ )  
+         MVPbkContactViewBase& /*aView*/ )  
 {
     PRINT ( _L("Enter CPcsContactStore::ContactViewUnavailable") );
-    // Update the caching status to complete
+    PRINT1 ( _L("CPcsContactStore::ContactViewUnavailable: URI=%S"),
+             &*iUri );
+
+    // Update the caching status to cachingComplete, the client of PCS--Cmail can
+    // perform searching even when contactview of somestore is unavailable.
+    // For Contacts and Group view we get one of this event brfore ContactViewReady
 	iObserver->UpdateCachingStatus(*iUri, ECachingComplete);
     iFs.Close();
-	PRINT ( _L("End CPcsContactStore::ContactViewUnavailable") );
+
+    PRINT ( _L("End CPcsContactStore::ContactViewUnavailable") );
 }
 
 // ---------------------------------------------------------------------------
 // Implements the add contact function of MVPbkContactViewObserver
 // --------------------------------------------------------------------------- 
 void CPcsContactStore::ContactAddedToView(
-            MVPbkContactViewBase& /*aView*/, 
-            TInt /*aIndex*/, 
-            const MVPbkContactLink& /*aContactLink*/ ) 
+         MVPbkContactViewBase& /*aView*/, 
+         TInt /*aIndex*/, 
+         const MVPbkContactLink& /*aContactLink*/ ) 
 {
 }
 
@@ -680,9 +719,9 @@ void CPcsContactStore::ContactAddedToView(
 // Implements the remove contact function of MVPbkContactViewObserver
 // --------------------------------------------------------------------------- 
 void CPcsContactStore::ContactRemovedFromView(
-                MVPbkContactViewBase& /*aView*/, 
-                TInt /*aIndex*/, 
-                const MVPbkContactLink& /*aContactLink*/ )  
+         MVPbkContactViewBase& /*aView*/, 
+         TInt /*aIndex*/, 
+         const MVPbkContactLink& /*aContactLink*/ )  
 {
 }
 
@@ -690,10 +729,12 @@ void CPcsContactStore::ContactRemovedFromView(
 // Implements the view error function of MVPbkContactViewObserver
 // --------------------------------------------------------------------------- 
 void CPcsContactStore::ContactViewError(
-            MVPbkContactViewBase& /*aView*/, 
-            TInt /*aError*/, 
-            TBool /*aErrorNotified*/ )  
+         MVPbkContactViewBase& /*aView*/, 
+         TInt aError, 
+         TBool /*aErrorNotified*/ )  
 {
+    PRINT2 ( _L("CPcsContactStore::ContactViewError: URI=%S, Error=%d"),
+             &*iUri, aError );
 }
 
 // ---------------------------------------------------------------------------
@@ -702,13 +743,15 @@ void CPcsContactStore::ContactViewError(
 void CPcsContactStore::CreateContactFetchViewL()
 {
 	PRINT ( _L("Enter CPcsContactStore::CreateContactFetchViewL") );
+    PRINT1 ( _L("CPcsContactStore::CreateContactFetchViewL: URI=%S"),
+             &*iUri );
 	
 	// Create the view definition
     CVPbkContactViewDefinition* viewDef = CVPbkContactViewDefinition::NewL();
 	CleanupStack::PushL( viewDef );
 
-  // Create the View Name for the view
-  // The views are named as PCSView_<uri>		
+    // Create the View Name for the view
+    // The views are named as PCSView_<uri>		
 	HBufC* viewName = HBufC::NewL(KBufferMaxLen);
 	viewName->Des().Append(KPcsViewPrefix);
 	viewName->Des().Append(iUri->Des());
@@ -767,10 +810,9 @@ void CPcsContactStore::CreateContactFetchViewL()
         CleanupStack::Pop(); // iContactViewBase
         CleanupStack::PopAndDestroy(sortOrder);	
         CleanupStack::PopAndDestroy(textbuffer);
-    
+
     	// Close the resouce File
-        iResourceFile.Close();                        
-	
+        iResourceFile.Close();
 	}
 	else if ( iUri->CompareC(KVPbkDefaultCntDbURI) == 0)
     {       
@@ -807,7 +849,7 @@ void CPcsContactStore::CreateContactFetchViewL()
 			
 		// Set name for the view
 		viewDef->SetNameL( *viewName );	
-		__LATENCY_MARK ( _L("CPcsContactStore::CreateContactFetchViewL===== create view start") );
+		__LATENCY_MARK ( _L("CPcsContactStore::CreateContactFetchViewL ==== create view start") );
     	iContactViewBase = iContactManager->CreateContactViewLC( 
 		                         *this, 
 		                         *viewDef, 
@@ -841,18 +883,29 @@ void CPcsContactStore::RunL()
 	
     switch( iNextState)
     {
-	   	case ECreateView :
-			CreateContactFetchViewL();
-		    break;
+        case ECreateView:
+            PRINT1 ( _L("CPcsContactStore::RunL(ECreateView): URI=%S. Create contact view to fetch data from store"),
+                     &*iUri );
+            CreateContactFetchViewL();
+            break;
+
+        case EFetchAllLinks:
+            PRINT1 ( _L("CPcsContactStore::RunL(EFetchAllLinks): URI=%S. Get all contact links in initial view"),
+                     &*iUri );
+            FetchAllInitialContactLinksL();
+            break;
    		
 	   	case EFetchContactBlock:
-	   		PRINT ( _L("Issuing the fetch request for next block") );
-			FetchlinksL();
+            PRINT4 ( _L("CPcsContactStore::RunL(EFetchContactBlock): URI=%S. Issuing fetch request for next block of max %d contacts (%d/%d fetched)"),
+                     &*iUri, KLinksToFetchInOneGo, iFetchBlockUpperNumber, iInitialContactCount);
+            FetchContactsBlockL();
 			break;
 	   	
 	   	case EComplete:
-		    PRINT ( _L("Contacts Caching FINISHED") );
-		    PRINT_BOOT_PERFORMANCE ( _L("Contacts Caching FINISHED") );
+		    PRINT3 ( _L("CPcsContactStore::RunL(EComplete): URI=%S. Contacts Caching FINISHED, (%d/%d contacts fetched)"),
+		             &*iUri, iFetchBlockUpperNumber, iInitialContactCount );
+		    PRINT1_BOOT_PERFORMANCE ( _L("CPcsContactStore::RunL(EComplete): URI=%S. Contacts Caching FINISHED"),
+		                              &*iUri );
 		    break;
     }
 }
@@ -862,11 +915,13 @@ void CPcsContactStore::RunL()
 // ---------------------------------------------------------------------------------
 TInt CPcsContactStore::RunError(TInt /*aError*/) 
 {
-	PRINT ( _L(" Enter CPcsContactStore:: CPcsContactStore::RunError()") );
+	PRINT ( _L("Enter CPcsContactStore::RunError") );
 
-	PRINT1 ( _L(" CPcsContactStore:: RunError().  Completing caching in contacts store %S with status ECachingCompleteWithErrors "), &(iUri->Des()));
+	PRINT1 ( _L("CPcsContactStore::RunError(): URI=%S. Completing caching with status ECachingCompleteWithErrors"),
+	         &*iUri );
     iObserver->UpdateCachingStatus(*iUri, ECachingCompleteWithErrors);
- 	PRINT ( _L(" End CPcsContactStore:: CPcsContactStore::RunError()") );
+
+    PRINT ( _L("End CPcsContactStore::RunError") );
 	return KErrNone;
 }
 
@@ -908,15 +963,31 @@ TInt CPcsContactStore::CreateCacheIDfromSimArrayIndex(TInt aSimId)
 // ---------------------------------------------------------------------------------
 // Issues request to active object to call RunL method
 // ---------------------------------------------------------------------------------
-void CPcsContactStore::IssueRequest()
+void CPcsContactStore::IssueRequest( TInt aTimeDelay )
 {
-	TRequestStatus* status = &iStatus;
-	User::RequestComplete( status, KErrNone );
-	SetActive();
+    if( IsActive() ) // cannot activate allready active object
+        return;
+
+    if ( 0 == aTimeDelay )
+    {
+        TRequestStatus* status = &iStatus;
+        User::RequestComplete( status, KErrNone );
+    }
+    else
+    {
+        PRINT1 ( _L("CPcsContactStore::IssueRequest: Applying delay of %d milliseconds"),
+                 aTimeDelay );
+
+        iTimer.After( iStatus, aTimeDelay);
+    }
+
+    SetActive();
 }
-// Creates a sort order depending on the fields specified in the cenrep
-// when calling this function pass the masterList (i.e list containing all the
-// vpbk fields)
+
+// ---------------------------------------------------------------------------------
+// Creates a sort order depending on the fields specified 
+// in the cenrep when calling this function pass the 
+// masterList (i.e list containing all the vpbk fields)
 // ---------------------------------------------------------------------------------
 void CPcsContactStore::CreateSortOrderL(const MVPbkFieldTypeList& aMasterList)
 {

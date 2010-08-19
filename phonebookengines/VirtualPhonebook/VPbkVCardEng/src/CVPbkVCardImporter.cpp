@@ -205,19 +205,6 @@ void CVPbkVCardImporter::SetObserver(
     iObserver = &aObserver;
     }
 
-CParserProperty* CVPbkVCardImporter::GetCurrentProperty()
-    {
-    // Get current property from parser array
-    CParserProperty* property = NULL;
-    TInt elementCount = iParser->ArrayOfProperties( EFalse )->Count();
-    if ( iArrayElementIndex < elementCount ) 
-        {        
-        property = 
-            iParser->ArrayOfProperties( EFalse )->At( iArrayElementIndex );
-        }
-    return property;
-    }
-
 CParserProperty* CVPbkVCardImporter::NextProperty()
     {
     // Get next property from parser array
@@ -346,15 +333,17 @@ TBool CVPbkVCardImporter::SaveDataL( CVPbkVCardContactFieldData& aData )
          aData.Uid() == TUid::Uid( KVersitPropertyCDesCArrayUid ) )
         {
         const TDesC& value = converter.GetDesCData( aData );
+        // If it is an IMPP field
         if ( aData.FieldType().FieldTypeResId() == R_VPBK_FIELD_TYPE_IMPP )
             {
             TInt pos = value.Find(KColon);
-            if( 0 == pos )
+            if( 0 == pos || KErrNotFound == pos )
                 {
-                // If the service name is NULL and it's a IMPP field, don't save the data.
+                // If the service name or the colon doesn't exist, don't save the data.
                 // e.g.:
                 // (1) If the value is YAHOO:peterpan@yahoo.com, YAHOO is the service name
                 // (2) If the value is :peterpan@yahoo.com, the service name is NULL
+                // (3) If the value is peterpan@yahoo.com, neither the service name and the colon exists
                 isSaved = EFalse;
                 }
             }
@@ -479,12 +468,16 @@ void CVPbkVCardImporter::FieldAddedToContact(
         {
         delete iAddFieldOperation;
         iAddFieldOperation = NULL;
-        StartAsync( ESaveField );
         }    
     if (&aOperation == iAddCntContactFieldOperation)
         {
         delete iAddCntContactFieldOperation;
         iAddCntContactFieldOperation = NULL;
+        }
+    // When both operations have completed
+    if ( !iAddFieldOperation && !iAddCntContactFieldOperation )
+        {
+        StartAsync( ESaveField );
         }
     }
     

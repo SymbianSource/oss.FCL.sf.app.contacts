@@ -195,7 +195,7 @@ inline TBool CCustomFilteredGroupView::IsContactFieldIncludedL(
 	{
 	TBool ret = EFalse;
 	
-	for ( TInt i=0; i < aMemberCount; ++i )
+	for ( TInt i=0; i < aMemberCount && !ret; ++i )
 		{
         const TContactItemId contactId = ( *aGroupMembers )[i];
         CContactItem* item = iContactStore.NativeDatabase().

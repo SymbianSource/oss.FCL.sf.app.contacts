@@ -50,6 +50,7 @@ class CPbk2SortOrderManager;
 enum
 {
     ECreateView,
+    EFetchAllLinks,
     EFetchContactBlock,
     EComplete
 };
@@ -216,6 +217,11 @@ class CPcsContactStore: public CActive,
         void ConstructL(CVPbkContactManager& aContactManager, MDataStoreObserver& aObserver,const TDesC& aUri);
 
         /**
+         * Check next state of state machine for contacts retrieval and perform transition 
+         */
+        void CheckNextState();
+
+        /**
          * Handles the operations for a single contact after it is fetched
          * @param aContact - The contact from database
          */
@@ -239,7 +245,8 @@ class CPcsContactStore: public CActive,
         /**
          * Fetches the  data from contact links from the view
          */
-        void FetchlinksL();
+        void FetchAllInitialContactLinksL();
+        void FetchContactsBlockL();
 
         /**
          * Reads the fields to cache from the central repository
@@ -260,7 +267,7 @@ class CPcsContactStore: public CActive,
         /**
          * Issues request to active object to call RunL method
          */
-        void IssueRequest();
+        void IssueRequest( TInt aTimeDelay );
 
         /**
          * Creates a sort order depending on the fields specified in the cenrep
@@ -275,12 +282,15 @@ class CPcsContactStore: public CActive,
 
     private:
 
+        RPointerArray<MVPbkContactLink> iInitialContactLinks;
 
         /**
          * Flags for store operations
          */
-        TInt  iAllContactLinksCount;
-        TInt  iFetchedContactCount;
+        TInt iInitialContactCount; // Initial contact count in a view
+        TInt iFetchBlockLowerNumber;
+        TInt iFetchBlockUpperNumber;
+        TInt iVPbkCallbackCount;
         TBool iContactViewReady;
         TCachingStatus iOngoingCacheUpdate;
 

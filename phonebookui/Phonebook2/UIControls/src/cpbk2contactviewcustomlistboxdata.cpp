@@ -364,9 +364,7 @@ void CPbk2ContactViewCustomListBoxDataExtension::ConstructL(
     
     iKineticScrolling = CAknPhysics::FeatureEnabled();
 
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     LoadMarkingIconsL();
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
 
     }
 
@@ -591,12 +589,10 @@ void CPbk2ContactViewCustomListBoxDataExtension::FocusLost()
 //
 void CPbk2ContactViewCustomListBoxDataExtension::SkinChangedL()
     {
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     DeleteAnim();
     TryCreateAnimation();
     CreateColorBitmapsL();
     LoadMarkingIconsL();
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     }
 // -----------------------------------------------------------------------------
 // CPbk2ContactViewCustomListBoxDataExtension::SkinChanged
@@ -1188,7 +1184,6 @@ TBool CPbk2ContactViewCustomListBoxDataExtension::DrawPressedDownEffect( MAknsSk
 //
 void CPbk2ContactViewCustomListBoxDataExtension::LoadMarkingIconsL()
     {
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     if ( !iMarkingIconArray )
         {
         iMarkingIconArray = new ( ELeave ) CAknIconArray( 2 );
@@ -1217,7 +1212,6 @@ void CPbk2ContactViewCustomListBoxDataExtension::LoadMarkingIconsL()
     CleanupStack::PushL( icon );
     iMarkingIconArray->AppendL( icon );
     CleanupStack::Pop( icon );
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     }
 
 CCoeControl *CPbk2ContactViewCustomListBoxData::Control() const 
@@ -2041,7 +2035,6 @@ void CPbk2ContactViewCustomListBoxData::DrawSimpleL( const TListItemProperties& 
 
     TRgb aTextColor = aHighlight ? aColors.iHighlightedText : aColors.iText;
     
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     TBool markingMode = EFalse;
     TRect itemRect( aRect );
     
@@ -2057,7 +2050,6 @@ void CPbk2ContactViewCustomListBoxData::DrawSimpleL( const TListItemProperties& 
                     AknLayoutScalable_Avkon::list_single_graphic_pane_t1( 0 ).LayoutLine().il;
             }
         }
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
 
     MAknsSkinInstance *skin = AknsUtils::SkinInstance();
     MAknsControlContext *cc = AknsDrawUtils::ControlContext( Control() );
@@ -2073,13 +2065,8 @@ void CPbk2ContactViewCustomListBoxData::DrawSimpleL( const TListItemProperties& 
     
     if ( iExtension->iSubCellsMightIntersect )
         {
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
         CheckIfSubCellsIntersectL( &textLines[0], &rectClipped[0], *aText, itemRect );
         }
-#else
-        CheckIfSubCellsIntersectL( &textLines[0], &rectClipped[0], *aText, aRect );
-        }
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
 #ifdef RD_UI_TRANSITION_EFFECTS_LIST
     MAknListBoxTfxInternal *transApi = CAknListLoader::TfxApiInternal( &aGc );
 #endif // RD_UI_TRANSITION_EFFECTS_LIST
@@ -2120,7 +2107,6 @@ void CPbk2ContactViewCustomListBoxData::DrawSimpleL( const TListItemProperties& 
         }
     DrawHighLight( aGc, aRect, aHighlight, skin );
     
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     if ( markingMode && !aItemProperties.IsSelectionHidden() )
         {
         TAknLayoutRect layoutRect;
@@ -2154,7 +2140,6 @@ void CPbk2ContactViewCustomListBoxData::DrawSimpleL( const TListItemProperties& 
             }
         
         }
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     
     // The column draw loop
     column = 0;
@@ -2270,13 +2255,8 @@ void CPbk2ContactViewCustomListBoxData::DrawSimpleL( const TListItemProperties& 
                 }
             
             TAknLayoutText textLayout;
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
             textLayout.LayoutText( itemRect, textLineLayout, usedFont );
             TRect layoutedRect( itemRect);
-#else
-            textLayout.LayoutText( aRect, textLineLayout, usedFont );
-            TRect layoutedRect( aRect );
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
                           
             // *2 == leave some room for marquee
             const TInt maxlen( KMaxColumnDataLength * 2 ); 
@@ -2323,11 +2303,7 @@ void CPbk2ContactViewCustomListBoxData::DrawSimpleL( const TListItemProperties& 
                 {
                 iExtension->iMarquee->UseLogicalToVisualConversion( bidiConv );
                 
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
                 if ( iExtension->iMarquee->DrawText( aGc, itemRect, textLineLayout, convBuf, usedFont, textColor ) )
-#else
-                if ( iExtension->iMarquee->DrawText( aGc, aRect, textLineLayout, convBuf, usedFont, textColor ) )
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
                     {
                     // all the loops have been executed
                     textLayout.DrawText( aGc, convBuf, bidiConv, textColor );
@@ -2429,11 +2405,7 @@ void CPbk2ContactViewCustomListBoxData::DrawSimpleL( const TListItemProperties& 
             TAknWindowLineLayout graphicLayout = iExtension->AtSL(subCellIndex).iGraphicLayout;
             TAknLayoutRect graphicRect; 
             
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
             graphicRect.LayoutRect( itemRect,graphicLayout );
-#else
-            graphicRect.LayoutRect(aRect,graphicLayout);
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
             TSize graphicSize( graphicRect.Rect().Size() );
             
             if (index>=0 && IconArray())
@@ -2528,7 +2500,6 @@ void CPbk2ContactViewCustomListBoxData::Draw( const TListItemProperties& aItemPr
         return;
         }
 
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     CEikListBox* listbox = static_cast<CEikListBox*>( iExtension->iControl );
     TBool markingMode = EFalse;
     TRect itemRect( aRect );
@@ -2545,19 +2516,12 @@ void CPbk2ContactViewCustomListBoxData::Draw( const TListItemProperties& aItemPr
                 AknLayoutScalable_Avkon::list_single_graphic_pane_t1( 0 ).LayoutLine().il;
             }
         }
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     
     TInt extraVerticalSpace=(aRect.Height()-font->HeightInPixels());
     TInt baseLineOffset=extraVerticalSpace/2+font->AscentInPixels();
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     TRect textRect( itemRect );
     TRect textMRect; // textrect with margins.
     textRect.iBr.iX = itemRect.iTl.iX;
-#else
-    TRect textRect( aRect );
-    TRect textMRect; // textrect with margins.
-    textRect.iBr.iX=aRect.iTl.iX;
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     TInt column=0;
     TPtrC text;
 
@@ -2567,20 +2531,12 @@ void CPbk2ContactViewCustomListBoxData::Draw( const TListItemProperties& aItemPr
     // be too difficult to do without - and this is cleaner solution.
     
     // pass 1, figures out x-coordinates for columns.
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     TInt x = itemRect.iTl.iX;
-#else
-    TInt x = aRect.iTl.iX;
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     
     TBool mirror = AknLayoutUtils::LayoutMirrored();
     if (mirror)
         {
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
         x = itemRect.iBr.iX;
-#else
-        x = aRect.iBr.iX;
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
         }
     TInt maxx = x;
     while(column <= lastColumn)
@@ -2653,15 +2609,6 @@ void CPbk2ContactViewCustomListBoxData::Draw( const TListItemProperties& aItemPr
         cc = SkinBackgroundContext();
         }
 
-#ifndef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
-    // aRect is list item's rect, width of which is smaller than width of the list
-    // with a scroll bar. List needs to draw under scroll bar anyway, so we need to
-    // modify given rect here.
-    TRect r(aRect);
-    
-    CEikListBox* listbox = static_cast<CEikListBox*>( iExtension->iControl );
-#endif // !PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
-
 #ifdef RD_UI_TRANSITION_EFFECTS_LIST
 
     MAknListBoxTfxInternal *transApi = CAknListLoader::TfxApiInternal( &aGc );
@@ -2697,13 +2644,8 @@ void CPbk2ContactViewCustomListBoxData::Draw( const TListItemProperties& aItemPr
 #endif // RD_UI_TRANSITION_EFFECTS_LIST
         }
     
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     if ( iExtension->iCurrentRow < listbox->BottomItemIndex() )
-#else
-    CEikListBox* list = static_cast<CEikListBox*>( iExtension->iControl );
 
-    if ( iExtension->iCurrentRow < list->BottomItemIndex() )
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
         {
         AknListUtils::DrawSeparator( aGc, aRect, aColors.iText, skin );
         }
@@ -2720,7 +2662,6 @@ void CPbk2ContactViewCustomListBoxData::Draw( const TListItemProperties& aItemPr
         }
 #endif // RD_UI_TRANSITION_EFFECTS_LIST
 
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     if ( markingMode && !aItemProperties.IsSelectionHidden() )
         {
         TAknLayoutRect layoutRect;
@@ -2761,7 +2702,6 @@ void CPbk2ContactViewCustomListBoxData::Draw( const TListItemProperties& aItemPr
                               EFalse );
             }
         }
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     
     // The column draw loop
     column = 0;
@@ -3382,11 +3322,8 @@ void CPbk2ContactViewCustomListBoxData::HandleResourceChange( TInt aType )
     // too.
     if( KAknsMessageSkinChange == aType )
         {
-#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
         TRAP_IGNORE( iExtension->SkinChangedL() );
-#else
-        iExtension->SkinChanged();
-#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
+
         }
     else if(aType == KEikDynamicLayoutVariantSwitch)
         {

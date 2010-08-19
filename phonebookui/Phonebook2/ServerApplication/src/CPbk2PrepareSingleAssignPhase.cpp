@@ -191,6 +191,16 @@ void CPbk2PrepareSingleAssignPhase::AcceptDelayedL
     }
 
 // --------------------------------------------------------------------------
+// CPbk2PrepareSingleAssignPhase::DenyDelayed
+// --------------------------------------------------------------------------
+//
+void CPbk2PrepareSingleAssignPhase::DenyDelayedL
+        ( const TDesC8& /*aContactLinkBuffer*/ )
+    {
+    // Nothing to do
+    }
+
+// --------------------------------------------------------------------------
 // CPbk2PrepareSingleAssignPhase::Results
 // --------------------------------------------------------------------------
 //

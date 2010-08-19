@@ -212,6 +212,16 @@ void CPbk2PrepareMultipleAssignPhase::AcceptDelayedL
     }
 
 // --------------------------------------------------------------------------
+// CPbk2PrepareMultipleAssignPhase::DenyDelayed
+// --------------------------------------------------------------------------
+//
+void CPbk2PrepareMultipleAssignPhase::DenyDelayedL
+        ( const TDesC8& /*aContactLinkBuffer*/ )
+    {
+    // Nothing to do
+    }
+
+// --------------------------------------------------------------------------
 // CPbk2PrepareMultipleAssignPhase::Results
 // --------------------------------------------------------------------------
 //

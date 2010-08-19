@@ -71,6 +71,8 @@ class CPbk2ItemFetcher : public CBase,
         void CancelService();
         void AcceptDelayedContactsL(
                 const TDesC8& aContactLinkBuffer );
+        void DenyDelayedContactsL(
+                const TDesC8& aContactLinkBuffer );
         void ExitServiceL(
                 TInt aExitCommandId );
         void ServiceResults(TServiceResults* aResults) const;

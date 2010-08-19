@@ -38,6 +38,7 @@
 
 // System includes
 #include <coemain.h>
+#include <akninputblock.h>
 
 // Debugging headers
 #include <Pbk2Debug.h>
@@ -56,7 +57,9 @@ CPbk2FetchResults::CPbk2FetchResults
                 iFetchDlg( aFetchDlg ),
                 iPages( aPages ),
                 iObserver( aObserver ),
-                iResultsObserver( aResultsObserver )
+                iResultsObserver( aResultsObserver ),
+                iWaitingForDelayedAppend( EFalse ),
+                iInputBlock( NULL )
     {
     }
 
@@ -86,6 +89,8 @@ CPbk2FetchResults::~CPbk2FetchResults()
         
         delete iOperationQueue;
         }
+    
+    delete iWaitForAllOperationComplete;
     }
 
 // --------------------------------------------------------------------------
@@ -107,6 +112,8 @@ inline void CPbk2FetchResults::ConstructL
         }
     
     iOperationQueue = new (ELeave) CArrayFixFlat<CFRConatactOperation*>(4);
+    
+    iWaitForAllOperationComplete = new (ELeave) CActiveSchedulerWait();
     }
 
 // --------------------------------------------------------------------------
@@ -133,10 +140,17 @@ CPbk2FetchResults* CPbk2FetchResults::NewL
 // --------------------------------------------------------------------------
 //
 void CPbk2FetchResults::AppendL( const MVPbkContactLink& aLink )
-    {
-    CFRConatactOperation* newAppendOperation = CFRConatactOperation::NewL( aLink, CFRConatactOperation::EAppendContact );
-    AppendContactOperationL(newAppendOperation);
-    ProcessNextContactOperationL();
+    { 
+    if ( iFetchDlg.IsSelectPermitted() )
+        {
+        CFRConatactOperation* newAppendOperation = CFRConatactOperation::NewL( aLink, CFRConatactOperation::EAppendContact );
+        AppendContactOperationL(newAppendOperation);
+        ProcessNextContactOperationL();
+        }
+    else
+        {
+        iPages.SelectContactL( aLink, EFalse );
+        }
     }
 
 // --------------------------------------------------------------------------
@@ -145,8 +159,24 @@ void CPbk2FetchResults::AppendL( const MVPbkContactLink& aLink )
 //
 void CPbk2FetchResults::AppendDelayedL( const MVPbkContactLink& aLink )
     {
+    // Add the feedback contact's operation to the head of the queue
+    // in order to ensure that the checked contact's operation to be
+    // handled firstly when phonebook receives the client feedback.
     CFRConatactOperation* newAppendOperation = CFRConatactOperation::NewL( aLink, CFRConatactOperation::EAppendContactDelayed );
-    AppendContactOperationL(newAppendOperation);
+    iOperationQueue->InsertL( 0, newAppendOperation ); 
+    // Waiting is over.
+    iWaitingForDelayedAppend = EFalse;
+    ProcessNextContactOperationL();
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2FetchResults::DenyAppendDelayedL
+// --------------------------------------------------------------------------
+//
+void CPbk2FetchResults::DenyAppendDelayedL( const MVPbkContactLink& aLink )
+    {
+    // Waiting is over, process next contact operation
+    iWaitingForDelayedAppend = EFalse;
     ProcessNextContactOperationL();
     }
 
@@ -173,6 +203,21 @@ void CPbk2FetchResults::ResetAndDestroy()
     RemoveCurrentContactOperation();
 
     iSelectedContacts->ResetAndDestroy();
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2FetchResults::WaitOperationsCompleteL
+// --------------------------------------------------------------------------
+//
+void CPbk2FetchResults::WaitOperationsCompleteL()
+    {
+    if ( iWaitingForDelayedAppend || iOperationQueue->Count()>0 )
+        {
+        iInputBlock = CAknInputBlock::NewLC();
+        CleanupStack::Pop( iInputBlock );
+        
+        iWaitForAllOperationComplete->Start();
+        }
     }
 
 // --------------------------------------------------------------------------
@@ -328,6 +373,13 @@ void CPbk2FetchResults::DoAppendContactL
         {
         // Observer needs to asked
         accept = iObserver.AcceptFetchSelectionL( count, *link );
+        // Determine whether accept query is needed
+        if ( MPbk2FetchDlgObserver::EFetchDelayed == accept )
+            {
+            // Start to wait client feedback, block the operation queue,
+            // process next operation until receive client feedback.
+            iWaitingForDelayedAppend = ETrue;
+            }
         }
 
     if ( accept == MPbk2FetchDlgObserver::EFetchNo )
@@ -489,8 +541,6 @@ void CPbk2FetchResults::HandleContactOperationCompleteL(
     // Remove executed operation from queue
     RemoveCurrentContactOperation();
     
-    // Initialize next operation from queue
-    ProcessNextContactOperationL();   
     
     /**********************************************************************/
     /**************! Dont use class members after SWITCH !*****************/
@@ -505,17 +555,26 @@ void CPbk2FetchResults::HandleContactOperationCompleteL(
         case CFRConatactOperation::EAppendContact:
             {
             DoAppendContactL( *aContact, EFalse );
+            // Check whether next operation can be processed
+            // after sending check request to client.
+            ProcessNextContactOperationL();
             break;
             }
             
         case CFRConatactOperation::EAppendContactDelayed:
             {
+            // Process new contact opretation before appending 
+            // the delayed contact to results. It can save time.
+            ProcessNextContactOperationL();   
             DoAppendContactL( *aContact, ETrue );
             break;
             }
         
         case CFRConatactOperation::ERemoveContact:
             {
+            // Process new contact opretation before removing contact 
+            // from results. It can save time.
+            ProcessNextContactOperationL();   
             DoRemoveContactL( *aContact );
             break;
             }
@@ -530,7 +589,7 @@ void CPbk2FetchResults::HandleContactOperationCompleteL(
 //
 void CPbk2FetchResults::ProcessNextContactOperationL()
     {
-    if( !iRetrieveOperation )
+    if( !iRetrieveOperation && !iWaitingForDelayedAppend )
         {        
         // No operation is executing -> process next one
         
@@ -538,13 +597,23 @@ void CPbk2FetchResults::ProcessNextContactOperationL()
             {
             // Start asynchronous contact retrieve operation, which completes
             // in CPbk2FetchResults::HandleContactOperationCompleteL.
-            iRetrieveOperation =  iContactManager.RetrieveContactL( *( GetCurrentContactOperation()->GetContactLink() ),
-                                                                   *this );
+			iRetrieveOperation =  iContactManager.RetrieveContactL( 
+                    *( GetCurrentContactOperation()->GetContactLink() ),
+                    *this );
             }
         else
             {
-            // Empty operation queue -> do nothing
-            PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING( "CPbk2FetchResults::ProcessNextContactOperationL emtpy queue" ));
+            if ( !iWaitingForDelayedAppend )
+                {
+                // Every seleced contacts' operation finishes,
+                // stop the scheduler waiting for every operation.
+                if (iWaitForAllOperationComplete->IsStarted())
+                    iWaitForAllOperationComplete->AsyncStop();
+                
+                // Stop blocking input 
+                delete iInputBlock;
+                iInputBlock = NULL;
+                }
             }
         }
     else

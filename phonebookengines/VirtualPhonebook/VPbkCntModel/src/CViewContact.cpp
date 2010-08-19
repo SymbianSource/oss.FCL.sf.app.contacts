@@ -200,7 +200,8 @@ CViewContactFieldCollection::~CViewContactFieldCollection()
 void CViewContactFieldCollection::SetFieldsData(
         const ::CViewContact& aViewContact )
     {
-    const TInt count = aViewContact.FieldCount();
+    const TInt count = aViewContact.FieldCount()<iFields.Count()?
+        aViewContact.FieldCount():iFields.Count();
     for (TInt i = 0; i < count; ++i)
         {
         iFields[i].SetFieldData(aViewContact.Field(i));

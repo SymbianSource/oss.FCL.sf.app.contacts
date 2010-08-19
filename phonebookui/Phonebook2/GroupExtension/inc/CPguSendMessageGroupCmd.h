@@ -151,6 +151,8 @@ class CPguSendMessageGroupCmd :
         TProcessState iState;
         /// Ref: Group UI extension
         CPguUIExtensionPlugin* iPguUIExtensionPlugin;
+        /// Own: Send Message indicator
+        TBool iSendMessage;
     };
 
 #endif // CPGUSENDMESSAGEGROUPCMD_H

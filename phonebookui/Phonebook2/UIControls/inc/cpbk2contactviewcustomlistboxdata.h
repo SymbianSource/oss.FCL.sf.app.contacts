@@ -102,8 +102,8 @@ public:
          */
         TRgb iHighlightedBack;
         };
-//Start of Code Added for PhoneBook2
-public: //Function below are added to suit PhoneBook2 Requirements
+
+public: 
     
     /**
      * Set internal data model to work with special PCS data
@@ -148,11 +148,10 @@ public: //Function below are added to suit PhoneBook2 Requirements
      */
     void SetListCommands( const RPointerArray<MPbk2UiControlCmdItem>* aCommands );
     
-private:
     TBool IsContactAtListboxIndex( TInt aListboxIndex ) const;
+	
+private:    
     TInt CommandItemCount() const;
-    
-//End of Code Added for PhoneBook2
     
 public:
 

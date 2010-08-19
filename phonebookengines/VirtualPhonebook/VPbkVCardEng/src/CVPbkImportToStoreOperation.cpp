@@ -22,6 +22,7 @@
 #include "CVPbkVCardImporter.h"
 #include "CVPbkVCardData.h"
 #include "VPbkVCardEngError.h"
+#include "CVPbkLocalVariationManager.h"
 
 // From Virtual Phonebook
 #include <MVPbkStoreContact.h>
@@ -371,7 +372,8 @@ void CVPbkImportToStoreOperation::HandleContactSavedL(
 	    	}
 		
      TBool destroyed = EFalse;
-     if(iGroupcardHandler && ((CVPbkVCardImporter *)iOperationImpl)->IsGroupcard())
+     TBool isGroupCard = ((CVPbkVCardImporter *)iOperationImpl)->IsGroupcard();   
+     if(iGroupcardHandler && isGroupCard )
          {
          // CVPbkGroupCardHandler uses nested activescheduler loop to make
          // async requests synchronous (why?). Hence it is possible that when 
@@ -398,6 +400,17 @@ void CVPbkImportToStoreOperation::HandleContactSavedL(
              destroyed = ETrue;
              }
          }
+     
+     CVPbkLocalVariationManager* lvm = CVPbkLocalVariationManager::NewL(); 
+     TBool supportSyncGroupVcard = lvm->LocallyVariatedFeatureEnabled( EVPbkLVSyncGroupEnabled );
+     delete lvm;    
+     if (supportSyncGroupVcard && iGroupcardHandler && !isGroupCard)        
+         {
+         iGroupcardHandler->BuildContactGroupsHashMapL(iTargetStore);
+         iGroupcardHandler->GetContactGroupStoreL(aResults->At(0));
+         iGroupcardHandler->DeleteContactFromGroupsL();
+         }
+     
     CleanupStack::PopAndDestroy(); // aResults
 
     if ( !destroyed )

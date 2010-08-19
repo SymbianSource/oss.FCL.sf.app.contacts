@@ -227,6 +227,11 @@ class CLogsRecentListView :     public CLogsBaseView,
         */
         TBool IgnoreViewDeactivatedOperation();
     
+        /**
+         * Early detection of view activation.
+         * Overrides the baseclass implementation calls CAknView::ViewActivatedL().
+         */
+        void ViewActivatedL(const TVwsViewId& aPrevViewId,TUid aCustomMessageId,const TDesC8& aCustomMessage);
     
     private:    // Data
         /// Own: view's control container

@@ -262,6 +262,7 @@ void CPguSendMessageGroupCmd::RunL()
             }
         case EStopping:
             {
+            iSendMessage = EFalse;
             ProcessDismissed( KErrNone );
             break;
             }
@@ -369,32 +370,35 @@ void CPguSendMessageGroupCmd::DoSendMessageL()
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
         ("CPguSendMessageGroupCmd::DoSendMessageL() start") );
 
-    // Gets current tile pane and saves it to title
-    HBufC* title = NULL;
-    CAknTitlePane* titlePane = NULL;
-    CEikStatusPane *sp = CEikonEnv::Static()->AppUiFactory()->StatusPane();
-    titlePane = STATIC_CAST( CAknTitlePane*, 
-        sp->ControlL( TUid::Uid( EEikStatusPaneUidTitle ) ) );
-    title = titlePane->Text()->AllocLC();
-
-    Phonebook2::Pbk2AppUi()->ApplicationServices().SendUiL()->
-        CreateAndSendMessageL( iMtmUid, iMessageData );
-
-    if( !Layout_Meta_Data::IsLandscapeOrientation() )
+    if ( iSendMessage )
         {
-        sp->SwitchLayoutL( R_AVKON_STATUS_PANE_LAYOUT_USUAL );
-        sp->MakeVisible( ETrue );
-        
-        // Sets title pane for tile which was save
-        titlePane->SetText( title );
-        sp->DrawNow();
+        // Gets current tile pane and saves it to title
+        HBufC* title = NULL;
+        CAknTitlePane* titlePane = NULL;
+        CEikStatusPane *sp = CEikonEnv::Static()->AppUiFactory()->StatusPane();
+        titlePane = STATIC_CAST( CAknTitlePane*, 
+            sp->ControlL( TUid::Uid( EEikStatusPaneUidTitle ) ) );
+        title = titlePane->Text()->AllocLC();
+
+        Phonebook2::Pbk2AppUi()->ApplicationServices().SendUiL()->
+            CreateAndSendMessageL( iMtmUid, iMessageData );
+
+        if( !Layout_Meta_Data::IsLandscapeOrientation() )
+            {
+            sp->SwitchLayoutL( R_AVKON_STATUS_PANE_LAYOUT_USUAL );
+            sp->MakeVisible( ETrue );
+            
+            // Sets title pane for tile which was save
+            titlePane->SetText( title );
+            sp->DrawNow();
+            }
+        else
+            {
+            // Sets title pane for tile which was save
+            titlePane->SetText( title );
+            }
+        CleanupStack::Pop();
         }
-    else
-        {
-        // Sets title pane for tile which was save
-        titlePane->SetText( title );
-        }
-    CleanupStack::Pop();
 
     iState = EStopping;
     IssueRequest();
@@ -456,6 +460,7 @@ void CPguSendMessageGroupCmd::ResolveUrlL()
         SetAddressFromFieldL( *selectedField );
         CleanupStack::PopAndDestroy(); // selectedField
         iState = ERetrieving;
+        iSendMessage = ETrue;
         }
     else 
         {

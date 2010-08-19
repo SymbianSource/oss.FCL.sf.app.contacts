@@ -112,8 +112,11 @@ EXPORT_C TUint16 CVPbkSimFieldTypeFilter::FilteringFlagForSimFieldType
             ret = ESimFilterCriteriaGsmNumber;
             break;
             }
-
-        case EVPbkSimAdditionalNumber:
+         
+         case EVPbkSimAdditionalNumber1:  // FALLTHROUGH
+         case EVPbkSimAdditionalNumber2:  // FALLTHROUGH
+         case EVPbkSimAdditionalNumber3:  // FALLTHROUGH
+         case EVPbkSimAdditionalNumberLast: // the same as EVPbkSimAdditionalNumber.
             {
             ret = ESimFilterCriteriaAdditionalNumber;
             break;

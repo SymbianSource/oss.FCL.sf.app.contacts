@@ -40,8 +40,8 @@ SOURCE          CPcsCache.cpp
 SOURCE          CPcsPoolElement.cpp
 SOURCE          CPcsKeyMap.cpp
 SOURCE          CPsDataPluginInterface.cpp
-SOURCE          FindUtilChineseECE.cpp 
-SOURCE          chinesefindutils.cpp
+SOURCE          chinesefindutils.cpp 
+SOURCE          FindUtilChineseECE.cpp
 
 USERINCLUDE     ../inc
 USERINCLUDE     ../../inc
@@ -65,3 +65,4 @@ LIBRARY         cone.lib
 LIBRARY         fepbase.lib 
 LIBRARY         centralrepository.lib
 LIBRARY         findutil.lib
+LIBRARY         pbkeng.lib

@@ -18,6 +18,7 @@
 
 // INCLUDE FILES
 #include "CPbk2CommandStore.h"
+#include "MPbk2CommandResourceRelease.h"
 
 // Phonebook 2
 #include <MPbk2Command.h>
@@ -222,11 +223,25 @@ void CPbk2CommandStore::IdleDestructor()
             MPbk2Command* arrayCmd = iCommandArray[j];
             if (idleDestCmd == arrayCmd)
                 {
-                // Remove from command array
-                iCommandArray.Remove(j);
                 iIdleDestructableCommands.Remove(i);
+                                
+                // Try to get MPbk2ResourceRelease interface.
+                TUid uid;
+                uid.iUid = MPbk2ResourceReleaseUID;
+                MPbk2ResourceRelease* release = static_cast<MPbk2ResourceRelease *>(idleDestCmd->CommandExtension(uid));
+                if (release)
+                  {
+                    // Call ReleaseResource before delete.
+                    release->ReleaseResource();
+                  }
+              
+                // Remove from command array
+                iCommandArray.Remove(j);                
+                
                 delete idleDestCmd;
                 idleDestCmd = NULL;
+                
+                break;
                 }
             }
         }

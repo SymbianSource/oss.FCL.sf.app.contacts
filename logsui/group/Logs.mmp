@@ -31,6 +31,7 @@ TARGET          Logs.exe
 TARGETTYPE      exe
 EPOCSTACKSIZE   0x2710  //10000dec (default is 8000dec). In new architecture we need some more stack to 
                         //facilitate succesfull launching of editors (e.g. prepend number and send sms editors)
+EPOCHEAPSIZE 0x1000 0x200000
 UID             0x100039CE KLogsAppUID3
 VENDORID        VID_DEFAULT
 

@@ -186,6 +186,19 @@ void CPbk2ContactFetchPhase::AcceptDelayedL
     }
 
 // --------------------------------------------------------------------------
+// CPbk2ContactFetchPhase::DenyDelayed
+// --------------------------------------------------------------------------
+//
+void CPbk2ContactFetchPhase::DenyDelayedL
+        ( const TDesC8& aContactLinkBuffer )
+    {
+    if ( iFetchDlg )
+        {
+        iFetchDlg->DenyDelayedFetchL( aContactLinkBuffer );
+        }
+    }
+
+// --------------------------------------------------------------------------
 // CPbk2ContactFetchPhase::Results
 // --------------------------------------------------------------------------
 //

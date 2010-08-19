@@ -307,6 +307,16 @@ void CPbk2CommAddressSelectPhase::AcceptDelayedL
     }
 
 // --------------------------------------------------------------------------
+// CPbk2CommAddressSelectPhase::DenyDelayed
+// --------------------------------------------------------------------------
+//
+void CPbk2CommAddressSelectPhase::DenyDelayedL
+        ( const TDesC8& /*aContactLinkBuffer*/ )
+    {
+    // Nothing to deny
+    }
+
+// --------------------------------------------------------------------------
 // CPbk2CommAddressSelectPhase::Results
 // --------------------------------------------------------------------------
 //

@@ -26,6 +26,7 @@
 
 // FORWARD DECLARATIONS
 struct TVPbkGsmStoreProperty;
+struct TVPbkUSimStoreProperty;  
 
 namespace VPbkSimStore {
 
@@ -52,6 +53,15 @@ NONSHARABLE_CLASS( CSupportedFieldTypes ):
         static CSupportedFieldTypes* NewL(
             const CFieldTypeMappings& aFieldTypeMappings,
             TVPbkGsmStoreProperty& aSimStoreProperty );
+        /**
+        * Two-phased constructor.
+        * @param aSimStoreProperty sim store properties
+        * @return a new instance of this class
+        */
+        static CSupportedFieldTypes* NewL(
+            const CFieldTypeMappings& aFieldTypeMappings,
+            TVPbkGsmStoreProperty& aSimStoreProperty,
+            TVPbkUSimStoreProperty& aUSimStoreProperty ); 
         
         /**
         * Destructor.
@@ -109,7 +119,8 @@ NONSHARABLE_CLASS( CSupportedFieldTypes ):
         * By default Symbian 2nd phase constructor is private.
         */
         void ConstructL( const CFieldTypeMappings& aFieldTypeMappings,
-            TVPbkGsmStoreProperty& aSimStoreProperty );
+            TVPbkGsmStoreProperty& aSimStoreProperty,
+            TVPbkUSimStoreProperty* aUSimStoreProperty = NULL ); 
 
     private:    // Data
         ///Ref: An array for the supported types. Doesn't own types

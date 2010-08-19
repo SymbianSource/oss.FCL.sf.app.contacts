@@ -30,7 +30,11 @@ enum TVPbkSimCntFieldType
     EVPbkSimReading = 5, // ETel ETagPBSecondName
     EVPbkSimEMailAddress = 6, // ETagPBEmailAddress
     EVPbkSimGroupName = 7, // ETel ETagPBGroupName
-    EVPbkSimUnknownType = 8
+    EVPbkSimUnknownType = 8,
+    EVPbkSimAdditionalNumber1 = 9,  // ETagPBAnrStart the first additional number
+    EVPbkSimAdditionalNumber2 = 10,  // ETagPBAnrStart the second additional number
+    EVPbkSimAdditionalNumber3 = 11,  // ETagPBAnrStart the third additional number
+    EVPbkSimAdditionalNumberLast = EVPbkSimAdditionalNumber  // ETagPBAnrStart the fourth additional number and so on.
     };
 
 

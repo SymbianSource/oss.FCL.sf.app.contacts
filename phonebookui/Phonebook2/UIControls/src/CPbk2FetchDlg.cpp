@@ -149,7 +149,8 @@ inline void CPbk2FetchDlg::TResData::ReadFromResource
 inline CPbk2FetchDlg::CPbk2FetchDlg
         ( TParams aParams, MPbk2FetchDlgObserver& aObserver ) :
             iParams( aParams ),
-            iObserver( aObserver )
+            iObserver( aObserver ),
+            iSelectPermitted( ETrue )
     {
     }
 
@@ -258,10 +259,33 @@ EXPORT_C void CPbk2FetchDlg::AcceptDelayedFetchL
         ( aContactLink, Phonebook2::Pbk2AppUi()->ApplicationServices().
             ContactManager().ContactStoresL() );
 
+    // Append the selected contact to results.
     if ( linkArray->Count() > 0 )
         {
         const MVPbkContactLink& link = linkArray->At( KFirstElement );
         iResults->AppendDelayedL( link );
+        }
+
+    CleanupStack::PopAndDestroy(); // linkArray
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2FetchDlg::AcceptDelayedFetchL
+// --------------------------------------------------------------------------
+//
+EXPORT_C void CPbk2FetchDlg::DenyDelayedFetchL
+        ( const TDesC8& aContactLink )
+    {
+    CVPbkContactLinkArray* linkArray = CVPbkContactLinkArray::NewLC
+        ( aContactLink, Phonebook2::Pbk2AppUi()->ApplicationServices().
+            ContactManager().ContactStoresL() );
+
+    // Unmark the selected contact
+    if ( linkArray->Count() > 0 )
+        {
+        const MVPbkContactLink& link = linkArray->At( KFirstElement );
+        iResults->DenyAppendDelayedL( link );
+        iPages->SelectContactL( link, EFalse );
         }
 
     CleanupStack::PopAndDestroy(); // linkArray
@@ -388,6 +412,12 @@ TBool CPbk2FetchDlg::OkToExitL( TInt aButtonId )
             }
         }
 
+    // Only multiple fetch needs to wait buffered operations finished
+    if ( !canceled && ( iParams.iFlags & EFetchMultiple ) )
+        {
+        iResults->WaitOperationsCompleteL();
+        }
+    
     // Notify observer
     if ( canceled )
         {
@@ -434,6 +464,11 @@ TBool CPbk2FetchDlg::OkToExitL( TInt aButtonId )
         {
         // Reset results
         iResults->ResetAndDestroy();
+        }
+    else
+        {
+        // Permit selection again
+        iSelectPermitted = ETrue;
         }
     
     iExitRecord.Set( EExitOrdered );    // exit is now ordered and
@@ -525,6 +560,12 @@ TKeyResponse CPbk2FetchDlg::OfferKeyEventL
         }
     else
         {
+        // EKeyApplicationF means left softkey is pressed
+        if ( EKeyApplicationF == aKeyEvent.iCode && 
+                ( iParams.iFlags & EFetchMultiple ) )
+            {
+            iSelectPermitted = EFalse;
+            }
         if( !Phonebook2::Pbk2AppUi()->KeyEventHandler().Pbk2ProcessKeyEventL( aKeyEvent, aType ) )
             {
             
@@ -787,6 +828,14 @@ void CPbk2FetchDlg::SelectContactL
             CleanupStack::PopAndDestroy( ); // link
         	}
         }
+    }
+// --------------------------------------------------------------------------
+// CPbk2FetchDlg::IsSelectPermitted
+// --------------------------------------------------------------------------
+//
+TBool CPbk2FetchDlg::IsSelectPermitted()
+    {
+    return iSelectPermitted;
     }
 
 // --------------------------------------------------------------------------

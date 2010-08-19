@@ -698,7 +698,12 @@ void CCCAppDetailsViewListBoxModel::VPbkSingleContactOperationComplete(
                 UpdateMSKinCbaL();
         );
 
-    SetFocusedListIndex(iInitialFocusIndex);
+    // check if any item highlighted
+    TBool highLightEnabled = iListBox.IsHighlightEnabled();
+    if ( !highLightEnabled )
+        {
+        SetFocusedListIndex(iInitialFocusIndex);
+        }
 
     /*if (!iXspIdModifyState)
      {

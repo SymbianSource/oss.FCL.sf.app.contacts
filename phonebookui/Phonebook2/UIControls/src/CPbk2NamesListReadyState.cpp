@@ -736,6 +736,7 @@ void CPbk2NamesListReadyState::HandlePointerEventL
         {
         // Send selection events based on marking
         TInt focusIndex = iListBox.CurrentItemIndex();
+        TInt commands = CommandItemCount();
         const TBool markedAfter = iListBox.View()->ItemIsSelected( focusIndex );
 
         TPbk2ControlEvent event( TPbk2ControlEvent::EContactSelected );
@@ -743,6 +744,10 @@ void CPbk2NamesListReadyState::HandlePointerEventL
         if ( !markedAfter )
             {
             event.iEventType = TPbk2ControlEvent::EContactUnselected;
+            }
+        else if ( focusIndex <  commands)
+            {
+            UnmarkCommands();
             }
         iEventSender.SendEventToObserversL( event );
 
@@ -1491,55 +1496,20 @@ void CPbk2NamesListReadyState::AddCommandItemL(MPbk2UiControlCmdItem* /*aCommand
 void CPbk2NamesListReadyState::DynInitMenuPaneL(
         TInt aResourceId, CEikMenuPane* aMenuPane) const
     {
-    AknSelectionService::HandleMarkableListDynInitMenuPane
-        (aResourceId, aMenuPane, &iListBox);
-    
-    TInt focusedItem = iListBox.View()->CurrentItemIndex();
-    TBool markHidden = iListBox.View()->ItemIsSelected( focusedItem );
-    TBool unmarkHidden = !iListBox.View()->ItemIsSelected( focusedItem );
-    TBool markAllHidden = ( iListBox.Model()->NumberOfItems() == 0 ) || 
-        ( iListBox.SelectionIndexes()->Count() == iListBox.Model()->NumberOfItems() );
-    TBool unmarkAllHidden = ( iListBox.Model()->NumberOfItems() == 0 ) || 
-        ( iListBox.SelectionIndexes()->Count() == 0 );
-    
-    TInt position;
-    if (aMenuPane->MenuItemExists(EAknCmdMark, position))
-        {
-        aMenuPane->SetItemDimmed(EAknCmdMark, markHidden);
-        }
-    if (aMenuPane->MenuItemExists(EAknCmdUnmark, position))
-        {
-        aMenuPane->SetItemDimmed(EAknCmdUnmark, unmarkHidden);
-        }
-    if (aMenuPane->MenuItemExists(EAknMarkAll, position))
-        {
-        aMenuPane->SetItemDimmed(EAknMarkAll, markAllHidden);
-        }
-    if (aMenuPane->MenuItemExists(EAknUnmarkAll, position))
-        {
-        aMenuPane->SetItemDimmed(EAknUnmarkAll, unmarkAllHidden);
-        }
-    
-    // When all contacts are marked in the listbox, the command items are not marked.
-    // This code snippet dims out the  Mark All menu item which is shown since the
-    // list box cannot differentiate a command and a contact item
-
     TInt commandItemCount = CommandItemCount();
+	
+    // Stores the position of the searched menu item.
+    // This position is not needed or used anywhere
+    TInt pos; 
 
-
-    if ((iListBox.SelectionIndexes()->Count() + commandItemCount ) == iListBox.Model()->NumberOfItems())
+    if ((iListBox.SelectionIndexes()->Count() + commandItemCount ) 
+            == iListBox.Model()->NumberOfItems())
         {
-        TInt i; // Stores the position of the searched menu item.
-                // This position is not needed or used anywhere
-        if (aMenuPane->MenuItemExists(EAknMarkAll, i))
+        if (aMenuPane->MenuItemExists( EAknCmdMarkingModeEnter, pos ) )
             {
-            aMenuPane->SetItemDimmed(EAknMarkAll, ETrue);
+            aMenuPane->SetItemDimmed( EAknCmdMarkingModeEnter, ETrue );
             }
         }
-
-    // If there's any, command items are always placed at the top of the list box.
-    // By comparing the list box current item index with the command item count, we are trying to find out
-    // if the current focused item is command item or not.
 
     }
 
@@ -2072,9 +2042,22 @@ void CPbk2NamesListReadyState::AdaptiveSearchTextChanged( CAknSearchField* aSear
 void CPbk2NamesListReadyState::CmdItemVisibilityChanged( TInt aCmdItemId, TBool aVisible )
     {
     TInt cmdItemIndex = FindCommand(aCmdItemId);
-    TRAP_IGNORE( HandleCommandEventL(
-                (aVisible ? EItemAdded : EItemRemoved),
-                cmdItemIndex) );
+    TInt cmdListBoxIndex = EnabledCommandCount();
+    if( aVisible )
+        {
+        cmdListBoxIndex--;
+        }
+    // Update the HiddenSelection property of the command items.
+    TListItemProperties prop( iListBox.ItemDrawer()->Properties(cmdListBoxIndex) );
+    prop.SetHiddenSelection(aVisible);
+    
+    TRAP_IGNORE(
+        iListBox.ItemDrawer()->SetPropertiesL(cmdListBoxIndex, prop);
+    
+        HandleCommandEventL(
+            (aVisible ? EItemAdded : EItemRemoved),
+            cmdItemIndex);
+        );
     }
 
 // --------------------------------------------------------------------------

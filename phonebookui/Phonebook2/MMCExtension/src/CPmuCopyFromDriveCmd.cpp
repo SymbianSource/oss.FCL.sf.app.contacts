@@ -402,9 +402,14 @@ void CPmuCopyFromMmcCmd::ContactsSaved
 // --------------------------------------------------------------------------
 //
 void CPmuCopyFromMmcCmd::ContactsSavingFailed
-        ( MVPbkContactOperationBase& aOperation, TInt /*aError*/ )
+        ( MVPbkContactOperationBase& aOperation, TInt aError )
     {
-    if ( &aOperation == iImportOperation )
+    // Stop copying if the disk is full
+    if ( aError == KErrDiskFull )
+        {
+        RunError( aError );
+        }
+    else if ( &aOperation == iImportOperation )
         {
         delete iImportOperation;
         iImportOperation = NULL;

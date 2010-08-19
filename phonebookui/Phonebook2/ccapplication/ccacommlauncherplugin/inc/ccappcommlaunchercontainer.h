@@ -23,6 +23,7 @@
 #include <Pbk2Commands.hrh>
 #include "ccappstatuscontrol.h"
 #include <aknlongtapdetector.h>
+#include <akninputblock.h>
 
 class CAknsBasicBackgroundControlContext;
 class CAknPreviewPopUpController;
@@ -36,6 +37,7 @@ class MCCAViewLauncher;
 class CCCAExtensionFactory;
 class CCCAppCommLauncherCustomListBox;
 class CCCaFactoryExtensionNotifier;
+class CAknInputBlock;
 
 /**
  * Class implementing CCAppCommLauncher -container for controls
@@ -52,7 +54,8 @@ class CCCAppCommLauncherContainer :
     public MEikListBoxObserver,
     public MCCAppContactHandlerNotifier,
     public MCCAStatusControlObserver,
-    public MAknLongTapDetectorCallBack
+    public MAknLongTapDetectorCallBack,
+    public MAknInputBlockCancelHandler
     {
 public: // constructor and destructor
 
@@ -227,7 +230,8 @@ public: // New
      * @return the amount of the list box.
      * @since S60 v5.0
     */
-    const TInt GetListBoxItemAmount() const;
+    const TInt GetListBoxItemAmount() const;    
+    
 
 private: // New
 
@@ -279,6 +283,105 @@ private: // New
     * availability.
     */
     void DoCheckExtensionFactoryL();
+
+    /*
+    * Launches find on map contact action
+    */
+    void HandleFindOnMapContactActionL();
+
+    /*
+    * Launches generic contact action 
+    * @param aActionType - Contact Action
+    */
+    void HandleGenericContactActionL(
+        VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aActionType );
+       
+    /*
+    * Used to check whether a Contact has only one number for initiating VoiceCall.  
+    * Fills selection to aSelectedField if only one field is possible
+    * Only works with VoiceCall Contact Action Type
+    * 
+    * @param aActionType - Contact ActionType. Here it should be EVoiceCallSelector
+    * @param aSelectedField - Data of the selected field. (Phonenumber)
+    * @return - returns ETrue, if more than one field is present for the contact which is capable 
+    *       of VoiceCall.   
+    *       In this case we need to show the field selection dialog
+    *       wherein the user will choose the number for which he wants to start VoiceCall.
+    *       
+    *       returns EFalse - Straight Forward. Voice call can be made directly, 
+    *       since we have only once number for this contact.
+    *       The number to which VoiceCall needs to be made is filled in the aSelectedField.
+    *            
+    */
+    TBool IsVoiceCallFieldSelectionAmbiguous(
+        VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aActionType,
+        TPtrC& aSelectedField );
+
+    /*
+    * Returns true if field has only one item
+    * @param CCmsContactField
+    */
+    TBool HasFieldOnlyOneItem( const CCmsContactField& field ) const;
+
+    /*
+    * Returns true if field is voice call type
+    * @param CCmsContactField
+    */
+    TBool IsVoiceCallType( const CCmsContactField& field ) const;
+    
+    /*
+    * Returns true if contact has single address
+    * @param aActionType - Contact ActionType.
+    * @param aHandler - Contact Handler 
+    */
+    TBool HasContactSingleAddress(
+        VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aActionType,
+        CCCAppCommLauncherContactHandler& aHandler );
+    
+    
+    /*
+    * Executes contact action service with field selection
+    * 
+    * @param aActionType - Contact ActionType.
+    * @param aContactIdentifier - Contact Link
+    * @param aFullName - Contact's Name
+    */
+    void ExecuteContactActionServiceWithFieldSelectionL( 
+        VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aActionType,
+        TDesC8& aContactIdentifier,
+        TDesC& aFullName );
+    
+    /*
+    * Executes contact actions service without field selections
+    * 
+    * @param aActionType - Contact ActionType.
+    * @param aContactIdentifier - Contact Link
+    * @param aFullName - Contact's Name
+    * @param aSelectedField - Contains the number to which 
+    *                   VoiceCall needs to be established.
+    */
+    void ExecuteContactActionServiceWithoutFieldSelectionL( 
+        VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector aActionType,
+        TDesC8& aContactIdentifier,
+        TDesC& aFullName,
+        TDesC& aSelectedField );
+    
+    /*
+    * From MAknInputBlockCancelHandler
+    */    
+    void AknInputBlockCancel();
+    
+    /**
+    * Removes the Input Blocker and makes the contianer regain 
+    * user input, key and pen
+    */    
+    void RemoveInputBlocker();
+    
+    /**
+    * Blocks user input, key and pen, from reaching
+    * container untill the issue of communication is complete 
+    */    
+    void SetInputBlockerL();
 
 private: // Constructors
 
@@ -371,6 +474,11 @@ private: // Data
 	
 	
 	TBool iLongTap;
+	
+	/**
+	 * Owns - Input Blocker
+	 */
+	CAknInputBlock* iInputBlocker;
     };
 
 #endif // __CCAPPCOMMALAUNCHERCONTAINER_H

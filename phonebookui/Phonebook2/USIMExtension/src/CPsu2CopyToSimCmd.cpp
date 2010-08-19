@@ -299,6 +299,13 @@ TInt CPsu2CopyToSimCmd::RunError(TInt aError)
     PBK2_DEBUG_PRINT( PBK2_DEBUG_STRING
         ( "CPsu2CopyToSimCmd::RunError %d" ), aError );
     CCoeEnv::Static()->HandleError(aError);
+    
+    // If the copy operation is cancelled due to error occurred, update the 
+    // ui control and reset the command pointer before it is destructed.
+    if ( iNameListUiControl )
+        {
+        iNameListUiControl->UpdateAfterCommandExecution();
+        }
     if ( iCommandObserver )
         {
         iCommandObserver->CommandFinished(*this);

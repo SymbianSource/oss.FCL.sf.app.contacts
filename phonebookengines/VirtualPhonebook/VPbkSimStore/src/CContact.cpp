@@ -30,6 +30,8 @@
 #include <CVPbkAsyncOperation.h>
 #include <CVPbkContactLinkArray.h>
 #include <CVPbkSimContact.h>
+#include <CVPbkSimCntField.h>
+#include <featmgr.h>
 #include <MVPbkSimCntStore.h>
 #include <MVPbkContactViewBase.h>
 #include <MVPbkContactStoreProperties.h>
@@ -47,6 +49,8 @@ enum TContactFlags
     {
     KNewContact = 1
     };
+
+const TInt KDefinedAnrFieldTypeCount = 3;   // count of defined additional number types
 
 // ============================= LOCAL FUNCTIONS ===============================
 
@@ -98,15 +102,35 @@ TInt MaxNumberOfFieldsInContact( TVPbkSimCntFieldType aType,
             break;
             }
         case EVPbkSimGsmNumber: // FALLTHROUGH
-        case EVPbkSimAdditionalNumber:
+        case EVPbkSimAdditionalNumberLast:    // the EVPbkSimAdditionalNumber
             {
             ++result; // always at least one number
             if ( aUsimProp.iMaxNumOfAnrs != KVPbkSimStorePropertyUndefined )
                 {
-                result += aUsimProp.iMaxNumOfAnrs;
+                if ( !FeatureManager::FeatureSupported(
+                             KFeatureIdFfTdClmcontactreplicationfromphonebooktousimcard ) )
+                    {
+                    result += aUsimProp.iMaxNumOfAnrs;
+                    }
+                else
+                    {
+                    if ( aUsimProp.iMaxNumOfAnrs - KDefinedAnrFieldTypeCount > 0 )
+                        {
+                        result += (aUsimProp.iMaxNumOfAnrs - KDefinedAnrFieldTypeCount);
+                        }
+                    }
                 }
             break;
             }
+        case EVPbkSimAdditionalNumber1:
+            result = aUsimProp.iMaxNumOfAnrs >= 1 ? 1 : 0;   // according the max number of anrs.
+            break;
+        case EVPbkSimAdditionalNumber2:
+            result = aUsimProp.iMaxNumOfAnrs >= 2 ? 1 : 0;
+            break;
+        case EVPbkSimAdditionalNumber3:
+            result = aUsimProp.iMaxNumOfAnrs >= 3 ? 1 : 0;	
+            break;
         default:
             {
             // Do nothing
@@ -119,6 +143,7 @@ TInt MaxNumberOfFieldsInContact( TVPbkSimCntFieldType aType,
 
 namespace VPbkSimStore {
 
+_LIT( KEmptyData, "+" );    //the empty data, modifiy this string to keep its a special string.
 // ============================ MEMBER FUNCTIONS ===============================
 
 // -----------------------------------------------------------------------------
@@ -143,6 +168,11 @@ inline void CContact::ConstructL( CVPbkSimContact& aSimContact,
     if ( aIsNewContact )
         {
         iFlags.Set( KNewContact );
+        }
+    if( FeatureManager::FeatureSupported( 
+                        KFeatureIdFfTdClmcontactreplicationfromphonebooktousimcard ) )
+        {
+        RemoveAllEmptyFields( aSimContact );    //  remove the empty contacts where added before save.
         }
     iFields.SetContact( *this, aSimContact );
     iAsyncOp = new( ELeave ) VPbkEngUtils::CVPbkAsyncOperation;
@@ -171,6 +201,126 @@ CContact::~CContact()
     delete iStoreOperation;
     delete iAsyncOp;
     delete iSimContact;
+    }
+
+// -----------------------------------------------------------------------------
+// CContact::RemoveAllEmptyFields
+// -----------------------------------------------------------------------------
+//
+void CContact::RemoveAllEmptyFields( CVPbkSimContact& aSimContact )
+    {
+    TInt i = aSimContact.FieldCount() - 1 ;
+    while( i >= 0 )
+        {
+		CVPbkSimCntField& cntField = aSimContact.FieldAt( i );
+		TVPbkSimCntFieldType simCntType = cntField.Type();
+        if( simCntType ==  EVPbkSimGsmNumber
+		    || simCntType == EVPbkSimAdditionalNumber1
+			|| simCntType == EVPbkSimAdditionalNumber2
+			|| simCntType == EVPbkSimAdditionalNumber3
+			|| simCntType == EVPbkSimAdditionalNumberLast )
+        	{
+			if( cntField. Data().Compare( KEmptyData ) == 0 )
+				{
+				aSimContact.DeleteField( i );
+				}
+        	}
+        i --;
+        }
+    }
+
+// -----------------------------------------------------------------------------
+// CContact::FillWithEmptyFieldsL
+// -----------------------------------------------------------------------------
+//
+void CContact::FillWithEmptyFieldsL() const
+    {
+    RPointerArray<CVPbkSimCntField> & contactFieldArray = iSimContact->FieldArray();
+    TInt i = contactFieldArray.Count() - 1 ;
+	while( i >= 0 ) // remove all empty content.
+		{
+		CVPbkSimCntField& cntField = iSimContact->FieldAt( i );
+		TVPbkSimCntFieldType type = cntField.Type();
+		if( cntField. Data().Length() == 0 )
+			{
+			iSimContact->DeleteField( i );
+			}
+		i --;
+		}
+	
+    if( contactFieldArray.Count() == 0 )  // no un-empty fields.
+        {
+        return;
+        }
+    CVPbkSimContact::TFieldLookup lookupAdnNumber = 
+                       iSimContact->FindField( EVPbkSimAdditionalNumber );  
+    if( lookupAdnNumber.EndOfLookup())  // if there is no additional number in the contact then no need to add placeholder
+    	{
+		return;
+    	}
+    RPointerArray<CVPbkSimCntField> tempFieldArray;
+    CleanupClosePushL( tempFieldArray );
+    // mappings 
+    CFieldTypeMappings & mappings = iParentStore.FieldTypeMappings();
+    // supported types.
+    const CSupportedFieldTypes& supportedTypes = iParentStore.SupportedFieldTypes();
+
+    // check all supported field types in the fields list. If not exist created new.
+    // if data length is 0, set data to empty data.
+    for( int i = 0; i < supportedTypes.FieldTypeCount(); i ++ )
+        {
+        const MVPbkFieldType& fieldType = supportedTypes.FieldTypeAt( i );
+        TVPbkSimCntFieldType simCntType = mappings.Match( fieldType );
+        if( simCntType ==  EVPbkSimGsmNumber
+		    || simCntType == EVPbkSimAdditionalNumber1
+			|| simCntType == EVPbkSimAdditionalNumber2
+			|| simCntType == EVPbkSimAdditionalNumber3
+			|| simCntType == EVPbkSimAdditionalNumberLast )
+            {
+            CVPbkSimCntField * field = NULL;
+            CVPbkSimContact::TFieldLookup lookup = 
+                   iSimContact->FindField( simCntType );
+
+            if( lookup.EndOfLookup() )
+                {
+                field= iSimContact->CreateFieldLC( simCntType );
+                field->SetDataL( KEmptyData );
+                tempFieldArray.Append( field );
+                CleanupStack::Pop();
+                }
+             else
+                {
+                field = contactFieldArray[lookup.Index()];
+                if( field->Data().Length() == 0 )
+                    {
+                    field->SetDataL( KEmptyData );
+                    }
+                if( simCntType == EVPbkSimAdditionalNumber1 
+                    || simCntType == EVPbkSimAdditionalNumber2
+                    || simCntType == EVPbkSimAdditionalNumber3 )
+                    {
+                    contactFieldArray.Remove( lookup.Index() );
+                    tempFieldArray.AppendL( field );
+                    }
+                }
+            }
+        }
+    TInt j = contactFieldArray.Count() - 1;
+    while( j >= 0 )  //  EVPbkSimAdditionalNumberLast type field will append at last.
+        {
+        if( contactFieldArray[j]->Type() == EVPbkSimAdditionalNumberLast )
+            {
+            tempFieldArray.AppendL( contactFieldArray[ j ] );
+            contactFieldArray.Remove( j );
+            }
+        j --;
+        }
+    for( int i = 0; i < tempFieldArray.Count(); i ++ )
+        {
+        contactFieldArray.AppendL( tempFieldArray[i]);
+        }
+    tempFieldArray.Reset();
+    CleanupStack::Pop();
     }
 
 // -----------------------------------------------------------------------------
@@ -301,7 +451,7 @@ MVPbkStoreContactField* CContact::CreateFieldLC(
         VPbkSimStore::Panic( ESimFieldTypeNotFound ) );
 
     if ( simType == EVPbkSimGsmNumber || 
-         simType == EVPbkSimAdditionalNumber )
+         simType == EVPbkSimAdditionalNumberLast )  //the same field type as EVPbkSimGsmNumber
         {
         // EVPbkSimGsmNumber and EVPbkSimAdditionalNumber maps to same
         // VPbk field type. A sim contact can have only one EVPbkSimGsmNumber
@@ -320,7 +470,7 @@ MVPbkStoreContactField* CContact::CreateFieldLC(
             }
         else
             {
-            simType = EVPbkSimAdditionalNumber;
+            simType = EVPbkSimAdditionalNumberLast; 
             }
         }
 
@@ -421,6 +571,10 @@ void CContact::CommitL( MVPbkContactObserver& aObserver ) const
             }
         // From the client point of view the MVPbkStoreContact is constant but
         // implementation needs a non const contact.
+        if( FeatureManager::FeatureSupported( KFeatureIdFfTdClmcontactreplicationfromphonebooktousimcard ) )
+            {
+            FillWithEmptyFieldsL();
+            }
         iStoreOperation = iSimContact->SaveL( const_cast<CContact&>( *this ));
         iObserver = &aObserver;
         }
@@ -498,6 +652,12 @@ void CContact::ContactEventComplete( TEvent aEvent,
     
     MVPbkContactObserver* observer = iObserver;
     ResetContactOperationState();
+    
+    // remove filled placeholder fields.
+    if( vpbkOpResult.iOpCode == MVPbkContactObserver::EContactCommit )
+    	{
+		RemoveAllEmptyFields( *iSimContact );
+    	}
     observer->ContactOperationCompleted( vpbkOpResult );
     }
 
@@ -516,6 +676,12 @@ void CContact::ContactEventError( TEvent aEvent,
     MVPbkContactObserver* observer = iObserver;
     ResetContactOperationState();
     MVPbkContactObserver::TContactOp op = ConvertContactOperation( aEvent );
+    
+    // remove filled placeholder fields.
+    if( op == MVPbkContactObserver::EContactCommit )
+    	{
+		RemoveAllEmptyFields( *iSimContact );
+    	}
     observer->ContactOperationFailed( op, aError, EFalse );
     } 
 

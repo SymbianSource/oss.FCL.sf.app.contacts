@@ -24,6 +24,7 @@
 #include <vwsdef.h>
 #include <MPbk2UIExtensionView.h>
 #include <eiklbo.h>
+#include <aknmarkingmodeobserver.h>
 
 // FORWARD DECLARATIONS
 class CPbk2UIExtensionView;
@@ -82,7 +83,8 @@ class MPbk2GroupMembersViewActivationCallback
 class CPguGroupMembersView : public CBase,
                              public MPbk2UIExtensionView,
                              public MEikListBoxObserver,
-                             private MPbk2GroupMembersViewActivationCallback
+                             private MPbk2GroupMembersViewActivationCallback,
+                             public MAknMarkingModeObserver 
                              
 
     {
@@ -125,6 +127,23 @@ class CPguGroupMembersView : public CBase,
                 const TPoint& aPenEventLocation,
                 const TPoint& aPenEventScreenLocation );
 
+    public: // From MAknMarkingModeObserver 
+            
+        /**
+         * This method is called when marking mode is activated or deactivated.
+         * 
+         * @param aActivated @c ETrue if marking mode was activate, @c EFalse
+         *                   if marking mode was deactivated.
+         */
+        void MarkingModeStatusChanged( TBool aActivated );
+
+        /**
+         * This method is called just before marking mode is closed. Client can 
+         * either accept or decline closing.
+         * 
+         * @return @c ETrue if marking mode should be closed, otherwise @c EFalse.
+         */
+        TBool ExitMarkingMode() const;
 
     protected: 
         // from MEikListBoxObserver
@@ -151,7 +170,6 @@ class CPguGroupMembersView : public CBase,
         class CGroupMembersAllGroupsReady;
         void ReturnToPreviousViewL() const;
         void ShowContextMenuL();
-
 
     private: // Data
         /// Ref: View that contains this extension view
