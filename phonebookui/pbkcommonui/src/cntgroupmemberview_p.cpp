@@ -21,6 +21,7 @@
 #include "cntglobal.h"
 #include "cntimagelabel.h"
 #include "cntimageutility.h"
+#include "cntthumbnailmanager.h"
 #include <hbnotificationdialog.h>
 #include <hbmessagebox.h>
 #include <hbmenu.h>
@@ -33,7 +34,6 @@
 #include <hbaction.h>
 #include <hblabel.h>
 #include <hbparameterlengthlimiter.h>
-#include <thumbnailmanager_qt.h>
 #include <cntlistmodel.h>
 #include <hbmainwindow.h>
 #include <xqservicerequest.h>
@@ -105,15 +105,6 @@ CntGroupMemberViewPrivate::CntGroupMemberViewPrivate() :
     connect(mDeleteAction, SIGNAL(triggered()), this, SLOT(deleteGroup()));
     mShowActionsAction = static_cast<HbAction*>( mDocument->findObject("cnt:groupactions"));
     connect(mShowActionsAction, SIGNAL(triggered()), this, SLOT(openGroupActions()));
-    
-    // thumbnail manager
-    mThumbnailManager = new ThumbnailManager(this);
-    mThumbnailManager->setMode(ThumbnailManager::Default);
-    mThumbnailManager->setQualityPreference(ThumbnailManager::OptimizeForQuality);
-    mThumbnailManager->setThumbnailSize(ThumbnailManager::ThumbnailLarge);
-   
-    connect(mThumbnailManager, SIGNAL(thumbnailReady(QPixmap, void*, int, int)),
-               this, SLOT(thumbnailReady(QPixmap, void*, int, int)));
 }
 
 /*!
@@ -147,11 +138,15 @@ void CntGroupMemberViewPrivate::setOrientation(Qt::Orientation orientation)
     }
 }
 
-void CntGroupMemberViewPrivate::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
+void CntGroupMemberViewPrivate::activate( const CntViewParameters aArgs )
 {
-    mViewManager = aMgr;
     mArgs = aArgs;
-    
+    mViewManager = &mEngine->viewManager();
+    mThumbnailManager = &mEngine->thumbnailManager();
+
+    connect(mThumbnailManager, SIGNAL(thumbnailReady(QPixmap, void*, int, int)),
+            this, SLOT(thumbnailReady(QPixmap, void*, int, int)));
+        
     if (mView->navigationAction() != mSoftkey)
         {
         mView->setNavigationAction(mSoftkey);   
@@ -176,7 +171,7 @@ void CntGroupMemberViewPrivate::activate( CntAbstractViewManager* aMgr, const Cn
         if (details.at(i).imageUrl().isValid())
             {
             mAvatar = new QContactAvatar(details.at(i));
-            mThumbnailManager->getThumbnail(mAvatar->imageUrl().toString());
+            mThumbnailManager->getThumbnail(ThumbnailManager::ThumbnailLarge, mAvatar->imageUrl().toString());
             break;
             }
     }
@@ -186,15 +181,29 @@ void CntGroupMemberViewPrivate::activate( CntAbstractViewManager* aMgr, const Cn
     mListView->setScrollingStyle(HbScrollArea::PanWithFollowOn);
     mListView->verticalScrollBar()->setInteractive(true);
     mListView->setUniformItemSizes(true);
-    mListView->listItemPrototype()->setGraphicsSize(HbListViewItem::Thumbnail);
+    
+    HbFrameBackground frame;
+    frame.setFrameGraphicsName("qtg_fr_list_normal");
+    frame.setFrameType(HbFrameDrawer::NinePieces);
+        
+    HbListViewItem* prototype = mListView->listItemPrototype();
+    prototype->setGraphicsSize(HbListViewItem::Thumbnail);
+    prototype->setDefaultFrame(frame);
+    
     HbIndexFeedback *indexFeedback = new HbIndexFeedback(mView);
     indexFeedback->setIndexFeedbackPolicy(HbIndexFeedback::IndexFeedbackSingleCharacter);
     indexFeedback->setItemView(mListView);
 
-    HbFrameBackground frame;
-    frame.setFrameGraphicsName("qtg_fr_list_normal");
-    frame.setFrameType(HbFrameDrawer::NinePieces);
-    mListView->itemPrototypes().first()->setDefaultFrame(frame);
+    // if no contacts are present, then disable the Manage Members toolbar 
+    QContactDetailFilter filter;
+    filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
+    filter.setValue(QLatin1String(QContactType::TypeContact));
+   
+    QList<QContactLocalId> contactIds = getContactManager()->contactIds(filter);   
+    if (contactIds.isEmpty())
+    {
+       mManageAction->setEnabled(false); 
+    }      
     
     createModel();
     
@@ -216,7 +225,7 @@ void CntGroupMemberViewPrivate::showPreviousView()
     emit q->backPressed();
     
     //save the contact if avatar has been changed.
-    QContact contact = mViewManager->contactManager( SYMBIAN_BACKEND )->contact(mGroupContact->localId());
+    QContact contact = getContactManager()->contact(mGroupContact->localId());
     if ( contact != *mGroupContact )
     {
         getContactManager()->saveContact(mGroupContact);
@@ -253,7 +262,7 @@ void CntGroupMemberViewPrivate::manageMembers()
     CntFetchContactPopup* popup = CntFetchContactPopup::createMultiSelectionPopup(
             HbParameterLengthLimiter(hbTrId("txt_phob_title_members_of_1_group")).arg(groupName),
             hbTrId("txt_common_button_save"),
-            *mViewManager->contactManager(SYMBIAN_BACKEND));
+            mEngine->contactManager(SYMBIAN_BACKEND));
     connect( popup, SIGNAL(fetchReady(QSet<QContactLocalId>)),this, SLOT(handleManageMembers(QSet<QContactLocalId>)) );
     popup->setSelectedContacts( mOriginalGroupMembers.toSet() );
     popup->showPopup();
@@ -270,15 +279,14 @@ void CntGroupMemberViewPrivate::handleManageMembers( QSet<QContactLocalId> aIds 
     QSet<QContactLocalId> addedMembers = aIds - mOriginalGroupMembers.toSet();
     setRelationship(addedMembers, addedMemberships);
     
-    QMap<int, QContactManager::Error> errors;
     if (!addedMemberships.isEmpty()) 
     {
-        getContactManager()->saveRelationships(&addedMemberships, &errors);
+        getContactManager()->saveRelationships(&addedMemberships, NULL);
     }
     
     if (!removedMemberships.isEmpty()) 
     {
-        getContactManager()->removeRelationships(removedMemberships, &errors);
+        getContactManager()->removeRelationships(removedMemberships, NULL);
     }
 }
 
@@ -288,7 +296,7 @@ void CntGroupMemberViewPrivate::createModel()
     rFilter.setRelationshipType(QContactRelationship::HasMember);
     rFilter.setRelatedContactRole(QContactRelationship::First);
     rFilter.setRelatedContactId(mGroupContact->id());
-
+    
     mModel = new CntListModel(getContactManager(), rFilter, false);
     mListView->setModel(mModel);
 }
@@ -466,19 +474,19 @@ void CntGroupMemberViewPrivate::openImageEditor()
 
 QContactManager* CntGroupMemberViewPrivate::getContactManager()
 {
-    return mViewManager->contactManager(SYMBIAN_BACKEND);
+    return &mEngine->contactManager(SYMBIAN_BACKEND);
 }
 
-void CntGroupMemberViewPrivate::setRelationship(QSet<QContactLocalId>        &aLocalId,
+void CntGroupMemberViewPrivate::setRelationship(QSet<QContactLocalId>        &aLocalIds,
                                          QList<QContactRelationship>  &aRelationshipList)
 {
-    foreach (QContactLocalId id, aLocalId) {
-        QContact contact = getContactManager()->contact(id);
-
+    foreach (QContactLocalId localId, aLocalIds) {
+		QContactId id;
+		id.setLocalId(localId);
         QContactRelationship membership;
         membership.setRelationshipType(QContactRelationship::HasMember);
         membership.setFirst(mGroupContact->id());
-        membership.setSecond(contact.id());
+        membership.setSecond(id);
         aRelationshipList.append(membership);
     }
 }
@@ -492,7 +500,7 @@ void CntGroupMemberViewPrivate::drawImageMenu(const QPointF &aCoords)
     HbAction *changeImageAction = menu->addAction(hbTrId("txt_phob_menu_change_picture"), this, SLOT(openImageEditor()));
     if (mAvatar && !mAvatar->imageUrl().isEmpty())
     {
-        HbAction *removeAction = menu->addAction(hbTrId("txt_phob_menu_remove_image"), this, SLOT(removeImage()));
+        menu->addAction(hbTrId("txt_phob_menu_remove_image"), this, SLOT(removeImage()));
     }
     menu->setPreferredPos(aCoords);
     menu->open();

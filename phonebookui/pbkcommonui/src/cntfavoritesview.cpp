@@ -59,7 +59,7 @@ CntFavoritesView::~CntFavoritesView()
     mContact = NULL;
 }
 
-void CntFavoritesView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
+void CntFavoritesView::activate( const CntViewParameters aArgs )
 {
     if (mView->navigationAction() != mSoftkey)
         mView->setNavigationAction(mSoftkey);
@@ -69,10 +69,22 @@ void CntFavoritesView::activate( CntAbstractViewManager* aMgr, const CntViewPara
     setOrientation(window->orientation());
     
     mContact = new QContact(aArgs.value(ESelectedGroupContact).value<QContact>());
-    mViewManager = aMgr;
+    mViewManager = &mEngine->viewManager();
 
     HbPushButton *addButton = static_cast<HbPushButton*>(mDocumentLoader.findWidget(QString("cnt_button_add")));
     connect(addButton, SIGNAL(clicked()), this, SLOT(openSelectionPopup()));
+    
+    // If no contacts are present, then disable the button 
+    QContactDetailFilter filter;
+    filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
+    filter.setValue(QLatin1String(QContactType::TypeContact));
+   
+    QList<QContactLocalId> contactIds = getContactManager()->contactIds(filter);   
+    if (contactIds.isEmpty())
+    {
+        addButton->setEnabled(false); 
+    }
+    
 }
 
 void CntFavoritesView::deactivate()
@@ -81,33 +93,19 @@ void CntFavoritesView::deactivate()
 
 void CntFavoritesView::openSelectionPopup()
 {
-    /*
-    QSet<QContactLocalId> emptySet;
-    if (!mFetchView) {
-        mFetchView = new CntFetchContacts(*getContactManager());
-        connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleMemberSelection()));
-    }
-    mFetchView->setDetails(hbTrId("txt_phob_subtitle_favorites"), hbTrId("txt_common_button_save"));
-    mFetchView->displayContacts(HbAbstractItemView::MultiSelection, emptySet);
-    */
     CntFetchContactPopup* popup = CntFetchContactPopup::createMultiSelectionPopup(
             hbTrId("txt_phob_subtitle_favorites"), 
             hbTrId("txt_common_button_save"),
             *getContactManager());
     connect(popup, SIGNAL(fetchReady(QSet<QContactLocalId>)), 
             this, SLOT(handleMemberSelection(QSet<QContactLocalId>)));
+    QSet<QContactLocalId> ids;
+    popup->setSelectedContacts(ids);
     popup->showPopup();
 }
 
 void CntFavoritesView::handleMemberSelection( QSet<QContactLocalId> aIds )
 {
-    //QSet<QContactLocalId> members = mFetchView->getSelectedContacts();
-    //bool saveChanges = !mFetchView->wasCanceled();
-
-    //delete mFetchView;
-    //mFetchView = 0;
-
-    //if (!saveChanges || members.count() == 0)
     if ( aIds.isEmpty() )
     {
         showPreviousView();
@@ -116,17 +114,17 @@ void CntFavoritesView::handleMemberSelection( QSet<QContactLocalId> aIds )
     {
         QList<QContactRelationship> memberships;
         foreach (QContactLocalId id, aIds) {
-            QContact contact = getContactManager()->contact(id);
+            QContactId contactId;
+            contactId.setLocalId(id);
             QContactRelationship membership;
             membership.setRelationshipType(QContactRelationship::HasMember);
             membership.setFirst(mContact->id());
-            membership.setSecond(contact.id());
+            membership.setSecond(contactId);
             memberships.append(membership);
         }
     
         if (!memberships.isEmpty()) {
-            QMap<int, QContactManager::Error> errors;
-            getContactManager()->saveRelationships(&memberships, &errors);
+            getContactManager()->saveRelationships(&memberships, NULL);
         }
     
         CntViewParameters viewParameters;
@@ -164,7 +162,7 @@ QContactManager* CntFavoritesView::getContactManager()
         return NULL;
     }
 
-    return mViewManager->contactManager(SYMBIAN_BACKEND);
+    return &mEngine->contactManager(SYMBIAN_BACKEND);
 }
 
 // end of file

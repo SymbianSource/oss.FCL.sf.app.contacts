@@ -40,7 +40,7 @@ class QTPBK_EXPORT CntDefaultViewFactory : public CntAbstractViewFactory
 {
     
 public:
-    CntDefaultViewFactory();
+    CntDefaultViewFactory( CntExtensionManager& aExtManager );
     ~CntDefaultViewFactory();
 
 public:
@@ -50,6 +50,6 @@ private:
     CntAbstractView* createPluginView( int aId );
 
 private:
-    CntExtensionManager *mExtensionManager;
+    CntExtensionManager& mExtensionManager;
 };
 #endif /* CNTABSTRACTVIEWFACTORY_H_ */

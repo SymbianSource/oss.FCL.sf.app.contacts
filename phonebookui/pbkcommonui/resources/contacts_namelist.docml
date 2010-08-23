@@ -29,11 +29,6 @@
 
     <widget name="view" type="HbView">
         <widget name="content" role="HbView:widget" type="HbWidget">
-        	<widget name="banner" type="HbGroupBox">
-            	<string locid="txt_phob_subtitle_find_all_contacts" name="heading"/>
-                <bool name="collapsable" value="FALSE"/>
-                <bool name="visible" value="FALSE"/>
-            </widget>
             <widget name="emptyLabel" type="HbLabel">
                 <fontspec name="fontSpec" role="Primary"/>
                 <string name="alignment" value="AlignCenter"/>
@@ -71,9 +66,6 @@
     <section name="no_find">
         <widget name="view" type="HbView">
             <widget name="content" role="HbView:widget" type="HbWidget">
-            	<widget name="banner" type="HbGroupBox">
-                    <bool name="visible" value="FALSE"/>
-                </widget>
                 <widget name="emptyLabel" type="HbLabel">
                     <bool name="visible" value="FALSE"/>
                 </widget>
@@ -96,9 +88,6 @@
     <section name="find_list">
         <widget name="view" type="HbView">
             <widget name="content" role="HbView:widget" type="HbWidget">
-            	<widget name="banner" type="HbGroupBox">
-                    <bool name="visible" value="TRUE"/>
-                </widget>
                 <widget name="emptyLabel" type="HbLabel">
                     <bool name="visible" value="FALSE"/>
                 </widget>
@@ -110,7 +99,6 @@
                 </widget>
                 <layout orientation="Vertical" spacing="0un" type="linear">
                     <contentsmargins bottom="0un" left="0un" right="0un" top="0un"/>
-                    <linearitem itemname="banner"/>
                     <linearitem itemname="listView"/>
                     <linearitem itemname="searchPanel"/>
                 </layout>
@@ -123,9 +111,6 @@
     <section name="find_empty">
         <widget name="view" type="HbView">
             <widget name="content" role="HbView:widget" type="HbWidget">
-            	<widget name="banner" type="HbGroupBox">
-                    <bool name="visible" value="TRUE"/>
-                </widget>
                 <widget name="emptyLabel" type="HbLabel">
                     <bool name="visible" value="TRUE"/>
                 </widget>
@@ -137,7 +122,6 @@
                 </widget>
                 <layout orientation="Vertical" spacing="0un" type="linear">
                     <contentsmargins bottom="0un" left="0un" right="0un" top="0un"/>
-                    <linearitem itemname="banner"/>
                     <linearitem itemname="emptyLabel"/>
                     <linearitem itemname="searchPanel"/>
                 </layout>

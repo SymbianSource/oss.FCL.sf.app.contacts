@@ -18,19 +18,22 @@
 #include "cntcontactcarddatacontainer.h"
 #include "cntcontactcarddataitem.h"
 #include "cntdetailorderinghelper.h"
-#include <cntmaptileservice.h> //For fetching maptile
-#include "cntuiactionextension.h"
+#include <maptileservice.h> //For fetching maptile
+#include <cntuiactionextension.h>
+#include <cntuiextensionfactory.h>
+#include <cntuicontactcardextension.h>
 
 #include <QPainter>
 #include <QList>
 #include <qtcontacts.h>
 #include <hbicon.h>
-#include <cntviewparams.h>
+#include <hbnumbergrouping.h>
 #include <QLocale>
 #include <QDir>
 
+#include <cntviewparams.h>
 #include "cntstringmapper.h"
-#include <hbnumbergrouping.h>
+#include "cntextensionmanager.h"
 
 /*!
 Compare function for CntContactCardDataItem
@@ -46,25 +49,37 @@ namespace
 /*!
 Constructor
 */
-CntContactCardDataContainer::CntContactCardDataContainer( 
-  QContact* contact, QObject *parent, bool myCard, CntMapTileService* maptile, Qt::Orientations orientation ) :
-                                                            mContact(contact), 
-                                                            mSeparatorIndex(-1),
-                                                            mLocationFeatureEnabled(false), 
-                                                            mMaptileInterface(maptile),
-                                                            mOrientation( orientation )
+CntContactCardDataContainer::CntContactCardDataContainer(
+    MapTileService* maptile,
+    CntExtensionManager& aExtensionManager,
+    Qt::Orientations orientation,
+    QObject *parent) :
+            mContact(NULL), 
+            mSeparatorIndex(-1),
+            mLocationFeatureEnabled(false), 
+            mMaptileInterface(maptile),
+            mOrientation( orientation ),
+            mExtensionManager( &aExtensionManager )
 {
-    Q_UNUSED(parent);
+    Q_UNUSED(parent); 
+}
+
+void CntContactCardDataContainer::setContactData(QContact* contact, bool aMyCard)
+{
+    clearContactData();
+    mContact = contact;
+    mSeparatorIndex = -1;
     if (contact->type() == QContactType::TypeGroup)
     {
         initializeGroupData();
     }
     else
     {
-        initializeActionsData(myCard);
+        initializeActionsData(aMyCard);
+        initialiseExtensionActions(aMyCard);
         initializeDetailsData();
         sortDataItems();
-    }   
+    }  
 }
 
 /*!
@@ -72,10 +87,13 @@ Destructor
 */
 CntContactCardDataContainer::~CntContactCardDataContainer()
 {
-    while (!mDataItemList.isEmpty())
-    {
-        delete mDataItemList.takeFirst();
-    }
+    clearContactData();
+}
+
+void CntContactCardDataContainer::clearContactData()
+{
+    qDeleteAll(mDataItemList);
+    mDataItemList.clear();
 }
 
 /*!
@@ -308,6 +326,43 @@ void CntContactCardDataContainer::initializeActionsData(bool myCard)
     }
 }
 
+void CntContactCardDataContainer::initialiseExtensionActions(bool /*aMyCard*/)
+{
+    // There can be several plugins that supply buttons.
+    for( int n = 0; n < mExtensionManager->pluginCount(); ++n )
+    {
+        CntUiExtensionFactory& factory = *mExtensionManager->pluginAt( n );
+        CntUiContactCardExtension* ext = factory.contactCardExtension();
+        if ( ext )
+        {
+            ext->prepare( *mContact, false ); // aMyCard = false
+            const int actionCount = ext->actionCount();
+            for( int x = 0; x < actionCount; ++x )
+            {
+                const CntUiContactCardExtAction& action = ext->actionAt( x );
+
+                const QContactDetail& detail = action.detailUsedForChoosingPosition();
+                QString context = detail.contexts().isEmpty() ? QString() : detail.contexts().first();
+                int position = getPosition(
+                    detail.definitionName(),
+                    context,
+                    true); // dynamicAction = true
+
+                CntContactCardDataItem* dataItem = new CntContactCardDataItem(
+                    action.firstTextLine(),
+                    position,
+                    true); // aIsFocusable = true
+                dataItem->setContactCardExtensionAndActionIndex( *ext, x );
+                dataItem->setValueText(action.secondTextLine());
+                dataItem->setIcon( action.icon());
+                dataItem->setContactDetail( action.detailUsedForChoosingPosition() );
+                //TODO: dataItem->setLongPressText();
+                mDataItemList.append(dataItem);
+            }
+        }
+    }
+}
+
 /*!
 Initialize group details which includes actions.
 */
@@ -387,16 +442,16 @@ void CntContactCardDataContainer::initializeDetailsData()
     //address
     QString contextHome(QContactAddress::ContextHome.operator QString());
     QString contextWork(QContactAddress::ContextWork.operator QString());
-    CntMapTileService::ContactAddressType sourceAddressType;  
+    MapTileService::AddressType sourceAddressType;
     if( mMaptileInterface )
     {
-        mLocationFeatureEnabled = mMaptileInterface->isLocationFeatureEnabled() ;
+        mLocationFeatureEnabled = mMaptileInterface->isLocationFeatureEnabled(MapTileService::AppTypeContacts) ;
     }
 
     QList<QContactAddress> addressDetails = mContact->details<QContactAddress>();
     for (int i = 0; i < addressDetails.count(); i++)
     {
-        sourceAddressType = CntMapTileService::AddressPreference;
+        sourceAddressType = MapTileService::AddressPreference;
         QVariantList addressList;
         //no action
         int position = CntContactCardDataItem::EOther;
@@ -410,13 +465,13 @@ void CntContactCardDataContainer::initializeDetailsData()
         {
             if ( addressDetails[i].contexts().at(0) == contextHome )
             {
-                sourceAddressType = CntMapTileService::AddressHome;
+                sourceAddressType = MapTileService::AddressHome;
                 title = hbTrId("txt_phob_formlabel_address_home");
                 position = CntContactCardDataItem::EAddressHome;
             }
             else if (addressDetails[i].contexts().at(0) == contextWork)
             {
-                sourceAddressType = CntMapTileService::AddressWork;
+                sourceAddressType = MapTileService::AddressWork;
                 title = hbTrId("txt_phob_formlabel_address_work");
                 position = CntContactCardDataItem::EAddressWork;
             }
@@ -446,28 +501,28 @@ void CntContactCardDataContainer::initializeDetailsData()
             int status = mMaptileInterface->getMapTileImage(
                         contactId, sourceAddressType, imageFile, mOrientation );
                  
-            if( status == CntMapTileService::MapTileFetchingInProgress || status == 
-                    CntMapTileService::MapTileFetchingNetworkError )
+            if( status == MapTileService::MapTileFetchingInProgress || status == 
+                    MapTileService::MapTileFetchingNetworkError )
             {
                 //Load the progress indicator icon
                 QString iconName("qtg_anim_small_loading_1");
                 HbIcon inProgressIcon(iconName);
                 dataItem->setSecondaryIcon( inProgressIcon );
             }
-            else if( status == CntMapTileService::MapTileFetchingUnknownError || 
-                        status == CntMapTileService::MapTileFetchingInvalidAddress  )
+            else if( status == MapTileService::MapTileFetchingUnknownError || 
+                        status == MapTileService::MapTileFetchingInvalidAddress  )
             {
                 //Load the search stop icon
                 QString iconName("qtg_mono_search_stop");
                 HbIcon stopIcon(iconName);
                 dataItem->setSecondaryIcon( stopIcon );
             }
-            else if( status == CntMapTileService::MapTileFetchingCompleted )
+            else if( status == MapTileService::MapTileFetchingCompleted )
             {
                 maptileAvailable = true;
             }
         }
-        dataItem->setValueText(address.join(" "));
+        dataItem->setValueText(address.join(", "));
         dataItem->setContactDetail(addressDetails[i]);
         addSeparator(itemCount());
         mDataItemList.append(dataItem);
@@ -501,7 +556,7 @@ void CntContactCardDataContainer::initializeDetailsData()
             companyList.append(organizationDetails[i].department());
         if (companyList.count()>0)
         {
-            dataItem->setValueText(companyList.join(" ").trimmed());
+            dataItem->setValueText(companyList.join(", ").trimmed());
             dataItem->setContactDetail(organizationDetails[i]);
             addSeparator(itemCount());
             mDataItemList.append(dataItem);
@@ -578,7 +633,8 @@ void CntContactCardDataContainer::initializeDetailsData()
     {
         if (!familyDetails[i].spouse().isEmpty())
         {
-            CntContactCardDataItem* dataSpouseItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_spouse"), CntContactCardDataItem::EChildren, false);
+            CntContactCardDataItem* dataSpouseItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_spouse"), 
+                    CntContactCardDataItem::ESpouse, false);
             dataSpouseItem->setValueText(familyDetails[i].spouse());
             dataSpouseItem->setContactDetail(familyDetails[i]);  
             addSeparator(itemCount());
@@ -587,7 +643,8 @@ void CntContactCardDataContainer::initializeDetailsData()
         
         if (!familyDetails[i].children().isEmpty())
         {
-            CntContactCardDataItem* dataChildrenItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_children"), CntContactCardDataItem::ESpouse, false);
+            CntContactCardDataItem* dataChildrenItem = new CntContactCardDataItem(hbTrId("txt_phob_formlabel_children"), 
+                    CntContactCardDataItem::EChildren, false);
             dataChildrenItem->setValueText(familyDetails[i].children().join(", "));
             dataChildrenItem->setContactDetail(familyDetails[i]);  
             addSeparator(itemCount());

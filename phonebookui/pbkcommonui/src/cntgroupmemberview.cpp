@@ -46,10 +46,10 @@ CntGroupMemberView::~CntGroupMemberView()
     delete d;
 }
     
-void CntGroupMemberView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
+void CntGroupMemberView::activate( const CntViewParameters aArgs )
 {
     Q_D(CntGroupMemberView);
-    d->activate(aMgr,aArgs);
+    d->activate(aArgs);
 }
 
 void CntGroupMemberView::deactivate()
@@ -73,5 +73,11 @@ int CntGroupMemberView::viewId() const
 {
     return groupMemberView;
 } 
+
+void CntGroupMemberView::setEngine( CntAbstractEngine& aEngine )
+{
+    Q_D( CntGroupMemberView );
+    d->mEngine = &aEngine;
+}
 // EOF
 

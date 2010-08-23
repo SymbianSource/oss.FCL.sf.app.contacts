@@ -20,23 +20,30 @@
 
 #include <QSharedData>
 #include <qtcontacts.h>
-#include <cntmaptileservice.h>
+
 #include "cntstringmapper.h"
 
 class CntContactCardDataItem;
+class MapTileService;
+class CntExtensionManager;
 
 class CntContactCardDataContainer: public QObject
 {
     Q_OBJECT    
 
 public:
-    CntContactCardDataContainer(QContact* contact, QObject *parent = 0, bool myCard = false,
-            CntMapTileService* maptile = NULL, Qt::Orientations orientation = Qt::Vertical );
+    CntContactCardDataContainer(
+        MapTileService* maptile,
+        CntExtensionManager& aExtensionManager,
+        Qt::Orientations orientation = Qt::Vertical,
+        QObject *parent = 0);
     virtual ~CntContactCardDataContainer();
 
 public:
     CntContactCardDataItem* dataItem(int index) const;
     int itemCount() const;
+    void setContactData(QContact* contact, bool aMyCard = false);
+    void clearContactData();
     
 #ifdef PBK_UNIT_TEST
 public:
@@ -44,6 +51,7 @@ public:
 private:    
 #endif  
     void initializeActionsData(bool myCard);
+    void initialiseExtensionActions(bool aMyCard);
     void initializeGroupData();
     void initializeDetailsData();
     QList<QContactDetail> actionDetails(const QString &actionName, const QContact &contact);
@@ -62,8 +70,9 @@ private:
     int                             mSeparatorIndex;
     CntStringMapper                 mStringMapper;
     bool                            mLocationFeatureEnabled;
-    CntMapTileService*              mMaptileInterface;
+    MapTileService*                 mMaptileInterface;
     Qt::Orientations                mOrientation;
+    CntExtensionManager*            mExtensionManager;
 };
 
 #endif /* CNTCOMMLAUNCHERLISTMODEL_H_ */

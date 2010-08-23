@@ -26,6 +26,7 @@
 #include "cntsimutility.h"
 #include "cntdebug.h"
 #include <QApplication>
+#include "cntdefaultengine.h"
 
 CntDefaultViewManager::CntDefaultViewManager( HbMainWindow* aWindow ) : QObject(),
     mFactory(NULL),
@@ -33,12 +34,14 @@ CntDefaultViewManager::CntDefaultViewManager( HbMainWindow* aWindow ) : QObject(
     mOldView(NULL),
     mNavigator(NULL),
     mMainWindow( aWindow ),
-    mSimUtility(NULL)
+    mSimUtility(NULL),
+    mEngine(NULL)
 {
     CNT_ENTRY
     
-    setViewFactory(new CntDefaultViewFactory());
-    setViewNavigator(new CntViewNavigator(this));
+    mEngine = new CntDefaultEngine( *this );
+    setViewFactory( new CntDefaultViewFactory( mEngine->extensionManager()) );
+    setViewNavigator( new CntViewNavigator(this) );
 
     int error = -1;
     mSimUtility = new CntSimUtility(CntSimUtility::AdnStore, error);
@@ -51,12 +54,18 @@ CntDefaultViewManager::CntDefaultViewManager( HbMainWindow* aWindow ) : QObject(
     CNT_EXIT
 }
 
+CntAbstractEngine& CntDefaultViewManager::engine()
+{
+    return *mEngine;
+}
+
 CntDefaultViewManager::~CntDefaultViewManager()
 {
     CNT_ENTRY
     
     cleanup();
 
+    delete mEngine;
     CNT_EXIT
 }
 
@@ -161,7 +170,7 @@ void CntDefaultViewManager::changeView(const CntViewParameters aArgs)
     
     CNT_EXIT
 }
-
+/*
 QContactManager* CntDefaultViewManager::contactManager( const QString& aType )
 {
     CNT_ENTRY
@@ -184,6 +193,7 @@ QContactManager* CntDefaultViewManager::contactManager( const QString& aType )
     CNT_EXIT
     return manager;
 }
+*/
 
 void CntDefaultViewManager::removeCurrentView()
 {
@@ -241,6 +251,8 @@ void CntDefaultViewManager::switchView(const CntViewParameters aArgs, QFlags<Hb:
         else
         {
             nextView = mFactory->createView( id );
+            nextView->setEngine( *mEngine );
+            
             if (nextView->isDefault())
             {
                 mDefaults.insert(id, nextView);
@@ -251,7 +263,7 @@ void CntDefaultViewManager::switchView(const CntViewParameters aArgs, QFlags<Hb:
         mCurrent = nextView;
         mMainWindow->addView(mCurrent->view());
         mMainWindow->setCurrentView(mCurrent->view(), true, flags);
-        mCurrent->activate(this, aArgs);
+        mCurrent->activate(aArgs);
         
         removeCurrentView();
     }

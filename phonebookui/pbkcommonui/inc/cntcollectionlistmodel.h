@@ -31,10 +31,7 @@ class CntCollectionItem;
 
 class CntExtensionManager;
 class CntExtensionGroupCallback;
-
-QTM_BEGIN_NAMESPACE
-class QContactManager;
-QTM_END_NAMESPACE
+class CntAbstractEngine;
 
 QTM_USE_NAMESPACE
 
@@ -43,7 +40,7 @@ class CntCollectionListModel : public QAbstractListModel
     Q_OBJECT
     
 public:
-    CntCollectionListModel(QContactManager *manager, CntExtensionManager &extensionManager, QObject *parent = 0);
+    CntCollectionListModel(CntAbstractEngine* aEngine, QObject *parent = 0);
     ~CntCollectionListModel();
     
 public:

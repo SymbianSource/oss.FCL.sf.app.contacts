@@ -34,6 +34,18 @@ public:
      */
     virtual void CompleteServiceAndCloseApp(const QVariant& retValue) = 0;
 
+    /*!
+     If this method has been called, then the argument in a call to CompleteServiceAndCloseApp() 
+     can be ignored by concrete provider.
+     */
+    virtual void overrideReturnValue(const QVariant& retValue) { Q_UNUSED(retValue) };
+    
+    /*!
+     By default sub views are allowed to exit the service, override this and return false to
+     restrict this functionality.
+     */
+    virtual bool allowSubViewsExit() { return true; };
+
 };
 
 #endif /* CNTABSTRACTSERVICEPROVIDER_H */

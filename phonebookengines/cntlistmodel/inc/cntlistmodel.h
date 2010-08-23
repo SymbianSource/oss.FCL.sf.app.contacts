@@ -30,6 +30,7 @@ QTM_USE_NAMESPACE
 
 class CntListModelData;
 class XQSettingsKey;
+class CntDisplayTextFormatter;
 
 /*!
  * CntListModel is a list model view for contacts database
@@ -61,13 +62,15 @@ public: // from QAbstractTableModel/QAbstractItemModel
 
 public:
 	QContact contact(const QModelIndex &index) const;
+    QContactLocalId contactId(const QModelIndex &index) const;
 	QModelIndex indexOfContact(const QContact &contact) const;
+	QModelIndex indexOfContactId(const QContactLocalId &contactId) const;
 	QContactManager& contactManager() const;
 	void setFilter(const QContactFilter& contactFilter = QContactFilter());
 	void showMyCard(bool enabled);
 	bool myCardStatus() const;
 	QContactLocalId myCardId() const;
-	
+		
 private:
     // Construction helpers
     int doConstruct();
@@ -81,7 +84,7 @@ private:
     // Utility
     bool validRowId(int row) const;
     int rowId(const QContactLocalId &contactId) const;
-    QVariant dataForDisplayRole(int row) const;
+    QVariant dataForRole(int row, int role) const;
     void updateRelationships();
 
 private slots:

@@ -26,8 +26,8 @@ class HbListView;
 class HbView;
 class HbDocumentLoader;
 class HbAction;
-
 class CntListModel;
+
 
 class QTPBK_EXPORT CntBaseSelectionView : public QObject, public CntAbstractView
 {
@@ -42,13 +42,14 @@ signals:
     void viewClosed();
     
 public:
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
     bool isDefault() const;
     HbView* view() const;
     
+    void setEngine( CntAbstractEngine& aEngine ){ mEngine = &aEngine; }
     virtual int viewId() const = 0;
-
+    
 protected:
     HbDocumentLoader* mDocument;
     HbListView* mListView;
@@ -56,7 +57,7 @@ protected:
     HbAction* mSoftkey;
     CntAbstractViewManager* mMgr;
     CntListModel* mListModel;
-
+    CntAbstractEngine* mEngine;
 };
 
 #endif /* CNTBASESELECTIONVIEW_H */

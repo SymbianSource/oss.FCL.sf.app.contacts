@@ -15,6 +15,9 @@
 *
 */
 
+#include <QPluginLoader>
+#include <QDir>
+
 #include <qtcontacts.h>
 #include <qcontactmanager.h>
 #include <hbapplication.h>
@@ -23,7 +26,8 @@
 #include <QTimer>
 #include "cntcache.h"
 #include "cntcache_p.h"
-#include "cntinfoprovider.h"
+#include <cntinfoproviderfactory.h>
+#include <cntinfoprovider.h>
 #include "cntdefaultinfoprovider.h"
 #include "cntpresenceinfoprovider.h"
 #include <cntdebug.h>
@@ -41,6 +45,8 @@ static const QEvent::Type ProcessJobsEvent = QEvent::User;
 static const int NoIconRequest = -1;
 // the id that states that there is no job with that key
 static const int NoSuchJob = -1;
+
+const char *CNT_INFO_PROVIDER_EXTENSION_PLUGIN_DIRECTORY = "/resource/qt/plugins/contacts/infoproviders/";
     
 // TODO: Provide a way (cenrep keys?) for UI to set which provider to use for
 //       what info field (and what info fields are indeed even in use).
@@ -60,15 +66,30 @@ CntCacheThread::CntCacheThread()
     // create static provider plugins
     mDataProviders.insert(new CntDefaultInfoProvider(), ContactInfoAllFields);
     mDataProviders.insert(new CntPresenceInfoProvider(), ContactInfoIcon2Field);
-    // TODO: create more static provider plugins
 
-    // TODO: load dynamic provider plugins using QPluginLoader
-
+    // load dynamic provider plugins
+    QDir pluginsDir(CNT_INFO_PROVIDER_EXTENSION_PLUGIN_DIRECTORY);
+    foreach (QString fileName, pluginsDir.entryList(QDir::Files))
+    {
+        // Create plugin loader
+        QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
+        if ( pluginLoader.load() )
+        {
+            CntInfoProviderFactory *factory = qobject_cast<CntInfoProviderFactory*>(pluginLoader.instance());
+            
+            if (factory)
+            {
+                CntInfoProvider *provider = factory->infoProvider();
+                mDataProviders.insert(provider, provider->supportedFields());
+            }
+        }
+    }
+    
     // connect the providers
     QMapIterator<CntInfoProvider*, ContactInfoFields> i(mDataProviders);
     while (i.hasNext()) {
         i.next();
-        connect(qobject_cast<CntInfoProvider*>(i.key()),
+        connect(static_cast<CntInfoProvider*>(i.key()),
                 SIGNAL(infoFieldReady(CntInfoProvider*, int, ContactInfoField, const QString&)),
                 this,
                 SLOT(onInfoFieldReady(CntInfoProvider*, int, ContactInfoField, const QString&)));

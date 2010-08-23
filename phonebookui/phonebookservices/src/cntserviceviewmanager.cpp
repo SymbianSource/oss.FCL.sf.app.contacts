@@ -17,7 +17,7 @@
 
 #include "cntserviceviewmanager.h"
 #include "cntserviceviewfactory.h"
-
+#include <cntabstractengine.h>
 /*!
 Constructor
 */
@@ -26,7 +26,7 @@ CntServiceViewManager::CntServiceViewManager( HbMainWindow *mainWindow,
     CntDefaultViewManager(mainWindow)
     {
     // ownership of the factory is given to the base class.
-    setViewFactory( new CntServiceViewFactory( aProvider ) );
+    setViewFactory( new CntServiceViewFactory( aProvider, engine().extensionManager() ) );
     }
 
 /*!

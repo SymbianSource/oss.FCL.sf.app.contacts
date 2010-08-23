@@ -15,16 +15,16 @@ EXPORTS
 	?startGetAvailableStores@CntSimUtility@@QAE_NXZ @ 14 NONAME ; bool CntSimUtility::startGetAvailableStores(void)
 	?verifyPin2Code@CntSimUtility@@QAE_NXZ @ 15 NONAME ; bool CntSimUtility::verifyPin2Code(void)
 	?ParseServiceTable@CntSimUtility@@ABEXPAUAvailableStores@1@@Z @ 16 NONAME ; void CntSimUtility::ParseServiceTable(struct CntSimUtility::AvailableStores *) const
-	?qt_metacast@CntSimUtility@@UAEPAXPBD@Z @ 17 NONAME ; void * CntSimUtility::qt_metacast(char const *)
-	?simInfoReady@CntSimUtility@@IAEXAAUSimInfo@1@H@Z @ 18 NONAME ; void CntSimUtility::simInfoReady(struct CntSimUtility::SimInfo &, int)
-	?isFdnActive@CntSimUtility@@QAE_NXZ @ 19 NONAME ; bool CntSimUtility::isFdnActive(void)
-	?qt_metacall@CntSimUtility@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 20 NONAME ; int CntSimUtility::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?trUtf8@CntSimUtility@@SA?AVQString@@PBD0H@Z @ 21 NONAME ; class QString CntSimUtility::trUtf8(char const *, char const *, int)
-	?trUtf8@CntSimUtility@@SA?AVQString@@PBD0@Z @ 22 NONAME ; class QString CntSimUtility::trUtf8(char const *, char const *)
-	?startGetSimInfo@CntSimUtility@@QAE_NXZ @ 23 NONAME ; bool CntSimUtility::startGetSimInfo(void)
-	?staticMetaObject@CntSimUtility@@2UQMetaObject@@B @ 24 NONAME ; struct QMetaObject const CntSimUtility::staticMetaObject
-	?RequestCompleted@CntSimUtility@@QAEXH@Z @ 25 NONAME ; void CntSimUtility::RequestCompleted(int)
-	??1CntSimUtility@@UAE@XZ @ 26 NONAME ; CntSimUtility::~CntSimUtility(void)
-	?getLastImportTime@CntSimUtility@@QAE?AVQDateTime@@AAH@Z @ 27 NONAME ; class QDateTime CntSimUtility::getLastImportTime(int &)
-	?setLastImportTime@CntSimUtility@@QAEXAAH@Z @ 28 NONAME ; void CntSimUtility::setLastImportTime(int &)
+	?getLastImportTime@CntSimUtility@@QAE?AVQDateTime@@AAH@Z @ 17 NONAME ; class QDateTime CntSimUtility::getLastImportTime(int &)
+	?qt_metacast@CntSimUtility@@UAEPAXPBD@Z @ 18 NONAME ; void * CntSimUtility::qt_metacast(char const *)
+	?simInfoReady@CntSimUtility@@IAEXAAUSimInfo@1@H@Z @ 19 NONAME ; void CntSimUtility::simInfoReady(struct CntSimUtility::SimInfo &, int)
+	?isFdnActive@CntSimUtility@@QAE_NXZ @ 20 NONAME ; bool CntSimUtility::isFdnActive(void)
+	?qt_metacall@CntSimUtility@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 21 NONAME ; int CntSimUtility::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?trUtf8@CntSimUtility@@SA?AVQString@@PBD0H@Z @ 22 NONAME ; class QString CntSimUtility::trUtf8(char const *, char const *, int)
+	?trUtf8@CntSimUtility@@SA?AVQString@@PBD0@Z @ 23 NONAME ; class QString CntSimUtility::trUtf8(char const *, char const *)
+	?startGetSimInfo@CntSimUtility@@QAE_NXZ @ 24 NONAME ; bool CntSimUtility::startGetSimInfo(void)
+	?setLastImportTime@CntSimUtility@@QAEXAAH@Z @ 25 NONAME ; void CntSimUtility::setLastImportTime(int &)
+	?staticMetaObject@CntSimUtility@@2UQMetaObject@@B @ 26 NONAME ; struct QMetaObject const CntSimUtility::staticMetaObject
+	?RequestCompleted@CntSimUtility@@QAEXH@Z @ 27 NONAME ; void CntSimUtility::RequestCompleted(int)
+	??1CntSimUtility@@UAE@XZ @ 28 NONAME ; CntSimUtility::~CntSimUtility(void)
 

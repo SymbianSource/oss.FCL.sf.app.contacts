@@ -22,14 +22,12 @@
 #include <hbpushbutton.h>
 #include <hblistview.h>
 
-//#include "cntabstractview.h"
 #include "cntactionmenubuilder.h"
 #include <hbdocumentloader.h>
 #include "cntsimutility.h"
 
 #include <cntabstractview.h>
 
-class CntAbstractViewManager;
 class HbView;
 class HbAction;
 class QStandardItemModel;
@@ -60,11 +58,13 @@ CntImportsView();
     ~CntImportsView();
 
 public: // From CntAbstractView
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
     bool isDefault() const { return false; }
     HbView* view() const { return mView; }
     int viewId() const { return importsView; }
+    inline void setEngine( CntAbstractEngine& aEngine ){ mEngine = &aEngine; }
+    
 	void simInfoErrorMessage(int infoError);
     bool startSimImport();
     void fetchSDNContacts();
@@ -119,6 +119,8 @@ private :
     bool mSimError;
     bool mWaitingForAdnCache;
     bool mImportInProgress;
+    
+    CntAbstractEngine* mEngine;
 };
 
 #endif /* CNTIMPORTSVIEW_H_ */

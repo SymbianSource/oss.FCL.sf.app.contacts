@@ -22,7 +22,7 @@
 #include <hbabstractviewitem.h>
 #include <hbgroupbox.h>
 #include "cntdetaileditormodel.h"
-#include "cntabstractview.h"
+#include <cntabstractview.h>
 
 #include <qtcontacts.h>
 
@@ -61,13 +61,14 @@ public:
     
 public:
     // Documentation inherited from CntAbstractView.
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
         
     bool isDefault() const;
     HbView* view() const;
     
     int viewId() const;
+    inline void setEngine( CntAbstractEngine& aEngine ){ mEngine = &aEngine; }
     
 private:    
     HbDocumentLoader* document();
@@ -85,7 +86,7 @@ private:
     HbAction                       *mCancel;
     CntViewParameters               mArgs;
     CntSaveManager                 *mSaveManager; // own
-    
+    CntAbstractEngine*              mEngine; // not own
     friend class TestCntDetailEditor;
     };
 #endif /* CNTDETAILEDITOR_H_ */

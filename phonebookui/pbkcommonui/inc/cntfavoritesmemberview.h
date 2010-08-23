@@ -23,13 +23,11 @@
 #include <QSet>
 
 class CntListModel;
-class CntAbstractViewManager;
 class HbView;
 class HbAction;
 class HbListView;
 class HbAbstractViewItem;
 class QModelIndex;
-class CntFetchContacts;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -40,11 +38,13 @@ class CntFavoritesMemberView : public QObject, public CntAbstractView
     Q_OBJECT
 
 public: // From CntAbstractView
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
     bool isDefault() const { return false; }
     HbView* view() const { return mView; }
     int viewId() const { return favoritesMemberView; }
+    inline void setEngine( CntAbstractEngine& aEngine ){ mEngine = &aEngine; }
+    
     void createModel();
     
 public:
@@ -85,9 +85,9 @@ private:
     CntAbstractViewManager*     mViewManager;
     HbDocumentLoader            mDocumentLoader;
     HbView*                     mView; // own
-    CntFetchContacts*           mFetchView;
     QSet<QContactLocalId>       mOriginalGroupMembers;
     HbAction*                   mSoftkey; // owned by view
+    CntAbstractEngine* mEngine;
 };
 
 #endif /* CNTFAVORITESMEMBERVIEW_H */

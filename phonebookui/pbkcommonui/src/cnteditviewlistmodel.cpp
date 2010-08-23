@@ -24,8 +24,9 @@
 #include <cntviewparams.h>
 #include <QDir>
 
-CntEditViewListModel::CntEditViewListModel( QContact& aContact ) :
-mContact( aContact )
+CntEditViewListModel::CntEditViewListModel( QContact& aContact, CntExtensionManager& aMgr ) :
+mContact( aContact ),
+mManager( aMgr )
 {
     mLookupTable.insert( EPhonenumber,    -1 );
     mLookupTable.insert( EEmailAddress,   -1 );
@@ -53,7 +54,6 @@ mContact( aContact )
     mLookupMap.insert( QContactNote::DefinitionName,            ENote);
     mLookupMap.insert( QContactFamily::DefinitionName,          EFamily);
     
-    mManager = new CntExtensionManager();
     mBuilder = new CntEditViewItemBuilder();
     mSeparator = new CntEditViewSeparator();
     
@@ -74,8 +74,6 @@ CntEditViewListModel::~CntEditViewListModel()
     
     delete mBuilder;
     mBuilder = NULL;
-    delete mManager;
-    mManager = NULL;
 }
  
 void CntEditViewListModel::updateRingtone()
@@ -216,29 +214,32 @@ void CntEditViewListModel::removeItem( CntEditViewItem* aItem, const QModelIndex
 
 void CntEditViewListModel::refreshExtensionItems()
 {
-    beginResetModel();
-    // remove all extension items
+    // remove and delete all extension items
     for( int i(mItemList.count()-1); i >= 0; i-- )
     {
         CntEditViewItem* item = mItemList.at( i );
         if ( item->data(ERoleItemType) == QVariant(ETypeUiExtension) )
         {
+            QModelIndex modelIndex = createIndex(i, 0);
+            beginRemoveRows( modelIndex.parent(), i, i );
             mItemList.removeAt(i);
             removeItem( EPluginItem );
+            
+            delete item;
+            endRemoveRows();
         }
     }
-    // query extension items again
-    int count = mManager->pluginCount();
+    // query and reload extension items again
+    int count = mManager.pluginCount();
     for ( int i(0); i < count; i++ )
     {
-        CntUiExtensionFactory* factory = mManager->pluginAt(i);
+        CntUiExtensionFactory* factory = mManager.pluginAt(i);
         CntEditViewItemSupplier* supplier = factory->editViewItemSupplier( mContact );
         if (supplier)
         {
             loadPluginItems( supplier );
         }
     }
-    endResetModel();
 }
 
 void CntEditViewListModel::allInUseFields( CntViewIdList& aList )
@@ -321,17 +322,15 @@ QModelIndex CntEditViewListModel::itemIndex( QContactDetail aDetail ) const
 
 void CntEditViewListModel::refresh()
 {
-    beginResetModel();
-    
     insertItem( EPhonenumber, mBuilder->phoneNumberItems(mContact) );
     insertItem( EEmailAddress, mBuilder->emailAddressItems(mContact) );
     insertItem( EAddressTemplate, mBuilder->addressItems(mContact) );
     insertItem( EUrl, mBuilder->urlItems(mContact) );
         
-    int count = mManager->pluginCount();
+    int count = mManager.pluginCount();
     for ( int i(0); i < count; i++ )
     {
-        CntUiExtensionFactory* factory = mManager->pluginAt(i);
+        CntUiExtensionFactory* factory = mManager.pluginAt(i);
         CntEditViewItemSupplier* supplier = factory->editViewItemSupplier( mContact );
         if (supplier)
         {
@@ -345,8 +344,6 @@ void CntEditViewListModel::refresh()
     insertDetailItem( ENote, mBuilder->noteDetails(mContact) );
     insertDetailItem( EFamily, mBuilder->familyDetails(mContact) );
     insertDetailItem( ERingingTone, mBuilder->ringtoneDetails(mContact) );
-    
-    endResetModel();
 }
 
 bool CntEditViewListModel::isEmptyItem( CntEditViewItem* aItem )
@@ -381,7 +378,26 @@ void CntEditViewListModel::loadPluginItems( CntEditViewItemSupplier* aSupplier )
     }
     
     if ( !list.isEmpty() )
+    {
+        // the new items will be inserted under already existing plugin items...
+        int index = mLookupTable.value( EPluginItem );
+        
+        // ... or under the address template (if no plugins exist)
+        if (index == -1)
+        {
+            index = mLookupTable.value( EAddressTemplate );
+        }
+        
+        // ... or as a final choice, under the email address items (if address template doesn't exist)
+        if (index == -1)
+        {
+            index = mLookupTable.value( EEmailAddress );
+        }
+        QModelIndex modelIndex = createIndex(index, 0);
+        beginInsertRows(modelIndex.parent(), index + 1, index + count);
         insertItem( EPluginItem, list );
+        endInsertRows();
+    }
 }
 
 void CntEditViewListModel::insertDetailItem( KLookupKey aKey, QList<CntEditViewItem*> aList )

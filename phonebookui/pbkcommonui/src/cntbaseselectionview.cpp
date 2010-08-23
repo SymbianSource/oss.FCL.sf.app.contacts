@@ -19,6 +19,7 @@
 
 #include <hbview.h>
 #include <hblistview.h>
+#include <hblistviewitem.h>
 #include <hbindexfeedback.h>
 #include <hbscrollbar.h>
 #include <hbdocumentloader.h>
@@ -47,6 +48,8 @@ mDocument(NULL)
     mListView->verticalScrollBar()->setInteractive(true);
     mListView->setUniformItemSizes(true);
 
+    HbListViewItem* prototype = mListView->listItemPrototype();
+    
     HbIndexFeedback *indexFeedback = new HbIndexFeedback(mView);
     indexFeedback->setIndexFeedbackPolicy(HbIndexFeedback::IndexFeedbackSingleCharacter);
     indexFeedback->setItemView(mListView);
@@ -60,26 +63,19 @@ CntBaseSelectionView::~CntBaseSelectionView()
     delete mDocument;
 }
 
-void CntBaseSelectionView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
+void CntBaseSelectionView::activate( const CntViewParameters aArgs )
 {
-    mMgr = aMgr;
+    mMgr = &mEngine->viewManager();
     
     if ( mView->navigationAction() != mSoftkey)
         mView->setNavigationAction(mSoftkey);
-    
-    HbMainWindow* window = mView->mainWindow();
-    if ( window )
-    {
-        //connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
-        //setOrientation(window->orientation());
-    }
     
     QContactDetailFilter filter;
     filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
     QString typeContact = QContactType::TypeContact;
     filter.setValue(typeContact);
 
-    mListModel = new CntListModel(mMgr->contactManager(SYMBIAN_BACKEND), filter);
+    mListModel = new CntListModel( &mEngine->contactManager(SYMBIAN_BACKEND), filter);
     mListModel->showMyCard( false );
     
     mListView->setModel( mListModel );

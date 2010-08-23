@@ -36,6 +36,7 @@ class CntUiGroupSupplier;
 class CntUiSocialExtension;
 class CntEditViewItemSupplier;
 class CntViewSupplier;
+class CntUiContactCardExtension;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -54,6 +55,12 @@ class CntUiExtensionFactory
 {
  public:
     virtual ~CntUiExtensionFactory() {}
+
+    /**
+     * Gives access to an interface for extending Contact Card.
+     * @return Returns null if not supported. Ownership is not given.
+     */
+    virtual CntUiContactCardExtension* contactCardExtension() = 0;
 
     /**
      * Gives access to an interface for extending UI with new groups.

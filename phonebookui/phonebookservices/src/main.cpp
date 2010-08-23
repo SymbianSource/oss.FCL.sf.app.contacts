@@ -48,9 +48,11 @@ int main(int argc, char **argv)
     CntKeyGrabber *keyGrabber = new CntKeyGrabber(&mainWindow, &mainWindow);
 
     CntViewNavigator* navigator = new CntViewNavigator( &mainWindow );
-    navigator->addException( serviceEditView, noView );
     navigator->addEffect( serviceContactCardView, historyView );
     navigator->addEffect( historyView, serviceContactCardView );
+    navigator->addEffect( serviceGroupMemberView, groupActionsView );
+    navigator->addEffect( groupActionsView, serviceGroupMemberView );
+    navigator->addRoot( serviceGroupMemberView );
 
     // This object actually executes the services
     CntServices* services = new CntServices();
@@ -61,7 +63,8 @@ int main(int argc, char **argv)
         *services ); // as CntAbstractServiceProvider
     viewManager->setViewNavigator( navigator );
 
-    services->setViewManager( *viewManager );
+    //services->setViewManager( *viewManager );
+    services->setEngine( viewManager->engine() );
 
     // These objects talk with QT Highway (send/receive)
     CntServiceProviderOld* serviceProviderOld = new CntServiceProviderOld( *services, &mainWindow ); // com.nokia.services.phonebookservices.Fetch

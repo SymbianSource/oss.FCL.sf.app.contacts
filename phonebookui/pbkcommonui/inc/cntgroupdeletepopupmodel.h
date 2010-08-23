@@ -22,8 +22,8 @@
 #include <QAbstractListModel>
 #include <qmobilityglobal.h>
 
-class ThumbnailManager;
-
+class CntThumbnailManager;
+class CntAbstractEngine;
 QTM_BEGIN_NAMESPACE
 class QContactManager;
 class QContact;
@@ -39,7 +39,7 @@ public:
 
 public:
     QContactManager    *mContactManager;
-    ThumbnailManager   *mThumbnailManager;
+    CntThumbnailManager   *mThumbnailManager;
     QList<QVariantList> mDataList;
     QMap<int,int>       mIconRequests;
 };
@@ -49,7 +49,7 @@ class CntGroupDeletePopupModel : public QAbstractListModel
     Q_OBJECT
     
 public:
-    CntGroupDeletePopupModel(QContactManager *manager, QObject *parent = 0);
+    CntGroupDeletePopupModel(CntAbstractEngine *aEngine, QObject *parent = 0);
     ~CntGroupDeletePopupModel();
     
 public:

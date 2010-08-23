@@ -20,9 +20,8 @@
 
 #include <hbdocumentloader.h>
 
-#include "cntabstractview.h"
+#include <cntabstractview.h>
 
-class CntAbstractViewManager;
 class HbView;
 class HbIcon;
 class HbAction;
@@ -31,7 +30,6 @@ class HbAbstractViewItem;
 class QModelIndex;
 class QStandardItemModel;
 class CntActionLauncher;
-
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -45,11 +43,12 @@ class CntGroupActionsView : public QObject, public CntAbstractView
     Q_OBJECT
 
 public: // From CntAbstractView
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
     bool isDefault() const { return false; }
     HbView* view() const { return mView; }
     int viewId() const { return groupActionsView; }
+    inline void setEngine( CntAbstractEngine& aEngine ){ mEngine = &aEngine; }
     
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
@@ -99,6 +98,8 @@ private:
     QStringList                 mEmailActionParams;
     QVariantMap                 mMessageActionParams;
     bool                        mIsExecutingAction;
+    
+    CntAbstractEngine*          mEngine;
 };
 
 #endif // CNTGROUPACTIONSVIEW_H

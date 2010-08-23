@@ -35,7 +35,7 @@ public:
     int viewId() const { return serviceContactCardView; }
     
 private slots:
-    void closeContactCard();
+    void closeContactCard(int value);
 
 private:
     CntAbstractServiceProvider& mProvider;

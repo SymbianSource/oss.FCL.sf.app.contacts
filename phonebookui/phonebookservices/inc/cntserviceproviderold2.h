@@ -110,10 +110,13 @@ public slots:  // operations offered to clients
 
 private: // from CntAbstractServiceProvider
     void CompleteServiceAndCloseApp(const QVariant& retValue);
+    void overrideReturnValue(const QVariant& retValue);
 
 private:
     CntServices& mServices;
     int mCurrentRequestIndex;
+    
+    QVariant mOverriddenReturnValue;
 };
 
 #endif /* CNTSERVICEPROVIDEROLD2_H */

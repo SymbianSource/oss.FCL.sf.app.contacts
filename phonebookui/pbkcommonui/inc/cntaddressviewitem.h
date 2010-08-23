@@ -23,6 +23,8 @@
 
 class HbWidget;
 class HbAbstractViewItem;
+class XQApplicationManager;
+class XQAiwRequest;
 
 class CntAddressViewItem : public /*CntDetailViewItem*/ HbDataFormViewItem
     {
@@ -34,6 +36,7 @@ public:
 
 private slots:
     void launchLocationPicker();
+    void handleLocationChange(const QVariant& aValue );
     
 public:
     HbAbstractViewItem* createItem();
@@ -42,8 +45,9 @@ public:
     bool canSetModelIndex( const QModelIndex &index ) const;
     
 private:
-    void handleLocationChange(const QVariant& aValue );
-
+    XQApplicationManager *mAppManager;
+    XQAiwRequest* mRequest;
+    bool mRequestPending;
     friend class T_AddressEditorTest;
 };
 

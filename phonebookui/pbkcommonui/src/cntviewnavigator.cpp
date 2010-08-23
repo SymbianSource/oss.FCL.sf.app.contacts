@@ -49,7 +49,6 @@ void CntViewNavigator::next( const int& aId, QFlags<Hb::ViewSwitchFlag> &flags )
 
 const int& CntViewNavigator::back( QFlags<Hb::ViewSwitchFlag> &flags, bool toRoot )
 {
-    qDebug() << "CntViewNavigator::back() - IN";
     iTop = noView;
     // Check if exception is set for current view item. Exception
     // means that instead of one step back, we go back until that 
@@ -108,7 +107,7 @@ const int& CntViewNavigator::back( QFlags<Hb::ViewSwitchFlag> &flags, bool toRoo
             flags = Hb::ViewSwitchUseBackAnim;
         }
     } 
-    qDebug() << "CntViewNavigator::back() - OUT";
+
     return iTop;
 }
 

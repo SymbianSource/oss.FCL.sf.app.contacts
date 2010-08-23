@@ -6,7 +6,7 @@
         </widget>
         <widget name="container" role="HbDialog:contentWidget" type="HbWidget">
         	<widget name="markAll" type="CntFetchMarkAll">
-        		<bool name="visible" value="TRUE"/>
+        		<bool name="visible" value="FALSE"/>
         	</widget>
             <widget name="emptyLabel" type="HbLabel">
                 <fontspec name="fontSpec" role="Primary"/>
@@ -45,12 +45,6 @@
                 <linearitem itemname="listView"/>
                 <linearitem itemname="searchPanel"/>
             </layout>
-            <sizehint height="expr(var(hb-param-screen-long-edge) -2*var(hb-param-margin-gene-screen) )" type="PREFERRED" width="expr(var(hb-param-screen-short-edge) - 2*var(hb-param-margin-gene-screen) )"/>
-            <!-- 
-            <sizepolicy horizontalPolicy="Preferred" horizontalStretch="0" verticalPolicy="Preferred" verticalStretch="0"/>
-            
-            <sizehint height="expr(var(hb-param-screen-height) -2*var(hb-param-margin-gene-screen) )" type="PREFERRED" width="expr(var(hb-param-screen-width) - 2*var(hb-param-margin-gene-screen) )"/>
-            <sizepolicy horizontalPolicy="Preferred" horizontalStretch="0" verticalPolicy="Preferred" verticalStretch="0"/> -->
         </widget>
     </section>
 	
@@ -70,13 +64,10 @@
                 <linearitem itemname="listView"/>
                 <linearitem itemname="searchPanel"/>
             </layout>
-            
-		<sizehint height="expr(var(hb-param-screen-long-edge) -2*var(hb-param-margin-gene-screen) )" type="PREFERRED" width="expr(var(hb-param-screen-short-edge) - 2*var(hb-param-margin-gene-screen) )"/>
         </widget>
     </section>
 	
 	<section name="find_list_landscape">
-		<widget name="dialog" type="HbDialog">
             <widget name="container" role="HbDialog:contentWidget" type="HbWidget">
 				<widget name="markAll" type="CntFetchMarkAll">
 					<bool name="visible" value="FALSE"/>
@@ -96,9 +87,6 @@
 					<linearitem itemname="searchPanel"/>
 				</layout>
 			</widget>
-			<sizehint height="expr(var(hb-param-screen-short-edge) - 2* var(hb-param-margin-gene-screen))" type="PREFERRED" width="expr(var(hb-param-screen-long-edge) - 2* var(hb-param-margin-gene-screen))"/>
-			<!-- <sizepolicy horizontalPolicy="Preferred" horizontalStretch="0" verticalPolicy="Preferred" verticalStretch="0"/> -->
-		</widget>
     </section>
 
     <section name="find_empty">
@@ -121,7 +109,6 @@
                 <linearitem itemname="emptyLabel"/>
                 <linearitem itemname="searchPanel"/>
             </layout>
-            <sizehint height="expr(var(hb-param-screen-short-edge) - 2* var(hb-param-margin-gene-screen))" type="PREFERRED" width="expr(var(hb-param-screen-long-edge) - 2* var(hb-param-margin-gene-screen))"/>
         </widget>
     </section>
 
@@ -141,14 +128,10 @@
                 <linearitem itemname="emptyLabel"/>
                 <linearitem itemname="searchPanel"/>
             </layout>
-            <sizehint height="expr(var(hb-param-screen-short-edge) - 2* var(hb-param-margin-gene-screen))" type="PREFERRED" width="expr(var(hb-param-screen-long-edge) - 2* var(hb-param-margin-gene-screen))"/>
         </widget>
     </section>
 	
 	<section name="find_empty_landscape">
-		<widget name="dialog" type="HbDialog">
-            <sizehint height="expr(var(hb-param-screen-short-edge) - 2* var(hb-param-margin-gene-screen))" type="PREFERRED" width="expr(var(hb-param-screen-long-edge) - 2* var(hb-param-margin-gene-screen))"/>
-
 			<widget name="container" role="HbDialog:contentWidget" type="HbWidget">
 				<widget name="markAll" type="CntFetchMarkAll">
 					<bool name="visible" value="FALSE"/>
@@ -168,12 +151,13 @@
 					<linearitem itemname="searchPanel"/>
 				</layout>
 			</widget>
-		</widget>
     </section>
 	
     <section name="size_section">
         <widget name="dialog" type="HbDialog">
-            <sizehint height="expr(var(hb-param-screen-height) - 2* var(hb-param-margin-gene-screen))" type="PREFERRED" width="expr(var(hb-param-screen-width) - 2* var(hb-param-margin-gene-screen))"/>
+            <widget name="container" role="HbDialog:contentWidget" type="HbWidget">
+                <sizehint height="expr(var(hb-param-screen-height) - 2* var(hb-param-margin-gene-screen))" type="PREFERRED" width="expr(var(hb-param-screen-width) - 2* var(hb-param-margin-gene-screen))"/>
+            </widget>
 	    </widget>
     </section>
 	

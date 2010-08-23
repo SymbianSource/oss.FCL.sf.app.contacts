@@ -267,4 +267,55 @@ QList<QContactUrl> CntDetailOrderingHelper::getOrderedUrls( const QContact &cont
     return orderedSupportedList;
 }
 
+/**
+* Return ordered list of address details
+*
+* @param QContact&, contact
+* @return QList<QContactAddress>, ordered list of address details
+*/   
+QList<QContactAddress> CntDetailOrderingHelper::getOrderedAddresses( const QContact& contact )
+{
+    QMap<QString, int> orderMap;
+    
+    orderMap.insert("" , EAddress);
+    orderMap.insert(QContactAddress::ContextHome , EAddressHome);
+    orderMap.insert(QContactAddress::ContextWork , EAddressWork);
+    
+    QList<QContactAddress> completeList = contact.details<QContactAddress>();
+    QList<QContactAddress> orderedSupportedList;
+    
+    foreach ( QContactAddress address, completeList )
+    {
+        QString context = address.contexts().isEmpty() ? QString() : address.contexts().first();
+        
+        if ( orderMap.keys().contains(context) )
+        {
+            int position = orderMap.value(context);
+            bool added = false;
+            
+            for (int i = 0; i < orderedSupportedList.count(); i++)
+            {
+                QString currentContext = orderedSupportedList.at(i).contexts().isEmpty() ? 
+                        QString() : orderedSupportedList.at(i).contexts().first();
+                
+                int currentPosition = orderMap.value(currentContext);
+                
+                if (currentPosition > position)
+                {
+                    orderedSupportedList.insert(i, address);
+                    added = true;
+                    break;
+                }
+            }
+            
+            if (!added)
+            {
+                orderedSupportedList.append(address);
+            }
+        }
+    }
+    
+    return orderedSupportedList;
+}
+
 // EOF

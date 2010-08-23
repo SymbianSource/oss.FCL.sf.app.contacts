@@ -30,11 +30,15 @@
 #include <qversitcontactimporter.h>
 #include <qversitdocument.h>
 #include <xqserviceprovider.h>
+#include <cntabstractengine.h>
 
 #include <QApplication>
 #include <QPixmap>
 #include <QFile>
 #include <QUrl>
+#include <QTextCodec>
+
+const int Latin1CharSetMIB = 4;
 
 CntServices::CntServices() :
 mViewManager(NULL),
@@ -71,6 +75,15 @@ CntServices::~CntServices()
 }
 
 
+void CntServices::setEngine( CntAbstractEngine& aEngine )
+{
+    CNT_LOG
+    mEngine = &aEngine;
+    mViewManager = &mEngine->viewManager();
+    CntServiceViewManager* srvMng = static_cast<CntServiceViewManager*>(mViewManager);
+    connect(srvMng, SIGNAL(applicationClosed()), this, SLOT(terminateService()));
+}
+/*
 void CntServices::setViewManager( CntAbstractViewManager& aViewManager )
 {
     CNT_LOG
@@ -78,7 +91,7 @@ void CntServices::setViewManager( CntAbstractViewManager& aViewManager )
     CntServiceViewManager* srvMng = static_cast<CntServiceViewManager*>(mViewManager);
     connect(srvMng, SIGNAL(applicationClosed()), this, SLOT(terminateService()));
 }
-
+*/
 
 void CntServices::singleFetch(
     const QString &title, const QString &action,
@@ -171,7 +184,7 @@ void CntServices::editCreateNew(const QString &definitionName, const QString &va
 }
 
 
-void CntServices::editCreateNewFromVCard(const QString &vCardFile,
+void CntServices::editCreateNewFromVCard(const QString &fileName,
     CntAbstractServiceProvider& aServiceProvider )
 {
     CNT_ENTRY
@@ -180,11 +193,26 @@ void CntServices::editCreateNewFromVCard(const QString &vCardFile,
     CntImageUtility imageUtility;
     QContact contact;
     QVersitReader reader;
-    QFile file(vCardFile);
-    if (!file.open(QIODevice::ReadOnly))
+    QFile inputFile(fileName);
+    if (!inputFile.open(QIODevice::ReadOnly))
         return;
-    reader.setDevice(&file);
     
+    // Versit parser default codec is UTF-8
+    // Check if decoding text to unicode is possible, else use Latin-1 text codec
+    QByteArray ba = inputFile.readAll();
+    if(!ba.isEmpty())
+        {
+        QTextCodec *c = QTextCodec::codecForUtfText(ba);
+        // Text codec returned is Latin-1, set default to Latin-1
+        if(c->mibEnum()==Latin1CharSetMIB)
+            reader.setDefaultCodec(QTextCodec::codecForName("ISO 8859-1"));
+        }
+    inputFile.close();
+    
+    QFile vCardFile(fileName);
+    if (!vCardFile.open(QIODevice::ReadOnly))
+        return;
+    reader.setDevice(&vCardFile);
     reader.startReading();
     reader.waitForFinished();
     // Use the resulting document(s)...
@@ -197,7 +225,7 @@ void CntServices::editCreateNewFromVCard(const QString &vCardFile,
         if(contacts.count() > 0)
             contact = contacts.first();
         }
-    file.close();
+    vCardFile.close();
     
     // Save thumbnail images
     QList<QContactThumbnail> details = contact.details<QContactThumbnail>();
@@ -533,6 +561,29 @@ void CntServices::CompleteServiceAndCloseApp(const QVariant& retValue)
     CNT_EXIT
 }
 
+// This method is inherited from CntAbstractServiceProvider
+void CntServices::overrideReturnValue(const QVariant& retValue)
+{
+    CNT_ENTRY
+    if (  mCurrentProvider )
+    {
+        mCurrentProvider->overrideReturnValue( retValue );
+    }
+    CNT_EXIT
+}
+
+// This method is inherited from CntAbstractServiceProvider
+bool CntServices::allowSubViewsExit()
+{
+    bool allow = true;
+    if (  mCurrentProvider )
+    {
+        allow = mCurrentProvider->allowSubViewsExit();
+    }
+    
+    return allow;
+}
+
 void CntServices::terminateService()
 {
     CNT_ENTRY
@@ -547,8 +598,8 @@ void CntServices::terminateService()
 
 QContactManager* CntServices::contactManager()
 {
-    if ( mViewManager )
-        return mViewManager->contactManager(SYMBIAN_BACKEND);
+    if ( mEngine )
+        return &mEngine->contactManager(SYMBIAN_BACKEND);
     return NULL;
 }
 

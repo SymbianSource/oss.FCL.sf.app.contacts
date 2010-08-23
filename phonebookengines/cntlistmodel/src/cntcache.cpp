@@ -278,7 +278,7 @@ void CntCache::onNewInfo(int contactId, const ContactInfoField& infoField, const
                 }
             }
             else if (iconName.startsWith("qtg_", Qt::CaseInsensitive)) {
-                CntIconCacheItem* iconItem = createIconCacheItem(iconName);
+                createIconCacheItem(iconName);
                 onNewIcon(iconName, HbIcon(iconName)); 
                 hasNewInfo = true;
             }
@@ -555,8 +555,11 @@ CntInfoCacheItem* CntCache::createInfoCacheItem(int contactId)
                 oldestItem = i;
             }
         }
-        mInfoCache.remove(oldestItem->contactId);
-        delete oldestItem;
+        
+        if (oldestItem) {
+            mInfoCache.remove(oldestItem->contactId);
+            delete oldestItem;
+        }
         
         // cache maintenance: if the cache ids become too large,
         // reduce all of them by MaxCacheOrderValue

@@ -39,6 +39,7 @@ public:
     
     void saveContactDetails();
     QContactDetail detail() const;
+    
 private:
     QContactName iName;
     QContactNickname iNick;

@@ -16,6 +16,7 @@
 */
 
 #include "cntimageeditorview.h"
+#include "cntthumbnailmanager.h"
 #include "cntimageutility.h"
 #include "cntsavemanager.h"
 #include "cntimagelabel.h"
@@ -27,7 +28,6 @@
 #include "cntdebug.h"
 #include "cntglobal.h"
 
-#include <thumbnailmanager_qt.h>
 #include <hbaction.h>
 #include <hbview.h>
 #include <hbmainwindow.h>
@@ -75,15 +75,6 @@ CntImageEditorView::CntImageEditorView() :
     mRemoveImage = static_cast<HbAction*>(mDocumentLoader.findObject("cnt:removeimage"));
     connect(mRemoveImage, SIGNAL(triggered()), this, SLOT(removeImage()));
 
-    // thumbnail manager
-    mThumbnailManager = new ThumbnailManager(this);
-    mThumbnailManager->setMode(ThumbnailManager::Default);
-    mThumbnailManager->setQualityPreference(ThumbnailManager::OptimizeForQuality);
-    mThumbnailManager->setThumbnailSize(ThumbnailManager::ThumbnailLarge);
-    
-    connect( mThumbnailManager, SIGNAL(thumbnailReady(QPixmap, void*, int, int)),
-        this, SLOT(thumbnailReady(QPixmap, void*, int, int)) );
-    
     // closing the application from task swapper or end key will cause the contact to be saved
     connect( qApp, SIGNAL(aboutToQuit()), this, SLOT(saveContact()));
 }
@@ -116,11 +107,15 @@ CntImageEditorView::~CntImageEditorView()
 /*!
 Called when activating the view
 */
-void CntImageEditorView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
+void CntImageEditorView::activate( const CntViewParameters aArgs )
 {
-    mViewManager = aMgr;
     mArgs = aArgs;
     
+    mViewManager = &mEngine->viewManager();
+    mThumbnailManager = &mEngine->thumbnailManager();
+    connect( mThumbnailManager, SIGNAL(thumbnailReady(QPixmap, void*, int, int)),
+            this, SLOT(thumbnailReady(QPixmap, void*, int, int)) );
+       
     if (mView->navigationAction() != mSoftkey)
         mView->setNavigationAction(mSoftkey);
     
@@ -143,7 +138,7 @@ void CntImageEditorView::activate( CntAbstractViewManager* aMgr, const CntViewPa
     
     QString myCard = mArgs.value( EMyCard ).toString();
     QContactLocalId localId = mContact->localId();
-    QContactLocalId selfContactId = mViewManager->contactManager(SYMBIAN_BACKEND)->selfContactId();
+    QContactLocalId selfContactId = mEngine->contactManager(SYMBIAN_BACKEND).selfContactId();
     bool isMyCard = ( localId == selfContactId && localId != 0 ) || !myCard.isEmpty();
     
     if (isMyCard)
@@ -170,7 +165,7 @@ void CntImageEditorView::activate( CntAbstractViewManager* aMgr, const CntViewPa
                 if (details.at(i).imageUrl().isValid())
                     {
                     mAvatar = new QContactAvatar(details.at(i));
-                    mThumbnailManager->getThumbnail(mAvatar->imageUrl().toString());
+                    mThumbnailManager->getThumbnail(ThumbnailManager::ThumbnailLarge, mAvatar->imageUrl().toString());
                     break;
                     }
             }
@@ -363,7 +358,7 @@ void CntImageEditorView::handleImageChange(const QVariant &value)
                 CNT_LOG_ARGS("image created, image = " << filePath)
                 
                 mAvatar->setImageUrl(QUrl(imagepath));
-                mThumbnailManager->getThumbnail(imagepath);
+                mThumbnailManager->getThumbnail(ThumbnailManager::ThumbnailLarge, imagepath);
                 mRemoveImage->setEnabled(true);
             }
         }
@@ -371,7 +366,7 @@ void CntImageEditorView::handleImageChange(const QVariant &value)
         {
             // No mass memory, use the orginal image
             mAvatar->setImageUrl(QUrl(value.toString()));
-            mThumbnailManager->getThumbnail(value.toString());
+            mThumbnailManager->getThumbnail(ThumbnailManager::ThumbnailLarge, value.toString());
             mRemoveImage->setEnabled(true);
         }
     }
@@ -446,14 +441,14 @@ void CntImageEditorView::saveContact()
         mContact->removeDetail(mAvatar);
     }
     
-    QString name = mViewManager->contactManager(SYMBIAN_BACKEND)->synthesizedContactDisplayLabel(*mContact);
+    QString name = mEngine->contactManager(SYMBIAN_BACKEND).synthesizedContactDisplayLabel(*mContact);
     
     if (name.isEmpty())
     {
         name = hbTrId("txt_phob_list_unnamed");
     }
     
-    CntSaveManager::CntSaveResult result = mSaveManager->saveContact(mContact, mViewManager->contactManager(SYMBIAN_BACKEND));
+    CntSaveManager::CntSaveResult result = mSaveManager->saveContact(mContact, &mEngine->contactManager(SYMBIAN_BACKEND));
     
     if (mContact->type() != QContactType::TypeGroup)
     {

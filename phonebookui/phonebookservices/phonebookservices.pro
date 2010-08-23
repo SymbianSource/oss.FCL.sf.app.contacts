@@ -18,6 +18,7 @@ DEPENDPATH += . \
     src
 
 INCLUDEPATH +=  ../pbkcommonui/inc \
+                ../pbkcommonui/engine_inc \
                 ../../inc
                 
 INCLUDEPATH += ../../phonebookengines/cntimageutility/inc
@@ -46,7 +47,8 @@ HEADERS += inc/cntserviceviewmanager.h \
            inc/cntserviceproviderfetch.h \
            inc/cntserviceproviderviewing.h \
            inc/cntserviceprovideredit.h \
-           inc/cntserviceviewparams.h
+           inc/cntserviceviewparams.h \
+           inc/cntservicesubeditview.h
 
 SOURCES += src/main.cpp \
            src/cntserviceviewmanager.cpp \
@@ -62,7 +64,8 @@ SOURCES += src/main.cpp \
            src/cntservices.cpp \
            src/cntserviceproviderfetch.cpp \
            src/cntserviceproviderviewing.cpp \
-           src/cntserviceprovideredit.cpp
+           src/cntserviceprovideredit.cpp \
+           src/cntservicesubeditview.cpp
 
 # capability
 TARGET.CAPABILITY = CAP_APPLICATION

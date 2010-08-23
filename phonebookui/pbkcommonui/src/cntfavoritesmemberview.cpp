@@ -40,8 +40,7 @@ CntFavoritesMemberView::CntFavoritesMemberView() :
     mContact(NULL),
     mModel(NULL),
     mFavoriteListView(NULL), 
-    mViewManager(NULL),
-    mFetchView(NULL)
+    mViewManager(NULL)
 {
     bool ok = false;
     mDocumentLoader.load(CNT_FAVORITESMEMBERVIEW_XML, &ok);
@@ -87,13 +86,13 @@ void CntFavoritesMemberView::showPreviousView()
     mViewManager->back(viewParameters);
 }
 
-void CntFavoritesMemberView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
+void CntFavoritesMemberView::activate( const CntViewParameters aArgs )
 {
     if (mView->navigationAction() != mSoftkey)
         mView->setNavigationAction(mSoftkey);   
     
     mContact = new QContact(aArgs.value(ESelectedGroupContact).value<QContact>());
-    mViewManager = aMgr;
+    mViewManager = &mEngine->viewManager();
 
     mFavoriteListView = static_cast<HbListView*> (mDocumentLoader.findWidget("listView"));
     mFavoriteListView->setUniformItemSizes(true);
@@ -111,10 +110,11 @@ void CntFavoritesMemberView::activate( CntAbstractViewManager* aMgr, const CntVi
     frame.setFrameGraphicsName("qtg_fr_list_normal");
     frame.setFrameType(HbFrameDrawer::NinePieces);
     
-    mFavoriteListView->itemPrototypes().first()->setDefaultFrame(frame);
-    mFavoriteListView->listItemPrototype()->setStretchingStyle(HbListViewItem::StretchLandscape);
-    mFavoriteListView->listItemPrototype()->setGraphicsSize(HbListViewItem::Thumbnail);
-
+    HbListViewItem* prototype = mFavoriteListView->listItemPrototype();
+    prototype->setDefaultFrame( frame );
+    prototype->setStretchingStyle(HbListViewItem::StretchLandscape);
+    prototype->setGraphicsSize(HbListViewItem::Thumbnail);
+    
     if (!mModel)
     {
         createModel();
@@ -137,14 +137,6 @@ void CntFavoritesMemberView::manageFavorites()
     membersFilter.setRelatedContactId(mContact->id());   
     mOriginalGroupMembers = getContactManager()->contactIds(membersFilter).toSet();
     
-    /*
-    if (!mFetchView) {
-        mFetchView = new CntFetchContacts(*getContactManager());
-        connect(mFetchView, SIGNAL(clicked()), this, SLOT(handleManageFavorites()));
-    }
-    mFetchView->setDetails(hbTrId("txt_phob_subtitle_favorites"), hbTrId("txt_common_button_save"));
-    mFetchView->displayContacts(HbAbstractItemView::MultiSelection, mOriginalGroupMembers);
-    */
     CntFetchContactPopup* popup = CntFetchContactPopup::createMultiSelectionPopup(
             hbTrId("txt_phob_subtitle_favorites"), 
             hbTrId("txt_common_button_save"),
@@ -156,17 +148,6 @@ void CntFavoritesMemberView::manageFavorites()
 
 void CntFavoritesMemberView::handleManageFavorites(QSet<QContactLocalId> aIds)
 {
-/*
-    QSet<QContactLocalId> selectedContacts = mFetchView->getSelectedContacts();
-    bool saveChanges = !mFetchView->wasCanceled();
-
-    delete mFetchView;
-    mFetchView = 0;
-    
-    if (!saveChanges) {
-        return;
-    }
-*/
     for (int i = 0; i < 2; ++i) {
         // first iteration processes added members, second removed members
         QSet<QContactLocalId> members = (i == 0 ? aIds - mOriginalGroupMembers
@@ -174,21 +155,21 @@ void CntFavoritesMemberView::handleManageFavorites(QSet<QContactLocalId> aIds)
         QList<QContactRelationship> memberships;
 
         foreach (QContactLocalId id, members) {
-            QContact contact = getContactManager()->contact(id);
+            QContactId contactId;
+            contactId.setLocalId(id);
             QContactRelationship membership;
             membership.setRelationshipType(QContactRelationship::HasMember);
             membership.setFirst(mContact->id());
-            membership.setSecond(contact.id());
+            membership.setSecond(contactId);
             memberships.append(membership);
         }
 
         if (!memberships.isEmpty()) {
-            QMap<int, QContactManager::Error> errors;
             if (i == 0) {
-                getContactManager()->saveRelationships(&memberships, &errors);
+                getContactManager()->saveRelationships(&memberships, NULL);
             }
             else {
-                getContactManager()->removeRelationships(memberships, &errors);
+                getContactManager()->removeRelationships(memberships, NULL);
             }
         }
     }
@@ -201,7 +182,7 @@ void CntFavoritesMemberView::createModel()
     rFilter.setRelatedContactRole(QContactRelationship::First);
     rFilter.setRelatedContactId(mContact->id());
 
-    mModel = new CntListModel(mViewManager->contactManager(SYMBIAN_BACKEND), rFilter, false);
+    mModel = new CntListModel( getContactManager(), rFilter, false);
     mFavoriteListView->setModel(mModel);
 }
 
@@ -316,7 +297,7 @@ QContactManager* CntFavoritesMemberView::getContactManager()
         return NULL;
     }
 
-    return mViewManager->contactManager(SYMBIAN_BACKEND);
+    return &mEngine->contactManager(SYMBIAN_BACKEND);
 }
 
 /*!

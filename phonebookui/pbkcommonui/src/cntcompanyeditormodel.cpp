@@ -75,7 +75,7 @@ void CntCompanyEditorModel::saveContactDetails()
     {
         mCompany.setName( name );
         mCompany.setTitle( title );
-        mCompany.setDepartment( department.split(", ") );
+        mCompany.setDepartment( department.split(", ", QString::SkipEmptyParts) );
         mCompany.setAssistantName( assistant );
         mContact->saveDetail( &mCompany );
     }

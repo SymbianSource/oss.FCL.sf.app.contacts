@@ -32,7 +32,6 @@ class CntCollectionListModel;
 class QModelIndex;
 class QActionGroup;
 class HbAbstractViewItem;
-class CntExtensionManager;
 
 QTM_USE_NAMESPACE
 
@@ -42,15 +41,16 @@ class CntCollectionView : public QObject, public CntAbstractView, public CntExte
     friend class TestCntCollectionView;
     
 public:
-    CntCollectionView(CntExtensionManager &extensionManager);
+    CntCollectionView();
     ~CntCollectionView();
     
 public: // From CntAbstractView
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
     bool isDefault() const { return false; }
     HbView* view() const { return mView; }
     int viewId() const { return collectionView; }
+    inline void setEngine( CntAbstractEngine& aEngine ){mEngine = &aEngine;}
     
 public: // From CntExtensionGroupCallback
     void openView(CntViewParameters& viewParams);
@@ -83,7 +83,7 @@ private:
     
     
 private:
-    CntExtensionManager&    mExtensionManager;
+    CntExtensionManager*    mExtensionManager;
     HbView*                 mView; // own
     HbAction*               mSoftkey; // owned by view
     CntAbstractViewManager* mViewManager;
@@ -100,6 +100,7 @@ private:
     QSet<QContactLocalId>   mSelectedContactsSet;
     
     QActionGroup*           mActionGroup;
+    CntAbstractEngine* mEngine;
 };
 
 #endif // CNTCOLLECTIONVIEW_H

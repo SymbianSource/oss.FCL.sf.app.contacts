@@ -17,6 +17,7 @@
 
 #include "cntimportsview.h"
 #include "cntglobal.h"
+
 #include <hbpushbutton.h>
 #include <hbaction.h>
 #include <hbview.h>
@@ -48,6 +49,7 @@ CntImportsView::CntImportsView() : mContactSimManagerADN(0),
     mFetchRequestADN(0),
     mFetchRequestSDN(0),
     mListView(0),
+    mModel(0),
     mAdnSimUtility(0),
     mSdnSimUtility(0),
     mAdnEntriesPresent(0),
@@ -109,19 +111,18 @@ void CntImportsView::showPreviousView()
 /*
 Activates a default view
 */
-void CntImportsView::activate(CntAbstractViewManager* aMgr, const CntViewParameters aArgs)
+void CntImportsView::activate(const CntViewParameters aArgs)
 {
     Q_UNUSED(aArgs);
     //back button
-    HbMainWindow* window = mView->mainWindow();
           
     if (mView->navigationAction() != mSoftkey)
     {
         mView->setNavigationAction(mSoftkey);
     }
             
-    mViewManager = aMgr;  
-    mContactSymbianManager = mViewManager->contactManager(SYMBIAN_BACKEND);
+    mViewManager = &mEngine->viewManager();  
+    mContactSymbianManager = &mEngine->contactManager(SYMBIAN_BACKEND);
    
     // Sim Utility info fetch
     int getSimInfoError(0);
@@ -191,13 +192,17 @@ void CntImportsView::activate(CntAbstractViewManager* aMgr, const CntViewParamet
      if (mSdnStorePresent && !mWaitingForAdnCache)
      {
         int sdnError = -1;
-        mSdnSimUtility = new CntSimUtility(CntSimUtility::SdnStore, sdnError);
-        if (sdnError != 0) 
+        mSdnStorePresent = false;
+        if (!mSdnSimUtility) 
         {
-            delete mSdnSimUtility; 
-            mSdnSimUtility = 0;
+            mSdnSimUtility = new CntSimUtility(CntSimUtility::SdnStore, sdnError);
+            if (sdnError != 0) 
+            {
+                delete mSdnSimUtility; 
+                mSdnSimUtility = 0;
+            }
         }
-        else
+        if (mSdnSimUtility)
         {
             //get number of SDN contacts 
             CntSimUtility::SimInfo sdnSimInfo = mSdnSimUtility->getSimInfo(getSdnSimInfoError);
@@ -205,12 +210,13 @@ void CntImportsView::activate(CntAbstractViewManager* aMgr, const CntViewParamet
             {
                 // sim entries are present
                 mSdnStoreEntries = sdnSimInfo.usedEntries;
+                if (mSdnStoreEntries > 0) {
+                    mSdnStorePresent = true;    
+                }
             }
         }
      }
     // end SDN store
-    
-    
     
     mListView = static_cast<HbListView*>(mDocumentLoader.findWidget(QString("listView")));
     
@@ -332,12 +338,12 @@ bool CntImportsView::startSimImport()
     mImportInProgress = true;
 
     delete mFetchRequestADN;
-    mContactSimManagerADN = mViewManager->contactManager(SIM_BACKEND_ADN);
+    mContactSimManagerADN = &mEngine->contactManager(SIM_BACKEND_ADN);
     mFetchRequestADN = new QContactFetchRequest;
     mFetchRequestADN->setManager(mContactSimManagerADN);   
     
     delete mFetchRequestSDN;
-    mContactSimManagerSDN = mViewManager->contactManager(SIM_BACKEND_SDN);
+    mContactSimManagerSDN = &mEngine->contactManager(SIM_BACKEND_SDN);
     mFetchRequestSDN = new QContactFetchRequest;
     mFetchRequestSDN->setManager(mContactSimManagerSDN);        
         
@@ -693,6 +699,7 @@ void CntImportsView::adnCacheStatusReady(CntSimUtility::CacheStatus& cacheStatus
     {
         mAdnStorePresent = false;
         mAdnEntriesPresent = false;
+        mSdnStorePresent = false;
     }
     else
     {
@@ -710,9 +717,69 @@ void CntImportsView::adnCacheStatusReady(CntSimUtility::CacheStatus& cacheStatus
                 mAdnEntriesPresent = true;
             }
         }
+        
+        //get number of SDN contacts
+        int sdnError = -1;
+        mSdnStorePresent = false;
+        if (!mSdnSimUtility)
+        {
+            mSdnSimUtility = new CntSimUtility(CntSimUtility::SdnStore, sdnError);
+            if (sdnError != 0) 
+            {
+                delete mSdnSimUtility; 
+                mSdnSimUtility = 0;
+            }
+        }
+        if (mSdnSimUtility)
+        {
+            int getSdnSimInfoError = 0;
+            CntSimUtility::SimInfo sdnSimInfo = mSdnSimUtility->getSimInfo(getSdnSimInfoError);
+            if (!getSdnSimInfoError)
+            {
+                mSdnStoreEntries = sdnSimInfo.usedEntries;
+                if (mSdnStoreEntries > 0)
+                {
+                    mSdnStorePresent = true;    
+                }
+            }
+        }
     }
     
-    //and start SIM contacts import, if user tapped "SIM import"
+    //dismiss progress dialog, if there are no SIM contacts 
+    if(mImportSimPopup != NULL && mImportSimPopup->isActive() &&
+       !mAdnEntriesPresent && !mSdnStorePresent)
+    {
+        mImportSimPopup->close();
+        showSimImportResults();
+    }
+    
+    //disable sim import item, if there are no SIM contacts 
+    if(!mAdnEntriesPresent && !mSdnStorePresent && mModel)
+    {
+        QList<QStandardItem*> importSimItems = mModel->takeRow(0);
+        QStandardItem* importSimItem = 0;
+        if (importSimItems.count() > 0)
+        {
+            importSimItem = importSimItems.at(0);
+        }
+         
+        if (importSimItem != 0)
+        {
+            QStringList simList;
+            QString simImport(hbTrId("txt_phob_dblist_import_from_sim"));
+            simList << simImport;
+            QString simNoContacts(hbTrId("txt_phob_dblist_import_from_1_val_no_sim_contacts"));
+            simList << simNoContacts;
+                 
+            importSimItem->setData(simList, Qt::DisplayRole);
+            importSimItem->setData(HbIcon("qtg_large_sim"), Qt::DecorationRole);
+            importSimItem->setEnabled(false);
+            mModel->insertRow(0, importSimItem);
+            mListView->reset();
+        }
+    }
+    
+    //start SIM contacts import, if user tapped "SIM import"
     if(mImportSimPopup != NULL && mImportSimPopup->isActive())
     {
         if (!startSimImport())

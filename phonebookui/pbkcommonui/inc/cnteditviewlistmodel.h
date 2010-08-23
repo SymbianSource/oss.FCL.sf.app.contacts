@@ -71,7 +71,7 @@ class CntEditViewListModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    CntEditViewListModel( QContact& aContact ); // ownership not transferred
+    CntEditViewListModel( QContact& aContact, CntExtensionManager& aExtensions ); // ownership not transferred
     ~CntEditViewListModel();
     
 public: // From QAbstractListModel
@@ -99,7 +99,7 @@ private:
     
 private:
     QList<CntEditViewItem*> mItemList;
-    CntExtensionManager* mManager;
+    CntExtensionManager& mManager;
     CntEditViewItemBuilder* mBuilder;
     CntEditViewItem* mSeparator;
     QContact& mContact;

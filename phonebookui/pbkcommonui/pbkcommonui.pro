@@ -49,6 +49,7 @@ symbian: {
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntviewparams.h APP_LAYER_PLATFORM_EXPORT_PATH(cntviewparams.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntabstractview.h APP_LAYER_PLATFORM_EXPORT_PATH(cntabstractview.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntabstractviewmanager.h APP_LAYER_PLATFORM_EXPORT_PATH(cntabstractviewmanager.h)"
+        :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntabstractengine.h APP_LAYER_PLATFORM_EXPORT_PATH(cntabstractengine.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_api/inc/cntuids.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuids.h)"
 
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntuiextensionfactory.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuiextensionfactory.h)"
@@ -61,6 +62,7 @@ symbian: {
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cnteditviewitem.h APP_LAYER_PLATFORM_EXPORT_PATH(cnteditviewitem.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntuiactionextension.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuiactionextension.h)"
         :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cnteditviewitemcallback.h APP_LAYER_PLATFORM_EXPORT_PATH(cnteditviewitemcallback.h)"
+        :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntuicontactcardextension.h APP_LAYER_PLATFORM_EXPORT_PATH(cntuicontactcardextension.h)"
 }
 
 # Input
@@ -141,7 +143,9 @@ HEADERS += \
     inc/cntactionpopup_p.h \
     inc/cntactionpopup.h \
     inc/cntsavemanager.h \
-    inc/cntkeygrabber.h
+    inc/cntkeygrabber.h \
+    engine_inc/cntdefaultengine.h \
+    engine_inc/cntthumbnailmanager.h
     
     
 SOURCES += \
@@ -217,7 +221,9 @@ SOURCES += \
     src/cntactionpopup_p.cpp \
     src/cntactionpopup.cpp \
     src/cntsavemanager.cpp \
-    src/cntkeygrabber.cpp
+    src/cntkeygrabber.cpp \
+    engine_src/cntthumbnailmanager.cpp \
+    engine_src/cntdefaultengine.cpp
 
 DOCML += resources/contacts_contactcard.docml \
          resources/contacts_ev.docml \
@@ -245,7 +251,7 @@ LIBS+= -lhbcore \
        -lcntlistmodel \
        -lthumbnailmanagerqt \
        -lcnthistorymodel \
-       -lcntmaptileservice \
+       -lmaptileservice \
        -lqtversit \
        -lcntimageutility \
        -lcntsimutility \

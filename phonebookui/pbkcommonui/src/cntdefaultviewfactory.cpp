@@ -38,16 +38,14 @@
 #include "cntsettingsview.h"
 #include "cntextensionmanager.h"
 
-CntDefaultViewFactory::CntDefaultViewFactory():
-    mExtensionManager(NULL)
+CntDefaultViewFactory::CntDefaultViewFactory( CntExtensionManager& aExt ):
+    mExtensionManager( aExt )
 {
-    mExtensionManager = new CntExtensionManager();
     HbStyleLoader::registerFilePath( ":/style" );
 }
 
 CntDefaultViewFactory::~CntDefaultViewFactory()
 {
-    delete mExtensionManager;
 }
 
 CntAbstractView* CntDefaultViewFactory::createView( int aId )
@@ -55,13 +53,13 @@ CntAbstractView* CntDefaultViewFactory::createView( int aId )
     switch ( aId )
     {
     case namesView:
-        return new CntNamesView(*mExtensionManager);
+        return new CntNamesView();
     case contactCardView:
         return new CntContactCardView();
     case myCardView:
         return new CntMyCardView();
     case collectionView:
-        return new CntCollectionView(*mExtensionManager);
+        return new CntCollectionView();
     case collectionFavoritesView:
         return new CntFavoritesView();
     case favoritesMemberView:
@@ -103,9 +101,9 @@ CntAbstractView* CntDefaultViewFactory::createView( int aId )
 
 CntAbstractView* CntDefaultViewFactory::createPluginView( int aId )
 {
-    for(int i = 0;i < mExtensionManager->pluginCount();i++)
+    for(int i = 0;i < mExtensionManager.pluginCount();i++)
     {
-        CntViewSupplier* viewSupplier = mExtensionManager->pluginAt(i)->viewSupplier();
+        CntViewSupplier* viewSupplier = mExtensionManager.pluginAt(i)->viewSupplier();
         if (viewSupplier)
         {
             for(int j = 0;j < viewSupplier->viewCount();j++)

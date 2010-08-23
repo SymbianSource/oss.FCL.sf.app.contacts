@@ -21,6 +21,7 @@
 #include "ut_cntcache.h"
 #include "ut_cntpresenceinfoprovider.h"
 #include "ut_cntdefaultinfoprovider.h"
+#include "ut_cntdisplaytextformatter.h"
 
 #include <QtTest/QtTest>
 
@@ -42,6 +43,9 @@ int main(int argc, char *argv[])
     app.installTranslator(&translator);
 
     TestRunner testRunner("ut_cntlistmodel");
+    
+    TestCntDisplayTextFormatter ut_CntDisplayTextFormatter;
+    testRunner.runTests( ut_CntDisplayTextFormatter );
     
     TestCntListModel ut_CntListModel;
     testRunner.runTests(ut_CntListModel);

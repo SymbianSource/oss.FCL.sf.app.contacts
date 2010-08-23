@@ -31,7 +31,6 @@
 
 class HbView;
 class HbListView;
-class HbGroupBox;
 class HbLabel;
 class HbDocumentLoader;
 class HbSearchPanel;
@@ -46,7 +45,7 @@ class CntNamesViewPrivate : public QObject
     Q_DECLARE_PUBLIC(CntNamesView)
     
 public:
-    CntNamesViewPrivate(CntExtensionManager &extensionManager);
+    CntNamesViewPrivate();
     virtual ~CntNamesViewPrivate();
 
 public slots:    
@@ -84,9 +83,9 @@ private slots:
     
 public:
     bool isFinderVisible();
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
-    
+    void setEngine( CntAbstractEngine& aEngine ){ mEngine = &aEngine; }
 private:
     void changeDeleteActionStatus();
     void focusLineEdit();
@@ -100,13 +99,11 @@ public:  // lazy initializations
     HbDocumentLoader *document();
     
 private:
-    CntExtensionManager&        mExtensionManager;
     CntAbstractViewManager*     mViewManager;
     CntListModel*               mListModel;
     HbView*                     mView;
     HbListView*                 mListView;
     HbLabel*                    mEmptyList;
-    HbGroupBox*                 mBanner;
     HbSearchPanel*              mSearchPanel;
     HbDocumentLoader*           mLoader;
     HbShrinkingVkbHost*         mVirtualKeyboard;
@@ -122,6 +119,7 @@ private:
     QActionGroup*               mActionGroup;
 	HbMenu*                     mMenu;
 	bool                        mFilterChanged;
+	CntAbstractEngine*          mEngine;
 };
 
 #endif /* CNTABSTRACTLISTVIEW_H_ */

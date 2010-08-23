@@ -38,8 +38,7 @@ exists(confml/phonebook.confml) :BLD_INF_RULES.prj_exports += "confml/phonebook.
 exists(implml/phonebook.implml) :BLD_INF_RULES.prj_exports += "implml/phonebook.implml CRML_EXPORT_PATH(phonebook.implml,uda_content)"
 exists(content/SQLite__Contacts.zip) :BLD_INF_RULES.prj_exports += "content/SQLite__Contacts.zip CRML_EXPORT_PATH(../content/zip/,uda_content)"
 
- 
-
+BLD_INF_RULES.prj_exports += "../sis/contacts_stub.sis  /epoc32/data/z/system/install/contacts_stub.sis"
 
 DEPLOYMENT += romfiles
 

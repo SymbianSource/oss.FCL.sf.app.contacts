@@ -24,7 +24,6 @@
 
 class HbDialog;
 class HbListView;
-class HbTextItem;
 class HbLabel;
 class HbAction;
 class HbSearchPanel;
@@ -75,6 +74,7 @@ private slots:
     void selectAll( int aState );
     void dialogDismissed( HbAction* aAction );
     void loadLayout( Qt::Orientation aOrientation );
+    void orientationChanged( Qt::Orientation aOrientation );
     void handleKeypadOpen();
     void handleKeypadClosed();
     void closePopup();
@@ -89,7 +89,7 @@ private:
     
     HbDialog* mPopup; // own
     HbListView* mListView; // own
-    HbTextItem* mEmptyView; // own
+    HbLabel* mEmptyView; // own
     HbLabel* mHeading; // own
     HbAction* mPrimaryAction; // own
     HbSearchPanel* mSearch; //own
@@ -99,6 +99,7 @@ private:
     QItemSelectionModel* mSelectionModel; // own
     CntDocumentLoader* mDoc; // own
     QString mTitle;
+    QList<QContactLocalId> mIds;
 };
 
 #endif /* CNTFETCHCONTACTPOPUP_H_ */

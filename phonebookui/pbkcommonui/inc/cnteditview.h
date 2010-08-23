@@ -23,7 +23,6 @@
 #include "cntglobal.h"
 
 class CntEditViewPrivate;
-class CntAbstractViewManager;
 class HbView;
 
 class QTPBK_EXPORT CntEditView : public QObject, public CntAbstractView
@@ -41,11 +40,13 @@ signals:
     
     
 public:
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
     bool isDefault() const;
     HbView* view() const;
     int viewId() const;
+
+    void setEngine( CntAbstractEngine& aEngine );
     
 private:
     CntEditViewPrivate* const d_ptr;

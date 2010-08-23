@@ -22,7 +22,7 @@
 #include <hbdataformmodelitem.h>
 #include <qtcontacts.h>
 #include "cntglobal.h"
-#include <cntmaptileservice.h>
+#include <maptileservice.h>
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -52,7 +52,7 @@ private:
     
 protected:
     bool mIsLocationPickerEnabled;
-    CntMapTileService* mMaptileInterface;
+    MapTileService* mMaptileInterface;
 	
     friend class T_AddressEditorTest;
     };

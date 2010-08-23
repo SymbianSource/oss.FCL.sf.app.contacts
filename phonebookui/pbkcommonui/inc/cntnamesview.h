@@ -23,24 +23,25 @@
 
 class HbView;
 class CntNamesViewPrivate;
-class CntExtensionManager;
 
 class CntNamesView : public QObject, public CntAbstractView
 {
     Q_OBJECT
     
 public:
-    CntNamesView(CntExtensionManager &extensionManager);
+    CntNamesView();
     ~CntNamesView();
    
 public: // From CntAbstractView
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
     HbView* view() const;
     
     bool isDefault() const;
     int viewId() const;
   
+    void setEngine( CntAbstractEngine& aEngine );
+    
 private:
     CntNamesViewPrivate* const d_ptr;
     Q_DECLARE_PRIVATE_D(d_ptr, CntNamesView)

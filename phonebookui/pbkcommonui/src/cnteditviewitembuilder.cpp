@@ -172,7 +172,7 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::addressItems(QContact& aContact)
     if ( addresses.isEmpty() )
     {
         QStringList fieldList;
-        fieldList << QContactAddress::FieldStreet << QContactAddress::FieldPostcode << QContactAddress::FieldPostOfficeBox;
+        fieldList << QContactAddress::FieldStreet << QContactAddress::FieldPostcode;
         fieldList << QContactAddress::FieldLocality << QContactAddress::FieldRegion << QContactAddress::FieldCountry;
               
         QContactAddress addr;
@@ -234,19 +234,23 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::addressDetails(QContact& aContac
 {
     QList<CntEditViewItem*> list;
     // Address 
-    foreach( QContactAddress addr, aContact.details<QContactAddress>() )
+    foreach( QContactAddress addr, CntDetailOrderingHelper::getOrderedAddresses(aContact) )
     {
         QStringList fieldList;
-        fieldList << QContactAddress::FieldStreet << QContactAddress::FieldPostcode << QContactAddress::FieldPostOfficeBox;
+        fieldList << QContactAddress::FieldStreet << QContactAddress::FieldPostcode;
         fieldList << QContactAddress::FieldLocality << QContactAddress::FieldRegion << QContactAddress::FieldCountry;
         
         QStringList valueList;
         foreach ( QString str, fieldList )
         {
-            valueList << addr.value( str );
+            QString value = addr.value( str );
+            if ( !value.isEmpty() )
+            {
+                valueList << addr.value( str );
+            }
         }
             
-        QString address = valueList.join(" ").trimmed();
+        QString address = valueList.join(", ").trimmed();
         if ( !address.isEmpty() )
         {
             QString context = addr.contexts().isEmpty() ? "" : addr.contexts().first();
@@ -275,11 +279,14 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::companyDetails(QContact& aContac
     // Company
     QContactOrganization org = aContact.detail<QContactOrganization>();
     QStringList detailList;
-    detailList << org.title();
-    detailList << org.name();
-    detailList << org.department().join(" ").trimmed();
+    if ( !org.title().isEmpty())
+        detailList << org.title();
+    if ( !org.name().isEmpty())
+        detailList << org.name();
+    if ( !org.department().isEmpty())
+        detailList << org.department().join(", ").trimmed();
 
-    QString company = detailList.join(" ").trimmed(); 
+    QString company = detailList.join(", ").trimmed(); 
     if ( !company.isEmpty() )
     {
         QStringList fields;

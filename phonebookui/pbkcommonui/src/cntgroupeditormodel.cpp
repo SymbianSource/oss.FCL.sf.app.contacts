@@ -65,8 +65,6 @@ bool CntGroupEditorModel::isConferenceNumber( const QModelIndex& aIndex )
 
 void CntGroupEditorModel::saveContactDetails()
 {
-    HbDataFormModelItem* root = invisibleRootItem();
-    
     iGroupName.setCustomLabel( iNameItem->contentWidgetData("text").toString().trimmed());
     iGroupConfCallNumber.setNumber( iNumberItem->contentWidgetData("text").toString().trimmed());
     

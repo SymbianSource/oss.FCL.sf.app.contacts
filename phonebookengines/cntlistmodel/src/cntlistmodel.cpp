@@ -74,10 +74,13 @@ CntListModel::CntListModel(QContactManager* manager,
     m_defaultMyCardIcon = HbIcon("qtg_large_avatar_mycard");
 
     d = new CntListModelData(contactFilter, showMyCard);
+
     d->m_contactManager = manager;
     d->m_cache = CntCache::instance();
+
     connect(d->m_cache, SIGNAL(contactInfoUpdated(QContactLocalId)), this, SLOT(handleContactInfoUpdated(QContactLocalId)));
     d->m_myCardId = d->m_contactManager->selfContactId();     
+
     if (doConstruct() != QContactManager::NoError) {
         throw("exception");
     }
@@ -120,7 +123,7 @@ QVariant CntListModel::data(const QModelIndex &index, int role) const
     }
     
     if (role == Qt::DisplayRole) {
-        return dataForDisplayRole(row);
+        return dataForRole(row, role);
     }
     else if (role == Hb::IndexFeedbackRole) {
         if (row == 0 && (d->m_myCardId == d->m_contactIds[0] || dummyMyCardId == d->m_contactIds[0])) {
@@ -128,7 +131,7 @@ QVariant CntListModel::data(const QModelIndex &index, int role) const
             return QVariant();
         }
         else {
-            return dataForDisplayRole(row).toStringList().at(0).toUpper();
+            return dataForRole(row, role).toStringList().at(0).toUpper();
         }
     }
     else if (role == Qt::BackgroundRole) {
@@ -199,6 +202,25 @@ QContact CntListModel::contact(const QModelIndex &index) const
 }
 
 /*!
+ * Returns the id for the contact at the requested row.
+ *
+ * \param index Index for the sought contact entry in this model.
+ * \return The id for the contact, 0 if invalid index.
+ *
+ */
+QContactLocalId CntListModel::contactId(const QModelIndex &index) const
+{
+    CNT_ENTRY
+
+    if (!validRowId(index.row())) {
+        return 0;
+    }
+
+    CNT_EXIT
+    return d->m_contactIds[index.row()];
+}
+
+/*!
  * Return an index that points to the row relating to the supplied contact.
  *  E.g. if the contact is at row 7, the index with the following properties
  *  is returned:
@@ -210,6 +232,20 @@ QContact CntListModel::contact(const QModelIndex &index) const
 QModelIndex CntListModel::indexOfContact(const QContact &contact) const
 {
     return createIndex(rowId(contact.localId()), 0);
+}
+
+/*!
+ * Return an index that points to the row relating to the supplied contact id.
+ *  E.g. if the contact with this id is at row 7, the index with the following
+ *  properties is returned:
+ *      index.row() == 7
+ 
+ * \param contactId The id of the contact for whose row an index is required
+ * \return a QModelIndex with the row set to match that of the contact id.
+ */
+QModelIndex CntListModel::indexOfContactId(const QContactLocalId &contactId) const
+{
+    return createIndex(rowId(contactId), 0);
 }
 
 /*!
@@ -375,6 +411,7 @@ int CntListModel::doConstruct()
     
     // Get current setting how to show an item in the name list and subscribe for changes
     d->m_Settings = new XQSettingsManager;
+
     d->m_NameListRowSettingkey = new XQSettingsKey(XQSettingsKey::TargetCentralRepository,
                             KCRCntSettings.iUid,
                             KCntNameListRowSetting);
@@ -383,6 +420,7 @@ int CntListModel::doConstruct()
     connect(d->m_Settings, SIGNAL(valueChanged(const XQSettingsKey&, const QVariant&)), this, SLOT(handleRowSettingChanged(const XQSettingsKey&, const QVariant&)));
     
     CNT_EXIT
+
     return error;
 }
 
@@ -482,7 +520,7 @@ int CntListModel::rowId(const QContactLocalId &contactId) const
  * \param column The column of the item to return data about.
  * \return QVariant The data for the specified index.
  */
-QVariant CntListModel::dataForDisplayRole(int row) const
+QVariant CntListModel::dataForRole(int row, int role) const
 {
     CNT_ENTRY
     QStringList list;
@@ -512,7 +550,14 @@ QVariant CntListModel::dataForDisplayRole(int row) const
         infoText = d->m_currentContact.text();
     }
     
-    list << name;
+    if ( role == Qt::DisplayRole )
+    {
+        list << d->m_Format->formattedText(name, d->m_filter);
+    }
+    else
+    {
+        list << name;
+    }
     
     if (!isNonEmptySelfContact) {
         if (d->m_currentRowSetting == CntTwoRowsNameAndPhoneNumber) {
@@ -642,42 +687,32 @@ void CntListModel::handleRemoved(const QList<QContactLocalId>& contactIds)
     
     // invalidate cached contact
     d->m_currentRow = -1;
-        
-    bool removeMyCard(false);
+    
     int myCardRow = -1;
     if (contactIds.contains(d->m_myCardId)) {
-        removeMyCard = true;
-        myCardRow = rowId(d->m_myCardId);    
+        myCardRow = rowId(d->m_myCardId);
         d->m_myCardId = 0;
     }
-    
-    int removeRowsCount=removeRows.count();
-    // no of rows
-    for(int j = 0; j < removeRows.count(); j++) {
-        if (removeMyCard 
-             && removeRows.at(j) == myCardRow 
-             && d->m_showMyCard) {
-            QModelIndex index = createIndex(0, 0);
-            emit dataChanged(index, index);
-            removeRowsCount--;
-        }
-        else {
+
+    // remove rows starting from the bottom
+    qSort(removeRows.begin(), removeRows.end(), qGreater<int>());
+    for (int j = 0; j < removeRows.count(); j++) {
+        if (removeRows.at(j) != myCardRow || !d->m_showMyCard) {
             beginRemoveRows(QModelIndex(), removeRows.at(j), removeRows.at(j));
             endRemoveRows();
         }
     }
-    updateContactIdsArray();
-    
-    // check row count in new list
-    // if there is a mismatch, probable late events. reset model
-    QList<QContactLocalId> updatedIdList = d->m_contactIds;
-    int rowsRemoved = idList.count() - updatedIdList.count();
-    if (rowsRemoved != removeRowsCount) {
-        beginResetModel();
-        reset();
-        endResetModel();
+
+    foreach (QContactLocalId id, contactIds) {
+        d->m_contactIds.removeOne(id);
     }
-    
+
+    if (myCardRow != -1 && d->m_showMyCard) {
+        d->m_contactIds.insert(0, dummyMyCardId);
+        QModelIndex index = createIndex(0, 0);
+        emit dataChanged(index, index);
+    }
+
     CNT_EXIT
 }
 
@@ -715,7 +750,7 @@ void CntListModel::handleAddedRelationship(const QList<QContactLocalId>& contact
 
     if (contactIds.contains(d->m_groupId)) {
         foreach (QContactLocalId id, contactIds) {
-            if (!d->m_contactIds.contains(id)) {
+            if (id != d->m_groupId && !d->m_contactIds.contains(id)) {
                 // at least one new contact id has been added to this group,
                 // so update the model
                 updateRelationships();

@@ -43,10 +43,10 @@ class CntPresenceListener : public QObject
     Q_OBJECT
     
 public:
-    CntPresenceListener(const QContact& contact, QObject* parent = NULL);
+    CntPresenceListener(QObject* parent = NULL);
     ~CntPresenceListener();
     
-    QMap<QString, bool> initialPresences(bool &combinedOnlineStatus);
+    QMap<QString, bool> initialPresences(const QContact& contact, bool &combinedOnlineStatus);
     
 private slots:
     void handlePresenceUpdate(bool aSuccess, PrcPresenceBuddyInfoQt* aPresenceBuddyInfo);
@@ -63,9 +63,6 @@ signals:
 private:
     PrcPresenceReader*  mReader; // own
     QStringList         mAccountList;
-    
-    const QContact&     mContact;
-    
 };
 
 #endif // CNTPRESENCELISTENER_H

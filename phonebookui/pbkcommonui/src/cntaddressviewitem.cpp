@@ -35,12 +35,25 @@
 #include <xqappmgr.h>
 CntAddressViewItem::CntAddressViewItem(QGraphicsItem* aParent) :
     /*CntDetailViewItem(aParent),*/
-    HbDataFormViewItem(aParent)
+    HbDataFormViewItem(aParent),
+    mAppManager(NULL),
+    mRequest(NULL),
+    mRequestPending(false)
 {
 }
 
 CntAddressViewItem::~CntAddressViewItem()
 {
+    if(mAppManager)
+    {
+        delete mAppManager;
+        mAppManager = NULL;
+    }
+    if(mRequest)
+    {
+        delete mRequest;
+        mRequest = NULL;
+    }
 }
 
 HbAbstractViewItem* CntAddressViewItem::createItem()
@@ -92,29 +105,33 @@ HbWidget* CntAddressViewItem::createCustomWidget()
 
 void CntAddressViewItem::launchLocationPicker()
 {
-    XQApplicationManager *appManager = new XQApplicationManager();
-    XQAiwRequest* request = appManager->create("com.nokia.symbian", "ILocationPick", "pick()", true);
-    if( request )
+    if( !mAppManager )
     {
-        QVariant retValue;
-        if( request->send( retValue ) )
-        {
-            handleLocationChange( retValue );
-        }
-        
-        delete request;
+    	mAppManager = new XQApplicationManager();
     }
-    delete appManager;
+    if(!mRequest)
+    {	
+    	mRequest = mAppManager->create("com.nokia.symbian", "ILocationPick", "pick()", true);
+    	mRequest->setSynchronous(false);
+    	connect(mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(handleLocationChange(const QVariant&)));
+    }
+    if(!mRequestPending)
+    {
+        if( mRequest->send() )
+    	{
+            mRequestPending = true;
+    	}
+    }
 }
 
 void CntAddressViewItem::handleLocationChange(const QVariant& aValue)
 {
+    mRequestPending = false;
     QLocationPickerItem selectedLocation = aValue.value<QLocationPickerItem>();
     if( selectedLocation.mIsValid )
     {
         HbDataForm* form = static_cast<HbDataForm*>(itemView());
         HbDataFormModel* model = static_cast<HbDataFormModel*>(form->model());
-        HbDataFormModelItem* item = model->itemFromIndex( modelIndex() );
     
         QModelIndex nextIndex = modelIndex().sibling( modelIndex().row() + 1 , modelIndex().column() );
         HbDataFormModelItem* street = model->itemFromIndex( nextIndex );

@@ -43,12 +43,13 @@ public:
     ~CntFavoritesView();
     
 public: // From CntAbstractView
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
     bool isDefault() const { return false; }
     HbView* view() const { return mView; }
     int viewId() const { return collectionFavoritesView; }
-
+    inline void setEngine( CntAbstractEngine& aEngine ){ mEngine = &aEngine; }
+    
 private slots:
     void showPreviousView();
     void openSelectionPopup();
@@ -68,6 +69,7 @@ private:
     HbAction* mSoftkey;
     CntAbstractViewManager* mViewManager;
     HbDocumentLoader mDocumentLoader;
+    CntAbstractEngine* mEngine;
 };
 
 #endif // CNTFAVORITESVIEW_H

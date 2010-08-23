@@ -157,23 +157,19 @@ bool CntAction::actionDescriptionSupported(const QContactActionDescriptor& descr
     return supported;       
 }
 
-//common code to perform a call, videocall and message action
+//common code to perform a call, videocall action
 void CntAction::performNumberAction(const QString &interface, const QString &operation)
 {
-    QVariantList args;
     QVariant retValue;
     
-    // TODO: Using XQApplicationManager is not working with calls
-    // The factory method cannot create a request. Find out why
-    //bool isCallAction = (m_actionName == "call" || m_actionName == "videocall");
-    XQServiceRequest snd(interface, operation, false);
+    // XQApplicationManager is not supported by PhoneUI to initiate calls,
+    // only old approarch using XQServiceRequest can be used. 
+    XQServiceRequest snd(interface, operation); //sync request
 
     //QContactType == TypeGroup
     if (QContactType::TypeGroup == m_contact.type()) {
         QContactPhoneNumber conferenceCall = m_contact.detail<QContactPhoneNumber>();
-        args << conferenceCall.number() << m_contact.localId() << m_contact.displayLabel();
         
-        // TODO remove once call action works
         snd << conferenceCall.number() << m_contact.localId() << m_contact.displayLabel();
         snd.send(retValue);
         emitResult(snd.latestError(), retValue);
@@ -183,8 +179,6 @@ void CntAction::performNumberAction(const QString &interface, const QString &ope
     else if (m_detail.definitionName() == QContactPhoneNumber::DefinitionName) {
 		const QContactPhoneNumber &phoneNumber = static_cast<const QContactPhoneNumber &>(m_detail);
 		
-		args << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
-	    
         snd << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
         snd.send(retValue);
         emitResult(snd.latestError(), retValue);
@@ -206,8 +200,6 @@ void CntAction::performNumberAction(const QString &interface, const QString &ope
 			phoneNumber = static_cast<QContactPhoneNumber>(detail);
 		}
 		
-		args << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
-
         snd << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
         snd.send(retValue);
         emitResult(snd.latestError(), retValue);

@@ -24,7 +24,7 @@
 #include <QKeyEvent>
 #include <QGraphicsSceneResizeEvent>
 #include "cntglobal.h"
-#include <cntmaptileservice.h>
+#include <maptileservice.h>
 
 class HbView;
 class HbScrollArea;
@@ -33,7 +33,7 @@ class HbAction;
 class HbIcon;
 class QGraphicsWidget;
 class QGraphicsLinearLayout;
-class ThumbnailManager;
+class CntThumbnailManager;
 class CntContactCardDataContainer;
 class CntContactCardHeadingItem;
 class CntContactCardDetailItem;
@@ -47,6 +47,8 @@ class QModelIndex;
 class HbSelectionDialog;
 class CntPresenceListener;
 class HbLabel;
+class CntSaveManager;
+class QTimer;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -81,8 +83,12 @@ class CntContactCardViewPrivate : public QObject
 public:
     CntContactCardViewPrivate(bool isTemporary);
     virtual ~CntContactCardViewPrivate();
-    
+
+#ifdef PBK_UNIT_TEST
+public:
+#else
 protected:
+#endif
     bool eventFilter(QObject *obj, QEvent *event);
 
 public slots:
@@ -116,6 +122,7 @@ private slots:
     void executeAction(QContact& aContact, const QContactDetail& aDetail, const QString& aAction);
     void sendKeyCancelSlot();
     void contactDeletedFromOtherSource(const QList<QContactLocalId>& contactIds);
+    void contactUpdatedFromOtherSource(const QList<QContactLocalId>& contactIds);
     
 #ifdef PBK_UNIT_TEST
 public slots:
@@ -134,14 +141,14 @@ private slots:
 	    
 public:
     CntContactCardView* q_ptr;    
-    void activate(CntAbstractViewManager* aMgr, const CntViewParameters aArgs);
+    void activate(const CntViewParameters aArgs);
     void deactivate();
     CntDocumentLoader* document();
     QContactManager* contactManager();
     
 signals:
     void preferredUpdated();
-    void backPressed();
+    void backPressed(int value);
     void viewActivated(CntAbstractViewManager* aMgr, const CntViewParameters aArgs);
     void addToContacts();
     
@@ -153,47 +160,43 @@ private:
     void connectAction(QString actionName, const char* slot);
     void executeAction(QContact& aContact, const QContactDetail& aDetail, const QString& aAction, CntContactCardDetailItem* aItem);
     void executeDynamicAction(QContact& aContact, QContactDetail aDetail, QContactActionDescriptor aActionDescriptor);
-    
     bool sendKeyPressed();
-#ifdef PBK_UNIT_TEST
+    void populateHeadingItem();
+    void populateListItems();
+    
 public:
-#else
-private:
-#endif
-    CntAbstractViewManager*     mViewManager;
+    CntAbstractViewManager*     mViewManager;   // not own
     HbView*                     mView;
     HbScrollArea                *mScrollArea;
-    QGraphicsWidget             *mContainerWidget;
     QGraphicsLinearLayout       *mContainerLayout;
     QContact                    *mContact;
-    QGraphicsWidget             *mDetailsWidget;
     CntContactCardDataContainer *mDataContainer;
     CntContactCardHeadingItem   *mHeadingItem;
-    ThumbnailManager            *mThumbnailManager;
+    CntThumbnailManager         *mThumbnailManager;
     QContactAvatar              *mAvatar;
-    bool                        mIsHandlingMenu;
     QMap<QString, CntContactCardDetailItem*> mPreferredItems;
+    
     /// maps a QContactOnlineAccount (for example "sip:sip@sip.com") to a detail item
     QMap<QString, CntContactCardDetailItem*> mPresenceItems;
-    int                         mFavoriteGroupId;
     CntDocumentLoader           *mLoader;
-    QContactAction              *mContactAction;
     HbAction                    *mBackKey;
     CntImageLabel               *mImageLabel;
-    XQServiceRequest            *mHighwayService;
     HbIcon                      *mVCardIcon;
     CntViewParameters           mArgs;
     ShareUi                     *mShareUi;
     bool                        mAcceptSendKey;
-    QStandardItemModel*         mSendKeyListModel;
-    HbSelectionDialog*          mSendKeyPopup;
     CntPresenceListener*        mPresenceListener; // own
-    CntMapTileService           *mMaptile;
-    QTimer                      *mProgressTimer;
+    MapTileService              *mMaptile; //own
     QList <CntContactCardMapTileDetail*> mAddressList;
     QMap <int, HbLabel*>        mMaptileLabelList;
     bool                        mIsTemporary;
     bool                        mIsExecutingAction;
+    QMap<QString, bool>         mInitiialPrecenceData;
+    QContactLocalId             mMyCardId;
+    CntSaveManager* mSaveManager; // own
+    CntAbstractEngine* mEngine;
+    QTimer* mProgressTimer; // own
+    QList<CntContactCardDetailItem*>    mDetailPtrs;
 };
 
 #endif // CNTCOMMLAUNCHERVIEW_H

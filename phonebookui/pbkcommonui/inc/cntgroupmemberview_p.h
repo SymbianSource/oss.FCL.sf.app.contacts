@@ -28,13 +28,11 @@
 #include <cntabstractview.h>
 
 class CntListModel;
-class CntAbstractViewManager;
 class CntContactCardHeadingItem;
 class HbView;
 class HbAction;
 class HbListView;
 class HbAbstractViewItem;
-class ThumbnailManager;
 class QModelIndex;
 class CntImageLabel;
 class HbDocumentLoader;
@@ -53,7 +51,7 @@ public:
     CntGroupMemberViewPrivate();
     ~CntGroupMemberViewPrivate();
     
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
     
 public:
@@ -93,6 +91,8 @@ private:
     Q_DECLARE_PUBLIC(CntGroupMemberView)
     friend class TestCntGroupMemberView;
     
+public:
+    CntAbstractEngine*          mEngine;
 private:
     QContact*                   mGroupContact; // own
     CntAbstractViewManager*     mViewManager;
@@ -100,7 +100,7 @@ private:
     HbView*                     mView; // own
     HbAction*                   mSoftkey; // owned by view
     CntContactCardHeadingItem*  mHeadingItem; // owned by layout
-    ThumbnailManager*           mThumbnailManager; // own
+    CntThumbnailManager*        mThumbnailManager; // own
     HbAction*                   mManageAction; // owned by view
     HbAction*                   mDeleteAction; // owned by view
     HbAction*                   mShowActionsAction; // owned by view

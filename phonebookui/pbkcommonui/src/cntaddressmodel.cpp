@@ -18,7 +18,7 @@
 #include "cntaddressmodel.h"
 #include "cntdetailmodelitem.h"
 #include "cntdetailconst.h"
-#include <cntmaptileservice.h> 
+#include <maptileservice.h> 
 
 CntAddressModel::CntAddressModel( QContact* aContact ):
 CntDetailEditorModel( aContact ),
@@ -27,7 +27,7 @@ mAddressHome(NULL),
 mAddressWork(NULL),
 mIsLocationPickerEnabled( false )
     {
-    mMaptileInterface = new CntMapTileService;
+    mMaptileInterface = new MapTileService;
     HbDataFormModelItem* address = appendDataFormGroup(hbTrId("txt_phob_formlabel_address"), invisibleRootItem());
     HbDataFormModelItem* addressHome = appendDataFormGroup(hbTrId("txt_phob_formlabel_address_home"), invisibleRootItem());
     HbDataFormModelItem* addressWork = appendDataFormGroup(hbTrId("txt_phob_formlabel_address_work"), invisibleRootItem());
@@ -91,7 +91,7 @@ CntAddressModel::~CntAddressModel()
 void CntAddressModel::createAddressItems( HbDataFormModelItem* aGroup, QContactAddress* aAddress )
     {
 	//Show the location picker button only if location feature enabled
-    if( mMaptileInterface->isLocationFeatureEnabled() )
+    if( mMaptileInterface->isLocationFeatureEnabled(MapTileService::AppTypeContacts) )
     {
         // custom item for map button
         HbDataFormModelItem* mapButton = new HbDataFormModelItem( HbDataFormModelItem::CustomItemBase );
@@ -190,7 +190,7 @@ QContactDetail CntAddressModel::detail() const
 bool CntAddressModel::saveAddressItems( HbDataFormModelItem* aGroup, QContactAddress* aAddress )
 {
     int offset = 0;
-    if( mMaptileInterface->isLocationFeatureEnabled() )
+    if( mMaptileInterface->isLocationFeatureEnabled(MapTileService::AppTypeContacts) )
     {
         offset = 1;
     }

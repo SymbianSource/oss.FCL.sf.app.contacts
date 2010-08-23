@@ -102,9 +102,9 @@ void CntDetailEditor::setInsertAction( const QString aInsert )
     connect( insert, SIGNAL(triggered()), this, SLOT(insertField()) );
 }
 
-void CntDetailEditor::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
+void CntDetailEditor::activate( const CntViewParameters aArgs )
 {
-    mViewManager = aMgr;
+    mViewManager = &mEngine->viewManager();
     mArgs = aArgs; //don't loose the params while swiching between editview and editorviews.
     
     mCancel = static_cast<HbAction*>(document()->findObject("cnt:discardchanges"));
@@ -128,15 +128,15 @@ void CntDetailEditor::activate( CntAbstractViewManager* aMgr, const CntViewParam
         connect( mDataForm, SIGNAL(itemShown(const QModelIndex&)), this, SLOT(handleItemShown(const QModelIndex&)) );
     }
     
-    QContactManager* cm = mViewManager->contactManager(SYMBIAN_BACKEND);
-    connect(cm, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), 
+    QContactManager& cm = mEngine->contactManager(SYMBIAN_BACKEND);
+    connect(&cm, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), 
         this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
     
     mEditorFactory->setupEditorView(*this, selectedContact);
     
     QString myCard = mArgs.value( EMyCard ).toString();
     QContactLocalId localId = selectedContact.localId();
-    QContactLocalId selfContactId = mViewManager->contactManager(SYMBIAN_BACKEND)->selfContactId();
+    QContactLocalId selfContactId = cm.selfContactId();
     bool isMyCard = ( localId == selfContactId && localId != 0 ) || !myCard.isEmpty();
     
     if (isMyCard)
@@ -159,6 +159,7 @@ void CntDetailEditor::activate( CntAbstractViewManager* aMgr, const CntViewParam
     {
         mDataFormModel->insertDetailField();
     }
+    
     mDataForm->setVerticalScrollBarPolicy(HbScrollArea::ScrollBarAsNeeded); 
     mDataForm->setScrollingStyle(HbScrollArea::PanWithFollowOn);
     mDataForm->verticalScrollBar()->setInteractive(true);
@@ -166,13 +167,12 @@ void CntDetailEditor::activate( CntAbstractViewManager* aMgr, const CntViewParam
 
 void CntDetailEditor::deactivate()
 {
+    QContactManager& mgr = mEngine->contactManager(SYMBIAN_BACKEND);
     if( mId == groupEditorView) {
-        QContactManager* mgr = mViewManager->contactManager(SYMBIAN_BACKEND);
-        mgr->saveContact( mDataFormModel->contact() );
+        mgr.saveContact( mDataFormModel->contact() );
     }
     
-    QContactManager *cm = mViewManager->contactManager(SYMBIAN_BACKEND);
-    disconnect(cm, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)),
+    disconnect(&mgr, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)),
             this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
 }
     
@@ -287,15 +287,15 @@ void CntDetailEditor::saveChanges()
 void CntDetailEditor::saveContact()
 {
     mDataFormModel->saveContactDetails();
-    
-    QString name = mViewManager->contactManager(SYMBIAN_BACKEND)->synthesizedContactDisplayLabel(*mDataFormModel->contact());
+    QContactManager& mgr = mEngine->contactManager( SYMBIAN_BACKEND );
+    QString name = mgr.synthesizedContactDisplayLabel(*mDataFormModel->contact());
     
     if (name.isEmpty())
     {
         name = hbTrId("txt_phob_list_unnamed");
     }
     
-    CntSaveManager::CntSaveResult result = mSaveManager->saveContact(mDataFormModel->contact(), mViewManager->contactManager(SYMBIAN_BACKEND));
+    CntSaveManager::CntSaveResult result = mSaveManager->saveContact(mDataFormModel->contact(), &mgr);
     
     if (mId != groupEditorView)
     {

@@ -24,6 +24,7 @@
 
 class CntGroupMemberViewPrivate;
 class HbView;
+class CntAbstractEngine;
 
 class QTPBK_EXPORT CntGroupMemberView : public QObject, public CntAbstractView
 {
@@ -34,16 +35,18 @@ public:
     ~CntGroupMemberView();
     
 public: // From CntAbstractView
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
     bool isDefault() const;
     HbView* view() const;
     int viewId() const;
-
+    void setEngine( CntAbstractEngine& aEngine );
+    
 signals:
     void backPressed();
         
 private:
+    friend class TestCntGroupMemberView;
     CntGroupMemberViewPrivate* const d_ptr;
     Q_DECLARE_PRIVATE_D(d_ptr, CntGroupMemberView)
     Q_DISABLE_COPY(CntGroupMemberView)

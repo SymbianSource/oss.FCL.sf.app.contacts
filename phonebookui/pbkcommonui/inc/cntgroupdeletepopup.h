@@ -25,6 +25,7 @@
 #include "cntgroupdeletepopupmodel.h"
 
 class HbListView;
+class CntAbstractEngine;
 
 QTM_BEGIN_NAMESPACE
 class QContactManager;
@@ -38,7 +39,7 @@ class CntGroupDeletePopup : public HbSelectionDialog
     friend class TestCntGroupDeletePopup;
 
 public:
-    CntGroupDeletePopup(QContactManager *manager, QGraphicsItem *parent = 0);
+    CntGroupDeletePopup(CntAbstractEngine *aEngine, QGraphicsItem *parent = 0);
     ~CntGroupDeletePopup();
 
     void populateListOfGroup();

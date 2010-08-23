@@ -23,11 +23,12 @@
 
 #include <qcontactmanager.h>
 #include <qcontactfilter.h>
+#include <qcontactdetailfilter.h>
 #include <qcontactsortorder.h>
 #include <cntuids.h>
 #include "cntcache.h"
 #include <cntdebug.h>
-
+#include "cntdisplaytextformatter.h"
 #include <xqsettingsmanager.h> 
 #include <xqsettingskey.h>
 
@@ -45,7 +46,8 @@ public:
                           m_Settings(NULL),
                           m_NameListRowSettingkey(NULL),
                           m_currentRowSetting(0),
-                          m_groupId(-1)
+                          m_groupId(-1),
+                          m_Format( new CntDummyDisplayTextFormatter )
         { 
             setFilter(contactFilter);
         }
@@ -56,6 +58,7 @@ public:
                 delete m_contactManager;
             delete m_Settings;
             delete m_NameListRowSettingkey;
+            delete m_Format;
         }
 
     void setFilter(const QContactFilter& contactFilter)
@@ -73,6 +76,28 @@ public:
             }
             else {
                 m_groupId = -1;
+                
+                // set proper text formatter for the display name. 
+                if ( contactFilter.type() == QContactFilter::ContactDetailFilter )
+                {
+                    delete m_Format;
+                    m_Format = NULL;
+                    
+                    QContactDetailFilter* detailFilter = static_cast<QContactDetailFilter*>( &m_filter );
+                    QStringList filter = detailFilter->value().toStringList();
+                    
+                    if ( detailFilter->detailDefinitionName() == QContactDisplayLabel::DefinitionName && 
+                         detailFilter->matchFlags() & QContactFilter::MatchStartsWith &&
+                         !filter.isEmpty() )
+                    {
+                        m_Format = new CntHTMLDisplayTextFormatter();
+                    }
+                    else
+                    {
+                        m_Format = new CntDummyDisplayTextFormatter();    
+                    }
+                }
+                    
             }
 
             CNT_LOG_ARGS(m_groupId)
@@ -96,6 +121,8 @@ public:
     XQSettingsKey *m_NameListRowSettingkey;
     int m_currentRowSetting;
     QContactLocalId m_groupId;
+    
+    CntDisplayTextFormatter* m_Format;
 };
 
 #endif // QCONTACTMODELPRIVATE_H

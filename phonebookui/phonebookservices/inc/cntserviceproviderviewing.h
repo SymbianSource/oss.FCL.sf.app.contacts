@@ -62,10 +62,15 @@ public slots:  // operations offered to clients
 
 private: // from CntAbstractServiceProvider
     void CompleteServiceAndCloseApp(const QVariant& retValue);
+    void overrideReturnValue(const QVariant& retValue);
+    bool allowSubViewsExit();
 
 private:
     CntServices& mServices;
     int mCurrentRequestIndex;
+    bool mAllowExit;
+    
+    QVariant mOverriddenReturnValue;
 };
 
 #endif /* CNTSERVICEPROVIDERVIEW_H */

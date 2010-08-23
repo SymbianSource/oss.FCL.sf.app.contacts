@@ -346,11 +346,18 @@ void CntContactCardHeadingItem::setDetails(const QContact* contact)
     {
         QContactOrganization org = contact->detail<QContactOrganization>();
         QStringList companyList;
-        companyList << org.title() << org.name() << org.department();
-        tinyMarqueeText = companyList.join(" ").trimmed();
+        
+        if (!org.title().isEmpty())
+            companyList << org.title();
+        if (!org.name().isEmpty())
+            companyList << org.name();
+        if (!org.department().isEmpty())
+            companyList << org.department().join(", ").trimmed();
+        tinyMarqueeText = companyList.join(", ").trimmed();
     }
 
     recreatePrimitives();
+    repolish();
 }
 
 QString CntContactCardHeadingItem::createNameText(const QContactName name)

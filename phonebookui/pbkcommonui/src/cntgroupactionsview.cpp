@@ -38,7 +38,6 @@
 #include <qtcontacts.h>
 #include <hbmainwindow.h>
 #include "cntactionlauncher.h"
-
 #include <QEvent>
 #include <QStandardItemModel>
 
@@ -123,13 +122,13 @@ void CntGroupActionsView::deactivate()
 /*
 Activates a default view and setup name label texts
 */
-void CntGroupActionsView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
+void CntGroupActionsView::activate( const CntViewParameters aArgs )
 {
     if (mView->navigationAction() != mSoftkey)
         mView->setNavigationAction(mSoftkey);   
     
     mGroupContact = new QContact(aArgs.value(ESelectedGroupContact).value<QContact>());
-    mViewManager = aMgr;
+    mViewManager = &mEngine->viewManager();
 
     QContactName contactName = mGroupContact->detail( QContactName::DefinitionName );
     QString groupName = contactName.value( QContactName::FieldCustomLabel );        
@@ -210,10 +209,11 @@ void CntGroupActionsView::listItemSelected(const QModelIndex &index)
         mMessageActionParams.clear();
         
         QString action = mModel->item(index.row())->data(Qt::UserRole+1).toString();
+        QContactManager& mgr = mEngine->contactManager( SYMBIAN_BACKEND );
         
         //conference call
         if (action.compare("call", Qt::CaseInsensitive) == 0 ) {
-            CntActionLauncher* other = new CntActionLauncher(*mViewManager->contactManager(SYMBIAN_BACKEND), action);
+            CntActionLauncher* other = new CntActionLauncher( mgr, action);
             connect(other, SIGNAL(actionExecuted(CntActionLauncher*)), this, SLOT(actionExecuted(CntActionLauncher*)));
             other->execute(*mGroupContact, QContactDetail());
         }
@@ -223,10 +223,10 @@ void CntGroupActionsView::listItemSelected(const QModelIndex &index)
             relationshipFilter.setRelationshipType(QContactRelationship::HasMember);
             relationshipFilter.setRelatedContactRole(QContactRelationship::First);
             relationshipFilter.setRelatedContactId(mGroupContact->id());   
-            QList<QContactLocalId> groupMembers = mViewManager->contactManager(SYMBIAN_BACKEND)->contactIds(relationshipFilter);
+            QList<QContactLocalId> groupMembers = mgr.contactIds(relationshipFilter);
             
             for (int i = 0;i<groupMembers.count();i++) {
-                QContact contact = mViewManager->contactManager(SYMBIAN_BACKEND)->contact(groupMembers.at(i));
+                QContact contact = mgr.contact(groupMembers.at(i));
                 QContactDetail preferredDetail = contact.preferredDetail(action);
                 //use preferred detail if exits
                 if (!preferredDetail.isEmpty()) {
@@ -265,7 +265,7 @@ void CntGroupActionsView::listItemSelected(const QModelIndex &index)
                     params.setValue(mEmailActionParams);
                 }
                 map.insert(action,params);
-                CntActionLauncher* other = new CntActionLauncher(*mViewManager->contactManager(SYMBIAN_BACKEND), action);
+                CntActionLauncher* other = new CntActionLauncher(mgr, action);
                 connect(other, SIGNAL(actionExecuted(CntActionLauncher*)), this, SLOT(actionExecuted(CntActionLauncher*)));
                 other->execute(*mGroupContact, QContactDetail(), map);
             }
@@ -299,7 +299,7 @@ void CntGroupActionsView::executeAction(QContact& contact, QContactDetail detail
         }
         map.insert(action,params);
         
-        CntActionLauncher* other = new CntActionLauncher(*mViewManager->contactManager(SYMBIAN_BACKEND), action);
+        CntActionLauncher* other = new CntActionLauncher( mEngine->contactManager(SYMBIAN_BACKEND), action);
         connect(other, SIGNAL(actionExecuted(CntActionLauncher*)), this, SLOT(actionExecuted(CntActionLauncher*)));
         other->execute(*mGroupContact, QContactDetail(), map);
         }
@@ -345,7 +345,7 @@ void CntGroupActionsView::executeConferenceCallAction(QContact& aContact, const 
         mIsExecutingAction = true;
     }
     
-    CntActionLauncher* other = new CntActionLauncher(*mViewManager->contactManager(SYMBIAN_BACKEND), aAction);
+    CntActionLauncher* other = new CntActionLauncher( mEngine->contactManager(SYMBIAN_BACKEND), aAction);
     connect(other, SIGNAL(actionExecuted(CntActionLauncher*)), this, SLOT(actionExecuted(CntActionLauncher*)));
     other->execute(aContact, aDetail);  
 }

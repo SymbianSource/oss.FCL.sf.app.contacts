@@ -16,9 +16,11 @@
 */
 
 #include "cntgroupdeletepopupmodel.h"
+#include "cntthumbnailmanager.h"
 #include "cntfavourite.h"
+#include <cntabstractengine.h>
+#include "cntglobal.h"
 
-#include <thumbnailmanager_qt.h>
 #include <qtcontacts.h>
 #include <hbglobal.h>
 #include <hbicon.h>
@@ -26,19 +28,16 @@
 /*!
 Constructor
 */
-CntGroupDeletePopupModel::CntGroupDeletePopupModel(QContactManager *manager, QObject *parent)
+CntGroupDeletePopupModel::CntGroupDeletePopupModel(CntAbstractEngine *aEngine, QObject *parent)
     : QAbstractListModel(parent),
     mFavoriteGroupId(-1)
 {
     d = new CntGroupPopupListData();
-    d->mContactManager = manager;
+    d->mContactManager = &aEngine->contactManager( SYMBIAN_BACKEND );
     
     mFavoriteGroupId = CntFavourite::createFavouriteGroup( d->mContactManager );
     
-    d->mThumbnailManager = new ThumbnailManager(this);
-    d->mThumbnailManager->setMode(ThumbnailManager::Default);
-    d->mThumbnailManager->setQualityPreference(ThumbnailManager::OptimizeForPerformance);
-    d->mThumbnailManager->setThumbnailSize(ThumbnailManager::ThumbnailSmall);
+    d->mThumbnailManager = &aEngine->thumbnailManager();
     connect(d->mThumbnailManager, SIGNAL(thumbnailReady(QPixmap, void *, int, int)),
              this, SLOT(onIconReady(QPixmap, void *, int, int)));
 }
@@ -112,7 +111,7 @@ void CntGroupDeletePopupModel::initializeGroupsList()
                 {
                    if (details.at(k).imageUrl().isValid())
                    {
-                       int id = d->mThumbnailManager->getThumbnail(details.at(k).imageUrl().toString());
+                       int id = d->mThumbnailManager->getThumbnail(ThumbnailManager::ThumbnailSmall, details.at(k).imageUrl().toString());
                        d->mIconRequests.insert(id, rowCount());
                        break;
                    }

@@ -135,14 +135,37 @@ void CntServiceProviderOld2::CompleteServiceAndCloseApp(const QVariant& retValue
     connect(this, SIGNAL(returnValueDelivered()), qApp, SLOT(quit()));
     if ( mCurrentRequestIndex != 0 )
     {
-        CNT_LOG_ARGS("next, completing request.")
-        const bool success = completeRequest(mCurrentRequestIndex, retValue);
+        bool success = false;
+        
+        if (!mOverriddenReturnValue.isNull() && retValue.value<int>() != KCntServicesReturnValueContactDeleted)
+        {
+            CNT_LOG_ARGS(mOverriddenReturnValue.value<int>());
+            success = completeRequest(mCurrentRequestIndex, mOverriddenReturnValue);
+        }
+        else
+        {
+            CNT_LOG_ARGS(retValue.value<int>());
+            success = completeRequest(mCurrentRequestIndex, retValue);
+        }
+        
         if ( !success )
         {
             CNT_LOG_ARGS("Failed to complete highway request.");
         }
         mCurrentRequestIndex = 0;
     }
+    CNT_EXIT
+}
+
+void CntServiceProviderOld2::overrideReturnValue(const QVariant& retValue)
+{
+    CNT_ENTRY
+    
+    if (mOverriddenReturnValue.isNull() || mOverriddenReturnValue.value<int>() != KCntServicesReturnValueContactSaved)
+    {
+        mOverriddenReturnValue = retValue;
+    }
+    
     CNT_EXIT
 }
 

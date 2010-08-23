@@ -1,42 +1,44 @@
 EXPORTS
-	?refreshModel@CntListModel@@AAEXXZ @ 1 NONAME ; void CntListModel::refreshModel(void)
-	?updateContactIdsArray@CntListModel@@AAEXXZ @ 2 NONAME ; void CntListModel::updateContactIdsArray(void)
-	?qt_metacall@CntListModel@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 3 NONAME ; int CntListModel::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?setFilter@CntListModel@@QAEXABVQContactFilter@QtMobility@@@Z @ 4 NONAME ; void CntListModel::setFilter(class QtMobility::QContactFilter const &)
-	?indexOfContact@CntListModel@@QBE?AVQModelIndex@@ABVQContact@QtMobility@@@Z @ 5 NONAME ; class QModelIndex CntListModel::indexOfContact(class QtMobility::QContact const &) const
-	?staticMetaObject@CntListModel@@2UQMetaObject@@B @ 6 NONAME ; struct QMetaObject const CntListModel::staticMetaObject
-	?rowId@CntListModel@@ABEHABI@Z @ 7 NONAME ; int CntListModel::rowId(unsigned int const &) const
-	?contact@CntListModel@@ABE?AVQContact@QtMobility@@H@Z @ 8 NONAME ; class QtMobility::QContact CntListModel::contact(int) const
-	?rowCount@CntListModel@@UBEHABVQModelIndex@@@Z @ 9 NONAME ; int CntListModel::rowCount(class QModelIndex const &) const
-	?trUtf8@CntListModel@@SA?AVQString@@PBD0H@Z @ 10 NONAME ; class QString CntListModel::trUtf8(char const *, char const *, int)
-	?doConstruct@CntListModel@@AAEHXZ @ 11 NONAME ; int CntListModel::doConstruct(void)
-	??0CntListModel@@QAE@PAVQContactManager@QtMobility@@ABVQContactFilter@2@_NPAVQObject@@@Z @ 12 NONAME ; CntListModel::CntListModel(class QtMobility::QContactManager *, class QtMobility::QContactFilter const &, bool, class QObject *)
-	?handleChanged@CntListModel@@AAEXABV?$QList@I@@@Z @ 13 NONAME ; void CntListModel::handleChanged(class QList<unsigned int> const &)
-	?myCardStatus@CntListModel@@QBE_NXZ @ 14 NONAME ; bool CntListModel::myCardStatus(void) const
-	?data@CntListModel@@UBE?AVQVariant@@ABVQModelIndex@@H@Z @ 15 NONAME ; class QVariant CntListModel::data(class QModelIndex const &, int) const
-	?initializeData@CntListModel@@AAEHXZ @ 16 NONAME ; int CntListModel::initializeData(void)
-	?dataForDisplayRole@CntListModel@@ABE?AVQVariant@@H@Z @ 17 NONAME ; class QVariant CntListModel::dataForDisplayRole(int) const
-	?setSortOrder@CntListModel@@AAEXXZ @ 18 NONAME ; void CntListModel::setSortOrder(void)
-	?qt_metacast@CntListModel@@UAEPAXPBD@Z @ 19 NONAME ; void * CntListModel::qt_metacast(char const *)
-	?contact@CntListModel@@QBE?AVQContact@QtMobility@@ABVQModelIndex@@@Z @ 20 NONAME ; class QtMobility::QContact CntListModel::contact(class QModelIndex const &) const
-	?handleContactInfoUpdated@CntListModel@@AAEXI@Z @ 21 NONAME ; void CntListModel::handleContactInfoUpdated(unsigned int)
-	?showMyCard@CntListModel@@QAEX_N@Z @ 22 NONAME ; void CntListModel::showMyCard(bool)
-	??_ECntListModel@@UAE@I@Z @ 23 NONAME ; CntListModel::~CntListModel(unsigned int)
-	?contactManager@CntListModel@@QBEAAVQContactManager@QtMobility@@XZ @ 24 NONAME ; class QtMobility::QContactManager & CntListModel::contactManager(void) const
-	?metaObject@CntListModel@@UBEPBUQMetaObject@@XZ @ 25 NONAME ; struct QMetaObject const * CntListModel::metaObject(void) const
-	?myCardId@CntListModel@@QBEIXZ @ 26 NONAME ; unsigned int CntListModel::myCardId(void) const
-	?validRowId@CntListModel@@ABE_NH@Z @ 27 NONAME ; bool CntListModel::validRowId(int) const
-	?handleRemoved@CntListModel@@AAEXABV?$QList@I@@@Z @ 28 NONAME ; void CntListModel::handleRemoved(class QList<unsigned int> const &)
-	?tr@CntListModel@@SA?AVQString@@PBD0@Z @ 29 NONAME ; class QString CntListModel::tr(char const *, char const *)
-	?getStaticMetaObject@CntListModel@@SAABUQMetaObject@@XZ @ 30 NONAME ; struct QMetaObject const & CntListModel::getStaticMetaObject(void)
-	?handleAdded@CntListModel@@AAEXABV?$QList@I@@@Z @ 31 NONAME ; void CntListModel::handleAdded(class QList<unsigned int> const &)
-	?trUtf8@CntListModel@@SA?AVQString@@PBD0@Z @ 32 NONAME ; class QString CntListModel::trUtf8(char const *, char const *)
-	??0CntListModel@@QAE@ABVQContactFilter@QtMobility@@_NPAVQObject@@@Z @ 33 NONAME ; CntListModel::CntListModel(class QtMobility::QContactFilter const &, bool, class QObject *)
-	??1CntListModel@@UAE@XZ @ 34 NONAME ; CntListModel::~CntListModel(void)
-	?tr@CntListModel@@SA?AVQString@@PBD0H@Z @ 35 NONAME ; class QString CntListModel::tr(char const *, char const *, int)
-	?handleMyCardChanged@CntListModel@@AAEXABI0@Z @ 36 NONAME ; void CntListModel::handleMyCardChanged(unsigned int const &, unsigned int const &)
-	?handleRemovedRelationship@CntListModel@@AAEXABV?$QList@I@@@Z @ 37 NONAME ; void CntListModel::handleRemovedRelationship(class QList<unsigned int> const &)
-	?handleAddedRelationship@CntListModel@@AAEXABV?$QList@I@@@Z @ 38 NONAME ; void CntListModel::handleAddedRelationship(class QList<unsigned int> const &)
-	?handleRowSettingChanged@CntListModel@@AAEXABVXQSettingsKey@@ABVQVariant@@@Z @ 39 NONAME ; void CntListModel::handleRowSettingChanged(class XQSettingsKey const &, class QVariant const &)
-	?updateRelationships@CntListModel@@AAEXXZ @ 40 NONAME ; void CntListModel::updateRelationships(void)
+	?updateRelationships@CntListModel@@AAEXXZ @ 1 NONAME ; void CntListModel::updateRelationships(void)
+	?handleRemovedRelationship@CntListModel@@AAEXABV?$QList@I@@@Z @ 2 NONAME ; void CntListModel::handleRemovedRelationship(class QList<unsigned int> const &)
+	?refreshModel@CntListModel@@AAEXXZ @ 3 NONAME ; void CntListModel::refreshModel(void)
+	?contact@CntListModel@@QBE?AVQContact@QtMobility@@ABVQModelIndex@@@Z @ 4 NONAME ; class QtMobility::QContact CntListModel::contact(class QModelIndex const &) const
+	?updateContactIdsArray@CntListModel@@AAEXXZ @ 5 NONAME ; void CntListModel::updateContactIdsArray(void)
+	?qt_metacall@CntListModel@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 6 NONAME ; int CntListModel::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?setFilter@CntListModel@@QAEXABVQContactFilter@QtMobility@@@Z @ 7 NONAME ; void CntListModel::setFilter(class QtMobility::QContactFilter const &)
+	?indexOfContact@CntListModel@@QBE?AVQModelIndex@@ABVQContact@QtMobility@@@Z @ 8 NONAME ; class QModelIndex CntListModel::indexOfContact(class QtMobility::QContact const &) const
+	?handleContactInfoUpdated@CntListModel@@AAEXI@Z @ 9 NONAME ; void CntListModel::handleContactInfoUpdated(unsigned int)
+	?staticMetaObject@CntListModel@@2UQMetaObject@@B @ 10 NONAME ; struct QMetaObject const CntListModel::staticMetaObject
+	?showMyCard@CntListModel@@QAEX_N@Z @ 11 NONAME ; void CntListModel::showMyCard(bool)
+	?rowId@CntListModel@@ABEHABI@Z @ 12 NONAME ; int CntListModel::rowId(unsigned int const &) const
+	?contact@CntListModel@@ABE?AVQContact@QtMobility@@H@Z @ 13 NONAME ; class QtMobility::QContact CntListModel::contact(int) const
+	??_ECntListModel@@UAE@I@Z @ 14 NONAME ; CntListModel::~CntListModel(unsigned int)
+	?handleAddedRelationship@CntListModel@@AAEXABV?$QList@I@@@Z @ 15 NONAME ; void CntListModel::handleAddedRelationship(class QList<unsigned int> const &)
+	?contactManager@CntListModel@@QBEAAVQContactManager@QtMobility@@XZ @ 16 NONAME ; class QtMobility::QContactManager & CntListModel::contactManager(void) const
+	?rowCount@CntListModel@@UBEHABVQModelIndex@@@Z @ 17 NONAME ; int CntListModel::rowCount(class QModelIndex const &) const
+	?trUtf8@CntListModel@@SA?AVQString@@PBD0H@Z @ 18 NONAME ; class QString CntListModel::trUtf8(char const *, char const *, int)
+	?metaObject@CntListModel@@UBEPBUQMetaObject@@XZ @ 19 NONAME ; struct QMetaObject const * CntListModel::metaObject(void) const
+	?doConstruct@CntListModel@@AAEHXZ @ 20 NONAME ; int CntListModel::doConstruct(void)
+	?myCardId@CntListModel@@QBEIXZ @ 21 NONAME ; unsigned int CntListModel::myCardId(void) const
+	?contactId@CntListModel@@QBEIABVQModelIndex@@@Z @ 22 NONAME ; unsigned int CntListModel::contactId(class QModelIndex const &) const
+	?validRowId@CntListModel@@ABE_NH@Z @ 23 NONAME ; bool CntListModel::validRowId(int) const
+	??0CntListModel@@QAE@PAVQContactManager@QtMobility@@ABVQContactFilter@2@_NPAVQObject@@@Z @ 24 NONAME ; CntListModel::CntListModel(class QtMobility::QContactManager *, class QtMobility::QContactFilter const &, bool, class QObject *)
+	?handleRemoved@CntListModel@@AAEXABV?$QList@I@@@Z @ 25 NONAME ; void CntListModel::handleRemoved(class QList<unsigned int> const &)
+	?tr@CntListModel@@SA?AVQString@@PBD0@Z @ 26 NONAME ; class QString CntListModel::tr(char const *, char const *)
+	?myCardStatus@CntListModel@@QBE_NXZ @ 27 NONAME ; bool CntListModel::myCardStatus(void) const
+	?handleChanged@CntListModel@@AAEXABV?$QList@I@@@Z @ 28 NONAME ; void CntListModel::handleChanged(class QList<unsigned int> const &)
+	?getStaticMetaObject@CntListModel@@SAABUQMetaObject@@XZ @ 29 NONAME ; struct QMetaObject const & CntListModel::getStaticMetaObject(void)
+	?initializeData@CntListModel@@AAEHXZ @ 30 NONAME ; int CntListModel::initializeData(void)
+	?data@CntListModel@@UBE?AVQVariant@@ABVQModelIndex@@H@Z @ 31 NONAME ; class QVariant CntListModel::data(class QModelIndex const &, int) const
+	?handleRowSettingChanged@CntListModel@@AAEXABVXQSettingsKey@@ABVQVariant@@@Z @ 32 NONAME ; void CntListModel::handleRowSettingChanged(class XQSettingsKey const &, class QVariant const &)
+	?handleAdded@CntListModel@@AAEXABV?$QList@I@@@Z @ 33 NONAME ; void CntListModel::handleAdded(class QList<unsigned int> const &)
+	?trUtf8@CntListModel@@SA?AVQString@@PBD0@Z @ 34 NONAME ; class QString CntListModel::trUtf8(char const *, char const *)
+	??1CntListModel@@UAE@XZ @ 35 NONAME ; CntListModel::~CntListModel(void)
+	??0CntListModel@@QAE@ABVQContactFilter@QtMobility@@_NPAVQObject@@@Z @ 36 NONAME ; CntListModel::CntListModel(class QtMobility::QContactFilter const &, bool, class QObject *)
+	?tr@CntListModel@@SA?AVQString@@PBD0H@Z @ 37 NONAME ; class QString CntListModel::tr(char const *, char const *, int)
+	?dataForRole@CntListModel@@ABE?AVQVariant@@HH@Z @ 38 NONAME ; class QVariant CntListModel::dataForRole(int, int) const
+	?handleMyCardChanged@CntListModel@@AAEXABI0@Z @ 39 NONAME ; void CntListModel::handleMyCardChanged(unsigned int const &, unsigned int const &)
+	?setSortOrder@CntListModel@@AAEXXZ @ 40 NONAME ; void CntListModel::setSortOrder(void)
+	?qt_metacast@CntListModel@@UAEPAXPBD@Z @ 41 NONAME ; void * CntListModel::qt_metacast(char const *)
+	?indexOfContactId@CntListModel@@QBE?AVQModelIndex@@ABI@Z @ 42 NONAME ; class QModelIndex CntListModel::indexOfContactId(unsigned int const &) const
 

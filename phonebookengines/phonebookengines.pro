@@ -26,7 +26,6 @@ SUBDIRS += cntfindplugin
 SUBDIRS += cntsortplugin
 SUBDIRS += cntlistmodel 
 SUBDIRS += cntactions 
-SUBDIRS += cntmaptileservice
 SUBDIRS += cntsimutility
 SUBDIRS += cntimageutility
 

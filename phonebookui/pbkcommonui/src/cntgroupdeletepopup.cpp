@@ -16,7 +16,8 @@
 */
 
 #include "cntgroupdeletepopup.h"
-
+#include <cntabstractengine.h>
+#include "cntglobal.h"
 #include <hbgroupbox.h>
 #include <hbaction.h>
 #include <hblistview.h>
@@ -24,12 +25,12 @@
 #include <qtcontacts.h>
 #include <hbmainwindow.h>
 
-CntGroupDeletePopup::CntGroupDeletePopup(QContactManager *manager, QGraphicsItem *parent):
+CntGroupDeletePopup::CntGroupDeletePopup(CntAbstractEngine *aEngine, QGraphicsItem *parent):
     HbSelectionDialog(parent),
-    mContactManager(manager),
+    mContactManager( &aEngine->contactManager(SYMBIAN_BACKEND) ),
     mModel(0)
 {
-    mModel = new CntGroupDeletePopupModel(mContactManager, this);
+    mModel = new CntGroupDeletePopupModel(aEngine, this);
 }
 
 CntGroupDeletePopup::~CntGroupDeletePopup()

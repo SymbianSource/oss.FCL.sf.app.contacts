@@ -65,13 +65,13 @@ CntSettingsView::~CntSettingsView()
     CNT_EXIT
 }
 
-void CntSettingsView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
+void CntSettingsView::activate( const CntViewParameters aArgs )
 {
     CNT_ENTRY
     
-    mViewMgr = aMgr;
     mArgs = aArgs;
-    
+    mViewMgr = &mEngine->viewManager();
+        
     if ( mView->navigationAction() != mBack) {
         mView->setNavigationAction(mBack);
     }

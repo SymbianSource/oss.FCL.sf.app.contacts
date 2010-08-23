@@ -524,7 +524,7 @@ void CntHistoryModelPrivate::logsDataChanged(const QModelIndex& first, const QMo
         HItemPointer item = m_logsMap.value( i );
         
         // Found item in the logs map
-        if ( !item.isNull() ) {
+        if ( !item.isNull() && event ) {
             int index = m_List.indexOf( item );
             readLogEvent( event, *item );
             indices.append( index );

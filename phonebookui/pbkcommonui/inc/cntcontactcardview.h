@@ -24,7 +24,6 @@
 
 class HbView;
 class CntContactCardViewPrivate;
-class CntAbstractViewManager;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -42,18 +41,19 @@ public:
     ~CntContactCardView();
   
 signals:
-    void backPressed();  
+    void backPressed(int value); // value is return value for services (from cntservicescontact.h)
     void viewActivated(CntAbstractViewManager* aMgr, const CntViewParameters aArgs);
     void addToContacts();
     
 public: // From CntAbstractView
-    void activate(CntAbstractViewManager* aMgr, const CntViewParameters aArgs);
+    void activate(const CntViewParameters aArgs);
     void deactivate();
     HbView* view() const;
     
     bool isDefault() const;
     int viewId() const;
      
+    void setEngine( CntAbstractEngine& aEngine );
 private:
     CntContactCardViewPrivate* const d_ptr;
     Q_DECLARE_PRIVATE_D(d_ptr, CntContactCardView)

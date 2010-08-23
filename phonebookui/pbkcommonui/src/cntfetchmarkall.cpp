@@ -34,7 +34,6 @@ CntFetchMarkAll::CntFetchMarkAll(QGraphicsItem *aParent)
     mCheckBox = new HbCheckBox(this);
     mCheckBox->setText(hbTrId("txt_common_list_mark_all_items"));
     mCheckBox->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    
     connect(mCheckBox, SIGNAL(stateChanged(int)), this, SIGNAL(markAll(int)) );
     
     mCounterLabel = new HbTextItem( this );
@@ -43,6 +42,7 @@ CntFetchMarkAll::CntFetchMarkAll(QGraphicsItem *aParent)
     mFrame->frameDrawer().setFrameGraphicsName("qtg_fr_groupbox_normal");
     mFrame->frameDrawer().setFrameType(HbFrameDrawer::NinePieces);
     mFrame->setZValue(-2);
+    
     style()->setItemName(mFrame, "background");
            
     HbStyle::setItemName(mCheckBox,"checkbox");

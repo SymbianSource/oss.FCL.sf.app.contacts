@@ -58,7 +58,6 @@ void CntServiceContactFetchView::cancelFetch()
 
 void CntServiceContactFetchView::closeFetchView()
 {
-    QContactManager* mgr = mMgr->contactManager(SYMBIAN_BACKEND);
     QModelIndexList temp = mListView->selectionModel()->selection().indexes();
     mIndex = 0;
     for(int i = 0; i < temp.count(); i++ )
@@ -306,7 +305,7 @@ void CntServiceContactFetchView::popupContactAction(QContact& aContact,QContactD
     {
         aContact.setPreferredDetail(aAction, contactDetail);
         //return value will be ignored because we cannot do anything if it fails.
-        mMgr->contactManager(SYMBIAN_BACKEND)->saveContact(&aContact);
+        mEngine->contactManager(SYMBIAN_BACKEND).saveContact(&aContact);
     }
     
     showPreviousView();

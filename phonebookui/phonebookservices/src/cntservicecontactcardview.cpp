@@ -29,7 +29,7 @@ CntServiceContactCardView::CntServiceContactCardView( CntAbstractServiceProvider
     mProvider( aServiceProvider )
 {
     CNT_ENTRY
-    connect(this, SIGNAL(backPressed()), this, SLOT(closeContactCard()));
+    connect(this, SIGNAL(backPressed(int)), this, SLOT(closeContactCard(int)));
     CNT_EXIT
 }
 
@@ -45,11 +45,12 @@ CntServiceContactCardView::~CntServiceContactCardView()
 /*!
 Close the view (quits the service as well)
 */
-void CntServiceContactCardView::closeContactCard()
+void CntServiceContactCardView::closeContactCard(int value)
 {
     CNT_ENTRY
+    CNT_LOG_ARGS(value);
     QVariant variant;
-    variant.setValue(KCntServicesTerminated);
+    variant.setValue(value);
     mProvider.CompleteServiceAndCloseApp(variant);
     CNT_EXIT
 }

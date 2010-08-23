@@ -22,11 +22,12 @@
 
 class CntAbstractView;
 class CntAbstractServiceProvider;
+class CntExtensionManager;
 
 class CntServiceViewFactory : public CntDefaultViewFactory
 {
 public:
-    CntServiceViewFactory( CntAbstractServiceProvider& aServiceProvider ); 
+    CntServiceViewFactory( CntAbstractServiceProvider& aServiceProvider, CntExtensionManager& aMgr ); 
     ~CntServiceViewFactory();
     
 public:

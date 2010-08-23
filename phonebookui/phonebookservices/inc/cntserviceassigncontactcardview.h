@@ -39,7 +39,7 @@ class CntServiceAssignContactCardView : public CntContactCardView
     Q_OBJECT
 
 public slots:
-    void doCloseView();
+    void doCloseView(int value);
     void addToContacts();
     void saveNew();
     void updateExisting();

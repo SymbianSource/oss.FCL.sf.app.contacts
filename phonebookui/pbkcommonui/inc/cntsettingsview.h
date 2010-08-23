@@ -38,12 +38,13 @@ public:
     ~CntSettingsView();
     
 protected: // From CntAbstractView
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
     bool isDefault() const;
     HbView* view() const;
     int viewId() const;
-
+    inline void setEngine( CntAbstractEngine& aEngine ){ mEngine = &aEngine; }
+    
 private slots:
     void back();
     
@@ -60,7 +61,7 @@ private:
     CntViewParameters mArgs;
     
     CntSettingsModel* mModel;
-    
+    CntAbstractEngine* mEngine;
     friend class TestCntSettings;
 };
 #endif

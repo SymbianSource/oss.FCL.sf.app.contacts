@@ -31,11 +31,13 @@
 #include <hbsearchpanel.h>
 #include <hblineedit.h>
 #include <hbaction.h>
-#include <hbtextitem.h>
 #include <hbstaticvkbhost.h>
+#include <hbstyleloader.h>
 
 #include <QGraphicsLinearLayout>
 #include <QCoreApplication>
+#include <QtAlgorithms>
+
 const char *CNT_FETCHLIST_XML = ":/xml/contacts_fetchdialog.docml";
 
 CntFetchContactPopup::CntFetchContactPopup( QContactManager& aMgr ) : 
@@ -50,6 +52,8 @@ mModel( NULL ),
 mMarkAll( NULL ),
 mDoc( NULL )
 {
+    HbStyleLoader::registerFilePath(":/temp/fetchdialog.css");
+            
     mDoc = new CntDocumentLoader();
         
     bool ok;
@@ -59,10 +63,12 @@ mDoc( NULL )
     {
         qFatal("Unable to read %S", CNT_FETCHLIST_XML );
     }
+    mDoc->load( CNT_FETCHLIST_XML, "size_section");
+    
     mPopup = static_cast<HbDialog*>( mDoc->findWidget( "dialog" ) );
     mSearch = static_cast<HbSearchPanel*>( mDoc->findWidget( "searchPanel" ) );
     mMarkAll = static_cast<CntFetchMarkAll*>( mDoc->findWidget("markAll") );
-    mEmptyView = static_cast<HbTextItem*>( mDoc->findWidget("emptyLabel" ));
+    mEmptyView = static_cast<HbLabel*>( mDoc->findWidget("emptyLabel" ));
     mListView = static_cast<HbListView*>( mDoc->findWidget("listView") );
     mHeading = static_cast<HbLabel*>( mDoc->findWidget("heading") );
    
@@ -78,10 +84,13 @@ mDoc( NULL )
     mVirtualKeyboard = new HbStaticVkbHost(editor);
     connect(mVirtualKeyboard, SIGNAL(keypadOpened()), this, SLOT(handleKeypadOpen()));
     connect(mVirtualKeyboard, SIGNAL(keypadClosed()), this, SLOT(handleKeypadClosed()));
+    
+    mMarkAll->setZValue( 2 );
 }
 
 CntFetchContactPopup::~CntFetchContactPopup()
 {
+    HbStyleLoader::unregisterFilePath(":/temp/fetchdialog.css");
     delete mDoc;
     delete mModel;
 }
@@ -108,12 +117,10 @@ void CntFetchContactPopup::setSelectedContacts( QSet<QContactLocalId> aIds )
     if ( mListView->selectionMode() == HbAbstractItemView::MultiSelection )
     {
         mIdList.clear();
-        
         foreach ( QContactLocalId id, aIds ) 
         {
             mIdList.append( id );
-            QContact contact = mManager.contact(id);
-            QModelIndex contactIndex = mModel->indexOfContact(contact);
+            QModelIndex contactIndex = mModel->indexOfContactId(id);
             mSelectionModel->select( contactIndex, QItemSelectionModel::Select );
         }
     }
@@ -123,11 +130,24 @@ void CntFetchContactPopup::setSelectedContacts( QSet<QContactLocalId> aIds )
 void CntFetchContactPopup::showPopup()
 {
     CNT_ENTRY
+    if ( mListView->selectionMode() == HbAbstractItemView::MultiSelection )
+    {
+        mIds.clear();
+        mIds = mIdList;
+        qSort(mIds.begin(), mIds.end());
+    }
+    
+    if ( mPrimaryAction )
+    {
+        mPrimaryAction->setEnabled(false);
+    }
+    
+    
     HbMainWindow* window = mPopup->mainWindow();
     if ( window )
     {
         connect(window, SIGNAL(orientationChanged(Qt::Orientation)), 
-                this, SLOT(loadLayout(Qt::Orientation)) );
+                this, SLOT(orientationChanged(Qt::Orientation)) );
     }
     
     mPopup->open( this, SLOT(dialogDismissed(HbAction*)) );
@@ -137,12 +157,15 @@ void CntFetchContactPopup::showPopup()
 void CntFetchContactPopup::handleKeypadOpen()
 {
     CNT_ENTRY
+    HbListViewItem* prototype = mListView->listItemPrototype();
+    prototype->setTextFormat( Qt::RichText );
+    
     qreal height = mPopup->size().height() - 
             mVirtualKeyboard->keyboardArea().height() - 
             mSearch->size().height();
     
     // in single selection we don't have the "mark all" option
-    if ( mMarkAll )
+    if ( mMarkAll->isVisible() )
     {
         height = height - mMarkAll->size().height();
     }
@@ -155,15 +178,14 @@ void CntFetchContactPopup::handleKeypadOpen()
 void CntFetchContactPopup::handleKeypadClosed()
 {
     CNT_ENTRY
-    
-    qreal height =  mPopup->size().height() - mSearch->size().height();
-    if ( mMarkAll )
+    if (mSearch->criteria().isEmpty())
     {
-        height = height - mMarkAll->size().height();
-    }   
+        HbListViewItem* prototype = mListView->listItemPrototype();
+        prototype->setTextFormat( Qt::PlainText );
+    }
     
-    mListView->setMaximumHeight( height );
-    mEmptyView->setMaximumHeight( height );
+    mListView->setMaximumHeight( -1 );
+    mEmptyView->setMaximumHeight( -1 );
     CNT_EXIT
 }
 
@@ -193,8 +215,7 @@ void CntFetchContactPopup::contactsSelected(
     // remove all deselected items
     foreach ( QModelIndex index, aDeselected.indexes() )
     {
-        QContact contact = mModel->contact( index );
-        QContactLocalId id = contact.localId();
+        QContactLocalId id = mModel->contactId( index );
         if ( mIdList.contains(id) )
         {
             mIdList.removeAll( id );
@@ -204,14 +225,23 @@ void CntFetchContactPopup::contactsSelected(
     // add all selected items
     foreach ( QModelIndex index, aSelected.indexes() )
     {
-        QContact contact = mModel->contact( index );
-        QContactLocalId id = contact.localId();
+        QContactLocalId id = mModel->contactId( index );
         if ( !mIdList.contains(id) )
         {
             mIdList.append( id );
         }
     }
-        
+    
+    qSort(mIdList.begin(), mIdList.end()); 
+    if (mIdList == mIds)
+    {
+        mPrimaryAction->setEnabled(false);
+    }
+    else
+    {
+        mPrimaryAction->setEnabled(true);
+    }
+    
     mMarkAll->setSelectedContactCount( mIdList.size() );
     CNT_EXIT
 }
@@ -255,8 +285,7 @@ void CntFetchContactPopup::dialogDismissed( HbAction* aAction )
         QModelIndexList indexList = mSelectionModel->selectedIndexes();
         foreach ( QModelIndex index, indexList )
         {
-            QContact contact = mModel->contact( index );
-            mIdList.append( contact.localId() );
+            mIdList.append(mModel->contactId(index));
         }
         emit fetchReady( mIdList.toSet() );
     }
@@ -276,13 +305,19 @@ void CntFetchContactPopup::setFilter( const QString& aFilter )
     detailfilter.setDetailDefinitionName(
             QContactDisplayLabel::DefinitionName,
             QContactDisplayLabel::FieldLabel);
-       
+
+    int oldRowCount = mModel->rowCount();
     mModel->setFilter(detailfilter);
+    int newRowCount = mModel->rowCount();
     
-    HbMainWindow* window = mPopup->mainWindow();
-    if ( window )
+    // minor optimization, only reload layout when needed
+    if ((oldRowCount == 0 && newRowCount > 0) || (oldRowCount > 0 && newRowCount == 0))
     {
-        loadLayout( window->orientation() );
+        HbMainWindow* window = mPopup->mainWindow();
+        if ( window )
+        {
+            loadLayout( window->orientation() );
+        }
     }
     
     setSelectedContacts( mIdList.toSet() );
@@ -319,13 +354,8 @@ void CntFetchContactPopup::constructPopupDialog( QString aTitle, QString aAction
         
     mListView->setSelectionMode( aMode );
     mListView->setModel( mModel );
-    mListView->setSelectionModel( mSelectionModel );
-    
-    HbMainWindow* window = mPopup->mainWindow();
-    if ( window )
-    {
-        loadLayout( window->orientation() );
-    }
+    mListView->setSelectionModel( mSelectionModel );   
+
     
     if ( !aAction.isEmpty() )
     {
@@ -350,6 +380,12 @@ void CntFetchContactPopup::constructPopupDialog( QString aTitle, QString aAction
                 this, SLOT(contactsSelected(const QItemSelection&, const QItemSelection&)) );
             
     }
+    
+    HbMainWindow* window = mPopup->mainWindow();
+    if ( window )
+    {
+        loadLayout( window->orientation() );
+    }
         
     CNT_EXIT
 }
@@ -368,10 +404,16 @@ void CntFetchContactPopup::loadLayout( Qt::Orientation aOrientation )
         }
         else
         {
-            mHeading = new HbLabel( mTitle );
-            mPopup->setHeadingWidget( mHeading );
-            qreal popupHeight = mPopup->mainWindow()->layoutRect().height();
-            mPopup->setMinimumHeight(popupHeight);
+            if (mPopup->headingWidget() == NULL)
+            {
+                mHeading = new HbLabel( mTitle );
+                mPopup->setHeadingWidget( mHeading );
+            }
+            else
+            {
+                mHeading->setPlainText( mTitle );
+            }
+            
             mDoc->load( CNT_FETCHLIST_XML, multi ? "find_list" : "find_list_single");
         }
     }
@@ -384,10 +426,16 @@ void CntFetchContactPopup::loadLayout( Qt::Orientation aOrientation )
         }
         else
         {
-            mHeading = new HbLabel( mTitle );
-            mPopup->setHeadingWidget( mHeading );
-            qreal popupHeight = mPopup->mainWindow()->layoutRect().height();
-            mPopup->setMinimumHeight(popupHeight);
+            if (mPopup->headingWidget() == NULL)
+            {
+                mHeading = new HbLabel( mTitle );
+                mPopup->setHeadingWidget( mHeading );
+            }
+            else
+            {
+                mHeading->setPlainText( mTitle );
+            }
+
             mDoc->load( CNT_FETCHLIST_XML, multi ? "find_empty" : "find_empty_single" );
         }
      }
@@ -395,9 +443,21 @@ void CntFetchContactPopup::loadLayout( Qt::Orientation aOrientation )
     CNT_EXIT
 }
 
+void CntFetchContactPopup::orientationChanged( Qt::Orientation aOrientation )
+{
+    CNT_ENTRY
+    
+    mDoc->load( CNT_FETCHLIST_XML, "size_section");
+    
+    loadLayout(aOrientation);
+    
+    CNT_EXIT
+}
+
 void CntFetchContactPopup::closePopup()
 {
     CNT_ENTRY
+    mPopup->close();
     disconnect(mVirtualKeyboard, SIGNAL(keypadOpened()), this, SLOT(handleKeypadOpen()));
     disconnect(mVirtualKeyboard, SIGNAL(keypadClosed()), this, SLOT(handleKeypadClosed()));
            

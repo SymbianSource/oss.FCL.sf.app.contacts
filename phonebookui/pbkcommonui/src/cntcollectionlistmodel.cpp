@@ -20,8 +20,10 @@
 #include "cntcollectionlistmodelworker.h"
 #include "cntextensionmanager.h"
 #include "cntfavourite.h"
+#include "cntthumbnailmanager.h"
 #include "cntdebug.h"
 
+#include <cntabstractengine.h>
 #include <cntuiextensionfactory.h>
 #include <cntuigroupsupplier.h>
 #include <cntuids.h>
@@ -31,18 +33,17 @@
 #include <hbglobal.h>
 #include <hbicon.h>
 
-#include <thumbnailmanager_qt.h>
-
 /*!
     Constructor
 */
-CntCollectionListModel::CntCollectionListModel(QContactManager *manager, CntExtensionManager &extensionManager, QObject *parent)
+CntCollectionListModel::CntCollectionListModel(CntAbstractEngine* aEngine, QObject *parent)
     : QAbstractListModel(parent)
 {
     CNT_ENTRY
     
-    d = new CntCollectionListModelData(extensionManager);
-    d->mContactManager = manager;
+    d = new CntCollectionListModelData( aEngine->extensionManager() );
+    d->mContactManager = &aEngine->contactManager( SYMBIAN_BACKEND );
+    d->mThumbnailManager = &aEngine->thumbnailManager();
     
     XQSettingsKey nameOrderKey(XQSettingsKey::TargetCentralRepository,
             KCRCntSettings.iUid,
@@ -52,12 +53,8 @@ CntCollectionListModel::CntCollectionListModel(QContactManager *manager, CntExte
     QString noFavs = hbTrId("txt_phob_dblist_favorites_val_no_favorites_selecte");
     QString noMembers = hbTrId("txt_phob_dblist_val_no_members_selected");
     mThread = new CntCollectionListModelWorker(unnamed, noFavs, noMembers, order);
-    connect(mThread, SIGNAL(fetchDone(int, const QString&, int)), this, SLOT(informationUpdated(int, const QString&, int)));
     
-    d->mThumbnailManager = new ThumbnailManager(this);
-    d->mThumbnailManager->setMode(ThumbnailManager::Default);
-    d->mThumbnailManager->setQualityPreference(ThumbnailManager::OptimizeForPerformance);
-    d->mThumbnailManager->setThumbnailSize(ThumbnailManager::ThumbnailSmall);
+    connect(mThread, SIGNAL(fetchDone(int, const QString&, int)), this, SLOT(informationUpdated(int, const QString&, int)));
     connect(d->mThumbnailManager, SIGNAL(thumbnailReady(QPixmap, void *, int, int)),
              this, SLOT(onIconReady(QPixmap, void *, int, int)));
     
@@ -266,7 +263,7 @@ void CntCollectionListModel::addGroup(int localId)
             {
                 if (details.at(k).imageUrl().isValid())
                 {
-                    int id = d->mThumbnailManager->getThumbnail(details.at(k).imageUrl().toString());
+                    int id = d->mThumbnailManager->getThumbnail(ThumbnailManager::ThumbnailSmall, details.at(k).imageUrl().toString());
                     d->mIconRequests.insert(id, groupContactIds.at(i));
                     break;
                 }
@@ -503,7 +500,7 @@ void CntCollectionListModel::initializeUserGroups()
             {
                 if (details.at(k).imageUrl().isValid())
                 {
-                    int id = d->mThumbnailManager->getThumbnail(details.at(k).imageUrl().toString());
+                    int id = d->mThumbnailManager->getThumbnail(ThumbnailManager::ThumbnailSmall, details.at(k).imageUrl().toString());
                     d->mIconRequests.insert(id, groupContactIds.at(i));
                     break;
                 }

@@ -17,7 +17,6 @@
 
 #include "cnteditview.h"
 #include "cnteditview_p.h"
-#include "cntabstractviewmanager.h"
 
 #include <hbview.h>
 #include "cntglobal.h"
@@ -31,7 +30,6 @@
 #include <hbgroupbox.h>
 #include <hbpushbutton.h>
 #include <hbmenu.h>
-#include <thumbnailmanager_qt.h>
 
 CntEditView::CntEditView() : d_ptr(new CntEditViewPrivate())
 {
@@ -45,10 +43,10 @@ CntEditView::~CntEditView()
     delete d;
 }
     
-void CntEditView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
+void CntEditView::activate( const CntViewParameters aArgs )
 {
     Q_D(CntEditView);
-    d->activate(aMgr,aArgs);
+    d->activate(aArgs);
 }
 
 void CntEditView::deactivate()
@@ -71,5 +69,11 @@ HbView* CntEditView::view() const
 int CntEditView::viewId() const
 {
     return editView;
-} 
+}
+
+void CntEditView::setEngine( CntAbstractEngine& aEngine )
+{
+    Q_D( CntEditView );
+    d->mEngine = &aEngine;
+}
 // EOF

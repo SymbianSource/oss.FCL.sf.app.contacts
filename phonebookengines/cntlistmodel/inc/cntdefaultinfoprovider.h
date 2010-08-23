@@ -20,7 +20,7 @@
 #ifndef CNTDEFAULTPROVIDER_H
 #define CNTDEFAULTPROVIDER_H
 
-#include "cntinfoprovider.h"
+#include <cntinfoprovider.h>
 #include <qcontact.h>
 
 QTM_USE_NAMESPACE
@@ -38,6 +38,9 @@ public:
     QString id() const { return "default"; };
     ContactInfoFields supportedFields() const;
     void requestInfo(const QContact& contact, ContactInfoFields requestedInfo);
+    
+signals:
+    void infoFieldReady(CntInfoProvider* sender, int contactId, ContactInfoField field, const QString& value);
 };
 
 #endif

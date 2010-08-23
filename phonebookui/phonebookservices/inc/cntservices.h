@@ -23,6 +23,7 @@
 
 #include "cntabstractserviceprovider.h"
 
+class CntAbstractEngine;
 class CntAbstractViewManager;
 class XQServiceProvider;
 
@@ -38,7 +39,8 @@ public:
 
 public:
 
-    void setViewManager( CntAbstractViewManager& aViewManager );
+    //void setViewManager( CntAbstractViewManager& aViewManager );
+    void setEngine( CntAbstractEngine& aEngine );
     
     /**
      * Opens contact selection view where multiple contacts can be selected.
@@ -175,8 +177,11 @@ private:
 
 private: // from CntAbstractServiceProvider
     void CompleteServiceAndCloseApp(const QVariant& retValue);
+    void overrideReturnValue(const QVariant& retValue);
+    bool allowSubViewsExit();
 private:
     CntAbstractViewManager* mViewManager; // not owned
+    CntAbstractEngine* mEngine;
     QStringList m_definitionNames;
     CntAbstractServiceProvider* mCurrentProvider; // not owned
     bool mIsQuittable;

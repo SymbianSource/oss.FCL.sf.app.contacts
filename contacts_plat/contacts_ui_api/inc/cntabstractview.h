@@ -19,6 +19,7 @@
 
 #include <cntabstractviewmanager.h>
 #include <cntviewparams.h>
+#include <cntabstractengine.h>
 
 class HbView;
 
@@ -33,7 +34,7 @@ public:
      * View is activated after its added to main window and is
      * ready to be drawn.
      */
-    virtual void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs ) = 0;
+    virtual void activate( const CntViewParameters aArgs ) = 0;
     
     /**
      * View is deactivated just before its removed from
@@ -57,5 +58,10 @@ public:
      * return the view id
      */
     virtual int viewId() const = 0;
+	
+	/*!
+	 * set engine. This must be called right after C'tor.
+	 */
+	virtual void setEngine( CntAbstractEngine& aEngine ) = 0;
 };
 #endif /* CNTABSTRACTVIEW_H_ */

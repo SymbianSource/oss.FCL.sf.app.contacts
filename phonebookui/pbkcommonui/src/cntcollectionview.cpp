@@ -24,7 +24,6 @@
 #include "cntfavourite.h"
 #include "cntdetailconst.h"
 #include "cntdebug.h"
-
 #include <cntuiextensionfactory.h>
 #include <cntuigroupsupplier.h>
 #include <hblabel.h>
@@ -50,8 +49,7 @@ const char *CNT_COLLECTIONVIEW_XML = ":/xml/contacts_collections.docml";
 /*!
 
 */
-CntCollectionView::CntCollectionView(CntExtensionManager &extensionManager) :
-    mExtensionManager(extensionManager),
+CntCollectionView::CntCollectionView() :
     mView(NULL),
     mSoftkey(NULL),
     mViewManager(NULL),
@@ -119,7 +117,7 @@ CntCollectionView::~CntCollectionView()
 /*!
 Called when activating the view
 */
-void CntCollectionView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
+void CntCollectionView::activate( const CntViewParameters aArgs )
 {
     CNT_ENTRY
     
@@ -128,8 +126,9 @@ void CntCollectionView::activate( CntAbstractViewManager* aMgr, const CntViewPar
     if (mView->navigationAction() != mSoftkey)
         mView->setNavigationAction(mSoftkey);   
     
-    mViewManager = aMgr;
-
+    mViewManager = &mEngine->viewManager();
+    mExtensionManager = &mEngine->extensionManager();
+    
     // disable delete group(s) button if only favorites group is present
     QContactDetailFilter groupFilter;
     groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
@@ -156,7 +155,7 @@ void CntCollectionView::activate( CntAbstractViewManager* aMgr, const CntViewPar
     
     mListView->listItemPrototype()->setGraphicsSize(HbListViewItem::LargeIcon);
     mListView->listItemPrototype()->setStretchingStyle(HbListViewItem::StretchLandscape);
-    mModel = new CntCollectionListModel(getContactManager(), mExtensionManager, this);
+    mModel = new CntCollectionListModel( mEngine, this);
     mListView->setModel(mModel);
     
     CNT_EXIT
@@ -210,7 +209,7 @@ void CntCollectionView::openGroup(const QModelIndex &index)
     else
     {
         int id = index.data(Qt::UserRole).toInt();
-        int favoriteGrpId = CntFavourite::favouriteGroupId(mViewManager->contactManager(SYMBIAN_BACKEND));
+        int favoriteGrpId = CntFavourite::favouriteGroupId(getContactManager());
 
         if (id == favoriteGrpId )
         {
@@ -266,7 +265,7 @@ void CntCollectionView::showContextMenu(HbAbstractViewItem *item, const QPointF 
         int id = item->modelIndex().data(Qt::UserRole).toInt();
         QVariant data( id );
 
-        int favoriteGrpId = CntFavourite::favouriteGroupId(mViewManager->contactManager(SYMBIAN_BACKEND));
+        int favoriteGrpId = CntFavourite::favouriteGroupId(getContactManager());
         
         HbMenu *menu = new HbMenu();
         menu->setAttribute(Qt::WA_DeleteOnClose);
@@ -344,10 +343,6 @@ void CntCollectionView::handleNewGroup(HbAction* action)
         mHandledContact->saveDetail(&groupName);
         getContactManager()->saveContact(mHandledContact);
         
-        QContactDetailFilter filter;
-        QList<QContactLocalId> contactsList = getContactManager()->contactIds(filter);
-        QSet<QContactLocalId> contactsSet = contactsList.toSet();
-
         // Select some contact(s) to add to the group
         QString groupNameCreated = mHandledContact->displayLabel();
         if (groupNameCreated.isEmpty())
@@ -355,15 +350,32 @@ void CntCollectionView::handleNewGroup(HbAction* action)
             groupNameCreated = hbTrId("txt_phob_list_unnamed");
         }
         
-        CntFetchContactPopup* popup = CntFetchContactPopup::createMultiSelectionPopup(
-                HbParameterLengthLimiter(hbTrId("txt_phob_title_members_of_1_group")).arg(groupNameCreated),
-                hbTrId("txt_common_button_save"),
-                *mViewManager->contactManager(SYMBIAN_BACKEND));
-        connect( popup, SIGNAL(fetchReady(QSet<QContactLocalId>)), this, SLOT(handleNewGroupMembers(QSet<QContactLocalId>)) );
-        connect( popup, SIGNAL(fetchCancelled()), this, SLOT(handleCancelGroupMembers()) );
-        
-        popup->setSelectedContacts( contactsSet );
-        popup->showPopup();
+        // if no contacts are present, then dont call the fetch popup
+       QContactDetailFilter gFilter;
+       gFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
+       gFilter.setValue(QLatin1String(QContactType::TypeContact));
+      
+       QList<QContactLocalId> contactIds = getContactManager()->contactIds(gFilter);   
+       if (contactIds.isEmpty())
+       {
+           mModel->addGroup(mHandledContact->localId());
+           mDeleteGroupsAction->setEnabled(true);
+               
+           notifyNewGroup();
+       }      
+       else
+       {
+            CntFetchContactPopup* popup = CntFetchContactPopup::createMultiSelectionPopup(
+                    HbParameterLengthLimiter(hbTrId("txt_phob_title_members_of_1_group")).arg(groupNameCreated),
+                    hbTrId("txt_common_button_save"),
+                    mEngine->contactManager(SYMBIAN_BACKEND));
+            connect( popup, SIGNAL(fetchReady(QSet<QContactLocalId>)), this, SLOT(handleNewGroupMembers(QSet<QContactLocalId>)) );
+            connect( popup, SIGNAL(fetchCancelled()), this, SLOT(handleCancelGroupMembers()) );
+            
+            QSet<QContactLocalId> ids;
+            popup->setSelectedContacts(ids);
+            popup->showPopup();
+       }
     }
 }
 
@@ -424,7 +436,7 @@ void CntCollectionView::refreshDataModel()
     delete mModel;
     mModel = NULL;
     
-    mModel = new CntCollectionListModel(getContactManager(), mExtensionManager, this);
+    mModel = new CntCollectionListModel(mEngine, this);
     mListView->setModel(mModel);
 }
 
@@ -470,7 +482,7 @@ void CntCollectionView::handleDeleteGroup(int action)
 void CntCollectionView::deleteGroups()
 {
     // save the group here
-    CntGroupDeletePopup *groupDeletePopup = new CntGroupDeletePopup(getContactManager());
+    CntGroupDeletePopup *groupDeletePopup = new CntGroupDeletePopup( mEngine );
     
     groupDeletePopup->populateListOfGroup();
     groupDeletePopup->open(this, SLOT(handleDeleteGroups(HbAction*)));
@@ -503,26 +515,34 @@ void CntCollectionView::handleDeleteGroups(HbAction* action)
 
 QContactManager* CntCollectionView::getContactManager()
 {
-    if (!mViewManager) return NULL;
-
-    return mViewManager->contactManager(SYMBIAN_BACKEND);
+    if (!mEngine) {
+        return NULL;
+    }
+    return &mEngine->contactManager( SYMBIAN_BACKEND );
 }
 
-void CntCollectionView::saveNewGroup(QContact* aContact)
+void CntCollectionView::saveNewGroup(QContact* aGroup)
 {
-    if (!aContact) return;
+    if (!aGroup) {
+        return;
+    }
     
     // Save the relationship from the selection model of the member selection list
-    QList<QContactLocalId> selectedList = mSelectedContactsSet.toList();
-    for (int i = 0; i < selectedList.size(); i++ ) {
-        QContact contact = getContactManager()->contact(selectedList.at(i));
+    QList<QContactRelationship> relationships;
+    foreach (QContactLocalId localId, mSelectedContactsSet)
+    {
         QContactRelationship relationship;
+        QContactId id;
+        id.setLocalId(localId);
         relationship.setRelationshipType(QContactRelationship::HasMember);
-        relationship.setFirst(aContact->id());
-        relationship.setSecond(contact.id());
+        relationship.setFirst(aGroup->id());
+        relationship.setSecond(id);
+        relationships.append(relationship);
+    }
 
-        // Save relationship
-        getContactManager()->saveRelationship(&relationship);
+    // Save relationships
+    if (!relationships.isEmpty()) {
+        getContactManager()->saveRelationships(&relationships, NULL);
     }
 }
 

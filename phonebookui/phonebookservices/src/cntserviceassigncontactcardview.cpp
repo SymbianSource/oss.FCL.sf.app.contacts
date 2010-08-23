@@ -38,7 +38,7 @@ CntServiceAssignContactCardView::CntServiceAssignContactCardView( CntAbstractSer
     mProvider( aServiceProvider )
 {
     CNT_ENTRY
-    connect(this, SIGNAL(backPressed()), this, SLOT(doCloseView()));
+    connect(this, SIGNAL(backPressed(int)), this, SLOT(doCloseView(int)));
     connect(this, SIGNAL(viewActivated(CntAbstractViewManager*, const CntViewParameters)), this, SLOT(doViewActivated(CntAbstractViewManager*,const CntViewParameters)));
     connect(this, SIGNAL(addToContacts()), this, SLOT(addToContacts()));
     CNT_EXIT
@@ -145,10 +145,12 @@ void CntServiceAssignContactCardView::doViewActivated(CntAbstractViewManager* aM
 /*!
 Close the view (quits the service as well)
 */
-void CntServiceAssignContactCardView::doCloseView()
+void CntServiceAssignContactCardView::doCloseView(int value)
 {
     CNT_ENTRY
-    qApp->quit();
+    QVariant variant;
+    variant.setValue(value);
+    mProvider.CompleteServiceAndCloseApp(variant);
     CNT_EXIT
 }
 

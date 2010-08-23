@@ -17,13 +17,11 @@
 
 #include "cntcontactcardview.h"
 #include "cntcontactcardview_p.h"
-
 #include <hbview.h>
 
 CntContactCardView::CntContactCardView(bool isTemporary) : d_ptr(new CntContactCardViewPrivate(isTemporary))
 {
-    Q_D(CntContactCardView);
-    connect(d_ptr, SIGNAL(backPressed()), this, SIGNAL(backPressed()));
+    connect(d_ptr, SIGNAL(backPressed(int)), this, SIGNAL(backPressed(int)));
     connect(d_ptr, SIGNAL(viewActivated(CntAbstractViewManager*, const CntViewParameters)), 
             this, SIGNAL(viewActivated(CntAbstractViewManager*, const CntViewParameters)));
     connect(d_ptr, SIGNAL(addToContacts()), this, SIGNAL(addToContacts()));
@@ -38,10 +36,10 @@ CntContactCardView::~CntContactCardView()
     delete d;
 }
 
-void CntContactCardView::activate(CntAbstractViewManager* aMgr, const CntViewParameters aArgs)
+void CntContactCardView::activate(const CntViewParameters aArgs)
 {
     Q_D(CntContactCardView);
-    d->activate( aMgr, aArgs );
+    d->activate( aArgs );
 }
 
 void CntContactCardView::deactivate()
@@ -64,6 +62,12 @@ bool CntContactCardView::isDefault() const
 int CntContactCardView::viewId() const 
 { 
     return contactCardView; 
+}
+
+void CntContactCardView::setEngine( CntAbstractEngine& aEngine )
+{
+    Q_D( CntContactCardView );
+    d->mEngine = &aEngine;
 }
 
 // end of file

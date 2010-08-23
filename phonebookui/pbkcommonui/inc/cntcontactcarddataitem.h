@@ -23,6 +23,8 @@
 #include <qtcontacts.h>
 #include <hbicon.h>
 
+class CntUiContactCardExtension;
+
 QTM_USE_NAMESPACE
 
 class CntContactCardDataItem: public QObject
@@ -33,6 +35,8 @@ public:
     
 enum CntContactCardPosition
 { 
+
+// Communication methods >>>>>
         EInternalServices = 0,
         ECallMobile = 100,
         ECallMobileSendMessage,
@@ -77,6 +81,8 @@ enum CntContactCardPosition
         ELastActionWork,
         EExternalServices = 250,
         ESeparator = 300,
+// <<<<< Communication methods end here.
+        
         EInternetTelephone,
         EInternetTelephoneHome,
         EInternetTelephoneWork,
@@ -109,6 +115,7 @@ public:
     void setContactDetail(QContactDetail aDetail);
     void setActionDescriptor(const QContactActionDescriptor& aActionDescriptor);
     void setLongPressText(const QString& aLongPressText);
+    void setContactCardExtensionAndActionIndex( CntUiContactCardExtension& aExtension, int aIndex );
 
 public:
     QString titleText() const { return mTitle; }
@@ -121,6 +128,11 @@ public:
     bool isFocusable() const { return mIsFocusable; }
     QContactActionDescriptor actionDescriptor() const { return mActionDescriptor; }
     QString longPressText() const { return mLongPressText; }
+
+    /// Can return NULL which means this item is not from an extension.
+    CntUiContactCardExtension* contactCardExtension() const {return mExtension;}
+    int contactCardExtensionActionIndex() const {return mExtensionActionIndex;}
+
     int position() const { return mPosition; }
  
 private:
@@ -134,6 +146,8 @@ private:
     Qt::TextElideMode           mValueTextElideMode;
     bool                        mIsFocusable;
     QString                     mLongPressText;
+    CntUiContactCardExtension*  mExtension;
+    int                         mExtensionActionIndex;
     
 public:
     int                         mPosition;

@@ -18,6 +18,7 @@
 #include "cntmycardview.h"
 #include "cntfetchcontactpopup.h"
 #include "cntglobal.h"
+
 #include <qtcontacts.h>
 #include <hbpushbutton.h>
 #include <hbaction.h>
@@ -67,9 +68,9 @@ void CntMyCardView::showPreviousView()
 /*
 Activates a default view
 */
-void CntMyCardView::activate(CntAbstractViewManager* aMgr, const CntViewParameters aArgs)
+void CntMyCardView::activate(const CntViewParameters aArgs)
 {
-    mViewManager = aMgr;
+    mViewManager = &mEngine->viewManager();
     
     if (mView->navigationAction() != mSoftkey) {
         mView->setNavigationAction(mSoftkey);
@@ -90,7 +91,7 @@ void CntMyCardView::activate(CntAbstractViewManager* aMgr, const CntViewParamete
     filter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
     filter.setValue(QLatin1String(QContactType::TypeContact));
 
-    if (mViewManager->contactManager( SYMBIAN_BACKEND )->contactIds(filter).isEmpty())
+    if (mEngine->contactManager( SYMBIAN_BACKEND ).contactIds(filter).isEmpty())
     {
         chooseButton->setEnabled(false);
     }
@@ -137,21 +138,23 @@ void CntMyCardView::openMyCardSelectionView()
 {
     CntFetchContactPopup* popup = CntFetchContactPopup::createSingleSelectionPopup(
             hbTrId("txt_phob_title_select_contact"),
-            *mViewManager->contactManager(SYMBIAN_BACKEND));
+            mEngine->contactManager(SYMBIAN_BACKEND));
     connect( popup, SIGNAL(fetchReady(QSet<QContactLocalId>)), this, SLOT(handleMultiCardSelection(QSet<QContactLocalId>)));
+    QSet<QContactLocalId> ids;
+    popup->setSelectedContacts(ids);
     popup->showPopup();
 }
 
 void CntMyCardView::handleMultiCardSelection( QSet<QContactLocalId> aIds )
 {
-    QContactManager* manager = mViewManager->contactManager( SYMBIAN_BACKEND );
+    QContactManager& manager = mEngine->contactManager( SYMBIAN_BACKEND );
 
     if ( !aIds.isEmpty() ) {
         QList<QContactLocalId> selectedContactsList = aIds.values();
-        QContact contact = manager->contact(selectedContactsList.front());
+        QContact contact = manager.contact(selectedContactsList.front());
         removeFromGroup(&contact);
         
-        manager->setSelfContactId( contact.localId() );
+        manager.setSelfContactId( contact.localId() );
         showPreviousView();
     }
 }
@@ -162,16 +165,16 @@ void CntMyCardView::removeFromGroup(const QContact* aContact)
     groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
     groupFilter.setValue(QLatin1String(QContactType::TypeGroup));
 
-    QContactManager* mgr = mViewManager->contactManager(SYMBIAN_BACKEND);
-    QList<QContactLocalId> groupContactIds = mgr->contactIds(groupFilter);
+    QContactManager& mgr = mEngine->contactManager(SYMBIAN_BACKEND);
+    QList<QContactLocalId> groupContactIds = mgr.contactIds(groupFilter);
     if (!groupContactIds.isEmpty()) {
         for(int i = 0;i < groupContactIds.count();i++) {
-            QContact groupContact = mgr->contact(groupContactIds.at(i));
+            QContact groupContact = mgr.contact(groupContactIds.at(i));
             QContactRelationship relationship;
             relationship.setRelationshipType(QContactRelationship::HasMember);
             relationship.setFirst(groupContact.id());
             relationship.setSecond(aContact->id());
-            mgr->removeRelationship(relationship);  
+            mgr.removeRelationship(relationship);  
         }
     }
 }

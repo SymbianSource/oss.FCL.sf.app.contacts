@@ -68,11 +68,19 @@ class CntDetailOrderingHelper
         EUrlWork
     };
     
+    enum CntAddressPosition
+    {
+        EAddress = 0,
+        EAddressHome,
+        EAddressWork
+    };
+    
 public:
     static QList<QContactPhoneNumber> getOrderedSupportedPhoneNumbers( const QContact& contact );
     static QList<QContactOnlineAccount> getOrderedSupportedOnlineAccounts( const QContact& contact );
     static QList<QContactEmailAddress> getOrderedEmailAccounts( const QContact& contact );
     static QList<QContactUrl> getOrderedUrls( const QContact& contact );
+    static QList<QContactAddress> getOrderedAddresses( const QContact& contact );
 };
 
 #endif /* CNTPHONENUMBERHELPER_H */

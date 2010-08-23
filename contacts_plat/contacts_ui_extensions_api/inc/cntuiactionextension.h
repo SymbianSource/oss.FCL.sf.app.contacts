@@ -37,7 +37,7 @@
  */
 
 // Default Symbian database, use this as uri parameter for QContactManager::fromUri.
-const QString SYMBIAN_BACKEND = "qtcontacts:symbian:";
+const QString ACTION_EXT_SYMBIAN_BACKEND = "qtcontacts:symbian:";
 
 // First line in UI item
 // This tag is used to specify localized freetext(QString) description for action, eg. "Send message". This

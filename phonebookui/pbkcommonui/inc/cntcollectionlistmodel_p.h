@@ -28,7 +28,7 @@
 
 class CntExtensionManager;
 class CntUiGroupSupplier;
-class ThumbnailManager;
+class CntThumbnailManager;
 
 QTM_BEGIN_NAMESPACE
 class QContactManager;
@@ -100,7 +100,7 @@ public:
     
     QMap<int,int>                       mIconRequests;
     
-    ThumbnailManager                   *mThumbnailManager;
+    CntThumbnailManager                 *mThumbnailManager;
 };
 
 #endif // CNTCOLLECTIONLISTMODELPRIVATE_H

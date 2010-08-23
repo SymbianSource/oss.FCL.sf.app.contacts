@@ -27,7 +27,6 @@
 class CntImageLabel;
 class HbListView;
 class XQAiwRequest;
-class ThumbnailManager;
 class HbAction;
 class QStandardItemModel;
 class QModelIndex;
@@ -49,12 +48,12 @@ public:
     ~CntImageEditorView();
     
 public: // From CntAbstractView
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
     bool isDefault() const { return false; }
     HbView* view() const { return mView; }
     int viewId() const { return imageEditorView; }
-    
+    inline void setEngine( CntAbstractEngine& aEngine ){ mEngine = &aEngine; }
 #ifdef PBK_UNIT_TEST
 public:
 #else
@@ -89,7 +88,7 @@ private:
     CntImageLabel           *mImageLabel; // owned by layout
     XQAiwRequest            *mRequest; // own
     XQApplicationManager     mAppManager;
-    ThumbnailManager        *mThumbnailManager; // own
+    CntThumbnailManager        *mThumbnailManager; // own
     HbView                  *mView; // own
     HbAction                *mSoftkey; // owned by view
     HbAction                *mRemoveImage; // own
@@ -100,6 +99,7 @@ private:
     CntSaveManager          *mSaveManager; // own
     
     CntViewParameters       mArgs;
+    CntAbstractEngine* mEngine;
 };
 
 #endif // CNTIMAGEEDITORVIEW_H

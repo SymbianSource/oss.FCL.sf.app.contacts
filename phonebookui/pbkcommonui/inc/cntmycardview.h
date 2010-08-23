@@ -23,7 +23,6 @@
 #include <hbdocumentloader.h>
 #include <cntabstractview.h>
 
-class CntAbstractViewManager;
 class HbView;
 class HbAction;
 
@@ -43,12 +42,13 @@ public:
     ~CntMyCardView();
 
 public: // From CntAbstractView
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
     
     inline bool isDefault() const { return false; }
     inline HbView* view() const { return mView; }
     inline int viewId() const { return myCardView; }
+    inline void setEngine( CntAbstractEngine& aEngine ){ mEngine = &aEngine; }
     
 private slots:
     void showPreviousView();
@@ -67,7 +67,7 @@ private:
     HbDocumentLoader          mDocumentLoader;
     HbView*                   mView; // own
     HbAction*                 mSoftkey;
-    
+    CntAbstractEngine*        mEngine; 
     friend class TestCntMyCardView;
 };
 

@@ -364,10 +364,10 @@ void TestCntListModel::dataForDisplayRole()
     QVERIFY(mManager->saveContact(&c));
     
     int row = mCntModel->rowId(c.localId());
-    QVariant var = mCntModel->dataForDisplayRole(row);
+    QVariant var = mCntModel->dataForRole(row, Qt::DisplayRole);
     QVERIFY(var.type() == QVariant::StringList);
     
-    var = mCntModel->dataForDisplayRole(0);
+    var = mCntModel->dataForRole(0, Qt::DisplayRole);
     QVERIFY(var.type() == QVariant::StringList);
 }
 

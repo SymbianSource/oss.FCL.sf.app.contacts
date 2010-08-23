@@ -26,6 +26,7 @@ class CntAbstractViewFactory;
 class CntAbstractView;
 class CntViewNavigator;
 class CntSimUtility;
+class CntAbstractEngine;
 
 QTM_BEGIN_NAMESPACE
 class QContactManager;
@@ -45,11 +46,12 @@ public:
     void setViewFactory( CntAbstractViewFactory* aFactory );
     void setViewNavigator( CntViewNavigator* aNavigator );
     
+    CntAbstractEngine& engine();
+    
 public: // From CntAbstractViewManager
     void changeView( const CntViewParameters aArgs );
     void back( const CntViewParameters aArgs, bool toRoot = false );
-    QContactManager* contactManager( const QString& aType );
-
+    
 public:
     int currentViewId();
     
@@ -76,7 +78,7 @@ private:
     HbMainWindow*                mMainWindow;
     
     CntSimUtility* mSimUtility;
-    
+    CntAbstractEngine* mEngine;
     friend class T_CntDefaultViewManager;
 };
 #endif /* CNTDEFAULTVIEWMANAGER_H_ */

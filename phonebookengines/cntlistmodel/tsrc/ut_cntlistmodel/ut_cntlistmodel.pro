@@ -42,14 +42,15 @@ HEADERS += inc/testrunner.h \
            inc/ut_cntcache.h \
            inc/ut_cntpresenceinfoprovider.h \
            inc/ut_cntdefaultinfoprovider.h \
+           inc/ut_cntdisplaytextformatter.h \
            ../../inc/cntlistmodelglobal.h \
            ../../inc/cntlistmodel.h \
            ../../inc/cntlistmodel_p.h \
            ../../inc/cntcache.h \
            ../../inc/cntcache_p.h \
-           ../../inc/cntinfoprovider.h \
            ../../inc/cntdefaultinfoprovider.h \
            ../../inc/cntpresenceinfoprovider.h \
+           ../../inc/cntdisplaytextformatter.h \
            ../../../../inc/cntdebug.h
 
 SOURCES += src/testrunner.cpp \
@@ -58,11 +59,13 @@ SOURCES += src/testrunner.cpp \
            src/ut_cntcache.cpp \
            src/ut_cntpresenceinfoprovider.cpp \
            src/ut_cntdefaultinfoprovider.cpp \
+           src/ut_cntdisplaytextformatter.cpp \
            ../../src/cntlistmodel.cpp \
            ../../src/cntcache.cpp \
            ../../src/cntcache_p.cpp \
            ../../src/cntdefaultinfoprovider.cpp \
-           ../../src/cntpresenceinfoprovider.cpp
+           ../../src/cntpresenceinfoprovider.cpp \
+           ../../src/cntdisplaytextformatter.cpp
 
 BLD_INF_RULES.prj_exports += "image1.png /epoc32/winscw/c/data/images/"
 BLD_INF_RULES.prj_exports += "image2.png /epoc32/winscw/c/data/images/"

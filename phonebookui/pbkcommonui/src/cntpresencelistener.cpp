@@ -25,10 +25,9 @@
     presence information for a contact and separately for each
     valid QContactOnlineAccount.
 */
-CntPresenceListener::CntPresenceListener(const QContact& contact, QObject* parent) :
+CntPresenceListener::CntPresenceListener(QObject* parent) :
     QObject(parent),
-    mReader(NULL),
-    mContact(contact)
+    mReader(NULL)
 {
     mReader = PrcPresenceReader::createReader();
     connect(mReader, SIGNAL(signalPresenceNotification(bool, PrcPresenceBuddyInfoQt*)), 
@@ -51,11 +50,11 @@ CntPresenceListener::~CntPresenceListener()
     \param combinedOnlineStatus aggregated online status
     \return QMap with account specific (for example "sip:sip@sip.com") online information
 */
-QMap<QString, bool> CntPresenceListener::initialPresences(bool &combinedOnlineStatus)
+QMap<QString, bool> CntPresenceListener::initialPresences(const QContact& contact, bool &combinedOnlineStatus)
 {
     QMap<QString, bool> initialMap;
 
-    QList<QContactOnlineAccount> accounts = mContact.details<QContactOnlineAccount>();
+    QList<QContactOnlineAccount> accounts = contact.details<QContactOnlineAccount>();
     
     QList<PrcPresenceBuddyInfoQt*> buddies;
     

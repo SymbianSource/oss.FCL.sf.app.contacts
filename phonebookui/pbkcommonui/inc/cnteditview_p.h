@@ -33,7 +33,7 @@ class CntEditViewHeadingItem;
 class CntEditViewItem;
 class CntImageLabel;
 
-class ThumbnailManager;
+class CntThumbnailManager;
 class QModelIndex;
 class HbDocumentLoader;
 class HbAbstractViewItem;
@@ -44,6 +44,7 @@ class QAction;
 class HbMenu;
 class XQAiwRequest;
 class CntSaveManager;
+class CntAbstractEngine;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -60,7 +61,7 @@ public:
     CntEditViewPrivate();
     ~CntEditViewPrivate();
     
-    void activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs );
+    void activate( const CntViewParameters aArgs );
     void deactivate();
     
 public: // From CntEditViewItemCallback
@@ -110,9 +111,10 @@ public:
     CntImageLabel *mImageLabel;
     CntViewParameters mArgs;
     HbDocumentLoader* mDocument;
-    ThumbnailManager* mThumbnailManager;
+    CntThumbnailManager* mThumbnailManager;
     QContact* mContact; // own
     CntAbstractViewManager* mMgr; // not owned
+    CntAbstractEngine* mEngine; // now owned
     bool mIsMyCard;
     
     HbAction* mSoftkey;

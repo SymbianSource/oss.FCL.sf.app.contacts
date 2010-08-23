@@ -19,6 +19,7 @@
 
 #include <qcontacturl.h>
 #include <qcontactfilters.h>
+#include <QDesktopServices>
 
 //Action class
 CntBrowserAction::CntBrowserAction() : 
@@ -57,13 +58,23 @@ CntBrowserAction* CntBrowserAction::clone() const
 
 void CntBrowserAction::performAction()
 {
-    QVariant retValue;
-    emitResult(GeneralError, retValue);
-    
-    /*
-    QString service("com.nokia.services.telephony");
-    QString type("dial(QString,int)");
-    
-    performNumberAction(service, type);
-    */
+    if (m_detail.definitionName() == QContactUrl::DefinitionName)
+    {
+        const QContactUrl &contactUrl = static_cast<const QContactUrl &>(m_detail);
+        
+        QString address = contactUrl.url();
+        if (!address.startsWith("http://"))
+        {
+            address.prepend("http://");
+        }
+        
+        bool success = QDesktopServices::openUrl(QUrl(address));
+        QVariant retValue;
+        emitResult(success, retValue);
+    }
+    else
+    {
+        QVariant retValue;
+        emitResult(GeneralError, retValue);
+    }
 }

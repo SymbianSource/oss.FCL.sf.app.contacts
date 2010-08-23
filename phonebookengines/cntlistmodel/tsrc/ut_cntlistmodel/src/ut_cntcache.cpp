@@ -66,7 +66,7 @@ void TestCntCache::construction()
     QVERIFY(worker->mContactManager != NULL);
     QVERIFY(worker->mThumbnailManager != NULL);
     QVERIFY(!worker->mStarted);
-    QVERIFY(!worker->mJobLoopRunning);
+    QVERIFY(!worker->mProcessingJobs);
     QVERIFY(!worker->mPostponeJobs);
     QVERIFY(worker->mDataProviders.count() >= 1);
 

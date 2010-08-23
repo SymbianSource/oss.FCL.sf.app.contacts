@@ -102,7 +102,7 @@ CntHistoryView::~CntHistoryView()
  */
 void CntHistoryView::deactivate()
 {
-    QContactManager* cm = mViewMgr->contactManager(SYMBIAN_BACKEND);
+    QContactManager* cm = &mEngine->contactManager(SYMBIAN_BACKEND);
     disconnect(cm, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)),
             this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
 }
@@ -110,12 +110,12 @@ void CntHistoryView::deactivate()
 /**
  * Activate the view
  */
-void CntHistoryView::activate( CntAbstractViewManager* aMgr, const CntViewParameters aArgs )
+void CntHistoryView::activate( const CntViewParameters aArgs )
 {
-    mViewMgr = aMgr;
     mArgs = aArgs;
+    mViewMgr = &mEngine->viewManager();
     
-    QContactManager* cm = mViewMgr->contactManager(SYMBIAN_BACKEND);
+    QContactManager* cm = &mEngine->contactManager(SYMBIAN_BACKEND);
     mContact = new QContact(mArgs.value(ESelectedContact).value<QContact>());
     
     // Set history view heading

@@ -18,6 +18,7 @@
 #include "cntserviceviewfactory.h"
 #include "cntabstractview.h"
 
+#include "cntservicesubeditview.h"
 
 #include "cntserviceeditview.h"
 #include "cntservicecontactselectionview.h"
@@ -28,8 +29,8 @@
 #include "cntserviceassigncontactcardview.h"
 
 
-CntServiceViewFactory::CntServiceViewFactory( CntAbstractServiceProvider& aServiceProvider ) : 
-CntDefaultViewFactory(),
+CntServiceViewFactory::CntServiceViewFactory( CntAbstractServiceProvider& aServiceProvider, CntExtensionManager& aMgr ) : 
+CntDefaultViewFactory( aMgr ),
 mProvider( aServiceProvider )
 {
 }
@@ -52,6 +53,9 @@ CntAbstractView* CntServiceViewFactory::createView( int aViewId )
             
     case serviceEditView:
         return new CntServiceEditView( mProvider );
+        
+    case editView:
+        return new CntServiceSubEditView( mProvider );
 
     case serviceContactCardView:
         return new CntServiceContactCardView( mProvider );

@@ -19,7 +19,7 @@
 #ifndef CNTPRESENCEINFOPROVIDER_H
 #define CNTPRESENCEINFOPROVIDER_H
 
-#include "cntinfoprovider.h"
+#include <cntinfoprovider.h>
 #include <qcontact.h>
 
 class PrcPresenceReader;
@@ -54,6 +54,9 @@ private slots:
     
 private:
     QString parsePresence(const QList<PrcPresenceBuddyInfoQt*>& buddyList);
+
+signals:
+    void infoFieldReady(CntInfoProvider* sender, int contactId, ContactInfoField field, const QString& value);
     
 private:
     PrcPresenceReader*              iReader; // owned
