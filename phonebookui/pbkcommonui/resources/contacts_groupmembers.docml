@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hbdocument version="0.9">
+    <object name="cnt:managemembers" type="HbAction">
+        <icon iconName="qtg_mono_edit" name="icon"/>
+    </object>
+    <object name="cnt:deletegroup" type="HbAction">
+        <icon iconName="qtg_mono_delete" name="icon"/>
+    </object>
+    <object name="cnt:groupactions" type="HbAction">
+        <icon iconName="qtg_mono_communication" name="icon"/>
+    </object>
+    <object name="cnt:editgroupdetails" type="HbAction">
+        <string name="text" locid="txt_phob_opt_edit_group_details"/>
+    </object>
+    
+    
+    <widget name="view" type="HbView">
+        <widget name="content" role="HbView:widget" type="HbWidget">
+        	<widget name="listView" type="HbListView">
+                <widget name="listItemPrototype" role="HbAbstractView:prototype" type="HbListViewItem">
+                    <enums name="graphicsSize" value="Thumbnail"/>
+                    <string name="state" value="normal"/>
+                    <fontspec name="fontSpec" role="Primary" textheight="26.8"/>
+                </widget>
+                <sizehint height="47.7612un" type="PREFERRED" width="35.8209un"/>
+            </widget>
+            <widget name="editViewImage" type="CntImageLabel">
+                <bool name="visible" value="FALSE"/>
+                <contentsmargins bottom="2.0un" left="2.0un" right="2.0un" top="2.0un"/>
+                <string name="alignment" value="AlignCenter"/>
+                <string name="aspectRatioMode" value="KeepAspectRatio"/>
+                <sizehint height="30.5un" type="FIXED" width="30.5un"/>
+                <icon iconName="qtg_large_add_group_picture" name="icon"/>
+                <sizepolicy horizontalPolicy="Fixed" horizontalStretch="0" verticalPolicy="Fixed" verticalStretch="0"/>
+            </widget>
+            
+            <widget name="editViewHeading" type="CntContactCardHeadingItem"/>
+            
+        </widget>
+        
+       <widget name="viewMenu" role="HbView:menu" type="HbMenu">
+            <ref object="cnt:editgroupdetails" role="HbMenu:addAction"/>
+       </widget>
+       <widget name="viewToolbar" role="HbView:toolBar" type="HbToolBar">
+            <enums name="orientation" value="Horizontal"/>
+            <contentsmargins bottom="0" left="0" right="0" top="0"/>
+            <ref object="cnt:managemembers" role="HbToolBar:addAction"/>
+            <ref object="cnt:deletegroup" role="HbToolBar:addAction"/>
+            <ref object="cnt:groupactions" role="HbToolBar:addAction"/>
+       </widget>
+       <string locid="txt_phob_title_contacts" name="title" value="Contacts"/>
+    </widget>
+        <section name="portrait">
+        <widget name="content" role="HbView:widget" type="HbWidget">
+            <widget name="editViewImage" type="CntImageLabel">
+                <bool name="visible" value="FALSE"/>
+            </widget>
+            <layout orientation="Vertical" spacing="0un" type="linear">
+                <contentsmargins bottom="0un" left="0un" right="0un" top="0un"/>
+                <linearitem itemname="editViewHeading"/>
+                <linearitem itemname="listView"/>
+            </layout>
+        </widget>
+    </section>
+    <section name="landscape">
+        <widget name="content" role="HbView:widget" type="HbWidget">
+            <widget name="editViewImage" type="CntImageLabel">
+                <bool name="visible" value="TRUE"/>
+            </widget>
+            <layout type="anchor">
+                <anchoritem dst="" dstEdge="TOP" spacing="0un" src="editViewHeading" srcEdge="TOP"/>
+                <anchoritem dst="listView" dstEdge="TOP" spacing="0un" src="editViewHeading" srcEdge="BOTTOM"/>
+                <anchoritem dst="" dstEdge="RIGHT" spacing="0un" src="editViewHeading" srcEdge="RIGHT"/>
+                <anchoritem dst="editViewHeading" dstEdge="RIGHT" spacing="0un" src="listView" srcEdge="RIGHT"/>
+                <anchoritem dst="" dstEdge="BOTTOM" spacing="0un" src="listView" srcEdge="BOTTOM"/>
+                <anchoritem dst="editViewHeading" dstEdge="LEFT" spacing="0un" src="listView" srcEdge="LEFT"/>
+                <anchoritem dst="editViewHeading" dstEdge="LEFT" spacing="var(hb-param-margin-gene-left)" src="editViewImage" srcEdge="RIGHT"/>
+                <anchoritem dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-left)" src="editViewImage" srcEdge="LEFT"/>
+                <anchoritem dst="" dstEdge="TOP" spacing="-var(hb-param-margin-gene-top)" src="editViewImage" srcEdge="TOP"/>
+            </layout>
+        </widget>
+    </section>
+    <metadata activeUIState="portrait" display="QHD portrait" unit="un">
+        <uistate name="Common ui state" sections="#common"/>
+        <uistate name="portrait" sections="#common portrait"/>
+        <uistate name="landscape" sections="#common landscape"/>
+    </metadata>
+</hbdocument>

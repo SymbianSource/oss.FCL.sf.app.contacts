@@ -1,8 +1,0 @@
-EXPORTS
-	ExportBusinessCardL__12CBCardEngineR12RWriteStreamR15CPbkContactItem @ 1 NONAME ; CBCardEngine::ExportBusinessCardL(RWriteStream &, CPbkContactItem &)
-	ImportBusinessCardL__12CBCardEngineR15CPbkContactItemR11RReadStream @ 2 NONAME ; CBCardEngine::ImportBusinessCardL(CPbkContactItem &, RReadStream &)
-	ImportCompactBusinessCardL__12CBCardEngineR15CPbkContactItemR11RReadStream @ 3 NONAME ; CBCardEngine::ImportCompactBusinessCardL(CPbkContactItem &, RReadStream &)
-	NewL__12CBCardEngineP17CPbkContactEngine @ 4 NONAME ; CBCardEngine::NewL(CPbkContactEngine *)
-	"_._12CBCardEngine" @ 5 NONAME ; CBCardEngine::~CBCardEngine(void)
-	SupportsFieldType__12CBCardEnginei @ 6 NONAME ; CBCardEngine::SupportsFieldType(int)
-

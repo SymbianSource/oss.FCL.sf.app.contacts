@@ -33,7 +33,7 @@ VENDORID 0x70000001
 // MACRO __INCLUDE_SIM1_FOLDERS__
 
 SOURCEPATH		../server
-USERINCLUDE		../inc ../../../phonebookengines/contactsmodel/inc
+USERINCLUDE		../inc ../../../phonebookengines_old/contactsmodel/inc
 APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 
 SOURCE		pbapserver.cpp
@@ -61,7 +61,7 @@ LIBRARY		esock.lib bluetooth.lib sdpdatabase.lib obex.lib btextnotifiers.lib
 LIBRARY		pbaplogeng.lib logcli.lib
 LIBRARY		cntmodel.lib cntview.lib
 LIBRARY		versit.lib vcard.lib logwrap.lib
-
+LIBRARY		centralrepository.lib 
 LIBRARY	btlogger.lib tzclient.lib
 
 SMPSAFE

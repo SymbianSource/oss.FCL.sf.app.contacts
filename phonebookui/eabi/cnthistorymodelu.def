@@ -1,0 +1,25 @@
+EXPORTS
+	_ZN15CntHistoryModel11qt_metacallEN11QMetaObject4CallEiPPv @ 1 NONAME
+	_ZN15CntHistoryModel11qt_metacastEPKc @ 2 NONAME
+	_ZN15CntHistoryModel12clearHistoryEv @ 3 NONAME
+	_ZN15CntHistoryModel13doDataChangedERK11QModelIndexS2_ @ 4 NONAME
+	_ZN15CntHistoryModel13markAllAsSeenEv @ 5 NONAME
+	_ZN15CntHistoryModel14sortAndRefreshEN2Qt9SortOrderE @ 6 NONAME
+	_ZN15CntHistoryModel15doEndInsertRowsEv @ 7 NONAME
+	_ZN15CntHistoryModel15doEndRemoveRowsEv @ 8 NONAME
+	_ZN15CntHistoryModel16staticMetaObjectE @ 9 NONAME DATA 16
+	_ZN15CntHistoryModel17doBeginInsertRowsERK11QModelIndexii @ 10 NONAME
+	_ZN15CntHistoryModel17doBeginRemoveRowsERK11QModelIndexii @ 11 NONAME
+	_ZN15CntHistoryModel19getStaticMetaObjectEv @ 12 NONAME
+	_ZN15CntHistoryModel4sortEiN2Qt9SortOrderE @ 13 NONAME
+	_ZN15CntHistoryModelC1EjPN10QtMobility15QContactManagerEP7QObject @ 14 NONAME
+	_ZN15CntHistoryModelC2EjPN10QtMobility15QContactManagerEP7QObject @ 15 NONAME
+	_ZN15CntHistoryModelD0Ev @ 16 NONAME
+	_ZN15CntHistoryModelD1Ev @ 17 NONAME
+	_ZN15CntHistoryModelD2Ev @ 18 NONAME
+	_ZNK15CntHistoryModel10metaObjectEv @ 19 NONAME
+	_ZNK15CntHistoryModel4dataERK11QModelIndexi @ 20 NONAME
+	_ZNK15CntHistoryModel8rowCountERK11QModelIndex @ 21 NONAME
+	_ZTI15CntHistoryModel @ 22 NONAME
+	_ZTV15CntHistoryModel @ 23 NONAME
+

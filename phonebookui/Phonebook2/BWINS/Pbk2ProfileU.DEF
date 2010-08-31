@@ -1,7 +1,0 @@
-EXPORTS
-	??0TPbk2Profiling@Pbk2Profile@@AAE@XZ @ 1 NONAME ; Pbk2Profile::TPbk2Profiling::TPbk2Profiling(void)
-	??1TPbk2Profiling@Pbk2Profile@@QAE@XZ @ 2 NONAME ; Pbk2Profile::TPbk2Profiling::~TPbk2Profiling(void)
-	?EndProfile@TPbk2Profiling@Pbk2Profile@@QBEXH@Z @ 3 NONAME ; void Pbk2Profile::TPbk2Profiling::EndProfile(int) const
-	?GlobalL@TPbk2Profiling@Pbk2Profile@@SAPAV12@XZ @ 4 NONAME ; class Pbk2Profile::TPbk2Profiling * Pbk2Profile::TPbk2Profiling::GlobalL(void)
-	?StartProfile@TPbk2Profiling@Pbk2Profile@@QAEXH@Z @ 5 NONAME ; void Pbk2Profile::TPbk2Profiling::StartProfile(int)
-

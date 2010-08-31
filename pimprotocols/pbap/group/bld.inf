@@ -14,7 +14,7 @@
 //
 
 PRJ_EXPORTS
-../client/pbapcli.h SYMBIAN_APP_LAYER_PLATFORM_EXPORT_PATH(pbapcli.h)
+../client/pbapcli.h APP_LAYER_PLATFORM_EXPORT_PATH(pbapcli.h)
 
 pbap.iby  	/epoc32/rom/include/pbap.iby
 

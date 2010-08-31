@@ -17,7 +17,7 @@
 */
 
 
-#include "CSortKeyArray.h"
+#include "csortkeyarray.h"
 
 namespace {
 

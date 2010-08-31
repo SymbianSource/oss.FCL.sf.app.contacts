@@ -18,7 +18,7 @@
 
 
 #include <ecom/registryinfo.rh>
-#include "CntSortPluginUid.h"
+#include "cntsortpluginuid.h"
 
 RESOURCE REGISTRY_INFO theInfo
 	{

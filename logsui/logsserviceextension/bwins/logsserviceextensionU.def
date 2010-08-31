@@ -1,3 +1,0 @@
-EXPORTS
-	?CreateExtensionFactoryL@@YAPAVMLogsExtensionFactory@@XZ @ 1 NONAME ; class MLogsExtensionFactory * CreateExtensionFactoryL(void)
-

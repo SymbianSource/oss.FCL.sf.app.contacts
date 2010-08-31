@@ -1,4 +1,0 @@
-EXPORTS
-	?AocUtilL@CLogsAocObjFactory@@SAPAVMLogsAocUtil@@XZ @ 1 NONAME ; public: static class MLogsAocUtil * __cdecl CLogsAocObjFactory::AocUtilL(void)
-	?CallStatusLC@CLogsAocObjFactory@@SAPAVMLogsCallStatus@@XZ @ 2 NONAME ; public: static class MLogsCallStatus * __cdecl CLogsAocObjFactory::CallStatusLC(void)
-

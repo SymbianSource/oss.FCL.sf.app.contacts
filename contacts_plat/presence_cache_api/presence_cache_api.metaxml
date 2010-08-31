@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <api id="153b18dd3e523329b805f0d6cd8145ee" dataversion="2.0">
   <name>Presence Cache API</name>
-  <description>Presence Cache is a repository of presence data of contacts or identities. Presence Cache is not connected to the network. Data is pushed to the Presence Cache, and data can be read and subscribed from it. Only the latest data of an identity is kept. There is no history of previous data.</description>
+  <description>Presence Cache API</description>
   <type>c++</type>
-  <collection>Contacts</collection>
+  <collection>presencecache</collection>
   <libs>
-    <lib name="presencecacheclient2.lib"/>
-    <lib name="presencecacheutils.lib"/>
+    <lib name="presencecacheqt.lib"/>
   </libs>
   <release category="platform" sinceversion="5.2"/>
   <attributes>
-    <htmldocprovided>yes</htmldocprovided>
+    <htmldocprovided>no</htmldocprovided>
     <adaptation>no</adaptation>
   </attributes>
 </api>

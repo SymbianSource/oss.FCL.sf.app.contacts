@@ -1,4 +1,0 @@
-EXPORTS
-	?NewContactPresenceL@TContactPresenceFactory@@SAPAVMContactPresence@@AAVMContactPresenceObs@@@Z @ 1 NONAME ; class MContactPresence * TContactPresenceFactory::NewContactPresenceL(class MContactPresenceObs &)
-	?NewContactPresenceL@TContactPresenceFactory@@SAPAVMContactPresence@@AAVCVPbkContactManager@@AAVMContactPresenceObs@@@Z @ 2 NONAME ; class MContactPresence * TContactPresenceFactory::NewContactPresenceL(class CVPbkContactManager &, class MContactPresenceObs &)
-

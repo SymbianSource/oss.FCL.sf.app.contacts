@@ -1,9 +1,0 @@
-EXPORTS
-	_Z9LibEntryLR13CTestModuleIf @ 1 NONAME
-	_ZTI16CSimulateKeyBase @ 2 NONAME ; #<TI>#
-	_ZTI18CSimulateKeyEvents @ 3 NONAME ; #<TI>#
-	_ZTI23CFetchSelectionAccepter @ 4 NONAME ; #<TI>#
-	_ZTV16CSimulateKeyBase @ 5 NONAME ; #<VT>#
-	_ZTV18CSimulateKeyEvents @ 6 NONAME ; #<VT>#
-	_ZTV23CFetchSelectionAccepter @ 7 NONAME ; #<VT>#
-
