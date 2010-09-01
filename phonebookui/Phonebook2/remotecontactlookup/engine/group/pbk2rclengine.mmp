@@ -1,0 +1,111 @@
+/*
+* Copyright (c) 2007,2008 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project definition file for the RCL engine.
+*
+*/
+
+
+#include <platform/app/Pbk2UID.h>
+#include "../../../inc/Pbk2InternalUID.h"
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+OPTION CW -frame on
+
+TARGET          pbk2rclengine.dll
+TARGETTYPE      DLL
+UID             KEPOCStaticDllUID2 KPbk2DllUID3
+CAPABILITY      CAP_GENERAL_DLL
+VENDORID        VID_DEFAULT
+
+SOURCEPATH      ../src
+SOURCE          cpbkxrclqueryeditor.cpp
+SOURCE          cpbkxrclresultinfodlg.cpp
+SOURCE			cpbkxrclsearchresultdlg.cpp
+SOURCE			cpbkxrclserviceuicontextimpl.cpp
+SOURCE			cpbkxrclprotocolresultimpl.cpp
+SOURCE			cpbkxrclprotocolenvimpl.cpp
+SOURCE			cpbkxrclprotocolaccountimpl.cpp
+SOURCE			pbkxrclutils.cpp
+SOURCE			cpbkxrcleventscheduler.cpp
+SOURCE			cpbkxrclvcardsender.cpp
+SOURCE			cpbkxrclcbrsender.cpp
+SOURCE			cpbkxrclactionservicewrapper.cpp
+SOURCE			cpbkxrclcontactupdater.cpp
+SOURCE			cpbkxrclsettingitem.cpp
+SOURCE			cpbkxrclbasedlg.cpp
+SOURCE			cpbkxrclsearchresultlistbox.cpp
+SOURCE			cpbkxrclresultinfolistbox.cpp
+SOURCE 			cpbkxrclcontactconverter.cpp
+SOURCE          pbk2remotecontactlookupfactory.cpp
+SOURCE          cpbk2remotecontactlookupaccounts.cpp
+
+USERINCLUDE     ../inc
+USERINCLUDE     ../../inc
+USERINCLUDE ../../contactactionmenu/inc
+USERINCLUDE ../../contactactionservice/inc
+USERINCLUDE ../../../inc
+
+APP_LAYER_SYSTEMINCLUDE
+SYSTEMINCLUDE   /epoc32/include/ecom
+USERINCLUDE ../../../../inc 
+SYSTEMINCLUDE	/epoc32/include/cshelp
+
+LIBRARY 		AknLayout2.lib
+LIBRARY			AknLayout2Scalable.lib
+LIBRARY 		CdlEngine.lib
+LIBRARY         euser.lib 
+LIBRARY         ecom.lib
+LIBRARY         centralrepository.lib
+LIBRARY         commonengine.lib
+LIBRARY         cone.lib
+LIBRARY			cntmodel.lib
+LIBRARY         avkon.lib
+LIBRARY         eikcoctl.lib
+LIBRARY         eikctl.lib 
+LIBRARY         eikdlg.lib
+LIBRARY         eikcore.lib
+LIBRARY			bafl.lib
+LIBRARY			pbkeng.lib
+LIBRARY			pbkview.lib
+LIBRARY			aknskins.lib 
+LIBRARY			aknskinsrv.lib
+LIBRARY			efsrv.lib
+LIBRARY			estor.lib
+LIBRARY			bcardeng.lib
+LIBRARY			sendui.lib
+LIBRARY			etext.lib
+LIBRARY			featmgr.lib
+LIBRARY			servicehandler.lib
+LIBRARY			ws32.lib
+LIBRARY			egul.lib
+LIBRARY			aknicon.lib
+LIBRARY			fepbase.lib
+LIBRARY			hlplch.lib
+LIBRARY			VPbkEng.lib
+LIBRARY			VPbkVCardEng.lib
+LIBRARY         PlatformEnv.lib
+LIBRARY         Pbk2CommonUI.lib
+
+#if (PBKX_DEBUG_LEVEL > 0)
+LIBRARY         pbkxdebug.lib
+#endif
+
+SOURCEPATH      ../data
+START RESOURCE	engine.rss
+HEADER
+TARGET          pbk2rclengine.rsc
+TARGETPATH      RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END

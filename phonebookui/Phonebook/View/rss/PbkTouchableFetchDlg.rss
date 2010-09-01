@@ -1,0 +1,277 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains all the resources for the module.
+*
+*/
+
+
+//  RESOURCE DEFINITIONS 
+
+// ---------------------------------------------------------
+// Navi pane label for single entry fetch
+// ---------------------------------------------------------
+//
+RESOURCE NAVI_DECORATOR r_pbk_single_entry_fetch_navilabel
+    {
+    type = ENaviDecoratorLabel;
+    control = NAVI_LABEL 
+        {
+        txt = qtn_phob_navi_select_one_entry;
+        };
+    }
+
+// ---------------------------------------------------------
+// Single entry fetch resource
+// ---------------------------------------------------------
+//
+RESOURCE PBK_FETCH_DIALOG r_pbk_single_entry_fetch_dlg
+    {
+    dialog = r_pbk_single_entry_fetch_control_dlg;
+    cba = r_pbk_softkeys_single_entry_fetch;
+    emptyCba = r_pbk_softkeys_empty_back;
+    navi_pane = r_pbk_single_entry_fetch_navilabel;
+    }
+
+// ---------------------------------------------------------
+// Navi pane label for group member fetch
+// ---------------------------------------------------------
+//
+RESOURCE NAVI_DECORATOR r_pbk_group_member_fetch_navilabel
+    {
+    type = ENaviDecoratorLabel;
+    control = NAVI_LABEL 
+        {
+        txt = qtn_phob_navi_select_members;
+        };
+    }
+
+// ---------------------------------------------------------
+// Group member fetch resource
+// ---------------------------------------------------------
+//
+RESOURCE PBK_FETCH_DIALOG r_pbk_group_member_fetch_dlg
+    {
+    dialog = r_pbk_group_member_fetch_control_dialog;
+    cba = r_pbk_softkeys_group_member_fetch;
+    emptyCba = r_pbk_softkeys_empty_back;
+    navi_pane = r_pbk_group_member_fetch_navilabel;
+    }
+
+// ---------------------------------------------------------
+// Multiple entry fetch resource
+// ---------------------------------------------------------
+//
+RESOURCE PBK_FETCH_DIALOG r_pbk_multiple_entry_fetch_dlg
+    {
+    dialog = r_pbk_multiple_entry_fetch_control_dlg;
+    cba = r_pbk_softkeys_multiple_entry_fetch;
+    emptyCba = r_pbk_softkeys_empty_back;
+    }
+
+
+// ---------------------------------------------------------
+// Single Entry Fetch dialog
+// @type Dialog
+// ---------------------------------------------------------
+//
+RESOURCE DIALOG r_pbk_single_entry_fetch_control_dlg
+    {
+	flags = PBK_FETCHDIALOG_FLAGS;
+	pages = 0;  // Single page
+	buttons = r_pbk_softkeys_empty_back;
+    items = 
+        {
+        DLG_LINE
+            {
+            type = EPbkCtContactViewList;
+            id = ECtrlFetchNamesList;
+            control = PBK_CONTACTVIEWLISTCONTROL
+                {
+                emptyText = qtn_phob_no_entries;
+                unnamedText = qtn_phob_unnamed;
+                flags = KPbkContactViewListControlUpdateContextPane | KPbkContactViewListControlFindBox;
+                listboxType = EAknCtSingleGraphicListBox;
+                listbox = LISTBOX
+                    {
+                    flags = EAknListBoxLoopScrolling;
+                    };
+                iconArray = r_pbk_fieldtype_icons;
+                emptyIconId = EPbkqgn_prop_nrtyp_empty;
+                };
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Fetch check box icons.
+// ---------------------------------------------------------
+//
+RESOURCE PBK_ICON_ARRAY r_pbk_checkbox_icons
+    {
+    icons = 
+        {
+        PBK_ICON_ID { iconId=EPbkqgn_prop_checkbox_on;  },
+        PBK_ICON_ID { iconId=EPbkqgn_prop_checkbox_off; },
+        PBK_ICON_ID { iconId=EPbkqgn_prop_nrtyp_empty;  }
+        };      
+    }
+
+// ---------------------------------------------------------
+// Group Member Fetch dialog. 
+// This is used internally in Phonebook to fetch group members.
+// @type Dialog
+// ---------------------------------------------------------
+//
+RESOURCE DIALOG r_pbk_group_member_fetch_control_dialog
+    {
+	flags = PBK_FETCHDIALOG_FLAGS;
+	pages = 0;  // Single page
+	buttons = r_pbk_softkeys_empty_back;
+    items = 
+        {
+        DLG_LINE
+            {
+            type = EPbkCtContactViewList;
+            id = ECtrlFetchNamesList;
+            itemflags = EEikDlgItemTakesEnterKey | EEikDlgItemOfferAllHotKeys;
+            control = PBK_CONTACTVIEWLISTCONTROL
+                {
+                emptyText = qtn_phob_no_entries;
+                unnamedText = qtn_phob_unnamed;
+                flags = KPbkContactViewListControlUpdateContextPane | KPbkContactViewListControlFindBox;
+                listboxType = EAknCtSingleGraphicListBox;
+                listbox = LISTBOX
+                    {                    
+                    flags = EAknListBoxStylusMultiselectionList | EAknListBoxLoopScrolling;
+                    };
+                iconArray = r_pbk_checkbox_icons;
+                defaultIconId = EPbkqgn_prop_checkbox_off;
+                emptyIconId = EPbkqgn_prop_nrtyp_empty;
+                };
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Multiple Entry Fetch dialog
+// @type    fetch
+// ---------------------------------------------------------
+//
+RESOURCE DIALOG r_pbk_multiple_entry_fetch_control_dlg
+    {
+    flags = PBK_FETCHDIALOG_FLAGS;
+    pages = r_pbk_multiple_entry_fetch_dlg_pages;
+    buttons = r_pbk_softkeys_empty_back;
+    }
+
+// ---------------------------------------------------------
+// Multiple Entry Fetch dialog pages.
+// ---------------------------------------------------------
+//
+RESOURCE ARRAY r_pbk_multiple_entry_fetch_dlg_pages
+    {
+    items =
+        {
+        PAGE 
+            { 
+            id = ECtrlFetchNamesList; 
+            bmpfile = phonebook_mbm_file_location;
+            bmpid = qgn_prop_pb_all_tab2;
+            bmpmask = qgn_prop_pb_all_tab2_mask;
+            lines = r_pbk_multiple_entry_fetch_contactview; 
+            },
+		PAGE 
+            { 
+            id = ECtrlFetchGroupsList; 
+            bmpfile = phonebook_mbm_file_location;
+            bmpid = qgn_prop_group_tab2;
+            bmpmask = qgn_prop_group_tab2_mask;
+            lines = r_pbk_multiple_entry_fetch_groupsview; 
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Multiple Entry Fetch dialog page lines - Contact list.
+// ---------------------------------------------------------
+//
+RESOURCE ARRAY r_pbk_multiple_entry_fetch_contactview
+    {
+    items =
+        {
+        DLG_LINE
+            {
+            type = EPbkCtContactViewList;
+            id = ECtrlFetchNamesList;
+            itemflags = EEikDlgItemTakesEnterKey | EEikDlgItemOfferAllHotKeys;
+            control = PBK_CONTACTVIEWLISTCONTROL
+                {
+                emptyText = qtn_phob_no_entries;
+                unnamedText = qtn_phob_unnamed;
+                flags = KPbkContactViewListControlUpdateContextPane | KPbkContactViewListControlFindBox;
+                listboxType = EAknCtSingleGraphicListBox;
+                listbox = LISTBOX
+                    {
+                    flags = EAknListBoxStylusMultiselectionList | EAknListBoxLoopScrolling;
+                    };
+                iconArray = r_pbk_checkbox_icons;
+                defaultIconId = EPbkqgn_prop_checkbox_off;
+                emptyIconId = EPbkqgn_prop_nrtyp_empty;
+                };
+            }
+        };
+    }
+
+
+// ---------------------------------------------------------
+// Multiple Entry Fetch dialog page lines - Groups list.
+// ---------------------------------------------------------
+//
+RESOURCE ARRAY r_pbk_multiple_entry_fetch_groupsview
+    {
+    items =
+        {
+        DLG_LINE
+            {
+            type = EPbkCtContactViewList;
+            id = ECtrlFetchGroupsList;
+            itemflags = EEikDlgItemTakesEnterKey | EEikDlgItemOfferAllHotKeys;
+            control = PBK_CONTACTVIEWLISTCONTROL
+                {
+                emptyText = qtn_phob_no_groups;
+                unnamedText = qtn_phob_unnamed;
+                listboxType = EAknCtSingleGraphicListBox;
+                listbox = LISTBOX
+                    {
+                    flags = EAknListBoxStylusMultiselectionList | EAknListBoxLoopScrolling;
+                    };
+                iconArray = r_pbk_checkbox_icons;
+                defaultIconId = EPbkqgn_prop_checkbox_off;
+                emptyIconId = EPbkqgn_prop_nrtyp_empty;
+                };
+            }
+        };
+    }
+
+
+// Context pane icon for fetch dialogs
+RESOURCE IMAGE r_pbk_fetch_ctx_icon
+    {
+	bmpfile = phonebook_mbm_file_location;
+    bmpid   = qgn_menu_phob_cxt;
+    bmpmask = qgn_menu_phob_cxt_mask;
+	}
+
+// End of File

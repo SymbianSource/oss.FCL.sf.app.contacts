@@ -1,0 +1,109 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 service dialing info view definition.
+*
+*/
+
+
+// --------------------------------------------------------------------------
+// Avkon view definition
+// --------------------------------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_psu2_service_dialing_info_view
+    {
+    menubar = r_psu2_service_dialing_info_menubar;
+    cba = R_AVKON_SOFTKEYS_BACK;
+    }
+
+// --------------------------------------------------------------------------
+// Menu bar
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_psu2_service_dialing_info_menubar
+    {
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_SYSTEM_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = r_psu2_service_dialing_info_view_copy_menupane;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_CALL_MENU;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Service dialing info context menu bar
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_psu2_service_dialing_info_context_menubar
+    {
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_CALL_MENU;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Copy menu pane
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_psu2_service_dialing_info_view_copy_menupane
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdCopy;
+            txt = qtn_simp_opt_copy_to_pb;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Tabs
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_VIEW_NODE_TAB_ARRAY r_psu2_service_dialing_info_view_tabs
+    {
+    items =
+        {
+        PBK2_VIEW_NODE_TAB
+            {
+            version = 0;
+            tabsInGroup = 1;
+            tab = r_psu2_service_dialing_info_view_tab1;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Tab
+// --------------------------------------------------------------------------
+//
+RESOURCE TAB r_psu2_service_dialing_info_view_tab1
+    {
+    id = EPsu2ServiceDialingInfoViewId;
+    }
+
+// End of File

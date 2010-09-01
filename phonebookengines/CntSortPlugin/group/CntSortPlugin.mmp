@@ -17,26 +17,28 @@
 */
 
 
-#include "cntsortpluginuid.h"
+#include "CntSortPluginUid.h"
 #include <platform_paths.hrh>
 #include <data_caging_paths.hrh>
 
-TARGET          cntsortplugin.dll
+TARGET          CntSortPlugin.DLL
 TARGETTYPE      PLUGIN
 UID             KEComPluginUID2 KCntModelSortPluginDllUID3
 CAPABILITY      CAP_ECOM_PLUGIN
 VENDORID        VID_DEFAULT
 
 SOURCEPATH      ../src
-SOURCE          dllmain.cpp
-SOURCE          ccntsortplugin.cpp
-SOURCE          csortkeyarray.cpp
+SOURCE          DllMain.cpp
+SOURCE          CCntSortPlugin.cpp
+SOURCE          CSortKeyArray.cpp
 
 USERINCLUDE     ../group
 APP_LAYER_SYSTEMINCLUDE
+// Symbian uses #include <ecom.h> in cntviewsortplugin.h
+SYSTEMINCLUDE   /epoc32/include/ecom
 
 START RESOURCE  101f85a9.rss
-TARGET          cntsortplugin
+TARGET          CntSortPlugin
 TARGETPATH      resource/plugins
 END
 

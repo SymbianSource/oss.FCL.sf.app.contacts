@@ -1,0 +1,46 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Commands for CCACommLauncherPlugin
+*
+*/
+
+
+#ifndef __CCAPPCOMMLAUNCHER_HRH__
+#define __CCAPPCOMMLAUNCHER_HRH__
+
+/** CCACommLauncherPlugin's enumerated command codes */
+enum TCCAppCommLauncherCmdIds
+    {
+    ECCAppCommLauncherSelectCmd = 1,// start value must not be 0
+    ECCAppCommLauncherSelectOtherNmbCmd,
+    ECCAppCommLauncherSelectOtherAddrCmd,
+    ECCAppCommLauncherDefaultsCmd,
+    ECCAppCommLauncherVoiceTagDetailsCmd,
+    ECCAppCommLauncherStylusViewImageCmd,
+    ECCAppCommLauncherStylusChangeImageCmd,
+    ECCAppCommLauncherStylusRemoveImageCmd,
+    ECCAppCommLauncherStylusAddImageCmd,
+    ECCAppCommLauncherDeleteCmd,
+    // KAiwCmdAssign AIW service cmd used as Edit Options-menu item
+    // set AIW commands at last
+    ECCAppCommLauncherAiwBaseCmd = 1000 // leave this last
+    };
+    
+// todo; these should be exported for us and not defined in here!
+// AIW command
+#define KAiwCmdSindInfoView 0x10281C83
+// dll uid
+#define KAspInfoViewProviderDllUid   0x10281C81    
+
+#endif // __CCAPPCOMMLAUNCHER_HRH__

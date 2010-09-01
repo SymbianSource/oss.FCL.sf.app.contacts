@@ -1,0 +1,287 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     Logs 'Detail' view menu items (Logs.APP).
+*
+*/
+
+
+//  RESOURCE IDENTIFIER
+
+//  INCLUDES
+#include <logseng.loc>
+
+//  CONSTANTS
+
+//  MACROS
+
+//  RESOURCE DEFINITIONS
+
+/**
+ * Note displayed after number is copied to the clipboard.
+ */
+RESOURCE DIALOG r_number_copied_to_cb_note
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_EMPTY;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+        id = EGeneralNote;
+            control = AVKON_NOTE
+                {
+                layout = EGeneralLayout;
+                singular_label = qtn_logs_note_copy_done;
+                animation = R_QGN_NOTE_INFO_ANIM;
+                };
+            }
+        };
+    }
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_et_call_text
+    {
+    buf = qtn_logs_litext_com_voice;
+    }
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_et_data_text
+    {
+    buf = qtn_logs_litext_com_data;
+    }
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_et_sms_text
+    {
+    buf = qtn_logs_litext_com_sms;
+    }
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_et_packet_text
+    {
+    buf = qtn_logs_litext_com_packet;
+    }
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_et_fax_text
+    {
+    buf = qtn_logs_litext_com_fax;
+    }
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_dir_in_text
+    {
+    buf = qtn_dlogs_dir_in;
+    }
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_dir_out_text
+    {
+    buf = qtn_dlogs_dir_out;
+    }
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_dir_missed_text
+    {
+    buf = qtn_dlogs_dir_missed;
+    }
+
+/**
+ * Detail view private number
+ */
+RESOURCE TBUF r_dlogs_details_private_number
+    {
+    buf = qtn_dlogs_con_private_num;
+    }
+
+/**
+ * Detail view unknown number
+ */
+RESOURCE TBUF r_dlogs_details_unknown_number
+    {
+    buf = qtn_dlogs_con_unknown;
+    }
+
+
+/**
+ * Detail view payphone number
+ */
+RESOURCE TBUF r_dlogs_details_payphone_number
+    {
+    buf = qtn_dlogs_con_payphone;
+    }
+
+/**
+ * Detail view operator service number
+ */
+RESOURCE TBUF r_logs_details_oper_serv
+    {
+    buf = qtn_logs_con_oper_serv;
+    }
+
+/**
+ * Detail view csd number
+ */
+RESOURCE TBUF r_logs_details_csd_number
+    {
+    buf = qtn_logs_con_cs_access;
+    }
+
+/**
+ * Logs "Detail" view OK options list menu bar.
+ */
+RESOURCE MENU_BAR r_logs_log_detail_ok_menubar
+    {
+    titles =
+        {
+        MENU_TITLE { menu_pane = r_common_savetopbk_submenu; },
+        MENU_TITLE { menu_pane = r_common_event_menu_edit_calls; },
+        MENU_TITLE { menu_pane = r_common_send_message_submenu; }, 
+        MENU_TITLE { menu_pane = r_common_poc_submenu;     },      
+        MENU_TITLE { menu_pane = r_common_callui_submenu;  },      
+        MENU_TITLE { menu_pane = r_common_show_my_address_menu; }  
+        };
+    }
+
+
+/**
+ * Logs 'Detail' view menubar.
+ */
+RESOURCE MENU_BAR r_logs_log_detail_menubar
+    {
+    titles =
+        {
+        MENU_TITLE { menu_pane = r_logs_system_menu_bottom; },
+        MENU_TITLE { menu_pane = r_common_show_my_address_menu; }, 
+        MENU_TITLE { menu_pane = r_common_event_menu_edit_calls; },
+        MENU_TITLE { menu_pane = r_common_savetopbk_submenu; },   
+        MENU_TITLE { menu_pane = r_common_menu_open_phonebook; },      
+        MENU_TITLE { menu_pane = r_common_send_message_submenu; }, 
+        MENU_TITLE { menu_pane = r_common_poc_submenu; },          
+        MENU_TITLE { menu_pane = r_common_callui_submenu; }        
+        };
+    }
+
+/**
+ * Logs 'detail' view definition.
+ */
+RESOURCE AVKON_VIEW r_logs_detail_view
+    {
+    menubar = r_logs_log_detail_menubar;
+    cba = r_common_options_back_context;
+    toolbar = r_common_toolbar;  //View specific toolbar   
+    }
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_et_video_text
+    {
+    buf = qtn_logs_litext_com_video;
+    }
+
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_et_mms_text
+    {
+    buf = qtn_logs_litext_com_mms;
+    }
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_et_wlan_text
+    {
+    buf = qtn_logs_litext_com_wlan;
+    }
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_et_poc_text
+    {
+    buf = qtn_poc_call;
+    }
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_et_voip_text
+    {
+    buf = qtn_logs_litext_com_voip;
+    }
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_et_poc_info_text
+    {
+    buf = qtn_poc_info_call;
+    }
+
+/**
+ * Detail view event type text (used also as prompt instead of number in Edit/address-functionality)
+ */
+RESOURCE TBUF r_logs_et_poc_addr
+    {
+    buf = qtn_dlogs_lihd_poc_addr;
+    }
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_et_voip_call_from
+    {
+    buf = qtn_voip_call_from;
+    }
+
+/**
+ * Detail view event type texts
+ */
+RESOURCE TBUF r_logs_et_voip_call_to
+    {
+    buf = qtn_voip_call_to;
+    }
+
+/**
+ * Detail view's copy address menu option for sip uri
+ */
+RESOURCE TBUF r_dlogs_cmd_copy_address
+    {
+    buf = qtn_dlogs_cmd_copy_address;
+    }
+
+
+
+// End of File

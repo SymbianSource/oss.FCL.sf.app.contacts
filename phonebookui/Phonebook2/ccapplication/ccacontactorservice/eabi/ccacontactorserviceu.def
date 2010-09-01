@@ -1,0 +1,8 @@
+EXPORTS
+	_ZN19CCAContactorService15ExecuteServiceLERKNS_12TCSParameterE @ 1 NONAME
+	_ZN19CCAContactorService4NewLEv @ 2 NONAME
+	_ZNK19CCAContactorService10IsSelectedEv @ 3 NONAME
+	_ZNK19CCAContactorService6IsBusyEv @ 4 NONAME
+	_ZTI30CCmsContactorImPluginParameter @ 5 NONAME
+	_ZTV30CCmsContactorImPluginParameter @ 6 NONAME
+

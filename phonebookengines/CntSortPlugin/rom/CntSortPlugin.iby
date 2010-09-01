@@ -18,6 +18,6 @@
 #ifndef __CNTSORTPLUGIN_IBY__
 #define __CNTSORTPLUGIN_IBY__
 
-ECOM_PLUGIN(cntsortplugin.dll,101f85a9.rsc)
+ECOM_PLUGIN(CntSortPlugin.dll,101f85a9.rsc)
 
 #endif 

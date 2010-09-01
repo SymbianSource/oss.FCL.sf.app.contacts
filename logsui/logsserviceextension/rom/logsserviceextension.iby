@@ -1,0 +1,35 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  IBY file for logsserviceextension
+*
+*/
+
+
+#ifndef LOGSSERVICEEXTENSION_IBY
+#define LOGSSERVICEEXTENSION_IBY
+
+/*<branchInfo originator="heikkalt" since="07-12-19" category="new_feature" error=”none”>
+<MCSS_5132_OFF_CYCLE_SW_INT>
+</branchInfo>*/
+// BRANCH 07-12-19 : heikkalt
+#if defined(__VOIP) 
+// DLL
+file=ABI_DIR\BUILD_DIR\logsserviceextension.dll   SHARED_LIB_DIR\logsserviceextension.dll
+
+// stub SIS, provides support for SIS upgrading
+data=ZSYSTEM\install\logsserviceextension_stub.sis    system\install\logsserviceextension_stub.sis
+#endif // __VOIP
+// BRANCH_END 07-12-19 : heikkalt
+
+#endif // LOGSSERVICEEXTENSION_IBY

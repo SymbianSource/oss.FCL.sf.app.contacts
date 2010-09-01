@@ -1,0 +1,217 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     Resource file for the application view "Settings" (Logs.APP).
+*
+*/
+
+
+//  RESOURCE IDENTIFIER
+
+//  INCLUDES
+
+//  CONSTANTS  
+
+//  MACROS  
+
+//  RESOURCE DEFINITIONS 
+
+/**
+ * Settings log length popup view's listbox text line.
+ */
+RESOURCE TBUF r_logs_sv_log_length_0_text
+    {
+    buf = qtn_logs_adv3_no_log;
+    }
+
+/**
+ * Settings log length popup view's listbox text line.
+ */
+RESOURCE TBUF r_logs_sv_log_length_1_text
+    {
+    buf = qtn_logs_adv3_lenght_1;
+    }
+
+/**
+ * Settings log length popup view's listbox text line.
+ */
+RESOURCE TBUF r_logs_sv_log_length_10_text
+    {
+    buf = qtn_logs_adv3_lenght_10;
+    }
+
+/**
+ * Settings log length popup view's listbox text line.
+ */
+RESOURCE TBUF r_logs_sv_log_length_30_text
+    {
+    buf = qtn_logs_adv3_lenght_30;
+    }
+
+/**
+ *  Definition of Log length "No log" query.
+ */
+RESOURCE DIALOG r_ll_no_log_confirmation_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_YES_NO;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control = AVKON_CONFIRMATION_QUERY
+                {
+                    layout = EConfirmationLayout;
+                    label = qtn_logs_query_no_log;
+                };
+            }
+        };
+    }
+
+/************************************************
+"Show Call Duration" moved General Settings application, not in use any more in Logs 
+
+RESOURCE TBUF r_qtn_logs_ldv3_timer_on_text
+    {
+    buf = qtn_logs_ldv3_timer_on;
+    }
+
+RESOURCE TBUF r_qtn_logs_ldv3_timer_off_text
+    {
+    buf = qtn_logs_ldv3_timer_off;
+    }
+************************************************/
+
+/**
+ * Logs 'settings' view menu items.
+ */
+RESOURCE MENU_PANE r_logs_settings_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = ELogsCmdChange;
+            txt = qtn_logs_set_cmd_change;
+            flags = EEikMenuItemAction;
+            }
+        };
+    }
+
+/**
+ *  Logs Settings view system menu pane.
+ */
+RESOURCE MENU_PANE r_logs_settings_menu_bottom
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EAknCmdHelp;
+            txt = qtn_options_help;
+            },
+        MENU_ITEM
+            {
+            command = ELogsCmdMenuExit;
+            txt = qtn_logs_cmd_exit;
+            }
+        };
+    }
+    
+/**
+ * Logs 'Settings' view menubar.
+ */
+RESOURCE MENU_BAR r_logs_log_settings_menubar
+    {
+    titles = 
+        {
+        MENU_TITLE { menu_pane = r_logs_settings_menu_bottom; },                        
+        MENU_TITLE { menu_pane = r_logs_settings_menu; }
+        };                  
+    }
+
+/**
+ *  Settings' LogLength
+ */
+RESOURCE AVKON_SETTING_PAGE r_logs_settings_log_length_page
+    { 
+    label = qtn_logs_lda3_length;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL;
+    type = EAknSetListBox;
+    editor_resource_id = r_logs_settings_listbox;
+    }
+
+
+/************************************************
+"Show Call Duration" moved General Settings application, not in use any more in Logs 
+ 
+RESOURCE AVKON_SETTING_PAGE r_logs_settings_call_duration_page
+    { 
+    label = qtn_logs_lda3_time;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL;
+    type = EAknSetListBox;
+    editor_resource_id = r_logs_settings_listbox;
+    }
+************************************************/
+    
+
+/**
+ *  Settings' Show Cost In
+ */
+RESOURCE AVKON_SETTING_PAGE r_logs_settings_show_cost_in_page
+    { 
+    label = qtn_aoc_lda3_set_units;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL;
+    type = EAknSetListBox;
+    editor_resource_id = r_logs_settings_listbox;
+    }
+
+/**
+ *  Settings' Call Cost Limit
+ */
+RESOURCE AVKON_SETTING_PAGE r_logs_settings_call_cost_limit_page
+    {
+    label = qtn_aoc_lda3_set_limit;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL;
+    type = EAknSetListBox;
+    editor_resource_id = r_logs_settings_listbox;
+    }
+
+RESOURCE LISTBOX r_logs_settings_listbox 
+    {
+    flags = EEikListBoxMultipleSelection;
+    }
+
+/**
+ * Logs 'settings' view definition.
+ */
+RESOURCE AVKON_VIEW r_logs_settings_view
+    {
+    menubar = r_logs_log_settings_menubar;
+    cba = r_common_options_back_change;
+    }
+    
+/**
+ * Text for General Settings Application view.
+ */
+RESOURCE TBUF r_set_folder_logs
+    {
+    buf = qtn_set_folder_logs;
+    }
+    
+
+// End of File
+

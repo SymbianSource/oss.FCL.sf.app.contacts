@@ -1,0 +1,6 @@
+EXPORTS
+	?ImplementationGroupProxy@@YAPBUTImplementationProxy@@AAH@Z @ 1 NONAME ; struct TImplementationProxy const * ImplementationGroupProxy(int &)
+	??0CxSPBaseView@@IAE@AAVMxSPViewMapper@@AAVMxSPContactManager@@AAVCPbk2UIExtensionView@@@Z @ 2 NONAME ; CxSPBaseView::CxSPBaseView(class MxSPViewMapper &, class MxSPContactManager &, class CPbk2UIExtensionView &)
+	?DoActivateL@CxSPBaseView@@UAEXABVTVwsViewId@@VTUid@@ABVTDesC8@@@Z @ 3 NONAME ; void CxSPBaseView::DoActivateL(class TVwsViewId const &, class TUid, class TDesC8 const &)
+	?ViewBaseConstructL@CxSPBaseView@@IAEXKH@Z @ 4 NONAME ; void CxSPBaseView::ViewBaseConstructL(unsigned long, int)
+

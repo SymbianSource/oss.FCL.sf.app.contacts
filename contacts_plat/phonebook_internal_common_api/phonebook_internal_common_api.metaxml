@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<api id="c502bb65343e8419dac1f8fc8b0481c9" dataversion="2.0">
+  <name>Phonebook Internal common API</name>
+  <description>Internal Phonebook common API.</description>
+  <type>c++</type>
+  <collection>phonebookui</collection>
+  <libs>
+  </libs>
+  <release category="platform" deprecatedsince="0"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>no</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>

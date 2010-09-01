@@ -17,7 +17,7 @@
 
 PRJ_EXPORTS
 ../group/phbksync.iby	        		/epoc32/rom/include/phbksync.iby
-../Client/phbksync.h APP_LAYER_PUBLIC_EXPORT_PATH(phbksync.h)
+../Client/phbksync.h SYMBIAN_APP_LAYER_PUBLIC_EXPORT_PATH(phbksync.h)
 
 
 PRJ_TESTEXPORTS

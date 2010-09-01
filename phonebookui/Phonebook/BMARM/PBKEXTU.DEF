@@ -1,0 +1,4 @@
+EXPORTS
+	FactoryL__14CPbkExtGlobals @ 1 NONAME R3UNUSED ; CPbkExtGlobals::FactoryL(void)
+	InstanceL__14CPbkExtGlobals @ 2 NONAME R3UNUSED ; CPbkExtGlobals::InstanceL(void)
+

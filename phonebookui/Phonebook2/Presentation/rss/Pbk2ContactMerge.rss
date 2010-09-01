@@ -1,0 +1,51 @@
+/*
+* Copyright (c) 2006-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains resources for Pbk2Presentation.dll
+*
+*/
+
+
+
+// ---------------------------------------------------------
+//  Selector for emails
+// ---------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_pbk2_email_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameEMAIL;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+//  Selector for phone numbers
+// ---------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_pbk2_number_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            }
+        };
+    }
+
+// End of File

@@ -1,0 +1,165 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 UI extension definitions.
+*
+*/
+
+
+#include <Pbk2UIExtension.hrh>
+
+/**
+ * Phonebook 2 UI extension plug-in resource information.
+ *
+ * This has to be the second item in the UI extension resource file
+ * immediately after the RESOURCE RSS_SIGNATURE.
+ */
+STRUCT PHONEBOOK2_EXTENSION_INFORMATION
+    {
+    /// Version number
+    BYTE version = 0;
+
+    /// Implementation UID of the extension plug-in.
+    LONG implementationUid;
+
+    /// Loading policy of the UI extension.
+    /// @see Pbk2UIExtension.hrh
+    LONG loadingPolicy = KPbk2LoadOnCommandExecution;
+
+    /// Menu command range. Must not overlap with any other
+    /// extension's command range. The menu commands in
+    /// extensionMenus must be from this range.
+    /// @see PHONEBOOK2_EXTENSION_RANGE
+    STRUCT menuCommandRange;
+
+    /// An array of core Phonebook 2 commands this extension needs
+    /// to overwrite.
+    WORD overwrittenCommands[];
+
+    /// Array of menu resources that are brought to Phonebook 2
+    /// by this extension plug-in.
+    /// @see PHONEBOOK2_EXTENSION_MENU_RESOURCE
+    STRUCT extensionMenus[];
+
+    /// Array of view ids and corresponding view resource ids.
+    /// Must match with the ids in the viewGraphModification below.
+    /// @see PHONEBOOK2_EXTENSION_VIEW_ID
+    STRUCT viewIds[];
+
+    /// A link to the Phonebook 2 view graph modification resource id.
+    /// The resource is read by Phonebook 2 application and the view graph
+    /// is modified accordingly. Note that transitions from/to view will
+    /// not be exact specifications, but rather some kind of rules for
+    /// the view graph to construct partial ordering of the views.
+    /// @see PBK2_VIEW_GRAPH
+    LLINK viewGraphModification = 0;
+
+    /// A link to the icon information of the extension.
+    /// @see PHONEBOOK2_EXTENSION_ICON_INFORMATION
+    LLINK iconInformation = 0;
+
+    /// A link to the store property array that is needed in
+    /// Virtual Phonebook view creation. The UI extension can
+    /// define the properties if the store URIs are static and
+    /// the UI extension is not loaded in the startup.
+    /// @see PHONEBOOK2_STORE_PROPERTY_ARRAY
+    LLINK storePropertyArray = 0;
+    }
+
+/**
+ * Defines the menu command range for Phonebook 2 UI extension.
+ */
+STRUCT PHONEBOOK2_EXTENSION_RANGE
+    {
+    /// Id that starts the range
+    WORD firstId;
+
+    /// Id that ends the range
+    WORD lastId;
+    }
+
+/**
+ * Phonebook 2 UI extension view id and the corresponding view resource.
+ */
+STRUCT PHONEBOOK2_EXTENSION_VIEW_ID
+    {
+    /// Version number
+    BYTE version = 0;
+
+    /// View id
+    LONG viewId;
+
+    /// Link to a view resource
+    LLINK viewResource;
+    }
+
+/**
+ * Defines the menu items that will be added to the Phonebook 2 menu.
+ */
+STRUCT PHONEBOOK2_EXTENSION_MENU_RESOURCE
+    {
+    /// Version number
+    BYTE version = 0;
+
+    /// Id of the view whose menu these items are brought into.
+    LONG viewId;
+
+    /// Menu filtering flags that there must be up at the moment in
+    /// Phonebook 2 to enable this menu.
+    /// @see TPbk2UIExtensionMenuFilteringFlags
+    LONG menuFilteringFlags;
+
+    /// Resource id of the menu that these items will be added into.
+    LLINK parentMenu;
+
+    /// Command id of the item that these menu items will follow.
+    LONG prevCommand;
+
+    /// Menu pane that will be appended.
+    LLINK menuPane;
+
+    /// In case the menuPane is a cascading menu pane and the same
+    /// cascading menu pane is used from multiple extensions, this
+    /// has to be the command id of the cascading menu pane.
+    LONG cascadingMenuPaneCmd = 0;
+    }
+
+/**
+ * Defines a link from between the Phonebook 2 icon array and
+ * an UI extension icon array.
+ */
+STRUCT PHONEBOOK2_EXTENSION_ICON_INFORMATION
+    {
+    /// A link to the array that contains PBK2_ICON_INFOs.
+    LLINK iconInfoArray;
+
+    /// A link to the array that contains PHONEBOOK2_EXTENSION_ICON_ARRAYs.
+    STRUCT iconArrays[];
+    }
+
+/**
+ * Phonebook 2 UI extension icon array.
+ */
+STRUCT PHONEBOOK2_EXTENSION_ICON_ARRAY
+    {
+    /// The id of the Phonebook 2 icon array which extension defined
+    /// icons are added into.
+    /// @see TPbk2IconArrayId
+    BYTE parentIconArrayId;
+
+    /// A link to the extension icon array containing the icon ids that
+    /// are loaded to the parent icon array.
+    LLINK iconArray;
+    }
+
+// End of File

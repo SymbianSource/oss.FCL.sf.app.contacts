@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<api id="e547262c327a7a9740c4326be5dd4fae" dataversion="2.0">
+<name>PredictiveSearch Algorithm API</name>
+<description>Predictive Search Algorithms APIs</description>
+<type>c++</type>
+<collection>predictivesearch</collection>
+<libs></libs>
+<release category="platform" sinceversion="0"/>
+<attributes>
+<htmldocprovided>yes</htmldocprovided>
+<adaptation>no</adaptation>
+</attributes>
+</api>

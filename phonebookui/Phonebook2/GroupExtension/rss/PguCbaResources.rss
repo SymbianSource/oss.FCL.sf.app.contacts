@@ -1,0 +1,64 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains all the resources for Phonebook 2 groups list view.
+*
+*/
+
+
+// --------------------------------------------------------------------------
+// Cba resource Options - Open - Exit
+// --------------------------------------------------------------------------
+//
+RESOURCE CBA r_pgu_softkeys_options_exit_open
+    {
+    flags = 0;
+    buttons = 
+        {
+        CBA_BUTTON {id=EAknSoftkeyOptions; txt=text_softkey_option;},
+        CBA_BUTTON {id=EAknSoftkeyExit; txt= text_softkey_exit;},
+        CBA_BUTTON {id=EPbk2CmdOpenGroup; txt=text_softkey_open;}
+        };
+    }
+    
+RESOURCE CBA r_pgu_softkeys_options_back_open
+    {
+    flags = 0;
+    buttons = 
+        {
+        CBA_BUTTON {id=EAknSoftkeyOptions; txt=text_softkey_option;},
+        CBA_BUTTON {id=EPbk2CmdOpenPreviousView; txt= text_softkey_back;},
+        CBA_BUTTON {id=EPbk2CmdOpenCca; txt=text_softkey_open;}        
+        };
+    }
+
+RESOURCE CBA r_phonebook2_softkeys_assign_cancel
+    {
+    buttons =
+        {
+        CBA_BUTTON
+            {
+            id = EAknSoftkeyOk;
+            txt = qtn_phob_sk_assign_to_folder;
+            },
+        CBA_BUTTON
+            {
+            id = EEikBidCancel;
+            txt = text_softkey_cancel;
+            }
+        };
+    }    
+    
+// End of file
+    

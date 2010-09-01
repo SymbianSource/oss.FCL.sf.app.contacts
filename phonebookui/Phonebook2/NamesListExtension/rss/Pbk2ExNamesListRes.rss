@@ -1,0 +1,453 @@
+/*
+* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Hitchcock Names List UI Extension.
+*
+*/
+
+
+// INCLUDES
+#include <avkon.loc>
+#include <uikon.rh>
+#include <eikon.rh>
+#include <avkon.rh>
+#include <avkon.rsg>
+#include <avkon.mbg>
+#include <AvkonIcons.hrh>
+#include <phonebook2ece.loc>
+#include <phonebook2ece.mbg>
+#include <phonebook2.loc>
+#include <VPbkFieldType.rh>
+
+//pbk2
+#include <Pbk2UIExtension.rh>
+#include <Pbk2ViewInfo.hrh>//event
+#include <Pbk2ViewGraph.rh>
+#include <Pbk2UIControls.rh>
+#include <Pbk2UIControls.hrh>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2Commands.rsg> 
+#include <Pbk2IconId.rh>
+#include <Pbk2ViewId.hrh>
+#include <Pbk2Commands.hrh>
+#include <Phonebook2.rsg>
+#include <Pbk2UID.h>
+#include <Pbk2IconInfo.rh>
+#include <Pbk2IconArrayId.hrh>
+
+//own
+#include "Pbk2NamesListExUID.h"
+#include "Pbk2NamesListEx.hrh"
+#include "Pbk2NlxUIControls.hrh"
+#include "pbk2nameslistexiconid.hrh"
+
+#define KPbk2EceMifFile "z:\\resource\\apps\\phonebook2ece.mif"
+
+// --------------------------------------------------------------------------
+// Resource identifier
+// --------------------------------------------------------------------------
+//
+NAME P2NL   
+
+// --------------------------------------------------------------------------
+// Standard resource signature
+// --------------------------------------------------------------------------
+//
+RESOURCE RSS_SIGNATURE { }
+
+// --------------------------------------------------------------------------
+// Extension information
+// --------------------------------------------------------------------------
+//
+RESOURCE PHONEBOOK2_EXTENSION_INFORMATION
+        r_phonebook2_nameslist_ui_extension_information
+    {
+    version = 0;
+
+    implementationUid = KPbk2NamesListExtPluginUID2;
+		
+    loadingPolicy = KPbk2LoadInStartup; 
+
+    menuCommandRange = PHONEBOOK2_EXTENSION_RANGE
+         {
+         firstId = ENamesListExtentionFirstCommand;    
+         lastId = ENamesListExtentionLastCommand;
+         };
+    
+    // No overwritten commands, we forward all the
+    // commands to commandHandler
+    overwrittenCommands = {}; 
+
+    // we'll use nameslist's menu, no extentions
+    extensionMenus = 
+        { 
+        PHONEBOOK2_EXTENSION_MENU_RESOURCE
+            {
+            // Name list view: mycard commands
+            viewId = EPbk2NamesListViewId;
+            menuFilteringFlags = 0;
+            parentMenu = R_PHONEBOOK2_NAMESLIST_DELETE_MENU;
+            prevCommand = EPbk2CmdDeleteMe;
+            menuPane = r_pbk2_names_list_mycard_menu;
+            }
+        }; 
+    
+    viewIds =
+        {
+        PHONEBOOK2_EXTENSION_VIEW_ID
+            {
+            version = 0;
+            viewId = EPbk2NamesListViewId;
+            viewResource = R_PHONEBOOK2_NAMESLIST_APPVIEW;
+            }
+        };
+
+    // Pb uses r_pbk2_viewnodes in Pbk2ViewGraph.rss
+    // We do not modify the existing view graph here.
+    viewGraphModification = 0;
+    
+    iconInformation = r_name_list_icon_information;
+    }
+
+// --------------------------------------------------------------------------
+// Icon information
+// --------------------------------------------------------------------------
+//
+RESOURCE PHONEBOOK2_EXTENSION_ICON_INFORMATION r_name_list_icon_information
+    {
+    // A link to the array that contains PBK2_ICON_INFOs
+    iconInfoArray = r_name_list_icon_info_array;
+
+     // A link to the array that contains PHONEBOOK2_EXTENSION_ICON_ARRAYs
+    iconArrays =
+        {
+        PHONEBOOK2_EXTENSION_ICON_ARRAY
+            {
+            // Extension icons for contact list
+            parentIconArrayId = EPbk2ContactListIconArrayId;
+            iconArray = r_name_list_icon_array;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Extension icons for contact list
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ICON_ARRAY r_name_list_icon_array
+    {
+    // Array of PBK2_ICON_ID structures.
+    arrayId = EPbk2NullIconArrayId;
+    icons =
+        {
+        PHONEBOOK2_ICON_ID
+            {
+            ownerUid = KPbk2NamesListExtPluginUID2;
+            id = EPbk2EceNoThumbnailIconId;
+            },
+        PHONEBOOK2_ICON_ID
+            {
+            ownerUid = KPbk2NamesListExtPluginUID2;
+            id = EPbk2EceNoMyCardThumbnailIconId;
+            },
+        PHONEBOOK2_ICON_ID
+            {
+            ownerUid = KPbk2NamesListExtPluginUID2;
+            id = EPbk2EceAddToFovoritesThumbnailIconId;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Icon info array
+// --------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_name_list_icon_info_array
+    {
+    items =
+        {
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2NamesListExtPluginUID2;
+                id = EPbk2EceNoThumbnailIconId;
+                };
+            mbmFileName = KPbk2EceMifFile;
+            iconId = EMbmPhonebook2eceQgn_prop_pb_thumb_unknown;
+            maskId = EMbmPhonebook2eceQgn_prop_pb_thumb_unknown_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropPbThumbUnknown;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2NamesListExtPluginUID2;
+                id = EPbk2EceNoMyCardThumbnailIconId;
+                };
+            mbmFileName = KPbk2EceMifFile;
+            iconId = EMbmPhonebook2eceQgn_prop_pb_thump_mycard;
+            maskId = EMbmPhonebook2eceQgn_prop_pb_thump_mycard_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropPbThumpMycard;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2NamesListExtPluginUID2;
+                id = EPbk2EceAddToFovoritesThumbnailIconId;
+                };
+            mbmFileName = KPbk2EceMifFile;
+            iconId = EMbmPhonebook2eceQgn_prop_pb_add_top;
+            maskId = EMbmPhonebook2eceQgn_prop_pb_add_top_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnPropPbAddTop;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// CBA Options - Open CCA - Exit
+// --------------------------------------------------------------------------
+//
+RESOURCE CBA r_pbk2_softkeys_options_exit_connect
+    {
+    flags = 0;
+    buttons =
+        {
+        CBA_BUTTON
+            {
+            id = EAknSoftkeyOptions;
+            txt = text_softkey_option;
+            },
+        CBA_BUTTON
+            {
+            id = EAknSoftkeyExit;
+            txt= text_softkey_exit;
+            },
+        CBA_BUTTON
+            {
+            id = EPbk2CmdOpenCca;
+            txt = text_softkey_open;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Move top contacts dialog
+// --------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_pbk2_move_top_contacts_dlg
+	{
+	flags=EEikDialogFlagWait| EEikDialogFlagNoDrag | EEikDialogFlagNoTitleBar | EEikDialogFlagFillAppClientRect
+		|EEikDialogFlagCbaButtons|EEikDialogFlagNotifyEsc;
+	//buttons = R_AVKON_SOFTKEYS_SELECT_DONE;
+	buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+	items =
+		{
+		DLG_LINE
+			{
+			type = EAknCtSingleGraphicListBox;
+			itemflags=EEikDlgItemTakesEnterKey | EEikDlgItemOfferAllHotKeys;
+			id = ECtrlTopContactList;
+			control = LISTBOX
+				{
+				flags=EAknListBoxSelectionList|EAknListBoxLoopScrolling;
+				};
+			}
+		};
+	}
+
+// --------------------------------------------------------------------------
+// Move top contacts dialog title
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_pbk2_move_top_contacts_dlg_title
+    {
+    buf = qtn_phob_title_move;
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// Text for nameslist command "Add to Favorities" promotion
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_add_top_contacts
+    {
+    buf = qtn_phob_add_top_contacts;
+    }    
+
+// --------------------------------------------------------------------------
+// TBUF
+// Text for "Create MyCard"
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_contacts_mc_set_up_my_card
+    {
+    buf = qtn_contacts_mc_set_up_my_card;
+    }    
+
+// --------------------------------------------------------------------------
+// TBUF
+// Text for "MyCard"
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_contacts_mc_my_card
+    {
+    buf = qtn_contacts_mc_my_card;
+    }    
+
+// --------------------------------------------------------------------------
+// TBUF
+// Text for nameslist's secondary row "%N numbers"
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_n_numbers
+    {
+    buf = qtn_phob_n_numbers;
+    }   
+
+// --------------------------------------------------------------------------
+// TBUF
+// Text for delete mycard confirmation query
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_my_card_clear_confirm
+    {
+    buf = qtn_phob_my_card_clear_confirm;
+    }   
+
+// --------------------------------------------------------------------------
+// PBK2_CONTACT_CONTROL
+// Names list control
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_CONTACT_CONTROL r_pbk2_names_list_extension_control
+    {
+    flags = KPbk2ContactViewListControlUpdateContextPane |
+            KPbk2ContactViewListControlFindBox;
+    listbox = LISTBOX
+        {
+        flags = EAknListBoxMarkableList | EAknListBoxLoopScrolling |
+                EAknListBoxShiftEnterMarks;
+        };
+    iconArray = R_PBK2_CONTACT_LIST_ICONS;
+    emptyIconId = PHONEBOOK2_ICON_ID
+        {
+        ownerUid = KPbk2UID3;
+        id = EPbk2qgn_prop_nrtyp_empty;
+        };
+    defaultIconId = PHONEBOOK2_ICON_ID {};
+    }
+
+// --------------------------------------------------------------------------
+// PBK2_CONTACT_CONTROL
+// Names list control
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_CONTACT_CONTROL r_pbk2_spb_names_list_extension_control
+    {
+    flags = KPbk2ContactViewListControlUpdateContextPane |
+            KPbk2ContactViewListControlFindBox | 
+            KPbk2ContactViewListControlDoubleRow;
+    listbox = LISTBOX
+        {
+        flags = EAknListBoxStylusMarkableList | EAknListBoxLoopScrolling |
+        EAknListBoxPointerMarkableList;    
+        };
+    iconArray = R_PBK2_CONTACT_LIST_ICONS;
+    emptyIconId = PHONEBOOK2_ICON_ID
+        {
+        ownerUid = KPbk2UID3;
+        id = EPbk2qgn_prop_nrtyp_empty;
+        };
+    defaultIconId = PHONEBOOK2_ICON_ID
+        {
+        ownerUid = KPbk2NamesListExtPluginUID2;
+        id = EPbk2EceNoThumbnailIconId;
+        };
+    }
+
+
+// --------------------------------------------------------------------------
+// TBUF
+// Text for nameslist command "Search from remote"
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_search_from_remote
+    {
+    buf = qtn_phob_search_from_remote;
+    }    
+
+// ---------------------------------------------------------
+// Names List View's mycard menu pane
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_pbk2_names_list_mycard_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdDeleteMyCard;
+            txt = qtn_phob_opt_entry_delete;
+            flags = EEikMenuItemSpecific;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// r_pbk2_mycard_field_clip_selector
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_pbk2_mycard_field_clip_selector
+{
+    versitProperties =
+    {
+        // email fields
+        VBK_FIELD_VERSIT_PROPERTY
+        {
+            name = EVPbkVersitNameEMAIL;
+        },
+        // SIP fields (POC, SWIS, VoIP, etc.)
+        VBK_FIELD_VERSIT_PROPERTY
+        {
+            name = EVPbkVersitNameX;
+            extensionName = "X-SIP";
+        },
+        // xSP fields
+        VBK_FIELD_VERSIT_PROPERTY
+        {
+            name = EVPbkVersitNameIMPP;
+        },
+        // telephone
+        VBK_FIELD_VERSIT_PROPERTY
+        {
+            name = EVPbkVersitNameTEL;
+        },
+        // telephone
+        VBK_FIELD_VERSIT_PROPERTY
+        {
+            name = EVPbkVersitNameX;
+            extensionName = "X-ASSISTANT-TEL";
+        }
+    };
+}
+
+
+// EOF

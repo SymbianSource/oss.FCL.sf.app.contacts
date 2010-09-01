@@ -1,0 +1,86 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 UI Extension Manager project specification file.
+*
+*/
+
+
+#include <platform/app/Pbk2UID.h>
+#include "Pbk2Config.mmp"
+#include "../inc/Pbk2InternalUID.h"
+#include "../inc/Pbk2Config.hrh"
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+// Target information
+TARGET          Pbk2UIExt.dll
+TARGETTYPE      dll
+UID             KEPOCStaticDllUID2 KPbk2DllUID3
+CAPABILITY      CAP_GENERAL_DLL
+
+// Source path
+SOURCEPATH      ../UIExtensionManager/src
+
+// Extension managing
+SOURCE          CPbk2UIExtensionManager.cpp
+SOURCE          CPbk2UIExtensionMenuManager.cpp
+SOURCE          CPbk2UIExtensionLoader.cpp
+SOURCE          CPbk2UIExtensionFactory.cpp
+SOURCE          CPbk2ThinUIExtensionLoader.cpp
+SOURCE          CPbk2UIExtensionConfigurationObserver.cpp
+SOURCE          CPbk2UIExtensionInformation.cpp
+SOURCE          CPbk2UIExtensionIconSupport.cpp
+SOURCE          CPbk2UIExtensionIconInformation.cpp
+
+// Menu extension
+SOURCE          CPbk2UIExtensionMenu.cpp
+SOURCE          TPbk2UIExtensionRange.cpp
+
+// View extension
+SOURCE          CPbk2UIExtensionView.cpp
+
+// App UI extension
+SOURCE          CPbk2AppUiExtension.cpp
+
+// Traditional extensions
+SOURCE          CPbk2SettingsViewExtension.cpp
+SOURCE          CPbk2SettingsControlExtension.cpp
+SOURCE          CPbk2ContactEditorExtension.cpp
+SOURCE          CPbk2ContactUiControlExtension.cpp
+
+// Resources
+LANGUAGE_IDS
+
+// Include paths
+USERINCLUDE     ../UIExtensionManager/inc ../group
+SYSTEMINCLUDE   ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib ecom.lib efsrv.lib cone.lib bafl.lib
+LIBRARY eikcoctl.lib eikcore.lib
+LIBRARY FeatMgr.lib
+
+// Dependencies to S60 platform components
+LIBRARY avkon.lib
+
+// Dependencies to Phonebook components
+LIBRARY Pbk2Presentation.lib Pbk2CommonUi.lib
+
+#ifdef PBK2_ENABLE_PROFILE
+// Depencency to Phonebook profiling library
+LIBRARY Pbk2Profile.lib
+#endif // PBK2_ENABLE_PROFILE
+
+// End of File

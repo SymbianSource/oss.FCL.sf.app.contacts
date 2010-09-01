@@ -1,0 +1,38 @@
+/*
+* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  File that exports the files belonging to 
+:                Phonebook Data Management API
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+PRJ_PLATFORMS
+DEFAULT
+
+PRJ_EXPORTS
+
+../inc/PbkFields.hrh     APP_LAYER_PUBLIC_EXPORT_PATH(PbkFields.hrh)
+../inc/CPbkContactIter.h     APP_LAYER_PUBLIC_EXPORT_PATH(CPbkContactIter.h)
+../inc/PbkIconId.hrh     APP_LAYER_PUBLIC_EXPORT_PATH(PbkIconId.hrh)
+../inc/CPbkContactItem.h     APP_LAYER_PUBLIC_EXPORT_PATH(CPbkContactItem.h)
+../inc/CPbkContactChangeNotifier.h     APP_LAYER_PUBLIC_EXPORT_PATH(CPbkContactChangeNotifier.h)
+../inc/MPbkFieldData.h     APP_LAYER_PUBLIC_EXPORT_PATH(MPbkFieldData.h)
+../inc/MPbkContactDbObserver.h     APP_LAYER_PUBLIC_EXPORT_PATH(MPbkContactDbObserver.h)
+../inc/CPbkIdleFinder.h     APP_LAYER_PUBLIC_EXPORT_PATH(CPbkIdleFinder.h)
+../inc/CPbkFieldInfo.h     APP_LAYER_PUBLIC_EXPORT_PATH(CPbkFieldInfo.h)
+../inc/CPbkContactEngine.h     APP_LAYER_PUBLIC_EXPORT_PATH(CPbkContactEngine.h)
+../inc/CPbkFieldsInfo.h     APP_LAYER_PUBLIC_EXPORT_PATH(CPbkFieldsInfo.h)
+../inc/TPbkContactItemField.h     APP_LAYER_PUBLIC_EXPORT_PATH(TPbkContactItemField.h)

@@ -1,0 +1,397 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:     This file contains all the resources for the module.
+*
+*/
+
+
+
+
+
+
+//  RESOURCE IDENTIFIER
+NAME    SPCT // 4 letter ID
+
+//  INCLUDES
+
+#include <eikon.rh>
+#include <eikon.rsg>
+#include <avkon.rsg>
+#include <avkon.rh>
+#include <avkon.loc>
+#include <avkon.mbg>
+#include <avkon.hrh>
+#include <EIKCTL.rsg>
+#include <spdctrl.mbg>
+
+#include <speeddial.loc>
+#include "Speeddial.laf"
+#include "SpdiaControl.hrh"
+#include <AiwCommon.rh>
+#include <AiwGenericParam.hrh>
+#include "speeddial.hrh"
+
+//  CONSTANTS  
+//#define ?constant   ?value
+
+
+//  MACROS  
+//#define ?macro
+
+
+//  RESOURCE DEFINITIONS 
+
+RESOURCE RSS_SIGNATURE { }
+
+//RESOURCE TBUF16
+RESOURCE TBUF
+    {
+    buf = "Spdctrl";
+    }
+
+// ---------------------------------------------------------
+//   
+//    r_spdia_text_release
+//    Define text of confirmation query ( Release )
+//
+// ---------------------------------------------------------
+//
+//RESOURCE TBUF256 r_spdia_text_release
+RESOURCE TBUF r_spdia_text_release
+    {
+    buf = text_spdia_erase_query;
+    }
+
+// ---------------------------------------------------------
+//   
+//    r_spdia_text_replace
+//    Define text of confirmation query ( Relpace )
+//
+// ---------------------------------------------------------
+//
+//RESOURCE TBUF256 r_spdia_text_replace
+RESOURCE TBUF r_spdia_text_replace
+    {
+    buf = text_speed_dial_replace;
+    }
+
+// ---------------------------------------------------------
+//
+//    r_spdia_text_key_assigned
+//    Define text of confirmation query ( KeyAssinged )
+//
+// ---------------------------------------------------------
+//
+//RESOURCE TBUF256 r_spdia_text_key_assigned
+RESOURCE TBUF r_spdia_text_key_assigned
+    {
+    buf = text_speed_dial_key_assinged;
+    }
+// ---------------------------------------------------------
+//   
+//    r_qtn_spdia_grid_voice_mail
+//    Define text of voice mailbox
+//
+// ---------------------------------------------------------
+//
+//RESOURCE TBUF64 r_qtn_spdia_grid_voice_mail
+RESOURCE TBUF r_qtn_spdia_grid_voice_mail
+    {
+    buf = qtn_spdia_grid_voice_mail;
+    }
+// ---------------------------------------------------------
+//   
+//    r_qtn_spdia_title
+//    Speed Dial title
+//
+// ---------------------------------------------------------
+//
+//RESOURCE TBUF64 r_qtn_spdia_title
+
+RESOURCE TBUF r_qtn_spdia_title
+    {
+    buf = qtn_apps_sd_grid;
+    }
+
+// ---------------------------------------------------------
+//   
+//    r_qtn_spdia_contact_in_use
+//    Information note when contact in use
+//
+// ---------------------------------------------------------
+//
+//RESOURCE TBUF64 r_qtn_spdia_contact_in_use
+RESOURCE TBUF r_qtn_spdia_contact_in_use
+  {
+    buf = qtn_speed_dial_contact_in_use;
+  }
+
+//----------------------------------------------------
+//   
+//    r_spdia_select_dialog
+//    main_pane select phone number from phonebook 
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG  r_spdia_select_dialog
+    {
+    flags = EEikDialogFlagWait | EEikDialogFlagNoDrag | EEikDialogFlagNoTitleBar |
+            EEikDialogFlagFillAppClientRect |
+            EEikDialogFlagCbaButtons | EEikDialogFlagNoBorder;
+    buttons = R_AVKON_SOFTKEYS_TEXT_SETTING_ITEM;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtSingleGraphicListBox;
+            itemflags = EEikDlgItemTakesEnterKey |
+                        EEikDlgItemOfferAllHotKeys;
+            id = ESpdListItem;
+            control = LISTBOX
+                {
+                array_id = r_dlgapp_inbox_msgs;
+                flags = EAknListBoxMarkableList;
+                height = 8;
+                };
+            }
+        };
+    }
+
+RESOURCE ARRAY r_dlgapp_inbox_msgs
+    {
+    items =
+        {
+        LBUF { txt = "dummy"; }       // dummy
+        };
+    }
+    
+//----------------------------------------------------
+//   
+//    r_spdctrl_softkeys_assign_back_assign
+//    LeftSoftkey RightSoftkey MiddleSoftkey
+//
+//----------------------------------------------------
+RESOURCE CBA r_spdctrl_softkeys_assign_back_assign
+	{
+	buttons =
+		{
+		CBA_BUTTON {id = EAknSoftkeyOk; txt = text_softkey_assign;},
+		CBA_BUTTON {id = EAknSoftkeyBack; txt = text_softkey_back;},
+		CBA_BUTTON {id = EAknSoftkeyOk; txt = text_softkey_assign;}
+		};
+	}
+////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------
+//   
+//    r_spdia_grid_dialog
+//    main_pane select phone number from phonebook 
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG  r_spdia_grid_dialog
+    {
+    flags = EEikDialogFlagWait | EEikDialogFlagNoDrag |
+            EEikDialogFlagFillAppClientRect | EEikDialogFlagNoBorder |
+            EEikDialogFlagNoTitleBar | EEikDialogFlagCbaButtons;
+    buttons = R_AVKON_SOFTKEYS_BACK;
+    items =
+        {
+        DLG_LINE
+            {
+            type = ESpdiaGrid;
+//            type = EAknCtAppGrid;
+//            type = EAknCtQdialGrid;
+            itemflags = EEikDlgItemTakesEnterKey | EEikDlgItemOfferAllHotKeys;
+            id = ESpdGridItem;
+            control = GRID
+                {
+                //flags = EAknListBoxMarkableGridWithShortcuts; 
+                array_id = r_dlgapp_inbox_msgs; 
+                emptytext = "empty";
+                };
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_spdia_query_replace
+//    main_pane confirmation query
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_spdia_query_replace
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_YES_NO;
+    items=
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control= AVKON_CONFIRMATION_QUERY 
+                { 
+                layout = EConfirmationLayout;
+                //label = text_speed_dial_replace;
+                };
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_spdia_query_assign
+//    main_pane confirmation query
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_spdia_query_assign
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_YES_NO;
+    items=
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control= AVKON_CONFIRMATION_QUERY 
+                { 
+                layout = EConfirmationLayout;
+                label = text_speed_dial_assign_new_qu;
+                };
+            }
+        };
+    }
+
+RESOURCE AIW_INTEREST r_spdia_single_entry_fetch_interest
+    {
+    items=
+        {
+        AIW_CRITERIA_ITEM 
+            { 
+            id = KAiwCmdSelect;  // serviceCmd used here also as ID
+            serviceCmd   = KAiwCmdSelect;
+            contentType  = EGenericParamContactLinkArrayStr;
+            serviceClass = KAiwClassBase; 
+            maxProviders = 1;
+            }
+        };
+    }
+    
+RESOURCE AIW_INTEREST r_spdia_single_assign_interest
+    {
+    items=
+        {
+        AIW_CRITERIA_ITEM 
+            { 
+            id = KAiwCmdAssign;  // serviceCmd used here also as ID
+            serviceCmd = KAiwCmdAssign;
+            contentType = EGenericParamContactLinkArrayStr;
+            serviceClass = KAiwClassMenu; 
+            maxProviders = 1;
+            }
+        };
+    }
+// --------------------------------------------------------------------------
+// AIW_INTEREST
+// Email selection interest.
+// --------------------------------------------------------------------------
+//
+RESOURCE AIW_INTEREST r_speeddial_email_selection_interest
+    {
+    items=
+        {
+        AIW_CRITERIA_ITEM
+            {
+            id = KAiwCmdSelect;  // serviceCmd used here also as ID
+            serviceCmd   = KAiwCmdSelect;
+            contentType  = EGenericParamContactLinkArrayStr;
+            serviceClass = KAiwClassBase;
+            maxProviders = 1;
+            }
+        };
+    }
+//----------------------------------------------------
+//   
+//    r_spdia_query_release
+//    main_pane confirmation query
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_spdia_query_release
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_YES_NO;
+    items=
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control= AVKON_CONFIRMATION_QUERY 
+                { 
+                layout = EConfirmationLayout;
+                //label = text_spdai_erase_query;
+                };
+            }
+        };
+    }
+
+
+//----------------------------------------------------
+//   
+//    r_spdia_cba_enable_spdial
+//    main_pane confirmation query
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_spdia_cba_enable_spdial
+    {
+    flags = 0;
+    buttons =
+        {
+        CBA_BUTTON { id = ESpdCmdEnableYes; txt = text_softkey_yes; },
+        CBA_BUTTON { id = ESpdCmdEnableNo;  txt = text_softkey_no; },
+        CBA_BUTTON { id = ESpdCmdEnableYes; }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_spdia_query_enable_onekeydialling
+//    main_pane confirmation query
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_spdia_query_enable_onekeydialling
+    {
+    flags = EGeneralQueryFlags;
+    buttons = r_spdia_cba_enable_spdial;
+    items=
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control= AVKON_CONFIRMATION_QUERY 
+                { 
+                layout = EConfirmationLayout;
+                label = qtn_speed_dial_query_first_assign;
+                };
+            }
+        };
+    }
+// End of File

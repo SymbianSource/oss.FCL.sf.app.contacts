@@ -1,0 +1,38 @@
+;
+; Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+; All rights reserved.
+; This component and the accompanying materials are made available
+; under the terms of "Eclipse Public License v1.0"
+; which accompanies this distribution, and is available
+; at the URL "http://www.eclipse.org/legal/epl-v10.html".
+;
+; Initial Contributors:
+; Nokia Corporation - initial contribution.
+;
+; Contributors:
+;
+; Description:
+;
+;Language - standard language definitions
+&EN
+
+; standard SIS file header
+#{"Ps Client API TestSuite"},(0x2000B5BB),1,0,0
+
+;Supports Series 60 v 3.0
+[0x101F7961], 0, 0, 0, {"Series60ProductID"}
+
+;Localised Vendor name
+%{"Nokia"}
+
+;Unique Vendor name
+:"Nokia"
+
+; PS Client API Test Suite  files to be installed
+"\epoc32\release\armv5\urel\PsClientTestSuite.dll"-"!:\sys\bin\PsClientTestSuite.dll"
+
+; The configuration file for the test cases
+"..\conf\PsClientTestSuite.cfg"-"!:\testframework\PsClientTestSuite.cfg"
+
+; The test framework initilization file
+"..\init\PsClientTestSuite.ini"-"!:\testframework\PsClientTestSuite.ini"

@@ -20,8 +20,8 @@
 #include <e32std.h>
 #include <ecom/implementationproxy.h>
 
-#include "ccntsortplugin.h"
-#include "cntsortpluginuid.h"
+#include "CCntSortPlugin.h"
+#include "CntSortPluginUid.h"
 
 // Define the interface UIDs
 const TImplementationProxy ImplementationTable[] = 

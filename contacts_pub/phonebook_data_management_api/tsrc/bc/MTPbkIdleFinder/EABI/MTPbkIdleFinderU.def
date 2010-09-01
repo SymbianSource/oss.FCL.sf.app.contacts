@@ -1,0 +1,5 @@
+EXPORTS
+	_Z9LibEntryLR13CTestModuleIf @ 1 NONAME
+	_ZTIN16CMTPbkIdleFinder13CFindObserverE @ 2 NONAME ; #<TI>#
+	_ZTVN16CMTPbkIdleFinder13CFindObserverE @ 3 NONAME ; #<VT>#
+

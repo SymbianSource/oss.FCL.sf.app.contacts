@@ -1,0 +1,49 @@
+/*
+* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*       Declaration of resource for xSP view information
+*
+*/
+
+
+STRUCT XSP_VIEW_INFO
+    { 
+    // non-mapped view id
+    LONG oldId;
+    // flag whether this is a tab view  
+    LONG tabView = 0;
+    // icon id for tab icon
+    LONG tabIconId = -1;
+    // mask id for tab icon
+    LONG tabMaskId = -1;
+    // icon mbm file path without drive
+    // part i.e. \\path\\file.mbm
+    LTEXT tabIconFile = "\\";
+    // ADDITIONS FOR TAB VIEWS SORTING
+    // view name
+    LTEXT name = "";
+    // icon id for sorting
+    LONG sortIconId = -1;
+    // mask id for sorting
+    LONG sortMaskId = -1;
+    // sort icon mbm file path without
+    // drive part i.e. \\path\\file.mbm
+    LTEXT sortIconFile = "\\";
+    }
+
+STRUCT XSP_VIEW_INFO_ARRAY
+    {
+    STRUCT items[];
+    }
+    

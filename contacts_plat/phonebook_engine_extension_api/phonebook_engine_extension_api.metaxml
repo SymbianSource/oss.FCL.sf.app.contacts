@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<api id="420422229be4650f13ab3a161ef95729" dataversion="2.0">
+  <name>Phonebook Engine Extension API</name>
+  <description>Extension interface for Phonebook engine.</description>
+  <type>c++</type>
+  <collection>phonebookui</collection>
+  <libs>
+  </libs>
+  <release category="platform" deprecatedsince="0"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>no</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>

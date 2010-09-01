@@ -1,0 +1,150 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This is project specification file for the PbkEng.
+*
+*/
+
+
+// INCLUDES
+#include <platform/app/PbkUID.h> // Phonebook UIDs
+#include "PbkConfig.mmp"    // Phonebook MMP configuration file
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+// Build target
+TARGET          PbkEng.dll
+TARGETTYPE      dll
+UID             KEPOCStaticDllUID2 KPbkDllUID3
+CAPABILITY      CAP_GENERAL_DLL
+VENDORID        VID_DEFAULT
+
+// Source files location
+SOURCEPATH      ../Engine/src
+
+// Resource files
+START RESOURCE ../rss/cntmodel.rss
+HEADER
+TARGETPATH CONTACTS_RESOURCE_DIR
+LANGUAGE_IDS
+END // RESOURCE
+
+START RESOURCE ../rss/PbkEngChinese.rss
+HEADER
+TARGETPATH RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END // RESOURCE
+
+START RESOURCE ../rss/PbkEngJapanese.rss
+HEADER
+TARGETPATH RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END // RESOURCE
+
+START RESOURCE ../rss/PbkEng.rss
+HEADER
+TARGETPATH RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END // RESOURCE
+
+
+// Source files
+SOURCE          CPbkContactEngine.cpp 
+SOURCE          CContactDbConnection.cpp
+SOURCE          CPbkDefaultCompressionStrategy.cpp
+SOURCE          CCompressionTimer.cpp
+SOURCE          CDiskSpaceWatcher.cpp
+SOURCE          CPbkContactChangeNotifier.cpp
+SOURCE          CPbkFieldInfo.cpp CPbkFieldsInfo.cpp 
+SOURCE          CPbkFieldInfoGroup.cpp
+#if !defined(RD_SIND_VIA_AIW)
+SOURCE          CPbkContactItemOld.cpp
+#else
+SOURCE          CPbkContactItem.cpp
+#endif
+SOURCE          TPbkContactItemField.cpp
+SOURCE          CPbkFieldData.cpp
+SOURCE          CPbkContactIter.cpp
+SOURCE          CPbkIdleFinder.cpp
+SOURCE          CPbkEntryCache.cpp
+SOURCE          DigViewGraph.cpp
+SOURCE          PbkEngUtils.cpp
+SOURCE          CPbkContactIdSet.cpp
+SOURCE          CPbkAttachmentFile.cpp
+SOURCE          CPbkConstants.cpp
+SOURCE          CPbkContactSubView.cpp
+SOURCE          CPbkContactFindView.cpp CPbkContactFindViewImpl.cpp
+SOURCE          TPbkContactViewIterator.cpp
+SOURCE          TPbkFieldTypeSignature.cpp
+SOURCE          TPbkContactEntry.cpp
+SOURCE          CPbkVcardParameters.cpp
+SOURCE          CPbkVcardProperty.cpp
+SOURCE          TPbkFieldInfoExportTypeAdapter.cpp
+SOURCE          CPbkFieldImportType.cpp
+SOURCE          TPbkContactItemFieldType.cpp
+SOURCE          TPbkVcardFieldType.cpp
+SOURCE          CPbkDeleteContacts.cpp
+SOURCE          CPbkAssignToGroup.cpp
+SOURCE          CPbkRemoveFromGroup.cpp
+SOURCE          CPbkIdleProcessRunner.cpp
+SOURCE          PbkViewContactFieldDataAdapter.cpp
+SOURCE          CPbkViewContactNameFormatter.cpp
+SOURCE          CPbkDbRecovery.cpp
+SOURCE          CPbkEngineExtension.cpp
+SOURCE          CPbkLocalVariationManager.cpp
+SOURCE          CPbkEntryCopier.cpp
+SOURCE          CPbkNameLookup.cpp
+SOURCE          CPbkEntryCopyAddToExisting.cpp
+SOURCE          CPbkSortOrderManager.cpp
+SOURCE          PbkNameFormatterFactory.cpp
+SOURCE          CPbkContactNameFormatterBase.cpp
+SOURCE          CPbkContactNameFormatter.cpp
+SOURCE          CPbkChinaContactNameFormatter.cpp
+SOURCE          CPbkJapanContactNameFormatter.cpp
+SOURCE          TPbkTitleFieldFilter.cpp
+SOURCE          PbkContactNameFormattingUtil.cpp
+SOURCE          CPbkCodField.cpp
+SOURCE          PbkGlobalSettingFactoryTransientPubSub.cpp
+
+#ifndef RD_STARTUP_CHANGE
+	SOURCE          CPbkPubSubSetting.cpp
+#endif // RD_STARTUP_CHANGE
+
+SOURCE          PbkGlobalSettingFactoryPersistentCenRep.cpp
+SOURCE          CPbkCenRepSetting.cpp
+SOURCE          cpbkenginelocalstorage.cpp
+
+#ifndef ARMCC
+    // 2.x BC maintenance
+    SOURCE          Dummyexports.cpp
+#endif // ARMCC
+
+// Include paths
+USERINCLUDE     ../Engine/src ../Engine/inc ../inc ../Engine/rss ../group
+APP_LAYER_SYSTEMINCLUDE // macro that defines the platform system includes
+
+// Dependencies to system components
+LIBRARY         euser.lib bafl.lib estor.lib efsrv.lib ECom.lib
+LIBRARY         cntmodel.lib cntview.lib
+LIBRARY         CentralRepository.lib
+ 
+// Dependencies to other components
+LIBRARY         SysUtil.lib diskspacereserver.lib featmgr.lib CenRepNotifHandler.lib
+
+// Debugging dependencies
+#ifdef PBK_ENABLE_DEBUG_LOGGER
+    LIBRARY flogger.lib
+#endif
+
+// End of File

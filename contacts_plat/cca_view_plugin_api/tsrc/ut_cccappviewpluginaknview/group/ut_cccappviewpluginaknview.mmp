@@ -1,0 +1,47 @@
+/*TYPE TESTCLASS*//*
+* Copyright (c) 2002 - 2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+TARGET  	ut_cccappviewpluginaknview.dll
+TARGETTYPE  dll
+UID		    0x1000008D 0x0f120057
+
+CAPABILITY  ALL -TCB
+
+SOURCEPATH  ../src
+SOURCE 		ut_cccappviewpluginaknview.cpp
+
+// tested class
+SOURCE      ../../../../../phonebookui/Phonebook2/ccapplication/ccapp/ccapputil/src/ccappviewpluginaknview.cpp
+
+USERINCLUDE ../inc 
+
+APP_LAYER_SYSTEMINCLUDE 
+SYSTEMINCLUDE /epoc32/include/ecom
+
+LIBRARY     euser.lib
+LIBRARY     stiftestinterface.lib
+LIBRARY     ecom.lib
+LIBRARY		flogger.lib
+LIBRARY     cone.lib//avkon view/container
+LIBRARY     eikcore.lib//avkon view/container
+
+LANG            SC
+
+// End of File

@@ -1,0 +1,435 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains all the resources for Phonebook 2 names list view.
+*
+*/
+
+
+// ---------------------------------------------------------
+// Names List View's lauch CCA menu pane
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_open_cca
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdOpenCca;
+            txt = qtn_phob_opt_entry_open_views;
+            flags = EEikMenuItemAction;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Names List View's options command for selecting "Add favourites"
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_select_addfavorites
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdAddFavourites;
+            txt = qtn_phob_opt_entry_select_addfavourites;
+            flags = EEikMenuItemAction;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Names List View's options command for selecting "MyCard"
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_select_mycard
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdSelectMyCard;
+            txt = qtn_phob_opt_entry_select_promotion;
+            flags = EEikMenuItemAction;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdOpenMyCard;
+            txt = qtn_phob_opt_entry_open_views;
+            flags = EEikMenuItemAction;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Names List View's add to top contacts selection
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_add_to_topcontacts
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdAddToTopContacts;
+            txt = qtn_phob_opt_add_favourites;
+            flags = EEikMenuItemSpecific;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Names List View's remove from top contacts selection
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_remove_from_topcontacts
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdRemoveFromTopContacts;
+            txt = qtn_phob_opt_drop_from_favourites;
+            flags = EEikMenuItemSpecific;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Names List View's merge contacts
+// ---------------------------------------------------------
+//
+
+RESOURCE MENU_PANE r_phonebook2_merge_contacts
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdMergeContacts;
+            txt = qtn_options_list_merge;
+            }
+        };
+    }
+
+
+// ---------------------------------------------------------
+// Names List View's main menu pane for xSPExtensionManager
+// Empty, used by xSP plugins to add their own menu items to
+// names list Optiosn menu.
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_nameslist_main_menu
+    {
+    }
+
+// ---------------------------------------------------------
+// Names List View's create new contact menu pane
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_nameslist_create_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdCreateNew;
+            txt = qtn_phob_opt_entry_create;
+            }
+        };
+    }
+
+#if 0
+// ---------------------------------------------------------
+// Names List View's edit contact menu pane
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_nameslist_edit_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdEditMe;
+            txt = qtn_phob_opt_entry_edit;
+            }
+        };
+    }
+#endif
+
+// ---------------------------------------------------------
+// Names List View's delete contact menu pane
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_nameslist_delete_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdDeleteMe;
+            txt = qtn_phob_opt_entry_delete;
+            flags = EEikMenuItemSpecific;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Names List View's copy menu pane
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_nameslist_copy_menu
+    {
+    items=
+        {
+        // Copy command
+        MENU_ITEM
+            {
+            command = EPbk2CmdCopy;
+            txt = qtn_phob_opt_copy;
+            }
+        };
+    }
+    
+// ---------------------------------------------------------
+// Names List View's remote contact lookup menu pane
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_rcl_menu
+    {
+    items=
+        {
+        MENU_ITEM 
+            {
+            command = EPbk2CmdRcl;
+            txt = qtn_phob_opt_search_from_remote;
+            }	
+        };
+    }    
+
+// ---------------------------------------------------------
+// Names List View's options select option for command item "Search from remote".
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_select_rcl
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdSelectRclCmdItem;
+            txt = qtn_phob_opt_entry_select_rcl;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Names List View's copy menu pane for context menu
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_nameslist_copy_context_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdCopy;
+            txt = qtn_phob_opt_copy;
+            }
+        };
+    }
+
+
+// ---------------------------------------------------------
+// Names List View's send and go to URL menu pane
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_nameslist_send_url_menu
+    {
+    items =
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdGoToURL;
+            txt = qtn_find_go_to_url;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdSend;
+            txt = qtn_bcard_opt_send_entry_via;
+            flags = EEikMenuItemSpecific;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Names List View's context sensitive menu pane
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_nameslist_context_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdCreateNew;
+            txt = qtn_phob_opt_entry_create;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Names List View's Context sensitive menu pane
+// when items are marked
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_nameslist_context_menu_marked_items
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdDeleteMe;
+            txt = qtn_phob_opt_entry_delete;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Names List View's placeholder for menus that launch
+// views from other memories
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_nameslist_other_memories_menu_placeholder
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            // A command id that UI extensions can use as a previous command
+            // when they add items to this menu pane
+            command = EPbk2CmdOtherMemoriesPlaceholderFirst;
+            txt = "";
+            flags = EEikMenuItemDimmed;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Names List View's placeholder for backup functionality
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_nameslist_backup_menu_placeholder
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            // A command id that UI extensions can use as a previous command
+            // when they add items to this menu pane
+            command = EPbk2CmdBackupPlaceholderFirst;
+            txt = "";
+            flags = EEikMenuItemDimmed;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Names List View's dummy context sensitive menu pane for extensions
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_context_menu_pane_for_extensions
+    {
+    items=
+        {
+        // Intentionally left blank, needed by extensions
+        };
+    }
+
+///
+// ---------------------------------------------------------
+// Names List View's contact specific menu item for call
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_namelist_call_contact_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdCall;
+            txt = qtn_phob_opt_call;
+            flags = EEikMenuItemSpecific;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Names List View's contact specific menu item for send message
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_namelist_create_message_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdWriteNoQuery;
+            txt = qtn_phob_opt_send_message;
+            flags = EEikMenuItemSpecific;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Send as business card menu pane
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_bcard_send_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdSend;
+            txt = qtn_bcard_opt_send_entry_via;
+            flags = EEikMenuItemSpecific;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Mark/unmark menu to be used in CS menus (no submenu)
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_markable_list_context_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EAknCmdMark;
+            txt = qtn_options_list_mark_one;
+            },
+    MENU_ITEM
+            {
+            command = EAknCmdUnmark;
+            txt = qtn_options_list_unmark_one;
+            }
+        };
+    }
+// End of File

@@ -1,0 +1,44 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: MMP file for PsServerClientAPI
+*
+*/
+
+// using relative paths for sourcepath and user includes
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+TARGET        PsServerClientAPI.dll
+TARGETTYPE    DLL
+UID           0x1000008D 0x2000B5B7
+CAPABILITY    CAP_CLIENT_DLL  
+
+SOURCEPATH    ../src 
+SOURCE        CPsRequestHandler.cpp
+SOURCE        CPsPropertyHandler.cpp
+SOURCE        CPsUpdateHandler.cpp
+SOURCE        RPsSession.cpp 
+
+USERINCLUDE   ../inc
+USERINCLUDE   ../../PcsUtils/inc
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY       euser.lib
+LIBRARY       flogger.lib
+LIBRARY       estor.lib
+LIBRARY       bafl.lib
+
+LIBRARY       PcsUtils.lib
+LIBRARY       VPbkEng.lib
+LIBRARY       eCom.lib

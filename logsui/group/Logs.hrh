@@ -1,0 +1,165 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains declarations for resources of Logs.APP.
+*     The file can be included in C++ or resource file.
+*
+*
+*/
+
+
+#ifndef     __Logs_App_Menu_HRH__
+#define     __Logs_App_Menu_HRH__
+
+#include "LogsConstants.hrh" //KLogsPluginImplUID
+
+//  CONSTANTS
+
+/**
+ * Logs resource header (.hrh) file. Contains Logs command symbols.
+ */
+
+// Menu command codes
+enum TLogsCommands
+    {
+    ELogsCmdNoOperation = 0,
+    ELogsCmdMenuDetails,
+    ELogsCmdHandleMSK,    
+    ELogsCmdMenuFilter,
+    ELogsCmdMenuClearList,
+    ELogsCmdMenuSettings,
+    ELogsCmdMenuExit,
+    ELogsCmdMenuOpen,
+    ELogsCmdMenuClearRecentRegisters,
+    ELogsCmdChange,
+    ELogsCmdHandleTapFocusChange,   // For Toolbar initialisation when focus changed
+    ELogsCmdStartPhonebook,    
+    
+    ELogsCmdAiwCmdAssign,           // AddToPhonebook (from Toolbar)
+    
+    EAocCtCmdMenuDetails,           // AoC duration details for call timers
+    EAocCtCmdMenuDetailsVoip,       // AoC duration details for voip call timers
+    EAocCtCmdMenuDetailsCs,         // AoC duration details for cellular call timers
+                                  
+    EAocCtCmdMenuClear,             // AoC & CT: Clear costs
+    EAocCtCmdMenuFilterAls,         // AoC & CT: Filter ALS
+                                  
+    ELogsCmdSendKeyCall,            // Call function1 (when send key is pressed)
+    ELogsCmdLongSendKeyCall,        // Call function2 (when send key is pressed long)    
+    ELogsCmdDeviceCallKey,          // Call function3 (when special key is pressed - e.g.
+                                    // voice key for PoC call)
+    ELogsCmdSingleTapCall,          // Call function4 (when single tapping with touch UI)                                   
+    ELogsCmdMenuNumberSubMenu,      // dummy cmd, just for deleting number submenu
+    ELogsCmdMenuPrependNumber,      // Prepend number
+    ELogsCmdMenuCopyNumber,         // copy number
+
+    ELogsCmdMenuPocAddressSubMenu,  // dummy cmd, just for deleting address submenu
+    ELogsCmdMenuVoipAddressSubMenu, // dummy cmd, just for deleting address submenu
+    ELogsCmdMenuPrependAddress,     // Prepend address (used for voip and poc)
+    ELogsCmdMenuCopyAddress,        // copy sip address (used for voip and poc)
+    ELogsCmdShowMyAddress,          // Show user's sip address (used for voip and poc)
+    ELogsCmdMenuDelete,             // Delete
+    ELogsCmdMenuDeleteAll,          // Delete All
+    ELogsCmdFailedDueActiveCall,    // Some options was not allowed due active call
+    ELogsCmdMenuClearGprs,
+    ELogsCmdMenuSendUi,             // For send message submenu
+    ELogsCmdToolBarSendUi,          // For send message without query (Toolbar send message button)
+
+    // Last Logs command (keep this item LAST)
+    // Note! There are MORE commands on top of this in PECLogs (EDpbCmdLast)
+    ELogsCmdLast
+    };
+
+// Logs application view ID's
+enum TLogsViewIds
+    {
+    ELogAppListViewId = 1,  // Logs application view (when started from appshell). This value *must* be hardcoded 1
+                            // as appshell will use this number as view parameter in it's appshelldata.xml for Logs:
+                            // <appshell:application uid="101F4CD5" view="1"/>
+    ELogEventListViewId,    // Logs event list view 
+    ELogDetailViewId,       // Logs detail view 
+    ELogSubAppListViewId,   // Logs sub application view
+    EStmMissedListViewId,   // STM's missed calls view
+    EStmReceivedListViewId, // STM's received calls view
+    EStmDialledListViewId,  // STM's dialled calls view
+    ECtViewId,              // CT's call counters view
+    EGprsCounterViewId,     // GPRS counters
+    ELogsDummyViewId = 100, // View Id for experiments only
+    ELogSettingsViewId = KLogsPluginImplUID     //Settings view is ecom plugin. To keep things straightforward, we use the
+                                                //implementation UID as viewId too. The viewid must be unique inside host
+                                                //application (i.e General Settings in addition to Logs app).
+    };
+
+// Tab ID's
+enum TTabIds
+    {
+    EMissedTabId = EStmMissedListViewId,        // Missed tab id
+    EReceivedTabId = EStmReceivedListViewId,    // Received tab id
+    EDialledTabId = EStmDialledListViewId,      // Dialled tab id
+    EAppListTabId = ELogAppListViewId,          // AppList tab id
+    EEventListTabId = ELogEventListViewId,      // EventList tab id
+    ESubAppRecentsTabId = ELogSubAppListViewId, // Sub App Recent tab id
+    ESubAppTimersTabId = ECtViewId,             // Sub App Timers tab id
+    ESubAppGprsTabId = EGprsCounterViewId       // Sub App Gprs tab id
+    };
+
+// Logs subapplication ID's
+enum TLogsSubAppIds
+    {
+    EStmStmSubAppId = 0,
+    EStmTimersSubAppId,
+    EGprsCountSubAppId
+    };
+
+// Logs recent list ID's
+enum TLogsRecentListIds
+    {
+    EStmMissedId = 0,
+    EStmReceivedId,
+    EStmDialledId
+    };
+
+/// Settings view listbox item's enumerations.
+enum TLogsSettingsFunction
+    {
+    ELogSettingsLogLength = 0
+    //, ELogSettingsShowCallDurationPhone = 1
+    };
+
+// Additional message id:s for view activation
+enum TLogsViewActivationMessages
+    {
+    ELogsViewActivationNoMessage = 0,
+    ELogsViewActivationBackground
+    };
+    
+enum TLogsShowToolbar
+    {
+    ELogsToolbarOff,
+    ELogsToolbarOn,
+    ELogsHideItemsAndDrawOnlyBackground,
+    ELogsUnHideItemsAndDrawOnlyBackground
+    }; 
+
+// Logs application execution modes
+enum TLogsExecutionModes
+    {
+    ELogsInForeground = 0,         //Logs running in foregroung
+    ELogsInBackground_ExitOrEndPressed
+    };                            
+
+#endif  // __Logs_App_Menu_HRH__
+
+// End of File
+

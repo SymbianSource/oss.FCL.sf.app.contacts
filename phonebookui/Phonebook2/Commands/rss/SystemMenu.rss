@@ -1,0 +1,91 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains resources for Phonebook 2 system menus.
+*
+*/
+
+
+// ---------------------------------------------------------
+// Phonebook 2 system menu pane. Insert system-wide commands
+// here.
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_system_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EAknCmdHelp;
+            txt = qtn_options_help;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdExit;
+            txt = qtn_options_exit;
+            }
+        };
+    }
+
+
+// ---------------------------------------------------------
+// Open me menu
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_open_me_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdOpenMeViews;
+            txt = qtn_phob_opt_entry_open_views;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Phonebook 2 info menu pane
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_info_menu
+    {
+    items =
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdPhonebook2Info;
+            txt = qtn_phob_opt_pb_info2;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Phonebook 2 Settings menu
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_settings_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdSettings;
+            txt = qtn_phob_opt_settings;
+            }
+        };
+    }    
+
+// End of File

@@ -1,0 +1,62 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  USIM extension specific resource definitions
+*
+*/
+
+
+#ifndef PBK2USIMUI_RH
+#define PBK2USIMUI_RH
+
+
+//  INCLUDES
+#include <VPbkFieldType.rh>
+#include "Pbk2USimUI.hrh"
+
+//  MACROS  
+
+//  STRUCTURE DEFINITIONS
+
+// -----------------------------------------------------------------------------
+// PSU2_COPY_TO_SIM_FIELDTYPE_MAPPINGS
+// -----------------------------------------------------------------------------
+//
+STRUCT PSU2_COPY_TO_SIM_FIELDTYPE_MAPPINGS
+    {
+    /// An array of PSU2_COPY_TO_SIM_FIELDTYPE_MAPPING
+    STRUCT items[];
+    }
+    
+// -----------------------------------------------------------------------------
+// PSU2_COPY_TO_SIM_FIELDTYPE_MAPPING
+// A structure for mapping a source contact field types 
+// to SIM contact field types.
+// This is a multiple to 1 mapping.
+// -----------------------------------------------------------------------------
+//
+STRUCT PSU2_COPY_TO_SIM_FIELDTYPE_MAPPING
+    {
+    // VPBK_FIELD_TYPE_SELECTOR that defines the fields that are mapped from
+    STRUCT sourceTypeSelector;
+    // The SIM field type resource id, from VPbkEng.rsg
+    LONG targetSimType;
+    // Flags defined in Pbk2UsimUi.hrh
+    BYTE flags = 0;
+    /// One of the values in TPsu2ErrorCode/Pbk2UsimUi.hrh
+    BYTE iBlockingError = KPsu2NoError;
+    }
+
+#endif      // PBK2USIMUI_RH
+            
+// End of File

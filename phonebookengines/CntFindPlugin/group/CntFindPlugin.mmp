@@ -17,25 +17,27 @@
 */
 
 
-#include "cntfindpluginuid.h"
+#include "CntFindPluginUid.h"
 #include <platform_paths.hrh>
 #include <data_caging_paths.hrh>
 
-TARGET          cntfindplugin.dll
+TARGET          CntFindPlugin.DLL
 TARGETTYPE      PLUGIN
 UID             KEComPluginUID2 KCntModelFindPluginDllUID3
 CAPABILITY      CAP_ECOM_PLUGIN
 VENDORID        VID_DEFAULT
 
 SOURCEPATH      ../src
-SOURCE          dllmain.cpp
-SOURCE          cntfindplugin.cpp
+SOURCE          DllMain.cpp
+SOURCE          CntFindPlugin.cpp
 
 USERINCLUDE     ../group
 APP_LAYER_SYSTEMINCLUDE
+// Symbian uses #include <ecom.h> in cntviewfindconfig.h
+SYSTEMINCLUDE   /epoc32/include/ecom
 
 START RESOURCE  101f85f4.rss
-TARGET          cntfindplugin
+TARGET          CntFindPlugin
 TARGETPATH      resource/plugins
 END
 

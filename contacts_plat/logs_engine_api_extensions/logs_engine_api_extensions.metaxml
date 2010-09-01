@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<api id="90609862c30ffc4eeecb94462e8dfb23" dataversion="2.0">
+  <name>Logs Engine API extensions</name>
+  <description></description>
+  <type>c++</type>
+  <collection>logsui</collection>
+  <libs>
+    <lib name="LogsClient.lib" />
+  </libs>
+  <release category="platform"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>no</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>

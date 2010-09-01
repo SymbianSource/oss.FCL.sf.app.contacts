@@ -1,0 +1,178 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     Only Phonebook internal use of this file is supported!
+*     enum TPbkDataSaveCommandId is moved to PbkDataSaveAppUi.hrh.
+*
+*     This file contains declarations for resources of PbkView.dll.
+*     The file can be included in C++ or resource file.
+*
+*/
+
+
+#ifndef __PbkView_HRH__
+#define __PbkView_HRH__
+
+// INCLUDES
+#include <PbkDataSaveAppUi.hrh>
+
+//  CONSTANTS
+
+// This file has to contain macro constants becuase it is part of resource 
+// compilation.
+
+
+////////////////////////////////////////////////////////////
+// CPbkEntryListControl flags
+
+/// CPbkEntryListControl flag: null flags (nothing set)
+#define KPbkEntryListControlFlagsNull							0x00000000
+
+/// CPbkEntryListControl flag: updates context pane if set
+#define KPbkEntryListControlUpdateContextPane					0x00000001
+
+/// CPbkEntryListControl flag: restores list box state after major changes to the data array if set
+#define KPbkEntryListControlDontRestoreStateAfterMajorChanges   0x00000002
+
+/// CPbkEntryListControl flag: control includes a find box if set
+#define KPbkEntryListControlFindBox                             0x00000004
+
+
+////////////////////////////////////////////////////////////
+// CPbkContactViewListControl flags
+
+/// CPbkContactViewListControl flag: null flags (nothing set)
+#define KPbkContactViewListControlFlagsNull						    0x00000000
+
+/// CPbkContactViewListControl flag: updates context pane if set
+#define KPbkContactViewListControlUpdateContextPane                 0x00000001
+
+/// CPbkContactViewListControl flag: control includes a find box if set
+#define KPbkContactViewListControlFindBox                           0x00000002
+
+
+
+////////////////////////////////////////////////////////////
+// CPbkContactInfoControl flags
+
+/// CPbkContactInfoControl flag: null flags (nothing set)
+#define KPbkContactInfoControlFlagsNull         0x00000000
+
+/// CPbkContactInfoControl flag: updates context pane if set
+#define KPbkContactInfoControlUpdateContextPane 0x00000001
+
+/// CPbkContactInfoControl flag: updates title pane if set
+#define KPbkContactInfoControlUpdateTitlePane   0x00000002
+
+/// CPbkContactInfoControl flag: updates status pane if set
+#define KPbkContactInfoControlUpdateStatusPane  (KPbkContactInfoControlUpdateContextPane | KPbkContactInfoControlUpdateTitlePane)
+
+/// CPbkContactInfoControl flag: shows name fields in the list if set
+#define KPbkContactInfoControlShowNameFields   0x00000004
+
+/// CPbkContactInfoControl flag: shows image fields in the list if set
+#define KPbkContactInfoControlShowImageFields   0x00000008
+
+
+/// Fetch Dialog flags
+#define PBK_FETCHDIALOG_FLAGS (EEikDialogFlagWait | EEikDialogFlagNoDrag | EEikDialogFlagCbaButtons  | EEikDialogFlagCbaButtons | EEikDialogFlagNoTitleBar | EEikDialogFlagFillAppClientRect)
+
+
+//  ENUMS
+
+/**
+ * Command ids for PbkView.dll.
+ */
+enum TPbkViewCommand
+    {
+    /// new/edit memory entry dialog menu items
+	EPbkCmdSave,
+	EPbkCmdAddItem,
+	EPbkCmdDeleteItem,
+	EPbkCmdEditItemLabel,
+	EPbkCmdFetchThumbnail,
+    EPbkCmdRemoveThumbnail,
+	// Settings list commands
+	EPbkCmdEditSetting
+    };
+
+/*
+ * @deprecated This is now declared in PbkDataSaveAppUi.hrh. Please change
+ * your #include.
+ *
+ * Command Ids for Phonebook's data save service.
+enum TPbkDataSaveCommandId
+    {
+    EPbkCmdDataSaveBase = 0,
+    EPbkCmdDataSaveCreateNew,
+    EPbkCmdDataSaveAddToExisting
+    };
+*/
+
+/**
+ * Phonebook control class IDs.
+ * These should be different from EIKON and AVKON IDs.
+ */
+enum 
+    {
+    /// IDs start here
+    EPbkCtStart = 6000,
+    /// Entry list control
+    EPbkCtEntryList,
+    /// Contact list control
+    EPbkCtContactList,
+    /// Contact view list control
+    EPbkCtContactViewList
+	};
+
+/**
+ * Control IDs in fetch dialog
+ */
+enum
+    {
+    /// Names list control in fetch dialog
+    ECtrlFetchNamesList = 1,
+    /// Groups list control fetch dialog
+    ECtrlFetchGroupsList 
+    };
+
+/// Note enum
+enum TPbkViewNoteIds
+    {
+    EPbkNoteContactsFetching = 1,
+    EPbkNoteProcessing
+    };
+    
+/**
+ * Phonebook settings list items
+ */
+enum
+    {
+    EPbkSettingNameOrder = 1
+    };
+
+/**
+ * Choices for Name order -setting
+ */
+enum
+    {
+    EPbkSettingNameOrderLastSpaceFirst = 0,
+    EPbkSettingNameOrderLastSeparatorFirst,
+    EPbkSettingNameOrderFirstSpaceLast
+    };
+
+
+#endif // __PbkView_HRH__
+
+// End of File

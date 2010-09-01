@@ -1,0 +1,29 @@
+/*
+* Copyright (c) 2007-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 presentation Japanese resources.
+*
+*/
+
+
+// INCLUDES
+#include "Pbk2JapaneseFieldOrdering.hrh"// resources for default languages
+#include "Pbk2PresentationCommon.rss" // common resources for all languages
+
+/*============================================================================
+* NB. Pbk2Presentation resources MUST be defined in Pbk2PresentationCommon.rss
+* because only one Pbk2Presentation.rsg file used with different language 
+* specific ".rsc" files. Otherwise BC is broken.
+============================================================================*/
+
+// End of File

@@ -1,0 +1,61 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Voice Tag Thin UI Extension project
+*              : specification file.
+*
+*/
+
+
+#include <platform/app/pbk2uid.h>
+#include "pbk2config.mmp"
+#include "../inc/pbk2internaluid.h"
+#include "../voicetagthinextension/inc/pvtvoicetagthinuiuid.h"
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+// Target information
+TARGET          Pbk2VoiceTagThinUi.dll
+TARGETTYPE      PLUGIN
+UID             KEComRecognitionUID2 KPbk2VoiceTagThinExtensionImplementationUID
+CAPABILITY      CAP_ECOM_PLUGIN
+VENDORID        VID_DEFAULT
+
+// Source path
+SOURCEPATH      ../VoiceTagThinExtension/Src
+
+// Source files
+SOURCE          DllMain.cpp
+SOURCE          CPvt2ThinUIExtensionPlugin.cpp
+
+// Resources
+START RESOURCE  ../Rss/Pbk2VoiceTagThinUI.rss
+TARGET          Pbk2VoiceTagThinUI
+TARGETPATH      ECOM_RESOURCE_DIR
+END
+
+// Other build related files
+SOURCEPATH      ../inc
+
+// Include paths
+USERINCLUDE     ../VoiceTagThinExtension/Inc
+SYSTEMINCLUDE   ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib ecom.lib eikcoctl.lib
+
+// Dependencies to S60 platform components
+LIBRARY FeatMgr.lib
+
+// End of File

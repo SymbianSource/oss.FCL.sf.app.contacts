@@ -1,0 +1,1119 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  
+*
+*/
+
+
+// Last name
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_lastname
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameN;
+            subField = EVPbkVersitSubFieldFamilyName;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameFN;
+            }
+        };
+    }
+
+// Last name reading
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_lastnamereading
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameSOUND;
+            subField = EVPbkVersitSubFieldFamilyNamePronunciation;
+            }
+        };
+    }
+
+// First name
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_firstname
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameN;
+            subField = EVPbkVersitSubFieldGivenName;
+            }
+        };
+    }
+
+// First name reading
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_firstnamereading
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameSOUND;
+            subField = EVPbkVersitSubFieldGivenNamePronunciation;
+            }
+        };
+    }
+
+// Prefix
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_prefix
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameN;
+            subField = EVPbkVersitSubFieldNamePrefix;
+            }
+        };
+    }
+
+// Suffix            
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_suffix
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameN;
+            subField = EVPbkVersitSubFieldNameSuffix;
+            }
+        };
+    }
+
+// Nick name
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_secondname
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-NICKNAME";
+            }
+        };
+    }
+
+// Landline phone (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_landphonehome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters = { EVPbkVersitParamHOME };
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamFAX, EVPbkVersitParamPAGER, 
+          EVPbkVersitParamCELL, EVPbkVersitParamVIDEO,
+          EVPbkVersitParamCAR };
+    }
+
+// Mobile phone (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_mobilephonehome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters = { EVPbkVersitParamCELL, EVPbkVersitParamHOME };
+            }
+        };
+    }
+
+// Video number (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_videonumberhome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters = { EVPbkVersitParamVIDEO, EVPbkVersitParamHOME };
+            }
+        };
+    }
+
+// Fax number (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_faxnumberhome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters = { EVPbkVersitParamFAX, EVPbkVersitParamHOME };
+            }
+        };
+    }
+
+// VoIP (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_voiphome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            parameters = { EVPbkVersitParamVOIP, EVPbkVersitParamHOME };
+            extensionName = "X-SIP";
+            }
+        };
+    }
+
+// Email address (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_emailhome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameEMAIL;
+            parameters = { EVPbkVersitParamINTERNET, EVPbkVersitParamHOME };
+            }
+        };
+    }
+
+// URL (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_urlhome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameURL;
+            parameters = { EVPbkVersitParamHOME };
+            }
+        };
+    }
+
+// Address label (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrlabelhome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameLABEL;
+            parameters = { EVPbkVersitParamHOME };
+            }
+        };
+    }
+
+// Address Postoffice (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrpohome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldPostOfficeAddress;
+            parameters = { EVPbkVersitParamHOME };
+            }
+        };
+    }
+
+// Address Extension (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrexthome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldExtendedAddress;
+            parameters = { EVPbkVersitParamHOME };
+            }
+        };
+    }
+
+// Address Street (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrstreethome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldStreet;
+            parameters = { EVPbkVersitParamHOME };
+            }
+        };
+    }
+
+// Address Locality (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrlocalhome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldLocality;
+            parameters = { EVPbkVersitParamHOME };
+            }
+        };
+    }
+
+// Address Region (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrregionhome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldRegion;
+            parameters = { EVPbkVersitParamHOME };
+            }
+        };
+    }
+
+// Address Postal Code (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrpostcodehome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldPostalCode;
+            parameters = { EVPbkVersitParamHOME };
+            }
+        };
+    }
+
+// Address Country (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrcountryhome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldCountry;
+            parameters = { EVPbkVersitParamHOME };
+            }
+        };
+    }
+
+// Job title
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_jobtitle
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTITLE;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameROLE;
+            }
+        };
+    }
+
+// Company name
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_companyname
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameORG;
+            subField = EVPbkVersitSubFieldOrgName;
+            }
+        };
+    }
+
+// Landline phone (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_landphonework
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters = { EVPbkVersitParamWORK };
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamFAX, EVPbkVersitParamPAGER, 
+          EVPbkVersitParamCELL, EVPbkVersitParamVIDEO,
+          EVPbkVersitParamCAR };
+    }
+
+// Mobile phone (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_mobilephonework
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters = { EVPbkVersitParamCELL, EVPbkVersitParamWORK };
+            }
+        };
+    }
+
+// Video number (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_videonumberwork
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters = { EVPbkVersitParamVIDEO, EVPbkVersitParamWORK };
+            }
+        };
+    }
+
+// Fax number (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_faxnumberwork
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters = { EVPbkVersitParamFAX, EVPbkVersitParamWORK };
+            }
+        };
+    }
+
+// VoIP (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_voipwork
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            parameters = { EVPbkVersitParamVOIP, EVPbkVersitParamWORK };
+            extensionName = "X-SIP";
+            }
+        };
+    }
+
+// Email address (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_emailwork
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameEMAIL;
+            parameters = { EVPbkVersitParamINTERNET, EVPbkVersitParamWORK };
+            }
+        };
+    }
+
+// URL (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_urlwork
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameURL;
+            parameters = { EVPbkVersitParamWORK };
+            }
+        };
+    }
+
+// Address label (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrlabelwork
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameLABEL;
+            parameters = { EVPbkVersitParamWORK };
+            }
+        };
+    }
+
+// Address Postoffice (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrpowork
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldPostOfficeAddress;
+            parameters = { EVPbkVersitParamWORK };
+            }
+        };
+    }
+
+// Address Extension (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrextwork
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldExtendedAddress;
+            parameters = { EVPbkVersitParamWORK };
+            }
+        };
+    }
+
+// Address Street (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrstreetwork
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldStreet;
+            parameters = { EVPbkVersitParamWORK };
+            }
+        };
+    }
+
+// Address Locality (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrlocalwork
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldLocality;
+            parameters = { EVPbkVersitParamWORK };
+            }
+        };
+    }
+
+// Address Region (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrregionwork
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldRegion;
+            parameters = { EVPbkVersitParamWORK };
+            }
+        };
+    }
+
+// Address Postal Code (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrpostcodework
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldPostalCode;
+            parameters = { EVPbkVersitParamWORK };
+            }
+        };
+    }
+
+// Address Country (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrcountrywork
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldCountry;
+            parameters = { EVPbkVersitParamWORK };
+            }
+        };
+    }
+
+// Landline phone (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_landphonegen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME,
+          EVPbkVersitParamFAX, EVPbkVersitParamPAGER, 
+          EVPbkVersitParamCELL, EVPbkVersitParamVIDEO,
+          EVPbkVersitParamCAR };
+    }
+
+// Mobile phone (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_mobilephonegen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters = { EVPbkVersitParamCELL };
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// Video number (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_videonumbergen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters = { EVPbkVersitParamVIDEO };
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// Fax number (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_faxnumbergen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters = { EVPbkVersitParamFAX };
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// VoIP (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_voipgen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            parameters = { EVPbkVersitParamVOIP };
+            extensionName = "X-SIP";
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// PTT (POC)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_poc
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            parameters = { EVPbkVersitParamPOC };
+            extensionName = "X-SIP";
+            }
+        };
+    }
+
+// SWIS
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_swis
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            parameters = { EVPbkVersitParamSWIS };
+            extensionName = "X-SIP";
+            }
+        };
+    }
+    
+// SIP
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_sip
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-SIP";
+            }
+        };
+    }
+
+// Email address (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_emailgen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameEMAIL;
+            parameters = { EVPbkVersitParamINTERNET };
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// URL (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_urlgen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameURL;
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// Address label (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrlabelgen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameLABEL;
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// Address Postoffice (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrpogen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldPostOfficeAddress;
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// Address Extension (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrextgen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldExtendedAddress;
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// Address Street (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrstreetgen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldStreet;
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// Address Locality (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrlocalgen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldLocality;
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// Address Region (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrregiongen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldRegion;
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// Address Postal Code (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrpostcodegen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldPostalCode;
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// Address Country (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_addrcountrygen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameADR;
+            subField   = EVPbkVersitSubFieldCountry;
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// Pager number
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_pagernumber
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters = { EVPbkVersitParamPAGER };
+            }
+        };
+    }
+
+// DTMF string
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_dtmfstring
+    {
+    nonVersitType = EVPbkNonVersitTypeDTMF;
+    }
+
+// Wv(IM) address
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_wvaddress
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameX;
+            extensionName = "X-WV-ID";
+            }
+        };
+    }
+
+// Date
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_date
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameBDAY;
+            }
+        };
+    }
+
+// Note
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_note
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameNOTE;
+            }
+        };
+    }
+/*
+// TODO: Uncomment this fieldtype when this is needed
+// Picture
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_picture
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNamePHOTO;
+            subField   = EVPbkVersitSubFieldPicture;
+            }
+        };
+    }
+*/
+// Thumbnail photo
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_thumbnailpic
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNamePHOTO;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameLOGO;
+            }
+        };
+    }
+
+// Ring tone
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_ringtone
+    {
+    nonVersitType = EVPbkNonVersitTypeRingTone;
+    }
+
+// Caller object image
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_callerobjimg
+    {
+    nonVersitType = EVPbkNonVersitTypeCodImage;
+    }
+
+// Caller object text
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_callerobjtext
+    {
+    nonVersitType = EVPbkNonVersitTypeCodText;
+    }
+
+// Middle name
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_middlename
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameN;
+            subField = EVPbkVersitSubFieldAdditionalName;
+            }
+        };
+    }
+
+// Department            
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_department
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameORG;
+            subField = EVPbkVersitSubFieldOrgUnit;
+            }
+        };
+    }
+
+// Assistant name
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_asstname
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameX;
+            extensionName = "X-ASSISTANT";
+            }
+        };
+    }
+// Spouse
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_spouse
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameX;
+            extensionName = "X-SPOUSE";
+            }
+        };
+    }
+
+// Children
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_children
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameX;
+            extensionName = "X-CHILDREN";
+            }
+        };
+    }
+
+// Assistant phone
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_asstphone
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameX;
+            extensionName = "X-ASSISTANT-TEL";
+            }
+        };
+    }
+// Car phone
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_carphone
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters = { EVPbkVersitParamCAR };
+            }
+        };
+    }
+
+// Anniversary
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_anniversary
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameX;
+            extensionName = "X-ANNIVERSARY";
+            }
+        };
+    }
+
+// Class - Syncronization
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_syncclass
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameX;
+            extensionName = "X-CLASS";
+            }
+        };
+    }
+
+// Location privacy indicator
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_locprivacy
+    {
+    nonVersitType = EVPbkNonVersitTypeLocationPrivacy;
+    }
+
+// Generic label field type for folded view names and group labels
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_genlabel
+    {
+    nonVersitType = EVPbkNonVersitTypeGenericLabel;
+    }        
+
+// Top Contact indicator
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_topcontact
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameTopContact;
+            }
+        };
+    }
+
+// IMPP            
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_impp
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameIMPP;
+            }
+       };
+    }
+
+// Geographic coordinates (home)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_geohome
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameGEO;
+            parameters = { EVPbkVersitParamHOME };
+            }
+        };
+    }
+
+// Geographic coordinates (work)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_geowork
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameGEO;
+            parameters = { EVPbkVersitParamWORK };
+            }
+        };
+    }
+
+// Geographic coordinates (general)
+RESOURCE VPBK_FIELD_TYPE r_vpbk_field_type_geogen
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameGEO;
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// End of File

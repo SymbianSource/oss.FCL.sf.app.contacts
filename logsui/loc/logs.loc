@@ -1,0 +1,677 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This is a localisation file for Logs.APP
+*     A .loc file is the one and only place where the logical strings
+*     to be localised are defined. 
+*  -------------------------------------------------------------------
+*
+*/
+
+
+// LOCALISATION STRINGS
+
+/**
+ *  Default (implementation English) Resource localisation file for
+ *  Logs application information resource Logs.rss. 
+ */
+
+//  LOCALISATION STRINGS  
+
+//d:Logs applications name
+//d:in the App Shell grid
+//l:cell_app_pane_t1
+//
+#define qtn_apps_logs_grid                  "Logs"
+
+//d:Logs applications name
+//d:in the App Shell list
+//l:list_single_large_graphic_pane_t1
+//
+#define qtn_apps_logs_list                  "Logs"
+
+//d:Logs applications title in
+//d:the mainpane
+//l:title_pane_t2/opt12
+//
+#define qtn_logs_title_logs                 "Logs"
+
+//  System menu item texts
+
+//d:Exit selection from the popup
+//d:menu pane
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_cmd_exit                   "Exit"
+
+// Logs options menu EventList -state
+
+//d:Detail selection from the popup
+//d:menu pane
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_cmd_details                "View details"
+
+//d:Log view's menu item view text 
+//d:Used in options menu when MSK label is shown
+//l:list_single_pane_t1_cp2
+//r:3.2
+//
+#define qtn_logs_cmd_view             			"View"
+
+//d:Filter selection from the popup
+//d:menu pane
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_cmd_filter                 "Filter"
+
+//d:Clear list selection from the popup
+//d:menu pane
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_cmd_clear_list             "Clear list"
+
+//d:Settings selection from the popup
+//d:menu pane
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_settings                   "Settings"
+
+//d:Settings view's title
+//l:title_pane_t2/opt12
+//
+#define qtn_logs_om_settings                "Logs settings"
+
+//d:This is asked, when user is going
+//d:to clear the whole logs database
+//l:popup_note_window
+//
+#define qtn_logs_query_clear_log_list       "Do you want to\nclear all events?"
+
+//d:Query text to show, when ensuring
+//d:the all the recent lists deletion.
+//l:popup_note_window
+//
+#define qtn_stm_note_erase_all_f_lists      "Clear all Call\nlists from Call\nRegister?"
+
+//d:Shows that there is no events to show
+//l:main_list_empty_pane
+//
+#define qtn_log_no_events                   "No log events"
+
+//d:Shows that the is no events to show
+//d:due the filter selection
+//l:main_list_empty_pane
+//
+#define qtn_log_no_events_filter            "No events due to\nfilter selection"
+
+//d:Text to show in the Details view,
+//d:when the number is private
+//l:list_single_graphic_heading_pane_t1
+//
+#define qtn_dlogs_con_private_num           "Private number"
+
+//d:Text to show, when the number is
+//d:private
+//l:list_single_graphic_heading_pane_t1
+//
+#define qtn_logs_con_private_num            "Private number"
+
+//d:Text to show in the Details view,
+//d:when the event is SAT event
+//l:list_single_graphic_heading_pane_t1
+//
+#define qtn_logs_con_oper_serv              "Operator Service"
+
+//d:Text to show in the Details view,
+//d:when the number is unknown
+//l:list_single_graphic_heading_pane_t1
+//
+#define qtn_dlogs_con_unknown               "Unknown caller"
+
+//d:Text to show, when the number is
+//d:unknown
+//l:list_single_graphic_heading_pane_t1
+//
+#define qtn_logs_con_unknown                "Unknown caller"
+
+//d:Text to show in the Details view,
+//d:when the number is withheld because of payphone call
+//l:list_single_graphic_heading_pane_t1
+//
+#define qtn_dlogs_con_payphone              "Payphone call"
+        
+
+//d:Text to show, when the number is
+//d:withheld because of payphone call
+//l:list_single_graphic_heading_pane_t1
+//
+#define qtn_logs_con_payphone               "Payphone call"
+
+
+//d:Text to show, when the call is made to 
+//d:emergency number
+//l:list_single_graphic_heading_pane_t1
+#define qtn_logs_emerg_call                 "Emergency call"
+
+//d:Text to show, when the call is made to 
+//d:csd number and number's wanted to be hidden
+//l:list_single_graphic_heading_pane_t1
+#define qtn_logs_con_cs_access              "GSM data access"
+
+// Logs Sub application view's texts
+
+//d:System menu item's open text
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_stm_cmd_open               "Open"
+
+//d:Clears all the recent registers
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_stm_cmd_clear_reg          "Clear Call Register"
+
+// Logs options menu AppList -state
+
+//d:Counters view's menu's one item
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_cmd_open                   "Open"
+
+// Logs options menu Detail -state
+
+//d:Information of succesfully copy
+//d:to clipboard
+//l:popup_note_window
+//
+#define qtn_logs_note_copy_done             "Number copied\nto clipboard!"
+
+//d:Counters view's selection,
+//d:Call Register
+//l:list_double_large_graphic_pane_t1
+//
+#define qtn_logs_ls1_call_register          "Call register"
+
+//d:Counters view's selection,
+//d:Call Timers
+//l:list_double_large_graphic_pane_t1
+//
+#define qtn_logs_ls1_timers                 "Call timers"
+
+//d:Call register view's title
+//l:title_pane_t2/opt12
+//
+#define qtn_stm_title_call_register         "Call register"
+
+// Stm recents lists titles for sub app view
+
+//d:Call register view's selectable item
+//l:list_double_large_graphic_pane_t1
+//
+#define qtn_logs_stm_missed_calls           "Missed calls"
+
+//d:Call register view's selectable item
+//l:list_double_large_graphic_pane_t1
+//
+#define qtn_logs_stm_received_calls         "Received calls"
+
+//d:Call register view's selectable item
+//l:list_double_large_graphic_pane_t1
+//
+#define qtn_logs_stm_dialled_calls          "Dialled calls"
+
+// Logs Settings menu's titles
+
+/************************************************
+"Show Call Duration" moved General Settings application, not in use any more in Logs 
+
+//d:Settings view's static line
+//d:Show call duration
+//l:list_setting_pane_1
+//
+#define qtn_logs_lda3_time                  "Show call duration"
+************************************************/
+
+//d:Settings view's static line
+//d:Show cost in
+//l:list_setting_pane_t1
+//
+#define qtn_aoc_lda3_set_units              "Show costs in"
+
+//d:Settings view's static line
+//d:Log length
+//l:list_setting_pane_t1
+//
+#define qtn_logs_lda3_length                "Log length"
+
+//d:Settings view's static line
+//d:Call costs limit
+//l:list_setting_pane_t1
+//
+#define qtn_aoc_lda3_set_limit              "Call costs' limit"
+
+// Detail view's listbox headers.
+
+//d:Detail view's heading Direction
+//l:list_single_heading_pane_t2
+//
+#define qtn_dlogs_lihd_direction            "Direction"
+
+//d:Detail view's heading Type
+//l:list_single_heading_pane_t2
+//
+#define qtn_dlogs_lihd_type                 "Type"
+
+//d:Detail view's heading Status
+//l:list_single_heading_pane_t2
+//
+#define qtn_dlogs_lihd_status               "Status"
+
+//d:Detail view's heading Duration
+//l:list_single_heading_pane_t2
+//
+#define qtn_dlogs_lihd_duration             "Duration"
+
+//d:Detail view: number of parts used in SMS (for text messages that are sent in more than in 1 part)
+//l:list_single_heading_pane_t2
+//
+#define qtn_dlogs_lihd_number               "Parts"
+
+//d:Detail view's heading Sent
+//l:list_single_heading_pane_t2
+//
+#define qtn_dlogs_lihd_sent                 "Sent"
+
+//d:Detail view's heading Received
+//l:list_single_heading_pane_t2
+//
+#define qtn_dlogs_lihd_received             "Received"
+
+//d:Detail view's heading Telephone number
+//l:list_single_heading_pane_t2
+//
+#define qtn_dlogs_lihd_tel_no               "Tel no"
+
+//d:Detail view's short text for kilobytes
+//l:list_single_heading_pane_t1
+//
+#define qtn_dlogs_amount_bytes              "%U kB"
+
+
+// **********************************************
+// Settings view's stuff
+// **********************************************
+
+//d:Settings view's menu's item
+//d:Change
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_set_cmd_change             "Change"
+
+// **********************************************
+// Settings view's popup "log length" list texts.
+// **********************************************
+
+//d:Settings view's dynamic line
+//d:for log length
+//d:No log
+//l:list_set_graphic_pane_t1
+//
+#define qtn_logs_adv3_no_log                "No log"
+
+//d:Settings view's dynamic line
+//d:for log length
+//d:1 day
+//l:list_set_graphic_pane_t1
+//
+#define qtn_logs_adv3_lenght_1              "1 day"
+
+//d:Settings view's dynamic line
+//d:for log length
+//d:10 days
+//l:list_set_graphic_pane_t1
+//
+#define qtn_logs_adv3_lenght_10             "10 days"
+
+//d:Settings view's dynamic line
+//d:for log length
+//d:30 days
+//l:list_set_graphic_pane_t1
+//
+#define qtn_logs_adv3_lenght_30             "30 days"
+
+//d:When selecting from the Settings view
+//d:No log, this query text will appear
+//l:popup_note_window
+//
+#define qtn_logs_query_no_log               "The log will not\nbe kept - \ncontinue?"
+
+
+/************************************************
+"Show Call Duration" moved General Settings application, not in use any more in Logs 
+
+//d:User choose that is the duration
+//d:of the call displayed, with active
+//d:value: On, is a setting value for
+//d:showing the call time.
+//l:list_setting_pane_2
+//
+#define qtn_logs_ldv3_timer_on              "On"
+
+//d:User choose that is the duration
+//d:of the call displayed, with active
+//d:value: Off, is a setting value for
+//d:not showing the call time.
+//l:list_setting_pane_2
+//
+#define qtn_logs_ldv3_timer_off             "Off"
+************************************************/
+
+
+// *********************************
+// Detail view's event type texts.
+// *********************************
+
+//d:Details view's direction text IN
+//l:list_single_heading_pane_t1
+//
+#define qtn_dlogs_dir_in                    "In"
+
+//d:Details view's direction text OUT
+//l:list_single_heading_pane_t1
+//
+#define qtn_dlogs_dir_out                   "Out"
+
+//d:Details view's direction text MISSED
+//l:list_single_heading_pane_t1
+//
+#define qtn_dlogs_dir_missed                "Missed"
+
+//d:Details view's status text ACTIVE
+//l:list_single_heading_pane_t1
+//
+#define qtn_dlogs_stat_active               "Active"
+
+//d:Details view's status text DELIVERED
+//l:list_single_heading_pane_t1
+//
+#define qtn_dlogs_stat_delivered            "Delivered"
+
+//d:Details view's status text PENDING
+//l:list_single_heading_pane_t1
+//
+#define qtn_dlogs_stat_pending              "Pending"
+
+//d:Details view's status text FAILURE
+//l:list_single_heading_pane_t1
+//
+#define qtn_dlogs_stat_failure              "Failure"
+
+//d:Details view's status text Sent
+//l:list_single_heading_pane_t1
+#define qtn_dlogs_stat_sent          "Sent"
+
+//d:Menu item Open phonebook
+//d:menu pane
+//l:list_single_pane_t1_cp2 
+//r:5.0
+//
+#define qtn_logs_opt_open_phonebook         "Open phonebook"
+
+//
+// Filter popup view's listbox content.
+//
+
+//d:Filter popup's heading text
+//l:heading_pane_t1
+//
+#define qtn_logs_filter_show                "Show:"
+
+//d:Filter selection, All communication
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_f_all_com                  "All communication"
+
+//d:Filter selection, All outgoing
+//d:communication
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_f_all_out_com              "All outgoing comm."
+
+//d:Filter selection, All incoming
+//d:communication
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_f_all_in_com               "All incoming comm."
+
+//d:Filter selection, Voice calls
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_f_voice_calls              "Voice calls"
+
+//d:Filter selection, Voice and video calls
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_f_voicevideo_calls         "Voice and video calls"
+
+//d:Filter selection, Messages
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_f_messages                 "Messages"
+
+//d:Filter selection, Packet connections
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_f_packet_conn              "GPRS connections"
+
+//d:Filter selection, Data calls
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_f_data_calls               "Data calls"
+
+//d:Filter selection, Wlan connections calls
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_f_data_wlan                "WLAN connections"
+
+//d:Filter selection, Selected event
+//l:list_single_pane_t1_cp2
+//
+#define qtn_logs_f_selected_event           "Selected event"
+
+//d:Will be shown on the screen, when
+//d:fetching the data from the database
+//l:main_list_empty_pane
+//
+#define qtn_logs_wait_fetching_data         "Fetching data..."
+ 
+//d:Disabled option note during active call.
+//l:popup_note_window
+//
+#define qtn_info_during_call         "Not possible during active call"
+
+//d:GPRS counter view's title
+//l:title_pane_t2/opt12
+//
+#define qtn_log_title_gprs_count         "GPRS counter"
+
+//d:GPRS counter view's selection
+//l:list_double_large_graphic_pane_t1
+//
+#define qtn_logs_ls1_gprs       "GPRS counter"
+
+//d:Clear GPRS counters from the popup
+//d:menu pane
+//l:list_single_pane_t1_cp2
+//
+#define qtn_log_gprs_clear_count    "Clear counters"
+
+//d:GPRS counter view's All sent data
+//l:list_double_large_graphic_pane_t1
+//
+#define qtn_log_gprs_sent_data  "All sent data"
+
+//d:GPRS counter view's All received data
+//l:list_double_large_graphic_pane_t1
+//
+#define qtn_log_gprs_recei_data     "All received data"
+
+//d:GPRS counter view's amount in bytes
+//l:list_double2_large_graphic_pane
+//
+#define qtn_log_gprs_amount_b   "%U B"
+
+//d:GPRS counter view's amount in kilobytes
+//l:list_double2_large_graphic_pane
+//
+#define qtn_log_gprs_amount_kb  "%U kB"
+
+//d:GPRS counter view's amount in megabytes
+//l:list_double2_large_graphic_pane
+//
+#define qtn_log_gprs_amount_mb  "%U MB"
+
+//d:GPRS counter view's amount in gigabytes
+//l:list_double2_large_graphic_pane
+//
+#define qtn_log_gprs_amount_gb  "%U GB"
+
+//d:Information note, that counter clearing
+//d:is not possible during active
+//d:GPRS connection
+//l:popup_note_window
+//
+#define qtn_info_during_gprs_conn   "Not possible during active GPRS connection"
+
+
+//d:In the Log View. The listbox line's
+//d:title text "PTT call"
+//l:list_single_graphic_heading_pane_t1
+//
+#define qtn_poc_call                        "PTT call"
+
+
+//d:In the Log View. The listbox line's
+//d:title text "Internet"
+//l:list_single_graphic_heading_pane_t2
+//
+#define qtn_logs_litext_com_voip            "Internet"
+
+
+//d:In the Log View. The listbox line's
+//d:title text "PTT Info"
+//l:list_single_graphic_heading_pane_t2
+//
+#define qtn_poc_info_call                   "PTT Info"
+
+
+//d:In the Log View. The listbox line's
+//d:title text "Address"
+//l:list_single_graphic_heading_pane_t2
+//
+#define qtn_dlogs_lihd_poc_addr             "Address"
+
+
+//d:In the Logs datail view. The listbox line's
+//d:title text "From"
+//l:list_single_heading_pane_t2
+//
+#define qtn_voip_call_from                  "From"
+
+
+//d:In the Logs datail view. The listbox line's
+//d:title text "To"
+//l:list_single_heading_pane_t2
+//
+#define qtn_voip_call_to                    "To"
+
+
+//d:In the Log View. The listbox line's
+//d:text "Group call" (shown instead of remote contact name
+//d:if the remote contact is not is available)
+//l:list_single_heading_pane_t2
+//
+#define qtn_pocuiintgr_logs_group_call      "Group call"
+
+
+//d:Detail view's menu's item
+//l:list_single_pane_t1_cp2
+//
+#define qtn_dlogs_cmd_copy_address          "Copy address"
+
+//d:Information note of succesful voip address copy
+//d:to clipboard
+//l:popup_note_window
+//
+#define qtn_voip_address_copied             "Voip address copied\nto clipboard!"
+
+
+//d:Information note of succesful poc address copy
+//d:to clipboard
+//l:popup_note_window
+//
+#define qtn_poc_address_copied              "Poc address copied\nto clipboard!"
+
+
+//d:Text "Logs" for General Settings Applications view (provided by
+//d:Logs Plugin).
+//l:list_single_large_graphic_pane_t1
+// r:3.1
+//
+#define qtn_set_folder_logs                 "Logs GS"
+
+//d:Informative text "1 missed call" for Missed calls universal indicator 
+//d:in Ecom plugin preview pop-up 
+//l: list_single_uniindi_pane_t1
+//
+#define qtn_logs_stylus_popup_missed1	      "1 missed call"
+
+//d:Informative text "N missed calls" for Missed calls universal indicator 
+//d:in Ecom plugin preview pop-up 
+//l: list_single_uniindi_pane_t1
+//
+#define qtn_logs_stylus_popup_missed        "%N missed calls"
+
+//d:Text for tooltip in Toolbar for voice, voip or poc call
+//l:popup_ai_links_title_window_t1
+//r:5.0
+//
+#define qtn_logs_tb_call                    "Call"
+
+//d:Text for tooltip in Toolbar for Create message
+//l:popup_ai_links_title_window_t1
+//r:5.0
+//
+#define qtn_logs_tb_msg                     "New message"
+
+//d:Text for tooltip in Toolbar for Open Phonebook
+//l:popup_ai_links_title_window_t1
+//r:5.0
+//
+#define qtn_logs_tb_pb                      "Open Phonebook"
+
+//d:Names List empty text
+//l:main_pane_empty_t1/opt2
+//r:5.0
+//
+#define qtn_logs_logging_off                "Log not in use"
+
+//d:Informative (secondary) text for empty names list
+//l:main_list_empty_pane/opt2
+//r:5.0
+//
+#define qtn_logs_logging_off_secondary      "Select 'Settings' from 'Options' to activate and define duration"
+
+// End of File
+

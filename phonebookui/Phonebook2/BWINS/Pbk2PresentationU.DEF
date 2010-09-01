@@ -1,0 +1,172 @@
+EXPORTS
+	??0CPbk2AttachmentFileArray@@QAE@H@Z @ 1 NONAME ; CPbk2AttachmentFileArray::CPbk2AttachmentFileArray(int)
+	??0RPbk2LocalizedResourceFile@@QAE@AAVCCoeEnv@@@Z @ 2 NONAME ; RPbk2LocalizedResourceFile::RPbk2LocalizedResourceFile(class CCoeEnv &)
+	??0TPbk2IconId@@QAE@AAVTResourceReader@@@Z @ 3 NONAME ; TPbk2IconId::TPbk2IconId(class TResourceReader &)
+	??0TPbk2IconId@@QAE@ABVTUid@@H@Z @ 4 NONAME ; TPbk2IconId::TPbk2IconId(class TUid const &, int)
+	??0TPbk2IconId@@QAE@XZ @ 5 NONAME ; TPbk2IconId::TPbk2IconId(void)
+	??0TPbk2ImageManagerParams@@QAE@XZ @ 6 NONAME ; TPbk2ImageManagerParams::TPbk2ImageManagerParams(void)
+	??0TPbk2SortOrderFieldMapper@@QAE@XZ @ 7 NONAME ; TPbk2SortOrderFieldMapper::TPbk2SortOrderFieldMapper(void)
+	??0TPbk2StoreContactAnalyzer@@QAE@ABVCVPbkContactManager@@PBVMVPbkStoreContact@@@Z @ 8 NONAME ; TPbk2StoreContactAnalyzer::TPbk2StoreContactAnalyzer(class CVPbkContactManager const &, class MVPbkStoreContact const *)
+	?__Pbk2Presentation_DummyExport3@@YAXXZ @ 9 NONAME ; void __Pbk2Presentation_DummyExport3(void)
+	??8TPbk2IconId@@QBEHABV0@@Z @ 10 NONAME ; int TPbk2IconId::operator==(class TPbk2IconId const &) const
+	?AddContactStoreURIL@CPbk2StoreConfiguration@@QAEXVTVPbkContactStoreUriPtr@@@Z @ 11 NONAME ; void CPbk2StoreConfiguration::AddContactStoreURIL(class TVPbkContactStoreUriPtr)
+	?AddDefaultSavingStoreObserverL@CPbk2StoreConfiguration@@QAEXAAVMPbk2DefaultSavingStoreObserver@@@Z @ 12 NONAME ; void CPbk2StoreConfiguration::AddDefaultSavingStoreObserverL(class MPbk2DefaultSavingStoreObserver &)
+	?AddObserverL@CPbk2SortOrderManager@@QAEXAAVMPbk2SortOrderObserver@@@Z @ 13 NONAME ; void CPbk2SortOrderManager::AddObserverL(class MPbk2SortOrderObserver &)
+	?AddObserverL@CPbk2StoreConfiguration@@QAEXAAVMPbk2StoreConfigurationObserver@@@Z @ 14 NONAME ; void CPbk2StoreConfiguration::AddObserverL(class MPbk2StoreConfigurationObserver &)
+	?AddSupportedTemplateFieldsL@CPbk2PresentationContact@@QAEXXZ @ 15 NONAME ; void CPbk2PresentationContact::AddSupportedTemplateFieldsL(void)
+	?AppendAndReplaceChars@Pbk2PresentationUtils@@SAHAAVTDes16@@ABVTDesC16@@11@Z @ 16 NONAME ; int Pbk2PresentationUtils::AppendAndReplaceChars(class TDes16 &, class TDesC16 const &, class TDesC16 const &, class TDesC16 const &)
+	?AppendFromArrayL@CPbk2StorePropertyArray@@QAEXAAV1@@Z @ 17 NONAME ; void CPbk2StorePropertyArray::AppendFromArrayL(class CPbk2StorePropertyArray &)
+	?AppendFromResourceL@CPbk2StorePropertyArray@@QAEXAAVTResourceReader@@@Z @ 18 NONAME ; void CPbk2StorePropertyArray::AppendFromResourceL(class TResourceReader &)
+	?AppendL@CPbk2StorePropertyArray@@QAEXPAVCPbk2StoreProperty@@@Z @ 19 NONAME ; void CPbk2StorePropertyArray::AppendL(class CPbk2StoreProperty *)
+	?AppendViewDefinitionL@CPbk2StoreProperty@@QAEXPAVCPbk2StoreViewDefinition@@@Z @ 20 NONAME ; void CPbk2StoreProperty::AppendViewDefinitionL(class CPbk2StoreViewDefinition *)
+	?At@CPbk2FieldPropertyGroup@@QBEABVMPbk2FieldProperty@@H@Z @ 21 NONAME ; class MPbk2FieldProperty const & CPbk2FieldPropertyGroup::At(int) const
+	?At@CPbk2PresentationContactFieldCollection@@QBEAAVCPbk2PresentationContactField@@H@Z @ 22 NONAME ; class CPbk2PresentationContactField & CPbk2PresentationContactFieldCollection::At(int) const
+	?At@CPbk2StoreInfoItemArray@@QBEABVCPbk2StoreInfoItem@@H@Z @ 23 NONAME ; class CPbk2StoreInfoItem const & CPbk2StoreInfoItemArray::At(int) const
+	?At@CPbk2StorePropertyArray@@QBEABVCPbk2StoreProperty@@H@Z @ 24 NONAME ; class CPbk2StoreProperty const & CPbk2StorePropertyArray::At(int) const
+	?AvailableFieldsToAddL@CPbk2PresentationContact@@QBEPAV?$CArrayPtr@$$CBVMPbk2FieldProperty@@@@XZ @ 25 NONAME ; class CArrayPtr<class MPbk2FieldProperty const > * CPbk2PresentationContact::AvailableFieldsToAddL(void) const
+	?Close@RPbk2LocalizedResourceFile@@QAEXXZ @ 26 NONAME ; void RPbk2LocalizedResourceFile::Close(void)
+	?__Pbk2Presentation_DummyExport4@@YAXXZ @ 27 NONAME ; void __Pbk2Presentation_DummyExport4(void)
+	?ContainsField@CPbk2PresentationContactFieldCollection@@QBEHABVMPbk2FieldProperty@@@Z @ 28 NONAME ; int CPbk2PresentationContactFieldCollection::ContainsField(class MPbk2FieldProperty const &) const
+	?ContainsFieldFromGroup@CPbk2PresentationContactFieldCollection@@QBEHABVCPbk2FieldPropertyGroup@@@Z @ 29 NONAME ; int CPbk2PresentationContactFieldCollection::ContainsFieldFromGroup(class CPbk2FieldPropertyGroup const &) const
+	?Count@CPbk2FieldPropertyGroup@@QBEHXZ @ 30 NONAME ; int CPbk2FieldPropertyGroup::Count(void) const
+	?Count@CPbk2StoreInfoItemArray@@QBEHXZ @ 31 NONAME ; int CPbk2StoreInfoItemArray::Count(void) const
+	?Count@CPbk2StorePropertyArray@@QBEHXZ @ 32 NONAME ; int CPbk2StorePropertyArray::Count(void) const
+	?CreateContactViewForStoresLC@CPbk2ContactViewBuilder@@QBEPAVMVPbkContactViewBase@@ABVCVPbkContactStoreUriArray@@AAVMVPbkContactViewObserver@@ABVMVPbkFieldTypeList@@PAVCVPbkFieldTypeSelector@@K@Z @ 33 NONAME ; class MVPbkContactViewBase * CPbk2ContactViewBuilder::CreateContactViewForStoresLC(class CVPbkContactStoreUriArray const &, class MVPbkContactViewObserver &, class MVPbkFieldTypeList const &, class CVPbkFieldTypeSelector *, unsigned long) const
+	?CreateGroupViewForStoresLC@CPbk2ContactViewBuilder@@QBEPAVMVPbkContactViewBase@@ABVCVPbkContactStoreUriArray@@AAVMVPbkContactViewObserver@@ABVMVPbkFieldTypeList@@PAVCVPbkFieldTypeSelector@@K@Z @ 34 NONAME ; class MVPbkContactViewBase * CPbk2ContactViewBuilder::CreateGroupViewForStoresLC(class CVPbkContactStoreUriArray const &, class MVPbkContactViewObserver &, class MVPbkFieldTypeList const &, class CVPbkFieldTypeSelector *, unsigned long) const
+	?CreateL@Pbk2ContactNameFormatterFactory@@SAPAVMPbk2ContactNameFormatter@@ABVMVPbkFieldTypeList@@ABVCPbk2SortOrderManager@@AAVTResourceReader@@PBVTDesC16@@PAVRFs@@@Z @ 35 NONAME ; class MPbk2ContactNameFormatter * Pbk2ContactNameFormatterFactory::CreateL(class MVPbkFieldTypeList const &, class CPbk2SortOrderManager const &, class TResourceReader &, class TDesC16 const *, class RFs *)
+	?CreateL@Pbk2ContactNameFormatterFactory@@SAPAVMPbk2ContactNameFormatter@@ABVMVPbkFieldTypeList@@ABVCPbk2SortOrderManager@@PAVRFs@@@Z @ 36 NONAME ; class MPbk2ContactNameFormatter * Pbk2ContactNameFormatterFactory::CreateL(class MVPbkFieldTypeList const &, class CPbk2SortOrderManager const &, class RFs *)
+	?CreateL@Pbk2ContactNameFormatterFactory@@SAPAVMPbk2ContactNameFormatter@@ABVTDesC16@@ABVMVPbkFieldTypeList@@ABVCPbk2SortOrderManager@@PAVRFs@@@Z @ 37 NONAME ; class MPbk2ContactNameFormatter * Pbk2ContactNameFormatterFactory::CreateL(class TDesC16 const &, class MVPbkFieldTypeList const &, class CPbk2SortOrderManager const &, class RFs *)
+	?CreateL@Pbk2FieldPropertiesFactory@@SAPAVMPbk2FieldPropertyArray@@ABVMVPbkFieldTypeList@@PAVRFs@@@Z @ 38 NONAME ; class MPbk2FieldPropertyArray * Pbk2FieldPropertiesFactory::CreateL(class MVPbkFieldTypeList const &, class RFs *)
+	?CreateLC@Pbk2FieldPropertiesFactory@@SAPAVMPbk2FieldPropertyArray@@ABVMVPbkFieldTypeList@@PAVRFs@@@Z @ 39 NONAME ; class MPbk2FieldPropertyArray * Pbk2FieldPropertiesFactory::CreateLC(class MVPbkFieldTypeList const &, class RFs *)
+	?CreateStoreSpecificFieldPropertiesL@CPbk2StoreProperty@@QBEPAVMPbk2FieldPropertyArray@@ABVMVPbkFieldTypeList@@@Z @ 40 NONAME ; class MPbk2FieldPropertyArray * CPbk2StoreProperty::CreateStoreSpecificFieldPropertiesL(class MVPbkFieldTypeList const &) const
+	?CurrentConfigurationL@CPbk2StoreConfiguration@@QBEPAVCVPbkContactStoreUriArray@@XZ @ 41 NONAME ; class CVPbkContactStoreUriArray * CPbk2StoreConfiguration::CurrentConfigurationL(void) const
+	?DefaultSavingStoreL@CPbk2StoreConfiguration@@QBE?AVTVPbkContactStoreUriPtr@@XZ @ 42 NONAME ; class TVPbkContactStoreUriPtr CPbk2StoreConfiguration::DefaultSavingStoreL(void) const
+	?DeleteProperty@CPbk2StorePropertyArray@@QAEXABVTVPbkContactStoreUriPtr@@@Z @ 43 NONAME ; void CPbk2StorePropertyArray::DeleteProperty(class TVPbkContactStoreUriPtr const &)
+	?FieldAt@TPbk2SortOrderFieldMapper@@QBEPBVMVPbkBaseContactField@@H@Z @ 44 NONAME ; class MVPbkBaseContactField const * TPbk2SortOrderFieldMapper::FieldAt(int) const
+	?FieldCount@TPbk2SortOrderFieldMapper@@QBEHXZ @ 45 NONAME ; int TPbk2SortOrderFieldMapper::FieldCount(void) const
+	?FieldPropertiesResId@CPbk2StoreProperty@@QBEHXZ @ 46 NONAME ; int CPbk2StoreProperty::FieldPropertiesResId(void) const
+	?File@CPbk2AttachmentFile@@QAEAAVRFile@@XZ @ 47 NONAME ; class RFile & CPbk2AttachmentFile::File(void)
+	?FileName@CPbk2AttachmentFile@@QBEABVTDesC16@@XZ @ 48 NONAME ; class TDesC16 const & CPbk2AttachmentFile::FileName(void) const
+	?FindFieldIndex@CPbk2PresentationContactFieldCollection@@QBEHABVMVPbkStoreContactField@@@Z @ 49 NONAME ; int CPbk2PresentationContactFieldCollection::FindFieldIndex(class MVPbkStoreContactField const &) const
+	?FindGroupForProperty@CPbk2FieldGroupPropertyArray@@QBEPBVCPbk2FieldPropertyGroup@@ABVMPbk2FieldProperty@@@Z @ 50 NONAME ; class CPbk2FieldPropertyGroup const * CPbk2FieldGroupPropertyArray::FindGroupForProperty(class MPbk2FieldProperty const &) const
+	?FindProperty@CPbk2StorePropertyArray@@QBEPBVCPbk2StoreProperty@@ABVTVPbkContactStoreUriPtr@@@Z @ 51 NONAME ; class CPbk2StoreProperty const * CPbk2StorePropertyArray::FindProperty(class TVPbkContactStoreUriPtr const &) const
+	?FindView@CPbk2StoreProperty@@QBEPBVCPbk2StoreViewDefinition@@W4TPbk2ContactViewType@@@Z @ 52 NONAME ; class CPbk2StoreViewDefinition const * CPbk2StoreProperty::FindView(enum TPbk2ContactViewType) const
+	?Flags@CPbk2StoreInfoItem@@QBEKXZ @ 53 NONAME ; unsigned long CPbk2StoreInfoItem::Flags(void) const
+	?Flags@CPbk2StoreProperty@@QBEKXZ @ 54 NONAME ; unsigned long CPbk2StoreProperty::Flags(void) const
+	?__Pbk2Presentation_DummyExport1@@YAXXZ @ 55 NONAME ; void __Pbk2Presentation_DummyExport1(void)
+	?GetImageAsyncL@CPbk2ImageManager@@QAEPAVMPbk2ImageOperation@@PAVTPbk2ImageManagerParams@@AAVMVPbkBaseContact@@ABVMVPbkFieldType@@AAVMPbk2ImageGetObserver@@@Z @ 56 NONAME ; class MPbk2ImageOperation * CPbk2ImageManager::GetImageAsyncL(class TPbk2ImageManagerParams *, class MVPbkBaseContact &, class MVPbkFieldType const &, class MPbk2ImageGetObserver &)
+	?GroupAt@CPbk2FieldGroupPropertyArray@@QBEABVCPbk2FieldPropertyGroup@@H@Z @ 57 NONAME ; class CPbk2FieldPropertyGroup const & CPbk2FieldGroupPropertyArray::GroupAt(int) const
+	?GroupCount@CPbk2FieldGroupPropertyArray@@QBEHXZ @ 58 NONAME ; int CPbk2FieldGroupPropertyArray::GroupCount(void) const
+	?HasFieldL@TPbk2StoreContactAnalyzer@@QBEHHHPBVMVPbkStoreContact@@@Z @ 59 NONAME ; int TPbk2StoreContactAnalyzer::HasFieldL(int, int, class MVPbkStoreContact const *) const
+	?HasImage@CPbk2ImageManager@@QBEHABVMVPbkBaseContact@@ABVMVPbkFieldType@@@Z @ 60 NONAME ; int CPbk2ImageManager::HasImage(class MVPbkBaseContact const &, class MVPbkFieldType const &) const
+	?IsEditable@CPbk2PresentationContactField@@QBEHXZ @ 61 NONAME ; int CPbk2PresentationContactField::IsEditable(void) const
+	?IsEmpty@CPbk2PresentationContactField@@QBEHXZ @ 62 NONAME ; int CPbk2PresentationContactField::IsEmpty(void) const
+	?IsFieldAdditionPossibleL@CPbk2PresentationContact@@QBEHABVMVPbkFieldType@@@Z @ 63 NONAME ; int CPbk2PresentationContact::IsFieldAdditionPossibleL(class MVPbkFieldType const &) const
+	?IsFieldTypeIncludedL@TPbk2StoreContactAnalyzer@@QBEHABVMVPbkBaseContactField@@H@Z @ 64 NONAME ; int TPbk2StoreContactAnalyzer::IsFieldTypeIncludedL(class MVPbkBaseContactField const &, int) const
+	?IsFieldTypeIncludedL@TPbk2StoreContactAnalyzer@@QBEHABVMVPbkFieldType@@H@Z @ 65 NONAME ; int TPbk2StoreContactAnalyzer::IsFieldTypeIncludedL(class MVPbkFieldType const &, int) const
+	?IsFieldTypeSupportedL@TPbk2StoreContactAnalyzer@@QBEHHPBVMVPbkStoreContact@@@Z @ 66 NONAME ; int TPbk2StoreContactAnalyzer::IsFieldTypeSupportedL(int, class MVPbkStoreContact const *) const
+	?IsRemovable@CPbk2PresentationContactField@@QBEHXZ @ 67 NONAME ; int CPbk2PresentationContactField::IsRemovable(void) const
+	?IsVisibleInDetailsView@CPbk2PresentationContactField@@QBEHXZ @ 68 NONAME ; int CPbk2PresentationContactField::IsVisibleInDetailsView(void) const
+	?ItemTextPlural@CPbk2StoreInfoItem@@QBEABVTDesC16@@XZ @ 69 NONAME ; class TDesC16 const & CPbk2StoreInfoItem::ItemTextPlural(void) const
+	?ItemTextSingular@CPbk2StoreInfoItem@@QBEABVTDesC16@@XZ @ 70 NONAME ; class TDesC16 const & CPbk2StoreInfoItem::ItemTextSingular(void) const
+	?ItemType@CPbk2StoreInfoItem@@QBEHXZ @ 71 NONAME ; int CPbk2StoreInfoItem::ItemType(void) const
+	?MaxDataLength@CPbk2PresentationContactField@@QBEHXZ @ 72 NONAME ; int CPbk2PresentationContactField::MaxDataLength(void) const
+	?MemoryInfoTypes@CPbk2StoreProperty@@QBEKXZ @ 73 NONAME ; unsigned long CPbk2StoreProperty::MemoryInfoTypes(void) const
+	?MergeDataL@CPbk2ContactMerge@@QAEHABVMVPbkBaseContact@@AAVMVPbkStoreContact@@@Z @ 74 NONAME ; int CPbk2ContactMerge::MergeDataL(class MVPbkBaseContact const &, class MVPbkStoreContact &)
+	?NameDisplayOrder@CPbk2SortOrderManager@@QBE?AW4TPbk2NameDisplayOrder@1@XZ @ 75 NONAME ; enum CPbk2SortOrderManager::TPbk2NameDisplayOrder CPbk2SortOrderManager::NameDisplayOrder(void) const
+	?NewL@CPbk2AttachmentFile@@SAPAV1@ABVTDesC16@@AAVRFs@@I@Z @ 76 NONAME ; class CPbk2AttachmentFile * CPbk2AttachmentFile::NewL(class TDesC16 const &, class RFs &, unsigned int)
+	?NewL@CPbk2ContactMerge@@SAPAV1@AAVCVPbkContactManager@@AAVMPbk2ContactNameFormatter@@ABVMPbk2FieldPropertyArray@@@Z @ 77 NONAME ; class CPbk2ContactMerge * CPbk2ContactMerge::NewL(class CVPbkContactManager &, class MPbk2ContactNameFormatter &, class MPbk2FieldPropertyArray const &)
+	?NewL@CPbk2DuplicateContactFinder@@SAPAV1@AAVCVPbkContactManager@@AAVMPbk2ContactNameFormatter@@ABVMVPbkFieldTypeList@@AAV?$RPointerArray@VMVPbkStoreContact@@@@@Z @ 78 NONAME ; class CPbk2DuplicateContactFinder * CPbk2DuplicateContactFinder::NewL(class CVPbkContactManager &, class MPbk2ContactNameFormatter &, class MVPbkFieldTypeList const &, class RPointerArray<class MVPbkStoreContact> &)
+	?NewL@CPbk2FieldGroupPropertyArray@@SAPAV1@ABVMPbk2FieldPropertyArray@@@Z @ 79 NONAME ; class CPbk2FieldGroupPropertyArray * CPbk2FieldGroupPropertyArray::NewL(class MPbk2FieldPropertyArray const &)
+	?NewL@CPbk2FieldPropertyArray@@SAPAV1@ABVMVPbkFieldTypeList@@AAVRFs@@@Z @ 80 NONAME ; class CPbk2FieldPropertyArray * CPbk2FieldPropertyArray::NewL(class MVPbkFieldTypeList const &, class RFs &)
+	?NewL@CPbk2FieldPropertyArray@@SAPAV1@ABVMVPbkFieldTypeList@@AAVTResourceReader@@AAVRFs@@@Z @ 81 NONAME ; class CPbk2FieldPropertyArray * CPbk2FieldPropertyArray::NewL(class MVPbkFieldTypeList const &, class TResourceReader &, class RFs &)
+	?NewL@CPbk2ImageManager@@SAPAV1@AAVCVPbkContactManager@@@Z @ 82 NONAME ; class CPbk2ImageManager * CPbk2ImageManager::NewL(class CVPbkContactManager &)
+	?NewL@CPbk2PresentationContact@@SAPAV1@AAVMVPbkStoreContact@@ABVMPbk2FieldPropertyArray@@@Z @ 83 NONAME ; class CPbk2PresentationContact * CPbk2PresentationContact::NewL(class MVPbkStoreContact &, class MPbk2FieldPropertyArray const &)
+	?NewL@CPbk2PresentationContactField@@SAPAV1@ABVMPbk2FieldProperty@@ABVMVPbkStoreContactField@@AAVMVPbkStoreContact@@@Z @ 84 NONAME ; class CPbk2PresentationContactField * CPbk2PresentationContactField::NewL(class MPbk2FieldProperty const &, class MVPbkStoreContactField const &, class MVPbkStoreContact &)
+	?NewL@CPbk2PresentationContactFieldCollection@@SAPAV1@ABVMPbk2FieldPropertyArray@@AAVMVPbkStoreContactFieldCollection@@AAVMVPbkStoreContact@@@Z @ 85 NONAME ; class CPbk2PresentationContactFieldCollection * CPbk2PresentationContactFieldCollection::NewL(class MPbk2FieldPropertyArray const &, class MVPbkStoreContactFieldCollection &, class MVPbkStoreContact &)
+	?NewL@CPbk2SortOrderManager@@SAPAV1@ABVMVPbkFieldTypeList@@PAVRFs@@@Z @ 86 NONAME ; class CPbk2SortOrderManager * CPbk2SortOrderManager::NewL(class MVPbkFieldTypeList const &, class RFs *)
+	?NewL@CPbk2StoreConfiguration@@SAPAV1@XZ @ 87 NONAME ; class CPbk2StoreConfiguration * CPbk2StoreConfiguration::NewL(void)
+	?NewL@CPbk2StoreInfoItemArray@@SAPAV1@AAVTResourceReader@@@Z @ 88 NONAME ; class CPbk2StoreInfoItemArray * CPbk2StoreInfoItemArray::NewL(class TResourceReader &)
+	?NewL@CPbk2StoreProperty@@SAPAV1@XZ @ 89 NONAME ; class CPbk2StoreProperty * CPbk2StoreProperty::NewL(void)
+	?NewL@CPbk2StorePropertyArray@@SAPAV1@AAVTResourceReader@@@Z @ 90 NONAME ; class CPbk2StorePropertyArray * CPbk2StorePropertyArray::NewL(class TResourceReader &)
+	?NewL@CPbk2StorePropertyArray@@SAPAV1@XZ @ 91 NONAME ; class CPbk2StorePropertyArray * CPbk2StorePropertyArray::NewL(void)
+	?NewL@CPbk2StoreSpecificFieldPropertyArray@@SAPAV1@AAVMPbk2FieldPropertyArray@@AAVCPbk2StorePropertyArray@@ABVMVPbkFieldTypeList@@AAVMVPbkContactStore@@@Z @ 92 NONAME ; class CPbk2StoreSpecificFieldPropertyArray * CPbk2StoreSpecificFieldPropertyArray::NewL(class MPbk2FieldPropertyArray &, class CPbk2StorePropertyArray &, class MVPbkFieldTypeList const &, class MVPbkContactStore &)
+	?NewL@CPbk2StoreViewDefinition@@SAPAV1@XZ @ 93 NONAME ; class CPbk2StoreViewDefinition * CPbk2StoreViewDefinition::NewL(void)
+	?NewLC@CPbk2AttachmentFile@@SAPAV1@ABVTDesC16@@AAVRFs@@I@Z @ 94 NONAME ; class CPbk2AttachmentFile * CPbk2AttachmentFile::NewLC(class TDesC16 const &, class RFs &, unsigned int)
+	?NewLC@CPbk2ContactViewBuilder@@SAPAV1@AAVCVPbkContactManager@@AAVCPbk2StorePropertyArray@@@Z @ 95 NONAME ; class CPbk2ContactViewBuilder * CPbk2ContactViewBuilder::NewLC(class CVPbkContactManager &, class CPbk2StorePropertyArray &)
+	?NewLC@CPbk2FieldGroupPropertyArray@@SAPAV1@ABVMPbk2FieldPropertyArray@@@Z @ 96 NONAME ; class CPbk2FieldGroupPropertyArray * CPbk2FieldGroupPropertyArray::NewLC(class MPbk2FieldPropertyArray const &)
+	?NewLC@CPbk2PresentationContactField@@SAPAV1@ABVMPbk2FieldProperty@@ABVMVPbkStoreContactField@@AAVMVPbkStoreContact@@@Z @ 97 NONAME ; class CPbk2PresentationContactField * CPbk2PresentationContactField::NewLC(class MPbk2FieldProperty const &, class MVPbkStoreContactField const &, class MVPbkStoreContact &)
+	?NewLC@CPbk2StoreInfoItem@@SAPAV1@AAVTResourceReader@@@Z @ 98 NONAME ; class CPbk2StoreInfoItem * CPbk2StoreInfoItem::NewLC(class TResourceReader &)
+	?NewLC@CPbk2StoreProperty@@SAPAV1@AAVTResourceReader@@@Z @ 99 NONAME ; class CPbk2StoreProperty * CPbk2StoreProperty::NewLC(class TResourceReader &)
+	?NewLC@CPbk2StoreProperty@@SAPAV1@ABV1@@Z @ 100 NONAME ; class CPbk2StoreProperty * CPbk2StoreProperty::NewLC(class CPbk2StoreProperty const &)
+	?NewLC@CPbk2StoreViewDefinition@@SAPAV1@AAVTResourceReader@@@Z @ 101 NONAME ; class CPbk2StoreViewDefinition * CPbk2StoreViewDefinition::NewLC(class TResourceReader &)
+	?NewLC@CPbk2StoreViewDefinition@@SAPAV1@ABV1@@Z @ 102 NONAME ; class CPbk2StoreViewDefinition * CPbk2StoreViewDefinition::NewLC(class CPbk2StoreViewDefinition const &)
+	?Offset@RPbk2LocalizedResourceFile@@QAEHXZ @ 103 NONAME ; int RPbk2LocalizedResourceFile::Offset(void)
+	?OpenL@RPbk2LocalizedResourceFile@@QAEXABVTDesC16@@00@Z @ 104 NONAME ; void RPbk2LocalizedResourceFile::OpenL(class TDesC16 const &, class TDesC16 const &, class TDesC16 const &)
+	?OpenL@RPbk2LocalizedResourceFile@@QAEXABVTDesC16@@@Z @ 105 NONAME ; void RPbk2LocalizedResourceFile::OpenL(class TDesC16 const &)
+	?OpenLC@RPbk2LocalizedResourceFile@@QAEXABVTDesC16@@00@Z @ 106 NONAME ; void RPbk2LocalizedResourceFile::OpenLC(class TDesC16 const &, class TDesC16 const &, class TDesC16 const &)
+	?Release@CPbk2AttachmentFile@@QAEXXZ @ 107 NONAME ; void CPbk2AttachmentFile::Release(void)
+	?RemoveContactStoreURIL@CPbk2StoreConfiguration@@QAEXVTVPbkContactStoreUriPtr@@@Z @ 108 NONAME ; void CPbk2StoreConfiguration::RemoveContactStoreURIL(class TVPbkContactStoreUriPtr)
+	?RemoveDefaultSavingStoreObserver@CPbk2StoreConfiguration@@QAEXAAVMPbk2DefaultSavingStoreObserver@@@Z @ 109 NONAME ; void CPbk2StoreConfiguration::RemoveDefaultSavingStoreObserver(class MPbk2DefaultSavingStoreObserver &)
+	?RemoveImage@CPbk2ImageManager@@QAEXAAVMVPbkStoreContact@@ABVMVPbkFieldType@@@Z @ 110 NONAME ; void CPbk2ImageManager::RemoveImage(class MVPbkStoreContact &, class MVPbkFieldType const &)
+	?RemoveObserver@CPbk2SortOrderManager@@QAEXAAVMPbk2SortOrderObserver@@@Z @ 111 NONAME ; void CPbk2SortOrderManager::RemoveObserver(class MPbk2SortOrderObserver &)
+	?RemoveObserver@CPbk2StoreConfiguration@@QAEXAAVMPbk2StoreConfigurationObserver@@@Z @ 112 NONAME ; void CPbk2StoreConfiguration::RemoveObserver(class MPbk2StoreConfigurationObserver &)
+	?ReplaceNonGraphicCharacters@Pbk2PresentationUtils@@SAXAAVTDes16@@G@Z @ 113 NONAME ; void Pbk2PresentationUtils::ReplaceNonGraphicCharacters(class TDes16 &, unsigned short)
+	?SearchStoreConfigurationL@CPbk2StoreConfiguration@@QAEPAVCVPbkContactStoreUriArray@@XZ @ 114 NONAME ; class CVPbkContactStoreUriArray * CPbk2StoreConfiguration::SearchStoreConfigurationL(void)
+	?SetContactFields@TPbk2SortOrderFieldMapper@@QAEXABVMVPbkBaseContactFieldCollection@@@Z @ 115 NONAME ; void TPbk2SortOrderFieldMapper::SetContactFields(class MVPbkBaseContactFieldCollection const &)
+	?SetContactViewL@CPbk2SortOrderManager@@QAEXAAVMVPbkContactViewBase@@@Z @ 116 NONAME ; void CPbk2SortOrderManager::SetContactViewL(class MVPbkContactViewBase &)
+	?SetFieldPropertiesResId@CPbk2StoreProperty@@QAEXH@Z @ 117 NONAME ; void CPbk2StoreProperty::SetFieldPropertiesResId(int)
+	?SetFlags@CPbk2StoreProperty@@QAEXK@Z @ 118 NONAME ; void CPbk2StoreProperty::SetFlags(unsigned long)
+	?__Pbk2Presentation_DummyExport2@@YAXXZ @ 119 NONAME ; void __Pbk2Presentation_DummyExport2(void)
+	?SetImageAsyncL@CPbk2ImageManager@@QAEPAVMPbk2ImageOperation@@AAVMVPbkStoreContact@@ABVMVPbkFieldType@@AAVMPbk2ImageSetObserver@@ABVCFbsBitmap@@@Z @ 120 NONAME ; class MPbk2ImageOperation * CPbk2ImageManager::SetImageAsyncL(class MVPbkStoreContact &, class MVPbkFieldType const &, class MPbk2ImageSetObserver &, class CFbsBitmap const &)
+	?SetImageAsyncL@CPbk2ImageManager@@QAEPAVMPbk2ImageOperation@@AAVMVPbkStoreContact@@ABVMVPbkFieldType@@AAVMPbk2ImageSetObserver@@ABVTDesC16@@@Z @ 121 NONAME ; class MPbk2ImageOperation * CPbk2ImageManager::SetImageAsyncL(class MVPbkStoreContact &, class MVPbkFieldType const &, class MPbk2ImageSetObserver &, class TDesC16 const &)
+	?SetImageAsyncL@CPbk2ImageManager@@QAEPAVMPbk2ImageOperation@@AAVMVPbkStoreContact@@ABVMVPbkFieldType@@AAVMPbk2ImageSetObserver@@ABVTDesC8@@@Z @ 122 NONAME ; class MPbk2ImageOperation * CPbk2ImageManager::SetImageAsyncL(class MVPbkStoreContact &, class MVPbkFieldType const &, class MPbk2ImageSetObserver &, class TDesC8 const &)
+	?SetMemoryInfoTypes@CPbk2StoreProperty@@QAEXK@Z @ 123 NONAME ; void CPbk2StoreProperty::SetMemoryInfoTypes(unsigned long)
+	?SetNameDisplayOrderL@CPbk2SortOrderManager@@QAEXW4TPbk2NameDisplayOrder@1@ABVTDesC16@@@Z @ 124 NONAME ; void CPbk2SortOrderManager::SetNameDisplayOrderL(enum CPbk2SortOrderManager::TPbk2NameDisplayOrder, class TDesC16 const &)
+	?SetSortOrder@TPbk2SortOrderFieldMapper@@QAEXABVMVPbkFieldTypeList@@@Z @ 125 NONAME ; void TPbk2SortOrderFieldMapper::SetSortOrder(class MVPbkFieldTypeList const &)
+	?SetStoreNameL@CPbk2StoreProperty@@QAEXABVTDesC16@@@Z @ 126 NONAME ; void CPbk2StoreProperty::SetStoreNameL(class TDesC16 const &)
+	?SetStoreUriL@CPbk2StoreProperty@@QAEXABVTDesC16@@@Z @ 127 NONAME ; void CPbk2StoreProperty::SetStoreUriL(class TDesC16 const &)
+	?SetViewDefinition@CPbk2StoreViewDefinition@@QAEXPAVCVPbkContactViewDefinition@@@Z @ 128 NONAME ; void CPbk2StoreViewDefinition::SetViewDefinition(class CVPbkContactViewDefinition *)
+	?SetViewItemIcon@CPbk2StoreViewDefinition@@QAEXABVTPbk2IconId@@@Z @ 129 NONAME ; void CPbk2StoreViewDefinition::SetViewItemIcon(class TPbk2IconId const &)
+	?SetViewLocation@CPbk2StoreViewDefinition@@QAEXW4TPbk2ContactViewLocation@@@Z @ 130 NONAME ; void CPbk2StoreViewDefinition::SetViewLocation(enum TPbk2ContactViewLocation)
+	?SetViewType@CPbk2StoreViewDefinition@@QAEXW4TPbk2ContactViewType@@@Z @ 131 NONAME ; void CPbk2StoreViewDefinition::SetViewType(enum TPbk2ContactViewType)
+	?SortOrder@CPbk2SortOrderManager@@QBEABVMVPbkFieldTypeList@@XZ @ 132 NONAME ; class MVPbkFieldTypeList const & CPbk2SortOrderManager::SortOrder(void) const
+	?StartL@CPbk2DuplicateContactFinder@@QAEXABVMVPbkBaseContact@@AAVMPbk2DuplicateContactObserver@@H@Z @ 133 NONAME ; void CPbk2DuplicateContactFinder::StartL(class MVPbkBaseContact const &, class MPbk2DuplicateContactObserver &, int)
+	?StartL@CPbk2DuplicateContactFinder@@QAEXABVMVPbkBaseContact@@AAVMVPbkContactStore@@AAVMPbk2DuplicateContactObserver@@H@Z @ 134 NONAME ; void CPbk2DuplicateContactFinder::StartL(class MVPbkBaseContact const &, class MVPbkContactStore &, class MPbk2DuplicateContactObserver &, int)
+	?StoreIndexOfField@CPbk2PresentationContactFieldCollection@@QBEHH@Z @ 135 NONAME ; int CPbk2PresentationContactFieldCollection::StoreIndexOfField(int) const
+	?StoreName@CPbk2StoreProperty@@QBEABVTDesC16@@XZ @ 136 NONAME ; class TDesC16 const & CPbk2StoreProperty::StoreName(void) const
+	?StoreUri@CPbk2StoreProperty@@QBE?AVTVPbkContactStoreUriPtr@@XZ @ 137 NONAME ; class TVPbkContactStoreUriPtr CPbk2StoreProperty::StoreUri(void) const
+	?SupportedStoreConfigurationL@CPbk2StoreConfiguration@@QBEPAVCVPbkContactStoreUriArray@@XZ @ 138 NONAME ; class CVPbkContactStoreUriArray * CPbk2StoreConfiguration::SupportedStoreConfigurationL(void) const
+	?SwitchDriveL@CPbk2AttachmentFile@@QAEXXZ @ 139 NONAME ; void CPbk2AttachmentFile::SwitchDriveL(void)
+	?TextType@CPbk2StoreInfoItem@@QBE?AW4TPbk2StoreInfoItemTextType@@XZ @ 140 NONAME ; enum TPbk2StoreInfoItemTextType CPbk2StoreInfoItem::TextType(void) const
+	?ViewDefinition@CPbk2StoreViewDefinition@@QBEABVCVPbkContactViewDefinition@@XZ @ 141 NONAME ; class CVPbkContactViewDefinition const & CPbk2StoreViewDefinition::ViewDefinition(void) const
+	?ViewItemIconId@CPbk2StoreViewDefinition@@QBEABVTPbk2IconId@@XZ @ 142 NONAME ; class TPbk2IconId const & CPbk2StoreViewDefinition::ViewItemIconId(void) const
+	?ViewLocation@CPbk2StoreViewDefinition@@QBE?AW4TPbk2ContactViewLocation@@XZ @ 143 NONAME ; enum TPbk2ContactViewLocation CPbk2StoreViewDefinition::ViewLocation(void) const
+	?ViewType@CPbk2StoreViewDefinition@@QBE?AW4TPbk2ContactViewType@@XZ @ 144 NONAME ; enum TPbk2ContactViewType CPbk2StoreViewDefinition::ViewType(void) const
+	?Views@CPbk2StoreProperty@@QBE?AV?$TArray@PB$$CBVCPbk2StoreViewDefinition@@@@XZ @ 145 NONAME ; class TArray<class CPbk2StoreViewDefinition const *> CPbk2StoreProperty::Views(void) const
+	?CopyFieldL@Pbk2ContactFieldCopy@@SAXABVMVPbkStoreContactField@@ABVMVPbkFieldType@@AAVMVPbkStoreContact@@@Z @ 146 NONAME ; void Pbk2ContactFieldCopy::CopyFieldL(class MVPbkStoreContactField const &, class MVPbkFieldType const &, class MVPbkStoreContact &)
+	?CopyTitleFieldsL@Pbk2ContactFieldCopy@@SAXABVMVPbkStoreContact@@AAV2@AAVMPbk2ContactNameFormatter@@@Z @ 147 NONAME ; void Pbk2ContactFieldCopy::CopyTitleFieldsL(class MVPbkStoreContact const &, class MVPbkStoreContact &, class MPbk2ContactNameFormatter &)
+	??0RPbk2LocalizedResourceFile@@QAE@PAVRFs@@@Z @ 148 NONAME ; RPbk2LocalizedResourceFile::RPbk2LocalizedResourceFile(class RFs *)
+	?DefaultSeparator@CPbk2SortOrderManager@@QAEABVTDesC16@@XZ @ 149 NONAME ; class TDesC16 const & CPbk2SortOrderManager::DefaultSeparator(void)
+	?CurrentSeparator@CPbk2SortOrderManager@@QBEABVTDesC16@@XZ @ 150 NONAME ; class TDesC16 const & CPbk2SortOrderManager::CurrentSeparator(void) const
+	?RetrieveContentLC@CPbk2StoreProperty@@QBEPAVCPbk2Content@@W4TPbk2ContentId@@@Z @ 151 NONAME ; class CPbk2Content * CPbk2StoreProperty::RetrieveContentLC(enum TPbk2ContentId) const
+	?AppendWithNewlineTranslationL@Pbk2PresentationUtils@@SAXAAVTDes16@@ABVTDesC16@@@Z @ 152 NONAME ; void Pbk2PresentationUtils::AppendWithNewlineTranslationL(class TDes16 &, class TDesC16 const &)
+	?TrimRightAppend@Pbk2PresentationUtils@@SAHABVTDesC16@@AAVTDes16@@@Z @ 153 NONAME ; int Pbk2PresentationUtils::TrimRightAppend(class TDesC16 const &, class TDes16 &)
+	?PresentationResourceFile@Pbk2PresentationUtils@@SAABVTDesC16@@XZ @ 154 NONAME ; class TDesC16 const & Pbk2PresentationUtils::PresentationResourceFile(void)
+	?AddSupportedContactStoreURIL@CPbk2StoreConfiguration@@QAEXVTVPbkContactStoreUriPtr@@@Z @ 155 NONAME ; void CPbk2StoreConfiguration::AddSupportedContactStoreURIL(class TVPbkContactStoreUriPtr)
+	?RemoveSupportedContactStoreURIL@CPbk2StoreConfiguration@@QAEXVTVPbkContactStoreUriPtr@@@Z @ 156 NONAME ; void CPbk2StoreConfiguration::RemoveSupportedContactStoreURIL(class TVPbkContactStoreUriPtr)
+	?__Pbk2Presentation_DummyExport5@@YAXXZ @ 157 NONAME ; void __Pbk2Presentation_DummyExport5(void)
+	?__Pbk2Presentation_DummyExport6@@YAXXZ @ 158 NONAME ; void __Pbk2Presentation_DummyExport6(void)
+	?__Pbk2Presentation_DummyExport7@@YAXXZ @ 159 NONAME ; void __Pbk2Presentation_DummyExport7(void)
+	?DynamicVisibility@CPbk2PresentationContactField@@QAEHXZ @ 160 NONAME ; int CPbk2PresentationContactField::DynamicVisibility(void)
+	?SetDynamicVisibility@CPbk2PresentationContactField@@QAEXH@Z @ 161 NONAME ; void CPbk2PresentationContactField::SetDynamicVisibility(int)
+	?CreateTopNonTopContactViewForStoresLC@CPbk2ContactViewBuilder@@QBEPAVMVPbkContactViewBase@@ABVCVPbkContactStoreUriArray@@AAVMVPbkContactViewObserver@@ABVMVPbkFieldTypeList@@PAVCVPbkFieldTypeSelector@@KAAVMVPbkContactSelector@@@Z @ 162 NONAME ; class MVPbkContactViewBase * CPbk2ContactViewBuilder::CreateTopNonTopContactViewForStoresLC(class CVPbkContactStoreUriArray const &, class MVPbkContactViewObserver &, class MVPbkFieldTypeList const &, class CVPbkFieldTypeSelector *, unsigned long, class MVPbkContactSelector &) const
+	?AddFieldL@CPbk2PresentationContact@@QAEHPAVMVPbkStoreContactField@@ABVTDesC16@@@Z @ 163 NONAME ; int CPbk2PresentationContact::AddFieldL(class MVPbkStoreContactField *, class TDesC16 const &)
+	?NewL@CPbk2FieldPropertyArray@@SAPAV1@ABVMVPbkFieldTypeList@@AAVRFs@@PAVCPbk2ServiceManager@@@Z @ 164 NONAME ; class CPbk2FieldPropertyArray * CPbk2FieldPropertyArray::NewL(class MVPbkFieldTypeList const &, class RFs &, class CPbk2ServiceManager *)
+	?NewL@CPbk2ServiceManager@@SAPAV1@AAVRFs@@@Z @ 165 NONAME ; class CPbk2ServiceManager * CPbk2ServiceManager::NewL(class RFs &)
+	?Services@CPbk2ServiceManager@@QAEABV?$RArray@UTService@CPbk2ServiceManager@@@@XZ @ 166 NONAME ; class RArray<struct CPbk2ServiceManager::TService> const & CPbk2ServiceManager::Services(void)
+	?RefreshDataL@CPbk2ServiceManager@@QAEXXZ @ 167 NONAME ; void CPbk2ServiceManager::RefreshDataL(void)
+	?CreateContactViewForStoresLC@CPbk2ContactViewBuilder@@QBEPAVMVPbkContactViewBase@@ABVCVPbkContactStoreUriArray@@AAVMVPbkContactViewObserver@@ABVMVPbkFieldTypeList@@PAVCVPbkFieldTypeSelector@@KPAVMVPbkContactSelector@@@Z @ 168 NONAME ; class MVPbkContactViewBase * CPbk2ContactViewBuilder::CreateContactViewForStoresLC(class CVPbkContactStoreUriArray const &, class MVPbkContactViewObserver &, class MVPbkFieldTypeList const &, class CVPbkFieldTypeSelector *, unsigned long, class MVPbkContactSelector *) const
+	?CropImageL@Pbk2PresentationImageUtils@@SAXAAVCFbsBitmap@@W4TCroppingMode@1@ABVTSize@@@Z @ 169 NONAME ; void Pbk2PresentationImageUtils::CropImageL(class CFbsBitmap &, enum Pbk2PresentationImageUtils::TCroppingMode, class TSize const &)
+	?FieldIndexOfStoreField@CPbk2PresentationContactFieldCollection@@QBEHH@Z @ 170 NONAME ; int CPbk2PresentationContactFieldCollection::FieldIndexOfStoreField(int) const
+

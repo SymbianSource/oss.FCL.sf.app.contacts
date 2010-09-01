@@ -1,0 +1,186 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
+
+/**
+ * Phonebook field info resource structure header.
+ * Not useful and cannot be used outside Phonebook.
+ * @deprecated
+ */
+
+STRUCT PBK_VCARD_PARAMETER
+    {
+    LONG param;
+    }
+
+/**
+ * Phonebook vCard property. Loaded from resource to a CPbkVcardProperty C++ instance.
+ * @see CPbkVcardProperty
+ */
+STRUCT PHONEBOOK_VCARD_PROPERTY
+    {
+    /// The property name as integer UID from ctndef.hrh
+    LONG name;
+    /// The parameters as integer UIDs from cntdef.hrh
+    STRUCT parameters[];
+    }
+
+/**
+ * Phonebook constant field information resource structure. Loaded from resources into 
+ * corresponding CPbkFieldInfo C++ instance.
+ *
+ * @see CPbkFieldInfo
+ */
+STRUCT PHONEBOOK_FIELD
+    {
+    /**
+     * Unique field id.
+     * @see TPbkFieldId
+     */
+    BYTE Id;
+
+    /**
+     * Maximum number of fields per contact.
+     * @see TPbkFieldMultiplicity
+     */
+    BYTE    Multiplicity;
+
+    /**
+     * Maximum length of field (in characters) from Phonebook UI specification.
+     */
+	WORD	MaxLength;
+
+    /**
+     * Editing mode of the field from Phonebook UI specification.
+     * @see TPbkFieldEditMode
+     */
+	BYTE	EditMode;
+
+    /**
+     * Default case of the field from Phonebook UI specification.
+     * @see TPbkFieldDefaultCase
+     */
+	BYTE	DefaultCase;
+
+    /**
+     * Phonebook Icon id of the field.
+     */
+	BYTE	IconId;
+
+    /**
+     * Dialog control type for the field.
+     * @see TPbkFieldCtrlType
+     */
+	BYTE	CtrlType;
+
+    /**
+     * Assorted flags for this field type.
+     * @see TPbkFieldFlags
+     */
+    LONG Flags;
+
+	/**
+	 * Phonebook Memory entry item Group ordering
+	 * @see TPbkOrderingGroup
+	 */
+	BYTE OrderingGroup;
+
+	/**
+	 * Phonebook Memory entry item Group ordering
+	 * @see TPbkOrderingItem
+	 */
+	BYTE OrderingItem;
+
+    /**
+	 * Phonebook Memory entry Add item ordering
+	 * @see TPbkAddItemOrdering
+     */
+    BYTE AddItemOrdering;
+
+    /**
+	 * Label text for Add item dialogs
+     */
+    LTEXT AddItemText;
+    
+    /**
+	 * The location of the field data: home/work/none.
+	 * @see TPbkFieldLocation
+     */
+    BYTE Location;
+
+    /**
+	 * The storage type of data in versit. Values
+     * from vuid.h
+     */
+    BYTE VersitStorageType;
+    
+    /**
+	 * vCard mapping properties for this field.
+	 * @see CPbkVcardProperty
+     */
+    STRUCT ImportProperties[];
+    
+    /**
+	 * Exclude parameters for vCard mapping for this field.
+	 * @see CPbkVcardParameters
+     */
+    STRUCT ExcludeParameters[];
+
+    /**
+     * Group id of this Field.
+     */
+    BYTE GroupId = EPbkFieldGroupIdNone;
+    }
+
+
+/**
+ * Array of PHONEBOOK_FIELDs.
+ *
+ * @see PHONEBOOK_FIELD
+ */
+STRUCT PHONEBOOK_FIELD_ARRAY
+    {
+    /// Array items.
+    STRUCT items[];
+    }
+
+
+/**
+ * Phonebook field info group. Loaded from resource to a CPbkFieldInfoGroup C++ instance.
+ */
+STRUCT PBK_FIELD_GROUP
+    {
+    /// Id of this group
+    BYTE id;
+    /// Label of this group
+    LTEXT label;
+    /// Icon Id of this group
+    BYTE iconId;
+    /// add item ordering of this group
+    BYTE addItemOrdering;
+    }
+
+/**
+ * All Phonebook field groups.
+ */
+STRUCT PBK_FIELD_GROUPS
+    {
+    STRUCT items[];
+    }
+
+
+// End of File

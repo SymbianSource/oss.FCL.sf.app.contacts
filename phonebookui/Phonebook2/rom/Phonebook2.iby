@@ -1,0 +1,111 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 IBY file.
+*
+*/
+
+
+#ifndef __PHONEBOOK2_IBY__
+#define __PHONEBOOK2_IBY__
+
+// Project only when flag is set
+#ifdef RD_PHONEBOOK2
+
+// Phonebook 2 application
+S60_APP_EXE(Phonebook2)
+S60_APP_BITMAP(Phonebook2)
+S60_APP_AIF_ICONS(Phonebook2)
+S60_APP_AIF_RSC(Phonebook2)
+
+// Component dlls
+file=ABI_DIR\BUILD_DIR\Pbk2Presentation.dll     SHARED_LIB_DIR\Pbk2Presentation.dll
+file=ABI_DIR\BUILD_DIR\Pbk2UIControls.dll       SHARED_LIB_DIR\Pbk2UIControls.dll
+file=ABI_DIR\BUILD_DIR\Pbk2CommonUI.dll         SHARED_LIB_DIR\Pbk2CommonUI.dll
+file=ABI_DIR\BUILD_DIR\Pbk2Commands.dll         SHARED_LIB_DIR\Pbk2Commands.dll
+file=ABI_DIR\BUILD_DIR\Pbk2UIExt.dll            SHARED_LIB_DIR\Pbk2UIExt.dll
+file=ABI_DIR\BUILD_DIR\Pbk2CommonUtility.dll    SHARED_LIB_DIR\Pbk2CommonUtility.dll
+file=ABI_DIR\BUILD_DIR\pbk2spbcontentprovider.dll   SHARED_LIB_DIR\pbk2spbcontentprovider.dll
+
+// Server application
+S60_APP_EXE(Pbk2ServerApp)
+S60_APP_AIF_RSC(Pbk2ServerApp)
+
+// Icon file (ECE)
+data=DATAZ_\BITMAP_DIR\phonebook2ece.mif BITMAP_DIR\phonebook2ece.mif
+
+// ECom plug-ins
+ECOM_PLUGIN(Pbk2UIServices.dll, Pbk2UIServices.rsc)
+ECOM_PLUGIN(Pbk2UIPolicy.dll,Pbk2UIPolicy.rsc)
+ECOM_PLUGIN(Pbk2ExNamesListPlugin.dll, Pbk2ExNamesListReg.rsc)
+ECOM_PLUGIN(Pbk2GroupUI.dll,Pbk2GroupUI.rsc)
+#ifndef RD_SIND_VIA_AIW
+ECOM_PLUGIN(Pbk2VoiceTagUI.dll, Pbk2VoiceTagUI.rsc)
+ECOM_PLUGIN(Pbk2VoiceTagThinUI.dll,Pbk2VoiceTagThinUI.rsc)
+#endif // RD_SIND_VIA_AIW
+ECOM_PLUGIN(Pbk2CmdExt.dll, Pbk2CmdExt.rsc)
+
+// This resource file should not be localized so it
+// is here instead of Pbk2Resources.iby
+data=DATAZ_\resource\Pbk2UIPolicyRes.rsc        resource\Pbk2UIPolicyRes.rsc
+ECOM_PLUGIN(Pbk2MigrationSupport.dll, Pbk2MigrationSupport.rsc)
+
+
+// SIM related components
+#ifdef __SIMCARD
+SCALABLE_IMAGE(APP_BITMAP_DIR, APP_BITMAP_DIR, psu2)
+ECOM_PLUGIN(Pbk2USIMUI.dll,Pbk2USIMUI.rsc)
+ECOM_PLUGIN(Pbk2USIMThinUI.dll,Pbk2USIMThinUI.rsc)
+#endif // __SIMCARD
+
+// MMC related components
+#ifdef __MMC
+ECOM_PLUGIN(Pbk2MMCUI.dll,Pbk2MMCUI.rsc)
+#endif // __MMC
+
+// Map Framework related components
+
+ECOM_PLUGIN(Pbk2MapUI.dll, Pbk2MapUI.rsc)
+
+
+// Backup & restore
+data=DATAZ_\private\101f4cce\backup_registration.xml    private\101f4cce\backup_registration.xml
+
+// PBK2_ENABLE_PROFILE - uncomment to enable profiling framework
+//file=ABI_DIR\BUILD_DIR\Pbk2Profile.dll          SHARED_LIB_DIR\Pbk2Profile.dll
+// PBK2_ENABLE_PROFILE
+
+ECOM_PLUGIN(ExtensionManager.dll,ExtensionManager.rsc)
+data=ZRESOURCE\ExtensionManager.mbm        	RESOURCE_FILES_DIR\ExtensionManager.mbm
+file=ABI_DIR\BUILD_DIR\xSPViewServices.dll	SHARED_LIB_DIR\xSPViewServices.dll
+
+//Publish application registration resource file 
+data=DATAZ_\private\10003a3f\apps\Phonebook2_reg.rsc    private\10003a3f\Import\Apps\Phonebook2_reg.rsc
+
+//stubfile for possible future nameslist upgrade (eclipsing)
+data=ZSYSTEM\install\pbk2_stub.sis                      System\Install\pbk2_stub.sis
+S60_APP_EXE(NewContactLauncher)
+data=DATAZ_\resource\apps\NewContactLauncher.rsc          resource\apps\NewContactLauncher.rsc  
+data=DATAZ_\private\10003a3f\apps\NewContactLauncher_reg.rsc	private\10003a3f\import\apps\NewContactLauncher_reg.rsc
+data=DATAZ_\resource\apps\NewContactLauncher.mif  resource\apps\NewContactLauncher.mif
+
+//Remote contact lookup
+#ifdef FF_CONTACTS_REMOTE_LOOKUP   
+ECOM_PLUGIN(pbk2rclsetting.dll,pbk2rclsetting.rsc)
+#endif //FF_CONTACTS_REMOTE_LOOKUP 
+
+#endif // RD_PHONEBOOK2
+
+#endif // __PHONEBOOK2_IBY__
+
+// End of File

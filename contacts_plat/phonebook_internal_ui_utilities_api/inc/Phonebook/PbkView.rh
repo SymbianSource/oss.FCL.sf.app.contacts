@@ -1,0 +1,252 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     Only Phonebook internal use of this file is supported!
+*
+*     This file contains declarations for resources of PbkView.dll.
+*     The file can be included only in resource file.
+*
+*/
+
+
+/**
+ * Phonebook View resource structure header.
+ * Not useful and cannot be used outside Phonebook.
+ * @deprecated
+ */
+
+//  STRUCTURE DEFINITIONS
+
+// ---------------------------------------------------------
+// Initialisation structure for Names List View UI Control
+// (class CPbkContactViewListControl).
+// ---------------------------------------------------------
+//
+STRUCT PBK_CONTACTVIEWLISTCONTROL
+    {
+    // Text to show when the list is empty
+    LTEXT emptyText;
+    // Text to use for unnamed items
+    LTEXT unnamedText;
+    // Flags 
+    LONG flags=0;
+    // List box type to use
+    WORD listboxType;
+    // Listbox resource
+    STRUCT listbox;
+    // Optional link to an icon array resource, see PBK_ICON_ARRAY
+    LLINK iconArray;
+    // Empty icon id in iconArray(s)
+    WORD emptyIconId;
+    // Optional default icon to use for all list rows
+    WORD defaultIconId = -1;
+    }
+            
+// ---------------------------------------------------------
+// Initialisation structure for Contact Info View Control
+// (class CPbkContactInfoControl).
+// ---------------------------------------------------------
+//
+STRUCT PBK_CONTACTINFO_CONTROL
+    {
+    // Text to show when the list is empty
+    LTEXT emptyText;
+    // Flags 
+    LONG flags=0;
+    // List box type to use
+    WORD listboxType;
+    // Listbox resource
+    STRUCT listbox;
+    // Link to a iccon array resource, see PBK_ICON_ARRAY
+    LLINK iconArray;
+    // Optional default icon to use for all list rows
+    LONG defaultIconId = -1;
+    }
+  
+
+// ---------------------------------------------------------
+// Initialisation structure for Fetch Dialog
+// (class CPbkFetchDlg).
+// ---------------------------------------------------------
+//
+STRUCT PBK_FETCH_DIALOG
+    {
+    // Link to a DIALOG resource. Defines the fetch dialog.
+    LLINK dialog;
+    // Command buttons when selection list is NOT empty
+    LLINK cba;
+    // Command buttons when selection list is empty
+    LLINK emptyCba;
+    // Optional link to a NAVI_DECORATOR resource. Defines contents of
+    // navi pane when fetch dialog is active
+    LLINK navi_pane = 0;
+    }
+
+// ---------------------------------------------------------
+// Thumbnail popup resource struct
+// (class CPbkThumbnailPopupControl).
+// ---------------------------------------------------------
+//
+STRUCT THUMBNAIL_ITEM
+    {
+    LLINK thumbnail=0;
+    }
+
+// ---------------------------------------------------------
+// Thumbnail popup resource properties table
+// (class CPbkThumbnailPopupControl).
+// ---------------------------------------------------------
+//
+STRUCT THUMBNAIL_PROPERTIES
+    {
+    WORD item18bitmapcenteringpointx = 0;
+    WORD item18bitmapcenteringpointy = 0;
+    WORD item18bitmapytoupperbound = 0;
+    }
+
+// ---------------------------------------------------------
+// Resource structure for CPbkIconArray class.
+// ---------------------------------------------------------
+//
+STRUCT PBK_ICON_ARRAY
+    {
+    // Array of AKN_ICON structures.
+    STRUCT icons[];
+    }
+
+// ---------------------------------------------------------
+// One icon id in PBK_ICON_ARRAY
+// ---------------------------------------------------------
+//
+STRUCT PBK_ICON_ID
+    {
+    // icon id
+    BYTE iconId;
+    }
+
+// ---------------------------------------------------------
+// Initialisation structure for Phonebook info View UI Control
+// (class CPbkPhonebookInfo).
+// ---------------------------------------------------------
+//
+STRUCT PHONEBOOK_INFO
+    {
+    // controls header text
+    LTEXT header;
+    // bitmap file name and path
+    LTEXT bmpfile;
+    // backgroup bitmap index
+    LONG backgroundindex;
+    // background bitmap mask index
+    LONG backgroundmaskindex;
+    // softkeys for the control
+    LLINK cba;
+    }
+
+// ---------------------------------------------------------
+// Initialisation structure for Phonebook Personal Info View UI Control
+// (class CPbkPersonalCardControl).
+// ---------------------------------------------------------
+//
+STRUCT PBK_PERSONAL_CARD_BITMAP
+    {
+    BYTE bitmapId;
+    WORD xPosition;
+    WORD yPosition;
+    }
+
+// ---------------------------------------------------------
+// Initialisation structure for Phonebook Personal Info View UI Control
+// (class CPbkPersonalCardControl).
+// ---------------------------------------------------------
+//
+STRUCT PBK_PERSONAL_INFO_BACKGROUND_COLOR
+    {
+    WORD controlBackgroundColor;
+    }
+
+// ---------------------------------------------------------
+// Initialisation structure for Phonebook Photo View UI Control
+// (class CPbkPhotoCardControl).
+// ---------------------------------------------------------
+//
+STRUCT PHOTO_CARD_ITEM
+	{
+	// shadow
+	STRUCT shadow;
+	//image
+	STRUCT image;
+	}
+
+///////////////////////////////////////////////////////////////
+//// Phonebook layout items
+
+STRUCT PBK_LAYOUT_CONTROL
+	{
+	WORD C=ELayoutEmpty;
+	WORD l=ELayoutEmpty;
+	WORD t=ELayoutEmpty;
+	WORD r=ELayoutEmpty;
+	WORD b=ELayoutEmpty;
+	WORD W=ELayoutEmpty;
+	WORD H=ELayoutEmpty;
+	}
+
+STRUCT PBK_LAYOUT_RECT
+	{
+	WORD C=ELayoutEmpty;
+	WORD l=ELayoutEmpty;
+	WORD t=ELayoutEmpty;
+	WORD r=ELayoutEmpty;
+	WORD b=ELayoutEmpty;
+	WORD W=ELayoutEmpty;
+	WORD H=ELayoutEmpty;
+	}
+
+STRUCT PBK_LAYOUT_LABEL
+	{
+	WORD font;
+	WORD C;
+	WORD l;
+	WORD r;
+	WORD B;
+	WORD W;
+	WORD J;
+	WORD nextB=0;
+	}
+
+/**
+ * Root table for phonebook memory info layouts
+ */
+STRUCT PBK_MEMINFO_TABLE
+	{
+	LLINK screen; 
+	LLINK main_pane;
+	LLINK memstatus_window; 
+	LLINK heading_pane; 
+	LLINK title_label; 
+	LLINK names_label; 
+	LLINK groups_label; 
+	LLINK memused_label;
+	LLINK memfree_label;
+	LLINK bg_image;
+	LLINK blanker;
+	LLINK status_secondshadow;
+	LLINK status_firstshadow;
+	LLINK status_outlineframe;
+	LLINK status_innerwindow;
+	LLINK statusheader_line;
+	}
+
+// End of File

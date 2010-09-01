@@ -1,0 +1,136 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Group UI Extension text resources.
+*
+*/
+
+
+// --------------------------------------------------------------------------
+// Text resource for add to group
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_qtl_add_to_grp
+    {
+    buf = qtn_phob_qtl_add_to_grp;
+    }
+
+// --------------------------------------------------------------------------
+// Text resource for entry is in group
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_qtl_entry_is_in_grp
+    {
+    buf = qtn_phob_qtl_entry_is_in_grp;
+    }
+
+// --------------------------------------------------------------------------
+// Text resource for entry is not in group
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_entry_is_in_no_grp
+    {
+    buf = qtn_phob_entry_is_in_no_grp;
+    }
+
+// --------------------------------------------------------------------------
+// Text resource for delete full group query
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_pbk2_qtn_fldr_del_full_groups_query
+    {
+    buf = qtn_fldr_del_full_groups_query;
+    }
+
+// --------------------------------------------------------------------------
+// Text resource for single entry remove confirmation note
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_fldr_name_already_used
+    {
+    buf = qtn_fldr_name_already_used;
+    }
+
+// --------------------------------------------------------------------------
+// Text resource for default group name
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_phonebook2_qtn_fldr_default_group_name
+    {
+    buf = qtn_fldr_default_group_name;
+    }
+
+// --------------------------------------------------------------------------
+// Text resource for position indicator group members view
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_navi_pos_indicator_group_members_view
+    {
+    buf = qtn_phob_navi_pos_indicator;
+    }
+
+// --------------------------------------------------------------------------
+// Text resource for ringing tone assignment selection confirmation note
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_rtone_set_to_grp
+    {
+    buf = qtn_phob_note_rtone_set_to_grp;
+    }
+
+// --------------------------------------------------------------------------
+// Text resource for primary empty group list text
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_no_groups
+    {
+    buf = qtn_phob_no_groups;
+    }
+
+// --------------------------------------------------------------------------
+// Text resource for secondary empty group list text (1/3)
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_no_groups_longer
+    {
+    buf = qtn_phob_no_groups_longer;
+    }
+
+// --------------------------------------------------------------------------
+// Text resource for secondary empty group list text (2/3)
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_no_groups_stores
+    {
+    buf = qtn_phob_no_groups_stores;
+    }
+
+// --------------------------------------------------------------------------
+// Text resource for secondary empty group list text (3/3)
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_no_groups_store
+    {
+    buf = qtn_phob_no_groups_store;
+    }
+
+// --------------------------------------------------------------------------
+// Text resource for empty group members list view
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_no_entries_in_grp
+    {
+    buf = qtn_phob_no_entries_in_grp;
+    }
+
+// End of File

@@ -1,0 +1,9 @@
+EXPORTS
+	_ZN11Pbk2Profile14TPbk2Profiling12StartProfileEi @ 1 NONAME
+	_ZN11Pbk2Profile14TPbk2Profiling7GlobalLEv @ 2 NONAME
+	_ZN11Pbk2Profile14TPbk2ProfilingC1Ev @ 3 NONAME
+	_ZN11Pbk2Profile14TPbk2ProfilingC2Ev @ 4 NONAME
+	_ZN11Pbk2Profile14TPbk2ProfilingD1Ev @ 5 NONAME
+	_ZN11Pbk2Profile14TPbk2ProfilingD2Ev @ 6 NONAME
+	_ZNK11Pbk2Profile14TPbk2Profiling10EndProfileEi @ 7 NONAME
+

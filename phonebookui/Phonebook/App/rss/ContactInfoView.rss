@@ -1,0 +1,172 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains resources for Contact Info View Phonebook.app.
+*
+*/
+
+
+
+/**
+ * Phonebook "Contact info" state menu. Insert state-specific commands here.
+ */
+RESOURCE MENU_PANE r_pbk_contactinfo_options_menu
+    {
+    items=
+        {
+        MENU_ITEM { command = EPbkCmdWrite;         txt = qtn_phob_opt_send;    },
+        MENU_ITEM { command = EPbkCmdGoToURL;           txt = qtn_find_go_to_url; },
+        MENU_ITEM { command = EPbkCmdEditMe;            txt = qtn_phob_opt_entry_edit; },
+        MENU_ITEM { command = EPbkCmdDeleteMe;          txt = qtn_phob_opt_entry_delete; },
+        MENU_ITEM { command = EPbkCmdUseNumber;           txt = qtn_stm_om_use_no; 
+                    cascade = r_phonebook_prepend_submenu; },
+        MENU_ITEM { command = EPbkCmdDefaultSettings;   txt = qtn_phob_opt_default_settings; },
+        MENU_ITEM { command = EPbkCmdAssignSpeedDial;   txt = qtn_phob_opt_speed_dial_add; },
+        MENU_ITEM { command = EPbkCmdRemoveSpeedDial;   txt = qtn_phob_opt_speed_dial_remove; },
+        MENU_ITEM { command = EPbkCmdPersonalRingingTone; txt = qtn_phob_opt_entry_rtone; },
+
+        MENU_ITEM { command = EPbkCmdCodEditText; txt = qtn_phob_opt_object_edit_text; },
+        MENU_ITEM { command = EPbkCmdCodViewImage; txt = qtn_phob_opt_object_view_image; },
+        MENU_ITEM { command = EPbkCmdCodChangeImage; txt = qtn_phob_opt_object_change_image; },
+        MENU_ITEM { command = EPbkCmdCodAddObjectSubMenu; txt = qtn_phob_opt_object_add;
+                    cascade = r_pbk_add_object_submenu; },
+        MENU_ITEM { command = EPbkCmdCodRemoveObject; txt = qtn_phob_opt_object_remove; },
+        MENU_ITEM { command = EPbkCmdSendUICommand; txt = qtn_bcard_opt_send_entry_via; }  
+        };
+    }
+
+/**
+ * Contact info context sensitive menu.
+ */
+RESOURCE MENU_PANE r_pbk_contactinfo_context_menu
+    {
+    items=
+        {
+        MENU_ITEM { command = EPbkCmdWrite;         txt = qtn_phob_opt_send;     },
+        MENU_ITEM { command = EPbkCmdGoToURL;           txt = qtn_find_go_to_url; },
+        MENU_ITEM { command = EPbkCmdUseNumber;           txt = qtn_stm_om_use_no; 
+                    cascade = r_phonebook_prepend_submenu; },
+        MENU_ITEM { command = EPbkCmdEditMe;            txt = qtn_phob_opt_entry_edit; },
+        MENU_ITEM { command = EPbkCmdDeleteMe;          txt = qtn_phob_opt_entry_delete; },
+        MENU_ITEM { command = EPbkCmdPersonalRingingTone; txt = qtn_phob_opt_entry_rtone; }
+        };
+    }
+
+/**
+ * Phonebook "Contact info" state menu bar.
+ */
+RESOURCE MENU_BAR r_pbk_contactinfo_menubar
+    {
+    titles = 
+        {
+        MENU_TITLE { menu_pane = r_phonebook_system_menu;        }, // System menu
+        MENU_TITLE { menu_pane = r_pbk_contactinfo_options_menu; }, // Contact info view menu
+	    MENU_TITLE { menu_pane = r_phonebook_poc_menu;		     },
+        MENU_TITLE { menu_pane = r_phonebook_call_menu;          }  // Call menu
+        };
+    }
+
+RESOURCE MENU_BAR r_pbk_contactinfo_contextbar
+    {
+    titles = 
+        {
+        MENU_TITLE { menu_pane = r_pbk_contactinfo_context_menu; }, // System menu
+        MENU_TITLE { menu_pane = r_phonebook_poc_context_menu;   }, // Push To Tall menu 
+        MENU_TITLE { menu_pane = r_phonebook_call_context_menu;  }  // Call menu
+        };
+    }
+
+/**
+ * Prepend submenu.
+ */
+RESOURCE MENU_PANE r_phonebook_prepend_submenu
+    {
+    items=
+        {
+        MENU_ITEM { command = EPbkCmdPrepend;           txt = qtn_logs_opt_use_prepend; },
+        MENU_ITEM { command = EPbkCmdCopyNumber;        txt = qtn_logs_opt_use_copy; }
+        };
+    }
+
+/*
+ * Phonebook contact info application view definition.
+ */
+RESOURCE AVKON_VIEW r_pbk_contactinfo_appview
+    {
+    menubar = r_pbk_contactinfo_menubar;
+    cba=R_AVKON_SOFTKEYS_OPTIONS_BACK;
+    }
+
+/**
+ * Contact info View's tag group resource.
+ */
+RESOURCE TAB_GROUP r_pbk_contact_info_tab_group
+    {
+    tab_width=EAknTabWidthWithOneTab;
+    active=0;
+    tabs=
+        {
+        TAB { 
+            id = EPbkContactInfoViewId;
+            }
+        };
+    }
+
+
+/// Text: prepend information note: "number copied to clipboard"
+RESOURCE TBUF r_qtn_logs_note_copy_done     { buf = qtn_logs_note_copy_done; }
+
+// Text: Text for call query prompt
+RESOURCE TBUF r_qtn_phob_prtx_text_for_call { buf = qtn_phob_prtx_text_for_call; }
+
+/**
+ * Phonebook add object for call sub menu.
+ */
+RESOURCE MENU_PANE r_pbk_add_object_submenu
+    {
+    items=
+        {        
+        MENU_ITEM { command = EPbkCmdCodAddObjectImage; txt = qtn_phob_opt_object_add_image; },
+        MENU_ITEM { command = EPbkCmdCodAddObjectText; txt = qtn_phob_opt_object_add_text; }
+        };
+    }
+
+// ---------------------------------------------------------
+// Text for call field edit data query
+// @type    data query
+// ---------------------------------------------------------
+//
+RESOURCE DIALOG r_pbk_edit_field_text_for_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons =R_AVKON_SOFTKEYS_OK_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control = AVKON_DATA_QUERY 
+                { 
+                layout = EDataLayout;
+                control = EDWIN 
+                    {
+                    };
+                };
+            }
+        };
+    }
+
+
+// End of File

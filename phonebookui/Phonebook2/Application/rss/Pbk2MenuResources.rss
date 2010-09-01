@@ -1,0 +1,275 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file contains menu resources for Phonebook2.exe.
+*                The menu pane resources can be found from Pbk2Commands.
+*
+*/
+
+
+// INCLUDES
+#include <Pbk2Commands.rsg>     // menu pane definitions are here
+#include <Pbk2UIControls.rsg>   // CBA resources
+
+// --------------------------------------------------------------------------
+// Names List View's main resource
+// --------------------------------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_phonebook2_nameslist_appview
+    {
+    menubar = r_phonebook2_nameslist_menubar;
+    cba = R_AVKON_SOFTKEYS_EXIT;
+    }
+
+// --------------------------------------------------------------------------
+// Contact Info View's main resource
+// --------------------------------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_phonebook2_contactinfo_appview
+    {
+    menubar = r_phonebook2_contactinfo_menubar;
+    cba = R_AVKON_SOFTKEYS_EXIT;
+    toolbar = 0;
+    }
+
+// --------------------------------------------------------------------------
+// Settings View's main resource
+// --------------------------------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_phonebook2_settings_appview
+    {
+    menubar = r_phonebook2_settings_menubar;
+    cba = R_PBK2_SOFTKEYS_OPTIONS_BACK_CHANGE;
+    toolbar = 0;
+    }
+
+// --------------------------------------------------------------------------
+// Names List View's menu bar
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_phonebook2_nameslist_menubar
+    {
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_SYSTEM_MENU;
+            },
+        MENU_TITLE
+            {
+            // Having "setting" positioned that up is annoying for the end users
+            // when more common option items are harder to reach.
+            // Adjust it to next to system(help, exit)item.
+            menu_pane = R_PHONEBOOK2_SETTINGS_MENU;
+            },            
+/*            
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_SYNCML_MENU;
+            },
+*/            
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_NAMESLIST_BACKUP_MENU_PLACEHOLDER;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_NAMESLIST_OTHER_MEMORIES_MENU_PLACEHOLDER;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_INFO_MENU;
+            },        
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_OVISYNC_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_RCL_MENU;
+            },
+        MENU_TITLE
+            {
+            // This menu item allows xSP plug-ins inserting their own menu items
+            // in names list Options menu.
+            menu_pane = R_PHONEBOOK2_NAMESLIST_MAIN_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_AVKON_MENUPANE_MARK_MULTIPLE;
+            },            
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_MERGE_CONTACTS;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_NAMESLIST_COPY_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_NAMESLIST_DELETE_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_NAMESLIST_SEND_URL_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_REMOVE_FROM_TOPCONTACTS;
+            },            
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_ADD_TO_TOPCONTACTS;
+            },            
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_NAMELIST_CREATE_MESSAGE_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_NAMELIST_CALL_CONTACT_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_NAMESLIST_CREATE_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_SELECT_ADDFAVORITES; 
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_SELECT_MYCARD; 
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_SELECT_RCL; 
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_OPEN_CCA; 
+            }            
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Names List View's context sensitive menu bar
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_phonebook2_nameslist_context_menubar
+    {
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_NAMESLIST_COPY_CONTEXT_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_SETTINGS_MENU;
+            },         
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_SYNCML_MENU;
+            },               
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_NAMESLIST_BACKUP_MENU_PLACEHOLDER;
+            },        
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_NAMESLIST_CONTEXT_MENU;
+            }
+        };
+    }
+
+
+// --------------------------------------------------------------------------
+// Contact Info View's menu bar
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_phonebook2_contactinfo_menubar
+    {
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_SYSTEM_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_CONTACTINFO_EXTENDED_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_SIND_INFOVIEW_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_CONTACTINFO_EDIT_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_POC_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_CALL_MENU;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Contact Info View's context menu bar
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_phonebook2_contactinfo_contextbar
+    {
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_CONTACTINFO_CONTEXT_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_POC_CONTEXT_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_CALL_CONTEXT_MENU;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Settings View's menu bar
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_phonebook2_settings_menubar
+    {
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_SYSTEM_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_SETTINGSVIEW_MENU;
+            }
+        };
+    }
+
+// End of File

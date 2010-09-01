@@ -1,0 +1,7 @@
+EXPORTS
+	??0TVPbkProfiling@VPbkProfile@@AAE@XZ @ 1 NONAME ; VPbkProfile::TVPbkProfiling::TVPbkProfiling(void)
+	??1TVPbkProfiling@VPbkProfile@@QAE@XZ @ 2 NONAME ; VPbkProfile::TVPbkProfiling::~TVPbkProfiling(void)
+	?EndProfile@TVPbkProfiling@VPbkProfile@@QBEXH@Z @ 3 NONAME ; void VPbkProfile::TVPbkProfiling::EndProfile(int) const
+	?GlobalL@TVPbkProfiling@VPbkProfile@@SAPAV12@XZ @ 4 NONAME ; class VPbkProfile::TVPbkProfiling * VPbkProfile::TVPbkProfiling::GlobalL(void)
+	?StartProfile@TVPbkProfiling@VPbkProfile@@QAEXH@Z @ 5 NONAME ; void VPbkProfile::TVPbkProfiling::StartProfile(int)
+

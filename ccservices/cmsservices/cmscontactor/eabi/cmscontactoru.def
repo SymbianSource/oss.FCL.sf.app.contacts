@@ -1,0 +1,18 @@
+EXPORTS
+	_ZTI15CCMSIMOperation @ 1 NONAME ; #<TI>#
+	_ZTI17CCMSCallOperation @ 2 NONAME ; #<TI>#
+	_ZTI18CCMSEmailOperation @ 3 NONAME ; #<TI>#
+	_ZTI20CCMSOpenURLOperation @ 4 NONAME ; #<TI>#
+	_ZTI21CCMSVOIPCallOperation @ 5 NONAME ; #<TI>#
+	_ZTI22CCMSUniEditorOperation @ 6 NONAME ; #<TI>#
+	_ZTI22CCMSVideoCallOperation @ 7 NONAME ; #<TI>#
+	_ZTI24CCMSOperationHandlerBase @ 8 NONAME ; #<TI>#
+	_ZTV15CCMSIMOperation @ 9 NONAME ; #<VT>#
+	_ZTV17CCMSCallOperation @ 10 NONAME ; #<VT>#
+	_ZTV18CCMSEmailOperation @ 11 NONAME ; #<VT>#
+	_ZTV20CCMSOpenURLOperation @ 12 NONAME ; #<VT>#
+	_ZTV21CCMSVOIPCallOperation @ 13 NONAME ; #<VT>#
+	_ZTV22CCMSUniEditorOperation @ 14 NONAME ; #<VT>#
+	_ZTV22CCMSVideoCallOperation @ 15 NONAME ; #<VT>#
+	_ZTV24CCMSOperationHandlerBase @ 16 NONAME ; #<VT>#
+

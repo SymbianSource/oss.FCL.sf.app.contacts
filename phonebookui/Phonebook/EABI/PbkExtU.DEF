@@ -1,0 +1,20 @@
+EXPORTS
+	_ZN14CPbkExtGlobals8FactoryLEv @ 1 NONAME
+	_ZN14CPbkExtGlobals9InstanceLEv @ 2 NONAME
+	_ZTI14CPbkExtGlobals @ 3 NONAME ; #<TI>#
+	_ZTI19CPbkExtensionLoader @ 4 NONAME ; #<TI>#
+	_ZTI20CPbkExtensionScanner @ 5 NONAME ; #<TI>#
+	_ZTI22CPbkMultiViewExtension @ 6 NONAME ; #<TI>#
+	_ZTI23CPbkMultiAppUiExtension @ 7 NONAME ; #<TI>#
+	_ZTI25CPbkDummyControlExtension @ 8 NONAME ; #<TI>#
+	_ZTI25CPbkMultiExtensionFactory @ 9 NONAME ; #<TI>#
+	_ZTI31CPbkMultiContactEditorExtension @ 10 NONAME ; #<TI>#
+	_ZTV14CPbkExtGlobals @ 11 NONAME ; #<VT>#
+	_ZTV19CPbkExtensionLoader @ 12 NONAME ; #<VT>#
+	_ZTV20CPbkExtensionScanner @ 13 NONAME ; #<VT>#
+	_ZTV22CPbkMultiViewExtension @ 14 NONAME ; #<VT>#
+	_ZTV23CPbkMultiAppUiExtension @ 15 NONAME ; #<VT>#
+	_ZTV25CPbkDummyControlExtension @ 16 NONAME ; #<VT>#
+	_ZTV25CPbkMultiExtensionFactory @ 17 NONAME ; #<VT>#
+	_ZTV31CPbkMultiContactEditorExtension @ 18 NONAME ; #<VT>#
+

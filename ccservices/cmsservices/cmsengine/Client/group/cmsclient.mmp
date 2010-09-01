@@ -1,0 +1,61 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*       
+*
+*/
+
+#include <platform_paths.hrh>
+
+TARGET                  cmsclient.dll
+TARGETTYPE              dll
+UID                     0x1000008d 0x2000B165
+VENDORID                VID_DEFAULT
+CAPABILITY              CAP_CLIENT_DLL
+
+USERINCLUDE             ../../inc
+USERINCLUDE             ../inc
+USERINCLUDE             ../../../presencetrafficlights/inc   // presencetrafficlighticons.h
+
+SOURCEPATH              ../src
+SOURCE                  cmscontact.cpp
+SOURCE                  cmssession.cpp
+SOURCE                  cmscontactbase.cpp
+SOURCE                  cmscontactfield.cpp
+SOURCE                  cmspresencedata.cpp
+SOURCE                  cmscontactfielditem.cpp
+SOURCE                  cmscontactfieldinfo.cpp
+SOURCE                  cmscontactnotifier.cpp
+
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY                 estor.lib
+LIBRARY             	efsrv.lib
+LIBRARY             	euser.lib
+LIBRARY             	bitgdi.lib
+LIBRARY                 fbscli.lib
+LIBRARY                 aknicon.lib
+LIBRARY                 bsclient.lib
+DEBUGLIBRARY            flogger.lib
+
+
+
+#if defined( ARMCC )
+    DEFFILE ../eabi/ 
+#elif defined ( WINSCW )
+    deffile ../bwinscw/ 
+#elif defined ( WINS )
+    deffile ../bwins/ 
+#endif
+

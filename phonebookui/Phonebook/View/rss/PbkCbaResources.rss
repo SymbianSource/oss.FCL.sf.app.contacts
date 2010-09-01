@@ -1,0 +1,211 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains all the resources for the module.
+*
+*/
+
+
+// ---------------------------------------------------------
+// Assign - Cancel softkeys.  This could be defined in Avkon!
+// ---------------------------------------------------------
+//
+RESOURCE CBA r_pbk_softkeys_assign_cancel
+    {
+    buttons =
+	    {
+	    CBA_BUTTON { id = EAknSoftkeyOk;    txt = qtn_phob_sk_assign_to_folder; },
+	    CBA_BUTTON { id = EEikBidCancel;    txt = text_softkey_cancel; }
+	    };
+    }
+
+// ---------------------------------------------------------
+// Assign - Back softkeys.  This could be defined in Avkon!
+// ---------------------------------------------------------
+//
+RESOURCE CBA r_pbk_softkeys_assign_back
+    {
+    buttons =
+	    {
+	    CBA_BUTTON { id = EAknSoftkeyOk;    txt = qtn_phob_sk_assign_folder; },
+	    CBA_BUTTON { id = EEikBidCancel;    txt = text_softkey_back; }
+	    };
+    }
+
+// ---------------------------------------------------------
+// Empty - Back softkeys.  This could be defined in Avkon!
+// ---------------------------------------------------------
+//
+RESOURCE CBA r_pbk_softkeys_empty_back
+    {
+    buttons =
+	    {
+	    CBA_BUTTON { },
+	    CBA_BUTTON { id = EAknSoftkeyCancel; txt = text_softkey_back; },
+		CBA_BUTTON 
+			{
+			id = EAknSoftkeyEmpty;
+			txt = text_softkey_empty;
+			}
+	    };
+    }
+
+// ---------------------------------------------------------
+// Call - Cancel softkeys.  This could be defined in Avkon!
+// ---------------------------------------------------------
+//
+RESOURCE CBA r_pbk_softkeys_call_cancel
+    {
+    buttons =
+	    {
+	    CBA_BUTTON { id = EAknSoftkeyOk; txt = text_softkey_call; },
+        // Need to use EAknSoftkeyBack because list query doesn't exit
+        // with any other key!
+	    CBA_BUTTON { id = EAknSoftkeyBack; txt = text_softkey_cancel; },
+		CBA_BUTTON 
+			{
+			id = EAknSoftkeyOk;
+			txt = text_softkey_select;
+			}
+	    };
+    }
+
+// ---------------------------------------------------------
+// Softkeys for Single Entry Fetch dialog
+// ---------------------------------------------------------
+//
+RESOURCE CBA r_pbk_softkeys_single_entry_fetch
+    {
+    buttons =
+		{
+		CBA_BUTTON { id=EEikBidOk;     txt=text_softkey_select; },
+		CBA_BUTTON { id=EEikBidCancel; txt=text_softkey_back;   },
+		CBA_BUTTON 
+			{
+			id = EAknSoftkeyOk;
+			txt = text_softkey_select;
+			}
+		};
+    }
+    
+// ---------------------------------------------------------
+// Softkeys for Multiple Entry Fetch dialog with 'Mark'
+// ---------------------------------------------------------
+//
+RESOURCE CBA r_pbk_softkeys_ok_back_mark
+    {
+    buttons =
+		{
+		CBA_BUTTON { id=EEikBidOk;     txt=text_softkey_ok; },
+		CBA_BUTTON { id=EEikBidCancel; txt=text_softkey_back;   },
+		CBA_BUTTON 
+			{
+			id = EAknSoftkeyMark;
+			txt = text_softkey_mark;
+			}
+		};
+    } 
+    
+    
+// ---------------------------------------------------------
+// Softkeys for Single Entry Fetch
+// ---------------------------------------------------------
+//
+RESOURCE CBA r_pbk_softkeys_ok_back_ok
+    {
+    buttons =
+		{
+		CBA_BUTTON { id=EEikBidOk;     txt=text_softkey_ok; },
+		CBA_BUTTON { id=EEikBidCancel; txt=text_softkey_back;   },
+		CBA_BUTTON 
+			{
+			id = EEikBidOk;
+			txt = text_softkey_ok;
+			}
+		};
+    }        
+    
+// ---------------------------------------------------------
+// Softkeys for Multiple Entry Fetch dialog
+// ---------------------------------------------------------
+//
+RESOURCE CBA r_pbk_softkeys_multiple_entry_fetch
+    {
+    buttons =
+		{
+		CBA_BUTTON { id=EEikBidOk;      txt=text_softkey_ok;   },
+		CBA_BUTTON { id=EEikBidCancel;  txt=text_softkey_back; },
+		CBA_BUTTON 
+			{
+			id = EEikBidOk;
+			txt = text_softkey_ok;
+			}
+		};
+    }
+
+// ---------------------------------------------------------
+// Softkeys for Group Member Fetch dialog.
+// ---------------------------------------------------------
+//
+RESOURCE CBA r_pbk_softkeys_group_member_fetch
+    {
+    buttons =
+		{
+		CBA_BUTTON { id=EEikBidOk;      txt=text_softkey_ok;   },
+		CBA_BUTTON { id=EEikBidCancel;  txt=text_softkey_back; }
+		};
+    }    
+
+// ---------------------------------------------------------
+// Go to - Cancel softkeys.
+// ---------------------------------------------------------
+//
+RESOURCE CBA r_pbk_softkeys_goto_cancel
+    {
+    buttons =
+	    {
+	    CBA_BUTTON { id = EAknSoftkeyOk;    txt = qtn_wml_softk_go; },
+	    CBA_BUTTON { id = EEikBidCancel;    txt = text_softkey_cancel; }
+	    };
+    }
+
+
+// --------------------------------------------------------------------------
+// Options - Change - Done
+// --------------------------------------------------------------------------
+//
+RESOURCE CBA r_pbk_softkeys_options_done_change
+    {    
+    flags = 0;
+    buttons =
+        {
+        CBA_BUTTON
+            {
+            id = EAknSoftkeyOptions;
+            txt = text_softkey_option;
+            },
+        CBA_BUTTON
+            {
+            id = EAknSoftkeyDone;
+            txt= text_softkey_done;
+            },
+        CBA_BUTTON
+            {
+            id = EAknSoftkeyChange;
+            txt = qtn_msk_change;
+            }
+        };
+    }
+    
+// End of file

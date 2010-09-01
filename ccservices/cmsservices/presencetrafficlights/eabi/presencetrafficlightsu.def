@@ -1,0 +1,5 @@
+EXPORTS
+	_ZN22MPresenceTrafficLights4NewLEv @ 1 NONAME
+	_ZTI22CPresenceTrafficLights @ 2 NONAME ; #<TI>#
+	_ZTV22CPresenceTrafficLights @ 3 NONAME ; #<VT>#
+

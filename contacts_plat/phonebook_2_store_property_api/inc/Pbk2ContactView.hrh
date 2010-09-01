@@ -1,0 +1,94 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 contact view definitions.
+*
+*/
+
+
+#ifndef PBK2CONTACTVIEW_HRH
+#define PBK2CONTACTVIEW_HRH
+
+// --------------------------------------------------------------------------
+// Phonebook 2 contact view ids
+// --------------------------------------------------------------------------
+//
+enum TPbk2ContactViewId
+    {
+    EPbk2RootViewId = 100,
+
+    EPbk2OrderedPreListPlaceHolder,
+ 
+    EPbk2MergedTopContactsListPlaceHolder,
+	
+    EPbk2MergedMainListPlaceHolder,
+
+    EPbk2OrderedPostListPlaceHolder
+
+    };
+    
+
+// --------------------------------------------------------------------------
+// Phonebook 2 contact view types
+// --------------------------------------------------------------------------
+//
+enum TPbk2ContactViewType
+    {
+    /// Contact view
+    EPbk2MainNamesList,
+    /// Group view
+    EPbk2MainGroupsList,
+
+// *** CHANGED FOR ECE ***  >>
+    /// Top contacts view
+    EPbk2MainTopContactsList
+// <<*** CHANGED FOR ECE ***    
+
+    };
+
+// --------------------------------------------------------------------------
+// Phonebook 2 contact view locations
+//
+// The Phonebook 2 names list view consists of a composite of three
+// contact views, defined below. Each view is separated from another
+// by not sorting/intermixing the contacts of different view category
+// together.
+// The keyword _merged_ means that the contacts of all the views of the
+// same location category are sorted together, which results to a merged
+// view in the UI.
+// The keyword _ordered_ means that the contacts of all the views of the
+// same location category are not sorted together but presented in
+// an order - a view at a time.
+// --------------------------------------------------------------------------
+//
+enum TPbk2ContactViewLocation
+    {
+    /// Prelist is displayed before the main names list
+    EPbk2OrderedPreList,
+
+    // *** CHANGED FOR ECE ***
+    /// The merged top contacts list
+    EPbk2MergedTopContactsList,
+
+
+    /// The main names list
+    EPbk2MergedMainList,
+
+    
+    /// Postlist is displayed after the main names list
+    EPbk2OrderedPostList
+    };
+
+#endif // PBK2CONTACTVIEW_HRH
+
+// End of File

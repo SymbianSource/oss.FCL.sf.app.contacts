@@ -18,6 +18,6 @@
 #ifndef __CNTFINDPLUGIN_IBY__
 #define __CNTFINDPLUGIN_IBY__
 
-ECOM_PLUGIN(cntfindplugin.dll,101f85f4.RSC)
+ECOM_PLUGIN(CntFindPlugin.dll,101f85f4.RSC)
 
 #endif

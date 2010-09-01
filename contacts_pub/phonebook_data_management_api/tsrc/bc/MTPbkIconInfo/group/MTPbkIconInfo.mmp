@@ -1,0 +1,77 @@
+/*
+* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  ?Description
+*
+*/
+
+
+#if defined(__S60_)
+        // To get the APP_LAYER_SYSTEMINCLUDE-definition
+        #include <platform_paths.hrh>
+#endif
+
+TARGET          MTPbkIconInfo.dll
+TARGETTYPE      dll
+UID             0x1000008D 0x101FB3E3
+
+CAPABILITY      ALL -TCB
+/* Remove comments and replace 0x00000000 with correct vendor id */
+// VENDORID     0x00000000
+/* Remove comments and replace 0x00000000 with correct secure id */
+// SECUREID     0x00000000
+
+//TARGETPATH      ?target_path
+DEFFILE         MTPbkIconInfo.def
+
+#ifdef SBSV2
+	USERINCLUDE     ../inc 
+
+	#if defined(__S60_)
+	    APP_LAYER_SYSTEMINCLUDE
+	#else // __S60_ not defined
+	    SYSTEMINCLUDE   /epoc32/include 
+	    SYSTEMINCLUDE   /epoc32/include/internal
+	#endif // __S60_
+
+	SOURCEPATH      ../src
+#else // SBSV2 not defined
+	USERINCLUDE     ../inc 
+
+	#if defined(__S60_)
+	    APP_LAYER_SYSTEMINCLUDE
+	#else // __S60_ not defined
+	    SYSTEMINCLUDE   /epoc32/include 
+	    SYSTEMINCLUDE   /epoc32/include/internal
+	#endif // __S60_
+
+	SOURCEPATH      ../src
+#endif // SBSV2
+
+SOURCE          MTPbkIconInfo.cpp
+SOURCE          MTPbkIconInfoBlocks.cpp
+
+
+LIBRARY         euser.lib
+LIBRARY         stiftestinterface.lib
+LIBRARY         stiftestengine.lib
+LIBRARY                 bafl.lib
+LIBRARY                 cone.lib 
+LIBRARY                 PbkView.lib 
+LIBRARY                 aknskins.lib 
+LIBRARY                 egul.lib
+
+LANG            SC
+
+
+// End of File

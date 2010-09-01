@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE cshproj SYSTEM "/epoc32/tools/cshlpcmp/dtd/CSHproj.dtd">
+<?xml:stylesheet href="/epoc32/tools/cshlpcmp/xsl/CSHproj.xsl" title="CS-Help project" type="text/xsl"?>
+<cshproj>
+<helpfileUID>0x101f4cce</helpfileUID>
+<directories>
+<input>\PhoneBook\help\</input>
+<output>\epoc32\build\PhoneBook\help\</output>
+<graphics>\PhoneBook\help\</graphics>
+<working>\epoc32\build\PhoneBook\help\</working>
+</directories>
+<files>
+<source>
+<file>PHOB_HLP.rtf</file>
+</source>
+<destination>phob.hlp</destination>
+<customization>\PhoneBook\Help\defaultcustomisation.xml</customization>
+</files>
+</cshproj>

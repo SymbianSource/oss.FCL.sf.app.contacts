@@ -1,0 +1,56 @@
+/*
+* Copyright (c) 2003-2005 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*  The file contains values for central repository keys specifying
+*  Logs specific software settings. 
+*
+*
+*/
+
+
+#ifndef LOGSVARIANT_HRH
+#define LOGSVARIANT_HRH
+
+/**************************************************************************/
+/** Logs Local Variation Keys */
+/* Provides access to the locally variated fetures in Logs application  */
+const TUid KCRUidLogsLV = {0x102750C6};
+
+/**
+* KLogsActiveCallDuration
+* Controls the feature of showing or not shoiwing the active call duration counter
+* in Logs timers view.
+* 0 - Duration of Active Call is not shown by Logs Counter View.
+* 1 - Duration of Active Call is shown by Logs Counte View."
+*/
+const TUint32 KLogsActiveCallDuration = 0x00000001;
+
+/**************************************************************************/
+/**
+* Logs Local Variation Flags. 
+*/
+const TUint32 KLogsLVFlags              = 0x00000002;
+
+/** 
+* KLogsLVFlagShowRingDuration is on/off setting for ring duration feature.
+* When it is set on in KLogsLVFlags, ring duration feature is enabled.
+*/
+#define KLogsLVFlagShowRingDuration 0x00000001
+
+/**************************************************************************/
+
+
+#endif 
+// End of File

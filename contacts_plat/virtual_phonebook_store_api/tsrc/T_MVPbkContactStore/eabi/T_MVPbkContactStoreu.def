@@ -1,0 +1,11 @@
+EXPORTS
+	_Z16CreateTestSuiteLv @ 1 NONAME
+	_ZTI21T_ContactViewObserver @ 2 NONAME ; #<TI>#
+	_ZTI23T_MVPbkContactStoreMain @ 3 NONAME ; #<TI>#
+	_ZTI25T_MVPbkContactStoreSingle @ 4 NONAME ; #<TI>#
+	_ZTI28T_MVPbkContactStoreComposite @ 5 NONAME ; #<TI>#
+	_ZTV21T_ContactViewObserver @ 6 NONAME ; #<VT>#
+	_ZTV23T_MVPbkContactStoreMain @ 7 NONAME ; #<VT>#
+	_ZTV25T_MVPbkContactStoreSingle @ 8 NONAME ; #<VT>#
+	_ZTV28T_MVPbkContactStoreComposite @ 9 NONAME ; #<VT>#
+

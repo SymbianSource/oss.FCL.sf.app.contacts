@@ -1,0 +1,8 @@
+EXPORTS
+	??1CBCardEngine@@UAE@XZ @ 1 NONAME ; public: virtual __thiscall CBCardEngine::~CBCardEngine(void)
+	?ExportBusinessCardL@CBCardEngine@@QAEXAAVRWriteStream@@AAVCPbkContactItem@@@Z @ 2 NONAME ; public: void __thiscall CBCardEngine::ExportBusinessCardL(class RWriteStream &,class CPbkContactItem &)
+	?ImportBusinessCardL@CBCardEngine@@QAEXAAVCPbkContactItem@@AAVRReadStream@@@Z @ 3 NONAME ; public: void __thiscall CBCardEngine::ImportBusinessCardL(class CPbkContactItem &,class RReadStream &)
+	?ImportCompactBusinessCardL@CBCardEngine@@QAEHAAVCPbkContactItem@@AAVRReadStream@@@Z @ 4 NONAME ; public: int __thiscall CBCardEngine::ImportCompactBusinessCardL(class CPbkContactItem &,class RReadStream &)
+	?NewL@CBCardEngine@@SAPAV1@PAVCPbkContactEngine@@@Z @ 5 NONAME ; public: static class CBCardEngine * __cdecl CBCardEngine::NewL(class CPbkContactEngine *)
+	?SupportsFieldType@CBCardEngine@@QAEHH@Z @ 6 NONAME ; public: int __thiscall CBCardEngine::SupportsFieldType(int)
+

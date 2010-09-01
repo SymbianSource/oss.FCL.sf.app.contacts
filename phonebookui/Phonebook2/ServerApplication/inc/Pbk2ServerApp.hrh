@@ -1,0 +1,48 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 server application definitions.
+*
+*/
+
+
+#ifndef PBK2SERVERAPP_HRH
+#define PBK2SERVERAPP_HRH
+
+// --------------------------------------------------------------------------
+// Fetch types
+// --------------------------------------------------------------------------
+//
+enum TPbk2FetchType
+    {
+    EInvalidType,
+    EItemFetch,
+    EEntryFetch,
+    EMultipleEntryFetch,
+    ECallItemFetch,
+    EMultipleItemFetch
+    };
+
+// --------------------------------------------------------------------------
+// Note flags
+// --------------------------------------------------------------------------
+//
+#define KPbk2NoteFlagNoFlag                     0x00
+#define KPbk2NoteFlagOneContactCreated          0x02
+#define KPbk2NoteFlagOneContactRelocated        0x04
+#define KPbk2NoteFlagSeveralContactsRelocated   0x08
+#define KPbk2NoteFlagContactDeleted             0x10
+
+#endif // PBK2SERVERAPP_HRH
+
+// End of File

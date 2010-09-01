@@ -1,0 +1,40 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  CCAApp application's registration resource file
+*
+*/
+
+
+#include <appinfo.rh>
+#include <data_caging_paths_strings.hrh>
+#include <ccaapp.rsg>
+#include "../../inc/ccauids.h"
+
+UID2 KUidAppRegistrationResourceFile
+UID3 KCCAAppUID //0x0BE0700A
+
+// ---------------------------------------------------------
+//    APP_REGISTRATION_INFO
+// ---------------------------------------------------------
+//
+RESOURCE APP_REGISTRATION_INFO
+  {
+  app_file="ccaapp";//todo; localize!
+
+  hidden = KAppIsHidden;
+  embeddability = KAppEmbeddable;
+
+  localisable_resource_file = APP_RESOURCE_DIR"\\ccaapp";
+  localisable_resource_id = R_CCAAPP_LOCALISABLE_APP_INFO;
+  }

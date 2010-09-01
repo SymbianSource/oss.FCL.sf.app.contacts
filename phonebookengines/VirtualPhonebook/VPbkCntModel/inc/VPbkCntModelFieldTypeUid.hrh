@@ -1,0 +1,34 @@
+/*
+* Copyright (c) 2004-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains private declarations for resources of VPbkCntModel.dll.
+*     The file can be included in C++ or resource file.
+*
+*/
+
+
+#ifndef VPBKCNTMODELFIELDTYPEUID_HRH
+#define VPBKCNTMODELFIELDTYPEUID_HRH
+
+//  CONSTANTS  
+
+/**
+ * Phonebook custom Field value.
+ * Locationing privacy field type.
+ */
+#define KVPbkUidContactFieldLocationPrivValue    0x101F4FF2
+
+#endif // VPBKCNTMODELFIELDTYPEUID_HRH
+
+// End of File

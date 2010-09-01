@@ -1,0 +1,45 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  VirtualPhonebook Profiling project specification file.
+*
+*/
+
+
+// INCLUDES
+#include "../inc/vpbkprivateuid.h"
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+// Build target
+TARGET          VPbkProfile.dll
+TARGETTYPE      dll
+UID             KEPOCStaticDllUID2 KVPbkEngUID3
+CAPABILITY      CAP_GENERAL_DLL
+
+// Source files location
+SOURCEPATH      ../VPbkProfile/src
+
+// Controls
+SOURCE          VPbkProfile.cpp
+
+// Include paths
+USERINCLUDE     ../VPbkProfile
+
+SYSTEMINCLUDE   ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib 
+
+// End of File

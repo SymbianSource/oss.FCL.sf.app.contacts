@@ -1,0 +1,112 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Group members list view base
+*
+*/
+
+
+// ---------------------------------------------------------
+// Groups Members View's main resource
+// ---------------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_phonebook2_groupmembers_appview
+    {
+    menubar = r_phonebook2_groupmembers_menubar;
+    cba = R_AVKON_SOFTKEYS_OPTIONS_BACK;
+    }
+
+// ---------------------------------------------------------
+// Groups Members View's main menu pane
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_groupmembers_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdRemoveFromGroup;
+            txt = qtn_phob_opt_entry_rem_from_grp;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdBelongsToGroups;
+            txt = qtn_phob_opt_entry_is_in_grp;
+            flags = EEikMenuItemSpecific;
+            },          
+        MENU_ITEM
+            {
+            command = EPbk2CmdAddMembers;
+            txt = qtn_phob_opt_fetch_members;
+            }
+        };
+    }
+
+
+// ---------------------------------------------------------
+// Groups Members View's menu bar
+// ---------------------------------------------------------
+//
+RESOURCE MENU_BAR r_phonebook2_groupmembers_menubar
+    {
+    titles = 
+        {
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_SYSTEM_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_AVKON_MENUPANE_MARK_MULTIPLE;
+            },             
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_BCARD_SEND_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = r_phonebook2_groupmembers_menu;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_OPEN_CCA; 
+            }
+        };
+    }
+    
+// ---------------------------------------------------------
+// Groups Members View's context menu pane
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_groupmembers_context_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdRemoveFromGroup;
+            txt = qtn_phob_opt_entry_rem_from_grp;
+            },          
+        MENU_ITEM
+            {
+            command = EPbk2CmdAddMembers;
+            txt = qtn_phob_opt_fetch_members;
+            }
+        
+        };
+    }
+    
+
+// End of File

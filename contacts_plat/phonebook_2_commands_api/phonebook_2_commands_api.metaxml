@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<api id="80d0b8b76c0ea69540daa65b86b5c05f" dataversion="2.0">
+  <name>Phonebook 2 Commands API</name>
+  <description>Phonebook 2 business logic interface. Abstracts the command handling in Phonebook.</description>
+  <type>c++</type>
+  <collection>phonebookui</collection>
+  <libs>
+    <lib name="Pbk2Commands.lib" />
+  </libs>
+  <release category="platform"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>no</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>

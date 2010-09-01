@@ -1,0 +1,117 @@
+/*
+* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  File that exports the files belonging to
+*               Virtual Phonebook Engine API
+*
+*/
+
+#include <platform_paths.hrh>
+
+PRJ_PLATFORMS
+DEFAULT
+
+PRJ_EXPORTS
+
+../inc/VPbkContactView.rh                     APP_LAYER_PUBLIC_EXPORT_PATH( VPbkContactView.rh )
+../inc/MVPbkStoreContact2.h                   APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkStoreContact2.h )
+../inc/MVPbkStoreContact.h                    APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkStoreContact.h )
+../inc/MVPbkContactStoreProperties.h          APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactStoreProperties.h )
+../inc/MVPbkContactStoreProperties2.h         APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactStoreProperties2.h )
+../inc/MVPbkContactLinkArray.h                APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactLinkArray.h )
+../inc/MVPbkContactOperation.h                APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactOperation.h )
+../inc/CVPbkSortOrder.h                       APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkSortOrder.h )
+../inc/CVPbkSpeedDialAttribute.h              APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkSpeedDialAttribute.h )
+../inc/VPbkError.h                            APP_LAYER_PUBLIC_EXPORT_PATH( VPbkError.h )
+../inc/MVPbkBaseContactFieldCollection.h      APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkBaseContactFieldCollection.h )
+../inc/VPbkContactStoreUris.h                 APP_LAYER_PUBLIC_EXPORT_PATH( VPbkContactStoreUris.h )
+../inc/MVPbkContactLink.h                     APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactLink.h )
+../inc/CVPbkContactCopier.h                   APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkContactCopier.h )
+../inc/MVPbkStoreContactField.h               APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkStoreContactField.h )
+../inc/MVPbkStoreContactField2.h              APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkStoreContactField2.h )
+../inc/VPbkFieldType.hrh                      APP_LAYER_PUBLIC_EXPORT_PATH( VPbkFieldType.hrh )
+../inc/MVPbkFieldTypeSelector.h               APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkFieldTypeSelector.h )
+../inc/MVPbkFieldType.h                       APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkFieldType.h )
+../inc/VPbkPublicUid.h                        APP_LAYER_PUBLIC_EXPORT_PATH( VPbkPublicUid.h )
+../inc/MVPbkContactFindFromStoresObserver.h   APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactFindFromStoresObserver.h )
+../inc/MVPbkContactFieldOrdering.h            APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactFieldOrdering.h )
+../inc/MVPbkContactFieldData.h                APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactFieldData.h )
+../inc/CVPbkContactFieldIterator.h            APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkContactFieldIterator.h )
+../inc/MVPbkContactViewObserver.h             APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactViewObserver.h )
+../inc/MVPbkStreamable.h                      APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkStreamable.h )
+../inc/CVPbkFieldTypeSelector.h               APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkFieldTypeSelector.h )
+../inc/VPbkFieldType.rh                       APP_LAYER_PUBLIC_EXPORT_PATH( VPbkFieldType.rh )
+../inc/MVPbkContactAttribute.h                APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactAttribute.h )
+../inc/MVPbkContactStoreObserver.h            APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactStoreObserver.h )
+../inc/MVPbkExpandable.h                      APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkExpandable.h )
+../inc/MVPbkContactGroup.h                    APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactGroup.h )
+../inc/MVPbkContactViewBase.h                 APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactViewBase.h )
+../inc/MVPbkContactViewBaseChildAccessExtension.h  APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactViewBaseChildAccessExtension.h )
+../inc/MVPbkViewContactField.h                APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkViewContactField.h )
+../inc/MVPbkContactStoreInfo.h                APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactStoreInfo.h )
+../inc/MVPbkContactStoreListObserver.h        APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactStoreListObserver.h )
+../inc/CVPbkContactManager.h                  APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkContactManager.h )
+../inc/CVPbkVoiceTagAttribute.h               APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkVoiceTagAttribute.h )
+../inc/TVPbkFieldTypeParameters.h             APP_LAYER_PUBLIC_EXPORT_PATH( TVPbkFieldTypeParameters.h )
+../inc/MVPbkViewContact.h                     APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkViewContact.h )
+../inc/TVPbkFieldVersitProperty.h             APP_LAYER_PUBLIC_EXPORT_PATH( TVPbkFieldVersitProperty.h )
+../inc/MVPbkContactFindObserver.h             APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactFindObserver.h )
+../inc/TVPbkFieldTypeMapping.h                APP_LAYER_PUBLIC_EXPORT_PATH( TVPbkFieldTypeMapping.h )
+../inc/MVPbkContactFieldDateTimeData.h        APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactFieldDateTimeData.h )
+../inc/RVPbkContactFieldDefaultPriorities.h   APP_LAYER_PUBLIC_EXPORT_PATH( RVPbkContactFieldDefaultPriorities.h )
+../inc/MVPbkContactFieldSelector.h            APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactFieldSelector.h )
+../inc/CVPbkContactLinkArray.h                APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkContactLinkArray.h )
+../inc/CVPbkFieldTypeRefsList.h               APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkFieldTypeRefsList.h )
+../inc/MVPbkContactObserver.h                 APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactObserver.h )
+../inc/MVPbkContactFieldTextData.h            APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactFieldTextData.h )
+../inc/VPbkContactView.hrh                    APP_LAYER_PUBLIC_EXPORT_PATH( VPbkContactView.hrh )
+../inc/CVPbkFieldFilter.h                     APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkFieldFilter.h )
+../inc/CVPbkContactStoreUriArray.h            APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkContactStoreUriArray.h )
+../inc/TVPbkWordParserCallbackParam.h         APP_LAYER_PUBLIC_EXPORT_PATH( TVPbkWordParserCallbackParam.h )
+../inc/VPbkUtils.h                            APP_LAYER_PUBLIC_EXPORT_PATH( VPbkUtils.h )
+../inc/MVPbkContactView.h                     APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactView.h )
+../inc/MVPbkContactSelector.h                 APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactSelector.h )
+../inc/CVPbkPhoneNumberMatchStrategy.h        APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkPhoneNumberMatchStrategy.h )
+../inc/MVPbkContactBookmark.h                 APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactBookmark.h )
+../inc/MVPbkBatchOperationObserver.h          APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkBatchOperationObserver.h )
+../inc/MVPbkContactAttributeManager.h         APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactAttributeManager.h )
+../inc/MVPbkContactCopyObserver.h             APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactCopyObserver.h )
+../inc/MVPbkContactBookmarkCollection.h       APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactBookmarkCollection.h )
+../inc/MVPbkBaseContact.h                     APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkBaseContact.h )
+../inc/MVPbkContactOperationBase.h            APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactOperationBase.h )
+../inc/TVPbkContactStoreUriPtr.h              APP_LAYER_PUBLIC_EXPORT_PATH( TVPbkContactStoreUriPtr.h )
+../inc/MVPbkContactOperationFactory.h         APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactOperationFactory.h )
+../inc/MVPbkStoreContactFieldCollection.h     APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkStoreContactFieldCollection.h )
+../inc/MVPbkContactStore.h                    APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactStore.h )
+../inc/MVPbkContactStore2.h                   APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactStore2.h )
+../inc/MVPbkObjectHierarchy.h                 APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkObjectHierarchy.h )
+../inc/CVPbkFilteredContactView.h             APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkFilteredContactView.h )
+../inc/MVPbkContactViewFiltering.h            APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactViewFiltering.h )
+../inc/MVPbkBaseContactField.h                APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkBaseContactField.h )
+../inc/CVPbkDefaultAttribute.h                APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkDefaultAttribute.h )
+../inc/MVPbkSingleContactOperationObserver.h  APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkSingleContactOperationObserver.h )
+../inc/VPbkSyncConstants.h                    APP_LAYER_PUBLIC_EXPORT_PATH( VPbkSyncConstants.h )
+../inc/MVPbkContactStoreList.h                APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactStoreList.h )
+../inc/MVPbkContactFieldBinaryData.h          APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactFieldBinaryData.h )
+../inc/CVPbkFieldTypeIterator.h               APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkFieldTypeIterator.h )
+../inc/MVPbkViewContactFieldCollection.h      APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkViewContactFieldCollection.h )
+../inc/MVPbkContactLinkPacking.h              APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactLinkPacking.h )
+../inc/MVPbkStoreContactProperties.h          APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkStoreContactProperties.h )
+../inc/MVPbkContactFieldUriData.h             APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactFieldUriData.h )
+../inc/MVPbkSingleContactLinkOperationObserver.h     APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkSingleContactLinkOperationObserver.h )
+../inc/CVPbkTopContactManager.h               APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkTopContactManager.h )
+../inc/MVPbkOperationObserver.h               APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkOperationObserver.h )
+../inc/VPbkFieldTypeSelectorFactory.h         APP_LAYER_PUBLIC_EXPORT_PATH( VPbkFieldTypeSelectorFactory.h )
+../inc/CVPbkxSPContacts.h                     APP_LAYER_PUBLIC_EXPORT_PATH( CVPbkxSPContacts.h )
+../inc/TVPbkStoreContactAnalyzer.h            APP_LAYER_PUBLIC_EXPORT_PATH( TVPbkStoreContactAnalyzer.h )
+../inc/MVPbkContactOperationFactory2.h        APP_LAYER_PUBLIC_EXPORT_PATH( MVPbkContactOperationFactory2.h )

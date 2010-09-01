@@ -1,0 +1,288 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This is a localisation file for Logs icons
+*  -------------------------------------------------------------------
+*
+*/
+
+
+#include <data_caging_paths_strings.hrh>  //APP_BITMAP_DIR etc
+
+// *********************************
+// Graphical stuffs here
+// *********************************
+
+// Logs application's icon file. The path definition is needed here because 
+// logs.rss refers to qtn_logs_subapp_icon_file. Otherwise resource
+// loading will crash during runtime
+#define DRIVE "Z:"
+#define FILE "\\logs.mbm"   //.mbm is ok as system will automatically select between .mif and .mbm files
+#define FULLPATH DRIVE APP_BITMAP_DIR FILE
+
+#define qtn_logs_subapp_icon_file           FULLPATH
+
+// Missed calls sub application icon
+#define qgn_prop_log_missed_sub             EMbmLogsQgn_prop_log_missed_sub
+
+// Missed calls sub application
+// icon's mask
+#define qgn_prop_log_missed_sub_mask        EMbmLogsQgn_prop_log_missed_sub_mask
+
+// Received calls sub application icon
+#define qgn_prop_log_in_sub                 EMbmLogsQgn_prop_log_in_sub
+
+// Received calls sub application
+// icon's mask
+#define qgn_prop_log_in_sub_mask            EMbmLogsQgn_prop_log_in_sub_mask
+
+// Dialled calls sub application icon
+#define qgn_prop_log_out_sub                EMbmLogsQgn_prop_log_out_sub
+
+// Dialled calls sub application
+// icon's mask
+#define qgn_prop_log_out_sub_mask           EMbmLogsQgn_prop_log_out_sub_mask
+
+// Icon to indicate that the event is
+// received call
+#define icon_prop_log_in                    EMbmLogsQgn_prop_log_in
+
+// Icon to indicate that the event is
+// received call (mask)
+#define icon_prop_log_in_mask               EMbmLogsQgn_prop_log_in_mask
+
+// Icon to indicate that the event is
+// missed call
+#define icon_prop_log_missed                EMbmLogsQgn_prop_log_missed
+
+// Icon to indicate that the event is
+// missed call (mask)
+#define icon_prop_log_missed_mask           EMbmLogsQgn_prop_log_missed_mask
+
+// Icon to indicate that the event is
+// dialled call
+#define icon_prop_log_out                   EMbmLogsQgn_prop_log_out
+
+// Icon to indicate that the event is
+// dialled call (mask)
+#define icon_prop_log_out_mask              EMbmLogsQgn_prop_log_out_mask
+
+// Logs applications Counters view's tab
+// icon
+#define qgn_prop_log_counters_tab2          EMbmLogsQgn_prop_log_counters_tab2
+
+// Logs applications Counters view's tab
+// icon's mask
+#define qgn_prop_log_counters_tab2_mask     EMbmLogsQgn_prop_log_counters_tab2_mask
+
+// Logs applications Log view's tab
+// icon
+#define qgn_prop_log_log_tab2               EMbmLogsQgn_prop_log_logs_tab2
+
+// Logs applications Log view's tab
+// icon's mask
+#define qgn_prop_log_log_tab2_mask          EMbmLogsQgn_prop_log_logs_tab2_mask
+
+// STM view's tab icon
+#define qgn_prop_log_calls_tab3             EMbmLogsQgn_prop_log_calls_tab3
+
+// STM view's tab icon's mask
+#define qgn_prop_log_calls_tab3_mask        EMbmLogsQgn_prop_log_calls_tab3_mask
+
+// Call Timers view's tab icon
+#define qgn_prop_log_timers_tab3            EMbmLogsQgn_prop_log_timers_tab3
+
+// Call Timers view's tab icon's mask
+#define qgn_prop_log_timers_tab3_mask       EMbmLogsQgn_prop_log_timers_tab3_mask
+
+// GPRS counter view's tab icon
+#define qgn_prop_log_gprs_tab3              EMbmLogsQgn_prop_log_gprs_tab3
+
+// GPRS counter view's tab icon's mask
+#define qgn_prop_log_gprs_tab3_mask         EMbmLogsQgn_prop_log_gprs_tab3_mask
+
+// STM's Dialled view's tab icon
+#define qgn_prop_log_calls_out_tab3         EMbmLogsQgn_prop_log_calls_out_tab3
+
+// STM's Dialled view's tab icon's mask
+#define qgn_prop_log_calls_out_tab3_mask    EMbmLogsQgn_prop_log_calls_out_tab3_mask
+
+// STM's Missed view's tab icon
+#define qgn_prop_log_calls_missed_tab3      EMbmLogsQgn_prop_log_calls_missed_tab3
+
+// STM's Missed view's tab icon's mask
+#define qgn_prop_log_calls_missed_tab3_mask EMbmLogsQgn_prop_log_calls_missed_tab3_mask
+
+// STM's Received view's tab icon
+#define qgn_prop_log_calls_in_tab3          EMbmLogsQgn_prop_log_calls_in_tab3
+
+// STM's Received view's tab icon's mask
+#define qgn_prop_log_calls_in_tab3_mask     EMbmLogsQgn_prop_log_calls_in_tab3_mask
+
+// Call Timers subapplication's icon
+#define qgn_prop_log_timers_sub             EMbmLogsQgn_prop_log_timers_sub
+
+// Call Timers subapplication's icon's mask
+#define qgn_prop_log_timers_sub_mask        EMbmLogsQgn_prop_log_timers_sub_mask
+
+
+
+// Logs application's application icon in Context Pane
+#ifdef __SCALABLE_ICONS
+
+    #define qgn_logs_menu_pane_icon             EMbmLogsQgn_menu_log
+    #define qgn_logs_menu_pane_icon_mask        EMbmLogsQgn_menu_log_mask
+
+#else
+
+    #define qgn_logs_menu_pane_icon             EMbmLogsQgn_menu_log_cxt
+    #define qgn_logs_menu_pane_icon_mask        EMbmLogsQgn_menu_log_cxt_mask
+
+#endif
+
+
+
+// STM subapplications icon
+#define qgn_prop_log_calls_sub              EMbmLogsQgn_prop_log_calls_sub
+
+// STM subapplications icon's mask
+#define qgn_prop_log_calls_sub_mask         EMbmLogsQgn_prop_log_calls_sub_mask
+
+// Active Call Timer's icon
+#define qgn_prop_log_timer_call_active      EMbmLogsQgn_prop_log_timer_call_active
+
+// Active Call Timer's icon's mask
+#define qgn_prop_log_timer_call_active_mask EMbmLogsQgn_prop_log_timer_call_active_mask
+
+// Call Timers' "All call's" icon
+#define qgn_prop_log_timer_call_all         EMbmLogsQgn_prop_log_timer_call_all
+
+// Call Timers' "All call's" icon's mask
+#define qgn_prop_log_timer_call_all_mask    EMbmLogsQgn_prop_log_timer_call_all_mask
+
+// Call Timers' "Dialled call's" icon
+#define qgn_prop_log_timer_call_out         EMbmLogsQgn_prop_log_timer_call_out
+
+// Call Timers' "Dialled call's"
+// icon's mask
+#define qgn_prop_log_timer_call_out_mask    EMbmLogsQgn_prop_log_timer_call_out_mask
+
+// Call Timers' "Last call's" icon
+#define qgn_prop_log_timer_call_last        EMbmLogsQgn_prop_log_timer_call_last
+
+// Call Timers' "Last call's" icon's mask
+#define qgn_prop_log_timer_call_last_mask   EMbmLogsQgn_prop_log_timer_call_last_mask
+
+// Call Timers' "Received call's" icon
+#define qgn_prop_log_timer_call_in          EMbmLogsQgn_prop_log_timer_call_in
+
+// Call Timers' "Received call's"
+// icon's mask
+#define qgn_prop_log_timer_call_in_mask     EMbmLogsQgn_prop_log_timer_call_in_mask
+
+
+
+// GPRS counter "Sent data" icon
+#define qgn_prop_log_gprs_sent              EMbmLogsQgn_prop_log_gprs_sent
+
+// GPRS counter "Sent data" 
+// icon's mask
+#define qgn_prop_log_gprs_sent_mask         EMbmLogsQgn_prop_log_gprs_sent_mask
+
+// GPRS counter "Received data" icon
+#define qgn_prop_log_gprs_received          EMbmLogsQgn_prop_log_gprs_received
+
+// GPRS counter "Received data" 
+// icon's mask
+#define qgn_prop_log_gprs_received_mask     EMbmLogsQgn_prop_log_gprs_received_mask
+
+// GPRS counter subapplication's icon
+#define qgn_prop_log_gprs_sub               EMbmLogsQgn_prop_log_gprs_sub
+
+// GPRS counter subapplication's icon's mask 
+#define qgn_prop_log_gprs_sub_mask          EMbmLogsQgn_prop_log_gprs_sub_mask
+
+// Alternate line service icon
+#define qgn_indi_als_line2_add              EMbmLogsQgn_indi_als_line2_add
+#define qgn_indi_als_line2_add_mask         EMbmLogsQgn_indi_als_line2_add_mask 
+
+// New missed calls icon
+#define qgn_indi_log_missed_call_add        EMbmLogsQgn_indi_log_missed_call_add
+#define qgn_indi_log_missed_call_add_mask   EMbmLogsQgn_indi_log_missed_call_add_mask
+
+// Icon indicating Video Telephone call 
+#define qgn_indi_call_video_add             EMbmLogsQgn_indi_call_video_add
+#define qgn_indi_call_video_add_mask        EMbmLogsQgn_indi_call_video_add_mask
+
+// Icon indicating VoipTelephone call 
+#define qgn_prop_nrtyp_voip                 EMbmLogsQgn_prop_nrtyp_voip
+#define qgn_prop_nrtyp_voip_mask            EMbmLogsQgn_prop_nrtyp_voip_mask
+
+// Icon indicating PoC call 
+#define qgn_indi_poc_add                    EMbmLogsQgn_indi_poc_add
+#define qgn_indi_poc_add_mask               EMbmLogsQgn_indi_poc_add_mask
+
+// Icon provided by Logs settings plugin for GS Applications view
+#define qgn_prop_set_apps_log               EMbmLogsQgn_prop_set_apps_log
+#define qgn_prop_set_apps_log_mask          EMbmLogsQqgn_prop_set_apps_log_mask
+
+//Icons used for showing Phone call types
+#define qgn_prop_nrtyp_mobile               EMbmLogsQgn_prop_nrtyp_mobile
+#define qgn_prop_nrtyp_mobile_mask          EMbmLogsQgn_prop_nrtyp_mobile_mask
+#define qgn_prop_nrtyp_video                EMbmLogsQgn_prop_nrtyp_video 
+#define qgn_prop_nrtyp_video_mask           EMbmLogsQgn_prop_nrtyp_video_mask 
+#define qgn_prop_nrtyp_poc                  EMbmLogsQgn_prop_nrtyp_poc   
+#define qgn_prop_nrtyp_poc_mask             EMbmLogsQgn_prop_nrtyp_poc_mask   
+#define qgn_prop_nrtyp_phone                EMbmLogsQgn_prop_nrtyp_phone
+#define qgn_prop_nrtyp_phone_mask           EMbmLogsQgn_prop_nrtyp_phone_mask
+#define qgn_prop_nrtyp_pager                EMbmLogsQgn_prop_nrtyp_pager
+#define qgn_prop_nrtyp_pager_mask           EMbmLogsQgn_prop_nrtyp_pager_mask
+#define qgn_prop_nrtyp_fax                  EMbmLogsQgn_prop_nrtyp_fax
+#define qgn_prop_nrtyp_fax_mask             EMbmLogsQgn_prop_nrtyp_fax_mask
+#define qgn_prop_nrtyp_assistant            EMbmLogsQgn_prop_nrtyp_assistant
+#define qgn_prop_nrtyp_assistant_mask       EMbmLogsQgn_prop_nrtyp_assistant_mask
+#define qgn_prop_nrtyp_car                  EMbmLogsQgn_prop_nrtyp_car
+#define qgn_prop_nrtyp_car_mask             EMbmLogsQgn_prop_nrtyp_car_mask
+#define qgn_prop_nrtyp_call                 EMbmLogsQgn_prop_nrtyp_call
+#define qgn_prop_nrtyp_call_mask            EMbmLogsQgn_prop_nrtyp_call_mask
+//Icons for Toolbar use
+/*** (icons not yet avaiable)
+    #define qgn_indi_tb_call  	                EMbmLogsQgn_indi_tb_call  	        
+    #define qgn_indi_tb_call_mask  	        EMbmLogsQgn_indi_tb_call_mask
+        
+    #define qgn_indi_tb_call_video	        EMbmLogsQgn_indi_tb_call_video	 
+    #define qgn_indi_tb_call_video_mask	        EMbmLogsQgn_indi_tb_call_video_mask
+       
+    #define qgn_indi_tb_mce	                EMbmLogsQgn_indi_tb_mce	            
+    #define qgn_indi_tb_mce_mask	        EMbmLogsQgn_indi_tb_mce_mask
+        
+    #define qgn_indi_tb_pb	                EMbmLogsQgn_indi_tb_pb	            
+    #define qgn_indi_tb_pb_mask	                EMbmLogsQgn_indi_tb_pb_mask
+        
+    #define qgn_indi_tb_avail_contacts	        EMbmLogsQgn_indi_tb_avail_contacts	
+    #define qgn_indi_tb_avail_contacts_mask     EMbmLogsQgn_indi_tb_avail_contacts_mask
+
+Move below to inconlist.txt too when above icons available:
+/c8,8 qgn_indi_tb_call  	      
+/c8,8 qgn_indi_tb_call_video	  
+/c8,8 qgn_indi_tb_mce	          
+/c8,8 qgn_indi_tb_pb	          
+/c8,8 qgn_indi_tb_avail_contacts
+***/    
+
+
+
+// End of File
+
+

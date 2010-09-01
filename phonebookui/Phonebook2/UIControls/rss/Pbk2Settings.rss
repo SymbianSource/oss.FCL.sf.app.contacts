@@ -1,0 +1,254 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 settings resources.
+*
+*/
+
+
+#include <Pbk2CommonUi.rsg>
+
+
+// --------------------------------------------------------------------------
+// Name order settings popup
+// --------------------------------------------------------------------------
+//
+RESOURCE POPUP_SETTING_LIST
+        r_phonebook2_settings_nameorder_selection_popup_listbox
+	{
+	}
+
+// --------------------------------------------------------------------------
+// Name order settings page
+// --------------------------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_phonebook2_settings_nameorder_page
+    {
+	label = qtn_phob_set_disp_names;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknCtPopupSettingList;
+	editor_resource_id =
+        r_phonebook2_settings_nameorder_selection_popup_listbox;
+	invalid_contents_softkey_resource =
+        r_pbk2_settings_softkeys_empty_cancel;
+	}	
+
+// --------------------------------------------------------------------------
+// An empty array for Avkon to read resources correctly
+// --------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_phonebook2_settings_nameorder_text_array
+   {
+   items =
+      {
+      };
+   }
+
+// --------------------------------------------------------------------------
+// Name order settings popup texts
+// --------------------------------------------------------------------------
+//
+RESOURCE AVKON_POPUP_SETTING_TEXTS
+        r_phonebook2_settings_nameorder_setting_texts
+	{
+	setting_texts_resource = r_phonebook2_settings_nameorder_text_array;
+	popped_up_texts_resource = r_phonebook2_settings_nameorder_text_array;
+	}
+
+// --------------------------------------------------------------------------
+// Memory selection settings popup listbox
+// --------------------------------------------------------------------------
+//
+RESOURCE LISTBOX r_phonebook2_settings_memory_selection_popup_listbox
+	{
+	flags = EEikListBoxMultipleSelection;
+	}
+
+// --------------------------------------------------------------------------
+// Memory selection settings page
+// --------------------------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_phonebook2_settings_memory_selection_page
+    {
+    label = qtn_phob_set_contacts_shown;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__UNMARK;
+	type = EAknSetListBox;
+	editor_resource_id =
+        r_phonebook2_settings_memory_selection_popup_listbox;
+    invalid_contents_softkey_resource = r_pbk2_softkeys_empty_cancel_mark;        
+    }    
+
+// --------------------------------------------------------------------------
+// Default saving store settings page
+// --------------------------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_phonebook2_settings_default_saving_storage_page
+    {
+	label = qtn_phob_set_default_storage;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknCtPopupSettingList;
+	editor_resource_id =
+        r_phonebook2_settings_default_saving_storage_popup_listbox;
+	}
+
+// --------------------------------------------------------------------------
+// Default saving store settings popup listbox
+// --------------------------------------------------------------------------
+//
+RESOURCE POPUP_SETTING_LIST
+        r_phonebook2_settings_default_saving_storage_popup_listbox
+	{
+	}	
+	
+// --------------------------------------------------------------------------
+// Default saving storage settings values
+// --------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_phonebook2_settings_default_saving_storage_text_and_values
+	{
+	items =
+		{			
+		};
+	}
+
+// --------------------------------------------------------------------------
+// Default saving storage settings texts
+// --------------------------------------------------------------------------
+//
+RESOURCE AVKON_POPUP_SETTING_TEXTS
+        r_phonebook2_settings_default_saving_storage_setting_texts
+	{
+	setting_texts_resource =
+        r_phonebook2_settings_default_saving_storage_text_and_values;
+	popped_up_texts_resource =
+        r_phonebook2_settings_default_saving_storage_text_and_values;
+	}
+
+
+// --------------------------------------------------------------------------
+// predictive search settings texts
+// --------------------------------------------------------------------------
+//
+RESOURCE AVKON_POPUP_SETTING_TEXTS r_phonebook2_settings_predictive_search_setting_texts
+    {
+    setting_texts_resource = r__phonebook2_settings_predictive_search_on_off_texts;
+    popped_up_texts_resource = r__phonebook2_settings_predictive_search_popped_up_on_off_texts;
+    }
+
+RESOURCE ARRAY r__phonebook2_settings_predictive_search_on_off_texts
+    {
+    items =
+        {
+        AVKON_ENUMERATED_TEXT { value = 1; text = qtn_phob_set_prediction_on; },
+        AVKON_ENUMERATED_TEXT { value = 0; text = qtn_phob_set_prediction_off; }
+        };
+    }
+
+RESOURCE ARRAY r__phonebook2_settings_predictive_search_popped_up_on_off_texts
+    {
+    items =
+        {
+        LBUF { txt = qtn_phob_set_prediction_on; },
+        LBUF { txt = qtn_phob_set_prediction_off; }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// predictive search setting page
+// --------------------------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_phonebook2_settings_predictive_search_page
+    {   
+    type = EAknCtPopupSettingList;
+    editor_resource_id = r_phonebook2_settings_predictive_search_list;
+    }
+
+RESOURCE POPUP_SETTING_LIST r_phonebook2_settings_predictive_search_list
+    {
+    }
+  
+
+// --------------------------------------------------------------------------
+// The settings list
+// --------------------------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_ITEM_LIST r_phonebook2_settings_list
+	{
+	title = qtn_phob_set_title;
+	initial_number = 1;
+    items = 
+		{		
+        AVKON_SETTING_ITEM
+            {
+            identifier = EPbk2SettingMemorySelection;
+            name = qtn_phob_set_contacts_shown;
+            setting_page_resource =
+                r_phonebook2_settings_memory_selection_page;
+            },
+        AVKON_SETTING_ITEM
+			{
+      		identifier = EPbk2SettingDefaultSavingStorage;
+	      	name = qtn_phob_set_default_storage;
+	      	setting_page_resource =
+                r_phonebook2_settings_default_saving_storage_page;
+			associated_resource =
+                r_phonebook2_settings_default_saving_storage_setting_texts;
+			},
+        AVKON_SETTING_ITEM
+			{
+      		identifier = EPbk2SettingNameOrder;
+	      	name = qtn_phob_set_disp_names;
+	      	setting_page_resource = r_phonebook2_settings_nameorder_page;
+			associated_resource =
+                r_phonebook2_settings_nameorder_setting_texts;
+			},
+      AVKON_SETTING_ITEM
+            {
+            identifier = EPbk2SettingPredictiveSearch;
+            name = qtn_phob_set_prediction;
+            setting_page_resource = r_phonebook2_settings_predictive_search_page;
+            associated_resource =
+                r_phonebook2_settings_predictive_search_setting_texts;
+            }
+		};
+	}
+
+// --------------------------------------------------------------------------
+// The settings list without name ordering item
+// --------------------------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_ITEM_LIST r_phonebook2_settings_list_no_name_ordering
+	{
+	title = qtn_phob_set_title;
+	initial_number = 1;
+    items = 
+		{		
+        AVKON_SETTING_ITEM
+            {
+            identifier = EPbk2SettingMemorySelection;
+            name = qtn_phob_set_contacts_shown;
+            setting_page_resource =
+                r_phonebook2_settings_memory_selection_page;
+            },
+        AVKON_SETTING_ITEM
+			{
+      		identifier = EPbk2SettingDefaultSavingStorage;
+	      	name = qtn_phob_set_default_storage;
+	      	setting_page_resource = r_phonebook2_settings_default_saving_storage_page;
+			associated_resource =
+                r_phonebook2_settings_default_saving_storage_setting_texts;
+			}
+		};
+	}
+
+// End of File

@@ -1,0 +1,59 @@
+/*
+* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Names List UI Extension registry information.
+*
+*/
+
+
+// INCLUDES
+#include "Pbk2NamesListExUID.h"
+#include <Pbk2ExtensionUID.h>
+#include <ecom/registryinfov2.rh>
+
+/**
+ * The registry information.
+ * NamesListExtention plugin is an integral part of Pb2.
+ * It must be overridden by RAM-based plugins
+ * Use resource format version 2 to allow overwriting 
+ */
+RESOURCE REGISTRY_INFO theInfo
+    {
+    // resource_format_version must always be set as follows    
+    resource_format_version = RESOURCE_FORMAT_VERSION_2;
+    
+    // always UID2 of the plugin
+    dll_uid = KPbk2NamesListExtPluginUID2; 
+    
+    interfaces =
+        {
+        INTERFACE_INFO
+            {
+            interface_uid = KPbk2UiExtensionInterfaceUID;
+            implementations =
+                {
+                IMPLEMENTATION_INFO
+                    {
+                    implementation_uid = KPbk2NamesListExtPluginUID2;
+                    version_no = 1;
+                    display_name = "NamesListPlugin";
+                    default_data = KPbkUiExtensionDefaultDataString;
+                    opaque_data = "\\resource\\Pbk2ExNamesListRes.rsc";
+                    rom_only = 0; // RAM based plugins CAN overwrite (1 for ROM-only implementations)
+                    }
+                };
+            }
+        };
+    }
+
+// End of File

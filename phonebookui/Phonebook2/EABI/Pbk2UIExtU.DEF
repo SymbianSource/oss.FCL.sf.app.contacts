@@ -1,0 +1,17 @@
+EXPORTS
+	_ZN23CPbk2UIExtensionManager12IconSupportLEv @ 1 NONAME
+	_ZN23CPbk2UIExtensionManager15GetHelpContextLER15TCoeHelpContextRK16CPbk2AppViewBaseR21MPbk2ContactUiControl @ 2 NONAME
+	_ZN23CPbk2UIExtensionManager16DynInitMenuPaneLEiP12CEikMenuPaneR16CPbk2AppViewBaseR21MPbk2ContactUiControl @ 3 NONAME
+	_ZN23CPbk2UIExtensionManager31ApplyExtensionViewGraphChangesLER14CPbk2ViewGraph @ 4 NONAME
+	_ZN23CPbk2UIExtensionManager8FactoryLEv @ 5 NONAME
+	_ZN23CPbk2UIExtensionManager9InstanceLEv @ 6 NONAME
+	_ZTI20CPbk2UIExtensionView @ 7 NONAME ; #<TI>#
+	_ZTI23CPbk2UIExtensionManager @ 8 NONAME ; #<TI>#
+	_ZTV20CPbk2UIExtensionView @ 9 NONAME ; #<VT>#
+	_ZTV23CPbk2UIExtensionManager @ 10 NONAME ; #<VT>#
+	_ZN20CPbk2UIExtensionMenu5NewLCE4TUidmiiii @ 11 NONAME
+	_ZN22TPbk2UIExtensionViewIdC1E4TUidi @ 12 NONAME
+	_ZN22TPbk2UIExtensionViewIdC2E4TUidi @ 13 NONAME
+	_ZN27CPbk2UIExtensionInformation10AddViewIdLER22TPbk2UIExtensionViewId @ 14 NONAME
+	_ZN27CPbk2UIExtensionInformation8AddMenuLEP20CPbk2UIExtensionMenu @ 15 NONAME
+

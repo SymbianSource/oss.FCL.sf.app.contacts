@@ -1,0 +1,128 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Common UI resources.
+*
+*/
+
+
+NAME P2CU // Phonebook 2 Common UI
+
+#include <avkon.rh>
+#include <eikon.rh>
+#include <avkon.rsg>
+#include <phonebook2.loc>
+#include <avkon.loc>
+
+// --------------------------------------------------------------------------
+// RSS_SIGNATURE
+// Standard resource signature
+// --------------------------------------------------------------------------
+//
+RESOURCE RSS_SIGNATURE { }
+
+// --------------------------------------------------------------------------
+// DIALOG
+// An own version of confirmation query is needed in CommonUI
+// instead of using r_pbk2_general_confirmation_query.
+// That is because a dependency to Pbk2UIControls is not allowed.
+// --------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_pbk2_commonui_confirmation_query
+    {
+    flags= EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_YES_NO__YES;
+        items=
+        {
+        DLG_LINE
+            {
+            type=EAknCtQuery;
+            id=EGeneralQuery;
+            control=AVKON_CONFIRMATION_QUERY
+                {
+                layout = EConfirmationQueryLayout;
+                };
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// Resource string for an unnamed contact
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_unnamed
+    {
+    buf = qtn_phob_unnamed;
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// Phonebook 2 title pane text resource
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_title
+    {
+    buf = qtn_phob_title;
+    }
+
+// --------------------------------------------------------------------------
+// TBUF
+// qtn_phob_note_store_full
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phob_note_store_full
+    {
+    buf = qtn_phob_note_store_full;
+    }
+
+// --------------------------------------------------------------------------
+// AKN_NOTE_WRAPPER
+// Data base corrupted note
+// --------------------------------------------------------------------------
+//
+RESOURCE AKN_NOTE_WRAPPER r_pbk2_note_database_corrupted
+    {
+    resId   = R_AKN_INFORMATION_NOTE_DIALOG_WAIT;
+    timeout = EAknInformationNoteTimeout;
+    tone    = EAknNoteDialogConfirmationTone;
+    text    = qtn_memlo_database_corrupted;
+    }
+
+// Additional resource files
+// These files are included here in the middle of resource file since new
+// resources should be added after to preserve order of the resource
+// constants in the generated .rsg file.
+#include "Pbk2IconInfo.rss"
+#include "Pbk2DrmManager.rss"
+#include "Pbk2StartupMonitor.rss"
+
+// --------------------------------------------------------------------------
+// Heading text for ringing tone selection list
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_tc_popup_heading
+    {
+    buf = qtn_tc_popup_heading;
+    }
+
+// --------------------------------------------------------------------------
+// Ringing tone selection list item for no tone list item
+// --------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_phop_seli_default_rtone
+    {
+    buf = qtn_tc_no_personal_tone;
+    }
+
+// End of File

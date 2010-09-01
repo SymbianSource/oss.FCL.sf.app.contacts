@@ -1,0 +1,72 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*       
+*
+*/
+
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+TARGET                  cmscontactor.dll
+TARGETTYPE              dll
+UID                     0x1000008d 0x2000B60C
+VENDORID                VID_DEFAULT
+CAPABILITY              CAP_CLIENT_DLL NetworkServices NetworkControl
+
+START RESOURCE          cmscontactor.rss
+HEADER
+TARGETPATH              resource/cms
+LANG                    SC
+END 
+
+USERINCLUDE             ../inc
+USERINCLUDE             ../../inc
+USERINCLUDE             ../../cmsengine/inc
+
+SOURCEPATH              ../src
+SOURCE                  cmsphonecall.cpp
+SOURCE                  cmsmsgeditors.cpp
+SOURCE                  cmsoperationhandlerbase.cpp
+SOURCE                  cmsunieditoroperation.cpp
+SOURCE                  cmscalloperation.cpp
+SOURCE                  cmsselectiondialog.cpp
+SOURCE                  cmsemailoperation.cpp
+SOURCE                  cmsvoipcalloperation.cpp
+SOURCE                  cmsimoperation.cpp 
+SOURCE                  cmsopenurloperation.cpp
+SOURCE                  cmsvideocalloperation.cpp
+
+
+APP_LAYER_SYSTEMINCLUDE
+SYSTEMINCLUDE         /epoc32/include/ecom
+
+LIBRARY               cone.lib
+LIBRARY               ws32.lib
+LIBRARY               avkon.lib //Popuplist
+LIBRARY               eikcoctl.lib //Popuplist
+LIBRARY               eikcore.lib //Popuplist
+LIBRARY               bafl.lib //Listboxmodel
+LIBRARY               euser.lib
+LIBRARY               efsrv.lib
+LIBRARY               aiwdialdata.lib //AIW
+LIBRARY               commonengine.lib
+LIBRARY               servicehandler.lib //AIW
+LIBRARY               sendui.lib
+LIBRARY               cmsclient.lib //CMS
+LIBRARY               ecom.lib 
+LIBRARY               serviceprovidersettings.lib
+LIBRARY               apgrfx.lib
+DEBUGLIBRARY          flogger.lib
+

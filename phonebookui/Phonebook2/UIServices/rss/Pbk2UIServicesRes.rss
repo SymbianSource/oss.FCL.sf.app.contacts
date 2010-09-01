@@ -1,0 +1,110 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 UI Services resources.
+*
+*/
+
+
+NAME    P2US  // Phonebook 2 UI Services
+
+// INCLUDES
+#include <eikon.rh>
+#include <AiwCommon.rh>
+#include <phonebook2.loc>
+#include <phonebook2ece.loc>
+#include "Pbk2UIServices.hrh"
+
+// --------------------------------------------------------------------------
+// RSS_SIGNATURE
+// Standard resource signature.
+// --------------------------------------------------------------------------
+//
+RESOURCE RSS_SIGNATURE { }
+
+
+// --------------------------------------------------------------------------
+// MENU_PANE
+// Assign menu
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_pbk2_aiw_assign
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2AiwCmdAssign;
+            txt = qtn_mg_options_assign_to_contact; // qtn_phob_opt_assign is the not abbreviated version;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// MENU_PANE
+// Add to contacts menu
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_pbk2_aiw_add_to_contacts
+    {
+    items =
+        {
+        MENU_ITEM
+            {
+            command = EPbk2AiwCmdDataSaveCreateNew;
+            txt = qtn_options_contacts_new;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2AiwCmdDataSaveAddToExisting;
+            txt = qtn_options_contacts_update;
+            },
+        MENU_ITEM
+            {
+            command = AIW_SUBMENU_TITLE;
+            txt = qtn_options_contacts;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// MENU_PANE
+// Add xsp to contacts menu
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_pbk2_aiw_add_to_contacts_xsp
+    {
+    items =
+        {
+        MENU_ITEM
+            {
+            command = EPbk2AiwCmdDataSaveCreateNew;
+            txt = qtn_options_contacts_new;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2AiwCmdDataSaveAddToExisting;
+            txt = qtn_options_contacts_link;
+            },
+        MENU_ITEM
+            {
+            command = AIW_SUBMENU_TITLE;
+            txt = qtn_options_contacts;
+            }
+        };
+    }
+
+// Additional resource files
+#include  "Pbk2UiServicesSelectors.rss"
+
+// End of File

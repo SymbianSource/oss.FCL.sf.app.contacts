@@ -1,0 +1,40 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  
+*
+*/
+
+
+#ifndef VPBK_VCARD_HRH
+#define VPBK_VCARD_HRH
+
+/**
+ * The storage type of data in Versit.dll.
+ * Note that corresponding Uids exist in 
+ * vuid.h.
+ */
+enum TVPbkVersitStorageType
+	{
+    EVPbkVersitPropertyNULL = 0,
+    EVPbkVersitPropertyHBufC,
+    EVPbkVersitPropertyBinary,
+    EVPbkVersitPropertyCDesCArray,
+    EVPbkVersitPropertyMultiDateTime,
+    EVPbkVersitPropertyDateTime,
+    EVPbkVersitPropertyInt
+	};
+
+#endif // VPBK_VCARD_HRH
+
+// End of file

@@ -1,0 +1,184 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This is project specification file for the Phonebook.
+*
+*/
+
+
+// INCLUDES
+#include <platform/app/pbkuid.h> // Phonebook UIDs
+#include "pbkconfig.mmp"            // Phonebook MMP configuration file
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+////////////////////////////////////////////////////////////
+// Target information
+
+TARGET          Phonebook.exe
+EPOCSTACKSIZE   0x5000
+EPOCHEAPSIZE    0x20000 0x1000000 // Min 128kb, max 16Mb
+TARGETTYPE      exe    
+UID             KEPOCNullUID KPbkUID3
+
+CAPABILITY  CAP_APPLICATION NetworkControl
+VENDORID    VID_DEFAULT
+
+
+////////////////////////////////////////////////////////////
+// Sources
+
+SOURCEPATH ../App/src
+
+// Core classes
+SOURCE CPbkApplication.cpp
+SOURCE CPbkDocument.cpp
+SOURCE CPbkAppUi.cpp
+SOURCE PbkAppViewFactory.cpp
+SOURCE CPbkAppView.cpp
+SOURCE CPbkViewNavigator.cpp
+SOURCE CPbkViewNavigatorImpl.cpp
+
+// Application view classes
+SOURCE CPbkContactListAppView.cpp
+SOURCE CPbkNamesListAppView.cpp
+SOURCE CPbkGroupsListAppView.cpp
+SOURCE CPbkGroupMembersListAppView.cpp
+SOURCE CPbkMemoryEntryAppView.cpp 
+SOURCE CPbkContactInfoAppView.cpp
+SOURCE CPbkStartupView.cpp
+
+// Command classes
+SOURCE CPbkCommandFactory.cpp
+SOURCE CPbkDeleteContactsCmd.cpp
+SOURCE CPbkAssignToGroupCmd.cpp
+SOURCE CPbkRemoveFromGroupCmd.cpp
+SOURCE CPbkSetToneToGroupCmd.cpp
+SOURCE CPbkSendContactCmd.cpp
+SOURCE CPbkCallCmd.cpp
+SOURCE CPbkPocCmd.cpp
+SOURCE CpbkSyncMlCmd.cpp
+SOURCE CPbkSendMultipleMessageCmd.cpp
+SOURCE CPbkGoToURLCmd.cpp
+SOURCE CPbkSettingsCmd.cpp
+SOURCE CPbkCodImageCmd.cpp
+
+
+// AIW Interest items
+SOURCE CPbkAiwInterestItemFactory.cpp
+SOURCE CPbkAiwInterestItemBase.cpp
+SOURCE CPbkAiwInterestItemCall.cpp
+SOURCE CPbkAiwInterestItemPoc.cpp
+SOURCE CPbkAiwInterestItemSyncMl.cpp
+
+// Utility and system classes
+SOURCE CViewActivationTransactionImpl.cpp
+SOURCE CPbkvCardConverter.cpp
+SOURCE TSingleDesCArray.cpp
+SOURCE CPbkDbRecoveryUi.cpp
+SOURCE CPbkAppGlobals.cpp
+SOURCE PbkContactInfoNavigationStrategyFactory.cpp
+SOURCE CPbkContactInfoBaseNavigationStrategy.cpp
+SOURCE CPbkContactInfoContactNavigationStrategy.cpp
+SOURCE CPbkContactInfoGroupMemberNavigationStrategy.cpp
+SOURCE CPbkContactInfoNoNavigationStrategy.cpp
+SOURCE CPbkMenuFiltering.cpp
+SOURCE CPbkCallTypeSelector.cpp
+SOURCE PbkApplicationLauncherFactory_exe.cpp
+SOURCE CPbkExeLauncher.cpp
+
+
+////////////////////////////////////////////////////////////
+// Resources
+START RESOURCE ../rss/Phonebook.rss
+DEPENDS pbkview.rsg
+HEADER
+TARGETPATH APP_RESOURCE_DIR
+LANGUAGE_IDS
+END // RESOURCE
+
+// Common extension resources
+START RESOURCE ../rss/PbkExtCommon.rss
+HEADER
+TARGETPATH      resource
+LANGUAGE_IDS
+END // RESOURCE
+
+
+////////////////////////////////////////////////////////////
+// AIF file
+START RESOURCE ../../aif/Phonebook_reg.rss
+DEPENDS phonebook.rsg
+TARGETPATH /private/10003a3f/apps
+END
+
+
+////////////////////////////////////////////////////////////
+// Include paths
+//
+
+// This component's include paths
+USERINCLUDE     ../App/inc ../App/rss ../group ../View/rss
+
+// Standard system include paths
+APP_LAYER_SYSTEMINCLUDE // macro that defines the platform system includes
+
+// System includes outside standard include paths. Needed to keep CCB
+// Phonebook1 compilable on 3.1m.
+SYSTEMINCLUDE   /epoc32/include/ecom
+
+// Phonebook component include paths
+SYSTEMINCLUDE   ../inc ../View/inc ../PbkUI/inc 
+SYSTEMINCLUDE   ../PbkExt/inc
+
+////////////////////////////////////////////////////////////
+// Static dependencies
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib efsrv.lib estor.lib
+LIBRARY cntmodel.lib cntview.lib
+LIBRARY apparc.lib ws32.lib cone.lib  egul.lib fbscli.lib
+LIBRARY etext.lib eikcore.lib bafl.lib
+LIBRARY apgrfx.lib eikctl.lib
+
+// Dependencies to AVKON
+LIBRARY Avkon.lib eikcoctl.lib
+LIBRARY AknSkins.lib
+
+// Dependencies to Series60 platform components
+LIBRARY commonengine.lib diskspacereserver.lib
+LIBRARY ecom.lib FeatMgr.lib
+LIBRARY sendui.lib servicehandler.lib
+LIBRARY spdctrl.lib
+LIBRARY hlplch.lib
+
+// Dependencies to other Phonebook components
+LIBRARY PbkEng.lib      // Engine component
+LIBRARY PbkExt.lib      // Phonebook Extension manager
+LIBRARY BCardEng.lib    // Business card import/export component
+LIBRARY PbkView.lib     // View component
+LIBRARY PbkUI.lib       // Common Phonebook UI framework
+
+// Dependencies to other Series60 applications
+LIBRARY MGFetch.lib
+
+LIBRARY commonui.lib
+LIBRARY apmime.lib
+
+// Debugging dependencies
+#ifdef PBK_ENABLE_DEBUG_LOGGER
+    LIBRARY flogger.lib
+#endif
+
+// End of File

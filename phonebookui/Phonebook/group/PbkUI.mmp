@@ -1,0 +1,60 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This is project specification file for the Phonebook UI.
+*
+*/
+
+
+// INCLUDES
+#include <platform/app/pbkuid.h> // Phonebook UIDs
+#include "pbkconfig.mmp"    // Phonebook MMP configuration file
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+// Build target
+TARGET          PbkUI.dll
+TARGETTYPE      dll
+UID             KEPOCStaticDllUID2 KPbkDllUID3
+CAPABILITY      CAP_GENERAL_DLL
+VENDORID        VID_DEFAULT
+
+// Source files location
+SOURCEPATH		../PbkUI/src
+
+// Source files
+SOURCE	CPbkDocumentBase.cpp
+SOURCE	CPbkAppUiBase.cpp
+SOURCE  CPbkAppGlobalsBase.cpp
+SOURCE	CPbkAppViewBase.cpp
+SOURCE  CPbkControlContainer.cpp
+SOURCE  CPbkCommandStore.cpp
+SOURCE  CPbkAiwInterestArray.cpp
+SOURCE  RPbkResourceFile.cpp
+
+LANGUAGE_IDS
+
+// Include paths
+USERINCLUDE     ../PbkUI/inc ../group
+APP_LAYER_SYSTEMINCLUDE // macro that defines the platform system includes
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib
+LIBRARY apparc.lib
+LIBRARY cone.lib eikcore.lib eikcoctl.lib
+
+// Dependencies to Series 60 components
+LIBRARY avkon.lib servicehandler.lib diskspacereserver.lib
+
+// End of File

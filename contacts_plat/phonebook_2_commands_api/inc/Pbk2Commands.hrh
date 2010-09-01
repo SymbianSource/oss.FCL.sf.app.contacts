@@ -1,0 +1,197 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 command enumerations.
+*
+*/
+
+
+#ifndef PBK2COMMANDS_HRH
+#define PBK2COMMANDS_HRH
+
+/**
+ * Phonebook 2 command codes.
+ */
+enum TPbk2CommandId
+    {
+    /// First Phonebook2 command (keep this item first)
+    /// First id must be bigger than 0x6000 to avoid clashes with
+    /// system command ids.
+    EPbk2CmdFirst = 25000,
+
+    /// Common menu commands (repeated in several views)
+    EPbk2CmdWrite,                      // overridden
+    EPbk2CmdDeleteMe,                   // overridden
+    EPbk2CmdEditMe,                     // overridden
+    EPbk2CmdCall,
+    EPbk2CmdPoC,
+    EPbk2CmdGoToURL,                    // overridden
+    EPbk2CmdExit,
+    EPbk2CmdOpenPreviousView,
+    EPbk2CmdCopy,                       // overridden
+    EPbk2CmdSend,                       // overridden
+    EPbk2CmdOpenCca, 
+    EPbk2CmdAddFavourites,
+    EPbk2CmdAddToTopContacts,
+    EPbk2CmdRemoveFromTopContacts,
+    EPbk2CmdMoveInTopContactsList,
+    EPbk2CmdWriteNoQuery,
+
+    /// Names list menu items
+    EPbk2CmdOpenMeViews = 25500,
+    EPbk2CmdCreateNew,                  // overridden
+    EPbk2CmdPhonebook2Info,             // overridden
+    EPbk2CmdSettings,
+    EPbk2CmdSetPredictiveTextInputOn,
+    EPbk2CmdSetPredictiveTextInputOff,
+    EPbk2CmdCopyContacts,
+    EPbk2CmdRcl,
+    EPbk2CmdSelectRclCmdItem, 
+    EPbk2CmdOpenMyCard,    
+    EPbk2CmdSelectMyCard,
+
+    /// Contact info view menu items
+    EPbk2CmdDefaultSettings = 26000,    // overridden
+    EPbk2CmdAssignSpeedDial,            // overridden
+    EPbk2CmdRemoveSpeedDial,            // overridden
+    EPbk2CmdPersonalRingingTone,
+    EPbk2CmdUseNumber,
+    EPbk2CmdPrepend,
+    EPbk2CmdCopyNumber,                 // overridden
+    EPbk2CmdFetchThumbnail,             // overridden
+    EPbk2CmdRemoveThumbnail,            // overridden
+    EPbk2CmdAddImage,                   // overridden
+    EPbk2CmdImage,
+    EPbk2CmdViewImage,                  // overridden
+    EPbk2CmdChangeImage,                // overridden
+    EPbk2CmdRemoveImage,                // overridden
+    EPbk2CmdAddText,                    // removed functionality, not in use
+    EPbk2CmdTextForCall,                // removed functionality, not in use 
+    EPbk2CmdEditText,                   // removed functionality, not in use
+    EPbk2CmdRemoveText,                 // overridden
+    EPbk2CmdCopyDetail,                 // overridden
+    EPbk2CmdCopyAddress,                // overridden
+    EPbk2CmdMergeContacts,              // overridden
+    /// Command range allocated to Group UI Extension
+    EGroupUiExtensionFirstCommand = 30000,
+    EGroupUiExtensionPublicCommandsStart = 30050,
+    EPbk2CmdBelongsToGroups,
+    EPbk2CmdAssignToGroups,
+    EGroupUiExtensionLastCommand = 30099,
+
+    /// Command range allocated to USIM UI Extension
+    EUSimUiExtensionFirstCommand = 30100,
+    EUSimUiExtensionLastCommand = 30199,
+
+    /// Command range allocated to PEC UI Extension
+    EPecUiExtensionFirstCommand = 30200,
+    EPecUiExtensionLastCommand = 30299,
+
+    /// Command range allocated to MMC UI Extension
+    EMmcUiExtensionFirstCommand = 30300,
+    EMmcUiExtensionLastCommand = 30399,
+
+    /// Command range allocated to VoiceTag UI Extension
+    EVoiceTagUiExtensionFirstCommand = 30400,
+    EVoiceTagUiExtensionLastCommand = 30499,
+
+    /// Command range allocated to common extension commands
+    EPbk2ExtCommonExtensionFirstCommand = 30500,
+    EPbk2ExtCommonExtensionLastCommand = 30599,
+
+    /// Command range allocated to Commands UI extension
+    ECmdExtensionFirstCommand = 30600,
+    ECmdExtensionLastCommand = 30699,
+
+    /// Command range allocated to Properties UI extension
+    EPropertiesExtensionFirstCommand = 30700,
+    EPropertiesExtensionLastCommand = 30799,
+    
+    /// Command range allocated to Contact Info UI extension
+    EContactInfoExtensionFirstCommand = 30800,
+    EContactInfoExtensionLastCommand = 30899,
+
+    /// Command range allocated to Map UI extension
+    EMapExtensionFirstCommand = 30900,
+    EMapExtensionLastCommand = 30999,
+
+    /// Command range allocated to Top contacts UI extension
+    ETopContactsExtensionFirstCommand = 31000,
+    ETopContactsLastCommand = 31099,
+        
+    /// Command range allocated to NamesList UI extension
+    ENamesListExtentionFirstCommand = 31100, 
+    ENamesListExtentionLastCommand = 31199,
+
+    /// Last Phonebook 2 command (keep this item last)
+    EPbk2CmdLast = 65535
+    };
+
+/**
+ * Commmon extension command ids.
+ */
+enum TPbk2UIExtCommonCommand
+    {
+    /// Placeholder menu dimmed menu commads for UI extension to use
+    /// as a previous command
+    EPbk2CmdOtherMemoriesPlaceholderFirst = EPbk2ExtCommonExtensionFirstCommand,
+    EPbk2CmdBackupPlaceholderFirst,
+    EPbk2CmdVoiceTagPlaceholder,
+    EPbk2CmdMapExtensionPlaceholder
+    };
+
+/**
+ * Phonebook2 note dialog ids.
+ */
+enum TPhonebook2NoteId
+    {
+    EPbk2NoteContactsFetching = 1,
+    EPbk2NoteProcessing,
+    EPbk2NoteMemoryDeleteInProgress,
+    EPbk2NoteConvertingToBusinessCard,
+    EPbk2NoteCheckingContacts,
+    EPbk2NoteContactsRetrievingProgressBar,
+    EPbk2NoteContactsSaving,
+    EPbk2NoteContactsSynchronizing,
+
+    /// Note range allocated to Group UI Extension
+    EGroupUiExtensionFirstNoteId = 100,
+    EGroupUiExtensionLastNoteId = 199,
+
+    /// Note range allocated to USIM UI Extension
+    EUSimUiExtensionFirstNoteId = 200,
+    EUSimUiExtensionLastNoteId = 299,
+
+    /// Note range allocated to PEC UI Extension
+    EPecUiExtensionFirstNoteId = 300,
+    EPecUiExtensionLastNoteId = 399,
+
+    /// Note range allocated to MMC UI Extension
+    EMmcUiExtensionFirstNoteId = 400,
+    EMmcUiExtensionLastNoteId = 499,
+
+    /// Note range allocated to VoiceTag UI Extension
+    EVoiceTagUiExtensionFirstNoteId = 500,
+    EVoiceTagUiExtensionLastNoteId = 599,
+
+    /// Note range allocated to common extension commands
+    EPbk2ExtCommonExtensionFirstNoteId = 600,
+    EPbk2ExtCommonExtensionLastNoteId = 699,
+
+    /// Last Phonebook 2 note id (keep this item last)
+    EPbk2NoteLast = 5000
+    };
+
+#endif // PBK2COMMANDS_HRH
+
+// End of File

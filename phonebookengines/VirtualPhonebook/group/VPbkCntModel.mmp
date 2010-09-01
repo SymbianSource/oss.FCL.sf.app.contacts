@@ -1,0 +1,158 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This is project specification file for the
+*     Virtual Phonebook Contacts Model store.
+*
+*/
+
+// 
+
+#include "../inc/VPbkPrivateUid.h"
+#include "VPbkConfig.mmp"
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+TARGET          VPbkCntModel.dll
+TARGETTYPE      PLUGIN
+UID             0x10009D8D KVPbkCntModelStoreDomainImplementationUID
+
+CAPABILITY      CAP_ECOM_PLUGIN
+VENDORID        VID_DEFAULT
+
+SOURCEPATH      ../VPbkCntModel/src
+
+// Contact classes
+SOURCE          CContact.cpp
+SOURCE          CViewContact.cpp
+SOURCE          CContactLink.cpp
+SOURCE          CContactBookmark.cpp
+
+// Contact field classes
+SOURCE          TNewContactField.cpp
+SOURCE          TContactFieldCollection.cpp
+SOURCE          TContactField.cpp
+SOURCE          TContactFieldData.cpp
+SOURCE          TContactFieldDataImpl.cpp
+SOURCE          CFieldTypeMap.cpp
+SOURCE          CFieldFactory.cpp
+SOURCE          CFieldInfo.cpp
+SOURCE          CFieldTypeList.cpp
+
+// Contact store classes
+SOURCE          CContactStore.cpp
+SOURCE          CContactStoreDomain.cpp
+SOURCE          CContactStoreInfo.cpp
+
+// Contact view classes
+SOURCE          CViewBase.cpp
+SOURCE          CContactView.cpp
+SOURCE          CFilteredContactView.cpp
+SOURCE          CCustomFilteredContactView.cpp
+SOURCE          CCustomFilteredGroupView.cpp
+SOURCE          CCustomFilteredNativeContactView.cpp
+SOURCE          CGroupView.cpp
+SOURCE          CFilteredGroupView.cpp
+SOURCE          CGroupMembersView.cpp
+SOURCE          CFindViewBase.cpp
+SOURCE          CFindView.cpp
+SOURCE          CRefineView.cpp
+
+// Operations
+SOURCE          CContactRetriever.cpp
+SOURCE          CDeleteContactsOperation.cpp
+SOURCE          CCommitContactsOperation.cpp
+SOURCE          CMatchPhoneNumberOperation.cpp
+SOURCE          CAsyncContactOperation.cpp
+SOURCE          CFindOperation.cpp
+SOURCE          CFindInTextDefOperation.cpp
+
+// Attribute classes
+SOURCE          CDefaultAttributeManager.cpp
+SOURCE          CDefaultAttributeOperation.cpp
+SOURCE          CSpeedDialAttributeManager.cpp
+SOURCE          CSpeedDialAttributeOperation.cpp
+
+// Voice Tag Support
+
+// Only SIND voice tags are supported and only if SIND AIW service
+// is not on. These files can be removed when RD_SIND_VIA_AIW
+// is removed from platform and SIND AIW service is always on.
+#if defined(__SIND) && !defined(RD_SIND_VIA_AIW)
+SOURCE          CSindVoiceTagAttributeManager.cpp
+SOURCE          CSindVoiceTagAttributeListOperation.cpp
+SOURCE          CSindVoiceTagAttributeFindOperation.cpp
+SOURCE          VPbkCntModelEntryPointVoiceTagOn.cpp
+SOURCE          VoiceTagSupported.cpp
+#else
+SOURCE          VPbkCntModelEntryPoint.cpp
+SOURCE          VoiceTagNotSupported.cpp
+#endif
+
+// Miscellanous
+SOURCE          CContactIdConverter.cpp
+SOURCE          CContactFilter.cpp
+SOURCE          CNamedRemoteViewHandle.cpp
+SOURCE          NamedRemoteViewViewDefinitionStoreUtility.cpp
+SOURCE          vpbkcntmodelremoteviewpreferences.cpp
+SOURCE          COwnContactLinkOperation.cpp
+
+START RESOURCE  ../rss/VPbkCntModelRes.rss
+HEADER
+TARGET          VPbkCntModelRes
+TARGETPATH      RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END
+
+// Only SIND voice tags are supported and only if SIND AIW service
+// is not on. VPbkCntModelVoiceTagOn.rss can be removed when RD_SIND_VIA_AIW
+// is removed from platform and SIND AIW service is always on.
+#if defined (__SIND) && !defined (RD_SIND_VIA_AIW)
+START RESOURCE  ../rss/VPbkCntModelVoiceTagOn.rss
+TARGET          VPbkCntModel
+TARGETPATH      ECOM_RESOURCE_DIR
+END
+#else
+START RESOURCE  ../rss/VPbkCntModel.rss
+TARGET          VPbkCntModel
+TARGETPATH      ECOM_RESOURCE_DIR
+END
+#endif
+
+USERINCLUDE     ../VPbkCntModel/inc
+USERINCLUDE     ../group
+
+SYSTEMINCLUDE   ../inc
+// Dependency to the upper layer due to SIND/VuiVoiceRecogDefs.h,
+// PbkFields.hrh, CPbkContactEngine.h, CPbkContactItem.h.
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY         euser.lib efsrv.lib bafl.lib estor.lib
+LIBRARY         cntmodel.lib cntview.lib sysutil.lib
+LIBRARY         commonengine.lib diskspacereserver.lib ecom.lib
+LIBRARY         VPbkEng.lib VPbkEngUtils.lib PbkEng.lib
+LIBRARY         featmgr.lib cone.lib
+// Only SIND voice tags are supported and only if SIND AIW service
+// is not on. Dependency to NssVASApi.lib can be removed when RD_SIND_VIA_AIW
+// is removed from platform and SIND AIW service is always on.
+#if defined (__SIND) && !defined (RD_SIND_VIA_AIW)
+LIBRARY         NssVASApi.lib
+#endif
+
+#ifdef VPBK_ENABLE_PROFILE
+// Depencency to VirtualPhonebook profiling library
+LIBRARY VPbkProfile.lib
+#endif // VPBK_ENABLE_PROFILE
+
+// End of File

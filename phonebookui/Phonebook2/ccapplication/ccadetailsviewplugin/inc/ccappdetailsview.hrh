@@ -1,0 +1,69 @@
+/*
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Commands for ccappdetailsviewplugin
+*
+*/
+
+
+#ifndef __CCAPPDETAILSVIEW_HRH__
+#define __CCAPPDETAILSVIEW_HRH__
+
+/** ccappdetailsviewplugin's enumerated command codes */
+enum TCCAppDetailsViewCmdIds
+{
+
+    ECCAppDetailsViewEditItemCmd = 1,// start value must not be 0
+    ECCAppDetailsViewImageCmd,
+    ECCAppDetailsViewNumberCmd,
+    ECCAppDetailsViewAddressCmd,
+    ECCAppDetailsViewSendBusinessCardCmd,
+    ECCAppDetailsViewSetTopContactCmd,
+    ECCAppDetailsViewRemoveTopContactCmd,
+    ECCAppDetailsViewDeleteCmd,
+    ECCAppDetailsViewCopyCmd,
+    ECCAppDetailsViewCopyNumberCmd,
+    ECCAppDetailsViewCopyAddressCmd,
+    ECCAppDetailsViewCopyDetailCmd,
+    ECCAppDetailsViewAssignSpeedDialCmd,
+    ECCAppDetailsViewUnassignSpeedDialCmd,
+    ECCAppDetailsViewSetAsDefaultCmd,
+    ECCAppDetailsViewPrependCmd,
+    ECCAppDetailsViewFindOnMapCmd,
+    ECCAppDetailsViewShowOnMapCmd,
+    ECCAppDetailsViewCallCmd,
+
+    // KAiwCmdAssign AIW service cmd used as Edit Options-menu item
+    // set AIW commands at last
+    ECCAppDetailsViewAiwBaseCmd = 1000 // leave this last
+
+};
+
+enum TCCAppDetailsViewIconIds
+{
+    ECCAppDetailsViewNullIconId               = -1,
+    ECCAppDetailsViewQgn_indi_qdial_one_add   = 1,
+    ECCAppDetailsViewQgn_indi_qdial_two_add,
+    ECCAppDetailsViewQgn_indi_qdial_three_add,
+    ECCAppDetailsViewQgn_indi_qdial_four_add,
+    ECCAppDetailsViewQgn_indi_qdial_five_add,
+    ECCAppDetailsViewQgn_indi_qdial_six_add,
+    ECCAppDetailsViewQgn_indi_qdial_seven_add,
+    ECCAppDetailsViewQgn_indi_qdial_eight_add,
+    ECCAppDetailsViewQgn_indi_qdial_nine_add,
+    ECCAppDetailsViewQgn_indi_default_conn_add
+};
+
+#endif // __CCAPPDETAILSVIEW_HRH__
+
+// End of File

@@ -1,0 +1,70 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 USIM UI Extension registry information.
+*
+*/
+
+
+// INCLUDES
+#include "Pbk2USIMUIUID.h"
+#include <Pbk2ExtensionUID.h>
+#include <VPbkPolicyUid.h>
+#include <ecom/registryinfov2.rh>
+
+/**
+ * The registry information.
+ */
+RESOURCE REGISTRY_INFO theInfo
+    {
+    // use resource format version 2 to enable ROM only plugins
+    resource_format_version = RESOURCE_FORMAT_VERSION_2;
+    dll_uid = KPbk2USIMExtensionImplementationUID;
+    interfaces =
+        {
+        INTERFACE_INFO
+            {
+            interface_uid = KPbk2UiExtensionInterfaceUID;
+            implementations =
+                {
+                IMPLEMENTATION_INFO
+                    {
+                    implementation_uid = KPbk2USIMExtensionImplementationUID;
+                    version_no = 1;
+                    display_name = "";
+                    default_data = KPbkUiExtensionDefaultDataString;
+                    opaque_data = "z:\\Resource\\Pbk2USimUiRes.rsc";
+                    rom_only = 0;
+                    }
+                };
+            },
+        INTERFACE_INFO
+            {
+            interface_uid = KVPbkCopyPolicyInterfaceUID;
+            implementations =
+                {
+                IMPLEMENTATION_INFO
+                    {
+                    implementation_uid = KPbk2SimCopyPolicyImplementationUID;
+                    version_no = 1;
+                    display_name = "Phonebook2 SIM Copy Policy";
+                    default_data = KVPbkCopyPolicyDataString;
+                    opaque_data = "sim";
+                    }
+                };
+            }
+        };
+    }
+
+
+// End of File

@@ -1,0 +1,32 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file contains resources for common languages 
+*                for pbk engine extension.
+*
+*/
+
+
+//  INCLUDES
+#include <PbkDefaultFieldOrdering.hrh>
+//Contains common resources for all languages
+#include "PbkEngine_FMCommonRes.rss"
+
+/*============================================================================
+* NB. PbkEngine_FM resources MUST be defined in PbkEngine_FMCommonRes.rss 
+* because only one PbkEngine_FMRes.rsg file used with different language 
+* specific ".rsc" files. Otherwise BC is broken.
+============================================================================*/
+
+
+// End of File

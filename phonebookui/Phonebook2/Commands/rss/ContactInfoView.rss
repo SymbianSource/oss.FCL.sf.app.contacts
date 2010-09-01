@@ -1,0 +1,217 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains all the resources for Phonebook 2 contact info view.
+*
+*/
+
+
+// ---------------------------------------------------------
+// Contact Info View's main menu pane
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_contactinfo_edit_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdWrite;
+            txt = qtn_phob_opt_send;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdGoToURL;
+            txt = qtn_find_go_to_url;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdEditMe;
+            txt = qtn_phob_opt_entry_edit;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdDeleteMe;
+            txt = qtn_phob_opt_entry_delete;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdMapExtensionPlaceholder;
+            txt = "";
+            flags = EEikMenuItemDimmed;
+            },            
+        MENU_ITEM
+            {
+            command = EPbk2CmdUseNumber;
+            txt = qtn_stm_om_use_no;
+            cascade = r_phonebook2_prepend_submenu;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdDefaultSettings;
+            txt = qtn_phob_opt_default_settings;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Contact Info View's main menu pane, continued. 
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_contactinfo_extended_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdAssignSpeedDial;
+            txt = qtn_phob_opt_speed_dial_add;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdRemoveSpeedDial;
+            txt = qtn_phob_opt_speed_dial_remove;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdPersonalRingingTone;
+            txt = qtn_phob_field_change_sync;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdFetchThumbnail;
+            txt = qtn_phob_opt_thumbnail_get;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdRemoveThumbnail;
+            txt = qtn_phob_opt_thumbnail_remove;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdAddImage;
+            txt = qtn_phob_opt_add_image;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdImage;
+            txt = qtn_phob_opt_image;
+            cascade = r_phonebook2_image_submenu;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdCopy;
+            txt = qtn_phob_opt_copy;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdSend;
+            txt = qtn_bcard_opt_send_entry_via;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Contact Info View's context sensitive menu
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_contactinfo_context_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdWrite;
+            txt = qtn_phob_opt_send;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdGoToURL;
+            txt = qtn_find_go_to_url;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdUseNumber;
+            txt = qtn_stm_om_use_no;
+            cascade = r_phonebook2_prepend_submenu;
+            },
+        // Image/text for call context menus
+        MENU_ITEM
+            {
+            command = EPbk2CmdImage;
+            txt = qtn_phob_opt_image;
+            cascade = r_phonebook2_image_submenu;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdEditMe;
+            txt = qtn_phob_opt_entry_edit;
+            },          
+        MENU_ITEM
+            {
+            command = EPbk2CmdPersonalRingingTone;
+            txt = qtn_phob_opt_entry_rtone;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Prepend submenu
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_prepend_submenu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdPrepend;
+            txt = qtn_logs_opt_use_prepend;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdCopyNumber;
+            txt = qtn_logs_opt_use_copy;
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+// Image submenu
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_image_submenu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPbk2CmdViewImage;
+            txt = qtn_phob_opt_image_view;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdChangeImage;
+            txt = qtn_phob_field_change_sync;
+            },
+        MENU_ITEM
+            {
+            command = EPbk2CmdRemoveImage;
+            txt = qtn_phob_opt_image_remove;
+            }
+        };
+    }
+
+
+// End of File

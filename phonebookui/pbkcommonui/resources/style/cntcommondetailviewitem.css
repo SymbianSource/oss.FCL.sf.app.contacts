@@ -1,7 +1,0 @@
-CntCommonDetailViewItem{
-    layout:customLayout;
-}
-
-CntCommonDetailViewItem:landscape{
-    layout:customLayout-landscape;
-}

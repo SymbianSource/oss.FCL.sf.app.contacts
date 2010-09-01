@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<api id="dad8298d83b168ea7d12d88fac46d4f5" dataversion="2.0">
+  <name>Phonebook 2 Common UI API</name>
+  <description>Phonebook 2 application-framework. Core Phonebook and Phonebook Extensions use this framework.</description>
+  <type>c++</type>
+  <collection>phonebookui</collection>
+  <libs>
+    <lib name="Pbk2CommonUI.lib" />
+  </libs>
+  <release category="platform"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>no</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>

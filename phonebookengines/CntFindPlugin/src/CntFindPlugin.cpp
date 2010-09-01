@@ -18,7 +18,7 @@
 
 
 // INCLUDE FILES
-#include "cntfindplugin.h"
+#include "CntFindPlugin.h"
 #include <FindUtil.h>
 
 // ========================== MEMBER FUNCTIONS ===============================

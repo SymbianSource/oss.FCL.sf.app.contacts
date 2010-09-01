@@ -1,0 +1,212 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*
+*/
+
+
+
+//  LOCALISATION STRINGS  
+
+// STM titles
+
+//d:STM's missed view's title text
+//l:title_pane_t2/opt12
+//
+#define qtn_stm_title_missed_calls                  "Missed calls"
+
+//d:STM's received view's title text
+//l:title_pane_t2/opt12
+//
+#define qtn_stm_title_received_calls                "Received calls"
+
+//d:STM's dialled view's title text
+//l:title_pane_t2/opt12
+//
+#define qtn_stm_title_dialled_calls                 "Dialled calls"
+
+//d:STM's Call Info's title text
+//l:heading_pane_t1
+//
+#define qtn_logs_stm_call_info_note                 "Call info:"
+
+
+// STM options menu
+
+//d:Menu item "Use number"'s text
+//l:list_single_pane_t1_cp2/opt3
+//
+#define qtn_stm_om_use_no                           "Use number"
+
+//d:Menu item "Delete"'s text.
+//d:Used to erase a name/number from the STM list
+//l:list_single_pane_t1_cp2
+//
+#define qtn_stm_om_delete                           "Delete"
+
+//d:Menu item "Clear list"'s text
+//l:list_single_pane_t1_cp2
+//
+#define qtn_stm_om_delete_all                       "Clear list"
+
+// Message texts
+
+//d:Text to show, when an amount of
+//d:new calls
+//l:list_double_large_graphic_pane_t2
+//
+#define qtn_logs_stm_amount_mcalls                  "%N New calls"
+
+//d:Text to show, when 1 new call
+//l:list_double_large_graphic_pane_t2
+//
+#define qtn_logs_stm_amount_call                    "1 New call"
+
+//d:Query text to show, when ensuring
+//d:the number deletion from the list.
+//d:Because the text will not fit in the
+//d:one line, there is two lines.
+//l:popup_note_window
+//
+#define text_stm_erase_entry_query                  "Erase number\nfrom list?"
+
+//d:Text to show, when no dialled numbers
+//l:main_list_empty_pane
+//
+#define qtn_stm_info_no_last_dialled                "No dialled numbers"
+
+//d:Query text to show, when ensuring
+//d:the missed calls list deletion.
+//l:popup_note_window
+//
+#define qtn_stm_note_erase_missed                   "Erase all missed\ncalls?"
+
+//d:Query text to show, when ensuring
+//d:the received calls list deletion.
+//l:popup_note_window
+//
+#define qtn_stm_note_erase_received                 "Erase all received\ncalls?"
+
+//d:Query text to show, when ensuring
+//d:the dialled calls list deletion.
+//l:popup_note_window
+//
+#define qtn_stm_note_erase_dialled                  "Erase all dialled\ncalls?"
+
+//d:Call Info's telephone number text
+//l:list_single_heading_pane_t2 
+//
+#define qtn_logs_stm_call_info_name                 "Name"
+
+//d:Call Info's telephone number text
+//l:list_single_heading_pane_t2 
+//
+#define qtn_logs_stm_call_info_number               "Number"
+
+//d:Call Info's time text
+//l:list_single_heading_pane_t2 
+//
+#define qtn_logs_stm_call_info_time                 "Time"
+
+//d:Call Info's date text
+//l:list_single_heading_pane_t2 
+//
+#define qtn_logs_stm_call_info_date                 "Date"
+
+//d:Use Number Query Data pop-up
+//d:windows title
+//l:popup_query_data_window
+//
+#define text_stm_use_number_popup_text              "Use number"
+
+//d:When no events to show on the
+//d:Dialled list, then this text will
+//d:be shown
+//l:main_list_empty_pane
+//
+#define text_no_dialled_events                      "No Dialled calls"
+
+//d:When no events to show on the
+//d:Missed list, then this text will
+//d:be shown
+//l:main_list_empty_pane
+//
+#define text_no_missed_events                       "No Missed calls"
+
+//d:When no events to show on the 
+//d:Received list, then this text will
+//d:be shown
+//l:main_list_empty_pane
+//
+#define text_no_received_events                     "No Received calls"
+
+//d:Write message to selected event
+//l:list_single_pane_t1_cp2/opt3
+//
+#define qtn_logs_opt_write_message                 "Write message"
+
+//d:Options list submenu text for writing a SMS message
+//l:list_single_popup_submenu_pane_t1
+//
+#define qtn_logs_opt_send_sms                       "Text message"
+
+//d:Options list submenu text for writing a MMS message to a memory entry
+//l:list_single_popup_submenu_pane_t1
+//
+#define qtn_logs_opt_send_mms                       "Multimedia message"
+
+//d:Sub menu item "Copy"'s text
+//l:list_single_popup_submenu_pane_t1
+//
+#define qtn_logs_opt_use_copy                       "Copy"
+
+//d:Sub menu item "use number","Prepend" text. Note! In localised 
+//d:versions the translation for this will be based on meaning 
+//d:"Prepend" in CDMA-versions and "Edit" in other versions.
+//l:list_single_popup_submenu_pane_t1
+//
+#define qtn_logs_opt_use_prepend                    "Prepend"
+
+//d:Menu item: use poc address text.
+//l:list_single_pane_t1_cp2/opt3
+//
+#define qtn_poc_use_address                         "Use poc address"
+
+//d:Menu item: use voip address text.
+//l:list_single_pane_t1_cp2/opt3
+//
+#define qtn_voip_use_address                        "Use voip address"
+
+//d:Menu item: show my voip address text.
+//l:list_single_pane_t1_cp2
+//
+#define qtn_voip_show_my_address                    "Show my voip address"
+
+//d:Information note showing "my address"
+//l:popup_note_window
+//
+#define qtn_stm_my_address                          "My address: %U"
+
+//d:Data query prompting voip address
+//l:popup_query_data_window
+//
+#define qtn_voip_use_address_query                  "Address:"
+
+
+
+
+
+
+
+// End of File

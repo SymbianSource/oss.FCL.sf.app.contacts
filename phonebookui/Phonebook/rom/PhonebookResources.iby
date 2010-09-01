@@ -1,0 +1,42 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*
+*/
+#ifndef __PHONEBOOK_RESOURCES_IBY__
+#define __PHONEBOOK_RESOURCES_IBY__
+
+//Resource file(s) for Phonebook application
+data=DATAZ_\RESOURCE_FILES_DIR\PbkEng.rsc                      RESOURCE_FILES_DIR\PbkEng.rsc
+data=DATAZ_\RESOURCE_FILES_DIR\PbkEngChinese.rsc               RESOURCE_FILES_DIR\PbkEngChinese.rsc
+data=DATAZ_\RESOURCE_FILES_DIR\PbkEngJapanese.rsc              RESOURCE_FILES_DIR\PbkEngJapanese.rsc
+data=DATAZ_\RESOURCE_FILES_DIR\BCardEng.rsc                    RESOURCE_FILES_DIR\BCardEng.rsc
+data=DATAZ_\RESOURCE_FILES_DIR\PbkView.rsc                     RESOURCE_FILES_DIR\PbkView.rsc
+data=DATAZ_\CONTACTS_RESOURCE_DIR\cntmodel.rsc                 CONTACTS_RESOURCE_DIR\cntmodel.rsc
+data=DATAZ_\resource\PbkEngine_FMRes.RSC                       resource\PbkEngine_FMRes.RSC
+data=DATAZ_\resource\PbkEngine_FMJapaneseRes.RSC               resource\PbkEngine_FMJapaneseRes.RSC
+data=DATAZ_\resource\PbkEngine_FMChineseRes.RSC                resource\PbkEngine_FMChineseRes.RSC
+
+#ifndef RD_PHONEBOOK2
+data=DATAZ_\APP_RESOURCE_DIR\Phonebook.rsc                     APP_RESOURCE_DIR\Phonebook.rsc
+data=DATAZ_\resource\PbkExtCommon.rsc                          resource\PbkExtCommon.rsc
+data=DATAZ_\resource\PbkVoiceTagRes.rsc                        resource\PbkVoiceTagRes.rsc
+data=DATAZ_\resource\PbkUSimUIRes.rsc                          resource\PbkUSimUIRes.rsc
+data=DATAZ_\resource\PbkAIWProvidersRes.RSC                    resource\PbkAIWProvidersRes.RSC
+#ifdef __MMC
+data=DATAZ_\resource\PbkMmcUIRes.rsc                           resource\PbkMmcUIRes.rsc
+#endif // __MMC
+#endif // RD_PHONEBOOK2
+
+#endif

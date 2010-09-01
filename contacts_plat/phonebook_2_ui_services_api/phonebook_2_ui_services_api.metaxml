@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<api id="bc500ae6d959d64ec6cb73b0923f15e4" dataversion="2.0">
+<name>Phonebook 2 UI Services API</name>
+<description>Provides UI services for Phonebook contact data clients through AIW 
+</description>
+<type>c++</type>
+<collection>phonebookui</collection>
+<libs></libs>
+<release category="platform" sinceversion="0"/>
+<attributes>
+<htmldocprovided>yes</htmldocprovided>
+<adaptation>no</adaptation>
+</attributes>
+</api>

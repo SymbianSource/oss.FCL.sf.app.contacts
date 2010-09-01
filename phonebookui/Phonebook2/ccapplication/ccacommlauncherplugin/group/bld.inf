@@ -1,0 +1,39 @@
+/*
+* Copyright (c) 2007-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Build information file for project ccappcommlauncherplugin
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+PRJ_PLATFORMS
+DEFAULT
+
+PRJ_EXPORTS
+// CenRep/ConfML config files
+../conf/ccappcommlauncher.confml            APP_LAYER_CONFML( ccappcommlauncher.confml )
+../conf/ccappcommlauncher_japan.confml      CONFML_EXPORT_PATH( ccappcommlauncher_japan.confml, japan )
+../conf/ccappcommlauncher_20019548.crml     APP_LAYER_CRML( ccappcommlauncher_20019548.crml )
+../conf/ccappcommlauncher_20019548.crml     CRML_EXPORT_PATH( ccappcommlauncher_20019548.crml, japan )
+
+// IBYs
+../rom/ccacommlauncherplugin.iby            CORE_APP_LAYER_IBY_EXPORT_PATH( ccacommlauncherplugin.iby )
+../rom/ccacommlauncherpluginresources.iby   LANGUAGE_APP_LAYER_IBY_EXPORT_PATH( ccacommlauncherpluginresources.iby )
+
+PRJ_MMPFILES
+ccappcommlauncherplugin.mmp
+
+
+

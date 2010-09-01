@@ -1,0 +1,62 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 build time configuration file.
+*
+*/
+
+
+#ifndef PBK2CONFIG_HRH
+#define PBK2CONFIG_HRH
+
+/// Put flags you want to enable or disable for testing here.
+/// In order for this to work all Phonebook source files that need
+/// the platform flags should not include <bldvariant.hrh> directly but
+/// this file. DO NOT check this file out from version control if you modify
+/// it only for testing. Modify only your local copy.
+
+//TEMPORARY DEFINE FOR ECE:
+// context-sensitive menu ( and middle softkey ) needs to be disabled for ece
+// but should be still available for platfrom branch and feature realeses
+// it's not clear how this variation will be handled so
+// use ECE_DISABLE_CONTEXT_MENU for now to avoid code deleting and ease merging
+#define ECE_DISABLE_CONTEXT_MENU
+
+#if defined(__WINS__) || defined(WINS)
+/// Flag for using ETel test server instead of ETel
+//#define PBK2_USE_ETEL_TESTSERVER
+#endif
+
+
+/// Enable phonebook debug print all over the phonebook
+/// If you like to enable debug prints in specific file,
+/// define this macro only in that file before Pbk2Debug.h include.
+/// 
+// #define PBK2_ENABLE_DEBUG_PRINT
+
+/// Define this if you want to put debug output to the file.
+/// The file should be c:/logs/Pbk2/Pbk2.log, see Pbk2Debug.h.
+///
+//#define PBK2_ENABLE_DEBUG_LOGGER
+
+/// Enabling the PBK2_ENABLE_PROFILE flag enables the phonebook profiling
+/// on all profiles. Search with PBK2_ENABLE_PROFILE and uncomment the 
+/// nesessary parts to build all needed parts of the framework.
+/// When logging on HW remember to uncomment the component
+/// from the IBY files.
+#undef PBK2_ENABLE_PROFILE
+
+
+#endif // PBK2CONFIG_HRH
+
+// End of File

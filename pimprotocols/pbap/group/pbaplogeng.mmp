@@ -28,7 +28,7 @@ UID	0 0x10283035
 VENDORID 0x70000001
 
 SOURCEPATH		../pbaplogeng
-USERINCLUDE		../inc ../../../phonebookengines_old/contactsmodel/inc
+USERINCLUDE		../inc ../../../phonebookengines/contactsmodel/inc
 APP_LAYER_SYSTEMINCLUDE_SYMBIAN
 
 SOURCE		pbaplogeng.cpp

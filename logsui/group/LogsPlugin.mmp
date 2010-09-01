@@ -1,0 +1,95 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This is a project specification file for Logs plugin for General Settings 
+ *  Applications view
+ *
+*/
+
+
+#include        <data_caging_paths.hrh>
+#include <platform_paths.hrh>   // for APP_LAYER_SYSTEMINCLUDE macro
+
+//Activate these macros to get traces
+//MACRO           TRACE_ENTRY_EXIT_POINT
+//MACRO           TRACE_MODULE_LOGSPLUGIN
+
+
+CAPABILITY      CAP_ECOM_PLUGIN
+TARGET          LogsPlugin.dll
+TARGETTYPE      PLUGIN 
+UID             0x10009D8D  0x102750EB   //ECom Dll recognition and Logs Plugin dll UID  
+VENDORID        VID_DEFAULT
+
+SOURCEPATH      ../LogsPlugin
+SOURCE          CLogsSettingsView.cpp
+SOURCE          CLogsSettingsControlContainer.cpp
+SOURCE          LogsPluginImplementationTable.cpp
+
+//From Logs Appsrc
+SOURCEPATH      ../AppSrc
+SOURCE          CLogsBaseControlContainer.cpp
+
+// ECOM resource definition. TARGET name must be same as DLL name
+SOURCEPATH      ../LogsPlugin
+START RESOURCE  LogsPlugin.RSS          //Plugin registration data
+TARGET          LogsPlugin.rsc
+END
+
+// Include paths
+USERINCLUDE     ../LogsPlugin  
+USERINCLUDE     ../AppSrc
+USERINCLUDE     ../AocCtViewInc  
+USERINCLUDE     ../EngineInc
+USERINCLUDE     ../group
+USERINCLUDE     ../LogsExt
+
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to Logs components
+LIBRARY         LogsEng.lib
+LIBRARY         AocCtView.lib
+
+// Dependencies to system components
+LIBRARY         logcli.lib                      // CLogClient
+LIBRARY         apparc.lib
+LIBRARY         avkon.lib
+LIBRARY         commonengine.lib                // StringLoader
+LIBRARY         cone.lib
+LIBRARY         eikcoctl.lib
+LIBRARY         eikctl.lib
+LIBRARY         eikcore.lib
+LIBRARY         euser.lib
+LIBRARY         fbscli.lib                      // Listbox graphic
+LIBRARY         egul.lib
+LIBRARY         bafl.lib                        // MDesCArray, CCLipBoard
+
+LIBRARY         etext.lib                       // CPlainText
+
+LIBRARY         AknSkins.lib 
+LIBRARY         hlplch.lib                      // Help application
+LIBRARY         FeatMgr.lib                     // Feature Manager API
+LIBRARY         ws32.lib
+LIBRARY         apgrfx.lib
+LIBRARY         CdlEngine.lib                   //Dynamic ui stuff  
+LIBRARY         eikdlg.lib
+
+LIBRARY         gdi.lib                         //This is needed for 3.1 builds (because of API change in CFont Class (gdi.h)
+
+LIBRARY         ecom.lib    
+LIBRARY         GSEcomPlugin.lib
+LIBRARY         GSFramework.lib
+LIBRARY         efsrv.lib
+
+// End of File
+

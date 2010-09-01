@@ -1,0 +1,47 @@
+EXPORTS
+	__16CPbkDocumentBaseR15CEikApplication @ 1 NONAME R3UNUSED ; CPbkDocumentBase::CPbkDocumentBase(CEikApplication &)
+	ApplicationUid__C15CPbkAppViewBase @ 2 NONAME R3UNUSED ; CPbkAppViewBase::ApplicationUid(void) const
+	ContextPane__C15CPbkAppViewBase @ 3 NONAME R3UNUSED ; CPbkAppViewBase::ContextPane(void) const
+	DynInitMenuPaneL__15CPbkAppViewBaseiP12CEikMenuPane @ 4 NONAME R3UNUSED ; CPbkAppViewBase::DynInitMenuPaneL(int, CEikMenuPane *)
+	Engine__C15CPbkAppViewBase @ 5 NONAME R3UNUSED ; CPbkAppViewBase::Engine(void) const
+	GetViewStateLC__C15CPbkAppViewBase @ 6 NONAME R3UNUSED ; CPbkAppViewBase::GetViewStateLC(void) const
+	HandleCommandKeyL__15CPbkAppViewBaseRC9TKeyEvent10TEventCode @ 7 NONAME R3UNUSED ; CPbkAppViewBase::HandleCommandKeyL(TKeyEvent const &, TEventCode)
+	HandleCommandL__15CPbkAppViewBasei @ 8 NONAME R3UNUSED ; CPbkAppViewBase::HandleCommandL(int)
+	LaunchPopupMenuL__15CPbkAppViewBasei @ 9 NONAME R3UNUSED ; CPbkAppViewBase::LaunchPopupMenuL(int)
+	PbkAppUi__C15CPbkAppViewBase @ 10 NONAME R3UNUSED ; CPbkAppViewBase::PbkAppUi(void) const
+	PbkDocument__C13CPbkAppUiBase @ 11 NONAME R3UNUSED ; CPbkAppUiBase::PbkDocument(void) const
+	PbkProcessKeyEventL__15CPbkAppViewBaseRC9TKeyEvent10TEventCode @ 12 NONAME R3UNUSED ; CPbkAppViewBase::PbkProcessKeyEventL(TKeyEvent const &, TEventCode)
+	ProcessCommandL__15CPbkAppViewBasei @ 13 NONAME R3UNUSED ; CPbkAppViewBase::ProcessCommandL(int)
+	TitlePane__C15CPbkAppViewBase @ 14 NONAME R3UNUSED ; CPbkAppViewBase::TitlePane(void) const
+	"_._13CPbkAppUiBase" @ 15 NONAME R3UNUSED ; CPbkAppUiBase::~CPbkAppUiBase(void)
+	"_._15CPbkAppViewBase" @ 16 NONAME R3UNUSED ; CPbkAppViewBase::~CPbkAppViewBase(void)
+	"_._16CPbkDocumentBase" @ 17 NONAME R3UNUSED ; CPbkDocumentBase::~CPbkDocumentBase(void)
+	__13CPbkAppUiBase @ 18 NONAME R3UNUSED ; CPbkAppUiBase::CPbkAppUiBase(void)
+	__15CPbkAppViewBase @ 19 NONAME R3UNUSED ; CPbkAppViewBase::CPbkAppViewBase(void)
+	ActiveView__C13CPbkAppUiBase @ 20 NONAME R3UNUSED ; CPbkAppUiBase::ActiveView(void) const
+	__24CPbkControlContainerImplP19MPbkKeyEventHandler @ 21 NONAME R3UNUSED ; CPbkControlContainerImpl::CPbkControlContainerImpl(MPbkKeyEventHandler *)
+	CoeControl__C24CPbkControlContainerImpl @ 22 NONAME R3UNUSED ; CPbkControlContainerImpl::CoeControl(void) const
+	ComponentControl__C24CPbkControlContainerImpli @ 23 NONAME R3UNUSED ; CPbkControlContainerImpl::ComponentControl(int) const
+	ConstructL__24CPbkControlContainerImplR15MObjectProvider @ 24 NONAME R3UNUSED ; CPbkControlContainerImpl::ConstructL(MObjectProvider &)
+	CountComponentControls__C24CPbkControlContainerImpl @ 25 NONAME R3UNUSED ; CPbkControlContainerImpl::CountComponentControls(void) const
+	DestroyControl__24CPbkControlContainerImpl @ 26 NONAME R3UNUSED ; CPbkControlContainerImpl::DestroyControl(void)
+	GetHelpContext__C24CPbkControlContainerImplR15TCoeHelpContext @ 27 NONAME R3UNUSED ; CPbkControlContainerImpl::GetHelpContext(TCoeHelpContext &) const
+	KeyEventHandler__C24CPbkControlContainerImpl @ 28 NONAME R3UNUSED ; CPbkControlContainerImpl::KeyEventHandler(void) const
+	OfferKeyEventL__24CPbkControlContainerImplRC9TKeyEvent10TEventCode @ 29 NONAME R3UNUSED ; CPbkControlContainerImpl::OfferKeyEventL(TKeyEvent const &, TEventCode)
+	SetCoeControl__24CPbkControlContainerImplP11CCoeControlRC5TRecti @ 30 NONAME ; CPbkControlContainerImpl::SetCoeControl(CCoeControl *, TRect const &, int)
+	SetHelpContext__24CPbkControlContainerImplRC15TCoeHelpContext @ 31 NONAME R3UNUSED ; CPbkControlContainerImpl::SetHelpContext(TCoeHelpContext const &)
+	SetKeyEventHandler__24CPbkControlContainerImplP19MPbkKeyEventHandler @ 32 NONAME R3UNUSED ; CPbkControlContainerImpl::SetKeyEventHandler(MPbkKeyEventHandler *)
+	SizeChanged__24CPbkControlContainerImpl @ 33 NONAME R3UNUSED ; CPbkControlContainerImpl::SizeChanged(void)
+	"_._24CPbkControlContainerImpl" @ 34 NONAME R3UNUSED ; CPbkControlContainerImpl::~CPbkControlContainerImpl(void)
+	InstanceL__18CPbkAppGlobalsBase @ 35 NONAME R3UNUSED ; CPbkAppGlobalsBase::InstanceL(void)
+	FocusChanged__24CPbkControlContainerImpl8TDrawNow @ 36 NONAME R3UNUSED ; CPbkControlContainerImpl::FocusChanged(TDrawNow)
+	AddAndExecuteCommandL__13CPbkAppUiBaseP11MPbkCommand @ 37 NONAME R3UNUSED ; CPbkAppUiBase::AddAndExecuteCommandL(MPbkCommand *)
+	CreateInterestItemAndAttachL__15CPbkAppViewBaseiiii @ 38 NONAME ; CPbkAppViewBase::CreateInterestItemAndAttachL(int, int, int, int)
+	Close__16RPbkResourceFile @ 39 NONAME R3UNUSED ; RPbkResourceFile::Close(void)
+	OpenL__16RPbkResourceFileRC7TDesC16 @ 40 NONAME R3UNUSED ; RPbkResourceFile::OpenL(TDesC16 const &)
+	"_._16RPbkResourceFile" @ 41 NONAME R3UNUSED ; RPbkResourceFile::~RPbkResourceFile(void)
+	__16RPbkResourceFileR7CCoeEnv @ 42 NONAME R3UNUSED ; RPbkResourceFile::RPbkResourceFile(CCoeEnv &)
+	AddAndExecuteCommandL__16CPbkCommandStoreP11MPbkCommand @ 43 NONAME R3UNUSED ; CPbkCommandStore::AddAndExecuteCommandL(MPbkCommand *)
+	NewL__16CPbkCommandStore @ 44 NONAME R3UNUSED ; CPbkCommandStore::NewL(void)
+	NewL__20CPbkAiwInterestArrayR17CPbkContactEngine @ 45 NONAME R3UNUSED ; CPbkAiwInterestArray::NewL(CPbkContactEngine &)
+

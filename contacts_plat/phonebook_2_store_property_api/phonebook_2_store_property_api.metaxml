@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<api id="5d85a07f234961f7696673d2562173c5" dataversion="2.0">
+  <name>Phonebook 2 Store Property API</name>
+  <description>Provides Phonebook 2 store property utilities to clients.</description>
+  <type>c++</type>
+  <collection>phonebookui</collection>
+  <libs>
+    <lib name="Pbk2Presentation.lib" />
+  </libs>
+  <release category="platform"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>no</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>

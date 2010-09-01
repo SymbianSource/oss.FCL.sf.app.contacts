@@ -1,0 +1,22 @@
+EXPORTS
+	?RemoveObserver@CSpbContentProvider@@QAEXAAVMSpbContentProviderObserver@@@Z @ 1 NONAME ; void CSpbContentProvider::RemoveObserver(class MSpbContentProviderObserver &)
+	?AddObserverL@CSpbContentProvider@@QAEXAAVMSpbContentProviderObserver@@@Z @ 2 NONAME ; void CSpbContentProvider::AddObserverL(class MSpbContentProviderObserver &)
+	?NewL@CSpbContentProvider@@SAPAV1@AAVCVPbkContactManager@@AAVCPbk2StoreManager@@J@Z @ 3 NONAME ; class CSpbContentProvider * CSpbContentProvider::NewL(class CVPbkContactManager &, class CPbk2StoreManager &, long)
+	?CreateServiceIconLC@CSpbContentProvider@@QAEPAVCGulIcon@@ABVTPbk2IconId@@@Z @ 4 NONAME ; class CGulIcon * CSpbContentProvider::CreateServiceIconLC(class TPbk2IconId const &)
+	?GetContentL@CSpbContentProvider@@QAEXAAVMVPbkContactLink@@AAPAVHBufC16@@AAVTPbk2IconId@@AAW4TSpbContentType@1@@Z @ 5 NONAME ; void CSpbContentProvider::GetContentL(class MVPbkContactLink &, class HBufC16 * &, class TPbk2IconId &, enum CSpbContentProvider::TSpbContentType &)
+	?Text@CSpbContactDataModel@@QBE?AVTPtrC16@@W4TTextTypes@1@@Z @ 6 NONAME ; class TPtrC16 CSpbContactDataModel::Text(enum CSpbContactDataModel::TTextTypes) const
+	?ExternalizeL@CSpbContactDataModel@@QBEXAAVRWriteStream@@@Z @ 7 NONAME ; void CSpbContactDataModel::ExternalizeL(class RWriteStream &) const
+	?NewL@CSpbContactDataModel@@SAPAV1@AAVCVPbkContactManager@@AAVCCoeEnv@@HPAVMPbk2ClipListBoxText@@@Z @ 8 NONAME ; class CSpbContactDataModel * CSpbContactDataModel::NewL(class CVPbkContactManager &, class CCoeEnv &, int, class MPbk2ClipListBoxText *)
+	?SetDataL@CSpbContactDataModel@@QAEXABVCPbk2PresentationContact@@PBVCPbk2IconArray@@@Z @ 9 NONAME ; void CSpbContactDataModel::SetDataL(class CPbk2PresentationContact const &, class CPbk2IconArray const *)
+	?ContactLink@CSpbContactDataModel@@QAEPAVMVPbkContactLink@@XZ @ 10 NONAME ; class MVPbkContactLink * CSpbContactDataModel::ContactLink(void)
+	?PresentationFieldIndex@CSpbContactDataModel@@QAEHH@Z @ 11 NONAME ; int CSpbContactDataModel::PresentationFieldIndex(int)
+	?Reset@CSpbContactDataModel@@QAEXXZ @ 12 NONAME ; void CSpbContactDataModel::Reset(void)
+	?SetClipListBoxText@CSpbContactDataModel@@QAEXPAVMPbk2ClipListBoxText@@@Z @ 13 NONAME ; void CSpbContactDataModel::SetClipListBoxText(class MPbk2ClipListBoxText *)
+	?UpdateIconsL@CSpbContactDataModel@@QAEXABVCPbk2IconArray@@@Z @ 14 NONAME ; void CSpbContactDataModel::UpdateIconsL(class CPbk2IconArray const &)
+	?IsEmpty@CSpbContactDataModel@@QAEHXZ @ 15 NONAME ; int CSpbContactDataModel::IsEmpty(void)
+	?InternalizeL@CSpbContactDataModel@@QAEXAAVRReadStream@@@Z @ 16 NONAME ; void CSpbContactDataModel::InternalizeL(class RReadStream &)
+	?Data@CSpbContactDataModel@@QBE?AVTPtrC8@@W4TBinaryTypes@1@@Z @ 17 NONAME ; class TPtrC8 CSpbContactDataModel::Data(enum CSpbContactDataModel::TBinaryTypes) const
+	?ListBoxModel@CSpbContactDataModel@@QAEAAVMDesC16Array@@XZ @ 18 NONAME ; class MDesC16Array & CSpbContactDataModel::ListBoxModel(void)
+	?CleanContentL@CSpbContentProvider@@QAEXAAVMVPbkContactStore@@@Z @ 19 NONAME ; void CSpbContentProvider::CleanContentL(class MVPbkContactStore &)
+	?ListIndex@CSpbContactDataModel@@QAEHH@Z @ 20 NONAME ; int CSpbContactDataModel::ListIndex(int)
+

@@ -1,0 +1,65 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*
+*/
+
+// FieldTypeMapping.rh
+
+/**
+ * Resource structure for mapping Contact Model field types to Virtual 
+ * Phonebook field types.
+ *
+ * @see class TFieldTypeMapData
+ */
+STRUCT VERSIT_FIELDTYPE_MAPPING
+    {
+    /**
+     * Contact Model field type id.
+     * @see cntdef.hrh
+     */
+    LONG cntModelId;
+
+    /**
+     * Versit property mapping for this field type.
+     *
+     * @see VBK_FIELD_VERSIT_PROPERTY
+     */
+    STRUCT versitProperty;
+    }
+
+STRUCT NONVERSIT_FIELDTYPE_MAPPING
+    {
+    /**
+     * Contact Model field type id.
+     * @see cntdef.hrh
+     */
+    LONG cntModelId;
+
+    /**
+     * Type name for non-versit field types.
+     *
+     * @see TVPbkNonVersitFieldType
+     */
+    BYTE nonVersitType;
+    }
+
+/**
+ * Array of Contact Model -> Virtual Phonebook field type mappings.
+ */
+STRUCT FIELDTYPE_MAPPINGS
+    {
+    STRUCT items[];
+    }
+

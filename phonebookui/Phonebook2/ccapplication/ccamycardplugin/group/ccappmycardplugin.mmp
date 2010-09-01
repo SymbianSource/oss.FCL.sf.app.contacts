@@ -1,0 +1,97 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project definition file for project MyCard plugin
+*
+*/
+
+
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+#include "../../inc/ccappmycardpluginuids.hrh"
+
+TARGET          ccappmycardplugin.dll
+TARGETTYPE      PLUGIN
+UID             0x10009D8D KCCAMyCardPluginDllUid
+
+CAPABILITY      CAP_ECOM_PLUGIN
+VENDORID        VID_DEFAULT
+
+SOURCEPATH      ../src
+SOURCE          ccappmycardpluginproxy.cpp
+SOURCE          ccappmycardplugin.cpp
+SOURCE          ccappmycardpluginfactory.cpp
+SOURCE          ccappmycardcontainer.cpp
+SOURCE          ccappmycard.cpp
+SOURCE          ccappmycardheadercontrol.cpp
+SOURCE          ccappmycardimageloader.cpp
+
+
+// resources
+SOURCEPATH      ../data
+START RESOURCE  ccappmycardpluginrsc.rss 
+DEPENDS vpbkeng.rsg
+HEADER
+TARGETPATH      RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END
+
+// ECom plugin resource
+START RESOURCE  ccappmycardplugin.rss
+    TARGET      ccappmycardplugin.rsc
+END
+
+APP_LAYER_SYSTEMINCLUDE
+SYSTEMINCLUDE   /epoc32/include/ecom
+SYSTEMINCLUDE   ../../../inc    //phonebook2/inc
+
+USERINCLUDE     ../../inc       //ccapplication/inc
+USERINCLUDE     ../../ccapp/ccapputil/inc
+USERINCLUDE     ../inc
+
+
+LIBRARY         euser.lib 
+LIBRARY         cone.lib
+LIBRARY         avkon.lib
+LIBRARY         aknskins.lib
+LIBRARY         eikcore.lib 
+LIBRARY         ecom.lib
+LIBRARY         bafl.lib
+LIBRARY         aknicon.lib
+LIBRARY         commonengine.lib
+LIBRARY         eikcoctl.lib 
+LIBRARY         servicehandler.lib
+LIBRARY         cdlengine.lib
+LIBRARY         aknlayout2.lib 
+LIBRARY         featmgr.lib
+LIBRARY         AknLayout2Scalable.lib
+
+LIBRARY         vpbkeng.lib
+LIBRARY         pbk2presentation.lib
+LIBRARY         pbk2commonui.lib
+LIBRARY         pbk2uicontrols.lib
+LIBRARY         Pbk2Commands.lib
+LIBRARY         ccapputil.lib
+LIBRARY         pbk2spbcontentprovider.lib
+LIBRARY         egul.lib // CGulIcon
+LIBRARY         touchfeedback.lib 
+LIBRARY         centralrepository.lib
+
+LIBRARY         estor.lib
+LIBRARY         efsrv.lib
+LIBRARY         fbscli.lib
+
+DEBUGLIBRARY    flogger.lib
+
+// End of File
+

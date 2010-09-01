@@ -1,0 +1,104 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 view and tab ids.
+*
+*/
+
+
+#ifndef PBK2VIEWINFO_HRH
+#define PBK2VIEWINFO_HRH
+
+/**
+ * Phonebook 2 extension view IDs.
+ *
+ * @see Pbk2ViewId.hrh for core Phonebook 2 view ids.
+ */
+enum
+    {
+    /// View id range allocated to USIM UI Extension
+    EUSimUiExtensionFirstViewId         = 200,
+    EUSimUiExtensionLastViewId          = 299,
+
+    /// View id allocated to PEC UI Extension
+    EPecUiExtensionFirstViewId          = 300,
+    EPecUiExtensionLastViewId           = 399,
+
+    /// View id allocated to MMC UI Extension
+    EMmcUiExtensionFirstViewId          = 400,
+    EMmcUiExtensionLastViewId           = 499,
+
+    /// View id allocated to VoiceTag UI Extension
+    EVoiceTagUiExtensionFirstViewId     = 500,
+    EVoiceTagUiExtensionLastViewId      = 599,
+
+    /// View id range allocated to the LDAP UI Extension
+    ELdapUiExtensionFirstViewId         = 600,
+    ELdapUiExtensionLastViewId          = 699,
+
+    /// View id range allocated to the Properties UI Extension
+    EPropertiesUiExtensionFirstViewId   = 700,
+    EPropertiesUiExtensionLastViewId    = 799,
+    
+    /// View id range allocated to TopContacts UI Extension
+    ETopContactsUiExtensionFirstViewId = 800,
+    ETopContactsUiExtensionLastViewId =  899    
+    };
+
+/**
+ * Tab group ids.
+ */
+enum TPbk2TabGroupId
+    {
+    EPbk2MainTabGroup = 1,
+    EPbk2MemoryEntryTabGroup,
+    EPbk2SettingsTabGroup,
+    EPbk2GroupMembersTabGroup,
+    EPbk2OwnNumberTabGroup,
+    EPbk2ServiceDialingTabGroup,
+    EPbk2FixedDialingTabGroup
+    };
+
+/**
+ * Tab group ordering.
+ */
+enum TPbk2TabGroupOrdering
+    {
+    /// Ordering in EPbk2MainTabGroup
+    EPbk2NamesListViewTabOrdering       = 1000,
+    EPbk2GroupsListViewTabOrdering      = 2000,
+
+    /// Ordering in EPbk2MemoryEntryTabGroup
+    EPbk2ContactInfoViewTabOrdering     = 1000,
+    EPbk2PropertiesViewTabOrdering      = 2000,
+
+    /// Ordering in EPbk2SettingsTabGroup
+    EPbk2SettingsViewTabOrdering        = 1000
+    };
+
+/**
+ * Phonebook2 view transition events.
+ *
+ * @see PBK2_VIEW_TRANSITION
+ */
+enum TPbk2ViewTransitionEvent
+    {
+    EPbk2ViewTransitionMenu = 1,
+    EPbk2ViewTransitionBack,
+    EPbk2ViewTransitionLeft,
+    EPbk2ViewTransitionRight
+    };
+
+#endif // PBK2VIEWINFO_HRH
+
+// End of File

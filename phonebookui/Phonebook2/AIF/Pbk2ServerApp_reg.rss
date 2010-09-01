@@ -1,0 +1,42 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 Server Application registration information.
+*
+*/
+
+
+#include <appinfo.rh>
+#include <Pbk2ServerApp.rsg>
+#include <Pbk2InternalUID.h>
+
+UID2 KUidAppRegistrationResourceFile
+UID3 KPbk2ServerAppUID3
+
+/// Resource file location
+#define resource_file_location "\\resource\\apps\\Pbk2ServerApp"
+
+// --------------------------------------------------------------------------
+// Application registration info
+// --------------------------------------------------------------------------
+//
+RESOURCE APP_REGISTRATION_INFO
+    {
+    app_file = "Pbk2ServerApp";
+    localisable_resource_file = resource_file_location;
+    localisable_resource_id = R_PBK2SERVERAPP_LOCALISABLE_APP_INFO;
+    hidden = KAppIsHidden;
+    embeddability = KAppEmbeddableUiOrStandAlone;
+    }
+
+// End of File

@@ -1,0 +1,317 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*
+*/
+// T_MVPbkContactStore.rss
+
+#include <badef.rh>
+#include <VPbkStoreUriDefinitions.hrh>
+#include "VPbkContactView.rh"
+#include "VPbkFieldType.rh"
+
+// Test suite setup
+
+// Define here stores that will be tested.
+#define DB1 "cntdb://c:TestContacts1.cdb"
+#define DB2 "cntdb://c:TestContacts2.cdb"
+#define DB3 "cntdb://c:TestContacts3.cdb"
+#define DB4 "cntdb://c:TestContacts4.cdb"
+
+RESOURCE ARRAY r_single_store_with_sim
+    {
+    items =
+        {
+        LBUF { txt = KVPBK_SIM_GLOBAL_ADN_URI; },
+        LBUF { txt = DB1; }
+        };
+    }
+
+RESOURCE ARRAY r_single_store
+    {
+    items =
+        {
+        LBUF { txt = DB1; }
+        };
+    }
+
+RESOURCE ARRAY r_composite_stores
+    {
+    items =
+        {
+        LBUF { txt = DB1; },
+        LBUF { txt = DB2; },
+        LBUF { txt = DB3; },
+        LBUF { txt = DB4; }
+        };
+    }
+
+// Test resources
+
+// These resources depending on testsuite setup i.e. how many dbs are under test
+RESOURCE VPBK_CONTACT_VIEW r_ordered_flat_composite_contact_view
+	{
+	type = EVPbkCompositeView;
+	subViews =
+		{
+		VPBK_CONTACT_VIEW
+			{
+			uri = DB1;
+			},
+		VPBK_CONTACT_VIEW
+			{
+			uri = DB2;
+			},
+		VPBK_CONTACT_VIEW
+			{
+			uri = DB3;
+			},
+		VPBK_CONTACT_VIEW
+			{
+			uri = DB4;
+			}
+		};
+	}
+
+RESOURCE VPBK_CONTACT_VIEW r_sorted_flat_composite_contact_view
+	{
+	type = EVPbkCompositeView;
+	sortPolicy = EVPbkSortedContactView;
+	subViews =
+		{
+		VPBK_CONTACT_VIEW
+			{
+			uri = DB1;
+			},
+		VPBK_CONTACT_VIEW
+			{
+			uri = DB2;
+			},
+		VPBK_CONTACT_VIEW
+			{
+			uri = DB3;
+			},
+		VPBK_CONTACT_VIEW
+			{
+			uri = DB4;
+			}
+		};
+	}
+
+RESOURCE VPBK_CONTACT_VIEW r_ordered_complex_composite_contact_view
+	{
+	type = EVPbkCompositeView;
+	subViews =
+		{
+		VPBK_CONTACT_VIEW
+			{
+			uri = DB1;
+			},
+		VPBK_CONTACT_VIEW
+			{
+			type = EVPbkCompositeView;
+			subViews =
+				{
+				VPBK_CONTACT_VIEW
+					{
+					type = EVPbkCompositeView;
+					subViews = 
+						{
+						VPBK_CONTACT_VIEW
+							{
+							uri = DB2;
+							},
+						VPBK_CONTACT_VIEW
+							{
+							uri = DB3;
+							},
+		                VPBK_CONTACT_VIEW
+			                {
+			                uri = DB4;
+			                }
+						};
+					}
+				};
+			}
+		};
+	}
+
+RESOURCE VPBK_CONTACT_VIEW r_sorted_complex_composite_contact_view
+	{
+	type = EVPbkCompositeView;
+	sortPolicy = EVPbkSortedContactView;
+	subViews =
+		{
+		VPBK_CONTACT_VIEW
+			{
+			type = EVPbkCompositeView;
+			sortPolicy = EVPbkSortedContactView;
+			subViews =
+				{
+				VPBK_CONTACT_VIEW
+					{
+					type = EVPbkCompositeView;
+					sortPolicy = EVPbkSortedContactView;
+					subViews = 
+						{
+						VPBK_CONTACT_VIEW
+							{
+							uri = DB1;
+							},
+						VPBK_CONTACT_VIEW
+							{
+							uri = DB2;
+							}
+						};
+					}
+				};
+			},
+		VPBK_CONTACT_VIEW
+			{
+			type = EVPbkCompositeView;
+			sortPolicy = EVPbkSortedContactView;
+			subViews =
+				{
+				VPBK_CONTACT_VIEW
+					{
+					uri = DB3;
+					},
+		        VPBK_CONTACT_VIEW
+			        {
+			        uri = DB4;
+			        }
+				};
+			}
+		};
+	}
+
+// General test resources
+
+RESOURCE VPBK_FIELD_TYPE_MAPPING r_first_name_type
+    {
+    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+        {
+        name = EVPbkVersitNameN;
+        subField = EVPbkVersitSubFieldGivenName;
+        };
+    }
+
+RESOURCE VPBK_FIELD_TYPE_MAPPING r_last_name_type
+    {
+    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+        {
+        name = EVPbkVersitNameN;
+        subField = EVPbkVersitSubFieldFamilyName;
+        };
+    }
+
+RESOURCE VPBK_FIELD_TYPE_MAPPING r_tel_no_type
+    {
+    versitProperty = VBK_FIELD_VERSIT_PROPERTY
+        {
+        name = EVPbkVersitNameTEL;
+        };                
+    }
+
+RESOURCE VPBK_FIELD_TYPE_MAPPING r_non_versit_type
+    {
+    versitProperty = VBK_FIELD_VERSIT_PROPERTY { };
+    nonVersitType = EVPbkNonVersitTypeRingTone;
+    }
+
+RESOURCE ARRAY r_sortorder_lastname_firstname
+	{
+	items =
+		{
+		VPBK_FIELD_TYPE_MAPPING
+			{
+			versitProperty = VBK_FIELD_VERSIT_PROPERTY
+				{
+                name = EVPbkVersitNameN;
+                subField = EVPbkVersitSubFieldFamilyName;
+                };
+			},
+		VPBK_FIELD_TYPE_MAPPING
+			{
+			versitProperty = VBK_FIELD_VERSIT_PROPERTY
+				{
+                name = EVPbkVersitNameN;
+                subField = EVPbkVersitSubFieldGivenName;
+                };
+			}
+		};
+	}
+
+RESOURCE ARRAY r_sortorder_firstname_lastname
+	{
+	items =
+		{
+		VPBK_FIELD_TYPE_MAPPING
+			{
+			versitProperty = VBK_FIELD_VERSIT_PROPERTY
+				{
+                name = EVPbkVersitNameN;
+                subField = EVPbkVersitSubFieldGivenName;
+                };
+			},
+		VPBK_FIELD_TYPE_MAPPING
+			{
+			versitProperty = VBK_FIELD_VERSIT_PROPERTY
+				{
+                name = EVPbkVersitNameN;
+                subField = EVPbkVersitSubFieldFamilyName;
+                };
+			},
+        VPBK_FIELD_TYPE_MAPPING
+            {
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY
+                {
+                };
+
+            nonVersitType = EVPbkNonVersitTypeDTMF;
+            }
+		};
+	}
+
+RESOURCE ARRAY r_sortorder_generic_label
+	{
+	items =
+		{
+		VPBK_FIELD_TYPE_MAPPING
+            {
+            versitProperty = VBK_FIELD_VERSIT_PROPERTY {};
+            nonVersitType = EVPbkNonVersitTypeGenericLabel;
+            }
+		};
+	}
+
+RESOURCE VPBK_CONTACT_VIEW r_single_contact_view
+	{
+	uri = "";
+	flags = EVPbkContactViewFlagsNone;
+	subViews = {};
+	}
+
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_vpbk_phone_number_selector
+    {
+    versitProperties = 
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            }
+        };
+    }
+
+// End of file

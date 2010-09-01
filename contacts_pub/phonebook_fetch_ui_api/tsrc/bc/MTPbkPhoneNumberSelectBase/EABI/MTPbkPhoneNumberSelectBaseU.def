@@ -1,0 +1,12 @@
+EXPORTS
+	_Z9LibEntryLR13CTestModuleIf @ 1 NONAME
+	_ZN22CPhoneNumberSelectBase11QueryTitleLEv @ 2 NONAME
+	_ZN22CPhoneNumberSelectBase19PbkControlKeyEventLERK9TKeyEvent10TEventCode @ 3 NONAME
+	_ZNK22CPhoneNumberSelectBase21QuerySoftkeysResourceEv @ 4 NONAME
+	_ZTI16CSimulateKeyBase @ 5 NONAME ; #<TI>#
+	_ZTI18CSimulateKeyEvents @ 6 NONAME ; #<TI>#
+	_ZTI22CPhoneNumberSelectBase @ 7 NONAME ; #<TI>#
+	_ZTV16CSimulateKeyBase @ 8 NONAME ; #<VT>#
+	_ZTV18CSimulateKeyEvents @ 9 NONAME ; #<VT>#
+	_ZTV22CPhoneNumberSelectBase @ 10 NONAME ; #<VT>#
+

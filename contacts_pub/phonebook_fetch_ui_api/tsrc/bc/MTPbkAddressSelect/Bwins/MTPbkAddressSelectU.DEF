@@ -1,0 +1,7 @@
+EXPORTS
+	?LibEntryL@@YAPAVCScriptBase@@AAVCTestModuleIf@@@Z @ 1 NONAME ; class CScriptBase * __cdecl LibEntryL(class CTestModuleIf &)
+	?AddressField@CAddressSelect@@EBEHABVTPbkContactItemField@@@Z @ 2 NONAME ; int CAddressSelect::AddressField(class TPbkContactItemField const &) const
+	?QuerySoftkeysResource@CAddressSelect@@EBEHXZ @ 3 NONAME ; int CAddressSelect::QuerySoftkeysResource(void) const
+	?QueryTitleL@CAddressSelect@@EAEABVTDesC16@@XZ @ 4 NONAME ; class TDesC16 const & CAddressSelect::QueryTitleL(void)
+	?NoAddressesL@CAddressSelect@@EAEXXZ @ 5 NONAME ; void CAddressSelect::NoAddressesL(void)
+

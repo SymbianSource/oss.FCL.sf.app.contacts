@@ -1,0 +1,41 @@
+;
+; Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+; All rights reserved.
+; This component and the accompanying materials are made available
+; under the terms of "Eclipse Public License v1.0"
+; which accompanies this distribution, and is available
+; at the URL "http://www.eclipse.org/legal/epl-v10.html".
+;
+; Initial Contributors:
+; Nokia Corporation - initial contribution.
+;
+; Contributors:
+;
+; Description:
+;
+; --- pbk2_stub.pkg ---
+&EN
+#{"nameslist"},(0x0E287528),10,0,0, TYPE=SA
+
+:"Nokia Corporation"
+%{"Nokia Corporation"}
+
+; Nameslist ecom dll (UI) 
+""-"z:\sys\bin\Pbk2ExNamesListPlugin.dll"
+
+; Nameslist UI Pbk2ExNamesListSortOrder resource file - Needed if RequestContactViewL() is used in nameslist
+""-"z:\resource\Pbk2ExNamesListSortOrder.rsc"
+
+; Nameslist ecom interface definition 
+""-"z:\resource\plugins\Pbk2ExNamesListPlugin.rsc"
+
+; No entry for reg file of the UI (Phonebook2.exe that loads Nameslist ecom dll)? No need(?) to create a stub entry for 
+; it because it normally already exists in z:\private\10003a3f\apps in rom, and for eclipsing we additionally publish
+; it into z:\private\10003a3f\import\apps by Pbk2NamesListExt.iby
+; (HOWEVER it is unclear if we really need stub entry in order to create directory c:\private\10003a3f\apps to C-drive. 
+;  Therefore below stub entry is done for it for testing it (just to see is it now possible to install to it)
+""-"z:\private\10003a3f\import\apps\Phonebook2_reg.rsc"
+
+; Nameslist UI resource file - just for testing, not needed to upgrade this 
+""-"z:\resource\Pbk2ExNamesListRes.rsc"
+

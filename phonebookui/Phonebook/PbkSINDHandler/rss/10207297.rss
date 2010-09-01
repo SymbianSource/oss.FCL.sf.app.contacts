@@ -1,0 +1,52 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file contains ECom resources for pbk SIND Handler. 
+*
+*
+*/
+
+
+#include "PbkUID.h"
+#include <ECom/RegistryInfoV2.rh>
+
+RESOURCE REGISTRY_INFO theInfo
+	{
+	resource_format_version = RESOURCE_FORMAT_VERSION_2;
+	dll_uid = KPbkSINDHandlerPluginUID;
+	interfaces = 
+		{
+		INTERFACE_INFO
+	        {
+	        interface_uid = KPbkSINDHandlerInterfaceUID;
+	        implementations = 
+                {
+    		    IMPLEMENTATION_INFO
+                    {
+                    implementation_uid = KPbkSINDHandlerPluginUID;
+                    version_no = 1;
+                    display_name = "SINDHandler";
+                    // First field is used to get match when
+                    // ListImplementationsL is used.
+                    // Second field is used to get right implementation
+                    // with CreateImplementationL.
+                    default_data = "";
+                    opaque_data = "";
+                    rom_only = 0;
+                    }
+    		    };
+	    	}
+	    };
+	}
+
+// End of file

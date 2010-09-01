@@ -1,0 +1,109 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 tool bar resources.
+*
+*/
+
+
+#include <Pbk2IconId.rh>
+#include <Pbk2IconInfo.rh>
+#include <Pbk2Commands.hrh>
+#include <Pbk2Icons.hrh>
+#include <Pbk2UID.h>
+#include <Pbk2IconId.hrh>
+#include <aknsconstants.hrh>
+#include <phonebook2.loc>
+
+// --------------------------------------------------------------------------
+// Names list tool bar icons
+// --------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_pbk2_nameslist_toolbar_icon_info_array
+    {
+    items =
+        {
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_indi_tb_call;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_indi_tb_call;
+            maskId = qgn_indi_tb_call_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiTbCall;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_indi_tb_mce;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_indi_tb_mce;
+            maskId = qgn_indi_tb_mce_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiTbMce;
+            },
+        PBK2_ICON_INFO
+            {
+            version = 0;
+            pbk2IconInfoId = PHONEBOOK2_ICON_ID
+                {
+                ownerUid = KPbk2UID3;
+                id = EPbk2qgn_indi_tb_avail_contacts;
+                };
+            mbmFileName = phonebook2_mbm_file_location;
+            iconId = qgn_indi_tb_avail_contacts;
+            maskId = qgn_indi_tb_avail_contacts_mask;
+            skinIdMajor = EAknsMajorGeneric;
+            skinIdMinor = EAknsMinorGenericQgnIndiTbAvailContacts;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Names List View's toolbar resource
+// --------------------------------------------------------------------------
+//
+RESOURCE AVKON_TOOLBAR r_pbk2_nameslist_toolbar
+    {
+    flags = KAknToolbarFixed; // KAknToolbarWithoutCba;  
+    items =
+        {
+        // Toolbar is currently created dynamically
+        };
+    }
+
+RESOURCE TBUF r_phob_tb_call
+    {
+    buf = qtn_phob_tb_call;
+    }
+
+RESOURCE TBUF r_phob_tb_create_msg
+    {
+    buf = qtn_phob_tb_create_msg;
+    }
+RESOURCE TBUF r_phob_tb_new_contact
+    {
+    buf = qtn_phob_tb_new_contact;
+    }
+
+
+// End of File

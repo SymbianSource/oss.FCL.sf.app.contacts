@@ -18,7 +18,7 @@
 
 
 #include <ecom/registryinfo.rh>
-#include "cntfindpluginuid.h"
+#include "CntFindPluginUid.h"
 
 RESOURCE REGISTRY_INFO theInfo
 	{

@@ -1,0 +1,287 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 address select resources.
+*
+*/
+
+
+#include "Pbk2AddressSelect.rh"
+#include <Pbk2CommonUi.rsg>
+
+// --------------------------------------------------------------------------
+//  Phone number select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_phone_number_select
+    {
+    selector = r_phonebook2_phonenumber_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_number_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_number;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  Video number select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_video_number_select
+    {
+    selector = r_phonebook2_video_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_number_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_number;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  Address select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_address_select
+    {
+    selector = r_phonebook2_address_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_number_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_number;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  DTMF and phone number select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_dtmf_phone_number_select
+    {
+    selector = r_phonebook2_dtmf_phone_number_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_number_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_number;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  MMS address select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_mms_address_select
+    {
+    selector = r_phonebook2_mms_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_mms_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_mms;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  Email address select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_email_address_select
+    {
+    selector = r_phonebook2_email_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_email_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_email;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  Email over SMS address select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_email_over_sms_address_select
+    {
+    selector = r_phonebook2_email_over_sms_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_sms_with_email_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_sms_with_email;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  POC address select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_poc_address_select
+    {
+    selector = r_phonebook2_sip_msisdn_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_poc_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_poc;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  VoIP address select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_voip_address_select
+    {
+    selector = r_phonebook2_sip_msisdn_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_voip_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_voip;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  SIP address select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_sip_address_select
+    {
+    selector = r_phonebook2_sip_selector;
+    noAddressesForNamePrompt = r_empty_text_buffer_u; // not used
+    noAddressesPrompt = r_empty_text_buffer;          // not used
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  SIP & MSISDN address select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_sip_msisdn_address_select
+    {
+    selector = r_phonebook2_sip_msisdn_selector;
+    noAddressesForNamePrompt = r_empty_text_buffer_u; // not used
+    noAddressesPrompt = r_empty_text_buffer;          // not used
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  MMS address select for unified editor
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_unified_editor_mms_address_select
+    {
+    selector = r_phonebook2_mms_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_msg_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_msg;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  Email over SMS address select for unified editor
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT
+        r_pbk2_unified_editor_email_over_sms_address_select
+    {
+    selector = r_phonebook2_email_over_sms_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_msg_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_msg;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  Phone number address select for unified editor
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_unified_editor_phone_number_select
+    {
+    selector = r_phonebook2_phonenumber_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_number_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_number;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  Send key address select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_send_key_address_select
+    {
+    selector = r_phonebook2_phonenumber_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_number_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_number;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  Send key address select when VoIP is enabled
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_send_key_address_select_voip
+    {
+    selector = r_phonebook2_sip_msisdn_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_number_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_number;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  URL address select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_url_address_select
+    {
+    selector = r_phonebook2_url_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_url;
+    noAddressesPrompt = r_qtn_phob_note_no_url_defined;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  Thumbnail select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_thumbnail_select
+    {
+    selector = r_phonebook2_thumbnail_selector;
+    noAddressesForNamePrompt = r_empty_text_buffer_u; // not used
+    noAddressesPrompt = r_empty_text_buffer;          // not used
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  Call item number select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_call_item_number_select
+    {
+    selector = r_phonebook2_phonenumber_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_number_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_number;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  VoIP item number select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_voip_item_address_select
+    {
+    selector = r_phonebook2_sip_msisdn_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_voip_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_voip;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  Generic address select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_generic_address_select
+    {
+    selector = r_phonebook2_generic_selector;
+    noAddressesForNamePrompt = r_empty_text_buffer_u; // not used
+    noAddressesPrompt = r_empty_text_buffer;          // not used
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// --------------------------------------------------------------------------
+//  SMS address select
+// --------------------------------------------------------------------------
+//
+RESOURCE PBK2_ADDRESS_SELECT r_pbk2_sms_address_select
+    {
+    selector = r_phonebook2_sms_selector;
+    noAddressesForNamePrompt = r_qtn_phob_note_no_number_to_name;
+    noAddressesPrompt = r_qtn_phob_note_no_number;
+    cba = R_AVKON_SOFTKEYS_SELECT_BACK__SELECT;
+    }
+
+// End of File

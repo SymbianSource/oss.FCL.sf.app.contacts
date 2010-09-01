@@ -1,0 +1,88 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 MMC UI Extension project specification file.
+*
+*/
+
+
+#include <platform/app/Pbk2UID.h>
+#include "Pbk2Config.mmp"
+#include "../inc/Pbk2InternalUID.h"
+#include "../MMCExtension/inc/Pbk2MmcUiUid.h"
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+// Target information
+TARGET          Pbk2MmcUI.dll
+TARGETTYPE      PLUGIN
+UID             KEComRecognitionUID2 KPbk2MMCExtensionImplementationUID
+CAPABILITY      CAP_ECOM_PLUGIN
+VENDORID        VID_DEFAULT
+
+// Source path
+SOURCEPATH      ../MMCExtension/src
+
+// Source files
+SOURCE          DllMain.cpp
+SOURCE          CPmuUIExtensionPlugin.cpp
+#ifdef RD_MULTIPLE_DRIVE
+SOURCE          CPmuCopyToDriveCmd.cpp
+SOURCE          CPmuCopyFromDriveCmd.cpp
+#else
+SOURCE          CPmuCopyToMmcCmd.cpp
+SOURCE          CPmuCopyFromMmcCmd.cpp
+#endif
+
+
+// Resources
+#ifdef RD_MULTIPLE_DRIVE
+START RESOURCE  ../rss/Pbk2DriveUiRes.rss
+DEPENDS pbk2commands.rsg
+#else
+START RESOURCE  ../Rss/Pbk2MmcUIRes.rss
+DEPENDS pbk2commands.rsg
+#endif // RD_MULTIPLE_DRIVE
+HEADER
+TARGET          Pbk2MmcUIRes
+TARGETPATH      RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END
+
+START RESOURCE  ../rss/Pbk2MmcUi.rss
+TARGET          Pbk2MmcUI
+TARGETPATH      ECOM_RESOURCE_DIR
+END
+
+// Include paths
+USERINCLUDE     ../MMCExtension/inc
+SYSTEMINCLUDE   ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib commonengine.lib
+LIBRARY efsrv.lib estor.lib ecom.lib
+LIBRARY cone.lib
+LIBRARY eikcoctl.lib eikcore.lib
+
+// Dependencies to S60 components
+LIBRARY Avkon.lib PlatformEnv.lib
+#ifdef RD_MULTIPLE_DRIVE
+LIBRARY CommonDialogs.lib
+#endif // RD_MULTIPLE_DRIVE
+
+// Dependencies to Phonebook
+LIBRARY Pbk2Presentation.lib Pbk2Commands.lib
+LIBRARY Pbk2CommonUi.lib VPbkVCardEng.lib VPbkEng.lib
+
+// End of File

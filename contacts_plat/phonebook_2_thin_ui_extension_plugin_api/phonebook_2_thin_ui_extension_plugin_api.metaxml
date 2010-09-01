@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<api id="d6c9ef9e025b4ba7e1e687a323b2a1a7" dataversion="2.0">
+  <name>Phonebook 2 Thin UI Extension Plugin API</name>
+  <description>Provides dynamic menu filtering to Phonebook 2 UI extensions.</description>
+  <type>c++</type>
+  <collection>phonebookui</collection>
+  <libs>
+    <lib name="Pbk2UIExt.lib" />
+  </libs>
+  <release category="platform"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>no</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>

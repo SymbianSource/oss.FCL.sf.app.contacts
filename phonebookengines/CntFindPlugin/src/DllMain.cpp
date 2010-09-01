@@ -20,8 +20,8 @@
 #include <e32std.h>
 #include <ecom/implementationproxy.h>
 
-#include "cntfindplugin.h"
-#include "cntfindpluginuid.h"
+#include "CntFindPlugin.h"
+#include "CntFindPluginUid.h"
 
 // Define the interface UIDs
 const TImplementationProxy ImplementationTable[] = 

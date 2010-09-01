@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api id="5ae1a39efe3b7e313e16d56f5dea75b6" dataversion="2.0">
+  <name>ContactPresence API</name>
+  <description>A service that supplies real time presence icons for contacts. If the contact has many presence services, then a certain logic is used for mapping the presence states to "traffic light" icons.</description>
+  <type>c++</type>
+  <collection>Contacts</collection>
+  <libs>
+    <lib name="contactpresence.lib"/>
+  </libs>
+  <release category="platform" sinceversion="5.2"/>
+  <attributes>
+    <htmldocprovided>yes</htmldocprovided>
+    <adaptation>no</adaptation>
+  </attributes>
+</api>

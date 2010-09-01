@@ -1,0 +1,160 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 UI control definitions.
+*
+*/
+
+
+#ifndef PBK2UICONTROLS_HRH
+#define PBK2UICONTROLS_HRH
+
+// --------------------------------------------------------------------------
+// CPbk2ContactViewListControl flags
+// --------------------------------------------------------------------------
+//
+/// CPbk2ContactViewListControl flag: null flags (nothing set)
+#define KPbk2ContactViewListControlFlagsNull                    0x00000000
+
+/// CPbk2ContactViewListControl flag: updates context pane if set
+#define KPbk2ContactViewListControlUpdateContextPane            0x00000001
+
+/// CPbk2ContactViewListControl flag: control includes a find box if set
+#define KPbk2ContactViewListControlFindBox                      0x00000002
+
+/// CPbk2ContactViewListControl flag: control is double row list if set
+#define KPbk2ContactViewListControlDoubleRow                    0x00000004
+
+
+// --------------------------------------------------------------------------
+// CPbk2ContactInfoControl flags
+// --------------------------------------------------------------------------
+//
+/// CPbk2ContactInfoControl flag: null flags (nothing set)
+#define KPbk2ContactInfoControlFlagsNull                        0x00000000
+
+/// CPbk2ContactInfoControl flag: updates context pane if set
+#define KPbk2ContactInfoControlUpdateContextPane                0x00000001
+
+/// CPbk2ContactInfoControl flag: updates title pane if set
+#define KPbk2ContactInfoControlUpdateTitlePane                  0x00000002
+
+/// CPbk2ContactInfoControl flag: updates status pane if set
+#define KPbk2ContactInfoControlUpdateStatusPane ( KPbk2ContactInfoControlUpdateContextPane | \
+                                                  KPbk2ContactInfoControlUpdateTitlePane)
+
+/// CPbk2ContactInfoControl flag: shows name fields in the list if set
+#define KPbk2ContactInfoControlShowNameFields                   0x00000004
+
+/// CPbk2ContactInfoControl flag: shows image fields in the list if set
+#define KPbk2ContactInfoControlShowImageFields                  0x00000008
+
+
+// --------------------------------------------------------------------------
+// Fetch dialog flags
+// --------------------------------------------------------------------------
+//
+#define PBK2_FETCHDIALOG_FLAGS ( EEikDialogFlagNotifyEsc | \
+                                EEikDialogFlagNoDrag | \
+                                EEikDialogFlagCbaButtons | \
+                                EEikDialogFlagNoTitleBar | \
+                                EEikDialogFlagFillAppClientRect )
+
+// --------------------------------------------------------------------------
+// Definitions for minimum and maximum date values
+// --------------------------------------------------------------------------
+//
+#define KPbk2DateMinDay     0       // from 0 to 27/28/29/30 inclusive
+#define KPbk2DateMinMonth   0       // from 0 to 11 inclusive
+#define KPbk2DateMinYear    0001
+#define KPbk2DateMaxDay     30      // from 0 to 27/28/29/30 inclusive
+#define KPbk2DateMaxMonth   11      // from 0 to 11 inclusive
+#define KPbk2DateMaxYear    2100
+
+// --------------------------------------------------------------------------
+// Command ids for Pbk2UIControls.dll
+// --------------------------------------------------------------------------
+ enum TPbk2UIControlsCommand
+    {
+    /// new/edit memory entry dialog menu items
+    EPbk2CmdSave,
+    EPbk2CmdAddItem,
+    EPbk2CmdDeleteItem,
+    EPbk2CmdEditItemLabel,
+    EPbk2CmdEditorChangeRingtone,
+    EPbk2CmdEditorRemoveRingtone,
+    //EPbk2CmdEditorImage,  //no submenu currently    
+    EPbk2CmdEditorAddImage,
+    EPbk2CmdEditorChangeImage,    
+    EPbk2CmdEditorViewImage,       
+    EPbk2CmdEditorRemoveImage,
+    EPbk2CmdEditorChangeSync,
+    //Custom field items
+    EPbk2CmdEditorHandleCustomSelect,
+    EPbk2CmdEditorHandleCustomRemove,    
+    // Settings list commands
+    EPbk2CmdEditSetting,
+    //Address commands
+    EPbk2CmdEditorSelectAddress,
+    EPbk2CmdEditorSelectAddressHome,
+    EPbk2CmdEditorSelectAddressOffice,
+    EPbk2CmdEditorSelectAssignFromMaps,
+    EPbk2CmdEditorOpen,
+    EPbk2CmdEditorContextMenu
+    };
+
+// --------------------------------------------------------------------------
+// Phonebook 2 control class IDs
+// These should be different from EIKON and AVKON IDs
+// --------------------------------------------------------------------------
+enum
+    {
+    /// IDs start here
+    EPbk2CtStart = 6000,
+    /// Entry list control
+    EPbk2CtEntryList,
+    /// Contact list control
+    EPbk2CtContactList,
+    /// Contact view list control
+    EPbk2CtContactViewList,
+    /// Names contact list
+    EPbk2CtNamesContactViewList,
+    /// Groups contact list
+    EPbk2CtGroupsContactViewList
+    };
+
+// --------------------------------------------------------------------------
+// Control IDs in fetch dialog
+// --------------------------------------------------------------------------
+enum
+    {
+    /// Names list control in fetch dialog
+    ECtrlFetchNamesList = 1,
+    /// Groups list control fetch dialog
+    ECtrlFetchGroupsList
+    };
+
+// --------------------------------------------------------------------------
+// Phonebook 2 settings list items.
+// --------------------------------------------------------------------------
+enum
+    {
+    EPbk2SettingMemorySelection,
+    EPbk2SettingDefaultSavingStorage,
+    EPbk2SettingNameOrder,
+    EPbk2SettingPredictiveSearch
+    };
+
+#endif // PBK2UICONTROLS_HRH
+
+// End of File

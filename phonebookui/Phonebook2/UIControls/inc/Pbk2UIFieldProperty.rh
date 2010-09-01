@@ -1,0 +1,73 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 contact editor dialog UI field property.
+*
+*/
+
+/**
+ * Phonebook 2 UI field property resource structure.
+ */
+STRUCT PHONEBOOK2_UI_FIELD_PROPERTY
+    {
+    /// Version number
+    BYTE version = 0;
+
+    /// Maximum number of fields per contact.
+    /// @see TPbk2FieldMultiplicity
+    BYTE multiplicity;
+
+    /// Maximum length of the field (in characters).
+    WORD maxLength;
+
+    /// Editing mode of the field.
+    /// @see TPbk2FieldEditMode
+    BYTE editMode;
+    
+    /// Fields order.
+    /// @see TPbk2FieldOrder
+    BYTE order;
+
+    /// Default case of the field.
+    /// @see TPbk2FieldDefaultCase
+    BYTE defaultCase;
+
+    /// Specifies the icon for the field.
+    /// @see PHONEBOOK2_ICON_ID
+    STRUCT iconId;
+
+    /// Edit dialog control type for the field.
+    /// @see TFormControlTypes
+    BYTE ctrlType;
+
+    /// Assorted flags for this field type.
+    /// @see Pbk2UIFieldProperty.hrh
+    LONG flags;
+
+    /// Default label for the field.
+    LTEXT defaultLabel = "";
+    }
+
+/**
+ * Array of UI field property items.
+ * @see PHONEBOOK2_UI_FIELD_PROPERTY
+ */
+STRUCT PHONEBOOK2_UI_FIELD_PROPERTY_ARRAY
+    {
+    /// Array of PHONEBOOK2_UI_FIELD_PROPERTYs.
+    STRUCT items[];
+    }
+
+
+
+// End of File

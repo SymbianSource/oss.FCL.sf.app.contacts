@@ -1,0 +1,58 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This is project specification file for VPbkAdaptiveStore. 
+*                AdaptiveStore contains list of contacts which are sorted some 
+*                other way than alphabetically. For example most used contacts 
+*                are sorted to first.
+*
+*/
+
+
+#include "../inc/VPbkPrivateUid.h"
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+TARGET          VPbkAdaptiveStore.dll
+TARGETTYPE      PLUGIN
+UID             0x10009D8D KVPbkAdaptiveStoreDomainImplementationUID
+
+CAPABILITY      CAP_ECOM_PLUGIN
+VENDORID        VID_DEFAULT
+
+// Test sources
+SOURCEPATH      ../VPbkAdaptiveStore/src
+SOURCE          VPbkAdaptiveStoreEntryPoint.cpp
+
+START RESOURCE  ../rss/VPbkAdaptiveStoreRes.rss
+HEADER
+TARGET          VPbkAdaptiveStoreRes
+TARGETPATH      RESOURCE_FILES_DIR
+END
+
+USERINCLUDE     ../VPbkAdaptiveStore/inc
+USERINCLUDE     ../group
+
+SYSTEMINCLUDE   ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+START RESOURCE  ../rss/VPbkAdaptiveStore.rss
+TARGET          VPbkAdaptiveStore
+TARGETPATH      ECOM_RESOURCE_DIR
+END
+
+LIBRARY         euser.lib efsrv.lib bafl.lib estor.lib
+LIBRARY         ecom.lib
+LIBRARY         VPbkEng.lib VPbkEngUtils.lib
+
+// End of file

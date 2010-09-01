@@ -1,0 +1,1040 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 selector resources.
+*
+*/
+
+
+/////////////////////////////////////////////////////////////////////////////
+/// NOTE!! This file is __DEPRECATED__ and will eventually be removed.
+/// Please use Virtual Phonebook's VPbkFieldTypeSelectors.rss instead.
+/// There most likely will be implemented a selector factory to VPbkEng,
+/// so that the client code does not need to load the resource file itself.
+/// But currently there is no such class.
+/////////////////////////////////////////////////////////////////////////////
+
+#include <VPbkFieldType.rh>
+
+// --------------------------------------------------------------------------
+//  Selector for phone number fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_phonenumber_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-ASSISTANT-TEL";
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for video number fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_video_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters =
+                {
+                EVPbkVersitParamVIDEO
+                };
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for address fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_address_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldCountry;
+            parameters =
+                {
+                EVPbkVersitParamHOME
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldLocality;
+            parameters =
+                {
+                EVPbkVersitParamHOME
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldStreet;
+            parameters =
+                {
+                EVPbkVersitParamHOME
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldPostalCode;
+            parameters =
+                {
+                EVPbkVersitParamHOME
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldRegion;
+            parameters =
+                {
+                EVPbkVersitParamHOME
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldExtendedAddress;
+            parameters =
+                {
+                EVPbkVersitParamHOME
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldPostOfficeAddress;
+            parameters =
+                {
+                EVPbkVersitParamHOME
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldCountry;
+            parameters =
+                {
+                EVPbkVersitParamWORK
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldLocality;
+            parameters =
+                {
+                EVPbkVersitParamWORK
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldStreet;
+            parameters =
+                {
+                EVPbkVersitParamWORK
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldPostalCode;
+            parameters =
+                {
+                EVPbkVersitParamWORK
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldRegion;
+            parameters =
+                {
+                EVPbkVersitParamWORK
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldExtendedAddress;
+            parameters =
+                {
+                EVPbkVersitParamWORK
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldPostOfficeAddress;
+            parameters =
+                {
+                EVPbkVersitParamWORK
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldCountry;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldLocality;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldStreet;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldPostalCode;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldRegion;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldExtendedAddress;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldPostOfficeAddress;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for home address fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_home_address_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldCountry;
+            parameters =
+                {
+                EVPbkVersitParamHOME
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldLocality;
+            parameters =
+                {
+                EVPbkVersitParamHOME
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldStreet;
+            parameters =
+                {
+                EVPbkVersitParamHOME
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldPostalCode;
+            parameters =
+                {
+                EVPbkVersitParamHOME
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldRegion;
+            parameters =
+                {
+                EVPbkVersitParamHOME
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldExtendedAddress;
+            parameters =
+                {
+                EVPbkVersitParamHOME
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldPostOfficeAddress;
+            parameters =
+                {
+                EVPbkVersitParamHOME
+                };
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for work address fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_work_address_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldCountry;
+            parameters =
+                {
+                EVPbkVersitParamWORK
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldLocality;
+            parameters =
+                {
+                EVPbkVersitParamWORK
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldStreet;
+            parameters =
+                {
+                EVPbkVersitParamWORK
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldPostalCode;
+            parameters =
+                {
+                EVPbkVersitParamWORK
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldRegion;
+            parameters =
+                {
+                EVPbkVersitParamWORK
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldExtendedAddress;
+            parameters =
+                {
+                EVPbkVersitParamWORK
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldPostOfficeAddress;
+            parameters =
+                {
+                EVPbkVersitParamWORK
+                };
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for general address fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_general_address_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldCountry;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldLocality;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldStreet;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldPostalCode;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldRegion;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldExtendedAddress;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            subField = EVPbkVersitSubFieldPostOfficeAddress;
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamHOME, EVPbkVersitParamHOME };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for home geo fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_home_geo_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameGEO;
+            parameters = { EVPbkVersitParamHOME };
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for work geo fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_work_geo_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameGEO;
+            parameters = { EVPbkVersitParamWORK };
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for general geo fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_general_geo_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameGEO;
+            }
+        };
+    excludedParameters =
+        { EVPbkVersitParamWORK, EVPbkVersitParamHOME };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for pager fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_pager_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters =
+                {
+                EVPbkVersitParamPAGER
+                };
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for email fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_email_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameEMAIL;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for email over SMS fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_email_over_sms_selector
+    {
+    versitProperties =
+        {
+        // Mobile phone (all)
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters = { EVPbkVersitParamCELL };
+            },
+        // Car
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters = { EVPbkVersitParamCAR };
+            },
+        // Assistant's number
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-ASSISTANT-TEL";
+            },
+        // Email fields
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameEMAIL;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for MMS fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_mms_selector
+    {
+    versitProperties =
+        {
+        // Phone number (all)
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            },
+        // Email fields
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameEMAIL;
+            }
+        };
+    excludedParameters =
+        {
+        EVPbkVersitParamFAX, EVPbkVersitParamPAGER,
+        EVPbkVersitParamVIDEO, EVPbkVersitParamCAR
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for VoIP fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_voip_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            parameters =
+                {
+                EVPbkVersitParamVOIP
+                };
+            extensionName = "X-SIP";
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for PTT (push-to-talk) field
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_ptt_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            parameters =
+                {
+                EVPbkVersitParamPOC
+                };
+            extensionName = "X-SIP";
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for SIP fields (POC, SWIS, VoIP, etc.)
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_sip_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-SIP";
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for SIP and MSISDN fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_sip_msisdn_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-SIP";
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-ASSISTANT-TEL";
+            }            
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for thumbnail fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_thumbnail_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNamePHOTO;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameLOGO;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for image fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_image_selector
+    {
+    nonVersitType =
+        {
+        EVPbkNonVersitTypeCodImage
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for all image fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_image_fields_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNamePHOTO;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameLOGO;
+            }
+        };
+    nonVersitType =
+        {
+        EVPbkNonVersitTypeCodImage
+        };
+    }
+
+
+// --------------------------------------------------------------------------
+//  Selector for ringing tone field
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_ringtone_selector
+    {
+    nonVersitType =
+        {
+        EVPbkNonVersitTypeRingTone
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for URL fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_url_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameURL;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for last name field
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_last_name_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameN;
+            subField = EVPbkVersitSubFieldFamilyName;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for first name field
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_first_name_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameN;
+            subField = EVPbkVersitSubFieldGivenName;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for last name pronunciation field
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_last_name_pronunciation_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameSOUND;
+            subField = EVPbkVersitSubFieldFamilyNamePronunciation;
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for first name pronunciation field
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_first_name_pronunciation_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameSOUND;
+            subField = EVPbkVersitSubFieldGivenNamePronunciation;
+            }
+        };
+    }
+
+
+// --------------------------------------------------------------------------
+// Resource for syncronization field selection
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_syncronization_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameX;
+            extensionName = "X-CLASS";
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Resource for DTMF field selection
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_dtmf_selector
+    {
+    nonVersitType =
+        {
+        EVPbkNonVersitTypeDTMF
+        };
+    }
+
+// --------------------------------------------------------------------------
+// Resource for DTMF and phone number selection
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_dtmf_phone_number_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            }
+        };
+    nonVersitType =
+        {
+        EVPbkNonVersitTypeDTMF
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  All fields selector
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_generic_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameN;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameEMAIL;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameURL;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameADR;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameGEO;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTITLE;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameNOTE;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNamePHOTO;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameLOGO;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-SIP";
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-ASSISTANT";
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-ASSISTANT-TEL";
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-ANNIVERSARY";
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-SPOUSE";
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-CHILDREN";
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-CLASS";
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name       = EVPbkVersitNameX;
+            extensionName = "X-WV-ID";
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-NICKNAME";
+            }
+        };
+    nonVersitType =
+        {
+        EVPbkNonVersitTypeRingTone,
+        EVPbkNonVersitTypeDTMF,
+        EVPbkNonVersitTypeRingTone,
+        EVPbkNonVersitTypeCodImage
+        };
+    }
+    
+// --------------------------------------------------------------------------
+//  Pager & Fax numbers selector
+// --------------------------------------------------------------------------
+//   
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_pagerfax_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters =
+                {
+                EVPbkVersitParamPAGER
+                };
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            parameters =
+                {
+                EVPbkVersitParamFAX
+                };
+            }
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for SMS fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_sms_selector
+    {
+    versitProperties =
+        {
+        //Phone number (all)
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            }
+        };
+    excludedParameters =
+        {
+        EVPbkVersitParamFAX, EVPbkVersitParamPAGER,
+        EVPbkVersitParamVIDEO, EVPbkVersitParamCAR
+        };
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for voip call out fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_voip_call_out_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameTEL;
+            },
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameX;
+            extensionName = "X-ASSISTANT-TEL";
+            }
+        };
+    excludedParameters = {EVPbkVersitParamPAGER,EVPbkVersitParamFAX,EVPbkVersitParamVIDEO};
+    }
+
+// --------------------------------------------------------------------------
+//  Selector for Xsp fields
+// --------------------------------------------------------------------------
+//
+RESOURCE VPBK_FIELD_TYPE_SELECTOR r_phonebook2_impp_selector
+    {
+    versitProperties =
+        {
+        VBK_FIELD_VERSIT_PROPERTY
+            {
+            name = EVPbkVersitNameIMPP;
+            }
+       };
+    }
+// End of File

@@ -1,0 +1,37 @@
+/*
+* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This is the project specification file for xSP View Activation API.
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+TARGET          xSPViewServices.dll
+TARGETTYPE      DLL
+UID             0x1000008d 0x10283107 
+VENDORID        VID_DEFAULT
+
+CAPABILITY      ALL -TCB
+
+APP_LAYER_SYSTEMINCLUDE
+USERINCLUDE     ../xSPExtensionManager/src
+
+SOURCEPATH      ../xSPExtensionManager/src
+
+SOURCE          xSPViewServices.cpp
+SOURCE			CxSPViewData.cpp
+
+LIBRARY	        apgrfx.lib apparc.lib ws32.lib ecom.lib euser.lib
+LIBRARY         Pbk2CommonUi.lib VPbkEng.lib estor.lib

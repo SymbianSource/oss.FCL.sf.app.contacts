@@ -1,0 +1,77 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phonebook 2 UI Services project specification file.
+*
+*/
+
+
+#include <platform/app/Pbk2UID.h>
+#include "Pbk2Config.mmp"
+#include "../inc/Pbk2InternalUID.h"
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+// Target information
+TARGET          Pbk2UIServices.dll
+TARGETTYPE      PLUGIN
+UID             KEComRecognitionUID2 KPbk2UIServicesUID
+CAPABILITY      CAP_ECOM_PLUGIN
+VENDORID        VID_DEFAULT
+
+// Source path
+SOURCEPATH      ../UIServices/src
+
+// Sources
+SOURCE          Dllmain.cpp
+
+// AIW Providers
+SOURCE          CPbk2AiwAssignProvider.cpp
+SOURCE          CPbk2AiwSelectionProvider.cpp
+
+// Application server client side interface
+SOURCE          CPbk2ServerAppConnection.cpp
+SOURCE          CPbk2ExitServiceMonitor.cpp
+SOURCE          CPbk2AcceptServiceMonitor.cpp
+SOURCE          RPbk2UIService.cpp
+
+// Resources
+START RESOURCE  ../rss/Pbk2UIServicesRes.rss
+HEADER
+TARGET          Pbk2UiServicesRes
+TARGETPATH      RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END
+
+START RESOURCE  ../rss/Pbk2UIServices.rss
+TARGET          Pbk2UiServices
+TARGETPATH      ECOM_RESOURCE_DIR
+END
+
+// Include paths
+USERINCLUDE     ../UIServices/inc
+SYSTEMINCLUDE   ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+// Dependencies to Symbian OS components
+LIBRARY euser.lib apparc.lib eikcore.lib bafl.lib
+LIBRARY cone.lib eikcoctl.lib estor.lib efsrv.lib
+
+// Dependencies to S60 platform components
+LIBRARY Avkon.lib ServiceHandler.lib
+LIBRARY FeatMgr.lib
+
+// Dependencies to Phonebook
+LIBRARY VPbkEng.lib Pbk2Presentation.lib Pbk2CommonUtility.lib
+
+// End of File

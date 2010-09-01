@@ -1,0 +1,37 @@
+/*
+* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  File that exports the files belonging to 
+:                Phonebook 2 UI Utilities API
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+PRJ_PLATFORMS
+DEFAULT
+
+PRJ_EXPORTS
+
+../inc/Pbk2ViewId.hrh     APP_LAYER_PUBLIC_EXPORT_PATH(Pbk2ViewId.hrh)
+../inc/CPbk2ViewState.h     APP_LAYER_PUBLIC_EXPORT_PATH(CPbk2ViewState.h)
+
+
+// Phonebook2 UI Utilities API
+// Because Pbk2UID.h is included in pbk2 mmp-files they must be exported to both old and new places.
+// It's not allowed to include sdk/domain header using relative paths in mmp-file.
+
+// 05.12.2008 Antti Leinonen: Using old way of exporting in order to prevent a break in contactssearchplugin.cpp
+../inc/Pbk2UID.h        APP_LAYER_PLATFORM_EXPORT_PATH(Pbk2UID.h)
+

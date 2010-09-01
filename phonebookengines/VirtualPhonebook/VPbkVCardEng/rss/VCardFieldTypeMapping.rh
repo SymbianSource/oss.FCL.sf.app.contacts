@@ -1,0 +1,91 @@
+/*
+* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  
+*
+*/
+
+
+/**
+ */
+STRUCT VCARD_ID_NAME_MAPPINGS
+	{
+	STRUCT items[];
+	}
+
+/**
+ */
+STRUCT VCARD_ID_NAME_MAPPING
+	{
+	BYTE	id;
+
+	LTEXT	name;
+	}
+/**
+ */
+STRUCT VCARD_FIELD_TYPE_PROPERTY_LIST
+	{
+	/**
+	 * Array of VCARD_FIELDTYPE_PROPERTY structures
+	 */
+	STRUCT items[];
+	}
+
+
+/**
+ * Resource structure for mapping VCard field types to Virtual 
+ * Phonebook field types.
+ */
+STRUCT VCARD_FIELDTYPE_PROPERTY
+    {
+    /**
+     * VCard property name
+     */
+    LTEXT	name = "";
+
+	/**
+	 * Versit storage type
+	 */
+	BYTE	versitStorageType = EVPbkVersitPropertyNULL;
+	
+	/**
+	 * Array of VCARD_INDEXED_PROPERTY
+	 */
+	STRUCT	indexedProperties[];
+    }
+
+STRUCT VCARD_INDEXED_PROPERTY
+	{	
+    /**
+     * VCard property index
+     */
+    LONG	index = 0;
+
+    /**
+     * Versit property mapping for this field type.
+     *
+     * @see VBK_FIELD_VERSIT_PROPERTY
+     */
+    STRUCT	versitProperty;
+
+	BYTE	nonVersitType = 0;
+	}
+
+// ------------------------------------------------------------
+// Structure for masked fields during beamed exports
+// ------------------------------------------------------------
+//
+STRUCT VCARD_MASKED_FIELDS_LIST
+    {
+    LTEXT8 MASKED_FIELDS[];
+    }
