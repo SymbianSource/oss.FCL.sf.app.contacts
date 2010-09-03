@@ -18,16 +18,18 @@
 #include "cntmainwindow.h"
 #include "cntdefaultviewmanager.h"
 #include "cntviewnavigator.h"
+#include "cntabstractviewfactory.h"
 #include "cntkeygrabber.h"
 #include <cntdebug.h>
+#include <cntabstractengine.h>
+
 
 CntMainWindow::CntMainWindow(QWidget *parent, int defaultView)
     : HbMainWindow(parent),
-    mViewManager(NULL),
-    mDefaultView(defaultView)
+    mViewManager( NULL ),
+    mDefaultView( defaultView )
 {
     CNT_ENTRY
-    
     CntKeyGrabber *keyGrabber = new CntKeyGrabber(this, this);
     
     if (defaultView != noView)
@@ -45,6 +47,7 @@ CntMainWindow::CntMainWindow(QWidget *parent, int defaultView)
                 
         mViewManager = new CntDefaultViewManager( this );
         mViewManager->setViewNavigator( navigator );
+        mViewManager->setViewFactory( new CntDefaultViewFactory( mViewManager->engine().extensionManager()) );
         
         //activate the view
         CntViewParameters viewParameters;
@@ -61,7 +64,7 @@ CntMainWindow::~CntMainWindow()
 
     delete mViewManager;
     mViewManager = NULL;
-
+    
     CNT_EXIT
 }
 

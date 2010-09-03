@@ -28,7 +28,7 @@ CAPABILITY              CAP_GENERAL_DLL
 VENDORID                VID_DEFAULT
 
 SOURCEPATH              ../src
-SOURCE                  presencetrace.cpp 
+SOURCE                  prestrace.cpp 
 SOURCE                  presencecachebuddyinfo.cpp
 SOURCE                  presenceobjecthelpers.cpp
 

@@ -35,20 +35,24 @@ mIsLocationPickerEnabled( false )
     foreach ( QContactAddress a, mContact->details<QContactAddress>() )
         {
         QStringList context = a.contexts();
-        if ( context.isEmpty() && !mAddress ) // no context
-            {
-            mAddress = new QContactAddress( a );
-            createAddressItems( address, mAddress );
-            }
-        else if (context.first() == QContactAddress::ContextHome && !mAddressHome )
+        QString type = context.isEmpty() ? "" : context.first();
+        // Context HOME
+        if (type == QContactAddress::ContextHome && !mAddressHome )
             {
             mAddressHome = new QContactAddress( a );
             createAddressItems( addressHome, mAddressHome );
             }
-        else if (context.first() == QContactAddress::ContextWork && !mAddressWork )
+        // Context WORK
+        else if (type == QContactAddress::ContextWork && !mAddressWork )
             {
             mAddressWork = new QContactAddress( a );
             createAddressItems( addressWork, mAddressWork );
+            }
+        // Context WHATEVER
+        else if ( !mAddress ) // no context
+            {
+            mAddress = new QContactAddress( a );
+            createAddressItems( address, mAddress );
             }
         }
     
@@ -107,8 +111,7 @@ void CntAddressModel::createAddressItems( HbDataFormModelItem* aGroup, QContactA
     HbDataFormModelItem* postal = new HbDataFormModelItem( HbDataFormModelItem::TextItem, hbTrId("txt_phob_formlabel_postal_codezip_code"));
     postal->setContentWidgetData( "text", aAddress->postcode() );
     postal->setContentWidgetData( "maxLength", CNT_POSTCODE_MAXLENGTH );
-    postal->setContentWidgetData( "preferDigits", true);
-    
+        
     HbDataFormModelItem* city = new HbDataFormModelItem( HbDataFormModelItem::TextItem, hbTrId("txt_phob_formlabel_city"));
     city->setContentWidgetData( "text", aAddress->locality() );
     city->setContentWidgetData( "maxLength", CNT_LOCALITY_MAXLENGTH );

@@ -21,6 +21,7 @@
 
 void TestCntCache::initTestCase()
 {
+    // get contact manager
     mContactManager = new QContactManager("symbian");
 
     // start with a clean database
@@ -65,15 +66,11 @@ void TestCntCache::construction()
     QVERIFY(cache->mContactManager != NULL);
     QVERIFY(worker->mContactManager != NULL);
     QVERIFY(worker->mThumbnailManager != NULL);
-    QVERIFY(!worker->mStarted);
-    QVERIFY(!worker->mProcessingJobs);
-    QVERIFY(!worker->mPostponeJobs);
-    QVERIFY(worker->mDataProviders.count() >= 1);
+    QVERIFY(worker->mInfoProviders.count() >= 1);
 
     // test deletion
     cache->onShutdown();
-    QVERIFY(cache == NULL);
-    QVERIFY(worker == NULL);
+    QVERIFY(CntCache::mInstance == NULL);
 }
 
 /*
@@ -158,7 +155,7 @@ void TestCntCache::fetchContactInfo()
     }
     QVERIFY(cacheItemCount == 2*2); // two images, both used by two contacts
 
-    delete cache;
+    cache->onShutdown();
 }
 
 /*

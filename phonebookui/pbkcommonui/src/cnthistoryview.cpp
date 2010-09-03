@@ -152,16 +152,16 @@ void CntHistoryView::activate( const CntViewParameters aArgs )
         this, SLOT(showClearHistoryMenu()));
     connect(mHistoryModel, SIGNAL(layoutChanged()),
         this, SLOT(updateScrollingPosition()));
+    connect(mHistoryModel, SIGNAL(modelReset()),
+        this, SLOT(updateScrollingPosition()));
+    connect(mHistoryModel, SIGNAL(modelReset()),
+        this, SLOT(showClearHistoryMenu()));
     
     // Connect the menu options to respective slots
     mClearHistory = static_cast<HbAction*>(docLoader()->findObject("cnt:clearhistory"));
     mClearHistory->setParent(mView);
     connect(mClearHistory, SIGNAL(triggered()), this, SLOT(clearHistory()));
     showClearHistoryMenu();
-    
-    HbMainWindow* mainWindow = mView->mainWindow();
-    connect(mainWindow, SIGNAL(orientationChanged(Qt::Orientation)), 
-            this, SLOT(updateScrollingPosition()));
     
     connect(cm, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), 
         this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
@@ -258,7 +258,7 @@ void CntHistoryView::itemActivated(const QModelIndex &index)
     
         delete mRequest;
         mRequest = NULL;
-        mRequest = appMng.create(interface, operation, false); // not embedded
+        mRequest = appMng.create(interface, operation, true); // embedded
         
         if ( mRequest ) {
             mRequest->setArguments(args); 

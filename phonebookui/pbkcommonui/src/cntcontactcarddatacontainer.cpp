@@ -55,6 +55,8 @@ CntContactCardDataContainer::CntContactCardDataContainer(
     Qt::Orientations orientation,
     QObject *parent) :
             mContact(NULL), 
+            mCallAction(NULL),
+            mMessageAction(NULL),
             mSeparatorIndex(-1),
             mLocationFeatureEnabled(false), 
             mMaptileInterface(maptile),
@@ -62,6 +64,16 @@ CntContactCardDataContainer::CntContactCardDataContainer(
             mExtensionManager( &aExtensionManager )
 {
     Q_UNUSED(parent); 
+    QList<QContactActionDescriptor> callActionDescriptors = QContactAction::actionDescriptors("call", "symbian");
+    if (!callActionDescriptors.isEmpty())
+    {
+        mCallAction = QContactAction::action(callActionDescriptors.first());
+    }
+    QList<QContactActionDescriptor> messageActionDescriptors = QContactAction::actionDescriptors("message", "symbian");
+    if (!messageActionDescriptors.isEmpty())
+    {
+        mMessageAction = QContactAction::action(messageActionDescriptors.first());
+    }
 }
 
 void CntContactCardDataContainer::setContactData(QContact* contact, bool aMyCard)
@@ -88,6 +100,10 @@ Destructor
 CntContactCardDataContainer::~CntContactCardDataContainer()
 {
     clearContactData();
+    delete mCallAction;
+    mCallAction = NULL;
+    delete mMessageAction;
+    mMessageAction = NULL;
 }
 
 void CntContactCardDataContainer::clearContactData()
@@ -286,7 +302,7 @@ void CntContactCardDataContainer::initializeActionsData(bool myCard)
             }
         }
     }
-    
+
     // This is special action case. Here we query implementations that are generic
     // to contact, so it's not linked to any detail(usually generic my card actions).
     for(int j = 0; j < extendedActions.count(); j++)
@@ -475,6 +491,11 @@ void CntContactCardDataContainer::initializeDetailsData()
                 title = hbTrId("txt_phob_formlabel_address_work");
                 position = CntContactCardDataItem::EAddressWork;
             }
+            else
+            {
+                title = hbTrId("txt_phob_formlabel_address");
+                position = CntContactCardDataItem::EAddress;
+            }
         }
         CntContactCardDataItem* dataItem = new CntContactCardDataItem(title, position, false);
         
@@ -657,19 +678,16 @@ void CntContactCardDataContainer::initializeDetailsData()
 Returns true if contactDetails contains spesific action.
 */
 bool CntContactCardDataContainer::supportsDetail(const QString &actionName, const QContactDetail &contactDetail)
-{    
-    QList<QContactActionDescriptor> actionDescriptors = QContactAction::actionDescriptors(actionName, "symbian");
-    if (actionDescriptors.isEmpty())
-    {
-        return false;
+{
+    QContactAction* action = NULL;
+
+    if (actionName == "call") {
+        action = mCallAction;
+    } else if (actionName == "message") {
+        action = mMessageAction;
     }
     
-    QContactAction* contactAction = QContactAction::action(actionDescriptors.first());
-    bool isSupportDetail = contactAction->isDetailSupported(contactDetail);
-    
-    delete contactAction;
-    
-    return isSupportDetail;
+    return (action != NULL && action->isDetailSupported(contactDetail));
 }
 
 /*!

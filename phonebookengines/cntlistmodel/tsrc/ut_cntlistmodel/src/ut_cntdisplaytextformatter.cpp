@@ -21,7 +21,7 @@
 
 void TestCntDisplayTextFormatter::testFormatter()
 {
-    QColor color = HbColorScheme::color("qtc_lineedit_selected ");
+    QColor color = HbColorScheme::color("qtc_lineedit_selected");
     QColor bg = HbColorScheme::color("qtc_lineedit_marker_normal");
     QString foo = QString("<span style=\"background-color:%1;color:%2\">f</span>oo").arg(bg.name().toUpper()).arg(color.name().toUpper());
     

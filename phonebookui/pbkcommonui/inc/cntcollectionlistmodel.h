@@ -52,7 +52,7 @@ public:
     
 public:
     // removing and adding groups
-    void removeGroup(int localId);
+    bool removeGroup(int localId);
     void addGroup(int localId);
     
     // extension (plugin) group handling
@@ -74,9 +74,18 @@ private:
     bool validateRowIndex(const int index) const;
     
 private slots:
-    void informationUpdated(int id, const QString& secondRowText, int memberCount);
+    void informationUpdated(int id, const QString& secondRowText, const QList<int>& members);
     void onIconReady(const QPixmap& pixmap, void *data, int id, int error);
     void extensionGroupsReady();
+    
+    void handleAdded(const QList<QContactLocalId>& contactIds);
+    void handleRemoved(const QList<QContactLocalId>& contactIds);
+    void handleChanged(const QList<QContactLocalId>& contactIds);
+    void handleAddedRelationship(const QList<QContactLocalId>& contactIds);
+    void handleRemovedRelationship(const QList<QContactLocalId>& contactIds);
+    
+signals:
+    void groupCountChanged();
     
 private:
     QSharedDataPointer<CntCollectionListModelData>  d;

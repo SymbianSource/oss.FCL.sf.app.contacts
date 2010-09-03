@@ -1,30 +1,38 @@
-CntContactCardHeadingItem[icon][primary_text][!secondary_text][!marquee_item][!first_line_text][!second_line_text]{
+CntContactCardHeadingItem[primary_text]{
     layout:layout_one_row;
 }
 
-CntContactCardHeadingItem[icon][first_line_text][secondary_text][marquee_item][!primary_text][!second_line_text]{
+CntContactCardHeadingItem[secondary_text][!marquee_item]{
+    layout:layout_two_rows_secondary;
+}
+
+CntContactCardHeadingItem[!secondary_text][marquee_item]{
+    layout:layout_two_rows_marquee;
+}
+
+CntContactCardHeadingItem[first_line_text][secondary_text][marquee_item]{
     layout:layout_three_rows;
 }
 
-CntContactCardHeadingItem[primary_text][!secondary_text][!marquee_item][!first_line_text][!second_line_text]:landscape{
+CntContactCardHeadingItem[primary_text]:landscape{
     layout:layout_one_row-landscape;
 }
 
-CntContactCardHeadingItem[first_line_text][secondary_text][marquee_item][!primary_text][!second_line_text]:landscape{
+CntContactCardHeadingItem[secondary_text][!marquee_item]:landscape{
+    layout:layout_two_rows_secondary-landscape;
+}
+
+CntContactCardHeadingItem[!secondary_text][marquee_item]:landscape{
+    layout:layout_two_rows_marquee-landscape;
+}
+
+CntContactCardHeadingItem[first_line_text][secondary_text][marquee_item]:landscape{
     layout:layout_three_rows-landscape;
-}
-
-CntContactCardHeadingItem:landscape{
-    layout:layout_two_rows-landscape;
-}
-
-CntContactCardHeadingItem{
-    layout:layout_two_rows;
 }
 
 CntContactCardHeadingItem::icon{
     fixed-width:var(hb-param-graphic-size-primary-large);
-		fixed-height:var(hb-param-graphic-size-primary-large);
+    fixed-height:var(hb-param-graphic-size-primary-large);
 }
 
 CntContactCardHeadingItem::first_line_text{
@@ -34,12 +42,6 @@ CntContactCardHeadingItem::first_line_text{
 }
 
 CntContactCardHeadingItem::primary_text{
-    text-height:var(hb-param-text-height-primary);
-    font-variant:primary;
-    text-align:left;
-}
-
-CntContactCardHeadingItem::second_line_text{
     text-height:var(hb-param-text-height-primary);
     font-variant:primary;
     text-align:left;
@@ -58,8 +60,8 @@ CntContactCardHeadingItem::marquee_item{
 }
 
 CntContactCardHeadingItem::secondary_icon{
-  fixed-height: var(hb-param-graphic-size-primary-small);
-  fixed-width: var(hb-param-graphic-size-primary-small);
+  fixed-height: var(hb-param-graphic-size-secondary);
+  fixed-width: var(hb-param-graphic-size-secondary);
 }
 
 CntContactCardHeadingItem::background{

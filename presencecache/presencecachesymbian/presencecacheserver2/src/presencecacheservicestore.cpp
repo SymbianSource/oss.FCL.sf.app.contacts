@@ -21,7 +21,7 @@
 
 #include "presencecacheservicestore.h"
 #include "presencecachebuddystore.h"
-#include "presencetrace.h"
+#include "prestrace.h"
 #include "presenceobjecthelpers.h"
 
 // ---------------------------------------------------------------------------

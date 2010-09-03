@@ -39,7 +39,7 @@ void TestCntHistoryModel::cleanup()
 
 void TestCntHistoryModel::testLogsInsertions()
 {   
-    QSignalSpy spy( model, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+    QSignalSpy spy( model, SIGNAL(modelReset()));
     model->d_ptr->logsRowsInserted(QModelIndex(), 0, 0);
     
     QVERIFY(model->rowCount() == 1);
@@ -86,7 +86,7 @@ void TestCntHistoryModel::testMsgInsertions()
     msgs.append(msg2);
     msgs.append(msg3);
     
-    QSignalSpy spy( model, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+    QSignalSpy spy( model, SIGNAL(modelReset()));
     model->d_ptr->messagesReady(msgs);
     
     QVERIFY(model->rowCount() == 3);
@@ -223,6 +223,10 @@ void TestCntHistoryModel::testRoles()
     var = modelIndex.data(Qt::BackgroundRole);
     QVERIFY(var.type() > (QVariant::UserType - 1));
     
+    // ConversationRole
+    var = modelIndex.data(CntConverstaionIdRole);
+    QVERIFY(var.type() == QVariant::Int);
+    
     // Invalid role
     var = modelIndex.data(-10);
     QVERIFY(var.type() == QVariant::Invalid);
@@ -271,7 +275,7 @@ void TestCntHistoryModel::testSorting()
     } 
     
     // Sort ascending
-    QSignalSpy spy( model, SIGNAL( rowsInserted(const QModelIndex &, int, int)));
+    QSignalSpy spy( model, SIGNAL(modelReset()));
     model->sortAndRefresh(Qt::AscendingOrder);
     
     QVERIFY(spy.count() == 1);    
@@ -282,7 +286,7 @@ void TestCntHistoryModel::testSorting()
     }
     
     // Sort descending
-    QSignalSpy spy1( model, SIGNAL( rowsInserted(const QModelIndex &, int, int)));
+    QSignalSpy spy1( model, SIGNAL( modelReset()));
     model->sortAndRefresh(Qt::DescendingOrder);
     
     QVERIFY(spy1.count() == 1);    
@@ -307,6 +311,11 @@ void TestCntHistoryModel::testClear()
     QSignalSpy spy1( model, SIGNAL( rowsRemoved(const QModelIndex &, int, int)));
     model->clearHistory();
     QVERIFY(spy1.count() == 0);
+    
+    // test reset
+    QSignalSpy spy2( model, SIGNAL(modelReset()));
+    model->d_ptr->handleLogsReset();
+    QVERIFY(spy2.count() == 1);
 }
 
 void TestCntHistoryModel::testMarkSeen()

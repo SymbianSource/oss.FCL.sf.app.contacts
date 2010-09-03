@@ -33,6 +33,7 @@
 #include <hbaction.h>
 #include <hbstaticvkbhost.h>
 #include <hbstyleloader.h>
+#include <hbstyle.h>
 
 #include <QGraphicsLinearLayout>
 #include <QCoreApplication>
@@ -99,7 +100,6 @@ CntFetchContactPopup* CntFetchContactPopup::createMultiSelectionPopup( QString a
 {
     CntFetchContactPopup* popup = new CntFetchContactPopup( aManager );
     popup->constructPopupDialog( aTitle, aAction, HbAbstractItemView::MultiSelection );
-    
     return popup;
 }
 
@@ -157,12 +157,21 @@ void CntFetchContactPopup::showPopup()
 void CntFetchContactPopup::handleKeypadOpen()
 {
     CNT_ENTRY
+    
     HbListViewItem* prototype = mListView->listItemPrototype();
     prototype->setTextFormat( Qt::RichText );
     
+    qreal margin;
+    HbStyle style;
+    style.parameter("hb-param-margin-gene-popup", margin);
+
+    if (mPopup->mainWindow()->orientation() == Qt::Horizontal)
+        margin /= 2;
+    
     qreal height = mPopup->size().height() - 
             mVirtualKeyboard->keyboardArea().height() - 
-            mSearch->size().height();
+            mSearch->size().height() +
+            margin;
     
     // in single selection we don't have the "mark all" option
     if ( mMarkAll->isVisible() )
@@ -178,6 +187,7 @@ void CntFetchContactPopup::handleKeypadOpen()
 void CntFetchContactPopup::handleKeypadClosed()
 {
     CNT_ENTRY
+    
     if (mSearch->criteria().isEmpty())
     {
         HbListViewItem* prototype = mListView->listItemPrototype();
@@ -330,7 +340,7 @@ void CntFetchContactPopup::constructPopupDialog( QString aTitle, QString aAction
     mIdList.clear();
     mTitle = aTitle;
     
-    mPopup->setAttribute( Qt::WA_DeleteOnClose, true );    
+    mPopup->setAttribute( Qt::WA_DeleteOnClose, true );
     
     QContactDetailFilter contactsFilter;
     contactsFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
@@ -374,8 +384,9 @@ void CntFetchContactPopup::constructPopupDialog( QString aTitle, QString aAction
     }
     else
     {
-        mMarkAll->setSelectedContactCount( 0 );
         mMarkAll->setMaxContactCount( mModel->rowCount() );
+        mMarkAll->setSelectedContactCount( 0 );
+        
         connect(mSelectionModel, SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
                 this, SLOT(contactsSelected(const QItemSelection&, const QItemSelection&)) );
             

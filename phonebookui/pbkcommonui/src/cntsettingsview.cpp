@@ -44,7 +44,7 @@ mModel( NULL )
     mForm = static_cast<HbDataForm*> (document()->findWidget(QString("dataForm")));
     mForm->setItemRecycling(true);
     
-    mModel = new CntSettingsModel();
+	mModel = new CntSettingsModel();
     mForm->setModel( mModel );
     
     mBack = new HbAction(Hb::BackNaviAction, mView);

@@ -21,12 +21,12 @@
 #include <QGraphicsSceneResizeEvent>
 #include <QStringList>
 #include <QStandardItemModel>
-#include <QDebug>
 #include <QKeyEvent>
 #include <QDir>
 
 #include <cntservicescontact.h>
 #include <qtcontacts.h>
+#include <hbapplication.h>
 #include <hbscrollarea.h>
 #include <hblabel.h>
 #include <hbmenu.h>
@@ -70,8 +70,15 @@
 #include <cntabstractengine.h>
 #include <cntuicontactcardextension.h>
 
-#define CNT_MAPTILE_PROGRESS_TIMER  100 //100 msec
-#define CNT_UNKNOWN_MAPTILE_STATUS  -1
+#define CNT_MAPTILE_PROGRESS_TIMER  100 // 100 msec
+#define CNT_UNKNOWN_MAPTILE_STATUS   -1
+
+// A few list items (CntInitialPopulation) will be populated before the first view;
+// if there are more list items, they will be fetched and added one by one after the
+// first view has been shown to the user
+static const int CntListPopulationNotInProgress = -1;
+static const QEvent::Type ProcessPopulateListEvent = QEvent::User;
+static const int CntInitialPopulation = 8;
 
 const char *CNT_CONTACTCARDVIEW_XML = ":/xml/contacts_contactcard.docml";
 const char *CNT_MAPTILE_INPROGRESS_ICON = "qtg_anim_small_loading_1";
@@ -83,6 +90,7 @@ Constructor, initialize member variables.
 CntContactCardViewPrivate::CntContactCardViewPrivate(bool isTemporary) :
     QObject(),
     mContainerLayout(NULL),
+    mContainerWidget(NULL),
     mContact(NULL),
     mDataContainer(NULL),
     mAvatar(NULL),
@@ -94,7 +102,9 @@ CntContactCardViewPrivate::CntContactCardViewPrivate(bool isTemporary) :
 	mIsTemporary(isTemporary),
 	mIsExecutingAction(false),
     mMyCardId(0),
-    mSaveManager(NULL)
+    mSaveManager(NULL),
+    mListPopulationProgress(CntListPopulationNotInProgress),
+    mStopListPopulation(false)
 {
     bool ok;
     document()->load(CNT_CONTACTCARDVIEW_XML, &ok);
@@ -207,7 +217,11 @@ Activates a previous view
 */
 void CntContactCardViewPrivate::showPreviousView()
 {
+    // stop list population, if it is still in progress
+    mStopListPopulation = true;
+
     int returnValue = KCntServicesReturnValueContactNotModified;
+
     //save the contact if avatar has been changed.
     QContact contact = contactManager()->contact(mContact->localId());
     if ( contact != *mContact && contactManager()->error() == QContactManager::NoError)
@@ -232,6 +246,9 @@ Activates the root view
 */
 void CntContactCardViewPrivate::showRootView()
 {
+    // stop list population, if it is still in progress
+    mStopListPopulation = true;
+
     mViewManager->back( mArgs, true );
 }
 
@@ -242,13 +259,12 @@ void CntContactCardViewPrivate::activate(const CntViewParameters aArgs)
 {   
     CNT_ENTRY
     mArgs = aArgs;
-            
+
     mViewManager = &mEngine->viewManager();
     mThumbnailManager = &mEngine->thumbnailManager();
     connect(mThumbnailManager, SIGNAL(thumbnailReady(QPixmap, void*, int, int)),
             this, SLOT(thumbnailReady(QPixmap, void*, int, int)));
        
-    
     HbMainWindow* window = mView->mainWindow();
     if (window)
     {
@@ -257,7 +273,7 @@ void CntContactCardViewPrivate::activate(const CntViewParameters aArgs)
         
         setOrientation(window->orientation());
     }
-    
+
     qApp->installEventFilter(this);
         
     QContact contact = aArgs.value(ESelectedContact).value<QContact>();
@@ -267,6 +283,7 @@ void CntContactCardViewPrivate::activate(const CntViewParameters aArgs)
     mMyCardId = contactManager()->selfContactId();
     
     populateHeadingItem();
+
     populateListItems();
     
     bool myCard = mContact->localId() == mMyCardId;
@@ -314,6 +331,8 @@ void CntContactCardViewPrivate::activate(const CntViewParameters aArgs)
 
 void CntContactCardViewPrivate::populateHeadingItem()
 {
+    CNT_ENTRY
+
     Q_ASSERT(mHeadingItem != NULL && mContact != NULL);
     
     mHeadingItem->setDetails(mContact);
@@ -333,16 +352,13 @@ void CntContactCardViewPrivate::populateHeadingItem()
         mImageLabel->ungrabGesture(Qt::TapGesture);
     }
     
-
     bool online;
     mInitiialPrecenceData = mPresenceListener->initialPresences(*mContact, online);
     mHeadingItem->setOnlineStatus(online);
-    
-    if (!myCard)
-    {
-        bool setAsFavorite( false );
-        setAsFavorite = CntFavourite::isMemberOfFavouriteGroup( contactManager(), mContact );
-        mHeadingItem->setFavoriteStatus( setAsFavorite ); // if contact is part of favourites group
+
+    if (!myCard) {
+        bool setAsFavorite = CntFavourite::isMemberOfFavouriteGroup(contactManager(), mContact);
+        mHeadingItem->setFavoriteStatus(setAsFavorite); // if contact is part of favourites group
         static_cast<HbAction *>(document()->findObject("cnt:setasfavorite"))->setVisible( !setAsFavorite );
         static_cast<HbAction *>(document()->findObject("cnt:removefromfavorite"))->setVisible( setAsFavorite );
     }
@@ -367,65 +383,77 @@ void CntContactCardViewPrivate::populateHeadingItem()
             break;
         }
     }
-    
+
+    CNT_EXIT
 }
 
 void CntContactCardViewPrivate::populateListItems()
 {
+    CNT_ENTRY
+
     Q_ASSERT(mContact != NULL && mScrollArea != NULL);
 
-    // data container
-    if (!mDataContainer) {
-        mDataContainer = new CntContactCardDataContainer(
-            mMaptile,
-            mEngine->extensionManager(),
-            mView->mainWindow()->orientation() );
-    }
-    
-    // fill the data container with contact details
-    mDataContainer->setContactData(mContact);
-    
-    // scroll area + container widget
-    QGraphicsWidget* containerWidget = mScrollArea->contentWidget();
-    if (!containerWidget)
-    {
-        // initialize
-        mScrollArea->setScrollDirections(Qt::Vertical);
-        
-        containerWidget = new QGraphicsWidget();
-        mScrollArea->setContentWidget(containerWidget); // takes ownership.
-            
-        mContainerLayout = new QGraphicsLinearLayout(Qt::Vertical);
-        mContainerLayout->setContentsMargins(0, 0, 0, 0);
-        mContainerLayout->setSpacing(0);
-        mContainerLayout->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-        
-        containerWidget->setLayout(mContainerLayout);   // takes ownership.
-    } else {
-        // Already initialized
-        Q_ASSERT(mContainerLayout != NULL);
-        
-        // Clear the container
-        int count = mContainerLayout->count();
-        for (int i=0; i<count; i++) 
-        {
-            // do not delete items. They will be deleted automatically
-            mContainerLayout->removeAt(i);
+    if (mListPopulationProgress == CntListPopulationNotInProgress) {
+        mListPopulationProgress = 0;
+
+        if (!mDataContainer) {
+            mDataContainer = new CntContactCardDataContainer(
+                mMaptile,
+                mEngine->extensionManager(),
+                mView->mainWindow()->orientation());
         }
-    }
-    
-    // Delete all the detail pointers if any
-    qDeleteAll(mDetailPtrs);
-    mDetailPtrs.clear();
-    for(int index = 0; index < mDataContainer->itemCount(); index++)
-    {
-        CntContactCardDataItem* dataItem = mDataContainer->dataItem(index);
-        int pos = dataItem->position();
+
+        // fill the data container with contact details
+        mDataContainer->setContactData(mContact);
         
+        // scroll area + container widget
+        mContainerWidget = mScrollArea->contentWidget();
+        if (!mContainerWidget) {
+            // initialize
+            mScrollArea->setScrollDirections(Qt::Vertical);
+            
+            mContainerWidget = new QGraphicsWidget();
+            mScrollArea->setContentWidget(mContainerWidget); // takes ownership. Old widget is deleted
+                
+            mContainerLayout = new QGraphicsLinearLayout(Qt::Vertical);
+            mContainerLayout->setContentsMargins(0, 0, 0, 0);
+            mContainerLayout->setSpacing(0);
+            mContainerLayout->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+            
+            mContainerWidget->setLayout(mContainerLayout);   // takes ownership. Old layout is deleted
+        } else {
+            // Already initialized
+            Q_ASSERT(mContainerLayout != NULL);
+            
+            // Clear the container
+            int count = mContainerLayout->count();
+            for (int i = 0; i < count; i++) {
+                // do not delete items. They will be deleted automatically
+                mContainerLayout->removeAt(i);
+            }
+        }
+    
+        // Delete all the detail pointers if any
+        qDeleteAll(mDetailPtrs);
+        mDetailPtrs.clear();
+    }
+
+
+    do {
+        if (mListPopulationProgress == mDataContainer->itemCount() || mStopListPopulation) {
+            // population of the list has completed
+            mListPopulationProgress = CntListPopulationNotInProgress;
+            mStopListPopulation = false;
+            return;
+        }
+
+        CntContactCardDataItem* dataItem = mDataContainer->dataItem(mListPopulationProgress);
+        int pos = dataItem->position();
+
         // communication methods
         if (pos < CntContactCardDataItem::ESeparator && dataItem->isFocusable())
         { 
-            CntContactCardDetailItem* item = new CntContactCardDetailItem(index, containerWidget);
+            CntContactCardDetailItem* item = new CntContactCardDetailItem(mListPopulationProgress, mContainerWidget);
             mDetailPtrs.append(item);
 
             connect(item, SIGNAL(clicked()), this, SLOT(onItemActivated()));
@@ -499,7 +527,7 @@ void CntContactCardViewPrivate::populateListItems()
             //other details
             else
             {
-                CntContactCardDetailItem* item = new CntContactCardDetailItem(index, containerWidget, false);
+                CntContactCardDetailItem* item = new CntContactCardDetailItem(mListPopulationProgress, mContainerWidget, false);
                 mDetailPtrs.append(item);
                 
                 //To check whether maptile status  icon is set with the address 
@@ -540,7 +568,17 @@ void CntContactCardViewPrivate::populateListItems()
                 mContainerLayout->addItem(item);
             }
         }
+    
+        ++mListPopulationProgress;
+    } while (mListPopulationProgress < CntInitialPopulation);
+
+    if (mListPopulationProgress <= CntInitialPopulation) {
+        QObject::connect(mView->mainWindow(), SIGNAL(viewReady()), this, SLOT(populateListItems()));
+    } else {
+        HbApplication::instance()->postEvent(this, new QEvent(ProcessPopulateListEvent));
     }
+
+    CNT_EXIT
 }
 
 /*
@@ -864,6 +902,13 @@ void CntContactCardViewPrivate::setAsFavorite()
     QContactId id = mContact->id();
     CntFavourite::addContactToFavouriteGroup( contactManager(), id );
     
+    QContact c = contactManager()->contact(mContact->localId());
+    
+    delete mContact;
+    mContact = NULL;
+    
+    mContact = new QContact(c);
+    
     qobject_cast<HbAction *>(document()->findObject("cnt:removefromfavorite"))->setVisible(true);
     qobject_cast<HbAction *>(document()->findObject("cnt:setasfavorite"))->setVisible(false);
     mHeadingItem->setFavoriteStatus(true);  
@@ -873,6 +918,13 @@ void CntContactCardViewPrivate::removeFromFavorite()
 {
     QContactId id = mContact->id();   
     CntFavourite::removeContactFromFavouriteGroup( contactManager(), id );
+    
+    QContact c = contactManager()->contact(mContact->localId());
+    
+    delete mContact;
+    mContact = NULL;
+    
+    mContact = new QContact(c);
 
     qobject_cast<HbAction *>(document()->findObject("cnt:removefromfavorite"))->setVisible(false);
     qobject_cast<HbAction *>(document()->findObject("cnt:setasfavorite"))->setVisible(true);
@@ -1295,6 +1347,31 @@ void CntContactCardViewPrivate::handleSendBusinessCard( HbAction* aAction )
     {
         tmpContact.removeDetail( &a );
     }
+    
+    //temproral solution for a contact without name - add an empty name,
+    //so vcard construction doesn't fail
+    //TODO: use custom handler again when new QVersitContactExporterDetailHandlerV2
+    //(part of QtVersit) is available in the platform
+    QList<QContactName> names = tmpContact.details<QContactName>();
+    if (names.count() > 0)
+    {
+        QContactName name = names.at(0);
+        if (name.firstName().isEmpty() && name.lastName().isEmpty())
+        {
+            //empty first and last names - update with empty string
+            name.setFirstName(QString(""));
+            tmpContact.saveDetail(&name);
+        }
+    }
+    else
+    {
+        //no name detail - create one
+        QContactName name;
+        name.setFirstName(QString(""));
+        tmpContact.saveDetail(&name);
+    } //temproral solution for a contact without name - add an empty name,
+      //so vcard construction doesn't fail - end
+    
     list.append( tmpContact );
     
     QString tempDir = QDir::tempPath().append("/tempcntvcard");
@@ -1333,8 +1410,10 @@ void CntContactCardViewPrivate::handleSendBusinessCard( HbAction* aAction )
     vCardPath = QDir::toNativeSeparators(vCardPath);
     
     QVersitContactExporter exporter;
-    CntVCardDetailHandler hanlder;
-    exporter.setDetailHandler(&hanlder);
+    //TODO: use custom handler again when new QVersitContactExporterDetailHandlerV2
+    //(part of QtVersit) is available in the platform
+    //CntVCardDetailHandler hanlder;
+    //exporter.setDetailHandler(&hanlder);
     // The vCard version needs to be 2.1 due to backward compatiblity when sending 
     if (exporter.exportContacts(list, QVersitDocument::VCard21Type))
     {
@@ -1357,7 +1436,7 @@ void CntContactCardViewPrivate::handleSendBusinessCard( HbAction* aAction )
             }
             QStringList l;
             l << vCardPath;
-            mShareUi->send(l,false);
+            mShareUi->send(l, true);
         }
     }
     
@@ -1453,6 +1532,11 @@ QContactManager* CntContactCardViewPrivate::contactManager()
 
 bool CntContactCardViewPrivate::eventFilter(QObject *obj, QEvent *event)
 {
+    if (event->type() == ProcessPopulateListEvent && obj == this) {
+        populateListItems();
+        return true;
+    }
+
     if (event->type() == QEvent::KeyPress && obj == mView->mainWindow())
     {
         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);

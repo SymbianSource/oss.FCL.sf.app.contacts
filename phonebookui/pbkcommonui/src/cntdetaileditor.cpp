@@ -35,6 +35,7 @@
 #include <hbscrollbar.h>
 #include <hbdevicenotificationdialog.h>
 #include <hbparameterlengthlimiter.h>
+#include <hbshrinkingvkbhost.h>
 
 #include <QApplication>
 #include <QTimer>
@@ -51,7 +52,8 @@ CntDetailEditor::CntDetailEditor( int aId ) :
     mViewManager(NULL),
     mEditorFactory(NULL),
     mCancel(NULL),
-    mSaveManager(NULL)
+    mSaveManager(NULL),
+    mVirtualKeyboard(NULL)
 {
     bool ok;
     document()->load(CNT_DETAILEDITOR_XML, &ok);
@@ -88,6 +90,8 @@ CntDetailEditor::~CntDetailEditor()
     mEditorFactory = NULL;
     delete mSaveManager;
     mSaveManager = NULL;
+    delete mVirtualKeyboard;
+    mVirtualKeyboard = NULL;
 }
 
 void CntDetailEditor::setViewId( int aId )
@@ -163,6 +167,11 @@ void CntDetailEditor::activate( const CntViewParameters aArgs )
     mDataForm->setVerticalScrollBarPolicy(HbScrollArea::ScrollBarAsNeeded); 
     mDataForm->setScrollingStyle(HbScrollArea::PanWithFollowOn);
     mDataForm->verticalScrollBar()->setInteractive(true);
+    
+    mVirtualKeyboard = new HbShrinkingVkbHost(mView);
+        
+    connect(mVirtualKeyboard, SIGNAL(keypadOpened()), this, SLOT(handleKeypadOpen()));
+    connect(mVirtualKeyboard, SIGNAL(keypadClosed()), this, SLOT(handleKeypadClosed()));
 }
 
 void CntDetailEditor::deactivate()
@@ -230,7 +239,7 @@ void CntDetailEditor::handleItemShown(const QModelIndex& aIndex )
             
             if (modelItem->contentWidgetData( "preferDigits" ).toBool())
             {
-                edit->setInputMethodHints( Qt::ImhPreferNumbers );
+                edit->setInputMethodHints( Qt::ImhPreferNumbers | Qt::ImhNoPredictiveText );
             }
             
             objName = mDataFormModel->detail().definitionName() + " line edit %1";
@@ -367,6 +376,23 @@ void CntDetailEditor::contactDeletedFromOtherSource(const QList<QContactLocalId>
         // not updated properly if this is not done in the event loop
         QTimer::singleShot(0, this, SLOT(showRootView()));
     }
+    CNT_EXIT
+}
+
+void CntDetailEditor::handleKeypadOpen()
+{
+    CNT_ENTRY
+    
+  // enable full screen
+    mView->setContentFullScreen(true);
+    CNT_EXIT
+}
+
+void CntDetailEditor::handleKeypadClosed()
+{
+    CNT_ENTRY
+    // disable full screen
+    mView->setContentFullScreen(false);
     CNT_EXIT
 }
 

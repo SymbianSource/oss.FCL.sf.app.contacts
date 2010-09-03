@@ -34,7 +34,6 @@ file=ABI_DIR\BUILD_DIR\cntimageutility.dll            	SHARED_LIB_DIR\cntimageut
 file=ABI_DIR\BUILD_DIR\pbkcommonui.dll                	SHARED_LIB_DIR\pbkcommonui.dll UNPAGED
 file=ABI_DIR\BUILD_DIR\phonebook.exe                  	SHARED_LIB_DIR\phonebook.exe
 
-S60_APP_AIF_RSC(phonebook)
 UPGRADABLE_APP_REG_RSC(phonebook)
 
 data=DATAZ_\RESOURCE_FILES_DIR\qt\plugins\contacts\cntactionsplugin.qtplugin         				RESOURCE_FILES_DIR\qt\plugins\contacts\cntactionsplugin.qtplugin

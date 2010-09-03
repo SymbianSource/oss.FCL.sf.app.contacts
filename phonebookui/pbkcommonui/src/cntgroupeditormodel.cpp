@@ -48,6 +48,7 @@ CntGroupEditorModel::CntGroupEditorModel(QContact* aContact) :
     iNameItem->setContentWidgetData("text", iGroupName.customLabel());
     iNameItem->setContentWidgetData("maxLength", CNT_GROUPNAME_MAXLENGTH);
     iNumberItem->setContentWidgetData("text", iGroupConfCallNumber.number() );
+    iNumberItem->setContentWidgetData("maxLength", CNT_PHONENUMBER_EDITOR_MAXLENGTH);
     
     HbDataFormModelItem* root = invisibleRootItem();
     appendDataFormItem( iNameItem, root);

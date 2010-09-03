@@ -43,7 +43,6 @@ CntContactCardHeadingItem::CntContactCardHeadingItem(QGraphicsItem *parent) :
     mSecondaryIcon(NULL),
     mFirstLineText(NULL),
     mPrimaryText(NULL),
-    mSecondLineText(NULL),
     mSecondaryText(NULL),
     mMarqueeItem(NULL),
     mFrameItem(NULL),
@@ -137,26 +136,6 @@ void CntContactCardHeadingItem::createPrimitives()
             delete mPrimaryText;
         }
         mPrimaryText = 0;
-    }
-
-
-    if (!secondLineText.isNull())
-    {
-        if (!mSecondLineText)
-        {
-            mSecondLineText = new HbTextItem(this);
-            mSecondLineText->setText(secondLineText);
-            mSecondLineText->setMaximumLines(1);
-            style()->setItemName(mSecondLineText, "second_line_text");
-        }
-    }
-    else
-    {
-        if (mSecondLineText)
-        {
-            delete mSecondLineText;
-        }
-        mSecondLineText = 0;
     }
 
     if (!secondaryText.isNull())
@@ -266,9 +245,6 @@ void CntContactCardHeadingItem::recreatePrimitives()
 
     delete mPrimaryText;
     mPrimaryText = 0;
-
-    delete mSecondLineText;
-    mSecondLineText = 0;
 
     delete mSecondaryText;
     mSecondaryText = 0;
@@ -505,19 +481,19 @@ void CntContactCardHeadingItem::setSecondaryIcon()
     if (mIsOnline)
     {
         secondaryIcon = HbIcon("qtg_small_online");
-        createPrimitives();
+        recreatePrimitives();
         mSecondaryIcon->setIcon(secondaryIcon);
     }
     else if (!mIsOnline && mIsFavorite)
     {
         secondaryIcon = HbIcon("qtg_small_favorite");
-        createPrimitives();
+        recreatePrimitives();
         mSecondaryIcon->setIcon(secondaryIcon);
     }
     else
     {
         secondaryIcon.clear();
-        createPrimitives();
+        recreatePrimitives();
     }
 
     repolish();

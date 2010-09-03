@@ -234,12 +234,28 @@ void TestCntListModel::contact()
     QVERIFY(!c.isEmpty());
 }
 
+void TestCntListModel::contactId()
+{
+    QModelIndex modelIndex = mCntModel->index(1, 0);
+    QContact c = mCntModel->contact(modelIndex);
+    
+    QVERIFY(mCntModel->contactId(modelIndex) == c.localId());
+}
+
 void TestCntListModel::indexOfContact()
 {
     QModelIndex modelIndex = mCntModel->index(1, 0);
     QContact c = mCntModel->contact(modelIndex);
     
     QVERIFY(mCntModel->indexOfContact(c) == modelIndex);
+}
+
+void TestCntListModel::indexOfContactId()
+{
+    QModelIndex modelIndex = mCntModel->index(1, 0);
+    QContact c = mCntModel->contact(modelIndex);
+    
+    QVERIFY(mCntModel->indexOfContactId(c.localId()) == modelIndex);
 }
 
 void TestCntListModel::contactManager()
@@ -278,7 +294,7 @@ void TestCntListModel::setFilter()
     QModelIndex modelIndex = mCntModel->indexOfContact(c);
     QVERIFY(modelIndex.row() < 0);
     QVERIFY(mCntModel->d->m_filter == unionFilter);
-    QVERIFY(mCntModel->d->m_sortOrders.count() == 3);
+    QVERIFY(mCntModel->d->m_sortOrders.count() == 2);
 }
 
 void TestCntListModel::myCard()
@@ -453,6 +469,106 @@ void TestCntListModel::handleMyCardChanged()
     
     mCntModel->handleMyCardChanged(0, c.localId());
     QVERIFY(mCntModel->d->m_myCardId == c.localId());
+}
+
+void TestCntListModel::handleRelationships()
+{
+    // remove all contacts
+    QList<QContactLocalId> ids = mManager->contactIds();
+    QMap<int, QContactManager::Error> errorMap;
+    mManager->removeContacts(ids,&errorMap);
+    QTest::qWait(1000);
+
+    // create group "myGroup"
+    QContact group;
+    group.setType(QContactType::TypeGroup);
+    QContactName groupName;
+    groupName.setCustomLabel("myGroup");
+    group.saveDetail(&groupName);
+    mManager->saveContact(&group);
+
+    // create a relationship filter
+    QContactRelationshipFilter groupFilter;
+    groupFilter.setRelationshipType(QContactRelationship::HasMember);
+    groupFilter.setRelatedContactRole(QContactRelationship::First);
+    groupFilter.setRelatedContactId(group.id()); 
+
+    // create new listmodel
+    CntListModel* groupListModel = new CntListModel(mManager, groupFilter, false);
+    QVERIFY(groupListModel != NULL);
+
+    QCOMPARE(groupListModel->rowCount(), 0);
+
+    // create contacts
+    QList<QContact> contacts;
+    contacts << createContact("Alfa", "One");
+    contacts << createContact("Beta", "Two");
+    contacts << createContact("Gamma", "Three");
+    QTest::qWait(1000);
+    QCOMPARE(groupListModel->rowCount(), 0);
+
+    // add contacts to group
+    foreach (QContact contact, contacts) {
+        addGroupMember(group, contact);
+    }
+    QTest::qWait(1000);
+    QCOMPARE(groupListModel->rowCount(), 3);
+
+    // remove contact from group
+    removeGroupMember(group, contacts.at(1));
+    QTest::qWait(1000);
+    QCOMPARE(groupListModel->rowCount(), 2);
+
+    // add and remove empty list
+    QList<QContactLocalId> emptyList;
+    emptyList << group.localId();
+    mCntModel->handleAddedRelationship(emptyList);
+    QCOMPARE(groupListModel->rowCount(), 2);
+    mCntModel->handleRemovedRelationship(emptyList);
+    QCOMPARE(groupListModel->rowCount(), 2);
+
+    // verify that contact on second row is "Gamma Three" (comes after "Alfa One"
+    // regardless of sorting type and Beta Two was removed)
+    QVERIFY(groupListModel->indexOfContact(contacts.at(0)).row() == 0);
+    QVERIFY(groupListModel->indexOfContact(contacts.at(1)).row() == -1);
+    QVERIFY(groupListModel->indexOfContact(contacts.at(2)).row() == 1);
+
+    // create a contact and make sure list model count does not change
+    createContact("Delta", "Four");
+    QTest::qWait(1000);
+    QCOMPARE(groupListModel->rowCount(), 2);
+    
+    delete groupListModel;
+}
+
+QContact TestCntListModel::createContact(const QString& firstName, const QString& lastName)
+{
+    QContact contact;
+    QContactName name;
+    name.setFirstName(firstName);
+    name.setLastName(lastName);
+    contact.saveDetail(&name);
+    mManager->saveContact(&contact);
+
+    return contact;
+}
+
+void TestCntListModel::addGroupMember(const QContact& group, const QContact& contact)
+{
+    QContactRelationship relationship;
+    relationship.setRelationshipType(QContactRelationship::HasMember);
+    relationship.setFirst(group.id());
+    relationship.setSecond(contact.id());
+    mManager->saveRelationship(&relationship);
+}
+
+void TestCntListModel::removeGroupMember(const QContact& group, const QContact& contact)
+{
+    QContactRelationship relationship;
+    relationship.setRelationshipType(QContactRelationship::HasMember);
+    relationship.setFirst(group.id());
+    relationship.setSecond(contact.id());
+    mManager->removeRelationship(relationship);
 }
 
 void TestCntListModel::cleanupTestCase()

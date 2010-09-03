@@ -24,6 +24,7 @@
 #include <cntviewparams.h>
 
 class CntDefaultViewManager;
+class XqKeyCapture;
 
 class QTPBK_EXPORT CntMainWindow : public HbMainWindow
 {

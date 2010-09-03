@@ -51,7 +51,9 @@ public:
 private:
     CntEditViewPrivate* const d_ptr;
     Q_DECLARE_PRIVATE_D(d_ptr, CntEditView)
-    Q_DISABLE_COPY(CntEditView)   
+    Q_DISABLE_COPY(CntEditView)
+    
+    friend class TestCntEditView;
 };
 #endif //CNTEDITVIEW__H
 // EOF

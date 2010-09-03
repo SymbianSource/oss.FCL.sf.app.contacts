@@ -34,6 +34,9 @@ class TestCntListModel : public QObject
 
 private:
     void contactReady(int start, int end);
+    QContact createContact(const QString& firstName, const QString& lastName);
+    void addGroupMember(const QContact& group, const QContact& contact);
+    void removeGroupMember(const QContact& group, const QContact& contact);
 
 private slots:
 	void initTestCase();
@@ -43,7 +46,9 @@ private slots:
 	void rowCount();
 	
 	void contact();
+	void contactId();
 	void indexOfContact();
+	void indexOfContactId();
 	void contactManager();
 	void setFilter();
 	void myCard();
@@ -55,6 +60,7 @@ private slots:
     void handleChanged();
     void handleRemoved();
 	void handleMyCardChanged();
+    void handleRelationships();
 	
 	void cleanupTestCase();
 	

@@ -39,6 +39,8 @@
 #include <hbgroupbox.h>
 #include <hbmessagebox.h>
 #include <hbparameterlengthlimiter.h>
+#include <hbeffect.h>
+#include <hbtoolbar.h>
 
 #include <QActionGroup>
 #include <QApplication>
@@ -74,6 +76,9 @@ CntCollectionView::CntCollectionView() :
     {
         qFatal("Unable to read :/xml/contacts_collections.docml");
     }
+    
+    // disable toolbar effects
+    HbEffect::disable(mView->toolBar());
     
     //back button
     mSoftkey = new HbAction(Hb::BackNaviAction, mView);
@@ -156,6 +161,7 @@ void CntCollectionView::activate( const CntViewParameters aArgs )
     mListView->listItemPrototype()->setGraphicsSize(HbListViewItem::LargeIcon);
     mListView->listItemPrototype()->setStretchingStyle(HbListViewItem::StretchLandscape);
     mModel = new CntCollectionListModel( mEngine, this);
+    connect(mModel, SIGNAL(groupCountChanged()), this, SLOT(groupCountChanged()));
     mListView->setModel(mModel);
     
     CNT_EXIT
@@ -343,7 +349,6 @@ void CntCollectionView::handleNewGroup(HbAction* action)
         mHandledContact->saveDetail(&groupName);
         getContactManager()->saveContact(mHandledContact);
         
-        // Select some contact(s) to add to the group
         QString groupNameCreated = mHandledContact->displayLabel();
         if (groupNameCreated.isEmpty())
         {
@@ -358,9 +363,6 @@ void CntCollectionView::handleNewGroup(HbAction* action)
        QList<QContactLocalId> contactIds = getContactManager()->contactIds(gFilter);   
        if (contactIds.isEmpty())
        {
-           mModel->addGroup(mHandledContact->localId());
-           mDeleteGroupsAction->setEnabled(true);
-               
            notifyNewGroup();
        }      
        else
@@ -395,19 +397,13 @@ void CntCollectionView::handleNewGroupMembers( QSet<QContactLocalId> aIds )
         viewParameters.insert(ESelectedGroupContact, var);
         mViewManager->changeView(viewParameters);
     }
-    else
-    {
-        mModel->addGroup(mHandledContact->localId());
-        mDeleteGroupsAction->setEnabled(true);
-    }
+
     notifyNewGroup();
 }
 
 void CntCollectionView::handleCancelGroupMembers()
 {
     mSelectedContactsSet.clear();
-    mModel->addGroup(mHandledContact->localId());
-    mDeleteGroupsAction->setEnabled(true);
     
     notifyNewGroup();
 }
@@ -437,6 +433,7 @@ void CntCollectionView::refreshDataModel()
     mModel = NULL;
     
     mModel = new CntCollectionListModel(mEngine, this);
+    connect(mModel, SIGNAL(groupCountChanged()), this, SLOT(groupCountChanged()));
     mListView->setModel(mModel);
 }
 
@@ -462,17 +459,6 @@ void CntCollectionView::handleDeleteGroup(int action)
     if (action == HbMessageBox::Delete)
     {
         getContactManager()->removeContact(mHandledContact->localId());
-        mModel->removeGroup(mHandledContact->localId());
-        
-        // disable delete group(s) button if only favorites group is present
-        QContactDetailFilter groupFilter;
-        groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
-        groupFilter.setValue(QLatin1String(QContactType::TypeGroup));
-        QList<QContactLocalId> groupContactIds = getContactManager()->contactIds(groupFilter);
-        if (groupContactIds.count() < 2)
-        {
-            mDeleteGroupsAction->setEnabled(false);
-        }
     }
     
     delete mHandledContact;
@@ -495,21 +481,23 @@ void CntCollectionView::handleDeleteGroups(HbAction* action)
     
     if (groupDeletePopup && action == groupDeletePopup->actions().first())
     {
-        QList<QContactLocalId> deletedList = groupDeletePopup->deleteGroup();
-        foreach (QContactLocalId id, deletedList)
-        {
-            mModel->removeGroup(id);
-        }
-        
-        // disable delete group(s) button if only favorites group is present
-        QContactDetailFilter groupFilter;
-        groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
-        groupFilter.setValue(QLatin1String(QContactType::TypeGroup));
-        QList<QContactLocalId> groupContactIds = getContactManager()->contactIds(groupFilter);
-        if (groupContactIds.count() < 2)
-        {
-            mDeleteGroupsAction->setEnabled(false);
-        }
+        groupDeletePopup->deleteGroup();
+    }
+}
+
+void CntCollectionView::groupCountChanged()
+{
+    QContactDetailFilter groupFilter;
+    groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
+    groupFilter.setValue(QLatin1String(QContactType::TypeGroup));
+    QList<QContactLocalId> groupContactIds = getContactManager()->contactIds(groupFilter);
+    if (groupContactIds.count() < 2)
+    {
+        mDeleteGroupsAction->setEnabled(false);
+    }
+    else
+    {
+        mDeleteGroupsAction->setEnabled(true);
     }
 }
 

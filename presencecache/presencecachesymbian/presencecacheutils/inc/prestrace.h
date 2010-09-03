@@ -15,8 +15,8 @@
 *
 */
 
-#ifndef PRESENCETRACE_H__
-#define PRESENCETRACE_H__
+#ifndef PRESTRACE_H__
+#define PRESTRACE_H__
 
 #include <e32std.h>
 
@@ -32,9 +32,6 @@ _LIT( KPresenceTraceLogFile, "presence.log" );
     /**
      * Trace handlers. Different statements with 
      * different names for handling different parameter amounts.
-     *
-     * Link against ximpdatamodel.dll to use trace
-     * services.
      *
      * Statements produce traces only in debug builds.
      * In hardware debug builds traces go to file defined
@@ -87,10 +84,7 @@ _LIT( KPresenceTraceLogFile, "presence.log" );
 
 
 /**
- * XIMP Framework trace sink.
- *
- * @lib ximpdatamodel.dll
- * @since S60 v3.2
+ * trace sink.
  */
 class PresenceTrace
     {
@@ -148,5 +142,5 @@ private:
 };
 
 
-#endif  // PresenceTrace_H__
+#endif  // PRESTRACE_H__
 

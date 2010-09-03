@@ -767,6 +767,7 @@ void CntEditViewPrivate::setSelectedContact( QContact aContact )
     QContactManager& cm = mEngine->contactManager( SYMBIAN_BACKEND );
     connect(&cm, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), 
         this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)), Qt::UniqueConnection);
+    
 	CNT_EXIT
 }
 

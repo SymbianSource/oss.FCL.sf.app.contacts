@@ -31,7 +31,7 @@
 #include <QPixmap>
 #include <QGraphicsSceneMouseEvent>
 #include <HbEvent>
-
+#include <xqaiwdecl.h>
 #include <cntservicescontact.h>
 #include <hbaction.h>
 
@@ -55,6 +55,18 @@ const QString widgetPrefContactId = "contactId";
 // Docml file
 const QString contactWidgetDocml = ":/commlauncherwidget.docml";
 
+
+// TODO: THESE STRINGS ARE IN W32 SDK. THESE DEFINITIONS CAN BE REMOVED
+// WHEN EVERYBODY ARE USING IT OR LATER VERSION
+#ifndef XQI_CONTACTS_FETCH
+#define XQI_CONTACTS_FETCH QLatin1String("com.nokia.symbian.IContactsFetch")
+#endif
+#ifndef XQOP_CONTACTS_FETCH_SINGLE
+#define XQOP_CONTACTS_FETCH_SINGLE QLatin1String("singleFetch(QString,QString)")
+#endif
+
+
+
 /*!
   \class ContactWidgetHs
 */
@@ -76,13 +88,14 @@ ContactWidgetHs::ContactWidgetHs(QGraphicsItem *parent, Qt::WindowFlags flags )
   mAppManager(0),
   mContactSelectRequest(0),
   mMainWindow(0),
-  mThumbnailManager(0),
+  mThumbnailManager(new ThumbnailManager(this)),
   mThumbnailPixmap(QPixmap()),
   mThumbnailInProgress(false),
-  mTranslator(0)
+  mTranslator(new HbTranslator(translationsPath, translationsFile)),
+  mAvatarIcon(0),
+  mPendingExit(false)
 {
-    // Localization file loading   
-	mTranslator = new HbTranslator(translationsPath, translationsFile);
+    // Localization file loading   		
 	mTranslator->loadCommon();    
     
     // UI creation done in onInitialize()
@@ -95,39 +108,36 @@ ContactWidgetHs::ContactWidgetHs(QGraphicsItem *parent, Qt::WindowFlags flags )
 
     // avatar icon item has to be created without parent else the drawing goes wrong
     mAvatarIconItem = new HbIconItem();
-    
-    //Create Communication launcher
+    mCleanupHandler.add(mAvatarIconItem);
+    //Create Communication launchernew
     //Has to be created without parent, otherwise timout, dismissPolicy and modality have no effect
     mLauncher = new CommLauncherWidget();
+    mCleanupHandler.add(mLauncher);
     mLauncher->setTimeout(0);
     mLauncher->setDismissPolicy(HbPopup::TapAnywhere); 
     mLauncher->setBackgroundFaded(false);
     mLauncher->setModal(false);
     mLauncher->hide();
     // USE CONNECT WHEN THE LATCHED GRAPHICS IS IN THE PLATFORM
-    //connect(mLauncher, SIGNAL(launcherClosed()),
-    //        this, SLOT(loadNormalLayout()));
-    
-    mAppManager = new XQApplicationManager();
+    connect(mLauncher, SIGNAL(launcherClosed()),
+            this, SLOT(loadNormalLayout()));
+    connect(mLauncher, SIGNAL(requestCompleted()),
+    		this, SLOT(onRequestComplete()));
+    mAppManager = new XQApplicationManager();    
     ASSERT(mAppManager);
+    mCleanupHandler.add(mAppManager);
     mLauncher->setApplicationManager(*mAppManager);
     
-    // Thumbnail manager so we can handle large size images as contact avatars
-    mThumbnailManager = new ThumbnailManager(this);
+    // Thumbnail manager so we can handle large size images as contact avatars    
     mThumbnailManager->setMode(ThumbnailManager::Default);
     mThumbnailManager->setQualityPreference(ThumbnailManager::OptimizeForQuality);
     mThumbnailManager->setThumbnailSize(ThumbnailManager::ThumbnailMedium );
     
-    connect(mThumbnailManager, SIGNAL(thumbnailReady(QPixmap, void*, int, int)),
+    connect(mThumbnailManager.data(), SIGNAL(thumbnailReady(QPixmap, void*, int, int)),
         this, SLOT(thumbnailReady(QPixmap, void*, int, int)));
     
-    mWidgetFrameDrawer = new HbFrameDrawer(normalFrameName, 
-                                           HbFrameDrawer::NinePieces);
-    ASSERT(mWidgetFrameDrawer);
-    
-    mShareFrameDrawer = new HbFrameDrawer(normalFrameName, 
-                                          HbFrameDrawer::NinePieces);
-    ASSERT(mShareFrameDrawer);
+
+      
 }
 
 /*!
@@ -135,37 +145,17 @@ ContactWidgetHs::ContactWidgetHs(QGraphicsItem *parent, Qt::WindowFlags flags )
 */
 ContactWidgetHs::~ContactWidgetHs()
 {
-	if (mLauncher) 
-		{
-		delete mLauncher;
-		}
-    if (mContactManager)
-    	{
-    	delete mContactManager;
-    	}
-    if (mAppManager)
-    	{
-    	delete mAppManager;
-    	}
-    if (mAvatar)
-    	{
-    	delete mAvatar;
-    	}
-    
-    // Deleting request cancels all pending requests
-    if (mContactSelectRequest)
-    	{
-    	delete mContactSelectRequest;
-    	}
-    
-    if (mThumbnailManager)
-    	{
-    	delete mThumbnailManager;
-    	}
-    if (mTranslator)
-    	{
-    	delete mTranslator;
-    	}
+
+}
+
+/*!
+    Slot for handle request complete
+    if pending exit was set , do it.
+*/
+void ContactWidgetHs::onRequestComplete()
+{
+ if (mPendingExit)
+	 emit finished();
 }
 
 /*!
@@ -238,13 +228,13 @@ QString ContactWidgetHs::contactImage() const
 bool ContactWidgetHs::setContactImage(QPixmap& inputPixmap)
 {
     bool ret = false;
-        
-    HbFrameDrawer *avatarDrawer = new HbFrameDrawer("qtg_fr_hsshortcut_normal", HbFrameDrawer::NinePieces);
-    ASSERT(avatarDrawer);
 
-    // Try to load the image first, because setFrameGraphicsName() returns void.
-    //,,mContactImageFileName = imageFile;
-    
+    QScopedPointer<HbFrameDrawer> avatarDrawer( new HbFrameDrawer(defaultAvatar, 
+					  HbFrameDrawer::NinePieces));
+    //TODO: do check other way 
+    // This assert must be commented because QScopedPointer not support it this way
+    //ASSERT(avatarDrawer.isNull());
+            
     ret=true;
     qDebug() << "setContactImage av 0, inputsize " << inputPixmap.width() << "x" << inputPixmap.height(); 
     
@@ -256,8 +246,7 @@ bool ContactWidgetHs::setContactImage(QPixmap& inputPixmap)
     avatarPixmap.fill(QColor(0, 0, 0, 0)); //transparent background
     qDebug() << "setContactImage av 1"; //,,
   
-    QPainter painter(&avatarPixmap); 
-    QStyleOptionGraphicsItem *item = new QStyleOptionGraphicsItem;
+    QPainter painter(&avatarPixmap);      
     avatarDrawer->paint(&painter, QRectF(0, 0, contactIconSize, contactIconSize));
     painter.end();
     qDebug() << "setContactImage av 2"; //,,             
@@ -289,16 +278,17 @@ bool ContactWidgetHs::setContactImage(QPixmap& inputPixmap)
     }
 	} 
     
-    HbIcon *avatarIcon = new HbIcon(QIcon(avatarPixmap));
-       
-    mAvatarIconItem->setIcon(*avatarIcon);
+
+    mAvatarIcon.reset(new HbIcon(QIcon(avatarPixmap))); 
+  
+    mAvatarIconItem->setIcon(*mAvatarIcon.data());
     mAvatarIconItem->setSize(QSize(contactIconSize, contactIconSize));
     mAvatarIconItem->setAspectRatioMode(Qt::KeepAspectRatio);
         
     // Then display the new image
     update();
     qDebug() << "setContactImage av 3"; //,,
-    
+       
     return ret;
 }
 
@@ -308,10 +298,12 @@ bool ContactWidgetHs::setContactImage(QPixmap& inputPixmap)
 bool ContactWidgetHs::setContactImage(const QString &imageFile)
 {
     bool ret = false;
-        
-    HbFrameDrawer *avatarDrawer = new HbFrameDrawer("qtg_fr_hsshortcut_normal", HbFrameDrawer::NinePieces);
-    ASSERT(avatarDrawer);
-
+    QScopedPointer<HbFrameDrawer> avatarDrawer( new HbFrameDrawer(defaultAvatar, 
+					  HbFrameDrawer::NinePieces));
+    //TODO: do check other way 
+    //This assert must be commented because QScopedPointer not support it this way
+    //ASSERT(avatarDrawer.isNull());
+ 
     // Try to load the image first, because setFrameGraphicsName() returns void.
     mContactImageFileName = imageFile;
     qDebug() << "setContactImage ok " << imageFile;
@@ -331,24 +323,28 @@ bool ContactWidgetHs::setContactImage(const QString &imageFile)
     avatarPixmap.fill(QColor(0, 0, 0, 0)); //transparent background
         
     QPainter painter(&avatarPixmap);
-    QStyleOptionGraphicsItem *item = new QStyleOptionGraphicsItem;
+    
     avatarDrawer->paint(&painter, QRectF(0, 0, contactIconSize, contactIconSize));
     painter.end();
              
-    HbIcon *avatarIcon = new HbIcon(QIcon(avatarPixmap));
+
+     
+    mAvatarIcon.reset(new HbIcon(QIcon(avatarPixmap))); 
     
     // Add badge if needed
     if (imageFile == addContactAvatar) {
         HbIcon addIcon(addContactAvatar);
-        QSizeF avatarSize = avatarIcon->size();
+        QSizeF avatarSize = mAvatarIcon->size();
         addIcon.setSize(QSize(avatarSize.width()/2, avatarSize.height()/2));
-        avatarIcon->addBadge(Qt::AlignTop | Qt::AlignRight, addIcon, 1);    
+        mAvatarIcon->addBadge(Qt::AlignTop | Qt::AlignRight, addIcon, 1);    
     }
     
-    mAvatarIconItem->setIcon(*avatarIcon);
+    mAvatarIconItem->setIcon(*mAvatarIcon.data());
         
     // Then display the new image
     update();
+    
+ 
 
     return ret;
 }
@@ -376,8 +372,20 @@ void ContactWidgetHs::createUI()
     const int textRow = 2;
     const int rows = 4; // 4 using 2 margins
     
+    setContentsMargins(0, 0, 0, 0);
+
     QGraphicsGridLayout *layout = new QGraphicsGridLayout(this);
 
+    mWidgetFrameDrawer = new HbFrameDrawer(normalFrameName, 
+                                           HbFrameDrawer::NinePieces);
+    ASSERT(mWidgetFrameDrawer);
+    
+    mShareFrameDrawer = new HbFrameDrawer(normalFrameName, 
+                                          HbFrameDrawer::NinePieces);
+    ASSERT(mShareFrameDrawer);
+    
+    
+    
     // Widget frame
     qreal corner = 1.5 * unit; // from shortcut widget layout spec: 1.5un    
     mWidgetFrameDrawer->setBorderWidths(corner, corner); 
@@ -426,14 +434,20 @@ void ContactWidgetHs::createUI()
     layout->setRowFixedHeight(textRow,   fontSpec.textHeight());    
     layout->setRowFixedHeight(textRow+1, widgetMargin);
     
+    layout->setHorizontalSpacing(0.5);
+    layout->setVerticalSpacing(1.5);
+    layout->setContentsMargins(0, 0, 0, 0);
     setLayout(layout);
 
     // Widget size
-    qreal sizeX = widgetMargin * 2 * unit;  //margins from layout spec
-    qreal sizeY = widgetMargin * 3 * unit;  //margins from layout spec
-    sizeY += fontSpec.textHeight();
-    sizeY += contactIconSize;
+    qreal sizeX = widgetMargin * 2; // margins from layout spec
     sizeX += contactIconSize;
+    sizeX += 1;                     // 2*0.5 horizontal spacing
+    qreal sizeY = widgetMargin * 2; // margins from layout spec
+    sizeY += contactIconSize;
+    sizeY += fontSpec.textHeight();
+    sizeY += 5;                     // 3*0.5 vertical spacing, 5 because 4.5 broke snaping
+    
     
     qDebug() << "widget sizex, sizey, unit, rows " << sizeX << sizeY << unit << rows;
     
@@ -444,10 +458,11 @@ void ContactWidgetHs::createUI()
 
 QString ContactWidgetHs::getContactDisplayName(QContact& contact)
 {
-	QString name = mContactManager->synthesizedDisplayLabel(contact);
-    if (name.isEmpty()) {
-        name = hbTrId("txt_friend_widget_contact_unnamed");    
-	}
+    QString name = mContactManager->synthesizedContactDisplayLabel(contact);
+    if (name.isEmpty())
+    {
+        name = hbTrId("txt_friend_widget_contact_unnamed");
+    }
     return name;
 }
 
@@ -457,7 +472,7 @@ QString ContactWidgetHs::getContactDisplayName(QContact& contact)
 */
 void ContactWidgetHs::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	Q_UNUSED(event);
+    Q_UNUSED(event);
 }
 
 /*!
@@ -492,11 +507,12 @@ void ContactWidgetHs::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
                 }
             }
         } else if (!mLauncher->isVisible()) {
+            // Change the frame layout
+            loadLayout(latchedFrameName, latchedTextColor);
+
             // create and show CommunicationsLauncher
             createLauncherWithPosition();
             mLauncher->show();
-            // USE LOADLAYOUT-FUNCTION WHEN THE LATCHED GRAPHICS IS IN THE PLATFORM
-            //loadLayout(latchedFrameName, latchedTextColor);
 
             mLauncherRect = mLauncher->boundingRect();
             qDebug() << "after exec rect() " << mLauncherRect;
@@ -528,9 +544,10 @@ void ContactWidgetHs::getContactData()
         for (int i=0; i<details.count(); i++)
         {
             if (details.at(i).imageUrl().isValid())
-            {
-				delete mAvatar;				
-				mAvatar = new QContactAvatar(details.at(i));
+            {			
+            	    					
+				mAvatar.reset( new QContactAvatar(details.at(i)));
+				//mCleanupHandler.add(mAvatar);
 				avatarFile = mAvatar->imageUrl().toString();  //,,remove this once tn is working
 
 				mThumbnailInProgress = true;
@@ -576,6 +593,7 @@ void ContactWidgetHs::createContactManager()
     }    
     qDebug() << "createContactManager() backend " << sBackend;
     mContactManager = new QContactManager(sBackend);
+    mCleanupHandler.add(mContactManager);
     if (mContactManager->error()) {
         qDebug() << "cm can't connect to backend " << sBackend;
     } else { // connect contact change observation
@@ -690,19 +708,15 @@ bool ContactWidgetHs::launchSingleContactSelecting()
     qDebug() << "- launchSingleContactSelecting() starts";  //,,
     mContactLocalId = unUsedContactId;
     
-    /* TODO! THIS SERVICE WILL BE RENAMED TO com.nokia.services.phonebook.Services */                                      
-    mContactSelectRequest = mAppManager->create(
-        "com.nokia.services.phonebookservices",
-        "Fetch", 
-        "Dofetch(QString,QString,QString,QString)", 
-        false);   
+    mContactSelectRequest = mAppManager->create(XQI_CONTACTS_FETCH,
+                                                XQOP_CONTACTS_FETCH_SINGLE,
+                                                false);
+    mCleanupHandler.add(mContactSelectRequest);
     connect(mContactSelectRequest, SIGNAL(requestOk(QVariant)),
             this, SLOT(onContactSelectCompleted(QVariant)));  
     QList<QVariant> args;
     args << hbTrId("txt_friend_widget_title_select_contact");
     args << KCntActionAll;
-    args << KCntFilterDisplayAll;
-    args << KCntSingleSelectionMode;
     mContactSelectRequest->setArguments(args);
     
     qDebug() << "---- setArgs done ---------------------"; //,,28.5.          
@@ -800,15 +814,18 @@ void ContactWidgetHs::onContactsRemoved( const QList<QContactLocalId> &contactId
 
             mAvatarIconItem->deleteLater();
             mContactNameLabel->deleteLater();
-            mAppManager->deleteLater();
-            mLauncher->deleteLater();
-            mContactLocalId = unUsedContactId;
-            delete mAvatar;
-            mContactHasAvatarDetail = false;
-            mContactManager->deleteLater();
-            mThumbnailManager->deleteLater();
             
-            emit finished();
+            mContactLocalId = unUsedContactId;
+            
+            mContactHasAvatarDetail = false;
+            
+            
+            if (!mLauncher->isPendingRequest()){
+            	emit finished();
+            }
+            else {
+            	mPendingExit = true;
+            }
             break;
         }
     }
@@ -862,10 +879,10 @@ void ContactWidgetHs::loadNormalLayout()
 void ContactWidgetHs::loadLayout(const QString frameName, const QString textColor)
 {
     mWidgetFrameDrawer->setFrameGraphicsName(frameName);
-    mWidgetFrameDrawer->themeChanged();
+//    mWidgetFrameDrawer->themeChanged();
     
     mShareFrameDrawer->setFrameGraphicsName(frameName);
-    mShareFrameDrawer->themeChanged();
+//    mShareFrameDrawer->themeChanged();
     
     QColor color = HbColorScheme::color(textColor);
     mContactNameLabel->setTextColor(color);

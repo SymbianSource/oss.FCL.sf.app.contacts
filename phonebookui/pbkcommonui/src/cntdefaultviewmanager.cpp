@@ -40,8 +40,6 @@ CntDefaultViewManager::CntDefaultViewManager( HbMainWindow* aWindow ) : QObject(
     CNT_ENTRY
     
     mEngine = new CntDefaultEngine( *this );
-    setViewFactory( new CntDefaultViewFactory( mEngine->extensionManager()) );
-    setViewNavigator( new CntViewNavigator(this) );
 
     int error = -1;
     mSimUtility = new CntSimUtility(CntSimUtility::AdnStore, error);

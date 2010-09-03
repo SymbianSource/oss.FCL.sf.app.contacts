@@ -16,6 +16,7 @@
  */
 
 #include "cnthistoryviewitem.h"
+#include "cntdebug.h"
 
 #include <cnthistorymodel.h>
 #include <hbframedrawer.h>
@@ -37,6 +38,9 @@ CntHistoryViewItem::CntHistoryViewItem(QGraphicsItem* parent)
   mNewItem(NULL),
   mFocusItem(NULL)
 {
+    CNT_ENTRY
+    
+    CNT_EXIT
 }
 
 //---------------------------------------------------------------
@@ -54,9 +58,13 @@ HbAbstractViewItem* CntHistoryViewItem::createItem()
 //---------------------------------------------------------------
 void CntHistoryViewItem::updateChildItems()
 {
+    CNT_ENTRY
+    
     int flags = modelIndex().data(CntFlagsRole).toInt();
     mIncoming = flags & CntIncoming ? true : false;
     mNewMessage = flags & CntUnseen ? true : false;
+    
+    CNT_LOG_ARGS(mIncoming << mNewMessage)
 
     if (mNewMessage)
     {
@@ -76,6 +84,10 @@ void CntHistoryViewItem::updateChildItems()
     }
     
     HbListViewItem::updateChildItems();
+    
+    repolish();
+    
+    CNT_EXIT
 }
 
 //---------------------------------------------------------------
@@ -84,6 +96,8 @@ void CntHistoryViewItem::updateChildItems()
 //---------------------------------------------------------------
 void CntHistoryViewItem::pressStateChanged(bool pressed, bool animate)
 {
+    CNT_ENTRY
+    
     Q_UNUSED(animate);
     if (pressed)
     {
@@ -117,27 +131,8 @@ void CntHistoryViewItem::pressStateChanged(bool pressed, bool animate)
             mFocusItem = NULL;
         }
     }
-}
-
-bool CntHistoryViewItem::event(QEvent* e)
-{
-    bool result;
-    if (e->type() == QEvent::GraphicsSceneResize)
-    {
-        // HbAbstractItemView has a performance improvement when drawing backrounds but seems
-        // to screw the layout of history view items. This workaround fixes the issue. There should
-        // be minimal performance drawbacks since GraphicsSceneResize events are quite few.
-        // TODO: Remove this once Orbit changes their implementation. Not known when
-        QGraphicsWidget *frame = static_cast<QGraphicsWidget*>(primitive("frame"));
-        QRectF frameGeometry = frame->geometry();
-        result = HbListViewItem::event(e);
-        frame->setGeometry(frameGeometry);
-    } 
-    else
-    {
-        result = HbListViewItem::event(e);
-    }
-    return result;
+    
+    CNT_EXIT
 }
 
 // EOF

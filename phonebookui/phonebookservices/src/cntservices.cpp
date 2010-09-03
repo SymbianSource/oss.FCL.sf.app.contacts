@@ -83,15 +83,6 @@ void CntServices::setEngine( CntAbstractEngine& aEngine )
     CntServiceViewManager* srvMng = static_cast<CntServiceViewManager*>(mViewManager);
     connect(srvMng, SIGNAL(applicationClosed()), this, SLOT(terminateService()));
 }
-/*
-void CntServices::setViewManager( CntAbstractViewManager& aViewManager )
-{
-    CNT_LOG
-    mViewManager = &aViewManager;
-    CntServiceViewManager* srvMng = static_cast<CntServiceViewManager*>(mViewManager);
-    connect(srvMng, SIGNAL(applicationClosed()), this, SLOT(terminateService()));
-}
-*/
 
 void CntServices::singleFetch(
     const QString &title, const QString &action,
@@ -226,6 +217,9 @@ void CntServices::editCreateNewFromVCard(const QString &fileName,
             contact = contacts.first();
         }
     vCardFile.close();
+    
+    // check if the contact is in db already.
+    updateLocalId( contact );
     
     // Save thumbnail images
     QList<QContactThumbnail> details = contact.details<QContactThumbnail>();
@@ -550,6 +544,33 @@ void CntServices::fillOnlineAccount( QContactOnlineAccount& account, const QStri
         }
     }
 
+void CntServices::updateLocalId( QContact& aContact )
+{
+    CNT_ENTRY
+    if ( aContact.localId() == 0 )
+        {
+        QContactGuid guid = aContact.detail<QContactGuid>();
+        QString guidString = guid.guid();
+            
+        QContactDetailFilter filter;
+        filter.setDetailDefinitionName( QContactGuid::DefinitionName, QContactGuid::FieldGuid );
+        filter.setValue( guid.guid() );
+            
+        QContactManager& cm = mEngine->contactManager( SYMBIAN_BACKEND );
+        QList<QContactLocalId> idList = cm.contactIds( filter, QList<QContactSortOrder>() );
+        int count = idList.count();
+        
+        if ( !idList.isEmpty() )
+            {
+            QContactId id;
+            id.setLocalId( idList.first() );
+            id.setManagerUri( cm.managerUri() );
+            
+            aContact.setId( id );
+            }
+        }
+    CNT_EXIT
+}
 // This method is inherited from CntAbstractServiceProvider
 void CntServices::CompleteServiceAndCloseApp(const QVariant& retValue)
 {

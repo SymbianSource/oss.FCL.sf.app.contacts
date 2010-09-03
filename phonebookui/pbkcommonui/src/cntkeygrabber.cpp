@@ -17,14 +17,14 @@
 
 #include "cntkeygrabber.h"
 
-#include <logsservices.h>
 #include <hbmainwindow.h>
 #include <xqaiwrequest.h>
 #include <xqaiwdecl.h>
 #include <xqappmgr.h>
 #include <QCoreApplication>
 #include <QKeyEvent>
-
+#include <xqserviceutil.h>
+#include <xqkeycapture.h>
 /*!
     Key press event handler for default actions when pressing either send or end key.
     End key closes the application and send key opens dialer. Default functionality
@@ -36,9 +36,11 @@
 CntKeyGrabber::CntKeyGrabber(HbMainWindow *window, QObject *parent) :
     QObject(parent),
     mMainWindow(window),
-    mRequest(NULL)
+    mRequest(NULL),
+    mKeyCapture(NULL)
 {
     mMainWindow->installEventFilter(this);
+    mKeyCapture = new XqKeyCapture();
 }
 
 /*!
@@ -47,6 +49,12 @@ CntKeyGrabber::CntKeyGrabber(HbMainWindow *window, QObject *parent) :
 CntKeyGrabber::~CntKeyGrabber()
 {
     delete mRequest;
+    if ( mKeyCapture )
+    {
+        mKeyCapture->cancelCaptureKey(Qt::Key_Yes);
+    }
+    delete mKeyCapture;
+    mKeyCapture = NULL;
 }
 
 /*!
@@ -59,7 +67,15 @@ CntKeyGrabber::~CntKeyGrabber()
 */
 bool CntKeyGrabber::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type() == QEvent::KeyPress && obj == mMainWindow)
+    if ( event->type() == QEvent::ApplicationActivate )
+    {
+        mKeyCapture->captureKey( Qt::Key_Yes );
+    }
+    else if ( event->type() == QEvent::ApplicationDeactivate )
+    {
+        mKeyCapture->cancelCaptureKey( Qt::Key_Yes );
+    }
+    else if (event->type() == QEvent::KeyPress && obj == mMainWindow)
     {
         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
         
@@ -85,7 +101,7 @@ bool CntKeyGrabber::eventFilter(QObject *obj, QEvent *event)
             {
                 QList<QVariant> args;
                 QVariantMap map;
-                map.insert(XQLOGS_VIEW_INDEX, QVariant(int(LogsServices::ViewAll)));
+                map.insert(XQLOGS_VIEW_INDEX, QVariant(int(XQService::LogsViewAll)));
                 map.insert(XQLOGS_SHOW_DIALPAD, QVariant(true));
                 map.insert(XQLOGS_DIALPAD_TEXT, QVariant(QString()));
                 args.append(QVariant(map));

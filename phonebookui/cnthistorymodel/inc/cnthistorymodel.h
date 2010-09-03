@@ -56,7 +56,6 @@ public:
 public: // from QAbstractTableModel/QAbstractItemModel
     QVariant data(const QModelIndex& index, int role) const;
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
-    void sort(int column = 0, Qt::SortOrder order = Qt::AscendingOrder);
 
 public:
     void clearHistory();
@@ -68,6 +67,8 @@ private:
     void doEndInsertRows();
     void doBeginRemoveRows(const QModelIndex &parent, int first, int last);
     void doEndRemoveRows();
+    void doBeginResetModel();
+    void doEndResetModel();
     void doDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
     
 private:

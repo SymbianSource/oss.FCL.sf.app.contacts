@@ -324,7 +324,7 @@ void CntPhoneNumberViewItem::constructSubtypeModel( QString aSubType, QStringLis
     model->appendRow(internetwork);
           
     QStandardItem *sip = new QStandardItem;
-    sip->setText(hbTrId("txt_phob_formlabel_val_sip"));
+    sip->setText(hbTrId("txt_phob_formlabel_sip"));
     sip->setData(subTypeSIP, DetailSubType);
     sip->setData(CNT_ONLINEACCOUNT_EDITOR_MAXLENGTH, DetailMaxLength);
     model->appendRow(sip);

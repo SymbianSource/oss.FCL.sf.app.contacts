@@ -44,7 +44,6 @@ class CntContactCardHeadingItem : public HbWidget
     
     Q_PROPERTY( QString first_line_text READ getFirstLineText )
     Q_PROPERTY( QString primary_text READ getPrimaryText )
-    Q_PROPERTY( QString second_line_text READ getSecondLineText )
     Q_PROPERTY( QString secondary_text READ getSecondaryText )
     Q_PROPERTY( QString marquee_item READ getTinyMarqueeText )
     Q_PROPERTY( HbIcon icon READ getIcon )
@@ -90,7 +89,6 @@ private:
 
     QString getFirstLineText() const { return firstLineText; }
     QString getPrimaryText() const { return primaryText; }
-    QString getSecondLineText() const { return secondLineText; }
     QString getSecondaryText() const { return secondaryText; }
     QString getTinyMarqueeText() const { return tinyMarqueeText; }
 
@@ -103,7 +101,6 @@ private:
     HbIconItem              *mSecondaryIcon;
     HbTextItem              *mFirstLineText;
     HbTextItem              *mPrimaryText;
-    HbTextItem              *mSecondLineText;
     HbTextItem              *mSecondaryText;
     HbMarqueeItem           *mMarqueeItem;
     HbFrameItem             *mFrameItem;
@@ -111,7 +108,6 @@ private:
     
     QString                 firstLineText;
     QString                 primaryText;
-    QString                 secondLineText;
     QString                 secondaryText;
     QString                 tinyMarqueeText;
     HbIcon                  icon;

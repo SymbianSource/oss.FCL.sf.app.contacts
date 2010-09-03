@@ -16,7 +16,7 @@
 */
 
 // INCLUDE FILES
-#include "presencetrace.h"
+#include "prestrace.h"
 
 #include <e32svr.h>
 #include <e32std.h>

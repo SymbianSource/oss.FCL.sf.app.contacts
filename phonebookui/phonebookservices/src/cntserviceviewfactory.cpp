@@ -33,10 +33,12 @@ CntServiceViewFactory::CntServiceViewFactory( CntAbstractServiceProvider& aServi
 CntDefaultViewFactory( aMgr ),
 mProvider( aServiceProvider )
 {
+    
 }
 
 CntServiceViewFactory::~CntServiceViewFactory()
 {
+    
 }
     
 CntAbstractView* CntServiceViewFactory::createView( int aViewId )

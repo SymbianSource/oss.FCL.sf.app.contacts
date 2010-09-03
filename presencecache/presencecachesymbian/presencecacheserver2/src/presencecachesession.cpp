@@ -23,7 +23,7 @@
 #include "presenceobjecthelpers.h"
 #include "presencecachesession.h"
 #include "presencecacheserver.h"
-#include "presencetrace.h"
+#include "prestrace.h"
 #include "cacheobjecthelpers.h"
 #include "presencecacheservicestore.h"
 #include "presencecachebuddystore.h"

@@ -135,6 +135,7 @@ private slots:
 	void setMaptileLabel( HbLabel*& mapLabel, const HbIcon& icon );
 	void updateMaptileImage();
 	HbLabel* loadMaptileLabel( int addressType );
+    void populateListItems();
 	
 	// Presence related function
 	void updateItemPresence(const QString& accountUri, bool online);
@@ -162,13 +163,13 @@ private:
     void executeDynamicAction(QContact& aContact, QContactDetail aDetail, QContactActionDescriptor aActionDescriptor);
     bool sendKeyPressed();
     void populateHeadingItem();
-    void populateListItems();
     
 public:
     CntAbstractViewManager*     mViewManager;   // not own
     HbView*                     mView;
     HbScrollArea                *mScrollArea;
     QGraphicsLinearLayout       *mContainerLayout;
+    QGraphicsWidget*            mContainerWidget;
     QContact                    *mContact;
     CntContactCardDataContainer *mDataContainer;
     CntContactCardHeadingItem   *mHeadingItem;
@@ -197,6 +198,8 @@ public:
     CntAbstractEngine* mEngine;
     QTimer* mProgressTimer; // own
     QList<CntContactCardDetailItem*>    mDetailPtrs;
+    int                         mListPopulationProgress;
+    bool                        mStopListPopulation;
 };
 
 #endif // CNTCOMMLAUNCHERVIEW_H

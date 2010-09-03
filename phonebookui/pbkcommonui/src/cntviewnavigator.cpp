@@ -22,10 +22,12 @@ CntViewNavigator::CntViewNavigator( QObject* aParent ) :
     QObject( aParent ),
     iTop( noView )
 {
+    
 }
 
 CntViewNavigator::~CntViewNavigator()
-{   
+{
+    
 }
 
 void CntViewNavigator::next( const int& aId, QFlags<Hb::ViewSwitchFlag> &flags )

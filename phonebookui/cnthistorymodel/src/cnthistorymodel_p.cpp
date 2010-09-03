@@ -89,12 +89,18 @@ CntHistoryModelPrivate::CntHistoryModelPrivate(QContactLocalId contactId, QConta
       m_initLogs(false),
       m_extendedLocale(HbExtendedLocale::system())
 {
+    CNT_ENTRY
+    
     // Create the model structure and cache history data from the databases
     initializeModel();
+    
+    CNT_EXIT
 }
 
 CntHistoryModelPrivate::~CntHistoryModelPrivate()
 {
+    CNT_ENTRY
+    
     if (m_logsModel) {
         delete m_logsModel;
         m_logsModel = NULL;
@@ -107,6 +113,8 @@ CntHistoryModelPrivate::~CntHistoryModelPrivate()
         delete m_msgHistory;
         m_msgHistory = NULL;
     }
+    
+    CNT_EXIT
 }
 
 /*!
@@ -119,6 +127,7 @@ CntHistoryModelPrivate::~CntHistoryModelPrivate()
  */
 QVariant CntHistoryModelPrivate::data(const QModelIndex& index, int role) const
 {
+    CNT_ENTRY_ARGS(index << role)
     // Invalid index
     int row = index.row();
     
@@ -128,7 +137,7 @@ QVariant CntHistoryModelPrivate::data(const QModelIndex& index, int role) const
     HItemPointer p = m_List.at(row);
     if ( p.isNull() )
         return QVariant();
-    
+        
     switch( role )
     {       
         case Qt::DisplayRole:
@@ -160,6 +169,8 @@ QVariant CntHistoryModelPrivate::data(const QModelIndex& index, int role) const
  */
 QVariant CntHistoryModelPrivate::displayRoleData(const HistoryItem& item) const
 {
+    CNT_ENTRY
+    
     QStringList list;
     HbExtendedLocale locale = m_extendedLocale;
     
@@ -172,6 +183,8 @@ QVariant CntHistoryModelPrivate::displayRoleData(const HistoryItem& item) const
         list << item.title << item.message << locale.format(item.timeStamp.date(), r_qtn_date_usual);
     }
     
+    CNT_EXIT_ARGS(list)
+    
     return QVariant(list);
 }
 
@@ -183,6 +196,8 @@ QVariant CntHistoryModelPrivate::displayRoleData(const HistoryItem& item) const
  */
 QVariant CntHistoryModelPrivate::decorationRoleData(const HistoryItem& item) const
 {
+    CNT_ENTRY
+    
     // Messages
     if (item.flags & CntMessage)
         return QVariant(HbIcon(MESSAGE_ICON));
@@ -227,7 +242,7 @@ QVariant CntHistoryModelPrivate::conversationIdRoleData(const int row) const
     int id(-1);
     if ( p.data()->flags & CntMessage )
         id = m_msgMap.key(p, -1);
-    
+
     if (id != -1)
         return QVariant(id);
     else
@@ -253,10 +268,14 @@ int CntHistoryModelPrivate::rowCount(const QModelIndex& /*parent*/) const
  */
 void CntHistoryModelPrivate::sort(int /*column*/, Qt::SortOrder order)
 {
+    CNT_ENTRY_ARGS(order)
+    
     if ( order == Qt::AscendingOrder )
         qStableSort(m_List.begin(), m_List.end(), lessThan);
     else
         qStableSort(m_List.begin(), m_List.end(), greaterThan);
+    
+    CNT_EXIT
 }
 
 /*!
@@ -266,10 +285,17 @@ void CntHistoryModelPrivate::sort(int /*column*/, Qt::SortOrder order)
  */
 void CntHistoryModelPrivate::clearHistory()
 {
+    CNT_ENTRY
+    
     Q_Q(CntHistoryModel);
     
     if ( m_List.isEmpty() )
         return;
+    
+    // Clear all data from the history model.
+    int count = rowCount();
+    
+    q->doBeginRemoveRows( QModelIndex(), 0, count );
     
     // Call logs
     if ( !m_isMyCard && m_logsFilter )
@@ -281,15 +307,14 @@ void CntHistoryModelPrivate::clearHistory()
     if (m_msgHistory)
         m_msgHistory->clearMessages( (int)m_contactId );
     
-    // Clear all data from the history model.
-    int count = rowCount();
-    
     m_List.clear();
     m_msgMap.clear();
     m_logsMap.clear();
     
-    q->doBeginRemoveRows( QModelIndex(), 0, count );
+    
     q->doEndRemoveRows();
+    
+    CNT_EXIT
 }
 
 /*!
@@ -298,12 +323,16 @@ void CntHistoryModelPrivate::clearHistory()
  */
 void CntHistoryModelPrivate::markAllAsSeen()
 {
+    CNT_ENTRY
+    
     if ( m_isMarkedAsSeen )
         return;
     
     // Messages
     if (m_msgHistory->markRead( m_contactId ))
         m_isMarkedAsSeen = true;
+    
+    CNT_EXIT
 }
 
 /*!
@@ -313,12 +342,18 @@ void CntHistoryModelPrivate::markAllAsSeen()
  */
 void CntHistoryModelPrivate::initializeModel()
 {
+    CNT_ENTRY
+    
     initializeLogsModel();
     initializeMsgModel();
+    
+    CNT_EXIT
 }
 
 void CntHistoryModelPrivate::initializeMsgModel()
 {
+    CNT_ENTRY
+    
     if( m_isMyCard )
         return;
     
@@ -339,10 +374,14 @@ void CntHistoryModelPrivate::initializeMsgModel()
     
     // Initial fetch of all messages
     m->getMessages(m_contactId);
+    
+    CNT_EXIT
 }
 
 void CntHistoryModelPrivate::initializeLogsModel()
 {
+    CNT_ENTRY
+    
     //populate model with call events
     m_logsModel = new LogsModel(LogsModel::LogsFullModel);
     if (!m_isMyCard) {
@@ -377,6 +416,7 @@ void CntHistoryModelPrivate::initializeLogsModel()
                 this, SLOT(logsDataChanged(const QModelIndex &, const QModelIndex &)));
     connect(m_AbstractLogsModel, SIGNAL(modelReset()), this, SLOT(handleLogsReset()));
 
+    CNT_EXIT
 }
 
 /*!
@@ -386,7 +426,7 @@ void CntHistoryModelPrivate::initializeLogsModel()
  * \param item Conversation history item
  */
 void CntHistoryModelPrivate::readLogEvent(LogsEvent* event, HistoryItem& item)
-{    
+{
     QString bodyText;
     QString title;
     
@@ -435,9 +475,18 @@ void CntHistoryModelPrivate::readLogEvent(LogsEvent* event, HistoryItem& item)
  */
 void CntHistoryModelPrivate::logsRowsInserted(const QModelIndex& /*parent*/, int first, int last)
 {
+    CNT_ENTRY_ARGS(first << last)
+    
     Q_Q(CntHistoryModel);
     
-    int oldRowCount = rowCount();
+    // Check if this is the first time to receive events
+    if ( !m_initLogs ) {
+        q->doBeginResetModel();
+    }
+    else {
+        q->doBeginInsertRows( QModelIndex(), rowCount(), rowCount() + (last - first) );
+    }
+    
     QList<HItemPointer> l;
     
     for ( int i = first; i < m_AbstractLogsModel->rowCount() && i <= last; ++i ) {
@@ -456,12 +505,14 @@ void CntHistoryModelPrivate::logsRowsInserted(const QModelIndex& /*parent*/, int
     // and sort the entire list.
     if ( !m_initLogs ) {
         sort();
-        oldRowCount = 0;
         m_initLogs = true;
+        q->doEndResetModel();
+    }
+    else {
+        q->doEndInsertRows();
     }
     
-    q->doBeginInsertRows(QModelIndex(), oldRowCount, rowCount());
-    q->doEndInsertRows();
+    CNT_EXIT
 }
 
 /*!
@@ -473,6 +524,8 @@ void CntHistoryModelPrivate::logsRowsInserted(const QModelIndex& /*parent*/, int
  */
 void CntHistoryModelPrivate::logsRowsRemoved(const QModelIndex& /*parent*/, int first, int last)
 {
+    CNT_ENTRY_ARGS(first << last)
+    
     Q_Q(CntHistoryModel);
     
     QList< int > indices;
@@ -498,6 +551,8 @@ void CntHistoryModelPrivate::logsRowsRemoved(const QModelIndex& /*parent*/, int 
             q->doEndRemoveRows();
         }
     }
+    
+    CNT_EXIT
 }
 
 /*!
@@ -509,6 +564,8 @@ void CntHistoryModelPrivate::logsRowsRemoved(const QModelIndex& /*parent*/, int 
  */
 void CntHistoryModelPrivate::logsDataChanged(const QModelIndex& first, const QModelIndex& last)
 {
+    CNT_ENTRY_ARGS(first << last)
+    
     Q_Q(CntHistoryModel);
     
     int f = first.row();
@@ -537,15 +594,21 @@ void CntHistoryModelPrivate::logsDataChanged(const QModelIndex& first, const QMo
         foreach( QList<int> l, batches )
             q->doDataChanged( q->index(l.first(), 0), q->index(l.last(), 0) );
     }
+    
+    CNT_EXIT
 }
 
 /*
- * Clear all call logs after receiving a reset model
- * signal from logs model
+ * Clear all call logs and refetches new call events after 
+ * receiving a reset model signal from logs model
  */
 void CntHistoryModelPrivate::handleLogsReset()
 {
+    CNT_ENTRY
+    
     Q_Q(CntHistoryModel);
+    
+    q->doBeginResetModel();
     
     // Remove all call logs
     QList<HItemPointer> values = m_logsMap.values();
@@ -569,8 +632,10 @@ void CntHistoryModelPrivate::handleLogsReset()
     }
     
     sort();
-    q->doBeginInsertRows(QModelIndex(), 0, rowCount());
-    q->doEndInsertRows();
+
+    q->doEndResetModel();
+    
+    CNT_EXIT
 }
 
 /*!
@@ -592,6 +657,8 @@ bool CntHistoryModelPrivate::validateRowIndex( const int index) const
  */
 QList< QList<int> > CntHistoryModelPrivate::findIndices( const QList< int >& indices )
 {
+    CNT_ENTRY_ARGS(indices)
+    
     QList< QList<int> > sequences;
     QList<int> currSequence;
     int prevIndex = indices.at(0) - 1;
@@ -616,6 +683,8 @@ QList< QList<int> > CntHistoryModelPrivate::findIndices( const QList< int >& ind
         sequences.append( currSequence );
     }
     
+    CNT_EXIT_ARGS(sequences)
+    
     return sequences;
 }
 
@@ -627,6 +696,8 @@ QList< QList<int> > CntHistoryModelPrivate::findIndices( const QList< int >& ind
  */
 void CntHistoryModelPrivate::readMsgEvent(MsgItem& event, HistoryItem& item)
 {
+    CNT_ENTRY
+    
     // Msg direction
     if ( event.direction() == MsgItem::MsgDirectionIncoming ) {
         item.flags |= CntIncoming;
@@ -657,6 +728,8 @@ void CntHistoryModelPrivate::readMsgEvent(MsgItem& event, HistoryItem& item)
     item.timeStamp = event.timeStamp().toLocalTime();
     
     LOG_ITEM(item);
+    
+    CNT_EXIT
 }
 
 /*!
@@ -668,7 +741,11 @@ void CntHistoryModelPrivate::readMsgEvent(MsgItem& event, HistoryItem& item)
  */
 void CntHistoryModelPrivate::messagesReady(QList<MsgItem>& msgs)
 {
+    CNT_ENTRY
+    
     Q_Q(CntHistoryModel);
+    
+    q->doBeginResetModel();
     
     foreach( MsgItem m, msgs ) {
         // Create a new hst item
@@ -686,8 +763,9 @@ void CntHistoryModelPrivate::messagesReady(QList<MsgItem>& msgs)
     
     sort();
     
-    q->doBeginInsertRows(QModelIndex(), 0, rowCount());
-    q->doEndInsertRows();
+    q->doEndResetModel();
+    
+    CNT_EXIT
 }
 
 /*!
@@ -698,9 +776,11 @@ void CntHistoryModelPrivate::messagesReady(QList<MsgItem>& msgs)
  */
 void CntHistoryModelPrivate::messageAdded(MsgItem& msg)
 {
+    CNT_ENTRY
+    
     Q_Q(CntHistoryModel);
     
-    int oldRowCount = rowCount();
+    q->doBeginInsertRows( QModelIndex(), rowCount(), rowCount() );
     
     // Create a new hst item
     HItemPointer item(new HistoryItem());
@@ -714,8 +794,9 @@ void CntHistoryModelPrivate::messageAdded(MsgItem& msg)
     // Append the hst item to our list
     m_List.append( item );
     
-    q->doBeginInsertRows( QModelIndex(), oldRowCount, rowCount() );
     q->doEndInsertRows();
+    
+    CNT_EXIT
 }
 
 /*!
@@ -726,6 +807,8 @@ void CntHistoryModelPrivate::messageAdded(MsgItem& msg)
  */
 void CntHistoryModelPrivate::messageChanged(MsgItem& msg)
 {
+    CNT_ENTRY
+    
     Q_Q(CntHistoryModel);
     
     // Fetch the hst item that maps to this MsgItem
@@ -742,6 +825,8 @@ void CntHistoryModelPrivate::messageChanged(MsgItem& msg)
     int pIndex = m_List.indexOf( p );
     
     q->doDataChanged(q->index(pIndex, 0), q->index(pIndex, 0));
+    
+    CNT_EXIT
 }
 
 /*!
@@ -752,6 +837,8 @@ void CntHistoryModelPrivate::messageChanged(MsgItem& msg)
  */
 void CntHistoryModelPrivate::messageDeleted(MsgItem& msg)
 {
+    CNT_ENTRY
+    
     Q_Q(CntHistoryModel);
     
     // Fetch the hst item that maps to this MsgItem
@@ -765,8 +852,10 @@ void CntHistoryModelPrivate::messageDeleted(MsgItem& msg)
     m_msgMap.remove( msg.id() );
     int index = m_List.indexOf( p );
     if ( index > -1 ) {
-        m_List.removeAt( index );
         q->doBeginRemoveRows(QModelIndex(), index, index);
+        m_List.removeAt( index );
         q->doEndRemoveRows();
     }
+    
+    CNT_EXIT
 }

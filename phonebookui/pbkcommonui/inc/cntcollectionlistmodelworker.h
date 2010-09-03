@@ -22,7 +22,7 @@
 #include <QMutex>
 #include <QPair>
 
-#include <qmobilityglobal.h>
+#include <qtcontacts.h>
 
 QTM_BEGIN_NAMESPACE
 class QContactManager;
@@ -49,7 +49,7 @@ private:
     void fetchInformation(int id);
     
 signals:
-    void fetchDone(int id, const QString& secondRowText, int memberCount);
+    void fetchDone(int id, const QString& secondRowText, const QList<int>& members);
     
 private:
     bool                        mStarted;

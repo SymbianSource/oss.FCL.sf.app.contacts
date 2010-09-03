@@ -52,7 +52,8 @@ void TestCntDefaultInfoProvider::testRequestInfo()
     fields = ContactInfoIcon1Field | ContactInfoTextField;
     
     mCntDefaultInfoProvider->requestInfo(c, fields);
-    QCOMPARE(spy.count(), 0);
+    QCOMPARE(spy.count(), 2);
+    spy.clear();
     
     QContactPhoneNumber number;
     number.setNumber("1234567");
@@ -61,20 +62,26 @@ void TestCntDefaultInfoProvider::testRequestInfo()
     c.saveDetail(&number);
     
     mCntDefaultInfoProvider->requestInfo(c, fields);
-    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.count(), 2);
     spy.clear();
     
     c.setPreferredDetail("call", number);
+
+    QContactPhoneNumber number2;
+    number2.setNumber("7654321");
+    number2.setContexts(QContactDetail::ContextWork);
+    number2.setSubTypes(QContactPhoneNumber::SubTypeMobile);
+    c.saveDetail(&number2);
     
     mCntDefaultInfoProvider->requestInfo(c, fields);
-    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.count(), 2);
     spy.clear();
     
     QContactAvatar avatar;
     c.saveDetail(&avatar);
     
     mCntDefaultInfoProvider->requestInfo(c, fields);
-    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.count(), 2);
     spy.clear();
     
     avatar.setImageUrl(QUrl("dummyavatar"));

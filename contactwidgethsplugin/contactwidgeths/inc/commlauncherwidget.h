@@ -21,6 +21,8 @@
 #include <HbPopup>
 #include <qtcontacts.h>
 #include <xqaiwrequest.h>
+#include <QObjectCleanupHandler>
+#include <QScopedPointer>
 
 #include "contactwidgetplugin_global.h"
 
@@ -52,8 +54,11 @@ public:
                                  QRectF& sceneRect, QRectF& launcherRect);
     void selectAppearEffect(QPointF FriendPos, QPointF LauncherPos);
     
+    bool isPendingRequest();
+    
 signals:
     void launcherClosed();
+    void requestCompleted();
         
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -68,9 +73,10 @@ private slots:
 
     void makeCall();
     void sendMessage(); 
-    // EMAIL FUNCTIONALITY COMMENTED OUT BECAUSE PLATFORM DOES NOT SUPPORT IT!
-    //void sendEmail();
+    void sendEmail();
     void openPhonebook();
+    
+    void handleRequestOk(const QVariant& value);
     
     int commLauncherWidth();
 
@@ -80,8 +86,11 @@ private:
     QGraphicsLinearLayout *mLayout;
     
     int mButtonCount;
+    
+    
 
     XQAiwRequest *mRequest;
+    QContactAction* mCommLauncherAction;
     
     HbPushButton *mCallButton;
     HbPushButton *mSendMsgButton;
@@ -90,6 +99,10 @@ private:
     
     XQApplicationManager *mApplicationManager;
     QString mAppearEffect;
+    
+    QObjectCleanupHandler mCleanupHandler;
+    
+    bool mPendingRequest;
     
     CONTACTWIDGET_TEST_FRIEND_CLASS(TestContactWidget)
 

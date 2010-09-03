@@ -18,7 +18,7 @@
 #include "cntgroupdeletepopup.h"
 #include <cntabstractengine.h>
 #include "cntglobal.h"
-#include <hbgroupbox.h>
+#include <hblabel.h>
 #include <hbaction.h>
 #include <hblistview.h>
 #include <hblistviewitem.h>
@@ -41,8 +41,8 @@ CntGroupDeletePopup::~CntGroupDeletePopup()
 
 void CntGroupDeletePopup::populateListOfGroup()
 {
-    HbGroupBox *headingLabel = new HbGroupBox(this);   
-    headingLabel->setHeading(hbTrId("txt_phob_opt_delete_groups"));
+    HbLabel *headingLabel = new HbLabel(this);   
+    headingLabel->setPlainText(hbTrId("txt_phob_opt_delete_groups"));
     
     setHeadingWidget(headingLabel);
 

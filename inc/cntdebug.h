@@ -23,7 +23,7 @@
 #include <QtGlobal> // qDebug()
 
 // #define TRACK_MEMORY_LEAKS
-#define TRACES
+// #define TRACES
 // #define TRACE2FILE
 
 /*!

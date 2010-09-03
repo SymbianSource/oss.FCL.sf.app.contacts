@@ -24,7 +24,9 @@
 
 int main(int argc, char **argv)
 {
+#if defined (TRACES) || defined (TRACE2FILE)
     qInstallMsgHandler(MSG_HANDLER);
+#endif
 
     CntApplication a( argc, argv );
 

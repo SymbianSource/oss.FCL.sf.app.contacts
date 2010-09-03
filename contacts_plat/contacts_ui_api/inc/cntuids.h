@@ -49,7 +49,8 @@ enum CntNameOrder {
 // name list row enumerations
 enum CntNameListRowSetting {
     CntOneRowNameOnly = 0x0,
-    CntTwoRowsNameAndPhoneNumber = 0x1
+    CntTwoRowsNameAndPhoneNumber = 0x1,
+    CntTwoRowsStatusUpdate = 0x2
 };
 
 

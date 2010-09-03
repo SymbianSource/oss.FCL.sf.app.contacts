@@ -23,7 +23,7 @@
 #include <qtcontacts.h>
 #include <hbdocumentloader.h>
 #include <xqappmgr.h>
-
+#include <xqaiwdecl.h>
 #include "commlauncherwidget.h"
 
 // ContactManager backend
@@ -39,12 +39,19 @@ const QString emailButtonName    = "ButtonEmail";
 const QString messageButtonName  = "ButtonMessage";
 const QString mycardButtonName   = "ButtonMycard";
 
-const QString appearTL = "appear_tl";
-const QString appearTR = "appear_tr";
-const QString appearBL = "appear_bl";
-const QString appearBR = "appear_br"; 
+const QString appearEffectName = "appear";
 
 const int commLauncherMargin = 120;  // heights of titlebar & comm.launcher 
+
+// TODO: THESE STRINGS ARE IN W32 SDK. THESE DEFINITIONS CAN BE REMOVED
+// WHEN EVERYBODY ARE USING IT OR LATER VERSION
+#ifndef XQOP_CONTACTS_VIEW_CONTACT_CARD
+#define XQOP_CONTACTS_VIEW_CONTACT_CARD QLatin1String("openContactCard(int)")
+#endif
+#ifndef XQI_CONTACTS_VIEW
+#define XQI_CONTACTS_VIEW QLatin1String("com.nokia.symbian.IContactsView")
+#endif
+
 
 /*!
   \class CommLauncherWidget
@@ -62,7 +69,9 @@ CommLauncherWidget::CommLauncherWidget(QGraphicsItem *parent) :
  mSendMsgButton(0),
  mEmailButton(0),
  mPhonebookButton(0),
- mApplicationManager(0)
+ mApplicationManager(0),
+ mCommLauncherAction(0),
+ mPendingRequest(false)
 {    
     
     HbStyleLoader::registerFilePath(":/commlauncherbuttons.css");
@@ -81,30 +90,37 @@ CommLauncherWidget::CommLauncherWidget(QGraphicsItem *parent) :
                                 horizontalMargin, 2*verticalMargin);
     
     // create document loader
-    HbDocumentLoader *documentLoader = new HbDocumentLoader();
+    QScopedPointer<HbDocumentLoader> documentLoader ( new HbDocumentLoader()	);
     bool result = false;
     documentLoader->load(commLauncherDocml, &result);
     ASSERT(result);
     
     // create buttons
     const QString callIconName = "qtg_large_active_call";
-    mCallButton = createButton(callIconName, callButtonName, documentLoader);
+    mCallButton = createButton(callIconName, callButtonName, documentLoader.data());
+    HbStyle::setItemName(mCallButton, "callApp");
+    mCallButton->setObjectName("callApp");
     connect(mCallButton, SIGNAL(clicked()), this, SLOT(makeCall()));
     
     const QString messagingIconName = "qtg_large_message";
-    mSendMsgButton = createButton(messagingIconName, messageButtonName, documentLoader);
+    mSendMsgButton = createButton(messagingIconName, messageButtonName, documentLoader.data());
+    HbStyle::setItemName(mSendMsgButton, "msgApp");
+    mSendMsgButton->setObjectName("msgApp");
     connect(mSendMsgButton, SIGNAL(clicked()), this, SLOT(sendMessage()));
     
     const QString emailIconName = "qtg_large_email";
-    mEmailButton = createButton(emailIconName, emailButtonName, documentLoader);
-    // EMAIL FUNCTIONALITY COMMENTED OUT BECAUSE PLATFORM DOES NOT SUPPORT IT!
-    //connect(mEmailButton, SIGNAL(clicked()), this, SLOT(sendEmail()));
+    mEmailButton = createButton(emailIconName, emailButtonName, documentLoader.data());
+    HbStyle::setItemName(mEmailButton, "emailApp");
+    mEmailButton->setObjectName("emailApp");
+    connect(mEmailButton, SIGNAL(clicked()), this, SLOT(sendEmail()));
     
     const QString phonebookIconName = "qtg_large_mycard";
-    mPhonebookButton = createButton(phonebookIconName, mycardButtonName, documentLoader);
+    mPhonebookButton = createButton(phonebookIconName, mycardButtonName, documentLoader.data());
+    HbStyle::setItemName(mPhonebookButton, "phoneApp");
+    mPhonebookButton->setObjectName("phoneApp");
     connect(mPhonebookButton, SIGNAL(clicked()), this, SLOT(openPhonebook()));
         
-    delete documentLoader;
+    
 }
 
 /*!
@@ -113,11 +129,6 @@ CommLauncherWidget::CommLauncherWidget(QGraphicsItem *parent) :
 CommLauncherWidget::~CommLauncherWidget()
 {
     // Deleting request cancels all pending requests 
-    if (mRequest) {
-        delete mRequest;
-        mRequest = NULL;
-    }
-
 }
 
 /*!
@@ -182,8 +193,7 @@ void CommLauncherWidget::createUI()
     }
         
     // Create email button, if email count exists
-    // EMAIL FUNCTIONALITY COMMENTED OUT BECAUSE PLATFORM DOES NOT SUPPORT IT!
-    /*QList<QContactActionDescriptor> emailActionDescriptors =
+    QList<QContactActionDescriptor> emailActionDescriptors =
             QContactAction::actionDescriptors("email", cmBackend);
     if (emailActionDescriptors.count() > 0) {
         QList<QContactEmailAddress> emailList = mContact->details<QContactEmailAddress>();
@@ -200,16 +210,12 @@ void CommLauncherWidget::createUI()
     } else {
         qDebug() << "Email button not created";
     }
-    */
+    
 
     mLayout->addItem(mPhonebookButton);
     mButtonCount++;
 
-    // add Effects
-    HbEffect::add(this, QString(":/friend_expand_tl.fxml"), appearTL);
-    HbEffect::add(this, QString(":/friend_expand_tr.fxml"), appearTR);
-    HbEffect::add(this, QString(":/friend_expand_bl.fxml"), appearBL);
-    HbEffect::add(this, QString(":/friend_expand_br.fxml"), appearBR);       
+    // Set the disappear effect.
     HbEffect::add(this, QString(":/friend_minimize.fxml"),  "disappear");
     
     setLayout(mLayout);    
@@ -220,7 +226,7 @@ void CommLauncherWidget::createUI()
 */
 void CommLauncherWidget::popupAboutToShow()
 { 
-    HbEffect::start(this, mAppearEffect);  
+    // no implementation
 }
 
 /*
@@ -241,18 +247,26 @@ void CommLauncherWidget::selectAppearEffect(QPointF FriendPos, QPointF LauncherP
         left = false;
     }	
 
+    // Remove the previous appear effect.
+    if (!mAppearEffect.isEmpty()) {
+        HbEffect::remove(this, mAppearEffect, appearEffectName);
+    }
+
+    // Define the new appear effect and set it as active appear effect.
     if (top && left) {
-        mAppearEffect = appearTL;
+        mAppearEffect = ":/friend_expand_tl.fxml";
     }
     else if (top && !left) {
-        mAppearEffect = appearTR;
+        mAppearEffect = ":/friend_expand_tr.fxml";
     }
     else if (!top && left) {
-        mAppearEffect = appearBL;
+        mAppearEffect = ":/friend_expand_bl.fxml";
     }
     else {
-        mAppearEffect = appearBR;
+        mAppearEffect = ":/friend_expand_br.fxml";
     }
+    HbEffect::add(this, mAppearEffect, appearEffectName);
+
     qDebug() << "---------------top " << top << "--- left " << left << " " << mAppearEffect;
 }
 
@@ -261,7 +275,6 @@ void CommLauncherWidget::selectAppearEffect(QPointF FriendPos, QPointF LauncherP
 */
 void CommLauncherWidget::popupAboutToClose()
 {
-    HbEffect::start(this, "disappear");  
     emit launcherClosed();
 }
 
@@ -274,8 +287,10 @@ HbPushButton* CommLauncherWidget::createButton(const QString iconName, const QSt
     HbPushButton *button = 0;
     button = qobject_cast<HbPushButton *>
                     (documentLoader->findWidget(buttonName));
+                    
     if (button) {
-        button->setIcon(HbIcon(iconName));
+    	mCleanupHandler.add(button);    
+        button->setIcon(HbIcon(iconName));        
     }
 
     return button;
@@ -351,10 +366,14 @@ void CommLauncherWidget::makeCall()
             //if preferred is not set select the first number
             phoneNumber = mContact->detail<QContactPhoneNumber>();
         }
-        // invoke action
-        QContactAction *callAction = QContactAction::action(callActionDescriptors.at(0));
+        // invoke action yasir memory leak
+        
+       if(mCommLauncherAction)
+        	delete mCommLauncherAction;
+        mCommLauncherAction = QContactAction::action(callActionDescriptors.at(0));
+        mCleanupHandler.add(mCommLauncherAction);        
         if (!phoneNumber.isEmpty()) {
-            callAction->invokeAction(*mContact, phoneNumber);
+            mCommLauncherAction->invokeAction(*mContact, phoneNumber);
             
             qDebug() << "call to number " << phoneNumber.number();
         }
@@ -385,9 +404,13 @@ void CommLauncherWidget::sendMessage()
             messageNumber = mContact->detail<QContactPhoneNumber>();
         }
         // invoke action
-        QContactAction *messageAction = QContactAction::action(messageActionDescriptors.at(0));
+        if(mCommLauncherAction)
+        	delete mCommLauncherAction;
+        mCommLauncherAction = QContactAction::action(messageActionDescriptors.at(0));
+        mCleanupHandler.add(mCommLauncherAction);
+        
         if (!messageNumber.isEmpty()) {
-            messageAction->invokeAction(*mContact, messageNumber);
+            mCommLauncherAction->invokeAction(*mContact, messageNumber);
             
             qDebug() << "send to number " << messageNumber.number();
         }
@@ -401,20 +424,21 @@ void CommLauncherWidget::sendMessage()
 /*!
     Sends an email to contact.
 */
-// EMAIL FUNCTIONALITY COMMENTED OUT BECAUSE WK20 PLATFORM DOES NOT SUPPORT IT!
 
-/*
 void CommLauncherWidget::sendEmail()
 {
 
     QList<QContactActionDescriptor> emailActionDescriptors =
                 QContactAction::actionDescriptors("email", cmBackend);
-    if (emailActionDescriptors.count() > 0) {
-        QContactAction *emailAction = QContactAction::action(emailActionDescriptors.at(0));
+    if (emailActionDescriptors.count() > 0) {   
+       if(mCommLauncherAction)
+        	delete mCommLauncherAction;
+        mCommLauncherAction = QContactAction::action(emailActionDescriptors.at(0));
+        mCleanupHandler.add(mCommLauncherAction);        
     //TODO: implement
         QList<QContactEmailAddress> emailList = mContact->details<QContactEmailAddress>();
         if (emailList.count() > 0) {
-            emailAction->invokeAction(*mContact, emailList.at(0));
+            mCommLauncherAction->invokeAction(*mContact, emailList.at(0));
        
             QString emailAddress = emailList.at(0).emailAddress();
             qDebug() << "send to email " << emailAddress;
@@ -443,6 +467,7 @@ void CommLauncherWidget::sendEmail()
     
     mRequest = mApplicationManager->create("com.nokia.symbian.IMessage",
                                            "Send", "send(QVariant)", false);
+    mCleanupHandler.add(mRequest);
     if (mRequest) {
         mRequest->setSynchronous(false);
         QList<QVariant> arguments;
@@ -458,7 +483,23 @@ void CommLauncherWidget::sendEmail()
     
     close();
 }
+
+/*!
+    SLOT for handle end of assync request.
 */
+void CommLauncherWidget::handleRequestOk(const QVariant& /*value*/)
+{
+	mPendingRequest = false;	
+	emit requestCompleted();
+}
+
+/*!
+    Return true if any pending request is in progress (at the moment phone book my cart is open).
+*/
+bool CommLauncherWidget::isPendingRequest()
+{
+	return mPendingRequest;
+}
 
 /*!
     Opens contact card from phonebook to contact.
@@ -470,15 +511,21 @@ void CommLauncherWidget::openPhonebook()
         delete mRequest;
         mRequest = NULL;
     }
-    mRequest = mApplicationManager->create("com.nokia.services.phonebookservices",
-                                           "Fetch", "open(int)", false);
+    mRequest = mApplicationManager->create(XQI_CONTACTS_VIEW,
+                                           XQOP_CONTACTS_VIEW_CONTACT_CARD,
+                                           false);
+    mCleanupHandler.add(mRequest);
     if (mRequest) {
-        mRequest->setSynchronous(false);
+        mPendingRequest = true;
+        connect(mRequest, SIGNAL(requestOk(const QVariant&)), 
+        		this, SLOT(handleRequestOk(const QVariant&)));
+    	mRequest->setSynchronous(false);
         QList<QVariant> arguments;
         arguments.append(QVariant(mContact->localId()));
         mRequest->setArguments(arguments);
         bool result = mRequest->send();
         if (!result) {
+        	mPendingRequest = false;
             qDebug() << "Sending request failed: " << mRequest->lastErrorMessage();
         }
     } else {
@@ -498,22 +545,17 @@ void CommLauncherWidget::openPhonebookCreateNew()
         delete mRequest;
         mRequest = NULL;
     }
-    mRequest = mApplicationManager->create("com.nokia.services.phonebookservices",
-                                           "Fetch", "editCreateNew(QString,QString)", false);
-    if (mRequest) {
-        QList<QVariant> arguments;
-        QString type = QContactPhoneNumber::DefinitionName;
-        arguments.append(QVariant( type ));
-        arguments.append(QVariant( "" ));        
-        mRequest->setArguments(arguments);
-   
-        bool result = mRequest->send();
-        if (!result) {
-            qDebug() << "Sending request failed: " << mRequest->lastErrorMessage();
-        }
     
-    } else {
-        qDebug() << "Creating service request failed";
+    // Launching the phonebook to main view
+    mRequest = mApplicationManager->create("com.nokia.services.phonebookappservices",
+                                           "Launch", "launch()", false);
+    mCleanupHandler.add(mRequest);
+    if (mRequest) {
+        QVariant retValue(-1);
+		bool result = mRequest->send(retValue);
+		if (!result) {
+        	qDebug() << "Sending request failed: " << mRequest->lastErrorMessage();
+        }
     }
 }
 

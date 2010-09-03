@@ -15,69 +15,78 @@
 *
 */
 #include "cntfavourite.h"
+#include <cntglobal.h>
+#include <QDebug>
 
-QContactLocalId CntFavourite::createFavouriteGroup( QContactManager* aManager )
+int CntFavourite::mCachedSymbianFavouriteId = 0;
+
+QContactLocalId CntFavourite::createFavouriteGroup(QContactManager* aManager)
 {
    QContactLocalId favouriteId = CntFavourite::favouriteGroupId(aManager);
     
-   if ( favouriteId == 0 )
-   {
+   if (favouriteId == 0) {
        QContact favouriteGroup;
        favouriteGroup.setType( QContactType::TypeGroup );
 
        QContactName favouriteGroupName;
        favouriteGroupName.setCustomLabel( QLatin1String(FavouriteGroupName) );
 
-       favouriteGroup.saveDetail( &favouriteGroupName );
-       if ( aManager->saveContact( &favouriteGroup ) )
-       {
+       favouriteGroup.saveDetail(&favouriteGroupName);
+       if (aManager->saveContact(&favouriteGroup)) {
            favouriteId = favouriteGroup.localId();
+           if (aManager->managerUri() == SYMBIAN_BACKEND) {
+               mCachedSymbianFavouriteId = favouriteId;
+           }
        }
    }
+
    return favouriteId;
 }
 
-QContactLocalId CntFavourite::favouriteGroupId( QContactManager* aManager )
+QContactLocalId CntFavourite::favouriteGroupId(QContactManager* aManager)
 {
-    QContactLocalId favouriteId( 0 );
+    QContactLocalId favouriteId(0);
+   
+    if (mCachedSymbianFavouriteId != 0 && aManager->managerUri() == SYMBIAN_BACKEND) {
+        favouriteId = mCachedSymbianFavouriteId;
+    } else {
+        QContactDetailFilter groupFilter;
+        groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
+        groupFilter.setValue(QString(QLatin1String(QContactType::TypeGroup)));
     
-    QContactDetailFilter groupFilter;
-    groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
-    groupFilter.setValue(QString(QLatin1String(QContactType::TypeGroup)));
-
-    QList<QContactLocalId> groupContactIds = aManager->contactIds( groupFilter );
-        
-    for(int i = 0;i < groupContactIds.count();i++)
-    {
-        QContact contact = aManager->contact(groupContactIds.at(i));
-        QContactName contactName = contact.detail<QContactName>();
-        QString groupName = contactName.customLabel();
-        if ( groupName.compare(QLatin1String(FavouriteGroupName)) == 0 )
-        {
-            favouriteId = groupContactIds.at(i);
-            break;
+        QList<QContactLocalId> groupContactIds = aManager->contactIds( groupFilter );
+            
+        for (int i = 0; i < groupContactIds.count(); i++) {
+            QContactFetchHint noRelationshipsFetchHint;
+            noRelationshipsFetchHint.setOptimizationHints(QContactFetchHint::NoRelationships);
+            QContact contact = aManager->contact(groupContactIds.at(i), noRelationshipsFetchHint);
+            QContactName contactName = contact.detail<QContactName>();
+            QString groupName = contactName.customLabel();
+            if (groupName.compare(QLatin1String(FavouriteGroupName)) == 0) {
+                favouriteId = groupContactIds.at(i);
+                if (aManager->managerUri() == SYMBIAN_BACKEND) {
+                    mCachedSymbianFavouriteId = favouriteId;
+                }
+                break;
+            }
         }
     }
-
+    
     return favouriteId;
 }
 
-bool CntFavourite::isMemberOfFavouriteGroup( QContactManager* aManager, QContact* aContact )
+bool CntFavourite::isMemberOfFavouriteGroup(QContactManager* contactManager, QContact* contact)
 {
-    bool favouriteGroupContact( false );
-    QContactLocalId favouriteId = CntFavourite::favouriteGroupId( aManager );
-    if ( favouriteId != 0 )
-    {
-        QContact favoriteGroup = aManager->contact( favouriteId );
-        QContactRelationshipFilter rFilter;
-        rFilter.setRelationshipType( QContactRelationship::HasMember );
-        rFilter.setRelatedContactRole( QContactRelationship::First );
-        rFilter.setRelatedContactId( favoriteGroup.id() );
-            
-        QList<QContactLocalId> contactsLocalIdList = aManager->contactIds( rFilter );
-        favouriteGroupContact = contactsLocalIdList.contains( aContact->localId() );
-    }
-    return favouriteGroupContact;
+    QContactId favouriteId;
+    favouriteId.setManagerUri(contactManager->managerUri());
+    favouriteId.setLocalId(CntFavourite::favouriteGroupId(contactManager));
+
+    QContactRelationship favouriteMembership;
+    favouriteMembership.setFirst(favouriteId);
+    favouriteMembership.setSecond(contact->id());
+    favouriteMembership.setRelationshipType(QContactRelationship::HasMember);
+
+    return contact->relationships().contains(favouriteMembership);
 }
 
 void CntFavourite::addContactToFavouriteGroup( QContactManager* aManager, QContactId& aId)
@@ -100,17 +109,17 @@ void CntFavourite::addContactToFavouriteGroup( QContactManager* aManager, QConta
     aManager->saveRelationship( &relationship );
 }
 
-void CntFavourite::removeContactFromFavouriteGroup( QContactManager* aManager, QContactId& aId )
+void CntFavourite::removeContactFromFavouriteGroup(QContactManager* aManager, QContactId& aId)
 {
-    QContactLocalId favouriteId = CntFavourite::favouriteGroupId( aManager );
-    if ( favouriteId != 0 )
-    {
-        QContact favoriteGroup = aManager->contact( favouriteId );
+    QContactLocalId favouriteId = CntFavourite::favouriteGroupId(aManager);
+    if (favouriteId != 0) {
+        QContact favoriteGroup = aManager->contact(favouriteId);
         QContactRelationship relationship;
-        relationship.setRelationshipType( QContactRelationship::HasMember );
-        relationship.setFirst( favoriteGroup.id() );
-        relationship.setSecond( aId );
+        relationship.setRelationshipType(QContactRelationship::HasMember);
+        relationship.setFirst(favoriteGroup.id());
+        relationship.setSecond(aId);
         aManager->removeRelationship(relationship);
     }
 }
+
 // End of File

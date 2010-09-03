@@ -683,7 +683,7 @@ void testPbkServices::launchEditCreateNew( bool aNewInterface, QString aDetailTy
     
     if ( aNewInterface )
     {
-        QString interface("com.nokia.symbian.IContactsFetch"); 
+        QString interface("com.nokia.symbian.IContactsEdit"); 
         // service name is not needed
         mRequest = appMng.create( interface, operation, true); // embedded
     }

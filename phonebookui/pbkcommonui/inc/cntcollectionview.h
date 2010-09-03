@@ -77,6 +77,8 @@ private slots:
     void deleteGroups();
     void handleDeleteGroups(HbAction* action);
     
+    void groupCountChanged();
+    
 private:
     QContactManager* getContactManager();
     void saveNewGroup(QContact* aContact);

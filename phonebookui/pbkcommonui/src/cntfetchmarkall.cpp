@@ -39,9 +39,9 @@ CntFetchMarkAll::CntFetchMarkAll(QGraphicsItem *aParent)
     mCounterLabel = new HbTextItem( this );
     
     mFrame = new HbFrameItem(this);
-    mFrame->frameDrawer().setFrameGraphicsName("qtg_fr_groupbox_normal");
+    mFrame->frameDrawer().setFrameGraphicsName("qtg_fr_groupbox");
     mFrame->frameDrawer().setFrameType(HbFrameDrawer::NinePieces);
-    mFrame->setZValue(-2);
+    mFrame->setZValue(-5);
     
     style()->setItemName(mFrame, "background");
            
@@ -64,6 +64,12 @@ void CntFetchMarkAll::setSelectedContactCount( int aSelectedCount )
     {
         blockSignals( true );
         mCheckBox->setCheckState( Qt::Unchecked );
+        blockSignals( false );
+    }
+    else if (mSelectionCount == mContactCount)
+    {
+        blockSignals( true );
+        mCheckBox->setCheckState( Qt::Checked );
         blockSignals( false );
     }
 }

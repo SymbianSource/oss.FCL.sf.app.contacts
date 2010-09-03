@@ -22,6 +22,7 @@
 #include "cntglobal.h"
 #include "cntdebug.h"
 #include "cntapplication.h"
+#include "cntfavourite.h"
 #include <cntabstractengine.h>
 
 #include <cntuiextensionfactory.h>
@@ -51,6 +52,7 @@
 
 const char *CNT_CONTACTLIST_XML = ":/xml/contacts_namelist.docml";
 static const int CNT_MIN_ROW_COUNT = 2;
+bool CntNamesViewPrivate::mIsFirstTimeUse = true;
 
 CntNamesViewPrivate::CntNamesViewPrivate() :
     QObject(),
@@ -64,8 +66,6 @@ CntNamesViewPrivate::CntNamesViewPrivate() :
     mNamesAction(NULL),
     mMenuBuilder(NULL),
     mHandledContactId(0),
-    mIsDefault(true),
-    mId( namesView ),
     mActionGroup(NULL),
 	mMenu(NULL),
 	mFilterChanged(false)
@@ -142,6 +142,22 @@ CntNamesViewPrivate::CntNamesViewPrivate() :
 #ifdef __WINS__
     mView->menu()->addAction("Change Orientation", this, SLOT(switchOrientation()) );
 #endif
+    CNT_EXIT
+}
+
+void CntNamesViewPrivate::handleImportContacts( HbAction *aAction )
+{
+    CNT_ENTRY
+    
+    HbDialog *popup = static_cast<HbDialog*>(sender());
+    
+    if (popup && aAction == popup->actions().first())
+    {
+        CntViewParameters args;        
+        args.insert(EViewId, importsView);
+        mViewManager->changeView(args);
+    }
+          
     CNT_EXIT
 }
 
@@ -234,6 +250,46 @@ void CntNamesViewPrivate::activate(const CntViewParameters aArgs)
         showFinder();
     }
     
+    if (mIsFirstTimeUse)
+    {
+        // Disable FTU flag
+        mIsFirstTimeUse = false;
+        
+        // Show import contacts popup only if there no local contacts
+        // Check row count from list model and exclude dummy mycard
+        if (mListModel->rowCount()==1 && mListModel->myCardId()<= 0)
+        {
+            // Default filter to fetch all contacts and groups
+            QContactFilter filter;
+            QList<QContactLocalId> contactIds = contactManager->contactIds(filter);
+            
+            // Check if favourite group contact exists
+            // Favourite group contact is created by default in phonebook
+            int favouriteId = CntFavourite::favouriteGroupId(contactManager);
+            if ( (contactIds.isEmpty() )
+                 || (contactIds.count() == 1 && contactIds.at(0) == favouriteId) )
+            {
+                HbMessageBox *note = new HbMessageBox();
+                note->setDismissPolicy(HbDialog::NoDismiss);
+                note->setTimeout(HbPopup::NoTimeout);
+                note->setBackgroundFaded(true);
+                note->setAttribute(Qt::WA_DeleteOnClose, true);
+                note->setStandardButtons(HbMessageBox::NoButton);
+                note->addAction(new HbAction(hbTrId("txt_phob_button_import"), note));
+                note->addAction(new HbAction(hbTrId("txt_common_button_cancel"), note));
+                    
+                HbLabel *headingLabel = new HbLabel( note );
+                headingLabel->setPlainText(hbTrId("txt_phob_title_import_contacts")); 
+                note->setHeadingWidget(headingLabel);
+                
+                note->setIcon(HbIcon("qtg_large_sim"));
+                note->setText(hbTrId("txt_phob_info_your_phonebook_is_empty_do_you_wish"));
+                
+                note->open(this, SLOT(handleImportContacts(HbAction*)));
+            }
+        }
+    }
+
     CNT_EXIT
 }
 
@@ -686,5 +742,6 @@ HbDocumentLoader* CntNamesViewPrivate::document()
     CNT_EXIT
     return mLoader;
 }
+
 
 // End of File

@@ -1,6 +1,0 @@
-component           contacts_metadata
-source   \sf\app\contacts\contacts_info\contacts_metadata 
-source   \sf\app\contacts\package_definition.xml
-source   \sf\app\contacts\distribution.policy.s60
-notes_source      \component_defs\release.src
-ipr T 

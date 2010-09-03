@@ -89,12 +89,14 @@ public:
         bool AdnStorePresent;
         bool SdnStorePresent;
         bool FdnStorePresent;
+        bool OnStorePresent;
         
         AvailableStores() {
             SimPresent = false;
             AdnStorePresent = false;
             SdnStorePresent = false;
             FdnStorePresent = false;
+            OnStorePresent = false;
         };
     };
     

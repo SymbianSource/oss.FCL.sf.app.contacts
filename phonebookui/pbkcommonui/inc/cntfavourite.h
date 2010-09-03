@@ -38,5 +38,9 @@ public:
     static bool isMemberOfFavouriteGroup( QContactManager* aManager, QContact* aContact );
     static void addContactToFavouriteGroup( QContactManager* aManager, QContactId& aId );
     static void removeContactFromFavouriteGroup( QContactManager* aManager, QContactId& aId );
+
+private:
+    static int mCachedSymbianFavouriteId;
 };
+
 #endif /* CNTFAVOURITE_H_ */

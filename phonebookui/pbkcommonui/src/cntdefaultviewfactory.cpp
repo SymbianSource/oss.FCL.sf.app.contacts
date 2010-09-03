@@ -46,6 +46,7 @@ CntDefaultViewFactory::CntDefaultViewFactory( CntExtensionManager& aExt ):
 
 CntDefaultViewFactory::~CntDefaultViewFactory()
 {
+    
 }
 
 CntAbstractView* CntDefaultViewFactory::createView( int aId )

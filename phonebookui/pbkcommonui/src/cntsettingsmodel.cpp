@@ -77,13 +77,13 @@ void CntSettingsModel::createNamesListRowSettingItem()
     mNameListRowSettingkey = new XQSettingsKey(XQSettingsKey::TargetCentralRepository,
                             KCRCntSettings.iUid,
                             KCntNameListRowSetting);
-    int settingValue = mSettings.readItemValue(*mNameListRowSettingkey, XQSettingsManager::TypeInt).toInt();
+	int settingValue = mSettings.readItemValue(*mNameListRowSettingkey, XQSettingsManager::TypeInt).toInt();
     
     if (settingValue == CntOneRowNameOnly) {
-        rowSetting->setContentWidgetData("currentIndex", 0 );
-    } else if (settingValue == CntTwoRowsNameAndPhoneNumber) {
-        rowSetting->setContentWidgetData("currentIndex", 1 );
-    }    
+         rowSetting->setContentWidgetData("currentIndex", 0 );
+	} else if (settingValue == CntTwoRowsNameAndPhoneNumber) {
+         rowSetting->setContentWidgetData("currentIndex", 1 );
+    }
 }
 
 CntSettingsModel::~CntSettingsModel()
@@ -112,7 +112,7 @@ void CntSettingsModel::handleDataChanged(QModelIndex topLeft, QModelIndex bottom
     }
     else if (topLeft.row() == 1) {
         int selected = itemFromIndex(topLeft)->contentWidgetData( "currentIndex" ).toInt();
-        if (selected == 0) {
+		if (selected == 0) {
             written = mSettings.writeItemValue(*mNameListRowSettingkey, QVariant(CntOneRowNameOnly));
         } else if (selected == 1) {
             written = mSettings.writeItemValue(*mNameListRowSettingkey, QVariant(CntTwoRowsNameAndPhoneNumber));

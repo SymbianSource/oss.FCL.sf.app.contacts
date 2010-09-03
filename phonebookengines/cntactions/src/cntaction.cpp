@@ -160,28 +160,35 @@ bool CntAction::actionDescriptionSupported(const QContactActionDescriptor& descr
 //common code to perform a call, videocall action
 void CntAction::performNumberAction(const QString &interface, const QString &operation)
 {
+    QVariantList args;
     QVariant retValue;
     
-    // XQApplicationManager is not supported by PhoneUI to initiate calls,
-    // only old approarch using XQServiceRequest can be used. 
-    XQServiceRequest snd(interface, operation); //sync request
+    delete m_request;
+    m_request = NULL;
+    m_request = m_AppManager.create(interface, operation, false); // not embedded
+    if (!m_request) {
+        emitResult(GeneralError, retValue);
+        return;
+    }
 
     //QContactType == TypeGroup
     if (QContactType::TypeGroup == m_contact.type()) {
         QContactPhoneNumber conferenceCall = m_contact.detail<QContactPhoneNumber>();
-        
-        snd << conferenceCall.number() << m_contact.localId() << m_contact.displayLabel();
-        snd.send(retValue);
-        emitResult(snd.latestError(), retValue);
+        args << conferenceCall.number() << m_contact.localId() << m_contact.displayLabel();
+        m_request->setArguments(args);
+        m_request->setSynchronous(true);
+        m_request->send(retValue);
+        emitResult(m_request->lastError(), retValue);
     }
     //QContactType == TypeContact
     //detail exist use it
     else if (m_detail.definitionName() == QContactPhoneNumber::DefinitionName) {
 		const QContactPhoneNumber &phoneNumber = static_cast<const QContactPhoneNumber &>(m_detail);
-		
-        snd << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
-        snd.send(retValue);
-        emitResult(snd.latestError(), retValue);
+		args << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
+		m_request->setArguments(args);
+		m_request->setSynchronous(true);
+        m_request->send(retValue);
+        emitResult(m_request->lastError(), retValue);
 	}
     //QContactType == TypeContact
     //if no detail, pick preferred
@@ -200,9 +207,11 @@ void CntAction::performNumberAction(const QString &interface, const QString &ope
 			phoneNumber = static_cast<QContactPhoneNumber>(detail);
 		}
 		
-        snd << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
-        snd.send(retValue);
-        emitResult(snd.latestError(), retValue);
+	    args << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
+	    m_request->setArguments(args);
+	    m_request->setSynchronous(true);
+	    m_request->send(retValue);
+	    emitResult(m_request->lastError(), retValue);
 	}
 	//else return an error
 	else {

@@ -127,7 +127,7 @@ private:
     ThumbnailManager* mThumbnailManager;    // for fetching icons
 
     // maps info providers to their responsibilities
-    QMap<CntInfoProvider*, ContactInfoFields> mDataProviders;
+    QMap<CntInfoProvider*, ContactInfoFields> mInfoProviders;
 
     QMutex mJobMutex;                       // guards access to the job lists
     bool mStarted;                          // true when thread has been started

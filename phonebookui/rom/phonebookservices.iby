@@ -22,7 +22,6 @@
 
 file=ABI_DIR\UREL\phonebookservices.exe                   SHARED_LIB_DIR\phonebookservices.exe
 
-S60_APP_AIF_RSC(phonebookservices)
 S60_APP_RESOURCE(phonebookservices)
 UPGRADABLE_APP_REG_RSC(phonebookservices)
 

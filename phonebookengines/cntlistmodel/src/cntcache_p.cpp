@@ -64,8 +64,8 @@ CntCacheThread::CntCacheThread()
     CNT_ENTRY
 
     // create static provider plugins
-    mDataProviders.insert(new CntDefaultInfoProvider(), ContactInfoAllFields);
-    mDataProviders.insert(new CntPresenceInfoProvider(), ContactInfoIcon2Field);
+    mInfoProviders.insert(new CntDefaultInfoProvider(), ContactInfoAllFields);
+    mInfoProviders.insert(new CntPresenceInfoProvider(), ContactInfoIcon2Field);
 
     // load dynamic provider plugins
     QDir pluginsDir(CNT_INFO_PROVIDER_EXTENSION_PLUGIN_DIRECTORY);
@@ -80,13 +80,13 @@ CntCacheThread::CntCacheThread()
             if (factory)
             {
                 CntInfoProvider *provider = factory->infoProvider();
-                mDataProviders.insert(provider, provider->supportedFields());
+                mInfoProviders.insert(provider, provider->supportedFields());
             }
         }
     }
     
     // connect the providers
-    QMapIterator<CntInfoProvider*, ContactInfoFields> i(mDataProviders);
+    QMapIterator<CntInfoProvider*, ContactInfoFields> i(mInfoProviders);
     while (i.hasNext()) {
         i.next();
         connect(static_cast<CntInfoProvider*>(i.key()),
@@ -130,8 +130,8 @@ CntCacheThread::~CntCacheThread()
     delete mThumbnailManager;
     mThumbnailManager = NULL;
 
-    qDeleteAll(mDataProviders.keys());
-    mDataProviders.clear();
+    qDeleteAll(mInfoProviders.keys());
+    mInfoProviders.clear();
 
     mJobMutex.unlock();
 
@@ -339,7 +339,7 @@ void CntCacheThread::processJobs()
 			QContact contact = mContactManager->contact(contactId, restrictions);
 
             // request contact info from providers
-            QMapIterator<CntInfoProvider*, ContactInfoFields> i(mDataProviders);
+            QMapIterator<CntInfoProvider*, ContactInfoFields> i(mInfoProviders);
             while (i.hasNext()) {
                 i.next();
                 if (i.value() != 0) {
@@ -388,9 +388,9 @@ void CntCacheThread::onInfoFieldReady(CntInfoProvider* sender, int contactId,
     // 1) the sender is in the list of providers
     // 2) exactly one field bit is set in parameter 'field'
     // 3) the field bit has been assigned to this provider
-    if (mDataProviders.contains(sender)
+    if (mInfoProviders.contains(sender)
         && ((field & (field - 1)) == 0)
-        && ((field & mDataProviders.value(sender)) != 0)) {
+        && ((field & mInfoProviders.value(sender)) != 0)) {
         emit infoFieldUpdated(contactId, field, text);
     }
 

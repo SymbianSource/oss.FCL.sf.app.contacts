@@ -92,8 +92,6 @@ CntCache::~CntCache()
     qDeleteAll(mIconCache);
     mIconCache.clear();
 
-    mInstance = NULL;
-
     CNT_EXIT
 }
 
@@ -651,6 +649,7 @@ void CntCache::onShutdown()
 {
 	CNT_ENTRY
 
+    mInstance = NULL;
     deleteLater();
 
 	CNT_EXIT

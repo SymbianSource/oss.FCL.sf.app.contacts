@@ -26,7 +26,8 @@
 #include <XQServiceUtil.h>
 #include <xqappmgr.h>
 #include <thumbnailmanager_qt.h>
-
+#include <QObjectCleanupHandler>
+#include <QScopedPointer>
 #include "contactwidgetplugin_global.h"
 #include "commlauncherwidget.h"
 
@@ -89,6 +90,7 @@ private slots:
     void onContactsRemoved( const QList<QContactLocalId> &contactIds );
     void thumbnailReady(QPixmap, void*, int, int);
     void loadNormalLayout();
+    void onRequestComplete();
     
 private:
     void createUI();
@@ -117,11 +119,15 @@ private:
     CommLauncherWidget *mLauncher;
     HbFrameDrawer *mWidgetFrameDrawer;
     HbFrameDrawer *mShareFrameDrawer;
+    QScopedPointer<HbIcon> mAvatarIcon;
+   
     // Contact
     QContact mContact;
     QContactLocalId mContactLocalId;
     QString mContactImageFileName;
-    QContactAvatar* mAvatar;
+    // need to use scopepointer as QObjectCleanupHandler is not accepting
+    // it as a parameter
+    QScopedPointer<QContactAvatar> mAvatar;
     bool mContactHasAvatarDetail;
     // Contact manager
     QContactManager *mContactManager;
@@ -129,11 +135,15 @@ private:
     XQAiwRequest *mContactSelectRequest;
 
     HbMainWindow *mMainWindow;
-    ThumbnailManager *mThumbnailManager;
+    QScopedPointer<ThumbnailManager> mThumbnailManager;
     QPixmap mThumbnailPixmap;
     // When true, thumbnail generating is in progress
     bool mThumbnailInProgress; 
-    HbTranslator* mTranslator;
+    QScopedPointer<HbTranslator> mTranslator;
+    
+    QObjectCleanupHandler mCleanupHandler;
+    
+    bool mPendingExit;
     
     CONTACTWIDGET_TEST_FRIEND_CLASS(TestContactWidget)
 

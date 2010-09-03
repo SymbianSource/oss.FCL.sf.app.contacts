@@ -234,12 +234,6 @@ void CntServiceContactFetchView::aboutToOpenView(CntAbstractViewManager* aMgr, c
     
     // Set action filter
     mAction = aArgs.value(ESelectedAction).toString();
-    // ESelectedAction is defined in cntviewparams.h
-
-    // Has never been implemented.
-    //QString filterStr = aArgs.value(KCntServiceViewParamFilter).toString();
-    // KCntServiceViewParamFilter is defined in cntserviceviewparams.h
-
     if (mAction == KCntActionSms)
         {
             QContactActionFilter actionFilter;
@@ -254,9 +248,15 @@ void CntServiceContactFetchView::aboutToOpenView(CntAbstractViewManager* aMgr, c
         }
         else if (mAction == KCntActionEmail)
         {
-            QContactActionFilter actionFilter;
-            actionFilter.setActionName("email");
-            mListModel->setFilter(actionFilter);
+            QContactDetailFilter emailFilter;
+            emailFilter.setMatchFlags( QContactDetailFilter::MatchContains );
+            emailFilter.setDetailDefinitionName( 
+                    QContactEmailAddress::DefinitionName, 
+                    QContactEmailAddress::FieldEmailAddress );
+            // we need to give something to filter for the email filter
+            emailFilter.setValue( "@" );
+            mListModel->setFilter( emailFilter );
+            
         }
         else
         {

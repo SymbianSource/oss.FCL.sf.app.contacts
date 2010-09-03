@@ -68,7 +68,7 @@ SOURCES += src/main.cpp \
            src/cntservicesubeditview.cpp
 
 # capability
-TARGET.CAPABILITY = CAP_APPLICATION
+TARGET.CAPABILITY = CAP_APPLICATION NetworkControl
 
 TRANSLATIONS = contacts.ts
 

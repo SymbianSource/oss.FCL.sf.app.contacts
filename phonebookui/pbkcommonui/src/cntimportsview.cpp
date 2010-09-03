@@ -287,17 +287,7 @@ void CntImportsView::activate(const CntViewParameters aArgs)
     importSimItem->setData(HbIcon("qtg_large_sim"), Qt::DecorationRole);   
      
     mModel->insertRow(0,importSimItem);
-    
-    QStandardItem *importDeviceItem = new QStandardItem();
-    QStringList deviceList;
-    QString deviceImport(hbTrId("txt_phob_dblist_import_from_device"));
-    deviceList << deviceImport;
-    importDeviceItem->setData(deviceList, Qt::DisplayRole);
-    importDeviceItem->setData(HbIcon("qtg_large_data_import"), Qt::DecorationRole);
-    importDeviceItem->setEnabled(false);
-       
-    mModel->insertRow(1,importDeviceItem);
-    
+        
     mListView->setModel(mModel);
     mListView->setSelectionMode(HbAbstractItemView::NoSelection);
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(endKeyPressed()));

@@ -66,6 +66,8 @@ public:
 private:    
 #endif       
     QContact*                       mContact;
+    QContactAction*                 mCallAction;
+    QContactAction*                 mMessageAction;
     QList<CntContactCardDataItem*>  mDataItemList;
     int                             mSeparatorIndex;
     CntStringMapper                 mStringMapper;

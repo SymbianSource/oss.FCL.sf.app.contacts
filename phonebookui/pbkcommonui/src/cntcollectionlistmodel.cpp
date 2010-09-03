@@ -33,6 +33,16 @@
 #include <hbglobal.h>
 #include <hbicon.h>
 
+#include <QtAlgorithms>
+
+namespace
+{
+    bool caseInsensitiveLessThan(const QContact &c1, const QContact &c2)
+    {
+        return c1.displayLabel().toLower() < c2.displayLabel().toLower();
+    }
+}
+
 /*!
     Constructor
 */
@@ -54,7 +64,8 @@ CntCollectionListModel::CntCollectionListModel(CntAbstractEngine* aEngine, QObje
     QString noMembers = hbTrId("txt_phob_dblist_val_no_members_selected");
     mThread = new CntCollectionListModelWorker(unnamed, noFavs, noMembers, order);
     
-    connect(mThread, SIGNAL(fetchDone(int, const QString&, int)), this, SLOT(informationUpdated(int, const QString&, int)));
+    connect(mThread, SIGNAL(fetchDone(int, const QString&, const QList<int>&)), this, 
+            SLOT(informationUpdated(int, const QString&, const QList<int>&)));
     connect(d->mThumbnailManager, SIGNAL(thumbnailReady(QPixmap, void *, int, int)),
              this, SLOT(onIconReady(QPixmap, void *, int, int)));
     
@@ -94,6 +105,8 @@ CntCollectionListModel::~CntCollectionListModel()
 */
 QVariant CntCollectionListModel::data(const QModelIndex& index, int role) const
 {
+    CNT_ENTRY_ARGS(index << role)
+    
     int row = index.row();
     
     if ( !validateRowIndex(row) )
@@ -190,20 +203,25 @@ bool CntCollectionListModel::insertRows(int row, int count, const QModelIndex &p
 
     \param localId QContactLocalId of the group that should be removed
 */
-void CntCollectionListModel::removeGroup(int localId)
+bool CntCollectionListModel::removeGroup(int localId)
 {
-    CNT_ENTRY
+    CNT_ENTRY_ARGS(localId)
+    
+    bool groupRemoved = false;
     
     for (int i = 0;i < rowCount();i++)
     {
         if (!d->mList.at(i)->isPlugin && d->mList.at(i)->id == localId)
         {
             removeRow(i);
+            groupRemoved = true;
             break;
         }
     }
     
-    CNT_EXIT
+    CNT_EXIT_ARGS(groupRemoved)
+    
+    return groupRemoved;
 }
 
 /*!
@@ -214,7 +232,7 @@ void CntCollectionListModel::removeGroup(int localId)
 */
 void CntCollectionListModel::addGroup(int localId)
 {
-    CNT_ENTRY
+    CNT_ENTRY_ARGS(localId)
     
     QContactDetailFilter groupFilter;
     groupFilter.setDetailDefinitionName(QContactType::DefinitionName, QContactType::FieldType);
@@ -312,6 +330,8 @@ bool CntCollectionListModel::isExtensionGroup(const QModelIndex &index)
 */
 CntViewParameters CntCollectionListModel::extensionGroupActivated(int row)
 {
+    CNT_ENTRY_ARGS(row)
+
     CntViewParameters params;
     for(int i = 0;i < d->mExtensions.value(row)->groupCount();i++)
     {
@@ -322,6 +342,9 @@ CntViewParameters CntCollectionListModel::extensionGroupActivated(int row)
             break;
         }
     }
+    
+    CNT_EXIT_ARGS(params)
+    
     return params;
 }
 
@@ -335,7 +358,7 @@ CntViewParameters CntCollectionListModel::extensionGroupActivated(int row)
 */
 void CntCollectionListModel::extensionGroupLongPressed(int row, const QPointF& coords, CntExtensionGroupCallback* interface)
 {
-    CNT_ENTRY
+    CNT_ENTRY_ARGS(row << coords << interface)
     
     for(int i = 0;i < d->mExtensions.value(row)->groupCount();i++)
     {
@@ -358,15 +381,22 @@ void CntCollectionListModel::extensionGroupLongPressed(int row, const QPointF& c
 */
 QModelIndex CntCollectionListModel::indexOfGroup(int localId)
 {
+    CNT_ENTRY_ARGS(localId)
+            
+    QModelIndex groupIndex;
+
     for (int i = 0;i < d->mList.count();i++)
     {
         if (d->mList.at(i)->id == localId && !d->mList.at(i)->isPlugin)
         {
-            return index(i);
+            groupIndex = index(i);
+            break;
         }
     }
     
-    return QModelIndex();
+    CNT_EXIT_ARGS(groupIndex)
+    
+    return groupIndex;
 }
 
 /*!
@@ -379,6 +409,13 @@ void CntCollectionListModel::doConstruct()
     initializeStaticGroups();
     initializeExtensions();
     initializeUserGroups();
+    
+    connect(d->mContactManager, SIGNAL(contactsAdded(const QList<QContactLocalId>&)), this, SLOT(handleAdded(const QList<QContactLocalId>&)));
+    connect(d->mContactManager, SIGNAL(contactsChanged(const QList<QContactLocalId>&)), this, SLOT(handleChanged(const QList<QContactLocalId>&)));
+    connect(d->mContactManager, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), this, SLOT(handleRemoved(const QList<QContactLocalId>&)));
+    connect(d->mContactManager, SIGNAL(relationshipsAdded(const QList<QContactLocalId>&)), this, SLOT(handleAddedRelationship(const QList<QContactLocalId>&)));
+    connect(d->mContactManager, SIGNAL(relationshipsRemoved(const QList<QContactLocalId>&)), this, SLOT(handleRemovedRelationship(const QList<QContactLocalId>&)));
+
     
     CNT_EXIT
 }
@@ -526,6 +563,8 @@ void CntCollectionListModel::initializeUserGroups()
 */
 QVariant CntCollectionListModel::displayRoleData(const CntCollectionItem& item) const
 {
+    CNT_ENTRY
+    
     QStringList list;
 
     list << item.groupName << item.secondLineText;
@@ -539,6 +578,8 @@ QVariant CntCollectionListModel::displayRoleData(const CntCollectionItem& item) 
         list << " ";
     }
     
+    CNT_EXIT
+    
     return QVariant(list);
 }
 
@@ -550,6 +591,8 @@ QVariant CntCollectionListModel::displayRoleData(const CntCollectionItem& item) 
 */
 QVariant CntCollectionListModel::decorationRoleData(const CntCollectionItem& item) const
 {
+    CNT_ENTRY
+    
     QList<QVariant> icons;
     icons << item.icon;
     
@@ -557,6 +600,8 @@ QVariant CntCollectionListModel::decorationRoleData(const CntCollectionItem& ite
     {
         icons << item.secondaryIcon;
     }
+    
+    CNT_EXIT
     
     return QVariant(icons);
 }
@@ -580,9 +625,9 @@ bool CntCollectionListModel::validateRowIndex(const int index) const
     \param secondRowText text to be shown in the second row
     \param memberCount the amount of members the group has (shown in text-3 in HbListViewItem)
 */
-void CntCollectionListModel::informationUpdated(int id, const QString& secondRowText, int memberCount)
+void CntCollectionListModel::informationUpdated(int id, const QString& secondRowText, const QList<int>& members)
 {
-    CNT_ENTRY
+    CNT_ENTRY_ARGS(id << secondRowText << members)
     
     for (int i = 0;i < d->mList.count();i++)
     {
@@ -591,7 +636,8 @@ void CntCollectionListModel::informationUpdated(int id, const QString& secondRow
             CollectionItemPointer item = d->mList.at(i);
             
             item->secondLineText = secondRowText;
-            item->memberCount = memberCount;
+            item->memberCount = members.count();
+            item->members = members;
             
             int idx = d->mList.indexOf(item);
             emit dataChanged(index(idx, 0), index(idx, 0));
@@ -614,7 +660,7 @@ void CntCollectionListModel::informationUpdated(int id, const QString& secondRow
 */
 void CntCollectionListModel::onIconReady(const QPixmap& pixmap, void *data, int id, int error)
 {
-    CNT_ENTRY
+    CNT_ENTRY_ARGS(pixmap << data << id << error)
     
     Q_UNUSED(data);
     
@@ -649,6 +695,8 @@ void CntCollectionListModel::onIconReady(const QPixmap& pixmap, void *data, int 
 */
 void CntCollectionListModel::extensionGroupsReady()
 {
+    CNT_ENTRY
+    
     CntUiGroupSupplier* groupSupplier = static_cast<CntUiGroupSupplier*>(sender());
     
     int addedCount = groupSupplier->groupCount();
@@ -693,4 +741,198 @@ void CntCollectionListModel::extensionGroupsReady()
         
         endInsertRows();
     }
+    
+    CNT_EXIT
+}
+
+void CntCollectionListModel::handleAdded(const QList<QContactLocalId>& contactIds)
+{
+    CNT_ENTRY_ARGS(contactIds)
+            
+    if (contactIds.count() == 1)
+    {
+        QContactFetchHint noRelationshipsFetchHint;
+        noRelationshipsFetchHint.setOptimizationHints(QContactFetchHint::NoRelationships);
+        
+        QContact contact = d->mContactManager->contact(contactIds.first(), noRelationshipsFetchHint);
+        
+        if (contact.type() == QContactType::TypeGroup)
+        {
+            addGroup(contactIds.first());
+            emit groupCountChanged();
+        }
+    }
+    else
+    {
+        QList<QContact> addedGroups;
+        
+        foreach (QContactLocalId id, contactIds)
+        {
+            QContactFetchHint noRelationshipsFetchHint;
+            noRelationshipsFetchHint.setOptimizationHints(QContactFetchHint::NoRelationships);
+            
+            QContact contact = d->mContactManager->contact(id, noRelationshipsFetchHint);
+            
+            if (contact.type() == QContactType::TypeGroup)
+            {
+                addedGroups << contact;
+            }
+        }
+        
+        if (addedGroups.count() == 1)
+        {
+            addGroup(addedGroups.first().localId());
+            emit groupCountChanged();
+        }
+        else if (addedGroups.count() > 1)
+        {
+            qSort(addedGroups.begin(), addedGroups.end(), caseInsensitiveLessThan);
+            
+            foreach (QContact c, addedGroups)
+            {
+                addGroup(c.localId());
+            }
+            emit groupCountChanged();
+        }
+    }
+
+    CNT_EXIT
+}
+
+void CntCollectionListModel::handleRemoved(const QList<QContactLocalId>& contactIds)
+{
+    CNT_ENTRY_ARGS(contactIds)
+            
+    foreach (QContactLocalId id, contactIds)
+    {
+        if (removeGroup(id))
+        {
+            emit groupCountChanged();
+        }
+        else
+        {
+            for (int i = 0;i < d->mList.count();i++)
+            {
+                if (d->mList.at(i)->members.contains(id))
+                {
+                    CollectionItemPointer item = d->mList.at(i);
+
+                    item->fetched = false;
+
+                    int idx = d->mList.indexOf(item);
+                    emit dataChanged(index(idx, 0), index(idx, 0));
+                }
+            }
+        }
+    }
+            
+    CNT_EXIT
+}
+
+void CntCollectionListModel::handleChanged(const QList<QContactLocalId>& contactIds)
+{
+    CNT_ENTRY_ARGS(contactIds)
+
+    foreach (QContactLocalId id, contactIds)
+    {
+        QContact contact = d->mContactManager->contact(id);
+
+        if (contact.type() == QContactType::TypeGroup)
+        {
+            for (int i = 0;i < d->mList.count();i++)
+            {
+                if (d->mList.at(i)->id == id && !d->mList.at(i)->isPlugin)
+                {
+                    CollectionItemPointer item = d->mList.at(i);
+
+                    QContactName contactName = contact.detail<QContactName>();
+                    QString groupName = contactName.customLabel();
+
+                    if (groupName != item->groupName)
+                    {
+                        if (groupName.isNull())
+                        {
+                            item->groupName = hbTrId("txt_phob_dblist_unnamed");
+                        }
+                        else
+                        {
+                            item->groupName = groupName;
+                        }
+
+                        int idx = d->mList.indexOf(item);
+                        emit dataChanged(index(idx, 0), index(idx, 0));
+                    }
+
+                    break;
+                }
+            }
+        }
+        else if (contact.type() == QContactType::TypeContact)
+        {
+            for (int i = 0;i < d->mList.count();i++)
+            {
+                if (d->mList.at(i)->members.contains(id))
+                {
+                    CollectionItemPointer item = d->mList.at(i);
+
+                    item->fetched = false;
+
+                    int idx = d->mList.indexOf(item);
+                    emit dataChanged(index(idx, 0), index(idx, 0));
+                }
+            }
+        }
+    }
+    
+    CNT_EXIT
+}
+
+void CntCollectionListModel::handleAddedRelationship(const QList<QContactLocalId>& contactIds)
+{
+    CNT_ENTRY_ARGS(contactIds)
+            
+    foreach (QContactLocalId id, contactIds)
+    {      
+        for (int i = 0;i < d->mList.count();i++)
+        {
+            if (d->mList.at(i)->id == id && !d->mList.at(i)->isPlugin)
+            {
+                CollectionItemPointer item = d->mList.at(i);
+
+                item->fetched = false;
+
+                int idx = d->mList.indexOf(item);
+                emit dataChanged(index(idx, 0), index(idx, 0));
+
+                break;
+            }
+        }
+    }
+            
+    CNT_EXIT
+}
+
+void CntCollectionListModel::handleRemovedRelationship(const QList<QContactLocalId>& contactIds)
+{
+    CNT_ENTRY_ARGS(contactIds)
+    
+    foreach (QContactLocalId id, contactIds)
+    {      
+        for (int i = 0;i < d->mList.count();i++)
+        {
+            if (d->mList.at(i)->id == id && !d->mList.at(i)->isPlugin)
+            {
+                CollectionItemPointer item = d->mList.at(i);
+
+                item->fetched = false;
+
+                int idx = d->mList.indexOf(item);
+                emit dataChanged(index(idx, 0), index(idx, 0));
+
+                break;
+            }
+        }
+    }
+            
+    CNT_EXIT
 }

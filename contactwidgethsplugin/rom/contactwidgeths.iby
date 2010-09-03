@@ -26,7 +26,7 @@ data=ZPRIVATE\20022f35\import\widgetregistry\2002C353\contactwidgethsplugin.mani
 data=ZPRIVATE\20022f35\import\widgetregistry\2002C353\contactwidgethsplugin.xml         private\20022f35\import\widgetregistry\2002C353\contactwidgethsplugin.xml
 
 data=ZPRIVATE\20022f35\import\widgetregistry\2002C353\qtg_large_friend.svg              private\20022f35\import\widgetregistry\2002C353\qtg_large_friend.svg
+data=ZPRIVATE\20022f35\import\widgetregistry\2002C353\qtg_graf_hswidget_preview_contact.svg private\20022f35\import\widgetregistry\2002C353\qtg_graf_hswidget_preview_contact.svg 
 
-data=DATAZ_\APP_RESOURCE_DIR\contactwidgethsplugin.rsc                                  APP_RESOURCE_DIR\contactwidgethsplugin.rsc
-
+data=ZSYSTEM\Install\contactwidgethsplugin_stub.sis \system\install\contactwidgethsplugin_stub.sis
 #endif //__CONTACTWIDGETHSPLUGIN_IBY__

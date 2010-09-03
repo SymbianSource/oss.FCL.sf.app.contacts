@@ -257,7 +257,8 @@ LIBS+= -lhbcore \
        -lcntsimutility \
        -lshareui \
        -lpresencecacheqt \
-       -lxqsettingsmanager
+       -lxqsettingsmanager \
+       -lxqkeycapture
 
 # capability
 TARGET.CAPABILITY = CAP_GENERAL_DLL

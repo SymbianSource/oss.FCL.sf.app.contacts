@@ -80,6 +80,7 @@ public slots:
     
 private slots:
     void switchOrientation();
+    void handleImportContacts( HbAction *aAction );
     
 public:
     bool isFinderVisible();
@@ -114,12 +115,11 @@ private:
     HbAction*                   mNewContact;
     QContactLocalId             mHandledContactId;
     HbAction*                   mMultipleDeleter;
-    bool                        mIsDefault;
-    int                         mId;
     QActionGroup*               mActionGroup;
 	HbMenu*                     mMenu;
 	bool                        mFilterChanged;
 	CntAbstractEngine*          mEngine;
+	static bool                 mIsFirstTimeUse; // FTU flag
 };
 
 #endif /* CNTABSTRACTLISTVIEW_H_ */

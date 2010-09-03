@@ -76,7 +76,7 @@ void CntMessageAction::performAction()
     if (QContactType::TypeGroup == m_contact.type()) {
         QString interface("com.nokia.symbian.IMessageSend");
         QString operation("send(QVariantMap,QString)");
-        m_request = m_AppManager.create(interface, operation, false); // not embedded
+        m_request = m_AppManager.create(interface, operation, true); // embedded
         if (m_request==NULL) {
             emitResult(GeneralError, retValue);
             return;
@@ -104,7 +104,7 @@ void CntMessageAction::performAction()
     else if (m_detail.definitionName() == QContactPhoneNumber::DefinitionName) {
         QString interface("com.nokia.symbian.IMessageSend");
         QString operation("send(QString,qint32,QString)");
-        m_request = m_AppManager.create(interface, operation, false); // not embedded
+        m_request = m_AppManager.create(interface, operation, true); // embedded
         if (m_request==NULL) {
             emitResult(GeneralError, retValue);
             return;

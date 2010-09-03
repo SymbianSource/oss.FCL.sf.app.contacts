@@ -55,12 +55,12 @@ HbView* CntNamesView::view() const
 bool CntNamesView::isDefault() const 
 { 
     Q_D(const CntNamesView);
-    return d->mIsDefault; 
+    return true; 
 }
 int CntNamesView::viewId() const 
 {
     Q_D(const CntNamesView);
-    return d->mId; 
+    return namesView;
 }
 
 void CntNamesView::setEngine( CntAbstractEngine& aEngine )

@@ -93,7 +93,7 @@ QList<CntEditViewItem*> CntEditViewItemBuilder::phoneNumberItems(QContact& aCont
                 
                 if ( subtype == QContactOnlineAccount::SubTypeSip )
                 {
-                    detailItem->addText( hbTrId("txt_phob_formlabel_val_sip") );
+                    detailItem->addText( hbTrId("txt_phob_formlabel_sip") );
                     detailItem->addText( number.accountUri() );
                     list.append( detailItem );
                 }

@@ -25,8 +25,9 @@
 #include <QDir>
 
 CntEditViewListModel::CntEditViewListModel( QContact& aContact, CntExtensionManager& aMgr ) :
-mContact( aContact ),
-mManager( aMgr )
+mManager( aMgr ),
+mContact( aContact )
+
 {
     mLookupTable.insert( EPhonenumber,    -1 );
     mLookupTable.insert( EEmailAddress,   -1 );

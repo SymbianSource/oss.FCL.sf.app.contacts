@@ -277,32 +277,37 @@ void CntGroupActionsView::executeAction(QContact& contact, QContactDetail detail
 {
     Q_UNUSED(contact);
     
-    if (action.compare("message", Qt::CaseInsensitive) == 0) {
+    if (action.compare("message", Qt::CaseInsensitive) == 0)
+    {
         QContactPhoneNumber phoneNumber = static_cast<QContactPhoneNumber>(detail);
         mMessageActionParams.insert(phoneNumber.number(),QVariant(contact.displayLabel()));
     }
-    else if (action.compare("email", Qt::CaseInsensitive) == 0) {
+    else if (action.compare("email", Qt::CaseInsensitive) == 0)
+    {
         QContactEmailAddress email = static_cast<QContactEmailAddress>(detail);
         mEmailActionParams.append(email.emailAddress());
     }
     
     //actionpopup executed, decrement counter
     mPopupCount--;
-    if (mPopupCount==0) {
+    if (mPopupCount==0)
+    {
         QVariantMap map;
         QVariant params;
-        if (action.compare("message", Qt::CaseInsensitive) == 0) {
+        if (action.compare("message", Qt::CaseInsensitive) == 0)
+        {
             params.setValue(mMessageActionParams);
         }
-        else if (action.compare("email", Qt::CaseInsensitive) == 0) {
+        else if (action.compare("email", Qt::CaseInsensitive) == 0)
+        {
             params.setValue(mEmailActionParams);
         }
         map.insert(action,params);
-        
+
         CntActionLauncher* other = new CntActionLauncher( mEngine->contactManager(SYMBIAN_BACKEND), action);
         connect(other, SIGNAL(actionExecuted(CntActionLauncher*)), this, SLOT(actionExecuted(CntActionLauncher*)));
         other->execute(*mGroupContact, QContactDetail(), map);
-        }
+    }
 }
 
 bool CntGroupActionsView::eventFilter(QObject *obj, QEvent *event)
@@ -354,6 +359,32 @@ void CntGroupActionsView::actionCancelled()
 {
     //actionpopup cancelled, decrement counter
     mPopupCount--;
+    
+    if (mPopupCount==0)
+    {
+        QVariantMap map;
+        QVariant params;
+        QString action;
+        if (mMessageActionParams.count())
+        {
+            params.setValue(mMessageActionParams);
+            action = "message";
+        }
+        else if (mEmailActionParams.count())
+        {
+            params.setValue(mEmailActionParams);
+            action = "email";
+        }
+        else
+        {
+            return;
+        }
+        map.insert(action,params);
+
+        CntActionLauncher* other = new CntActionLauncher( mEngine->contactManager(SYMBIAN_BACKEND), action);
+        connect(other, SIGNAL(actionExecuted(CntActionLauncher*)), this, SLOT(actionExecuted(CntActionLauncher*)));
+        other->execute(*mGroupContact, QContactDetail(), map);
+    }
 }
 
 

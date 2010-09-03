@@ -19,6 +19,7 @@
 #include <hbmainwindow.h>
 #include <QTranslator>
 #include <QLocale>
+#include <QScopedPointer>
 #include "cntserviceproviderold.h"
 #include "cntserviceproviderold2.h"
 #include "cntserviceproviderfetch.h"
@@ -34,7 +35,9 @@
 
 int main(int argc, char **argv)
 {
+#if defined (TRACES) || defined (TRACE2FILE)
     qInstallMsgHandler(MSG_HANDLER);
+#endif
     
     HbApplication a( argc, argv );
 
@@ -58,12 +61,11 @@ int main(int argc, char **argv)
     CntServices* services = new CntServices();
     services->setParent( &mainWindow ); // for ownership
 
-    CntServiceViewManager* viewManager = new CntServiceViewManager(
+    QScopedPointer<CntServiceViewManager> viewManager(new CntServiceViewManager(
         &mainWindow,
-        *services ); // as CntAbstractServiceProvider
+        *services )); // as CntAbstractServiceProvider
     viewManager->setViewNavigator( navigator );
 
-    //services->setViewManager( *viewManager );
     services->setEngine( viewManager->engine() );
 
     // These objects talk with QT Highway (send/receive)

@@ -52,6 +52,7 @@ public:
         icon = other.icon;
         secondaryIcon = other.secondaryIcon;
         memberCount = other.memberCount;
+        members = other.members;
         isPlugin = other.isPlugin;
         id = other.id;
         return *this;
@@ -68,6 +69,7 @@ public:
     HbIcon      icon;
     HbIcon      secondaryIcon;
     int         memberCount;
+    QList<int>  members;
     bool        isPlugin;
     bool        fetched;
     int         id;

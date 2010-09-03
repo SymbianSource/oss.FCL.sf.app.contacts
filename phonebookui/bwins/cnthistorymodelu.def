@@ -6,12 +6,12 @@ EXPORTS
 	?doBeginInsertRows@CntHistoryModel@@AAEXABVQModelIndex@@HH@Z @ 5 NONAME ; void CntHistoryModel::doBeginInsertRows(class QModelIndex const &, int, int)
 	??1CntHistoryModel@@UAE@XZ @ 6 NONAME ; CntHistoryModel::~CntHistoryModel(void)
 	?doEndRemoveRows@CntHistoryModel@@AAEXXZ @ 7 NONAME ; void CntHistoryModel::doEndRemoveRows(void)
-	?qt_metacast@CntHistoryModel@@UAEPAXPBD@Z @ 8 NONAME ; void * CntHistoryModel::qt_metacast(char const *)
-	?metaObject@CntHistoryModel@@UBEPBUQMetaObject@@XZ @ 9 NONAME ; struct QMetaObject const * CntHistoryModel::metaObject(void) const
-	?doBeginRemoveRows@CntHistoryModel@@AAEXABVQModelIndex@@HH@Z @ 10 NONAME ; void CntHistoryModel::doBeginRemoveRows(class QModelIndex const &, int, int)
-	?qt_metacall@CntHistoryModel@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 11 NONAME ; int CntHistoryModel::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?staticMetaObject@CntHistoryModel@@2UQMetaObject@@B @ 12 NONAME ; struct QMetaObject const CntHistoryModel::staticMetaObject
-	?sort@CntHistoryModel@@UAEXHW4SortOrder@Qt@@@Z @ 13 NONAME ; void CntHistoryModel::sort(int, enum Qt::SortOrder)
+	?doBeginResetModel@CntHistoryModel@@AAEXXZ @ 8 NONAME ; void CntHistoryModel::doBeginResetModel(void)
+	?qt_metacast@CntHistoryModel@@UAEPAXPBD@Z @ 9 NONAME ; void * CntHistoryModel::qt_metacast(char const *)
+	?metaObject@CntHistoryModel@@UBEPBUQMetaObject@@XZ @ 10 NONAME ; struct QMetaObject const * CntHistoryModel::metaObject(void) const
+	?doBeginRemoveRows@CntHistoryModel@@AAEXABVQModelIndex@@HH@Z @ 11 NONAME ; void CntHistoryModel::doBeginRemoveRows(class QModelIndex const &, int, int)
+	?qt_metacall@CntHistoryModel@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 12 NONAME ; int CntHistoryModel::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?staticMetaObject@CntHistoryModel@@2UQMetaObject@@B @ 13 NONAME ; struct QMetaObject const CntHistoryModel::staticMetaObject
 	?trUtf8@CntHistoryModel@@SA?AVQString@@PBD0@Z @ 14 NONAME ; class QString CntHistoryModel::trUtf8(char const *, char const *)
 	?d_func@CntHistoryModel@@ABEPBVCntHistoryModelPrivate@@XZ @ 15 NONAME ; class CntHistoryModelPrivate const * CntHistoryModel::d_func(void) const
 	?tr@CntHistoryModel@@SA?AVQString@@PBD0H@Z @ 16 NONAME ; class QString CntHistoryModel::tr(char const *, char const *, int)
@@ -23,5 +23,6 @@ EXPORTS
 	?markAllAsSeen@CntHistoryModel@@QAEXXZ @ 22 NONAME ; void CntHistoryModel::markAllAsSeen(void)
 	??0CntHistoryModel@@QAE@IPAVQContactManager@QtMobility@@PAVQObject@@@Z @ 23 NONAME ; CntHistoryModel::CntHistoryModel(unsigned int, class QtMobility::QContactManager *, class QObject *)
 	?data@CntHistoryModel@@UBE?AVQVariant@@ABVQModelIndex@@H@Z @ 24 NONAME ; class QVariant CntHistoryModel::data(class QModelIndex const &, int) const
-	??_ECntHistoryModel@@UAE@I@Z @ 25 NONAME ; CntHistoryModel::~CntHistoryModel(unsigned int)
+	?doEndResetModel@CntHistoryModel@@AAEXXZ @ 25 NONAME ; void CntHistoryModel::doEndResetModel(void)
+	??_ECntHistoryModel@@UAE@I@Z @ 26 NONAME ; CntHistoryModel::~CntHistoryModel(unsigned int)
 

@@ -41,5 +41,6 @@
         <file alias="cntfetchmarkall.css">style/cntfetchmarkall.css</file>
         <file alias="cntfetchmarkall_color.css">style/cntfetchmarkall_color.css</file>
         <file alias="fetchdialog.css">temp/fetchdialog.css</file>
+        <file alias="cntselectiondialogmarkwidget_color.css">style/cntselectiondialogmarkwidget_color.css</file>
     </qresource>
 </RCC>

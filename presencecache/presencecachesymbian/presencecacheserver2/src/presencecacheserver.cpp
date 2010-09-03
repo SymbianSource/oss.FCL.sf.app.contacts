@@ -26,7 +26,7 @@
 #include "presencecacheserver.h"
 #include "presencecachesession.h"
 #include "presencecachedefs2.h"
-#include "presencetrace.h"
+#include "prestrace.h"
 #include "presencecachesecuritypolicy.h"
 
 //Include Cache server namespace

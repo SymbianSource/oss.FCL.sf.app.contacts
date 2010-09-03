@@ -450,6 +450,13 @@ void CntSimUtility::ParseServiceTable(AvailableStores* availableStores) const
         else {
             availableStores->FdnStorePresent = false;
         }
+        
+        if (m_serviceTable.iServices17To24 & RMobilePhone::KUstMSISDN) {
+            availableStores->OnStorePresent = true;
+        }
+        else {
+            availableStores->OnStorePresent = false;
+        }
     }
     else if (m_serviceTableType == RMobilePhone::ESIMServiceTable) {
         //ADN store is always present if SIM card is inserted
@@ -467,6 +474,13 @@ void CntSimUtility::ParseServiceTable(AvailableStores* availableStores) const
         }
         else {
             availableStores->FdnStorePresent = false;
+        }
+        
+        if (m_serviceTable.iServices9To16 & RMobilePhone::KSstMSISDN) {
+            availableStores->OnStorePresent = true;
+        }
+        else {
+            availableStores->OnStorePresent = false;
         }
     }
 }

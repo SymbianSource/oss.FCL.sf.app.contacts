@@ -174,7 +174,15 @@ private:
     void removeNotSupportedDetails(QContact& contact);
     void fillOnlineAccount( QContactOnlineAccount& account, const QString& value, const QString& subType, bool defaultForOnlineAccountIsImpp);
     QContactManager* contactManager();
-
+    
+    /**
+     * Checks if we already have the given contact global uid in database. If so,
+     * updates the local id and managerUri accordingly.
+     * 
+     * If given contact has already a local id, method does nothing.
+     */
+    void updateLocalId( QContact& aContact );
+    
 private: // from CntAbstractServiceProvider
     void CompleteServiceAndCloseApp(const QVariant& retValue);
     void overrideReturnValue(const QVariant& retValue);

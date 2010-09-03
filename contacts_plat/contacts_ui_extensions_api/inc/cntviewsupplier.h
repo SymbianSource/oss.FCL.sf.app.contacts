@@ -50,6 +50,16 @@ public:
      */
     virtual CntAbstractView* viewAt( int aIndex ) = 0;
 
+    /**
+     * Sets the view id base value for supplier. 
+     * The supplier method viewIdAt should return view ids in range
+     * from aViewIdBase to aViewIdBase + viewCount.
+     *
+     * @param int, action index 
+     * @return QString, process name
+     */
+    virtual void setViewIdBase( int aViewIdBase ) = 0;
+
 protected:
     // prevent deleting by client
     virtual ~CntViewSupplier() {}

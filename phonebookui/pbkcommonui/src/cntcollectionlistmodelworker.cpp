@@ -195,7 +195,6 @@ void CntCollectionListModelWorker::fetchInformation(int id)
     int favoriteGroupId = CntFavourite::favouriteGroupId( mManager );
 
     QString secondLineText;
-    int memberCount = 0;
 
     QContactRelationshipFilter rFilter;
     rFilter.setRelationshipType(QContactRelationship::HasMember);
@@ -228,8 +227,15 @@ void CntCollectionListModelWorker::fetchInformation(int id)
     // group members and their count
     QList<QContactLocalId> groupMemberIds = mManager->contactIds(rFilter, sortOrders);
 
+    QList<int> groupMemberIdsToInt;
     if (!groupMemberIds.isEmpty())
     {
+        // first copy all the ids to QList<int>
+        // (convert unsigned int -> int due to signalling problems with unsigned ints)
+        for(int i = 0;i < groupMemberIds.count();i++)
+        {
+            groupMemberIdsToInt << groupMemberIds.at(i);
+        }
         QStringList nameList;
         for(int i = 0;i < groupMemberIds.count();i++)
         {
@@ -257,7 +263,6 @@ void CntCollectionListModelWorker::fetchInformation(int id)
         QString names = nameList.join(", ").trimmed();
 
         secondLineText = names;
-        memberCount = groupMemberIds.count();
     }
     else
     {
@@ -271,7 +276,7 @@ void CntCollectionListModelWorker::fetchInformation(int id)
         }
     }
 
-    emit fetchDone(id, secondLineText, memberCount);
+    emit fetchDone(id, secondLineText, groupMemberIdsToInt);
     
     CNT_EXIT
 }

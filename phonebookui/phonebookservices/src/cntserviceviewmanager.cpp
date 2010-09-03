@@ -24,10 +24,10 @@ Constructor
 CntServiceViewManager::CntServiceViewManager( HbMainWindow *mainWindow,
     CntAbstractServiceProvider& aProvider ):
     CntDefaultViewManager(mainWindow)
-    {
+{
     // ownership of the factory is given to the base class.
     setViewFactory( new CntServiceViewFactory( aProvider, engine().extensionManager() ) );
-    }
+}
 
 /*!
 Destructor
