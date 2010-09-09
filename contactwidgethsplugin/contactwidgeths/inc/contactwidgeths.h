@@ -91,6 +91,8 @@ private slots:
     void thumbnailReady(QPixmap, void*, int, int);
     void loadNormalLayout();
     void onRequestComplete();
+    void onSelfContactIdChanged(const QContactLocalId &theOldId,
+            const QContactLocalId &theNewId);
     
 private:
     void createUI();
@@ -111,6 +113,7 @@ private:
     bool launchSingleContactSelecting();
     void createLauncherWithPosition();
     void loadLayout(const QString frameName, const QString textColor);
+    void finishWidget();
 
 private:
     HbIconItem *mAvatarIconItem;

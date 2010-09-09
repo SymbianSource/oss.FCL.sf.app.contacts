@@ -46,6 +46,7 @@ QObject *ContactWidgetHsPlugin::createInstance(const QServiceInterfaceDescriptor
         return new ContactWidgetHs();
     } else {
         return 0;
+		
     }
 }
 

@@ -92,7 +92,6 @@ ContactWidgetHs::ContactWidgetHs(QGraphicsItem *parent, Qt::WindowFlags flags )
   mThumbnailPixmap(QPixmap()),
   mThumbnailInProgress(false),
   mTranslator(new HbTranslator(translationsPath, translationsFile)),
-  mAvatarIcon(0),
   mPendingExit(false)
 {
     // Localization file loading   		
@@ -601,6 +600,12 @@ void ContactWidgetHs::createContactManager()
             this, SLOT(onContactsChanged(QList<QContactLocalId>)));
         connect(mContactManager, SIGNAL(contactsRemoved(QList<QContactLocalId>)),
             this, SLOT(onContactsRemoved(QList<QContactLocalId>)));
+        connect(mContactManager,
+        		SIGNAL(selfContactIdChanged(const QContactLocalId &,
+        				const QContactLocalId &)),
+        		this,
+        		SLOT(onSelfContactIdChanged(const QContactLocalId &,
+        				const QContactLocalId &)));
     }
 }
 
@@ -811,21 +816,7 @@ void ContactWidgetHs::onContactsRemoved( const QList<QContactLocalId> &contactId
     for(i=0; i<contactIds.count(); i++) {
         if (contactIds.at(i) == mContactLocalId) {
             qDebug() << "-deleting widget with removed contact " << mContactLocalId;
-
-            mAvatarIconItem->deleteLater();
-            mContactNameLabel->deleteLater();
-            
-            mContactLocalId = unUsedContactId;
-            
-            mContactHasAvatarDetail = false;
-            
-            
-            if (!mLauncher->isPendingRequest()){
-            	emit finished();
-            }
-            else {
-            	mPendingExit = true;
-            }
+            finishWidget();
             break;
         }
     }
@@ -890,5 +881,26 @@ void ContactWidgetHs::loadLayout(const QString frameName, const QString textColo
     update();
 }
 
+void ContactWidgetHs::onSelfContactIdChanged(const QContactLocalId &theOldId,
+        const QContactLocalId &theNewId) {
+    if (0 != theNewId && mContactLocalId == theNewId) {
+        qDebug() << "-deleting widget after selfcontact change"
+                 << mContactLocalId;
+        finishWidget();
+    }
+}
+
+void ContactWidgetHs::finishWidget() {
+    mAvatarIconItem->deleteLater();
+    mContactNameLabel->deleteLater();
+    mContactLocalId = unUsedContactId;
+    mContactHasAvatarDetail = false;
+    
+    if (!mLauncher->isPendingRequest()) {
+        emit finished();
+    } else {
+    	mPendingExit = true;
+    }
+}
 Q_IMPLEMENT_USER_METATYPE(CntServicesContact)
 Q_IMPLEMENT_USER_METATYPE_NO_OPERATORS(CntServicesContactList)
