@@ -70,19 +70,19 @@ SYSTEMINCLUDE   ../inc
 APP_LAYER_SYSTEMINCLUDE
 
 // Dependencies to Symbian OS components
-LIBRARY euser.lib commonengine.lib
+LIBRARY euser.lib CommonEngine.lib
 LIBRARY efsrv.lib estor.lib ecom.lib
 LIBRARY cone.lib
 LIBRARY eikcoctl.lib eikcore.lib
 
 // Dependencies to S60 components
-LIBRARY Avkon.lib PlatformEnv.lib
+LIBRARY avkon.lib platformenv.lib
 #ifdef RD_MULTIPLE_DRIVE
-LIBRARY CommonDialogs.lib
+LIBRARY commondialogs.lib
 #endif // RD_MULTIPLE_DRIVE
 
 // Dependencies to Phonebook
 LIBRARY Pbk2Presentation.lib Pbk2Commands.lib
-LIBRARY Pbk2CommonUi.lib VPbkVCardEng.lib VPbkEng.lib
+LIBRARY Pbk2CommonUI.lib VPbkVCardEng.lib VPbkEng.lib
 
 // End of File

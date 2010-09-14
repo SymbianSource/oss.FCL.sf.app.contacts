@@ -24,7 +24,7 @@
 #include <CPbk2StoreConfiguration.h>
 #include <RPbk2LocalizedResourceFile.h>
 #include <Pbk2DataCaging.hrh>
-#include <Pbk2CommonUi.rsg>
+#include <pbk2commonui.rsg>
 
 // Virtual Phonebook
 #include <CVPbkContactManager.h>

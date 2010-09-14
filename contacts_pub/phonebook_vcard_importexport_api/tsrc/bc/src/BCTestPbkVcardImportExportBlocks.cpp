@@ -398,7 +398,6 @@ TInt CBCTestPbkVcardImportExport::TestNewL( CStifItemParser& /*aItem*/ )
    ASSERT(testBCEngine->SupportsFieldType(EPbkFieldIdSecondName));
    ASSERT(testBCEngine->SupportsFieldType(EPbkFieldIdPhoneNumberVideo));
    ASSERT(testBCEngine->SupportsFieldType(EPbkFieldIdVOIP));
-   ASSERT(testBCEngine->SupportsFieldType(EPbkFieldIdPushToTalk));
    ASSERT(testBCEngine->SupportsFieldType(EPbkFieldIdShareView));
    ASSERT(testBCEngine->SupportsFieldType(EPbkFieldIdSIPID));
    ASSERT(testBCEngine->SupportsFieldType(EPbkFieldIdPrefix));

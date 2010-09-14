@@ -28,8 +28,8 @@
 #include <eikspane.h>
 
 // Phonebook.app include files
-#include <Phonebook.rsg>
-#include <PbkView.rsg>
+#include <phonebook.rsg>
+#include <pbkview.rsg>
 #include <pbkdebug.h>
 
 // PbkEng.dll include files

@@ -22,7 +22,7 @@
 
 #include <StringLoader.h>
 #include <aknnotewrappers.h>
-#include <Pbk2Commands.rsg>
+#include <pbk2commands.rsg>
 
 namespace{
 

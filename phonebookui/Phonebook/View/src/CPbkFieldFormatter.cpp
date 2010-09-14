@@ -25,7 +25,7 @@
 #include "CPbkFieldInfo.h"
 #include "CPbkSyncronizationConstants.h"
 #include <AknUtils.h>
-#include <PbkView.rsg>
+#include <pbkview.rsg>
 
 // ==================== LOCAL FUNCTIONS ====================
 

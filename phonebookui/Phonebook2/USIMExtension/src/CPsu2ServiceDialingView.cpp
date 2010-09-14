@@ -25,10 +25,10 @@
 #include <MPbk2ViewActivationTransaction.h>
 #include <CPbk2AppUiBase.h>
 #include <MPbk2ViewExplorer.h>
-#include <Pbk2USimUIRes.rsg>
+#include <pbk2usimuires.rsg>
 #include <CPbk2ViewState.h>
 #include <CPbk2NamesListControl.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 
 // System includes
 #include <StringLoader.h>

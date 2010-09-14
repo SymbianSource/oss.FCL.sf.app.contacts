@@ -25,7 +25,7 @@
 #include <MPbk2ViewActivationTransaction.h>
 #include <CPbk2AppUiBase.h>
 #include <MPbk2ViewExplorer.h>
-#include <Pbk2USimUIRes.rsg>
+#include <pbk2usimuires.rsg>
 #include <CPbk2ControlContainer.h>
 #include <Pbk2MenuFilteringFlags.hrh>
 #include <CPbk2ContactUiControlSubstitute.h>

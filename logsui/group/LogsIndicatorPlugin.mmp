@@ -59,11 +59,11 @@ LIBRARY         apparc.lib
 LIBRARY         apgrfx.lib
 LIBRARY         ecom.lib    
 LIBRARY         avkon.lib 
-LIBRARY         commonengine.lib                // StringLoader
+LIBRARY         CommonEngine.lib                // StringLoader
 LIBRARY         bafl.lib 
 LIBRARY         efsrv.lib 
 LIBRARY         centralrepository.lib
-LIBRARY         PlatformEnv.lib
+LIBRARY         platformenv.lib
 LIBRARY         cenrepnotifhandler.lib
 DEBUGLIBRARY    flogger.lib
 // End of File

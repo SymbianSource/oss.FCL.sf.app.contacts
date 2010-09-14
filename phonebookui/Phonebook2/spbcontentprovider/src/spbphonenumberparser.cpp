@@ -26,7 +26,7 @@
 #include <CVPbkDefaultAttribute.h>
 #include <MVPbkContactFieldTextData.h>
 #include <MVPbkFieldType.h>
-#include <VPbkEng.rsg>						// resource ids for numbers
+#include <vpbkeng.rsg>						// resource ids for numbers
 
 
 // ---------------------------------------------------------------------------

@@ -22,8 +22,8 @@
 
 #include <aknnotedialog.h>
 #include <StringLoader.h>
-#include <PbkAiwProvidersRes.rsg>
-#include <PbkView.rsg>
+#include <pbkaiwprovidersres.rsg>
+#include <pbkview.rsg>
 #include <CPbkContactEngine.h>
 #include <AknNoteWrappers.h>
 #include <AknWaitDialog.h>

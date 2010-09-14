@@ -25,7 +25,7 @@
 #include "CPbk2AppViewFactory.h"
 #include "CPbk2AppUi.h"
 #include "CPbk2Document.h"
-#include <Phonebook2.rsg>
+#include <phonebook2.rsg>
 #include <CPbk2ViewGraph.h>
 #include <CPbk2AppViewBase.h>
 #include <CPbk2IconInfoContainer.h>

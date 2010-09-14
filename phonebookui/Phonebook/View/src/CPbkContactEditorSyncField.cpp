@@ -23,7 +23,7 @@
 #include "MPbkContactEditorUiBuilder.h"
 #include "MPbkFieldEditorVisitor.h"
 
-#include <PbkView.rsg>
+#include <pbkview.rsg>
 
 #include <eikdialg.h>
 #include <eikedwin.h>

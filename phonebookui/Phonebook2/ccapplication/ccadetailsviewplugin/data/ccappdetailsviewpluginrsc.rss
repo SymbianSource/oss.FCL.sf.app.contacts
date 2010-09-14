@@ -26,7 +26,7 @@ NAME CCDW // 4 letter ID
 #include <eikon.rh>
 #include <avkon.rh>
 
-#include <EIKCORE.rsg>
+#include <eikcore.rsg>
 #include <eikon.rsg>
 #include <avkon.hrh>
 #include <avkon.rsg>

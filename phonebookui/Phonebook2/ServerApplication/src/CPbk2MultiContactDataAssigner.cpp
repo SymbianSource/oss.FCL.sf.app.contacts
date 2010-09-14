@@ -31,8 +31,8 @@
 #include "MPbk2SelectFieldProperty.h"
 #include <CPbk2FetchDlg.h>
 #include <MPbk2ApplicationServices.h>
-#include <Pbk2UIControls.rsg>
-#include <Pbk2ServerApp.rsg>
+#include <pbk2uicontrols.rsg>
+#include <pbk2serverapp.rsg>
 
 // Virtual Phonebook
 #include <CVPbkContactManager.h>

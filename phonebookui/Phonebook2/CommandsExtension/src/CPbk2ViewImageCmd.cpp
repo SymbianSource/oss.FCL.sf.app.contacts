@@ -22,11 +22,11 @@
 
 // Phonebook 2
 #include "Pbk2DataCaging.hrh"
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <MPbk2CommandObserver.h>
 #include <TPbk2StoreContactAnalyzer.h>
-#include <Pbk2Commands.rsg>
-#include <Pbk2CmdExtRes.rsg>
+#include <pbk2commands.rsg>
+#include <pbk2cmdextres.rsg>
 
 // Virtual Phonebook
 #include <MVPbkStoreContact.h>

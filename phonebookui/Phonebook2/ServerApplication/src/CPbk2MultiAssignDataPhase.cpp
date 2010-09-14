@@ -33,7 +33,7 @@
 #include <CPbk2FieldPropertyArray.h>
 #include <CPbk2PresentationContact.h>
 #include <MPbk2ApplicationServices.h>
-#include <Pbk2ServerApp.rsg>
+#include <pbk2serverapp.rsg>
 
 // Virtual Phonebook
 #include <MVPbkContactLink.h>

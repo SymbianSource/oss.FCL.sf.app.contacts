@@ -16,7 +16,7 @@
 */
 
 // INCLUDES
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <PtiEngine.h>
 #include <centralrepository.h>
 #include <AknFepInternalCRKeys.h>
@@ -301,7 +301,7 @@ void CPcsAlgorithm2::PerformSearchL(const CPsSettings& aSettings,
 
 
         // Sort rule        
-        TLinearOrder<CPsData> rule(CPcsAlgorithm2Utils::CompareDataBySortOrder);
+        TLinearOrder<CPsData> rule(CPcsAlgorithm2Utils::CompareDataBySortOrderL);
 
         // Avoid duplicates and add new results
         TIdentityRelation<CPsData> identityRule(CPsData::CompareById);

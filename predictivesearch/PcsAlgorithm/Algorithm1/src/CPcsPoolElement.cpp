@@ -74,10 +74,10 @@ CPsData* CPcsPoolElement::GetPsData()
 }
 
 // ----------------------------------------------------------------------------
-// CPcsPoolElement::CompareByData
-// Calls CPsData::CompareByData to compare CPsData objects
+// CPcsPoolElement::CompareByDataL
+//
 // ----------------------------------------------------------------------------
-TInt CPcsPoolElement::CompareByData ( const CPcsPoolElement& aObject1,  const CPcsPoolElement& aObject2 )
+TInt CPcsPoolElement::CompareByDataL ( const CPcsPoolElement& aObject1,  const CPcsPoolElement& aObject2 )
 {
     CPsData *data1 = const_cast<CPcsPoolElement&> (aObject1).GetPsData();
     CPsData *data2 = const_cast<CPcsPoolElement&> (aObject2).GetPsData();  

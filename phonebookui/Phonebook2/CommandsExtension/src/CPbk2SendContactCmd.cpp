@@ -22,8 +22,8 @@
 #include "Pbk2SendCmdUtils.h"
 #include "CPbk2vCardConverter.h"
 #include <MPbk2CommandObserver.h>
-#include <Pbk2Commands.rsg>
-#include <Pbk2CmdExtRes.rsg>
+#include <pbk2commands.rsg>
+#include <pbk2cmdextres.rsg>
 #include <Pbk2ProcessDecoratorFactory.h>
 #include <MPbk2ProcessDecorator.h>
 #include <MPbk2ContactLinkIterator.h>
@@ -42,7 +42,7 @@
 #include <MVPbkStoreContact.h>
 #include <MVPbkFieldType.h>
 #include <TVPbkFieldTypeMapping.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 // System includes
 #include <txtrich.h>

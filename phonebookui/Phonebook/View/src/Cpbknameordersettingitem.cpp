@@ -21,7 +21,7 @@
 #include "Cpbknameordersettingitem.h"   // This class
 #include <CPbkContactEngine.h>
 #include <StringLoader.h>
-#include <PbkView.rsg>
+#include <pbkview.rsg>
 
 #include <PbkView.hrh>
 #include "PbkViewUtils.h"

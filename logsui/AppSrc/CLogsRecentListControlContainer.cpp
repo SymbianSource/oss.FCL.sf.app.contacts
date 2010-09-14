@@ -23,7 +23,7 @@
 #include <akntabgrp.h>
 #include <AknsConstants.h>  //For skinned icons
 #include <csxhelp/log.hlp.hrh>
-#include <Logs.rsg>
+#include <logs.rsg>
 #include <logs.mbg>   //Index file for Logs icons.
 
 #include "CLogsRecentListControlContainer.h"
@@ -119,11 +119,10 @@ void CLogsRecentListControlContainer::ConstructL( const TRect& aRect )
 
     iAdapter = CLogsRecentListAdapter::NewL( this, iLastOwnIconOffset );
 
+    // Shows "No missed calls" in this case
+     MakeEmptyTextListBoxL( iListBox, EmptyListboxResourceL() );
     iListBox->Model()->SetItemTextArray( iAdapter );
     
-    //The below was a bad place for this as container is not deleted when we lose foreground
-    //but we still reread events. Instead we handle this in CLogsRecentListView::StateChangedL 
-    //MakeEmptyTextListBoxL( iListBox, EmptyListboxResource() );  //Shows "no data" in this case
     MakeScrollArrowsL( iListBox );
 
     //Create recent list view tab group (Logs.rss)

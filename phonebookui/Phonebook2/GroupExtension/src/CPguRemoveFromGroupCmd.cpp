@@ -20,7 +20,7 @@
 #include "CPguRemoveFromGroupCmd.h"
 
 // Phonebook2
-#include <Pbk2GroupUIRes.rsg>
+#include <pbk2groupuires.rsg>
 #include <MPbk2CommandObserver.h>
 #include <MPbk2ContactUiControl.h>
 #include <CPbk2GeneralConfirmationQuery.h>

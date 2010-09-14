@@ -29,7 +29,7 @@
 #include <akncontext.h>  
 #include <AknDef.h>   //KEikDynamicLayoutVariantSwitch
 #include <StringLoader.h>
-#include <Logs.rsg>
+#include <logs.rsg>
 
 #include "CLogsBaseControlContainer.h"
 #include "MLogsKeyProcessor.h"

@@ -22,7 +22,7 @@
 #include "CPbk2IconInfo.h"
 #include <RPbk2LocalizedResourceFile.h>
 #include <Pbk2DataCaging.hrh>
-#include <Pbk2CommonUi.rsg>
+#include <pbk2commonui.rsg>
 #include <CPbk2IconInfoContainer.h>
 
 // System includes

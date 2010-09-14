@@ -79,6 +79,7 @@ private:
 	TVCardVersion 		iFormat;
 	TUint64			iFilter;	
 	RTz                 	iTzClient;
+	TInt iMatchDigitCount;
 	};
 
 #endif // PBAPVCARDEXPORTERUTIL_H

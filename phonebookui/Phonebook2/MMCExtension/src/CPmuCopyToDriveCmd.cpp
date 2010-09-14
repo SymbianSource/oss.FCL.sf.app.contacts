@@ -27,7 +27,7 @@
 #include <Pbk2ProcessDecoratorFactory.h>
 #include <MPbk2ProcessDecorator.h>
 #include <TPbk2CopyContactsResults.h>
-#include <Pbk2MmcUIRes.rsg>
+#include <pbk2mmcuires.rsg>
 #include <CPbk2DriveSpaceCheck.h>
 
 // Virtual Phonebook

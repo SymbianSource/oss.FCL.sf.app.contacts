@@ -19,12 +19,12 @@
 #include "pbk2mapuiuid.h"
 #include "pbk2mapcommands.hrh"
 #include <Pbk2Commands.hrh>
-#include <Pbk2Commands.rsg>
+#include <pbk2commands.rsg>
 #include <Pbk2UIExtension.rh>
 #include <Pbk2ViewId.hrh>
 #include <phonebook2.loc>
 #include "Pbk2UIControls.hrh"
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include "Pbk2EditorLineIds.hrh" 
 #include "Pbk2FieldProperty.hrh" 
 #include "Pbk2UIFieldProperty.hrh"

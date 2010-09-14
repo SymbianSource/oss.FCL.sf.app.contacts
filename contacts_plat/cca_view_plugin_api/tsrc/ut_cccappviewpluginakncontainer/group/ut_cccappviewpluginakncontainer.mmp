@@ -36,7 +36,7 @@ APP_LAYER_SYSTEMINCLUDE
 SYSTEMINCLUDE /epoc32/include/ecom
 
 LIBRARY     euser.lib
-LIBRARY     stiftestinterface.lib
+LIBRARY     StifTestInterface.lib
 LIBRARY     ecom.lib
 LIBRARY		flogger.lib
 LIBRARY     cone.lib//avkon view/container

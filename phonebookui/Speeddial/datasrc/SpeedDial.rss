@@ -35,7 +35,7 @@ NAME    SPDI // 4 letter ID
 #include <avkon.mbg>
 #include <avkon.loc>
 #include <avkon.hrh>
-#include <EIKCTL.rsg>
+#include <eikctl.rsg>
 
 #include <bldvariant.hrh>
 

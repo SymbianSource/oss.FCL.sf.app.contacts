@@ -27,7 +27,7 @@
 #include <bautils.h> //parser
 #include <featmgr.h>
 
-#include <Logs.rsg>  
+#include <logs.rsg>  
 #include <StringLoader.h>   // Series 60 localisation stringloader
 #include <hlplch.h>
 

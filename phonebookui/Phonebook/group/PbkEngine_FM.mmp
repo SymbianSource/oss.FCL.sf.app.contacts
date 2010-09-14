@@ -73,9 +73,9 @@ LIBRARY efsrv.lib
 LIBRARY ecom.lib
 LIBRARY bafl.lib
 
-LIBRARY FeatMgr.lib
+LIBRARY featmgr.lib
 
-LIBRARY PbkEng.lib
+LIBRARY pbkeng.lib
 
 
 // End of File

@@ -30,7 +30,7 @@
 #include <MPbk2ContactNameFormatter.h>
 #include <MVPbkStoreContact.h>
 #include <CPbk2IconArray.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <MPbk2Command.h>
 #include <Pbk2MenuFilteringFlags.hrh>
 #include <MVPbkContactLink.h>
@@ -56,13 +56,13 @@
 #include <ccappmycardpluginrsc.rsg>
 #include <gulicon.h>
 #include <phonebook2ece.mbg>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include "MVPbkFieldType.h"
 #include <aknstyluspopupmenu.h>
 #include <e32std.h>
 #include <aknlayoutscalable_apps.cdl.h>
 #include <Pbk2PresentationUtils.h>
-#include <Pbk2Presentation.rsg>
+#include <pbk2presentation.rsg>
 #include <RPbk2LocalizedResourceFile.h>
 #include <Pbk2DataCaging.hrh>
 #include <pbk2nameordercenrep.h>

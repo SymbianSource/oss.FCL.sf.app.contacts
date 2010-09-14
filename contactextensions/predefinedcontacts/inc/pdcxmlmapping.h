@@ -20,7 +20,7 @@
 #define PDCXMLMAPPING_H
 
 // System includes 
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 // User includes
 #include "pdcstringconstants.h"     // PdcStringTable

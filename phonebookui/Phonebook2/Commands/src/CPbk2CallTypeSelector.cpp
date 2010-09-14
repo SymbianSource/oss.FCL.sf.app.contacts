@@ -22,7 +22,7 @@
 // Phonebook 2
 #include <MPbk2ContactUiControl.h>
 #include <Pbk2Commands.hrh>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <TPbk2StoreContactAnalyzer.h>
 
 // Virtual Phonebook

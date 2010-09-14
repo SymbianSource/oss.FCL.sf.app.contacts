@@ -36,7 +36,7 @@
 #include <MVPbkContactFieldTextData.h>
 #include <MVPbkContactStoreProperties.h>
 #include <MVPbkContactLink.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <VPbkContactStoreUris.h>
 #include <CVPbkContactViewDefinition.h>
 #include <MVPbkContactViewBase.h>

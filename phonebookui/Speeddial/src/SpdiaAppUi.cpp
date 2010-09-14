@@ -29,7 +29,7 @@
 #include <featmgr.h>
 #include <aknview.h>
 
-#include <SpeedDial.rsg>
+#include <speeddial.rsg>
 #include <AknGlobalNote.h>
 
 #include "speeddial.hrh"

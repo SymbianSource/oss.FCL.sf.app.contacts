@@ -30,7 +30,7 @@
 
 
 // PbkView classes
-#include    <PbkView.rsg>
+#include    <pbkview.rsg>
 #include    <CPbkIconArray.h>
 #include    "TPbkAddItemWrapper.h"
 

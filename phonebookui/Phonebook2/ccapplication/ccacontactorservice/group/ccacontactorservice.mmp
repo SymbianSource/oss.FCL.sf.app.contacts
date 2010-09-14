@@ -63,7 +63,7 @@ LIBRARY               euser.lib
 LIBRARY               efsrv.lib
 LIBRARY               bafl.lib
 LIBRARY               aiwdialdata.lib //AIW
-LIBRARY               commonengine.lib
+LIBRARY               CommonEngine.lib
 LIBRARY               servicehandler.lib //AIW
 LIBRARY               sendui.lib
 LIBRARY               ecom.lib 

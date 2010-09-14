@@ -23,7 +23,7 @@
 #include <akntabgrp.h>			// tab group
 #include <AknsConstants.h>      // for skinned icons
 
-#include <Logs.rsg>				// note structure
+#include <logs.rsg>				// note structure
 #include <logs.mbg>				// Index file for Logs icons.
 #include "CGprsCtControlContainer.h"
 #include "CGprsCtView.h"

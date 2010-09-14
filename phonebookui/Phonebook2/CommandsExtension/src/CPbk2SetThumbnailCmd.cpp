@@ -25,8 +25,8 @@
 #include "CPbk2DrmManager.h"
 #include "Pbk2DataCaging.hrh"
 #include "Pbk2PresentationUtils.h"
-#include <Pbk2Commands.rsg>
-#include <Pbk2CommonUi.rsg>
+#include <pbk2commands.rsg>
+#include <pbk2commonui.rsg>
 #include <MPbk2CommandObserver.h>
 #include <RPbk2LocalizedResourceFile.h>
 

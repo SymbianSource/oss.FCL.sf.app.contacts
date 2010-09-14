@@ -173,7 +173,7 @@ TInt CPcsAlgorithm2FilterHelper::AddToPoolL(CPsData* aPsData, RPointerArray<TDes
     aPatternSequence.Sort(rule);
 
     // Sort rule        
-    TLinearOrder<CPsData> psDataRule(CPcsAlgorithm2Utils::CompareDataBySortOrder);
+    TLinearOrder<CPsData> psDataRule(CPcsAlgorithm2Utils::CompareDataBySortOrderL);
 
     // Search Rule
     TIdentityRelation<CPsData> identitySearchRule(CPsData::CompareById);

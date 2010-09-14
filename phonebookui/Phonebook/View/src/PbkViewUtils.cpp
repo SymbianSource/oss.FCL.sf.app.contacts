@@ -19,7 +19,7 @@
 
 // INCLUDE FILES
 #include "PbkViewUtils.h"
-#include <PbkView.rsg>
+#include <pbkview.rsg>
 #include <StringLoader.h>
 #include <CPbkContactEngine.h>
 

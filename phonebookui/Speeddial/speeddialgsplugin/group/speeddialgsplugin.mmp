@@ -66,14 +66,14 @@ LIBRARY   eikcore.lib
 LIBRARY   egul.lib
 LIBRARY   flogger.lib           // File logging
 LIBRARY   CommonEngine.lib      // For RConeResourceLoader
-LIBRARY   FeatMgr.lib           // Feature manager 
-LIBRARY   CentralRepository.lib
+LIBRARY   featmgr.lib           // Feature manager
+LIBRARY   centralrepository.lib
 LIBRARY   aknskinsrv.lib        // for enhanced skinning
 LIBRARY   aknskins.lib          // for enhanced skinning
-LIBRARY   GSEcomPlugin.lib
+LIBRARY   gsecomplugin.lib
 LIBRARY   hlplch.lib            // for "Help" options menu
-LIBRARY   GSFramework.lib       // For base classes
-LIBRARY   GSListBox.lib         // For CGSListBoxItemTextArray
+LIBRARY   gsframework.lib       // For base classes
+LIBRARY   gslistbox.lib         // For CGSListBoxItemTextArray
 LIBRARY   apgrfx.lib 
 LIBRARY   apparc.lib
 LIBRARY         ws32.lib

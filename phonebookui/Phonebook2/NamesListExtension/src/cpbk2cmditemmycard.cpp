@@ -21,7 +21,7 @@
 // Pbk2
 #include "CPbk2AddFavoritesVisibility.h"
 #include <Pbk2Commands.hrh>
-#include <Pbk2ExNamesListRes.rsg>
+#include <pbk2exnameslistres.rsg>
 #include <MPbk2AppUi.h>
 #include <MPbk2ApplicationServices.h>
 #include "cpbk2mycard.h"

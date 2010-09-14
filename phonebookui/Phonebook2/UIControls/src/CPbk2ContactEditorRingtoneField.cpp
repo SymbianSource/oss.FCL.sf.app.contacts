@@ -35,7 +35,7 @@
 #include <MVPbkContactFieldTextData.h>
 #include <VPbkFieldType.hrh>
 #include <MVPbkFieldType.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 
 // System includes
 #include <eikcapc.h>

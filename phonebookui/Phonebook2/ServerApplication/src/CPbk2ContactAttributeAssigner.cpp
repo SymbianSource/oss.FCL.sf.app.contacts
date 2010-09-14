@@ -31,7 +31,7 @@
 #include "CPbk2AttributeAddressSelectPhase.h"
 #include "CPbk2PrepareAttributeAssignPhase.h"
 #include <CPbk2FetchDlg.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <MPbk2DialogEliminator.h>
 #include <CPbk2StoreManager.h>
 #include <MPbk2ApplicationServices.h>
@@ -42,7 +42,7 @@
 #include <MVPbkContactLink.h>
 #include <CVPbkFieldTypeSelector.h>
 #include <VPbkPublicUid.h>
-#include <VPbkFieldTypeSelectors.rsg>
+#include <vpbkfieldtypeselectors.rsg>
 #include <VPbkFieldTypeSelectorFactory.h>
 #include <VPbkContactViewFilterBuilder.h>
 

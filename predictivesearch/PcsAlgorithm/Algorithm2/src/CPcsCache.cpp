@@ -22,7 +22,7 @@
 
 // INCLUDE FILES
 #include <MVPbkContactLink.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 #include "FindUtilChineseECE.h"
 #include "CPsData.h"
@@ -168,7 +168,7 @@ void CPcsCache::AddToPoolL(TUint64& aPoolMap, CPsData& aData)
     // element doesn't get added for the same data
     RHashMap<TInt, TInt> elementHash;
     CleanupClosePushL( elementHash );
-    TLinearOrder<CPcsPoolElement> rule(CPcsPoolElement::CompareByData);
+    TLinearOrder<CPcsPoolElement> rule(CPcsPoolElement::CompareByDataL);
 
     // Parse thru each data element
     const TInt dataElementCount = aData.DataElementCount();
@@ -259,7 +259,7 @@ void CPcsCache::AddToCacheL(CPsData& aData)
     iCacheInfo.InsertL(aData.Id(), poolMap);
 
     // Include this element in master pool        
-    TLinearOrder<CPsData> rule(CPcsAlgorithm2Utils::CompareDataBySortOrder);
+    TLinearOrder<CPsData> rule(CPcsAlgorithm2Utils::CompareDataBySortOrderL);
     iMasterPool.InsertInOrderAllowRepeatsL(&aData, rule);
     }
 

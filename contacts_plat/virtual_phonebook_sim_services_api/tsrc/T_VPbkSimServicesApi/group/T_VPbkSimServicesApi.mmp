@@ -36,11 +36,11 @@ USERINCLUDE     ../inc
 APP_LAYER_SYSTEMINCLUDE
 
 LIBRARY         euser.lib
-LIBRARY         stiftestinterface.lib
+LIBRARY         StifTestInterface.lib
 LIBRARY         stiftestengine.lib
 LIBRARY         VPbkEng.lib
 LIBRARY         VPbkSimStoreImpl.lib
-LIBRARY         VPbkSimStoreService.lib
+LIBRARY         vpbksimstoreservice.lib
 
 LANG            SC
 

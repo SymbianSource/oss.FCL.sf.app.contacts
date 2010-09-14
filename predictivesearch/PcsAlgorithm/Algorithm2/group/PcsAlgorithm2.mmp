@@ -51,7 +51,7 @@ USERINCLUDE     ../../../PcsUtils/inc
 APP_LAYER_SYSTEMINCLUDE
 
 LIBRARY         euser.lib
-LIBRARY         eCom.lib
+LIBRARY         ecom.lib
 LIBRARY         efsrv.lib
 LIBRARY         estor.lib
 LIBRARY         flogger.lib
@@ -60,9 +60,9 @@ LIBRARY         gdi.lib
 LIBRARY         eikcoctl.lib 
 LIBRARY         PcsUtils.lib
 LIBRARY         ptiengine.lib
-LIBRARY         CenRepNotifHandler.lib
+LIBRARY         cenrepnotifhandler.lib
 LIBRARY         cone.lib
 LIBRARY         fepbase.lib 
 LIBRARY         centralrepository.lib
-LIBRARY         findutil.lib
+LIBRARY         FindUtil.lib
 LIBRARY         pbkeng.lib

@@ -39,12 +39,12 @@ USERINCLUDE     ../inc
 APP_LAYER_SYSTEMINCLUDE
 
 LIBRARY         euser.lib
-LIBRARY         stiftestinterface.lib
+LIBRARY         StifTestInterface.lib
 LIBRARY         stiftestengine.lib
 //LIBRARY         PsServerClientAPI.lib 
 LIBRARY         PcsUtils.lib
 LIBRARY         VPbkEng.lib
-LIBRARY         eCom.lib
+LIBRARY         ecom.lib
 LIBRARY         flogger.lib
 LIBRARY         estor.lib
 

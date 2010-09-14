@@ -43,7 +43,7 @@
 #include <CPbk2FieldPropertyArray.h>
 #include <CPbk2TabGroupContainer.h>
 #include <MPbk2ContactViewSupplier.h>
-#include <Pbk2CommonUi.rsg>
+#include <pbk2commonui.rsg>
 #include <Pbk2UID.h>
 #include <Phonebook2PublicPSKeys.h> 
 

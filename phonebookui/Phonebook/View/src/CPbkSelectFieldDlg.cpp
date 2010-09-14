@@ -24,7 +24,7 @@
 #include    <eikclbd.h>     // CColumnListBoxData
 #include    <calslbs.h>     // AknTextUtils
 
-#include    <PbkView.rsg>   // View DLL resource Ids
+#include    <pbkview.rsg>   // View DLL resource Ids
 #include    "CPbkFieldListBoxModel.h"
 #include    "MPbkControlKeyObserver.h"
 #include    <CPbkIconArray.h>

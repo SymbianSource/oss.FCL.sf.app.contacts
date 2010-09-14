@@ -73,4 +73,6 @@ EXPORTS
 	_ZThn28_N24CPbk2AiwInterestItemBase7AttachLEiii @ 72 NONAME ; #<thunk>#
 	_ZThn28_NK24CPbk2AiwInterestItemBase10InterestIdEv @ 73 NONAME ; #<thunk>#
 	_ZN20CPbk2DriveSpaceCheck8SetStoreERK7TDesC16 @ 74 NONAME
+	_ZN17CPbk2CommandStore18DestroyAllCommandsEv @ 75 NONAME
+	_ZN19CPbk2CommandHandler12CommandStoreEv @ 76 NONAME
 

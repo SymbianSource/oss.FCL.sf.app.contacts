@@ -28,7 +28,7 @@
 #include <LogsUiCmdStarter.h>
 
 #include <StringLoader.h> 
-#include <Logs.rsg>
+#include <logs.rsg>
 #include <AknUtils.h>
 #include <LogsDomainCRKeys.h>
 

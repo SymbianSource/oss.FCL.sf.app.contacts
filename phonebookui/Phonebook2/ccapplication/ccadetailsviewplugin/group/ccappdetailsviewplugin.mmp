@@ -58,7 +58,7 @@ LIBRARY         bafl.lib
 LIBRARY         ecom.lib
 LIBRARY         VPbkEng.lib
 LIBRARY         Pbk2Presentation.lib
-LIBRARY         Pbk2UIControls.lib
+LIBRARY         pbk2uicontrols.lib
 LIBRARY         Pbk2CommonUI.lib
 LIBRARY         Pbk2UIExt.lib
 LIBRARY         Pbk2Commands.lib
@@ -72,7 +72,7 @@ LIBRARY         efsrv.lib
 LIBRARY         aknskins.lib
 LIBRARY         eikcoctl.lib
 LIBRARY         servicehandler.lib // aiw
-LIBRARY         commonengine.lib
+LIBRARY         CommonEngine.lib
 LIBRARY         CdlEngine.lib
 LIBRARY         AknLayout2Scalable.lib
 LIBRARY         cone.lib
@@ -80,7 +80,7 @@ LIBRARY         eikcore.lib
 LIBRARY         eikctl.lib
 LIBRARY         ws32.lib
 LIBRARY         mnclientlib.lib
-LIBRARY         SpdCtrl.lib
+LIBRARY         spdctrl.lib
 DEBUGLIBRARY    flogger.lib
 LIBRARY         ccacontactorservice.lib
 

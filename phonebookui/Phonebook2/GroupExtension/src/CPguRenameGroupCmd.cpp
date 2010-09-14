@@ -22,7 +22,7 @@
 // Phonebook 2
 #include "CPguGroupNameQueryDlg.h"
 #include "Pbk2GroupConsts.h"
-#include <Pbk2GroupUIRes.rsg>
+#include <pbk2groupuires.rsg>
 #include <MPbk2CommandObserver.h>
 #include <MPbk2ContactUiControl.h>
 #include <CPbk2StoreConfiguration.h>

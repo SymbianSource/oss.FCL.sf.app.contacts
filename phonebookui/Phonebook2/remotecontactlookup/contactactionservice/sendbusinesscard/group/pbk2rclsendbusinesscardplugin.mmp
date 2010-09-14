@@ -49,7 +49,7 @@ LIBRARY                 efsrv.lib
 LIBRARY                 euser.lib 
 LIBRARY                 ecom.lib
 LIBRARY                 egul.lib
-LIBRARY                 commonengine.lib
+LIBRARY                 CommonEngine.lib
 LIBRARY                 bafl.lib
 LIBRARY                 cone.lib 
 LIBRARY                 VPbkEng.lib
@@ -59,19 +59,19 @@ LIBRARY                 aknskins.lib
 LIBRARY                 centralrepository.lib
 LIBRARY                 Pbk2Presentation.lib
 
-LIBRARY					sendui.lib
-LIBRARY					etext.lib
-LIBRARY					featmgr.lib
-LIBRARY					bcardeng.lib
-LIBRARY					pbkeng.lib
-LIBRARY  				estor.lib //RFileWriteStream
-LIBRARY	 				PlatformEnv.lib
-LIBRARY					VPbkVCardEng.lib
+LIBRARY			sendui.lib
+LIBRARY			etext.lib
+LIBRARY			featmgr.lib
+LIBRARY			bcardeng.lib
+LIBRARY			pbkeng.lib
+LIBRARY  		estor.lib //RFileWriteStream
+LIBRARY	 		platformenv.lib
+LIBRARY			VPbkVCardEng.lib
 
 
-LIBRARY 				eikcoctl.lib 
-LIBRARY 				apparc.lib 
-LIBRARY 				apmime.lib
+LIBRARY 		eikcoctl.lib 
+LIBRARY 		apparc.lib 
+LIBRARY 		apmime.lib
 
 #if (PBKX_DEBUG_LEVEL > 0)
 LIBRARY                 pbkxdebug.lib

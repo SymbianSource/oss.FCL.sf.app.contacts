@@ -65,17 +65,17 @@ SOURCE          BCTestPbkVcardImportExportBlocks.cpp
 
 
 LIBRARY         euser.lib
-LIBRARY         stiftestinterface.lib
+LIBRARY         StifTestInterface.lib
 LIBRARY         stiftestengine.lib
 
 LIBRARY                 bafl.lib
-LIBRARY                 BCardEng.lib
+LIBRARY                 bcardeng.lib
 LIBRARY                 cntmodel.lib
 LIBRARY                 efsrv.lib
 LIBRARY                 estor.lib
-LIBRARY                 ImageConversion.lib
-LIBRARY                 PbkEng.lib
-LIBRARY                 PbkView.lib
+LIBRARY                 imageconversion.lib
+LIBRARY                 pbkeng.lib
+LIBRARY                 pbkview.lib
 LIBRARY                 vcard.lib
 LIBRARY                 versit.lib
 LIBRARY        			charconv.lib // unicode coversion

@@ -27,7 +27,7 @@
 #include "CPbk2ContactFetchPhase.h"
 #include "CPbk2AddressSelectPhase.h"
 #include <CPbk2StoreManager.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <TPbk2AddressSelectParams.h>
 #include <Pbk2IPCPackage.h>
 #include <MPbk2ApplicationServices.h>

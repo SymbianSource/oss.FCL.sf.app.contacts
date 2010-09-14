@@ -38,7 +38,7 @@ void CPcsAlgorithm2Utils::FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR
     {
     TInt maxIndex = 0;
     TInt maxValue = aSearchResultsArr[maxIndex]->Count();
-    TLinearOrder<CPsData> rule(CPcsAlgorithm2Utils::CompareDataBySortOrder);
+    TLinearOrder<CPsData> rule(CPcsAlgorithm2Utils::CompareDataBySortOrderL);
 
     // Find the largest array in aSearchResultsArr
     const TInt searchResultsArrCount = aSearchResultsArr.Count(); 
@@ -99,102 +99,128 @@ TInt CPcsAlgorithm2Utils::MyCompareC(const TDesC& aLeft, const TDesC& aRight)
     }
 
 // ----------------------------------------------------------------------------
-// CPcsAlgorithm2Utils::CompareDataBySortOrder()
+// CPcsAlgorithm2Utils::CompareDataBySortOrderL()
 // TLinearOrder rule for comparison of data objects
 // ----------------------------------------------------------------------------
-TInt CPcsAlgorithm2Utils::CompareDataBySortOrder(const CPsData& aObject1,
-                                                 const CPsData& aObject2)
+TInt CPcsAlgorithm2Utils::CompareDataBySortOrderL(const CPsData& aObject1,
+                                                  const CPsData& aObject2)
     {
-    _LIT(KSpace, " ");
+    TInt compareRes = 0;
+
+    if( CPsData::CompareById(aObject1, aObject2) )
+        {
+        return compareRes;
+        }
 
     // Fetch the cache list stored in TLS to recover the sort order
     typedef RPointerArray<CPcsCache> PTR;
-    PTR* pcsCache = static_cast<PTR*> (Dll::Tls());
+    PTR* pcsCache = static_cast<PTR*>(Dll::Tls());
+    User::LeaveIfNull(pcsCache);
 
-    // Data1
-    TBuf<255> data1(KNullDesC);
-    TInt uriId1 = aObject1.UriId();
-    CPcsCache* cache = (*pcsCache)[uriId1];
-
-    RArray<TInt> indexOrder;
+    CPcsCache* cache1 = (*pcsCache)[aObject1.UriId()];
+    CPcsCache* cache2 = (*pcsCache)[aObject2.UriId()];
+    RArray<TInt> indexOrder1;
+    RArray<TInt> indexOrder2;
 
     // Get the index order based on sort order from the cache
-    cache->GetIndexOrder(indexOrder);
+    cache1->GetIndexOrder(indexOrder1);
+    CleanupClosePushL(indexOrder1);
+    cache2->GetIndexOrder(indexOrder2);
+    CleanupClosePushL(indexOrder2);
 
-    // Append sort order elements first
-    const TInt indexOrderCount1 = indexOrder.Count();
-    for (int i = 0; i < indexOrderCount1; i++)
+    // Check if Sort Order is identical (it must be for same cache)
+    TBool sameIndexOrder = ETrue;
+    if ( indexOrder1.Count() != indexOrder2.Count() )
         {
-        TInt index = indexOrder[i];
-        if (index < aObject1.DataElementCount() && aObject1.Data(index))
+        sameIndexOrder = EFalse;
+        }
+    else
+        {
+        for ( TInt i = 0; i < indexOrder1.Count(); i++ )
             {
-            // Trim the unnecessary white spaces/special chars before we compare
-            TBuf<255> str(KNullDesC);
-
-            str = aObject1.Data(index)->Des();
-            CPcsAlgorithm2Utils::MyTrim(str);
-
-            data1 += str;
-            data1 += KSpace;
+            if (indexOrder1[i] != indexOrder2[i])
+                {
+                sameIndexOrder = EFalse;
+                break;
+                }
             }
         }
 
-    /* --- NOT SURE IF THIS BEHAVIOR IS REQUIRED ---
-     // Append remaining elements in order
-     for ( int i = 0; i < aObject1.DataElementCount(); i++ )
-     {
-     if ( indexOrder.Find(i) == KErrNone && aObject1.Data(i) )
-     {
-     data1 += aObject1.Data(i)->Des();
-     data1 += KSpace;
-     }	     
-     }
-     */
-
-    // Data2
-    TBuf<255> data2(KNullDesC);
-    TInt uriId2 = aObject2.UriId();
-    cache = (*pcsCache)[uriId2];
-
-    indexOrder.Reset();
-
-    // Get the index order based on sort order from the cache
-    cache->GetIndexOrder(indexOrder);
-    const TInt indexOrderCount2 = indexOrder.Count();
-
-    // Append sort order elements first
-    for (int i = 0; i < indexOrderCount2; i++)
+    // Sort Orders among diffent caches should be the same, anyway
+    // if caches and SO are different we compare by cache URI index
+    if (!sameIndexOrder)
         {
-        TInt index = indexOrder[i];
-        if (index < aObject2.DataElementCount() && aObject2.Data(index))
+        compareRes = aObject1.UriId() - aObject2.UriId();
+
+        CleanupStack::PopAndDestroy(&indexOrder2);
+        CleanupStack::PopAndDestroy(&indexOrder1);
+        return compareRes;
+        }
+
+    // The comparison between contacts data is done for the sort order
+    // fields skipping the ones that are empty
+    TInt indexCount = indexOrder1.Count();
+    TInt idx1 = 0;
+    TInt idx2 = 0;
+    while ( compareRes == 0 && idx1 < indexCount && idx2 < indexCount )
+        {
+        // Get contact field of 1st contact
+        TInt object1Idx = indexOrder1[idx1];
+        HBufC* strCompare1 = aObject1.Data(object1Idx)->Des().AllocLC();
+        TPtr strCompare1Ptr( strCompare1->Des() );
+        CPcsAlgorithm2Utils::MyTrim( strCompare1Ptr );
+
+        // Get contact field of 2nd contact
+        TInt object2Idx = indexOrder2[idx2];
+        HBufC* strCompare2 = aObject2.Data(object2Idx)->Des().AllocLC();
+        TPtr strCompare2Ptr( strCompare2->Des() );
+        CPcsAlgorithm2Utils::MyTrim( strCompare2Ptr );
+
+        if ( strCompare1->Length() > 0 && strCompare2->Length() > 0 )
             {
-            // Trim the unnecessary white spaces/special chars before we compare
-            TBuf<255> str(KNullDesC);
+            compareRes = CPcsAlgorithm2Utils::MyCompareC(*strCompare1, *strCompare2);
+            idx1++;
+            idx2++;
+            }
+        else // Increment only the index of the contact with empty field
+            {
+            if ( strCompare1->Length() == 0 )
+                idx1++;
+            if ( strCompare2->Length() == 0 )
+                idx2++;
+            }
 
-            str = aObject2.Data(index)->Des();
-            CPcsAlgorithm2Utils::MyTrim(str);
+        CleanupStack::PopAndDestroy(strCompare2);
+        CleanupStack::PopAndDestroy(strCompare1);
+        }
 
-            data2 += str;
-            data2 += KSpace;
+    // We do not return that contacts are equal by SO
+    if ( compareRes == 0 )
+        {
+        if ( idx1 != idx2 )
+            {
+            // Compare by index position
+            // If idx1 > idx2 and SO is "FN LN" it means for instance that:
+            //     Contact1=[FN:"",      LN:"Smith"],  idx1=2
+            //     Contact2=[FN:"Smith", LN:"Donald"], idx2=1
+            // Therefore Contact1="Smith" is < than Contact2="Smith Donald"
+            // and the return value of this method has to be < 0 (idx2-idx1)
+
+            compareRes = idx2 - idx1;
+            }
+        else
+            {
+            // Compare by URI ID as 1st choice and Contact ID as 2nd choice
+
+            compareRes == ( aObject1.UriId() != aObject2.UriId() ) ?
+                aObject1.UriId() - aObject2.UriId() : aObject1.Id() - aObject2.Id();
             }
         }
 
-    /* --- NOT SURE IF THIS BEHAVIOR IS REQUIRED ---
-     // Append remaining elements in order
-     for ( int i = 0; i < aObject2.DataElementCount(); i++ )
-     {
-     if ( indexOrder.Find(i) == KErrNone && aObject2.Data(i) )
-     {
-     data2 += aObject2.Data(i)->Des();
-     data2 += KSpace;
-     }	     
-     }
-     */
+    CleanupStack::PopAndDestroy(&indexOrder2);
+    CleanupStack::PopAndDestroy(&indexOrder1);
 
-    indexOrder.Reset();
-    data1.TrimAll();
-    data2.TrimAll();
-    return (CPcsAlgorithm2Utils::MyCompareC(data1, data2));
+    return compareRes;
     }
 
 // ----------------------------------------------------------------------------

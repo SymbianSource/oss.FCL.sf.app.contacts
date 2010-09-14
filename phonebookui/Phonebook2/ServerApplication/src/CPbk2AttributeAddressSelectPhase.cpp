@@ -25,7 +25,7 @@
 #include <CPbk2AddressSelect.h>
 #include <TPbk2AddressSelectParams.h>
 #include <MPbk2ApplicationServices.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <CPbk2StoreManager.h>
 
 // Virtual Phonebook
@@ -37,7 +37,7 @@
 #include <CVPbkSpeedDialAttribute.h>
 #include <VPbkFieldTypeSelectorFactory.h>
 #include <CVPbkFieldTypeSelector.h>
-#include <VPbkFieldTypeSelectors.rsg>
+#include <vpbkfieldtypeselectors.rsg>
 #include <VPbkContactViewFilterBuilder.h>
 
 // System includes

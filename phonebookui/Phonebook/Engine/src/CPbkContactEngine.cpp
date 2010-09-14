@@ -29,7 +29,7 @@
 #include <PbkUID.h>
 #include <bautils.h>    // BaflUtils
 
-#include <PbkEng.rsg>    // Engine resources
+#include <pbkeng.rsg>    // Engine resources
 #include "CPbkFieldsInfo.h"
 #include "CPbkFieldInfo.h"
 #include "CPbkContactItem.h"

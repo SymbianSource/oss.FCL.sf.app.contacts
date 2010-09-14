@@ -44,7 +44,7 @@
 
 
 #include <StringLoader.h>
-#include <SpdCtrl.rsg>
+#include <spdctrl.rsg>
 #include <spdctrl.mbg>
 #include <avkon.mbg>
 #include <gdi.h>
@@ -97,7 +97,7 @@
 #include <AiwServiceHandler.h>
 #include <telvmbxsettingscrkeys.h>
 
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <AiwContactAssignDataTypes.h>
 
 #include "SpdiaContainer.h"
@@ -223,7 +223,8 @@ inline TDesC& TXspIconHelper::LableText()
                         iFetchmail(EFalse),
                         iServiceHandler(NULL),						
                         iCancelFlag(0),
-                        iRemoveConfirmQueryDialog( NULL )
+                        iRemoveConfirmQueryDialog( NULL ),
+                        iFindOperation( NULL )
                         /*iOperationComplete(EFalse),*/
 	{
 
@@ -495,7 +496,10 @@ void CSpeedDialPrivate::InitBmpArray()
         iRemoveConfirmQueryDialog = NULL;
         }
 		
-    ixspIconInfoArray.Close();    
+    ixspIconInfoArray.Close();  
+    
+    // Make sure iFindOperation released if it has not release in InitIndexDataL()
+    delete iFindOperation;
     }
        
 // ---------------------------------------------------------
@@ -2695,15 +2699,16 @@ void CSpeedDialPrivate::InitIndexDataL()
         iFetchAll = EFalse;
         iSpeedDial->SetIndex(CVPbkSpeedDialAttribute::KSpeedDialIndexNotDefined);
        // iSpeedDial->SetIndex(2);
-       	MVPbkContactOperationBase* findOperation = iAttributeManager->ListContactsL(*iSpeedDial,(*this));
+        iFindOperation = iAttributeManager->ListContactsL( *iSpeedDial , ( *this ) );
        
-        while(findOperation != NULL && !iFetchAll)
+        while( iFindOperation != NULL && !iFetchAll )
         {
         	//Wait till every contactlink is fetched and set.
         	Wait();
         }
         //Delete the handle
-        delete findOperation;
+        delete iFindOperation;
+        iFindOperation = NULL;
         
         MVPbkContactOperationBase* retrieveOperation = NULL;
         for(TInt count =0; iContactLinkArray && count < iContactLinkArray->Count();++count)

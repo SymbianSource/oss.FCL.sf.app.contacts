@@ -19,9 +19,9 @@
 
 // Phonebook 2
 #include <CPbk2UIExtensionPlugin.h>
-#include <Pbk2USimUIRes.rsg>
-#include <Pbk2UIControls.rsg>
-#include <Pbk2CommonUi.rsg>
+#include <pbk2usimuires.rsg>
+#include <pbk2uicontrols.rsg>
+#include <pbk2commonui.rsg>
 #include <Pbk2UIControls.hrh>
 #include <MPbk2ContactEditorControl.h>
 #include <CPbk2StoreProperty.h>
@@ -52,10 +52,9 @@
 #include <Pbk2Commands.hrh>
 #include <MPbk2CommandHandler.h>
 #include <MPbk2ApplicationServices.h>
-#include <Pbk2MapUIRes.rsg>
-#include <Pbk2Commands.rsg>
+#include <pbk2mapuires.rsg>
+#include <pbk2commands.rsg>
 #include <Pbk2UIControls.hrh>
-#include <Pbk2UIControls.rsg>
 #include <cpmapcontacteditorextension.h>
 #include <CPbk2ContactEditorDlgImpl.h>
 

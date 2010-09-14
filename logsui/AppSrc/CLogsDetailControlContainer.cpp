@@ -21,7 +21,7 @@
 #include <aknnavide.h>
 #include <akntabgrp.h>
 #include <applayout.cdl.h>    //Dynamic layout functions
-#include <Logs.rsg>
+#include <logs.rsg>
 #include <AknUtils.h>
 
 #include "CLogsDetailControlContainer.h"

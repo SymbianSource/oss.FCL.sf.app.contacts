@@ -53,7 +53,7 @@ LIBRARY                         bsclient.lib
 LIBRARY                         presencetrafficlights.lib
                    
 LIBRARY                         aknskins.lib
-LIBRARY							vpbkeng.lib
+LIBRARY				VPbkEng.lib
 LIBRARY                         Pbk2Presentation.lib //nameformatter
-LIBRARY 						serviceprovidersettings.lib
+LIBRARY 			serviceprovidersettings.lib
 

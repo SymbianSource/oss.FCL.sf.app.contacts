@@ -21,7 +21,7 @@
 #include <eikmenub.h>
 #include <AknQueryDialog.h>
 #include <featmgr.h>    //FeatureManger
-#include <Logs.rsg>
+#include <logs.rsg>
 
 #include "CLogsEventListView.h"
 #include "CLogsAppUi.h"
@@ -709,5 +709,15 @@ TLogsState CLogsEventListView::State() const
     {
     return iState;  
     }
+
+// ----------------------------------------------------------------------------
+// CLogsEventListView::OriginalCallMenuIsVisible
+// ----------------------------------------------------------------------------
+//
+TBool CLogsEventListView::OriginalCallMenuIsVisible()
+	{
+	// Original CallMenu is visible
+	return ETrue;
+	}
 
 //  End of File

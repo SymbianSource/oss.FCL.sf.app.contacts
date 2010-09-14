@@ -53,9 +53,9 @@ SOURCE 		        	PdcMain.cpp
 USERINCLUDE             ../inc
 
 LIBRARY	      	euser.lib 
-LIBRARY			CentralRepository.lib
-LIBRARY         vpbkeng.lib
-LIBRARY         vpbkvcardeng.lib
+LIBRARY		centralrepository.lib
+LIBRARY         VPbkEng.lib
+LIBRARY         VPbkVCardEng.lib
 LIBRARY         efsrv.lib
 LIBRARY         estor.lib
 LIBRARY         xmlframework.lib
@@ -63,8 +63,8 @@ LIBRARY         bafl.lib
 LIBRARY         sysutil.lib
 LIBRARY         aknnotify.lib
 LIBRARY         eiksrv.lib
-LIBRARY         commonengine.lib
-LIBRARY         PbkEng.lib 
+LIBRARY         CommonEngine.lib
+LIBRARY         pbkeng.lib
 LIBRARY         ecom.lib
 LIBRARY         flogger.lib
 LIBRARY         cntmodel.lib 

@@ -48,7 +48,7 @@
 #include <LogsApiConsts.h>      //additional event uids
 #include <CPhCltEmergencyCall.h>
 
-#include <Logs.rsg>
+#include <logs.rsg>
 
 #include "LogsIcons.hrh"
 #include "LogsConsts.h"
@@ -1715,6 +1715,32 @@ void CLogsBaseView::DynInitAiwCallUiMenuPaneL(
     TRACE_ENTRY_POINT;
     CAiwGenericParamList& paramList = iServHandlerRef->InParamListL();
 
+    // identify the call type to hide the matching call type from the menu
+    // The call items (voice, video and VoIP are located in the main level
+    // of the menu when the parameter EGenericParamHideCallSubmenu is passed
+    // to the aiw provider
+    if( !this-> OriginalCallMenuIsVisible() && ( NULL!= aEvent )&&( NULL!= aEvent->LogsEventData()))
+    	{
+    	TAiwVariant variant;
+    	
+    	// Video call
+        if ( aEvent->LogsEventData()->VT() )
+            {
+            variant.Set( EGenericParamVideoCall );
+            }
+        // VoIP call
+        else if ( aEvent->LogsEventData()->VoIP() )
+            {
+            variant.Set( EGenericParamVoIPCall );
+            }
+        // voice call
+        else 
+            {
+            variant.Set( EGenericParamVoiceCall );            
+            }
+        TAiwGenericParam param( EGenericParamHideCallSubmenu, variant );
+        paramList.AppendL( param );
+    	}   
     //Check do we provide only voice call (i.e. skip video call option)
     if ( !aVideo ) 
         {
@@ -1732,9 +1758,12 @@ void CLogsBaseView::DynInitAiwCallUiMenuPaneL(
  
 // Sawfish VoIP changes  >>>>
     TPtrC8 tempPtr( KNullDesC8 );
-    TInt result;
+    TInt result = KErrNotFound;
     CLogsCntLinkChecker* contactCheckerPtr;
-    result = aEvent->LogsEventData()->GetContactLink( tempPtr );
+    if (( NULL!= aEvent )&&( NULL!= aEvent->LogsEventData()))
+        {
+         result = aEvent->LogsEventData()->GetContactLink( tempPtr );
+        }
     
     if ( KErrNone == result )
         {   
@@ -1782,7 +1811,9 @@ void CLogsBaseView::DynInitAiwCallUiMenuPaneL(
         *aMenuPane,    //Handle of menu pane to initialise                                                  
         aResourceId,   //MenuResourceId                                                                     
         KAiwCmdCall,   //Base ID for the handler to generate menu IDs for placeholders                      
-        paramList );   //input parameter list for provider's parameters checking                  
+        paramList,     //input parameter list for provider's parameters checking 
+        EFalse,        //Not use submenu
+        ETrue );                    
     
     TRACE_EXIT_POINT;    
     }
@@ -3074,6 +3105,16 @@ void CLogsBaseView::SetToolbarItems(
         } 
     TRACE_EXIT_POINT;  
     }
+
+// ----------------------------------------------------------------------------
+// CLogsBaseView::OriginalCallMenuIsVisible
+// ----------------------------------------------------------------------------
+//
+TBool CLogsBaseView::OriginalCallMenuIsVisible()
+	{
+	// Original CallMenu is not visible
+	return EFalse;
+	}
 
 //  End of File
 

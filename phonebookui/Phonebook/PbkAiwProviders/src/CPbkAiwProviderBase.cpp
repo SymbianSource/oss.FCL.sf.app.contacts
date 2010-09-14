@@ -21,13 +21,13 @@
 #include "CPbkAiwProviderBase.h"
 
 #include <barsread.h>
-#include <Phonebook.rsg>
+#include <phonebook.rsg>
 #include <CPbkContactEngine.h>
 #include <AknNoteWrappers.h>
 #include <CPbkCommandStore.h>
 #include <aknnavide.h>
 #include "PbkDataCaging.hrh"
-#include <PbkAiwProvidersRes.rsg>
+#include <pbkaiwprovidersres.rsg>
 #include <pbkdebug.h>
 
 

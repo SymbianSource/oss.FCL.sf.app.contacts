@@ -208,6 +208,14 @@ class   CLogsDetailView :   public CLogsBaseView,
         void SetMenuItemsItemSpecificProperty(
                 CEikMenuPane* aMenuPane, TBool aItemSpecific );
 
+    public:   
+    	/**
+    	 * Get whether the original CallMenu is visible
+    	 *
+    	 * @return EFalse\ETrue whether the original CallMenu is visible
+    	 */ 
+        TBool OriginalCallMenuIsVisible();
+            
     private:  // data
 
         /// Own: This view's control container.

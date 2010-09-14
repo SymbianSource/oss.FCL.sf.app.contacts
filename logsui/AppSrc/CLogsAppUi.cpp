@@ -30,7 +30,7 @@
 #include <gsplugininterface.h>  
 #include <hlplch.h>
 #include <LogsUiCmdStarterConsts.h>
-#include <Logs.rsg>
+#include <logs.rsg>
 
 //+ __GFXTRANS__
 // Transition effects

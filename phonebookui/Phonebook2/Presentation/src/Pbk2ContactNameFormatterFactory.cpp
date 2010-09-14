@@ -26,7 +26,7 @@
 #include "CPbk2ChineseContactNameFormatter.h"
 #include "Pbk2PresentationUtils.h"
 #include <RPbk2LocalizedResourceFile.h>
-#include <Pbk2Presentation.rsg>
+#include <pbk2presentation.rsg>
 
 // From Virtual Phonebook
 #include <CVPbkFieldTypeSelector.h>

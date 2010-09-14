@@ -42,7 +42,7 @@
 #include <CVPbkFieldTypeRefsList.h>
 #include <CVPbkContactFieldIterator.h>
 #include <CVPbkFieldTypeRefsList.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 // System includes
 #include <gsmerror.h>

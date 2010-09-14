@@ -29,8 +29,8 @@
 #include <sendui.h> 
 #include <SendUiConsts.h>
 #include <TSendingCapabilities.h>
-#include <Sendnorm.rsg>
-#include <Logs.rsg>
+#include <sendnorm.rsg>
+#include <logs.rsg>
 #include <AiwCommon.hrh>                //KAiwCmdCall
 #include <AiwPoCParameters.h>           //TAiwPocParameterData
 #include <aknViewAppUi.h>

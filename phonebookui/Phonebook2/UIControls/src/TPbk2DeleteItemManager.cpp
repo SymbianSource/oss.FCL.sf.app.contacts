@@ -21,7 +21,7 @@
 // Phonebook 2
 #include "MPbk2ContactEditorFieldArray.h"
 #include <MPbk2ContactEditorField.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <CPbk2PresentationContact.h>
 #include <CPbk2PresentationContactFieldCollection.h>
 #include <CPbk2PresentationContactField.h>

@@ -22,7 +22,7 @@
 #include <eikmenub.h>   
 #include <StringLoader.h> 
 #include <aknnotewrappers.h> 
-#include <Logs.rsg>
+#include <logs.rsg>
 
 #include "CLogsDetailView.h"
 #include "CLogsDetailControlContainer.h"
@@ -498,4 +498,15 @@ void CLogsDetailView::SetMenuItemsItemSpecificProperty(
             }
         }
     }
+
+// ----------------------------------------------------------------------------
+// CLogsDetailView::OriginalCallMenuIsVisible
+// ----------------------------------------------------------------------------
+//
+TBool CLogsDetailView::OriginalCallMenuIsVisible()
+	{
+	// Original CallMenu is visible
+	return ETrue;
+	}
+
 //  End of File

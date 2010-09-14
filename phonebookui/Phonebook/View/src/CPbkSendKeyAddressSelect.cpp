@@ -23,7 +23,7 @@
 #include <avkon.hrh>         // AVKON softkey codes
 #include <aknnotewrappers.h> // AVKON Notes
 #include <StringLoader.h>    // StringLoader
-#include <PbkView.rsg>
+#include <pbkview.rsg>
 #include <CPbkContactItem.h>
 #include <CPbkContactEngine.h>
 #include <CPbkConstants.h>

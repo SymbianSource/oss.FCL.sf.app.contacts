@@ -32,7 +32,7 @@
 #include <MPbk2AppUi.h>
 #include <CPbk2ApplicationServices.h>
 #include <Pbk2Commands.hrh>
-#include <Pbk2Commands.rsg>
+#include <pbk2commands.rsg>
 
 // Virtual Phonebook
 #include <CVPbkContactManager.h>

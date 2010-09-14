@@ -153,25 +153,25 @@ LIBRARY etext.lib eikcore.lib bafl.lib
 LIBRARY apgrfx.lib eikctl.lib
 
 // Dependencies to AVKON
-LIBRARY Avkon.lib eikcoctl.lib
-LIBRARY AknSkins.lib
+LIBRARY avkon.lib eikcoctl.lib
+LIBRARY aknskins.lib
 
 // Dependencies to Series60 platform components
-LIBRARY commonengine.lib diskspacereserver.lib
-LIBRARY ecom.lib FeatMgr.lib
+LIBRARY CommonEngine.lib diskspacereserver.lib
+LIBRARY ecom.lib featmgr.lib
 LIBRARY sendui.lib servicehandler.lib
 LIBRARY spdctrl.lib
 LIBRARY hlplch.lib
 
 // Dependencies to other Phonebook components
-LIBRARY PbkEng.lib      // Engine component
+LIBRARY pbkeng.lib      // Engine component
 LIBRARY PbkExt.lib      // Phonebook Extension manager
-LIBRARY BCardEng.lib    // Business card import/export component
-LIBRARY PbkView.lib     // View component
+LIBRARY bcardeng.lib    // Business card import/export component
+LIBRARY pbkview.lib     // View component
 LIBRARY PbkUI.lib       // Common Phonebook UI framework
 
 // Dependencies to other Series60 applications
-LIBRARY MGFetch.lib
+LIBRARY mgfetch.lib
 
 LIBRARY commonui.lib
 LIBRARY apmime.lib

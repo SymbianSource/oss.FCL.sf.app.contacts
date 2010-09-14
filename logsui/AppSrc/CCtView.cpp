@@ -20,7 +20,7 @@
 //  INCLUDE FILES
 #include <eikmenub.h>
 
-#include <Logs.rsg>
+#include <logs.rsg>
 
 #include "CCtView.h"
 #include "CCtControlContainer.h"

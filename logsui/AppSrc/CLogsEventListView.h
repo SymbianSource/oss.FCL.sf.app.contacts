@@ -187,6 +187,14 @@ class   CLogsEventListView :    public  CLogsBaseView
          *  Function filters the events from log db.
          */
         void CmdFilterL();
+        
+    public:    
+    	/**
+    	  * Get whether the original CallMenu is visible
+    	  *
+    	  * @return EFalse\ETrue whether the original CallMenu is visible
+    	  */ 
+        TBool OriginalCallMenuIsVisible();
 
     private:  // data
 

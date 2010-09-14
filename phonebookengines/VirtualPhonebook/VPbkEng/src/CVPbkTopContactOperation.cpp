@@ -39,7 +39,7 @@
 #include <MVPbkContactStore.h>
 #include <VPbkContactViewFilterBuilder.h>
 #include <CVPbkSortOrder.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <VPbkDataCaging.hrh>
 #include <RLocalizedResourceFile.h>
 #include <TVPbkFieldVersitProperty.h>

@@ -136,6 +136,15 @@ class CPbk2CommandHandler : public CBase,
                 TInt aPresIndex,
                 const MVPbkStoreContact* aStoreContact );
 
+    public:
+    	  /**
+         * Returns the Command Store
+         * OwnerShip is not transferred. 
+         *
+         * @return  Pointer to the instance CPbk2CommandStore. Can be NULL. Ownership not transferred
+         */
+        IMPORT_C CPbk2CommandStore* CommandStore();
+                
     private: // Data
         /// Own: Command factory
         MPbk2CommandFactory* iCommandFactory;

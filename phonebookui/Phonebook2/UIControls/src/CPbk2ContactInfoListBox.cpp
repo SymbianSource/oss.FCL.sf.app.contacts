@@ -25,7 +25,7 @@
 #include "CPbk2FieldListBoxModel.h"
 #include <CPbk2PresentationContactField.h>
 #include <CPbk2PresentationContactFieldCollection.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <CPbk2UIExtensionManager.h>
 #include <MPbk2UIExtensionIconSupport.h>
 #include <Pbk2Profile.h>

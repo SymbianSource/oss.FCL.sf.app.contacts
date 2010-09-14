@@ -25,18 +25,18 @@
 #include <MPbk2ApplicationServices.h>
 #include <MPbk2AppUi.h>
 #include <CPbk2FieldPropertyArray.h>
-#include <Pbk2MapUIRes.rsg>
+#include <pbk2mapuires.rsg>
 #include <MPbk2ContactEditorControl.h>
 #include <MPbk2ContactEditorField.h>
 #include <Pbk2UIControls.hrh>
 #include <Pbk2Commands.hrh>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <TPbk2AddressSelectParams.h>
 #include <CPbk2AddressSelect.h>
 #include <Pbk2AddressTools.h>
-#include <Pbk2UIControls.rsg>
 #include <CPbk2ApplicationServices.h>
 #include <pbk2mapcommands.hrh>
+#include <MPbk2DialogEliminator.h>
 
 // Virtual Phonebook
 #include <MVPbkBaseContactField.h>
@@ -49,7 +49,7 @@
 #include <MVPbkStoreContactField.h>
 #include <MVPbkContactFieldData.h>
 #include <MVPbkContactFieldTextData.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <MVPbkFieldType.h>
 #include <TVPbkFieldVersitProperty.h>
 #include <MVPbkStoreContactFieldCollection.h>
@@ -126,6 +126,11 @@ CPmapCmd::CPmapCmd( MPbk2ContactUiControl& aUiControl, TInt aCommandId ) :
 //
 CPmapCmd::~CPmapCmd()
     {
+    if ( iAddressSelectEliminator )
+        {
+        iAddressSelectEliminator->ForceExit();
+        }
+    
     Cancel();
     if(iMapView)
         {
@@ -139,6 +144,13 @@ CPmapCmd::~CPmapCmd()
 	    iUiControl->RegisterCommand( NULL );
 	    }
     delete iMapViewProvider;
+    
+    //Indication that the object has been deleted.
+    if ( iThisPtrDestroyed )
+        {
+        *iThisPtrDestroyed = ETrue;
+        }
+    
     }
 
 // --------------------------------------------------------------------------
@@ -258,6 +270,9 @@ void CPmapCmd::ExecuteL()
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
         ("CPmapCmd::ExecuteLD"));
 
+    TBool amIDestroyed( EFalse );
+    iThisPtrDestroyed = &amIDestroyed;  
+        
     iAddressUpdatePrompt = ETrue;
     TPbk2FieldGroupId groupId = EPbk2FieldGroupIdNone;
     if( !IsAddressInContact() )
@@ -309,6 +324,15 @@ void CPmapCmd::ExecuteL()
     	{
     	groupId = SelectAddressL();
     	}
+        
+    //This object could have been deleted because of some external activity
+    //Dont proceed if this object is destroyed
+    if ( amIDestroyed )
+        {        
+        return;
+        }    
+    
+    iThisPtrDestroyed = NULL;
     
     if( groupId != EPbk2FieldGroupIdNone )
     	{
@@ -506,6 +530,12 @@ TPbk2FieldGroupId CPmapCmd::SelectAddressL()
 
     CleanupStack::PopAndDestroy( appServices );
     CPbk2AddressSelect* addressSelect = CPbk2AddressSelect::NewL( params );
+    
+    // Execute
+    iAddressSelectEliminator = addressSelect;
+    iAddressSelectEliminator->ResetWhenDestroyed
+        ( &iAddressSelectEliminator );
+    
     MVPbkStoreContactField* selectedField = addressSelect->ExecuteLD();
     CleanupStack::PopAndDestroy(); // resReader
 

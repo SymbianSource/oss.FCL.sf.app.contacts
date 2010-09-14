@@ -34,7 +34,7 @@
 #include <MPbk2FieldPropertyArray.h>
 #include <MPbk2FieldProperty.h>
 #include <TPbk2StoreContactAnalyzer.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include "Pbk2AddressTools.h"
 
 // Virtual Phonebook
@@ -45,7 +45,7 @@
 #include <CVPbkContactManager.h>
 #include <MVPbkContactFieldData.h>
 #include <VPbkUtils.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <MVPbkStoreContact.h>
 
 /// Unnamed namespace for local definitions

@@ -252,7 +252,7 @@ void CPbk2CommandStore::IdleDestructor()
 // CPbk2CommandStore::DestroyAllCommands
 // --------------------------------------------------------------------------
 //
-void CPbk2CommandStore::DestroyAllCommands()
+EXPORT_C void CPbk2CommandStore::DestroyAllCommands()
     {
     // Delete objects in idle commands array using CommandFinished
     for (TInt i = 0; i < iCommandArray.Count(); ++i)

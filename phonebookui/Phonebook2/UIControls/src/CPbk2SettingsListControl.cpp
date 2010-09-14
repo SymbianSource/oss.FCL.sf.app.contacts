@@ -28,7 +28,7 @@
 #include "Phonebook2PrivateCRKeys.h"
 
 // From Phonebook 2
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <CPbk2UIExtensionManager.h>
 #include <MPbk2UIExtensionFactory.h>
 #include <MPbk2SettingsControlExtension.h>

@@ -23,8 +23,8 @@
 
 #include <RPbk2LocalizedResourceFile.h>
 #include <Pbk2DataCaging.hrh>
-#include <Pbk2USimUIRes.rsg>
-#include <Pbk2CommonUi.rsg>
+#include <pbk2usimuires.rsg>
+#include <pbk2commonui.rsg>
 
 #include <TVPbkFieldTypeMapping.h>
 #include <CVPbkFieldTypeSelector.h>
@@ -34,7 +34,7 @@
 #include <barsread.h>
 #include <gsmerror.h>
 #include <featmgr.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 namespace
 {
@@ -86,9 +86,9 @@ class CPsu2CopyToSimFieldtypeMapping : public CBase
         MVPbkFieldTypeSelector& SourceTypeSelector() const;
         
         /**
-         * Returns the resource id (VPbkEng.rsg) of the target field type.
+         * Returns the resource id (vpbkeng.rsg) of the target field type.
          *
-         * @return the resource id (VPbkEng.rsg) of the target field type.
+         * @return the resource id (vpbkeng.rsg) of the target field type.
          */
         TInt TargetFieldtypeResId() const;
     
@@ -112,7 +112,7 @@ class CPsu2CopyToSimFieldtypeMapping : public CBase
     private: // Data
         /// Own: source field type selector
         CVPbkFieldTypeSelector* iSourceTypeSelector;
-        /// Own: target field type resource id (VPbkEng.rsg)
+        /// Own: target field type resource id (vpbkeng.rsg)
         TInt iTargetFieldTypeResId;
         /// Flags from Pbk2UsimUi.hrh
         TUint8 iFlags;

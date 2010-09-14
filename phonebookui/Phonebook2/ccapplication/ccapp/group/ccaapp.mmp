@@ -81,7 +81,7 @@ LIBRARY         estor.lib
 LIBRARY         bafl.lib
 LIBRARY         apgrfx.lib
 LIBRARY         efsrv.lib
-LIBRARY         AknIcon.lib
+LIBRARY         aknicon.lib
 LIBRARY         ccaclient.lib
 LIBRARY         centralrepository.lib
 LIBRARY         cmsclient.lib
@@ -90,7 +90,7 @@ LIBRARY         featmgr.lib
 LIBRARY         hlplch.lib
 LIBRARY         ccapputil.lib
 LIBRARY         CdlEngine.lib
-LIBRARY         AknLayout2.lib
+LIBRARY         aknlayout2.lib
 LIBRARY         ws32.lib 
 LIBRARY         Pbk2CommonUI.lib
 LIBRARY         VPbkEng.lib

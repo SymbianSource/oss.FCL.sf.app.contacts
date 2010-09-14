@@ -25,7 +25,7 @@
 #include <MPbk2ApplicationServices.h>
 #include <Phonebook2PrivateCRKeys.h>
 #include <MPbk2ContactRelocatorObserver.h>
-#include <Pbk2CommonUi.rsg>
+#include <pbk2commonui.rsg>
 #include <CPbk2StoreProperty.h>
 #include <CPbk2StorePropertyArray.h>
 #include <MPbk2ContactNameFormatter.h>

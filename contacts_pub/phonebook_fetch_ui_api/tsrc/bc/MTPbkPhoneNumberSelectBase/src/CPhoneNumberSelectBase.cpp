@@ -27,7 +27,7 @@
 
 #include    <CPbkContactItem.h>
 #include    <StringLoader.h>        // StringLoader
-#include    <MT_CPbkPhoneNumberSelectBase.rsg>
+#include    <mt_cpbkphonenumberselectbase.rsg>
 #include    <eikon.hrh>
 
 #include    "CPhoneNumberSelectBase.h"

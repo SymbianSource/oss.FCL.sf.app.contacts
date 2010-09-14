@@ -21,7 +21,7 @@
 #include "CPbk2InfoDialogCmd.h"
 
 // Phonebook 2
-#include <Pbk2Commands.rsg>
+#include <pbk2commands.rsg>
 #include <MPbk2CommandObserver.h>
 #include <CPbk2StoreListQuery.h>
 #include <CPbk2PhonebookInfoDlg.h>

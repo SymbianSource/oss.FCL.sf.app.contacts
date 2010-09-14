@@ -27,8 +27,8 @@
 #include <Pbk2Commands.hrh>
 #include <MPbk2ContactUiControl.h>
 #include <CPbk2AppViewBase.h>
-#include <Pbk2Commands.rsg>
-#include <Pbk2MmcUIRes.rsg>
+#include <pbk2commands.rsg>
+#include <pbk2mmcuires.rsg>
 
 // System includes
 #include <coemain.h>
@@ -82,14 +82,22 @@ void CPmuUIExtensionPlugin::DynInitMenuPaneL( TInt aResourceId,
         case R_PMU_CASCADING_COPY_CONTACT_CARD_MENU :
             {
             TBool marked = aControl.ContactsMarked();
-            if ( !marked)  
+            // Menu item "To other memory" is not displayed if there is no marked item in the Names List
+            // Menu item "From other memory" is not displayed if there is marked item in the Names List
+            TInt pos = 0;
+            if ( marked )  
                 {
-				//Not displayed if no marked items in the Names List.                
-                TInt pos;
+                if ( aMenuPane->MenuItemExists( EPmuCmdImportFromMemoryCard, pos ) )
+                    {
+                    aMenuPane->SetItemDimmed( EPmuCmdImportFromMemoryCard, ETrue );
+                    }
+                }
+            else
+                {
                 if ( aMenuPane->MenuItemExists( EPmuCmdExportToMemoryCard, pos ) )
-                	{
-                	aMenuPane->SetItemDimmed( EPmuCmdExportToMemoryCard, ETrue );
-                	}
+                    {
+                    aMenuPane->SetItemDimmed( EPmuCmdExportToMemoryCard, ETrue );
+                    }
                 }
             break;
             }

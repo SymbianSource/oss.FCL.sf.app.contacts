@@ -26,7 +26,7 @@
 #include "CPbk2StorePropertyArray.h"
 #include "CPbk2StoreViewDefinition.h"
 #include <RPbk2LocalizedResourceFile.h>
-#include <Pbk2Presentation.rsg>
+#include <pbk2presentation.rsg>
 #include <Pbk2DataCaging.hrh>
 
  #include <CVPbkFieldTypeSelector.h>

@@ -48,7 +48,7 @@ LIBRARY         VPbkEngUtils.lib
 LIBRARY         VPbkSimStoreCommon.lib
 LIBRARY         euser.lib
 LIBRARY         estor.lib
-LIBRARY         FeatMgr.lib
+LIBRARY         featmgr.lib
 
 /////////////////////////////////////
 // DEBUG DEPENDENCIES

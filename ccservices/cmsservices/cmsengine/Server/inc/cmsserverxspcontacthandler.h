@@ -23,7 +23,7 @@
 // INCLUDES
 #include <e32base.h>
 #include "cmscontact.h"
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <badesca.h>
 #include <MVPbkBatchOperationObserver.h>
 #include <MVPbkContactFindFromStoresObserver.h>

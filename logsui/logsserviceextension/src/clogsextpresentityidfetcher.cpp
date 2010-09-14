@@ -35,7 +35,7 @@
 #include <MVPbkContactFieldData.h>
 #include <CVPbkContactFieldIterator.h>
 #include <MVPbkContactOperationBase.h>    
-#include <VPbkEng.rsg>  // url field resource id
+#include <vpbkeng.rsg>  // url field resource id
 #include <CVPbkContactLinkArray.h>
 #include <MVPbkContactFieldUriData.h>
 

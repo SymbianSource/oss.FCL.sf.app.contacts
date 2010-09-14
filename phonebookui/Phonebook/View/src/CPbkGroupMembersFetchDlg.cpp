@@ -22,7 +22,7 @@
 #include <cntview.h>
 
 // PbkView APIs
-#include <PbkView.rsg>
+#include <pbkview.rsg>
 #include "CPbkFetchDlg.h"
 #include "MPbkFetchCallbacks.h"
 

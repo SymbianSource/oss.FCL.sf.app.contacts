@@ -36,7 +36,7 @@
 #include <sendnorm.rsg>					// for Send UI functionality
 #include <SenduiMtmUids.h>				// Send UI MTM uid's
 
-#include <Phonebook.rsg>				// Phonebook resources
+#include <phonebook.rsg>				// Phonebook resources
 #include <CPbkControlContainer.h>
 #include "CPbkAppUi.h"					// Phonebook application UI class
 #include "CPbkAssignToGroupCmd.h"
@@ -48,7 +48,7 @@
 #include <CPbkConstants.h>
 #include <CPbkAiwInterestArray.h>
 
-#include <PbkView.rsg>					// PbkView dll resources
+#include <pbkview.rsg>					// PbkView dll resources
 #include <CPbkViewState.h>
 #include <CPbkContactViewListControl.h>
 #include <CPbkGroupMembersFetchDlg.h>

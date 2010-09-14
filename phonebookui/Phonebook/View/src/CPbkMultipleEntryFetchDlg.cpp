@@ -19,7 +19,7 @@
 
 // INCLUDE FILES
 #include "CPbkMultipleEntryFetchDlg.h"  // This class
-#include <PbkView.rsg>
+#include <pbkview.rsg>
 #include "CPbkFetchDlg.h"
 #include "MPbkFetchDlgSelection.h"
 #include <CPbkContactEngine.h>

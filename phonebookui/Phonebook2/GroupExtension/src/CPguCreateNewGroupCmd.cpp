@@ -22,8 +22,8 @@
 #include "CPguGroupNameQueryDlg.h"
 #include "Pbk2GroupConsts.h"
 #include <CPbk2InputAbsorber.h>
-#include <Pbk2GroupUIRes.rsg>
-#include <Pbk2UIControls.rsg>
+#include <pbk2groupuires.rsg>
+#include <pbk2uicontrols.rsg>
 #include <MPbk2CommandObserver.h>
 #include <MPbk2ContactUiControl.h>
 #include <CPbk2StoreConfiguration.h>

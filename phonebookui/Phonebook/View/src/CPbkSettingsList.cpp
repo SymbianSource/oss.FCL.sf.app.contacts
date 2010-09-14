@@ -21,7 +21,7 @@
 #include "CPbkSettingsList.h"			// This class
 #include "Cpbknameordersettingitem.h"
 #include <PbkView.hrh>
-#include <PbkView.rsg>
+#include <pbkview.rsg>
 #include <CPbkContactEngine.h>
 
 /// Unnamed namespace for local definitons

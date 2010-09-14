@@ -22,9 +22,9 @@
 #include "CPsu2CharConv.h"
 #include "CPsu2FdnContactEditorPhoneNumberField.h"
 #include <CPbk2UIExtensionPlugin.h>
-#include <Pbk2USimUIRes.rsg>
-#include <Pbk2UIControls.rsg>
-#include <Pbk2CommonUi.rsg>
+#include <pbk2usimuires.rsg>
+#include <pbk2uicontrols.rsg>
+#include <pbk2commonui.rsg>
 #include <Pbk2UIControls.hrh>
 #include <MPbk2ContactEditorControl.h>
 #include <CPbk2StoreProperty.h>

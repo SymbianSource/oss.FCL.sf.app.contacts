@@ -24,7 +24,7 @@
 #include <MVPbkContactFieldData.h>
 #include <MVPbkContactFieldTextData.h>
 
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 
 

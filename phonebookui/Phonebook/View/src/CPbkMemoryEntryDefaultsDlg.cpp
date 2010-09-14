@@ -23,7 +23,7 @@
 #include <StringLoader.h>
 #include <featmgr.h>
 
-#include <PbkView.rsg>
+#include <pbkview.rsg>
 #include "MPbkClipListBoxText.h"
 #include "CPbkFieldListBoxModel.h"
 #include <CPbkIconArray.h>

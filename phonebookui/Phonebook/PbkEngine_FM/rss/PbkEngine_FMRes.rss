@@ -24,7 +24,7 @@
 
 /*============================================================================
 * NB. PbkEngine_FM resources MUST be defined in PbkEngine_FMCommonRes.rss 
-* because only one PbkEngine_FMRes.rsg file used with different language 
+* because only one pbkengine_fmres.rsg file used with different language 
 * specific ".rsc" files. Otherwise BC is broken.
 ============================================================================*/
 

@@ -22,7 +22,7 @@
 
 #include <secui.h>
 #include <secuisecurityhandler.h>
-#include <SecUi.rsg>
+#include <secui.rsg>
 
 #include <exterror.h>
 

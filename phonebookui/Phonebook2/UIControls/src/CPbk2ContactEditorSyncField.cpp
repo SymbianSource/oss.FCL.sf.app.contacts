@@ -23,7 +23,7 @@
 #include "MPbk2ContactEditorFieldVisitor.h"
 #include <MPbk2FieldProperty.h>
 #include <CPbk2PresentationContactField.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include "Pbk2UIControls.hrh"
 
 // Virtual Phonebook

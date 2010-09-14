@@ -29,7 +29,7 @@
 #include "CPbkContactItem.h"
 #include "CPbkDeleteContactQuery.h"
 #include <CPbkFFSCheck.h>
-#include <PbkView.rsg>
+#include <pbkview.rsg>
 #include <cshelp/phob.hlp.hrh>
 
 

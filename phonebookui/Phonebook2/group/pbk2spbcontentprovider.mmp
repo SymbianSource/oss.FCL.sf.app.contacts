@@ -60,10 +60,10 @@ LIBRARY         cone.lib
 LIBRARY         estor.lib 
 
 LIBRARY         featmgr.lib
-LIBRARY         vpbkeng.lib
+LIBRARY         VPbkEng.lib
 LIBRARY         bsclient.lib
-LIBRARY         pbk2presentation.lib
-LIBRARY         pbk2commonui.lib
+LIBRARY         Pbk2Presentation.lib
+LIBRARY         Pbk2CommonUI.lib
 LIBRARY         presencecacheclient2.lib
 LIBRARY         presencecacheutils.lib
 LIBRARY         efsrv.lib 

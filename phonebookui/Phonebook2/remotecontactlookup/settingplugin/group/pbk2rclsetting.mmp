@@ -54,7 +54,7 @@ END // RESOURCE
 
 USERINCLUDE             ../inc 
 USERINCLUDE             ../../inc // for emailtrace.h
-USERINCLUDE           ../../../../inc
+USERINCLUDE             ../../../../inc
 
 SYSTEMINCLUDE   	/epoc32/include/ecom
 
@@ -62,7 +62,7 @@ APP_LAYER_SYSTEMINCLUDE
 
 // Dependencies to Symbian OS components
 LIBRARY                 euser.lib
-LIBRARY                 commonengine.lib
+LIBRARY                 CommonEngine.lib
 LIBRARY                 ecom.lib
 LIBRARY                 cone.lib 
 LIBRARY                 eikcoctl.lib

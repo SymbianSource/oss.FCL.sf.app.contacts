@@ -18,7 +18,7 @@
 
 
 // INCLUDE FILES
-#include <Logs.rsg>
+#include <logs.rsg>
 #include <w32std.h>
 #include <apgtask.h>
 

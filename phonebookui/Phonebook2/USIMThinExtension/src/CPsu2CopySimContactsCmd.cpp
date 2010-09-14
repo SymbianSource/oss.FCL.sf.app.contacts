@@ -37,13 +37,13 @@
 #include <Phonebook2PublicPSKeys.h>
 #include <Phonebook2PrivatePSKeys.h>
 #include <Pbk2UID.h>
-#include <Pbk2USimThinUIRes.rsg>
+#include <pbk2usimthinuires.rsg>
 /// Use R_PBK2_GENERAL_CONFIRMATION_QUERY from UI controls
 /// As a core components UiControl's resource file is loaded in core Pbk2
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 /// Use R_GENERAL_COPY_PROGRESS_NOTE from Commands
 /// As a core components Command's resource file is loaded in core Pbk2
-#include <Pbk2Commands.rsg>
+#include <pbk2commands.rsg>
 #include <Pbk2DataCaging.hrh>
 #include <MPbk2AppUi.h>
 #include <MPbk2ApplicationServices.h>

@@ -24,7 +24,7 @@
 #include <MPbk2CommandObserver.h>
 #include <MPbk2ContactUiControl.h>
 #include <Pbk2ProcessDecoratorFactory.h>
-#include <Pbk2Commands.rsg>
+#include <pbk2commands.rsg>
 #include <MPbk2ContactNameFormatter.h>
 #include <CPbk2DriveSpaceCheck.h>
 #include <CPbk2AppUiBase.h>

@@ -36,14 +36,29 @@ CVPbkVCardAttributeHandler::~CVPbkVCardAttributeHandler()
     delete iAttribute;
     }    
     
-TBool CVPbkVCardAttributeHandler::CreateAttributeL(TVPbkFieldTypeParameter aParameter)
+TBool CVPbkVCardAttributeHandler::CreateAttributeL(TVPbkFieldTypeParameter aParameter, 
+		TVPbkFieldTypeName aFieldTypeName )
     {
     TBool retval(EFalse);
     delete iAttribute;
     iAttribute = NULL;
-    if (aParameter == EVPbkVersitParamPREF)
+    if ( EVPbkVersitParamPREF == aParameter )
         {
-        iAttribute = CVPbkDefaultAttribute::NewL(EVPbkDefaultTypePhoneNumber);
+        if ( EVPbkVersitNameURL == aFieldTypeName )
+        	{
+			// Create default attribute for URL field.
+            iAttribute = CVPbkDefaultAttribute::NewL( EVPbkDefaultTypeOpenLink );
+        	}
+        else if ( EVPbkVersitNameIMPP == aFieldTypeName )
+        	{
+			// Create default attribute for IMPP field.
+            iAttribute = CVPbkDefaultAttribute::NewL( EVPbkDefaultTypeChat );
+        	}
+        else 
+        	{
+			// Create default attribute for other fields.
+            iAttribute = CVPbkDefaultAttribute::NewL( EVPbkDefaultTypePhoneNumber );
+        	}
         retval = ETrue;
         }
     return retval;

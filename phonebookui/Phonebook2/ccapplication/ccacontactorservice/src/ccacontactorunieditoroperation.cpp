@@ -79,8 +79,19 @@ void CCCAContactorUniEditorOperation::ConstructL()
 void CCCAContactorUniEditorOperation::ExecuteLD()
     {
     CleanupStack::PushL(this);
+    
+	TInt err = KErrNone;
+	TRAP( err,
     CCCAMsgEditors::ExecuteL (KSenduiMtmUniMessageUid,
                 iParam, iName);
+    );
+	
+	if ( KErrNone != err )
+		{
+	    // Show error note.
+	    CCoeEnv::Static()->HandleError( err );
+		}
+	
     CleanupStack::PopAndDestroy(this);
     }
 // End of File

@@ -46,7 +46,7 @@ LIBRARY                 efsrv.lib
 LIBRARY                 euser.lib 
 LIBRARY                 ecom.lib
 LIBRARY                 egul.lib
-LIBRARY                 commonengine.lib
+LIBRARY                 CommonEngine.lib
 LIBRARY                 bafl.lib
 LIBRARY                 cone.lib 
 LIBRARY                 VPbkEng.lib

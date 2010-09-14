@@ -30,7 +30,7 @@
 #include <CVPbkContactManager.h>
 #include <CVPbkSpeedDialAttribute.h>
 #include <MVPbkStoreContactFieldCollection.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <MVPbkFieldType.h>
 #include <CVPbkContactFieldIterator.h>
 #include <MVPbkContactFieldUriData.h>

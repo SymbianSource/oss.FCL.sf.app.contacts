@@ -17,7 +17,7 @@
 #ifndef __SELECTOR_CONSTANTS_H
 #define __SELECTOR_CONSTANTS_H
 
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include "stifunitmacros.h"
 #include <CVPbkFieldTypeSelector.h>
 #include <MVPbkFieldType.h>

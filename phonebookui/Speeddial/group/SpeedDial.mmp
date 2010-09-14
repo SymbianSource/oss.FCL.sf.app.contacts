@@ -62,11 +62,11 @@ LIBRARY         spdctrl.lib
 
 // Dependencies to system components
 LIBRARY         euser.lib apparc.lib ws32.lib bafl.lib
-LIBRARY         cone.lib eikcoctl.lib Avkon.lib fbscli.lib egul.lib
-LIBRARY         eikcore.lib commonengine.lib 
+LIBRARY         cone.lib eikcoctl.lib avkon.lib fbscli.lib egul.lib
+LIBRARY         eikcore.lib CommonEngine.lib 
 LIBRARY         eikdlg.lib
 LIBRARY         numbergrouping.lib
-LIBRARY         ServiceHandler.lib              //Application InterWorking
+LIBRARY         servicehandler.lib              //Application InterWorking
 LIBRARY			efsrv.lib
 LIBRARY         apgrfx.lib
 LIBRARY	        bitgdi.lib 
@@ -74,23 +74,23 @@ LIBRARY	        bitgdi.lib
 LIBRARY         VPbkEng.lib
 LIBRARY  		Pbk2Presentation.lib
 LIBRARY 		Pbk2CommonUI.lib
-LIBRARY         CentralRepository.lib
+LIBRARY         centralrepository.lib
 LIBRARY         cenrepnotifhandler.lib  // Cenrep notifier
 // external dependencies
 /// phone engine support
-LIBRARY         PbkEng.lib
+LIBRARY         pbkeng.lib
 /// context sensitive help support
 LIBRARY         hlplch.lib // for "Help" options menu
-LIBRARY         FeatMgr.lib
+LIBRARY         featmgr.lib
 
-library         AknLayout.lib
-LIBRARY         AknLayout2.lib       
+library         aknlayout.lib
+LIBRARY         aknlayout2.lib
 LIBRARY         AknLayout2Scalable.lib 
-LIBRARY         UikLaf.lib 
-LIBRARY         AknIcon.lib
+LIBRARY         uiklaf.lib
+LIBRARY         aknicon.lib
 library         vmbx.lib
 library 		aknnotify.lib
-library         SSSettings.lib
+library         sssettings.lib
 
 LIBRARY         sendui.lib
 LIBRARY		etext.lib

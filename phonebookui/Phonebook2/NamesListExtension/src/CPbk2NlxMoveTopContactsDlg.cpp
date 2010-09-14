@@ -23,7 +23,7 @@
 #include <MPbk2AppUi.h>
 #include <MPbk2ApplicationServices.h>
 #include <MPbk2ContactViewSupplier.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 
 // Virtual Phonebook
 #include <CVPbkContactLinkArray.h>
@@ -43,7 +43,7 @@
 
 #include "CPbk2NlxReorderingModel.h"
 #include "Pbk2NlxUIControls.hrh"
-#include <Pbk2ExNamesListRes.rsg> 
+#include <pbk2exnameslistres.rsg> 
 
 #include <Pbk2Debug.h>
 

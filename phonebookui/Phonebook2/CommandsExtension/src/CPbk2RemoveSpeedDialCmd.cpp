@@ -26,7 +26,7 @@
 #include <CPbk2PresentationContact.h>
 #include <CPbk2FieldPropertyArray.h>
 #include <CPbk2PresentationContactFieldCollection.h>
-#include <Pbk2CmdExtRes.rsg>
+#include <pbk2cmdextres.rsg>
 #include <CPbk2AppUiBase.h>
 
 // From Virtual Phonebook

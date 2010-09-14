@@ -21,7 +21,7 @@
 #include "CPbkAssignToGroupCmd.h"
 #include <eikprogi.h>
 #include <StringLoader.h>
-#include <Phonebook.rsg>
+#include <phonebook.rsg>
 #include <CPbkAssignToGroup.h>
 #include <CPbkContactViewListControl.h>
 #include <MPbkCommandObserver.h>

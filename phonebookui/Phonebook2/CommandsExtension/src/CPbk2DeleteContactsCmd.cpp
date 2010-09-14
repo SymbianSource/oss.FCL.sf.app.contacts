@@ -23,8 +23,8 @@
 #include <MPbk2CommandObserver.h>
 #include "MPbk2ProcessDecorator.h"
 #include "Pbk2ProcessDecoratorFactory.h"
-#include <Pbk2Commands.rsg>
-#include <Pbk2UIControls.rsg>
+#include <pbk2commands.rsg>
+#include <pbk2uicontrols.rsg>
 #include <MPbk2ContactUiControl.h>
 #include <MPbk2ContactNameFormatter.h>
 #include <CPbk2GeneralConfirmationQuery.h>

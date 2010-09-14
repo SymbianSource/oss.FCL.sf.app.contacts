@@ -70,13 +70,13 @@ APP_LAYER_SYSTEMINCLUDE
 // Dependencies to Symbian OS components
 LIBRARY euser.lib ecom.lib efsrv.lib cone.lib bafl.lib
 LIBRARY eikcoctl.lib eikcore.lib
-LIBRARY FeatMgr.lib
+LIBRARY featmgr.lib
 
 // Dependencies to S60 platform components
 LIBRARY avkon.lib
 
 // Dependencies to Phonebook components
-LIBRARY Pbk2Presentation.lib Pbk2CommonUi.lib
+LIBRARY Pbk2Presentation.lib Pbk2CommonUI.lib
 
 #ifdef PBK2_ENABLE_PROFILE
 // Depencency to Phonebook profiling library

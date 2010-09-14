@@ -55,7 +55,7 @@ APP_LAYER_SYSTEMINCLUDE // macro that defines the platform system includes
 LIBRARY euser.lib
 LIBRARY efsrv.lib
 LIBRARY ecom.lib
-LIBRARY NssVASApi.lib 
+LIBRARY nssvasapi.lib
 
 LIBRARY flogger.lib
 

@@ -24,7 +24,7 @@
 
 #include <BCardEng.h>
 #include <CPbkFieldInfo.h>
-#include <Phonebook.rsg>
+#include <phonebook.rsg>
 #include <CPbkContactEngine.h>
 #include <CPbkProgressNoteWrapper.h>
 #include <CPbkConstants.h>

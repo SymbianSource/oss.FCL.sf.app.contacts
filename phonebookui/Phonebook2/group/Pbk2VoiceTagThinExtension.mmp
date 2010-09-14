@@ -56,6 +56,6 @@ APP_LAYER_SYSTEMINCLUDE
 LIBRARY euser.lib ecom.lib eikcoctl.lib
 
 // Dependencies to S60 platform components
-LIBRARY FeatMgr.lib
+LIBRARY featmgr.lib
 
 // End of File

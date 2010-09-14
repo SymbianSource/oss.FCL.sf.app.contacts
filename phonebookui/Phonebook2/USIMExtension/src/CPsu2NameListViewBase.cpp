@@ -28,9 +28,9 @@
 #include <CPbk2ViewState.h>
 #include <CPbk2IconInfoContainer.h>
 #include <CPbk2IconFactory.h>
-#include <Pbk2USimUIRes.rsg>
-#include <Pbk2CommonUi.rsg>
-#include <Pbk2UIControls.rsg>
+#include <pbk2usimuires.rsg>
+#include <pbk2commonui.rsg>
+#include <pbk2uicontrols.rsg>
 #include <MPbk2ViewExplorer.h>
 #include <csxhelp/phob.hlp.hrh>
 #include <CPbk2SortOrderManager.h>

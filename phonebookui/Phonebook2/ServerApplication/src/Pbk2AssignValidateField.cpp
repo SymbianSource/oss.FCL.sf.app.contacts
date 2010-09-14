@@ -27,7 +27,7 @@
 #include <MVPbkContactStoreProperties.h>
 #include <MVPbkContactFieldTextData.h>
 #include <MVPbkFieldType.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 
 /// Unnamed namespace for local definitions

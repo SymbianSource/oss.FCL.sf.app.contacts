@@ -28,8 +28,8 @@
 #include <CPbk2AppUiBase.h>
 #include <CPbk2UIExtensionManager.h>
 #include <MPbk2Command.h>
-#include <Pbk2Commands.rsg>
-#include <Pbk2UIControls.rsg>
+#include <pbk2commands.rsg>
+#include <pbk2uicontrols.rsg>
 #include <CPbk2ViewState.h>
 #include <CPbk2PhonebookInfoDlg.h>
 #include <TPbk2StoreContactAnalyzer.h>
@@ -1125,6 +1125,15 @@ TInt CPbk2CommandHandler::ToStoreFieldIndexL(
         CleanupStack::PopAndDestroy( presentationContact );
         }
     return index;
+    }
+
+// --------------------------------------------------------------------------
+// CPbk2CommandHandler::CommandStore
+// --------------------------------------------------------------------------
+//
+EXPORT_C CPbk2CommandStore* CPbk2CommandHandler::CommandStore()
+    {
+    return iCommandStore;
     }
 
 // End of File

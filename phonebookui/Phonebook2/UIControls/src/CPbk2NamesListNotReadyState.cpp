@@ -23,7 +23,7 @@
 #include "CPbk2ContactViewListBox.h"
 #include "CPbk2NamesListControl.h"
 #include <Pbk2MenuFilteringFlags.hrh>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 
 // System includes
 #include <AknsDrawUtils.h>

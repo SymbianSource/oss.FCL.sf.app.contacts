@@ -22,7 +22,7 @@
 // Phonebook 2
 #include "Pbk2AssignValidateField.h"
 #include "CPbk2ServerAppAppUi.h"
-#include <Pbk2ServerApp.rsg>
+#include <pbk2serverapp.rsg>
 #include <CPbk2FieldPropertyArray.h>
 #include <MPbk2FieldProperty.h>
 #include <TPbk2AddItemWrapper.h>

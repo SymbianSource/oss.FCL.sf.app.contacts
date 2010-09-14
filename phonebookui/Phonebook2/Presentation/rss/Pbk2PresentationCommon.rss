@@ -40,7 +40,7 @@
 #include <VPbkContactView.rh>
 #include <VPbkFieldType.rh>
 #include <VPbkStoreUriDefinitions.hrh>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 #include <eikon.rh>
 

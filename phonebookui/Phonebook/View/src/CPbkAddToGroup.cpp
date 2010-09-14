@@ -23,7 +23,7 @@
 #include <aknnotewrappers.h>    // AVKON Notes
 #include <StringLoader.h>       // StringLoader
 
-#include <PbkView.rsg>  // Phonebook view dll resource IDs
+#include <pbkview.rsg>  // Phonebook view dll resource IDs
 #include "CPbkGroupPopup.h"
 
 #include <CPbkContactEngine.h>  // Phonebook engine

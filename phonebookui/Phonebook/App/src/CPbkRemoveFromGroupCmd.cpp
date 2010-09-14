@@ -22,7 +22,7 @@
 #include <eikprogi.h>
 #include <StringLoader.h>
 #include <CPbkContactEngine.h>
-#include <Phonebook.rsg>
+#include <phonebook.rsg>
 #include <CPbkRemoveFromGroup.h>
 #include <CPbkProgressNoteWrapper.h>
 #include <CPbkContactViewListControl.h>

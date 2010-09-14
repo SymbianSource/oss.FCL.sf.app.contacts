@@ -20,7 +20,7 @@
 // INCLUDE FILES
 #include "CPbkPhonebookInfoDlg.h"
 
-#include <PbkView.rsg>
+#include <pbkview.rsg>
 #include <CPbkContactEngine.h>
 #include <StringLoader.h>
 #include <aknPopup.h>

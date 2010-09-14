@@ -64,12 +64,12 @@ DEFFILE         BCardEng.def
 // Dependencies to system components
 LIBRARY         euser.lib bafl.lib estor.lib    // User libraries
 LIBRARY         efsrv.lib                       // file server
-LIBRARY		    versit.lib vcard.lib            // Versit parser
-LIBRARY			cntmodel.lib                    // Contact model
-LIBRARY         ImageConversion.lib             // Image handling
-LIBRARY         featmgr.lib		                // FeatureManager
+LIBRARY		versit.lib vcard.lib            // Versit parser
+LIBRARY		cntmodel.lib                    // Contact model
+LIBRARY         imageconversion.lib             // Image handling
+LIBRARY         featmgr.lib	                // FeatureManager
 
 // Dependencies to other components
-LIBRARY			PbkEng.lib PbkView.lib
+LIBRARY		pbkeng.lib pbkview.lib
 
 // End of File

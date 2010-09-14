@@ -38,7 +38,7 @@
 #include "CxSPAppUiManager.h"
 #include "CxSPLoader.h"
 #include "ExtensionManager.hrh"
-#include <ExtensionManagerRes.rsg>
+#include <extensionmanagerres.rsg>
 #include "CxSPViewIdChanger.h"
 #include "ExtensionManagerIcons.hrh"
 #include "CxSPViewInfo.h"

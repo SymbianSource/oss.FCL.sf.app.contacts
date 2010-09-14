@@ -63,17 +63,17 @@ SOURCE          MTPbkContactItemFieldBlocks.cpp
 
 
 LIBRARY         euser.lib
-LIBRARY         stiftestinterface.lib
+LIBRARY         StifTestInterface.lib
 LIBRARY         stiftestengine.lib
 LIBRARY                 bafl.lib
 LIBRARY                 cntmodel.lib
 LIBRARY                 cntview.lib
-LIBRARY                 commonengine.lib
-LIBRARY                 ECom.lib
+LIBRARY                 CommonEngine.lib
+LIBRARY                 ecom.lib
 LIBRARY                 efsrv.lib
 LIBRARY                 estor.lib
-LIBRARY                 PbkEng.lib
-LIBRARY                 SysUtil.lib
+LIBRARY                 pbkeng.lib
+LIBRARY                 sysutil.lib
 
 
 LANG            SC

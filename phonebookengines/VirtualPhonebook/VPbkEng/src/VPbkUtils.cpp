@@ -29,7 +29,7 @@
 #include <MVPbkBaseContactFieldCollection.h>
 #include <CVPbkContactFieldIterator.h>
 #include <MVPbkStoreContact.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <RLocalizedResourceFile.h>
 #include <VPbkDataCaging.hrh>
 #include <TVPbkFieldVersitProperty.h>

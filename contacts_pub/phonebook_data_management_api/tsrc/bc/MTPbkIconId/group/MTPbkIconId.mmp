@@ -62,15 +62,15 @@ SOURCE          MTPbkIconId.cpp
 SOURCE          MTPbkIconIdBlocks.cpp
 
 
-LIBRARY         stiftestinterface.lib
+LIBRARY         StifTestInterface.lib
 LIBRARY         stiftestengine.lib
 LIBRARY                 bafl.lib
 LIBRARY                 cntmodel.lib
 LIBRARY                 efsrv.lib
 LIBRARY                 estor.lib
 LIBRARY                 euser.lib
-LIBRARY                 PbkEng.lib
-LIBRARY                 SysUtil.lib
+LIBRARY                 pbkeng.lib
+LIBRARY                 sysutil.lib
 
 LANG            SC
 

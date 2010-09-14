@@ -21,7 +21,7 @@ NAME    MYCD
 
 //  INCLUDES
 #include <eikon.rh>
-#include <EIKCORE.rsg>
+#include <eikcore.rsg>
 #include <eikon.rsg>
 
 #include <avkon.rh>
@@ -40,7 +40,7 @@ NAME    MYCD
 #include "ccappmycard.hrh"
 
 // includes for the field resource
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <VPbkFieldType.rh>
 #include <Pbk2UID.h>
 #include <Pbk2FieldProperty.hrh>

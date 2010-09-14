@@ -24,11 +24,11 @@
 #include <avkon.rsg>
 #include <avkon.mbg>
 #include <AvkonIcons.hrh>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <Pbk2UIControls.rh>
 #include <Pbk2UIControls.hrh>
 #include <Pbk2Commands.hrh>
-#include <Pbk2Commands.rsg>
+#include <pbk2commands.rsg>
 #include <phonebook2.loc>
 #include "Pbk2GroupUi.hrh"
 #include "Pbk2UIExtension.rh"

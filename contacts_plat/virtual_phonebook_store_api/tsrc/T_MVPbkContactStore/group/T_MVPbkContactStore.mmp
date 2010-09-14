@@ -43,7 +43,7 @@ APP_LAYER_SYSTEMINCLUDE
 SYSTEMINCLUDE  ../../../../../phonebookengines/VirtualPhonebook/inc
 SYSTEMINCLUDE   /epoc32/include/Digia/EUnit
 
-LIBRARY         EUnit.lib
+LIBRARY         eunit.lib
 LIBRARY         euser.lib efsrv.lib bafl.lib estor.lib cone.lib ecom.lib
 LIBRARY		serviceprovidersettings.lib
 LIBRARY 	cntmodel.lib

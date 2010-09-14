@@ -14,7 +14,6 @@
 //
 
 #include <e32property.h>
-#include <app-services/private/cbackuprestorenotification.h>
 
 //
 // Forward declarations.

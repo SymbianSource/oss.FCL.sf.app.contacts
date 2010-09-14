@@ -22,7 +22,7 @@
 #include <mccaparentcleaner.h>
 #include <mccapluginfactory.h>
 
-#include <cpbk2applicationservices.h>
+#include <CPbk2ApplicationServices.h>
 #include <CPbk2StoreConfiguration.h>
 #include <CVPbkContactManager.h>
 #include <MVPbkContactStoreProperties.h>

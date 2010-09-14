@@ -25,11 +25,11 @@
 #include "MPsu2ViewLaunchCallback.h"
 #include <MPbk2ViewExplorer.h>
 #include <CPbk2SortOrderManager.h>
-#include <Pbk2USimUIRes.rsg>
+#include <pbk2usimuires.rsg>
 #include <CPbk2StoreProperty.h>
 #include <CPbk2StorePropertyArray.h>
 #include <MPbk2AppUi.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <CPbk2ApplicationServices.h>
 
 // Virtual Phonebook

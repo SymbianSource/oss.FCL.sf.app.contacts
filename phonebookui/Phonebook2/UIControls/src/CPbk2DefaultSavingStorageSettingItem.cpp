@@ -26,7 +26,7 @@
 #include <CPbk2StoreConfiguration.h>
 #include <CPbk2StorePropertyArray.h>
 #include <CPbk2StoreProperty.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <Pbk2StoreProperty.hrh>
 #include <Phonebook2InternalCRKeys.h>
 

@@ -57,14 +57,14 @@ USERINCLUDE     ../LogsExt
 APP_LAYER_SYSTEMINCLUDE
 
 // Dependencies to Logs components
-LIBRARY         LogsEng.lib
+LIBRARY         logseng.lib
 LIBRARY         AocCtView.lib
 
 // Dependencies to system components
 LIBRARY         logcli.lib                      // CLogClient
 LIBRARY         apparc.lib
 LIBRARY         avkon.lib
-LIBRARY         commonengine.lib                // StringLoader
+LIBRARY         CommonEngine.lib                // StringLoader
 LIBRARY         cone.lib
 LIBRARY         eikcoctl.lib
 LIBRARY         eikctl.lib
@@ -76,9 +76,9 @@ LIBRARY         bafl.lib                        // MDesCArray, CCLipBoard
 
 LIBRARY         etext.lib                       // CPlainText
 
-LIBRARY         AknSkins.lib 
+LIBRARY         aknskins.lib
 LIBRARY         hlplch.lib                      // Help application
-LIBRARY         FeatMgr.lib                     // Feature Manager API
+LIBRARY         featmgr.lib                     // Feature Manager API
 LIBRARY         ws32.lib
 LIBRARY         apgrfx.lib
 LIBRARY         CdlEngine.lib                   //Dynamic ui stuff  
@@ -87,8 +87,8 @@ LIBRARY         eikdlg.lib
 LIBRARY         gdi.lib                         //This is needed for 3.1 builds (because of API change in CFont Class (gdi.h)
 
 LIBRARY         ecom.lib    
-LIBRARY         GSEcomPlugin.lib
-LIBRARY         GSFramework.lib
+LIBRARY         gsecomplugin.lib
+LIBRARY         gsframework.lib
 LIBRARY         efsrv.lib
 
 // End of File

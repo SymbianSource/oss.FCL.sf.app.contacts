@@ -21,7 +21,7 @@
 // Phonebook 2
 #include "MPbk2ContactAssignerObserver.h"
 #include <CPbk2DrmManager.h>
-#include <Pbk2ServerApp.rsg>
+#include <pbk2serverapp.rsg>
 
 // Virtual Phonebook
 #include <MVPbkStoreContact.h>

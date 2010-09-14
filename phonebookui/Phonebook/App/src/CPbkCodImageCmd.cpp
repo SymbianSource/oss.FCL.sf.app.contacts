@@ -29,7 +29,7 @@
 #include <AknNoteWrappers.h>
 #include <SysUtil.h>
 #include <StringLoader.h>
-#include <PbkView.rsg>              // PbkView resource symbols
+#include <pbkview.rsg>              // PbkView resource symbols
 #include <CPbkContactItem.h>
 #include <MPbkMenuCommandObserver.h>
 #include <MGFetch.h>

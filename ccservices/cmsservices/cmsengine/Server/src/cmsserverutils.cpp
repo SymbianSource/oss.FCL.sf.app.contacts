@@ -18,7 +18,7 @@
 
 
 // INCLUDE FILES
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <spproperty.h>
 #include <spsettings.h>
 #include <spentry.h>

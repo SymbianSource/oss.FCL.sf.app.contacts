@@ -31,12 +31,12 @@
 #include <MVPbkBaseContactField.h>
 #include <MVPbkFieldType.h>
 #include <MVPbkContactFieldData.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <CVPbkTopContactManager.h>
 #include <Pbk2InternalUID.h>
 #include <mpbk2commanditemupdater.h>
 #include <StringLoader.h>
-#include <Pbk2ExNamesListRes.rsg>
+#include <pbk2exnameslistres.rsg>
 
 //ECE
 #include <gulicon.h>

@@ -133,7 +133,7 @@ CSession2* CPcsServer::NewSessionL(const TVersion& aVersion,
 CPcsPluginInterface* CPcsServer::PluginInterface()
 {
 	return iPcs;
-};
+}
 
 // ----------------------------------------------------------------------------
 // CPcsServer::IsChineseFeatureInitilizedL()

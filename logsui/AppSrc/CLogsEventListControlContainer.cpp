@@ -24,7 +24,7 @@
 #include <akntabgrp.h>
 #include <AknsConstants.h>  //for skinned icons
 
-#include <Logs.rsg>
+#include <logs.rsg>
 #include <logs.mbg>
 
 #include "CLogsEventListControlContainer.h"

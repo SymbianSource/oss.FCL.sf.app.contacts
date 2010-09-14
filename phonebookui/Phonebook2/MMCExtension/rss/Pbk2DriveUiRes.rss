@@ -20,7 +20,7 @@
 #include "Pbk2MmcUiUid.h"
 #include "PmuCommands.hrh"
 #include <Pbk2Commands.hrh>
-#include <Pbk2Commands.rsg>
+#include <pbk2commands.rsg>
 #include <Pbk2UIExtension.rh>
 #include <Pbk2ViewId.hrh>
 #include <phonebook2.loc>

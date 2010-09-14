@@ -38,7 +38,7 @@
 #include <MPbk2AppUi.h>
 #include "CPbk2RingingToneFetch.h"
 
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <coemain.h>
 
 #include <Pbk2Debug.h>

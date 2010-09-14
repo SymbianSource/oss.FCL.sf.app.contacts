@@ -30,8 +30,8 @@
 #include <MVPbkSingleContactOperationObserver.h>
 #include <RLocalizedResourceFile.h>
 #include <VPbkDataCaging.hrh>
-#include <VPbkEng.rsg>
-#include <VPbkFieldTypeSelectors.rsg>
+#include <vpbkeng.rsg>
+#include <vpbkfieldtypeselectors.rsg>
 #include <CVPbkFieldTypeSelector.h>
 #include <CVPbkFieldFilter.h>
 #include <barsread.h>

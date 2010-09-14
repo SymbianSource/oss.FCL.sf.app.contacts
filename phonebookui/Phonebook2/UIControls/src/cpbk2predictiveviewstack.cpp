@@ -21,7 +21,7 @@
 // Phonebook 2 / Virtual Phonebook
 #include <MVPbkContactViewFiltering.h>
 #include <CVPbkContactFindPolicy.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <MVPbkViewContact.h>
 #include <CVPbkContactIdConverter.h>
 #include <MPbk2AppUi.h>

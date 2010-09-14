@@ -24,7 +24,7 @@
 #include <aknPopup.h>       // als query popup
 #include <AknsConstants.h>  //for skinned icons
 
-#include <Logs.rsg>           // note structure
+#include <logs.rsg>           // note structure
 #include <logs.mbg>     // Logs own icons
 
 #include <csxhelp/log.hlp.hrh>

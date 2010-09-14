@@ -26,7 +26,7 @@
 #include <MVPbkFieldType.h>
 #include <CVPbkContactFieldIterator.h>
 #include <VPbkFieldTypeSelectorFactory.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 #include "cmssetvoicecalldefault.h"
 

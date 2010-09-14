@@ -30,7 +30,7 @@
 #include <Pbk2UIControls.hrh>
 #include <MPbk2ContactUiControl.h>
 #include <MPbk2FetchDlgObserver.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <MPbk2ContactLinkIterator.h>
 #include <CPbk2IconInfoContainer.h>
 #include <Pbk2UID.h>
@@ -1327,6 +1327,21 @@ TInt CPbk2FetchDlg::RestoreSelections( TAny* aFetchDlg )
 //
 void CPbk2FetchDlg::RestoreSelectionsL()
     {
+    // Remove selections in all pages. Selections will be restored later.
+    // In case of sort order change the selections will be in a new position,
+    // that's why they need to be removed.
+    if ( iPages )
+        {
+        const TInt pageCount = iPages->DlgPageCount();
+        for ( TInt i = 0; i < pageCount; i++ )
+            {
+            if ( iPages->DlgPageAt(i).Control().ContactsMarked() )
+                {
+                iPages->DlgPageAt(i).Control().ClearMarks();
+                }
+            }
+        }
+    
     if ( iResults )
         {
         for ( TInt i = 0; i < iResults->Count(); ++i )

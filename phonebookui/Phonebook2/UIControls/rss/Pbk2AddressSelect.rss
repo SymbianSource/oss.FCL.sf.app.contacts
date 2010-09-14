@@ -17,7 +17,7 @@
 
 
 #include "Pbk2AddressSelect.rh"
-#include <Pbk2CommonUi.rsg>
+#include <pbk2commonui.rsg>
 
 // --------------------------------------------------------------------------
 //  Phone number select

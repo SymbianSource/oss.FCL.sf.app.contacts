@@ -20,7 +20,7 @@
 #include <e32base.h>
 #include <barsread.h>
 #include <Pbk2DataCaging.hrh>
-#include <Pbk2Presentation.rsg>
+#include <pbk2presentation.rsg>
 #include <RPbk2LocalizedResourceFile.h>
 #include "CPbk2ServiceManager.h"
 #include "Pbk2PresentationUtils.h"

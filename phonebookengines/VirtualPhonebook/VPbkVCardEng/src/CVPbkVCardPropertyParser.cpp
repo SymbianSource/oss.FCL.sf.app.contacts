@@ -143,7 +143,8 @@ void CVPbkVCardPropertyParser::ResolveParamsL( CParserProperty* aProperty,
             TVPbkFieldTypeParameter fieldTypeParam = 
                 static_cast<TVPbkFieldTypeParameter>( 
                     TVPbkMappingsFindTool::FindIdByName( *name, paramArray ) );
-            if (!iAttributeHandler.CreateAttributeL(fieldTypeParam))
+            if (!iAttributeHandler.CreateAttributeL(fieldTypeParam, 
+            		iVersitProperty.Name()))
                 {
                 // No attribute created from fieldTypeParam,
                 // so add to parameters list
@@ -163,7 +164,8 @@ void CVPbkVCardPropertyParser::ResolveParamsL( CParserProperty* aProperty,
                 TVPbkFieldTypeParameter fieldTypeParam = 
                 static_cast<TVPbkFieldTypeParameter>( 
                     TVPbkMappingsFindTool::FindIdByName( *name, paramArray ) );
-                if (!iAttributeHandler.CreateAttributeL(fieldTypeParam))
+                if (!iAttributeHandler.CreateAttributeL(fieldTypeParam, 
+                		iVersitProperty.Name()))
                     {
                     // No attribute created from fieldTypeParam,
                     // so add to parameters list

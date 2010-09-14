@@ -26,7 +26,7 @@
 #include <CPbk2StorePropertyArray.h>
 #include <CPbk2UIExtensionManager.h>
 #include <MPbk2UIExtensionIconSupport.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <CPbk2PresenceIconInfo.h>
 #include "CPbk2FieldAnalyzer.h"
 #include <CPbk2ApplicationServices.h>
@@ -336,19 +336,28 @@ void CPbk2SelectFieldDlg::CPopupList::SetupWindowLayout
 TKeyResponse CPbk2SelectFieldDlg::CPopupList::OfferKeyEventL
         (const TKeyEvent& aKeyEvent, TEventCode aType)
     {
-    // The focus can display after clicking on navigation key and MSK key.
-    // Then, both LSK and RSK should be visible.
-    // Check whether LSK is hidden, if yes, make it visible
-    if ( !ButtonGroupContainer()->IsCommandVisible( EAknSoftkeySelect ) )
-    	{
-        // Whether navigation key or MSK key is pressed.
-    	if ( aKeyEvent.iCode == EKeyUpArrow  
-          || aKeyEvent.iCode == EKeyDownArrow 
-          || aKeyEvent.iCode == EKeyDevice3 )
+    if ( aKeyEvent.iCode == EKeyEscape )
+        {
+        // When the popup list is prompting for selection, if the user closes Phonebook application from FSW, 
+        // the dialog is to be closed otherwise re-enter Phonebook would result in wrong UI behavior.
+        AttemptExitL( EFalse);
+        }
+    else
+        {
+        // The focus can display after clicking on navigation key and MSK key.
+        // Then, both LSK and RSK should be visible.
+        // Check whether LSK is hidden, if yes, make it visible
+        if ( !ButtonGroupContainer()->IsCommandVisible( EAknSoftkeySelect ) )
             {
-            ButtonGroupContainer()->MakeCommandVisible( EAknSoftkeySelect, ETrue );
+            // Whether navigation key or MSK key is pressed.
+            if ( aKeyEvent.iCode == EKeyUpArrow || aKeyEvent.iCode
+                == EKeyDownArrow || aKeyEvent.iCode == EKeyDevice3 )
+                {
+                ButtonGroupContainer()->MakeCommandVisible(
+                    EAknSoftkeySelect, ETrue );
+                }
             }
-    	}
+        }
     TKeyResponse response = ListBox()->OfferKeyEventL( aKeyEvent, aType );
     return response;
     }

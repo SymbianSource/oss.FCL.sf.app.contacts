@@ -61,12 +61,12 @@ LIBRARY                 gdi.lib
 LIBRARY                 aknskins.lib
 LIBRARY                 aknskinsrv.lib
 LIBRARY                 aknswallpaperutils.lib
-LIBRARY                 FontUtils.lib
-LIBRARY                 cdlengine.lib
+LIBRARY                 fontutils.lib
+LIBRARY                 CdlEngine.lib
 LIBRARY                 aknlayout2.lib
-LIBRARY                 aknlayout2scalable.lib
-LIBRARY                 aknlayout2adaptation.lib
-LIBRARY                 commonengine.lib
+LIBRARY                 AknLayout2Scalable.lib
+LIBRARY                 AknLayout2Adaptation.lib
+LIBRARY                 CommonEngine.lib
 
 #if (PBKX_DEBUG_LEVEL > 0)
 LIBRARY                 pbkxdebug.lib

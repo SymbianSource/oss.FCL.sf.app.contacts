@@ -23,7 +23,7 @@
 #include <avkon.rsg>
 #include <StringLoader.h>
 
-#include <PbkView.rsg>
+#include <pbkview.rsg>
 #include "CPbkFetchDlg.h"
 #include "MPbkFetchCallbacks.h"
 #include "CPbkSelectFieldDlg.h"

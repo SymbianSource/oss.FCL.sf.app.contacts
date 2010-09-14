@@ -94,17 +94,17 @@ LIBRARY euser.lib bafl.lib
 LIBRARY apparc.lib cone.lib fbscli.lib
 LIBRARY eikcore.lib efsrv.lib eikcoctl.lib
 LIBRARY ws32.lib apgrfx.lib
-LIBRARY CentralRepository.lib
-LIBRARY PlatformEnv.lib
+LIBRARY centralrepository.lib
+LIBRARY platformenv.lib
 
 // Dependencies to S60 platform components
-LIBRARY Avkon.lib AknSkins.lib
-LIBRARY CommonEngine.lib SendUI.lib
+LIBRARY avkon.lib aknskins.lib
+LIBRARY CommonEngine.lib sendui.lib
 LIBRARY gfxtrans.lib
 
 // Dependencies to Phonebook
-LIBRARY VPbkEng.lib Pbk2UiControls.lib Pbk2CommonUI.lib
-LIBRARY Pbk2Presentation.lib Pbk2UiExt.lib Pbk2Commands.lib
+LIBRARY VPbkEng.lib pbk2uicontrols.lib Pbk2CommonUI.lib
+LIBRARY Pbk2Presentation.lib Pbk2UIExt.lib Pbk2Commands.lib
 
 #ifdef PBK2_ENABLE_PROFILE
 // Depencency to Phonebook profiling library

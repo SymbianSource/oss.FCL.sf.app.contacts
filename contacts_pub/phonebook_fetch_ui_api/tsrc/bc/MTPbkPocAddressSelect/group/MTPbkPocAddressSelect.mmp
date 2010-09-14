@@ -64,20 +64,20 @@ SOURCE					../../ExtraCodes/T_AddressAndNumberSelect.cpp
 SOURCE 					../../ExtraCodes/CSimulateKeyBase.cpp
 SOURCE 					../../ExtraCodes/CSimulateKeyEvents.cpp
 
-LIBRARY         stiftestinterface.lib
+LIBRARY         StifTestInterface.lib
 LIBRARY         stiftestengine.lib
 LIBRARY                 aknicon.lib
-LIBRARY                 AknSkins.lib
+LIBRARY                 aknskins.lib
 LIBRARY                 apgrfx.lib
 LIBRARY                 apmime.lib
 LIBRARY                 avkon.lib
 LIBRARY                 bafl.lib
 LIBRARY                 bitgdi.lib
-LIBRARY                 BitmapTransforms.lib
+LIBRARY                 bitmaptransforms.lib
 LIBRARY                 centralrepository.lib
 LIBRARY                 cntmodel.lib
 LIBRARY                 cntview.lib
-LIBRARY                 commonengine.lib
+LIBRARY                 CommonEngine.lib
 LIBRARY                 cone.lib
 LIBRARY                 DrmHelper.lib
 LIBRARY                 efsrv.lib
@@ -89,10 +89,10 @@ LIBRARY                 eikdlg.lib
 LIBRARY                 estor.lib
 LIBRARY                 euser.lib
 LIBRARY                 fbscli.lib
-LIBRARY                 ImageConversion.lib
-LIBRARY                 MGFetch.lib
-LIBRARY                 PbkEng.lib
-LIBRARY                 PbkView.lib
+LIBRARY                 imageconversion.lib
+LIBRARY                 mgfetch.lib
+LIBRARY                 pbkeng.lib
+LIBRARY                 pbkview.lib
 LIBRARY                 sysutil.lib
 LANG            SC
 

@@ -48,7 +48,7 @@
 #include <RPbkViewResourceFile.h>  // Phonebook view dll resource file loader
 #include <StringLoader.h>
 
-#include <SpdCtrl.rsg>
+#include <spdctrl.rsg>
 #include <SpdCtrl.mbg>
 #include <Avkon.mbg>
 #include <gdi.h>

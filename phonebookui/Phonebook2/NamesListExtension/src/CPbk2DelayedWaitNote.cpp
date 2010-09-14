@@ -17,7 +17,7 @@
 
 //  INCLUDES
 #include <Pbk2ProcessDecoratorFactory.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <avkon.hrh>
 #include "CPbk2DelayedWaitNote.h"
 

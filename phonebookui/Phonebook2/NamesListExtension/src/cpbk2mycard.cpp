@@ -41,7 +41,7 @@
 // thumbnail loading
 #include <CPbk2ImageManager.h>
 #include <TPbk2ImageManagerParams.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <fbs.h>
 #include <AknUtils.h>
 #include <aknlayoutscalable_apps.cdl.h>

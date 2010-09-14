@@ -21,7 +21,7 @@
 #include "CPbk2ContactEditorNewContact.h"
 
 // Phonebook 2
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <TPbk2ContactEditorParams.h>
 #include <CPbk2PresentationContact.h>
 #include "CPbk2InputAbsorber.h"

@@ -21,7 +21,7 @@
 #include "CPbk2ThumbnailCmdBase.h"
 
 // Phonebook 2
-#include <Pbk2Commands.rsg>
+#include <pbk2commands.rsg>
 #include <CPbk2ImageManager.h>
 #include <CPbk2ContactRelocator.h>
 #include <MPbk2CommandObserver.h>

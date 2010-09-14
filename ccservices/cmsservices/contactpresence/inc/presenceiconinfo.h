@@ -23,7 +23,7 @@
 #include <badesca.h>
 #include <MVPbkSingleContactOperationObserver.h>
 #include <mcontactpresence.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 #include "mpresencetrafficlightsobs.h"
 #include "presenceiconinfolistener.h"

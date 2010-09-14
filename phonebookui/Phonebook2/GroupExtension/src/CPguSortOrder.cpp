@@ -20,7 +20,7 @@
 
 // Phonebook 2
 #include <RPbk2LocalizedResourceFile.h>
-#include <Pbk2GroupUIRes.rsg>
+#include <pbk2groupuires.rsg>
 #include <Pbk2DataCaging.hrh>
 
 // Virtual Phonebook

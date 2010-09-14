@@ -20,7 +20,7 @@
 // INCLUDE FILES
 #include <StringLoader.h>
 #include <AknUtils.h>
-#include <Logs.rsg>
+#include <logs.rsg>
 
 #include "CLogsGprsCtAdapter.h"
 #include "MLogsSharedData.h"

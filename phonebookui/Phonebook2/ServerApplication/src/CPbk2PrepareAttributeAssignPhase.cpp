@@ -24,7 +24,7 @@
 #include "CPbk2KeyEventDealer.h"
 #include <TPbk2StoreContactAnalyzer.h>
 #include <MPbk2ApplicationServices.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 
 // Virtual Phonebook
 #include <MVPbkContactLink.h>

@@ -26,7 +26,7 @@
 #include <MVPbkFieldType.h>
 #include <RLocalizedResourceFile.h>
 #include <VPbkDataCaging.hrh>
-#include <VPbkCntModelRes.rsg>
+#include <vpbkcntmodelres.rsg>
 
 // System includes
 #include <cntdef.hrh>

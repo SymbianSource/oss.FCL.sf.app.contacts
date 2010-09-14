@@ -26,7 +26,7 @@
 #include <RPbk2LocalizedResourceFile.h>
 #include <Pbk2DataCaging.hrh>
 #include <CPbk2StoreProperty.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <CPbk2StorePropertyContentStoreName.h>
 #include <Pbk2StoreProperty.hrh>
 

@@ -17,7 +17,7 @@
 
 #include "CPbk2UIFieldArray.h"
 #include "CPbk2UIField.h"
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 
 // Phonebook 2
 #include <RPbk2LocalizedResourceFile.h>

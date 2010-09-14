@@ -36,9 +36,9 @@
 #include <RPbk2LocalizedResourceFile.h>
 #include "Pbk2DataCaging.hrh"
 #include "Pbk2PresentationUtils.h"
-#include <Pbk2CommonUi.rsg>
-#include <Pbk2UIControls.rsg>
-#include <Pbk2Commands.rsg>
+#include <pbk2commonui.rsg>
+#include <pbk2uicontrols.rsg>
+#include <pbk2commands.rsg>
 
 #include <MPbk2ImageOperationObservers.h>   // MPbk2ImageSetObserver
 #include <AknServerApp.h>                   // MAknServerAppExitObserver
@@ -49,7 +49,7 @@
 #include <CVPbkContactManager.h>
 #include <TVPbkFieldTypeMapping.h>
 #include <MVPbkFieldType.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 // System includes
 #include <barsread.h>
@@ -60,7 +60,7 @@
 #include <MGFetch.h>
 #include <DocumentHandler.h>            // CDocumentHandler
 #include <apmstd.h>                     // TDataType
-#include <Pbk2CmdExtRes.rsg>
+#include <pbk2cmdextres.rsg>
 #include <sysutil.h>
 #include <CPbk2ApplicationServices.h>
 #include <AknProgressDialog.h>

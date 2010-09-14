@@ -42,5 +42,5 @@ TARGETPATH      resource/plugins
 END
 
 LIBRARY         euser.lib
-LIBRARY         ECom.lib
-LIBRARY         findutil.lib
+LIBRARY         ecom.lib
+LIBRARY         FindUtil.lib

@@ -24,7 +24,7 @@
 #include <featmgr.h>
 #include <DRMCommon.h>
 #include <bldvariant.hrh>
-#include <PbkView.rsg>
+#include <pbkview.rsg>
 #include <eikenv.h>
 #include <StringLoader.h>
 #include <aknnotewrappers.h>

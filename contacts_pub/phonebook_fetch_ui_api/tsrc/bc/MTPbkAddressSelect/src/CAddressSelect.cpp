@@ -34,7 +34,7 @@
 #include    <CPbkFieldInfo.h>
 #include    <CPbkContactEngine.h>
 #include    "MTPbkAddressSelect.h"
-#include    <PbkAddressSelect.rsg>
+#include    <pbkaddressselect.rsg>
 
 // ================= MEMBER FUNCTIONS =======================
 

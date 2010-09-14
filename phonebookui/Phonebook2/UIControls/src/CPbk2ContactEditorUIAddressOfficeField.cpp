@@ -22,12 +22,12 @@
 #include "MPbk2ContactEditorFieldVisitor.h"
 #include "MPbk2ContactEditorUiBuilderExtension.h"
 #include "CPbk2IconInfoContainer.h"
-#include <Pbk2CommonUi.rsg>
+#include <pbk2commonui.rsg>
 #include "MPbk2UIField.h"
 #include "Pbk2EditorLineIds.hrh" 
 #include <Pbk2UIControls.hrh>
 #include "CPbk2ContactEditorReadonlyField.h"
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 // System includes
 #include <eikcapc.h>
 #include <eikedwin.h>

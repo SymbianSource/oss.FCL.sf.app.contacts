@@ -42,8 +42,8 @@
 #include "CPbk2PredictiveSearchFilter.h"
 #include "cpbk2contactviewdoublelistbox.h"
 #include <CPbk2ThumbnailManager.h>
-#include <Pbk2CommonUi.rsg>
-#include <Pbk2UIControls.rsg>
+#include <pbk2commonui.rsg>
+#include <pbk2uicontrols.rsg>
 #include "CPbk2AppUi.h"
 
 // Virtual Phonebook

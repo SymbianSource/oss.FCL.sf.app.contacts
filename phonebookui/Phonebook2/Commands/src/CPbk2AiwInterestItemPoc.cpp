@@ -23,8 +23,8 @@
 #include "CPbk2PocCmd.h"
 #include <TPbk2StoreContactAnalyzer.h>
 #include <MPbk2Command.h>
-#include <Pbk2UIControls.rsg>
-#include <Pbk2Commands.rsg>
+#include <pbk2uicontrols.rsg>
+#include <pbk2commands.rsg>
 #include <MPbk2ContactUiControl.h>
 #include <Pbk2UID.h>
 #include <MPbk2ApplicationServices.h>

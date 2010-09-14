@@ -24,7 +24,7 @@
 #include "PbkUID.h"
 #include "PbkViewUtils.h"
 
-#include <PbkView.rsg>
+#include <pbkview.rsg>
 #include <CPbkContactEngine.h>
 #include <eikspane.h>
 #include <akntitle.h>

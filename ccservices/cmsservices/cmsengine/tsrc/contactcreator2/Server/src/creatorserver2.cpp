@@ -21,7 +21,7 @@
 #include <e32std.h>
 #include <flogger.h>
 #include <barsread.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <MVPbkFieldType.h>
 #include <MVPbkStoreContact.h>
 #include <MVPbkContactStore.h>

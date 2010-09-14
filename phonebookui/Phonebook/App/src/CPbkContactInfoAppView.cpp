@@ -27,8 +27,8 @@
 #include <PbkUID.h>
 
 // Phonebook.app include files
-#include <Phonebook.rsg>
-#include <PbkView.rsg>
+#include <phonebook.rsg>
+#include <pbkview.rsg>
 
 // Phone include files
 #include <SpdiaControl.h>

@@ -20,7 +20,7 @@
 #include "cpbk2storestatechecker.h"
 
 // Phonebook 2
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <MPbk2ApplicationServices.h>
 #include <MPbk2AppUi.h>
 #include <CPbk2StoreProperty.h>

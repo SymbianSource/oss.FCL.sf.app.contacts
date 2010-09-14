@@ -513,11 +513,10 @@ void CCCAppCommLauncherContainer::HandleLongTapEventL( const TPoint& /*aPenEvent
     
         VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector
             contactActionType = iPlugin.Container().SelectedCommunicationMethod();
-        
-        if ( !iLongTap && contactActionType
+      
+        if ( contactActionType
                         == VPbkFieldTypeSelectorFactory::EFindOnMapSelector )
-            {  
-            iLongTap = ETrue;    
+            {   
             DoShowMapCmdL( (TPbk2CommandId)EPbk2ExtensionShowOnMap );
             }
         else
@@ -608,14 +607,7 @@ void CCCAppCommLauncherContainer::HandleListBoxEventL(
 //
 void CCCAppCommLauncherContainer::HandleFindOnMapContactActionL()
     {
-    if ( !iLongTap )
-        {
-        DoShowMapCmdL( (TPbk2CommandId)EPbk2ExtensionShowOnMap );
-        }
-    else
-        {
-        iLongTap = EFalse;
-        }
+    DoShowMapCmdL( (TPbk2CommandId)EPbk2ExtensionShowOnMap );
     }
 
 // ----------------------------------------------------------------------------
@@ -812,6 +804,13 @@ void CCCAppCommLauncherContainer::ExecuteContactActionServiceWithoutFieldSelecti
 void CCCAppCommLauncherContainer::ContactInfoFetchedNotifyL(
     const CCmsContactFieldInfo& aContactFieldInfo)
     {
+    
+    //CloseAll Pending Pbk2Commands initiated by CCA.    
+    if( iPbkCmd )
+        {
+        iPbkCmd->DeleteAllRunningCmd();
+        }
+
     // update buttons
     iModel->UpdateAddressesValidationL( aContactFieldInfo );
     iModel->FillButtonArrayL();

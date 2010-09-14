@@ -76,7 +76,7 @@ NONSHARABLE_CLASS( CPbk2FieldOrderingManager )
             TFieldTypeOrder( TResourceReader& aReader );
             
             /**
-             * Field type resource id from VPbkEng.rsg
+             * Field type resource id from vpbkeng.rsg
              */
             TInt iFieldTypeResId;
             

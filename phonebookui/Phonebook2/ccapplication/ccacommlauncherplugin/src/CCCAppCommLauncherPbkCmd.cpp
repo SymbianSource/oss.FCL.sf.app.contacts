@@ -33,6 +33,7 @@
 #include <coemain.h>
 #include <aknnotewrappers.h>
 #include <StringLoader.h>
+#include <CPbk2CommandStore.h>
 
 _LIT(KPbk2CommandsDllResFileName,   "Pbk2Commands.rsc");
 _LIT(KPbk2UiControlsDllResFileName, "Pbk2UiControls.rsc");
@@ -944,3 +945,25 @@ CPbk2ApplicationServices& CCCAppCommLauncherPbkCmd::ApplicationServices() const
     {
     return *iAppServices;
     }
+
+// --------------------------------------------------------------------------
+// CCCAppCommLauncherPbkCmd::DeleteAllRunningCmd
+// --------------------------------------------------------------------------
+//
+void CCCAppCommLauncherPbkCmd::DeleteAllRunningCmd()
+    {
+    //Close all the pending pbk2commands launched from CCA    
+    if ( iPlugin.CommandState().IsRunning() )
+        {
+        iPlugin.CommandState().SetNotRunning();  
+        if ( iCommandHandler )
+            {
+            CPbk2CommandStore* cmdStore( iCommandHandler->CommandStore() );
+            if ( cmdStore )
+                {
+                cmdStore->DestroyAllCommands();
+                }
+            }
+        }    
+    }
+

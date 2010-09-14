@@ -24,7 +24,7 @@
 #include <Pbk2IPCPackage.h>
 #include <Pbk2MimeTypeHandler.h>
 #include <CPbk2StoreConfiguration.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 
 // Virtual Phonebook
 #include <CVPbkContactManager.h>

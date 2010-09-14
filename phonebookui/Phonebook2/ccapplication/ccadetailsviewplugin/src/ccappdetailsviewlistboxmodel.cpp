@@ -60,14 +60,13 @@
 #include <TVPbkFieldTypeParameters.h>
 #include <TVPbkFieldVersitProperty.h>
 #include <StringLoader.h>
-
 #include <TPbk2AppIconId.h>
 
 #include <aknlists.h>
 
 #include <avkon.rsg>
-#include <VPbkEng.rsg>
-#include <Pbk2UIControls.rsg>
+#include <vpbkeng.rsg>
+#include <pbk2uicontrols.rsg>
 
 #include "ccappdetailsviewlistboxmodel.h"
 #include "ccappdetailsviewdefs.h"

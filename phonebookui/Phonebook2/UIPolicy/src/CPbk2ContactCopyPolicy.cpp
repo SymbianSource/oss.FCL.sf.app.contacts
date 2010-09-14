@@ -29,7 +29,7 @@
 #include <Pbk2ContactFieldCopy.h>
 #include <RPbk2LocalizedResourceFile.h>
 #include <Pbk2DataCaging.hrh>
-#include <Pbk2Presentation.rsg>
+#include <pbk2presentation.rsg>
 
 // Virtual Phonebook
 #include <MVPbkContactFieldCopyObserver.h>
@@ -48,7 +48,7 @@
 #include <MVPbkContactOperationBase.h>
 #include <MVPbkContactAttributeManager.h>
 #include <VPbkUtils.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 // System includes
 #include <coemain.h>

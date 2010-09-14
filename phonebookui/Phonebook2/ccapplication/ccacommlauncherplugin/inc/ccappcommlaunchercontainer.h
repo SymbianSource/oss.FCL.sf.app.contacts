@@ -472,9 +472,6 @@ private: // Data
      */
 	CCCaFactoryExtensionNotifier* iFactoryExtensionNotifier;
 	
-	
-	TBool iLongTap;
-	
 	/**
 	 * Owns - Input Blocker
 	 */

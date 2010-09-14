@@ -22,9 +22,9 @@
 #include "CPguAddMembersCmd.h"
 #include "CPguRemoveFromGroupCmd.h"
 #include "Pbk2GroupUi.hrh"
-#include <Pbk2GroupUIRes.rsg>
+#include <pbk2groupuires.rsg>
 #include <CPbk2AppUiBase.h>
-#include <Pbk2Commands.rsg>
+#include <pbk2commands.rsg>
 #include <CPbk2UIExtensionView.h>
 #include <CPbk2DocumentBase.h>
 #include <CPbk2NamesListControl.h>
@@ -49,8 +49,8 @@
 #include <MPbk2ControlObserver.h>
 #include <MPbk2NavigationObserver.h>
 #include <MPbk2MenuCommandObserver.h>
-#include <Pbk2CommonUi.rsg>
-#include <Pbk2UIControls.rsg>
+#include <pbk2commonui.rsg>
+#include <pbk2uicontrols.rsg>
 #include <MPbk2PointerEventInspector.h>
 #include <MPbk2ApplicationServices.h>
 #include <MPbk2ContactViewSupplier.h>

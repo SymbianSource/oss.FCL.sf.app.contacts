@@ -45,7 +45,7 @@ APP_LAYER_SYSTEMINCLUDE
 USERINCLUDE     ../inc
 
 LIBRARY     euser.lib
-LIBRARY     stiftestinterface.lib
+LIBRARY     StifTestInterface.lib
 LIBRARY	    estlib.lib
 LIBRARY	    bafl.lib
 LIBRARY     efsrv.lib

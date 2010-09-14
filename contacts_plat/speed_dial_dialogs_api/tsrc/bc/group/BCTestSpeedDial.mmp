@@ -51,21 +51,21 @@ SOURCE          BCTestSpeedDialBlocks.cpp
 
 
 LIBRARY         euser.lib
-LIBRARY         stiftestinterface.lib
+LIBRARY         StifTestInterface.lib
 LIBRARY         stiftestengine.lib
 
-LIBRARY			SpdCtrl.lib
-LIBRARY			PbkEng.lib
+LIBRARY			spdctrl.lib
+LIBRARY			pbkeng.lib
 
 LIBRARY			efsrv.lib
 LIBRARY         cone.lib ws32.lib avkon.lib eikcoctl.lib eikctl.lib apgrfx.lib aknskins.lib 
 LIBRARY			bafl.lib aknskinsrv.lib aknswallpaperutils.lib eikcore.lib
 
 LIBRARY         Pbk2CommonUI.lib
-LIBRARY         ServiceHandler.lib
+LIBRARY         servicehandler.lib
 LIBRARY         Pbk2Presentation.lib
-LIBRARY         PbkView.lib
-LIBRARY         PhoneClient.LIB
+LIBRARY         pbkview.lib
+LIBRARY         phoneclient.lib
 LIBRARY         VPbkEng.lib
 
 

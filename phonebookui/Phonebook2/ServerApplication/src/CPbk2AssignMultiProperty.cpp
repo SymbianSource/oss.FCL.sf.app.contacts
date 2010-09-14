@@ -21,7 +21,7 @@
 
 // Phonebook 2
 #include "CPbk2ServerAppAppUi.h"
-#include <Pbk2ServerApp.rsg>
+#include <pbk2serverapp.rsg>
 #include <MPbk2FieldProperty.h>
 #include <TPbk2AddItemWrapper.h>
 #include <CPbk2FieldPropertyArray.h>

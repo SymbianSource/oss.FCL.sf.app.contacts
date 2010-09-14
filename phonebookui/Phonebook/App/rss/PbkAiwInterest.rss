@@ -20,7 +20,7 @@
 #include <pbkconfig.hrh>
 
 #include <eikon.rsg>
-#include <Avkon.rsg>
+#include <avkon.rsg>
 #include <AiwCommon.rh>
 #include <AiwPoCParameters.hrh>
 

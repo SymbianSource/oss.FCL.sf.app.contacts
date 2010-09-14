@@ -36,7 +36,7 @@
 #include <MPbk2FieldProperty.h>
 #include <MPbk2FieldProperty2.h>
 #include <CPbk2FieldPropertyArray.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <MPbk2ContactNameFormatter.h>
 #include <MPbk2ContactEditorExtension.h>
 #include <CPbk2StoreConfiguration.h>
@@ -81,7 +81,7 @@
 #include <MVPbkFieldType.h>
 #include <TVPbkFieldVersitProperty.h>
 
-#include <VPbkEng.rsg> 
+#include <vpbkeng.rsg> 
 #include <VPbkFieldType.hrh>
 #include <VPbkContactStoreUris.h>
 
@@ -2400,6 +2400,7 @@ void CPbk2ContactEditorDlgImpl::StoreUnavailable
                 iDelayDelete = CIdle::NewL( CActive::EPriorityStandard );
                 }
             delete iAddressView;
+            iAddressView = NULL;
             }
        else
             {

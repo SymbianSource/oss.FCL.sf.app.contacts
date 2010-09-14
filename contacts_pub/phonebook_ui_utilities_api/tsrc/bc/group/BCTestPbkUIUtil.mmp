@@ -62,13 +62,13 @@ SOURCE          BCTestPbkUIUtil.cpp
 SOURCE          BCTestPbkUIUtilBlocks.cpp
 
 
-LIBRARY         euser.lib SysUtil.lib
-LIBRARY         stiftestinterface.lib
+LIBRARY         euser.lib sysutil.lib
+LIBRARY         StifTestInterface.lib
 LIBRARY         stiftestengine.lib
-LIBRARY		    PbkEng.lib PbkView.lib
+LIBRARY		    pbkeng.lib pbkview.lib
 LIBRARY		    efsrv.lib estor.lib cntmodel.lib
-LIBRARY		    cone.lib commonengine.lib
-LIBRARY         eikcoctl.lib eikcore.lib Avkon.lib
+LIBRARY		    cone.lib CommonEngine.lib
+LIBRARY         eikcoctl.lib eikcore.lib avkon.lib
 LIBRARY         bafl.lib aknskins.lib egul.lib
 
 

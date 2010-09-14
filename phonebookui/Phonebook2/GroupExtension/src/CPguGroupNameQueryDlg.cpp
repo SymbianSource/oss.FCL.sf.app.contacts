@@ -21,7 +21,7 @@
 // Phonebook 2
 #include "Pbk2GroupConsts.h"
 #include <MPbk2ContactNameFormatter.h>
-#include <Pbk2GroupUIRes.rsg>
+#include <pbk2groupuires.rsg>
 #include <Pbk2PresentationUtils.h>
 #include <CPbk2AppUiBase.h>
 #include <MPbk2StartupMonitor.h>

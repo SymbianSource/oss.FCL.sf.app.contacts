@@ -27,7 +27,7 @@
 #include <MVPbkContactStore.h>
 #include <TVPbkFieldTypeMapping.h>
 #include <MVPbkContactOperationBase.h>
-#include <T_VPbkVCardApi.rsg>
+#include <t_vpbkvcardapi.rsg>
 #include <MVPbkStoreContact.h>
 
 _LIT( KCntDbUri, "cntdb://c:testcontacts.cdb" );

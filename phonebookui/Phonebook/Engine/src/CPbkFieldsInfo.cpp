@@ -24,7 +24,7 @@
 #include    <cntitem.h>
 #include    <cntmodel.rsg>
 
-#include    <PbkEng.rsg>
+#include    <pbkeng.rsg>
 #include    "CPbkFieldInfo.h"
 #include    "CPbkFieldInfoGroup.h"
 #include    "CPbkUidMap.h"

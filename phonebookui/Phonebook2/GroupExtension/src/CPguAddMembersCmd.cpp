@@ -19,9 +19,9 @@
 #include "CPguAddMembersCmd.h"
 
 // Phonebook 2
-#include <Pbk2GroupUIRes.rsg>
-#include <Pbk2Commands.rsg>
-#include <Pbk2UIControls.rsg>
+#include <pbk2groupuires.rsg>
+#include <pbk2commands.rsg>
+#include <pbk2uicontrols.rsg>
 #include <CPbk2FetchDlg.h>
 #include <MPbk2CommandObserver.h>
 #include <MPbk2ContactUiControl.h>

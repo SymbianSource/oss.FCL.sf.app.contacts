@@ -22,7 +22,7 @@
 #include    "CPbkPhoneNumberSelectBase.h"
 #include    <aknnotewrappers.h>
 #include    <StringLoader.h>        // StringLoader
-#include    <PbkView.rsg>
+#include    <pbkview.rsg>
 #include    <CPbkFieldInfo.h>
 #include    <CPbkContactItem.h>
 

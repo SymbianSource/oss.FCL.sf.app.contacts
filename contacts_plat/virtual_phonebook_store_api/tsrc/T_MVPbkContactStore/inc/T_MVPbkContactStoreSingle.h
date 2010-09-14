@@ -32,7 +32,7 @@
 #include <MVPbkBatchOperationObserver.h>
 #include <MVPbkContactFindObserver.h>
 #include <MVPbkContactFindFromStoresObserver.h>
-#include <T_MVPbkContactStore.rsg>
+#include <t_mvpbkcontactstore.rsg>
 #include <badesca.h>
 #include <mvpbkoperationobserver.h>
 #include <barsread.h>

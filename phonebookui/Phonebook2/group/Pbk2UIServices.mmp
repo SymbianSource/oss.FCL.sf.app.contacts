@@ -68,8 +68,8 @@ LIBRARY euser.lib apparc.lib eikcore.lib bafl.lib
 LIBRARY cone.lib eikcoctl.lib estor.lib efsrv.lib
 
 // Dependencies to S60 platform components
-LIBRARY Avkon.lib ServiceHandler.lib
-LIBRARY FeatMgr.lib
+LIBRARY avkon.lib servicehandler.lib
+LIBRARY featmgr.lib
 
 // Dependencies to Phonebook
 LIBRARY VPbkEng.lib Pbk2Presentation.lib Pbk2CommonUtility.lib

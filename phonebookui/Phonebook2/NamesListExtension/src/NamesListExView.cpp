@@ -21,7 +21,7 @@
 #include "CPbk2CmdItemAddTop.h"
 #include "CPbk2CmdItemRemoteContactLookup.h"
 #include <cpbk2remotecontactlookupaccounts.h>
-#include <Pbk2ExNamesListRes.rsg>
+#include <pbk2exnameslistres.rsg>
 #include "Pbk2NlxMenuFiltering.h"
 #include "cpbk2cmditemmycard.h"
 #include "cpbk2mycard.h"
@@ -36,14 +36,15 @@
 #include <MPbk2ViewExplorer.h>
 #include "CPbk2ViewState.h"
 #include <MPbk2StartupMonitor.h>
-#include <Phonebook2.rsg>
-#include <Pbk2Commands.rsg>
-#include <Pbk2UIControls.rsg>
-#include <Pbk2CommonUi.rsg>
+#include <phonebook2.rsg>
+#include <pbk2commands.rsg>
+#include <pbk2uicontrols.rsg>
+#include <pbk2commonui.rsg>
 #include <CPbk2ControlContainer.h>
 #include <CPbk2NamesListControl.h>
 #include <MPbk2CommandHandler.h>
 #include <Pbk2Commands.hrh>
+#include <PmuCommands.hrh>
 #include <MPbk2ViewActivationTransaction.h>
 #include <CPbk2ViewStateTransformer.h>
 #include <csxhelp/phob.hlp.hrh>
@@ -812,6 +813,23 @@ void CPbk2NamesListExView::DynInitMenuPaneL
                     iControl->NumberOfContacts() <= 0 )
                 {
                 aMenuPane->SetItemDimmed( EAknCmdMarkingModeEnter, ETrue );
+                }
+            break;
+            }
+        case R_PHONEBOOK2_NAMESLIST_BACKUP_MENU_PLACEHOLDER:
+            {
+            if ( iControl->ContactsMarked() && iMarkingModeOn )
+                {
+                // This item is shown in option menu but not in popup menu
+                CEikMenuBar* menuBar = static_cast<CEikMenuBar*>( aMenuPane->Parent() );
+                if ( menuBar && menuBar->GetMenuType() == CEikMenuBar::EMenuOptions )
+                    {
+                    aMenuPane->SetItemSpecific( EPmuCmdCascadingBackup, ETrue );
+                    }
+                else
+                    {
+                    aMenuPane->SetItemDimmed( EPmuCmdCascadingBackup, ETrue );
+                    }
                 }
             break;
             }

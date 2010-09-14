@@ -52,7 +52,7 @@ public:
     /**
      * TLinearOrder rule for comparison of data objects
      */
-    static TInt CompareDataBySortOrder(const CPsData& aObject1, const CPsData& aObject2);
+    static TInt CompareDataBySortOrderL(const CPsData& aObject1, const CPsData& aObject2);
 
     /**
      * TIdentityRelation rule for comparing descriptors case-sensitively.

@@ -24,7 +24,7 @@
 #include <CVPbkContactLinkArray.h>
 #include <MVPbkContactStoreList.h>
 #include <CVPbkFieldTypeRefsList.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 #include <MVPbkContactOperationBase.h>
 #include <MVPbkContactStoreProperties.h>

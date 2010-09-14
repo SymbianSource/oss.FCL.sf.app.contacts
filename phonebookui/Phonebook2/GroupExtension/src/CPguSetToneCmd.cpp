@@ -22,8 +22,8 @@
 // Phonebook 2
 #include <CPbk2ContactRelocator.h>
 #include <MPbk2ContactUiControl.h>
-#include <Pbk2GroupUIRes.rsg>
-#include <Pbk2CommonUi.rsg>
+#include <pbk2groupuires.rsg>
+#include <pbk2commonui.rsg>
 
 // Virtual Phonebook
 #include <CVPbkContactManager.h>

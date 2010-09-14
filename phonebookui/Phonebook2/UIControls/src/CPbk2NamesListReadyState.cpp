@@ -2103,19 +2103,40 @@ void CPbk2NamesListReadyState::RestoreMarkedItemsL(
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
         ("CPbk2NamesListReadyState::RestoreMarkedItemsL: %d items"),
         aSelectedItems.Count() );
-
-    DisableRedrawEnablePushL();
-    iListBox.ClearSelection();
+    
     const TInt count = aSelectedItems.Count();
-    for ( TInt i = 0; i < count; ++i )
+    if ( count > 0 )
         {
-        TInt index = iViewStack.IndexOfBookmarkL( aSelectedItems.At( i ) ) + CommandItemCount();
-        if ( index >= 0 )
+        CListBoxView::CSelectionIndexArray* updateSelections = 
+                    new(ELeave) CArrayFixFlat<TInt>( count );
+        CleanupStack::PushL( updateSelections );
+        
+        // Get the index of each selected item. If one of items could not be found, break.
+        for ( TInt i = 0; i < count; ++i )
             {
-            iListBox.View()->SelectItemL( index );
+            TInt index = iViewStack.IndexOfBookmarkL( aSelectedItems.At( i ) ) + CommandItemCount();
+            if ( index >= 0 )
+                {
+                updateSelections->AppendL( index );
+                }
+            else
+                {
+                break;
+                }
             }
+    
+        // If all the selected items can be found in iViewStack, update the list box.
+        // The list box will change nothing if some of selected items are not found in iViewStack.
+        if ( updateSelections->Count() == count )
+            {
+            DisableRedrawEnablePushL();
+            iListBox.ClearSelection();
+            iListBox.SetSelectionIndexesL( updateSelections );
+            CleanupStack::PopAndDestroy();  // DisableRedrawEnablePushL
+            }
+        
+        CleanupStack::PopAndDestroy( updateSelections );  // Destroy updateSelections
         }
-    CleanupStack::PopAndDestroy();  // DisableRedrawEnablePushL
     }
 
 // --------------------------------------------------------------------------

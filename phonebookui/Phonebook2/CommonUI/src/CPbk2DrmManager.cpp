@@ -21,7 +21,7 @@
 #include "CPbk2DrmManager.h"
 
 // Phonebook 2
-#include <Pbk2CommonUi.rsg>
+#include <pbk2commonui.rsg>
 
 // System includes
 #include <featmgr.h>

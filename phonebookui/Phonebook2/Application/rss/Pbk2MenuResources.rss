@@ -18,8 +18,8 @@
 
 
 // INCLUDES
-#include <Pbk2Commands.rsg>     // menu pane definitions are here
-#include <Pbk2UIControls.rsg>   // CBA resources
+#include <pbk2commands.rsg>     // menu pane definitions are here
+#include <pbk2uicontrols.rsg>   // CBA resources
 
 // --------------------------------------------------------------------------
 // Names List View's main resource

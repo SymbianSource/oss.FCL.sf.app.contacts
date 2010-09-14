@@ -25,7 +25,7 @@
 
 
 #include <TVPbkWordParserCallbackParam.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <CVPbkContactFieldIterator.h>
 #include <CVPbkContactManager.h>
 #include <CVPbkFieldTypeRefsList.h>

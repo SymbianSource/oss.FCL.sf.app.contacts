@@ -33,7 +33,7 @@
 #include <MVPbkContactFieldBinaryData.h>
 #include <vpbkeng.rsg>
 #include <VPbkSyncConstants.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 
 // System includes
 #include <AknUtils.h>

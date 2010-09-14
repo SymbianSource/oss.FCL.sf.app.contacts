@@ -31,7 +31,7 @@
 #include <coemain.h>
 #include <eikcapc.h>
 
-#include <PbkView.rsg>
+#include <pbkview.rsg>
 
 
 /// Unnamed namespace for local definitons

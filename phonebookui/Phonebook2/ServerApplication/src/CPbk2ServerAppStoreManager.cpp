@@ -219,6 +219,8 @@ MVPbkContactViewBase* CPbk2ServerAppStoreManager::BuildFetchViewL
             ( aStoreUris, *this, *sortOrder,
               aViewFilter, aFlags );
         
+        iGroupView = result;
+        
         CleanupStack::Pop(); // result
         }
 
@@ -346,10 +348,13 @@ void CPbk2ServerAppStoreManager::ContactViewUnavailable
 // --------------------------------------------------------------------------
 //
 void CPbk2ServerAppStoreManager::ContactAddedToView
-        ( MVPbkContactViewBase& /*aView*/, TInt /*aIndex*/,
+        ( MVPbkContactViewBase& aView, TInt /*aIndex*/,
           const MVPbkContactLink& /*aContactLink*/ )
     {
-    // Do nothing
+    if ( iGroupView && aView.Type() == EVPbkContactsView )
+        {
+        iGroupView->RefreshL();
+        }    
     }
 
 // --------------------------------------------------------------------------
@@ -357,10 +362,13 @@ void CPbk2ServerAppStoreManager::ContactAddedToView
 // --------------------------------------------------------------------------
 //
 void CPbk2ServerAppStoreManager::ContactRemovedFromView
-        ( MVPbkContactViewBase& /*aView*/, TInt /*aIndex*/,
+        ( MVPbkContactViewBase& aView, TInt /*aIndex*/,
           const MVPbkContactLink& /*aContactLink*/ )
     {
-    // Do nothing
+        if ( iGroupView && aView.Type() == EVPbkContactsView )
+            {
+            iGroupView->RefreshL();
+            }
     }
 
 // --------------------------------------------------------------------------

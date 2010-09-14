@@ -29,13 +29,13 @@
 #include <aknnavide.h>
 #include <akntitle.h>
 #include <avkon.mbg>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <MPbk2MergeConflict.h>
 #include <CPbk2ImageManager.h>
 #include <TPbk2ImageManagerParams.h>
 #include <MVPbkBaseContact.h>
 #include <MVPbkFieldType.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <MPbk2AppUi.h>
 #include <MPbk2ApplicationServices.h>
 #include <CVPbkContactManager.h>

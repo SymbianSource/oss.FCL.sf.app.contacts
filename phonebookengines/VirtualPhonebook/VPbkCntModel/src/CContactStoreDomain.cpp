@@ -35,7 +35,7 @@
 #include <RLocalizedResourceFile.h>
 #include <VPbkUtil.h>
 #include <VPbkDataCaging.hrh>
-#include <VPbkCntModelRes.rsg>
+#include <vpbkcntmodelres.rsg>
 #include <VPbkStoreUriLiterals.h>
 
 #include <cntdb.h>

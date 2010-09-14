@@ -23,7 +23,7 @@
 #include <Pbk2Commands.hrh>
 #include <MPbk2Command.h>
 #include <MPbk2ContactUiControl.h>
-#include <Pbk2Commands.rsg>
+#include <pbk2commands.rsg>
 
 // System includes
 #include <AiwServiceHandler.h>

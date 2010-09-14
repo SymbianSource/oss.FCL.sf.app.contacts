@@ -53,7 +53,7 @@ END
 
 APP_LAYER_SYSTEMINCLUDE
 SYSTEMINCLUDE   /epoc32/include/ecom
-SYSTEMINCLUDE   ../../../inc //phonebook2/inc internal headers
+SYSTEMINCLUDE   ../../../inc ../../../commands/inc  //phonebook2/inc internal headers
 
 USERINCLUDE     ../../inc //ccapplication/inc
 USERINCLUDE     ../../ccapp/ccapputil/inc
@@ -74,15 +74,15 @@ LIBRARY         eikcoctl.lib
 LIBRARY         servicehandler.lib // aiw
 LIBRARY         ccapputil.lib
 LIBRARY         bafl.lib
-LIBRARY         commonengine.lib//coneresourceloader
+LIBRARY         CommonEngine.lib//coneresourceloader
 LIBRARY         eikctl.lib
 LIBRARY	        aknicon.lib
 LIBRARY	        egul.lib 
 LIBRARY	        aknskinsrv.lib
 LIBRARY	        aknswallpaperutils.lib
-LIBRARY	        aknlayout2scalable.lib
+LIBRARY	        AknLayout2Scalable.lib
 LIBRARY	        aknlayout2.lib
-LIBRARY         cdlengine.lib
+LIBRARY         CdlEngine.lib
 LIBRARY         eikcore.lib
 LIBRARY         cone.lib
 LIBRARY         flogger.lib
@@ -100,7 +100,7 @@ LIBRARY					bitgdi.lib
 // Dependencies to AVKON
 LIBRARY 	CdlEngine.lib 
 LIBRARY 	touchfeedback.lib
-LIBRARY 	FeatMgr.lib
+LIBRARY 	featmgr.lib
 
 LIBRARY         akntransitionutils.lib
 LIBRARY         aknphysics.lib
@@ -113,7 +113,7 @@ LIBRARY 	gdi.lib
 LIBRARY         pbk2spbcontentprovider.lib
 LIBRARY			charconv.lib 
 
-LIBRARY         FontUtils.lib
+LIBRARY         fontutils.lib
 
 LIBRARY         apgrfx.lib
 LIBRARY         ws32.lib

@@ -24,8 +24,8 @@
 #include <AiwCommon.h>
 #include <AiwCommon.hrh>
 #include <barsread.h>
-#include <PbkAiwProvidersRes.rsg>
-#include <Phonebook.rsg>
+#include <pbkaiwprovidersres.rsg>
+#include <phonebook.rsg>
 #include <CPbkContactEngine.h>
 #include <AknNoteWrappers.h>
 #include <CPbkMultipleEntryFetchDlg.h>

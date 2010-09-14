@@ -32,8 +32,8 @@
 #include <CPbk2ContactEditorDlg.h>
 #include <CPbk2FieldPropertyArray.h>
 #include <MPbk2FieldProperty.h>
-#include <Pbk2USimUIRes.rsg>
-#include <Pbk2UIControls.rsg>
+#include <pbk2usimuires.rsg>
+#include <pbk2uicontrols.rsg>
 #include <CPbk2NamesListControl.h>
 #include <CPbk2ControlContainer.h>
 #include <CPbk2ViewState.h>

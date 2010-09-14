@@ -28,7 +28,7 @@
 #include "CPbk2KeyEventDealer.h"
 #include <TPbk2DestructionIndicator.h>
 #include <MPbk2ApplicationServices.h>
-#include <Pbk2ServerApp.rsg>
+#include <pbk2serverapp.rsg>
 
 // Virtual Phonebook
 #include <MVPbkContactLink.h>

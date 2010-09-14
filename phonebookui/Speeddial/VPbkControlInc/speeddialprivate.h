@@ -722,6 +722,7 @@ private:
     
     RArray<TXspIconHelper> ixspIconInfoArray;
     
+    MVPbkContactOperationBase* iFindOperation;  //own: contact find operation
 };
 
 

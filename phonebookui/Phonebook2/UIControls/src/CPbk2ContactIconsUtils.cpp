@@ -29,7 +29,7 @@
 #include <CPbk2UIExtensionManager.h>
 #include <MPbk2UIExtensionIconSupport.h>
 
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <Pbk2PresentationUtils.h>
 #include "Pbk2NamesListExUID.h"
 

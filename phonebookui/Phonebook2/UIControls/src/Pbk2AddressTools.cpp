@@ -18,7 +18,7 @@
 #include "Pbk2AddressTools.h"
 
 // Phonebook 2
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include "Pbk2UIFieldProperty.hrh"
 
 // Virtual Phonebook

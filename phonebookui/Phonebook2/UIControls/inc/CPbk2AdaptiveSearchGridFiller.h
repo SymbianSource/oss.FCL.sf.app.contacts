@@ -140,6 +140,9 @@ NONSHARABLE_CLASS(CPbk2AdaptiveSearchGridFiller) : public CActive,
         TBool GridFromPsEngineL( const MVPbkContactViewBase& aView );
         // Check whether the title is empty or not.
         TBool IsActualTitleEmpty( const MVPbkViewContact& aContact );
+        // Sort the Adaptive Search Grid.
+        void SortGridL( TBool aAddSpace );
+       
     private: // Data
     	
 		/// Own: Containts adaptive search grid.
@@ -180,7 +183,10 @@ NONSHARABLE_CLASS(CPbk2AdaptiveSearchGridFiller) : public CActive,
 
 		/// Used to save the contacts' title which include drgraphs
 		RPointerArray<HBufC> iDigraphContactsTitleArray;
-		
+        
+        /// Used to get the status of feature manager
+        TBool iFeatureManagerInitialized;	
+
 	    /// Own: Number of contacts in view
 	    TInt iViewItemCount;
 	    

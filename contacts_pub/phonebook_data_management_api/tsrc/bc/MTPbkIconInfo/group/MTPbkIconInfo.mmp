@@ -63,11 +63,11 @@ SOURCE          MTPbkIconInfoBlocks.cpp
 
 
 LIBRARY         euser.lib
-LIBRARY         stiftestinterface.lib
+LIBRARY         StifTestInterface.lib
 LIBRARY         stiftestengine.lib
 LIBRARY                 bafl.lib
 LIBRARY                 cone.lib 
-LIBRARY                 PbkView.lib 
+LIBRARY                 pbkview.lib
 LIBRARY                 aknskins.lib 
 LIBRARY                 egul.lib
 

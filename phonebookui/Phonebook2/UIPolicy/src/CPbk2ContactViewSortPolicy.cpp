@@ -22,7 +22,7 @@
 #include "CPbk2SortKeyArray.h"
 #include "RPbk2LocalizedResourceFile.h"
 #include "Pbk2DataCaging.hrh"
-#include <Pbk2UIPolicyRes.rsg>
+#include <pbk2uipolicyres.rsg>
 
 // Virtual Phonebook
 #include <MVPbkFieldType.h>

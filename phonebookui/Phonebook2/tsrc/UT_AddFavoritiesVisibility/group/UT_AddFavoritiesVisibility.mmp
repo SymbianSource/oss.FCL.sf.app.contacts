@@ -58,7 +58,7 @@ APP_LAYER_SYSTEMINCLUDE
 #endif
 
 LIBRARY         euser.lib
-LIBRARY         stiftestinterface.lib
+LIBRARY         StifTestInterface.lib
 LIBRARY         stiftestengine.lib
 LIBRARY         VPbkContactTestUtils.lib
 LIBRARY         centralrepository.lib

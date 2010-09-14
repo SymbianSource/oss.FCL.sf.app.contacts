@@ -23,7 +23,7 @@
 #include "Pbk2DataCaging.hrh"
 #include <RPbk2LocalizedResourceFile.h>
 #include <Phonebook2PrivateCRKeys.h>
-#include <Pbk2Presentation.rsg>
+#include <pbk2presentation.rsg>
 #include <Pbk2DataCaging.hrh>
 
 // Virtual Phonebook

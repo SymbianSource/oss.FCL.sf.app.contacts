@@ -86,8 +86,8 @@ LIBRARY euser.lib eikctl.lib eikcoctl.lib cone.lib ws32.lib
 LIBRARY bafl.lib hlplch.lib eikcore.lib
 
 // Dependencies to S60 platform components
-LIBRARY Avkon.lib CommonEngine.lib FeatMgr.lib
-LIBRARY ServiceHandler.lib FileList.lib
+LIBRARY avkon.lib CommonEngine.lib featmgr.lib
+LIBRARY servicehandler.lib filelist.lib
 LIBRARY centralrepository.lib
 LIBRARY sysutil.lib efsrv.lib
 LIBRARY aiwdialdata.lib
@@ -95,7 +95,7 @@ LIBRARY serviceprovidersettings.lib
 
 // Dependencies to Phonebook
 LIBRARY VPbkEng.lib
-LIBRARY Pbk2UIControls.lib Pbk2Presentation.lib
+LIBRARY pbk2uicontrols.lib Pbk2Presentation.lib
 LIBRARY Pbk2CommonUI.lib Pbk2UIExt.lib
 
 // Depencency to Phonebook profiling library

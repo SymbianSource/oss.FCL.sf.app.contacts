@@ -29,12 +29,12 @@
 #include <MPbk2ContactNameFormatter.h>
 #include <MPbk2CommandObserver.h>
 #include <Pbk2ProcessDecoratorFactory.h>
-#include <Pbk2USimUIRes.rsg>
+#include <pbk2usimuires.rsg>
 #include <CPbk2StorePropertyArray.h>
 #include <CPbk2StoreProperty.h>
 #include <CPbk2ApplicationServices.h>
 #include <MPbk2AppUi.h>
-#include <Pbk2CommonUi.rsg>
+#include <pbk2commonui.rsg>
 
 // Virtual Phonebook
 #include <MVPbkContactStoreProperties.h>

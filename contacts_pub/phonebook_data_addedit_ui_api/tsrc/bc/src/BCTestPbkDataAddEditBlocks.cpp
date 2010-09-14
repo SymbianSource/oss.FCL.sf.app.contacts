@@ -30,7 +30,7 @@
 #include <eikmenup.h> 
 #include <coecntrl.h>
 
-//#include<PbkView.rsg>
+//#include<pbkview.rsg>
 #include <stringloader.h>
 #include <eikbtgpc.h>
 #include <eikrted.h>

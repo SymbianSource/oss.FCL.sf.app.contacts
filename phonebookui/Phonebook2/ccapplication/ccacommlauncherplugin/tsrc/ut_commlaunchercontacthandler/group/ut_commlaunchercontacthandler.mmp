@@ -48,7 +48,7 @@ SYSTEMINCLUDE   ../../../../../inc
 
 
 LIBRARY         euser.lib
-LIBRARY         stiftestinterface.lib
+LIBRARY         StifTestInterface.lib
 LIBRARY         stiftestengine.lib
 LIBRARY         flogger.lib
 LIBRARY			centralrepository.lib

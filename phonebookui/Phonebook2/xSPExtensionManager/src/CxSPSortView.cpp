@@ -45,7 +45,7 @@
 
 // internal
 #include "ExtensionManager.hrh"
-#include <ExtensionManagerRes.rsg>
+#include <extensionmanagerres.rsg>
 #include "ExtensionManagerUID.H"
 #include "CxSPLoader.h"
 #include "MxSPFactory.h"

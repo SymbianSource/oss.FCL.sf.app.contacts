@@ -40,7 +40,7 @@
 
 #include <aknlayoutscalable_apps.cdl.h>
 #include <layoutmetadata.cdl.h>
-#include <SpdCtrl.rsg>
+#include <spdctrl.rsg>
 #include "SpdiaControl.hrh"
 #include "speeddialprivate.h"
 #include "SpdiaGridDlgVPbk.h"

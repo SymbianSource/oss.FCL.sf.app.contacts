@@ -20,7 +20,7 @@
 
 // Phonebook 2
 #include <Pbk2UID.h>
-#include <Pbk2CommonUi.rsg>
+#include <pbk2commonui.rsg>
 
 // Virtual Phonebook
 

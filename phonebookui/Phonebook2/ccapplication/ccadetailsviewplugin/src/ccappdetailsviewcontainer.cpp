@@ -32,7 +32,7 @@
 #include <ccappdetailsviewplugin.h>
 
 // PhoneBook2
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <CVPbkContactLinkArray.h>
 #include <CVPbkContactManager.h>
 #include <CPbk2IconArray.h>
@@ -62,7 +62,7 @@
 
 #include <mccaparameter.h>
 #include <mccappengine.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 /// Unnamed namespace for local definitions
 namespace {

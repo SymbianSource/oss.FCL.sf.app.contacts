@@ -44,7 +44,7 @@ LIBRARY         fbscli.lib
 LIBRARY         euser.lib
 LIBRARY         efsrv.lib
 LIBRARY         flogger.lib
-LIBRARY         stiftestinterface.lib
+LIBRARY         StifTestInterface.lib
 
 LIBRARY         presencecacheclient2.lib
 LIBRARY         presencecacheutils.lib

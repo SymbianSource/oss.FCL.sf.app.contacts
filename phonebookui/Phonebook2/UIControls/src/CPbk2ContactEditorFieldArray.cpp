@@ -23,12 +23,12 @@
 #include "Pbk2ContactEditorFieldFactory.h"
 #include "MPbk2ContactEditorField.h"
 #include "MPbk2ContactEditorUiBuilder.h"
-#include <Pbk2CommonUi.rsg>
+#include <pbk2commonui.rsg>
 #include <CPbk2PresentationContact.h>
 #include <CPbk2PresentationContactFieldCollection.h>
 #include <CPbk2PresentationContactField.h>
 #include <MPbk2FieldProperty.h>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <MPbk2AppUi.h>
 #include <CPbk2ServiceManager.h>
 #include "TPbk2ContactEditorParams.h"
@@ -47,7 +47,7 @@
 #include <MVPbkContactStore.h>
 #include <MVPbkContactStoreProperties.h>
 #include <CVPbkFieldTypeSelector.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <MVPbkFieldType.h>
 #include <VPbkFieldType.hrh>
 #include <TVPbkFieldVersitProperty.h>

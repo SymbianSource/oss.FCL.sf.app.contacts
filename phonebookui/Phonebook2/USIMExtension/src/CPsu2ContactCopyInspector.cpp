@@ -25,7 +25,7 @@
 #include <CVPbkFieldTypeRefsList.h>
 #include <MVPbkStoreContact.h>
 #include <CVPbkContactFieldIterator.h>
-#include <VPbkEng.rsg>  // field type res ids
+#include <vpbkeng.rsg>  // field type res ids
 
 CPsu2ContactCopyInspector::CPsu2ContactCopyInspector
     ( MPbk2ContactNameFormatter& aNameFormatter )

@@ -26,7 +26,7 @@
 #include <sysutil.h>
 #include <StringLoader.h>
 
-#include <PbkView.rsg>              // PbkView resource symbols
+#include <pbkview.rsg>              // PbkView resource symbols
 #include <PbkView.hrh>
 
 #include "CPbkThumbnailManager.h"

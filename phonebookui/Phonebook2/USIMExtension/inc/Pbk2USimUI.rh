@@ -49,7 +49,7 @@ STRUCT PSU2_COPY_TO_SIM_FIELDTYPE_MAPPING
     {
     // VPBK_FIELD_TYPE_SELECTOR that defines the fields that are mapped from
     STRUCT sourceTypeSelector;
-    // The SIM field type resource id, from VPbkEng.rsg
+    // The SIM field type resource id, from vpbkeng.rsg
     LONG targetSimType;
     // Flags defined in Pbk2UsimUi.hrh
     BYTE flags = 0;

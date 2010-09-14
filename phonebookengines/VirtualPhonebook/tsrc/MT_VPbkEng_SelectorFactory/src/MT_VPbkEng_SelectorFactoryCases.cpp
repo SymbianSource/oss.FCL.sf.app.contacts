@@ -25,7 +25,7 @@
 #include <VPbkFieldTypeSelectorFactory.h>
 #include <rlocalizedresourcefile.h>
 #include <vpbkdatacaging.hrh>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <CVPbkFieldTypeSelector.h>
 #include <CVPbkContactTestUtils.h>
 #include <CVPbkContactManager.h>
@@ -46,8 +46,6 @@
 // System includes
 #include <f32file.h>
 #include <barsread.h>
-
-#include <VPbkEng.rsg>
 
 namespace {
 

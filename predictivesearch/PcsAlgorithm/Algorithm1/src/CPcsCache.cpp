@@ -174,7 +174,7 @@ void CPcsCache::AddToPoolL(TUint64& aPoolMap, CPsData& aData)
     // element doesn't get added for the same data
     RHashMap<TInt, TInt> elementHash;
     CleanupClosePushL( elementHash );
-    TLinearOrder<CPcsPoolElement> rule( CPcsPoolElement::CompareByData );
+    TLinearOrder<CPcsPoolElement> rule( CPcsPoolElement::CompareByDataL );
 
     TBool unnamed = ETrue;
     // Parse thru each data element

@@ -100,13 +100,13 @@ LIBRARY estor.lib etext.lib apmime.lib
 LIBRARY imageconversion.lib fbscli.lib
 
 // Dependencies to S60 components
-LIBRARY Avkon.lib CommonEngine.lib BrowserLauncher.lib SendUI.lib FeatMgr.lib
-LIBRARY MGFetch.lib SpdCtrl.lib
-LIBRARY CommonUI.lib
+LIBRARY avkon.lib CommonEngine.lib browserlauncher.lib sendui.lib featmgr.lib
+LIBRARY mgfetch.lib spdctrl.lib
+LIBRARY commonui.lib
 
 // Dependencies to Phonebook
 LIBRARY VPbkEng.lib VPbkVCardEng.lib Pbk2Commands.lib
-LIBRARY Pbk2UIControls.lib Pbk2Presentation.lib
+LIBRARY pbk2uicontrols.lib Pbk2Presentation.lib
 LIBRARY Pbk2CommonUI.lib Pbk2UIExt.lib
 LIBRARY pbk2rclengine.lib
 

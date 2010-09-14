@@ -78,15 +78,15 @@ SYSTEMINCLUDE   ../inc
 APP_LAYER_SYSTEMINCLUDE
 
 // Dependencies to Symbian OS components
-LIBRARY euser.lib commonengine.lib
+LIBRARY euser.lib CommonEngine.lib
 LIBRARY cone.lib eikcoctl.lib bafl.lib eikctl.lib eikdlg.lib eikcore.lib
 LIBRARY efsrv.lib ecom.lib
 
 // Dependencies to S60 components
-LIBRARY Avkon.lib FeatMgr.lib sendui.lib touchfeedback.lib
+LIBRARY avkon.lib featmgr.lib sendui.lib touchfeedback.lib
 
 // Dependencies to Phonebook
-LIBRARY Pbk2CommonUi.lib Pbk2UiControls.lib Pbk2Commands.lib
+LIBRARY Pbk2CommonUI.lib pbk2uicontrols.lib Pbk2Commands.lib
 LIBRARY Pbk2Presentation.lib VPbkEng.lib
 LIBRARY CdlEngine.lib
 // End of File

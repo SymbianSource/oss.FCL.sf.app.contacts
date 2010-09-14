@@ -64,10 +64,10 @@ SOURCE          BCTestPbkDataAddEditBlocks.cpp
 
 LIBRARY         euser.lib eikcore.lib	eikcoctl.lib
 LIBRARY         efsrv.lib cone.lib 
-LIBRARY         PbkEng.lib PbkView.lib cntmodel.lib
-LIBRARY         stiftestinterface.lib
+LIBRARY         pbkeng.lib pbkview.lib cntmodel.lib
+LIBRARY         StifTestInterface.lib
 LIBRARY         stiftestengine.lib
-LIBRARY commonengine.lib 
+LIBRARY CommonEngine.lib 
 
 
 LANG            SC

@@ -656,6 +656,14 @@ class   CLogsBaseView:  public CAknView,
          */
         void SetCurrentMenuType(CEikMenuBar::TMenuType aMenuType);
         
+    public:    
+    	/**
+    	 * Get whether the original CallMenu is visible
+    	 *
+    	 * @return EFalse\ETrue whether the original CallMenu is visible
+    	 */  
+        virtual TBool OriginalCallMenuIsVisible();
+            
     private:    // data
 
         CEikMenuBar* iPopup;

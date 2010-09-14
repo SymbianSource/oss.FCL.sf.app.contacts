@@ -24,12 +24,11 @@
 #include <bldvariant.hrh>
 #include <AiwCommon.hrh>
 
-#include <SpeedDial.rsg>
+#include <speeddial.rsg>
 
 #include <vmnumber.h>
 #include <AknQueryDialog.h> 
 #include <aknnotedialog.h> 
-#include <SpeedDial.rsg>
 #include <StringLoader.h> 
 // needed just to get localized error message
 #include <AknGlobalNote.h>

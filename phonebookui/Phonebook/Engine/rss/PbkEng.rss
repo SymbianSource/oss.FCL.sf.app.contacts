@@ -23,7 +23,7 @@
 
 /*============================================================================
 * NB. PbkEng resources MUST be defined in PbkEngCommon.rss 
-* because only one PbkEng.rsg file used with different language 
+* because only one pbkeng.rsg file used with different language 
 * specific ".rsc" files. Otherwise BC is broken.
 ============================================================================*/
 

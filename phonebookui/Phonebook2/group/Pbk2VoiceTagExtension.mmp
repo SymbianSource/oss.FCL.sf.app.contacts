@@ -67,11 +67,11 @@ LIBRARY euser.lib cone.lib eikcoctl.lib bafl.lib
 LIBRARY eikcore.lib ecom.lib
 
 // Dependencies to S60 components
-LIBRARY Avkon.lib FeatMgr.lib
+LIBRARY avkon.lib featmgr.lib
 LIBRARY VoiceUiNameDialer.lib
 LIBRARY CommonEngine.lib
 
 // Dependencies to Phonebook2
-LIBRARY VPbkEng.lib Pbk2CommonUi.lib Pbk2Presentation.lib
+LIBRARY VPbkEng.lib Pbk2CommonUI.lib Pbk2Presentation.lib
 
 // End of File

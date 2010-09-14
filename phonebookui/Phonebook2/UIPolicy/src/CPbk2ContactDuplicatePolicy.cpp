@@ -27,7 +27,7 @@
 #include <RPbk2LocalizedResourceFile.h>
 #include "Pbk2DataCaging.hrh"
 #include "Pbk2PresentationUtils.h"
-#include <Pbk2Presentation.rsg>
+#include <pbk2presentation.rsg>
 #include <CVPbkFieldTypeSelector.h>
 #include <CVPbkFieldTypeIterator.h>
 #include <CVPbkFieldTypeRefsList.h>

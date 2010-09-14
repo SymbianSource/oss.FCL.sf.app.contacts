@@ -21,10 +21,10 @@
 
 #include <StringLoader.h>
 #include <aknnotewrappers.h>
-#include <Pbk2UIControls.rsg> 
-#include <Pbk2CommonUi.rsg>
-#include <Pbk2CmdExtRes.rsg>
-#include <Pbk2Commands.rsg>
+#include <pbk2uicontrols.rsg> 
+#include <pbk2commonui.rsg>
+#include <pbk2cmdextres.rsg>
+#include <pbk2commands.rsg>
 
 #include <Pbk2ProcessDecoratorFactory.h>
 #include <CPbk2NamesListControl.h>
@@ -39,7 +39,7 @@
 #include <MVPbkContactOperationBase.h>
 #include <MVPbkContactLink.h>
 #include <MVPbkStoreContact.h>
-#include <Pbk2ExNamesListRes.rsg>
+#include <pbk2exnameslistres.rsg>
 #include <Phonebook2PrivateCRKeys.h>
 #include <centralrepository.h>
 #include <CVPbkTopContactManager.h>

@@ -26,8 +26,8 @@
 #include <TPbk2AddressSelectParams.h>
 #include <MPbk2ApplicationServices.h>
 #include <CPbk2PresenceIconInfo.h>
-#include <Pbk2UIControls.rsg>
-#include <Pbk2Commands.rsg>
+#include <pbk2uicontrols.rsg>
+#include <pbk2commands.rsg>
 #include <CPbk2StoreManager.h> 
 
 // Virtual Phonebook
@@ -45,7 +45,7 @@
 #include <CVPbkContactFieldIterator.h>
 #include <CVPbkFieldTypeSelector.h>
 #include <CVPbkFieldFilter.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 // System includes
 #include <barsread.h>

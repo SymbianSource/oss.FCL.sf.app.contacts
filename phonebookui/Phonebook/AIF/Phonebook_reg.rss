@@ -17,7 +17,7 @@
 
 
 #include <appinfo.rh>
-#include <Phonebook.rsg>
+#include <phonebook.rsg>
 #include <PbkUID.h>
 
 UID2 KUidAppRegistrationResourceFile

@@ -26,7 +26,7 @@
 #include <AknUtils.h>
 #include <aknlists.h>   //caknsingleheadingstylelistbox
 
-#include <Logs.rsg>     // detail view's event type texts.
+#include <logs.rsg>     // detail view's event type texts.
 
 #include "CLogsDetailAdapter.h"
 #include "CLogsDetailView.h"

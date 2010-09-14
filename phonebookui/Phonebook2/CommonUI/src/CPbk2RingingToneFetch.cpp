@@ -20,7 +20,7 @@
 #include <CPbk2RingingToneFetch.h>
 
 // Phonebook 2
-#include <Pbk2CommonUi.rsg>
+#include <pbk2commonui.rsg>
 
 // System includes
 #include <cntfldst.h>

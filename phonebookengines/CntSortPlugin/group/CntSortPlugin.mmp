@@ -43,6 +43,6 @@ TARGETPATH      resource/plugins
 END
 
 LIBRARY         euser.lib
-LIBRARY         ECom.lib
+LIBRARY         ecom.lib
 LIBRARY         cntmodel.lib
-LIBRARY         sortutil.lib
+LIBRARY         SortUtil.lib

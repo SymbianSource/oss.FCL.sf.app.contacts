@@ -25,7 +25,7 @@
 //
 STRUCT FSC_FIELDTYPE_PRESENTATION_ORDER
     {
-    /// Field type resource id from VPbkEng.rsg
+    /// Field type resource id from vpbkeng.rsg
     LONG fieldTypeResId;
     /// The number that specifies the location of this field type
     /// in contact presentation (defines the order of fields). 

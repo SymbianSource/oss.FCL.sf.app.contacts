@@ -30,7 +30,7 @@
 #include <RLocalizedResourceFile.h>
 #include <TVPbkContactStoreUriPtr.h>
 #include <VPbkDataCaging.hrh>
-#include <VPbkSimStoreRes.rsg>
+#include <vpbksimstoreres.rsg>
 #include <VPbkStoreUriLiterals.h>
 #include <VPbkUtil.h>
 

@@ -48,13 +48,13 @@
 #include <CPbk2ViewState.h>
 
 #include <MPbk2ContactUiControlExtension.h>
-#include <Pbk2Commands.rsg>
+#include <pbk2commands.rsg>
 #include <MVPbkBaseContact.h>
 #include <MVPbkBaseContactFieldCollection.h>
 #include <MVPbkBaseContactField.h>
 #include <MVPbkFieldType.h>
 #include <MVPbkContactFieldData.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 #include <CVPbkTopContactManager.h>
 #include <VPbkContactStoreUris.h>
 #include <CVPbkContactStoreUriArray.h>

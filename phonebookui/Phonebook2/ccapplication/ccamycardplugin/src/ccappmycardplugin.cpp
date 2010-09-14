@@ -24,7 +24,7 @@
 #include "ccappmycard.hrh"
 #include <spbcontactdatamodel.h>
 #include <ccappmycardpluginrsc.rsg>
-#include <Pbk2UIControls.rsg>
+#include <pbk2uicontrols.rsg>
 #include <data_caging_path_literals.hrh>
 #include <mccappengine.h>
 #include <bautils.h>

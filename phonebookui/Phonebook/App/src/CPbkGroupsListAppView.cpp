@@ -27,7 +27,7 @@
 #include <StringLoader.h>
 
 // Phonebook.app APIs
-#include <Phonebook.rsg>  // Phonebook resources
+#include <phonebook.rsg>  // Phonebook resources
 #include <pbkdebug.h>
 #include "CPbkAppUi.h"
 #include <CPbkControlContainer.h>
@@ -43,7 +43,7 @@
 #include <CPbkAiwInterestArray.h>
 
 // PbkView.dll APIs
-#include <PbkView.rsg>                   // PbkView dll resources
+#include <pbkview.rsg>                   // PbkView dll resources
 #include <CPbkViewState.h>               // Phonebook view state object
 #include <CPbkContactViewListControl.h>
 #include <CPbkGroupNameQueryDlg.h>       // CPbkGroupNameQueryDlg

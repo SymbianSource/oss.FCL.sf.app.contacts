@@ -77,9 +77,19 @@ void CCCAContactorEmailOperation::ConstructL()
 //
 void CCCAContactorEmailOperation::ExecuteLD()
     {
-    CleanupStack::PushL(this);
-    CCCAMsgEditors::ExecuteL(KSenduiMtmSmtpUid, iParam,
-                iName);
+	CleanupStack::PushL(this);
+	
+	TInt err = KErrNone;
+	TRAP( err,
+    CCCAMsgEditors::ExecuteL( KSenduiMtmSmtpUid, iParam, iName );
+	);
+	
+	if ( KErrNone != err )
+		{
+	    // Show error note.
+	    CCoeEnv::Static()->HandleError( err );
+		}
+	
     CleanupStack::PopAndDestroy(this);
     }
 // Enf of File

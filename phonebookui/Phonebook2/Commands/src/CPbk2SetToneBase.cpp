@@ -27,8 +27,8 @@
 #include <Pbk2ProcessDecoratorFactory.h>
 #include <TPbk2StoreContactAnalyzer.h>
 #include <MVPbkContactFieldTextData.h>
-#include <Pbk2Commands.rsg>
-#include <Pbk2UIControls.rsg>
+#include <pbk2commands.rsg>
+#include <pbk2uicontrols.rsg>
 #include <CPbk2DriveSpaceCheck.h>
 #include <CPbk2AppUiBase.h>
 #include <MPbk2ApplicationServices.h>
@@ -40,7 +40,7 @@
 #include <CVPbkContactManager.h>
 #include <TVPbkFieldTypeMapping.h>
 #include <MVPbkFieldType.h>
-#include <VPbkEng.rsg>
+#include <vpbkeng.rsg>
 
 // System includes
 #include <barsread.h>

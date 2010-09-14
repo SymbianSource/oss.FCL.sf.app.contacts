@@ -33,6 +33,6 @@ SOURCE          CIconCustomApiTestModuleBlocks.cpp
 LIBRARY         euser.lib
 LIBRARY         ecom.lib
 LIBRARY         fbscli.lib 
-LIBRARY         stiftestinterface.lib
+LIBRARY         StifTestInterface.lib
 
 // End of File

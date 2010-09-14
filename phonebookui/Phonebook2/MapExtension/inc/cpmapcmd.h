@@ -37,6 +37,7 @@ class MPbk2ContactEditorControlExtension;
 class MVPbkStoreContactField;
 class TLocality;
 class CMnMapView;
+class MPbk2DialogEliminator;
 
 enum TCurrentMapLaunchedByState
     {
@@ -299,6 +300,14 @@ class CPmapCmd : public CActive,
 		TVPbkFieldTypeParameter iAddressType;
 		/// Own: Is already address is there?
 		TBool iNoAddress;
+		
+		/// Ref: For address select dialog's exit handling
+		///Doesnt Own
+		MPbk2DialogEliminator* iAddressSelectEliminator;
+		        
+		///Bool to denote whether the Current Obj has been deleted or not
+    	///Doesnt Own
+	    TBool *iThisPtrDestroyed;
     };
 
 #endif // CPMAPCMD_H

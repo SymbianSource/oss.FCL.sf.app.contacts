@@ -30,8 +30,8 @@
 #include "CPbk2SelectCreateNewPropertyPhase.h"
 #include "CPbk2PrepareSingleAssignPhase.h"
 #include "MPbk2SelectFieldProperty.h"
-#include <Pbk2UIControls.rsg>
-#include <Pbk2ServerApp.rsg>
+#include <pbk2uicontrols.rsg>
+#include <pbk2serverapp.rsg>
 #include <CPbk2StoreManager.h>
 #include <CPbk2StoreConfiguration.h>
 #include <MPbk2ApplicationServices.h>
