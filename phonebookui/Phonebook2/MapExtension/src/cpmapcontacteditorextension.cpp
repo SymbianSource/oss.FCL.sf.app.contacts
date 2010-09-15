@@ -113,6 +113,7 @@ CPmapContactEditorExtension::~CPmapContactEditorExtension()
 //
 inline void CPmapContactEditorExtension::ConstructL()
     {
+    iMapCommandFinish = ETrue;
     }
 
 // --------------------------------------------------------------------------
@@ -170,31 +171,53 @@ void CPmapContactEditorExtension::DynInitMenuPaneL
 TBool CPmapContactEditorExtension::ProcessCommandL
         ( TInt aCommandId )
     {
+    TBool result = EFalse;
+    
     switch( aCommandId )
         {
         case EPbk2ExtensionShowOnMap:
-        	{
-        	if(iCmd)
-        	    {
-                delete iCmd;
-                iCmd = NULL;
-        	    }
-        	iCmd = CPmapCmd::NewL( iEditorControl, iContact, aCommandId );
-        	// Execute the command 
-        	iCmd->ExecuteLD();
-            return ETrue;
+            {
+            // Ignore new command if the previous command is not finished
+            if ( iMapCommandFinish )
+                {
+                if(iCmd)
+                    {
+                    delete iCmd;
+                    iCmd = NULL;
+                    }
+                iCmd = CPmapCmd::NewL( iEditorControl, iContact, aCommandId );
+                
+                // Observer if the Map command is finished
+                iCmd->AddObserver( *this );
+                iMapCommandFinish = EFalse;
+                
+                // Execute the command 
+                iCmd->ExecuteLD();
+                }
+            result = ETrue;
+            break;
             }
         case EPbk2ExtensionAssignFromMap:
-        	{
-        	if(iCmd)
+            {
+            // Ignore new command if the previous command is not finished
+            if ( iMapCommandFinish )
                 {
-                delete iCmd;
-                iCmd = NULL;
+                if(iCmd)
+                    {
+                    delete iCmd;
+                    iCmd = NULL;
+                    }
+                iCmd = CPmapCmd::NewL( iEditorControl, iContact, aCommandId );
+                
+                // Observer if the Map command is finished
+                iCmd->AddObserver( *this );
+                iMapCommandFinish = EFalse;
+                
+                // Execute the command
+                iCmd->ExecuteLD();
                 }
-        	iCmd = CPmapCmd::NewL( iEditorControl, iContact, aCommandId );
-        	// Execute the command
-        	iCmd->ExecuteLD();
-            return ETrue;
+            result = ETrue;
+            break;
             }
         default:
             {
@@ -202,7 +225,16 @@ TBool CPmapContactEditorExtension::ProcessCommandL
             break;
             }
         }
-    return EFalse;
+    return result;
+    }
+
+// --------------------------------------------------------------------------
+// CPmapContactEditorExtension::CommandFinished
+// --------------------------------------------------------------------------
+//
+void CPmapContactEditorExtension::CommandFinished(const MPbk2Command& /*aCommand*/)
+    {
+    iMapCommandFinish = ETrue;
     }
 
 // --------------------------------------------------------------------------

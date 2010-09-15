@@ -377,6 +377,39 @@ void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdDeleteL( const TDesC8& aContact )
     }
 
 // ---------------------------------------------------------------------------
+// CCCAppCommLauncherMenuHandler::ExecutePbk2CmdSendBCardL
+// ---------------------------------------------------------------------------
+//
+void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdSendBCardL( const TDesC8& aContact )
+    {
+    TCCAppCommandState& cmdState( iPlugin.CommandState() );
+    if ( !cmdState.IsRunning() )
+        {
+        cmdState.SetRunningAndPushCleanupL();
+        
+        iPbk2CommandId = EPbk2CmdSend;
+        
+        if( iLinks )
+            {
+            delete iLinks;
+            iLinks = NULL;
+            }
+        
+        iLinks = iAppServices->ContactManager().CreateLinksLC( aContact );   
+        
+        if ( iLinks->Count() > 0 )
+            {       
+            // operation completes by StoreReady,
+            //  StoreUnavailable or HandleStoreEventL
+            ( iLinks->At( 0 ) ).ContactStore().OpenL( *this );
+            }
+        
+        CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
+        cmdState.PopCleanup();
+        }
+    }
+
+// ---------------------------------------------------------------------------
 // CCCAppCommLauncherMenuHandler::HandleError
 // ---------------------------------------------------------------------------
 //

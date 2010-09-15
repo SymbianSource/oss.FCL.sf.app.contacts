@@ -202,9 +202,9 @@ void  CPcsAlgorithm2::RemoveSpacesL(CPsQuery& aQuery)
 // ----------------------------------------------------------------------------
 TBool CPcsAlgorithm2::ReplaceZeroWithSpaceL(CPsQuery& aQuery)
     {
-    PRINT ( _L("Enter CPcsAlgorithm1::ReplaceZeroWithSpaceL") );
+    PRINT ( _L("Enter CPcsAlgorithm2::ReplaceZeroWithSpaceL") );
 
-       //PRINTQUERY ( _L("CPcsAlgorithm1::ReplaceZeroWithSpaceL (BEFORE): "), aQuery );
+       //PRINTQUERY ( _L("CPcsAlgorithm2::ReplaceZeroWithSpaceL (BEFORE): "), aQuery );
 
        TBool queryModified = EFalse;    
 
@@ -238,11 +238,11 @@ TBool CPcsAlgorithm2::ReplaceZeroWithSpaceL(CPsQuery& aQuery)
            }
        }
        
-       //PRINTQUERY ( _L("CPcsAlgorithm1::ReplaceZeroWithSpaceL (AFTER): "), aQuery );
+       //PRINTQUERY ( _L("CPcsAlgorithm2::ReplaceZeroWithSpaceL (AFTER): "), aQuery );
 
-       PRINT1 ( _L("CPcsAlgorithm1::ReplaceZeroWithSpaceL: Query modified (0=not, 1=yes): %d"), queryModified );
+       PRINT1 ( _L("CPcsAlgorithm2::ReplaceZeroWithSpaceL: Query modified (0=not, 1=yes): %d"), queryModified );
 
-       PRINT ( _L("End CPcsAlgorithm1::ReplaceZeroWithSpaceL") );
+       PRINT ( _L("End CPcsAlgorithm2::ReplaceZeroWithSpaceL") );
 
        return  queryModified;
     }
@@ -267,7 +267,7 @@ void CPcsAlgorithm2::PerformSearchL(const CPsSettings& aSettings,
          
     if ( searchUris.Count() <= 0)
     {
-        PRINT ( _L("searchUris.Count() <= 0, Leave from CPcsAlgorithm1::PerformSearchL") );
+        PRINT ( _L("searchUris.Count() <= 0, Leave from CPcsAlgorithm2::PerformSearchL") );
         User::Leave(KErrArgument); 
     }
     CleanupStack::PopAndDestroy( &searchUris ); // ResetAndDestroy
@@ -489,17 +489,40 @@ void CPcsAlgorithm2::SearchInputL(CPsQuery& aQuery,
 // CPcsAlgorithm2::SearchMatchStringL
 // Search function for input string, result also as string
 // ----------------------------------------------------------------------------
-void CPcsAlgorithm2::SearchMatchStringL( CPsQuery& /*aSearchQuery*/,
-                                         TDesC& /*aSearchData*/,
-                                         TDes& /*aMatch*/ )
+void CPcsAlgorithm2::SearchMatchStringL( CPsQuery& aSearchQuery,
+                                         TDesC& aSearchData,
+                                         TDes& aMatch )
     {
     PRINT ( _L("Enter CPcsAlgorithm2::SearchMatchStringL") );
 
-    //__LATENCY_MARK ( _L("CPcsAlgorithm2::SearchMatchStringL") ); 
+    __LATENCY_MARK ( _L("CPcsAlgorithm2::SearchMatchStringL") ); 
     
-    // TODO: Implementation missing
+    RemoveSpacesL(aSearchQuery);
+    // ---------------------- Perform the initial search ----------------------
+    iMultiSearchHelper->LookupMatchL( aSearchQuery, aSearchData, aMatch );
+    PRINTQUERY ( _L("CPcsAlgorithm2::SearchMatchStringL: 1st search: "), aSearchQuery );
+    PRINT1     ( _L("CPcsAlgorithm2::SearchMatchStringL: 1st search: Search Data: %S"), &aSearchData );
+    PRINT1     ( _L("CPcsAlgorithm2::SearchMatchStringL: 1st search: Result: %S"), &aMatch );
+    // ------------------------------------------------------------------------
     
-    //__LATENCY_MARKEND ( _L("CPcsAlgorithm2::SearchMatchStringL") );
+    // ---- Perform new search after "0" replacement if query is not empty ----
+    /* Examples:
+     * - If the original search string is "Abc0" then we will search again with "Abc".
+     * - If the original search string is "00" then we will not search again.
+     */
+    if ( aMatch.Length() <= 0 )
+    {
+        TBool isQueryModified = ReplaceZeroWithSpaceL(aSearchQuery);
+        RemoveSpacesL(aSearchQuery);
+        if ( isQueryModified && (aSearchQuery.Count() > 0) )
+        {
+            iMultiSearchHelper->LookupMatchL( aSearchQuery, aSearchData, aMatch );
+            PRINTQUERY ( _L("CPcsAlgorithm2::SearchMatchStringL: 2nd search: "), aSearchQuery );
+            PRINT1     ( _L("CPcsAlgorithm2::SearchMatchStringL: 2nd search: Search Data: %S"), &aSearchData );
+            PRINT1     ( _L("CPcsAlgorithm2::SearchMatchStringL: 2nd search: Result: %S"), &aMatch );            
+        }
+    }
+    __LATENCY_MARKEND ( _L("CPcsAlgorithm2::SearchMatchStringL") );
 
     PRINT ( _L("End CPcsAlgorithm2::SearchMatchStringL") );
     }
@@ -1321,7 +1344,7 @@ void CPcsAlgorithm2::ChangeSortOrderL(TDesC& aURI, RArray<TInt>& aSortOrder)
     TRAP(err, cache->ResortdataInPoolsL());
     if (err != KErrNone)
         {
-        PRINT ( _L("CPcsAlgorithm1::ChangeSortOrderL() Set Caching Error ") );
+        PRINT ( _L("CPcsAlgorithm2::ChangeSortOrderL() Set Caching Error ") );
         SetCachingError(aURI, err);
         UpdateCachingStatus(aURI, ECachingCompleteWithErrors);
         return;

@@ -236,6 +236,9 @@ void CCCAppMyCardPlugin::DoDeactivate()
     {
     CCA_DP(KMyCardLogFile, CCA_L("->CCCAppMyCardPlugin::DoDeactivate()"));
 
+    // iOwnContainer should update command to reset the UiControl when deactivated.
+    iOwnContainer->UpdateAfterCommandExecution();
+    
     // Forward the deactivation-call to base-class
     CCCAppViewPluginAknView::DoDeactivate();
 

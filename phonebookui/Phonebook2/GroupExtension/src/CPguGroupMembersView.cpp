@@ -57,6 +57,8 @@
 #include <CPbk2StoreConfiguration.h>
 #include <MPbk2AppUi.h>
 #include <Pbk2MenuFilteringFlags.hrh>
+#include <CPbk2CommandStore.h>
+#include <CPbk2CommandHandler.h>
 
 // Virtual Phonebook
 #include <MVPbkContactViewBase.h>
@@ -742,6 +744,10 @@ class CPguGroupMembersView::CGroupMembersAllGroupsReady :
         TBool iStylusPopupMenuLaunched;
         // Ref: Store management ptr
         CPbk2StoreConfiguration* iStoreConf;
+        //OWN: Active scheduler wait for waiting the completion
+        CActiveSchedulerWait    iWait;
+        // Ref: To the command. Doesn't Own.
+        MPguGroupCmd* iCommand;
     };
 
 // --------------------------------------------------------------------------
@@ -1095,6 +1101,12 @@ CPguGroupMembersView::CGroupMembersAllGroupsReady::CGroupMembersAllGroupsReady
 CPguGroupMembersView::CGroupMembersAllGroupsReady::
         ~CGroupMembersAllGroupsReady()
     {    
+
+    if( iWait.IsStarted() )
+        {
+        iWait.AsyncStop();  
+        }
+
     iCommandHandler.RemoveMenuCommandObserver( *this );
 
     if ( iStoreConf )
@@ -1441,13 +1453,10 @@ TBool CPguGroupMembersView::CGroupMembersAllGroupsReady::HandleCommandKeyL
             case EKeyEnter: // FALLTHROUGH
             case EKeyOK:
                 {
+                // The key will be handled by ListBox if there are contacts in this view
                 if ( !ShiftDown(aKeyEvent) ) // pure OK or ENTER key
                     {
-                    if ( iControl->ContactsMarked() && itemSpecEnabled )
-                        {
-                        result = ETrue;
-                        }
-                    else if ( iControl->NumberOfContacts() == 0 )
+                    if ( iControl->NumberOfContacts() == 0 )
                         {
                         result = ETrue;
                         }
@@ -1532,6 +1541,27 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::DynInitMenuPaneL
             break;
             }
 
+        case R_AVKON_MENUPANE_MARK_MULTIPLE:
+                {
+                TInt markedContactCount = 0;
+                
+                CPbk2NamesListControl* nlctrl = static_cast <CPbk2NamesListControl*> (iControl);
+
+                CCoeControl* ctrl = nlctrl->ComponentControl(0);
+                CEikListBox* listbox=static_cast <CEikListBox*> (ctrl);
+                
+                if ( listbox )
+                    {
+                    markedContactCount = listbox->SelectionIndexes()->Count();
+                    }
+                // dim the makr all item if all contacts are marked. 
+                if ( markedContactCount > 0 && markedContactCount == iControl->NumberOfContacts() )
+                    {
+                    aMenuPane->SetItemDimmed( EAknCmdMarkingModeMarkAll, ETrue );
+                    }
+                break;
+                }
+                
         case R_PHONEBOOK2_GROUPMEMBERS_MENU:
             {
             // Weed out commands not meant to be used with empty list
@@ -1836,9 +1866,10 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::HandleCommandL
                             CPguRemoveFromGroupCmd::NewLC(
                                 *iViewParent.FocusedContact(),
                                 *iControl);
-                    iCommandHandler.AddAndExecuteCommandL(cmd);
-                    
+                    iCommandHandler.AddAndExecuteCommandL(cmd);                    
                     CleanupStack::Pop(cmd);  // command handler takes the ownership
+                    //Store the reference here. Reset to NULL when Command is Completed.
+                    iCommand = cmd;
                     }
                 break;
                 }
@@ -1848,11 +1879,32 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::HandleCommandL
                 CPguAddMembersCmd* cmd =
                         CPguAddMembersCmd::NewLC(*iViewParent.FocusedContact(),
                             *iControl);
-                iCommandHandler.AddAndExecuteCommandL(cmd);
+                iCommandHandler.AddAndExecuteCommandL(cmd);                
                 CleanupStack::Pop(cmd); // command handler takes the ownership
+                //Store the reference here. Reset to NULL when Command is Completed. 
+                iCommand = cmd;
                 break;
                 }
-    
+           
+			case EAknCmdExit:
+        	case EAknSoftkeyExit:
+        	case EPbk2CmdExit:
+            case EAknCmdHideInBackground:
+                {
+                CPbk2CommandStore* cmdStore = static_cast<CPbk2CommandHandler*>(&iCommandHandler)->CommandStore();
+                if ( iCommand && cmdStore )
+                    {
+                    iCommand->Abort();
+                    cmdStore->DestroyAllCommands();
+                    
+                    if( !iWait.IsStarted() )
+                        {
+                        iWait.Start();  
+                        }  
+                    }                
+                break;
+                }    
+                
             default:
                 {
                 // Do nothing
@@ -1997,7 +2049,7 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::PreCommandExecutionL
     {    
     if (iContainer && iContainer->Control())
         {
-        iContainer->Control()->HideThumbnail();
+        iContainer->Control()->HideThumbnail();        
         }
     }
 
@@ -2007,13 +2059,23 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::PreCommandExecutionL
 //
 void CPguGroupMembersView::CGroupMembersAllGroupsReady::PostCommandExecutionL
         ( const MPbk2Command& /*aCommand*/ )
-    {    
+    { 
+    if ( iCommand )
+        {
+        iCommand = NULL;
+        }
+    
     if ( iContainer && iContainer->Control() )
         {
         iContainer->Control()->ShowThumbnail();
         }
 
     UpdateCbasL();
+    if( iWait.IsStarted() )
+        {
+        iWait.AsyncStop();  
+        }
+    
     }
 
 // --------------------------------------------------------------------------
@@ -2376,7 +2438,7 @@ void CPguGroupMembersView::MarkingModeStatusChanged( TBool aActivated )
 //
 TBool CPguGroupMembersView::ExitMarkingMode() const
     {
-    return EFalse; 
+    return ETrue; 
     }
 
 // --------------------------------------------------------------------------

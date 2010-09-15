@@ -748,4 +748,19 @@ void CPguRemoveFromGroupCmd::ReactivateUIBlockL()
     CleanupStack::Pop( iInputBlock );   
     }
 
+
+// --------------------------------------------------------------------------
+// CPguRemoveFromGroupCmd::Abort
+// --------------------------------------------------------------------------
+//
+void CPguRemoveFromGroupCmd::Abort()
+    {
+    if ( iProgressDialog && !iDialogDismissed )
+        {
+        // Delete the dialog
+        TRAP_IGNORE( iProgressDialog->ProcessFinishedL() );
+        iProgressDialog = NULL;
+        }
+    }
+
 //  End of File  

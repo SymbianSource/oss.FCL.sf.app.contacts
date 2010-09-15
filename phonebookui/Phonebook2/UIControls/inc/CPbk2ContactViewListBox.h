@@ -186,6 +186,16 @@ NONSHARABLE_CLASS(CPbk2ContactViewListBox) :
             iMarkingModeOn = aActived;
             }
 
+        /**
+         * Reset the value of iShowPopupChar, i.e. set its value to EFalse.
+         * As for iShowPopupChar, ETrue indicates showing the scrollbar popup char;
+         * EFalse indicates the opposite. 
+         */
+        inline void ResetShowPopupChar()
+            {
+            iShowPopupChar = EFalse;
+            }
+
     public: // From MPbk2ClipListBoxText
         TBool ClipFromBeginning(
                 TDes& aBuffer,

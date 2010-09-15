@@ -70,6 +70,7 @@
 #include <Pbk2UID.h>
 #include <pbk2mapcommands.hrh>
 #include <MPbk2StartupMonitor.h>
+#include <featmgr.h>
 
 // Virtual Phonebook
 #include <CVPbkContactManager.h>
@@ -96,6 +97,7 @@
 #include <aknnavide.h>
 #include <akninputblock.h>
 #include <charconv.h>
+#include <aknpriv.hrh>
 
 /// Unnamed namespace for local definitions
 namespace {
@@ -175,7 +177,9 @@ CPbk2ContactEditorDlgImpl::CPbk2ContactEditorDlgImpl
         iEndKeyWasPressed( EFalse ),
         iAddressViewStandalone( EFalse ),
         iAppServices( aAppServices ),
-        iTitleText( aTitleText )
+        iTitleText( aTitleText ),
+        iExitApp( EFalse ),
+        iIsInputPaneOpen( EFalse )
     {
     // Exit is approved by default
     iExitRecord.Set( EExitApproved );
@@ -201,9 +205,15 @@ CPbk2ContactEditorDlgImpl::~CPbk2ContactEditorDlgImpl()
         *iSelfPtr = NULL;
         }
     // Make the variable in CloseDialog() to ETrue.
-    if ( iDestroyedPtr )
+    if ( iDestroyedPtrForCloseDlg )
         {
-        *iDestroyedPtr = ETrue;
+        *iDestroyedPtrForCloseDlg = ETrue;
+        }
+    
+    // Make the variable in AddItemToContactL() to ETrue.
+    if ( iDestroyedPtrForAddItem )
+        {
+        *iDestroyedPtrForAddItem = ETrue;
         }
     
     if( iAppServices )
@@ -228,7 +238,7 @@ CPbk2ContactEditorDlgImpl::~CPbk2ContactEditorDlgImpl()
     if (iNaviContainer)
         {
         iNaviContainer->Pop();
-        TRAP_IGNORE(RestorePrevNaviDecoratorL());        
+        TRAP_IGNORE(RestorePrevNaviDecoratorL());
         }
 
     delete iStoreContact;
@@ -244,6 +254,13 @@ CPbk2ContactEditorDlgImpl::~CPbk2ContactEditorDlgImpl()
 
     delete iConverter;
     delete iDelayDelete;
+    
+    // The if-expression is used here to Exit Phonebook2 for the case 
+    // that Exit phonebook2 with the EditorDlg opened.
+    if ( iExitApp )
+        {
+        TRAP_IGNORE( ((CAknViewAppUi*)CEikonEnv::Static()->EikAppUi())->ProcessCommandL( EAknCmdExit ) );
+        }
     }
 
 // --------------------------------------------------------------------------
@@ -495,19 +512,64 @@ void CPbk2ContactEditorDlgImpl::HandlePointerEventL(
 //
 void CPbk2ContactEditorDlgImpl::HandleResourceChange( TInt aType )
     {
-    // Handle change in layout orientation
-    if ( aType == KEikDynamicLayoutVariantSwitch )
+    switch ( aType )
         {
-        // Set status pane layout to the Phonebook 2 one
-        CEikStatusPane* statusPane = iAvkonAppUi->StatusPane();
-        if ( statusPane )
+        case KEikDynamicLayoutVariantSwitch: // Handle change in layout orientation
             {
-            iCurrentstatuspane = statusPane->CurrentLayoutResId();
-            if( iCurrentstatuspane != R_AVKON_STATUS_PANE_LAYOUT_USUAL )
+            // Set status pane layout to the Phonebook 2 one
+            CEikStatusPane* statusPane = iAvkonAppUi->StatusPane();
+            if ( statusPane )
                 {
-                TRAP_IGNORE( statusPane->SwitchLayoutL(R_AVKON_STATUS_PANE_LAYOUT_USUAL) );
+                iCurrentstatuspane = statusPane->CurrentLayoutResId();
+                if( iCurrentstatuspane != R_AVKON_STATUS_PANE_LAYOUT_USUAL )
+                    {
+                    TRAP_IGNORE( 
+                        statusPane->SwitchLayoutL(
+                            R_AVKON_STATUS_PANE_LAYOUT_USUAL )
+                        );
+                    }
                 }
             }
+            break;
+        case KAknSplitInputEnabled:     // Handle split input keyboard
+            {
+            // Sometimes this function will be called continuously
+            // with the same parameter.
+            // Add a flag iIsInputPaneOpen to ensure the dialog
+            // only draw one time.
+            if( !iIsInputPaneOpen )
+                {
+                Layout();
+                DrawNow();
+                iIsInputPaneOpen = ETrue;
+                }
+            }
+            break;
+        case KAknSplitInputDisabled:
+            {
+            // Sometimes this function will be called continuously
+            // with the same parameter.
+            // Add a flag iIsInputPaneOpen to ensure the dialog
+            // only draw one time.
+            if( iIsInputPaneOpen )
+                {
+                // Set status pane layout to the Phonebook 2 one
+                Layout();
+                DrawNow();
+                CEikStatusPane* statusPane = iAvkonAppUi->StatusPane();
+                if ( statusPane )
+                    {
+                    TRAP_IGNORE(
+                            statusPane->SwitchLayoutL(
+                                    R_AVKON_STATUS_PANE_LAYOUT_USUAL )
+                        );
+                    }
+                iIsInputPaneOpen = EFalse;
+                }
+            }
+            break;
+        default:
+            break;
         }
     
     CAknForm::HandleResourceChange( aType );
@@ -522,6 +584,9 @@ void CPbk2ContactEditorDlgImpl::AddItemToContactL
         const TDesC& aFieldTypeXspName, 
         TBool aSetFocus )
     {
+    // For knowing whether the destructor has been called
+    TBool destroyed = EFalse;
+    iDestroyedPtrForAddItem = &destroyed;
     // Store the original parameter value, since it is
     // changed by AddFieldsL
     TInt origParam = aFieldTypeResourceId;
@@ -532,70 +597,77 @@ void CPbk2ContactEditorDlgImpl::AddItemToContactL
     CleanupStack::PushL(addItemManager);
     CPbk2AddItemManager::TReturnValue ret = addItemManager->AddFieldsL(
             aFieldTypeResourceId, xSpName);
-
-    if (ret.iControlId == KErrAlreadyExists)
+    
+    // In case that pop list for adding item is closed by FSW, this object 
+    // will be destructed by CPbk2ContactEditorOperator::ForceExit().
+    // If this object is destructed, don't execute the following anymore.
+    if ( !destroyed )
         {
-        // cannot add more than one of this field type
-        // find and focus that
-        TInt fieldArrayCount( iUiFieldArray->Count() );
-        for (TInt i(0); i < fieldArrayCount && ret.iControlId
-                == KErrAlreadyExists; ++i)
+        if (ret.iControlId == KErrAlreadyExists)
             {
-            if (!iUiFieldArray->At(i).ContactEditorField())
+            // cannot add more than one of this field type
+            // find and focus that
+            TInt fieldArrayCount( iUiFieldArray->Count() );
+            for (TInt i(0); i < fieldArrayCount && ret.iControlId
+                    == KErrAlreadyExists; ++i)
                 {
-                continue;
-                }
-            const MVPbkFieldType* fieldType =
-                iUiFieldArray->At(i).ContactEditorField()->ContactField().
-                    BestMatchingFieldType();
-            if(fieldType && fieldType->FieldTypeResId() == aFieldTypeResourceId)
-                {
-                ret.iControlId = iUiFieldArray->At(i).ControlId();
-                }
-            }
-        }
-
-    if (ret.iControlId > 0)
-        {
-        if (aSetFocus)
-            {
-            TryChangeFocusL(ret.iControlId);
-            MPbk2ContactEditorField* editorField = iUiFieldArray->Find( ret.iControlId )->ContactEditorField();
-            MVPbkStoreContactField& storeContactField = editorField->ContactField();
-            iParams.iFocusedContactField = &storeContactField;
-            // Call this after adding or deleting lines
-            UpdatePageL( ETrue );
-            // Must be DrawNow and not DrawDeferred otherwise field label
-            // and content of the following field will be incorrect
-            DrawNow();
-            }
-        }
-    else if (ret.iControlId == KErrNotSupported && origParam == KErrNotFound)
-        {
-        iUiFieldArray->SaveFieldsL();
-        iRelocator.RelocateContactL(aFieldTypeResourceId, xSpName,
-            Pbk2ContactRelocator::EPbk2DisplayStoreDoesNotSupportQuery);
-        }
-    else if ( iParams.iActiveView == TPbk2ContactEditorParams::EEditorView )
-        {
-        switch( ret.iGruopId )
-            {
-            case EPbk2FieldGroupIdPostalAddress:
-                if(iUiFieldArray->Count())
+                if (!iUiFieldArray->At(i).ContactEditorField())
                     {
-                    iUiFieldArray->AddNewFieldL( ret.iGruopId );
-                    ExecuteAddressDlgL( TPbk2ContactEditorParams::EEditorAddressView );
+                    continue;
                     }
-                break;
-            case EPbk2FieldGroupIdHomeAddress:
-                iUiFieldArray->AddNewFieldL( ret.iGruopId );
-                ExecuteAddressDlgL( TPbk2ContactEditorParams::EEditorAddressHomeView );
-                break;
-            case EPbk2FieldGroupIdCompanyAddress:
-                iUiFieldArray->AddNewFieldL( ret.iGruopId );
-                ExecuteAddressDlgL( TPbk2ContactEditorParams::EEditorAddressOfficeView );
-                break;
+                const MVPbkFieldType* fieldType =
+                    iUiFieldArray->At(i).ContactEditorField()->ContactField().
+                        BestMatchingFieldType();
+                if(fieldType && fieldType->FieldTypeResId() == aFieldTypeResourceId)
+                    {
+                    ret.iControlId = iUiFieldArray->At(i).ControlId();
+                    }
+                }
             }
+    
+        if (ret.iControlId > 0)
+            {
+            if (aSetFocus)
+                {
+                TryChangeFocusL(ret.iControlId);
+                MPbk2ContactEditorField* editorField = iUiFieldArray->Find( ret.iControlId )->ContactEditorField();
+                MVPbkStoreContactField& storeContactField = editorField->ContactField();
+                iParams.iFocusedContactField = &storeContactField;
+                // Call this after adding or deleting lines
+                UpdatePageL( ETrue );
+                // Must be DrawNow and not DrawDeferred otherwise field label
+                // and content of the following field will be incorrect
+                DrawNow();
+                }
+            }
+        else if (ret.iControlId == KErrNotSupported && origParam == KErrNotFound)
+            {
+            iUiFieldArray->SaveFieldsL();
+            iRelocator.RelocateContactL(aFieldTypeResourceId, xSpName,
+                Pbk2ContactRelocator::EPbk2DisplayStoreDoesNotSupportQuery);
+            }
+        else if ( iParams.iActiveView == TPbk2ContactEditorParams::EEditorView )
+            {
+            switch( ret.iGruopId )
+                {
+                case EPbk2FieldGroupIdPostalAddress:
+                    if(iUiFieldArray->Count())
+                        {
+                        iUiFieldArray->AddNewFieldL( ret.iGruopId );
+                        ExecuteAddressDlgL( TPbk2ContactEditorParams::EEditorAddressView );
+                        }
+                    break;
+                case EPbk2FieldGroupIdHomeAddress:
+                    iUiFieldArray->AddNewFieldL( ret.iGruopId );
+                    ExecuteAddressDlgL( TPbk2ContactEditorParams::EEditorAddressHomeView );
+                    break;
+                case EPbk2FieldGroupIdCompanyAddress:
+                    iUiFieldArray->AddNewFieldL( ret.iGruopId );
+                    ExecuteAddressDlgL( TPbk2ContactEditorParams::EEditorAddressOfficeView );
+                    break;
+                }
+            }
+        iDestroyedPtrForAddItem = NULL;
         }
     CleanupStack::PopAndDestroy(addItemManager);
     }
@@ -687,6 +759,14 @@ TKeyResponse CPbk2ContactEditorDlgImpl::OfferKeyEventL
          return EKeyWasConsumed;
          }*/
 
+     // When the end key is pressed and OfferKeyEventL() is called for the first time,
+     // set the edit dialog to be not editable to close the partial input
+     // screen if it is open.
+     if( aKeyEvent.iCode == EKeyEscape && !iEndKeyWasPressed )
+         {
+         SetEditableL( EFalse );
+         }
+
     // Display menu bar if the focused control doesnt consume selection keys
     CPbk2ContactEditorArrayItem* currentField = iUiFieldArray->Find(
             IdOfFocusControl());
@@ -716,19 +796,37 @@ TKeyResponse CPbk2ContactEditorDlgImpl::OfferKeyEventL
         ret = EKeyWasConsumed;
         }
 
-    if ( ret != EKeyWasConsumed && !iEndKeyWasPressed )
+    if ( ret != EKeyWasConsumed )
         {
-        if ( aKeyEvent.iCode == EKeyEscape )
+        // If the iEndKeyWasPressed equels to true, which illustrates
+        // the EditorDlgImpl get the Escape key event one more time 
+        // for the case that Exit phonebook2 with the EditorDlg opened,
+        // sush as save VOIP settings,there will be two event,
+        // one is to close dialog and the other is to exit phonebook2. 
+        if ( iEndKeyWasPressed )
             {
-            iEditorStrategy.StopQuery();
-            iEndKeyWasPressed = ETrue;
+            if ( aKeyEvent.iCode == EKeyEscape && iAvkonAppUi->IsAppShutterRunning() )
+                {
+                // Use the iExitApp to record whether the AppShutter is running.
+                // According to the value of iExitApp to Exit Phonebook2 app ui 
+                // after the EditorDlg close completely. 
+                iExitApp = ETrue;
+                }
             }
-        ret = CAknForm::OfferKeyEventL( aKeyEvent, aType );
-        if ( ret == EKeyWasConsumed && 
-            aKeyEvent.iCode != EKeyPhoneEnd && aKeyEvent.iCode != EKeyEscape )
+        else
             {
-            UpdateCbasL();
-            }        
+            if ( aKeyEvent.iCode == EKeyEscape )
+                {
+                iEditorStrategy.StopQuery();
+                iEndKeyWasPressed = ETrue;
+                }
+            ret = CAknForm::OfferKeyEventL( aKeyEvent, aType );
+            if ( ret == EKeyWasConsumed && aKeyEvent.iCode != EKeyPhoneEnd
+                && aKeyEvent.iCode != EKeyEscape )
+                {
+                UpdateCbasL();
+                }
+            }
         }
 
     return ret;
@@ -1217,7 +1315,7 @@ void CPbk2ContactEditorDlgImpl::AddGroupFieldsL(TPbk2FieldGroupId aGroupId)
 // CPbk2ContactEditorDlgImpl::AreAllFieldsEmpty
 // --------------------------------------------------------------------------
 //
-TBool CPbk2ContactEditorDlgImpl::AreAllFieldsEmpty()
+TBool CPbk2ContactEditorDlgImpl::AreAllFieldsEmptyL()
     {
     TBool result(ETrue);
     TInt countAll = iContact.PresentationFields().FieldCount();
@@ -1647,7 +1745,12 @@ TBool CPbk2ContactEditorDlgImpl::OkToExitL(TInt aKeycode)
                  RestorePrevNaviDecoratorL();
                  iNaviContainer = NULL;
                  }
-            MakeVisible( EFalse );
+            
+            if ( !iAvkonAppUi->IsAppShutterRunning() )
+                {
+                MakeVisible( EFalse );
+                }
+           
             MPbk2ContactEditorEventObserver::TParams params;
             params.iFlags = EPbk2EditorKeyCode;
             params.iKeyCode = aKeycode;
@@ -1965,7 +2068,7 @@ void CPbk2ContactEditorDlgImpl::ContactEditorOperationCompleted
 // --------------------------------------------------------------------------
 //
 void CPbk2ContactEditorDlgImpl::CloseDialog()
-	{
+    {
     // Ignore error and close editor without further user interaction
     MVPbkContactObserver::TContactOpResult exitResult;
     exitResult.iExtension = NULL;
@@ -2665,7 +2768,7 @@ void CPbk2ContactEditorDlgImpl::CloseDialog(
     {
     // For knowing if the destructor has been called
     TBool destroyed = EFalse;
-    iDestroyedPtr = &destroyed;
+    iDestroyedPtrForCloseDlg = &destroyed;
 
     if (aInformObserver && iParams.iActiveView
             == TPbk2ContactEditorParams::EEditorView || iAddressViewStandalone)
@@ -2698,22 +2801,21 @@ void CPbk2ContactEditorDlgImpl::CloseDialog(
     // In VOIP/new contacts/exit case, this object will be destructed by
     // iContactObserver.ContactEditingComplete() above.
     // If this object is destructed, don't excute the following anymore
-    if ( destroyed )
+    if ( !destroyed )
         {
-        return;
-        }
-
-    // Don't save any contact data (already saved)
-    iExitRecord.Set(EOkToExitWithoutHandlingIt);
-    iExitRecord.Clear(EExitOrdered);
-
-    // Close dialog using TryExitL and returning ETrue from OkToExit
-    TInt err = KErrNone;
-        TRAP( err, TryExitL( EAknSoftkeyBack ) );
-    if (err != KErrNone)
-        {
-        // If not nicely then use the force.
-        delete this;
+        // Don't save any contact data (already saved)
+        iExitRecord.Set(EOkToExitWithoutHandlingIt);
+        iExitRecord.Clear(EExitOrdered);
+    
+        // Close dialog using TryExitL and returning ETrue from OkToExit
+        TInt err = KErrNone;
+            TRAP( err, TryExitL( EAknSoftkeyBack ) );
+        if (err != KErrNone)
+            {
+            // If not nicely then use the force.
+            delete this;
+            }
+        iDestroyedPtrForCloseDlg = NULL;
         }
     }
 
@@ -2863,30 +2965,59 @@ void CPbk2ContactEditorDlgImpl::SetAddressValidationIconsL()
                 case EPbk2FieldCtrlTypeExtAddressEditor:
                 case EPbk2FieldCtrlTypeExtAddressHomeEditor:
                 case EPbk2FieldCtrlTypeExtAddressOfficeEditor:
-                    if(IsAddressValidated(Pbk2AddressTools::MapCtrlTypeToAddress(
-                            uiField->UIField()->CtrlType())))
+                    {
+                	TInt iconId = 0;
+                    // UnSync feature indicator flag and chinese flag
+                    TBool supportUnSyncFeature = 
+                          FeatureManager::FeatureSupported( 
+                          KFeatureIdFfTdUnSyncabPbfieldsInd );
+                    TBool supportChinese = 
+                        FeatureManager::FeatureSupported( KFeatureIdChinese ); 
+                    // Valid address
+                    TBool addressValidated = 
+                         IsAddressValidated( 
+                            Pbk2AddressTools::MapCtrlTypeToAddress(
+                            uiField->UIField()->CtrlType()));
+                    if(supportChinese && supportUnSyncFeature)
                         {
-                        TPbk2IconId iconID(TUid::Uid(KPbk2UID3), EPbk2qgn_prop_locev_map);
-                        uiField->LoadBitmapToFieldL(iconID);
+                        // Unsync icon
+                        iconId = EPbk2qgn_prop_phonebook2_unsync;
                         }
                     else
                         {
-                        TPbk2IconId iconID(TUid::Uid(KPbk2UID3), EPbk2qgn_prop_pb_no_valid_lm);
-                        uiField->LoadBitmapToFieldL(iconID);
+                        iconId = addressValidated ?
+                            EPbk2qgn_prop_locev_map : EPbk2qgn_prop_pb_no_valid_lm;
                         }
+                    TPbk2IconId pbkIconId(TUid::Uid(KPbk2UID3),iconId);
+                    uiField->LoadBitmapToFieldL(pbkIconId); 
+                    }
                     break;
                 case EPbk2FieldCtrlTypeExtAssignFromMapsEditor:
-                    if(IsAddressValidated( Pbk2AddressTools::MapViewTypeToAddress(iParams.iActiveView)))
+                    {
+                    // UnSync feature indicator flag and chinese flag
+                    TBool supportUnSyncFeature = 
+                           FeatureManager::FeatureSupported(
+                           KFeatureIdFfTdUnSyncabPbfieldsInd );
+                    TBool supportChinese = 
+                           FeatureManager::FeatureSupported( KFeatureIdChinese ); 
+
+                    TBool addressValidated = 
+                           IsAddressValidated( 
+                           Pbk2AddressTools::MapViewTypeToAddress( iParams.iActiveView ));
+                    TInt iconId = 0;
+                    if( supportChinese && supportUnSyncFeature )
                         {
-                          TPbk2IconId iconID(TUid::Uid(KPbk2UID3), EPbk2qgn_prop_locev_map);
-                          uiField->LoadBitmapToFieldL(iconID);
-                          }
-                      else
-                          {
-                          TPbk2IconId iconID(TUid::Uid(KPbk2UID3), EPbk2qgn_prop_pb_no_valid_lm);
-                          uiField->LoadBitmapToFieldL(iconID);
-                          }
-                    break;  
+                        iconId = EPbk2qgn_prop_phonebook2_unsync;
+                        }
+                    else
+                        {
+                        iconId = addressValidated ?
+                            EPbk2qgn_prop_locev_map : EPbk2qgn_prop_pb_no_valid_lm;
+                        }
+                    TPbk2IconId pbkIconId(TUid::Uid(KPbk2UID3),iconId);
+                    uiField->LoadBitmapToFieldL(pbkIconId); 
+                    }
+                    break;
                 default:
                     return;
                 }
@@ -2982,7 +3113,7 @@ void CPbk2ContactEditorDlgImpl::CmdDoneL(
             {
             // Estimate all field are empty by UI field.
         if (( AreAllControlsEmpty() && !iAddressViewStandalone )||
-            (iAddressViewStandalone && AreAllFieldsEmpty()))
+            (iAddressViewStandalone && AreAllFieldsEmptyL()))
                 {
                 if (iEditorExtension->OkToDeleteContactL(aParams))
                     {
@@ -3154,13 +3285,14 @@ TBool CPbk2ContactEditorDlgImpl::OkToExitApplicationL
     {
     TBool okToExit = ETrue;
 
-    // If exit callback returned EFalse, the exit is cancelled
-    if ( iParams.iExitCallback &&
-         !iParams.iExitCallback->OkToExitL( aCommandId ) )
+    // The exit callback must be invoked only once when editor dlg is exiting.
+    if ( (iParams.iActiveView == TPbk2ContactEditorParams::EEditorView || 
+            iAddressViewStandalone) && iParams.iExitCallback )
         {
-        okToExit = EFalse;
+        okToExit = iParams.iExitCallback->OkToExitL( aCommandId );
         }
-
+    
+    // If exit callback returned EFalse, the exit is cancelled
     if ( !okToExit )
         {
         iExitRecord.Clear( EExitApproved );

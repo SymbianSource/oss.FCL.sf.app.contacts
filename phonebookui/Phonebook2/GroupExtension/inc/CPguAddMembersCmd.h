@@ -29,6 +29,7 @@
 #include <MPbk2Command.h>
 #include <MVPbkContactSelector.h>
 #include <MPbk2ProcessDecorator.h>
+#include <mpgugroupcmd.h>
 
 // FORWARD DECLARATIONS
 class MPbk2ContactUiControl;
@@ -53,7 +54,8 @@ class CPguAddMembersCmd : public CActive,
                           private MVPbkContactViewObserver,
                           private MVPbkContactSelector,
                           private MPbk2ContactRelocatorObserver,
-                          private MPbk2ProcessDecoratorObserver
+                          private MPbk2ProcessDecoratorObserver,
+                          public MPguGroupCmd
     {
     public: // Construction and destruction
 
@@ -72,6 +74,9 @@ class CPguAddMembersCmd : public CActive,
          * Destructor.
          */
         ~CPguAddMembersCmd();
+        
+    public: //MPguGroupCmd
+        void Abort();
 
     public: // From MPbk2Command
         void ExecuteLD();
@@ -221,6 +226,7 @@ class CPguAddMembersCmd : public CActive,
         TInt iContactsCounter;
         /// Own: Contact 
         MVPbkStoreContact* iContact;
+        TBool iAbort;
     };
 
 #endif // CPGUADDMEMBERSCMD_H

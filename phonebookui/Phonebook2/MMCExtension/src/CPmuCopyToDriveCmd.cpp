@@ -239,15 +239,14 @@ void CPmuCopyToMmcCmd::RunL()
                 }
             else
                 {
-                iState = EPmuCopyToMmcCmdComplete;
-                IssueRequest();
+                // Stop the process dialog when complete the process of copying 
+                iDecorator->ProcessStopped();
                 }
             break;
             }
         case EPmuCopyToMmcCmdComplete:
             {
-            // Copy complete, decorator calls processdismissed
-            iDecorator->ProcessStopped();
+            CommandCompleted();
             break;
             }
         default:
@@ -327,19 +326,8 @@ void CPmuCopyToMmcCmd::ResetUiControl( MPbk2ContactUiControl& aUiControl )
 //
 void CPmuCopyToMmcCmd::ProcessDismissed( TInt /*aCancelCode*/ )
     {
-    Cancel();
-    delete iRetrieveOperation;
-    iRetrieveOperation = NULL;
-    delete iExportOperation;
-    iExportOperation = NULL;
-
-    // It is a not big deal if result note is not shown to user
-    TRAP_IGNORE( ShowResultsL() );
-    if ( iUiControl )
-        {
-        iUiControl->UpdateAfterCommandExecution();
-        } 
-    iCommandObserver->CommandFinished( *this );
+    iState = EPmuCopyToMmcCmdComplete;
+    IssueRequest();
     }
 
 // --------------------------------------------------------------------------
@@ -651,6 +639,27 @@ TInt CPmuCopyToMmcCmd::HandleError( TInt aError )
         }
     
     return err;
+    }
+
+// --------------------------------------------------------------------------
+// CPmuCopyToMmcCmd::CommandCompleted
+// --------------------------------------------------------------------------
+//    
+void CPmuCopyToMmcCmd::CommandCompleted()
+    {
+    Cancel();
+    delete iRetrieveOperation;
+    iRetrieveOperation = NULL;
+    delete iExportOperation;
+    iExportOperation = NULL;
+
+    // It is a not big deal if result note is not shown to user
+    TRAP_IGNORE( ShowResultsL() );
+    if ( iUiControl )
+        {
+        iUiControl->UpdateAfterCommandExecution();
+        } 
+    iCommandObserver->CommandFinished( *this );
     }
 
 // End of File

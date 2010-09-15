@@ -90,6 +90,18 @@ public:
                               const TDesC& aData, 
                               RPointerArray<TDesC>& aMatchSet, 
                               RArray<TPsMatchLocation>& aMatchLocation);
+    
+
+	/**
+	 * Funtion to Search match string for multi query
+	 * 
+	 * @param aSearchQuery Search query
+	 * @param aData Source date for matching
+	 * @param aMatchedData Matching result 
+	 */
+	void LookupMatchL( CPsQuery& aSearchQuery,
+	        const TDesC& aData,
+	        TDes& aMatchedData );
 
 private:
 

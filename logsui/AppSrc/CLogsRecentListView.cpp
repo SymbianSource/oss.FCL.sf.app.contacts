@@ -879,8 +879,8 @@ void CLogsRecentListView::HandleGainingForeground()
                 iFocusChangeControl = ELogsNoChange;
                 }
             }
-        // Sure "ClearMissedCallNotificationsL" is called.
-        ClearMissedCallNotificationsL();
+        // Sure "ClearMissedCallNotifications" is called.
+        ClearMissedCallNotifications();
         
         RemoveInputBlocker(); //just in case
         }                            

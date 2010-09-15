@@ -98,6 +98,8 @@ void CPbk2ContactEditorDateField::ConstructL()
         }
     iControl->ConstructL( minimumDate, maximumDate, time, EFalse );
 
+    // Enable partial screen input
+    iControl->SetFeature(CEikMfne::EPartialScreenInput, ETrue);
     iUiBuilder.LoadBitmapToFieldL
         ( iContactField.FieldProperty(), iIconInfoContainer, ControlId() );
 

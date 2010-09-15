@@ -284,6 +284,7 @@ void CLogsDetailView::DynInitMenuPaneL(
         case ( R_COMMON_SEND_MESSAGE_SUBMENU ):
         case ( R_COMMON_POC_SUBMENU ):
         case ( R_COMMON_CALLUI_SUBMENU ):
+        case ( R_COMMON_SHOW_MY_ADDRESS_MENU ):
             {
             SetMenuItemsItemSpecificProperty( aMenuPane, EFalse );
             }

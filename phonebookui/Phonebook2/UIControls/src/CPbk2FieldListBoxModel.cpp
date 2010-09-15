@@ -36,7 +36,7 @@
 #include <TPbk2StoreContactAnalyzer.h>
 #include <pbk2uicontrols.rsg>
 #include "Pbk2AddressTools.h"
-
+#include <featmgr.h>
 // Virtual Phonebook
 #include <MVPbkFieldType.h>
 #include <TVPbkFieldVersitProperty.h>
@@ -48,6 +48,7 @@
 #include <vpbkeng.rsg>
 #include <MVPbkStoreContact.h>
 
+#include <Pbk2Config.hrh> // For unSync
 /// Unnamed namespace for local definitions
 namespace {
 
@@ -697,18 +698,25 @@ inline void CPbk2FieldListBoxModel::AppendAddressIconsToBeginningL
     // Format icon index
     TBuf<KMaxFormattedTIntLength> iconText; 
     TInt iconIndex = KErrNotFound;
-    
-    if ( IsGeoFieldForAddressL( aField ) )
+    TInt iconId = 0;
+    // UnSync feature indicator flag and chinese flag
+    TBool supportUnSyncFeature = FeatureManager::FeatureSupported(
+    		KFeatureIdFfTdUnSyncabPbfieldsInd);
+    TBool supportChinese = FeatureManager::FeatureSupported(KFeatureIdChinese);
+    // Valid address
+    TBool addressValidated = IsGeoFieldForAddressL( aField );
+    if( supportChinese && supportUnSyncFeature)
         {
-        iconIndex = aParams.iIconArray.FindIcon(
-            TPbk2AppIconId( EPbk2qgn_prop_locev_map ) );
+        // UnSync Icon
+        iconId = EPbk2qgn_prop_phonebook2_unsync;
         }
     else
-    	{
-        iconIndex = aParams.iIconArray.FindIcon(
-    	    TPbk2AppIconId( EPbk2qgn_prop_pb_no_valid_lm ) );
-    	}
-
+        {
+        iconId = addressValidated ?
+            EPbk2qgn_prop_locev_map : EPbk2qgn_prop_pb_no_valid_lm;
+        }
+    TPbk2IconId pbkIconId(TUid::Uid(KPbk2UID3), iconId);
+    iconIndex = aParams.iIconArray.FindIcon(pbkIconId); 
     iconText.Num( iconIndex );
     aRow.AppendColumnL( iconText );
     }

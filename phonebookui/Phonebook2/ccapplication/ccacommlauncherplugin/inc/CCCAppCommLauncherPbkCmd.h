@@ -75,6 +75,7 @@ public: // new
     void ExecutePbk2CmdRemoveImageL( const TDesC8& aContact );
     void ExecutePbk2CmdAddImageL( const TDesC8& aContact );
     void ExecutePbk2CmdDeleteL( const TDesC8& aContact );
+    void ExecutePbk2CmdSendBCardL( const TDesC8& aContact );
     TBool IsPbk2CommandRunning();
     //Close all the pending pbk2commands launched from CCA
     void DeleteAllRunningCmd();

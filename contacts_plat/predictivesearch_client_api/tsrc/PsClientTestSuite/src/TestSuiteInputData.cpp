@@ -22,6 +22,24 @@
 #include "pstestcontactshandler.h"
 #include "psclienttestsuitedefs.h"
 #include <vpbkeng.rsg>
+#include <f32file.h>
+#include <CHARCONV.H>
+
+void CTestSuiteInputData::ConvUtf2UniL( const TDesC& aOriginal, TDes& aRes )
+    {
+    HBufC8* buf8 = HBufC8::NewLC( aOriginal.Length() * 2 );
+    buf8->Des().Copy( aOriginal );
+    TPtrC8 str = buf8->Des();
+
+    HBufC* InfoText = CnvUtfConverter::ConvertToUnicodeFromUtf8L( str );
+    CleanupStack::PushL( InfoText );
+    TPtr16 ptr = InfoText->Des();
+
+    aRes.Zero();
+    aRes.Copy( ptr );
+
+    CleanupStack::PopAndDestroy( 2 );
+    }
 
 // ============================== MEMBER FUNCTIONS ============================
 
@@ -422,9 +440,14 @@ void CTestSuiteInputData::AddSingleContactDataL(TDesC& aInput, TInt aType)
             j++;
 
         TPtrC16 dataPtr = aInput.Mid(Startpos ,j - Startpos);	
-
+        
+        HBufC* buf = dataPtr.AllocLC();
+        TPtr uniPtr = buf->Des();
+        ConvUtf2UniL( dataPtr, uniPtr);
+        
         // Add data to the class
-        tempcacheData->data.Append(dataPtr.AllocL());
+        tempcacheData->data.Append(uniPtr.AllocL());
+        CleanupStack::PopAndDestroy();
 
         commaPos = j ;  
         j++;   
@@ -548,12 +571,16 @@ void CTestSuiteInputData::GetCharacterSeparatedDataL(TDesC& aInput, TChar aSepar
             j++;
 			      
         TPtrC16 dataPtr = aInput.Mid(Startpos ,j - Startpos);	
+        HBufC* buf = dataPtr.AllocLC();
+        TPtr uniPtr = buf->Des();
+        ConvUtf2UniL( dataPtr, uniPtr);
 			
         // Add data to the output
-        HBufC* tempData = dataPtr.AllocL();
+        HBufC* tempData = uniPtr.AllocL();
         aSeparatedData.Append(tempData);
         SeparatorPos = j;  
         j++;   
+        CleanupStack::PopAndDestroy();
 	}
 }
 
@@ -846,7 +873,11 @@ TBool CTestSuiteInputData::CompareInputDataWithResultDataL(CPsClientData& aResDa
 // -----------------------------------------------------------------------------
 void CTestSuiteInputData::ParseInputInputSearchStringL(TDesC& aInput)
 {
-	iInputSearchString = aInput.AllocL();
+	HBufC* buf = aInput.AllocLC();
+	TPtr uniPtr = buf->Des();
+	ConvUtf2UniL( aInput, uniPtr);
+	iInputSearchString = uniPtr.AllocL();
+	CleanupStack::PopAndDestroy();
 }
 
 // -----------------------------------------------------------------------------
@@ -950,8 +981,13 @@ void CTestSuiteInputData::ParseInputForAddingGroupsL(TDesC& aInput)
 	HBufC* temp2 = aInput.Right(len - 1).AllocL();
 	ParseInputForContactsDataL(*temp2,0);
 	
+    HBufC* buf = gropName->AllocLC();
+    TPtr uniPtr = buf->Des();
+    ConvUtf2UniL( gropName->Des(), uniPtr);
+	
 	//Add the group
-	iContactHandler->AddGroupL(*gropName);
+	iContactHandler->AddGroupL(*buf);
+	CleanupStack::PopAndDestroy();
 	CActiveScheduler :: Start();
 	
 	//Create Contacts 
@@ -964,7 +1000,11 @@ void CTestSuiteInputData::ParseInputForAddingGroupsL(TDesC& aInput)
 // -----------------------------------------------------------------------------
 void CTestSuiteInputData::ParseInputForSearchWithinGroupL(TDesC& aInput)
 {
-	iGroupToBeSearched = aInput.AllocL();	
+	HBufC* buf = aInput.AllocLC();
+	TPtr uniPtr = buf->Des();
+	ConvUtf2UniL( aInput, uniPtr);
+	iGroupToBeSearched = uniPtr.AllocL();
+	CleanupStack::PopAndDestroy();
 }
 
 // -----------------------------------------------------------------------------

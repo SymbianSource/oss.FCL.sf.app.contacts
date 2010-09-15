@@ -79,50 +79,6 @@ private:
     void ConstructL();
 
 private: //new methods
-    /**
-     * Helper class for handling special cases.
-     * Currently VOIP ServiceID implemented.
-     *
-     * @param aFieldData: Selected field.
-     * @since S60 5.0
-     */
-    void ResolveSpecialCasesL(const TDesC& aFieldData);
-
-    /**
-     * Helper class for searching ServiceID
-     *
-     * @param aFieldData: Selected field.
-     * @return ServiceId
-     * @since S60 5.0
-     */
-    TUint32 ResolveServiceIdL(const TDesC& aFieldData);
-
-    /**
-     * Helper class for parsing xSP identification.
-     *
-     * @param aFieldData: Selected field.
-     * @param aXSPId: Found xSP ID.
-     * @return boolean if xSP is found.
-     * @since S60 5.0
-     */
-    TBool ExtractServiceL(const TDesC& aFieldData, TPtrC& aXSPId);
-
-    /**
-     * Helper class for searching ServiceId from spsettings
-     *
-     * @param aFieldData: Selected field.
-     * @return ServiceId
-     * @since S60 5.0
-     */
-    TUint32 SearchServiceIdL(const TDesC& aFieldData);
-
-    /**
-     * Helper class for checking if MSISDN addressing is supported.
-     *
-     * @return ServiceId
-     * @since S60 5.0
-     */
-    TUint32 ResolveMSISDNAddressingSupportedL();
 
     /**
      * Helper class for starting communication method.
@@ -157,12 +113,6 @@ private:
      * Not own.
      */
     const CCAContactorService::TCSParameter* iParameter;
-
-    /**
-     * ServiceId for VOIP service.
-     * Own.
-     */
-    TUint32 iServiceId;
     
     /**
      * Is call item selected

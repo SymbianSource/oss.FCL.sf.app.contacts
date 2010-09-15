@@ -123,6 +123,14 @@ void CLogsRecentListControlContainer::ConstructL( const TRect& aRect )
      MakeEmptyTextListBoxL( iListBox, EmptyListboxResourceL() );
     iListBox->Model()->SetItemTextArray( iAdapter );
     
+    // Fetch data for extension
+    if( iView->CurrentModel()->Count() > 0 )
+        {
+        iControlExtension->HandleAdditionalData( 
+                    *( iView->CurrentModel() ), 
+                    *iListBox );
+        }
+    
     MakeScrollArrowsL( iListBox );
 
     //Create recent list view tab group (Logs.rss)

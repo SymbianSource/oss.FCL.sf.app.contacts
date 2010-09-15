@@ -63,6 +63,7 @@ public:
 private:
 	CPbapVCardExporterUtil(CContactDatabase& aDatabase, CPbapLogWrapper* aLogWrapper);
 	void ConstructL();
+	void GetMatchDigitCountL();
 
 	TBool ContactExistsL(TContactItemId aContactId);
 	CParserVCard* CreateVCardParserLC(TVCardVersion aFormat);

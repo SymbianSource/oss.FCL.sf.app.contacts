@@ -804,6 +804,11 @@ void CPguAddMembersCmd::AddContactsToGroupL()
         iState = ECommitingTransaction;
         }
     
+    if ( iAbort )
+        {
+        iState = ECommitingTransaction;
+        }
+    
     IssueRequest();
     }
 
@@ -1017,4 +1022,15 @@ void CPguAddMembersCmd::CheckContactsL()
         IssueRequest();
         }
     }
+
+void CPguAddMembersCmd::Abort()
+    {
+    if ( iDecorator )
+        {
+        // iDecorator calls ProcessStopped to end this cmd
+        iDecorator->ProcessStopped();
+        iAbort = ETrue;
+        }
+    }
+
 // End of File

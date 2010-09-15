@@ -22,6 +22,7 @@
 #include <e32base.h>
 #include <MPbk2ContactEditorExtension.h>
 #include <MPbk2ContactEditorExtensionExtension.h>
+#include <MPbk2CommandObserver.h>
 #include <Pbk2FieldProperty.hrh>
 
 // FORWARD DECLARATIONS
@@ -34,7 +35,8 @@ class MPbk2Command;
 // CLASS DECLARATION
 class CPmapContactEditorExtension : public CBase,
 								    public MPbk2ContactEditorExtension,
-								    public MPbk2ContactEditorExtensionExtension
+								    public MPbk2ContactEditorExtensionExtension,
+								    public MPbk2CommandObserver
     {
     public:
         /**
@@ -90,6 +92,10 @@ class CPmapContactEditorExtension : public CBase,
                 TFailParams& aFailParams );
         TAny* ContactEditorExtensionExtension(
                         TUid /*aExtensionUid*/ );
+        
+    public: // From MPbk2CommandObserver
+        void CommandFinished(
+                        const MPbk2Command& aCommand );
 
     private: // Implementation
         CPmapContactEditorExtension(
@@ -109,6 +115,8 @@ class CPmapContactEditorExtension : public CBase,
         MPbk2ContactEditorControl& iEditorControl;
         /// Own: Map command controller
         MPbk2Command* iCmd;
+        /// Own: Mark if Map command is finished
+        TBool iMapCommandFinish;
 	};
 
 #endif // CPMAPCONTACTEDITOREXTENSION_H

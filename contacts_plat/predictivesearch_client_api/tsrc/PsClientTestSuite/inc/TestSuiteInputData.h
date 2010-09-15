@@ -279,6 +279,7 @@ private:  // Private functions for internal Parsing data
 	    void ParseInputForSearchWithinGroupL(TDesC& aInput);
 		void ParseInputForSortOrderL(TDesC& aInput);
 		TInt GetFieldIdFromVpbkIdentifierL(TDesC& aIdentifierAsString);
+		void ConvUtf2UniL( const TDesC& aOriginal, TDes& aRes );
 
 private: // data
 

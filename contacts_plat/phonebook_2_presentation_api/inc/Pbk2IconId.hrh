@@ -67,7 +67,9 @@ enum TPbk2CoreIconId
     EPbk2qgn_prop_pb_no_valid_lm,
     EPbk2qgn_prop_blid_waypoint,
     EPbk2qgn_prop_radiobutt_off,
-    EPbk2qgn_prop_radiobutt_on
+    EPbk2qgn_prop_radiobutt_on,
+    EPbk2qgn_prop_phonebook2_unsync
+
     };
 
 #endif // PBK2ICONID_HRH

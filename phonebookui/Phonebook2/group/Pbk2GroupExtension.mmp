@@ -74,6 +74,7 @@ END
 
 // Include paths
 USERINCLUDE     ../GroupExtension/inc
+USERINCLUDE     ../commands/inc
 SYSTEMINCLUDE   ../inc
 APP_LAYER_SYSTEMINCLUDE
 

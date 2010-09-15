@@ -149,7 +149,8 @@ CPsu2FixedDialingView::CPsu2FixedDialingView(
         CPbk2UIExtensionView& aExtensionView,
         CPsu2ViewManager& aViewManager ) :
     CPsu2NameListViewBase( aExtensionView, aViewManager ),
-    iShowFdnNotActiveNote( ETrue )
+    iShowFdnNotActiveNote( ETrue ),
+    iMarkingModeOn( EFalse )
     {
     }
 
@@ -524,11 +525,6 @@ void CPsu2FixedDialingView::DynInitMenuPaneL(
                     {
                     aMenuPane->SetItemDimmed( EPsu2CmdNewContact , ETrue );
                     aMenuPane->SetItemDimmed( EPbk2CmdEditMe , ETrue );
-                    aMenuPane->SetItemSpecific( EPbk2CmdDeleteMe, EFalse );
-                    }
-                else
-                    {
-                    aMenuPane->SetItemSpecific( EPbk2CmdDeleteMe, ETrue );
                     }
                 }
             break;
@@ -540,16 +536,25 @@ void CPsu2FixedDialingView::DynInitMenuPaneL(
                 {
                 aMenuPane->SetItemDimmed( EPbk2CmdCopy, ETrue );
                 }
-            if ( marked )
-                {
-                aMenuPane->SetItemSpecific( EPbk2CmdCopy, EFalse );
-                aMenuPane->SetItemDimmed( EPsu2CmdCopyFromContacts, ETrue );
-                }
-            else
-                {
-                aMenuPane->SetItemSpecific( EPbk2CmdCopy, ETrue);
-                }
             break;
+            }
+        case R_AVKON_MENUPANE_MARK_MULTIPLE:
+                {
+                TInt markedContactCount = 0;
+              
+                CCoeControl* ctrl = iControl->ComponentControl(0);
+                CEikListBox* listbox = static_cast <CEikListBox*> (ctrl);
+                if ( listbox )
+                    {
+                    markedContactCount = listbox->SelectionIndexes()->Count();
+                    }
+                // dim the makr all item if all contacts are marked. 
+                if ( markedContactCount > 0 && markedContactCount == iControl->NumberOfContacts() )
+                    {
+                    aMenuPane->SetItemDimmed( EAknCmdMarkingModeMarkAll, ETrue );
+                    }
+             
+                break;
             }
         case R_PSU2_FIXED_DIALING_DELETE_MENUPANE:
             {
@@ -725,6 +730,29 @@ void CPsu2FixedDialingView::ContactOperationFailed(
     {
     CCoeEnv::Static()->HandleError(aErrorCode);
     }    
+
+// -----------------------------------------------------------------------------
+// CPsu2FixedDialingView::MarkingModeStatusChanged
+// -----------------------------------------------------------------------------
+//
+void CPsu2FixedDialingView::MarkingModeStatusChanged( TBool aActivated )
+    {
+    iMarkingModeOn = aActivated;
+    }
+
+// -----------------------------------------------------------------------------
+// CPsu2FixedDialingView::ExitMarkingMode
+// Called by avkon, if the return value is ETrue, 
+// the Marking mode will be canceled after any operation, 
+// otherwise the Marking mode keep active.
+// -----------------------------------------------------------------------------
+//
+TBool CPsu2FixedDialingView::ExitMarkingMode() const
+    {
+    return ETrue; 
+    }
+    
+
 
 // --------------------------------------------------------------------------
 // CPsu2FixedDialingView::UpdateNaviPaneTextL

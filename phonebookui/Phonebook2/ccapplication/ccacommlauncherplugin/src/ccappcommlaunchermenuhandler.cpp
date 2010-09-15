@@ -374,6 +374,9 @@ void CCCAppCommLauncherMenuHandler::HandleCommandL( TInt aCommand )
         case ECCAppCommLauncherDeleteCmd:
             DoDeleteCmdL();
             break;
+        case ECCAppCommLauncherSendBCardCmd:
+            DoSendBCardCmdL();
+            break;
         default:
             break;
         }
@@ -641,6 +644,22 @@ void CCCAppCommLauncherMenuHandler::DoDeleteCmdL()
         iPbkCmd = CCCAppCommLauncherPbkCmd::NewL( iPlugin );
         }
     iPbkCmd->ExecutePbk2CmdDeleteL(
+        *iPlugin.ContactHandler().ContactIdentifierLC() );
+
+    CleanupStack::PopAndDestroy( 1 ); // ContactIdentifierLC
+    }
+
+// ---------------------------------------------------------------------------
+// CCCAppCommLauncherMenuHandler::DoSendBCardCmdL
+// ---------------------------------------------------------------------------
+//
+void CCCAppCommLauncherMenuHandler::DoSendBCardCmdL()
+    {
+    if( !iPbkCmd )
+        {
+        iPbkCmd = CCCAppCommLauncherPbkCmd::NewL( iPlugin );
+        }
+    iPbkCmd->ExecutePbk2CmdSendBCardL(
         *iPlugin.ContactHandler().ContactIdentifierLC() );
 
     CleanupStack::PopAndDestroy( 1 ); // ContactIdentifierLC

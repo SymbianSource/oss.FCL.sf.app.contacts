@@ -28,6 +28,7 @@
 #include <MVPbkSingleContactOperationObserver.h>
 #include <MVPbkContactViewObserver.h>
 #include <MVPbkContactSelector.h>
+#include <mpgugroupcmd.h>
 
 // FORWARD DECLARATIONS
 class MPbk2ContactUiControl;
@@ -97,7 +98,8 @@ class CPguRemoveFromGroupCmd :
         private MVPbkSingleContactOperationObserver,
         private MVPbkContactObserver,
         private MVPbkContactViewObserver,
-        private MProgressDialogCallback
+        private MProgressDialogCallback,
+        public MPguGroupCmd
 
     {
     public: // Construction and destruction
@@ -118,6 +120,9 @@ class CPguRemoveFromGroupCmd :
          */
         ~CPguRemoveFromGroupCmd();
 
+    public: //MPguGroupCmd
+            void Abort();    
+            
     public: // From MPbk2Command
         void ExecuteLD();
         void AddObserver(

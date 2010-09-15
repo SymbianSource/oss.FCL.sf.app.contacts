@@ -268,6 +268,137 @@ void CPcsAlgorithm2MultiSearchHelper::SearchMatchSeqMultiL( RPointerArray<CPsQue
     }
 
 // ----------------------------------------------------------------------------
+// CPcsAlgorithm2MultiSearchHelper::LookupMatchL
+// ----------------------------------------------------------------------------
+void CPcsAlgorithm2MultiSearchHelper::LookupMatchL( CPsQuery& aSearchQuery,
+    const TDesC& aData, TDes& aMatchedData )
+    {
+    _LIT( KSpace, " " );
+    aMatchedData.Zero();
+    RPointerArray<CPsQuery> queryList = MultiQueryL( aSearchQuery );
+    CleanupResetAndDestroyPushL( queryList );
+    // Convert the individual queries to string form
+    RPointerArray<CPsQuery> mySearchQuery;
+    CleanupResetAndDestroyPushL( mySearchQuery );
+
+    // Remember a temporary copy of query list
+    // Copy the content of searchQuery
+    const TInt searchQueryCount = queryList.Count();
+    for (TInt i = 0; i < searchQueryCount; i++ )
+        {
+        CPsQuery* tempQuery = CPsQuery::NewL();
+        CleanupStack::PushL( tempQuery );
+        iAlgorithm->FindUtilECE()->GetPartOfQueryL( *(queryList[i]), 0,
+            queryList[i]->Count() - 1, *tempQuery );
+        mySearchQuery.AppendL( tempQuery );
+        CleanupStack::Pop( tempQuery ); // ownership transferred
+        }
+
+    // Sort the query items according to the length of each query 
+    TLinearOrder<CPsQuery> rule( CPcsAlgorithm2Utils::CompareLength );
+    mySearchQuery.Sort( rule );
+
+    // To hold the match results
+    RPointerArray<TDesC> tmpMatchSet;
+    CleanupResetAndDestroyPushL( tmpMatchSet );
+
+    TBool isMatch = ETrue;
+    TInt wordMatches = 0;
+
+    // Reset iWordMatches to zero 
+    ClearWordMatches();
+
+    // Check for each query atleast one data element matches
+    // Loop from the last query so that longest match is seen first
+    for (TInt queryIndex = mySearchQuery.Count() - 1; queryIndex >= 0; queryIndex-- )
+        {
+        TBool queryMatch = EFalse;
+        CPsQuery* tmpPsQuery = mySearchQuery[queryIndex];
+
+        TInt wordIndex = -1;
+        TLex lex( aData );
+
+        // First word
+        TPtrC tmpData = lex.NextToken();
+
+        // Search thru multiple words
+        while (tmpData.Length() != 0 )
+            {
+            wordIndex++;
+
+            // Compare the data against query
+            TBool matched = iAlgorithm->FindUtilECE()->MatchRefineL( tmpData,
+                *tmpPsQuery );
+
+            if ( matched )
+                {
+                // Perform two checks.
+                // 1. Ensure that the word is not matched against any previous query
+                // 2. If it is the first match to the query
+                TBool isWordMatch = IsWordMatch( 0, wordIndex );
+
+                // Check if the current word is not matched to any query
+                // For example, there is a contact named "abc a" and query is key2
+                // The key2 could match the first and second 'a'. So it is required to 
+                // check if the current word has aready been matched before.
+
+                if ( !isWordMatch )
+                    {
+                    // Check if no word is matched for this query till now
+                    if ( !queryMatch )
+                        {
+                        wordMatches++;
+                        queryMatch = ETrue;
+                        SetWordMap( 0, wordIndex );
+                        // Extract matched character sequence and fill in temp array
+                        TInt len = tmpPsQuery->Count();
+                        if ( iAlgorithm->FindUtilECE()->IsChineseWordIncluded(
+                            tmpData ) )
+                            {
+                            // A Chinese word could be matched by serveral keys
+                            // It is hard to know the matched query length. So set it to 1
+                            // as a trick result
+                            len = 1;
+                            }
+
+                        TPtrC seq = tmpData.Left( len );
+                        CPcsAlgorithm2Utils::AppendMatchToSeqL( tmpMatchSet,
+                            seq );
+                        }
+                    }
+                }
+
+            // Next word
+            tmpData.Set( lex.NextToken() );
+            }
+
+        // No data element matches the query. Ignore this result.
+        if ( queryMatch == EFalse )
+            {
+            isMatch = EFalse;
+            break;
+            }
+        }
+
+    // If match add the element to the result set
+    //  And before adding to the result set, check if there is atleast one match per query
+    if ( isMatch && wordMatches >= mySearchQuery.Count() )
+        {
+        const TInt matchCount = tmpMatchSet.Count();
+        for (TInt i = 0; i < matchCount; i++ )
+            {
+            aMatchedData.Append( *tmpMatchSet[i] );
+            aMatchedData.Append( KSpace );
+            }
+        aMatchedData.TrimRight();
+        }
+
+    CleanupStack::PopAndDestroy( &tmpMatchSet ); // ResetAndDestroy
+    CleanupStack::PopAndDestroy( &mySearchQuery ); // ResetAndDestroy
+    CleanupStack::PopAndDestroy( &queryList ); // ResetAndDestroy
+    }
+
+// ----------------------------------------------------------------------------
 // CPcsAlgorithm2MultiSearchHelper::FilterResultsMultiL
 // Subset search function. Refer the above function for more description.
 // ----------------------------------------------------------------------------

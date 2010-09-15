@@ -137,6 +137,10 @@ inline void CPbk2ContactEditorReadingField::ConstructL()
     iControl->CreateTextViewL();
     iCaptionedCtrl = iUiBuilder.LineControl(ControlId());
     iCaptionedCtrl->SetTakesEnterKey(ETrue);
+    
+    // Enable partial screen input
+    TInt flags = iControl->AknEditorFlags();
+    iControl->SetAknEditorFlags(flags | EAknEditorFlagEnablePartialScreen);
     }
 
 // --------------------------------------------------------------------------

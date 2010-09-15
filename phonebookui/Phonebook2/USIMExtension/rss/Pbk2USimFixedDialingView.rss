@@ -51,11 +51,11 @@ RESOURCE MENU_BAR r_psu2_fixed_dialing_menubar
             },
         MENU_TITLE
             {
-            menu_pane = r_psu2_fixed_dialing_copy_menupane;
+            menu_pane = R_AVKON_MENUPANE_MARK_MULTIPLE;
             },
         MENU_TITLE
             {
-            menu_pane = R_AVKON_MENUPANE_MARKABLE_LIST;
+            menu_pane = r_psu2_fixed_dialing_copy_menupane;
             },
         MENU_TITLE
             {

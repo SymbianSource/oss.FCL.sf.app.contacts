@@ -53,12 +53,13 @@ END
 
 APP_LAYER_SYSTEMINCLUDE
 SYSTEMINCLUDE   /epoc32/include/ecom
-SYSTEMINCLUDE   ../../../inc ../../../commands/inc  //phonebook2/inc internal headers
+SYSTEMINCLUDE   ../../../inc //phonebook2/inc internal headers
 
 USERINCLUDE     ../../inc //ccapplication/inc
 USERINCLUDE     ../../ccapp/ccapputil/inc
 USERINCLUDE     ../../../../../ccservices/cmsservices/cmsengine/inc
 USERINCLUDE     . ../inc
+USERINCLUDE	../../../commands/inc
 
 LIBRARY         euser.lib 
 LIBRARY         ecom.lib

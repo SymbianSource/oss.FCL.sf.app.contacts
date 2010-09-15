@@ -384,8 +384,8 @@ TInt CBCTestPbkDataAddEdit::TestDataSaveHandleCommandL( CStifItemParser& /*aItem
     
     _LIT( KPhoneNumber, "+358401234567" );
     TInt commandId = TPbkDataSaveCommandId( EPbkCmdDataSaveAddToExisting );
-    TBool added = dataSaveAppUi->HandleCommandL( commandId, *fields, KPhoneNumber );
-    ASSERT(added );
+    TRAPD( err, dataSaveAppUi->HandleCommandL( commandId, *fields, KPhoneNumber ) );
+    ASSERT(err == KErrNone);
     
     CleanupStack::PopAndDestroy( fields );
     CleanupStack::PopAndDestroy( dataSaveAppUi );

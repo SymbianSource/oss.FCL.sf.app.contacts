@@ -17,6 +17,7 @@
 
 #include <e32std.h>
 #include <s32mem.h>
+#include <spsettingsvoiputils.h>
 
 #include "ccacontactorserviceheaders.h"
 
@@ -122,9 +123,6 @@ void CCCAContactorServiceOperator::Execute(
         result = iParameter->iSelectedField;
         }
 
-    // Resolve special cases
-    TRAP(err, ResolveSpecialCasesL(*result));
-
     if (KErrNone != err)
         {
         CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::ExecuteL: ResolveSpecialCasesL: Leaves %d."), err);
@@ -153,7 +151,6 @@ TBool CCCAContactorServiceOperator::IsSelected()
 // --------------------------------------------------------------------------
 //
 CCCAContactorServiceOperator::CCCAContactorServiceOperator():
-    iServiceId((TUint32)KErrNotFound),
     isSelected(EFalse)
     {
     }
@@ -172,225 +169,6 @@ void CCCAContactorServiceOperator::ConstructL()
     }
 
 // --------------------------------------------------------------------------
-// CCCAContactorServiceOperator::ResolveSpecialCasesL
-// --------------------------------------------------------------------------
-//
-void CCCAContactorServiceOperator::ResolveSpecialCasesL(const TDesC& aFieldData)
-    {
-    CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::ResolveSpecialCasesL"));
-
-    /*
-     * Currently only VOIP ServiceId is needed to find out.
-     */
-    switch(iParameter->iCommTypeSelector)
-        {
-        case VPbkFieldTypeSelectorFactory::EVOIPCallSelector:
-            iServiceId = ResolveServiceIdL(aFieldData);
-            break;
-        }
-
-    CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::ResolveSpecialCasesL: Done."));
-    }
-
-// --------------------------------------------------------------------------
-// CCCAContactorServiceOperator::ResolveServiceIdL
-// --------------------------------------------------------------------------
-//
-TUint32 CCCAContactorServiceOperator::ResolveServiceIdL(const TDesC& aFieldData)
-    {
-    CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::ResolveServiceIdL"));
-
-    __ASSERT_ALWAYS (NULL != &aFieldData, User::Leave (KErrArgument));
-    __ASSERT_ALWAYS (0 < aFieldData.Size(), User::Leave (KErrArgument));
-
-    TUint32 ret = (TUint32)KErrNotFound;
-
-    //LOGIC:
-    /*
-     * 1. Find out is there xSP prefix
-     * 2. If there is, search service id
-     * 3. If not, find out how many services support msisdn
-     * 4. If only one, find use that service id
-     * 5. If more than one, do not use service id.
-     */
-
-    TPtrC result;
-
-    // 1. Find out is there xSP prefix
-    if (ExtractServiceL(aFieldData, result))
-        {
-        CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::ResolveServiceIdL: ExtractServiceL found."));
-
-        // 2. If there is, search service id
-        ret = SearchServiceIdL(result);
-        }
-    else
-        {
-        CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::ResolveServiceIdL: ExtractServiceL not found."));
-
-        // 3. If not, find out how many services support msisdn
-        ret = ResolveMSISDNAddressingSupportedL();
-        if ((TUint32)KErrNotFound != ret)
-            {
-            // 4. If only one, find use that service id
-            CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::ResolveServiceIdL: ResolveMSISDNAddressingSupportedL only one service."));
-
-            }
-        else
-            {
-            // 5. If more than one or none found, do not use service id.
-            CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::ResolveServiceIdL: ResolveMSISDNAddressingSupportedL more than one service."));
-
-            }
-        }
-
-    CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::ResolveServiceIdL: Done."));
-
-    return ret;
-    }
-
-// --------------------------------------------------------------------------
-// CCCAContactorServiceOperator::ExtractServiceL
-// --------------------------------------------------------------------------
-//
-TBool CCCAContactorServiceOperator::ExtractServiceL(
-    const TDesC& aFieldData, TPtrC& aXSPId)
-    {
-    CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::ExtractServiceL"));
-
-    TBool found = EFalse;
-
-    TInt pos = aFieldData.Find(KColon);
-    if (pos >= 0)
-        {
-        // ok input
-        aXSPId.Set(aFieldData.Left(pos));
-        found = ETrue;
-        }
-
-    CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::ExtractServiceL: Done."));
-
-    return found;
-    }
-
-// --------------------------------------------------------------------------
-// CCCAContactorServiceOperator::SearchServiceIdL
-// --------------------------------------------------------------------------
-//
-TUint32 CCCAContactorServiceOperator::SearchServiceIdL(const TDesC& aFieldData)
-    {
-    CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::SearchServiceIdL"));
-
-    TUint32 ret = (TUint32)KErrNotFound;
-    TInt err = KErrNone;
-    CDesCArrayFlat* nameArray = NULL;
-
-    RIdArray ids;
-    CleanupClosePushL(ids);
-
-    nameArray = new (ELeave) CDesCArrayFlat(2);
-    CleanupStack::PushL(nameArray);
-
-    CSPSettings* settings = CSPSettings::NewLC();
-
-    err = settings->FindServiceIdsL(ids);
-    User::LeaveIfError(err);
-    err = settings->FindServiceNamesL(ids, *nameArray);
-    User::LeaveIfError(err);
-
-    TInt count = nameArray->MdcaCount();
-    for (TInt i(0); i < count; i++)
-        {
-        // search the mathching service name
-        TPtrC p = nameArray->MdcaPoint(i);
-        if (!p.CompareF(aFieldData))
-            {
-            // Service found
-            ret = ids[i];
-
-            CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::SearchServiceIdL: Service found."));
-            break;
-            }
-        }
-    CleanupStack::PopAndDestroy(3); // ids, nameArray, settings
-
-    CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::SearchServiceIdL: Done."));
-
-    return ret;
-    }
-
-// --------------------------------------------------------------------------
-// CCCAContactorServiceOperator::ResolveMSISDNAddressingSupportedL
-// --------------------------------------------------------------------------
-//
-TUint32 CCCAContactorServiceOperator::ResolveMSISDNAddressingSupportedL()
-    {
-    CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::ResolveMSISDNAddressingSupportedL"));
-
-    /*
-     * LOGIC:
-     * -Find out services
-     * -If only 1 service, return the serviceid
-     * -If services are more than 1, then do not use serviceid.
-     */
-
-    TInt err = KErrNone;
-    TInt foundNo = 0;
-    TUint32 ret = (TUint32)KErrNotFound;
-
-    RIdArray ids;
-    CleanupClosePushL(ids);
-
-    CSPSettings* settings = CSPSettings::NewLC();
-
-    err = settings->FindServiceIdsL(ids);
-    User::LeaveIfError(err);
-
-    TInt count = ids.Count();
-    for (TInt i(0); i < count; i++)
-        {
-        CSPProperty* property = CSPProperty::NewLC();
-
-        // Find out property
-        err = settings->FindPropertyL(ids[i],
-            EPropertyServiceAttributeMask, *property);
-
-        // If service have property
-        if (KErrNone == err)
-            {
-            // read the value of mask property
-            TInt mask = 0;
-            err = property->GetValue(mask);
-            if (KErrNone == err)
-                {
-                if ((mask & ESupportsMSISDNAddressing) &&
-                    (mask & ESupportsInternetCall))
-                    {
-                    // Found one.
-                    ret = ids[i];
-                    foundNo++;
-
-                    }// if mask
-                }// if err
-            }// if err
-
-        CleanupStack::PopAndDestroy(property);
-        }// for
-
-    // If more than 1 service, do not use serviceid
-
-    if (1 < foundNo)
-    {
-        ret = (TUint32)KErrNotFound;
-    }
-
-    CleanupStack::PopAndDestroy(2); // ids, settings
-
-    CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::ResolveMSISDNAddressingSupportedL: Done."));
-    return ret;
-    }
-
-// --------------------------------------------------------------------------
 // CCCAContactorServiceOperator::LaunchCommunicationMethodL
 // --------------------------------------------------------------------------
 //
@@ -401,8 +179,12 @@ void CCCAContactorServiceOperator::LaunchCommunicationMethodL(
 
     __ASSERT_ALWAYS (NULL != &iParameter->iFullName, User::Leave (KErrArgument));
     
-    // If serviceid found, use it.
-    if ((TUint32)KErrNotFound != iServiceId)
+    // If there is a default service, use the service 
+    TUint serviceId = 0;
+    CSPSettingsVoIPUtils* spSettings = CSPSettingsVoIPUtils::NewLC();
+    
+    if ( ( iParameter->iCommTypeSelector == VPbkFieldTypeSelectorFactory::EVOIPCallSelector ) &&
+    		( !spSettings->GetPreferredService( serviceId ) ) )
         {
         CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::ExecuteL: ExecuteServiceL with serviceid"));
         CCAContactor::ExecuteServiceL(
@@ -410,7 +192,7 @@ void CCCAContactorServiceOperator::LaunchCommunicationMethodL(
             aFieldData,
             iParameter->iFullName,
             iParameter->iContactLinkArray,
-            iServiceId
+            serviceId
             );
         }
     else
@@ -421,7 +203,9 @@ void CCCAContactorServiceOperator::LaunchCommunicationMethodL(
             aFieldData,
             iParameter->iFullName,
             iParameter->iContactLinkArray);
-        }
+    	}
+    
+    CleanupStack::PopAndDestroy( spSettings );
 
     CCA_DP(KCCAContactorServiceLoggerFile, CCA_L("CCCAContactorServiceOperator::LaunchCommunicationMethodL: Done."));
     }

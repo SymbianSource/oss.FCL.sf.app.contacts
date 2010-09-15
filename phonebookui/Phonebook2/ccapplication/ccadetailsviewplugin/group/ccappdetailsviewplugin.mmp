@@ -83,5 +83,6 @@ LIBRARY         mnclientlib.lib
 LIBRARY         spdctrl.lib
 DEBUGLIBRARY    flogger.lib
 LIBRARY         ccacontactorservice.lib
+LIBRARY         featmgr.lib          // To check Unsync icon feature
 
 // End of File

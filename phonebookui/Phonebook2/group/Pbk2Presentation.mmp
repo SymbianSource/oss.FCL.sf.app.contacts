@@ -126,6 +126,14 @@ TARGETPATH  RESOURCE_FILES_DIR
 LANGUAGE_IDS
 END
 
+// UnSync icon resource file
+START RESOURCE ../rss/Pbk2PresentationChineseUnSync.rss
+DEPENDS vpbkeng.rsg
+HEADER
+TARGET Pbk2PresentationChineseUnSync
+TARGETPATH RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END
 
 // Include paths
 USERINCLUDE     ../Presentation/inc ../Presentation/rss

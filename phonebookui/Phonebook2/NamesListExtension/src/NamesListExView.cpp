@@ -809,6 +809,20 @@ void CPbk2NamesListExView::DynInitMenuPaneL
         case R_AVKON_MENUPANE_MARK_MULTIPLE:
             {
             TInt pos;
+            TInt markedContactCount = 0;
+            
+            CPbk2ContactViewListBox* listbox = 
+                static_cast<CPbk2ContactViewListBox*>(iControl->ComponentControl(0));
+            
+            if ( listbox )
+                {
+                markedContactCount = listbox->SelectionIndexes()->Count();
+                }
+            // dim the makr all item if all contacts are marked. 
+            if ( markedContactCount > 0 && markedContactCount == iControl->NumberOfContacts() )
+                {
+                aMenuPane->SetItemDimmed( EAknCmdMarkingModeMarkAll, ETrue );
+                }
             if ( aMenuPane->MenuItemExists( EAknCmdMarkingModeEnter, pos ) &&
                     iControl->NumberOfContacts() <= 0 )
                 {
@@ -818,7 +832,11 @@ void CPbk2NamesListExView::DynInitMenuPaneL
             }
         case R_PHONEBOOK2_NAMESLIST_BACKUP_MENU_PLACEHOLDER:
             {
-            if ( iControl->ContactsMarked() && iMarkingModeOn )
+            TInt pos = 0;
+            // Checks whether there are marked contacts and
+            // whether menu pane contains the menu item
+            if ( iMarkingModeOn && iControl->ContactsMarked() &&
+                    aMenuPane->MenuItemExists( EPmuCmdCascadingBackup, pos ) )
                 {
                 // This item is shown in option menu but not in popup menu
                 CEikMenuBar* menuBar = static_cast<CEikMenuBar*>( aMenuPane->Parent() );
@@ -835,8 +853,12 @@ void CPbk2NamesListExView::DynInitMenuPaneL
             }
         case R_PHONEBOOK2_NAMESLIST_SEND_URL_MENU:
             {
+            TInt pos = 0;
             DimItem( aMenuPane, EPbk2CmdGoToURL );
-            if ( iControl->ContactsMarked() && iMarkingModeOn )
+            // Checks whether there are marked contacts and
+            // whether menu pane contains the menu item
+            if ( iMarkingModeOn && iControl->ContactsMarked() &&
+                    aMenuPane->MenuItemExists( EPbk2CmdSend, pos ) )
                 {
                 aMenuPane->SetItemDimmed( EPbk2CmdSend, EFalse );
                 }
@@ -1614,7 +1636,7 @@ void CPbk2NamesListExView::MarkingModeStatusChanged( TBool aActivated )
 //
 TBool CPbk2NamesListExView::ExitMarkingMode() const
     {
-    return EFalse; 
+    return ETrue; 
     }
     
 //---------------------------------------------------------------------------

@@ -1441,6 +1441,8 @@ void CPbk2NamesListControl::FocusChanged( TDrawNow aDrawNow )
 void CPbk2NamesListControl::SizeChanged()
     {
     iCurrentState->SizeChanged();
+    // Reset the popup char flag so that the char will not be shown.
+    iListBox->ResetShowPopupChar();
     }
 
 // --------------------------------------------------------------------------
@@ -2427,7 +2429,9 @@ void CPbk2NamesListControl::HandleContactAddedToBaseView
             {
             if( iCurrentState->NamesListState() == EStateEmpty )
                 {
-                SelectAndChangeReadyStateL();
+                // Trap the function because it may leave.
+                TRAPD( res, SelectAndChangeReadyStateL() );
+                HandleError( res );
                 }
             }
         else

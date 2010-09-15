@@ -69,22 +69,12 @@ void CPbapVCardExporterUtil::ConstructL()
 	CVersitTlsData::VersitTlsDataL();		
 	User::LeaveIfError(iTzClient.Connect());
 	
-	// Read the amount of digits to be used in contact matching
-	// The key is properly owned by PhoneApp, however we cannot include
-	// that header file from here, so a temporary fix has been done to 
-	// use locally defined versions.  If there is a problem here it is 
-	// likely because these values have gone out of sync.
-	CRepository* repository = CRepository::NewLC(KCRUidTelConfiguration);
-    if ( repository->Get(KTelMatchDigits, iMatchDigitCount) == KErrNone )
-        {
-        // Min is 7
-        iMatchDigitCount = Max(iMatchDigitCount, KDefaultGsmNumberMatchLength);
-        }
-    else
-        {
-        iMatchDigitCount = KDefaultGsmNumberMatchLength;
-        }
-	CleanupStack::PopAndDestroy(repository);
+	TRAPD(err, GetMatchDigitCountL())
+	if (err != KErrNone)
+		{
+		iMatchDigitCount = KDefaultGsmNumberMatchLength;
+		}
+
 	}
 
 CPbapVCardExporterUtil::~CPbapVCardExporterUtil()
@@ -93,7 +83,21 @@ CPbapVCardExporterUtil::~CPbapVCardExporterUtil()
 	iTzClient.Close();
 	CVersitTlsData::CloseVersitTlsData();
 	}
-	
+
+void CPbapVCardExporterUtil::GetMatchDigitCountL()
+	{
+	// Read the amount of digits to be used in contact matching
+	// The key is properly owned by PhoneApp, however we cannot include
+	// that header file from here, so a temporary fix has been done to 
+	// use locally defined versions.  If there is a problem here it is 
+	// likely because these values have gone out of sync.
+	CRepository* repository = CRepository::NewLC(KCRUidTelConfiguration);
+	User::LeaveIfError(repository->Get(KTelMatchDigits, iMatchDigitCount));
+	// The rest of the system has a miniumum of 7 for the number matching, so we do the same here
+	iMatchDigitCount = Max(iMatchDigitCount, KDefaultGsmNumberMatchLength);
+	CleanupStack::PopAndDestroy(repository);
+	}
+
 /**
  Export a contact as vCard.
 

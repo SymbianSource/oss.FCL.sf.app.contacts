@@ -29,6 +29,7 @@ S60_APP_CAPTION(Phonebook2)
 data=DATAZ_\RESOURCE_FILES_DIR\Pbk2Presentation.rsc     RESOURCE_FILES_DIR\Pbk2Presentation.rsc
 data=DATAZ_\RESOURCE_FILES_DIR\Pbk2PresentationChinese.rsc RESOURCE_FILES_DIR\Pbk2PresentationChinese.rsc
 data=DATAZ_\RESOURCE_FILES_DIR\Pbk2PresentationJapanese.rsc RESOURCE_FILES_DIR\Pbk2PresentationJapanese.rsc
+data=DATAZ_\RESOURCE_FILES_DIR\Pbk2PresentationChineseUnSync.rsc RESOURCE_FILES_DIR\Pbk2PresentationChineseUnSync.rsc
 
 data=DATAZ_\RESOURCE_FILES_DIR\Pbk2UIControls.rsc       RESOURCE_FILES_DIR\Pbk2UIControls.rsc
 data=DATAZ_\RESOURCE_FILES_DIR\Pbk2Commands.rsc         RESOURCE_FILES_DIR\Pbk2Commands.rsc
