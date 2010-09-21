@@ -24,7 +24,7 @@
 
 class HbMainWindow;
 class XQAiwRequest;
-class XqKeyCapture;
+class XQKeyCapture;
 
 class QTPBK_EXPORT CntKeyGrabber : public QObject
 {
@@ -41,7 +41,7 @@ protected:
 private:
     HbMainWindow    *mMainWindow;
     XQAiwRequest    *mRequest;
-    XqKeyCapture    *mKeyCapture;
+    XQKeyCapture    *mKeyCapture;
 
 };
 

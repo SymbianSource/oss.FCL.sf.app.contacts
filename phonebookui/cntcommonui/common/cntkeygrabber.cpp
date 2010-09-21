@@ -40,7 +40,7 @@ CntKeyGrabber::CntKeyGrabber(HbMainWindow *window, QObject *parent) :
     mKeyCapture(NULL)
 {
     mMainWindow->installEventFilter(this);
-    mKeyCapture = new XqKeyCapture();
+    mKeyCapture = new XQKeyCapture();
 }
 
 /*!
