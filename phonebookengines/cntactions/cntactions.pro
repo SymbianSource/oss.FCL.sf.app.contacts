@@ -56,3 +56,4 @@ symbian:
     symbianplugin.path = /resource/qt/plugins/contacts
     DEPLOYMENT += symbianplugin
 }
+symbian:MMP_RULES += SMPSAFE

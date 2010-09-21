@@ -19,10 +19,12 @@
 #include <hbapplication.h>
 #include <qtcontacts.h>
 #include <qcontactmanager.h>
+#include <QTimer>
+
 #include <cntdebug.h>
 #include "cntcache.h"
+#include "cntnamefetcher.h"
 #include "cntcache_p.h"
-#include "cntinfoprovider.h"
 
 // set the singleton instance pointer to NULL
 CntCache* CntCache::mInstance = NULL;
@@ -32,7 +34,7 @@ static const int CacheOrderStartValue = 1;
 // for avoiding wrap around with cache orders
 static const int MaxCacheOrderValue = 10000000;
 // number of items to read quickly when a new instance is requested or cache is cleared
-static const int ItemsToReadUrgently = 12;
+static const int ItemsToReadUrgently = 13;
 // number of items to read ahead into cache; this number is for one direction
 static const int ItemsToCacheAhead = 24;
 // cache size for info items (name, text, icon1name, icon2name)
@@ -46,62 +48,12 @@ static const int IconsInCntContactInfo = 2;
 static const QString EmptyTextField = " ";
 
 /*!
-    Creates the CntCache singleton instance.
- */
-CntCache::CntCache()
-    : mContactManager(new QContactManager()),
-      mWorker(new CntCacheThread()),
-      mNextInfoCacheOrder(CacheOrderStartValue),
-      mNextIconCacheOrder(CacheOrderStartValue),
-      mEmittedContactId(-1),
-      mUrgentContacts(0)
-{
-    CNT_ENTRY
-
-    // listen to worker updates
-    connect(mWorker, SIGNAL(infoFieldUpdated(int, const ContactInfoField&, const QString&)),
-            this, SLOT(onNewInfo(int, const ContactInfoField&, const QString&)));
-    connect(mWorker, SIGNAL(iconUpdated(const QString&, const HbIcon&)),
-            this, SLOT(onNewIcon(const QString&, const HbIcon&)));
-    connect(mWorker, SIGNAL(infoCancelled(int)), this, SLOT(onInfoCancelled(int)));
-    connect(mWorker, SIGNAL(iconCancelled(const QString&)), this, SLOT(onIconCancelled(const QString&)));
-    connect(mWorker, SIGNAL(allJobsDone()), this, SLOT(scheduleOneReadAheadItem()));
-
-    // listen to the database for changes to contacts
-    connect(mContactManager, SIGNAL(contactsChanged(const QList<QContactLocalId>&)), this, SLOT(updateContactsInCache(const QList<QContactLocalId>&)));
-    connect(mContactManager, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), this, SLOT(removeContactsFromCache(const QList<QContactLocalId>&)));
-
-    // shutdown only when the whole application shuts down
-    connect(HbApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(onShutdown()));
-
-    CNT_EXIT
-}
-
-/*!
-    Destructs the CntCache singleton instance.
- */
-CntCache::~CntCache()
-{
-    CNT_ENTRY
-
-    delete mWorker;
-    delete mContactManager;
-    
-    qDeleteAll(mInfoCache);
-    mInfoCache.clear();
-    qDeleteAll(mIconCache);
-    mIconCache.clear();
-
-    CNT_EXIT
-}
-
-/*!
     Provides a pointer to the CntCache singleton instance.
  */
-CntCache* CntCache::instance()
+CntCache* CntCache::instance(QContactManager *manager)
 {
-    if (mInstance == NULL) {
-        mInstance = new CntCache();
+    if (!mInstance) {
+        mInstance = new CntCache(manager);
     }
 
     // whenever a client requests an instance the client will want to get all info
@@ -146,9 +98,8 @@ CntContactInfo CntCache::fetchContactInfo(int row, const QList<QContactLocalId>&
         // 2) update read ahead cache to contain all IDs of all items near this item
         if (mUrgentContacts > 0) {
             --mUrgentContacts;
-        }
-        else {
-            mWorker->postponeJobs();
+        } else {
+            mWorker->postponeJobs(150);
         }
         updateReadAheadCache(row, idList);
     }
@@ -172,8 +123,7 @@ CntContactInfo CntCache::fetchContactInfo(int row, const QList<QContactLocalId>&
                         // also reschedule it
                         mWorker->scheduleIconJob(iconName, row);
                     }
-                }
-                else {
+                } else {
                     // needed icon is not in cache, so schedule it for retrieval
                     CntIconCacheItem* iconItem = createIconCacheItem(iconName);
                     iconItem->contactIds.insert(contactId);
@@ -182,20 +132,17 @@ CntContactInfo CntCache::fetchContactInfo(int row, const QList<QContactLocalId>&
             }
         }
 
+        // set return text
+        text = infoItem->text;
+
         // update cache order
         infoItem->cacheOrder = mNextInfoCacheOrder++;
         infoItem->latestRow = row;
-
-        name = infoItem->name;
-        text = infoItem->text;
-    }
-    else {
-        // the item is not in cache, so fetch the name and schedule the rest
-        // of the info for retrieval
-        if (fetchContactName(contactId, name)) {
+    } else {
+        // the contact info is not in cache, schedule it for retrieval
+        if (contactExists(contactId)) {
             // contact found, so add new entry to cache
             CntInfoCacheItem* item = createInfoCacheItem(contactId);
-            item->name = name;
             item->text = text;
             item->latestRow = row;
 
@@ -204,24 +151,188 @@ CntContactInfo CntCache::fetchContactInfo(int row, const QList<QContactLocalId>&
         }
     }
 
+    name = contactName(contactId);
     CNT_EXIT_ARGS("name:" << name << "sec:" << text)
 
     return CntContactInfo(contactId, name, text, icons[0], icons[1]);
 }
 
 /*! 
-    Clears the cache of names (not icons). This function can be useful
-    for example when the format of contact names changes.
+    Creates a list of contact ids sorted according the corresponding contact names.
+
+    \param idFilter the IDs to be returned; if NULL, all contact IDs are returned
+    \return the list of ids, sorted according the contact name
  */
-void CntCache::clearCache()
+QList<QContactLocalId> CntCache::sortIdsByName(const QSet<QContactLocalId>* idFilter) const
 {
     CNT_ENTRY
 
-    // clear info cache
+    QList<QContactLocalId> sortedIds;
+    
+    // allocate memory in advance to avoid repeated reallocation during population
+    // an extra 16 items are allocated to leave room for a few more contacts
+    // before reallocation is needed
+    if (!idFilter) {
+        sortedIds.reserve(mSortedNames.count() + 16);
+    } else {
+        sortedIds.reserve(idFilter->count() + 16);
+    }
+
+    // the entries in mSortedNames are already sorted, so just pick
+    // out the ids from that list in the order that they appear
+    if (!idFilter) {
+        foreach (CntNameCacheItem* item, mSortedNames) {
+            sortedIds.append(item->contactId());
+        }
+    } else {
+        foreach (CntNameCacheItem* item, mSortedNames) {
+            if (idFilter->contains(item->contactId())) {
+                sortedIds.append(item->contactId());
+            }
+        }
+    }
+
+    CNT_EXIT
+
+    return sortedIds;
+}
+
+/*!
+    Overloaded version of the function for string based searching of contact names.
+    Currently for multi part names only space and dash variations are used for filtering,
+    e.g. "Axx Bxx" or "Axx-Bxx" are the only possible matches along with the original string. 
+    
+    \param searchList list of strings which are used for search
+    \return the list of ids, sorted according the contact name
+ */
+QList<QContactLocalId> CntCache::sortIdsByName(const QStringList searchList) const
+{
+    CNT_ENTRY
+    
+    QList<QContactLocalId> sortedIds;
+    int iterNames = 0;
+    int iterList = 0;
+    QString firstName = 0;
+    QString lastName = 0;
+    QString tempString = 0;
+    QString tempDash = 0;
+    QString tempSpace = 0;
+    int matchesFound = 0;
+    const QChar dash = '-';
+    const QChar space = ' ';
+    QStringList searchVariations;
+    
+    for (iterList = 0; iterList < searchList.size(); iterList++)
+    {
+        tempString = searchList.at(iterList);
+        tempDash = tempString;
+        tempSpace = tempString;
+        tempDash.insert(0, dash);
+        tempSpace.insert(0, space);
+        
+        searchVariations.append(tempString);
+        searchVariations.append(tempDash);
+        searchVariations.append(tempSpace);
+    }
+    
+    for (iterNames = 0; iterNames < mSortedNames.size(); iterNames++)
+    {
+        matchesFound = 0;
+        firstName = (mSortedNames.at(iterNames))->firstName();
+        lastName = (mSortedNames.at(iterNames))->lastName();
+        for (iterList = 0; iterList < searchVariations.size(); iterList += 3)
+        {
+            // if the current name doesn't contain any of the possible variations then it can be skipped
+            if ( !( firstName.startsWith(searchVariations.at(iterList), Qt::CaseInsensitive) ||
+                    lastName.startsWith(searchVariations.at(iterList), Qt::CaseInsensitive) ||
+                    firstName.contains(searchVariations.at(iterList+1), Qt::CaseInsensitive) ||
+                    lastName.contains(searchVariations.at(iterList+1), Qt::CaseInsensitive) ||
+                    firstName.contains(searchVariations.at(iterList+2), Qt::CaseInsensitive) ||
+                    lastName.contains(searchVariations.at(iterList+2), Qt::CaseInsensitive) ) )
+            {
+                break;
+            }
+        }
+        if (iterList == searchVariations.size())
+        {
+            sortedIds.append(mSortedNames.at(iterNames)->contactId());
+        }
+    }
+    
+    CNT_EXIT
+
+    return sortedIds;
+}
+
+/*!
+    Creates the CntCache singleton instance.
+ */
+CntCache::CntCache(QContactManager *manager)
+    : mContactManager(manager),
+      mWorker(new CntCacheThread()),
+      mNameFetcher(new CntNameFetcher()),
+      mNextInfoCacheOrder(CacheOrderStartValue),
+      mNextIconCacheOrder(CacheOrderStartValue),
+      mEmittedContactId(-1),
+      mUrgentContacts(0),
+      mHasModifiedNames(false),
+      mAllNamesFetchStarted(false)
+{
+    CNT_ENTRY
+
+    // listen to name fetcher
+    connect(mNameFetcher, SIGNAL(nameFormatChanged(CntNameOrder)), this, SLOT(reformatNames(CntNameOrder)));
+    connect(mNameFetcher, SIGNAL(databaseAccessComplete()), mWorker, SLOT(resumeJobs()));
+    connect(mNameFetcher, SIGNAL(namesAvailable(QList<CntNameCacheItem *>)), this, SLOT(setNameList(QList<CntNameCacheItem *>)));
+
+    // listen to info fetcher
+    connect(mWorker, SIGNAL(infoFieldUpdated(int, const ContactInfoField&, const QString&)),
+            this, SLOT(onNewInfo(int, const ContactInfoField&, const QString&)));
+    connect(mWorker, SIGNAL(infoCancelled(int)), this, SLOT(onInfoCancelled(int)));
+
+    // listen to icon fetcher
+    connect(mWorker, SIGNAL(iconUpdated(const QString&, const HbIcon&)),
+            this, SLOT(onNewIcon(const QString&, const HbIcon&)));
+    connect(mWorker, SIGNAL(iconCancelled(const QString&)), this, SLOT(onIconCancelled(const QString&)));
+    connect(mWorker, SIGNAL(allJobsDone()), this, SLOT(scheduleOneReadAheadItem()));
+
+    // listen to contact manager
+    connect(mContactManager, SIGNAL(contactsChanged(const QList<QContactLocalId>&)), this, SLOT(updateContacts(const QList<QContactLocalId>&)));
+    connect(mContactManager, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), this, SLOT(removeContacts(const QList<QContactLocalId>&)));
+    connect(mContactManager, SIGNAL(contactsAdded(const QList<QContactLocalId>&)), this, SLOT(addContacts(const QList<QContactLocalId>&)));
+
+    // listen to application -- shut down cache only when the whole application quits
+    connect(HbApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(onShutdown()));
+
+    // load all names to RAM
+    loadNames();
+
+    CNT_EXIT
+}
+
+/*!
+    Destructs the CntCache singleton instance.
+ */
+CntCache::~CntCache()
+{
+    CNT_ENTRY
+
+    if (mHasModifiedNames) {
+        mNameFetcher->writeNamesToCache(mSortedNames);
+    }
+
+    delete mWorker;
+    delete mNameFetcher;
+    
     qDeleteAll(mInfoCache);
     mInfoCache.clear();
-    mNextInfoCacheOrder = CacheOrderStartValue;
-    mUrgentContacts = ItemsToReadUrgently;
+
+    qDeleteAll(mIconCache);
+    mIconCache.clear();
+
+    qDeleteAll(mNameCache);
+    mNameCache.clear();
+    mSortedNames.clear();
 
     CNT_EXIT
 }
@@ -373,84 +484,58 @@ void CntCache::onIconCancelled(const QString& iconName)
     CNT_EXIT
 }
 
-/*! 
-    Update contacts in cache.
-    
-    /param contactIds ids of the contact that will be updated
+/*!
+    Fetch the names of all contacts.
  */
-void CntCache::updateContactsInCache(const QList<QContactLocalId>& contactIds)
+void CntCache::loadNames()
+{
+    CNT_ENTRY
+    
+    // read names from file cache
+    mNameFetcher->readNamesFromCache(mSortedNames);
+
+    // insert the names into the id-to-name map
+    foreach (CntNameCacheItem* item, mSortedNames) {
+        mNameCache.insert(item->contactId(), item);
+    }
+
+    // if there are no names in file cache, start the asynch
+    // read of all names immediately (normally it is done
+    // after secondary info has been read)
+    if (mSortedNames.count() == 0) {
+        mWorker->postponeJobs();
+        mAllNamesFetchStarted = true;
+        mNameFetcher->readAllNamesAsynch();
+    }
+
+    CNT_EXIT
+}
+
+/*!
+    Checks whether a contact exists.
+ */
+bool CntCache::contactExists(QContactLocalId contactId) const
+{
+    return mNameCache.contains(contactId);
+}
+
+/*!
+    Fetch the name of one contact.
+ */
+QString CntCache::contactName(QContactLocalId contactId) const
 {
     CNT_ENTRY
 
     QString name;
 
-    foreach (QContactLocalId contactId, contactIds) {
-        if (mInfoCache.contains(contactId) && fetchContactName(contactId, name)) {
-            CntInfoCacheItem* infoItem = mInfoCache.value(contactId);
-            infoItem->name = name;
-            mWorker->scheduleInfoJob(contactId, infoItem->latestRow);
-        }
-    }
-
-    foreach (QContactLocalId contactId, contactIds) {
-        emitContactInfoUpdated(contactId);
+    QHash<QContactLocalId, CntNameCacheItem*>::const_iterator i = mNameCache.find(contactId);
+    if (i != mNameCache.end()) {
+        name = i.value()->name();
     }
 
     CNT_EXIT
-}
 
-/*! 
-    Removes contacts from cache.
-    
-    /param contactIds ids of the contact that will be removed
- */
-void CntCache::removeContactsFromCache(const QList<QContactLocalId>& contactIds)
-{
-    CNT_ENTRY
-
-    foreach (QContactLocalId contactId, contactIds) {
-        if (mInfoCache.contains(contactId)) {
-            CntInfoCacheItem* item = mInfoCache.take(contactId);
-            delete item;
-        }
-    }
-
-    foreach (QContactLocalId contactId, contactIds) {
-        emitContactInfoUpdated(contactId);
-    }
-
-    CNT_EXIT
-}
-
-/*! 
-    Uses an optimized function to fetch the name of a contact from
-    the database.
-
-    /param contactId the id of the contact to fetch
-    /param contactName the name will be stored here if the function is successful
-    /return true if the name was fetched successfully
- */
-bool CntCache::fetchContactName(int contactId, QString& contactName)
-{
-    CNT_ENTRY_ARGS( contactId )
-
-    bool foundContact = false;
-
-    QContactFetchHint nameOnlyFetchHint;
-    /*QStringList details;
-    details << QContactDisplayLabel::DefinitionName;
-    nameOnlyFetchHint.setDetailDefinitionsHint(details);*/
-    nameOnlyFetchHint.setOptimizationHints(QContactFetchHint::NoRelationships);
-    QContact contact = mContactManager->contact(contactId, nameOnlyFetchHint);
-    
-    if (mContactManager->error() == QContactManager::NoError) {
-        contactName = contact.displayLabel();
-        foundContact = true;
-    }
-    
-    CNT_EXIT_ARGS( foundContact )
-    
-    return foundContact;
+    return name;
 }
 
 /*! 
@@ -509,20 +594,26 @@ void CntCache::scheduleOneReadAheadItem()
 
     QString name;
 
+    // fetch all names from the database if it hasn't been done yet
+    if (!mAllNamesFetchStarted) {
+        mWorker->postponeJobs();
+        mAllNamesFetchStarted = true;
+        mNameFetcher->readAllNamesAsynch();
+    }
+
     // pick the first contact from the read ahead cache and schedule it
     while (mReadAheadCache.count() > 0) {
         int contactId = mReadAheadCache.first().first;
         int contactRow = mReadAheadCache.takeFirst().second;
         if (!mInfoCache.contains(contactId)) {
             // contact is not in cache, so schedule it for retreival
-            if (fetchContactName(contactId, name)) {
+            if (contactExists(contactId)) {
                 // contact found, so add new entry to cache
                 CntInfoCacheItem* item = createInfoCacheItem(contactId);
-                item->name = name;
                 item->text = EmptyTextField;
                 item->latestRow = contactRow;
     
-                // schedule the info for retrieval
+                // schedule the info
                 mWorker->scheduleInfoJob(contactId, contactRow);
                 break;
             }
@@ -650,14 +741,188 @@ void CntCache::onShutdown()
 	CNT_ENTRY
 
     mInstance = NULL;
+
+    disconnect(mContactManager, SIGNAL(contactsChanged(const QList<QContactLocalId>&)), this, SLOT(updateContacts(const QList<QContactLocalId>&)));
+    disconnect(mContactManager, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), this, SLOT(removeContacts(const QList<QContactLocalId>&)));
+    disconnect(mContactManager, SIGNAL(contactsAdded(const QList<QContactLocalId>&)), this, SLOT(addContacts(const QList<QContactLocalId>&)));
+
     deleteLater();
 
 	CNT_EXIT
 }
 
+/*! 
+    Updates the names in cache according to newFormat.
+
+    This slot is called when name fetcher signals that the format of
+    names has been changed.
+ */
+void CntCache::reformatNames(CntNameOrder newFormat)
+{
+    foreach (CntNameCacheItem* item, mSortedNames) {
+        item->setNameFormat(newFormat);
+    }
+
+    mNameFetcher->sortNames(mSortedNames);
+
+    mNameFetcher->writeNamesToCache(mSortedNames);
+    mHasModifiedNames = false;
+
+    emit dataChanged();
+}
 
 /*! 
-    Creates an empty object.
+    Replaces the names in cache with the ones in this list.
+    
+    \param newSortedNames the sorted list with names; this list will be cleared and
+                          ownership will be taken of the items in the list
+ */
+void CntCache::setNameList(QList<CntNameCacheItem *> newSortedNames)
+{
+    CNT_ENTRY
+    
+    bool hasModifiedContacts = false;
+    int count = newSortedNames.count();
+
+    // check if there have been any changes
+    if (mSortedNames.count() != count) {
+        hasModifiedContacts = true;
+    } else {
+        for (int i = 0; i < count; ++i) {
+            CntNameCacheItem *oldItem = mSortedNames.at(i);
+            CntNameCacheItem *newItem = newSortedNames.at(i);
+            if (oldItem->contactId() != newItem->contactId() || oldItem->name() != newItem->name()) {
+                hasModifiedContacts = true;
+                break;
+            }
+        }
+    }
+
+    // the list has changed, so use the new list instead
+    if (hasModifiedContacts) {
+        qDeleteAll(mSortedNames);
+        mNameCache.clear();
+        mSortedNames.clear();
+        
+        foreach (CntNameCacheItem* item, newSortedNames) {
+            mSortedNames.append(item);
+            mNameCache.insert(item->contactId(), item);
+        }
+        
+        // write names to file cache
+        mNameFetcher->writeNamesToCache(mSortedNames);
+        
+        // notify clients that the list of names has changed
+        emit dataChanged();
+    } else {
+        qDeleteAll(newSortedNames);
+    }
+    
+    CNT_EXIT
+}
+
+/*! 
+    Updates data in response to some contacts having changed and
+    then notifies observers that these contacts have changed.
+ */
+void CntCache::updateContacts(const QList<QContactLocalId> &changedContacts)
+{
+    QString name;
+    QList<CntNameCacheItem*> items;
+
+    // reloads the names of the changed contacts and updates the
+    // list of sorted names accordingly
+    foreach (QContactLocalId contactId, changedContacts) {
+        CntNameCacheItem *newItem = mNameFetcher->readOneName(contactId);
+        if (newItem != NULL) {
+            CntNameCacheItem *oldItem = mNameCache.value(contactId);
+            if (oldItem->name() != newItem->name()) {
+                QList<CntNameCacheItem*>::iterator oldPos = qLowerBound(mSortedNames.begin(), mSortedNames.end(), oldItem, CntNameFetcher::compareNames);
+                while (*oldPos != oldItem && oldPos != mSortedNames.end()) {
+                     ++oldPos;
+                }
+                QList<CntNameCacheItem*>::iterator newPos = qUpperBound(mSortedNames.begin(), mSortedNames.end(), newItem, CntNameFetcher::compareNames);
+                if (oldPos < newPos) {
+                    mSortedNames.move(oldPos - mSortedNames.begin(), (newPos - mSortedNames.begin()) - 1);
+                } else {
+                    mSortedNames.move(oldPos - mSortedNames.begin(), newPos - mSortedNames.begin());
+                }
+                *oldItem = *newItem;
+                mHasModifiedNames = true;
+            }
+        }
+    }
+
+    // if any of the changed items have cached info, the info
+    // is scheduled for refreshing
+    foreach (QContactLocalId contactId, changedContacts) {
+        if (mInfoCache.contains(contactId)) {
+            CntInfoCacheItem* infoItem = mInfoCache.value(contactId);
+            mWorker->scheduleInfoJob(contactId, infoItem->latestRow);
+        }
+    }
+
+    // inform clients about these changes
+    emit contactsChanged(changedContacts);
+}
+
+/*! 
+    Updates data in response to some contacts having been removed
+    and then notifies observers that the contacts have been removed.
+ */
+void CntCache::removeContacts(const QList<QContactLocalId> &removedContacts)
+{
+    // removed the deleted contacts from the name cache and from the
+    // list of sorted names
+    foreach (QContactLocalId contactId, removedContacts) {
+        CntNameCacheItem *item = mNameCache.take(contactId);
+        if (item) {
+            QList<CntNameCacheItem*>::iterator pos = qLowerBound(mSortedNames.begin(), mSortedNames.end(), item, CntNameFetcher::compareNames);
+            while (*pos != item && pos != mSortedNames.end()) {
+                ++pos;
+            }
+            mSortedNames.erase(pos);
+            delete item;
+            mHasModifiedNames = true;
+        }
+    }
+
+    // info for these deleted items should be removed from cache
+    foreach (QContactLocalId contactId, removedContacts) {
+        if (mInfoCache.contains(contactId)) {
+            CntInfoCacheItem* item = mInfoCache.take(contactId);
+            delete item;
+        }
+    }
+
+    // inform clients about these deleted contacts
+    emit contactsRemoved(removedContacts);
+}
+
+/*! 
+    Updates data in response to some contacts having been added
+    and then notifies observers that the contacts have been added.
+ */
+void CntCache::addContacts(const QList<QContactLocalId> &addedContacts)
+{
+    // add the new contacts to the name cache and to the
+    // list of sorted names
+    foreach (QContactLocalId contactId, addedContacts) {
+        CntNameCacheItem *item = mNameFetcher->readOneName(contactId);
+        if (item != NULL) {
+            mNameCache.insert(contactId, item);
+            QList<CntNameCacheItem*>::iterator i = qUpperBound(mSortedNames.begin(), mSortedNames.end(), item, CntNameFetcher::compareNames);
+            mSortedNames.insert(i, item);
+            mHasModifiedNames = true;
+        }
+    }
+
+    // inform clients about the new contacts
+    emit contactsAdded(addedContacts);
+}
+
+/*! 
+    Creates an empty CntContactInfo object.
  */
 CntContactInfo::CntContactInfo()
     : d(new CntContactInfoData())
@@ -665,7 +930,7 @@ CntContactInfo::CntContactInfo()
 }
 
 /*! 
-    Creates an object with all info fields set.
+    Creates a CntContactInfo object with all info fields set.
  */
 CntContactInfo::CntContactInfo(int id, const QString& name, const QString& text, const HbIcon& icon1, const HbIcon& icon2)
     : d(new CntContactInfoData())
@@ -740,4 +1005,3 @@ HbIcon CntContactInfo::icon2() const
 {
     return d->icon2;
 }
-

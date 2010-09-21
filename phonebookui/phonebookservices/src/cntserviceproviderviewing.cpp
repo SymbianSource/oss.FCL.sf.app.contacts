@@ -47,7 +47,6 @@ void CntServiceProviderViewing::openContactCard( int aContactId )
 {
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.launchContactCard( aContactId, *this );
     CNT_EXIT
 }
@@ -56,7 +55,6 @@ void CntServiceProviderViewing::openTemporaryContactCard( QString aFieldName, QS
 {
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.launchTemporaryContactCard( aFieldName, aFieldValue, *this );
     CNT_EXIT
 }
@@ -66,7 +64,6 @@ void CntServiceProviderViewing::openGroup( int aContactId )
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
     mAllowExit = false;
-    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.launchGroupMemberView( aContactId, *this );
     CNT_EXIT
 }

@@ -21,8 +21,8 @@
    <component id="cnthistorymodel" filter="s60" name="Contacts History Model" introduced="^4">
     <!--<unit bldFile="phonebookui/cnthistorymodel" qt:proFile="cnthistorymodel.pro"/> -->
    </component>
-   <component id="pbkcommonui" filter="s60" name="Phonebook Common UI" introduced="^4">
-    <!--<unit bldFile="phonebookui/pbkcommonui" qt:proFile="pbkcommonui.pro"/> -->
+   <component id="cntcommonui" filter="s60" name="Phonebook Common UI" introduced="^4">
+    <!--<unit bldFile="phonebookui/cntcommonui" qt:proFile="cntcommonui.pro"/> -->
    </component>
    <component id="phonebookapp" filter="s60" name="Phonebook Application" introduced="^4">
     <!--<unit bldFile="phonebookui/phonebookapp" qt:proFile="phonebookapp.pro"/> -->
@@ -33,11 +33,6 @@
    <component id="phonebookui_build" filter="s60" name="Phonebook UI Build" introduced="^4">
     <!-- break up into components -->
     <unit bldFile="phonebookui" qt:proFile="phonebookui.pro"/>
-   </component>
-  </collection>
-  <collection id="phonebookengines_old" name="Old Phonebook Engines" level="engine">
-   <component id="contactsmodel" name="Contacts Model" introduced="ER5" purpose="optional">
-        <unit version="2" bldFile="phonebookengines_old/contactsmodel/groupsql" mrp="phonebookengines_old/contactsmodel/groupsql/app-engines_cntmodel.mrp"/>
    </component>
   </collection>
   <collection id="phonebookengines" name="Phonebook Engines" level="engine">
@@ -57,9 +52,6 @@
    <component id="cntactions" filter="s60" name="Contacts Actions" introduced="^4">
     <unit bldFile="phonebookengines/cntactions" qt:proFile="cntactions.pro"/>
    </component>
-   <component id="cntmaptileservice" filter="s60" name="Contacts Map Tile Service" introduced="^4">
-    <unit bldFile="phonebookengines/cntmaptileservice" qt:proFile="cntmaptileservice.pro"/>
-   </component>
    <component id="cntsimutility" filter="s60" name="Contacts SIM Utility" introduced="^4">
     <unit bldFile="phonebookengines/cntsimutility" qt:proFile="cntsimutility.pro"/>
    </component>
@@ -68,7 +60,7 @@
    </component>
   </collection>
   <collection id="pimprotocols" name="PIM Protocols" level="services">
-   <component id="phonebooksync" name="Phonebook Sync" purpose="optional" class="plugin">
+   <component id="phonebooksync" name="Phonebook Sync" purpose="optional" class="plugin" filter="s60">
     <unit bldFile="pimprotocols/phonebooksync/group" mrp="pimprotocols/phonebooksync/group/telephony_phbksync.mrp"/>
    </component>
    <component id="pbap" filter="s60" name="Bluetooth PBAP" introduced="9.2" purpose="optional">

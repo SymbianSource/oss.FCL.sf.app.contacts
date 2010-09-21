@@ -30,10 +30,8 @@ EXPORT_C CPresenceCacheBuddyStore* CPresenceCacheBuddyStore::NewLC(
                                     CPresenceCacheServiceStore* aServiceStore,
                                     const TDesC& aIdentity)
     {
-    CPresenceCacheBuddyStore* self = new( ELeave ) CPresenceCacheBuddyStore(
-                                            aServiceStore);
+    CPresenceCacheBuddyStore* self =CPresenceCacheBuddyStore::NewL(aServiceStore,aIdentity);
     CleanupStack::PushL( self );
-    self->ConstructL(aIdentity);
     return self;
     }
 
@@ -45,8 +43,11 @@ EXPORT_C CPresenceCacheBuddyStore* CPresenceCacheBuddyStore::NewL(
                                     CPresenceCacheServiceStore* aServiceStore,
                                     const TDesC& aIdentity)
     {
-    CPresenceCacheBuddyStore* self = NewLC(aServiceStore,aIdentity);
-    CleanupStack::Pop( self );
+    CPresenceCacheBuddyStore* self = new( ELeave ) CPresenceCacheBuddyStore(
+                                               aServiceStore);
+    CleanupStack::PushL( self );
+    self->ConstructL(aIdentity);
+    CleanupStack::Pop( self );    
     return self;
     }
 
@@ -79,7 +80,8 @@ CPresenceCacheBuddyStore::CPresenceCacheBuddyStore(
 //
 void CPresenceCacheBuddyStore::ConstructL(const TDesC& aIdentity)
     {
-    iIdentity = aIdentity.AllocL();
+    SetBuddyIdL(aIdentity);
+    
     }
 
 // ---------------------------------------------------------------------------
@@ -151,6 +153,7 @@ void CPresenceCacheBuddyStore::SetBuddyIdL(const TDesC& aIdentity)
     delete iIdentity;
     iIdentity = NULL;
     iIdentity = aIdentity.AllocL();
+    
     }
 
 // ---------------------------------------------------------------------------

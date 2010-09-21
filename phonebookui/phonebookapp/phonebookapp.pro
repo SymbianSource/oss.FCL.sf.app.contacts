@@ -27,7 +27,7 @@ TARGET = phonebook
 DEPENDPATH += .
 INCLUDEPATH += .
 INCLUDEPATH += ../../inc
-INCLUDEPATH += ../pbkcommonui/inc
+INCLUDEPATH += ../cntcommonui/core
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE 
 
 MOC_DIR = moc
@@ -36,7 +36,7 @@ CONFIG += hb
 CONFIG += service
 
 LIBS += -lhbcore \
-        -lpbkcommonui \
+        -lcntcommonui \
         -lxqservice \
         -lxqserviceutil
         
@@ -69,3 +69,4 @@ symbian: {
         :BLD_INF_RULES.prj_exports += "resources/phonebook.docml /epoc32/release/winscw/udeb/z/resource/hb/splashml/phonebook.docml
         :BLD_INF_RULES.prj_exports += "resources/phonebook.docml /epoc32/data/z/resource/hb/splashml/phonebook.docml
 }
+symbian:MMP_RULES += SMPSAFE

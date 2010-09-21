@@ -152,12 +152,6 @@ public:
      */
     void launchTemporaryContactCard(const QString &definitionName, const QString &value,
         CntAbstractServiceProvider& aServiceProvider );
-    
-    /**
-     * Set the flag that allows quitting the application explicitly
-     * using the quitApp slot. By default the value is always true.
-     */
-    void setQuittable(bool quittable);
         
 public slots:
     /**
@@ -192,7 +186,6 @@ private:
     CntAbstractEngine* mEngine;
     QStringList m_definitionNames;
     CntAbstractServiceProvider* mCurrentProvider; // not owned
-    bool mIsQuittable;
 };
 
 #endif /* CNTSERVICES_H */

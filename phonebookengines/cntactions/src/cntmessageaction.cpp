@@ -92,6 +92,7 @@ void CntMessageAction::performAction()
             data.append(QString()); //body text
             
             m_request->setArguments(data);
+            m_request->setSynchronous(true);
             m_request->send(retValue);
             emitResult(m_request->lastError(), retValue);
         }
@@ -114,6 +115,7 @@ void CntMessageAction::performAction()
         data << phoneNumber.number() << m_contact.localId() << m_contact.displayLabel();
         
         m_request->setArguments(data);
+        m_request->setSynchronous(true);
         m_request->send(retValue);
         emitResult(m_request->lastError(), retValue);
     }

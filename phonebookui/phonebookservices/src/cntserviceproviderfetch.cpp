@@ -46,7 +46,6 @@ void CntServiceProviderFetch::multiFetch(const QString &title, const QString &ac
 {
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.multiFetch( title, action, *this );
     CNT_EXIT
 }
@@ -55,7 +54,6 @@ void CntServiceProviderFetch::singleFetch(const QString &title, const QString &a
 {
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.singleFetch( title, action, *this );
     CNT_EXIT
 }

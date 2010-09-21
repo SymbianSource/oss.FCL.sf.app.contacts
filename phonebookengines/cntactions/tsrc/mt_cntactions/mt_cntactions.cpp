@@ -17,6 +17,7 @@
 
 
 #include "mt_cntactions.h"
+#include <qcontactaction.h>
 
 #include <QtTest/QtTest>
 
@@ -98,7 +99,11 @@ void TestCntActions::phonenumberCallSupport()
     QVERIFY(callActionDescriptors.count() == 1);
     QContactAction *callAction = QContactAction::action(callActionDescriptors.at(0));
     QVERIFY(callAction != 0);
+    QContactAction::State state = callAction->state();
+    QVERIFY(state != QContactAction::InactiveState);
     QVERIFY(callAction->isDetailSupported(numberList.at(0)) == true);
+    QList<QContactDetail> supportedDetails = callAction->supportedDetails(contact);
+    QVERIFY(supportedDetails.count() != 0);
     QVariantMap variantMap = callAction->metaData();
     QVERIFY(variantMap.count() == 0);
     variantMap = callAction->results();
@@ -159,6 +164,8 @@ void TestCntActions::phonenumberMessageSupport()
     QContactAction *messageAction = QContactAction::action(messageActionDescriptors.at(0));
     QVERIFY(messageAction != 0);
     QVERIFY(messageAction->isDetailSupported(numberList.at(0)) == true);
+    QList<QContactDetail> supportedDetails = messageAction->supportedDetails(contact);
+    QVERIFY(supportedDetails.count() != 0);
     QVariantMap variantMap = messageAction->metaData();
     QVERIFY(variantMap.count() == 0);
     variantMap = messageAction->results();
@@ -219,6 +226,8 @@ void TestCntActions::phonenumberVideoCallSupport()
     QContactAction *videoCallAction = QContactAction::action(videoCallActionDescriptors.at(0));
     QVERIFY(videoCallAction != 0);
     QVERIFY(videoCallAction->isDetailSupported(numberList.at(0)) == true);
+    QList<QContactDetail> supportedDetails = videoCallAction->supportedDetails(contact);
+    QVERIFY(supportedDetails.count() != 0);
     QVariantMap variantMap = videoCallAction->metaData();
     QVERIFY(variantMap.count() == 0);
     variantMap = videoCallAction->results();
@@ -278,6 +287,8 @@ void TestCntActions::emailSupport()
     QContactAction *emailAction = QContactAction::action(emailActionDescriptors.at(0));
     QVERIFY(emailAction != 0);
     QVERIFY(emailAction->isDetailSupported(emailList.at(0)) == true);
+    QList<QContactDetail> supportedDetails = emailAction->supportedDetails(contact);
+    QVERIFY(supportedDetails.count() != 0);
     QVariantMap variantMap = emailAction->metaData();
     QVERIFY(variantMap.count() == 0);
     variantMap = emailAction->results();
@@ -337,6 +348,8 @@ void TestCntActions::urlSupport()
     QContactAction *urlAction = QContactAction::action(urlActionDescriptors.at(0));
     QVERIFY(urlAction != 0);
     QVERIFY(urlAction->isDetailSupported(urlList.at(0)) == true);
+    QList<QContactDetail> supportedDetails = urlAction->supportedDetails(contact);
+    QVERIFY(supportedDetails.count() != 0);
     QVariantMap variantMap = urlAction->metaData();
     QVERIFY(variantMap.count() == 0);
     variantMap = urlAction->results();

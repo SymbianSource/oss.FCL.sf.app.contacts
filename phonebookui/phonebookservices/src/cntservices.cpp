@@ -42,8 +42,7 @@ const int Latin1CharSetMIB = 4;
 
 CntServices::CntServices() :
 mViewManager(NULL),
-mCurrentProvider(NULL),
-mIsQuittable(true)
+mCurrentProvider(NULL)
 {
     CNT_ENTRY
 
@@ -411,23 +410,12 @@ void CntServices::launchGroupMemberView(int aContactId,
     CNT_EXIT
 }
 
-void CntServices::setQuittable(bool quittable)
-{
-    mIsQuittable = quittable;
-}
-
 void CntServices::quitApp()
 {
-    CNT_ENTRY
-   
-    // Only embedded applications should be exited once a client
-    // disconnects. At the moments QtHighWay has unresolved issues
-    // when closing non-embedded applications. Error ou1cimx1#472852
-    // has more info
-    if ( mIsQuittable ) 
-    {
-       qApp->quit();
-    }   
+    CNT_ENTRY   
+    
+    qApp->quit();
+    
     CNT_EXIT
 }
 

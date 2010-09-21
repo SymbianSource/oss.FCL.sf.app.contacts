@@ -35,7 +35,7 @@
 "" - "z:\sys\bin\cntactionsplugin.dll"
 "" - "z:\sys\bin\cntsimutility.dll"
 "" - "z:\sys\bin\cntimageutility.dll"
-"" - "z:\sys\bin\pbkcommonui.dll"
+"" - "z:\sys\bin\cntcommonui.dll"
 "" - "z:\sys\bin\phonebook.exe"
 
 "" - "z:\resource\qt\plugins\contacts\cntactionsplugin.qtplugin"
@@ -54,3 +54,6 @@
 "" - "z:\resource\qt\translations\contacts*.qm"
 "" - "z:\resource\apps\phonebook.r*"
 
+;Cenrep settings
+"" - "z:\system\data\10202BE9\2002FF54.txt"
+"" - "z:\system\data\10202BE9\200315A8.txt"

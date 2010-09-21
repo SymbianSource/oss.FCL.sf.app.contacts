@@ -30,9 +30,8 @@
 //
 EXPORT_C CPresenceCacheServiceStore* CPresenceCacheServiceStore::NewLC()
     {
-    CPresenceCacheServiceStore* self = new( ELeave ) CPresenceCacheServiceStore;
+    CPresenceCacheServiceStore* self = CPresenceCacheServiceStore::NewL();
     CleanupStack::PushL( self );
-    self->ConstructL();
     return self;
     }
 
@@ -42,7 +41,9 @@ EXPORT_C CPresenceCacheServiceStore* CPresenceCacheServiceStore::NewLC()
 //
 EXPORT_C CPresenceCacheServiceStore* CPresenceCacheServiceStore::NewL()
     {
-    CPresenceCacheServiceStore* self = NewLC();
+    CPresenceCacheServiceStore* self = new( ELeave ) CPresenceCacheServiceStore;
+    CleanupStack::PushL( self );
+    self->ConstructL();
     CleanupStack::Pop( self );
     return self;
     }
@@ -230,6 +231,7 @@ CPresenceCacheBuddyStore* CPresenceCacheServiceStore::FindAndRemove
     aErr = KErrNotFound;
 
     TInt count = iBuddyStoreCollection.Count();
+    TRACE_1( _L("CPresenceCacheServiceStore::FindAndRemove - count = %d"),count );
     for (TInt i=0;i<count;i++)
         {
         if ( (iBuddyStoreCollection[i])->EqualsIdentity(aIdentity) )

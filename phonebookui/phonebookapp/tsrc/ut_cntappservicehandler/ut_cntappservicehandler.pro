@@ -38,3 +38,4 @@ SOURCES += t_cntappservicehandler.cpp \
 TARGET.CAPABILITY = ALL -TCB
 
 LIBS+=-lhbcore -lxqservice -lxqserviceutil
+symbian:MMP_RULES += SMPSAFE

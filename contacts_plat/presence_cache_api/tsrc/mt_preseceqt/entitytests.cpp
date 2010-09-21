@@ -262,8 +262,9 @@ void EntityTests::test1()
         QVERIFY((qtKeyList.count() )== (cnt - 1  )  );
         }
     
+    //Change the identity of one buddy
+    
 
- 
     delete buddy;
     delete buddy2;
     
@@ -305,9 +306,11 @@ void EntityTests::test3()
     connect(iReader, SIGNAL(signalPresenceRead(bool , QList<PrcPresenceBuddyInfoQt*> )), 
                            this, SLOT( handlePresenceReadInClient(bool,QList<PrcPresenceBuddyInfoQt*>)));
     QString testBuddyID = "sip:tester1@test.com";
+    QString testBuddyID2 = "xzsip:abctese@tt.com";
      iNotificationReceived = false;
     //Subscribe
     subscribeBuddy(testBuddyID);
+    subscribeBuddy(testBuddyID2); //subscribe also to some dummy buddya
     //Now save and check if notification is received
     iMapDataForAsyncTest.clear();
     iMapDataForAsyncTest.insert(K_Buddy,testBuddyID);
@@ -319,7 +322,7 @@ void EntityTests::test3()
     saveBuddy(iMapDataForAsyncTest);
     QTest::qWait(waitTime);
     QVERIFY(true == iNotificationReceived);
-    
+    unSubscribeBuddy(testBuddyID2);
     }
 
 // Subscribe , save, and Unsubscribe ,save

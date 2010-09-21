@@ -62,8 +62,8 @@ _LIT( KPresenceTraceLogFile, "presence.log" );
      *      TRACE_BLOCK_EXIT();
      *      }
      */
-    #define TRACE_BLOCK_ENTER( aBlockName ) TPresenceBlockTraceHandler __blockTraceHandler( _S( aBlockName ) );
-    #define TRACE_BLOCK_EXIT() __blockTraceHandler.NormalExit();
+    //#define TRACE_BLOCK_ENTER( aBlockName ) TPresenceBlockTraceHandler __blockTraceHandler( _S( aBlockName ) );
+    //#define TRACE_BLOCK_EXIT() __blockTraceHandler.NormalExit();
 
 
 
@@ -106,30 +106,26 @@ private: //Prohibited construtor / destructor
 
 
 
-/**
- * Block trace handler.
- */
+//  Commented out since not used. Can be uncommented if needed later
+/*  
+//  Block trace handler.
+// 
+
 NONSHARABLE_CLASS( TPresenceBlockTraceHandler )
     {
 public:
 
-    /**
-     * Block trace handler constructor.
-     *
-     * @param aBlockName Block name.
-     */
+    // Block trace handler constructor.
+    // @param aBlockName Block name.
+    
     TPresenceBlockTraceHandler( const TText* aBlockName );
 
 
-    /**
-     * Block trace handler destructor.
-     */
-    ~TPresenceBlockTraceHandler();
+    // Block trace handler destructor.
+     ~TPresenceBlockTraceHandler();
 
 
-    /**
-     * Marks that block has reached its normal exit.
-     */
+    // Marks that block has reached its normal exit.
     void NormalExit();
 
 
@@ -141,6 +137,6 @@ private:
     TBool iBlockNormalExit;
 };
 
-
+*/
 #endif  // PRESTRACE_H__
 

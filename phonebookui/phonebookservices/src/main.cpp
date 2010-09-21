@@ -51,6 +51,7 @@ int main(int argc, char **argv)
     CntKeyGrabber *keyGrabber = new CntKeyGrabber(&mainWindow, &mainWindow);
 
     CntViewNavigator* navigator = new CntViewNavigator( &mainWindow );
+    navigator->addException( serviceEditView, noView );
     navigator->addEffect( serviceContactCardView, historyView );
     navigator->addEffect( historyView, serviceContactCardView );
     navigator->addEffect( serviceGroupMemberView, groupActionsView );

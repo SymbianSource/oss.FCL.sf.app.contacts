@@ -17,11 +17,17 @@ CONFIG += service
 DEPENDPATH += . \
     src
 
-INCLUDEPATH +=  ../pbkcommonui/inc \
-                ../pbkcommonui/engine_inc \
+INCLUDEPATH +=  ../cntcommonui/core \
+                ../cntcommonui/common \
+                ../cntcommonui/views \
+                ../cntcommonui/contacteditors \
+                ../cntcommonui/contactcard \
+                ../cntcommonui/collections \
+                ../cntcommonui/widgets \
                 ../../inc
                 
-INCLUDEPATH += ../../phonebookengines/cntimageutility/inc
+INCLUDEPATH += ../../phonebookengines/cntlistmodel/inc \
+               ../../phonebookengines/cntimageutility/inc \
 
 INCLUDEPATH += . \
     inc \
@@ -79,10 +85,11 @@ LIBS += -lxqservice \
         -lhbcore \
         -lqtcontacts \
         -lcntlistmodel \
-        -lpbkcommonui \
+        -lcntcommonui \
         -lqtversit \
         -lcntimageutility
 
 SERVICE.FILE = service_conf.xml
 SERVICE.OPTIONS = embeddable
 SERVICE.OPTIONS += hidden
+symbian:MMP_RULES += SMPSAFE

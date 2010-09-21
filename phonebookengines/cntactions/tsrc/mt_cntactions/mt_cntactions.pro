@@ -19,6 +19,7 @@ TARGET =
 
 QT += testlib sql xml
 CONFIG  += qtestlib
+CONFIG  += symbian_test
 #DEFINES += PBK_UNIT_TEST
 
 DEPENDPATH += .
@@ -41,4 +42,4 @@ symbian:
   LIBS += -lQtContacts 
   
 }
-
+symbian:MMP_RULES += SMPSAFE

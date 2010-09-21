@@ -39,11 +39,7 @@ namespace
     }
     
 #ifdef TRACES
-#define LOG_ITEM(i) logItem(i)
-#else
-#define LOG_ITEM(i)
-#endif
-    
+#define LOG_ITEM(i) logItem(i)    
     void logItem(const HistoryItem& item)
     {
         QStringList l;
@@ -64,6 +60,9 @@ namespace
         
         qDebug() << l;
     }
+#else
+#define LOG_ITEM(i)
+#endif
 }
 
 Q_DECLARE_METATYPE(LogsEvent *)

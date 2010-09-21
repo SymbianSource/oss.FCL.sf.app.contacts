@@ -43,3 +43,4 @@ SOURCES +=  start.cpp \
 QT += sql
  
 LIBS += -lpresencecacheqt
+symbian:MMP_RULES += SMPSAFE

@@ -668,6 +668,7 @@ void ContactWidgetHs::orientationChange()
     if (mLauncher->isVisible()) {
         mLauncher->hide();
     }
+    loadNormalLayout();
 }    
 
 /*!

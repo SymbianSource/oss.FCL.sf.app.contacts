@@ -79,6 +79,8 @@ void CntServiceAssignContactCardView::addToContacts()
     addButton->setIcon(plusIcon);
     connect(addButton, SIGNAL(clicked()), popup, SLOT(close()));
     connect(addButton, SIGNAL(clicked()), this, SLOT(saveNew()));
+    connect(addButton, SIGNAL(longPress(QPointF)), popup, SLOT(close()));
+    connect(addButton, SIGNAL(longPress(QPointF)), this, SLOT(saveNew()));
     
     HbPushButton* updateButton = new HbPushButton(buttonWidget);
     updateButton->setStretched(true);
@@ -86,6 +88,9 @@ void CntServiceAssignContactCardView::addToContacts()
     updateButton->setIcon(plusIcon);
     connect(updateButton, SIGNAL(clicked()), popup, SLOT(close()));
     connect(updateButton, SIGNAL(clicked()), this, SLOT(updateExisting()));
+    connect(updateButton, SIGNAL(longPress(QPointF)), popup, SLOT(close()));
+    connect(updateButton, SIGNAL(longPress(QPointF)), this, SLOT(updateExisting()));
+    
     
     layout->addItem(addButton);
     layout->addItem(updateButton);

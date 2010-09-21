@@ -47,3 +47,4 @@ LIBS += -lQtContacts \
         -lmsghistory
 
 TARGET.CAPABILITY = ALL -TCB
+symbian:MMP_RULES += SMPSAFE

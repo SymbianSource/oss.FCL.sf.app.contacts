@@ -49,7 +49,6 @@ void CntServiceProviderOld::fetch(const QString &title, const QString &action, c
     CNT_ENTRY
     // Ignore the filter parameter
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.multiFetch( title, action, *this );
     CNT_EXIT
 }
@@ -64,7 +63,6 @@ void CntServiceProviderOld::Dofetch(const QString &title, const QString &action,
     // Ignore the filter parameter
     // Ignoring fourth argument, because it's not needed. DoFetch() by old contract is only for single-fetching.
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.singleFetch( title, action, *this );
     CNT_EXIT
 }
@@ -77,7 +75,6 @@ void CntServiceProviderOld::editCreateNew(const QString& definitionName, const Q
 {
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.editCreateNew( definitionName, value, *this, false ); // defaultForOnlineAccountIsImpp = false
     CNT_EXIT
 }
@@ -86,7 +83,6 @@ void CntServiceProviderOld::editCreateNew(const QString &vCardFile)
 {
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.editCreateNewFromVCard( vCardFile, *this );
     CNT_EXIT
 }
@@ -99,7 +95,6 @@ void CntServiceProviderOld::editUpdateExisting(const QString &definitionName, co
 {
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.editUpdateExisting( definitionName, value, *this, false ); // defaultForOnlineAccountIsImpp = false
     CNT_EXIT
 }
@@ -112,7 +107,6 @@ void CntServiceProviderOld::open(int contactId)
 {
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.launchContactCard( contactId, *this );
     CNT_EXIT
 }
@@ -124,7 +118,6 @@ void CntServiceProviderOld::open(const QString &definitionName, const QString &v
 {
     CNT_ENTRY
     mCurrentRequestIndex = setCurrentRequestAsync();
-    mServices.setQuittable(requestInfo().isEmbedded());
     mServices.launchTemporaryContactCard( definitionName, value, *this ); // definitionName = field type      value = actual field value for prefilling editor
     CNT_EXIT
 }

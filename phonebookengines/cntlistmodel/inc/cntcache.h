@@ -22,13 +22,17 @@
 #include <QObject>
 #include <QSharedData>
 #include <HbIcon>
+#include <cntuids.h>
 #include <qcontactmanager.h>
 #include <cntinfoprovider.h>
+#include <collate.h>
 
 class CntContactInfoData;
+class CntNameFetcher;
 class CntCacheThread;
 class CntInfoCacheItem;
 class CntIconCacheItem;
+class CntNameCacheItem;
 
 QTM_USE_NAMESPACE
 
@@ -79,46 +83,62 @@ class CntCache : public QObject
     friend class TestCntListModel;
     Q_OBJECT
 public:
-    static CntCache* instance();
+    static CntCache* instance(QContactManager *manager);
     CntContactInfo fetchContactInfo(int row, const QList<QContactLocalId>& idList);
-
-public slots:
-    void clearCache();
+    QList<QContactLocalId> sortIdsByName(const QSet<QContactLocalId>* idFilter = NULL) const;
+    QList<QContactLocalId> sortIdsByName(const QStringList searchList) const;
 
 signals:
     void contactInfoUpdated(QContactLocalId contactId);
+    void contactsChanged(const QList<QContactLocalId> &changedContacts);
+    void contactsRemoved(const QList<QContactLocalId> &removedContacts);
+    void contactsAdded(const QList<QContactLocalId> &addedContacts);
+    void dataChanged();
 
 private:
-    CntCache();
+    CntCache(QContactManager *manager);
     ~CntCache();
-    bool fetchContactName(int contactId, QString& contactName);
-    void updateReadAheadCache(int mostRecentRow, const QList<QContactLocalId>& idList);
+    void loadNames();
+    bool contactExists(QContactLocalId contactId) const;
+    QString contactName(QContactLocalId contactId) const;
     CntInfoCacheItem* createInfoCacheItem(int contactId);
-    CntIconCacheItem* createIconCacheItem(const QString& iconName);
+    CntIconCacheItem* createIconCacheItem(const QString &iconName);
+    void updateReadAheadCache(int mostRecentRow, const QList<QContactLocalId> &idList);
     void emitContactInfoUpdated(int contactId);
 
 private slots:
-    void onNewInfo(int contactId, const ContactInfoField& infoField, const QString& infoValue);
-    void onInfoCancelled(int contactId);
-    void onNewIcon(const QString& iconName, const HbIcon& icon);
-    void onIconCancelled(const QString& iconName);
     void onShutdown();
-    void updateContactsInCache(const QList<QContactLocalId>& contactIds);
-    void removeContactsFromCache(const QList<QContactLocalId>& contactIds);
+    void reformatNames(CntNameOrder newFormat);
+    void onNewInfo(int contactId, const ContactInfoField &infoField, const QString &infoValue);
+    void onInfoCancelled(int contactId);
     void scheduleOneReadAheadItem();
+    void onNewIcon(const QString &iconName, const HbIcon &icon);
+    void onIconCancelled(const QString &iconName);
+    void updateContacts(const QList<QContactLocalId> &changedContacts);
+    void removeContacts(const QList<QContactLocalId> &removedContacts);
+    void addContacts(const QList<QContactLocalId> &addedContacts);
+    void setNameList(QList<CntNameCacheItem *> newSortedNames);
 
 private:
-    static CntCache* mInstance;                   // the one and only instance of CntCache
-    QContactManager* mContactManager;             // for fetching contact names and for getting
-                                                  // notifications about changes to contacts
-    CntCacheThread* mWorker;                      // the background thread that does the actual fetching
-    QList< QPair<int,int> > mReadAheadCache;      // cache with set of contacts to prefetch (they are likely to be needed soon)
-    QHash<int,CntInfoCacheItem*> mInfoCache;      // cache with contact info, indexed by contact ids
-    QHash<QString,CntIconCacheItem*> mIconCache;  // cache with icons, indexed by icon name
+    static CntCache *mInstance;                   // the one and only instance of CntCache
+    QContactManager *mContactManager;             // for getting notifications about changes to contacts
+    CntCacheThread *mWorker;                      // the background thread that does the actual fetching
+    CntNameFetcher *mNameFetcher;                 // the helper that fetches contact names
+
+    QList<CntNameCacheItem *> mSortedNames;       // list of all contact names, in sorted order
+    QHash<QContactLocalId, CntNameCacheItem *> mNameCache;    // cache with all contact names, indexed by contact ids
+    QHash<int,CntInfoCacheItem *> mInfoCache;     // cache with contact info, indexed by contact ids
+    QHash<QString,CntIconCacheItem *> mIconCache; // cache with icons, indexed by icon name
+    QList< QPair<int, int> > mReadAheadCache;     // cache with contacts to prefetch (they are likely to be needed soon)
+
     int mNextInfoCacheOrder;                      // cache order for the next item to be updated/inserted in info cache
     int mNextIconCacheOrder;                      // cache order for the next item to be updated/inserted in icon cache
     int mEmittedContactId;                        // id of the last contact emitted to UI
     int mUrgentContacts;                          // the number of contacts left that need to be fetched asap
+    
+    bool mHasModifiedNames;                       // monitors whether any names have changed since file cache was last updated
+    bool mAllNamesFetchStarted;                   // false until the asynch fetching of all names from the DB has started;
+                                                  // this operation is done only once
 };
 
 #endif

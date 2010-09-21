@@ -79,7 +79,7 @@ EXPORT_C void PresenceTrace::Trace( TRefByValue<const TDesC> aFmt,... )
    }
 
 
-
+/* Commented out since not used as of now. Can be uncommented if needed
 
 // ============================ MEMBER FUNCTIONS ===============================
 
@@ -121,3 +121,4 @@ EXPORT_C void TPresenceBlockTraceHandler::NormalExit()
     }
     
 
+*/

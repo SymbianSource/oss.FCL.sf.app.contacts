@@ -25,13 +25,12 @@ INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 INCLUDEPATH += inc
 INCLUDEPATH += ../../inc
 
-INTERNAL_PUBLIC_HEADERS += inc/cntlistmodelglobal.h \
-    inc/cntlistmodel.h
-
-HEADERS += $$INTERNAL_PUBLIC_HEADERS \
+HEADERS += inc/cntlistmodelglobal.h \
+    inc/cntlistmodel.h \
     inc/cntlistmodel_p.h \
     inc/cntcache.h \
     inc/cntcache_p.h \
+    inc/cntnamefetcher.h \
     inc/cntdefaultinfoprovider.h \
     inc/cntpresenceinfoprovider.h \
     inc/cntdisplaytextformatter.h \
@@ -40,6 +39,7 @@ HEADERS += $$INTERNAL_PUBLIC_HEADERS \
 SOURCES += src/cntlistmodel.cpp \
     src/cntcache.cpp \
     src/cntcache_p.cpp \
+    src/cntnamefetcher.cpp \
     src/cntdefaultinfoprovider.cpp \
     src/cntpresenceinfoprovider.cpp \
     src/cntdisplaytextformatter.cpp
@@ -48,15 +48,12 @@ LIBS += -lQtContacts \
     -lhbcore \
     -lthumbnailmanagerqt \
     -lpresencecacheqt \
-    -lxqsettingsmanager
+    -lxqsettingsmanager \
+    -lestor \
+    -lefsrv \
+    -lxqutils
 
-deploy.path = /
-headers.sources = $$INTERNAL_PUBLIC_HEADERS
-headers.path = /epoc32/include/app # change this to internal folder
 DEPLOYMENT += exportheaders
-
-# This is for new exporting system coming in garden
-for(header, headers.sources):BLD_INF_RULES.prj_exports += "$$header $$deploy.path$$headers.path/$$basename(header)"
 
 :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntinfoproviderfactory.h APP_LAYER_PLATFORM_EXPORT_PATH(cntinfoproviderfactory.h)"
 :BLD_INF_RULES.prj_exports += "../../contacts_plat/contacts_ui_extensions_api/inc/cntinfoprovider.h APP_LAYER_PLATFORM_EXPORT_PATH(cntinfoprovider.h)"

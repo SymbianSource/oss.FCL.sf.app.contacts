@@ -36,4 +36,4 @@ TARGET.CAPABILITY = ALL -TCB
 
 BLD_INF_RULES.prj_exports += \
         "testvcard.vcf \epoc32\winscw\c\data\others\testvcard.vcf"
-        
+symbian:MMP_RULES += SMPSAFE        

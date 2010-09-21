@@ -47,9 +47,6 @@ class CNTLISTMODEL_EXPORT CntListModel : public QAbstractListModel
     friend class TestCntListModel;
 
 public:
-    CntListModel(const QContactFilter& contactFilter = QContactFilter(),
-                bool showMyCard = true,
-                QObject *parent = 0);
     CntListModel(QContactManager* manager,
                 const QContactFilter& contactFilter = QContactFilter(),
                 bool showMyCard = true,
@@ -65,23 +62,14 @@ public:
     QContactLocalId contactId(const QModelIndex &index) const;
 	QModelIndex indexOfContact(const QContact &contact) const;
 	QModelIndex indexOfContactId(const QContactLocalId &contactId) const;
-	QContactManager& contactManager() const;
 	void setFilter(const QContactFilter& contactFilter = QContactFilter());
 	void showMyCard(bool enabled);
 	bool myCardStatus() const;
 	QContactLocalId myCardId() const;
 		
 private:
-    // Construction helpers
-    int doConstruct();
-    int initializeData();
     void updateContactIdsArray();
-    void setSortOrder();
-
-    // Data manipulation
     QContact contact(int row) const;
-
-    // Utility
     bool validRowId(int row) const;
     int rowId(const QContactLocalId &contactId) const;
     QVariant dataForRole(int row, int role) const;
@@ -95,8 +83,8 @@ private slots:
     void handleContactInfoUpdated(QContactLocalId contactId);
     void handleAddedRelationship(const QList<QContactLocalId>& contactIds);
     void handleRemovedRelationship(const QList<QContactLocalId>& contactIds);
-    void refreshModel();
     void handleRowSettingChanged(const XQSettingsKey& key, const QVariant& value);
+    void refreshModel();
 
 private:
     QSharedDataPointer<CntListModelData>  d;

@@ -6,11 +6,6 @@ EXPORTS
 	_ZN20TPresenceArrayPacker12UnPackArrayLER13RPointerArrayI19MPresenceBuddyInfo2ERK6TDesC8 @ 5 NONAME
 	_ZN23PresenceCacheBuddyUtils18IsBuddyInfoExpiredERK19MPresenceBuddyInfo2 @ 6 NONAME
 	_ZN23PresenceCacheBuddyUtils23ResetBuddyInfoTimeStampER19MPresenceBuddyInfo2 @ 7 NONAME
-	_ZN26TPresenceBlockTraceHandler10NormalExitEv @ 8 NONAME
-	_ZN26TPresenceBlockTraceHandlerC1EPKt @ 9 NONAME
-	_ZN26TPresenceBlockTraceHandlerC2EPKt @ 10 NONAME
-	_ZN26TPresenceBlockTraceHandlerD1Ev @ 11 NONAME
-	_ZN26TPresenceBlockTraceHandlerD2Ev @ 12 NONAME
-	_ZTI23CPresenceCacheBuddyInfo @ 13 NONAME
-	_ZTV23CPresenceCacheBuddyInfo @ 14 NONAME
+	_ZTI23CPresenceCacheBuddyInfo @ 8 NONAME
+	_ZTV23CPresenceCacheBuddyInfo @ 9 NONAME
 

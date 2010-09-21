@@ -31,7 +31,7 @@ file=ABI_DIR\BUILD_DIR\cntsimutility.dll            		SHARED_LIB_DIR\cntsimutili
 file=ABI_DIR\BUILD_DIR\cntimageutility.dll            	SHARED_LIB_DIR\cntimageutility.dll UNPAGED
 
 // UI
-file=ABI_DIR\BUILD_DIR\pbkcommonui.dll                	SHARED_LIB_DIR\pbkcommonui.dll UNPAGED
+file=ABI_DIR\BUILD_DIR\cntcommonui.dll                	SHARED_LIB_DIR\cntcommonui.dll UNPAGED
 file=ABI_DIR\BUILD_DIR\phonebook.exe                  	SHARED_LIB_DIR\phonebook.exe
 
 UPGRADABLE_APP_REG_RSC(phonebook)

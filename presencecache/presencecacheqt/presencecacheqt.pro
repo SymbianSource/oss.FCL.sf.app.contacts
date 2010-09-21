@@ -71,3 +71,5 @@ myDefInclude = "NOSTRICTDEF" \
 	"DEFFILE  eabi/ "\
 	"$${LITERAL_HASH}endif"
 	MMP_RULES += myDefInclude
+
+symbian:MMP_RULES += SMPSAFE
