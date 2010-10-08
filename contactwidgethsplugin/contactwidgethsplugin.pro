@@ -38,6 +38,7 @@ symbian {
     INCLUDEPATH += $$MOC_DIR
     TARGET.CAPABILITY = ALL -TCB
     TARGET.EPOCALLOWDLLDATA=1
+    MMP_RULES += SMPSAFE
 }
 
 symbian: plugin { # copy qtstub and manifest
@@ -63,21 +64,14 @@ symbian: plugin { # copy qtstub and manifest
     BLD_INF_RULES.prj_exports += "./rom/contactwidgeths.iby CORE_APP_LAYER_IBY_EXPORT_PATH(contactwidgeths.iby)"
     BLD_INF_RULES.prj_exports += "./rom/contactwidgeths_resources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(contactwidgeths_resources.iby)"
     
-    
-    contactwidgethsplugin_buildstubsis_extension = \
-        "$${LITERAL_HASH}ifdef MARM" \
-        "    START EXTENSION app-services/buildstubsis" \
-        "    OPTION SRCDIR ." \
-        "    OPTION SISNAME contactwidgethsplugin_stub" \
-        "    END" \
-        "$${LITERAL_HASH}endif" 
-        
-    BLD_INF_RULES.prj_extensions += contactwidgethsplugin_buildstubsis_extension
-}
+    BLD_INF_RULES.prj_mmpfiles +=  "gnumakefile sis/contactwidgethsplugin_stub_sis.mk"
+
+
+	}
 
 symbian {
     TARGET.UID3 = 0x2002C353
-    ICON = qtg_large_friend.svg
+    # ICON = qtg_large_friend.svg
     # themable icon for application library
     SKINICON = qtg_large_friend
 
