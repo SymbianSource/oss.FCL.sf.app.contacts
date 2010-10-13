@@ -81,8 +81,6 @@ class CPbk2PrepareMultipleAssignPhase :
                 TInt aExitCommandId );
         void AcceptDelayedL(
                 const TDesC8& aContactLinkBuffer );
-        void DenyDelayedL(
-                const TDesC8& aContactLinkBuffer );
         MVPbkContactLinkArray* Results() const;
         TInt ExtraResultData() const;
         MVPbkStoreContact* TakeStoreContact();

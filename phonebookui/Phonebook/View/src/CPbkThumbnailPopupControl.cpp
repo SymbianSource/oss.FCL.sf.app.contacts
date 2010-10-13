@@ -19,7 +19,7 @@
 
 // INCLUDE FILES
 #include    "CPbkThumbnailPopupControl.h"
-#include    <pbkview.rsg>
+#include    <PbkView.rsg>
 #include    <barsread.h> // TResourceReader
 #include    <coemain.h> // CCoeEnv
 #include    <eikenv.h>  // CCoeMain

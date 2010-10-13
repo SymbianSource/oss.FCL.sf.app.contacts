@@ -22,7 +22,7 @@
 #include "Pbk2PresentationUtils.h"
 #include <MPbk2FieldPropertyArray.h>
 #include <RPbk2LocalizedResourceFile.h>
-#include <pbk2presentation.rsg>
+#include <Pbk2Presentation.rsg>
 #include <MPbk2FieldProperty.h>
 #include <CPbk2FieldPropertyGroup.h>
 #include <Pbk2DataCaging.hrh>

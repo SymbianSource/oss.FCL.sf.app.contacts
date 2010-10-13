@@ -22,8 +22,8 @@
 #include "CPbk2ServerAppConnection.h"
 #include "Pbk2UIServices.hrh"
 #include <Pbk2IPCPackage.h>
-#include <pbk2uiservicesres.rsg>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UiServicesRes.rsg>
+#include <Pbk2UIControls.rsg>
 #include <Pbk2DataCaging.hrh>
 #include <Pbk2MimeTypeHandler.h>
 #include <Pbk2InternalUID.h>

@@ -24,7 +24,7 @@
 #include "ccappmycard.hrh"
 #include <spbcontactdatamodel.h>
 #include <ccappmycardpluginrsc.rsg>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <data_caging_path_literals.hrh>
 #include <mccappengine.h>
 #include <bautils.h>
@@ -236,9 +236,6 @@ void CCCAppMyCardPlugin::DoDeactivate()
     {
     CCA_DP(KMyCardLogFile, CCA_L("->CCCAppMyCardPlugin::DoDeactivate()"));
 
-    // iOwnContainer should update command to reset the UiControl when deactivated.
-    iOwnContainer->UpdateAfterCommandExecution();
-    
     // Forward the deactivation-call to base-class
     CCCAppViewPluginAknView::DoDeactivate();
 

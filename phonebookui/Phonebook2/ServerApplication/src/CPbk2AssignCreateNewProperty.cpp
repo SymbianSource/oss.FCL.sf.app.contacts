@@ -20,8 +20,8 @@
 
 // Phonebook 2
 #include "TPbk2AssignNoteService.h"
-#include <pbk2uicontrols.rsg>
-#include <pbk2serverapp.rsg>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2ServerApp.rsg>
 #include <MPbk2FieldProperty.h>
 #include <TPbk2AddItemWrapper.h>
 

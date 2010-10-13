@@ -27,7 +27,7 @@
 #include <VPbkError.h>
 #include <MVPbkContactFieldData.h>
 #include <MVPbkContactFieldUriData.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <VPbkFieldTypeSelectorFactory.h>
 #include <MVPbkStoreContactFieldCollection.h>
 

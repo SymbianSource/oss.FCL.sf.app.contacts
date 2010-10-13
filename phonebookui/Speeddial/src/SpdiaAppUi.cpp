@@ -29,7 +29,7 @@
 #include <featmgr.h>
 #include <aknview.h>
 
-#include <speeddial.rsg>
+#include <SpeedDial.rsg>
 #include <AknGlobalNote.h>
 
 #include "speeddial.hrh"
@@ -143,6 +143,17 @@ CSpdiaAppUi::~CSpdiaAppUi()
     {
     FeatureManager::UnInitializeLib();
     
+    // We had gone to some other application using active application..
+	// We are coming back..Restore the GridStatus..
+	if(iSpeedPrivate!=NULL)
+	{
+	if(iSpeedPrivate->State() == CSpeedDialPrivate::STATE_IDLE && 
+		iSpeedPrivate->GridStatus() == CSpeedDialPrivate::EGridNoUse )
+	{
+		iSpeedPrivate->SetGridStatus(CSpeedDialPrivate::EGridUse);
+	}
+	}
+
 	 CSpdiaView* view = dynamic_cast<CSpdiaView*>(View( KViewId ));
 	 if ( view )
 	     {

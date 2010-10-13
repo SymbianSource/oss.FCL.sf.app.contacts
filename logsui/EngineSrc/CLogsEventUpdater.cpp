@@ -23,7 +23,7 @@
 #endif
 #include <logcli.h>
 #include <logview.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <PbkFields.hrh>
 #include <CVPbkContactFieldIterator.h>
 #include <CVPbkContactManager.h>

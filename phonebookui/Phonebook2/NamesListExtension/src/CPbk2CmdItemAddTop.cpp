@@ -24,7 +24,7 @@
 #include <MPbk2AppUi.h>
 #include <Pbk2InternalUID.h>
 #include "Pbk2NamesListExUID.h"
-#include <pbk2exnameslistres.rsg>
+#include <Pbk2ExNamesListRes.rsg>
 #include <TPbk2IconId.h>
 #include "pbk2nameslistexiconid.hrh"
 #include "pbk2contactuicontroldoublelistboxextension.h"

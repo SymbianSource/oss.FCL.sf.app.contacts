@@ -29,7 +29,7 @@
 #include <bautils.h>
 
 #include <PbkDebug.h>
-#include <pbkview.rsg>           // View resources
+#include <PbkView.rsg>           // View resources
 #include <PbkView.hrh>
 #include "CPbkViewState.h"
 #include "CPbkThumbnailPopup.h"

@@ -24,7 +24,7 @@
 #include "CVPbkVCardCompactBCardImporter.h"
 #include "VPbkVCardEngError.h"
 #include "CVPbkVCardFieldTypeProperty.h"
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 // From Virtual Phonebook engine
 #include <MVPbkContactFieldTextData.h>

@@ -25,7 +25,7 @@
 #include <avkon.hrh>    // Status pane control UIDs
 #include <eikimage.h>   // CEikImage
 #include <akncontext.h> // CAknContextPane
-#include <pbkview.rsg>  // Phonebook view dll resource IDs
+#include <PbkView.rsg>  // Phonebook view dll resource IDs
 #include <AknsSkinInstance.h>
 #include <AknUtils.h>
 #include <AknsUtils.h>

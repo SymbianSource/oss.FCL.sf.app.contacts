@@ -77,39 +77,36 @@ TInt16 MaxLength( TVPbkSimCntFieldType aType, const MVPbkSimCntStore& aStore )
         TVPbkUSimStoreProperty uprop;
         TInt err = aStore.GetUSimStoreProperties( uprop );
         if( err == KErrNone )
-            {
-            switch ( aType )
-                {
-                case EVPbkSimAdditionalNumber1:  // FALLTHROUGH
-                case EVPbkSimAdditionalNumber2:  // FALLTHROUGH
-                case EVPbkSimAdditionalNumber3:  // FALLTHROUGH
-                case EVPbkSimAdditionalNumberLast: // same as EVPbkSimAdditionalNumber
-                    {
-                    result = uprop.iMaxAnrLength;
-                    break;
-                    }
-                case EVPbkSimReading:  // FALLTHROUGH
-                case EVPbkSimNickName:
-                    {
-                    result = uprop.iMaxScndNameLength;
-                    break;
-                    }
-                case EVPbkSimEMailAddress:
-                    {
-                    result = uprop.iMaxEmailLength;
-                    break;
-                    }
-                case EVPbkSimGroupName:
-                    {
-                    result = uprop.iMaxGroupNameLength;
-                    break;
-                    }
-                default:
-                    {
-                    break;
-                    }
-                }
-            }
+        	{
+	        switch ( aType )
+	            {
+	            case EVPbkSimAdditionalNumber:
+	                {
+	                result = uprop.iMaxAnrLength;
+	                break;
+	                }
+	            case EVPbkSimReading:
+	            case EVPbkSimNickName:
+	                {
+	                result = uprop.iMaxScndNameLength;
+	                break;
+	                }
+	            case EVPbkSimEMailAddress:
+	                {
+	                result = uprop.iMaxEmailLength;
+	                break;
+	                }
+	            case EVPbkSimGroupName:
+	                {
+	                result = uprop.iMaxGroupNameLength;
+	                break;
+	                }
+	            default:
+	                {
+	                break;
+	                }
+	            }
+        	}
         }
     return (TInt16)result;
     }
@@ -292,11 +289,7 @@ void CVPbkSimCntField::SetInitialSimDataL( const TDesC& aData )
     
     // Max length must be calculated for number types only because other
     // types are not splitted in several records in SIM card.
-    if ( iType == EVPbkSimGsmNumber 
-            || iType == EVPbkSimAdditionalNumber1
-            || iType == EVPbkSimAdditionalNumber2
-            || iType == EVPbkSimAdditionalNumber3
-            || iType == EVPbkSimAdditionalNumberLast ) // same as EVPbkSimAdditionalNumber
+    if ( iType == EVPbkSimGsmNumber || iType == EVPbkSimAdditionalNumber )
         {
         TInt currentMaxLength = MaxLength( iType, 
             iParentContact.ParentStore() );

@@ -30,7 +30,7 @@
 #include <eikmenup.h> 
 #include <coecntrl.h>
 
-//#include<pbkview.rsg>
+//#include<PbkView.rsg>
 #include <stringloader.h>
 #include <eikbtgpc.h>
 #include <eikrted.h>
@@ -384,8 +384,8 @@ TInt CBCTestPbkDataAddEdit::TestDataSaveHandleCommandL( CStifItemParser& /*aItem
     
     _LIT( KPhoneNumber, "+358401234567" );
     TInt commandId = TPbkDataSaveCommandId( EPbkCmdDataSaveAddToExisting );
-    TRAPD( err, dataSaveAppUi->HandleCommandL( commandId, *fields, KPhoneNumber ) );
-    ASSERT(err == KErrNone);
+    TBool added = dataSaveAppUi->HandleCommandL( commandId, *fields, KPhoneNumber );
+    ASSERT(added );
     
     CleanupStack::PopAndDestroy( fields );
     CleanupStack::PopAndDestroy( dataSaveAppUi );

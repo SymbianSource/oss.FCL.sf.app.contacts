@@ -16,7 +16,7 @@
  */
 
 #include <TPbk2StoreContactAnalyzer.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <Pbk2PresentationUtils.h>
 #include <CPbk2PresentationContact.h>
 #include <CPbk2PresentationContactField.h>
@@ -35,7 +35,7 @@
 #include <MVPbkContactFieldBinaryData.h>
 #include <MVPbkContactFieldData.h>
 #include <VPbkUtils.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 #include <aknlists.h>
 #include <avkon.rsg>

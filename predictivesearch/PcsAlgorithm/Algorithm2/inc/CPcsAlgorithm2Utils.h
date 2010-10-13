@@ -20,12 +20,11 @@
 
 // INCLUDE FILES
 
-#include <e32base.h>
+#include <e32hashtab.h>
+
+#include "CPsData.h"
 
 // FORWARD DECLARATION
-class CPsData;
-class CPsQuery;
-struct TPsMatchLocation;
 
 typedef RPointerArray<CPsData> CPSDATA_R_PTR_ARRAY;
 
@@ -42,27 +41,17 @@ public:
      * works for all type of key board modes
      */
     static void FormCompleteSearchResultsL(RPointerArray<CPSDATA_R_PTR_ARRAY>& aSearchResultsArr,
-                                           RPointerArray<CPsData>& aSearchResults);
+                                           RPointerArray<CPsData>& SearchResults);
 
     /**
-     * Customized CompareC
+     * Customized CompareC         
      */
     static TInt MyCompareC(const TDesC& aLeft, const TDesC& aRight);
 
     /**
      * TLinearOrder rule for comparison of data objects
      */
-    static TInt CompareDataBySortOrderL(const CPsData& aObject1, const CPsData& aObject2);
-
-    /**
-     * TIdentityRelation rule for comparing descriptors case-sensitively.
-     */
-    static TBool CompareExact(const TDesC& aFirst, const TDesC& aSecond);
-
-    /**
-     * TLinearOrder rule for comparing queries by length
-     */
-    static TInt CompareLength(const CPsQuery& aFirst, const CPsQuery& aSecond);
+    static TInt CompareDataBySortOrder(const CPsData& aObject1, const CPsData& aObject2);
 
     /**
      * Trim off all white spaces and special chars
@@ -73,28 +62,8 @@ public:
      * Check if the input URI is of contact search in a group template form
      */
     static TBool IsGroupUri(TDesC& aURI);
-    
-    /**
-     * Constructs a bit pattern using the required/supported data fields
-     * For example, 6, 4 and 27 are supported fields <-- 00000111
-     *              6 and 4 are required fields      <-- 00000011
-     * Bit pattern returned is 00000011.
-     */
-    static TUint8 FilterDataFieldsL(const RArray<TInt>& aRequiredDataFields,
-                                    const RArray<TInt>& aSupportedDataFields);
-    
-    /**
-     * Create upper-case match sequence buffer from matching part and append it to
-     * array unless there's equal sequence already present.
-     */
-    static void AppendMatchToSeqL( RPointerArray<TDesC>& aMatchSeq, const TDesC& aMatch );
-    
-    /**
-     * Check if two match location items have overlapping indices.
-     */
-    static TBool MatchesOverlap( const TPsMatchLocation& aFirst, const TPsMatchLocation& aSecond );
-    };
 
+    };
 
 // CleanupStack helpers for item owning RPointerArrays
 template <class T>

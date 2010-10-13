@@ -22,7 +22,7 @@
 #include "CPbk2RemoteContactLookupVisibility.h"
 #include <Pbk2Commands.hrh>
 #include <MPbk2AppUi.h>
-#include <pbk2exnameslistres.rsg>
+#include <Pbk2ExNamesListRes.rsg>
 
 // General
 #include <StringLoader.h>

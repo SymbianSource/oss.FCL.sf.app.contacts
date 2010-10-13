@@ -31,7 +31,7 @@ USERINCLUDE     ../xSPExtensionManager/src
 SOURCEPATH      ../xSPExtensionManager/src
 
 SOURCE          xSPViewServices.cpp
-SOURCE		CxSPViewData.cpp
+SOURCE			CxSPViewData.cpp
 
 LIBRARY	        apgrfx.lib apparc.lib ws32.lib ecom.lib euser.lib
-LIBRARY         Pbk2CommonUI.lib VPbkEng.lib estor.lib
+LIBRARY         Pbk2CommonUi.lib VPbkEng.lib estor.lib

@@ -44,9 +44,9 @@
 #include <CPbk2MergeConflictsDlg.h>
 #include <CPbk2MergePhotoConflictDlg.h>
 
-#include <pbk2uicontrols.rsg> 
-#include <pbk2cmdextres.rsg>
-#include <pbk2commonui.rsg>
+#include <Pbk2UIControls.rsg> 
+#include <Pbk2CmdExtRes.rsg>
+#include <Pbk2CommonUi.rsg>
 //Virtual Phonebook
 #include <MVPbkContactLink.h>
 #include <MVPbkContactViewBase.h>
@@ -58,7 +58,7 @@
 #include <MVPbkStoreContact.h>
 #include <MVPbkContactFieldBinaryData.h>
 #include <MVPbkContactFieldTextData.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <MVPbkContactGroup.h>
 
 //System

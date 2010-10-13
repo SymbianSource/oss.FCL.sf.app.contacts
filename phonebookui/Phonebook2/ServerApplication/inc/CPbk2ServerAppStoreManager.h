@@ -191,8 +191,6 @@ class CPbk2ServerAppStoreManager : public CBase,
         CVPbkSortOrderAcquirer* iSortOrderAcquirer;
         /// Ref: list of opened contact stores
         RPointerArray<MVPbkContactStore> iOpenedStores;
-		/// Not Own - Group View
-        MVPbkContactViewBase* iGroupView;
     };
 
 #endif // CPBK2SERVERAPPSTOREMANAGER_H

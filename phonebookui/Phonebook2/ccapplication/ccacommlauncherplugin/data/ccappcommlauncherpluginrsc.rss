@@ -26,7 +26,7 @@ NAME    COML // 4 letter ID
 #include <eikon.rh>
 #include <avkon.rh>
 
-#include <eikcore.rsg>
+#include <EIKCORE.rsg>
 #include <eikon.rsg>
 #include <avkon.hrh>
 #include <avkon.rsg>
@@ -141,11 +141,6 @@ RESOURCE MENU_PANE r_ccacommlauncher_menupane
             { 
             command = ECCAppCommLauncherVoiceTagDetailsCmd; 
             txt = "";//will be filled dynamically by AIW 
-            },
-        MENU_ITEM 
-            { 
-            command = ECCAppCommLauncherSendBCardCmd; 
-            txt = qtn_bcard_opt_send_entry_via; 
             },
 #ifdef __SERIES60_HELP            
         MENU_ITEM 

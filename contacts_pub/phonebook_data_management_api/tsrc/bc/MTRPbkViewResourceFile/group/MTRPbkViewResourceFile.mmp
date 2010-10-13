@@ -62,15 +62,15 @@ SOURCE          MTRPbkViewResourceFile.cpp
 SOURCE          MTRPbkViewResourceFileBlocks.cpp
 
 
-LIBRARY         StifTestInterface.lib
+LIBRARY         stiftestinterface.lib
 LIBRARY         stiftestengine.lib
 LIBRARY         bafl.lib
 LIBRARY         cntmodel.lib
 LIBRARY         efsrv.lib
 LIBRARY         estor.lib
 LIBRARY         euser.lib
-LIBRARY         pbkview.lib
-LIBRARY         sysutil.lib
+LIBRARY         PbkView.lib
+LIBRARY         SysUtil.lib
 LIBRARY         cone.lib
 
 LANG            SC

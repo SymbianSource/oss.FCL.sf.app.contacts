@@ -22,7 +22,7 @@
 #include    <cntfldst.h>
 #include    <coemain.h>
 #include    <CFLDFileListContainer.h>
-#include    <pbkview.rsg>
+#include    <PbkView.rsg>
 #include    <CPbkContactEngine.h>
 #include    <CPbkFieldsInfo.h>
 #include    <CPbkFieldInfo.h>

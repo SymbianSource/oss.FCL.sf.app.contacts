@@ -104,11 +104,7 @@ class CPmuCopyToMmcCmd : public CActive,
         TBool ShowMemorySelectionDialogL();
         void ShowResultsL();
         TInt HandleError( TInt aError );
-        /**
-         * Show result and do cleanup when copy complete.
-         */
-        void CommandCompleted();
-        
+
     private:  // Data
         /// Ref: UI control
         MPbk2ContactUiControl* iUiControl;

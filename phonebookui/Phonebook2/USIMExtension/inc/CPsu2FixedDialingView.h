@@ -24,8 +24,6 @@
 #include <MPbk2EditedContactObserver.h>
 #include <MVPbkSingleContactOperationObserver.h>
 #include <MVPbkContactObserver.h>
-#include <aknmarkingmodeobserver.h>
-
 
 // FORWARD DECLARATIONS
 class CAknNavigationControlContainer;
@@ -47,8 +45,7 @@ class MPbk2DialogEliminator;
 class CPsu2FixedDialingView : public CPsu2NameListViewBase,
                               public MPbk2EditedContactObserver,
                               public MVPbkSingleContactOperationObserver,
-                              public MVPbkContactObserver,
-                              public MAknMarkingModeObserver
+                              public MVPbkContactObserver                                  
     {
     public:  // Constructors and destructor
        
@@ -88,25 +85,6 @@ class CPsu2FixedDialingView : public CPsu2NameListViewBase,
         void HandleControlEventL(
             MPbk2ContactUiControl& aControl,
             const TPbk2ControlEvent& aEvent );
-        
-    public: // From MAknMarkingModeObserver 
-            
-        /**
-         * This method is called when marking mode is activated or deactivated.
-         * 
-         * @param aActivated @c ETrue if marking mode was activate, @c EFalse
-         *                   if marking mode was deactivated.
-         */
-        void MarkingModeStatusChanged( TBool aActivated );
-
-        /**
-         * This method is called just before marking mode is closed. Client can 
-         * either accept or decline closing.
-         * 
-         * @return @c ETrue if marking mode should be closed, otherwise @c EFalse.
-         */
-        TBool ExitMarkingMode() const;
-
 
     private: // From CPsu2NameListViewBase
         void UpdateCbasL();
@@ -182,9 +160,6 @@ class CPsu2FixedDialingView : public CPsu2NameListViewBase,
         
         /// Ref: Eliminator of current contact editing dialog
         MPbk2DialogEliminator* iDlgEliminator;
-        // Flag to indicate whether Marking mode is active
-        TBool iMarkingModeOn;
-
     };
 
 #endif // CPSU2FIXEDDIALINGVIEW_H

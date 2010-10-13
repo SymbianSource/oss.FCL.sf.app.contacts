@@ -28,7 +28,7 @@
 #include "MxSPViewInfo.h"
 #include "ExtensionManager.hrh"
 #include "CxSPViewInfo.h"
-#include <extensionmanagerres.rsg>
+#include <ExtensionManagerRes.rsg>
 #include "ExtensionManagerUID.H"
 #include "xSPOrderOrganizer.h"
 #include "Phonebook2PrivateCRKeys.h"

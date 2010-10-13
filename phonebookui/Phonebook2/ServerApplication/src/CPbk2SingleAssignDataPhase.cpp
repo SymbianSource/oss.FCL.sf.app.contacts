@@ -31,8 +31,8 @@
 #include <TPbk2DestructionIndicator.h>
 #include <CPbk2StoreConfiguration.h>
 #include <MPbk2ApplicationServices.h>
-#include <pbk2uicontrols.rsg>
-#include <pbk2serverapp.rsg>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2ServerApp.rsg>
 
 // Virtual Phonebook
 #include <MVPbkContactLink.h>
@@ -168,16 +168,6 @@ void CPbk2SingleAssignDataPhase::RequestCancelL( TInt aExitCommandId )
 // --------------------------------------------------------------------------
 //
 void CPbk2SingleAssignDataPhase::AcceptDelayedL
-        ( const TDesC8& /*aContactLinkBuffer*/ )
-    {
-    // Nothing to do
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2SingleAssignDataPhase::DenyDelayed
-// --------------------------------------------------------------------------
-//
-void CPbk2SingleAssignDataPhase::DenyDelayedL
         ( const TDesC8& /*aContactLinkBuffer*/ )
     {
     // Nothing to do

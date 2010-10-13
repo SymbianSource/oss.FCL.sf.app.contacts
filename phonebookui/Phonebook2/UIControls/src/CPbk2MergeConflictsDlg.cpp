@@ -29,7 +29,7 @@
 #include <StringLoader.h>
 #include <aknnavide.h>
 #include <akntitle.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <MPbk2MergeResolver.h>
 #include <MPbk2MergeConflict.h>
 #include "CPbk2MergeConflictsDlg.h"

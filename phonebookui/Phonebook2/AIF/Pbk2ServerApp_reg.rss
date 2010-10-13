@@ -17,7 +17,7 @@
 
 
 #include <appinfo.rh>
-#include <pbk2serverapp.rsg>
+#include <Pbk2ServerApp.rsg>
 #include <Pbk2InternalUID.h>
 
 UID2 KUidAppRegistrationResourceFile

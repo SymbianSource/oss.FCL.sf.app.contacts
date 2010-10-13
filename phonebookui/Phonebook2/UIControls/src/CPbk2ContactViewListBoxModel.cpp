@@ -30,7 +30,7 @@
 #include <CPbk2StorePropertyArray.h>
 #include <MPbk2ContactUiControlExtension.h>
 #include <MPbk2ContactUiControlExtension2.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <Pbk2PresentationUtils.h>
 #include <CPbk2ContactIconsUtils.h>
 #include "Pbk2NamesListExUID.h"

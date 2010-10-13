@@ -27,7 +27,7 @@
 #include <CPbk2AddressSelect.h>
 #include <CPbk2ApplicationServices.h>
 #include <MPbk2AppUi.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <CPbk2FieldPropertyArray.h>
 
 // Virtual Phonebook

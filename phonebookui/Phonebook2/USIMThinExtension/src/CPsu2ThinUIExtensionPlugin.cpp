@@ -22,8 +22,8 @@
 // Phonebook 2
 #include "CPsu2CopySimContactsCmd.h"
 #include <Pbk2USimUI.hrh>
-#include <pbk2usimuires.rsg>
-#include <pbk2commands.rsg>
+#include <Pbk2USimUIRes.rsg>
+#include <Pbk2Commands.rsg>
 #include <MPbk2ContactUiControl.h>
 #include <MPbk2StartupMonitor.h>
 #include "CPsu2CheckAvailabeSimStore.h"

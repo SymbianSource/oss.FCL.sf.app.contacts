@@ -44,16 +44,16 @@ LIBRARY                 efsrv.lib
 LIBRARY                 euser.lib 
 LIBRARY                 ecom.lib
 LIBRARY                 egul.lib
-LIBRARY                 servicehandler.lib
-LIBRARY                 CommonEngine.lib
+LIBRARY                 ServiceHandler.lib
+LIBRARY                 commonengine.lib
 LIBRARY                 bafl.lib
 LIBRARY                 cone.lib 
 LIBRARY                 fbscli.lib
 LIBRARY                 ws32.lib
-LIBRARY                 featmgr.lib
+LIBRARY                 FeatMgr.lib 
 LIBRARY                 centralrepository.lib
 LIBRARY                 aknskins.lib
-LIBRARY                 ProfileEngine.lib
+LIBRARY                 profileengine.lib
 
 #if (PBKX_DEBUG_LEVEL > 0)
 LIBRARY                 pbkxdebug.lib

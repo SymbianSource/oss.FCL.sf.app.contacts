@@ -51,6 +51,6 @@ APP_LAYER_SYSTEMINCLUDE
 LIBRARY euser.lib ecom.lib
 
 // Dependencies to S60 components
-LIBRARY pbkview.lib VPbkEng.lib Pbk2CommonUI.lib
+LIBRARY PbkView.lib VPbkEng.lib Pbk2CommonUi.lib
 
 // End of File

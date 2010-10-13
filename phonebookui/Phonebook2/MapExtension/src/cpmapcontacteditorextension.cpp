@@ -19,9 +19,9 @@
 
 // Phonebook 2
 #include <CPbk2UIExtensionPlugin.h>
-#include <pbk2usimuires.rsg>
-#include <pbk2uicontrols.rsg>
-#include <pbk2commonui.rsg>
+#include <Pbk2USimUIRes.rsg>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2CommonUi.rsg>
 #include <Pbk2UIControls.hrh>
 #include <MPbk2ContactEditorControl.h>
 #include <CPbk2StoreProperty.h>
@@ -52,9 +52,10 @@
 #include <Pbk2Commands.hrh>
 #include <MPbk2CommandHandler.h>
 #include <MPbk2ApplicationServices.h>
-#include <pbk2mapuires.rsg>
-#include <pbk2commands.rsg>
+#include <Pbk2MapUIRes.rsg>
+#include <Pbk2Commands.rsg>
 #include <Pbk2UIControls.hrh>
+#include <Pbk2UIControls.rsg>
 #include <cpmapcontacteditorextension.h>
 #include <CPbk2ContactEditorDlgImpl.h>
 
@@ -113,7 +114,6 @@ CPmapContactEditorExtension::~CPmapContactEditorExtension()
 //
 inline void CPmapContactEditorExtension::ConstructL()
     {
-    iMapCommandFinish = ETrue;
     }
 
 // --------------------------------------------------------------------------
@@ -171,53 +171,31 @@ void CPmapContactEditorExtension::DynInitMenuPaneL
 TBool CPmapContactEditorExtension::ProcessCommandL
         ( TInt aCommandId )
     {
-    TBool result = EFalse;
-    
     switch( aCommandId )
         {
         case EPbk2ExtensionShowOnMap:
-            {
-            // Ignore new command if the previous command is not finished
-            if ( iMapCommandFinish )
-                {
-                if(iCmd)
-                    {
-                    delete iCmd;
-                    iCmd = NULL;
-                    }
-                iCmd = CPmapCmd::NewL( iEditorControl, iContact, aCommandId );
-                
-                // Observer if the Map command is finished
-                iCmd->AddObserver( *this );
-                iMapCommandFinish = EFalse;
-                
-                // Execute the command 
-                iCmd->ExecuteLD();
-                }
-            result = ETrue;
-            break;
+        	{
+        	if(iCmd)
+        	    {
+                delete iCmd;
+                iCmd = NULL;
+        	    }
+        	iCmd = CPmapCmd::NewL( iEditorControl, iContact, aCommandId );
+        	// Execute the command 
+        	iCmd->ExecuteLD();
+            return ETrue;
             }
         case EPbk2ExtensionAssignFromMap:
-            {
-            // Ignore new command if the previous command is not finished
-            if ( iMapCommandFinish )
+        	{
+        	if(iCmd)
                 {
-                if(iCmd)
-                    {
-                    delete iCmd;
-                    iCmd = NULL;
-                    }
-                iCmd = CPmapCmd::NewL( iEditorControl, iContact, aCommandId );
-                
-                // Observer if the Map command is finished
-                iCmd->AddObserver( *this );
-                iMapCommandFinish = EFalse;
-                
-                // Execute the command
-                iCmd->ExecuteLD();
+                delete iCmd;
+                iCmd = NULL;
                 }
-            result = ETrue;
-            break;
+        	iCmd = CPmapCmd::NewL( iEditorControl, iContact, aCommandId );
+        	// Execute the command
+        	iCmd->ExecuteLD();
+            return ETrue;
             }
         default:
             {
@@ -225,16 +203,7 @@ TBool CPmapContactEditorExtension::ProcessCommandL
             break;
             }
         }
-    return result;
-    }
-
-// --------------------------------------------------------------------------
-// CPmapContactEditorExtension::CommandFinished
-// --------------------------------------------------------------------------
-//
-void CPmapContactEditorExtension::CommandFinished(const MPbk2Command& /*aCommand*/)
-    {
-    iMapCommandFinish = ETrue;
+    return EFalse;
     }
 
 // --------------------------------------------------------------------------

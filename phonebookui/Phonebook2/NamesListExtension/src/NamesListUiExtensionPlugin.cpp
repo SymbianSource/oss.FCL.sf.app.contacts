@@ -48,13 +48,13 @@
 #include <CPbk2ViewState.h>
 
 #include <MPbk2ContactUiControlExtension.h>
-#include <pbk2commands.rsg>
+#include <Pbk2Commands.rsg>
 #include <MVPbkBaseContact.h>
 #include <MVPbkBaseContactFieldCollection.h>
 #include <MVPbkBaseContactField.h>
 #include <MVPbkFieldType.h>
 #include <MVPbkContactFieldData.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <CVPbkTopContactManager.h>
 #include <VPbkContactStoreUris.h>
 #include <CVPbkContactStoreUriArray.h>
@@ -371,7 +371,41 @@ void CNamesListUIExtensionPlugin::DynInitMenuPaneL(TInt aResourceId,
             break;
             }
 #endif            
-       
+        case R_AVKON_MENUPANE_MARKABLE_LIST_IMPLEMENTATION:
+        	{
+
+            if ( Pbk2NlxMenuFiltering::AddToFavoritesCmdSelected( aControl ) )
+                {
+                DimItem( aMenuPane, EAknCmdMark );
+                }
+            if ( Pbk2NlxMenuFiltering::MyCardCmdSelected( aControl ) )
+                {
+                DimItem( aMenuPane, EAknCmdMark );
+                }
+        	break;
+        	}
+        case R_PHONEBOOK2_MARKABLE_LIST_CONTEXT_MENU:
+            {
+            if ( Pbk2NlxMenuFiltering::AddToFavoritesCmdSelected( aControl ) )
+                {
+                DimItem( aMenuPane, EAknCmdMark );
+                DimItem( aMenuPane, EAknCmdUnmark );
+                }
+            if ( Pbk2NlxMenuFiltering::MyCardCmdSelected( aControl ) )
+                {
+                DimItem( aMenuPane, EAknCmdMark );
+                DimItem( aMenuPane, EAknCmdUnmark );
+                }
+            break;
+            }
+        case R_AVKON_MENUPANE_MARKABLE_LIST:
+            {
+            if ( !aControl.NumberOfContacts() )
+                {
+                DimItem( aMenuPane, EAknCmdEditListMenu );
+                }
+            break;
+            }
         case R_PHONEBOOK2_NAMESLIST_COPY_MENU:
             {
             MPbk2ContactUiControl2* tempControl = 

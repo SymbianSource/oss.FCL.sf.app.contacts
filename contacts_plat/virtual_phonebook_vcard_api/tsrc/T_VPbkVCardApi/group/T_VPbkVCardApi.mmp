@@ -44,10 +44,10 @@ LIBRARY         cone.lib
 LIBRARY         eikcore.lib
 LIBRARY         euser.lib
 LIBRARY         estor.lib
-LIBRARY         StifTestInterface.lib
+LIBRARY         stiftestinterface.lib
 LIBRARY         stiftestengine.lib
 LIBRARY         VPbkEng.lib
-LIBRARY         VPbkVCardEng.lib  efsrv.lib
+LIBRARY         vpbkvcardeng.lib  efsrv.lib
 
 LANG            SC
 

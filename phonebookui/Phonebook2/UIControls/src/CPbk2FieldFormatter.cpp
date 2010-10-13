@@ -21,7 +21,7 @@
 #include <Pbk2PhoneNumberFormatterFactory.h>
 #include <MPbk2PhoneNumberFormatter.h>
 #include <Pbk2PresentationUtils.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 
 // Virtual Phonebook
 #include <CVPbkContactManager.h>

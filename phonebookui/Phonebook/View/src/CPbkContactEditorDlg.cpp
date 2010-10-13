@@ -54,7 +54,7 @@
 #include <CPbkFieldsInfo.h>
 #include <CPbkConstants.h>
 #include <CPbkFieldData.h>
-#include <pbkview.rsg>
+#include <PbkView.rsg>
 #include <MPbkContactEditorExtension.h>
 #include <MPbkExtensionFactory.h>
 #include <CPbkExtGlobals.h>

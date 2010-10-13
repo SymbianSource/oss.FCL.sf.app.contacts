@@ -183,26 +183,26 @@ APP_LAYER_SYSTEMINCLUDE
 // Dependencies to Symbian OS components
 LIBRARY euser.lib cone.lib bafl.lib eikdlg.lib bitmaptransforms.lib
 LIBRARY eikcoctl.lib eikctl.lib eikcore.lib estor.lib fbscli.lib ecom.lib
-LIBRARY centralrepository.lib efsrv.lib egul.lib
-LIBRARY hlplch.lib FindUtil.lib charconv.lib
+LIBRARY CentralRepository.lib efsrv.lib egul.lib
+LIBRARY hlplch.lib findutil.lib charconv.lib
 LIBRARY form.lib etext.lib
 
 // Dependencies to AVKON
-LIBRARY avkon.lib aknskins.lib
-LIBRARY CdlEngine.lib aknjapanesereading.lib
-LIBRARY aknlayout2.lib AknLayout2Scalable.lib aknicon.lib
+LIBRARY Avkon.lib AknSkins.lib
+LIBRARY CdlEngine.lib AknJapaneseReading.lib
+LIBRARY AknLayout2.lib AknLayout2Scalable.lib AknIcon.lib
 LIBRARY touchfeedback.lib
 LIBRARY	serviceprovidersettings.lib 
 
 LIBRARY rcse.lib
 
 // Dependencies to S60 platform components
-LIBRARY CommonEngine.lib featmgr.lib numbergrouping.lib
+LIBRARY commonengine.lib FeatMgr.lib numbergrouping.lib
 LIBRARY DrmParsers.lib DrmDcf.lib DrmRights.lib
 LIBRARY DrmServerInterfaces.lib
 LIBRARY DRMCommon.lib
 
-LIBRARY apparc.lib mgfetch.lib commonui.lib apmime.lib sysutil.lib
+LIBRARY apparc.lib MGFetch.lib CommonUI.lib apmime.lib sysutil.lib
 
 // Dependencies to other Phonebook components
 LIBRARY VPbkEng.lib Pbk2Presentation.lib Pbk2UIExt.lib Pbk2CommonUI.lib
@@ -222,8 +222,6 @@ LIBRARY  aknlistloadertfx.lib
 
 LIBRARY         akntransitionutils.lib
 LIBRARY         aknphysics.lib
-LIBRARY		aknpictograph.lib
-LIBRARY         featmgr.lib
-
+LIBRARY			aknpictograph.lib
 
 // End of File

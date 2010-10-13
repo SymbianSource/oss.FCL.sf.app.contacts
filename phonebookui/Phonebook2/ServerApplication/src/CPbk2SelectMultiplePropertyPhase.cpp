@@ -180,16 +180,6 @@ void CPbk2SelectMultiplePropertyPhase::AcceptDelayedL
     }
 
 // --------------------------------------------------------------------------
-// CPbk2SelectMultiplePropertyPhase::DenyDelayed
-// --------------------------------------------------------------------------
-//
-void CPbk2SelectMultiplePropertyPhase::DenyDelayedL
-        ( const TDesC8& /*aContactLinkBuffer*/ )
-    {
-    // Nothing to do
-    }
-
-// --------------------------------------------------------------------------
 // CPbk2SelectMultiplePropertyPhase::Results
 // --------------------------------------------------------------------------
 //

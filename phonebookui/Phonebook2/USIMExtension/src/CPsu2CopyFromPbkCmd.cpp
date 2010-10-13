@@ -30,20 +30,20 @@
 #include <CPbk2FetchDlg.h>
 #include <MPbk2FetchDlgObserver.h>
 #include <CPbk2FieldPropertyArray.h>
-#include <pbk2uicontrols.rsg>
-#include <pbk2usimuires.rsg>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2USimUIRes.rsg>
 #include <TPbk2AddressSelectParams.h>
 #include <CPbk2AddressSelect.h>
 #include <Pbk2DataCaging.hrh>
 #include <MPbk2ContactNameFormatter.h>
 #include <MPbk2DialogEliminator.h>
 #include <Pbk2ProcessDecoratorFactory.h>
-#include <pbk2commands.rsg>
+#include <Pbk2Commands.rsg>
 #include <CPbk2StoreProperty.h>
 #include <CPbk2StorePropertyArray.h>
 #include <MPbk2ApplicationServices.h>
 #include <MPbk2AppUi.h>
-#include <pbk2commonui.rsg>
+#include <Pbk2CommonUi.rsg>
 
 // Virtual Phonebook
 #include <MVPbkStoreContact.h>

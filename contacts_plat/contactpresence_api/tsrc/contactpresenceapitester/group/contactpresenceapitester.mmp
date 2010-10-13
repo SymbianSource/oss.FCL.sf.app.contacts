@@ -45,9 +45,9 @@ LIBRARY         bafl.lib
 LIBRARY         fbscli.lib
 LIBRARY         euser.lib
 LIBRARY         efsrv.lib
-LIBRARY			VPbkEng.lib
+LIBRARY			vpbkeng.lib
 LIBRARY         flogger.lib
-LIBRARY         StifTestInterface.lib
+LIBRARY         stiftestinterface.lib
 LIBRARY         aknicon.lib
 LIBRARY	        serviceprovidersettings.lib
 // for writing cache

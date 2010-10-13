@@ -21,8 +21,6 @@
 #include <s32strm.h>
 #include <vprop.h>
 #include <vcard.h>
-#include <centralrepository.h>
-
 #ifdef SYMBIAN_ENABLE_SPLIT_HEADERS
 #include "vcard3.h"
 #include "cntdb_internal.h"
@@ -31,13 +29,6 @@
 #include "pbaplogeng.h"
 #include "btaccesshostlog.h"
 
-/* These constants are properly defined in telconfigcrkeys.h, however we 
-are not allowed to include that from here.  As a temporary fix the constants 
-from that file are re-defined here. */
-const TUid KCRUidTelConfiguration = {0x102828B8};
-const TUint32 KTelMatchDigits = 0x00000001;
-/* And similarly this constant is defined in ccsdefs.h */
-const TInt KDefaultGsmNumberMatchLength = 7;
 
 //constants
 _LIT8(KVersitTokenCALLDATETIME,"X-IRMC-CALL-DATETIME");
@@ -68,13 +59,6 @@ void CPbapVCardExporterUtil::ConstructL()
 	LOG_FUNC
 	CVersitTlsData::VersitTlsDataL();		
 	User::LeaveIfError(iTzClient.Connect());
-	
-	TRAPD(err, GetMatchDigitCountL())
-	if (err != KErrNone)
-		{
-		iMatchDigitCount = KDefaultGsmNumberMatchLength;
-		}
-
 	}
 
 CPbapVCardExporterUtil::~CPbapVCardExporterUtil()
@@ -83,21 +67,7 @@ CPbapVCardExporterUtil::~CPbapVCardExporterUtil()
 	iTzClient.Close();
 	CVersitTlsData::CloseVersitTlsData();
 	}
-
-void CPbapVCardExporterUtil::GetMatchDigitCountL()
-	{
-	// Read the amount of digits to be used in contact matching
-	// The key is properly owned by PhoneApp, however we cannot include
-	// that header file from here, so a temporary fix has been done to 
-	// use locally defined versions.  If there is a problem here it is 
-	// likely because these values have gone out of sync.
-	CRepository* repository = CRepository::NewLC(KCRUidTelConfiguration);
-	User::LeaveIfError(repository->Get(KTelMatchDigits, iMatchDigitCount));
-	// The rest of the system has a miniumum of 7 for the number matching, so we do the same here
-	iMatchDigitCount = Max(iMatchDigitCount, KDefaultGsmNumberMatchLength);
-	CleanupStack::PopAndDestroy(repository);
-	}
-
+	
 /**
  Export a contact as vCard.
 
@@ -191,12 +161,16 @@ void CPbapVCardExporterUtil::ExportCallHistoryL(const CLogEvent& aLogEvent,
 TContactItemId CPbapVCardExporterUtil::FindContactIdFromNumberL(const TDesC& aNumber)
 	{
 	TContactItemId ret = KNullContactId;
-	CContactIdArray* contactIdArray = iDatabase.MatchPhoneNumberL(aNumber, iMatchDigitCount);
+	CContactItemFieldDef* fieldDef;
+	fieldDef = new(ELeave) CContactItemFieldDef;
+	CleanupStack::PushL(fieldDef);
+	fieldDef->AppendL(KUidContactFieldPhoneNumber);
+	CContactIdArray* contactIdArray = iDatabase.FindLC(aNumber, fieldDef);
 	if (contactIdArray->Count() > 0)
 		{
 		ret = (*contactIdArray)[0];
 		}
-	delete contactIdArray;
+	CleanupStack::PopAndDestroy(2); // contactIdArray, fieldDef
 	return ret;
 	}
 

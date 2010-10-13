@@ -21,7 +21,7 @@
 // Phonebook 2
 #include <MPbk2ContactEditorField.h>
 #include <CPbk2PresentationContactField.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 
 // Virtual Phonebook
 #include <MVPbkFieldType.h>

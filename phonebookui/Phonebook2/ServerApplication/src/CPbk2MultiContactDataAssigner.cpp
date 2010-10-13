@@ -31,8 +31,8 @@
 #include "MPbk2SelectFieldProperty.h"
 #include <CPbk2FetchDlg.h>
 #include <MPbk2ApplicationServices.h>
-#include <pbk2uicontrols.rsg>
-#include <pbk2serverapp.rsg>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2ServerApp.rsg>
 
 // Virtual Phonebook
 #include <CVPbkContactManager.h>
@@ -225,16 +225,6 @@ void CPbk2MultiContactDataAssigner::CancelService()
 // --------------------------------------------------------------------------
 //
 void CPbk2MultiContactDataAssigner::AcceptDelayedContactsL
-        ( const TDesC8& /*aContactLinkBuffer*/ )
-    {
-    // Do nothing
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2MultiContactDataAssigner::AcceptDelayedContactsL
-// --------------------------------------------------------------------------
-//
-void CPbk2MultiContactDataAssigner::DenyDelayedContactsL
         ( const TDesC8& /*aContactLinkBuffer*/ )
     {
     // Do nothing

@@ -26,20 +26,20 @@
 #include <MPbk2CommandObserver.h>
 #include <CPbk2FieldPropertyArray.h>
 #include <CPbk2AppUiBase.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <TPbk2AddressSelectParams.h>
 #include <CPbk2AddressSelect.h>
-#include <pbk2presentation.rsg>
+#include <Pbk2Presentation.rsg>
 #include <Pbk2DataCaging.hrh>
 #include <RPbk2LocalizedResourceFile.h>
 #include <CPbk2AttachmentFile.h>
-#include <pbk2commands.rsg>
+#include <Pbk2Commands.rsg>
 #include <CPbk2PresentationContact.h>
 #include <CPbk2FieldPropertyArray.h>
 #include <CPbk2PresentationContactFieldCollection.h>
 #include <CPbk2DriveSpaceCheck.h>
 #include <CPbk2ApplicationServices.h>
-#include <pbk2commonui.rsg>
+#include <Pbk2CommonUi.rsg>
 
 // Virtual Phonebook
 #include <VPbkFieldType.hrh>

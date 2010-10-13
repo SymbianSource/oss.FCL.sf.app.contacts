@@ -30,8 +30,8 @@
 #include <MVPbkSingleContactOperationObserver.h>
 #include <RLocalizedResourceFile.h>
 #include <VPbkDataCaging.hrh>
-#include <vpbkeng.rsg>
-#include <vpbkfieldtypeselectors.rsg>
+#include <VPbkEng.rsg>
+#include <VPbkFieldTypeSelectors.rsg>
 #include <CVPbkFieldTypeSelector.h>
 #include <CVPbkFieldFilter.h>
 #include <barsread.h>
@@ -80,6 +80,7 @@ NONSHARABLE_CLASS(CVPbkPhoneNumberMatchStrategyImpl) :
         ~CVPbkPhoneNumberMatchStrategyImpl();
 
     public: // Interface
+        CContactPhoneNumberParser* GetParser();
         void MatchL(const TDesC& aPhoneNumber);
         TInt MaxMatchDigits() const;
         TArray<MVPbkContactStore*> StoresToMatch() const;
@@ -772,6 +773,11 @@ TPtrC CVPbkPhoneNumberMatchStrategyImpl::NameFieldValueL(
         }
     }
 
+CContactPhoneNumberParser* CVPbkPhoneNumberMatchStrategyImpl::GetParser()
+    {
+    return iParser;
+    }
+
 // Removes non-digit chars except plus form the beginning
 // Checks if number matches to one of defined types
 //
@@ -786,11 +792,19 @@ TInt CVPbkPhoneNumberMatchStrategyImpl::FormatAndCheckNumberType( TDes& aNumber 
     const TChar KAsterisk = TChar('*');
     const TChar KHash = TChar('#');
     
-    HBufC* numberBuf = HBufC::NewL( aNumber.Length() );
-    TPtr number = numberBuf->Des();
-    if ( iParser )
+    TInt format;
+    
+    HBufC* numberBuf = NULL;
+    TRAPD(err, numberBuf = HBufC::NewL( aNumber.Length() ) );
+    // Error was found when Phone allocated memory for numberBuf
+    if( err != KErrNone )
         {
-        iParser->ExtractRawNumber( aNumber, number );
+        return ( format = EUnknown );
+        }
+    TPtr number = numberBuf->Des();
+    if ( GetParser() )
+        {
+        GetParser()->ExtractRawNumber( aNumber, number );
         }
     TInt pos = aNumber.Find( number );
     
@@ -804,8 +818,6 @@ TInt CVPbkPhoneNumberMatchStrategyImpl::FormatAndCheckNumberType( TDes& aNumber 
         aNumber.Copy( number );
         }
     delete numberBuf;
-    
-	TInt format;
 	
     if ( !aNumber.Match( KTwoZerosPattern ) && aNumber.Length() > 2 && aNumber[2] != KZero )
         {
@@ -1159,13 +1171,18 @@ EXPORT_C CVPbkPhoneNumberMatchStrategy* CVPbkPhoneNumberMatchStrategy::NewL(
         CVPbkContactManager& aContactManager,
         MVPbkContactFindObserver& aObserver)
     {
-    if (aConfig.iMatchMode == EVPbkSequentialMatch)
+    // We do not support yet CVPbkPhoneNumberMatchStrategy::EVPbkBestMatchingFlag flag
+    // Skip it from the configuration
+    TConfig config = aConfig;
+    config.iMatchFlags &= ~CVPbkPhoneNumberMatchStrategy::EVPbkBestMatchingFlag;
+
+    if (config.iMatchMode == EVPbkSequentialMatch)
         {
-        return CVPbkPhoneNumberSequentialMatchStrategy::NewL(aConfig, aContactManager, aObserver);
+        return CVPbkPhoneNumberSequentialMatchStrategy::NewL(config, aContactManager, aObserver);
         }
     else
         {
-        return CVPbkPhoneNumberParallelMatchStrategy::NewL(aConfig, aContactManager, aObserver);
+        return CVPbkPhoneNumberParallelMatchStrategy::NewL(config, aContactManager, aObserver);
         }
    }
 
@@ -1178,7 +1195,24 @@ EXPORT_C void CVPbkPhoneNumberMatchStrategy::MatchL(const TDesC& aPhoneNumber)
     {
     InitMatchingL();
 
-    iImpl->MatchL(aPhoneNumber);
+    // The client might be using CVPbkPhoneNumberMatchStrategy::EVPbkBestMatchingFlag
+    // flag, therefore the special chars could not be stripped off from the number
+    // The flag is not supported yet, therefore we need to strip off the special chars
+    HBufC* numberBuf = HBufC::NewL( aPhoneNumber.Length() );
+    CleanupStack::PushL( numberBuf );
+    TPtr number = numberBuf->Des();
+    if ( iImpl->GetParser() )
+        {
+        iImpl->GetParser()->ExtractRawNumber( aPhoneNumber, number );
+        }
+    else
+        {
+        number.Copy( aPhoneNumber );
+        }
+
+    iImpl->MatchL(number);
+
+    CleanupStack::PopAndDestroy(); // numberBuf
     }
 
 void CVPbkPhoneNumberMatchStrategy::BaseConstructL(

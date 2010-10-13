@@ -21,7 +21,7 @@
 #include "CPbk2NlxMoveTopContactsDlg.h"
 #include "CPbk2NlxReorderingModel.h"
 
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <Pbk2ProcessDecoratorFactory.h>
 #include <MPbk2CommandObserver.h>
 #include <MPbk2ContactUiControl.h>

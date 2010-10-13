@@ -20,7 +20,7 @@
 // INCLUDE FILES
 #include <aknnavide.h>
 #include <AknUtils.h>
-#include <logs.rsg>
+#include <Logs.rsg>
 
 #include "CLogsSettingsControlContainer.h"
 #include "CLogsSettingsView.h"

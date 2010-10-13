@@ -26,7 +26,7 @@
 #include <AknsDrawUtils.h>
 #include <featmgr.h>
 #include <bldvariant.hrh>
-#include <pbkview.rsg>
+#include <PbkView.rsg>
 #include <AknDef.h>      // KEikDynamicLayoutVariantSwitch
 #include <AknUtils.h>
 

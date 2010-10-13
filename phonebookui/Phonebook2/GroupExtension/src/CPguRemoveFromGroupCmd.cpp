@@ -20,7 +20,7 @@
 #include "CPguRemoveFromGroupCmd.h"
 
 // Phonebook2
-#include <pbk2groupuires.rsg>
+#include <Pbk2GroupUIRes.rsg>
 #include <MPbk2CommandObserver.h>
 #include <MPbk2ContactUiControl.h>
 #include <CPbk2GeneralConfirmationQuery.h>
@@ -746,21 +746,6 @@ void CPguRemoveFromGroupCmd::ReactivateUIBlockL()
     
     iInputBlock = CAknInputBlock::NewLC();
     CleanupStack::Pop( iInputBlock );   
-    }
-
-
-// --------------------------------------------------------------------------
-// CPguRemoveFromGroupCmd::Abort
-// --------------------------------------------------------------------------
-//
-void CPguRemoveFromGroupCmd::Abort()
-    {
-    if ( iProgressDialog && !iDialogDismissed )
-        {
-        // Delete the dialog
-        TRAP_IGNORE( iProgressDialog->ProcessFinishedL() );
-        iProgressDialog = NULL;
-        }
     }
 
 //  End of File  

@@ -44,4 +44,4 @@ LIBRARY       flogger.lib
 LIBRARY       bafl.lib
 LIBRARY       ecom.lib
 LIBRARY       PcsUtils.lib
-LIBRARY       featmgr.lib
+LIBRARY       FeatMgr.lib

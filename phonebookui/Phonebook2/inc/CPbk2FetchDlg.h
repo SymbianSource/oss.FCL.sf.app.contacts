@@ -159,14 +159,6 @@ class CPbk2FetchDlg : public CAknDialog,
          */
         IMPORT_C void AcceptDelayedFetchL(
                 const TDesC8& aContactLink );
-        
-        /**
-         * Unmarks the given contact as selected.
-         *
-         * @param aContactLink  Link to a contact to select.
-         */
-        IMPORT_C void DenyDelayedFetchL(
-                const TDesC8& aContactLink );
 
     public: // From CEikDialog
         IMPORT_C TInt ExecuteLD();
@@ -212,7 +204,6 @@ class CPbk2FetchDlg : public CAknDialog,
         void SelectContactL(
                 const MVPbkContactLink& aLink,
                 TBool aSelected );
-        TBool IsSelectPermitted();
         
     private: // From MPbk2StoreConfigurationObserver
     	void ConfigurationChanged();
@@ -321,8 +312,6 @@ class CPbk2FetchDlg : public CAknDialog,
         CPbk2NamesListControl* iNamesListControl;
         /// Not own: Group list control
         CPbk2NamesListControl* iGroupListControl;
-        /// Is selection permitted
-        TBool iSelectPermitted;
     };
 
 #endif // CPBK2FETCHDLG_H

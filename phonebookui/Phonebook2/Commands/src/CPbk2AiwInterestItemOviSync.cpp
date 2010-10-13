@@ -22,7 +22,7 @@
 #include <Pbk2Commands.hrh>
 #include <MPbk2Command.h>
 #include <MPbk2ContactUiControl.h>
-#include <pbk2commands.rsg>
+#include <Pbk2Commands.rsg>
 #include "Pbk2InternalCommands.hrh"
 
 // System includes

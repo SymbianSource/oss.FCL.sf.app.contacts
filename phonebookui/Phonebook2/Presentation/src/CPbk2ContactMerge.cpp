@@ -25,7 +25,7 @@
 #include <MPbk2FieldPropertyArray.h>
 #include <MPbk2FieldProperty.h>
 #include <RPbk2LocalizedResourceFile.h>
-#include <pbk2presentation.rsg>
+#include <Pbk2Presentation.rsg>
 #include <Pbk2DataCaging.hrh>
 
 

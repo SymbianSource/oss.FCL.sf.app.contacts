@@ -54,6 +54,38 @@ RESOURCE MENU_PANE r_phonebook2_groupmembers_menu
         };
     }
 
+// ---------------------------------------------------------
+// Groups Members View's context menu bar
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phonebook2_groupmembers_markable_list_menu
+    {
+    items =
+        {
+        MENU_ITEM
+            {
+            command = EAknCmdMark;
+            txt = qtn_options_list_mark_one;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EAknCmdUnmark;
+            txt = qtn_options_list_unmark_one;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EAknMarkAll;
+            txt = qtn_options_list_mark_all;
+            },
+        MENU_ITEM
+            {
+            command = EAknUnmarkAll;
+            txt = qtn_options_list_unmark_all;
+            }
+        };
+    }
 
 // ---------------------------------------------------------
 // Groups Members View's menu bar
@@ -69,7 +101,7 @@ RESOURCE MENU_BAR r_phonebook2_groupmembers_menubar
             },
         MENU_TITLE
             {
-            menu_pane = R_AVKON_MENUPANE_MARK_MULTIPLE;
+            menu_pane = R_AVKON_MENUPANE_MARKABLE_LIST;
             },             
         MENU_TITLE
             {
@@ -108,5 +140,27 @@ RESOURCE MENU_PANE r_phonebook2_groupmembers_context_menu
         };
     }
     
+// ---------------------------------------------------------
+// Groups Members View's context menu bar
+// ---------------------------------------------------------
+//
+RESOURCE MENU_BAR r_phonebook2_groupmembers_context_menubar
+    {
+    titles = 
+        {
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_MARKABLE_LIST_CONTEXT_MENU;
+            },                
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_BCARD_SEND_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = r_phonebook2_groupmembers_context_menu;
+            }
+        };
+    }
 
 // End of File

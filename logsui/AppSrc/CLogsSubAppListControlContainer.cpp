@@ -25,7 +25,7 @@
 #include <AknsConstants.h>  //for skinned icons
 #include <featmgr.h>
 
-#include <logs.rsg>
+#include <Logs.rsg>
 #include <logs.mbg>
 
 #include "CLogsSubAppListControlContainer.h"

@@ -23,7 +23,6 @@
 #include <Pbk2Commands.hrh>
 #include "ccappstatuscontrol.h"
 #include <aknlongtapdetector.h>
-#include <akninputblock.h>
 
 class CAknsBasicBackgroundControlContext;
 class CAknPreviewPopUpController;
@@ -37,7 +36,6 @@ class MCCAViewLauncher;
 class CCCAExtensionFactory;
 class CCCAppCommLauncherCustomListBox;
 class CCCaFactoryExtensionNotifier;
-class CAknInputBlock;
 
 /**
  * Class implementing CCAppCommLauncher -container for controls
@@ -54,8 +52,7 @@ class CCCAppCommLauncherContainer :
     public MEikListBoxObserver,
     public MCCAppContactHandlerNotifier,
     public MCCAStatusControlObserver,
-    public MAknLongTapDetectorCallBack,
-    public MAknInputBlockCancelHandler
+    public MAknLongTapDetectorCallBack
     {
 public: // constructor and destructor
 
@@ -230,8 +227,7 @@ public: // New
      * @return the amount of the list box.
      * @since S60 v5.0
     */
-    const TInt GetListBoxItemAmount() const;    
-    
+    const TInt GetListBoxItemAmount() const;
 
 private: // New
 
@@ -365,23 +361,6 @@ private: // New
         TDesC8& aContactIdentifier,
         TDesC& aFullName,
         TDesC& aSelectedField );
-    
-    /*
-    * From MAknInputBlockCancelHandler
-    */    
-    void AknInputBlockCancel();
-    
-    /**
-    * Removes the Input Blocker and makes the contianer regain 
-    * user input, key and pen
-    */    
-    void RemoveInputBlocker();
-    
-    /**
-    * Blocks user input, key and pen, from reaching
-    * container untill the issue of communication is complete 
-    */    
-    void SetInputBlockerL();
 
 private: // Constructors
 
@@ -472,10 +451,8 @@ private: // Data
      */
 	CCCaFactoryExtensionNotifier* iFactoryExtensionNotifier;
 	
-	/**
-	 * Owns - Input Blocker
-	 */
-	CAknInputBlock* iInputBlocker;
+	
+	TBool iLongTap;
     };
 
 #endif // __CCAPPCOMMALAUNCHERCONTAINER_H

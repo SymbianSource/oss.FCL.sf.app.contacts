@@ -25,7 +25,7 @@
 #include <CPbk2SortOrderManager.h>
 #include <CPbk2ContactViewBuilder.h>
 #include <RPbk2LocalizedResourceFile.h>
-#include <pbk2commonui.rsg>
+#include <Pbk2CommonUi.rsg>
 #include <Pbk2DataCaging.hrh>
 #include <CPbk2GroupFeaturePlugin.h>
 #include <Pbk2ViewId.hrh>

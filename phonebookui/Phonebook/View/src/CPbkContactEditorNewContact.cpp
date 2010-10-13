@@ -25,7 +25,7 @@
 #include <eikmenup.h>
 #include <bldvariant.hrh>
 #include <featmgr.h>
-#include <pbkview.rsg>
+#include <PbkView.rsg>
 #include "CPbkContactEngine.h"
 #include <CPbkFFSCheck.h>
 #include <avkon.hrh>

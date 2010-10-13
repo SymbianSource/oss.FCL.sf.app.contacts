@@ -41,7 +41,7 @@
 #include <CPbkAttachmentFile.h>
 #include <CPbkConstants.h>
 
-#include <bcardeng.rsg>
+#include <BCardEng.rsg>
 #include "CBCardParserParamArray.h"
 #include "CBCardFieldAction.h"
 #include "CBCardFieldUidMapping.h"

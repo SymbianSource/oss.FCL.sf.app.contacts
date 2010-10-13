@@ -18,7 +18,7 @@
 #ifndef CCAPPMYCARDIMAGELOADER_H
 #define CCAPPMYCARDIMAGELOADER_H
 
-#include <ccappimagedecoding.h>
+#include <CCAppImageDecoding.h>
 
 class MVPbkStoreContact;
 class CCCAppImageDecoding;

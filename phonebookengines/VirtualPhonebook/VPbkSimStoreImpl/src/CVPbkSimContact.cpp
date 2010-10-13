@@ -18,7 +18,6 @@
 
 
 // INCLUDE FILES
-#include <featmgr.h>
 #include "CVPbkSimContact.h"
 
 #include "CVPbkSimCntField.h"
@@ -51,10 +50,6 @@ void CVPbkSimContact::ConstructL( const TDesC8* aETelContact )
     if ( aETelContact )
         {
         SetL( *aETelContact );
-        if( FeatureManager::FeatureSupported( KFeatureIdFfTdClmcontactreplicationfromphonebooktousimcard ) )
-        	{
-			IndentifyAdditionalFields();
-        	}
         }
     }
 
@@ -236,37 +231,6 @@ void CVPbkSimContact::SetL( const TDesC8& aETelContact )
     iStore.ContactConverter().ConvertFromETelToVPbkSimContactL( 
         ptr, *this );
     CleanupStack::PopAndDestroy( buf );
-    }
-
-// -----------------------------------------------------------------------------
-// CVPbkSimContact::IndentifyAdditionalFields()
-// -----------------------------------------------------------------------------
-//
-void CVPbkSimContact::IndentifyAdditionalFields()
-    {
-    TInt anrNumberFieldCount = 0;
-    for( int i = 0; i < iFieldArray.Count(); i ++ )
-        {
-        if( iFieldArray[i]->Type() == EVPbkSimAdditionalNumber )
-            {
-            anrNumberFieldCount ++;
-            switch( anrNumberFieldCount )
-                {
-                case 1:
-                    iFieldArray[i]->SetType( EVPbkSimAdditionalNumber1 );
-                    break;
-                case 2:
-                    iFieldArray[i]->SetType( EVPbkSimAdditionalNumber2 );
-                    break;
-                case 3:
-                    iFieldArray[i]->SetType( EVPbkSimAdditionalNumber3 );
-                    break;
-                default:
-                    iFieldArray[i]->SetType( EVPbkSimAdditionalNumberLast );
-                    break;
-                }
-            }
-        }
     }
 
 // -----------------------------------------------------------------------------

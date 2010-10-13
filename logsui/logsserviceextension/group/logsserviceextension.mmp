@@ -91,7 +91,7 @@ LIBRARY                 efsrv.lib
 LIBRARY                 cchclient.lib
 
 //Virtual Phonebook Engine
-LIBRARY                 VPbkEng.lib
+LIBRARY                 vpbkeng.lib
 
 //Base64 encoding
 LIBRARY                 imut.lib

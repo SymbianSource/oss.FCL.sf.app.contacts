@@ -22,7 +22,7 @@
 #include    <f32file.h>
 #include    <barsc.h>
 #include    <barsread.h>
-#include    <pbkeng.rsg>
+#include    <PbkEng.rsg>
 #include    "CPbkLocalVariationManager.h"
 
 

@@ -188,20 +188,5 @@ void CPbk2CommandActivator::CommandFinished( const MPbk2Command& /*aCommand*/ )
     iObserver->CommandFinished( *this );
     }
   
-// --------------------------------------------------------------------------
-// CPbk2CommandActivator::CommandExtension
-// --------------------------------------------------------------------------
-//
-TAny* CPbk2CommandActivator::CommandExtension(TUid aExtensionUid )
-    {
-      if( iCommand )
-        {
-          return iCommand->CommandExtension(aExtensionUid);
-        }
-      else
-        {
-          return NULL;
-        }
-    }
 
 //  End of File  

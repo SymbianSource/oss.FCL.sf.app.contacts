@@ -30,8 +30,8 @@
 #include <CPbk2PresentationContact.h>
 #include <CPbk2FieldPropertyArray.h>
 #include <CPbk2PresentationContactFieldCollection.h>
-#include <pbk2commands.rsg>
-#include <pbk2cmdextres.rsg>
+#include <Pbk2Commands.rsg>
+#include <Pbk2CmdExtRes.rsg>
 #include <MVPbkContactFieldUriData.h>
 
 #include <txtetext.h>   // CPlainText

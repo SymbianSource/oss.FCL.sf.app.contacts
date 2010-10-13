@@ -43,7 +43,7 @@
 #include <CPbk2FieldPropertyArray.h>
 #include <CPbk2TabGroupContainer.h>
 #include <MPbk2ContactViewSupplier.h>
-#include <pbk2commonui.rsg>
+#include <Pbk2CommonUi.rsg>
 #include <Pbk2UID.h>
 #include <Phonebook2PublicPSKeys.h> 
 
@@ -572,23 +572,9 @@ TBool CPbk2AppUi::LocalVariationFeatureEnabled( TInt aFeatureFlag )
 // --------------------------------------------------------------------------
 //
 void CPbk2AppUi::LeavePbkInMemExitL()
-    {
-    PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING("CPbk2AppUi::LeavePbkInMemExitL"));
-    
-    TBool dlgOnTop = IsDisplayingMenuOrDialog();
-    // When Phonebook app is to leave in memory with a dialog displaying
-    // on the top of it, an escape key event will be simuliated to notify
-    // the dialog more earlier.
-    if ( dlgOnTop ) 
-        { 
-        TKeyEvent key; 
-        key.iRepeats = 0; 
-        key.iCode = EKeyEscape; 
-        key.iModifiers = 0; 
-        key.iScanCode = EStdKeyNull; 
-        iCoeEnv->SimulateKeyEventL(key, EEventKey); 
-        } 
-
+	{
+	PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING("CPbk2AppUi::LeavePbkInMemExitL"));
+	
 	// Diasable bring to foreground on view activation event
 	SetCustomControl(1);
 	

@@ -28,7 +28,7 @@
 #include <aknlists.h>
 #include <eikmenub.h>
 
-#include <speeddial.rsg>
+#include <SpeedDial.rsg>
 #include <featmgr.h>
 #include <AiwCommon.hrh>    //KAiwCmdCall
 #include <aiwdialdataext.h>
@@ -50,13 +50,13 @@
 
 #include <settingsinternalcrkeys.h>
 #include <SpeeddialPrivateCRKeys.h>
-#include "spdctrl.rsg"
+#include "SpdCtrl.rsg"
 
 
 #include <CMessageData.h>
 #include <txtrich.h>
 #include <SendUiConsts.h>
-#include <sendnorm.rsg>
+#include <Sendnorm.rsg>
 #include <MVPbkContactFieldTextData.h>
 
 _LIT( KSpace, " " );

@@ -60,16 +60,14 @@
 #include <TVPbkFieldTypeParameters.h>
 #include <TVPbkFieldVersitProperty.h>
 #include <StringLoader.h>
-#include <featmgr.h>
+
 #include <TPbk2AppIconId.h>
 
 #include <aknlists.h>
 
 #include <avkon.rsg>
-#include <vpbkeng.rsg>
-#include <pbk2uicontrols.rsg>
-
-#include <Pbk2Config.hrh>
+#include <VPbkEng.rsg>
+#include <Pbk2UIControls.rsg>
 
 #include "ccappdetailsviewlistboxmodel.h"
 #include "ccappdetailsviewdefs.h"
@@ -700,12 +698,7 @@ void CCCAppDetailsViewListBoxModel::VPbkSingleContactOperationComplete(
                 UpdateMSKinCbaL();
         );
 
-    // check if any item highlighted
-    TBool highLightEnabled = iListBox.IsHighlightEnabled();
-    if ( !highLightEnabled )
-        {
-        SetFocusedListIndex(iInitialFocusIndex);
-        }
+    SetFocusedListIndex(iInitialFocusIndex);
 
     /*if (!iXspIdModifyState)
      {
@@ -927,26 +920,18 @@ void CCCAppDetailsViewListBoxModel::AddDataL()
                 // add icon.
                 buffer.Zero();
                 TInt iconIndex = 0;
-                TInt iconId = 0;
-                // UnSync feature indicator flag and chinese flag
-                TBool supportUnSyncFeature = FeatureManager::FeatureSupported(
-                KFeatureIdFfTdUnSyncabPbfieldsInd);
-                TBool supportChinese = FeatureManager::FeatureSupported(KFeatureIdChinese);
-                // Valid address
-                TBool addressValidated = IsAddressValidated(groupId); 
-                if(supportChinese && supportUnSyncFeature)
-                    {   
-                    // UnSync Icon
-                    iconId = EPbk2qgn_prop_phonebook2_unsync;
-                    }
+                if (IsAddressValidated(groupId))
+                {
+                    TPbk2IconId iconId(TUid::Uid(KPbk2UID3), EPbk2qgn_prop_locev_map);
+                    iconIndex = iIconArray.FindIcon(iconId);
+                    buffer.AppendNum(iconIndex);
+                }
                 else
-                    {
-                    iconId = addressValidated ?
-                        EPbk2qgn_prop_locev_map : EPbk2qgn_prop_pb_no_valid_lm;
-                    }
-                TPbk2IconId pbkIconId( TUid::Uid(KPbk2UID3),iconId );
-                iconIndex = iIconArray.FindIcon(pbkIconId);
-                buffer.AppendNum(iconIndex); 
+                {
+                    TPbk2IconId iconId(TUid::Uid(KPbk2UID3), EPbk2qgn_prop_pb_no_valid_lm);
+                    iconIndex = iIconArray.FindIcon(iconId);
+                    buffer.AppendNum(iconIndex);
+                }
                 row->AppendColumnL(buffer);
 
                 // add label.

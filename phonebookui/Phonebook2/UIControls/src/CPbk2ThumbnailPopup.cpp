@@ -28,7 +28,7 @@
 #include <CPbk2IconInfoContainer.h>
 #include <TPbk2AppIconId.h>
 #include <TPbk2ImageManagerParams.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 
 // Virtual Phonebook
 #include <MVPbkBaseContact.h>

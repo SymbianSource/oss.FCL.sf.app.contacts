@@ -36,7 +36,7 @@
 #include <txtetext.h>
 #include <eikenv.h>
 #include <eikappui.h>
-#include <eikcoctl.rsg>
+#include <EIKCOCTL.rsg>
 #include <eikedwin.h>
 #include <featmgr.h>
 #include <AknFepInternalCRKeys.h>

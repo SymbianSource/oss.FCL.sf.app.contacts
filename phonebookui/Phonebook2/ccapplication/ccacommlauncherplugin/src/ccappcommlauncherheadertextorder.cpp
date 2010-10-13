@@ -18,7 +18,7 @@
 #include "ccappcommlauncherheaders.h"
 #include "cmscontact.h"
 #include <Pbk2PresentationUtils.h>
-#include <pbk2presentation.rsg>
+#include <Pbk2Presentation.rsg>
 #include <RPbk2LocalizedResourceFile.h>
 #include <Pbk2DataCaging.hrh>
 

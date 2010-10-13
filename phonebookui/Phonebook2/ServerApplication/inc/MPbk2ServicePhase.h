@@ -68,18 +68,6 @@ class MPbk2ServicePhase
                 const TDesC8& aContactLinkBuffer ) = 0;
 
         /**
-         * Notifies of delayed acception.
-         *
-         * Purpose: Sometimes client maybe deny the selected contact, 
-         * the function is used to deliver the client's feedback to phonebook.
-         * 
-         * @param aContactLinkBuffer    Buffer containing denied
-         *                              contact links.
-         */
-        virtual void DenyDelayedL(
-                const TDesC8& aContactLinkBuffer ) = 0;
-        
-        /**
          * Returns the results.
          *
          * @return  Results.

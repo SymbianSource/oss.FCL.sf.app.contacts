@@ -20,7 +20,7 @@
 // INCLUDE FILES
 #include "CPbk2RemoveImageCmd.h"
 #include "CPbk2ImageManager.h"
-#include <pbk2commands.rsg>
+#include <Pbk2Commands.rsg>
 
 #include <AknQueryDialog.h>
 #include <MVPbkStoreContact.h>

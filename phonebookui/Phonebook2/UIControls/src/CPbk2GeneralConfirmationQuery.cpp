@@ -22,7 +22,7 @@
 #include <MPbk2AppUi.h>
 #include <CPbk2ApplicationServices.h>
 #include <MPbk2ContactNameFormatter.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 
 // Virtual Phonebook
 #include <MVPbkBaseContact.h>

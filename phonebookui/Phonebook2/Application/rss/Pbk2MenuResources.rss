@@ -18,8 +18,8 @@
 
 
 // INCLUDES
-#include <pbk2commands.rsg>     // menu pane definitions are here
-#include <pbk2uicontrols.rsg>   // CBA resources
+#include <Pbk2Commands.rsg>     // menu pane definitions are here
+#include <Pbk2UIControls.rsg>   // CBA resources
 
 // --------------------------------------------------------------------------
 // Names List View's main resource
@@ -106,7 +106,7 @@ RESOURCE MENU_BAR r_phonebook2_nameslist_menubar
             },
         MENU_TITLE
             {
-            menu_pane = R_AVKON_MENUPANE_MARK_MULTIPLE;
+            menu_pane = R_AVKON_MENUPANE_MARKABLE_LIST;
             },            
         MENU_TITLE
             {
@@ -194,6 +194,37 @@ RESOURCE MENU_BAR r_phonebook2_nameslist_context_menubar
         };
     }
 
+// --------------------------------------------------------------------------
+// Names List View's Context sensitive menu bar
+// when items are marked
+// --------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_phonebook2_nameslist_context_menubar_items_marked
+    {
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_MARKABLE_LIST_CONTEXT_MENU;
+            },            
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_NAMESLIST_COPY_CONTEXT_MENU;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_NAMESLIST_CONTEXT_MENU_MARKED_ITEMS;
+            },
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_BCARD_SEND_MENU;
+            },            
+        MENU_TITLE
+            {
+            menu_pane = R_PHONEBOOK2_NAMELIST_CREATE_MESSAGE_MENU;
+            }
+        };
+    }
 
 // --------------------------------------------------------------------------
 // Contact Info View's menu bar

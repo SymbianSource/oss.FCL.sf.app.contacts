@@ -23,7 +23,7 @@
 #include "CContactStore.h"
 #include "CFieldFactory.h"
 #include "CCustomFilteredGroupView.h"
-#include <vpbkcntmodelres.rsg>
+#include <VPbkCntModelRes.rsg>
 #include "VPbkCntModelRemoteViewPreferences.h"
 #include "NamedRemoteViewViewDefinitionStoreUtility.h"
 

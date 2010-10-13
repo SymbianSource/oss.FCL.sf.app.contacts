@@ -22,7 +22,7 @@
 #include <eikmenub.h>   
 #include <StringLoader.h> 
 #include <aknnotewrappers.h> 
-#include <logs.rsg>
+#include <Logs.rsg>
 
 #include "CLogsDetailView.h"
 #include "CLogsDetailControlContainer.h"
@@ -284,7 +284,6 @@ void CLogsDetailView::DynInitMenuPaneL(
         case ( R_COMMON_SEND_MESSAGE_SUBMENU ):
         case ( R_COMMON_POC_SUBMENU ):
         case ( R_COMMON_CALLUI_SUBMENU ):
-        case ( R_COMMON_SHOW_MY_ADDRESS_MENU ):
             {
             SetMenuItemsItemSpecificProperty( aMenuPane, EFalse );
             }
@@ -499,15 +498,4 @@ void CLogsDetailView::SetMenuItemsItemSpecificProperty(
             }
         }
     }
-
-// ----------------------------------------------------------------------------
-// CLogsDetailView::OriginalCallMenuIsVisible
-// ----------------------------------------------------------------------------
-//
-TBool CLogsDetailView::OriginalCallMenuIsVisible()
-	{
-	// Original CallMenu is visible
-	return ETrue;
-	}
-
 //  End of File

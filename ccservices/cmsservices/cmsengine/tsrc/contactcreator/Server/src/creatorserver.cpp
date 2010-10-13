@@ -23,7 +23,7 @@
 #include <spentry.h>
 #include <flogger.h>
 #include <barsread.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <spsettings.h>
 #include <spproperty.h>
 #include <spdefinitions.h>

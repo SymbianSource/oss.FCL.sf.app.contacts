@@ -25,18 +25,18 @@
 #include <MPbk2ApplicationServices.h>
 #include <MPbk2AppUi.h>
 #include <CPbk2FieldPropertyArray.h>
-#include <pbk2mapuires.rsg>
+#include <Pbk2MapUIRes.rsg>
 #include <MPbk2ContactEditorControl.h>
 #include <MPbk2ContactEditorField.h>
 #include <Pbk2UIControls.hrh>
 #include <Pbk2Commands.hrh>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <TPbk2AddressSelectParams.h>
 #include <CPbk2AddressSelect.h>
 #include <Pbk2AddressTools.h>
+#include <Pbk2UIControls.rsg>
 #include <CPbk2ApplicationServices.h>
 #include <pbk2mapcommands.hrh>
-#include <MPbk2DialogEliminator.h>
 
 // Virtual Phonebook
 #include <MVPbkBaseContactField.h>
@@ -49,7 +49,7 @@
 #include <MVPbkStoreContactField.h>
 #include <MVPbkContactFieldData.h>
 #include <MVPbkContactFieldTextData.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <MVPbkFieldType.h>
 #include <TVPbkFieldVersitProperty.h>
 #include <MVPbkStoreContactFieldCollection.h>
@@ -84,7 +84,8 @@
 // Debugging headers
 #include <Pbk2Debug.h>
 
-_LIT( KGeoSeparator, ",");
+_LIT(KGeoSeparator, ",");
+_LIT( KDecimalSepratorEnglish, "." );
 const TInt KGeoSeparatorLength = 1;
 const TReal32 KGeoHorizontalAccuracy = 0;
 const TInt KGeoMaxSize = 60;
@@ -126,11 +127,6 @@ CPmapCmd::CPmapCmd( MPbk2ContactUiControl& aUiControl, TInt aCommandId ) :
 //
 CPmapCmd::~CPmapCmd()
     {
-    if ( iAddressSelectEliminator )
-        {
-        iAddressSelectEliminator->ForceExit();
-        }
-    
     Cancel();
     if(iMapView)
         {
@@ -144,13 +140,6 @@ CPmapCmd::~CPmapCmd()
 	    iUiControl->RegisterCommand( NULL );
 	    }
     delete iMapViewProvider;
-    
-    //Indication that the object has been deleted.
-    if ( iThisPtrDestroyed )
-        {
-        *iThisPtrDestroyed = ETrue;
-        }
-    
     }
 
 // --------------------------------------------------------------------------
@@ -270,9 +259,6 @@ void CPmapCmd::ExecuteL()
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
         ("CPmapCmd::ExecuteLD"));
 
-    TBool amIDestroyed( EFalse );
-    iThisPtrDestroyed = &amIDestroyed;  
-        
     iAddressUpdatePrompt = ETrue;
     TPbk2FieldGroupId groupId = EPbk2FieldGroupIdNone;
     if( !IsAddressInContact() )
@@ -324,15 +310,6 @@ void CPmapCmd::ExecuteL()
     	{
     	groupId = SelectAddressL();
     	}
-        
-    //This object could have been deleted because of some external activity
-    //Dont proceed if this object is destroyed
-    if ( amIDestroyed )
-        {        
-        return;
-        }    
-    
-    iThisPtrDestroyed = NULL;
     
     if( groupId != EPbk2FieldGroupIdNone )
     	{
@@ -530,12 +507,6 @@ TPbk2FieldGroupId CPmapCmd::SelectAddressL()
 
     CleanupStack::PopAndDestroy( appServices );
     CPbk2AddressSelect* addressSelect = CPbk2AddressSelect::NewL( params );
-    
-    // Execute
-    iAddressSelectEliminator = addressSelect;
-    iAddressSelectEliminator->ResetWhenDestroyed
-        ( &iAddressSelectEliminator );
-    
     MVPbkStoreContactField* selectedField = addressSelect->ExecuteLD();
     CleanupStack::PopAndDestroy(); // resReader
 
@@ -879,17 +850,43 @@ TBool CPmapCmd::FillGeoLandmarkL(
 TBool CPmapCmd::DoFillGeoLandmarkL(
 		CPosLandmark& aLandmark, const TDesC& aDataText )
 	{
+    HBufC* locationText = aDataText.AllocLC();
+    
 	TBool result = EFalse;
-	TInt separator = aDataText.Find( KGeoSeparator );
+    TInt separator = locationText->Find( KGeoSeparator );
 	if ( separator != KErrNotFound )
 		{
+    TLocale localeFethcer;
+    TChar currentDecimalSeparator = localeFethcer.DecimalSeparator();
+    TBuf<1> currentLangDecSeprator;
+    currentLangDecSeprator.Append( currentDecimalSeparator );
+    TBuf< KGeoMaxSize > strLatitude;
+    strLatitude.Copy( locationText->Left( separator ) );
+    
+    TInt descimalSepratorPos = strLatitude.Find( KDecimalSepratorEnglish );
+    if( descimalSepratorPos != KErrNotFound )
+        {
+        strLatitude.Delete( descimalSepratorPos, 1 );
+        strLatitude.Insert( descimalSepratorPos,currentLangDecSeprator );
+        }
+
 		TReal64 latitude = 0;
 		TReal64 logitude = 0;
-        TLex lexLatitude( aDataText.Left( separator ) );
-		TLex lexLogitude( aDataText.Right( aDataText.Length()
-				- separator - KGeoSeparatorLength ) );
-		if ( lexLatitude.Val( latitude ) == KErrNone
-				&& lexLogitude.Val( logitude ) == KErrNone )
+    TLex lexLatitude( strLatitude );
+    
+    TBuf< KGeoMaxSize > strLongitude;
+    strLongitude.Copy( locationText->Right( locationText->Length() 
+                        - separator - KGeoSeparatorLength ) );
+    descimalSepratorPos = strLongitude.Find( KDecimalSepratorEnglish );
+    if( descimalSepratorPos != KErrNotFound )
+        {
+        strLongitude.Delete( descimalSepratorPos, 1 );
+        strLongitude.Insert( descimalSepratorPos,currentLangDecSeprator );
+        }
+    
+    TLex lexLogitude( strLongitude );
+    if ( lexLatitude.Val( latitude, currentDecimalSeparator ) == KErrNone
+        && lexLogitude.Val( logitude, currentDecimalSeparator ) == KErrNone )
 			{
 			TLocality loc( TCoordinate( latitude, logitude ),
 					KGeoHorizontalAccuracy );
@@ -898,11 +895,14 @@ TBool CPmapCmd::DoFillGeoLandmarkL(
             if(separator2 != KErrNotFound)
                 {
                 separator += separator2;
-                aLandmark.SetPositionFieldL(EPositionFieldCountryCode,aDataText.Right( aDataText.Length() - separator - (KGeoSeparatorLength * 2) ));
+                aLandmark.SetPositionFieldL( EPositionFieldCountryCode,
+                locationText->Right( locationText->Length() 
+                        - separator - ( KGeoSeparatorLength * 2 ) ) );
                 }
             result = ETrue;
             }
 		}
+    CleanupStack::PopAndDestroy( locationText );
 	return result;
 	}
 
@@ -968,10 +968,31 @@ void CPmapCmd::UpdateCoordsL(
 	textNumber.CreateL( KGeoMaxSize );
 	TRealFormat format( KGeoFormatWidth );
 	textNumber.Num( latitude, format );
+	
+    TLocale localeFetcer;
+    TChar currentDecimalSeparator;
+
+    currentDecimalSeparator = localeFetcer.DecimalSeparator();
+    TInt descimalSepratorPos = textNumber.Locate( currentDecimalSeparator ); 
+
+    if( descimalSepratorPos != KErrNotFound )
+        {
+        textNumber.Replace( descimalSepratorPos , 1 , KDecimalSepratorEnglish );
+        }
+
+    
 	geoData = textNumber;
 	geoData += KGeoSeparator();
 	textNumber.Num( longitude, format );
-	geoData += textNumber;
+	
+    descimalSepratorPos = textNumber.Locate( currentDecimalSeparator );
+
+    if( descimalSepratorPos != KErrNotFound )
+        {
+        textNumber.Replace( descimalSepratorPos , 1 , KDecimalSepratorEnglish );
+        }
+		
+    geoData += textNumber;
 
     if(aLandmark.IsPositionFieldAvailable( EPositionFieldCountryCode ))
         {
@@ -1431,6 +1452,8 @@ void CPmapCmd::HandleSelectiOnAssignFromMapsL()
             UpdateFieldL( *result, EPositionFieldPostalCode, 
                             EVPbkVersitSubFieldPostalCode, iAddressType );
             UpdateFieldL( *result, EPositionFieldLocality, 
+                            EVPbkVersitSubFieldRegion, iAddressType );
+            UpdateFieldL( *result, EPositionFieldState, 
                             EVPbkVersitSubFieldRegion, iAddressType );
             UpdateFieldL( *result, EPositionFieldNone, 
                             EVPbkVersitSubFieldPostOfficeAddress, iAddressType );

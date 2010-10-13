@@ -27,7 +27,7 @@
 #include "CPbk2ContactFetchPhase.h"
 #include "CPbk2AddressSelectPhase.h"
 #include <CPbk2StoreManager.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <TPbk2AddressSelectParams.h>
 #include <Pbk2IPCPackage.h>
 #include <MPbk2ApplicationServices.h>
@@ -407,31 +407,6 @@ void CPbk2ItemFetcher::AcceptDelayedContactsL
     if ( iFetchPhase )
         {
         iFetchPhase->AcceptDelayedL( aContactLinkBuffer );
-        }
-    }
-// --------------------------------------------------------------------------
-// CPbk2ItemFetcher::DenyDelayedContactsL
-// --------------------------------------------------------------------------
-//
-void CPbk2ItemFetcher::DenyDelayedContactsL
-        ( const TDesC8& aContactLinkBuffer )
-    {
-    PBK2_DEBUG_PRINT( PBK2_DEBUG_STRING
-        ("CPbk2ItemFetcher::DenyDelayedContactsL()") );
-
-    if ( iAddressSelectPhase )
-        {
-        iAddressSelectPhase->DenyDelayedL( aContactLinkBuffer );
-        }
-
-    if ( iCommAddressSelectPhase )
-        {
-        iCommAddressSelectPhase->DenyDelayedL( aContactLinkBuffer );
-        }
-
-    if ( iFetchPhase )
-        {
-        iFetchPhase->DenyDelayedL( aContactLinkBuffer );
         }
     }
 

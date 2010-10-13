@@ -30,7 +30,7 @@
 #include <CVPbkContactManager.h>
 #include <MVPbkFieldType.h>
 #include <MVPbkContactFieldTextData.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 // System includes
 #include <featmgr.h>

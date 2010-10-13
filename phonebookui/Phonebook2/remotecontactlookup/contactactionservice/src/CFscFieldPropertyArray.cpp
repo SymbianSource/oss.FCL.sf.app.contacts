@@ -31,7 +31,7 @@
 #include <MVPbkFieldType.h>
 #include <TVPbkFieldVersitProperty.h>
 #include <CVPbkFieldTypeSelector.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 // System includes
 #include <barsc.h>

@@ -33,7 +33,7 @@
 #include "MxSPFactory.h"
 #include "CxSPViewIdChanger.h"
 #include "CxSPViewInfo.h"
-#include <extensionmanagerres.rsg>
+#include <ExtensionManagerRes.rsg>
 #include "xSPOrderOrganizer.h"
 #include "CGlobalNoteObserver.h"
 #include <MPbk2ApplicationServices2.h>

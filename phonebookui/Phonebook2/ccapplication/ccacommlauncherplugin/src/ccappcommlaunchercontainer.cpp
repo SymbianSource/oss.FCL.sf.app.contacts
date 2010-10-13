@@ -513,10 +513,11 @@ void CCCAppCommLauncherContainer::HandleLongTapEventL( const TPoint& /*aPenEvent
     
         VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector
             contactActionType = iPlugin.Container().SelectedCommunicationMethod();
-      
-        if ( contactActionType
+        
+        if ( !iLongTap && contactActionType
                         == VPbkFieldTypeSelectorFactory::EFindOnMapSelector )
-            {   
+            {  
+            iLongTap = ETrue;    
             DoShowMapCmdL( (TPbk2CommandId)EPbk2ExtensionShowOnMap );
             }
         else
@@ -575,15 +576,13 @@ void CCCAppCommLauncherContainer::HandleListBoxEventL(
         iHasBeenDragged = EFalse;
         }
 
-    if ( executeContactAction && iPlugin.CommandState().IsRunning()  )
+    if ( executeContactAction && iPlugin.CommandState().IsRunning() )
         {
         executeContactAction = EFalse;
         }
 
-    if ( executeContactAction )
+    if (executeContactAction)
         {
-        SetInputBlockerL();
-        
         VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector
             contactActionType = iPlugin.Container().SelectedCommunicationMethod();
         
@@ -596,8 +595,6 @@ void CCCAppCommLauncherContainer::HandleListBoxEventL(
         	{
             HandleGenericContactActionL( contactActionType );
             }
-        
-        RemoveInputBlocker();
         }
     }
 
@@ -607,7 +604,14 @@ void CCCAppCommLauncherContainer::HandleListBoxEventL(
 //
 void CCCAppCommLauncherContainer::HandleFindOnMapContactActionL()
     {
-    DoShowMapCmdL( (TPbk2CommandId)EPbk2ExtensionShowOnMap );
+    if ( !iLongTap )
+        {
+        DoShowMapCmdL( (TPbk2CommandId)EPbk2ExtensionShowOnMap );
+        }
+    else
+        {
+        iLongTap = EFalse;
+        }
     }
 
 // ----------------------------------------------------------------------------
@@ -804,13 +808,6 @@ void CCCAppCommLauncherContainer::ExecuteContactActionServiceWithoutFieldSelecti
 void CCCAppCommLauncherContainer::ContactInfoFetchedNotifyL(
     const CCmsContactFieldInfo& aContactFieldInfo)
     {
-    
-    //CloseAll Pending Pbk2Commands initiated by CCA.    
-    if( iPbkCmd )
-        {
-        iPbkCmd->DeleteAllRunningCmd();
-        }
-
     // update buttons
     iModel->UpdateAddressesValidationL( aContactFieldInfo );
     iModel->FillButtonArrayL();
@@ -1090,39 +1087,4 @@ const TInt CCCAppCommLauncherContainer::GetListBoxItemAmount() const
 	{
 	return iModel->MdcaCount();
 	}
-
-//-----------------------------------------------------------------------------
-// CCCAppCommLauncherContainer::SetInputBlockerL()
-//-----------------------------------------------------------------------------
-//
-void CCCAppCommLauncherContainer::SetInputBlockerL()
-     {
-     if (!iInputBlocker)
-         {
-         iInputBlocker = CAknInputBlock::NewCancelHandlerLC( this );
-         CleanupStack::Pop( iInputBlocker );   
-         iInputBlocker->SetCancelDelete( iInputBlocker );
-         }
-     } 
-
-// --------------------------------------------------------------------------
-// CCCAppCommLauncherContainer::RemoveInputBlockerL
-// --------------------------------------------------------------------------
-//
-void CCCAppCommLauncherContainer::RemoveInputBlocker()
-    {
-    if (iInputBlocker)
-        {
-        iInputBlocker->Cancel();
-        }
-    }
-
-// --------------------------------------------------------------------------
-// CCCAppCommLauncherContainer::AknInputBlockCancel
-// --------------------------------------------------------------------------
-//
-void CCCAppCommLauncherContainer::AknInputBlockCancel()
-     {
-     iInputBlocker = NULL;
-     }
 // End of File

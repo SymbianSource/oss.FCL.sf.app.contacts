@@ -64,7 +64,7 @@ public:
      * Compares the two Pool Elements and returms the comparison value.
      * It takes care of language variance too.
      */
-    static TInt CompareByDataL(const CPcsPoolElement& aObject1,
+    static TInt CompareByData(const CPcsPoolElement& aObject1,
                               const CPcsPoolElement& aObject2);
 
 private:
@@ -100,7 +100,7 @@ private:
      * Bit 6 = Not used
      * Bit 7 = Not used
      */
-    TUint8 iDataMatchAttribute;
+    TInt8 iDataMatchAttribute;
     };
 
 #endif // __CPCS_POOL_ELEMENT_ALGORITHM_2_H__

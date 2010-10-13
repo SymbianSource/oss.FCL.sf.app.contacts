@@ -162,16 +162,6 @@ void CPbk2SelectUpdateEmptyPropertyPhase::AcceptDelayedL
     }
 
 // --------------------------------------------------------------------------
-// CPbk2SelectUpdateEmptyPropertyPhase::DenyDelayed
-// --------------------------------------------------------------------------
-//
-void CPbk2SelectUpdateEmptyPropertyPhase::DenyDelayedL
-        ( const TDesC8& /*aContactLinkBuffer*/ )
-    {
-    // Nothing to do
-    }
-
-// --------------------------------------------------------------------------
 // CPbk2SelectUpdateEmptyPropertyPhase::Results
 // --------------------------------------------------------------------------
 //

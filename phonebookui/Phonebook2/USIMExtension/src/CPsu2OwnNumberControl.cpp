@@ -21,7 +21,7 @@
 // From Phonebook 2
 #include "CPsu2OwnNumberListBoxModel.h"
 #include "Pbk2USIMUIUID.h"
-#include <pbk2usimuires.rsg>
+#include <Pbk2USimUIRes.rsg>
 #include <Pbk2USimUI.hrh>
 #include <CPbk2IconInfoContainer.h>
 #include <CPbk2IconFactory.h>

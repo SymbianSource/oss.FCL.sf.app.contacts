@@ -120,16 +120,8 @@ class CPsu2CopyToSimFieldInfoArray : public CBase
         * @return a reference to item in given index
         */
         inline const TPsu2CopyToSimFieldInfo& operator[](TInt aIndex) const;
-                
-        /**
-        * Remove the fieldinfo which target type is not supported.
-        * Some target types defined in the rss file are not supported because of the limit
-        * of the sim card support. So the unsupported types must be removed from mapping 
-        * array.
-        * @param aSupportedTypes: the supported type list.
-        */
-        void RemoveUnSupportedFieldInfo( const MVPbkFieldTypeList& aSupportedTypes );
-               
+
+        
         /**
         * @param aSourceType the source field type
         * @return the info that for the aSourceType or NULL

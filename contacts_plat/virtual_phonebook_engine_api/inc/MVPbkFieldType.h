@@ -641,7 +641,7 @@ class MVPbkFieldType
                 TInt aMatchPriority ) const = 0;
 
         /**
-         * Returns the field type resource id from vpbkeng.rsg
+         * Returns the field type resource id from VPbkEng.rsg
          * that be used to identify a type.
          *
          * @return A field type resource id.
@@ -732,7 +732,7 @@ class MVPbkFieldTypeList
          * Returns the field type corresponding to field type resource id.
          *
          * If no match is found returns NULL. The resource id aFieldTypeResId
-         * corresponds to the VPBK_FIELD_TYPE types in vpbkeng.rsg.
+         * corresponds to the VPBK_FIELD_TYPE types in VPbkEng.rsg.
          *
          * @param aFieldTypeResId The field type resource id.
          * @return The corresponding field type.

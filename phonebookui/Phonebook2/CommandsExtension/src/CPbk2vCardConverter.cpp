@@ -21,8 +21,8 @@
 // Phonebook 2
 #include "Pbk2SendCmdUtils.h"
 #include <CPbk2AttachmentFile.h>
-#include <pbk2commands.rsg>
-#include <pbk2cmdextres.rsg>
+#include <Pbk2Commands.rsg>
+#include <Pbk2CmdExtRes.rsg>
 #include <MPbk2ContactLinkIterator.h>
 
 // Virtual Phonebook
@@ -138,7 +138,6 @@ CPbk2vCardConverter::~CPbk2vCardConverter()
         delete iVcardFiles;
         }
     delete iVCardFile;
-    delete iRetrieveOperation;
     delete iVCardContact;
     iFileWriteStream.Close();
     delete iContactOperation;

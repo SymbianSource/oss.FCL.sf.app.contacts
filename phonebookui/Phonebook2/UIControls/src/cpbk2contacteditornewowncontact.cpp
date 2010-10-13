@@ -224,15 +224,16 @@ void CPbk2ContactEditorNewOwnContact::HandleIdleDelete()
     {
     PBK2_DEBUG_PRINT( PBK2_DEBUG_STRING
         ( "CPbk2ContactEditorNewOwnContact::HandleIdleDelete(0x%x)" ), this );
-    iInputAbsorber->StopWait();   
-    // Notify client asynchronously to let Delete Operation complete firstly and
-    // then the client will be notified to do the other things in the RunL() function.
-    iLatestResult.iExtension = NULL;
-    iLatestResult.iStoreContact = NULL;
-    iLatestResult.iOpCode = MVPbkContactObserver::EContactDelete;
-    TRequestStatus* status = &iStatus;
-    User::RequestComplete(status, KErrNone);
-    SetActive();
+
+    iInputAbsorber->StopWait();
+    MPbk2ContactEditorEventObserver* observer = iObserver;
+    iObserver = NULL;
+    MVPbkContactObserver::TContactOpResult result;
+    // Disable warnings by nulling the data members
+    result.iStoreContact = NULL;
+    result.iExtension = NULL;
+    result.iOpCode = MVPbkContactObserver::EContactDelete;
+    observer->ContactEditorOperationCompleted( result, iEditorParams );
     }
 
 // --------------------------------------------------------------------------

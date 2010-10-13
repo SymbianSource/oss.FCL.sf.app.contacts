@@ -36,7 +36,7 @@
 #include <TVPbkFieldTypeMapping.h>
 #include <TVPbkContactStoreUriPtr.h>
 
-#include <t_mvpbkcontactstore.rsg>
+#include <T_MVPbkContactStore.rsg>
 
 //  EXTERNAL INCLUDES
 #include <EUnitMacros.h>

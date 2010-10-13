@@ -231,7 +231,6 @@ TInt CBCTestSpeedDial::TestExecuteLDL( CStifItemParser& aItem )
     CSpdiaControl* spd = CSpdiaControl::NewL( *pbk );
     TRAPD( err, spd->ExecuteLD( 1, 1 ) );
             
-    delete spd;
     spd = 0;
     delete pbk;
     pbk = 0;            

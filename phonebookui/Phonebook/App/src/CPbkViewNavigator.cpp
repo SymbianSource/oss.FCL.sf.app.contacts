@@ -33,7 +33,7 @@
 #include <CPbkExtGlobals.h>
 #include <MPbkExtensionFactory.h>
 #include <PbkIconInfo.h>
-#include <phonebook.rsg>
+#include <Phonebook.rsg>
 
 // ================= MEMBER FUNCTIONS =======================
 

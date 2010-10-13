@@ -40,7 +40,7 @@
 #include <RPbk2LocalizedResourceFile.h>
 #include "Pbk2DataCaging.hrh"
 
-#include <pbk2presentation.rsg>
+#include <Pbk2Presentation.rsg>
 
 /// Unnamed namespace for local definitions
 namespace {

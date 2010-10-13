@@ -20,7 +20,7 @@
 #include <bautils.h>
 #include <barsread.h>
 
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 #include <CVPbkSortOrder.h>
 #include <MVPbkContactLink.h>

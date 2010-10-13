@@ -31,12 +31,12 @@
 #include <MVPbkBaseContactField.h>
 #include <MVPbkFieldType.h>
 #include <MVPbkContactFieldData.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <CVPbkTopContactManager.h>
 #include <Pbk2InternalUID.h>
 #include <mpbk2commanditemupdater.h>
 #include <StringLoader.h>
-#include <pbk2exnameslistres.rsg>
+#include <Pbk2ExNamesListRes.rsg>
 
 //ECE
 #include <gulicon.h>
@@ -371,13 +371,6 @@ void CPbk2NameslistUiControlExtension::MyCardEvent( TMyCardStatusEvent aEvent )
 			TRAP_IGNORE( AddMyCardThumbnailToIconArrayL() );
 			}
 		}
-    // Refresh mycard list item if thumbnail has changed
-    if( iCommandUpdater &&
-        ( aEvent == EStateThumbnailLoaded ||
-          aEvent == EStateThumbnailNotFound ) )
-        {
-        iCommandUpdater->UpdateCommandItem( EPbk2CmdOpenMyCard );
-        }
 	}
 
 // -----------------------------------------------------------------------------

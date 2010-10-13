@@ -24,7 +24,7 @@
 #include <VPbkDataCaging.hrh>
 #include <CVPbkContactManager.h>
 #include <CVPbkFieldTypeSelector.h>
-#include <vpbkfieldtypeselectors.rsg>
+#include <VPbkFieldTypeSelectors.rsg>
 
 // Virtual Phonebook Engine Utils
 #include <RLocalizedResourceFile.h>

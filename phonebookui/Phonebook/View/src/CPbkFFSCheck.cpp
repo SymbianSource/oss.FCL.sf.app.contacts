@@ -59,12 +59,7 @@ CPbkFFSCheck::~CPbkFFSCheck()
 
 EXPORT_C TBool CPbkFFSCheck::FFSClCheckL(TInt aBytesToWrite/*=0*/)
     {
-    RFs* rfSession = NULL;
-    if ( iConeEnv )
-        {
-        rfSession = &iConeEnv->FsSession();
-        }
-    if (SysUtil::FFSSpaceBelowCriticalLevelL( rfSession, aBytesToWrite ) ||
+    if (SysUtil::FFSSpaceBelowCriticalLevelL(&iConeEnv->FsSession(),aBytesToWrite) ||
         DebugFailNext())
         {
         // Show not enough memory note

@@ -41,7 +41,6 @@
 
 #include <aknappui.h>
 #include <aknViewAppUi.h>
-#include <aknlayoutscalable_avkon.cdl.h>
 
 // Debugging headers
 #include <Pbk2Debug.h>
@@ -60,7 +59,6 @@ namespace {
 // LOCAL FUNCTIONS
 
 _LIT( KTabChar, "\t" );
-const TInt KCheckboxMargin = 1; // Checkbox margin pixels
 
 /**
  * Returns icon array from given list box.
@@ -111,8 +109,7 @@ CPbk2ContactViewListBox::CPbk2ContactViewListBox
                 iContainer(aContainer), 
                 iChangedIndexes( 1 ), // allocation granularity
                 iUiExtension( aUiExtension ),
-                iSearchFilter( aSearchFilter ),
-                iMarkingModeOn( EFalse )
+                iSearchFilter( aSearchFilter )
     {
     }
 
@@ -445,28 +442,9 @@ void CPbk2ContactViewListBox::SetListCommands(
 TBool CPbk2ContactViewListBox::ClipFromBeginning
         ( TDes& aBuffer, TInt aItemIndex, TInt aSubCellNumber )
     {
-    CColumnListBoxData *data = ItemDrawer()->ColumnData();
-    const CFont *font =
-        data->Font(ItemDrawer()->Properties(aItemIndex), aSubCellNumber);
-    // The width of the subcell displaying the characters.
-    TInt cellWidth = data->ColumnWidthPixel(aSubCellNumber);
-    // The margin of the subcell.
-    TMargins margin = data->ColumnMargins(aSubCellNumber);
-    // The valid width width displaying the characters.
-    TInt width = cellWidth - margin.iLeft - margin.iRight;
-    // If Marking mode is active, recalculate the valid width displaying characters.
-    // contact entry of name list view in marking mode
-    //
-    // |checkbox|Icon|name  |
-    // |        |    |number|
-    if( iMarkingModeOn )
-        {
-        RecalcWidthInMarkingMode(width, *font, aBuffer[0]);
-        }
-    TInt clipGap = data->ColumnTextClipGap(aSubCellNumber);
-    
-    return AknTextUtils::ClipToFit(
-        aBuffer, *font, width, AknTextUtils::EClipFromBeginning, width + clipGap);
+    return AknTextUtils::ClipToFit( aBuffer,
+        AknTextUtils::EClipFromBeginning, this,  aItemIndex,
+        aSubCellNumber );
     }
 
 // --------------------------------------------------------------------------
@@ -553,9 +531,9 @@ void CPbk2ContactViewListBox::CreateListBoxModelL
         }
     // Wrap the original model.
     iListboxModelDecorator = DoCreateDecoratorL( 
-            *IconArray( *this ),
-            iResourceData.iEmptyIconId,
-            iResourceData.iDefaultIconId );
+    		*IconArray( *this ),
+			iResourceData.iEmptyIconId,
+			iResourceData.iDefaultIconId );
     
     
     iListboxModelDecorator->SetDecoratedModel( *iModel );
@@ -579,15 +557,15 @@ CPbk2ContactViewListBoxModel* CPbk2ContactViewListBox::DoCreateModelL(
 // --------------------------------------------------------------------------
 //
 CPbk2ListboxModelCmdDecorator* CPbk2ContactViewListBox::DoCreateDecoratorL( 
-                const CPbk2IconArray& aIconArray,
-                TPbk2IconId aEmptyIconId,
-                TPbk2IconId aDefaultIconId )
-    {
-    return CPbk2ListboxModelCmdDecorator::NewL(
-                aIconArray,
-                aEmptyIconId,
-                aDefaultIconId );
-    }
+        		const CPbk2IconArray& aIconArray,
+        		TPbk2IconId aEmptyIconId,
+        		TPbk2IconId aDefaultIconId )
+	{
+	return CPbk2ListboxModelCmdDecorator::NewL(
+				aIconArray,
+				aEmptyIconId,
+				aDefaultIconId );
+	}
 
 
 // --------------------------------------------------------------------------
@@ -644,7 +622,7 @@ void CPbk2ContactViewListBox::CreateItemDrawerL()
 //
 void CPbk2ContactViewListBox::HandleGainingForeground()
     {
-    DrawDeferred();
+	DrawDeferred();
     }
 
 // --------------------------------------------------------------------------
@@ -726,7 +704,7 @@ void CPbk2ContactViewListBox::HandlePopupCharacter( CWindowGc* aGc, const TRect&
         textLayout.LayoutText(layout.Rect(), AknLayoutScalable_Apps::popup_navstr_preview_pane_t1(0).LayoutLine());
 
         TPtrC desc(Model()->ItemTextArray()->MdcaPoint(View()->TopItemIndex()));
-        
+		
         //Add "if-clause" to avaid the error that argument of Mid() out of range.
         TInt index = desc.Find( KTabChar );
         if ( index != KErrNotFound && index < desc.Length()-1 )
@@ -742,56 +720,4 @@ void CPbk2ContactViewListBox::HandlePopupCharacter( CWindowGc* aGc, const TRect&
             }
         }
     }
-
-// --------------------------------------------------------------------------
-// CPbk2ContactViewListBox::RecalcWidthInMarkingMode
-// Recalculate the width of space displaying the third column of the schema
-// below when Marking Mode is active.
-// contact entry of name list view in marking mode
-// The schema:
-// |checkbox|Icon|name  |
-// |        |    |number|
-// --------------------------------------------------------------------------
-//
-void CPbk2ContactViewListBox::RecalcWidthInMarkingMode(
-                              TInt& aWidth,
-                              const CFont& aFont,
-                              TChar aChar )
-    {
-    if( aWidth > 0 )
-        {
-        aWidth -= KCheckboxMargin;
-        // Get the coordinate for the right margin of the checkbox.
-        TInt checkBoxRight = AknLayoutScalable_Avkon::list_single_graphic_pane_t1( 0 ).r();
-        // Get the coordinate for the left margin of the checkbox.
-        TInt checkBoxLeft = AknLayoutScalable_Avkon::list_single_graphic_pane_t1( 0 ).l();
-        // The width to display one char.
-        TInt charWidth = aFont.CharWidthInPixels(aChar);
-        TInt checkBoxWidth = checkBoxRight - checkBoxLeft;
-        if( 0 > checkBoxWidth )
-            {
-            checkBoxWidth *= -1; // To make sure the value is positive.
-            }
-        if( charWidth > 0 && checkBoxWidth > 0 )
-            {
-            // The width of the characters which should be dropped, when marking
-            // mode is active.
-            TInt width;
-            if( 0 == checkBoxWidth%charWidth )
-                {
-                width = checkBoxWidth;
-                }
-            else
-                {
-                // The width should be divisible by charWidth.
-                width = ( checkBoxWidth/charWidth + 1 ) * charWidth;
-                }
-            // When marking mode is on,
-            // the width should minus the part of checkbox in the front of
-            // a listbox item.
-            aWidth -= width;
-            }
-        }
-    }
-
 // End of File

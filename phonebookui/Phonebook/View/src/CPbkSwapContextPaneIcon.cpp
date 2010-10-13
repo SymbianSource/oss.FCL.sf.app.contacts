@@ -23,7 +23,7 @@
 #include <eikspane.h>   // CEikStatusPane
 #include <eikimage.h>   // CEikImage
 #include <akncontext.h> // CAknContextPane
-#include <pbkview.rsg>  // Phonebook view dll resource IDs
+#include <PbkView.rsg>  // Phonebook view dll resource IDs
 #include <AknsUtils.h>
 #include <AknsControlContext.h>
 #include <aknconsts.h>	// Context pane bitmap size

@@ -185,10 +185,6 @@
 #define qgn_prop_radiobutt_off              EMbmAvkonQgn_prop_radiobutt_off
 #define qgn_prop_radiobutt_off_mask         EMbmAvkonQgn_prop_radiobutt_off_mask
 
-/// UnSync icon
-#define qgn_prop_phonebook2_unsync              EMbmPhonebook2Qgn_prop_cmcc_unsync
-#define qgn_prop_phonebook2_unsync_mask         EMbmPhonebook2Qgn_prop_cmcc_unsync_mask
-
 //// Phonebook2 bitmap file location and name
 #define phonebook2_mbm_file_location     "z:\\resource\\apps\\Phonebook2.mif"
 

@@ -135,16 +135,6 @@ CSelectionItemList& CPbk2SettingsListState::SelectionItemList()
     }
 
 // --------------------------------------------------------------------------
-// CPbk2SettingsListState::ItemListState
-// --------------------------------------------------------------------------
-//
-CSelectionItemList& CPbk2SettingsListState::ItemListState()
-    {
-    __ASSERT_DEBUG( iItemListState, Panic(EPanicItemListStateNULL));
-    return *iItemListState;
-    }
-
-// --------------------------------------------------------------------------
 // CPbk2SettingsListState::SupportedStores
 // --------------------------------------------------------------------------
 //

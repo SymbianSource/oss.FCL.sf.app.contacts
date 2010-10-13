@@ -48,7 +48,6 @@
 #include <VPbkSimStoreTemplateFunctions.h>
 #include <CVPbkAsyncCallback.h>
 
-#include <featmgr.h>  
 namespace VPbkSimStore {
 
 // LOCAL
@@ -581,38 +580,17 @@ MVPbkContactLink* CContactStore::CreateLinkFromInternalsLC(
 void CContactStore::StoreReady( MVPbkSimCntStore& /*aStore*/ )
     {
     TVPbkGsmStoreProperty gsmProperties;
-    TInt res = KErrNone;  
-    if( !FeatureManager::FeatureSupported( KFeatureIdFfTdClmcontactreplicationfromphonebooktousimcard ) )
+    TInt res = iNativeStore->GetGsmStoreProperties( gsmProperties );
+
+    if ( res == KErrNone )
         {
-        res= iNativeStore->GetGsmStoreProperties( gsmProperties );
-        if ( res == KErrNone )
-            {
-            delete iSupportedFieldTypes;
-            iSupportedFieldTypes = NULL;
-            TRAP( res, iSupportedFieldTypes = CSupportedFieldTypes::NewL(
-                    iStoreDomain.FieldTypeMappings(), gsmProperties ) );
-                    iSimStoreCapabilities = gsmProperties.iCaps;
-            }
+        delete iSupportedFieldTypes;
+        iSupportedFieldTypes = NULL;
+        TRAP( res, iSupportedFieldTypes = CSupportedFieldTypes::NewL(
+            iStoreDomain.FieldTypeMappings(), gsmProperties ) );
+        iSimStoreCapabilities = gsmProperties.iCaps;
         }
-    else  // if contact replication from phonebook to usim card.
-        {
-        TInt resGsm = iNativeStore->GetGsmStoreProperties( gsmProperties );
-        TVPbkUSimStoreProperty usimProperties;
-        TInt resUsim = iNativeStore->GetUSimStoreProperties( usimProperties );	
-        if( resGsm == KErrNone && resUsim == KErrNone )
-            {
-            delete iSupportedFieldTypes;
-            iSupportedFieldTypes = NULL;
-            TRAP( res, iSupportedFieldTypes = CSupportedFieldTypes::NewL(
-                    iStoreDomain.FieldTypeMappings(), gsmProperties, usimProperties ) ); 
-                    iSimStoreCapabilities = gsmProperties.iCaps;
-            }
-        else
-            {
-            res = ( resGsm != KErrNone ? resGsm : resUsim );
-            }
-        }
-   
+
     if ( res != KErrNone )
         {
         iStoreState = EStoreNotAvailable;

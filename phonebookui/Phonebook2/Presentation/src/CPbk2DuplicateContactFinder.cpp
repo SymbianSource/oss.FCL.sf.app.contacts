@@ -32,7 +32,7 @@
 #include <MVPbkContactOperation.h>
 #include <MVPbkContactLinkArray.h>
 
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 namespace
     {
     #ifdef _DEBUG

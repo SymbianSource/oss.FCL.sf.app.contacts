@@ -27,7 +27,7 @@
 #include <FeatMgr.h>
 #include <hlplch.h>          // HlpLauncher
 
-#include <phonebook.rsg>     // Phonebook resources
+#include <Phonebook.rsg>     // Phonebook resources
 #include "CPbkApplication.h" // Phonebook application class
 #include "CPbkDocument.h"    // Phonebook document class
 #include "PbkAppViewFactory.h"   // Application view factory

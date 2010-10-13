@@ -35,12 +35,12 @@
 #include <Pbk2ViewGraph.rh>
 #include <Pbk2UIControls.rh>
 #include <Pbk2UIControls.hrh>
-#include <pbk2uicontrols.rsg>
-#include <pbk2commands.rsg> 
+#include <Pbk2UIControls.rsg>
+#include <Pbk2Commands.rsg> 
 #include <Pbk2IconId.rh>
 #include <Pbk2ViewId.hrh>
 #include <Pbk2Commands.hrh>
-#include <phonebook2.rsg>
+#include <Phonebook2.rsg>
 #include <Pbk2UID.h>
 #include <Pbk2IconInfo.rh>
 #include <Pbk2IconArrayId.hrh>
@@ -367,8 +367,7 @@ RESOURCE PBK2_CONTACT_CONTROL r_pbk2_spb_names_list_extension_control
             KPbk2ContactViewListControlDoubleRow;
     listbox = LISTBOX
         {
-        flags = EAknListBoxStylusMarkableList | EAknListBoxLoopScrolling |
-        EAknListBoxPointerMarkableList;    
+        flags = EAknListBoxStylusMarkableList | EAknListBoxLoopScrolling; 
         };
     iconArray = R_PBK2_CONTACT_LIST_ICONS;
     emptyIconId = PHONEBOOK2_ICON_ID

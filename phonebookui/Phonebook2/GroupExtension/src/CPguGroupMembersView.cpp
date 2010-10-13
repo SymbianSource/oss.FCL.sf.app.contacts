@@ -22,9 +22,9 @@
 #include "CPguAddMembersCmd.h"
 #include "CPguRemoveFromGroupCmd.h"
 #include "Pbk2GroupUi.hrh"
-#include <pbk2groupuires.rsg>
+#include <Pbk2GroupUIRes.rsg>
 #include <CPbk2AppUiBase.h>
-#include <pbk2commands.rsg>
+#include <Pbk2Commands.rsg>
 #include <CPbk2UIExtensionView.h>
 #include <CPbk2DocumentBase.h>
 #include <CPbk2NamesListControl.h>
@@ -49,16 +49,14 @@
 #include <MPbk2ControlObserver.h>
 #include <MPbk2NavigationObserver.h>
 #include <MPbk2MenuCommandObserver.h>
-#include <pbk2commonui.rsg>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2CommonUi.rsg>
+#include <Pbk2UIControls.rsg>
 #include <MPbk2PointerEventInspector.h>
 #include <MPbk2ApplicationServices.h>
 #include <MPbk2ContactViewSupplier.h>
 #include <CPbk2StoreConfiguration.h>
 #include <MPbk2AppUi.h>
 #include <Pbk2MenuFilteringFlags.hrh>
-#include <CPbk2CommandStore.h>
-#include <CPbk2CommandHandler.h>
 
 // Virtual Phonebook
 #include <MVPbkContactViewBase.h>
@@ -470,26 +468,10 @@ class CPguGroupMembersView::CGroupMembersViewImpl :
          */
         virtual ~CGroupMembersViewImpl()
             {}
-        
-    public:
-        
-        void SetMarkingModeOn( TBool aMarkingModeOn )
-            {
-            iMarkingModeOn = aMarkingModeOn;
-            }
-        
-        TBool IsMarkingModeOn()
-            {
-            return iMarkingModeOn;
-            }
 
     protected: // Implementation
-        CGroupMembersViewImpl() : iMarkingModeOn( EFalse )
+        CGroupMembersViewImpl()
             {}
-        
-    protected:
-        // Flag to indicate whether Marking mode is active
-        TBool iMarkingModeOn;
     };
 
 
@@ -744,10 +726,6 @@ class CPguGroupMembersView::CGroupMembersAllGroupsReady :
         TBool iStylusPopupMenuLaunched;
         // Ref: Store management ptr
         CPbk2StoreConfiguration* iStoreConf;
-        //OWN: Active scheduler wait for waiting the completion
-        CActiveSchedulerWait    iWait;
-        // Ref: To the command. Doesn't Own.
-        MPguGroupCmd* iCommand;
     };
 
 // --------------------------------------------------------------------------
@@ -1101,12 +1079,6 @@ CPguGroupMembersView::CGroupMembersAllGroupsReady::CGroupMembersAllGroupsReady
 CPguGroupMembersView::CGroupMembersAllGroupsReady::
         ~CGroupMembersAllGroupsReady()
     {    
-
-    if( iWait.IsStarted() )
-        {
-        iWait.AsyncStop();  
-        }
-
     iCommandHandler.RemoveMenuCommandObserver( *this );
 
     if ( iStoreConf )
@@ -1147,7 +1119,7 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::ConstructL
     iCommandHandler.AddMenuCommandObserver(*this);
 
     iStoreConf = &( Phonebook2::Pbk2AppUi()->ApplicationServices().
-        StoreConfiguration() );
+    	StoreConfiguration() );
     iStoreConf->AddObserverL( *this );
 
     // Expand the group members view from the all groups view
@@ -1453,13 +1425,18 @@ TBool CPguGroupMembersView::CGroupMembersAllGroupsReady::HandleCommandKeyL
             case EKeyEnter: // FALLTHROUGH
             case EKeyOK:
                 {
-                // The key will be handled by ListBox if there are contacts in this view
                 if ( !ShiftDown(aKeyEvent) ) // pure OK or ENTER key
-                    {
-                    if ( iControl->NumberOfContacts() == 0 )
-                        {
-                        result = ETrue;
-                        }
+					{	
+                    if ( iControl->ContactsMarked() && itemSpecEnabled )
+                    	{
+                    	iView.LaunchPopupMenuL(
+                    		R_PHONEBOOK2_GROUPMEMBERS_CONTEXT_MENUBAR);
+						result = ETrue;
+						}
+					else if ( iControl->NumberOfContacts() == 0 )
+						{
+						result = ETrue;
+						}
                     }
                 break;
                 }
@@ -1541,27 +1518,6 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::DynInitMenuPaneL
             break;
             }
 
-        case R_AVKON_MENUPANE_MARK_MULTIPLE:
-                {
-                TInt markedContactCount = 0;
-                
-                CPbk2NamesListControl* nlctrl = static_cast <CPbk2NamesListControl*> (iControl);
-
-                CCoeControl* ctrl = nlctrl->ComponentControl(0);
-                CEikListBox* listbox=static_cast <CEikListBox*> (ctrl);
-                
-                if ( listbox )
-                    {
-                    markedContactCount = listbox->SelectionIndexes()->Count();
-                    }
-                // dim the makr all item if all contacts are marked. 
-                if ( markedContactCount > 0 && markedContactCount == iControl->NumberOfContacts() )
-                    {
-                    aMenuPane->SetItemDimmed( EAknCmdMarkingModeMarkAll, ETrue );
-                    }
-                break;
-                }
-                
         case R_PHONEBOOK2_GROUPMEMBERS_MENU:
             {
             // Weed out commands not meant to be used with empty list
@@ -1575,6 +1531,7 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::DynInitMenuPaneL
                 {
                 aMenuPane->SetItemDimmed( EPbk2CmdBelongsToGroups, ETrue );
                 aMenuPane->SetItemDimmed( EPbk2CmdAddMembers, ETrue );
+                aMenuPane->SetItemSpecific( EPbk2CmdRemoveFromGroup, EFalse );
                 }
             // Weed out commands not meant to be if names list is empty
             if ( Phonebook2::Pbk2AppUi()->ApplicationServices().
@@ -1592,12 +1549,9 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::DynInitMenuPaneL
                 {
                 aMenuPane->SetItemDimmed( EPbk2CmdSend, ETrue );
                 }
-                
-            // When Marking mode is active,
-            // Send as business card item should be shown in pop up menu.
-            if( iMarkingModeOn )
+            if ( iControl->ContactsMarked() )
                 {
-                aMenuPane->SetItemSpecific( EPbk2CmdSend, ETrue );
+                aMenuPane->SetItemSpecific( EPbk2CmdSend, EFalse );
                 }
             break;
             }
@@ -1832,6 +1786,9 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::UpdateCbasL()
                     R_PBK2_SOFTKEYS_OPTIONS_BACK_CONTEXT);
                 }
             iView.Cba()->DrawDeferred();
+            // Change context menu when marked items
+            iView.MenuBar()->SetContextMenuTitleResourceId
+                ( R_PHONEBOOK2_GROUPMEMBERS_CONTEXT_MENUBAR );
             }
         }
     }
@@ -1866,10 +1823,9 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::HandleCommandL
                             CPguRemoveFromGroupCmd::NewLC(
                                 *iViewParent.FocusedContact(),
                                 *iControl);
-                    iCommandHandler.AddAndExecuteCommandL(cmd);                    
+                    iCommandHandler.AddAndExecuteCommandL(cmd);
+                    
                     CleanupStack::Pop(cmd);  // command handler takes the ownership
-                    //Store the reference here. Reset to NULL when Command is Completed.
-                    iCommand = cmd;
                     }
                 break;
                 }
@@ -1879,32 +1835,11 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::HandleCommandL
                 CPguAddMembersCmd* cmd =
                         CPguAddMembersCmd::NewLC(*iViewParent.FocusedContact(),
                             *iControl);
-                iCommandHandler.AddAndExecuteCommandL(cmd);                
+                iCommandHandler.AddAndExecuteCommandL(cmd);
                 CleanupStack::Pop(cmd); // command handler takes the ownership
-                //Store the reference here. Reset to NULL when Command is Completed. 
-                iCommand = cmd;
                 break;
                 }
-           
-			case EAknCmdExit:
-        	case EAknSoftkeyExit:
-        	case EPbk2CmdExit:
-            case EAknCmdHideInBackground:
-                {
-                CPbk2CommandStore* cmdStore = static_cast<CPbk2CommandHandler*>(&iCommandHandler)->CommandStore();
-                if ( iCommand && cmdStore )
-                    {
-                    iCommand->Abort();
-                    cmdStore->DestroyAllCommands();
-                    
-                    if( !iWait.IsStarted() )
-                        {
-                        iWait.Start();  
-                        }  
-                    }                
-                break;
-                }    
-                
+    
             default:
                 {
                 // Do nothing
@@ -1965,6 +1900,11 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::HandleListBoxEventL(CEik
                     // Select key is mapped to "Open Contact" command
                     HandleCommandL( EPbk2CmdOpenCca );
                     }
+                else
+                    {
+                    iView.LaunchPopupMenuL(
+                            R_PHONEBOOK2_GROUPMEMBERS_CONTEXT_MENUBAR);
+                    }
                 break;
                 }
             default:
@@ -2013,7 +1953,12 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::ShowContextMenuL()
         if ( iControl->NumberOfContacts() > 0 && 
                 iPointerEventInspector->FocusedItemPointed() )
             {
-            if ( !iControl->ContactsMarked() )
+            if ( iControl->ContactsMarked() )
+                {
+                iView.LaunchPopupMenuL(
+                    R_PHONEBOOK2_GROUPMEMBERS_CONTEXT_MENUBAR );
+                }
+            else
                 {
                 // Open contact
                 HandleCommandL(EPbk2CmdOpenCca);
@@ -2049,7 +1994,7 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::PreCommandExecutionL
     {    
     if (iContainer && iContainer->Control())
         {
-        iContainer->Control()->HideThumbnail();        
+        iContainer->Control()->HideThumbnail();
         }
     }
 
@@ -2059,23 +2004,13 @@ void CPguGroupMembersView::CGroupMembersAllGroupsReady::PreCommandExecutionL
 //
 void CPguGroupMembersView::CGroupMembersAllGroupsReady::PostCommandExecutionL
         ( const MPbk2Command& /*aCommand*/ )
-    { 
-    if ( iCommand )
-        {
-        iCommand = NULL;
-        }
-    
+    {    
     if ( iContainer && iContainer->Control() )
         {
         iContainer->Control()->ShowThumbnail();
         }
 
     UpdateCbasL();
-    if( iWait.IsStarted() )
-        {
-        iWait.AsyncStop();  
-        }
-    
     }
 
 // --------------------------------------------------------------------------
@@ -2252,15 +2187,11 @@ void CPguGroupMembersView::DoActivateL
         }
 
     iViewImpl->CreateControlL(iView.ClientRect());
-
+    
     CPbk2NamesListControl* nlctrl=static_cast <CPbk2NamesListControl*> (iViewImpl->Control());
-
-    // It will return the listbox by calling nlctrl->ComponentControl(0),
-    // which is defined in CPbk2NamesListControl::ComponentControl(TInt aIndex).
     CCoeControl* ctrl=nlctrl->ComponentControl(0);
     CEikListBox* listbox=static_cast <CEikListBox*> (ctrl);
-    listbox->SetListBoxObserver( this );
-    listbox->SetMarkingModeObserver( this );
+    listbox->SetListBoxObserver( this ); 
 
     iPreviousViewId = aPrevViewId;
 
@@ -2346,7 +2277,7 @@ void CPguGroupMembersView::HandleListBoxEventL(CEikListBox* aListBox,TListBoxEve
             {
             case EEventItemDoubleClicked:
             case EEventItemSingleClicked:
-            case EEventEnterKeyPressed:
+		    case EEventEnterKeyPressed:
                 {
 
                 if ( iViewImpl )
@@ -2375,11 +2306,10 @@ void CPguGroupMembersView::HandleListBoxEventL(CEikListBox* aListBox,TListBoxEve
 void CPguGroupMembersView::HandlePointerEventL(
         const TPointerEvent& aPointerEvent)
     {
-    if ( iViewImpl && !iViewImpl->IsMarkingModeOn() )
+    if ( iViewImpl )
         {
-        // Route the pointer events to the view implementing the application
-        // view currently except the Marking mode is active, 
-        // because the event is handled by avkon when marking mode is active.
+        // route the pointer events to the view implementing the application
+        // view currently
         iViewImpl->HandlePointerEventL(aPointerEvent);
         }
     }
@@ -2399,46 +2329,6 @@ void CPguGroupMembersView::HandleLongTapEventL(
         iViewImpl->HandleLongTapEventL(
             aPenEventLocation, aPenEventScreenLocation );
         }
-    }
-
-// -----------------------------------------------------------------------------
-// CPguGroupMembersView::MarkingModeStatusChanged
-// -----------------------------------------------------------------------------
-//
-void CPguGroupMembersView::MarkingModeStatusChanged( TBool aActivated )
-    {
-    if( iViewImpl )
-        {
-        iViewImpl->SetMarkingModeOn( aActivated );
-        CPbk2NamesListControl* nlctrl = 
-            static_cast <CPbk2NamesListControl*> (iViewImpl->Control());
-        if( !aActivated )
-            {
-            // It will return the findbox by calling 
-            // nlctrl->ComponentControl(1), which is defined in 
-            // CPbk2NamesListControl::ComponentControl(TInt aIndex).
-            CCoeControl* ctrl=nlctrl->ComponentControl(1);
-            if( ctrl->IsVisible() )
-                {
-                // Clear the text of the FindBox
-                // when canceling from Marking mode.
-                TRAP_IGNORE( nlctrl->ResetFindL() );
-                }
-            }
-        nlctrl->SetMarkingMode( aActivated );
-        }
-    }
-
-// -----------------------------------------------------------------------------
-// CPguGroupMembersView::ExitMarkingMode
-// Called by avkon, if the return value is ETrue, 
-// the Marking mode will be canceled after any operation,
-// otherwise the Marking mode keep active.
-// -----------------------------------------------------------------------------
-//
-TBool CPguGroupMembersView::ExitMarkingMode() const
-    {
-    return ETrue; 
     }
 
 // --------------------------------------------------------------------------

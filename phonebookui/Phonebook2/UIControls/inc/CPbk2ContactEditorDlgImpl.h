@@ -354,7 +354,7 @@ class CPbk2ContactEditorDlgImpl : public CAknForm,
         void ClearControls();
         TBool ContactHasAddress(TPbk2FieldGroupId aAddressGroup);
         void AddGroupFieldsL(TPbk2FieldGroupId aGroupId);
-        TBool AreAllFieldsEmptyL();
+        TBool AreAllFieldsEmpty();
         TBool IsUIDataChanged();
         TBool IsAddressValidated(TPbk2FieldGroupId aGroupId);
         void DeleteActiveAddressGeoCoords();
@@ -373,8 +373,6 @@ class CPbk2ContactEditorDlgImpl : public CAknForm,
                 TEventCode aType );
         void RestorePrevNaviDecoratorL();
         void RestoreStatusPaneL(); 
-        static TInt DelayDlgDeleteCallBack( TAny* aCallBack );
-        void DelayDlgDelete();
 
     private: // Data structures
 
@@ -465,24 +463,15 @@ class CPbk2ContactEditorDlgImpl : public CAknForm,
         HBufC* iTitleText;
         /// Own: Converts text between Unicode and SMS 7-bit 
         CCnvCharacterSetConverter* iConverter;
+        /// Ref: A pointer to stack variable in CloseDialog() for knowing
+        /// if the destructor has already been called
+        TBool* iDestroyedPtr;
         /// Ref: Holds the TopMost NaviDecorator before pushing 
         /// the empty one on to the top.
         /// Doesnt Own.
         CAknNavigationDecorator* iPrevNaviDecorator;
         
         TInt iCurrentstatuspane;
-        /// Own: For asynchronously delete editordlg.
-        CIdle* iDelayDelete;
-        // Own: Exit app ui after deleting the dialog
-        TBool iExitApp;
-        // Own: Whether the partial input screen is Opened
-        TBool iIsInputPaneOpen;
-        /// Ref: A pointer to stack variable in CloseDialog() for knowing
-        /// if the destructor has already been called
-        TBool* iDestroyedPtrForCloseDlg;
-        /// Ref: A pointer to stack variable in AddItemToContactL() for knowing
-        /// if the destructor has already been called
-        TBool* iDestroyedPtrForAddItem;
     };
 
 #endif // CPBK2CONTACTEDITORDLGIMPL_H

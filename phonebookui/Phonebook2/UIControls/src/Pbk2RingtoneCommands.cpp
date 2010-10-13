@@ -29,9 +29,9 @@
 #include <MPbk2ApplicationServices.h>
 #include <TPbk2StoreContactAnalyzer.h>
 
-#include <pbk2commonui.rsg>
-#include <pbk2uicontrols.rsg>
-#include <pbk2commands.rsg>
+#include <Pbk2CommonUi.rsg>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2Commands.rsg>
 
 // VPbk includes
 #include <MVPbkStoreContact.h>
@@ -39,7 +39,7 @@
 #include <CVPbkContactManager.h>
 #include <TVPbkFieldTypeMapping.h>
 #include <MVPbkFieldType.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 // System includes
 #include <AknQueryDialog.h>

@@ -26,4 +26,3 @@
 /c8,8 qgn_prop_locev_map.svg
 /c8,8 qgn_prop_pb_no_valid_lm.svg
 /c8,8 qgn_prop_blid_waypoint.svg
-/c8,8 qgn_prop_cmcc_unsync.svg

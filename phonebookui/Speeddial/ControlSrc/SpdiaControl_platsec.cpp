@@ -44,7 +44,7 @@
 #include <CPbkContactChangeNotifier.h>
 #include <RPbkViewResourceFile.h>  // Phonebook view dll resource file loader
 #include <StringLoader.h>
-#include <spdctrl.rsg>
+#include <SpdCtrl.rsg>
 #include <spdctrl.mbg>
 #include <avkon.mbg>
 #include <gdi.h>

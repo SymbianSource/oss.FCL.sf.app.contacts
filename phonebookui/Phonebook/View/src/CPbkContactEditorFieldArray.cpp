@@ -29,7 +29,7 @@
 #include "PbkIconInfo.h"
 #include "CPbkFieldInfo.h"
 #include "CPbkReadingEditorBinderVisitor.h"
-#include <pbkview.rsg>
+#include <PbkView.rsg>
 
 #include <CPbkExtGlobals.h>
 #include <MPbkExtensionFactory.h>

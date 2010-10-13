@@ -30,7 +30,7 @@
 #include <spproperty.h>
 #include <spdefinitions.h>
 
-#include <logs.rsg>
+#include <Logs.rsg>
 
 #include "MLogsEventGetter.h"
 #include "MLogsEvent.h"

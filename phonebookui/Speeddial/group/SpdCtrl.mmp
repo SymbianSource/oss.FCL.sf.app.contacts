@@ -69,7 +69,7 @@ SOURCE          speeddialprivate.cpp
 USERINCLUDE     ../inc ../ControlInc ../VPbkControlInc
 
 // Dependencies to other Phonebook components
-LIBRARY         pbkeng.lib pbkview.lib
+LIBRARY         PbkEng.lib PbkView.lib
 
 // Dependencies to other components
 //LIBRARY         PalbView.lib  //PalbEng.lib
@@ -79,26 +79,26 @@ LIBRARY         vmbx.LIB
 
 // Dependencies to system components
 LIBRARY         euser.lib bafl.lib cntmodel.lib 
-LIBRARY         cone.lib eikcoctl.lib eikdlg.lib avkon.lib fbscli.lib egul.lib
-LIBRARY         eikcore.lib CommonEngine.lib centralrepository.lib
-LIBRARY         sysutil.lib commonui.lib CdlEngine.lib
+LIBRARY         cone.lib eikcoctl.lib eikdlg.lib Avkon.lib fbscli.lib egul.lib
+LIBRARY         eikcore.lib commonengine.lib centralrepository.lib
+LIBRARY         sysutil.lib commonui.lib cdlengine.lib
 // phone client support
-LIBRARY         phoneclient.lib
+LIBRARY         PhoneClient.LIB
 // skins support
-LIBRARY         aknskins.lib
-LIBRARY         aknicon.lib
-LIBRARY		efsrv.lib
+LIBRARY         AknSkins.LIB
+LIBRARY         AknIcon.lib
+LIBRARY			efsrv.lib
 LIBRARY	        bitgdi.lib 
-LIBRARY         aknlayout2.lib
+LIBRARY         AknLayout2.lib       
 LIBRARY         AknLayout2Scalable.lib 
-LIBRARY         uiklaf.lib
-LIBRARY         featmgr.lib
+LIBRARY         UikLaf.lib 
+LIBRARY         FeatMgr.lib
 LIBRARY         avkon.lib
 LIBRARY         aknicon.lib
 
-LIBRARY 	servicehandler.lib
+LIBRARY 		ServiceHandler.lib
 LIBRARY         VPbkEng.lib
-LIBRARY  	Pbk2Presentation.lib
-LIBRARY 	Pbk2CommonUI.lib
+LIBRARY  		Pbk2Presentation.lib
+LIBRARY 		Pbk2CommonUI.lib
 
 // End of File

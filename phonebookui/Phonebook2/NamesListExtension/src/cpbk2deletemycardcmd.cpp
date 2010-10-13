@@ -20,12 +20,12 @@
 #include "cpbk2deletemycardcmd.h"
 #include <StringLoader.h>
 #include <AknQueryDialog.h>
-#include <pbk2exnameslistres.rsg>
+#include <Pbk2ExNamesListRes.rsg>
 
 // Phonebook2
 #include <CPbk2ApplicationServices.h>
 #include <MPbk2CommandObserver.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <MPbk2ContactUiControl.h>
 #include <MPbk2ContactNameFormatter.h>
 #include <CPbk2GeneralConfirmationQuery.h>

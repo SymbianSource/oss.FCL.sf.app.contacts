@@ -28,10 +28,10 @@
 #include <MPbk2ViewActivationTransaction.h>
 #include <MPbk2ViewExplorer.h>
 #include <CPbk2StoreConfiguration.h>
-#include <pbk2groupuires.rsg>
-#include <pbk2commonui.rsg>
-#include <pbk2commands.rsg>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2GroupUIRes.rsg>
+#include <Pbk2CommonUi.rsg>
+#include <Pbk2Commands.rsg>
+#include <Pbk2UIControls.rsg>
 #include <csxhelp/phob.hlp.hrh>
 #include <MPbk2CommandHandler.h>
 #include <Pbk2UID.h>

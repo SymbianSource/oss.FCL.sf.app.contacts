@@ -44,7 +44,7 @@
 #include <MVPbkContactViewBase.h>
 
 //Pbk2
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <Pbk2UID.h>
 
 namespace {

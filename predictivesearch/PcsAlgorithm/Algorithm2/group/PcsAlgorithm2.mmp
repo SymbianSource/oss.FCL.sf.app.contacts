@@ -40,8 +40,8 @@ SOURCE          CPcsCache.cpp
 SOURCE          CPcsPoolElement.cpp
 SOURCE          CPcsKeyMap.cpp
 SOURCE          CPsDataPluginInterface.cpp
-SOURCE          chinesefindutils.cpp 
-SOURCE          FindUtilChineseECE.cpp
+SOURCE          FindUtilChineseECE.cpp 
+SOURCE          chinesefindutils.cpp
 
 USERINCLUDE     ../inc
 USERINCLUDE     ../../inc
@@ -51,7 +51,7 @@ USERINCLUDE     ../../../PcsUtils/inc
 APP_LAYER_SYSTEMINCLUDE
 
 LIBRARY         euser.lib
-LIBRARY         ecom.lib
+LIBRARY         eCom.lib
 LIBRARY         efsrv.lib
 LIBRARY         estor.lib
 LIBRARY         flogger.lib
@@ -60,9 +60,8 @@ LIBRARY         gdi.lib
 LIBRARY         eikcoctl.lib 
 LIBRARY         PcsUtils.lib
 LIBRARY         ptiengine.lib
-LIBRARY         cenrepnotifhandler.lib
+LIBRARY         CenRepNotifHandler.lib
 LIBRARY         cone.lib
 LIBRARY         fepbase.lib 
 LIBRARY         centralrepository.lib
-LIBRARY         FindUtil.lib
-LIBRARY         pbkeng.lib
+LIBRARY         findutil.lib

@@ -30,7 +30,7 @@
 #include "t_ccappcmscontactfetcher.h"
 #include "t_testsingleton.h"
 #include "phonebookPrivateCRKeys.h"
-#include <e32hashtab.h>
+
 class CCmsContactFieldInfo;
 class MCCAppContactFieldDataObserver;
 

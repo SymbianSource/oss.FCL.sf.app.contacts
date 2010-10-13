@@ -20,8 +20,8 @@
 
 // Phonebook 2
 #include "CPguGroupPopup.h"
-#include <pbk2groupuires.rsg>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2GroupUIRes.rsg>
+#include <Pbk2UIControls.rsg>
 #include <MPbk2CommandObserver.h>
 #include <MPbk2ContactUiControl.h>
 #include <CPbk2StoreConfiguration.h>

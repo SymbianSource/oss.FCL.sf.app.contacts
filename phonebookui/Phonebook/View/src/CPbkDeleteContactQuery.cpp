@@ -19,7 +19,7 @@
 
 // INCLUDE FILES
 #include "CPbkDeleteContactQuery.h"
-#include <pbkview.rsg>
+#include <PbkView.rsg>
 #include <StringLoader.h>
 #include <CPbkContactItem.h>
 #include <CPbkContactEngine.h>

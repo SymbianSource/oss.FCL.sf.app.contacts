@@ -51,11 +51,11 @@ SOURCE          BCTestSpeedDialBlocks.cpp
 
 
 LIBRARY         euser.lib
-LIBRARY         StifTestInterface.lib
+LIBRARY         stiftestinterface.lib
 LIBRARY         stiftestengine.lib
 
-LIBRARY			spdctrl.lib
-LIBRARY			pbkeng.lib
+LIBRARY			SpdCtrl.lib
+LIBRARY			PbkEng.lib
 
 LIBRARY			efsrv.lib
 LIBRARY         cone.lib ws32.lib avkon.lib eikcoctl.lib eikctl.lib apgrfx.lib aknskins.lib 

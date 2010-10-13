@@ -27,7 +27,7 @@
 #include <MVPbkContactStoreList.h>
 #include <MVPbkStoreContact.h>
 #include <MVPbkFieldType.h>
-//#include <strcntanalyzer.rsg>
+//#include <StrCntAnalyzer.rsg>
 #include <vpbkeng.rsg>
 #include <CVPbkContactStoreProperties.h>
 

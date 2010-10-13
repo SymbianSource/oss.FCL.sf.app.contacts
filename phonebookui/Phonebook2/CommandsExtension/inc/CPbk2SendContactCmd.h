@@ -20,9 +20,6 @@
 #define CPBK2SENDCONTACTCMD_H
 
 // INCLUDES
-
-#include "MPbk2CommandResourceRelease.h"
-
 #include <e32base.h>
 #include <MPbk2Command.h>
 #include <MVPbkSingleContactOperationObserver.h>
@@ -63,8 +60,7 @@ NONSHARABLE_CLASS(CPbk2SendContactCmd) :
         public MPbk2Command,
         public MPbk2vCardConverterObserver,
         public MVPbkSingleContactOperationObserver,
-        private MPbk2ProcessDecoratorObserver,
-        public MPbk2ResourceRelease
+        private MPbk2ProcessDecoratorObserver
     {
     public: // Construction and destruction
         /**
@@ -85,14 +81,7 @@ NONSHARABLE_CLASS(CPbk2SendContactCmd) :
         void AddObserver(
                 MPbk2CommandObserver& aObserver );
         void ResetUiControl(MPbk2ContactUiControl& aUiControl);
-        TAny* CommandExtension(TUid /*aExtensionUid*/);
-    public: // From MPbk2ResourceRelease
-        /*-
-         * Delete all temp files.
-         * @Remark It not return until finish deleting all files.
-         *         It is non-reentrant.  
-         */
-        void ReleaseResource();
+
     private: // From CActive
         void RunL();
         TInt RunError(
@@ -145,7 +134,7 @@ NONSHARABLE_CLASS(CPbk2SendContactCmd) :
         void SendMsgUsingSendUI(
                 CMessageData* aMsgData );
         TBool IsMoreThanOneContact();
-        
+
     private: // Data structures
         /// Process states
         enum TState
@@ -154,8 +143,7 @@ NONSHARABLE_CLASS(CPbk2SendContactCmd) :
             ERetrievingContact,
             ESelectingSentData,
             EStopping,
-            ECancelling,
-            EReleaseResource
+            ECancelling
             };
 
     private: // Data
@@ -197,9 +185,6 @@ NONSHARABLE_CLASS(CPbk2SendContactCmd) :
         CPbk2ApplicationServices* iAppServices;
         /// Own: Send UI
         CSendUi* iSendUi;
-        /// Own:
-        CActiveSchedulerWait* iWaiter;
-       
     };
 
 #endif // CPBK2SENDCONTACTCMD_H

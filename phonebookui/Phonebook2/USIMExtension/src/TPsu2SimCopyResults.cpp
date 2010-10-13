@@ -20,8 +20,8 @@
 #include "TPsu2SimCopyResults.h"
 
 // Phonebook 2
-#include <pbk2usimuires.rsg>
-#include <pbk2commands.rsg>
+#include <Pbk2USimUIRes.rsg>
+#include <Pbk2Commands.rsg>
 
 // System includes
 #include <StringLoader.h>

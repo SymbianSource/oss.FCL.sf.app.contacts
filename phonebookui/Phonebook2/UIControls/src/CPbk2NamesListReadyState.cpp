@@ -1496,20 +1496,55 @@ void CPbk2NamesListReadyState::AddCommandItemL(MPbk2UiControlCmdItem* /*aCommand
 void CPbk2NamesListReadyState::DynInitMenuPaneL(
         TInt aResourceId, CEikMenuPane* aMenuPane) const
     {
-    TInt commandItemCount = CommandItemCount();
-	
-    // Stores the position of the searched menu item.
-    // This position is not needed or used anywhere
-    TInt pos; 
-
-    if ((iListBox.SelectionIndexes()->Count() + commandItemCount ) 
-            == iListBox.Model()->NumberOfItems())
+    AknSelectionService::HandleMarkableListDynInitMenuPane
+        (aResourceId, aMenuPane, &iListBox);
+    
+    TInt focusedItem = iListBox.View()->CurrentItemIndex();
+    TBool markHidden = iListBox.View()->ItemIsSelected( focusedItem );
+    TBool unmarkHidden = !iListBox.View()->ItemIsSelected( focusedItem );
+    TBool markAllHidden = ( iListBox.Model()->NumberOfItems() == 0 ) || 
+        ( iListBox.SelectionIndexes()->Count() == iListBox.Model()->NumberOfItems() );
+    TBool unmarkAllHidden = ( iListBox.Model()->NumberOfItems() == 0 ) || 
+        ( iListBox.SelectionIndexes()->Count() == 0 );
+    
+    TInt position;
+    if (aMenuPane->MenuItemExists(EAknCmdMark, position))
         {
-        if (aMenuPane->MenuItemExists( EAknCmdMarkingModeEnter, pos ) )
+        aMenuPane->SetItemDimmed(EAknCmdMark, markHidden);
+        }
+    if (aMenuPane->MenuItemExists(EAknCmdUnmark, position))
+        {
+        aMenuPane->SetItemDimmed(EAknCmdUnmark, unmarkHidden);
+        }
+    if (aMenuPane->MenuItemExists(EAknMarkAll, position))
+        {
+        aMenuPane->SetItemDimmed(EAknMarkAll, markAllHidden);
+        }
+    if (aMenuPane->MenuItemExists(EAknUnmarkAll, position))
+        {
+        aMenuPane->SetItemDimmed(EAknUnmarkAll, unmarkAllHidden);
+        }
+    
+    // When all contacts are marked in the listbox, the command items are not marked.
+    // This code snippet dims out the  Mark All menu item which is shown since the
+    // list box cannot differentiate a command and a contact item
+
+    TInt commandItemCount = CommandItemCount();
+
+
+    if ((iListBox.SelectionIndexes()->Count() + commandItemCount ) == iListBox.Model()->NumberOfItems())
+        {
+        TInt i; // Stores the position of the searched menu item.
+                // This position is not needed or used anywhere
+        if (aMenuPane->MenuItemExists(EAknMarkAll, i))
             {
-            aMenuPane->SetItemDimmed( EAknCmdMarkingModeEnter, ETrue );
+            aMenuPane->SetItemDimmed(EAknMarkAll, ETrue);
             }
         }
+
+    // If there's any, command items are always placed at the top of the list box.
+    // By comparing the list box current item index with the command item count, we are trying to find out
+    // if the current focused item is command item or not.
 
     }
 
@@ -1896,14 +1931,36 @@ void CPbk2NamesListReadyState::TopViewChangedL(
     // HandleItemRemovalL because they reset markings
     TBool marked = ContactsMarked();
 
-    // Handle list box changes
-    // Promotion item "Add to favourites" should not be visible if top view is 
-	// not base view (iViewStack.Level() !== 0). Remote search may be shown when there
-	// is text entered in find box. MyCard enabled similarly as add favorites.
-    TBool addFavoOk = iViewStack.Level() == 0 && !(iFindBox && iFindBox->TextLength());
-    UpdateCommandEnabled( EPbk2CmdAddFavourites, addFavoOk );
-    UpdateCommandEnabled( EPbk2CmdRcl, !addFavoOk );    
-    UpdateCommandEnabled( EPbk2CmdOpenMyCard, addFavoOk );
+    // Promotion item "Add to favourites" and "My card" should be visible,
+    // the conditions are as following:  
+    // 1. Top view is base view (iViewStack.Level() == 0).
+    // 2. There is no text entered in find box.
+    // 3. There is text entered in find box, but the text is space.
+    // When promotion item "Add to favourites" and "My card" are visible,
+    // remote search should not be shown.
+    TBool showFavAndMyCard = ETrue;
+    if ( iFindBox )
+        {
+        RBuf searchText;
+        searchText.CreateL ( iFindBox->TextLength() );
+        iFindBox->GetSearchText( searchText ); 
+        CleanupClosePushL( searchText );
+        searchText.TrimLeft();
+        if ( searchText.Length() != 0 )
+            {
+            showFavAndMyCard = EFalse;
+            }
+        CleanupStack::PopAndDestroy( &searchText );
+        }
+    if ( iViewStack.Level() != 0 )
+        {
+        showFavAndMyCard = EFalse;
+        }
+    
+    // Update the list box.
+    UpdateCommandEnabled( EPbk2CmdAddFavourites, showFavAndMyCard );
+    UpdateCommandEnabled( EPbk2CmdRcl, !showFavAndMyCard );    
+    UpdateCommandEnabled( EPbk2CmdOpenMyCard, showFavAndMyCard );
 
     if ( countAfter > countBefore )    //count does not contain command items 
         {
@@ -2042,22 +2099,9 @@ void CPbk2NamesListReadyState::AdaptiveSearchTextChanged( CAknSearchField* aSear
 void CPbk2NamesListReadyState::CmdItemVisibilityChanged( TInt aCmdItemId, TBool aVisible )
     {
     TInt cmdItemIndex = FindCommand(aCmdItemId);
-    TInt cmdListBoxIndex = EnabledCommandCount();
-    if( aVisible )
-        {
-        cmdListBoxIndex--;
-        }
-    // Update the HiddenSelection property of the command items.
-    TListItemProperties prop( iListBox.ItemDrawer()->Properties(cmdListBoxIndex) );
-    prop.SetHiddenSelection(aVisible);
-    
-    TRAP_IGNORE(
-        iListBox.ItemDrawer()->SetPropertiesL(cmdListBoxIndex, prop);
-    
-        HandleCommandEventL(
-            (aVisible ? EItemAdded : EItemRemoved),
-            cmdItemIndex);
-        );
+    TRAP_IGNORE( HandleCommandEventL(
+                (aVisible ? EItemAdded : EItemRemoved),
+                cmdItemIndex) );
     }
 
 // --------------------------------------------------------------------------
@@ -2103,40 +2147,19 @@ void CPbk2NamesListReadyState::RestoreMarkedItemsL(
     PBK2_DEBUG_PRINT(PBK2_DEBUG_STRING
         ("CPbk2NamesListReadyState::RestoreMarkedItemsL: %d items"),
         aSelectedItems.Count() );
-    
+
+    DisableRedrawEnablePushL();
+    iListBox.ClearSelection();
     const TInt count = aSelectedItems.Count();
-    if ( count > 0 )
+    for ( TInt i = 0; i < count; ++i )
         {
-        CListBoxView::CSelectionIndexArray* updateSelections = 
-                    new(ELeave) CArrayFixFlat<TInt>( count );
-        CleanupStack::PushL( updateSelections );
-        
-        // Get the index of each selected item. If one of items could not be found, break.
-        for ( TInt i = 0; i < count; ++i )
+        TInt index = iViewStack.IndexOfBookmarkL( aSelectedItems.At( i ) ) + CommandItemCount();
+        if ( index >= 0 )
             {
-            TInt index = iViewStack.IndexOfBookmarkL( aSelectedItems.At( i ) ) + CommandItemCount();
-            if ( index >= 0 )
-                {
-                updateSelections->AppendL( index );
-                }
-            else
-                {
-                break;
-                }
+            iListBox.View()->SelectItemL( index );
             }
-    
-        // If all the selected items can be found in iViewStack, update the list box.
-        // The list box will change nothing if some of selected items are not found in iViewStack.
-        if ( updateSelections->Count() == count )
-            {
-            DisableRedrawEnablePushL();
-            iListBox.ClearSelection();
-            iListBox.SetSelectionIndexesL( updateSelections );
-            CleanupStack::PopAndDestroy();  // DisableRedrawEnablePushL
-            }
-        
-        CleanupStack::PopAndDestroy( updateSelections );  // Destroy updateSelections
         }
+    CleanupStack::PopAndDestroy();  // DisableRedrawEnablePushL
     }
 
 // --------------------------------------------------------------------------

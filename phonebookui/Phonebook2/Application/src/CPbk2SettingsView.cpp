@@ -36,8 +36,8 @@
 #include <MPbk2CommandHandler.h>
 #include <MPbk2ApplicationServices.h>
 #include <csxhelp/phob.hlp.hrh>
-#include <phonebook2.rsg>
-#include <pbk2uicontrols.rsg>
+#include <Phonebook2.rsg>
+#include <Pbk2UIControls.rsg>
 
 // System includes
 #include <StringLoader.h>

@@ -31,7 +31,7 @@
 #include "TSingleDesCArray.h"
 #include "CPbkAppGlobals.h"
 #include <Phonebook.hrh>
-#include <phonebook.rsg>
+#include <Phonebook.rsg>
 #include <FeatMgr.h>
 #include <CPbkAttachmentFile.h>
 

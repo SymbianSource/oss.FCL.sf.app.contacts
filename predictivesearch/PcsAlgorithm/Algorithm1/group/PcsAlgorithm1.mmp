@@ -51,7 +51,7 @@ USERINCLUDE     ../../../PcsUtils/inc
 APP_LAYER_SYSTEMINCLUDE
 
 LIBRARY         euser.lib
-LIBRARY         ecom.lib
+LIBRARY         eCom.lib
 LIBRARY         efsrv.lib 
 LIBRARY         estor.lib
 LIBRARY         flogger.lib

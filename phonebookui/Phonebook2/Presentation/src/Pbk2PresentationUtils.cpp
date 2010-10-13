@@ -36,8 +36,6 @@ enum TPanicCode
 _LIT( KPbk2PresentationResFile, "Pbk2Presentation.rsc" );
 // Chinese presentation resource file 
 _LIT( KPbk2PresentationResFileChinese, "Pbk2PresentationChinese.rsc" );
-// UnSync Chinese presentation resource file 
-_LIT( KPbk2PresentationResFileChineseUnSync, "Pbk2PresentationChineseUnSync.rsc" );
 
 // ================= LOCAL FUNCTIONS =======================
 #ifdef _DEBUG
@@ -224,15 +222,7 @@ EXPORT_C const TDesC& Pbk2PresentationUtils::PresentationResourceFile()
     {
     if (FeatureManager::FeatureSupported(KFeatureIdChinese))
         {
-       if ( FeatureManager::FeatureSupported(KFeatureIdFfTdUnSyncabPbfieldsInd) )
-            {
-            // The resource which can't be synchronized with a server.
-            return KPbk2PresentationResFileChineseUnSync;
-            }
-        else
-            {
-            return KPbk2PresentationResFileChinese;
-            }
+        return KPbk2PresentationResFileChinese;
         }
     return KPbk2PresentationResFile;
     }    

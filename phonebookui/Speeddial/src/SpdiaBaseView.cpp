@@ -25,7 +25,7 @@
 
 #include <aknViewAppUi.h>
 
-#include <speeddial.rsg>
+#include <SpeedDial.rsg>
 
 #include "SpdiaBaseView.h"
 

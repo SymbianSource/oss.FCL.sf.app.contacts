@@ -33,7 +33,6 @@
 #include <coemain.h>
 #include <aknnotewrappers.h>
 #include <StringLoader.h>
-#include <CPbk2CommandStore.h>
 
 _LIT(KPbk2CommandsDllResFileName,   "Pbk2Commands.rsc");
 _LIT(KPbk2UiControlsDllResFileName, "Pbk2UiControls.rsc");
@@ -355,39 +354,6 @@ void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdDeleteL( const TDesC8& aContact )
         cmdState.SetRunningAndPushCleanupL();
         
         iPbk2CommandId = EPbk2CmdDeleteMe;
-        
-        if( iLinks )
-            {
-            delete iLinks;
-            iLinks = NULL;
-            }
-        
-        iLinks = iAppServices->ContactManager().CreateLinksLC( aContact );   
-        
-        if ( iLinks->Count() > 0 )
-            {       
-            // operation completes by StoreReady,
-            //  StoreUnavailable or HandleStoreEventL
-            ( iLinks->At( 0 ) ).ContactStore().OpenL( *this );
-            }
-        
-        CleanupStack::Pop( 1 ); // iLinks (deleted in destructor)
-        cmdState.PopCleanup();
-        }
-    }
-
-// ---------------------------------------------------------------------------
-// CCCAppCommLauncherMenuHandler::ExecutePbk2CmdSendBCardL
-// ---------------------------------------------------------------------------
-//
-void CCCAppCommLauncherPbkCmd::ExecutePbk2CmdSendBCardL( const TDesC8& aContact )
-    {
-    TCCAppCommandState& cmdState( iPlugin.CommandState() );
-    if ( !cmdState.IsRunning() )
-        {
-        cmdState.SetRunningAndPushCleanupL();
-        
-        iPbk2CommandId = EPbk2CmdSend;
         
         if( iLinks )
             {
@@ -978,25 +944,3 @@ CPbk2ApplicationServices& CCCAppCommLauncherPbkCmd::ApplicationServices() const
     {
     return *iAppServices;
     }
-
-// --------------------------------------------------------------------------
-// CCCAppCommLauncherPbkCmd::DeleteAllRunningCmd
-// --------------------------------------------------------------------------
-//
-void CCCAppCommLauncherPbkCmd::DeleteAllRunningCmd()
-    {
-    //Close all the pending pbk2commands launched from CCA    
-    if ( iPlugin.CommandState().IsRunning() )
-        {
-        iPlugin.CommandState().SetNotRunning();  
-        if ( iCommandHandler )
-            {
-            CPbk2CommandStore* cmdStore( iCommandHandler->CommandStore() );
-            if ( cmdStore )
-                {
-                cmdStore->DestroyAllCommands();
-                }
-            }
-        }    
-    }
-

@@ -32,7 +32,7 @@
 
 // internal
 #include "ExtensionManager.hrh"
-#include <extensionmanagerres.rsg>
+#include <ExtensionManagerRes.rsg>
 #include "MxSPCommandMapper.h"
 #include "ExtensionManagerUID.H"
 

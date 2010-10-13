@@ -233,20 +233,6 @@ NONSHARABLE_CLASS( CContact ):
         /// Resets the contact state after contact operation
         void ResetContactOperationState();
         
-        /**
-        * Remove empty field from aSimContact, these empty field was added 
-        * in the sim contact before save it to keep the order of additional 
-        * numbers in the USIM card. 
-        */
-        void RemoveAllEmptyFields( CVPbkSimContact& aSimContact );
-        
-        /**
-        * Fill some empty field in the sim contact. hese empty field was added 
-        * in the sim contact before save it to keep the order of additional 
-        * numbers in the USIM card. 
-        */
-        void FillWithEmptyFieldsL() const;
-               
     private:  // Data
 
         TStoreContactFieldCollection iFields;

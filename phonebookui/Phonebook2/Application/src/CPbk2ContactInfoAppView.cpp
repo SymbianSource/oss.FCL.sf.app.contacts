@@ -26,9 +26,9 @@
 #include "CPbk2ViewActivationTransaction.h"
 #include "Pbk2InternalCommands.hrh"
 #include "CPbk2ViewLoader.h"
-#include <phonebook2.rsg>
-#include <pbk2uicontrols.rsg>
-#include <pbk2commands.rsg>
+#include <Phonebook2.rsg>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2Commands.rsg>
 #include <CPbk2ViewState.h>
 #include <MPbk2ContactNavigation.h>
 #include <Pbk2NavigatorFactory.h>

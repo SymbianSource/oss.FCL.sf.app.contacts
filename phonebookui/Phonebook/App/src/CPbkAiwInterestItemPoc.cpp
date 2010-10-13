@@ -32,7 +32,7 @@
 #include <MPbkAiwCommandObserver.h>
 #include <AiwPoCParameters.h>
 
-#include <phonebook.rsg>
+#include <Phonebook.rsg>
 #include <AiwServiceHandler.h>
 #include <AiwPoCParameters.hrh>
 #include <eikmenup.h>

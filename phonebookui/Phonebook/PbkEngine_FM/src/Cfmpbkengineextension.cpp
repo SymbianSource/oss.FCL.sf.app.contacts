@@ -19,7 +19,7 @@
 
 // INCLUDES
 #include "Cfmpbkengineextension.h"
-#include <pbkengine_fmres.rsg> // Common for all langugages
+#include <PbkEngine_FMRes.rsg> // Common for all langugages
 #include <barsc.h>
 #include <bautils.h>
 #include <featmgr.h>

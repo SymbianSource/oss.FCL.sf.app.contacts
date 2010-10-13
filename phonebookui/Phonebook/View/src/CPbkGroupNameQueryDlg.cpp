@@ -23,7 +23,7 @@
 #include    <cntitem.h>
 #include    <aknnotewrappers.h>
 #include    <StringLoader.h>
-#include    <pbkview.rsg>
+#include    <PbkView.rsg>
 #include    <CPbkContactEngine.h>
 
 

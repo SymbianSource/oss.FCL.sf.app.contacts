@@ -68,17 +68,17 @@ LIBRARY         eikcore.lib
 LIBRARY         ecom.lib
 LIBRARY         bafl.lib
 LIBRARY         aknicon.lib
-LIBRARY         CommonEngine.lib
+LIBRARY         commonengine.lib
 LIBRARY         eikcoctl.lib 
 LIBRARY         servicehandler.lib
-LIBRARY         CdlEngine.lib
+LIBRARY         cdlengine.lib
 LIBRARY         aknlayout2.lib 
 LIBRARY         featmgr.lib
 LIBRARY         AknLayout2Scalable.lib
 
-LIBRARY         VPbkEng.lib
-LIBRARY         Pbk2Presentation.lib
-LIBRARY         Pbk2CommonUI.lib
+LIBRARY         vpbkeng.lib
+LIBRARY         pbk2presentation.lib
+LIBRARY         pbk2commonui.lib
 LIBRARY         pbk2uicontrols.lib
 LIBRARY         Pbk2Commands.lib
 LIBRARY         ccapputil.lib

@@ -315,11 +315,6 @@ class   CLogsAppUi :    public CAknViewAppUi,
          */  
         void SetLogsOpenedWithSendKey(TBool aLogsOpenedWithSendKey);
 		
-        /**
-         *  Returns whether Logs is background.
-         */
-        TBool IsBackground() const;
-
 	public: // from MAknTabObserver
 		void TabChangedL(TInt aIndex);
 

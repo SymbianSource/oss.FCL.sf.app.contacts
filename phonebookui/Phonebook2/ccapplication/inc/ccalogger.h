@@ -134,20 +134,19 @@ inline void CCA_DP(TCCAEmptyDebugString,T1,T2,T3,T4,T5,T6,T7,T8)
 
 /**
  * PERFORMANCE LOGGINS
- * Logging is down only in debug, to get the log files,
- * need to enable the _DEBUG marco first.
- *   
+ * 
  * OPTIONS: 
  * PERF_LOGGING -> 12 different points where performance is measured. (c:\logs\perflogger.txt) 
- *                 http://presenceprojects/trac/wiki/PerfLogging
+ * http://presenceprojects/trac/wiki/PerfLogging
+ * 
  * PERF_LAUNCH -> For test guys (c:\logs\perflaunch.txt)
  * 
  */
 
-#ifdef _DEBUG   
-#define PERF_LOGGING
+#undef PERF_LOGGING
 #define PERF_LAUNCH 
-#endif //_DEBUG
+
+
 
 
 #ifdef PERF_LOGGING

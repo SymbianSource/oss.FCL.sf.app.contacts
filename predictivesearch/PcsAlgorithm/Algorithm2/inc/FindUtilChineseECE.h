@@ -36,7 +36,7 @@ const TInt KMaxWordInterpretationLen = 255;
 Defines flags that can be used to indicate what is the default search method for each language.
 */
 
-enum TChineseSearchMethod
+enum TDefaultAdaptiveSearchMethod
     {
     EAdptSearchPinyin =0,
     EAdptSearchStroke,
@@ -48,7 +48,7 @@ enum TChineseSearchMethod
 /**
  *  STRINGINFO struct
  *
- *  This data struct is for splited text in find pane. 
+ *  This data struct is for splited taxt in find pane. 
  *  It includes two type word, which is Chinese or no-Chinese 
  *
  *  @lib FindUtil.dll
@@ -58,7 +58,6 @@ struct STRINGINFO
     {
     TBuf<KMaxWordLength> segmentString;
     TBool isChinese;
-    TInt segmentPos;
     };
 
 /**
@@ -89,24 +88,10 @@ public:
      *
      * @since S60 v3.2
      * @param aItemString Reference to the searching target
-     * @param aPsQuery Reference to the search query
+     * @param aWord Reference to text in find pane
      * @return ETrue for the text are matched; otherwise EFalse
      */
     virtual TBool MatchRefineL(const TDesC& aItemString, CPsQuery& aPsQuery);
-
-    /**
-     * Match arithmetic for accurate search 
-     *
-     * @since S60 v5.2
-     * @param aItemString Reference to the searching target
-     * @param aPsQuery Reference to the search query
-     * @param aMatchPos On return, contain positions of matching parts within aItemString
-     * @param aMatchLength On return, contains lenghts of matching parts within aItemString
-     * @param aHighLight  If highlight or underline position of matched contact is enabled
-     * @return ETrue for the text are matched; otherwise EFalse
-     */
-    TBool MatchRefineL(const TDesC& aItemString, CPsQuery& aPsQuery, 
-        RArray<TInt>& aMatchPos, RArray<TInt>& aMatchLength, TBool aHighLight );
 
     /**
      * Current input text is handled by this model 
@@ -185,6 +170,30 @@ public:
 public:
 
     /**
+     * Do translate for Chinese word
+     *
+     * @since S60 v3.2
+     * @param aHZUnicode For translate word
+     * @param aSpellList Reference to spelling list for polyphonic word
+     * @return ETrue for it can be translated; otherwise EFalse
+     */
+    TBool T9ChineseTranslationL(TInt16 aHZUnicode, RPointerArray<HBufC>& aSpellList);
+
+    /**
+     * Find pane text is including Chinese word
+     *
+     * @since S60 v3.2
+     * @param aWord Reference to text for analyse
+     * @return ETrue it includes Chinese; otherwise EFalse
+     */
+    TBool IsChineseWord(const TDesC& aWord);
+
+    /*
+     * 
+     */
+    void SetKeyboardMode(TInt aMode);
+    
+    /**
      * Translate Chinese word to its spelling
      *
      * @since S60 v3.2
@@ -194,15 +203,6 @@ public:
      */
     TBool DoTranslationL(TInt16 aHZUnicode, RPointerArray<HBufC>& aSpellList);
 
-    /**
-     * Find pane text is including Chinese word
-     *
-     * @since S60 v3.2
-     * @param aWord Reference to text for analyse
-     * @return ETrue it includes Chinese; otherwise EFalse
-     */
-    TBool IsChineseWordIncluded(const TDesC& aWord);
-
     /*
      * 
      */
@@ -211,11 +211,6 @@ public:
         return iLanguage;
         }
 
-    inline TChineseSearchMethod CurrentSearchMethod()
-        {
-        return iSearchMethod;
-        }
-    
 private:
 
     /**
@@ -243,6 +238,9 @@ private:
      */
     void CloseT9InterfaceL();
 
+    TInt CategoryOfLang(TLanguage aLanguage);
+
+
     /**
      * This letter is stroke symbol
      *
@@ -250,18 +248,12 @@ private:
      * @param aFindWord For analyse
      * @return ETrue for it is stroke symbol; otherwise EFalse
      */
-    TInt IsStrokeSymbol(const TUint16 aFindWord);
+    TInt IsStrokeSymbol(const TInt aFindWord);
     
-    /**
-     * Do translate for Chinese word
-     *
-     * @since S60 v3.2
-     * @param aHZUnicode For translate word
-     * @param aSpellList Reference to spelling list for polyphonic word
-     * @return ETrue for it can be translated; otherwise EFalse
-     */
-    TBool T9ChineseTranslationL(TInt16 aHZUnicode, RPointerArray<HBufC>& aSpellList);
-
+    // The below code is commented out because current CFindUtilChineseECE is used
+    // on 3.2.3 which is not supported adaptive search. It will be easy to keep these code 
+    // for the further merging work (merge from FindUtil 5.0)
+#if 0
     /**
      * Do translate for Chinese word
      *
@@ -271,6 +263,7 @@ private:
      * @return ETrue for it can be translated; otherwise EFalse
      */
     TBool T9ChineseTranslationAdaptiveL(TInt16 aHZUnicode, RPointerArray<HBufC>& aSpellList);
+#endif
     
     /**
      * Find pane text is including separator
@@ -290,14 +283,6 @@ private:
      */
     TBool IsStrokeSymbolInString(const TDesC& aWord);
 
-    /**
-     * Find pane text is just Chinese word
-     * 
-     * @param aWord Reference to text for analyse
-     * @return ETrue it is all Chinese word(s); otherwise EFalse
-     */
-    TBool IsAllChineseWord(const TDesC& aWord);
-    
     /**
      * Find pane text is including zhuyin symbol
      *
@@ -342,13 +327,10 @@ private:
      * @param aStringInfoArr Reference to segment list
      * @param aSegmentStr Reference to segment text
      * @param aChinese The segment is Chinese
-     * @param aIndexAfterStr The first index in the source string after the aSegmentStr.
-     *                       The indices of characters of aSegmentStr are 
-     *                       [aIndexAfterStr-aSegmementStr.Length(), aIndexAfterStr-1]
      * @return none
      */
     void InsertStrInforArrayL(RPointerArray<STRINGINFO>& aStringInfoArr,
-                              TDes &aSegmentStr, TBool aChinese, TInt aIndexAfterStr);
+                              TDes &aSegmentStr, const TBool aChinese);
 
     /**
      * This segment is matched by search text
@@ -356,13 +338,9 @@ private:
      * @since S60 v3.2
      * @param aStringInfoArr Reference to segment list
      * @param aSearchText Reference to searching text
-     * @param aMatchPos On return, contain positions of matching parts within the original searcg target text
-     * @param aMatchLength On return, contains lenghts of matching parts within the original search target text
-     * @param aHighLight  If highlight or underline position of matched contact is enabled
      * @return ETrue it is matched; otherwise EFalse
      */
-    TBool MatchSegmentL(RPointerArray<STRINGINFO>& aStringInfoArr, 
-        CPsQuery& aQuery, RArray<TInt>& aMatchPos, RArray<TInt>& aMatchLength, TBool aHighLight );
+    TBool MatchSegmentL(RPointerArray<STRINGINFO>& aStringInfoArr, CPsQuery& aQuery);
 
     /**
      * Search text by reverse
@@ -370,10 +348,9 @@ private:
      * @since S60 v3.2
      * @param aFirst Reference to matched text
      * @param aSecond Reference to matched text
-	 * @param aFullQuery Reference to the FullQuery
      * @return Matched count
      */
-    TInt ReverseMatchStringL(const TDesC& aFirst, const TDesC& aSecond, CPsQuery& aFullQuery );
+    TInt ReverseMatchString(const TDesC& aFirst, const TDesC& aSecond);
 
     /**
      * Search text in other text 
@@ -381,34 +358,29 @@ private:
      * @since S60 v3.2
      * @param aFirst Reference to matched text
      * @param aSecond Reference to matched text
-	 * @param aFullQuery Reference to the FullQuery
      * @return Matched count
      */
-    TInt MatchStringL(const TDesC& aFirst, const TDesC& aSecond, CPsQuery& aFullQuery);
+    TInt MatchString(const TDesC& aFirst, const TDesC& aSecond);
     
     /**
      * Search text in other text 
      *
      * @since S60 v3.2
-     * @param aSearchTargetString Data to be searched through
-     * @param aQuery Text to be searched from aSearchTargetString
-     * @return Number of matched characters from the begining of aQuery
+     * @param aSearhTargetStr Reference to the target text to be queried
+     * @param CPsQuery maintain the matched text from user 
+     * @return Matched count
      */
-    TInt MatchStringL(const TDesC& aSearhTargetString, CPsQuery& aQuery);
+    TInt MatchString(const TDesC& aSearhTargetStr, CPsQuery& aQuery);
 
     /**
      * Search Chinese word in input text 
      *
      * @since S60 v3.2
-     * @param aSearchTargetString Data to be searched through
-     * @param aQuery Text to be searched from aSearchTargetString
-     * @param aMatchStrtIdx On return, will contain the start index 
-     *                      of the matching part within aSearchTargetString
-     * @param aMatchEndIdx On return, will contain the end index 
-     *                     of the matching part within aSearchTargetString
-     * @return Number of matched characters from the begining of aQuery
+     * @param aFirst Reference to matched text
+     * @param aSecond Reference to matched text
+     * @return Matched count
      */
-    TInt MatchChineseStringL(const TDesC& aSearchTargetString, CPsQuery& aQuery, TInt& aMatchStartIdx, TInt& aMatchEndIdx);
+    TInt MatchChineseStringL(const TDesC& aSearchTargetString, CPsQuery& aQuery, TInt& aIndex);
 
     /**
      * Initial character search 
@@ -425,19 +397,18 @@ private:
      * Maximal matched count in spelling list  
      *
      * @since S60 v3.2
-     * @param aSpellList Reference to spelling list
+     * @param spellList Reference to spelling list
      * @param aSearchStr Reference to search text
      * @param aPreviouStr Reference to previous matched word
      * @param aMatchIndex Reference to match index in Search text
      * @param aFullMatched Previous word is fully matched
      * @param aMatchedCount Previous word matched count
      * @param aAgain Search again
-	 * @param aFullQuery Reference to the FullQuery
      * @return Matched count
      */
-    TInt MaxMatchInListL(RPointerArray<HBufC>& aSpellList, CPsQuery& aQuery,
+    TInt MaxMatchInList(RPointerArray<HBufC> &spellList, CPsQuery& aQuery,
                         TDesC& aPreviouStr, TInt& aMatchIndex, const TBool aFullMatched,
-                        const TInt aMatchedCount, TBool& aAgain, TBool& aPrevReplaced, CPsQuery& aFullQuery);
+                        const TInt aMatchedCount, TBool& aAgain);
 
     /**
      * Search the taxt is include the input text 
@@ -556,6 +527,18 @@ private:
                 const TDes& aCurrentBuf,HBufC*& aNextChars );
 #endif
 
+    /**
+     * Converts the input data to the key board mode specified by the query.
+     * Mode is referred in the CPsQuery.
+     * If the mode is ITU-T, data is converted to numeric.
+     * If the mode is Qwerty, data is retained as is.
+     * If the mode is Mix, data is conerted according to the keyboard mode 
+     * of the corresponding query chararter 
+     */
+    void ConvertdDataToKeyBoardModeL(CPsQuery& aQuery, 
+                                     const TDesC& aSearchTargetStr,
+                                     TBuf<KMaxWordInterpretationLen>& aOutputNumInterpretationStr);
+    
     // help function for using CPsQuery
 public:
     void GetPartOfQueryL(CPsQuery& aSrcQuery, TInt aStartIndex, 
@@ -572,9 +555,19 @@ private:
     CPtiEngine* iPtiEngine;
 
     /**
+     * Ptiengine for Chinese translation in English language (Own)
+     */
+    CPtiEngine* iPtiEnginePrc;
+
+    /**
      * Current text input language 
      */
     TLanguage iLanguage;
+
+    /**
+     * It is support Chinese Language
+     */
+    TBool iSupportPRCChinese;
 
     /**
      * Current input mode
@@ -591,10 +584,14 @@ private:
      */
     CFindRepositoryWatcher* iWatcher;
    
+    // The below code is commented out because current CFindUtilChineseECE is used
+    // on 3.2.3 which is not supported adaptive search. It will be easy to keep these code 
+    // for the further merging work (merge from FindUtil 5.0)
+#if 0
     /**
      * Repository for input mode (Own)
      */     
-    CRepository* iRepositoryFindAdaptive;
+    CRepository* iRepositoryFindAdaptive;	 
 
     /**
      * The repository watcher(Own);
@@ -605,14 +602,30 @@ private:
     /**
      * The default adaptive search method;
      */
-    TChineseSearchMethod iSearchMethod;
+    TDefaultAdaptiveSearchMethod iSearchMethodPRC;
+    
+    /**
+     * The default adaptive search method;
+     */
+    TDefaultAdaptiveSearchMethod iSearchMethodTaiWan;
+    
+    /**
+     * The default adaptive search method;
+     */
+    TDefaultAdaptiveSearchMethod iSearchMethodHongKong;
     
     /**
      * The search method;
      */
     TBool iSearchMethodAdaptive;
+#endif
 
     CPcsAlgorithm2* iAlgorithm;
+
+    /*
+     * The keyboard Mode
+     */
+    TInt iKeyboardMode;
 
     };
 

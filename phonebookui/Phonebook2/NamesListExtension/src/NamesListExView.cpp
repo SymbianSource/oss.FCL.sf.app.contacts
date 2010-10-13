@@ -21,7 +21,7 @@
 #include "CPbk2CmdItemAddTop.h"
 #include "CPbk2CmdItemRemoteContactLookup.h"
 #include <cpbk2remotecontactlookupaccounts.h>
-#include <pbk2exnameslistres.rsg>
+#include <Pbk2ExNamesListRes.rsg>
 #include "Pbk2NlxMenuFiltering.h"
 #include "cpbk2cmditemmycard.h"
 #include "cpbk2mycard.h"
@@ -36,15 +36,14 @@
 #include <MPbk2ViewExplorer.h>
 #include "CPbk2ViewState.h"
 #include <MPbk2StartupMonitor.h>
-#include <phonebook2.rsg>
-#include <pbk2commands.rsg>
-#include <pbk2uicontrols.rsg>
-#include <pbk2commonui.rsg>
+#include <Phonebook2.rsg>
+#include <Pbk2Commands.rsg>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2CommonUi.rsg>
 #include <CPbk2ControlContainer.h>
 #include <CPbk2NamesListControl.h>
 #include <MPbk2CommandHandler.h>
 #include <Pbk2Commands.hrh>
-#include <PmuCommands.hrh>
 #include <MPbk2ViewActivationTransaction.h>
 #include <CPbk2ViewStateTransformer.h>
 #include <csxhelp/phob.hlp.hrh>
@@ -204,8 +203,7 @@ CPbk2NamesListExView::CPbk2NamesListExView
         iCtrlVisibleStateBeforeLosingForground( ETrue ),
         iFirstTimeActivated( ETrue ),
         iContentProvider( aStatusProvider ),
-        iCCAConnection( aCCAConnection ),
-        iMarkingModeOn( EFalse )
+        iCCAConnection( aCCAConnection )
     {
     }
 
@@ -420,9 +418,9 @@ void CPbk2NamesListExView::HandleCommandL(TInt aCommandId)
         }
     
     if ( EPbk2CmdOpenCca == aCommandId )
-        {
+    	{
         iControl->SetOpeningCca( ETrue );
-        }
+    	}
 
     // Set focus, keep current focus on the area of the client screen
     // when scoll to the bottom of Names list view.
@@ -567,7 +565,7 @@ void CPbk2NamesListExView::DoActivateL
     // The application is set here to background if application exit occurs
     PBK2_PROFILE_START
         ( Pbk2Profile::ENamesListViewDoActivateNotifyViewActivatation );
-    
+
     // The application is set here to background if application exit occurs
     // When the device is powered on, Phonebook will start up automatically and
     // hide itself in the background. At the first time of names list view activation,
@@ -599,12 +597,9 @@ void CPbk2NamesListExView::DoActivateL
 
     PBK2_PROFILE_END(Pbk2Profile::ENamesListViewDoActivateL);
 
-    // It will return the listbox by calling iControl->ComponentControl(0),
-    // which is defined in CPbk2NamesListControl::ComponentControl(TInt aIndex).
     CCoeControl* ctrl=iControl->ComponentControl(0);
     CEikListBox* listbox=static_cast <CEikListBox*> (ctrl);
     listbox->SetListBoxObserver( this );
-    listbox->SetMarkingModeObserver( this );
 
     // iCtrlVisibleStateBeforeLosingForground records the names list control states before
     // losing foreground during a command execution. Set the iCtrlVisibleStateBeforeLosingForground
@@ -627,17 +622,17 @@ void CPbk2NamesListExView::AddCommandItemsToContainerL()
     // Check if there is need to create MyCard
     if( FeatureManager::FeatureSupported( KFeatureIdffContactsMycard ) &&
         ( !iMyCard && IsPhoneMemoryUsedL() ) )
-        {
-        // Get the phoneStore for MyCard
-        MVPbkContactStore* phoneStore = iContactManager->ContactStoresL()
-            .Find(VPbkContactStoreUris::DefaultCntDbUri() );
-        
-        if( phoneStore )
-            {
-            // Create MyCard if not already exist and the phone memory selected
-            iMyCard = CPbk2MyCard::NewL( *phoneStore );
-            }
-        }
+    	{				
+		// Get the phoneStore for MyCard
+		MVPbkContactStore* phoneStore = iContactManager->ContactStoresL()
+    		.Find(VPbkContactStoreUris::DefaultCntDbUri() );
+		
+		if( phoneStore )
+			{
+			// Create MyCard if not already exist and the phone memory selected
+			iMyCard = CPbk2MyCard::NewL( *phoneStore );
+			}
+    	}
     
     // Add the MyCard item to the top of the list
     if( iMyCard && IsPhoneMemoryUsedL() )
@@ -659,13 +654,13 @@ void CPbk2NamesListExView::AddCommandItemsToContainerL()
    // promotion item disabled until we can support command items at the bottom of the list
    // if ( IsRclOnL() )  
     if( 0 )
-        {
+	    {
         CPbk2CmdItemRemoteContactLookup* rclCmd = CPbk2CmdItemRemoteContactLookup::NewLC();
         // Add the command item to the bottom of the command list
         iControl->AddCommandItemL( rclCmd, commandCount ); // ownership transferred
         CleanupStack::Pop( rclCmd );
         commandCount++;
-        }
+	    }
     }
 
 // --------------------------------------------------------------------------
@@ -705,17 +700,17 @@ TBool CPbk2NamesListExView::IsRclOnL()
 // --------------------------------------------------------------------------
 //
 CPbk2MyCard* CPbk2NamesListExView::MyCard() const
-    {
-    TBool phoneMemory = EFalse;
-    
-    TRAP_IGNORE( phoneMemory = IsPhoneMemoryUsedL() );
-    
-    if( phoneMemory )
-        {
-        return iMyCard;
-        }
-    
-    return NULL;
+    {			
+	TBool phoneMemory = EFalse;
+	
+	TRAP_IGNORE( phoneMemory = IsPhoneMemoryUsedL() );
+	
+	if( phoneMemory )
+		{
+		return iMyCard;
+		}
+	
+	return NULL;
     }
 
 // --------------------------------------------------------------------------
@@ -765,15 +760,6 @@ void CPbk2NamesListExView::DoDeactivate()
     if (iContainer)
         {
         CCoeEnv::Static()->AppUi()->RemoveFromStack(iContainer);
-        if( iMarkingModeOn )
-            {
-            // It will return the listbox by calling
-            // iControl->ComponentControl(0), which is defined
-            // in CPbk2NamesListControl::ComponentControl(TInt aIndex).
-            CCoeControl* ctrl=iControl->ComponentControl(0);
-            CEikListBox* listbox=static_cast <CEikListBox*> (ctrl);
-            listbox->SetMarkingMode(EFalse);
-            }
         // Store current state, safe to ignore. There's no real harm,
         // if theres no stored state when activating this view again
         TRAP_IGNORE(StoreStateL());
@@ -806,74 +792,17 @@ void CPbk2NamesListExView::DynInitMenuPaneL
     //there.
     switch (aResourceId)
         {
-        case R_AVKON_MENUPANE_MARK_MULTIPLE:
-            {
-            TInt pos;
-            TInt markedContactCount = 0;
-            
-            CPbk2ContactViewListBox* listbox = 
-                static_cast<CPbk2ContactViewListBox*>(iControl->ComponentControl(0));
-            
-            if ( listbox )
-                {
-                markedContactCount = listbox->SelectionIndexes()->Count();
-                }
-            // dim the makr all item if all contacts are marked. 
-            if ( markedContactCount > 0 && markedContactCount == iControl->NumberOfContacts() )
-                {
-                aMenuPane->SetItemDimmed( EAknCmdMarkingModeMarkAll, ETrue );
-                }
-            if ( aMenuPane->MenuItemExists( EAknCmdMarkingModeEnter, pos ) &&
-                    iControl->NumberOfContacts() <= 0 )
-                {
-                aMenuPane->SetItemDimmed( EAknCmdMarkingModeEnter, ETrue );
-                }
-            break;
-            }
-        case R_PHONEBOOK2_NAMESLIST_BACKUP_MENU_PLACEHOLDER:
-            {
-            TInt pos = 0;
-            // Checks whether there are marked contacts and
-            // whether menu pane contains the menu item
-            if ( iMarkingModeOn && iControl->ContactsMarked() &&
-                    aMenuPane->MenuItemExists( EPmuCmdCascadingBackup, pos ) )
-                {
-                // This item is shown in option menu but not in popup menu
-                CEikMenuBar* menuBar = static_cast<CEikMenuBar*>( aMenuPane->Parent() );
-                if ( menuBar && menuBar->GetMenuType() == CEikMenuBar::EMenuOptions )
-                    {
-                    aMenuPane->SetItemSpecific( EPmuCmdCascadingBackup, ETrue );
-                    }
-                else
-                    {
-                    aMenuPane->SetItemDimmed( EPmuCmdCascadingBackup, ETrue );
-                    }
-                }
-            break;
-            }
         case R_PHONEBOOK2_NAMESLIST_SEND_URL_MENU:
             {
-            TInt pos = 0;
             DimItem( aMenuPane, EPbk2CmdGoToURL );
-            // Checks whether there are marked contacts and
-            // whether menu pane contains the menu item
-            if ( iMarkingModeOn && iControl->ContactsMarked() &&
-                    aMenuPane->MenuItemExists( EPbk2CmdSend, pos ) )
-                {
-                aMenuPane->SetItemDimmed( EPbk2CmdSend, EFalse );
-                }
             break;
             }
-        case R_PHONEBOOK2_NAMESLIST_COPY_MENU:  
+        case R_PHONEBOOK2_NAMELIST_CREATE_MESSAGE_MENU:
             {
             TInt pos;
-            if ( aMenuPane->MenuItemExists( EPbk2CmdCopy, pos ) && iMarkingModeOn
-                    && iControl->NumberOfContacts() > 0  )
+            if ( aMenuPane->MenuItemExists( EPbk2CmdWriteNoQuery, pos ) )
                 {
-                // Show Copy item both in pop up menu and Options
-                // when Marking mode is active.
-                aMenuPane->SetItemSpecific( EPbk2CmdCopy, ETrue );
-                aMenuPane->SetItemDimmed( EPbk2CmdCopy, EFalse );
+                aMenuPane->SetItemSpecific( EPbk2CmdWriteNoQuery, !iControl->ContactsMarked() );
                 }
             break;
             }
@@ -1020,10 +949,16 @@ TBool CPbk2NamesListExView::HandleCommandKeyL
                 {
                 if ( !ShiftDown(aKeyEvent) ) // pure OK key
                     {
-                    if ( iControl->ContactsMarked() && itemSpecEnabled )
+                    if ( iControl->ContactsMarked() && itemSpecEnabled )					
                         {
-                        result = EFalse;
+                        iView.LaunchPopupMenuL(
+                            R_PHONEBOOK2_NAMESLIST_CONTEXT_MENUBAR_ITEMS_MARKED);
+                        result = ETrue;
                         }
+                    //else if ( iControl->NumberOfContacts() == 0 )
+                    //    {
+                    //    result = ETrue;
+                    //    }
                     }
                 break;
                 }
@@ -1055,11 +990,11 @@ void CPbk2NamesListExView::HandleListBoxEventL(
         switch ( aEventType )
             {
             case EEventItemSingleClicked:
-                {
+            	{
                 ShowContextMenuL();
                 break;
                 }
-#if 0                
+#if 0            	
             case EEventEmptyAreaClicked:  //An empty area of non-empty listbox was clicked 
             case EEventEmptyListClicked:  //An empty listbox was clicked                
                 {
@@ -1091,6 +1026,11 @@ void CPbk2NamesListExView::HandleListBoxEventL(
                     {
                     // Select key is mapped to "Open Contact" command
                     HandleCommandL(EPbk2CmdOpenCca);
+                    }
+                else if (iControl->ContactsMarked())
+            		{
+                	iView.LaunchPopupMenuL(
+                    	R_PHONEBOOK2_NAMESLIST_CONTEXT_MENUBAR_ITEMS_MARKED);
                     }
                 break;
                 }
@@ -1174,7 +1114,13 @@ void CPbk2NamesListExView::ShowContextMenuL()
             {
             if ( iPointerEventInspector->FocusedItemPointed() )
                 {
-                if ( !iControl->ContactsMarked() )
+                if ( iControl->ContactsMarked() )
+                    {
+                    // Display marked items context menu
+                    iView.LaunchPopupMenuL
+                        ( R_PHONEBOOK2_NAMESLIST_CONTEXT_MENUBAR_ITEMS_MARKED );
+                    }
+                else
                     {
                     // cancel the long tap animation with pointer up event
                     TPointerEvent event;
@@ -1217,9 +1163,9 @@ void CPbk2NamesListExView::ProcessEmptyAreaClickL()
             {
             MTouchFeedback* feedback = MTouchFeedback::Instance();
             if ( feedback )
-                {
-                feedback->InstantFeedback( ETouchFeedbackBasic );
-                }
+                   {
+                   feedback->InstantFeedback( ETouchFeedbackBasic );
+                   }			
             HandleCommandL( EPbk2CmdCreateNew );
             }
         }    
@@ -1329,22 +1275,22 @@ void CPbk2NamesListExView::ConfigurationChanged()
     Reset();
            
     if( iMyCard )
-        {
-        return;
-        }
+    	{
+		return;
+    	}
        
     if( FeatureManager::FeatureSupported( KFeatureIdffContactsMycard ) )
-        {
-        // Get the phoneStore for MyCard
-        TRAP_IGNORE( phoneStore = iContactManager->ContactStoresL().
-            Find( VPbkContactStoreUris::DefaultCntDbUri() ) );
-        }
+	   {    				
+		// Get the phoneStore for MyCard
+		TRAP_IGNORE( phoneStore = iContactManager->ContactStoresL().
+			Find( VPbkContactStoreUris::DefaultCntDbUri() ) );    		
+	   }
                
     if( !phoneStore )
-        {
+    	{
         TRAP_IGNORE( iContactManager->LoadContactStoreL( 
                 VPbkContactStoreUris::DefaultCntDbUri() ) );
-        }
+    	}
     }
 
 // --------------------------------------------------------------------------
@@ -1601,51 +1547,13 @@ void CPbk2NamesListExView::HandleControlEventL(
         }
     }
 
-// -----------------------------------------------------------------------------
-// CPbk2NamesListExView::MarkingModeStatusChanged
-// -----------------------------------------------------------------------------
-//
-void CPbk2NamesListExView::MarkingModeStatusChanged( TBool aActivated )
-    {
-    iMarkingModeOn = aActivated;
-
-    // It will return the control findbox by calling
-    // iControl->ComponentControl(1), which is defined
-    // in CPbk2NamesListControl::ComponentControl(TInt aIndex).
-    if ( !iMarkingModeOn && iControl->ComponentControl(1)->IsVisible() )
-        {
-        // Clear the text of the FindBox, when canceling from Marking mode.
-        TRAP_IGNORE( iControl->ResetFindL() );
-        }
-    iControl->SetMarkingMode( aActivated );
-
-    // It will return the control listbox by calling
-    // iControl->ComponentControl(0), which is defined
-    // in CPbk2NamesListControl::ComponentControl(TInt aIndex).
-    CPbk2ContactViewListBox* listbox = 
-        static_cast<CPbk2ContactViewListBox*>(iControl->ComponentControl(0));
-    listbox->SetMarkingModeState( aActivated );
-    }
-
-// -----------------------------------------------------------------------------
-// CPbk2NamesListExView::ExitMarkingMode
-// Called by avkon, if the return value is ETrue, 
-// the Marking mode will be canceled after any operation, 
-// otherwise the Marking mode keep active.
-// -----------------------------------------------------------------------------
-//
-TBool CPbk2NamesListExView::ExitMarkingMode() const
-    {
-    return ETrue; 
-    }
-    
 //---------------------------------------------------------------------------
 // CPbk2NamesListExView::CreateControlsL
 // --------------------------------------------------------------------------
 //
 inline void CPbk2NamesListExView::CreateControlsL()
     {
-    
+	
     if (!iContainer)
         {
         PBK2_PROFILE_START(Pbk2Profile::ENamesListViewCreateControls);
@@ -1752,6 +1660,9 @@ void CPbk2NamesListExView::UpdateCbasL()
             {
             // Set middle softkey as Context Icon
             iView.Cba()->SetCommandSetL( R_PBK2_SOFTKEYS_OPTIONS_EXIT_CONTEXT );
+            // Change context menu when marked items
+            iView.MenuBar()->SetContextMenuTitleResourceId
+                ( R_PHONEBOOK2_NAMESLIST_CONTEXT_MENUBAR_ITEMS_MARKED );
             }
         else // not listContainsContacts && not contactsMarked
             {
@@ -1977,25 +1888,25 @@ TBool CPbk2NamesListExView::NeedToHideToolbar(TInt aCurrentCommand)
 // --------------------------------------------------------------------------
 //
 TBool CPbk2NamesListExView::IsPhoneMemoryUsedL() const
-    {
-    CPbk2ApplicationServices* appServices = CPbk2ApplicationServices::InstanceL();
-            
-    // Get current configuration
-    CPbk2StoreConfiguration& storeConfig = appServices->StoreConfiguration();
-    
-    CVPbkContactStoreUriArray* uriArray = storeConfig.CurrentConfigurationL();
-            
-    TVPbkContactStoreUriPtr contactUri( VPbkContactStoreUris::DefaultCntDbUri() );
-            
-    // Check is phone memory included
-    TBool phoneMemory = uriArray->IsIncluded( contactUri );
-    
-    delete uriArray;        
-    Release( appServices );
-    
-    return phoneMemory;
-    }
-    
+	{
+	CPbk2ApplicationServices* appServices = CPbk2ApplicationServices::InstanceL();
+			
+	// Get current configuration
+	CPbk2StoreConfiguration& storeConfig = appServices->StoreConfiguration();
+	
+	CVPbkContactStoreUriArray* uriArray = storeConfig.CurrentConfigurationL();
+			
+	TVPbkContactStoreUriPtr contactUri( VPbkContactStoreUris::DefaultCntDbUri() );		
+			
+	// Check is phone memory included
+	TBool phoneMemory = uriArray->IsIncluded( contactUri );
+	
+	delete uriArray;		
+	Release( appServices );
+	
+	return phoneMemory;
+	}
+	
 // --------------------------------------------------------------------------
 // CPbk2NamesListExView::HandleGainingForeground
 // --------------------------------------------------------------------------

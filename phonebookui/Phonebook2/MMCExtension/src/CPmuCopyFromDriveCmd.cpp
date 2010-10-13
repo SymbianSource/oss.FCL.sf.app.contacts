@@ -32,7 +32,7 @@
 #include <MPbk2StoreValidityInformer.h>
 #include <MPbk2AppUi.h>
 #include <MPbk2ApplicationServices.h>
-#include <pbk2mmcuires.rsg>
+#include <Pbk2MmcUIRes.rsg>
 
 // Virtual Phonebook
 #include <MVPbkContactOperationBase.h>

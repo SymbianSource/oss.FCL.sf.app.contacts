@@ -23,7 +23,7 @@
 #include "MPbk2ContactEditorFieldVisitor.h"
 #include <MPbk2FieldProperty.h>
 #include <CPbk2PresentationContactField.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 
 // Virtual Phonebook
 #include <MVPbkContactFieldDateTimeData.h>
@@ -98,8 +98,6 @@ void CPbk2ContactEditorDateField::ConstructL()
         }
     iControl->ConstructL( minimumDate, maximumDate, time, EFalse );
 
-    // Enable partial screen input
-    iControl->SetFeature(CEikMfne::EPartialScreenInput, ETrue);
     iUiBuilder.LoadBitmapToFieldL
         ( iContactField.FieldProperty(), iIconInfoContainer, ControlId() );
 

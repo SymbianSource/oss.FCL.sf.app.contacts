@@ -33,7 +33,7 @@
 #include <SenduiMtmUids.h>           // Send UI MTM uid's
 
 // Phonebook.app include files
-#include <phonebook.rsg>             // Phonebook resources
+#include <Phonebook.rsg>             // Phonebook resources
 #include "CPbkAppUi.h"               // Phonebook application UI class
 #include "CPbkDeleteContactsCmd.h"
 #include "CPbkAssignToGroupCmd.h"
@@ -54,7 +54,7 @@
 #include <CPbkAiwInterestArray.h>
 
 // Phonebook view include files
-#include <pbkview.rsg>               // PbkView dll resources
+#include <PbkView.rsg>               // PbkView dll resources
 #include <CPbkViewState.h>           // Phonebook view state object
 #include <CPbkContactViewListControl.h>
 #include <CPbkAddToGroup.h>

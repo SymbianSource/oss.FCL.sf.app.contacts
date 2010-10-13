@@ -37,6 +37,4 @@ EXPORTS
 	?AttachL@CPbk2AiwInterestItemBase@@UAEXHHH@Z @ 36 NONAME ; void CPbk2AiwInterestItemBase::AttachL(int, int, int)
 	?InterestId@CPbk2AiwInterestItemBase@@UBEHXZ @ 37 NONAME ; int CPbk2AiwInterestItemBase::InterestId(void) const
 	?SetStore@CPbk2DriveSpaceCheck@@QAEXABVTDesC16@@@Z @ 38 NONAME ; void CPbk2DriveSpaceCheck::SetStore(class TDesC16 const &)
-	?CommandStore@CPbk2CommandHandler@@QAEPAVCPbk2CommandStore@@XZ @ 39 NONAME ; class CPbk2CommandStore * CPbk2CommandHandler::CommandStore(void)
-	?DestroyAllCommands@CPbk2CommandStore@@QAEXXZ @ 40 NONAME ; void CPbk2CommandStore::DestroyAllCommands(void)
 

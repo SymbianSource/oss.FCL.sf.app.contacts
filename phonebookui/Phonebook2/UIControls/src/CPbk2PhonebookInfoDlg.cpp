@@ -21,7 +21,7 @@
 
 #include "CPbk2StoreInfoItemBuilder.h"
 #include "MPbk2StoreInfoUiItem.h"
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <CPbk2StorePropertyArray.h>
 #include <CPbk2StoreProperty.h>
 #include <MPbk2ApplicationServices.h>

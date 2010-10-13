@@ -240,11 +240,10 @@ void CPcsSession::SetSearchSettingsL(const RMessage2& aMessage)
 void CPcsSession::GetAsyncPcsResultsL(const RMessage2& aMessage)
 {
     __LATENCY_MARK ( _L("CPcsSession::GetAsyncPcsResultsL") );
-    PRINT( _L("Enter CPcsSession::GetAsyncPcsResultsL") );
+    PRINT ( _L("Enter CPcsSession::GetAsyncPcsResultsL") );
 
     if ( iBufferOverFlow == EFalse )
     {
-
         // -------------------------------------------------------------
 
 	    // Read search query from the message
@@ -255,10 +254,20 @@ void CPcsSession::GetAsyncPcsResultsL(const RMessage2& aMessage)
         RPointerArray<CPsClientData> searchResults;
         RPointerArray<CPsPattern> searchSeqs;
 
-        iServer->PluginInterface()->PerformSearchL(*iSettings,
-                                                   *psQuery,
-                                                   searchResults,
-                                                   searchSeqs);
+
+        if( !iServer->IsChineseVariant() )
+             {
+             PRINT ( _L("----Algorithm1 search----") );
+             iServer->PluginInterface()->PerformSearchL(*iSettings,
+                                                        *psQuery,
+                                                        searchResults,
+                                                        searchSeqs);
+             }
+         else
+             {
+             PRINT ( _L("----Algorithm2 fake search----") );
+             }       
+
         CleanupStack::PopAndDestroy( psQuery );
 
 		// Dynamic data buffer
@@ -384,11 +393,18 @@ void CPcsSession::SearchInputL(const RMessage2& aMessage)
     // To hold matched location
     RArray<TPsMatchLocation> sequenceLoc;
 
-	iServer->PluginInterface()->SearchInputL(*psQuery,
-	                                         *data,
-	                                         searchSeqs,
-	                                         sequenceLoc);
-
+    if( !iServer->IsChineseVariant() )
+         {
+         PRINT ( _L("----Algorithm1 searchinput----") );
+         iServer->PluginInterface()->SearchInputL(*psQuery,
+                                                  *data,
+                                                  searchSeqs,
+                                                  sequenceLoc);
+         }
+     else
+         {
+         PRINT ( _L("----Algorithm2 fake searchinput----") );
+         }       
 
     // Delete the search query and search data
 	CleanupStack::PopAndDestroy( data );
@@ -462,7 +478,7 @@ void CPcsSession::SearchInputL(const RMessage2& aMessage)
 void CPcsSession::SearchMatchStringL(const RMessage2& aMessage)
 {
     PRINT ( _L("Enter CPcsSession::SearchMatchStringL") );
-    //__LATENCY_MARK ( _L("CPcsSession::SearchMatchStringL") );
+    __LATENCY_MARK ( _L("CPcsSession::SearchMatchStringL") );
 
     // -------------------------------------------------------------
 
@@ -509,8 +525,7 @@ void CPcsSession::SearchMatchStringL(const RMessage2& aMessage)
     CleanupStack::PopAndDestroy(des);
     
     PRINT ( _L("End CPcsSession::SearchMatchStringL") );
-    //__LATENCY_MARKEND ( _L("CPcsSession::SearchMatchStringL") );
-
+    __LATENCY_MARKEND ( _L("CPcsSession::SearchMatchStringL") );
 }
 
 // ----------------------------------------------------------------------------

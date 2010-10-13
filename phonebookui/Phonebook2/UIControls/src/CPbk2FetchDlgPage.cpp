@@ -25,7 +25,7 @@
 #include <CPbk2StoreConfiguration.h>
 #include <MPbk2Command.h>
 #include <Pbk2UIControls.hrh>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <CPbk2ViewState.h>
 
 // Virtual Phonebook

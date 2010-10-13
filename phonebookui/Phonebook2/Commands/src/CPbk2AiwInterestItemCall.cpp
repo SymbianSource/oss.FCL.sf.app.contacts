@@ -27,8 +27,8 @@
 #include "MPbk2CommandFactory.h"
 #include "CPbk2CallTypeSelector.h"
 #include <MPbk2ContactUiControl.h>
-#include <pbk2uicontrols.rsg>
-#include <pbk2commands.rsg>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2Commands.rsg>
 #include <CPbk2FieldPropertyArray.h>
 #include <CPbk2AddressSelect.h>
 #include <TPbk2AddressSelectParams.h>

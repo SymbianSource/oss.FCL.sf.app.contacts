@@ -25,7 +25,7 @@ NAME    CPBK  // From the product PhoneBooK
 
 #include <eikon.rh>
 #include <eikon.rsg>
-#include <avkon.rsg>
+#include <Avkon.rsg>
 #include <Avkon.rh>
 #include <avkon.mbg>		//Icon in save query
 #include <avkon.loc>
@@ -37,7 +37,7 @@ NAME    CPBK  // From the product PhoneBooK
 #include <PbkIcons.hrh>		// Phonebook icon mapping
 #include <AvkonIcons.hrh>
 #include <DigViewGraph.rh>
-#include <pbkview.rsg>
+#include <PbkView.rsg>
 
 #if defined(__SCALABLE_ICONS)
   #define num_aif_icons 1

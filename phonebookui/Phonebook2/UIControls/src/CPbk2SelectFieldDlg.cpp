@@ -26,7 +26,7 @@
 #include <CPbk2StorePropertyArray.h>
 #include <CPbk2UIExtensionManager.h>
 #include <MPbk2UIExtensionIconSupport.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <CPbk2PresenceIconInfo.h>
 #include "CPbk2FieldAnalyzer.h"
 #include <CPbk2ApplicationServices.h>
@@ -338,9 +338,9 @@ TKeyResponse CPbk2SelectFieldDlg::CPopupList::OfferKeyEventL
     {
     if ( aKeyEvent.iCode == EKeyEscape )
         {
-        // When the popup list is prompting for selection, if the user closes Phonebook application from FSW, 
-        // the dialog is to be closed otherwise re-enter Phonebook would result in wrong UI behavior.
-        AttemptExitL( EFalse);
+        // when popup is pending for selection, contact is closed from FSW
+        // after application key is long pressed, dialog has to be closed
+        AttemptExitL( EFalse );
         }
     else
         {

@@ -22,8 +22,8 @@
 #include "Pbk2SendCmdUtils.h"
 #include "CPbk2vCardConverter.h"
 #include <MPbk2CommandObserver.h>
-#include <pbk2commands.rsg>
-#include <pbk2cmdextres.rsg>
+#include <Pbk2Commands.rsg>
+#include <Pbk2CmdExtRes.rsg>
 #include <Pbk2ProcessDecoratorFactory.h>
 #include <MPbk2ProcessDecorator.h>
 #include <MPbk2ContactLinkIterator.h>
@@ -42,7 +42,7 @@
 #include <MVPbkStoreContact.h>
 #include <MVPbkFieldType.h>
 #include <TVPbkFieldTypeMapping.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 // System includes
 #include <txtrich.h>
@@ -369,7 +369,6 @@ CPbk2SendContactCmd::~CPbk2SendContactCmd()
         iUiControl->RegisterCommand( NULL );
         }
 
-    delete iWaiter;
     delete iSelectedContacts;
     delete iConverter;
     delete iVCardSender;
@@ -547,25 +546,6 @@ void CPbk2SendContactCmd::RunL()
             ProcessDone( KErrCancel );
             break;
             }
-        case EReleaseResource:
-            {
-            CPbk2AttachmentFileArray& fileArray = iConverter->AttachmentFileArray();
-            TInt count = fileArray.Count();
-            TInt deleteIndex = count -1;
-            CPbk2AttachmentFile * file = fileArray.At(deleteIndex);
-            fileArray.Delete(deleteIndex);
-            delete file;
-            
-            if ( count > 1) 
-            {
-              IssueRequest();
-            }
-            else
-            {
-              iWaiter->AsyncStop();
-            }
-            break;
-            }
         }
     }
 
@@ -575,9 +555,6 @@ void CPbk2SendContactCmd::RunL()
 //
 TInt CPbk2SendContactCmd::RunError(TInt aError)
     {
-    if( iWaiter && iWaiter->IsStarted() )
-        iWaiter->AsyncStop();
-    
     return FilterErrors(aError);
     }
 
@@ -587,9 +564,6 @@ TInt CPbk2SendContactCmd::RunError(TInt aError)
 //
 void CPbk2SendContactCmd::DoCancel()
     {
-    if( iWaiter && iWaiter->IsStarted() )
-        iWaiter->AsyncStop();
-    
     delete iRetrieveOperation;
     iRetrieveOperation = NULL;
     }
@@ -1283,53 +1257,6 @@ TBool CPbk2SendContactCmd::IsMoreThanOneContact()
         result = ETrue;
         }
     return result;
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2SendContactCmd::CommandExtension
-// --------------------------------------------------------------------------
-//
-TAny* CPbk2SendContactCmd::CommandExtension(TUid aExtensionUid )
-    {
-     if( aExtensionUid == TUid::Uid(MPbk2ResourceReleaseUID) )
-        {
-        return static_cast<MPbk2ResourceRelease *>(this);
-        }
-     else
-        {
-        return NULL;
-        }
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2SendContactCmd::ReleaseResource
-// --------------------------------------------------------------------------
-//
-void CPbk2SendContactCmd::ReleaseResource()
-    {
-    Cancel();
-    if (iConverter)
-        {
-        iConverter->Cancel();
-        CPbk2AttachmentFileArray& fileArray = iConverter->AttachmentFileArray();        
-        if (fileArray.Count() > 0)
-            {
-            if ( !iWaiter )
-                {
-                TInt err( KErrNone );
-                TRAP( err,iWaiter = new (ELeave) CActiveSchedulerWait());
-                if ( err != KErrNone )
-                    {
-                    fileArray.ResetAndDestroy();
-                    return;
-                    }
-                 }
-            
-              iState = EReleaseResource;
-              IssueRequest();         
-              iWaiter->Start();
-            }
-       }
     }
 
 // End of File

@@ -29,12 +29,12 @@
 #include <MPbk2ContactNameFormatter.h>
 #include <MPbk2CommandObserver.h>
 #include <Pbk2ProcessDecoratorFactory.h>
-#include <pbk2usimuires.rsg>
+#include <Pbk2USimUIRes.rsg>
 #include <CPbk2StorePropertyArray.h>
 #include <CPbk2StoreProperty.h>
 #include <CPbk2ApplicationServices.h>
 #include <MPbk2AppUi.h>
-#include <pbk2commonui.rsg>
+#include <Pbk2CommonUi.rsg>
 
 // Virtual Phonebook
 #include <MVPbkContactStoreProperties.h>
@@ -299,13 +299,6 @@ TInt CPsu2CopyToSimCmd::RunError(TInt aError)
     PBK2_DEBUG_PRINT( PBK2_DEBUG_STRING
         ( "CPsu2CopyToSimCmd::RunError %d" ), aError );
     CCoeEnv::Static()->HandleError(aError);
-    
-    // If the copy operation is cancelled due to error occurred, update the 
-    // ui control and reset the command pointer before it is destructed.
-    if ( iNameListUiControl )
-        {
-        iNameListUiControl->UpdateAfterCommandExecution();
-        }
     if ( iCommandObserver )
         {
         iCommandObserver->CommandFinished(*this);

@@ -24,10 +24,10 @@
 #include <CVPbkFieldTypeSelector.h>
 #include <MVPbkFieldType.h>
 #include <CVPbkLocalVariationManager.h>
-#include <vpbkfieldtypeselectors.rsg>
+#include <VPbkFieldTypeSelectors.rsg>
 #include <RLocalizedResourceFile.h>
 #include <featmgr.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <spsettings.h>
 #include <spproperty.h>
 #include <spentry.h>

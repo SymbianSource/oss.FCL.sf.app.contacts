@@ -24,10 +24,10 @@
 #include <Pbk2Commands.hrh>
 #include <MPbk2CommandHandler.h>
 #include <MPbk2ApplicationServices.h>
-#include <pbk2mapuires.rsg>
-#include <pbk2commands.rsg>
+#include <Pbk2MapUIRes.rsg>
+#include <Pbk2Commands.rsg>
 #include <Pbk2UIControls.hrh>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <cpmapcontacteditorextension.h>
 #include "cpmapcmd.h"
 

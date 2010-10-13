@@ -43,7 +43,7 @@
 #include <MPbk2AppUi.h>
 
 // internal
-#include <extensionmanagerres.rsg>
+#include <ExtensionManagerRes.rsg>
 #include "ExtensionManager.hrh"
 #include "CxSPViewInfo.h"
 #include "CxSPViewIdChanger.h"

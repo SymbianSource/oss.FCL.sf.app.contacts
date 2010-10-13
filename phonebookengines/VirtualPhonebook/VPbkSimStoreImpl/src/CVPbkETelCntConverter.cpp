@@ -61,10 +61,7 @@ TUint8 FieldConversion( TVPbkSimCntFieldType aType )
             break;
             }
         case EVPbkSimGsmNumber: // FALLTHROUGH
-        case EVPbkSimAdditionalNumber1:  // FALLTHROUGH
-        case EVPbkSimAdditionalNumber2:  // FALLTHROUGH
-        case EVPbkSimAdditionalNumber3:  // FALLTHROUGH
-        case EVPbkSimAdditionalNumberLast:  // same as EVPbkSimAdditionalNumber
+        case EVPbkSimAdditionalNumber:
             {
             result = RMobilePhoneBookStore::ETagPBNumber;
             break;
@@ -190,10 +187,7 @@ inline TInt AddNewETelField( CPhoneBookBuffer& aETelBuffer,
     const TDesC& data = aField.Data();
     if ( data.Length() > 0 )
         {
-        if( aField.Type() == EVPbkSimAdditionalNumber1 
-                || aField.Type() == EVPbkSimAdditionalNumber2 
-                || aField.Type() == EVPbkSimAdditionalNumber3 
-                || aField.Type()== EVPbkSimAdditionalNumberLast ) // all these four types are all additional field types.
+        if ( aField.Type() == EVPbkSimAdditionalNumber )
             {
             // Additional number needs own tag that must be added before data
             aETelBuffer.AddNewNumberTag();

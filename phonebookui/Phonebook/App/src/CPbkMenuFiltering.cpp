@@ -27,7 +27,7 @@
 #include <bldvariant.hrh>
 #include <MenuFilteringFlags.h>
 #include <Stringloader.h>
-#include <phonebook.rsg>
+#include <Phonebook.rsg>
 
 namespace {
 

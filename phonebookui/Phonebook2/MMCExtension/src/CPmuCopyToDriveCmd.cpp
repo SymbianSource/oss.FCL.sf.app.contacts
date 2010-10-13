@@ -27,7 +27,7 @@
 #include <Pbk2ProcessDecoratorFactory.h>
 #include <MPbk2ProcessDecorator.h>
 #include <TPbk2CopyContactsResults.h>
-#include <pbk2mmcuires.rsg>
+#include <Pbk2MmcUIRes.rsg>
 #include <CPbk2DriveSpaceCheck.h>
 
 // Virtual Phonebook
@@ -239,14 +239,15 @@ void CPmuCopyToMmcCmd::RunL()
                 }
             else
                 {
-                // Stop the process dialog when complete the process of copying 
-                iDecorator->ProcessStopped();
+                iState = EPmuCopyToMmcCmdComplete;
+                IssueRequest();
                 }
             break;
             }
         case EPmuCopyToMmcCmdComplete:
             {
-            CommandCompleted();
+            // Copy complete, decorator calls processdismissed
+            iDecorator->ProcessStopped();
             break;
             }
         default:
@@ -326,8 +327,19 @@ void CPmuCopyToMmcCmd::ResetUiControl( MPbk2ContactUiControl& aUiControl )
 //
 void CPmuCopyToMmcCmd::ProcessDismissed( TInt /*aCancelCode*/ )
     {
-    iState = EPmuCopyToMmcCmdComplete;
-    IssueRequest();
+    Cancel();
+    delete iRetrieveOperation;
+    iRetrieveOperation = NULL;
+    delete iExportOperation;
+    iExportOperation = NULL;
+
+    // It is a not big deal if result note is not shown to user
+    TRAP_IGNORE( ShowResultsL() );
+    if ( iUiControl )
+        {
+        iUiControl->UpdateAfterCommandExecution();
+        } 
+    iCommandObserver->CommandFinished( *this );
     }
 
 // --------------------------------------------------------------------------
@@ -639,27 +651,6 @@ TInt CPmuCopyToMmcCmd::HandleError( TInt aError )
         }
     
     return err;
-    }
-
-// --------------------------------------------------------------------------
-// CPmuCopyToMmcCmd::CommandCompleted
-// --------------------------------------------------------------------------
-//    
-void CPmuCopyToMmcCmd::CommandCompleted()
-    {
-    Cancel();
-    delete iRetrieveOperation;
-    iRetrieveOperation = NULL;
-    delete iExportOperation;
-    iExportOperation = NULL;
-
-    // It is a not big deal if result note is not shown to user
-    TRAP_IGNORE( ShowResultsL() );
-    if ( iUiControl )
-        {
-        iUiControl->UpdateAfterCommandExecution();
-        } 
-    iCommandObserver->CommandFinished( *this );
     }
 
 // End of File

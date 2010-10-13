@@ -26,7 +26,7 @@
 #include    <aknlists.h>    // EikControlFactory
 
 // PbkView classes
-#include    <pbkview.rsg>
+#include    <PbkView.rsg>
 #include    <CPbkIconArray.h>
 
 // PbkEng classes

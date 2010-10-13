@@ -21,9 +21,9 @@
 #include <eiklabel.h>
 #include <eikfrlbd.h>
 #include <eikfrlb.h>
-#include <logs.rsg>
+#include <Logs.rsg>
 #include <gulicon.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <PbkFields.hrh>
 
 #include "CLogsRecentListAdapter.h"

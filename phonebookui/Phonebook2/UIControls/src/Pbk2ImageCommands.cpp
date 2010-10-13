@@ -36,9 +36,9 @@
 #include <RPbk2LocalizedResourceFile.h>
 #include "Pbk2DataCaging.hrh"
 #include "Pbk2PresentationUtils.h"
-#include <pbk2commonui.rsg>
-#include <pbk2uicontrols.rsg>
-#include <pbk2commands.rsg>
+#include <Pbk2CommonUi.rsg>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2Commands.rsg>
 
 #include <MPbk2ImageOperationObservers.h>   // MPbk2ImageSetObserver
 #include <AknServerApp.h>                   // MAknServerAppExitObserver
@@ -49,7 +49,7 @@
 #include <CVPbkContactManager.h>
 #include <TVPbkFieldTypeMapping.h>
 #include <MVPbkFieldType.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 // System includes
 #include <barsread.h>
@@ -60,7 +60,7 @@
 #include <MGFetch.h>
 #include <DocumentHandler.h>            // CDocumentHandler
 #include <apmstd.h>                     // TDataType
-#include <pbk2cmdextres.rsg>
+#include <Pbk2CmdExtRes.rsg>
 #include <sysutil.h>
 #include <CPbk2ApplicationServices.h>
 #include <AknProgressDialog.h>
@@ -619,34 +619,27 @@ MPbk2BaseCommand* Pbk2ImageCommands::RemoveImageL(
         services.ContactManager() );
 	CleanupStack::PushL( imageManager );
 	
-	const MVPbkFieldType* thumbType = services.ContactManager().FieldTypes().Find(
-	                R_VPBK_FIELD_TYPE_THUMBNAILPIC );
-	
-	// show a confirmation query if contact has an image
-	if (thumbType && imageManager->HasImage( *aContact, *thumbType ) )
-	    {
-	    if ( CAknQueryDialog::NewL()->ExecuteLD( 
-	            R_PHONEBOOK2_REMOVE_IMAGE_CONFIRMATION_DIALOG ) )
-	        {
-	        TPbk2StoreContactAnalyzer analyzer(
-	                services.ContactManager(), aContact );
-	        TInt imageIndex = analyzer.HasFieldL( R_PHONEBOOK2_IMAGE_SELECTOR );
+    if( CAknQueryDialog::NewL()->ExecuteLD(
+            R_PHONEBOOK2_REMOVE_IMAGE_CONFIRMATION_DIALOG ) )
+        {
+        TPbk2StoreContactAnalyzer analyzer(
+            services.ContactManager(), aContact );
+        TInt imageIndex = analyzer.HasFieldL( R_PHONEBOOK2_IMAGE_SELECTOR );
         
-	        if ( imageIndex != KErrNotFound )
-	            {
-	            //aContact->RemoveField( imageIndex );
-	            //Instead of above we don't remove the field, just zero it's data
-	            MVPbkContactFieldData& data(aContact->Fields().
-	                    FieldAt( imageIndex ).FieldData());
-	            MVPbkContactFieldTextData::Cast( data ).SetTextL(KNullDesC);
-	            }
+        if ( imageIndex != KErrNotFound )
+            {
+            //aContact->RemoveField( imageIndex );
+            //Instead of above we don't remove the field, just zero it's data
+            MVPbkContactFieldData& data(aContact->Fields().
+                FieldAt( imageIndex ).FieldData());
+            MVPbkContactFieldTextData::Cast( data ).SetTextL(KNullDesC);
+            }
         
-	        const MVPbkFieldType* thumbFieldType = ThumbnailFieldTypeL(services);
-	        imageManager->RemoveImage( *aContact, *thumbFieldType );
-	        }
-	    }
-	
+        const MVPbkFieldType* thumbFieldType = ThumbnailFieldTypeL(services);
+        imageManager->RemoveImage( *aContact, *thumbFieldType );
+        }
     CleanupStack::PopAndDestroy( imageManager );
+
     CleanupStack::PopAndDestroy(); // services
     
     return NULL; // synchronous operation

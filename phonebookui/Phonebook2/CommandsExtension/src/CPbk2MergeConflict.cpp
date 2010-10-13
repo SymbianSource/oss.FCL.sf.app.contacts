@@ -17,7 +17,7 @@
 
 // Phonebook2 includes
 #include <Pbk2AddressTools.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <CPbk2PresentationContact.h>
 #include <CPbk2PresentationContactFieldCollection.h>
 #include <CPbk2PresentationContactField.h>

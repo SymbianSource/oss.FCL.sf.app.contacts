@@ -24,7 +24,7 @@
 #include "Pbk2PresentationUtils.h"
 #include "CPbk2StoreProperty.h"
 #include <RPbk2LocalizedResourceFile.h>
-#include <pbk2presentation.rsg>
+#include <Pbk2Presentation.rsg>
 #include <Pbk2DataCaging.hrh>
 
 // From Virtual Phonebook

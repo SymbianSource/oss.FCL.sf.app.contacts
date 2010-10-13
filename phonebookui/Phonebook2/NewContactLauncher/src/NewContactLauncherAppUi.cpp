@@ -37,7 +37,7 @@
 #include <AiwContactSelectionDataTypes.h>
 #include <AiwContactAssignDataTypes.h>
 #include <AiwVariant.h>
-#include <newcontactlauncher.rsg>
+#include <NewContactLauncher.rsg>
 #include <coemain.h>
 #include <coeutils.h>
 #include <sysutil.h>

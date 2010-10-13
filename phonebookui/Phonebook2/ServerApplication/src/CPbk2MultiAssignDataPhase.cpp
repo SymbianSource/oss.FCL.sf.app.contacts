@@ -33,7 +33,7 @@
 #include <CPbk2FieldPropertyArray.h>
 #include <CPbk2PresentationContact.h>
 #include <MPbk2ApplicationServices.h>
-#include <pbk2serverapp.rsg>
+#include <Pbk2ServerApp.rsg>
 
 // Virtual Phonebook
 #include <MVPbkContactLink.h>
@@ -200,16 +200,6 @@ void CPbk2MultiAssignDataPhase::RequestCancelL( TInt aExitCommandId )
 // --------------------------------------------------------------------------
 //
 void CPbk2MultiAssignDataPhase::AcceptDelayedL
-        ( const TDesC8& /*aContactLinkBuffer*/ )
-    {
-    // Nothing to do
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2MultiAssignDataPhase::DenyDelayed
-// --------------------------------------------------------------------------
-//
-void CPbk2MultiAssignDataPhase::DenyDelayedL
         ( const TDesC8& /*aContactLinkBuffer*/ )
     {
     // Nothing to do

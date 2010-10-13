@@ -20,7 +20,7 @@
 #include "CPbkRclCmd.h"
 
 // Phonebook 2
-#include <pbk2commands.rsg>
+#include <Pbk2Commands.rsg>
 #include <MPbk2CommandObserver.h>
 #include <MPbk2ContactUiControl.h>
 

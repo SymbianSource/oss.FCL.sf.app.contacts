@@ -30,7 +30,7 @@
 #include <CVPbkContactFieldIterator.h>
 #include <MVPbkContactFieldTextData.h>
 #include <VPbkContactStoreUris.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <MVPbkContactFieldTextData.h>
 #include <MVPbkBaseContactFieldCollection.h>
 
@@ -214,9 +214,10 @@ TBool CPbk2ContactFindPolicy::MatchContactNameL(
         {
         FeatureManager::InitializeLibL();
         TBool chinese = FeatureManager::FeatureSupported( KFeatureIdChinese );
-        
-        TBool korean = FeatureManager::FeatureSupported( KFeatureIdKorean );
         FeatureManager::UnInitializeLib();
+        
+        TBool korean = (User::Language() == ELangKorean);
+
         if ( chinese || korean )
             {
             match = MatchChineseContactNameL( aFindWords, aContact );

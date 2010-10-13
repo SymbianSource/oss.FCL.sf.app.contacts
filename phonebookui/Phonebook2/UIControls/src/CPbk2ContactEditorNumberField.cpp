@@ -105,11 +105,7 @@ inline void CPbk2ContactEditorNumberField::ConstructL()
         // foreign characters if necessary
         AknTextUtils::DisplayTextLanguageSpecificNumberConversion(text);
         }
-
-	// Enable partial screen input
-    TInt flags = iControl->AknEditorFlags();
-    iControl->SetAknEditorFlags(flags | EAknEditorFlagEnablePartialScreen);
-    
+        
     if (iContactField.FieldProperty().EditMode() == EPbk2FieldEditModeNumeric)
         {
         iControl->SetAknEditorNumericKeymap(EAknEditorPlainNumberModeKeymap);

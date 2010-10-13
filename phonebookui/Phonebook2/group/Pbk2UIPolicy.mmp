@@ -75,7 +75,7 @@ LIBRARY euser.lib ecom.lib bafl.lib
 
 // Dependencies to S60 platform components
 LIBRARY SortUtil.lib FindUtil.lib
-LIBRARY featmgr.lib
+LIBRARY FeatMgr.lib
 
 // Dependencies to Phonebook
 LIBRARY VPbkEng.lib Pbk2Presentation.lib

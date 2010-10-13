@@ -21,7 +21,7 @@
 
 
 // INCLUDE FILES
-#include <spdctrl.rsg>
+#include <SpdCtrl.rsg>
 
 #include "speeddialprivate.h"
 #include "SpdiaCallingVmbxContainer.h"

@@ -122,13 +122,13 @@ LIBRARY ecom.lib
 LIBRARY AknLayout2Scalable.lib CdlEngine.lib
 
 // Dependencies to S60 platform components
-LIBRARY avkon.lib centralrepository.lib featmgr.lib
-LIBRARY CommonEngine.lib aknskins.lib
+LIBRARY Avkon.lib CentralRepository.lib FeatMgr.lib
+LIBRARY CommonEngine.lib AknSkins.lib
 LIBRARY serviceprovidersettings.lib
 LIBRARY contactpresence.lib
 
 // Dependencies Phonebook
-LIBRARY VPbkEng.lib Pbk2CommonUI.lib Pbk2UIExt.lib Pbk2Presentation.lib
-LIBRARY pbk2uicontrols.lib Pbk2Commands.lib Pbk2CommonUtility.lib
+LIBRARY VPbkEng.lib Pbk2CommonUi.lib Pbk2UiExt.lib Pbk2Presentation.lib
+LIBRARY Pbk2UiControls.lib Pbk2Commands.lib Pbk2CommonUtility.lib
 
 // End of File

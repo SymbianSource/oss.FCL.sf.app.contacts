@@ -30,8 +30,8 @@
 #include <MPbk2StartupObserver.h>
 #include <MPbk2ApplicationServices.h>
 #include <MPbk2ContactViewSupplier.h>
-#include <pbk2uicontrols.rsg>
-#include <pbk2commonui.rsg>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2CommonUi.rsg>
 #include <CPbk2AppViewBase.h>
 
 // Virtual Phonebook

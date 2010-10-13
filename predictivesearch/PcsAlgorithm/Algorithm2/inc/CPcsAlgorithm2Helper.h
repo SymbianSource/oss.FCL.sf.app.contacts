@@ -22,7 +22,6 @@
 #include <e32cmn.h>
 #include <e32math.h>
 #include <e32hashtab.h>
-#include <MPbkGlobalSetting.h> // For name order setting
 
 #include "CPcsPlugin.h"
 #include "CPsData.h"
@@ -37,7 +36,7 @@ class CPsData;
 class CPsDataPluginInterface;
 
 // CLASS DECLARATION
-class CPcsAlgorithm2Helper : public CBase, private MPbkGlobalSettingObserver
+class CPcsAlgorithm2Helper : public CBase
     {
 public:
 
@@ -54,52 +53,78 @@ public:
 private:
 
     /**
-     * Filter subset results for Mixed mode. Some portion of query can be in 
-     * ITU-T mode and some portion in Qwerty mode.
+     * Filter subset results for ITU-T Mode. Entire search query is 
+     * entered in ITU-T mode.
      */
-    void FilterResultsSingleL(CPcsAlgorithm2FilterHelper* aAlgorithmFilterHelper,
-                              RPointerArray<CPcsPoolElement>& aSearchSet,
-                              CPsQuery& aSearchQuery,
-                              TUint8 aFilteredDataMatch,
-                              TBool aIsSearchInGroup,
-                              const RArray<TInt>& aContactsInGroup);
-    
+    void FilterResultsL(CPcsAlgorithm2FilterHelper* aAlgorithmFilterHelper,
+                        RPointerArray<CPcsPoolElement>& searchSet,
+                        const TDesC& searchQuery, TBool isSearchInGroup,
+                        RArray<TInt>& aContactsInGroup);
     /**
-     * Create a buffer containing the first name and last name of a contact in the
-     * order specified in Phonebook settings.
+     * Filter subset results for Qwerty Mode. Entire search query is 
+     * entered in Qwerty mode.
      */
-    HBufC* CreateNameBufLC( const CPsData& aContactData, TInt aFirstNameIndex, TInt aLastNameIndex ) const;
-    
-    /**
-     * Get and store the order of first and last name.
-     */
-    void UpdateNameOrderL();
+    void FilterResultsQwertyL(CPcsAlgorithm2FilterHelper* aAlgorithmFilterHelper,
+                              RPointerArray<CPcsPoolElement>& searchSet,
+                              const TDesC& searchQuery, TBool isSearchInGroup,
+                              RArray<TInt>& aContactsInGroup);
 
-private: // from MPbkGlobalSettingObserver
     /**
-     * React to change in Phonebook settings.
+     * Filter subset results for Mixed mode. Some portion of query is in 
+     * ITU-T mode and some portion in Qwert mode.
      */
-    void SettingChangedL( MPbkGlobalSetting::TPbkGlobalSetting aKey );
-    
+    void FilterResultsMixedL(CPcsAlgorithm2FilterHelper* aAlgorithmFilterHelper,
+                             RPointerArray<CPcsPoolElement>& searchSet, 
+                             CPsQuery& searchQuery, TBool isSearchInGroup, 
+                             RArray<TInt>& aContactsInGroup);
+
+    /**
+     * Convert the search query to a string.
+     * If the mode is ITU-T, character is converted to numeric.
+     * If the mode is Qwerty, character is retained as is.
+     */
+    void ExtractQueryL(CPsQuery& aPsQuery, TDes& aOutput);
+
+    /**
+     * Convert the input search query to a string.
+     * Mode is referred in the CPsQuery.
+     * If the mode is ITU-T, character is converted to numeric.
+     * If the mode is Qwerty, character is retained as is.
+     */
+    void ExtractQueryL(TDesC& aInput, CPsQuery& aPsQuery, TDes& aOutput);
+
 public:
+
+    /**
+     * Search Function for ITU-T style
+     */
+    void SearchITUL(const CPsSettings& aSettings, CPsQuery& aQuery,
+                    TBool isGroupSearch, RArray<TInt>& aContactsInGroup,
+                    RPointerArray<CPsData>& searchResults,
+                    RPointerArray<CPsPattern>& searchSeqs);
+
+    /**
+     * Search Function for QWERTY style
+     */
+    void SearchQWERTYL(const CPsSettings& aSettings, CPsQuery& aQuery,
+                       TBool isGroupSearch, RArray<TInt>& aContactsInGroup,
+                       RPointerArray<CPsData>& searchResults,
+                       RPointerArray<CPsPattern>& searchSeqs);
 
     /**
      * Search Function for mixed style
      * Some chars are entered in ITU-T and some in QWERTY
      */
-    void SearchSingleL(const CPsSettings& aSettings, 
-                       CPsQuery& aQuery,
-                       TBool aIsGroupSearch, 
-                       const RArray<TInt>& aContactsInGroup,
-                       RPointerArray<CPsData>& aSearchResults,
-                       RPointerArray<CPsPattern>& aSearchSeqs);
+    void SearchMixedL(const CPsSettings& aSettings, CPsQuery& aQuery,
+                      TBool isGroupSearch, RArray<TInt>& aContactsInGroup,
+                      RPointerArray<CPsData>& searchResults,
+                      RPointerArray<CPsPattern>& searchSeqs);
 
     /**
      * Funciton to search matching sequences in the input text
      */
-    void SearchMatchSeqL(CPsQuery& aPsQuery,
-                         const TDesC& aData,
-                         RPointerArray<TDesC>& aMatchSet,
+    void SearchMatchSeqL(HBufC* aQuery, TDesC& aData,
+                         RPointerArray<TDesC>& aMatchSet, CPsQuery& aPsQuery, 
                          RArray<TPsMatchLocation>& aMatchLocation);
 
     /**
@@ -107,6 +132,16 @@ public:
      */
     void SortSearchSeqsL(RPointerArray<TDesC>& aMatchSet);
 
+private:
+
+    /**
+     * Constructs a bit pattern using the required/supported data fields
+     * For example, 6, 4 and 27 are supported fields <-- 00000111
+     *              6 and 4 are required fields      <-- 00000011
+     * Bit pattern returned is 00000011.
+     */
+    TUint8 FilterDataFieldsL(RArray<TInt>& aRequiredDataFields,
+                             RArray<TInt>& aSupportedDataFields);
 private:
 
     /**
@@ -129,33 +164,13 @@ private:
     /**
      * Pointer to key map instance. Not owned.
      */
-    CPcsKeyMap* iKeyMap;
+    CPcsKeyMap* keyMap;
 
     /**
      * Array of result sets from different data stores.
      */
     typedef RPointerArray<CPsData> CPSDATA_R_PTR_ARRAY;
     RPointerArray<CPSDATA_R_PTR_ARRAY> iSearchResultsArr;
-    
-    /**
-     * Phonebook settings store for reading name order.
-     */
-    MPbkGlobalSetting* iPbkSettings;
-    
-    /**
-     * Contact name display order 
-     */
-    enum TNameOrder
-        {
-        EFirstnameLastname,
-        ELastnameFirstname
-        };
-    TNameOrder iNameOrder;
-    
-    /**
-     * Counter of the matched contacts requested by PCS client
-     */
-    TInt iMaxCount;
     };
 
 #endif // C_PCS_ALGORITHM_2_HELPER

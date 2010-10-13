@@ -43,7 +43,7 @@ LIBRARY                 efsrv.lib
 LIBRARY                 euser.lib 
 LIBRARY                 ecom.lib
 LIBRARY                 egul.lib
-LIBRARY                 CommonEngine.lib
+LIBRARY                 commonengine.lib
 LIBRARY                 bafl.lib
 LIBRARY                 cone.lib 
 LIBRARY                 fbscli.lib
@@ -52,7 +52,7 @@ LIBRARY                 sendui.lib
 LIBRARY                 sysutil.lib
 LIBRARY                 featmgr.lib 
 LIBRARY                 centralrepository.lib
-LIBRARY                 VPbkEng.lib
+LIBRARY                 vpbkeng.lib
 
 SOURCEPATH              ../data
 START RESOURCE	        20029F33.rss

@@ -25,7 +25,7 @@
 
 // PbkView include files
 #include "PbkDataSaveAppUi.hrh"
-#include <pbkview.rsg>
+#include <PbkView.rsg>
 #include "CPbkContactEditorDlg.h"
 #include "CPbkSingleEntryFetchDlg.h"
 #include "CPbkMemoryEntryAddItemDlg.h"

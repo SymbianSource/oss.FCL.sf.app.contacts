@@ -40,7 +40,7 @@
 #include <CVPbkContactViewDefinition.h>
 #include <MVPbkContactView.h>
 #include <MVPbkContactOperation.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <VPbkDataCaging.hrh>
 #include <CVPbkContactLinkArray.h>
 #include <CVPbkContactStoreUriArray.h>

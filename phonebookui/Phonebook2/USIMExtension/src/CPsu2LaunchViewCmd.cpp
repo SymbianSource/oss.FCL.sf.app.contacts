@@ -21,7 +21,7 @@
 // Phonebook 2
 #include "CPsu2ViewManager.h"
 #include <Pbk2ProcessDecoratorFactory.h>
-#include <pbk2usimuires.rsg>
+#include <Pbk2USimUIRes.rsg>
 #include <CPbk2AppUiBase.h>
 #include <MPbk2ViewExplorer.h>
 #include <CPbk2SortOrderManager.h>

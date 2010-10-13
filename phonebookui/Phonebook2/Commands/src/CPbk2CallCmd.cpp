@@ -38,7 +38,7 @@
 #include <MVPbkFieldType.h>
 #include <MVPbkContactStore.h>
 #include <MVPbkContactStoreProperties.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <MVPbkContactFieldUriData.h>
 
 // System includes

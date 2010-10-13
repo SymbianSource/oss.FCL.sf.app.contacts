@@ -27,10 +27,10 @@
 #include <MPbk2ViewActivationTransaction.h>
 #include <CPbk2AppUiBase.h>
 #include <MPbk2ViewExplorer.h>
-#include <pbk2usimuires.rsg>
+#include <Pbk2USimUIRes.rsg>
 #include <CPbk2ViewState.h>
 #include <MPbk2ContactUiControl.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <MPbk2CommandHandler.h>
 #include <MPbk2ApplicationServices.h>
 #include <TPbk2ContactEditorParams.h>

@@ -23,7 +23,7 @@
 #include <avkon.rsg>        // AVKON resource IDs
 #include <aknnavide.h>      // CAknNavigationDecorator
 #include <aknappui.h>       // CEikAppUi
-#include <pbkview.rsg>              // Phonebook view dll resource IDs
+#include <PbkView.rsg>              // Phonebook view dll resource IDs
 #include <AknUtils.h> 
 #include <CPbkContactIdSet.h>
 #include <TPbkContactViewIterator.h>

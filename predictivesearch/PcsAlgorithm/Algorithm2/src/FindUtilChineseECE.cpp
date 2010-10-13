@@ -20,12 +20,11 @@
 #include <AknFepInternalCRKeys.h>
 #include <aknedsts.h>
 #include <coeaui.h>
-#include <AvkonInternalCRKeys.h>
-
 // The below code is commented out because current CFindUtilChineseECE is used
 // on 3.2.3 which is not supported adaptive search. It will be easy to keep these code 
 // for the further merging work (merge from FindUtil 5.0)
 #if 0
+#include <AvkonInternalCRKeys.h>
 #include <aknenv.h> //phonebook
 #include <aknappui.h>
 #include <aknapp.h>
@@ -46,13 +45,12 @@ const TUint16 KStarChar = 0x002a;
 const TUint16 KZhuyinstart = 0x3105;
 const TInt KZhuyincount = 37;
 const TInt KSeperator = 2626;
-const TUint16 KMinUnicodeHz = 0x4e00;
-const TUint16 KMaxUnicodeHz = 0x9fa5;
-const TUint16 KStrokeHorizontalValue = 0x4e00;
-const TUint16 KStrokeVerticalValue = 0x4e28;
-const TUint16 KStrokeDownToLeftValue = 0x4e3f;
-const TUint16 KStrokeDownToRightValue = 0x4e36;
-const TUint16 KStrokeBendingValue = 0x4e5b;
+const TInt16 KMinUnicodeHz = 0x4e00;
+const TInt16 KStrokeHorizontalValue = 0x4e00;
+const TInt16 KStrokeVerticalValue = 0x4e28;
+const TInt16 KStrokeDownToLeftValue = 0x4e3f;
+const TInt16 KStrokeDownToRightValue = 0x4e36;
+const TInt16 KStrokeBendingValue = 0x4e5b;
 const TInt KSysInputMode = -1;
 const TInt KLeftToRightFlag =0x200e;
 const TInt KRightToLeftFlag =0x200f;
@@ -64,7 +62,6 @@ const TUid KUidPhoneBook = {0x101F4CCE};
 const TUid KUidPhoneBookServer = {0x10207277};
 #endif
 
-
 _LIT(KWildChar, "*");
 _LIT(KUnderLine, "_");
 _LIT(KMiddleLine, "-");
@@ -73,6 +70,28 @@ _LIT(KTab, "\t");
 _LIT(KPanicReason, "Abnormal input parameters!");
 
 const TInt KLitLineFeed(8233);
+
+// CleanupStack helpers for item owning RPointerArrays
+template <class T>
+class CleanupResetAndDestroy
+    {
+public:
+    inline static void PushL( T& aRef )
+        { 
+        CleanupStack::PushL( TCleanupItem( &ResetAndDestroy, &aRef ) ); 
+        }
+private:
+    inline static void ResetAndDestroy( TAny *aPtr )
+        { 
+        static_cast<T*>( aPtr )->ResetAndDestroy();
+        }
+    };
+
+template <class T>
+inline void CleanupResetAndDestroyPushL( T& aRef )
+    { 
+    CleanupResetAndDestroy<T>::PushL( aRef );
+    }
 // ======== MEMBER FUNCTIONS ========
 
 // ---------------------------------------------------------
@@ -97,16 +116,25 @@ CFindUtilChineseECE* CFindUtilChineseECE::NewL(CPcsAlgorithm2* aAlgorithm)
 void CFindUtilChineseECE::ConstructL(CPcsAlgorithm2* aAlgorithm)
     {
     iRepositoryFind = CRepository::NewL(KCRUidAknFep);
+    // The below code is commented out because current CFindUtilChineseECE is used
+    // on 3.2.3 which is not supported adaptive search. It will be easy to keep these code 
+    // for the further merging work (merge from FindUtil 5.0)
+#if 0   
     iRepositoryFindAdaptive = CRepository::NewL(KCRUidAvkon);
+#endif
 
     iWatcher = CFindRepositoryWatcher::NewL(KCRUidAknFep, 
         TCallBack(HandleFindRepositoryCallBack, this), 
         iRepositoryFind);
 
+    // The below code is commented out because current CFindUtilChineseECE is used
+    // on 3.2.3 which is not supported adaptive search. It will be easy to keep these code 
+    // for the further merging work (merge from FindUtil 5.0)
+#if 0
     iWatcherAdaptive = CFindRepositoryWatcher::NewL(KCRUidAvkon,
         TCallBack(HandleFindRepositoryCallBack, this),
-        iRepositoryFindAdaptive);
-
+        iRepositoryFindAdaptive);                                        
+#endif
     iAlgorithm = aAlgorithm;
     OpenL();
 
@@ -118,11 +146,19 @@ void CFindUtilChineseECE::ConstructL(CPcsAlgorithm2* aAlgorithm)
 //
 CFindUtilChineseECE::CFindUtilChineseECE() :
 iLanguage(ELangTest),
-iCurInputMode(KSysInputMode),
-iSearchMethod(EAdptSearchPinyin),
+iSupportPRCChinese(EFalse),
+iCurInputMode(KSysInputMode)
+// The below code is commented out because current CFindUtilChineseECE is used
+// on 3.2.3 which is not supported adaptive search. It will be easy to keep these code 
+// for the further merging work (merge from FindUtil 5.0)
+#if 0
+iSearchMethodPRC(EAdptSearchPinyin),
+iSearchMethodTaiWan(EAdptSearchZhuyin),
+iSearchMethodHongKong(EAdptSearchStroke),
 iSearchMethodAdaptive(EFalse)
-    {
-    }
+#endif
+    	    {
+    	    }
 
 // ---------------------------------------------------------
 // Destructor
@@ -132,9 +168,15 @@ CFindUtilChineseECE::~CFindUtilChineseECE()
     {
     delete iPtiEngine;
     delete iWatcher;
+    delete iPtiEnginePrc;
     delete iRepositoryFind;
+    // The below code is commented out because current CFindUtilChineseECE is used
+    // on 3.2.3 which is not supported adaptive search. It will be easy to keep these code 
+    // for the further merging work (merge from FindUtil 5.0)
+#if 0
     delete iWatcherAdaptive;
     delete iRepositoryFindAdaptive;
+#endif
     }
 
 // ---------------------------------------------------------
@@ -146,36 +188,12 @@ TBool CFindUtilChineseECE::OpenT9InterfaceL(TLanguage aLanguage)
     if (!iPtiEngine)
         {
         iPtiEngine = CPtiEngine::NewL();
+        iSupportPRCChinese = IsSupportLanguage(ELangPrcChinese);
         }
 
     if (aLanguage != iLanguage)
         {
-        // We only support Chinese languages. If input language is changed
-        // to non-Chinese, then first available Chinese language is used
-        // instead.
-        if ( aLanguage == ELangPrcChinese ||
-             aLanguage == ELangTaiwanChinese ||
-             aLanguage == ELangHongKongChinese )
-            {
-            iLanguage = aLanguage;
-            }
-        else if ( IsSupportLanguage(ELangPrcChinese) )
-            {
-            iLanguage = ELangPrcChinese;
-            }
-        else if ( IsSupportLanguage(ELangTaiwanChinese) )
-            {
-            iLanguage = ELangTaiwanChinese;
-            }
-        else if ( IsSupportLanguage(ELangHongKongChinese) )
-            {
-            iLanguage = ELangHongKongChinese;
-            }
-        else
-            {
-            iLanguage = aLanguage;
-            }
-        
+        iLanguage = aLanguage;
         iPtiEngine->ActivateLanguageL(iLanguage);
         iPtiEngine->EnableToneMarks(EFalse);
         }
@@ -199,10 +217,6 @@ void CFindUtilChineseECE::CloseT9InterfaceL()
 //
 TBool CFindUtilChineseECE::DoTranslationL(TInt16 aHZUnicode, RPointerArray<HBufC>& aSpellList)
     {
-    // Always translate according the adaptive search method setting
-    return T9ChineseTranslationAdaptiveL(aHZUnicode, aSpellList);
-    
-#if 0
     // The below code is commented out because current CFindUtilChineseECE is used
     // on 3.2.3 which is not supported adaptive search. It will be easy to keep these code 
     // for the further merging work (merge from FindUtil 5.0)
@@ -250,14 +264,13 @@ TBool CFindUtilChineseECE::DoTranslationL(TInt16 aHZUnicode, RPointerArray<HBufC
 #endif
     return ETrue;
 
-#endif
     }
 
 // ---------------------------------------------------------
 // Find pane text is including stroke symbol
 // ---------------------------------------------------------
 //
-TInt CFindUtilChineseECE::IsStrokeSymbol(const TUint16 aFindWord)
+TInt CFindUtilChineseECE::IsStrokeSymbol(const TInt aFindWord)
     {
     TInt strokeValue = 0;
 
@@ -285,7 +298,24 @@ TInt CFindUtilChineseECE::IsStrokeSymbol(const TUint16 aFindWord)
     return strokeValue;
     }
 
-#if 0
+TInt CFindUtilChineseECE::CategoryOfLang(TLanguage aLanguage)
+    {
+    TInt ret = 0;
+    if (iLanguage == ELangPrcChinese || ( aLanguage == ELangEnglish && iSupportPRCChinese ))
+        {
+        ret = 1;
+        }
+    else if (aLanguage == ELangTaiwanChinese)
+        {
+        ret = 2;
+        }
+    else if (aLanguage == ELangHongKongChinese)
+        {
+        ret = 3;
+        }
+    return ret;
+    }
+
 // ---------------------------------------------------------
 // Do translate for Chinese word
 // ---------------------------------------------------------
@@ -293,6 +323,7 @@ TInt CFindUtilChineseECE::IsStrokeSymbol(const TUint16 aFindWord)
 TBool CFindUtilChineseECE::T9ChineseTranslationL(TInt16 aHZUnicode, RPointerArray<HBufC>& aSpellList)
     {
     TBuf<KMaxWordInterpretationLen> wordInterpretationBuf;
+    TBuf<KMaxWordInterpretationLen> numInterpretationBuf;
 
     if (iLanguage == ELangPrcChinese)
         {
@@ -358,8 +389,11 @@ TBool CFindUtilChineseECE::T9ChineseTranslationL(TInt16 aHZUnicode, RPointerArra
 
     return ETrue;
     }
-#endif
 
+// The below code is commented out because current CFindUtilChineseECE is used
+// on 3.2.3 which is not supported adaptive search. It will be easy to keep these code 
+// for the further merging work (merge from FindUtil 5.0)
+#if 0    
 // ---------------------------------------------------------
 // Do translate for Chinese word
 // ---------------------------------------------------------
@@ -369,59 +403,121 @@ TBool CFindUtilChineseECE::T9ChineseTranslationAdaptiveL(TInt16 aHZUnicode,
     {
     TBuf<KMaxWordInterpretationLen> wordInterpretationBuf;
 
-    switch(iSearchMethod)
+    if ( iLanguage == ELangPrcChinese )
         {
-        case EAdptSearchPinyin:
-            if (iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiPinyin)
+        if(iSearchMethodPRC == EAdptSearchPinyin)
+            {
+            if (iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiPinyin) 
                 != KErrNone)
                 {
                 return EFalse;
-                }
-             break;
-        case EAdptSearchStroke:
-            if (iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiStrokes)
+                }	
+            }
+        else if(iSearchMethodPRC == EAdptSearchStroke)    
+            {
+            if (iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiStrokes) 
                 != KErrNone)
                 {
                 return EFalse;
-                }
-            break;
-        case EAdptSearchZhuyin:
-            if (iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiZhuyin)
-                != KErrNone)
-                {
-                return EFalse;
-                }   
-            break;
-        case EAdptSearchNormalCangjie:
-            if (iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiCangJie)
-                != KErrNone)
-                {
-                return EFalse;
-                }
-            break;
-        case EAdptSearchEasyCangjie:
-            if (iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiEasyCangjie) 
-                != KErrNone)
-                {
-                return EFalse;
-                }
-            break;
-        case EAdptSearchAdvCangjie:
-            if ((iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiCangJie) != KErrNone)
-                &&(iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiEasyCangjie) != KErrNone))
-                {
-                return EFalse;
-                }
-            break;
-        default:
-            return EFalse;
-        }
+                }	
+            }
+        else
+            {
+            return EFalse;	
+            }    
 
+        }
+    else if ( iLanguage == ELangTaiwanChinese )
+        {
+        if(iSearchMethodTaiWan == EAdptSearchZhuyin)
+            {
+            if (iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiZhuyin) 
+                != KErrNone)
+                {
+                return EFalse;
+                }	
+            }
+        else if(iSearchMethodTaiWan == EAdptSearchStroke)    
+            {
+            if (iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiStrokes) 
+                != KErrNone)
+                {
+                return EFalse;
+                }	
+            }
+        else
+            {
+            return EFalse;	
+            }       
+        }
+    else if ( iLanguage == ELangHongKongChinese )
+        {
+        switch(iSearchMethodHongKong)
+            {
+            case EAdptSearchNormalCangjie:
+                if (iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiCangJie) 
+                    != KErrNone)
+                    {
+                    return EFalse;
+                    }
+                break;
+            case EAdptSearchEasyCangjie:
+                if (iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiEasyCangjie) 
+                    != KErrNone)
+                    {
+                    return EFalse;
+                    }
+                break;
+            case EAdptSearchAdvCangjie:
+                if ((iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiCangJie) != KErrNone)
+                    &&(iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiEasyCangjie) != KErrNone))
+                    {
+                    return EFalse;
+                    }
+                break;
+            case EAdptSearchStroke:
+                if (iPtiEngine->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiStrokes) 
+                    != KErrNone)
+                    {
+                    return EFalse;
+                    }
+                break;
+            default:
+                return EFalse;        	
+            }
+
+        }
+    else if ( iLanguage == ELangEnglish )
+        {
+        if (!iSupportPRCChinese)
+            {
+            return EFalse;
+            }
+
+        TInt err = KErrNone;
+        if (!iPtiEnginePrc)
+            {
+            iPtiEnginePrc = CPtiEngine::NewL(EFalse);
+            TRAP(err, iPtiEnginePrc->ActivateLanguageL(ELangPrcChinese));
+            }   
+
+        if (err == KErrNone)
+            {
+            if (iPtiEnginePrc->GetSpelling(aHZUnicode, wordInterpretationBuf, EPtiPinyin) 
+                != KErrNone) 
+
+                return EFalse;
+            }
+        }
+    else
+        {
+        return EFalse;
+        }
 
     TInt len = wordInterpretationBuf.Length();
     TInt start = 0;
 
-    if( iSearchMethod != EAdptSearchAdvCangjie )
+    if( iSearchMethodHongKong != EAdptSearchAdvCangjie )
         {
         for (TInt i =0; i < len; i++)
             {
@@ -432,7 +528,7 @@ TBool CFindUtilChineseECE::T9ChineseTranslationAdaptiveL(TInt16 aHZUnicode,
                 }
             }
 
-        aSpellList.Append((wordInterpretationBuf.MidTPtr(start, len-start)).Alloc());
+        aSpellList.Append((wordInterpretationBuf.MidTPtr(start, len-start)).Alloc());   	
         }
     //Could look advanced cangjie as normal and easy cangjie
     else 
@@ -468,7 +564,8 @@ TBool CFindUtilChineseECE::T9ChineseTranslationAdaptiveL(TInt16 aHZUnicode,
         }
 
     return ETrue;
-    }
+    } 
+#endif
 
 // ---------------------------------------------------------
 // Find pane text is including separator
@@ -486,71 +583,75 @@ TBool CFindUtilChineseECE::IsFindWordSeparator(TChar aCh)
 void CFindUtilChineseECE::OpenL()
     {
     TInt inputLanguage = 0;
-    TInt searchMode = 0;
+    //TInt searchMode =0;
 
     if (iRepositoryFind != NULL)
         {
         iRepositoryFind->Get(KAknFepInputTxtLang, inputLanguage);
         }
 
-    // The following sets iLangueage to inputLanguage if inputLanguage
-    // is Chinese. If inputLanguage is non-Chinese, iLanguage will be
-    // set to first available Chinese language.
     OpenT9InterfaceL((TLanguage) inputLanguage);
 
+    // The below code is commented out because current CFindUtilChineseECE is used
+    // on 3.2.3 which is not supported adaptive search. It will be easy to keep these code 
+    // for the further merging work (merge from FindUtil 5.0)
+#if 0
     if (iRepositoryFindAdaptive != NULL)
         {
         iRepositoryFindAdaptive->Get(KAknAvkonAdaptiveSearchEnabled, iSearchMethodAdaptive);
         }
-    if (iLanguage == ELangPrcChinese)
+    if( inputLanguage == ELangPrcChinese)
         {
-        iRepositoryFindAdaptive->Get(KAknAdaptiveSearchChinesePRC , searchMode);
-        if (searchMode == 0)
+        iRepositoryFindAdaptive->Get(KAknAdaptiveSearchChinesePRC , searchMode);	
+        if(searchMode ==0)
             {
-            iSearchMethod = EAdptSearchPinyin;
+            iSearchMethodPRC = EAdptSearchPinyin;	
             }
-        else if (searchMode == 1)
+        else if(searchMode ==1)
             {
-            iSearchMethod = EAdptSearchStroke;
+            iSearchMethodPRC = EAdptSearchStroke;	
             }
         }
-    else if (iLanguage == ELangTaiwanChinese)
+    else if(inputLanguage == ELangTaiwanChinese)
         {
         iRepositoryFindAdaptive->Get(KAknAdaptiveSearchChineseTW , searchMode);
-        if (searchMode == 0)
+        if(searchMode ==0)
             {
-            iSearchMethod = EAdptSearchZhuyin;
+            iSearchMethodTaiWan = EAdptSearchZhuyin;	
             }
-        else if (searchMode == 1)
+        else if(searchMode ==1)
             {
-            iSearchMethod = EAdptSearchStroke;
-            }
+            iSearchMethodTaiWan = EAdptSearchStroke;	
+            }	
         }
-    else if (iLanguage == ELangHongKongChinese)
+    else if(inputLanguage == ELangHongKongChinese)
         {
         iRepositoryFindAdaptive->Get(KAknAdaptiveSearchChineseHongkong  , searchMode);
-        if (searchMode == 1)
-            {
+        if(searchMode ==1)
+            {	    
             iRepositoryFind->Get(KAknFepCangJieMode , searchMode);
 
             switch (searchMode)
                 {
                 case 0:
-                    iSearchMethod = EAdptSearchNormalCangjie;
+                    iSearchMethodHongKong = EAdptSearchNormalCangjie;
                     break;
                 case 1:
-                    iSearchMethod = EAdptSearchEasyCangjie;
+                    iSearchMethodHongKong = EAdptSearchEasyCangjie;
                     break;
                 case 2:
-                    iSearchMethod = EAdptSearchAdvCangjie;
+                    iSearchMethodHongKong = EAdptSearchAdvCangjie;
                     break;
                 }
+
             }
-        else if (searchMode == 0)
+        else if(searchMode ==0)
             {
-            iSearchMethod = EAdptSearchStroke;
+            iSearchMethodHongKong = EAdptSearchStroke;	
             }
+
         }
+#endif
     }
 
 // ---------------------------------------------------------
@@ -581,7 +682,7 @@ TBool CFindUtilChineseECE::Match(const TDesC& aContactsField, const TDesC& aWord
 
     TBool ret = EFalse;
     // Check Chinese word in find pane
-    TBool chineseWord = IsChineseWordIncluded(aWord);
+    TBool chineseWord = IsChineseWord(aWord);
 
     if (chineseWord)
         {
@@ -750,25 +851,8 @@ void CFindUtilChineseECE::RemoveSeparator(TDes& aSearchText)
 //
 TBool CFindUtilChineseECE::MatchRefineL(const TDesC& aItemString, CPsQuery& aPsQuery)
     {
-    RArray<TInt> ignore1;
-    CleanupClosePushL( ignore1 );
-    RArray<TInt> ignore2;
-    CleanupClosePushL( ignore2 );
-    
-    TBool match = MatchRefineL( aItemString, aPsQuery, ignore1, ignore2, EFalse );
-    
-    CleanupStack::PopAndDestroy( &ignore2 );
-    CleanupStack::PopAndDestroy( &ignore1 );
-    
-    return match;
-    }
-
-TBool CFindUtilChineseECE::MatchRefineL(const TDesC& aItemString, CPsQuery& aPsQuery, 
-        RArray<TInt>& aMatchPos, RArray<TInt>& aMatchLength, TBool aHighLight )
-    {
     TBuf<KMaxWordLength> tempBuf;
     TBuf<KMaxWordLength> itemString;
-    TBool haschineseword = EFalse; 
 
     itemString.Zero();
     if ( KMaxWordLength > aItemString.Length() )
@@ -786,9 +870,11 @@ TBool CFindUtilChineseECE::MatchRefineL(const TDesC& aItemString, CPsQuery& aPsQ
         if(itemString[0]== KLeftToRightFlag || itemString[0]== KRightToLeftFlag)
             {
             itemString.Delete(0,1);
-            itemString.Delete((itemString.Length()-1),1);
+            itemString.Delete((itemString.Length()-1),1);    
             }
         }
+
+    TBool haschineseword = EFalse; 
 
     // Check function parameter
     if (aPsQuery.Count() == 0)
@@ -802,8 +888,8 @@ TBool CFindUtilChineseECE::MatchRefineL(const TDesC& aItemString, CPsQuery& aPsQ
         }
 
     TBool ret = EFalse;
+
     CPsQuery* query = CPsQuery::NewL();
-    CleanupStack::PushL( query );
     GetPartOfQueryL(aPsQuery, 0, aPsQuery.Count()-1, *query);
     RemoveSeparatorL(*query);
     TPtrC queryStrPtr = query->QueryAsStringLC();
@@ -826,63 +912,78 @@ TBool CFindUtilChineseECE::MatchRefineL(const TDesC& aItemString, CPsQuery& aPsQ
         {
         iCurInputMode = KSysInputMode;
         }
-    
-    TBool inputMethodStroke = EFalse;
-    if(iLanguage == ELangHongKongChinese && iCurInputMode == 0x0020)
-        {
-        inputMethodStroke = ETrue;
-        }
-      
-    // Check if any Chinese word in find pane
-    if ( IsChineseWordIncluded(tempBuf) )
+
+    // Check Chinese word in find pane
+    if (IsChineseWord(tempBuf))
         {
         haschineseword = ETrue;
         ret = IncludeString(aItemString, tempBuf);
-      
-        if( IsAllChineseWord( tempBuf ))
+
+        if (ret)
             {
-            CleanupStack::PopAndDestroy( query );
             return ret;
             }
+        /*    else
+            {
+            // if Stroke Symbol in HongKong
+            TBool strokeSymHK = (IsStrokeSymbolInString(tempBuf)) && 
+                                 (iLanguage == ELangHongKongChinese) &&
+                                 iCurInputMode == 0x0020;
+
+            if (!strokeSymHK)
+                {
+                return ret;
+                }
+            }*/
         }
 
-   
-    // There are two steps to do when searchstring includes Chinese character 
-    //
-    // step 1:  check whether itemstring includes the chinese charactor in the searchstring
-    //              If not, return EFalse. Otherwise, go to step2
-    //
-    // step2:  If itemstring includes the chinese charactor in the searchstring, translate 
-    //             the Chinese character in the searchstring to spellList and reconstruct the query.
+    //Find if search string has chinese word. 
+    //Compare with item string if find chinese word in item string then delete it from search and item string.
+    //if not then return EFalse.
+    TBool InputMethodStroke = EFalse;
+    if(iLanguage == ELangHongKongChinese && iCurInputMode == 0x0020)
+        {
+        InputMethodStroke = ETrue;
+        }
+    
     if (haschineseword)
         {
         TInt ii=0;
-        
-        // Step 1: 
-        // E.g: itemstring = "0x4E00,0x4E8C,0x4E09,0x56DB,0x4E94" 
-        // (Unicode of Chinese number "1 2 3 4 5")
-        // searchstring1 = "0x4E00,x,y,z,0x4E09"
-        // searchstring2 = "0x4E8C,0x4E00"
-        // searchstring3 = "0x4E00,0x4E5D" 
-        // In this case, searchstring2 and searchstring3 will return EFalse, 
-        // only searchstring1 will be translated to spellList in step 2
+        TBool leftDifferentChinese = EFalse; //Fixed for ESSG-7PJ6GF, flag the different Chinese character at the left of aSearchText.
         while (ii< tempBuf.Length())
             {
-            TInt lastFindCursor = -1;
-            if( (TUint16)tempBuf[ii] <= KMaxUnicodeHz 
-                && (TUint16)tempBuf[ii]>= KMinUnicodeHz
-                && ( !inputMethodStroke ||(inputMethodStroke &&
-                    !IsStrokeSymbol(tempBuf[ii])) ) )
+            if ((TInt)tempBuf[ii]>= KMinUnicodeHz && (!InputMethodStroke
+                    ||(InputMethodStroke && !IsStrokeSymbol(tempBuf[ii]))))
                 {
                 TInt Findcursor = itemString.Locate(tempBuf[ii]);
-                if( KErrNotFound == Findcursor || Findcursor < lastFindCursor )
+                if (Findcursor != KErrNotFound)
                     {
-                    CleanupStack::PopAndDestroy( query );
-                    return EFalse;
+                    if ((Findcursor == itemString.Length()-1)&& (ii
+                            ==tempBuf.Length()-1))
+                        {
+                        //Start:Fixed for ESSG-7PJ6GF
+                        if ( leftDifferentChinese || IsChineseWord(
+                            itemString.Left( Findcursor ) ) )
+                            {
+                            //if the different Chinese character at the left or middle, return false.
+                            return EFalse;
+                            }
+                        //End:Fixed for ESSG-7PJ6GF
+                        return ETrue;
+                        }
+                    itemString.Delete(0, Findcursor+1);
+                    tempBuf.Delete(0, ii+1);
+                    ii=0;
                     }
                 else
                     {
-                    lastFindCursor = Findcursor;
+                    //Start:Fixed for ESSG-7PJ6GF
+                    if ( IsChineseWord( tempBuf.Left( ii + 1 ) ) )
+                        {
+                        //flag the different Chinese character at the left.
+                        leftDifferentChinese = ETrue;
+                        }
+                    //End:Fixed for ESSG-7PJ6GF
                     ii++;
                     }
                 }
@@ -891,70 +992,9 @@ TBool CFindUtilChineseECE::MatchRefineL(const TDesC& aItemString, CPsQuery& aPsQ
                 ii++;
                 }
             }
-            
-        ii = 0;
-        // Counter of queryItem
-        TInt queryItemCount = 0;
-        
-        //Step 2: 
-        // Translating searchstring to spellList and reconstruct query
-         while ( ii< tempBuf.Length() )
-             {            
-             // If it is a valid chinese character
-             if ( (TUint16)tempBuf[ii] <= KMaxUnicodeHz 
-                 && (TUint16)tempBuf[ii]>= KMinUnicodeHz
-                 && ( !inputMethodStroke ||(inputMethodStroke &&
-                     !IsStrokeSymbol(tempBuf[ii])) ) )
-                 {
-                 RPointerArray<HBufC> spellList;
-                 
-                 // If successfully translating the chinese character to spellList( Pinyin,Zhuyin or stroke )
-                 // then reconstruct the query, replace the Chinese character with its spellList in the query.
-                 // Otherwise, just increase the counter of queryItem.
-                 if( DoTranslationL(TInt16(tempBuf[ii]), spellList) )
-                     {                    
-                     // Replace the queryItem by the translated spelling
-                     CPsQueryItem& tempItem = query->GetItemAtL(queryItemCount);
-                     const TKeyboardModes tempMode = tempItem.Mode();
-                     
-                     // Remove the Chinese character queryItem
-                     query->Remove(queryItemCount);
-                     
-                     // Reconstruct the query, replace Chinese character with its spellList
-                     for(TInt cnt = 0; cnt < spellList[0]->Length(); cnt++)
-                         {
-                         // Add a new query item to query
-                         CPsQueryItem* newItem = CPsQueryItem::NewL();   
-                         CleanupStack::PushL(newItem);
-                         newItem->SetCharacter(  (*spellList[0])[cnt] );
-                         newItem->SetMode(tempMode);
-   
-                         query->InsertL(*newItem, queryItemCount + cnt );
-                         CleanupStack::Pop(newItem);  
-                         }
-                    
-                     queryItemCount += spellList[0]->Length();
-                     }
-                 else
-                     {
-                     queryItemCount++;
-                     }
-                     
-                 ii++;
-                 spellList.ResetAndDestroy();
-                 spellList.Close();
-
-                 }
-             //if not, just pass it by     
-             else
-                 {
-                 ii++;
-                 queryItemCount++;
-                 }
-             }
 
         }
-    
+
     // Array for item string
     RPointerArray<STRINGINFO> stringInfoArr;
     // Split item string
@@ -962,13 +1002,13 @@ TBool CFindUtilChineseECE::MatchRefineL(const TDesC& aItemString, CPsQuery& aPsQ
 
     if (stringInfoArr.Count() > 0)
         {
-        ret = MatchSegmentL(stringInfoArr, *query, aMatchPos, aMatchLength, aHighLight);
+        ret = MatchSegmentL(stringInfoArr, *query);
         }
 
     stringInfoArr.ResetAndDestroy();
     stringInfoArr.Close();
 
-    CleanupStack::PopAndDestroy( query );
+    delete query;
 
     return ret;
     }
@@ -978,7 +1018,7 @@ TBool CFindUtilChineseECE::MatchRefineL(const TDesC& aItemString, CPsQuery& aPsQ
 // ---------------------------------------------------------
 //
 void CFindUtilChineseECE::SplitItemStringL(RPointerArray<STRINGINFO>& aStringInfoArr, 
-    const TDesC& aItemString)
+    const TDesC &aItemString)
     {
     TBuf<KMaxWordLength> tempBuf;
     TBuf<KMaxWordLength> englishBuf;
@@ -989,7 +1029,8 @@ void CFindUtilChineseECE::SplitItemStringL(RPointerArray<STRINGINFO>& aStringInf
     chineseBuf.Zero();
 
     TInt index = 0;
-    TBool isChinese = EFalse;
+    TUint32 temp = 0;
+    TInt32 distance = 0;
     const TInt strLength = aItemString.Length();
 
     for (; index < strLength; index++)
@@ -998,35 +1039,35 @@ void CFindUtilChineseECE::SplitItemStringL(RPointerArray<STRINGINFO>& aStringInf
             {
             // Check Chinese and English Buf. If it is not empty, 
             // add buf to Array
-            InsertStrInforArrayL(aStringInfoArr, chineseBuf, ETrue, index);
-            InsertStrInforArrayL(aStringInfoArr, englishBuf, EFalse, index);
+            InsertStrInforArrayL(aStringInfoArr, chineseBuf, ETrue);
+            InsertStrInforArrayL(aStringInfoArr, englishBuf, EFalse);
             continue;
             }
 
-        isChinese = ((TUint16)aItemString[index] >= KMinUnicodeHz && 
-                               (TUint16)aItemString[index] <= KMaxUnicodeHz);
-        
-        if ( !isChinese )// English word
+        temp = aItemString[index];
+        distance = (TInt32)(temp - KMinUnicodeHz);
+
+        if (distance < 0)// English word
             {
             // Chinese word is end and add to array
-            InsertStrInforArrayL(aStringInfoArr, chineseBuf, ETrue, index);
+            InsertStrInforArrayL(aStringInfoArr, chineseBuf, ETrue);
 
             // Add English word to array
-            englishBuf.Append(aItemString[index]);
+            englishBuf.Append((TChar) aItemString[index]);
             }
         else // Chinese word
             {
             // English word is end and add to array
-            InsertStrInforArrayL(aStringInfoArr, englishBuf, EFalse, index);
+            InsertStrInforArrayL(aStringInfoArr, englishBuf, EFalse);
 
             // Add Chinese word to array
-            chineseBuf.Append(aItemString[index]);
+            chineseBuf.Append((TChar) aItemString[index]);
             }
         }
 
     // Finish loop check buffer is empty
-    InsertStrInforArrayL(aStringInfoArr, chineseBuf, ETrue, index);
-    InsertStrInforArrayL(aStringInfoArr, englishBuf, EFalse, index);
+    InsertStrInforArrayL(aStringInfoArr, chineseBuf, ETrue);
+    InsertStrInforArrayL(aStringInfoArr, englishBuf, EFalse);
     }
 
 // ---------------------------------------------------------
@@ -1034,8 +1075,9 @@ void CFindUtilChineseECE::SplitItemStringL(RPointerArray<STRINGINFO>& aStringInf
 // ---------------------------------------------------------
 //
 void CFindUtilChineseECE::InsertStrInforArrayL(RPointerArray<STRINGINFO>& aStringInfoArr, 
-    TDes &aSegmentStr, TBool aChinese, TInt aIndexAfterStr)
+    TDes &aSegmentStr, const TBool aChinese)
     {
+    CleanupResetAndDestroyPushL( aStringInfoArr );
     if (aSegmentStr.Length() <= 0)
         {
         return;
@@ -1047,10 +1089,10 @@ void CFindUtilChineseECE::InsertStrInforArrayL(RPointerArray<STRINGINFO>& aStrin
     strInfo->segmentString.Copy(aSegmentStr);
     strInfo->segmentString.LowerCase();
     strInfo->isChinese = aChinese;
-    strInfo->segmentPos = aIndexAfterStr - aSegmentStr.Length();
 
     aStringInfoArr.AppendL(strInfo);
     aSegmentStr.Zero();
+    CleanupStack::Pop( &aStringInfoArr );
     }
 
 // ---------------------------------------------------------
@@ -1058,133 +1100,107 @@ void CFindUtilChineseECE::InsertStrInforArrayL(RPointerArray<STRINGINFO>& aStrin
 // ---------------------------------------------------------
 //
 TBool CFindUtilChineseECE::MatchSegmentL(RPointerArray<STRINGINFO>& aStringInfoArr, 
-    CPsQuery& aQuery, RArray<TInt>& aMatchPos, RArray<TInt>& aMatchLength, TBool aHighLight )
+    CPsQuery& aQuery)
     {
     const TInt arrayLength = aStringInfoArr.Count();
     const TInt searchStrLength = aQuery.Count();
+    TInt searchStrIndex = 0;
     STRINGINFO* pStringInfo;
     TInt index = 0;
-    TBool ret = EFalse;
-    TBool hasChinese = EFalse;
 
-    // First check if there is a full match in non-Chinese in any one segment
+    // First only check English
     for (; index < arrayLength; index++)
-        {
-        pStringInfo = aStringInfoArr[index];
-        TPtrC currentSeg( pStringInfo->segmentString );
-        TInt matchLen( 0 );
-
-        // Compare word
-        if (pStringInfo->isChinese)
-            {
-            hasChinese = ETrue;
-            }
-        else
-            {
-            matchLen = MatchStringL( currentSeg, aQuery );
-            }
-        
-        // If full match is found
-        if ( matchLen == searchStrLength  )
-            {
-            //Only append postion of non-Chinese character
-            if(  !pStringInfo->isChinese )
-                {
-                aMatchPos.Append( pStringInfo->segmentPos );
-                aMatchLength.Append( matchLen );
-                }
-            ret =   ETrue;
-            
-            // If there is no need to HighLight the matched part, return immediately
-            // Otherwise, continue to find all the matched positions
-            if( !aHighLight ) 
-                return ret;
-            }
-        }
-    
-    // Then search through segments again, this time considering
-    // also cases where matching part continues over several segments.
-    // This algorithm is greedy and heuristic and can't necesarily find
-    // all the matches in the segments after the first one.
-    TPtrC segCurrent;
-    TInt searchStrIndextemp = 0;
-    TInt searchStrIndexMax = 0;
-    TInt searchStrIndex = 0;
-    index = 0;
-
-    // Loop through seqments until whole query is matched
-    for (; index < arrayLength && !ret ; index++)
         {
         // Create an empty CPsQuery
         CPsQuery* tempQuery = CPsQuery::NewL();
-        CleanupStack::PushL( tempQuery );
-
-        GetPartOfQueryL( aQuery, searchStrIndex, searchStrLength - 1, *tempQuery );
-
         pStringInfo = aStringInfoArr[index];
-        segCurrent.Set( pStringInfo->segmentString );
 
-        if (pStringInfo->isChinese)
+        GetPartOfQueryL( aQuery, searchStrIndex, searchStrLength - 1,
+            *tempQuery );
+
+        // Compare word
+        if (!pStringInfo->isChinese)
             {
-            // find the longest substring matching the query
-            searchStrIndexMax = 0;
-            for (TInt i = 0; i< segCurrent.Length(); i++)
+            searchStrIndex += MatchString(pStringInfo->segmentString, *tempQuery);
+            }
+
+        delete tempQuery;
+        tempQuery = NULL;
+
+        if (searchStrIndex >= searchStrLength)
+            {
+            return ETrue;
+            }
+        }
+
+    TBuf<KMaxWordLength> bufcurrent;
+    TBuf<KMaxWordLength> tempbufcurrent;
+    TInt searchStrIndextemp = 0;
+    TInt searchStrIndexMax = 0;
+    // Find Chinese and English
+    searchStrIndex = 0;
+    index = 0;
+
+    for (; index < arrayLength; index++)
+        {
+        // Create an empty CPsQuery
+        CPsQuery* tempQuery = CPsQuery::NewL();
+        pStringInfo = aStringInfoArr[index];
+
+        GetPartOfQueryL( aQuery, searchStrIndex, searchStrLength - 1,
+            *tempQuery );
+        searchStrIndexMax = 0;
+
+        bufcurrent = pStringInfo->segmentString;
+
+        for(TInt i =0;i< pStringInfo->segmentString.Length();i++)
+            {
+            tempbufcurrent = bufcurrent.Mid(i);
+            if (pStringInfo->isChinese)
                 {
-                TPtrC tempSeg( segCurrent.Mid(i) );
-                TInt startIdx( KErrNotFound );
-                TInt endIdx( KErrNotFound );
-                searchStrIndextemp = MatchChineseStringL(tempSeg, *tempQuery, startIdx, endIdx);
-                if (searchStrIndextemp > searchStrIndexMax)
+                TInt temp=0;
+                searchStrIndextemp = MatchChineseStringL(tempbufcurrent, *tempQuery, temp);  
+                if(searchStrIndextemp > searchStrIndexMax)
                     {
                     searchStrIndex -= searchStrIndexMax;
                     searchStrIndexMax = searchStrIndextemp;
                     searchStrIndex += searchStrIndexMax;
                     }
-                
-                if (searchStrIndex >= searchStrLength)
-                    {
-                    // found substring which consumes whole query, no need to find any longer
-                    break;
-                    }
                 }
-            }
-        else // not chinese
-            {
-            TInt matchLen = MatchStringL(segCurrent, *tempQuery);
-            searchStrIndex += matchLen;
-            if ( matchLen )
+            else
                 {
-                aMatchPos.Append( pStringInfo->segmentPos );
-                aMatchLength.Append( matchLen );
+                searchStrIndex += MatchString(pStringInfo->segmentString, *tempQuery);
+                }
+
+            if (searchStrIndex >= searchStrLength)
+                {
+                delete tempQuery;
+                tempQuery = NULL;
+                return ETrue;
+                }
+            else if(!pStringInfo->isChinese)
+                {
+                break;
                 }
             }
 
-        if (searchStrIndex >= searchStrLength)
-            {
-             ret = ETrue; // also breaks us out from the loop
-            }
-        else if ( !pStringInfo->isChinese && !hasChinese )
-            {
-           CleanupStack::PopAndDestroy( tempQuery );
-            break;
-            }
-        
-        CleanupStack::PopAndDestroy( tempQuery );
+        delete tempQuery;
+        tempQuery = NULL;
         }
 
-    return ret;
+    return EFalse;
     }
 
 // ---------------------------------------------------------
 // Search Chinese word in input text 
 // ---------------------------------------------------------
 //
-TInt CFindUtilChineseECE::MatchChineseStringL(const TDesC& aSearhTargetString, CPsQuery& aQuery, 
-        TInt& aMatchStartIdx, TInt& aMatchEndIdx)
+TInt CFindUtilChineseECE::MatchChineseStringL(const TDesC& aSearhTargetString, CPsQuery& aQuery, TInt& aIndex)
     {
     const TInt stringLength = aSearhTargetString.Length();
     const TInt searchLength = aQuery.Count();
     TInt index = 0;
+    //TBuf<KMaxWordLength> tempBuf;
     TBuf<KMaxWordLength> previousBuf;
     TInt curMatchCount = 0;
     TInt preMatchCount = 0;
@@ -1192,13 +1208,6 @@ TInt CFindUtilChineseECE::MatchChineseStringL(const TDesC& aSearhTargetString, C
     TInt curSearchIndex = 0;
     TBool bFullMatched = EFalse;
     TBool bContinue = EFalse;
-    TBool bPrevReplaced = EFalse;
-    aMatchStartIdx = KErrNotFound;
-    aMatchEndIdx = KErrNotFound;
-    
-    CPsQuery* tempFullQuery = CPsQuery::NewL();
-    CleanupStack::PushL( tempFullQuery );
-    GetPartOfQueryL( aQuery, 0, aQuery.Count() - 1, *tempFullQuery );
 
     for (; index < stringLength; index++)
         {
@@ -1217,17 +1226,17 @@ TInt CFindUtilChineseECE::MatchChineseStringL(const TDesC& aSearhTargetString, C
 
         // Get left string
         CPsQuery* tempQuery = CPsQuery::NewL();
-        CleanupStack::PushL( tempQuery );
-        GetPartOfQueryL( aQuery, curSearchIndex, searchLength - 1, *tempQuery );
+        GetPartOfQueryL( aQuery, curSearchIndex, searchLength - 1,
+            *tempQuery );
 
-        // Get Matched count and the matched index in list
-        curMatchCount = MaxMatchInListL(spellList, *tempQuery, previousBuf, matchIndex, 
-            bFullMatched, preMatchCount, bContinue, bPrevReplaced, *tempFullQuery);
+        // Get Matched count and the matched index in list     
+        curMatchCount = MaxMatchInList(spellList, *tempQuery, previousBuf, matchIndex, 
+            bFullMatched, preMatchCount, bContinue);
 
         // There is a string matched in list 
         if (curMatchCount != 0)
             {
-            previousBuf.Copy(*spellList[matchIndex]);
+            previousBuf.Copy(spellList[matchIndex]->Des());
 
             if (curMatchCount == previousBuf.Length())
                 {
@@ -1238,7 +1247,7 @@ TInt CFindUtilChineseECE::MatchChineseStringL(const TDesC& aSearhTargetString, C
                 bFullMatched = EFalse;
                 }
 
-            // If it is repeat match, continue
+            // If it is repeat match, continue     
             if (!bContinue)
                 {
                 curSearchIndex += curMatchCount;
@@ -1249,14 +1258,6 @@ TInt CFindUtilChineseECE::MatchChineseStringL(const TDesC& aSearhTargetString, C
                 previousBuf.Zero();
                 curMatchCount = 0;
                 }
-
-            // Store the index of first matched Han character
-            if ( bPrevReplaced || aMatchStartIdx == KErrNotFound )
-                {
-                aMatchStartIdx = index;
-                }
-            // Store the index of last matched Han character
-            aMatchEndIdx = index;
             }
         else
             {
@@ -1268,17 +1269,13 @@ TInt CFindUtilChineseECE::MatchChineseStringL(const TDesC& aSearhTargetString, C
                 }
 
             curSearchIndex = 0;
-            
-            // Any earlier partial match is discarded, reset the matching part indices
-            aMatchStartIdx = KErrNotFound;
-            aMatchEndIdx = KErrNotFound;
             }
 
         spellList.ResetAndDestroy();//destroy spellList
         spellList.Close();
         preMatchCount = curMatchCount;
 
-        CleanupStack::PopAndDestroy( tempQuery );
+        delete tempQuery;
         tempQuery = NULL;
 
         // Search to End and return
@@ -1287,9 +1284,8 @@ TInt CFindUtilChineseECE::MatchChineseStringL(const TDesC& aSearhTargetString, C
             break;
             }
         }
-    CleanupStack::PopAndDestroy( tempFullQuery );
-    tempFullQuery = NULL;
 
+    aIndex = index;
     return curSearchIndex;
     }
 
@@ -1297,11 +1293,11 @@ TInt CFindUtilChineseECE::MatchChineseStringL(const TDesC& aSearhTargetString, C
 // Maximal matched count in spelling list  
 // ---------------------------------------------------------
 //
-TInt CFindUtilChineseECE::MaxMatchInListL(RPointerArray<HBufC> &aSpellList, CPsQuery& aQuery,
+TInt CFindUtilChineseECE::MaxMatchInList(RPointerArray<HBufC> &spellList, CPsQuery& aQuery,
     TDesC& aPreviouStr, TInt& aMatchIndex, const TBool aFullMatched, 
-    const TInt aMatchedCount, TBool& aAgain, TBool& aPrevReplaced, CPsQuery& aFullQuery)
+    const TInt aMatchedCount, TBool& aAgain)
     {
-    const TInt itemCount = aSpellList.Count();
+    const TInt itemCount = spellList.Count();
     TInt matchCount = 0;
     TBool selfMatch = EFalse;
     aMatchIndex = 0;
@@ -1324,9 +1320,9 @@ TInt CFindUtilChineseECE::MaxMatchInListL(RPointerArray<HBufC> &aSpellList, CPsQ
         repeatCount = 0;
         loopFlag = EFalse;
         tempBuf.Zero();
-        tempBuf.Copy( *aSpellList[index] );
+        tempBuf.Copy(spellList[index]->Des());
 
-        temp = MatchStringL(tempBuf, aQuery);
+        temp = MatchString(tempBuf, aQuery);
         if(temp != 0)
             {
             selfMatch = ETrue;
@@ -1341,11 +1337,11 @@ TInt CFindUtilChineseECE::MaxMatchInListL(RPointerArray<HBufC> &aSpellList, CPsQ
             // Previous word is fully matched
             if (aFullMatched)
                 {
-                repeatCount = ReverseMatchStringL(aPreviouStr, tempBuf, aFullQuery );
+                repeatCount = ReverseMatchString(aPreviouStr, tempBuf);
                 // Find repeat and remove it, search again
                 if (repeatCount != 0)
                     {
-                    temp = MatchStringL(tempBuf.Right(tempBuf.Length() - repeatCount), aQuery);
+                    temp = MatchString(tempBuf.Right(tempBuf.Length() - repeatCount), aQuery);
 
                     if (temp == 0)
                         {
@@ -1356,14 +1352,14 @@ TInt CFindUtilChineseECE::MaxMatchInListL(RPointerArray<HBufC> &aSpellList, CPsQ
                 }
             else
                 {
-                repeatCount = MatchStringL(aPreviouStr, tempBuf, aFullQuery);
+                repeatCount = MatchString(aPreviouStr, tempBuf);
 
                 // Find repeat and remove it, search again
                 if (repeatCount != 0)
                     {
                     if (aMatchedCount <= repeatCount)
                         {
-                        temp = MatchStringL(tempBuf.Right(tempBuf.Length() - aMatchedCount), aQuery);
+                        temp = MatchString(tempBuf.Right(tempBuf.Length() - aMatchedCount), aQuery);
 
                         if (temp == 0)
                             {
@@ -1375,11 +1371,11 @@ TInt CFindUtilChineseECE::MaxMatchInListL(RPointerArray<HBufC> &aSpellList, CPsQ
 
                 if (temp == 0)
                     {
-                    repeatCount = ReverseMatchStringL(aPreviouStr.Left(aMatchedCount), tempBuf, aFullQuery);
+                    repeatCount = ReverseMatchString(aPreviouStr.Left(aMatchedCount), tempBuf);
 
                     if (repeatCount != 0)
                         {
-                        temp = MatchStringL(tempBuf.Right(tempBuf.Length() - repeatCount), aQuery);
+                        temp = MatchString(tempBuf.Right(tempBuf.Length() - repeatCount), aQuery);
 
                         if (temp == 0)
                             {
@@ -1418,20 +1414,16 @@ TInt CFindUtilChineseECE::MaxMatchInListL(RPointerArray<HBufC> &aSpellList, CPsQ
             aMatchIndex = index;
             aAgain = loopFlag;
             }
-        if (matchCount == aQuery.Count() && selfMatch)
+        if(matchCount == aQuery.Count() && selfMatch)
             {
             break;
             }
         }
-    
-    // Was the previous match replaced with a longer match from this spell list
-    aPrevReplaced = ( matchCount && repeatCount );
-    
     return matchCount;
     }
 
 // ---------------------------------------------------------
-// Search the text is include the input text  
+// Search the taxt is include the input text  
 // ---------------------------------------------------------
 //
 TBool CFindUtilChineseECE::IncludeString(const TDesC& aFirst, const TDesC& aSecond)
@@ -1463,22 +1455,29 @@ TBool CFindUtilChineseECE::IncludeString(const TDesC& aFirst, const TDesC& aSeco
 // Search text in other text  
 // ---------------------------------------------------------
 //
-TInt CFindUtilChineseECE::MatchStringL(const TDesC& aFirst, const TDesC& aSecond, CPsQuery& aFullQuery)
+TInt CFindUtilChineseECE::MatchString(const TDesC& aFirst, const TDesC& aSecond)
     {
     const TInt secondStrLength = aSecond.Length();
     const TInt firstStrLength = aFirst.Length();
 
-    const TInt compareCount = Min( firstStrLength, secondStrLength );
+    const TInt compareCount = firstStrLength > secondStrLength ? secondStrLength
+        : firstStrLength;
     TInt index = 0;
-    TBuf<KMaxWordInterpretationLen> firstNumInterpretationBuf;
-    TBuf<KMaxWordInterpretationLen> secondNumInterpretationBuf;
-    
-    iAlgorithm->GetKeyMap()->GetMixedKeyStringForDataL(aFullQuery, aFirst, firstNumInterpretationBuf);
-    iAlgorithm->GetKeyMap()->GetMixedKeyStringForDataL(aFullQuery, aSecond, secondNumInterpretationBuf);
+
+    TBuf<KMaxWordLength> tempStr;
+    // translate search target string into numeric string before match
+    if (iAlgorithm)
+        {
+        iAlgorithm->Converter( aFirst, tempStr );
+        }
+    else
+        {
+        tempStr.Copy(aFirst);
+        }
 
     for (; index < compareCount; index++)
         {
-        if (firstNumInterpretationBuf.Left(index + 1).FindC(secondNumInterpretationBuf.Left(index + 1)) == KErrNotFound)
+        if (tempStr.Left(index + 1).FindC(aSecond.Left(index + 1)) == KErrNotFound)
             {
             break;
             }
@@ -1486,32 +1485,32 @@ TInt CFindUtilChineseECE::MatchStringL(const TDesC& aFirst, const TDesC& aSecond
     // Match count
     return index;
     }
-
 // ---------------------------------------------------------
 // Search CPsQuery in aSearhTargetStr
 // ---------------------------------------------------------
 //
-TInt CFindUtilChineseECE::MatchStringL(const TDesC& aSearhTargetStr, CPsQuery& aQuery)
+TInt CFindUtilChineseECE::MatchString(const TDesC& aSearhTargetStr, CPsQuery& aQuery)
     {
     const TInt secondStrLength = aQuery.Count();
     const TInt firstStrLength = aSearhTargetStr.Length();
     TBuf<KMaxWordInterpretationLen> numInterpretationBuf;
-    TBuf<KMaxWordInterpretationLen> queryStr;
 
-    const TInt compareCount = Min( firstStrLength, secondStrLength );
-
+    const TInt compareCount = firstStrLength > secondStrLength ? secondStrLength
+        : firstStrLength;
     TInt index = 0;
 
-    iAlgorithm->GetKeyMap()->GetMixedKeyStringForDataL(aQuery, aSearhTargetStr, numInterpretationBuf);
-    iAlgorithm->GetKeyMap()->GetMixedKeyStringForQueryL(aQuery, queryStr);
+    ConvertdDataToKeyBoardModeL(aQuery, aSearhTargetStr, numInterpretationBuf);
 
+    TPtrC queryStr = aQuery.QueryAsStringLC();
     for (; index < compareCount; index++)
         {
+
         if (numInterpretationBuf.Left(index + 1).FindC(queryStr.Left(index + 1)) == KErrNotFound)
             {
             break;
             }
         }
+    CleanupStack::PopAndDestroy();
 
     // Match count
     return index;
@@ -1521,22 +1520,32 @@ TInt CFindUtilChineseECE::MatchStringL(const TDesC& aSearhTargetStr, CPsQuery& a
 // Search text by reverse  
 // ---------------------------------------------------------
 //
-TInt CFindUtilChineseECE::ReverseMatchStringL(const TDesC& aFirst, const TDesC& aSecond, CPsQuery& aFullQuery)
+TInt CFindUtilChineseECE::ReverseMatchString(const TDesC& aFirst, const TDesC& aSecond)
     {
     const TInt secondStrLength = aSecond.Length();
     const TInt firstStrLength = aFirst.Length();
     TInt compareCount = firstStrLength > secondStrLength ? secondStrLength : firstStrLength;
     TInt index = 0;
     TInt matchCount = 0;
-    TBuf<KMaxWordInterpretationLen> firstNumInterpretationBuf;
-    TBuf<KMaxWordInterpretationLen> secondNumInterpretationBuf;
-    
-    iAlgorithm->GetKeyMap()->GetMixedKeyStringForDataL(aFullQuery, aFirst, firstNumInterpretationBuf);
-    iAlgorithm->GetKeyMap()->GetMixedKeyStringForDataL(aFullQuery, aSecond, secondNumInterpretationBuf);
-    
+
     for (; index < compareCount; index++)
         {
-        if( firstNumInterpretationBuf.Right( index + 1 ).FindC( secondNumInterpretationBuf.Left( index + 1 ) ) != KErrNotFound )
+        TBuf<KMaxWordLength> firstConvStr;
+        TBuf<KMaxWordLength> secondConvStr;
+
+        // translate compared target string into numeric string before match
+        if ( iAlgorithm )
+            {
+            iAlgorithm->Converter( aFirst, firstConvStr );
+            iAlgorithm->Converter( aSecond, secondConvStr );
+            }
+        else
+            {
+            firstConvStr.Copy( aFirst );
+            secondConvStr.Copy( aSecond );
+            }
+
+        if( firstConvStr.Right( index + 1 ).FindC( secondConvStr.Left( index + 1 ) ) != KErrNotFound )
             {
             matchCount = index + 1;
             }
@@ -1558,16 +1567,14 @@ TBool CFindUtilChineseECE::IsWordValidForMatching(const TDesC& /*aWord*/)
 // Find pane text is including Chinese word  
 // ---------------------------------------------------------
 //
-TBool CFindUtilChineseECE::IsChineseWordIncluded(const TDesC& aWord)
+TBool CFindUtilChineseECE::IsChineseWord(const TDesC& aWord)
     {
     TBool IsChineseSearchStr = EFalse;
     const TInt len = aWord.Length();
 
     for (TInt ii = 0; ii < len; ii++)
         {
-
-        if ( ((TUint16) aWord[ii] >= KMinUnicodeHz) &&
-            ((TUint16) aWord[ii] <= KMaxUnicodeHz) )
+        if ((TInt) aWord[ii] >= KMinUnicodeHz)
             {
             IsChineseSearchStr = ETrue;
             break;
@@ -1587,39 +1594,12 @@ TBool CFindUtilChineseECE::IsStrokeSymbolInString(const TDesC& aWord)
 
     for (TInt index = 0; index < len; index++)
         {
-        if (IsStrokeSymbol(TUint16(aWord[index])) != 0)
+        if (IsStrokeSymbol(TInt(aWord[index])) != 0)
             {
             return ETrue;
             }
         }
     return EFalse;
-    }
-
-// --------------------------------------------------------
-// Find pane text is all Chinese word(s)
-// --------------------------------------------------------
-//
-TBool CFindUtilChineseECE::IsAllChineseWord(const TDesC& aWord)
-    {
-    TBool isChineseWord = ETrue;
-    const TInt len = aWord.Length();
-    
-    TBool InputMethodStroke = EFalse;
-    if(iLanguage == ELangHongKongChinese && iCurInputMode == 0x0020)
-        {
-        InputMethodStroke = ETrue;
-        }
-    
-    for( TInt i = 0; i < len; i++ )
-        {
-        if( (( TUint16 )aWord[i] > KMaxUnicodeHz ) ||  (( TUint16 )aWord[i] < KMinUnicodeHz )
-            || ( InputMethodStroke && IsStrokeSymbol(aWord[i]) ) )
-            {
-            isChineseWord = EFalse;
-            break;
-            }
-        }
-    return isChineseWord;
     }
 
 // ---------------------------------------------------------
@@ -1663,37 +1643,108 @@ TBool CFindUtilChineseECE::IsSupportLanguage(TLanguage aLang)
 TInt CFindUtilChineseECE::HandleFindRepositoryCallBack(TAny* aPtr)
     {
     TInt ret = KErrNone;
-    CFindUtilChineseECE* self = static_cast<CFindUtilChineseECE*> (aPtr);
+    CFindUtilChineseECE *self = static_cast<CFindUtilChineseECE*> (aPtr);
+    TInt searchMode = 0;
 
-    // Get changed key either from language repository (AknFepRepository)
-    // or from adaptive repository (AvkonRepository).
-    TUint32 changedKey = self->iWatcher->ChangedKey();
-    if ( changedKey == NCentralRepositoryConstants::KInvalidNotificationId )
+    if (self->iWatcher->ChangedKey() == KAknFepInputTxtLang)
         {
-        changedKey = self->iWatcherAdaptive->ChangedKey();
-        }
+        TInt inputLanguage = 0;
+        self->iRepositoryFind->Get(KAknFepInputTxtLang, inputLanguage);
 
+        TInt prevCategory = self->CategoryOfLang(self->iLanguage);
+        TRAP(ret, self->OpenT9InterfaceL(TLanguage(inputLanguage)));
 
-    // Update the search method if input language or any search method variable
-    // changed
-    if ( changedKey == KAknFepInputTxtLang ||
-         changedKey == KAknAdaptiveSearchChinesePRC ||
-         changedKey == KAknAdaptiveSearchChineseTW ||
-         changedKey == KAknAdaptiveSearchChineseHongkong ||
-         changedKey == KAknFepCangJieMode ||
-         changedKey == KAknAvkonAdaptiveSearchEnabled )
-        {
-        TChineseSearchMethod prevSearchMethods = self->iSearchMethod;
-
-        TRAP( ret, self->OpenL() );
-        
-        // Reconstruct cache if search method got changed
-        if ( ret == KErrNone && prevSearchMethods != self->iSearchMethod )
+        TInt category = self->CategoryOfLang(TLanguage(inputLanguage));
+        if (prevCategory != category && category != 0)
             {
             TRAP(ret, self->iAlgorithm->ReconstructCacheDataL());
             }
         }
-    
+
+    // The below code is commented out because current CFindUtilChineseECE is used
+    // on 3.2.3 which is not supported adaptive search. It will be easy to keep these code 
+    // for the further merging work (merge from FindUtil 5.0)
+#if 0    
+    if(self->iWatcherAdaptive->ChangedKey() == KAknAvkonAdaptiveSearchEnabled)
+        {
+        self->iRepositoryFindAdaptive->Get(KAknAvkonAdaptiveSearchEnabled, self->iSearchMethodAdaptive);
+        }
+
+    if (self->iWatcherAdaptive->ChangedKey() == KAknAdaptiveSearchChinesePRC)
+        {
+        self->iRepositoryFindAdaptive->Get(KAknAdaptiveSearchChinesePRC, searchMode);
+
+        if(searchMode ==0)
+            {
+            self->iSearchMethodPRC = EAdptSearchPinyin;	
+            }
+        else if(searchMode ==1)
+            {
+            self->iSearchMethodPRC = EAdptSearchStroke;	
+            }
+        }
+
+    if (self->iWatcherAdaptive->ChangedKey() == KAknAdaptiveSearchChineseTW )
+        {
+        self->iRepositoryFindAdaptive->Get(KAknAdaptiveSearchChineseTW , searchMode);
+
+        if(searchMode ==0)
+            {
+            self->iSearchMethodTaiWan = EAdptSearchZhuyin;	
+            }
+        else if(searchMode ==1)
+            {
+            self->iSearchMethodTaiWan = EAdptSearchStroke;	
+            }
+        }
+
+    if (self->iWatcherAdaptive->ChangedKey() == KAknAdaptiveSearchChineseHongkong )
+        {
+        self->iRepositoryFindAdaptive->Get(KAknAdaptiveSearchChineseHongkong , searchMode);
+
+        if(searchMode ==1)
+            {
+            self->iRepositoryFind->Get(KAknFepCangJieMode , searchMode);
+
+            switch (searchMode)
+                {
+                case 0:
+                    self->iSearchMethodHongKong = EAdptSearchNormalCangjie;
+                    break;
+                case 1:
+                    self->iSearchMethodHongKong = EAdptSearchEasyCangjie;
+                    break;
+                case 2:
+                    self->iSearchMethodHongKong = EAdptSearchAdvCangjie;
+                    break;	
+                }
+
+            }
+        else if(searchMode ==0)
+            {
+            self->iSearchMethodHongKong = EAdptSearchStroke;	
+            }
+        }
+
+    if (self->iWatcher->ChangedKey() == KAknFepCangJieMode )
+        {
+        self->iRepositoryFind->Get(KAknFepCangJieMode , searchMode);
+
+        switch (searchMode)
+            {
+            case 0:
+                self->iSearchMethodHongKong = EAdptSearchNormalCangjie;
+                break;
+            case 1:
+                self->iSearchMethodHongKong = EAdptSearchEasyCangjie;
+                break;
+            case 2:
+                self->iSearchMethodHongKong = EAdptSearchAdvCangjie;
+                break;	
+            }
+
+        }
+#endif
     return ret;
     }
 
@@ -1726,6 +1777,11 @@ void CFindUtilChineseECE::UpdateCurrentInputMode()
         }
     }
 
+void CFindUtilChineseECE::SetKeyboardMode(TInt aMode)
+    {
+    iKeyboardMode = aMode;
+    }
+
 // The below code is commented out because current CFindUtilChineseECE is used
 // on 3.2.3 which is not supported adaptive search. It will be easy to keep these code 
 // for the further merging work (merge from FindUtil 5.0)
@@ -1742,7 +1798,7 @@ void CFindUtilChineseECE::UpdateNextCharsL(HBufC*& aNextChars, TChar aCh)
             {
             aNextChars = aNextChars->ReAllocL( aNextChars->Des().MaxLength()+10 );
             }		
-        aNextChars->Des().Append(aCh);
+        aNextChars->Des().Append(aCh);								
         }
     }    
 
@@ -1934,7 +1990,7 @@ TBool CFindUtilChineseECE::CheckEnglishFirstL( RPointerArray<STRINGINFO>& aarray
             // Compare word
             if (!pStringInfo->isChinese)
                 {
-                searchStrIndex += MatchStringL(pStringInfo->segmentString,
+                searchStrIndex += MatchString(pStringInfo->segmentString,
                     transSearchBuf);
                 }
 
@@ -2014,7 +2070,7 @@ void CFindUtilChineseECE::AddNextIfOverlapL(const RPointerArray<STRINGINFO>& ast
 
         }
     tempSpellList.ResetAndDestroy();
-    if(ReverseMatchStringL(aCurrentBuf,temp)>0)
+    if(ReverseMatchString(aCurrentBuf,temp)>0)
         {
         if (pStringInfo->isChinese)
             {
@@ -2264,7 +2320,7 @@ TBool CFindUtilChineseECE::IsAdaptiveFindMatchL( const TDesC& aItemString, const
     //Find if search string has chinese word. 
     //Compare with item string if find chinese word in item string then delete it from search and item string.
 
-    if(IsChineseWordIncluded(tempBuf))
+    if(IsChineseWord(tempBuf))
         {
         if(TrimChineseCharacterL(itemString,tempBuf,aNextChars))
             {
@@ -2349,7 +2405,7 @@ TBool CFindUtilChineseECE::IsAdaptiveFindMatchL( const TDesC& aItemString, const
                 }
             else
                 {//english words and chinese words don't coexist in same segment
-                matchLength = MatchStringL(bufcurrent, transSearchBuf);
+                matchLength = MatchString(bufcurrent, transSearchBuf);
                 searchStrIndex +=matchLength;
                 if (searchStrIndex >= searchStrLength)
                     {
@@ -2498,6 +2554,58 @@ TBool CFindUtilChineseECE::MatchAdaptiveRefineL( const TDesC& aItemString,
     }
 #endif
 
+// ----------------------------------------------------------------------------
+// CFindUtilChineseECE::ConvertdDataToKeyBoardModeL
+// Converts the input data to the key board mode specified by the query
+// ----------------------------------------------------------------------------
+void CFindUtilChineseECE::ConvertdDataToKeyBoardModeL(CPsQuery& aQuery, 
+    const TDesC& aSearchTargetStr, 
+    TBuf<KMaxWordInterpretationLen>& aOutputNumInterpretationStr)
+    {    
+    if (iKeyboardMode == EItut)
+        {
+        iAlgorithm->GetKeyMap()->GetNumericKeyString(aSearchTargetStr, aOutputNumInterpretationStr);
+        }
+    else if (iKeyboardMode == EQwerty)
+        {
+        aOutputNumInterpretationStr = aSearchTargetStr;
+        aOutputNumInterpretationStr.LowerCase();
+        }
+    else
+        {
+
+        TInt len = -1;
+        TBuf<KPsQueryMaxLen> outBuf;
+
+        iAlgorithm->GetKeyMap()->GetNumericKeyString(aSearchTargetStr, outBuf);
+
+        // Always loop thru the lowest length
+        if (aSearchTargetStr.Length() > aQuery.Count() )
+            {
+            len = aQuery.Count();
+            }
+        else
+            {
+            len = aSearchTargetStr.Length();
+            }
+
+        // Interprete search target str according to the query char mode
+        for (TInt i = 0; i < len; i++)
+            {
+            if (aQuery.GetItemAtL(i).Mode() == EItut)
+                {
+                aOutputNumInterpretationStr.Append(outBuf[i]);
+                }
+            else
+                {
+                aOutputNumInterpretationStr.Append(aSearchTargetStr[i]);
+                }
+            }
+
+        aOutputNumInterpretationStr.LowerCase();
+        }
+    }
+
 void CFindUtilChineseECE::GetPartOfQueryL(CPsQuery& aSrcQuery, TInt aStartIndex, 
     TInt aEndIndex, CPsQuery& aDestQuery)
     {
@@ -2516,6 +2624,7 @@ void CFindUtilChineseECE::GetPartOfQueryL(CPsQuery& aSrcQuery, TInt aStartIndex,
 
             aDestQuery.AppendL(*newItem);
             }
+
         }
     else 
         {
@@ -2542,7 +2651,6 @@ void CFindUtilChineseECE::RemoveSeparatorL(CPsQuery& aQuery)
                 // ajust index after remove
                 index--; 
                 }
-                break;
             default:
                 continue;
             } // switch

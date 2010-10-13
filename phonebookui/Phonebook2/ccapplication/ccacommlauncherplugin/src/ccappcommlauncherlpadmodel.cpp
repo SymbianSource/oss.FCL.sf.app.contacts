@@ -971,21 +971,11 @@ void CCCAppCommLauncherLPadModel::ContactPresenceChangedL(
         presData.PreparePresenceDataL( iPresenceIconSize );
         TUint32 serviceType = presData.ServiceType();      
         
-        // The ownerships of mask and bitmap are transferred to this object. 
-        CFbsBitmap* mask = presData.Mask();
-        CFbsBitmap* bitmap = presData.Bitmap();       
-        TBool isValidBitmap = !( bitmap && ( NULL == bitmap->Handle() ) );
-        
-        // If any one of below condition is satisfied, the bitmap and mask are invalid. 
-        // Delete them since the ownerships of them are transferred to this object.
-        if ( !isValidBitmap || serviceType != CCmsContactFieldItem::ECmsPresenceChatNotification )
-        	{
-            delete mask;
-            delete bitmap;
-        	}
-        
         if ( serviceType == CCmsContactFieldItem::ECmsPresenceChatNotification )
-            {       
+            {
+            CFbsBitmap* mask = presData.Mask();
+            CFbsBitmap* bitmap = presData.Bitmap();
+            
             // Find the index for chat item
         	TInt index = KErrNotFound;
         	const TInt dataCount = iButtonDataArray.Count();
@@ -1004,34 +994,40 @@ void CCCAppCommLauncherLPadModel::ContactPresenceChangedL(
         	    TBool hasPresenceIcon = iButtonDataArray[ index ].iFlags & 
 			                TCommLauncherButtonData::EHasPresenceIcon;
         	
-                if ( hasPresenceIcon )
+                if ( bitmap && ( NULL == bitmap->Handle() ) )
             	    {
-                    if ( isValidBitmap )
-                    	{
-    		            // Update presence icon
-        	            iButtonIconArray->At( EPresenceIconIndex )->SetBitmap(bitmap);
-        	            iButtonIconArray->At( EPresenceIconIndex )->SetMask(mask); 
-                    	}
-                    else
-                    	{
-        		        // Delete presence icon from icon array 
-        		        iButtonDataArray[ index ].iFlags &= ~(TCommLauncherButtonData::EHasPresenceIcon);
-        		        CGulIcon* icon = iButtonIconArray->At( EPresenceIconIndex );
-        		        delete icon;
-        		        iButtonIconArray->Delete( EPresenceIconIndex );
-                    	}          		    
+            	    if ( hasPresenceIcon )
+            		    {
+            		    // Delete presence icon from icon array 
+            		    iButtonDataArray[ index ].iFlags &= ~(TCommLauncherButtonData::EHasPresenceIcon);
+            		    iButtonIconArray->Delete( EPresenceIconIndex );
+            		    }
             	    }
-                else if ( isValidBitmap )
-                	{
-    		        // Append presence icon to icon array
-                    CGulIcon* icon = CGulIcon::NewLC();
-                    icon->SetBitmap( bitmap );
-                    icon->SetMask( mask );
-        	        iButtonIconArray->AppendL( icon );
-        	        iButtonDataArray[ index ].iFlags |= TCommLauncherButtonData::EHasPresenceIcon;
-        	        CleanupStack::Pop(); // icon
-                	}                  
+                else if ( bitmap )
+                    {           	       	
+            	    if ( hasPresenceIcon )
+            		    {
+            		    // Update presence icon
+                	    iButtonIconArray->At( EPresenceIconIndex )->SetBitmap(bitmap);
+                	    iButtonIconArray->At( EPresenceIconIndex )->SetMask(mask);
+            		    }
+            	    else
+            		    { 
+            		    // Append presence icon to icon array
+                        CGulIcon* icon = CGulIcon::NewLC();
+                        icon->SetBitmap( bitmap );
+                        icon->SetMask( mask );
+                	    iButtonIconArray->AppendL( icon );
+                	    iButtonDataArray[ index ].iFlags |= TCommLauncherButtonData::EHasPresenceIcon;
+                	    CleanupStack::Pop(); // icon
+            		    }
+                    }
         		}
+            }
+        else
+            {
+            delete presData.Bitmap();
+            delete presData.Mask();
             }
         }
     }

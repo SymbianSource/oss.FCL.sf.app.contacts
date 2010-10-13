@@ -20,7 +20,7 @@
 
 // Phonebook 2
 #include "CPbk2InputAbsorber.h"
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <TPbk2ContactEditorParams.h>
 #include <CPbk2PresentationContact.h>
 #include <CPbk2GeneralConfirmationQuery.h>
@@ -37,7 +37,7 @@
 #include <MVPbkStoreContact.h>
 #include <MVPbkFieldType.h>
 #include <MVPbkContactFieldData.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 // System includes
 #include <avkon.rsg>

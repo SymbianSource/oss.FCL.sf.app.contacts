@@ -44,55 +44,23 @@ CSupportedFieldTypes::CSupportedFieldTypes()
 //
 void CSupportedFieldTypes::ConstructL( 
     const CFieldTypeMappings& aFieldTypeMappings,
-    TVPbkGsmStoreProperty& aSimStoreProperty,
-    TVPbkUSimStoreProperty* aUSimStoreProperty )
+    TVPbkGsmStoreProperty& aSimStoreProperty )
     {
     // SIM supports always the name field
     const MVPbkFieldType* vpbkType = aFieldTypeMappings.Match( EVPbkSimName );
     iSupportedTypes.AppendL( vpbkType );
     // SIM supports always one number field
     vpbkType = aFieldTypeMappings.Match( EVPbkSimGsmNumber );
-    const MVPbkFieldType* vpbkGsmType = vpbkType;
     iSupportedTypes.AppendL( vpbkType );
     // USIM can support additional numbers
     if ( aSimStoreProperty.iCaps & VPbkSimStoreImpl::KAdditionalNumUsed )
         {
-        if( aUSimStoreProperty )
+        vpbkType = aFieldTypeMappings.Match( EVPbkSimAdditionalNumber );
+        // Check if the VPbk type is different than the type for
+        // already added EVPbkSimGsmNumber
+        if ( iSupportedTypes.Find( vpbkType ) == KErrNotFound )
             {
-            for( TInt i = 1; i <= aUSimStoreProperty->iMaxNumOfAnrs; i ++ )
-                {
-                TVPbkSimCntFieldType type;
-                switch( i )
-                    {
-                    case 1:  // first additional number field type 
-                        type = EVPbkSimAdditionalNumber1;
-                        break;
-                    case 2: // second additional number field type
-                        type = EVPbkSimAdditionalNumber2;
-                        break;
-                    case 3: // third additional number field type
-                        type = EVPbkSimAdditionalNumber3;
-                        break;
-                    default: // four and so on 
-                        type = EVPbkSimAdditionalNumberLast;
-                        break;
-                    }
-                vpbkType = aFieldTypeMappings.Match( type );
-                if( !( vpbkGsmType->IsSame( *vpbkType ) ) )   // if not the same as GSM type.
-                    {
-                    iSupportedTypes.AppendL( vpbkType );
-                    }
-                }
-            }
-        else
-            {
-            vpbkType = aFieldTypeMappings.Match( EVPbkSimAdditionalNumber );
-            // Check if the VPbk type is different than the type for
-            // already added EVPbkSimGsmNumber
-            if ( iSupportedTypes.Find( vpbkType ) == KErrNotFound )
-                {
-                iSupportedTypes.AppendL( vpbkType );
-                }
+            iSupportedTypes.AppendL( vpbkType );
             }
         }
     if ( aSimStoreProperty.iCaps & VPbkSimStoreImpl::KSecondNameUsed )
@@ -121,23 +89,6 @@ CSupportedFieldTypes* CSupportedFieldTypes::NewL(
     CSupportedFieldTypes* self = new( ELeave ) CSupportedFieldTypes;
     CleanupStack::PushL( self );
     self->ConstructL( aFieldTypeMappings, aSimStoreProperty );
-    CleanupStack::Pop( self );
-    return self;
-    }
-
-// -----------------------------------------------------------------------------
-// CSupportedFieldTypes::NewL
-// Two-phased constructor.
-// -----------------------------------------------------------------------------
-//
-CSupportedFieldTypes* CSupportedFieldTypes::NewL(
-    const CFieldTypeMappings& aFieldTypeMappings,
-    TVPbkGsmStoreProperty& aSimStoreProperty,
-    TVPbkUSimStoreProperty& aUSimStoreProperty )  
-    {
-    CSupportedFieldTypes* self = new( ELeave ) CSupportedFieldTypes;
-    CleanupStack::PushL( self );
-    self->ConstructL( aFieldTypeMappings, aSimStoreProperty, &aUSimStoreProperty );  
     CleanupStack::Pop( self );
     return self;
     }

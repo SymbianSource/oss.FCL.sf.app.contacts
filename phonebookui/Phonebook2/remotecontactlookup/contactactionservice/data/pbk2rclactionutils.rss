@@ -37,7 +37,7 @@ NAME    FSAU // 4 letter ID
 #include <Pbk2UID.h>
 
 #include "FscFieldOrdering.rh"
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 // RESOURCE DEFINITIONS
 #include <Pbk2StoreProperty.rh>

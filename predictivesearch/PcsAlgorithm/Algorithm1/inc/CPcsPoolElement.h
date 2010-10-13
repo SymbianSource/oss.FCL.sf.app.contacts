@@ -65,7 +65,7 @@ class CPcsPoolElement : public CBase
 		 * Compares the two Pool Elements and returms the comparison value.
 		 * It takes care of language variance too.
 		 */
-		 static TInt CompareByDataL ( const CPcsPoolElement& aObject1, 
+		 static TInt CompareByData ( const CPcsPoolElement& aObject1, 
 					     const CPcsPoolElement& aObject2 );
 
     private:

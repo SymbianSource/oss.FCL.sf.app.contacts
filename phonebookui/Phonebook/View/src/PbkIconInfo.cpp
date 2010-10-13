@@ -22,7 +22,7 @@
 #include <barsread.h>
 #include <coemain.h>
 #include <gulicon.h>
-#include <pbkview.rsg>
+#include <PbkView.rsg>
 #include <AknsUtils.h>
 #include <aknenv.h>
 

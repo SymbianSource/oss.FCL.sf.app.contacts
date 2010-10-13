@@ -19,7 +19,7 @@
 
 // INCLUDE FILES
 #include "CPbkDeleteContactsCmd.h"
-#include <phonebook.rsg>
+#include <Phonebook.rsg>
 #include <eikprogi.h>
 #include <CPbkProgressNoteWrapper.h>
 #include <CPbkContactViewListControl.h>

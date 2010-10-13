@@ -28,8 +28,8 @@
 #include <CPbk2AppUiBase.h>
 #include <CPbk2UIExtensionManager.h>
 #include <MPbk2Command.h>
-#include <pbk2commands.rsg>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2Commands.rsg>
+#include <Pbk2UIControls.rsg>
 #include <CPbk2ViewState.h>
 #include <CPbk2PhonebookInfoDlg.h>
 #include <TPbk2StoreContactAnalyzer.h>
@@ -511,9 +511,13 @@ inline void CPbk2CommandHandler::PerformStandardMenuFilteringL(
                 {
                 aMenuPane->SetItemDimmed( EPbk2CmdDeleteMe, ETrue );
                 }
+            if ( aControl.ContactsMarked() )
+                {
+                aMenuPane->SetItemSpecific( EPbk2CmdDeleteMe, EFalse );
+                }
             break;
             }
-        
+
         case R_PHONEBOOK2_NAMELIST_CALL_CONTACT_MENU:
             {
             // Weed out commands not meant to be used with marked items
@@ -544,6 +548,7 @@ inline void CPbk2CommandHandler::PerformStandardMenuFilteringL(
 
             if ( aControl.ContactsMarked() )
                 {
+                aMenuPane->SetItemDimmed( EPbk2CmdSend, ETrue );
                 aMenuPane->SetItemDimmed( EPbk2CmdGoToURL, ETrue );
                 }
             break;
@@ -1125,15 +1130,6 @@ TInt CPbk2CommandHandler::ToStoreFieldIndexL(
         CleanupStack::PopAndDestroy( presentationContact );
         }
     return index;
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2CommandHandler::CommandStore
-// --------------------------------------------------------------------------
-//
-EXPORT_C CPbk2CommandStore* CPbk2CommandHandler::CommandStore()
-    {
-    return iCommandStore;
     }
 
 // End of File

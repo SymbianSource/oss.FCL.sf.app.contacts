@@ -94,17 +94,17 @@ APP_LAYER_SYSTEMINCLUDE
 // Dependencies to Symbian OS components
 LIBRARY euser.lib bafl.lib apparc.lib
 LIBRARY cone.lib eikcore.lib eikcoctl.lib egul.lib
-LIBRARY efsrv.lib centralrepository.lib
+LIBRARY efsrv.lib CentralRepository.lib
 LIBRARY estor.lib ecom.lib
 LIBRARY fbscli.lib
 
 // Dependencies to S60 platform components
-LIBRARY avkon.lib aknskins.lib CommonEngine.lib
+LIBRARY avkon.lib AknSkins.lib CommonEngine.lib
 LIBRARY aknicon.lib AknLayout2Scalable.lib CdlEngine.lib
 LIBRARY apgrfx.lib apmime.lib
-LIBRARY featmgr.lib
-LIBRARY DrmHelper.lib DrmRights.lib DRMCommon.lib
-LIBRARY MediaFileList.lib
+LIBRARY FeatMgr.lib
+LIBRARY DrmHelper.lib DrmRights.lib DrmCommon.lib
+LIBRARY mediafilelist.lib
 
 // Dependencies to Phonebook
 LIBRARY VPbkEng.lib
@@ -116,7 +116,7 @@ LIBRARY Pbk2Profile.lib
 #endif // PBK2_ENABLE_PROFILE
 
 #ifdef RD_DRM_COMMON_INTERFACE_FOR_OMA_AND_WMDRM
-LIBRARY DRMUtility.lib
+LIBRARY drmutility.lib
 #endif
 
 // End of File

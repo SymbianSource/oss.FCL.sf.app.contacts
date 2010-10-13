@@ -24,8 +24,8 @@
 #include <AknNoteWrappers.h>
 #include <CPbkContactEngine.h>
 #include <cntitem.h>
-#include <phonebook.rsg>
-#include <pbkview.rsg>
+#include <Phonebook.rsg>
+#include <PbkView.rsg>
 #include <CPbkSetToneToGroup.h>
 #include <MPbkCommandObserver.h>
 

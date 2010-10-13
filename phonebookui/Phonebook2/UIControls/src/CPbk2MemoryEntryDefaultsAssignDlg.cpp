@@ -23,7 +23,7 @@
 #include "CPbk2FieldListBoxModel.h"
 #include <CPbk2IconInfo.h>
 #include <CPbk2IconArray.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <CPbk2PresentationContact.h>
 #include <CPbk2PresentationContactField.h>
 #include <CPbk2PresentationContactFieldCollection.h>

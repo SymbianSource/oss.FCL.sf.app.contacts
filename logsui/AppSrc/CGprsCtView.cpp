@@ -20,7 +20,7 @@
 //  INCLUDE FILES
 #include <aknnotedialog.h>
 
-#include <logs.rsg>
+#include <Logs.rsg>
 
 #include "CGprsCtView.h"
 #include "CGprsCtControlContainer.h"

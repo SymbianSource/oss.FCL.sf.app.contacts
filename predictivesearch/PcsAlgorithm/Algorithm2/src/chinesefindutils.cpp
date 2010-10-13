@@ -66,11 +66,7 @@ CFindRepositoryWatcher::CFindRepositoryWatcher(
     TCallBack aCallBack,
     CRepository* aRepository)
     :
-    iUid(aUid), 
-    iKey(aKey), 
-    iChangedKey(NCentralRepositoryConstants::KInvalidNotificationId), 
-    iCallBack(aCallBack), 
-    iRepository(aRepository)
+    iUid(aUid), iKey(aKey), iCallBack(aCallBack), iRepository(aRepository)
     {
     }
 

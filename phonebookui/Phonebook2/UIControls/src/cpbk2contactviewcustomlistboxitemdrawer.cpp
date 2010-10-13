@@ -148,6 +148,19 @@ void CPbk2ContactViewCustomListBoxItemDrawer::SetItemCellSize(
     data->SetItemCellSize( iItemCellSize );
     }
 
+#ifndef RD_TOUCH2
+void CPbk2ContactViewCustomListBoxItemDrawer::DrawCurrentItemRect(const TRect& aRect) const
+//
+//    Draw the item background
+//
+    {
+    iGc->SetClippingRect(iViewRect);
+    iGc->SetBrushStyle(CGraphicsContext::ENullBrush);
+    iGc->SetPenColor(iHighlightedBackColor);    // KDefaultLbxHighlightRectColor
+    iGc->DrawRect(aRect);
+    iGc->CancelClippingRect();
+    }
+#endif // !RD_TOUCH2
 
 /**
 * Returns a pointer to the column data. Does not imply transfer of ownership.
@@ -197,11 +210,13 @@ void CPbk2ContactViewCustomListBoxItemDrawer::DrawItemText( TInt aItemIndex,
     TInt pos = -1;
     
     TBool removeicon = (!aItemIsSelected && !ItemMarkReverse()) || (aItemIsSelected && ItemMarkReverse()); 
+#ifdef PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     
     if ( Flags() & CListItemDrawer::EMarkingModeEnabled )
         {
         removeicon = EFalse;
         }
+#endif // PBK2_AVKON_TOUCH_MARKINGMODE_CHANGES
     if ( Flags() & EDrawMarkSelection && ItemMarkPosition() != -1 && removeicon)
         {
         repl.Set( ItemMarkReplacement() );
@@ -294,18 +309,7 @@ void CPbk2ContactViewCustomListBoxItemDrawer::SetPropertiesL(TInt aItemIndex, TL
 
 TListItemProperties CPbk2ContactViewCustomListBoxItemDrawer::Properties(TInt aItemIndex) const
     {
-    if ( !iPropertyArray )
-        {
-        TListItemProperties prop( 
-            CTextListItemDrawer::Properties( aItemIndex ) );       
-        // Do not allow marking other than contact items
-        if ( !ColumnData()->IsContactAtListboxIndex( aItemIndex ) )
-            {
-            prop.SetHiddenSelection( ETrue );
-            }      
-        return prop;
-        }
-    
+    if (!iPropertyArray) return CTextListItemDrawer::Properties(aItemIndex);
     CAknListBoxFilterItems *filter = STATIC_CAST(CAknFilteredTextListBoxModel*,iModel)->Filter();
     if (filter)
         {

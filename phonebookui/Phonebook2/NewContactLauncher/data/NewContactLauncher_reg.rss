@@ -18,7 +18,7 @@
 #include "NewContactLauncher.hrh"
 #include "NewContactLauncher.rls"
 #include <appinfo.rh>
-#include <newcontactlauncher.rsg>
+#include <NewContactLauncher.rsg>
 
 UID2 KUidAppRegistrationResourceFile
 UID3 _UID3

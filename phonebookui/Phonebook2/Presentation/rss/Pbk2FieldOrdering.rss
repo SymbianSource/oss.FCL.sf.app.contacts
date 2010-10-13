@@ -17,7 +17,7 @@
 */
 
 #include "Pbk2FieldOrdering.rh"
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 // ---------------------------------------------------------------------------
 // R_PBK2_FIELDTYPE_PRESENTATION_ORDERS

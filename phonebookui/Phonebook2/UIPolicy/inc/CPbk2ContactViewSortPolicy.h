@@ -73,17 +73,6 @@ class CPbk2ContactViewSortPolicy : public CVPbkContactViewSortPolicy
                 TParam* aParam );
         TInt PostProcessResult(
                 TInt aSortUtilResult );
-        /**
-         * Get the index of top contact field in sort order list
-         */
-        TInt GetTopContactFieldIndex();
-        /** 
-         * Set sortkey array item from one field
-         */
-        void SetSortKey(
-        		CPbk2SortKeyArray* aSortKeyArray,
-        		const MVPbkBaseContactField* aField,
-        		TInt aIndex );
 
     private: // Data
         /// Own: Sort Util to forward sorting requests
@@ -101,8 +90,6 @@ class CPbk2ContactViewSortPolicy : public CVPbkContactViewSortPolicy
         TPbk2SortOrderFieldMapper iFieldMapper;
         /// Own: Indicates succesfull initialization
         TBool iSortPolicyParameterReceived;
-        /// Index of top contact field in iSortOrder
-        TInt iTopContactId;
     };
 
 #endif // CPBK2CONTACTVIEWSORTPOLICY_H

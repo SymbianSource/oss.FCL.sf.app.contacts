@@ -25,7 +25,7 @@ NAME    CPVW  // From Phonebook View
 #include <pbkconfig.hrh>
 #include <eikon.rh>
 #include <eikon.rsg>
-#include <avkon.rsg>
+#include <Avkon.rsg>
 #include <Avkon.hrh>
 #include <Avkon.rh>
 #include <avkon.mbg>	// Icon in save query

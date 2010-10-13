@@ -72,13 +72,13 @@ LIBRARY                 euser.lib
 LIBRARY                 ecom.lib
 LIBRARY                 cone.lib
 LIBRARY                 avkon.lib
-LIBRARY                 CommonEngine.lib
+LIBRARY                 commonengine.lib
 LIBRARY                 centralrepository.lib
 LIBRARY                 egul.lib // Icon
 LIBRARY                 fbscli.lib
 LIBRARY                 featmgr.lib 
 LIBRARY                 aknskins.lib
-LIBRARY                 VPbkEng.lib
+LIBRARY                 vpbkeng.lib
 LIBRARY                 bafl.lib
 LIBRARY                 efsrv.lib
 LIBRARY                 eikcoctl.lib
@@ -89,7 +89,7 @@ LIBRARY                 apparc.lib
 
 // Dependencies to Phonebook
 LIBRARY                 Pbk2Presentation.lib
-LIBRARY                 Pbk2CommonUI.lib
+LIBRARY                 Pbk2CommonUi.lib
 
 #if (PBKX_DEBUG_LEVEL > 0)
 LIBRARY                 pbkxdebug.lib

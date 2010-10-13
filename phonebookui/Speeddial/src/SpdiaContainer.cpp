@@ -33,14 +33,14 @@
 
 #include <StringLoader.h>
 #include <aknnotewrappers.h>
-#include <spdctrl.rsg>
+#include <SpdCtrl.rsg>
 #include <AknsUtils.h>
 #include <AknIconUtils.h>
 #include <aknViewAppUi.h>
 #include <AknFepInternalCRKeys.h>
 #include <aknlists.h>
 
-#include <speeddial.rsg>
+#include <SpeedDial.rsg>
 
 #include "speeddial.hrh" 
 #include "SpdiaControl.hrh"

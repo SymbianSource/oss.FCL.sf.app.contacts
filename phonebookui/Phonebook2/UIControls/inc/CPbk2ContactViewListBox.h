@@ -178,24 +178,6 @@ NONSHARABLE_CLASS(CPbk2ContactViewListBox) :
         void HandlePopupCharacter( CWindowGc* aGc,
                                    const TRect& aRectOfListBoxItem ) const;
 
-        /**
-         * Set the state of the Marking mode 
-         */
-        inline void SetMarkingModeState( TBool aActived )
-            {
-            iMarkingModeOn = aActived;
-            }
-
-        /**
-         * Reset the value of iShowPopupChar, i.e. set its value to EFalse.
-         * As for iShowPopupChar, ETrue indicates showing the scrollbar popup char;
-         * EFalse indicates the opposite. 
-         */
-        inline void ResetShowPopupChar()
-            {
-            iShowPopupChar = EFalse;
-            }
-
     public: // From MPbk2ClipListBoxText
         TBool ClipFromBeginning(
                 TDes& aBuffer,
@@ -244,9 +226,6 @@ NONSHARABLE_CLASS(CPbk2ContactViewListBox) :
 
         TBool IsContact( TInt aIndex ) const;
         
-    private:
-        void RecalcWidthInMarkingMode( TInt& aWidth, const CFont& aFont, TChar aChar );
-        
     private: // Data structures
         /// Data loaded from resources
         struct TResourceData
@@ -287,8 +266,6 @@ NONSHARABLE_CLASS(CPbk2ContactViewListBox) :
         CPbk2PredictiveSearchFilter &iSearchFilter;
         // ref: used fro checking command item count
         CCoeControl& iContainer;
-        // Flag to indicate whether Marking mode is active
-        TBool iMarkingModeOn;
         
     };
 

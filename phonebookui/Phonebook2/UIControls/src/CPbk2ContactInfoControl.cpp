@@ -26,7 +26,7 @@
 #include "CPbk2ContactFieldDynamicProperties.h"
 #include "CPbk2ThumbnailLoader.h"
 #include "Pbk2TitlePanePictureFactory.h"
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <Pbk2UIControls.hrh>
 #include <CPbk2IconArray.h>
 #include <MPbk2ContactNameFormatter.h>
@@ -57,7 +57,7 @@
 #include <CVPbkFieldTypeSelector.h>
 #include <CVPbkContactStoreUriArray.h>
 #include <MVPbkContactFieldTextData.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 // System includes
 #include <akntitle.h>

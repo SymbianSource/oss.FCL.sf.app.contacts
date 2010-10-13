@@ -59,9 +59,9 @@ SYSTEMINCLUDE   ../View/inc ../inc
 APP_LAYER_SYSTEMINCLUDE // macro that defines the platform system includes
 
 // Dependencies to other components
-LIBRARY         euser.lib cone.lib CommonEngine.lib diskspacereserver.lib eikcoctl.lib
+LIBRARY         euser.lib cone.lib commonengine.lib diskspacereserver.lib eikcoctl.lib
 LIBRARY         avkon.lib servicehandler.lib 
-LIBRARY         pbkeng.lib pbkview.lib PbkUi.lib
+LIBRARY         PbkEng.lib PbkView.lib PbkUi.lib
 LIBRARY         centralrepository.lib 
 LIBRARY         efsrv.lib  // RFs
 

@@ -21,7 +21,7 @@
 // Phonebook 2
 #include <TPbk2AddItemDialogParams.h>
 #include <TPbk2AddItemWrapper.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <CPbk2IconArray.h>
 #include <TPbk2AppIconId.h>
 #include <CPbk2UIExtensionManager.h>

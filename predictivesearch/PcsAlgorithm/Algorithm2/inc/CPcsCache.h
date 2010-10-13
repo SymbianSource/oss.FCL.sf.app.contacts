@@ -38,7 +38,7 @@ public:
     /**
      * Two phase construction
      */
-    static CPcsCache* NewL(CPcsAlgorithm2* aAlgorithm, const TDesC& aURI, 
+    static CPcsCache* NewL(CPcsAlgorithm2* aAlgorithm, TDesC& aURI, 
                            CPcsKeyMap& aKeyMap, TUint8 aUriId);
 
     /**
@@ -74,7 +74,7 @@ public:
     /**
      * Removes all data elements from the cache
      */
-    void RemoveAllFromCache();
+    void RemoveAllFromCacheL();
 
     /**
      * Sets data fields to the cache
@@ -125,16 +125,6 @@ public:
      */
     void ResortdataInPoolsL();
 
-    /**
-     * Get data index of the first name field
-     */
-    TInt GetFirstNameIndex() const;
-
-    /**
-     * Get data index of the last name field
-     */
-    TInt GetLastNameIndex() const;
-
 private:
 
     /**
@@ -145,36 +135,24 @@ private:
     /**
      * Second phase constructor
      */
-    void ConstructL(CPcsAlgorithm2* aAlgorithm, const TDesC& aURI,
+    void ConstructL(CPcsAlgorithm2* aAlgorithm, TDesC& aURI,
                     CPcsKeyMap& aKeyMap, TUint8 aUriId);
 
     /**
      * Utility function to add a contact to the pool
      */
-    void AddToPoolL(TUint64& aPoolMap, CPsData& aData);
+    void AddToPoolL(TInt& aInfo, CPsData& data);
 
     /**
      * Utility function 
      */
-    void SetPoolMap(TUint64& aPoolMap, TInt aArrayIndex);
+    void SetPoolMap(TInt& aPoolMap, TInt aPoolId);
 
     /**
      * Utility function 
      */
-    TBool GetPoolMap(TUint64& aPoolMap, TInt aArrayIndex);
+    TBool GetPoolMap(TInt& aPoolMap, TInt arrayIndex);
 
-    /**
-     * Gets all the first characters of the words in the data field according
-     * to which the contact should be inserted into cache.
-     */
-    void GetFirstCharsForDataL( const TDesC& aData, RArray<TChar>& aFirstChars ) const;
-    
-    /**
-     * Gets all the pool IDs matching the given characters. If there are two predictive
-     * keyboards available, then pool IDs are given according to both keyboards.
-     */
-    void GetPoolIdsForCharsL( const RArray<TChar>& aChars, RArray<TInt>& aPoolIds ) const;
-    
     /**
      * Utility function
      */
@@ -187,27 +165,27 @@ private:
      * Array of key maps
      */
     typedef RPointerArray<CPcsPoolElement> R_PTR_ARRAY;
-    RPointerArray<R_PTR_ARRAY> iKeyArr;
+    RPointerArray<R_PTR_ARRAY> keyArr;
 
     /*
      * Hashmaps to remember the location of a contact in the pools
      */
-    RHashMap<TInt, TUint64> iCacheInfo;
+    RHashMap<TInt, TInt> cacheInfo;
 
     /*
      * Master pool of all contacts in this cache
      */
-    RPointerArray<CPsData> iMasterPool;
+    RPointerArray<CPsData> masterPool;
     
     /*
     * Master pool backup of all contacts in this cache when sortorder changed
     */
-    RPointerArray<CPsData> iMasterPoolBackup;
+    RPointerArray<CPsData> masterPoolBackup;  
 
     /*
      * Not owned
      */
-    CPcsKeyMap* iKeyMap;
+    CPcsKeyMap* keyMap;
 
     /**
      * Owned. Refer to the database URI this cache is for.

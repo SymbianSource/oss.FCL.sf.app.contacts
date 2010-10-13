@@ -21,7 +21,7 @@
 #include <AknQueryDialog.h>
 #include <featmgr.h>
 
-#include <logs.rsg>
+#include <Logs.rsg>
 
 #include "CLogsSubAppListView.h"
 #include "CLogsSubAppListControlContainer.h"

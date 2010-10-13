@@ -34,7 +34,7 @@
 #include <CPbkPhoneNumberSelect.h>
 #include <CPbkGroupBelongings.h>
 #include <CPbkConstants.h>
-#include <phonebook.rsg>            // Phonebook resources
+#include <Phonebook.rsg>            // Phonebook resources
 #include <MenuFilteringFlags.h>
 #include <CPbkAiwInterestArray.h>
 

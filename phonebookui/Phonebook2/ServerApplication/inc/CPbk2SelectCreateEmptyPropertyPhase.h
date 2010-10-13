@@ -72,8 +72,6 @@ class CPbk2SelectCreateEmptyPropertyPhase : public CActive,
                 TInt aExitCommandId );
         void AcceptDelayedL(
                 const TDesC8& aContactLinkBuffer );
-        void DenyDelayedL(
-                const TDesC8& aContactLinkBuffer );
         MVPbkContactLinkArray* Results() const;
         MVPbkStoreContact* TakeStoreContact();
         TInt ExtraResultData() const;

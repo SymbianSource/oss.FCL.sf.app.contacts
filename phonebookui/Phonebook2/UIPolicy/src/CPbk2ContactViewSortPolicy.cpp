@@ -22,7 +22,7 @@
 #include "CPbk2SortKeyArray.h"
 #include "RPbk2LocalizedResourceFile.h"
 #include "Pbk2DataCaging.hrh"
-#include <pbk2uipolicyres.rsg>
+#include <Pbk2UIPolicyRes.rsg>
 
 // Virtual Phonebook
 #include <MVPbkFieldType.h>
@@ -42,12 +42,6 @@
 
 // Debugging headers
 #include <Pbk2Profile.h>
-
-#include <vpbkeng.rsg>
-
-// Greater than any practical top contact number string
-// which is in form like '0000000001'.
-_LIT(KBigNumStr, "9999999999");
 
 
 /// Unnamed namespace for local definitions
@@ -178,8 +172,6 @@ void CPbk2ContactViewSortPolicy::ConstructL( TParam* aParam )
         iSortOrder = CVPbkSortOrder::NewL(aParam->iSortOrder);
         iFieldMapper.SetSortOrder(*iSortOrder);
 
-        iTopContactId = GetTopContactFieldIndex();
-
         RPbk2LocalizedResourceFile resFile(aParam->iFs);
         resFile.OpenLC( KPbk2RomFileDrive, KDC_RESOURCE_FILES_DIR,
             KResourceFile );
@@ -213,8 +205,6 @@ void CPbk2ContactViewSortPolicy::SetSortOrderL
     delete iSortOrder;
     iSortOrder = sortOrder;
     iFieldMapper.SetSortOrder( *iSortOrder );
-
-    iTopContactId = GetTopContactFieldIndex();
     }
 
 // --------------------------------------------------------------------------
@@ -285,14 +275,34 @@ PBK2_PROFILE_START( Pbk2Profile::ESortPolicyCompareContacts );
         const TInt lhsCount = iFieldMapper.FieldCount();
         for ( i = 0; i < lhsCount; ++i )
             {
-            SetSortKey( iLeftSortKeyArray, iFieldMapper.FieldAt(i), i );
+            const MVPbkBaseContactField* lhsField =
+                iFieldMapper.FieldAt( i );
+            if ( lhsField )
+                {
+                iLeftSortKeyArray->SetText( MVPbkContactFieldTextData::Cast
+                    ( lhsField->FieldData() ).Text(), i );
+                }
+            else
+                {
+                iLeftSortKeyArray->SetText( KNullDesC, i );
+                }
             }
 
         iFieldMapper.SetContactFields( aRhs.Fields() );
         const TInt rhsCount = iFieldMapper.FieldCount();
         for ( i = 0; i < rhsCount; ++i )
             {
-            SetSortKey( iRightSortKeyArray, iFieldMapper.FieldAt(i), i );
+            const MVPbkBaseContactField* rhsField =
+                iFieldMapper.FieldAt( i );
+            if ( rhsField )
+                {
+                iRightSortKeyArray->SetText( MVPbkContactFieldTextData::Cast
+                    ( rhsField->FieldData() ).Text(), i );
+                }
+            else
+                {
+                iRightSortKeyArray->SetText( KNullDesC, i );
+                }
             }
 
 PBK2_PROFILE_END( Pbk2Profile::ESortPolicyCompareContacts );
@@ -380,62 +390,6 @@ TInt CPbk2ContactViewSortPolicy::PostProcessResult( TInt aSortUtilResult )
         }
 
     return result;
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2ContactViewSortPolicy::GetTopContactFieldIndex
-// --------------------------------------------------------------------------
-//
-TInt CPbk2ContactViewSortPolicy::GetTopContactFieldIndex()
-    {
-    TInt index = KErrNotFound;
-    for ( TInt i=0; i<iSortOrder->FieldTypeCount(); i++ )
-        {
-        // Resource id of top contact field is R_VPBK_FIELD_TYPE_TOPCONTACT.
-        if ( iSortOrder->FieldTypeAt( i ).FieldTypeResId() == 
-                R_VPBK_FIELD_TYPE_TOPCONTACT )
-            {
-            index = i;
-            break;
-            }
-        }
-    return index;
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2ContactViewSortPolicy::SetSortKey
-// --------------------------------------------------------------------------
-//
-void CPbk2ContactViewSortPolicy::SetSortKey(
-        CPbk2SortKeyArray* aSortKeyArray,
-        const MVPbkBaseContactField* aField,
-        TInt aIndex )
-    {
-    TInt textLen = 0;
-    if ( aField )
-        {
-        TPtrC text = MVPbkContactFieldTextData::Cast
-            ( aField->FieldData() ).Text();
-        aSortKeyArray->SetText( text, aIndex );
-        textLen = text.Length();
-        }
-    if ( textLen == 0 )
-        {
-        if ( aIndex == iTopContactId )
-            {
-            // For some variants such as Chinese variant, 
-            // empty string is less than not empty string. 
-            // This will make topic contacts which have substantial top contact
-            // id strings after those with empty id strings.
-            // To prevent this, use a big number string instead of empty string 
-            // and make sure top contacts in front of other contacts.
-            aSortKeyArray->SetText( KBigNumStr, aIndex );
-            }
-        else
-            {
-            aSortKeyArray->SetText( KNullDesC, aIndex );
-            }
-        }
     }
 
 //  End of File

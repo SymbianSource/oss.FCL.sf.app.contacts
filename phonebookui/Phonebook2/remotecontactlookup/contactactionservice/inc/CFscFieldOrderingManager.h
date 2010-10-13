@@ -75,7 +75,7 @@ private: // Data
         TFieldTypeOrder( TResourceReader& aReader );
 
         /**
-         * Field type resource id from vpbkeng.rsg
+         * Field type resource id from VPbkEng.rsg
          */
         TInt iFieldTypeResId;
 

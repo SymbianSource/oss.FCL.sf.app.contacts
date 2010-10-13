@@ -23,7 +23,7 @@
 #include "CPsu2NumberQueryDlg.h"
 #include <CPbk2FieldPropertyArray.h>
 #include <MPbk2FieldProperty.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <MPbk2CommandHandler.h>
 #include <CPbk2AppViewBase.h>
 #include <CPbk2ContactUiControlSubstitute.h>

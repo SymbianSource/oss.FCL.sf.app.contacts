@@ -41,10 +41,6 @@
 // Debugging headers
 #include <Pbk2Debug.h>
 
-#include <aknnavi.h>
-#include <aknnavide.h> 
-#include <aknnavilabel.h>
-
 
 /// Unnamed namespace for local definitions
 namespace {
@@ -128,35 +124,12 @@ void CPbk2NamesListEmptyState::SubscribeCmdItemsVisibility()
 //
 void CPbk2NamesListEmptyState::ActivateStateL()
     {
-    AllowCommandsToShowThemselves( ETrue );
-    CPbk2NamesListControl& namesListControl = 
-        reinterpret_cast<CPbk2NamesListControl&>(CoeControl());
-    if( namesListControl.GetMarkingMode() )
-        {
-        // If NamesListEmptyState and Marking mode are both active,
-        // the Marking mode should be canceled. 
-        iListBox.SetMarkingMode(EFalse);
-        CEikonEnv* eikonEnv = CEikonEnv::Static();
-        if ( eikonEnv && eikonEnv->AppUiFactory() )
-            {
-            CEikStatusPane* statusPane = eikonEnv->AppUiFactory()->StatusPane();
-            if ( statusPane )
-                {
-
-                CAknNavigationControlContainer* naviPane =
-                        (CAknNavigationControlContainer *)statusPane->ControlL(
-                                TUid::Uid(EEikStatusPaneUidNavi));
-                CAknNavigationDecorator* decorator = naviPane->Top();
-                        naviPane->Pop( decorator );
-                naviPane->DrawDeferred();
-                }
-            }
-        }
-
-    // hide findbox since there is no contact
+    AllowCommandsToShowThemselves( ETrue );  
+	
+	// hide findbox since there is no contact
     if ( iFindBox && iFindBox->IsVisible() )
         {
-        iFindBox->MakeVisible( EFalse );
+        iFindBox->MakeVisible( EFalse );                
         }
 
     }
@@ -167,8 +140,8 @@ void CPbk2NamesListEmptyState::ActivateStateL()
 //
 void CPbk2NamesListEmptyState::DeactivateState()
     {
-    AllowCommandsToShowThemselves( EFalse );
-
+    AllowCommandsToShowThemselves( EFalse );  	
+	
     if ( iFindBox && !iFindBox->IsFocused() )
         {
         iFindBox->SetFocus( ETrue );
@@ -324,7 +297,7 @@ void CPbk2NamesListEmptyState::HandleCommandEventL
 //
 void CPbk2NamesListEmptyState::HandleListboxEventL
         (TInt aEvent, TInt aListboxIndex,
-        TBool /*aMantainFocus*/) 
+		TBool /*aMantainFocus*/) 
     {
     iListBox.HandleEventL( aEvent, aListboxIndex );
     iParent.DrawDeferred();
@@ -376,9 +349,9 @@ TInt CPbk2NamesListEmptyState::NumberOfContacts() const
     // The listbox can also have command items.
     TInt result = iListBox.NumberOfItems() - CommandItemCount();
     if ( result < 0 )
-        {
-        result = KNumberOfContacts; // No contacts 
-        }
+    	{
+    	result = KNumberOfContacts; // No contacts 
+    	}
     return result;
     }
 
@@ -518,53 +491,53 @@ MVPbkContactLinkArray* CPbk2NamesListEmptyState::SelectedContactsL() const
 MVPbkContactLinkArray*
         CPbk2NamesListEmptyState::SelectedContactsOrFocusedContactL() const
     {
-    CVPbkContactLinkArray* array = NULL;
-    // my card is showing on empty list, check if the wanted contact is it
-    TInt currentItem = iListBox.CurrentItemIndex();
-    // if focused index is command item
-    if( currentItem < CommandItemCount() )
-        {
-        // check if the command is my card ( this search is copied from CommandItemAt - function to avoid const cast)
-        // Some of the commands might be disabled. Skip those.
-        TInt enabledCount = 0;
-        TInt indexOfResult = KErrNotFound;
-        for ( TInt n = 0; n < iCommandItems.Count() && indexOfResult == KErrNotFound; ++n )
-            {
-            if ( iCommandItems[ n ]->IsEnabled() )
-                {
-                enabledCount++;
-                if ( enabledCount-1 == currentItem )
-                    {
-                    indexOfResult = n;
-                    }
-                }
-            }
-        MPbk2UiControlCmdItem* item = iCommandItems[ indexOfResult ];
-        // check if the command item was a my card
-        if( item->CommandId() == EPbk2CmdOpenMyCard )
-            {
-            // get extension point and my card link
-            TAny* object = item->ControlCmdItemExtension( TUid::Uid( KPbk2ControlCmdItemExtensionUID ) );
-            if(  object )
-                {
-                MPbk2DoubleListboxCmdItemExtension* extension = 
-                        static_cast<MPbk2DoubleListboxCmdItemExtension*>( object );
-                // if extension exists
-                if( extension )
-                    {
-                    const MVPbkContactLink* link = extension->Link();
-                    // if link exists, add it to the array
-                    if( link )
-                        {
-                        array = CVPbkContactLinkArray::NewLC();
-                        array->AppendL( link->CloneLC() );
-                        CleanupStack::Pop( 2 );    // array, link
-                        }
-                    }
-                }
-            }
-        }
-    return array;
+	CVPbkContactLinkArray* array = NULL;
+	// my card is showing on empty list, check if the wanted contact is it
+	TInt currentItem = iListBox.CurrentItemIndex();
+	// if focused index is command item
+	if( currentItem < CommandItemCount() )
+		{
+		// check if the command is my card ( this search is copied from CommandItemAt - function to avoid const cast)
+		// Some of the commands might be disabled. Skip those.
+		TInt enabledCount = 0;
+		TInt indexOfResult = KErrNotFound;
+		for ( TInt n = 0; n < iCommandItems.Count() && indexOfResult == KErrNotFound; ++n )
+			{
+			if ( iCommandItems[ n ]->IsEnabled() )
+				{
+				enabledCount++;
+				if ( enabledCount-1 == currentItem )
+					{
+					indexOfResult = n;
+					}
+				}
+			}
+		MPbk2UiControlCmdItem* item = iCommandItems[ indexOfResult ];
+		// check if the command item was a my card
+		if( item->CommandId() == EPbk2CmdOpenMyCard )
+			{
+			// get extension point and my card link
+			TAny* object = item->ControlCmdItemExtension( TUid::Uid( KPbk2ControlCmdItemExtensionUID ) );
+			if(  object )
+				{
+				MPbk2DoubleListboxCmdItemExtension* extension = 
+						static_cast<MPbk2DoubleListboxCmdItemExtension*>( object );
+				// if extension exists
+				if( extension )
+					{
+					const MVPbkContactLink* link = extension->Link();
+					// if link exists, add it to the array
+					if( link )
+						{
+						array = CVPbkContactLinkArray::NewLC();
+						array->AppendL( link->CloneLC() );
+						CleanupStack::Pop( 2 );	// array, link
+						}
+					}
+				}
+			}
+		}
+	return array;
     }
 
 // --------------------------------------------------------------------------
@@ -634,17 +607,17 @@ void CPbk2NamesListEmptyState::SetSelectedContactL(
 // --------------------------------------------------------------------------
 //
 TInt CPbk2NamesListEmptyState::CommandItemCount() const
-    {
+	{
     // Some of the commands might be disabled. Don't count those.
-    TInt enabledCommandCount = 0;
-    for ( TInt n = 0; n < iCommandItems.Count(); ++n ) 
-        {
-        if ( iCommandItems[ n ]->IsEnabled() )
-            {
-            enabledCommandCount++;
-            }
-        }
-    return enabledCommandCount;
+	TInt enabledCommandCount = 0;
+	for ( TInt n = 0; n < iCommandItems.Count(); ++n ) 
+		{
+		if ( iCommandItems[ n ]->IsEnabled() )
+			{
+			enabledCommandCount++;
+			}
+		}
+	return enabledCommandCount;
     }
 
 // --------------------------------------------------------------------------
@@ -653,24 +626,24 @@ TInt CPbk2NamesListEmptyState::CommandItemCount() const
 //
 const MPbk2UiControlCmdItem&
 CPbk2NamesListEmptyState::CommandItemAt( TInt aIndex ) const
-    {
+	{
     // Some of the commands might be disabled. Skip those.
-    TInt enabledCount = 0;
-    TInt indexOfResult = KErrNotFound;
-    for ( TInt n = 0; n < iCommandItems.Count()&& indexOfResult == KErrNotFound; ++n ) 
-    
-        {
-        if ( iCommandItems[ n ]->IsEnabled() )
-            {
-            enabledCount++;
-            if ( enabledCount-1 == aIndex )
-                {
-                indexOfResult = n;
-                }
-            }
-        }
-    return *iCommandItems[ indexOfResult ];
-    }
+	TInt enabledCount = 0;
+	TInt indexOfResult = KErrNotFound;
+	for ( TInt n = 0; n < iCommandItems.Count()&& indexOfResult == KErrNotFound; ++n ) 
+	
+		{
+		if ( iCommandItems[ n ]->IsEnabled() )
+			{
+			enabledCount++;
+			if ( enabledCount-1 == aIndex )
+				{
+				indexOfResult = n;
+				}
+			}
+		}
+	return *iCommandItems[ indexOfResult ];
+	}
 
 // --------------------------------------------------------------------------
 // CPbk2NamesListEmptyState::FocusedCommandItem
@@ -678,9 +651,9 @@ CPbk2NamesListEmptyState::CommandItemAt( TInt aIndex ) const
 //
 const MPbk2UiControlCmdItem*
 CPbk2NamesListEmptyState::FocusedCommandItem() const
-    {
-    const MPbk2UiControlCmdItem* cmdItem = NULL;
-    // Is the focus on a command item:
+	{
+	const MPbk2UiControlCmdItem* cmdItem = NULL;
+	// Is the focus on a command item:
     TInt focusListIndex = iListBox.CurrentItemIndex();
     const TInt commandItemCount = CommandItemCount();
     if ( focusListIndex != KErrNotFound && focusListIndex < commandItemCount )
@@ -688,7 +661,7 @@ CPbk2NamesListEmptyState::FocusedCommandItem() const
         // Yes it's a command item.
         cmdItem = &CommandItemAt(focusListIndex); 
         }
-    return cmdItem;
+	return cmdItem;
     }
 
 // --------------------------------------------------------------------------
@@ -696,7 +669,7 @@ CPbk2NamesListEmptyState::FocusedCommandItem() const
 // --------------------------------------------------------------------------
 //
 void CPbk2NamesListEmptyState::DeleteCommandItemL( TInt /*aIndex*/ )
-    {
+	{
     // ownership & management of iCommandItems is wasted in names list
     // control. Do nothing here
     }
@@ -709,7 +682,7 @@ void CPbk2NamesListEmptyState::AddCommandItemL(MPbk2UiControlCmdItem* /*aCommand
     {
     // ownership & management of iCommandItems is wasted in names list
     // control. Do nothing here
-    }    
+	}	
 
 // --------------------------------------------------------------------------
 // CPbk2NamesListEmptyState::DynInitMenuPaneL
@@ -725,9 +698,13 @@ void CPbk2NamesListEmptyState::DynInitMenuPaneL(
     TInt pos; // Stores the position of the searched menu item.
             // This position is not needed or used anywhere
     
-    if ( aMenuPane->MenuItemExists ( EAknCmdMarkingModeEnter, pos ) )
+    if (aMenuPane->MenuItemExists(EAknUnmarkAll, pos))
         {
-        aMenuPane->SetItemDimmed( EAknCmdMarkingModeEnter, ETrue );
+        aMenuPane->SetItemDimmed(EAknUnmarkAll, ETrue);
+        }
+    if (aMenuPane->MenuItemExists(EAknMarkAll, pos))
+        {
+        aMenuPane->SetItemDimmed(EAknMarkAll, ETrue);
         }
     }
 
@@ -967,9 +944,9 @@ void CPbk2NamesListEmptyState::AllowCommandsToShowThemselves( TBool aVisible )
         // ownership not transferred
         iListBox.SetListCommands( &iCommandItems );
         SubscribeCmdItemsVisibility();        
-        UpdateCommandEnabled( EPbk2CmdRcl, ETrue );             
+        UpdateCommandEnabled( EPbk2CmdRcl, ETrue ); 			
         UpdateCommandEnabled( EPbk2CmdAddFavourites, EFalse ); 
-        //MyCard is stored separately and may also contain data         
+		//MyCard is stored separately and may also contain data         
         UpdateCommandEnabled( EPbk2CmdOpenMyCard, ETrue ); 
         }
     else
@@ -985,20 +962,9 @@ void CPbk2NamesListEmptyState::AllowCommandsToShowThemselves( TBool aVisible )
 void CPbk2NamesListEmptyState::CmdItemVisibilityChanged( TInt aCmdItemId, TBool aVisible ) 
     {
     TInt cmdItemIndex = FindCommand(aCmdItemId);
-    TRAP_IGNORE(
-        // If command item is changed to be visible, set its hidden selection to ETrue.
-        if( aVisible )
-            {
-            TInt enableCmdCount = EnabledCommandCount();
-            TListItemProperties prop( iListBox.ItemDrawer()->Properties(enableCmdCount) );
-            prop.SetHiddenSelection(aVisible);
-            iListBox.ItemDrawer()->SetPropertiesL(enableCmdCount-1, prop);
-            }
-    
-        HandleCommandEventL(
+    TRAP_IGNORE( HandleCommandEventL(
                 (aVisible ? EItemAdded : EItemRemoved),
-                 cmdItemIndex);
-        );
+                 cmdItemIndex) );		
     }
 
 // --------------------------------------------------------------------------
@@ -1081,23 +1047,6 @@ void CPbk2NamesListEmptyState::UnmarkCommands() const
         {
         iListBox.View()->DeselectItem( i );
         }
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2NamesListEmptyState::EnabledCommandCount
-// --------------------------------------------------------------------------
-// 
-TInt CPbk2NamesListEmptyState::EnabledCommandCount() const
-    {
-    TInt result = 0;
-    for ( TInt i = 0; i < iCommandItems.Count(); ++i )
-        {
-        if(iCommandItems[i]->IsEnabled())
-            {
-            result++;
-            }
-        }
-    return result;    
     }
 
 //  End of File

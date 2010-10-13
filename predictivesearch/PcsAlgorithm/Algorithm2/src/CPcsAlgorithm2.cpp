@@ -16,7 +16,7 @@
 */
 
 // INCLUDES
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <PtiEngine.h>
 #include <centralrepository.h>
 #include <AknFepInternalCRKeys.h>
@@ -79,6 +79,7 @@ void CPcsAlgorithm2::ConstructL()
     iCacheCount = 0; // No data
 
     iFindUtilECE = CFindUtilChineseECE::NewL(this);
+    iFindUtil = CFindUtil::NewL();
     
     iPluginLauncher = CIdle::NewL( CActive::EPriorityStandard );
 
@@ -95,14 +96,13 @@ void CPcsAlgorithm2::ConstructL()
 
     // Initialize key map and pti engine
     TInt keyMapErr = KErrNone;
-    TRAP( keyMapErr, iKeyMap = CPcsKeyMap::NewL( this ) );
+    TRAP( keyMapErr, iKeyMap = CPcsKeyMap::NewL( this ));
     if (keyMapErr != KErrNone)
         {
         PRINT ( _L("**********************************************."));
         PRINT1 ( _L("CPcsAlgorithm2::ConstructL() KeyMap construction error. The keymap crashed with error code %d."), keyMapErr );
         PRINT ( _L("Please check the keypad/language for which keymap got crashed.") );
         PRINT ( _L("**********************************************."));
-        User::Leave( keyMapErr ); // we can't go on without a key map; constructing cache needs it
         }
     
     // Initialize helpers
@@ -140,6 +140,7 @@ CPcsAlgorithm2::~CPcsAlgorithm2()
     delete iMultiSearchHelper;
 
     delete iFindUtilECE;
+    delete iFindUtil;
     
     delete iPluginLauncher;
 
@@ -164,152 +165,105 @@ void CPcsAlgorithm2::DefinePropertyL( TPcsInternalKeyCacheStatus aPsKey )
     }
 
 // ----------------------------------------------------------------------------
-// CPcsAlgorithm2::RemoveSpacesL
-// Remove leading and trailing spaces of search query
-// ----------------------------------------------------------------------------
-void  CPcsAlgorithm2::RemoveSpacesL(CPsQuery& aQuery)
-    {
-    PRINT ( _L("Enter CPcsAlgorithm2::RemoveSpacesL") );
-
-    // Remove all leading " "
-    while ( aQuery.Count() > 0 )
-        {
-        CPsQueryItem& item = aQuery.GetItemAtL(0); // First
-        if ( !item.Character().IsSpace() )
-            {
-            break;
-            }
-        aQuery.Remove(0);
-        }
-
-    // Remove all trailing " "
-    while ( aQuery.Count() > 0 )
-        {
-        CPsQueryItem& item = aQuery.GetItemAtL(aQuery.Count()-1); // Last
-        if ( !item.Character().IsSpace() )
-            {
-            break;
-            }
-        aQuery.Remove(aQuery.Count()-1);
-        }
-    
-    PRINT ( _L("End CPcsAlgorithm2::RemoveSpacesL") );
-    }    
-
-// ----------------------------------------------------------------------------
 // CPcsAlgorithm2::ReplaceZeroWithSpaceL
 // Replace first occurance of '0' in a sequence of '0's in ITU-T with space
 // ----------------------------------------------------------------------------
 TBool CPcsAlgorithm2::ReplaceZeroWithSpaceL(CPsQuery& aQuery)
     {
-    PRINT ( _L("Enter CPcsAlgorithm2::ReplaceZeroWithSpaceL") );
+    TChar space(KSpace); // ascii value for space
 
-       //PRINTQUERY ( _L("CPcsAlgorithm2::ReplaceZeroWithSpaceL (BEFORE): "), aQuery );
+    TBool queryModified = EFalse;
 
-       TBool queryModified = EFalse;    
+    // Skip initial zeros in query
+    TInt index = 0;
+    for (index = 0; index < aQuery.Count()
+            && aQuery.GetItemAtL(index).Character().GetNumericValue() == 0; ++index)
+        {
+        }
 
-       /* In phones like E52 and E55, where the "0" and the " " characters are on
-        * the same key, the "0"s have to be considered as possible separators.
-        *
-        * In phones like N97 and E72, where the "0" and the " " characters are on
-        * different keys, the "0"s must not be considered as possible separators.
-        */
+    if (aQuery.KeyboardModeL() != EQwerty)
+        {
+        for (TInt beg = index; beg < aQuery.Count(); ++beg)
+            {
+            CPsQueryItem& item = aQuery.GetItemAtL(beg);
 
-       // Skip initial "0"s, they are not replaced into spaces
-       TInt skipIndex = 0;
-       while ( (skipIndex < aQuery.Count()) && 
-               (aQuery.GetItemAtL(skipIndex).Character().GetNumericValue() == 0) )
-       {
-           skipIndex++;
-       }
-       
-       // Replace remaining "0"s into spaces in case they are entered with a keyboard
-       // that has "0" and " " on the same key.
-       const TInt queryCount = aQuery.Count();
-       for ( TInt index = skipIndex; index < queryCount; index++ )
-       {
-           CPsQueryItem& item = aQuery.GetItemAtL(index);
+            if (item.Character().GetNumericValue() == 0 && item.Mode()== EItut)
+                {
+                if (beg != 0)
+                    {
+                    CPsQueryItem& item1 = aQuery.GetItemAtL(beg - 1);
+                    if (item1.Character().GetNumericValue() != 0
+                            && !item1.Character().IsSpace())
+                        {
+                        item.SetCharacter(space);
+                        queryModified = ETrue;
+                        }
+                    }
+                else
+                    {
+                    item.SetCharacter(space);
+                    queryModified = ETrue;
+                    }
+                }
+            }
+        }
 
-           if ( iKeyMap->GetSpaceAndZeroOnSameKey( item.Mode() ) &&
-                item.Character().GetNumericValue() == 0 )
-           {
-               item.SetCharacter(KSpace);
-               queryModified = ETrue;
-           }
-       }
-       
-       //PRINTQUERY ( _L("CPcsAlgorithm2::ReplaceZeroWithSpaceL (AFTER): "), aQuery );
-
-       PRINT1 ( _L("CPcsAlgorithm2::ReplaceZeroWithSpaceL: Query modified (0=not, 1=yes): %d"), queryModified );
-
-       PRINT ( _L("End CPcsAlgorithm2::ReplaceZeroWithSpaceL") );
-
-       return  queryModified;
+    return queryModified;
     }
 
 // ----------------------------------------------------------------------------
 // CPcsAlgorithm2::PerformSearchL
 // Search function for cache
 // ----------------------------------------------------------------------------
-void CPcsAlgorithm2::PerformSearchL(const CPsSettings& aSettings, 
-                                    CPsQuery& aQuery, 
+void CPcsAlgorithm2::PerformSearchL(const CPsSettings& aSettings, CPsQuery& aQuery, 
                                     RPointerArray<CPsClientData>& aSearchResults,
                                     RPointerArray<CPsPattern>& aSearchSeqs)
     {
     PRINT ( _L("Enter CPcsAlgorithm2::PerformSearchL") );
 
-    //__LATENCY_MARK ( _L("CPcsAlgorithm2::PerformSearchL") );
-    
-    // Check aSettings   
-    RPointerArray<TDesC> searchUris;
-    CleanupResetAndDestroyPushL( searchUris );
-    aSettings.SearchUrisL(searchUris);
-         
-    if ( searchUris.Count() <= 0)
-    {
-        PRINT ( _L("searchUris.Count() <= 0, Leave from CPcsAlgorithm2::PerformSearchL") );
-        User::Leave(KErrArgument); 
-    }
-    CleanupStack::PopAndDestroy( &searchUris ); // ResetAndDestroy
+    __LATENCY_MARK ( _L("CPcsAlgorithm2::PerformSearchL") );
+
+    // Get the current language
+    TLanguage lang = User::Language();
+
+    // Check if the language is supported and the keyboard mode is not qwerty.
 
     // Local arrays to hold the search results 
     RPointerArray<CPsData> tempSearchResults;
-    CleanupClosePushL( tempSearchResults );
     RPointerArray<CPsData> tempSearchResults1;
-    CleanupClosePushL( tempSearchResults1 );
 
     // -------------------- Perform the basic search --------------------------
 
-    RemoveSpacesL(aQuery);
-    PRINTQUERY ( _L("CPcsAlgorithm2::PerformSearchL: 1st search query: "), aQuery );
     DoSearchL(aSettings, aQuery, tempSearchResults, aSearchSeqs);
 
     // ------------------------------------------------------------------------
 
-    // ---- Perform new search after "0" replacement if query is not empty ----
-    /* Examples:
-     * - If the original search string is "Abc0" then we will search again with "Abc".
-     * - If the original search string is "00" then we will not search again.
-     */
+    // ------------------- Perform advanced search if needed ------------------
+    // Substitute "0" with space
     TBool queryModified = ReplaceZeroWithSpaceL(aQuery);
-    RemoveSpacesL(aQuery);
-    // Perform query again if query got modified. 
+
+    // If query got modified and the search query translated to more than 1 query
+    // perform a multi search again
     if (queryModified)
         {
-        PRINTQUERY ( _L("CPcsAlgorithm2::PerformSearchL: 2nd search query: "), aQuery );
-        DoSearchL(aSettings, aQuery, tempSearchResults1, aSearchSeqs);
+        // Split query
+        RPointerArray<CPsQuery> queryList = iMultiSearchHelper->MultiQueryL(aQuery);
 
+        //  Perform seach again
+        if (queryList.Count() > 1)
+            {
+            DoSearchL(aSettings, aQuery, tempSearchResults1, aSearchSeqs);
+            }
 
         // Sort rule        
-        TLinearOrder<CPsData> rule(CPcsAlgorithm2Utils::CompareDataBySortOrderL);
+        TLinearOrder<CPsData> rule(CPcsAlgorithm2Utils::CompareDataBySortOrder);
 
         // Avoid duplicates and add new results
         TIdentityRelation<CPsData> identityRule(CPsData::CompareById);
-        const TInt tempSearchResults1Count = tempSearchResults1.Count();
         if (aSettings.GetSortType() != EAlphabetical)
             {
             TInt insertPos = 0;
-            for (TInt i = 0; i < tempSearchResults1Count; i++)
+            for (int i = 0; i < tempSearchResults1.Count(); i++)
                 {
                 if (tempSearchResults.Find(tempSearchResults1[i],
                                            identityRule) == KErrNotFound)
@@ -317,11 +271,14 @@ void CPcsAlgorithm2::PerformSearchL(const CPsSettings& aSettings,
                     tempSearchResults.Insert(tempSearchResults1[i], insertPos);
                     insertPos++;
                     }
+
                 }
+
             }
         else
             {
-            for (TInt i = 0; i < tempSearchResults1Count; i++)
+
+            for (int i = 0; i < tempSearchResults1.Count(); i++)
                 {
                 if (tempSearchResults.Find(tempSearchResults1[i],
                                            identityRule) == KErrNotFound)
@@ -331,35 +288,40 @@ void CPcsAlgorithm2::PerformSearchL(const CPsSettings& aSettings,
                     }
                 }
             }
+
+        queryList.ResetAndDestroy();
         }
     // ------------------------------------------------------------------------
 
     // ---------------------- Write result objects to the stream --------------
     // Truncate the result set if required
-    TInt maxNumToDisplay = aSettings.MaxResults();
-    TInt resultSetCount = tempSearchResults.Count();
-    TInt numToDisplay = 0;
-    if ( maxNumToDisplay == -1 )
+    TInt numToDisplay = aSettings.MaxResults();
+    TInt resultSet = tempSearchResults.Count();
+
+    if (resultSet > numToDisplay && numToDisplay != -1)
         {
-        numToDisplay = resultSetCount;
+        // Copy the top N contents from tempSearchResults to the results stream
+        for (int i = 0; i < numToDisplay; i++)
+            {
+            aSearchResults.Append(WriteClientDataL(*(tempSearchResults[i])));
+            }
+
         }
     else
         {
-        numToDisplay = Min( maxNumToDisplay, resultSetCount );
-        }
-
-    // Copy desired number of results from tempSearchResults to the results stream
-    for (TInt i = 0; i < numToDisplay; i++)
-        {
-        aSearchResults.Append(WriteClientDataL(*(tempSearchResults[i])));
+        // Copy all the contents from tempSearchResults to the results stream
+        for (int i = 0; i < resultSet; i++)
+            {
+            aSearchResults.Append(WriteClientDataL(*(tempSearchResults[i])));
+            }
         }
     // ------------------------------------------------------------------------
 
     // Cleanup local results array
-    CleanupStack::PopAndDestroy( &tempSearchResults1 ); // Close, don't destroy
-    CleanupStack::PopAndDestroy( &tempSearchResults );  // Close, don't destroy
+    tempSearchResults.Reset(); // Don't destroy
+    tempSearchResults1.Reset(); // Don't destroy
 
-    // __LATENCY_MARKEND ( _L("CPcsAlgorithm2::PerformSearchL") );
+    __LATENCY_MARKEND ( _L("CPcsAlgorithm2::PerformSearchL") );
 
     PRINT ( _L("End CPcsAlgorithm2::PerformSearchL") );
     }
@@ -368,187 +330,84 @@ void CPcsAlgorithm2::PerformSearchL(const CPsSettings& aSettings,
 // CPcsAlgorithm2::SearchInputL
 // Search function for input string
 // ----------------------------------------------------------------------------
-void CPcsAlgorithm2::SearchInputL(CPsQuery& aQuery, 
-                                  TDesC& aData,
+void CPcsAlgorithm2::SearchInputL(CPsQuery& aQuery, TDesC& aData,
                                   RPointerArray<TDesC>& aMatchSet,
                                   RArray<TPsMatchLocation>& aMatchLocation)
     {
-    // __LATENCY_MARK ( _L("CPcsAlgorithm2::SearchInputL: ") );
     PRINT ( _L("Enter CPcsAlgorithm2::SearchInputL") );
 
+    // Get the current language
+    TLanguage lang = User::Language();
+
+    // Check if the language is supported and the keyboard mode is not qwerty.
+
     // Print input query for debug
-    PRINTQUERY ( _L("CPcsAlgorithm2::SearchInputL: Search query: "), aQuery );
+    aQuery.PrintQuery();
 
     // Print received search data
     PRINT1 ( _L("Search data received = %S"), &aData);
 
-
     // -------------------- Perform the basic search --------------------------
 
-    RemoveSpacesL(aQuery);
     DoSearchInputL(aQuery, aData, aMatchSet, aMatchLocation);
 
     // ------------------------------------------------------------------------   
 
-    // ---- Perform new search after "0" replacement if query is not empty ----
-    /* Examples:
-     * - If the original search string is "Abc0" then we will search again with "Abc".
-     * - If the original search string is "00" then we will not search again.
-     */
+    // ------------------- Perform advanced search if needed ------------------
+    // Substitute "0" with space
     TBool queryModified = ReplaceZeroWithSpaceL(aQuery);
-    RemoveSpacesL(aQuery);
-    // If query got modified and the search query still contains something
+
+    // If query got modified and the search query translated to more than 1 query
     // perform a multi search again
-    if (queryModified && aQuery.Count() > 0 && aMatchSet.Count() == 0  && aMatchLocation.Count() == 0 )
+    if (queryModified)
         {
-        DoSearchInputL(aQuery, aData, aMatchSet, aMatchLocation);
+        RPointerArray<CPsQuery> queryList = iMultiSearchHelper->MultiQueryL(aQuery);
+
+        if (queryList.Count() > 1)
+            {
+            DoSearchInputL(aQuery, aData, aMatchSet, aMatchLocation);
+            }
+
+        queryList.ResetAndDestroy();
         }
     // ------------------------------------------------------------------------
-
-    // --- Remove overlapping items from aMatchLocation ---
-    TInt i = 0;
-    TBool incrementFirstCursor;
-    while ( i < aMatchLocation.Count() )
-        {
-        incrementFirstCursor = ETrue;
-        TInt j = i+1;
-        while ( j < aMatchLocation.Count() )
-            {
-            if ( CPcsAlgorithm2Utils::MatchesOverlap( aMatchLocation[j], aMatchLocation[i] ) )
-                {
-                // Remove match location item with smallest length if 2 items have same index
-                if ( aMatchLocation[j].length <= aMatchLocation[i].length )
-                    {
-                    aMatchLocation.Remove(j);
-                    continue; // Do not increment j
-                    }
-                else
-                    {
-                    aMatchLocation.Remove(i);
-                    incrementFirstCursor = EFalse; // Do not increment i
-                    break;
-                    }
-                }
-            j++;
-            }
-        if ( incrementFirstCursor )
-            {
-            i++;
-            }
-        }
-
-    // --- Remove from aMatchSet items which no longer have corresponding item in aMatchLocation ---
-    HBufC* dataUpper = HBufC::NewLC(aData.Length());
-    dataUpper->Des().Copy(aData);
-    dataUpper->Des().UpperCase(); // Get uppercase, as aMatchSet is in upper case
-
-    TInt k = 0;
-    while ( k < aMatchSet.Count() )
-        {
-        TBool keepMatch = EFalse;
-        TInt startCursor = -1;
-
-        TInt offsetCursor;
-        while ( KErrNotFound != (offsetCursor = dataUpper->Mid(startCursor + 1).Find(*aMatchSet[k])) )
-            {
-            // startCursor = index of match item *aMatchSet[k] into search string aData
-            startCursor = offsetCursor + startCursor + 1;
-            const TInt matchLocationCount = aMatchLocation.Count();
-            for ( TInt i = 0; i < matchLocationCount; i++ )
-                {
-                // If match item was found in the location list, then keep it
-                if ( (aMatchLocation[i].index == startCursor) &&
-                     (aMatchLocation[i].length == aMatchSet[k]->Length()) )
-                    {
-                    keepMatch = ETrue;
-                    break;
-                    }
-                }
-            }
-
-        if ( keepMatch )
-            {
-            k++;
-            }
-        else
-            {
-            aMatchSet.Remove(k); // Do not increment k
-            }
-        }
-    CleanupStack::PopAndDestroy( dataUpper );
-    // --- Remove items End ---
 
     // Sort match set
     iHelper->SortSearchSeqsL(aMatchSet);
 
     PRINT ( _L("End CPcsAlgorithm2::SearchInputL") );
-    //__LATENCY_MARKEND ( _L("CPcsAlgorithm2::SearchInputL") );
     }
 
 // ----------------------------------------------------------------------------
 // CPcsAlgorithm2::SearchMatchStringL
 // Search function for input string, result also as string
 // ----------------------------------------------------------------------------
-void CPcsAlgorithm2::SearchMatchStringL( CPsQuery& aSearchQuery,
-                                         TDesC& aSearchData,
-                                         TDes& aMatch )
+void CPcsAlgorithm2::SearchMatchStringL( CPsQuery& /*aSearchQuery*/,
+                                         TDesC& /*aSearchData*/,
+                                         TDes& /*aMatch*/ )
     {
-    PRINT ( _L("Enter CPcsAlgorithm2::SearchMatchStringL") );
-
-    __LATENCY_MARK ( _L("CPcsAlgorithm2::SearchMatchStringL") ); 
-    
-    RemoveSpacesL(aSearchQuery);
-    // ---------------------- Perform the initial search ----------------------
-    iMultiSearchHelper->LookupMatchL( aSearchQuery, aSearchData, aMatch );
-    PRINTQUERY ( _L("CPcsAlgorithm2::SearchMatchStringL: 1st search: "), aSearchQuery );
-    PRINT1     ( _L("CPcsAlgorithm2::SearchMatchStringL: 1st search: Search Data: %S"), &aSearchData );
-    PRINT1     ( _L("CPcsAlgorithm2::SearchMatchStringL: 1st search: Result: %S"), &aMatch );
-    // ------------------------------------------------------------------------
-    
-    // ---- Perform new search after "0" replacement if query is not empty ----
-    /* Examples:
-     * - If the original search string is "Abc0" then we will search again with "Abc".
-     * - If the original search string is "00" then we will not search again.
-     */
-    if ( aMatch.Length() <= 0 )
-    {
-        TBool isQueryModified = ReplaceZeroWithSpaceL(aSearchQuery);
-        RemoveSpacesL(aSearchQuery);
-        if ( isQueryModified && (aSearchQuery.Count() > 0) )
-        {
-            iMultiSearchHelper->LookupMatchL( aSearchQuery, aSearchData, aMatch );
-            PRINTQUERY ( _L("CPcsAlgorithm2::SearchMatchStringL: 2nd search: "), aSearchQuery );
-            PRINT1     ( _L("CPcsAlgorithm2::SearchMatchStringL: 2nd search: Search Data: %S"), &aSearchData );
-            PRINT1     ( _L("CPcsAlgorithm2::SearchMatchStringL: 2nd search: Result: %S"), &aMatch );            
-        }
-    }
-    __LATENCY_MARKEND ( _L("CPcsAlgorithm2::SearchMatchStringL") );
-
-    PRINT ( _L("End CPcsAlgorithm2::SearchMatchStringL") );
+    //NOT IMPLEMENTED YET
     }
 
 // ----------------------------------------------------------------------------
 // CPcsAlgorithm2::DoSearchL
 // Search function helper
 // ----------------------------------------------------------------------------
-void CPcsAlgorithm2::DoSearchL( const CPsSettings& aSettings, 
-                                CPsQuery& aQuery, 
-                                RPointerArray<CPsData>& aSearchResults,
-                                RPointerArray<CPsPattern>& aSearchSeqs )
+void CPcsAlgorithm2::DoSearchL(const CPsSettings& aSettings, CPsQuery& aQuery, 
+                               RPointerArray<CPsData>& searchResults,
+                               RPointerArray<CPsPattern>& searchSeqs)
     {
     PRINT ( _L("Enter CPcsAlgorithm2::DoSearchL") );
 
-    //__LATENCY_MARK ( _L("CPcsAlgorithm2::DoSearchL") ); 
-    
+    // Print query for debug
+    aQuery.PrintQuery();
+
     // -(0)----------------- Check if group search is required ---------------    
     RArray<TInt> contactsInGroup;
-    CleanupClosePushL( contactsInGroup );
     RArray<TInt> groupIdArray;
-    CleanupClosePushL( groupIdArray );
 
     // Create a new settings instance
-    CPsSettings* tempSettings = aSettings.CloneL();
-    CleanupStack::PushL( tempSettings );
+    CPsSettings *tempSettings = aSettings.CloneL();
 
     TBool isGroupSearch = IsGroupSearchL(*tempSettings, groupIdArray);
 
@@ -561,55 +420,102 @@ void CPcsAlgorithm2::DoSearchL( const CPsSettings& aSettings,
         GetContactsInGroupL(groupIdArray[0], contactsInGroup);
         }
 
+    groupIdArray.Close();
+
     // -----------------------------------------------------------------------
 
 
     // Extract query list. 
     RPointerArray<CPsQuery> queryList = iMultiSearchHelper->MultiQueryL(aQuery);
-    CleanupResetAndDestroyPushL( queryList );
 
-    // (1)-------------------- No query return all contacts -------------------
+    // -(1)--------------------- No query return all contacts ----------------    
     if (queryList.Count() == 0)
         {
-        GetAllContentsL(*tempSettings, aSearchResults);
+        GetAllContentsL(*tempSettings, searchResults);
 
         if (isGroupSearch)
             {
-            FilterSearchResultsForGroupsL(contactsInGroup, aSearchResults);
+            FilterSearchResultsForGroupsL(contactsInGroup, searchResults);
             }
         }
     // ------------------------------------------------------------------------
 
-    // (2)-------------------- Perform a single query search ------------------
-    else if (queryList.Count() == 1)
+
+    // -(2)------------------------ Perform a single query search -------------
+    if (queryList.Count() == 1)
         {
+        TInt mode = aQuery.KeyboardModeL();
+
         CPsQuery* query = queryList[0];
 
-        // Search results
-        iHelper->SearchSingleL(*tempSettings, *query, isGroupSearch,
-                               contactsInGroup, aSearchResults, aSearchSeqs);
+        iFindUtilECE->SetKeyboardMode(mode);
+
+        switch (mode)
+            {
+            case EItut:
+
+                PRINT ( _L("Query received is in ITU-T mode") );
+
+                // Search results
+                iHelper->SearchITUL(*tempSettings, *query, isGroupSearch,
+                                    contactsInGroup, searchResults, searchSeqs);
+
+                break;
+
+            case EQwerty:
+
+                PRINT ( _L("Query received is in QWERTY mode") );
+
+                // Search results
+                iHelper->SearchQWERTYL(*tempSettings, *query, isGroupSearch,
+                                       contactsInGroup, searchResults, searchSeqs);
+
+                break;
+
+            case EModeUndefined:
+
+                PRINT ( _L("Query received is in Mixed mode. Keyboard swap happened.") );
+
+                // Search results
+                iHelper->SearchMixedL(*tempSettings, *query, isGroupSearch,
+                                      contactsInGroup, searchResults, searchSeqs);
+
+                break;
+            }
+
         }
     // ------------------------------------------------------------------------
 
-    // (3)-------------------- Perform a multi query search -------------------
-    else // multiple query
+
+    // -(3)---------------------------- Perform a multi query search ----------
+    if (queryList.Count() > 1) // multiple query
         {
         PRINT ( _L("Query received is in multiple. Performing a multi search.") );
 
+        TInt mode = aQuery.KeyboardModeL();
+        iFindUtilECE->SetKeyboardMode(mode);
+
+        for (int i = 0; i < queryList.Count(); i++)
+            {
+            TPtrC queryPtr = queryList[i]->QueryAsStringLC();
+            PRINT2 ( _L("Received Query, index = %d; value = %S"), i, &queryPtr );
+            CleanupStack::PopAndDestroy();
+            }
+
         // Search results
         iMultiSearchHelper->SearchMultiL(*tempSettings, queryList, isGroupSearch, 
-                                         contactsInGroup, aSearchResults, aSearchSeqs);
+                                         contactsInGroup, searchResults, searchSeqs, 
+                                         mode);
         }
     // -------------------------------------------------------------------------	
 
     // Cleanup
-    
-    CleanupStack::PopAndDestroy( &queryList ); // ResetAndDestroy
-    CleanupStack::PopAndDestroy( tempSettings );
-    CleanupStack::PopAndDestroy( &groupIdArray ); // Close
-    CleanupStack::PopAndDestroy( &contactsInGroup ); // Close
+    delete tempSettings;
+    tempSettings = NULL;
 
-	//__LATENCY_MARKEND ( _L("CPcsAlgorithm2::DoSearchL") );
+    groupIdArray.Close();
+    contactsInGroup.Close();
+    queryList.ResetAndDestroy();
 
     PRINT ( _L("End CPcsAlgorithm2::DoSearchL") );
     }
@@ -618,49 +524,56 @@ void CPcsAlgorithm2::DoSearchL( const CPsSettings& aSettings,
 // CPcsAlgorithm2::DoSearchInputL
 // Search function helper
 // ----------------------------------------------------------------------------
-void CPcsAlgorithm2::DoSearchInputL(CPsQuery& aQuery, 
-                                    const TDesC& aData,
+void CPcsAlgorithm2::DoSearchInputL(CPsQuery& aQuery, TDesC& aData,
                                     RPointerArray<TDesC>& aMatchSet,
                                     RArray<TPsMatchLocation>& aMatchLocation)
     {
 
-    //__LATENCY_MARK ( _L("CPcsAlgorithm2::SearchInputL: ") );
     PRINT ( _L("Enter CPcsAlgorithm2::DoSearchInputL") );
 
     // Check if any seperator is there in the query
     RPointerArray<CPsQuery> queryList = iMultiSearchHelper->MultiQueryL(aQuery);
-    CleanupResetAndDestroyPushL( queryList );
 
     // No query    
     if (queryList.Count() == 0)
         {
         PRINT ( _L("Query received is empty") );
-        CleanupStack::PopAndDestroy( &queryList ); // ResetAndDestroy
         return;
         }
+
+    RPointerArray<HBufC> convertedQuery;
+    iMultiSearchHelper->ConvertQueryToListL(queryList, convertedQuery);
 
     // Single query
     if (queryList.Count() == 1)
         {
-        iHelper->SearchMatchSeqL(aQuery, aData, aMatchSet, aMatchLocation);
+        iHelper->SearchMatchSeqL(convertedQuery[0], aData, aMatchSet, aQuery,
+                                 aMatchLocation);
+
         }
 
     if (queryList.Count() > 1) // multiple query
         {
         PRINT ( _L("Query received is in multiple. Performing a multi search.") );
 
+        for (int i = 0; i < queryList.Count(); i++)
+            {
+            TPtrC queryPtr = queryList[i]->QueryAsStringLC();
+            PRINT2 ( _L("Rceived Query, index = %d; value = %S"), i, &queryPtr );
+            CleanupStack::PopAndDestroy();
+            }
+
         // Search results
-        iMultiSearchHelper->SearchMatchSeqMultiL(queryList, 
-                                                 aData, 
-                                                 aMatchSet,
+        iMultiSearchHelper->SearchMatchSeqMultiL(queryList, aData, aMatchSet,
                                                  aMatchLocation);
+
         }
 
     // Delete all the query elements
-    CleanupStack::PopAndDestroy( &queryList ); // ResetAndDestroy
-    PRINT ( _L("End CPcsAlgorithm2::DoSearchInputL") );
-    //__LATENCY_MARKEND ( _L("CPcsAlgorithm2::SearchInputL") );
+    queryList.ResetAndDestroy();
+    convertedQuery.ResetAndDestroy();
 
+    PRINT ( _L("End CPcsAlgorithm2::DoSearchInputL") );
     }
 
 // ----------------------------------------------------------------------------
@@ -727,17 +640,21 @@ void CPcsAlgorithm2::RemoveAll(TDesC& aDataStore)
         return;
 
     CPcsCache* cache = iPcsCache[dataStoreIndex];
-    cache->RemoveAllFromCache();
+    TRAPD(err, cache->RemoveAllFromCacheL());
+
+    if (err != KErrNone)
+        {
+        SetCachingError(aDataStore, err);
+        }
     }
 
 // ----------------------------------------------------------------------------
 // CPcsAlgorithm2::GetCacheIndex
 // Return the cache index for a data store
 // ----------------------------------------------------------------------------
-TInt CPcsAlgorithm2::GetCacheIndex(const TDesC& aDataStore)
+TInt CPcsAlgorithm2::GetCacheIndex(TDesC& aDataStore)
     {
-    const TInt pcsCacheCount = iPcsCache.Count();
-    for (int i = 0; i <pcsCacheCount; i++)
+    for (int i = 0; i < iPcsCache.Count(); i++)
         {
         CPcsCache* cache = iPcsCache[i];
 
@@ -821,7 +738,6 @@ void CPcsAlgorithm2::AddDataStore(TDesC& aDataStore)
 // ----------------------------------------------------------------------------
 void CPcsAlgorithm2::RemoveDataStore(TDesC& aDataStore)
     {
-
     for (int i = 0; i < iPcsCache.Count(); i++)
         {
         CPcsCache* cache = iPcsCache[i];
@@ -848,12 +764,12 @@ TBool CPcsAlgorithm2::IsLanguageSupportedL(TUint32 aLang)
 // CPcsAlgorithm2::GetUriForIdL
 // Get the URI string for this internal id
 // ----------------------------------------------------------------------------
-const TDesC& CPcsAlgorithm2::GetUriForIdL(TUint8 aUriId)
+TDesC& CPcsAlgorithm2::GetUriForIdL(TUint8 aUriId)
     {
     TBool found = EFalse;
     TInt i = 0;
-    const TInt pcsCacheCount = iPcsCache.Count();
-    for (i = 0; i < pcsCacheCount; i++)
+
+    for (i = 0; i < iPcsCache.Count(); i++)
         {
         if (iPcsCache[i]->GetUriId() == aUriId)
             {
@@ -874,18 +790,17 @@ const TDesC& CPcsAlgorithm2::GetUriForIdL(TUint8 aUriId)
 // CPcsAlgorithm2::FindStoreUri
 // Checks if this store exists
 // ----------------------------------------------------------------------------
-TInt CPcsAlgorithm2::FindStoreUri(const TDesC& aDataStore)
+TInt CPcsAlgorithm2::FindStoreUri(TDesC& aDataStore)
     {
-    const TInt pcsCacheCount = iPcsCache.Count();
-    for ( TInt i = 0; i < pcsCacheCount; i++ )
+    for (int i = 0; i < iPcsCache.Count(); i++)
         {
-        if ( aDataStore.CompareC(*(iPcsCache[i]->GetUri())) == 0 )
+        if (aDataStore.CompareC(*(iPcsCache[i]->GetUri())) == 0)
             {
             return i;
             }
         }
 
-    return KErrNotFound;
+    return -1;
     }
 
 // ----------------------------------------------------------------------------
@@ -893,10 +808,8 @@ TInt CPcsAlgorithm2::FindStoreUri(const TDesC& aDataStore)
 // Update caching status
 // ----------------------------------------------------------------------------
 void CPcsAlgorithm2::UpdateCachingStatus(TDesC& aDataStore, TInt aStatus)
-{
+    {
     PRINT ( _L("Enter CPcsAlgorithm2::UpdateCachingStatus") );
-    PRINT2 ( _L("CPcsAlgorithm2::UpdateCachingStatus: Request received for URI=%S with status=%d"),
-             &aDataStore, aStatus );
 
     // Handle data store update events
     if ( aStatus == ECacheUpdateContactRemoved ||
@@ -909,108 +822,82 @@ void CPcsAlgorithm2::UpdateCachingStatus(TDesC& aDataStore, TInt aStatus)
 
     // If not a cache update event, then this event is related to the initial
     // cache construction.
+    TInt index = FindStoreUri(aDataStore);
+    iPcsCache[index]->UpdateCacheStatus(aStatus);
 
-    // Check if any error occurred and update the cache error
-    if ( aStatus < 0 )
-    {
-        SetCachingError(aDataStore, aStatus);
-    }
-    else
-    {
-        TInt index = FindStoreUri(aDataStore);
-        iPcsCache[index]->UpdateCacheStatus(aStatus);
-    }
-
-    TCachingStatus status = ECachingNotStarted;
-    TUint countNotStarted = 0;
-    TUint countInProgress = 0;
-    TUint countCompleted = 0;
-    TUint countCompletedWithErrors = 0;
-    TInt cacheCount = iPcsCache.Count();
-    for ( TInt i = 0; i < cacheCount; i++ )
-    {
-        PRINT3 ( _L("CPcsAlgorithm2::UpdateCachingStatus: URI[%d]=%S, cache status=%d"),
-                 i, &iPcsCache[i]->GetURI(), iPcsCache[i]->GetCacheStatus() );
-
-        switch ( iPcsCache[i]->GetCacheStatus() )
+    // Check if any error occurred
+    // If so, update the cache status, Set the property and return
+    if (aStatus < 0)
         {
-            case ECachingNotStarted:         
+        SetCachingError(aDataStore, aStatus);
+        //return;
+        }
+
+    //store the index for firstname and lastname
+    if (aStatus == ECachingComplete)
+        {
+        RArray<TInt> dataFields;
+        iPcsCache[index]->GetDataFields(dataFields);
+
+        for (int i = 0; i < dataFields.Count(); i++)
             {
-                countNotStarted++;          
-                break;
-            }
-            case ECachingInProgress:         
-            {
-                countInProgress++;         
-                break;
-            }
-            case ECachingComplete:           
-            {
-                countCompleted++;           
-                break;
-            }
-            case ECachingCompleteWithErrors: 
-            {
-                countCompletedWithErrors++; 
-                break;
-            }
-            default:                         
-            { 
-                // Default completed state
-                countCompleted++;           
-                break;
+            if (dataFields[i] == R_VPBK_FIELD_TYPE_FIRSTNAME)
+                {
+                iFirstNameIndex = i;
+                }
+            else if (dataFields[i] == R_VPBK_FIELD_TYPE_LASTNAME)
+                {
+                iLastNameIndex = i;
+                }
             }
         }
-    }
 
-    // Calculate cumulative status according to single caches statuses
-    if ( countCompleted > 0 && ( countCompleted + countNotStarted ) == cacheCount )
-    {
-        // If at least one caching is finished
-        // set status to ECachingComplete or ECachingCompleteWithErrors
-        // according to iCacheError
-        status = ( iCacheError == KErrNone ) ? ECachingComplete : ECachingCompleteWithErrors;
-    }
-    else if ( countInProgress > 0 )
-    {
-        // Else if at least one caching is in progress,
-        // set status to ECachingInProgress
-        status = ECachingInProgress;
-    }
-    else if ( countCompletedWithErrors > 0 )
-    {
-        // Else if at least one caching is completed with errors, 
-        //set status to ECachingCompleteWithErrors
-        status = ECachingCompleteWithErrors;
-    }
-    else
-    {
-        // countNotStarted == cacheCount
-        // status is set to default ECachingNotStarted
-    }
+    // No error occurred
+    TCachingStatus status = ECachingComplete;
+    TBool atLeastOneStoreCachingCompleteWithErrors(EFalse);
+    for (TInt i = 0; i < iPcsCache.Count(); i++)
+        {
+        if (iPcsCache[i]->GetCacheStatus() == ECachingComplete)
+            {
+            continue;
+            }
+        else if (iPcsCache[i]->GetCacheStatus() == ECachingCompleteWithErrors)
+            {
+            atLeastOneStoreCachingCompleteWithErrors = ETrue;
+            continue;
+            }
+        else
+            {
+            status = ECachingInProgress;
+            break;
+            }
+        }
 
-    PRINT1 ( _L("CPcsAlgorithm2::UpdateCachingStatus: Cumulative caching status is %d"),
-             status );
+    if (status == ECachingComplete)
+        {
+        // See if any error occurred while caching
+        // If so, change the status to ECachingCompleteWithErrors
+        if ((iCacheError != KErrNone) || (atLeastOneStoreCachingCompleteWithErrors))
+            {
+            status = ECachingCompleteWithErrors;
+            }
+        }
 
     // Check if status changed
-    if ( status != iCacheStatus )
-    {
-        PRINT2 ( _L("CPcsAlgorithm2::UpdateCachingStatus: Cumulative caching changed: %d -> %d"),
-                 iCacheStatus, status );
-
+    if (status != iCacheStatus)
+        {
         iCacheStatus = status;
         RProperty::Set(KPcsInternalUidCacheStatus, EPsKeyCacheStatus, iCacheStatus );
+        }
+
+    PRINT ( _L("End CPcsAlgorithm2::UpdateCachingStatus") );
     }
-
-    PRINT( _L("End CPcsAlgorithm2::UpdateCachingStatus") );
-}
-
 
 // ----------------------------------------------------------------------------
 // CPcsAlgorithm2::SetCachingError
 // Updates cachinge error
 // ----------------------------------------------------------------------------
-void CPcsAlgorithm2::SetCachingError(const TDesC& aDataStore, TInt aError)
+void CPcsAlgorithm2::SetCachingError(TDesC& aDataStore, TInt aError)
     {
     PRINT2 ( _L("SetCachingError::URI %S ERROR %d"), &aDataStore, aError );
 
@@ -1025,33 +912,25 @@ void CPcsAlgorithm2::SetCachingError(const TDesC& aDataStore, TInt aError)
 void CPcsAlgorithm2::GetAllContentsL(const CPsSettings& aSettings,
                                      RPointerArray<CPsData>& aResults)
     {
-    //__LATENCY_MARK ( _L("CPcsAlgorithm2::GetAllContentsL") );
+    __LATENCY_MARK ( _L("CPcsAlgorithm2::GetAllContentsL") );
 
     PRINT ( _L("Enter CPcsAlgorithm2::GetAllContentsL") );
 
+    // Get the data stores
+    RPointerArray<TDesC> aDataStores;
+    aSettings.SearchUrisL(aDataStores);
+
     // To hold array of results from different data stores
     typedef RPointerArray<CPsData> CPSDATA_R_PTR_ARRAY;
-    RPointerArray<CPSDATA_R_PTR_ARRAY> searchResultsArr;
-    CleanupResetAndDestroyPushL( searchResultsArr );
-    // TODO: Here's still a potential memory leak if a leave happens. The child
-    // arrays of searchResultsArr are not Reset in that case. The CPsData objects
-    // may leak as well. Handling this safely is somewhat complicated because some of
-    // the CPsData objects may already be transferred to ownership of aResults array
-    // at the time the leave happens, and those items must not be deleted.
-    
-    // Get the data stores
-    RPointerArray<TDesC> dataStores;
-    CleanupResetAndDestroyPushL( dataStores );
-    aSettings.SearchUrisL(dataStores);
+    RPointerArray<CPSDATA_R_PTR_ARRAY> iSearchResultsArr;
 
     // Get all contacts for each data store
-    const TInt dataStoresCount = dataStores.Count(); 
-    for (TInt dsIndex = 0; dsIndex < dataStoresCount; dsIndex++)
+    for (int dsIndex = 0; dsIndex < aDataStores.Count(); dsIndex++)
         {
         RPointerArray<CPsData> *temp = new (ELeave) RPointerArray<CPsData> ();
-        searchResultsArr.Append(temp);
+        iSearchResultsArr.Append(temp);
 
-        TInt arrayIndex = GetCacheIndex(*(dataStores[dsIndex]));
+        TInt arrayIndex = GetCacheIndex(*(aDataStores[dsIndex]));
         if (arrayIndex < 0)
             {
             continue;
@@ -1059,28 +938,29 @@ void CPcsAlgorithm2::GetAllContentsL(const CPsSettings& aSettings,
 
         CPcsCache* cache = GetCache(arrayIndex);
 
-        cache->GetAllContentsL(*(searchResultsArr[dsIndex]));
+        cache->GetAllContentsL(*(iSearchResultsArr[dsIndex]));
         }
 
-    CleanupStack::PopAndDestroy( &dataStores ); // ResetAndDestroy
+    aDataStores.ResetAndDestroy();
 
     // Merge the results from different data stores
-    CPcsAlgorithm2Utils::FormCompleteSearchResultsL(searchResultsArr, aResults);
+    CPcsAlgorithm2Utils::FormCompleteSearchResultsL(iSearchResultsArr, aResults);
 
     // Cleanup the local arrays
-    const TInt seaerchResultsArrCount = searchResultsArr.Count(); 
-    for (TInt i = 0; i < seaerchResultsArrCount; i++)
+    for (TInt i = 0; i < iSearchResultsArr.Count(); i++)
         {
-        searchResultsArr[i]->Reset();
+        iSearchResultsArr[i]->Reset();
+        delete iSearchResultsArr[i];
+        iSearchResultsArr[i] = NULL;
         }
 
-    CleanupStack::PopAndDestroy( &searchResultsArr ); // ResetAndDestroy
+    iSearchResultsArr.Reset();
 
     PRINT1 ( _L("Number of results = %d"), aResults.Count() );
 
     PRINT ( _L("End CPcsAlgorithm2::GetAllContentsL") );
 
-    //__LATENCY_MARKEND ( _L("CPcsAlgorithm2::GetAllContentsL") );
+    __LATENCY_MARKEND ( _L("CPcsAlgorithm2::GetAllContentsL") );
     }
 
 // ----------------------------------------------------------------------------
@@ -1097,18 +977,18 @@ TBool CPcsAlgorithm2::IsGroupSearchL(CPsSettings& aSettings,
 
     // Get the current URIs defined in settings    
     RPointerArray<TDesC> searchUris;
-    CleanupResetAndDestroyPushL( searchUris );
     aSettings.SearchUrisL(searchUris);
 
     if (aGroupIdArray.Count() && (searchUris.Count() > aGroupIdArray.Count()))
         {
         // There is an error, either there are more than one groups
         // or the settings contain a combination of group/non-group Uris
+        searchUris.ResetAndDestroy();
         aGroupIdArray.Close();
         User::Leave(KErrArgument);
         }
 
-    CleanupStack::PopAndDestroy( &searchUris ); // ResetAndDestroy
+    searchUris.ResetAndDestroy();
 
     PRINT ( _L("End CPcsAlgorithm2::IsGroupSearchL") );
 
@@ -1125,16 +1005,15 @@ TBool CPcsAlgorithm2::IsGroupSearchL(CPsSettings& aSettings,
 void CPcsAlgorithm2::ReplaceGroupsUriL(CPsSettings& aSettings)
     {
     RPointerArray<TDesC> uri;
-    CleanupResetAndDestroyPushL( uri );
 
     // Set contacts db uri
-    HBufC* cntdb = KVPbkDefaultCntDbURI().AllocLC();
-    uri.AppendL(cntdb);
-    CleanupStack::Pop( cntdb ); // ownership transferred
+    HBufC* cntdb = HBufC::NewL(KBufferMaxLen);
+    cntdb->Des().Copy(KVPbkDefaultCntDbURI);
+    uri.Append(cntdb);
     aSettings.SetSearchUrisL(uri);
 
     // Cleanup
-    CleanupStack::PopAndDestroy( &uri ); // ResetAndDestroy
+    uri.ResetAndDestroy();
     }
 
 // ----------------------------------------------------------------------------
@@ -1176,22 +1055,28 @@ void CPcsAlgorithm2::GetContactsInGroupL(TInt aGroupId, RArray<TInt>& aGroupCont
     {
     // Clear results array
     aGroupContactIds.Reset();
-    
-    // Cache Index for group database
-    TInt cacheIndex = GetCacheIndex(KVPbkDefaultGrpDbURI);
-    
+
+    // Groups URI
+    HBufC* groupURI = HBufC::NewL(50);
+    groupURI->Des().Copy(KVPbkDefaultGrpDbURI);
+
+    // Cache Index   
+    TInt cacheIndex = GetCacheIndex(*groupURI);
+
+    // Cleanup
+    delete groupURI;
+    groupURI = NULL;
+
     // Get the groups contact ids 
     if (cacheIndex != -1)
         {
         RPointerArray<CPsData> groups;
-        CleanupClosePushL( groups );
 
         // Get all groups
         iPcsCache[cacheIndex]->GetAllContentsL(groups);
 
         // Get all contacts in group
-        const TInt groupsCount = groups.Count(); 
-        for (TInt i = 0; i < groupsCount; i++)
+        for (TInt i = 0; i < groups.Count(); i++)
             {
             if (groups[i]->Id() == aGroupId)
                 {
@@ -1200,7 +1085,7 @@ void CPcsAlgorithm2::GetContactsInGroupL(TInt aGroupId, RArray<TInt>& aGroupCont
                 }
             }
 
-        CleanupStack::PopAndDestroy( &groups ); // Close
+        groups.Reset();
         }
     }
 
@@ -1217,7 +1102,8 @@ void CPcsAlgorithm2::GetDataOrderL(TDesC& aURI, RArray<TInt>& aDataOrder)
     if (CPcsAlgorithm2Utils::IsGroupUri(aURI))
         {
         // If search in a group uri, use contacts db
-        arrayIndex = GetCacheIndex(KVPbkDefaultCntDbURI);
+        TBuf<255> cntdb(KVPbkDefaultCntDbURI);
+        arrayIndex = GetCacheIndex(cntdb);
         }
     else
         {
@@ -1252,7 +1138,8 @@ void CPcsAlgorithm2::GetSortOrderL(TDesC& aURI, RArray<TInt>& aDataOrder)
     if (CPcsAlgorithm2Utils::IsGroupUri(aURI))
         {
         // If search in a group uri, use contacts db
-        arrayIndex = GetCacheIndex(KVPbkDefaultCntDbURI);
+        TBuf<255> cntdb(KVPbkDefaultCntDbURI);
+        arrayIndex = GetCacheIndex(cntdb);
         }
     else
         {
@@ -1310,8 +1197,7 @@ void CPcsAlgorithm2::ChangeSortOrderL(TDesC& aURI, RArray<TInt>& aSortOrder)
     if (aSortOrder.Count() == mySortOrder.Count())
         {
         TBool same = ETrue;
-        const TInt mySourtOrderCount = mySortOrder.Count(); 
-        for ( TInt i = 0; i < mySourtOrderCount ; i++ )
+        for (int i = 0; i < mySortOrder.Count(); i++)
             {
             if (mySortOrder[i] != aSortOrder[i])
                 {
@@ -1344,7 +1230,7 @@ void CPcsAlgorithm2::ChangeSortOrderL(TDesC& aURI, RArray<TInt>& aSortOrder)
     TRAP(err, cache->ResortdataInPoolsL());
     if (err != KErrNone)
         {
-        PRINT ( _L("CPcsAlgorithm2::ChangeSortOrderL() Set Caching Error ") );
+        PRINT ( _L("CPcsAlgorithm1::ChangeSortOrderL() Set Caching Error ") );
         SetCachingError(aURI, err);
         UpdateCachingStatus(aURI, ECachingCompleteWithErrors);
         return;
@@ -1353,11 +1239,22 @@ void CPcsAlgorithm2::ChangeSortOrderL(TDesC& aURI, RArray<TInt>& aSortOrder)
     PRINT ( _L("End CPcsAlgorithm2::ChangeSortOrderL.") );
     }
 
+// ----------------------------------------------------------------------------
+// CPcsAlgorithm2::GetAdaptiveGridL
+// 
+// ----------------------------------------------------------------------------
+void CPcsAlgorithm2::GetAdaptiveGridL( const MDesCArray& /*aURIs*/,
+                                       const TBool /*aCompanyName*/,
+                                       TDes& /*aAdaptiveGrid*/ )
+    {
+    //NOT IMPLEMENTED YET
+    }
+
 // ---------------------------------------------------------------------------------
 // Read the persisted sort order from the central repository
 // Persisted sort order is of form URI Field1 Field2 Field3 .. FieldN (space delimited)
 // ---------------------------------------------------------------------------------
-void CPcsAlgorithm2::ReadSortOrderFromCenRepL(const TDesC& aURI, RArray<TInt>& aSortOrder)
+void CPcsAlgorithm2::ReadSortOrderFromCenRepL(TDesC& aURI, RArray<TInt>& aSortOrder)
     {
     PRINT ( _L("Enter CPcsAlgorithm2::ReadSortOrderFromCenRepL.") );
 
@@ -1368,9 +1265,8 @@ void CPcsAlgorithm2::ReadSortOrderFromCenRepL(const TDesC& aURI, RArray<TInt>& a
     // Read the sort order from cenrep
     TBuf<KCRMaxLen> str;
 
-    for ( TInt i(KCenrepFieldsStartKey); 
-          i < KCenrepFieldsStartKey + KCenrepNumberOfFieldsCount; 
-          i++ )
+    for (TInt i(KCenrepFieldsStartKey); i < KCenrepFieldsStartKey
+            + KCenrepNumberOfFieldsCount; i++)
         {
         TInt err = repository->Get(i, str);
 
@@ -1422,19 +1318,18 @@ void CPcsAlgorithm2::ReadSortOrderFromCenRepL(const TDesC& aURI, RArray<TInt>& a
 // Write the sort order into the central repository
 // Persisted sort order is of form URI Field1 Field2 Field3 .. FieldN (space delimited)
 // ---------------------------------------------------------------------------------
-void CPcsAlgorithm2::WriteSortOrderToCenRepL(const TDesC& aURI, RArray<TInt>& aSortOrder)
+void CPcsAlgorithm2::WriteSortOrderToCenRepL(TDesC& aURI, RArray<TInt>& aSortOrder)
     {
     PRINT ( _L("Enter CPcsAlgorithm2::WriteSortOrderToCenRepL.") );
 
-    CRepository* repository = CRepository::NewLC(KCRUidPSSortOrder);
+    CRepository *repository = CRepository::NewL(KCRUidPSSortOrder);
 
     // Check if there an entry for this URI in cenrep
     TBuf<KCRMaxLen> str;
     TInt keyIndex = -1;
 
-    for ( TInt i(KCenrepFieldsStartKey); 
-          i < KCenrepFieldsStartKey + KCenrepNumberOfFieldsCount; 
-          i++ )
+    for (TInt i(KCenrepFieldsStartKey); i < KCenrepFieldsStartKey
+            + KCenrepNumberOfFieldsCount; i++)
         {
         TInt err = repository->Get(i, str);
 
@@ -1464,9 +1359,8 @@ void CPcsAlgorithm2::WriteSortOrderToCenRepL(const TDesC& aURI, RArray<TInt>& aS
     if (keyIndex == -1)
         {
         // Find the next free key index
-        for ( TInt i(KCenrepFieldsStartKey); 
-              i < KCenrepFieldsStartKey + KCenrepNumberOfFieldsCount; 
-              i++ )
+        for (TInt i(KCenrepFieldsStartKey); i < KCenrepFieldsStartKey
+                + KCenrepNumberOfFieldsCount; i++)
             {
             TInt err = repository->Get(i, str);
 
@@ -1491,7 +1385,7 @@ void CPcsAlgorithm2::WriteSortOrderToCenRepL(const TDesC& aURI, RArray<TInt>& aS
         }
 
     // Persist the sort order
-    HBufC* str1 = HBufC::NewLC(KCRMaxLen);
+    HBufC* str1 = HBufC::NewL(KCRMaxLen);
     TPtr ptr(str1->Des());
 
     // Append the URI
@@ -1499,8 +1393,7 @@ void CPcsAlgorithm2::WriteSortOrderToCenRepL(const TDesC& aURI, RArray<TInt>& aS
     ptr.Append(KSpace);
 
     // Append the sort order fields
-    const TInt sortOrderCount =  aSortOrder.Count();
-    for (TInt j = 0; j < sortOrderCount; j++)
+    for (int j = 0; j < aSortOrder.Count(); j++)
         {
         ptr.AppendNum(aSortOrder[j]);
         ptr.Append(KSpace);
@@ -1511,9 +1404,9 @@ void CPcsAlgorithm2::WriteSortOrderToCenRepL(const TDesC& aURI, RArray<TInt>& aS
 
     User::LeaveIfError(err);
 
-    CleanupStack::PopAndDestroy( str1 );
+    delete str1;
 
-    CleanupStack::PopAndDestroy( repository );
+    delete repository;
 
     PRINT ( _L("End CPcsAlgorithm2::WriteSortOrderToCenRepL.") );
     }
@@ -1534,8 +1427,7 @@ CPsClientData* CPcsAlgorithm2::WriteClientDataL(CPsData& aPsData)
     clientData->SetUriL(GetUriForIdL(aPsData.UriId()));
 
     // set pointer to the each data element
-    const TInt dataElementCount = aPsData.DataElementCount(); 
-    for (TInt i = 0; i <dataElementCount; i++)
+    for (TInt i = 0; i < aPsData.DataElementCount(); i++)
         {
         clientData->SetDataL(i, *(aPsData.Data(i)));
         }
@@ -1574,11 +1466,11 @@ void CPcsAlgorithm2::HandleCacheUpdated( TCachingStatus aStatus )
         default:
             break;
         }
-    
-    // Increment the relevant counter in P&S by one to signal the clients about
-    // the cache update.
-    if( psKey != KErrNotFound )
+
+    if ( psKey != KErrNotFound )
         {
+        // Increment the relevant counter in P&S by one to signal the clients about
+        // the cache update.
         TInt counter( KErrNotFound );
         TInt err = RProperty::Get( KPcsInternalUidCacheStatus, psKey, counter );
         if ( !err )
@@ -1603,30 +1495,39 @@ void CPcsAlgorithm2::ReconstructCacheDataL()
         PRINT1 ( _L("keyMap ReconstructKeymapL, err =%d"),err );
         }
     
-    for (TInt index = 0; index < iCacheCount; index++)
+    for (int index = 0; index < iCacheCount; index++)
         {
         CPcsCache* cache = iPcsCache[index];
 
-        HBufC* uri = cache->GetUri();
+        HBufC * uri = cache->GetUri();
         // Clear the cache
-        cache->RemoveAllFromCache();
+        TRAP(err, cache->RemoveAllFromCacheL());   
+        PRINT1 ( _L("cache RemoveAllFromCacheL, err =%d"),err );
 
         if (err != KErrNone)
             {
             SetCachingError(*uri, err);
             }
         //Update the caching status as ECachingInProgress, since now the caching
-        // would be started again
+        // would be strated again
         UpdateCachingStatus(*uri, ECachingInProgress);
 
         // Request for data again
-        TRAP(err, iPsDataPluginInterface->RequestForDataL(*uri));
+        TRAP(err, iPsDataPluginInterface->RequestForDataL(*uri));        
         PRINT1 ( _L("iPsDataPluginInterface->RequestForDataL, err =%d"),err );
 
         if (err != KErrNone)
             {
             SetCachingError(*uri, err);
             }
+        }
+    }
+
+void CPcsAlgorithm2::Converter(const TDesC& aSourStr, TDes& aDestStr)
+    {
+    if (iKeyMap)
+        {
+        iKeyMap->GetNumericKeyString(aSourStr, aDestStr);
         }
     }
 
@@ -1660,32 +1561,15 @@ void CPcsAlgorithm2::DoLaunchPluginsL()
 
     // Initialize cache
     RPointerArray<TDesC> dataStores;
-    CleanupClosePushL( dataStores );
 
     iPsDataPluginInterface->GetAllSupportedDataStoresL(dataStores);
 
-    const TInt dataStoresCount = dataStores.Count();
-    for (TInt dIndex = 0; dIndex < dataStoresCount; dIndex++)
+    for (int dIndex = 0; dIndex < dataStores.Count(); dIndex++)
         {
         AddDataStore(*(dataStores[dIndex]));
         }
 
-    CleanupStack::PopAndDestroy( &dataStores ); // Close
-    }
-
-/**
-* Returns the Adaptive Grid for one or more URI
-* 
-*/
- void CPcsAlgorithm2::GetAdaptiveGridL( const MDesCArray& /*aURIs*/,
-                               const TBool /*aCompanyName*/,
-                               TDes& /*aAdaptiveGrid*/ )
-    {
-     PRINT ( _L("Enter CPcsAlgorithm2::GetAdaptiveGridL") );
-
-
-     PRINT ( _L("End CPcsAlgorithm2::GetAdaptiveGridL") );
-
+    dataStores.Reset();
     }
 // End of file
 

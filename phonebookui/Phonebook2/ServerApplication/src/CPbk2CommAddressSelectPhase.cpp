@@ -26,8 +26,8 @@
 #include <TPbk2AddressSelectParams.h>
 #include <MPbk2ApplicationServices.h>
 #include <CPbk2PresenceIconInfo.h>
-#include <pbk2uicontrols.rsg>
-#include <pbk2commands.rsg>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2Commands.rsg>
 #include <CPbk2StoreManager.h> 
 
 // Virtual Phonebook
@@ -45,7 +45,7 @@
 #include <CVPbkContactFieldIterator.h>
 #include <CVPbkFieldTypeSelector.h>
 #include <CVPbkFieldFilter.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 // System includes
 #include <barsread.h>
@@ -304,16 +304,6 @@ void CPbk2CommAddressSelectPhase::AcceptDelayedL
         ( const TDesC8& /*aContactLinkBuffer*/ )
     {
     // Nothing to accept
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2CommAddressSelectPhase::DenyDelayed
-// --------------------------------------------------------------------------
-//
-void CPbk2CommAddressSelectPhase::DenyDelayedL
-        ( const TDesC8& /*aContactLinkBuffer*/ )
-    {
-    // Nothing to deny
     }
 
 // --------------------------------------------------------------------------

@@ -39,7 +39,7 @@ SOURCE                          cmsservercontact.cpp
 SOURCE                          cmsphonebookproxy.cpp
 SOURCE                          cmsserverasynccontact.cpp
 SOURCE                          cmsserverxspcontacthandler.cpp 
-SOURCE				cmsfindlinkedcontact.cpp 
+SOURCE							cmsfindlinkedcontact.cpp 
 SOURCE                          cmssetvoicecalldefault.cpp 
 
 USERINCLUDE                     ../inc
@@ -57,13 +57,13 @@ LIBRARY                         estor.lib
 LIBRARY                         efsrv.lib
 LIBRARY             	        euser.lib
 LIBRARY                         fbscli.lib
-LIBRARY                         featmgr.lib
-LIBRARY				VPbkEng.lib
-LIBRARY				CommonEngine.lib
+LIBRARY                         FeatMgr.lib
+LIBRARY							vpbkeng.lib
+LIBRARY							CommonEngine.lib
 LIBRARY                         presencecacheutils.lib
 LIBRARY                         presencecacheclient2.lib
 LIBRARY                         Pbk2Presentation.lib // nameformatter
-LIBRARY			        serviceprovidersettings.lib
+LIBRARY					        serviceprovidersettings.lib
 LIBRARY                         presencetrafficlights.lib
 
 LIBRARY	 rcse.lib

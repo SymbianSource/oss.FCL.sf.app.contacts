@@ -21,7 +21,7 @@
 // Pbk2
 #include "CPbk2AddFavoritesVisibility.h"
 #include <Pbk2Commands.hrh>
-#include <pbk2exnameslistres.rsg>
+#include <Pbk2ExNamesListRes.rsg>
 #include <MPbk2AppUi.h>
 #include <MPbk2ApplicationServices.h>
 #include "cpbk2mycard.h"
@@ -118,10 +118,23 @@ TAny* CPbk2CmdItemMyCard::ControlCmdItemExtension(
     return NULL;
     }
 
-void CPbk2CmdItemMyCard::MyCardEvent( MPbk2MyCardObserver::TMyCardStatusEvent /*aEvent*/ )
+void CPbk2CmdItemMyCard::MyCardEvent( MPbk2MyCardObserver::TMyCardStatusEvent aEvent )
     {
-    NotifyVisibiltyChange( IsEnabled() );
-    }
+	// always inform these
+    if( aEvent == EStateThumbnailLoaded ||
+    	aEvent == EStateThumbnailNotFound )
+    	{
+		if( iObserver )
+			{
+			iObserver->CmdItemVisibilityChanged( CommandId(), ETrue );
+			}
+    	}
+    // status change
+    else
+    	{
+		NotifyVisibiltyChange( IsEnabled() ) ;    
+    	}
+	}
 
 void CPbk2CmdItemMyCard::FormatDataL(
                 MPbk2DoubleListboxDataElement& aDataElement )

@@ -32,7 +32,6 @@ enum TCCAppCommLauncherCmdIds
     ECCAppCommLauncherStylusRemoveImageCmd,
     ECCAppCommLauncherStylusAddImageCmd,
     ECCAppCommLauncherDeleteCmd,
-    ECCAppCommLauncherSendBCardCmd,
     // KAiwCmdAssign AIW service cmd used as Edit Options-menu item
     // set AIW commands at last
     ECCAppCommLauncherAiwBaseCmd = 1000 // leave this last

@@ -46,13 +46,13 @@ LIBRARY                 euser.lib
 LIBRARY                 ecom.lib
 LIBRARY                 egul.lib // Icon
 LIBRARY                 servicehandler.lib // AIW
-LIBRARY                 CommonEngine.lib // String loadder
+LIBRARY                 commonengine.lib // String loadder
 LIBRARY                 bafl.lib
 LIBRARY                 cone.lib 
 LIBRARY                 fbscli.lib
 LIBRARY                 ws32.lib
 LIBRARY                 featmgr.lib 
-LIBRARY                 ProfileEngine.lib
+LIBRARY                 profileengine.lib
 LIBRARY                 centralrepository.lib
 LIBRARY                 aiwdialdata.lib
 

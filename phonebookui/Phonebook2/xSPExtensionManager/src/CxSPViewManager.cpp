@@ -18,7 +18,7 @@
 
 
 // INCLUDE FILES
-#include <pbk2commands.rsg>
+#include <Pbk2Commands.rsg>
 #include <coemain.h>
 #include <barsread.h>
 #include <eikmenup.h>

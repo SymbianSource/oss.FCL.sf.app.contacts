@@ -36,11 +36,9 @@ NONSHARABLE_CLASS( CVPbkVCardAttributeHandler ) : public CBase
         /**
          * Decides whether to create an attribute from aParameter or not.
          * @param aParameter Field type parameter
-		 * @param aFieldTypeName Field type name
          * @return ETrue if creates the attribute, otherwise EFalse.
          */
-        TBool CreateAttributeL( TVPbkFieldTypeParameter aParameter, 
-        		TVPbkFieldTypeName aFieldTypeName );
+        TBool CreateAttributeL( TVPbkFieldTypeParameter aParameter );
         
         /**
          * Returns the created attribute or NULL.

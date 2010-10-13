@@ -69,14 +69,14 @@ TARGET          ExtensionManager
 TARGETPATH      ECOM_RESOURCE_DIR
 END
 
-LIBRARY     euser.lib cone.lib ecom.lib bafl.lib CommonEngine.lib
+LIBRARY     euser.lib cone.lib ecom.lib bafl.lib commonengine.lib
 LIBRARY     eikcore.lib eikctl.lib eikcoctl.lib
-LIBRARY     avkon.lib aknnotify.lib estor.lib efsrv.lib aknicon.lib egul.lib aknskins.lib
-LIBRARY	    xspviewservices.lib
+LIBRARY     avkon.lib aknnotify.lib estor.lib efsrv.lib aknicon.lib egul.lib AknSkins.lib
+LIBRARY		xSPViewServices.lib
 LIBRARY	    centralrepository.lib
 
 // Dependencies to Phonebook2
-LIBRARY     Pbk2CommonUI.lib Pbk2UIExt.lib Pbk2Presentation.lib VPbkEng.lib
+LIBRARY     Pbk2CommonUi.lib Pbk2UIExt.lib Pbk2Presentation.lib VPbkEng.lib
 LIBRARY		bitgdi.lib fbscli.lib
 
 START BITMAP ExtensionManager.mbm

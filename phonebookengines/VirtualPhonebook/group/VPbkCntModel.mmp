@@ -140,14 +140,14 @@ APP_LAYER_SYSTEMINCLUDE
 
 LIBRARY         euser.lib efsrv.lib bafl.lib estor.lib
 LIBRARY         cntmodel.lib cntview.lib sysutil.lib
-LIBRARY         CommonEngine.lib diskspacereserver.lib ecom.lib
-LIBRARY         VPbkEng.lib VPbkEngUtils.lib pbkeng.lib
+LIBRARY         commonengine.lib diskspacereserver.lib ecom.lib
+LIBRARY         VPbkEng.lib VPbkEngUtils.lib PbkEng.lib
 LIBRARY         featmgr.lib cone.lib
 // Only SIND voice tags are supported and only if SIND AIW service
 // is not on. Dependency to NssVASApi.lib can be removed when RD_SIND_VIA_AIW
 // is removed from platform and SIND AIW service is always on.
 #if defined (__SIND) && !defined (RD_SIND_VIA_AIW)
-LIBRARY         nssvasapi.lib
+LIBRARY         NssVASApi.lib
 #endif
 
 #ifdef VPBK_ENABLE_PROFILE

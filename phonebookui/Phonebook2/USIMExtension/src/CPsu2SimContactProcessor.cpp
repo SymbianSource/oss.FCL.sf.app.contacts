@@ -42,7 +42,7 @@
 #include <CVPbkFieldTypeRefsList.h>
 #include <CVPbkContactFieldIterator.h>
 #include <CVPbkFieldTypeRefsList.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 // System includes
 #include <gsmerror.h>
@@ -253,11 +253,6 @@ CPsu2SimContactProcessor* CPsu2SimContactProcessor::NewL(
 //
 void CPsu2SimContactProcessor::ConstructL( RFs& aFs )
     {
-    const MVPbkFieldTypeList& supportedTypes =
-            iTargetStore.StoreProperties().SupportedFields();
-    // Remove the unsupported fieldInfo from array first.
-    iCopyToSimFieldInfoArray.RemoveUnSupportedFieldInfo( supportedTypes );
-        
     const TInt count = iCopyToSimFieldInfoArray.Count();
     for ( TInt i = 0; i < count; ++i )
         {

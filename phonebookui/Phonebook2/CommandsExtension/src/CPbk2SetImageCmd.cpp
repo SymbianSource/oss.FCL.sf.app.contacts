@@ -25,13 +25,13 @@
 #include "CPbk2DrmManager.h"
 #include "Pbk2DataCaging.hrh"
 #include "Pbk2PresentationUtils.h"
-#include <pbk2commands.rsg>
-#include <pbk2commonui.rsg>
+#include <Pbk2Commands.rsg>
+#include <Pbk2CommonUi.rsg>
 #include <MPbk2CommandObserver.h>
 #include <RPbk2LocalizedResourceFile.h>
 #include <CPbk2DriveSpaceCheck.h>
 #include <CPbk2AppUiBase.h>
-#include <pbk2cmdextres.rsg>
+#include <Pbk2CmdExtRes.rsg>
 
 // Virtual Phonebook
 #include <MVPbkStoreContact.h>

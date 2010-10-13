@@ -63,14 +63,14 @@ SOURCE          MTPbkContactChangeNotifierBlocks.cpp
 SOURCE          CContactEngineEventQueue.cpp 
 
 LIBRARY         euser.lib
-LIBRARY         StifTestInterface.lib
+LIBRARY         stiftestinterface.lib
 LIBRARY         stiftestengine.lib
 LIBRARY                 bafl.lib
 LIBRARY                 cntmodel.lib
 LIBRARY                 efsrv.lib
 LIBRARY                 estor.lib
-LIBRARY                 pbkeng.lib
-LIBRARY                 sysutil.lib
+LIBRARY                 PbkEng.lib
+LIBRARY                 SysUtil.lib
 
 LANG            SC
 

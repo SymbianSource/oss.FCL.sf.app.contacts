@@ -88,7 +88,7 @@ LIBRARY         featmgr.lib
 
 // Dependencies to other Phonebook components
 LIBRARY         VPbkEng.lib  VPbkEngUtils.lib 
-LIBRARY         vpbksimstoreservice.lib VPbkSimStoreCommon.lib
+LIBRARY         VPbkSimStoreService.lib VPbkSimStoreCommon.lib 
 LIBRARY         VPbkSimStoreImpl.lib
 
 #ifdef VPBK_ENABLE_PROFILE

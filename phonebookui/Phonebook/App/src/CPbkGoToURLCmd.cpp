@@ -22,7 +22,7 @@
 #include "CPbkGoToURLCmd.h"
 #include <CPbkContactItem.h>
 #include <CPbkURLAddressSelect.h>
-#include <pbkview.rsg>
+#include <PbkView.rsg>
 #include <SchemeHandler.h>
 #include <aknnotewrappers.h>
 #include <pbkdebug.h>

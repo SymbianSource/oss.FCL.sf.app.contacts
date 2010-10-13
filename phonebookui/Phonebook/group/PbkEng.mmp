@@ -135,12 +135,12 @@ USERINCLUDE     ../Engine/src ../Engine/inc ../inc ../Engine/rss ../group
 APP_LAYER_SYSTEMINCLUDE // macro that defines the platform system includes
 
 // Dependencies to system components
-LIBRARY         euser.lib bafl.lib estor.lib efsrv.lib ecom.lib
+LIBRARY         euser.lib bafl.lib estor.lib efsrv.lib ECom.lib
 LIBRARY         cntmodel.lib cntview.lib
-LIBRARY         centralrepository.lib
+LIBRARY         CentralRepository.lib
  
 // Dependencies to other components
-LIBRARY         sysutil.lib diskspacereserver.lib featmgr.lib cenrepnotifhandler.lib
+LIBRARY         SysUtil.lib diskspacereserver.lib featmgr.lib CenRepNotifHandler.lib
 
 // Debugging dependencies
 #ifdef PBK_ENABLE_DEBUG_LOGGER

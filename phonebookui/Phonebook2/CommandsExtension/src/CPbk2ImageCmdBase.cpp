@@ -38,7 +38,7 @@
 #include <MVPbkFieldType.h>
 #include <CVPbkContactManager.h>
 #include <MVPbkContactOperationBase.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 // System headers
 #include <coemain.h>

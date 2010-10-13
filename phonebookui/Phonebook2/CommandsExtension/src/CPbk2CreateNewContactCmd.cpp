@@ -26,9 +26,9 @@
 #include <CPbk2StoreConfiguration.h>
 #include <CPbk2FieldPropertyArray.h>
 #include <MPbk2FieldProperty.h>
-#include <pbk2uicontrols.rsg>
-#include <pbk2commonui.rsg>
-#include <pbk2cmdextres.rsg>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2CommonUi.rsg>
+#include <Pbk2CmdExtRes.rsg>
 #include <MPbk2ContactUiControl.h>
 #include <CPbk2StoreProperty.h>
 #include <CPbk2StorePropertyArray.h>

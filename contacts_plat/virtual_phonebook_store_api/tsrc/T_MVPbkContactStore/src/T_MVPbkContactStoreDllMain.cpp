@@ -30,7 +30,7 @@
 #include "T_MVPbkContactStoreSingle.h"
 #include "T_MVPbkContactStoreComposite.h"
 #include "TVPbkContactStoreUriPtr.h"
-#include <t_mvpbkcontactstore.rsg>
+#include <T_MVPbkContactStore.rsg>
 #include <VPbkConfig.hrh>
 
 // LOCAL

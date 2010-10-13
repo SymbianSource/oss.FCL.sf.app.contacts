@@ -190,22 +190,6 @@ void CPbk2EntryFetcher::AcceptDelayedContactsL
     }
 
 // --------------------------------------------------------------------------
-// CPbk2EntryFetcher::DenyDelayedContactsL
-// --------------------------------------------------------------------------
-//
-void CPbk2EntryFetcher::DenyDelayedContactsL
-        ( const TDesC8& aContactLinkBuffer )
-    {
-    PBK2_DEBUG_PRINT( PBK2_DEBUG_STRING
-        ("CPbk2EntryFetcher::DenyDelayedContactsL()") );
-
-    if ( iFetchPhase )
-        {
-        iFetchPhase->DenyDelayedL( aContactLinkBuffer );
-        }
-    }
-
-// --------------------------------------------------------------------------
 // CPbk2EntryFetcher::ExitServiceL
 // --------------------------------------------------------------------------
 //

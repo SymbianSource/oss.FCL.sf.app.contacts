@@ -22,7 +22,6 @@
 
 // INCLUDE FILES
 #include <MVPbkContactLink.h>
-#include <vpbkeng.rsg>
 
 #include "FindUtilChineseECE.h"
 #include "CPsData.h"
@@ -38,7 +37,7 @@
 // CPcsCache::NewL
 // Two Phase Construction
 // ----------------------------------------------------------------------------
-CPcsCache* CPcsCache::NewL(CPcsAlgorithm2* aAlgorithm, const TDesC& aURI, 
+CPcsCache* CPcsCache::NewL(CPcsAlgorithm2* aAlgorithm, TDesC& aURI, 
                            CPcsKeyMap& aKeyMap, TUint8 aUriId)
     {
     PRINT ( _L("Enter CPcsCache::NewL") );
@@ -70,7 +69,7 @@ CPcsCache::CPcsCache()
 // CPcsCache::ConstructL
 // 2nd Phase Constructor
 // ----------------------------------------------------------------------------
-void CPcsCache::ConstructL(CPcsAlgorithm2* aAlgorithm, const TDesC& aURI, 
+void CPcsCache::ConstructL(CPcsAlgorithm2* aAlgorithm, TDesC& aURI, 
                            CPcsKeyMap& aKeyMap, TUint8 aUriId)
     {
     PRINT ( _L("Enter CPcsCache::ConstructL") );
@@ -81,14 +80,13 @@ void CPcsCache::ConstructL(CPcsAlgorithm2* aAlgorithm, const TDesC& aURI,
     //Update the caching status for this cache
     iCacheStatus = ECachingNotStarted;
 
-    iKeyMap = &aKeyMap;
+    keyMap = &aKeyMap;
 
-    // Populate iKeyArr
-    const TInt keyMapPoolcount =  aKeyMap.PoolCount();
-    for (TInt i = 0; i < keyMapPoolcount; i++)
+    // Populate keyArr
+    for (TInt i = 0; i < aKeyMap.PoolCount(); i++)
         {
-        RPointerArray<CPcsPoolElement>* keyMap = new (ELeave) RPointerArray<CPcsPoolElement> (1);
-        iKeyArr.InsertL(keyMap, i);
+        RPointerArray<CPcsPoolElement> *keyMap = new (ELeave) RPointerArray<CPcsPoolElement> (1);
+        keyArr.InsertL(keyMap, i);
         }
 
     PRINT ( _L("End CPcsCache::ConstructL") );
@@ -102,15 +100,86 @@ CPcsCache::~CPcsCache()
     {
     PRINT ( _L("Enter CPcsCache::~CPcsCache") );
 
-    delete iURI;
+    if (iURI)
+        {
+        delete iURI;
+        }
 
-    RemoveAllFromCache(); // cleans up iMasterPool and iCacheInfo
-   
-    iKeyArr.ResetAndDestroy();
+    // Loop thru cache info and free and the data elements
+    THashMapIter<TInt, TInt> iter(cacheInfo);
+
+    do
+        {
+        TInt* id = const_cast<TInt*> (iter.NextKey());
+
+        if (id == NULL)
+            break;
+
+        TInt* poolMap = iter.CurrentValue();
+
+        if (poolMap == NULL)
+            {
+            continue;
+            }
+
+        CPsData *data = NULL;
+        for (int keyIndex = 0; keyIndex <= keyArr.Count(); keyIndex++)
+            {
+            TBool present = GetPoolMap(*poolMap, keyIndex);
+
+            if (!present)
+                {
+                continue;
+                }
+
+            RPointerArray<CPcsPoolElement> tmpKeyMap = *(keyArr[keyIndex]);
+            for (int arrayIndex = 0; arrayIndex < tmpKeyMap.Count(); arrayIndex++)
+                {
+                CPcsPoolElement *element = tmpKeyMap[arrayIndex];
+                TInt localId = element->GetPsData()->Id();
+                if (*id == localId)
+                    {
+                    data = element->GetPsData();
+                    delete element;
+                    keyArr[keyIndex]->Remove(arrayIndex);
+                    }
+                }
+            };
+
+        // Remove this element from master pool
+        for (int arrayIndex = 0; arrayIndex < masterPool.Count(); arrayIndex++)
+            {
+            CPsData *dataElement = masterPool[arrayIndex];
+            TInt localId = dataElement->Id();
+            if (*id == localId)
+                {
+                masterPool.Remove(arrayIndex);
+                }
+            }
+
+        if (data)
+            {
+            delete data;
+            }
+
+        }
+    while (1);
+
+    for (TInt i = 0; i < keyArr.Count(); i++)
+        {
+        keyArr[i]->ResetAndDestroy();
+        delete keyArr[i];
+        keyArr[i] = NULL;
+        }
+
+    masterPool.ResetAndDestroy();
+
+    cacheInfo.Close();
+
+    keyArr.Reset();
     iDataFields.Reset();
     iSortOrder.Reset();
     iIndexOrder.Reset();
-    iMasterPoolBackup.Close();
 
     PRINT ( _L("End CPcsCache::~CPcsCache") );
     }
@@ -122,18 +191,15 @@ CPcsCache::~CPcsCache()
 void CPcsCache::GetContactsForKeyL(TInt aKeyId, RPointerArray<CPcsPoolElement>& aData)
     {
     PRINT ( _L("Enter CPcsCache::GetContactsForKeyL") );
-
-    if ( aKeyId >= 0 && aKeyId < iKeyArr.Count() )
+    CleanupClosePushL( aData );
+    RPointerArray<CPcsPoolElement> arr = *keyArr[aKeyId];
+    for (int i = 0; i < arr.Count(); i++)
         {
-        const RPointerArray<CPcsPoolElement>& arr = *iKeyArr[aKeyId];
-        const TInt arrCount = arr.Count();
-        for (TInt i = 0; i < arrCount; i++)
-            {
-            CPcsPoolElement* value = arr[i];
-            aData.AppendL(value);
-            }
+        CPcsPoolElement* value = arr[i];
+        aData.AppendL(value);
         }
 
+    CleanupStack::Pop();
     PRINT ( _L("End CPcsCache::GetContactsForKeyL") );
     }
 
@@ -144,14 +210,13 @@ void CPcsCache::GetContactsForKeyL(TInt aKeyId, RPointerArray<CPcsPoolElement>& 
 void CPcsCache::GetAllContentsL(RPointerArray<CPsData>& aData)
     {
     PRINT ( _L("Enter CPcsCache::GetAllContentsL") );
-    
-    const TInt masterPoolCount =  iMasterPool.Count(); 
-    for (TInt i = 0; i < masterPoolCount; i++)
+    CleanupClosePushL( aData );
+    for (int i = 0; i < masterPool.Count(); i++)
         {
-        CPsData* value = iMasterPool[i];
+        CPsData* value = masterPool[i];
         aData.AppendL(value);
         }
-
+    CleanupStack::Pop();
     PRINT ( _L("End CPcsCache::GetAllContentsL") );
     }
 
@@ -159,7 +224,7 @@ void CPcsCache::GetAllContentsL(RPointerArray<CPsData>& aData)
 // CPcsCache::AddToPool
 // Adds a contact to cache
 // ----------------------------------------------------------------------------
-void CPcsCache::AddToPoolL(TUint64& aPoolMap, CPsData& aData)
+void CPcsCache::AddToPoolL(TInt& aPoolMap, CPsData& aData)
     {
     // Temp hash to remember the location of pool elements
     // First TInt  = Pool 
@@ -167,43 +232,68 @@ void CPcsCache::AddToPoolL(TUint64& aPoolMap, CPsData& aData)
     // Required for memory optimization so that more than one pool
     // element doesn't get added for the same data
     RHashMap<TInt, TInt> elementHash;
-    CleanupClosePushL( elementHash );
-    TLinearOrder<CPcsPoolElement> rule(CPcsPoolElement::CompareByDataL);
+    TLinearOrder<CPcsPoolElement> rule(CPcsPoolElement::CompareByData);
 
-    // Parse thru each data element
-    const TInt dataElementCount = aData.DataElementCount();
-    for (TInt dataIndex = 0; dataIndex < dataElementCount; dataIndex++)
+    // Parse thru each data element    
+    for (int dataIndex = 0; dataIndex < aData.DataElementCount(); dataIndex++)
         {
         // Stores first key for each word
-        RArray<TChar> firstCharArr;
-        CleanupClosePushL( firstCharArr );
+        RArray<TChar> firstKey;
 
         // Recover the first character
-        if ( aData.Data(dataIndex) )
+        if (aData.Data(dataIndex) && aData.Data(dataIndex)->Length() != 0)
             {
-            GetFirstCharsForDataL( *aData.Data(dataIndex), firstCharArr );
-            }
-        
-        // Get the corresponding Pool IDs
-        RArray<TInt> poolIdArr;
-        CleanupClosePushL( poolIdArr );
-        GetPoolIdsForCharsL( firstCharArr, poolIdArr );
+            // Split the data into words	
+            CWords* words = CWords::NewLC(*aData.Data(dataIndex));
 
-        const TInt poolIdArrCount = poolIdArr.Count();
-        for (TInt poolArrIndex = 0; poolArrIndex < poolIdArrCount ; poolArrIndex++)
+            // Store the first numeric key for each word
+            for (int i = 0; i < words->MdcaCount(); i++)
+                {
+                TChar firstChar;
+                for (int j = 0; j < words->MdcaPoint(i).Length(); j++)
+                    {
+                    firstChar = (words->MdcaPoint(i))[j];
+                    TBuf<20> word;
+                    word.Append(firstChar);
+                    if (iAlgorithm->FindUtilECE()->IsChineseWord(word))
+                        {
+                        RPointerArray<HBufC> spellList;
+                        if (iAlgorithm->FindUtilECE()->T9ChineseTranslationL(firstChar, spellList))
+                            {
+                            for (int j = 0; j < spellList.Count(); j++)
+                                {
+                                firstKey.Append(keyMap->KeyForCharacter(*(spellList[j]->Ptr())));
+                                }
+                            }
+                        else
+                            {
+                            firstKey.Append( keyMap->KeyForCharacter(firstChar));
+                            }
+                        spellList.ResetAndDestroy();
+                        }
+                    else
+                        {
+                        firstKey.Append(keyMap->KeyForCharacter(firstChar));
+                        }
+                    }
+                }
+
+            CleanupStack::PopAndDestroy(words);
+            }
+
+        for (TInt wordIndex = 0; wordIndex < firstKey.Count(); wordIndex++)
             {
-            
-            TInt poolId = poolIdArr[poolArrIndex];
+            TInt arrayIndex = keyMap->PoolIdForCharacter(firstKey[wordIndex]);
 
             CPcsPoolElement* element = NULL;
 
             // Check if an element already exists in the pool for this data
             TInt* loc = NULL;
-            loc = elementHash.Find(poolId);
+            loc = elementHash.Find(arrayIndex);
             if (loc != NULL)
                 {
                 // Exists. Then recover ...
-                RPointerArray<CPcsPoolElement> tmpKeyMap = *(iKeyArr[poolId]);
+                RPointerArray<CPcsPoolElement> tmpKeyMap = *(keyArr[arrayIndex]);
                 element = tmpKeyMap[*loc];
                 }
 
@@ -214,31 +304,30 @@ void CPcsCache::AddToPoolL(TUint64& aPoolMap, CPsData& aData)
                 element->SetDataMatch(dataIndex);
 
                 // Insert to pool
-                iKeyArr[poolId]->InsertInOrderAllowRepeatsL(element, rule);
-                TInt index = iKeyArr[poolId]->FindInOrderL(element, rule);
+                keyArr[arrayIndex]->InsertInOrderAllowRepeatsL(element, rule);
+                TInt index = keyArr[arrayIndex]->FindInOrderL(element, rule);
 
-                // Set the bit for this pool
-                SetPoolMap(aPoolMap, poolId);
+                // Set the bit for this pool					
+                SetPoolMap(aPoolMap, arrayIndex);
 
                 // Store the array index in the temp hash
-                elementHash.InsertL(poolId, index);
+                elementHash.InsertL(arrayIndex, index);
                 }
             else // Pool element exists. Just alter the data match attribute
                 {
                 element->SetDataMatch(dataIndex);
 
-                // Set the bit for this pool
-                SetPoolMap(aPoolMap, poolId);
+                // Set the bit for this pool					
+                SetPoolMap(aPoolMap, arrayIndex);
                 }
 
             } // for 2 loop
 
-        CleanupStack::PopAndDestroy( &poolIdArr );    // Close
-        CleanupStack::PopAndDestroy( &firstCharArr ); // Close
+        firstKey.Reset();
 
         } // for 1 loop
 
-    CleanupStack::PopAndDestroy( &elementHash );  // Close
+    elementHash.Close();
     }
 
 // ---------------------------------------------------------------------
@@ -248,19 +337,19 @@ void CPcsCache::AddToPoolL(TUint64& aPoolMap, CPsData& aData)
 void CPcsCache::AddToCacheL(CPsData& aData)
     {
     // Protect against duplicate items getting added
-    if (iCacheInfo.Find(aData.Id()) != NULL)
+    if (cacheInfo.Find(aData.Id()) != NULL)
         {
         return;
         }
 
     // Include this element in the pool     
-    TUint64 poolMap = 0;
+    TInt poolMap = 0;
     AddToPoolL(poolMap, aData);
-    iCacheInfo.InsertL(aData.Id(), poolMap);
+    cacheInfo.InsertL(aData.Id(), poolMap);
 
     // Include this element in master pool        
-    TLinearOrder<CPsData> rule(CPcsAlgorithm2Utils::CompareDataBySortOrderL);
-    iMasterPool.InsertInOrderAllowRepeatsL(&aData, rule);
+    TLinearOrder<CPsData> rule(CPcsAlgorithm2Utils::CompareDataBySortOrder);
+    masterPool.InsertInOrderAllowRepeatsL(&aData, rule);
     }
 
 // ---------------------------------------------------------------------
@@ -271,7 +360,7 @@ void CPcsCache::RemoveFromCacheL(TInt aItemId)
     {
     CPsData *data = NULL;
 
-    TUint64* poolMap = iCacheInfo.Find(aItemId);
+    TInt* poolMap = cacheInfo.Find(aItemId);
 
     if (poolMap == NULL)
         {
@@ -279,8 +368,7 @@ void CPcsCache::RemoveFromCacheL(TInt aItemId)
         }
 
     // Remove this element from pools
-    const TInt keyArrCount = iKeyArr.Count();
-    for (TInt keyIndex = 0; keyIndex < keyArrCount; keyIndex++)
+    for (int keyIndex = 0; keyIndex <= keyArr.Count(); keyIndex++)
         {
         TBool present = GetPoolMap(*poolMap, keyIndex);
 
@@ -289,9 +377,8 @@ void CPcsCache::RemoveFromCacheL(TInt aItemId)
             continue;
             }
 
-        const RPointerArray<CPcsPoolElement>& tmpKeyMap = *(iKeyArr[keyIndex]);
-        
-        for (TInt arrayIndex = 0; arrayIndex < tmpKeyMap.Count(); arrayIndex++)
+        RPointerArray<CPcsPoolElement> tmpKeyMap = *(keyArr[keyIndex]);
+        for (int arrayIndex = 0; arrayIndex < tmpKeyMap.Count(); arrayIndex++)
             {
             CPcsPoolElement *element = tmpKeyMap[arrayIndex];
             TInt id = element->GetPsData()->Id();
@@ -299,19 +386,19 @@ void CPcsCache::RemoveFromCacheL(TInt aItemId)
                 {
                 data = element->GetPsData();
                 delete element;
-                iKeyArr[keyIndex]->Remove(arrayIndex);
+                keyArr[keyIndex]->Remove(arrayIndex);
                 }
             }
         }
 
     // Remove this element from master pool
-    for (TInt arrayIndex = 0; arrayIndex < iMasterPool.Count(); arrayIndex++)
+    for (int arrayIndex = 0; arrayIndex < masterPool.Count(); arrayIndex++)
         {
-        CPsData *dataElement = iMasterPool[arrayIndex];
+        CPsData *dataElement = masterPool[arrayIndex];
         TInt id = dataElement->Id();
         if (id == aItemId)
             {
-            iMasterPool.Remove(arrayIndex);
+            masterPool.Remove(arrayIndex);
             }
         }
 
@@ -323,178 +410,51 @@ void CPcsCache::RemoveFromCacheL(TInt aItemId)
         }
 
     // Clear up cache information
-    iCacheInfo.Remove(aItemId);
+    cacheInfo.Remove(aItemId);
     }
 
 // ---------------------------------------------------------------------
 // CPcsCache::RemoveAllFromCacheL
 // 
 // ---------------------------------------------------------------------
-void CPcsCache::RemoveAllFromCache()
+void CPcsCache::RemoveAllFromCacheL()
     {
-    PRINT ( _L("Enter CPcsCache::RemoveAllFromCache") );
+    PRINT ( _L("Enter CPcsCache::RemoveAllFromCacheL") );
 
-    const TInt keyArrCount = iKeyArr.Count();
-    for ( TInt i = 0 ; i < keyArrCount ; i++ )
+    for (TInt i = 0; i < keyArr.Count(); i++)
         {
-        iKeyArr[i]->ResetAndDestroy();
+        keyArr[i]->ResetAndDestroy();
+
         }
 
-    iMasterPool.ResetAndDestroy();
-    iCacheInfo.Close();
+    masterPool.ResetAndDestroy();
+    cacheInfo.Close();
 
-    PRINT ( _L("End CPcsCache::RemoveAllFromCache") );
+    PRINT ( _L("End CPcsCache::RemoveAllFromCacheL") );
     }
 
 // ---------------------------------------------------------------------
 // CPcsCache::SetPoolMap
 // 
 // ---------------------------------------------------------------------
-void CPcsCache::SetPoolMap(TUint64& aPoolMap, TInt aArrayIndex)
+void CPcsCache::SetPoolMap(TInt& aPoolMap, TInt arrayIndex)
     {
-    __ASSERT_DEBUG( aArrayIndex < 64, User::Panic(_L("CPcsCache"), KErrOverflow ) );
+    TReal val;
+    Math::Pow(val, 2, arrayIndex);
 
-    /* Some platforms do not support 64 bits shift operations.
-     * Split to two 32 bits operations.
-     */
-    
-    TUint32 poolMapH = I64HIGH(aPoolMap);
-    TUint32 poolMapL = I64LOW(aPoolMap);
-    
-    TUint32 valH = 0;
-    TUint32 valL = 0;
-    if (aArrayIndex < 32)
-        {
-        valL = 1 << aArrayIndex;
-        }
-    else
-        {
-        valH = 1 << (aArrayIndex-32);
-        }
-
-    poolMapH |= valH;
-    poolMapL |= valL;
-    
-    aPoolMap = MAKE_TUINT64(poolMapH, poolMapL);
+    aPoolMap |= (TInt) val;
     }
 
 // ---------------------------------------------------------------------
 // CPcsCache::GetPoolMap
 // 
 // ---------------------------------------------------------------------
-TBool CPcsCache::GetPoolMap(TUint64& aPoolMap, TInt aArrayIndex)
+TBool CPcsCache::GetPoolMap(TInt& aPoolMap, TInt arrayIndex)
     {
-    __ASSERT_DEBUG( aArrayIndex < 64, User::Panic(_L("CPcsCache"), KErrOverflow ) );
+    TReal val;
+    Math::Pow(val, 2, arrayIndex);
 
-    /* Some platforms do not support 64 bits shift operations.
-     * Split to two 32 bits operations.
-     */
-
-    TUint32 poolMapH = I64HIGH(aPoolMap);
-    TUint32 poolMapL = I64LOW(aPoolMap);
-    
-    TUint32 valH = 0;
-    TUint32 valL = 0;
-    if (aArrayIndex < 32)
-        {
-        valL = 1 << aArrayIndex;
-        }
-    else
-        {
-        valH = 1 << (aArrayIndex-32);
-        }
-
-    TBool ret = (poolMapH & valH) || (poolMapL & valL);
-
-    return (ret);
-    }
-
-// ---------------------------------------------------------------------
-// CPcsCache::GetFirstCharsForDataL
-// 
-// ---------------------------------------------------------------------
-void CPcsCache::GetFirstCharsForDataL( const TDesC& aData, RArray<TChar>& aFirstChars ) const
-    {
-    // Split the data into words
-    CWords* words = CWords::NewLC(aData);
-
-    // Find indexing characters for each word
-    for (TInt i = 0; i < words->MdcaCount(); i++)
-        {
-        TPtrC16 word = words->MdcaPoint(i);
-        TBool lastCharIsChinese = EFalse;
-        
-        // If the word contains any Chinese characters, then it is
-        // stored to cache according all the available spellings of
-        // all the Chinese characters
-        if ( iAlgorithm->FindUtilECE()->IsChineseWordIncluded(word) )
-            {
-            const TInt wordLength = word.Length();
-            for (TInt j = 0; j < wordLength; j++)
-                {
-                TText curChar = word[j];
-                RPointerArray<HBufC> spellList;
-                CleanupResetAndDestroyPushL( spellList );
-                if ( iAlgorithm->FindUtilECE()->DoTranslationL(curChar, spellList) )
-                    {
-                    lastCharIsChinese = ETrue;
-                    // Append first char of each spelling
-                    const TInt spellListCount = spellList.Count();
-                    for (TInt k = 0; k < spellListCount; k++)
-                        {
-                        const HBufC* spelling = spellList[k];
-                        aFirstChars.AppendL( (*spelling)[0] );
-                        }
-                    }
-                else
-                    {
-                    if ( lastCharIsChinese )
-                        {
-                        aFirstChars.AppendL( word[j] );
-                        lastCharIsChinese = EFalse;
-                        }
-                    }
-                CleanupStack::PopAndDestroy( &spellList ); // ResetAndDestroy
-                }
-            }
-        
-        // If the first charcter of the word is non-Chinese, then it's stored to the
-        // cache according this first character. Other characters of the word may or
-        // may not be Chinese.
-        if ( !iAlgorithm->FindUtilECE()->IsChineseWordIncluded( word.Left(1) ) )
-            {
-            aFirstChars.AppendL( word[0] );
-            }
-        }
-    CleanupStack::PopAndDestroy(words);
-    }
-
-// ---------------------------------------------------------------------
-// CPcsCache::GetPoolIdsForCharsL
-// 
-// ---------------------------------------------------------------------
-void CPcsCache::GetPoolIdsForCharsL( const RArray<TChar>& aChars, RArray<TInt>& aPoolIds ) const
-    {
-    // There can potentially be two pool IDs for each character. 
-    // Reserve memory for this upfront to prevent unnecessary reallocations.
-    aPoolIds.ReserveL( aChars.Count() * 2 );
-    
-    const TInt charsCount = aChars.Count() ;
-    for ( TInt i = 0 ; i < charsCount ; ++i )
-        {
-        TChar character = aChars[i];
-        TInt itutPoolId = iKeyMap->PoolIdForCharacter( character, EPredictiveItuT );
-        if ( itutPoolId != KErrNotFound )
-            {
-            aPoolIds.AppendL( itutPoolId );
-            }
-        
-        TInt qwertyPoolId = iKeyMap->PoolIdForCharacter( character, EPredictiveQwerty );
-        if ( qwertyPoolId != KErrNotFound )
-            {
-            aPoolIds.AppendL( qwertyPoolId );
-            }
-        }
+    return (aPoolMap & (TInt) val);
     }
 
 // ---------------------------------------------------------------------
@@ -512,8 +472,7 @@ TDesC& CPcsCache::GetURI()
 // ---------------------------------------------------------------------
 void CPcsCache::SetDataFields(RArray<TInt>& aDataFields)
     {
-    const TInt dataFieldsCount = aDataFields.Count();
-    for (TInt i(0); i < dataFieldsCount; i++)
+    for (TInt i(0); i < aDataFields.Count(); i++)
         {
         iDataFields.Append(aDataFields[i]);
         }
@@ -525,8 +484,7 @@ void CPcsCache::SetDataFields(RArray<TInt>& aDataFields)
 // ---------------------------------------------------------------------
 void CPcsCache::GetDataFields(RArray<TInt>& aDataFields)
     {
-    const TInt dataFieldsCount = iDataFields.Count();
-    for (TInt i(0); i < dataFieldsCount; i++)
+    for (TInt i(0); i < iDataFields.Count(); i++)
         {
         aDataFields.Append(iDataFields[i]);
         }
@@ -577,8 +535,8 @@ void CPcsCache::SetSortOrder(RArray<TInt>& aSortOrder)
     PRINT ( _L("Enter CPcsCache::SetSortOrder") );
 
     iSortOrder.Reset();
-    const TInt sortOrderCount = aSortOrder.Count();
-    for (TInt i(0); i < sortOrderCount; i++)
+
+    for (TInt i(0); i < aSortOrder.Count(); i++)
         {
         iSortOrder.Append(aSortOrder[i]);
         }
@@ -595,8 +553,8 @@ void CPcsCache::SetSortOrder(RArray<TInt>& aSortOrder)
 void CPcsCache::GetSortOrder(RArray<TInt>& aSortOrder)
     {
     aSortOrder.Reset();
-    const TInt sortOrderCount =  iSortOrder.Count();
-    for (TInt i(0); i < sortOrderCount; i++)
+
+    for (TInt i(0); i < iSortOrder.Count(); i++)
         {
         aSortOrder.Append(iSortOrder[i]);
         }
@@ -609,8 +567,8 @@ void CPcsCache::GetSortOrder(RArray<TInt>& aSortOrder)
 void CPcsCache::GetIndexOrder(RArray<TInt>& aIndexOrder)
     {
     aIndexOrder.Reset();
-    const TInt indexOrderCount = iIndexOrder.Count();
-    for (TInt i(0); i < indexOrderCount; i++)
+
+    for (TInt i(0); i < iIndexOrder.Count(); i++)
         {
         aIndexOrder.Append(iIndexOrder[i]);
         }
@@ -624,11 +582,9 @@ void CPcsCache::ComputeIndexOrder()
     {
     iIndexOrder.Reset();
 
-    const TInt sortOrderCount = iSortOrder.Count();
-    const TInt dataFieldsCount = iDataFields.Count(); 
-    for (TInt i = 0; i < sortOrderCount; i++)
+    for (int i = 0; i < iSortOrder.Count(); i++)
         {
-        for (TInt j = 0; j <dataFieldsCount; j++)
+        for (int j = 0; j < iDataFields.Count(); j++)
             {
             if (iSortOrder[i] == iDataFields[j])
                 {
@@ -645,64 +601,24 @@ void CPcsCache::ComputeIndexOrder()
 // ---------------------------------------------------------------------
 void CPcsCache::ResortdataInPoolsL()
     {
-    // copy iMasterPool data into iMasterPoolBackup
-    const TInt masterPoolCount = iMasterPool.Count();
-    for (TInt i = 0; i < masterPoolCount; i++ )
+    // copy masterPool data into masterPoolBackup
+    for (TInt i = 0; i < masterPool.Count(); i++ )
         {
-        iMasterPoolBackup.Append( iMasterPool[i] );
+        masterPoolBackup.Append( masterPool[i] );
         }
     //Now reset the key array
-    const TInt keyArrCount = iKeyArr.Count(); 
-    for (TInt i = 0; i <keyArrCount; i++ )
+    for (TInt i = 0; i < keyArr.Count(); i++ )
         {
-        iKeyArr[i]->ResetAndDestroy();
+        keyArr[i]->ResetAndDestroy();
         }
-    iMasterPool.Reset();
-    iCacheInfo.Close();
-    //now add data again from the iMasterPoolBackup
-    const TInt masterPoolBackupCount = iMasterPoolBackup.Count();
-    for (TInt i = 0; i < masterPoolBackupCount; i++ )
+    masterPool.Reset();
+    cacheInfo.Close();
+    //now add data again from the masterPoolBackup
+    for (TInt i = 0; i < masterPoolBackup.Count(); i++ )
         {
-        CPsData* temp = iMasterPoolBackup[i];
+        CPsData* temp = static_cast<CPsData*>(masterPoolBackup[i]);
         AddToCacheL( *temp );
         }
-    iMasterPoolBackup.Reset();
-    }
-
-// ---------------------------------------------------------------------
-// CPcsCache::GetFirstNameIndex
-// 
-// ---------------------------------------------------------------------
-TInt CPcsCache::GetFirstNameIndex() const
-    {
-    TInt fnIndex = KErrNotFound;
-    const TInt dataFieldsCount = iDataFields.Count();
-    for ( TInt i = 0 ; i < dataFieldsCount && fnIndex == KErrNotFound ; ++i )
-        {
-        if ( iDataFields[i] == R_VPBK_FIELD_TYPE_FIRSTNAME )
-            {
-            fnIndex = i;
-            }
-        }
-    return fnIndex;
-    }
-
-// ---------------------------------------------------------------------
-// CPcsCache::GetLastNameIndex
-// 
-// ---------------------------------------------------------------------
-TInt CPcsCache::GetLastNameIndex() const
-    {
-    TInt lnIndex = KErrNotFound;
-    const TInt dataFieldsCount = iDataFields.Count();
-    for ( TInt i = 0 ; i < dataFieldsCount && lnIndex == KErrNotFound ; ++i )
-        {
-        if ( iDataFields[i] == R_VPBK_FIELD_TYPE_LASTNAME )
-            {
-            lnIndex = i;
-            }
-        }
-    return lnIndex;
-    }
-
+    masterPoolBackup.Reset();
+    } 
 // End of file

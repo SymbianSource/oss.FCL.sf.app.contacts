@@ -87,25 +87,25 @@ TARGETPATH      ECOM_RESOURCE_DIR
 END
 
 // Dependencies to Symbian OS components
-LIBRARY euser.lib CommonEngine.lib
+LIBRARY euser.lib commonengine.lib
 LIBRARY cone.lib bafl.lib
 LIBRARY efsrv.lib ecom.lib
 
 // Dependencies to S60 components
-LIBRARY avkon.lib featmgr.lib sendui.lib CdlEngine.lib
+LIBRARY Avkon.lib FeatMgr.lib sendui.lib CdlEngine.lib
 LIBRARY eikctl.lib eikdlg.lib eikcore.lib eikcoctl.lib bsclient.lib serviceprovidersettings.lib
 
 //CCA
 LIBRARY ccaclient.lib
 // Dependencies to Phonebook
-LIBRARY Pbk2CommonUI.lib pbk2uicontrols.lib Pbk2Commands.lib Pbk2UIExt.lib
+LIBRARY Pbk2CommonUi.lib Pbk2UiControls.lib Pbk2Commands.lib Pbk2UIExt.lib
 LIBRARY pbk2rclengine.lib
 LIBRARY Pbk2Presentation.lib VPbkEng.lib pbk2spbcontentprovider.lib
 LIBRARY centralrepository.lib touchfeedback.lib
 LIBRARY fbscli.lib
 LIBRARY egul.lib
 LIBRARY contactpresence.lib
-LIBRARY aknlayout2.lib AknLayout2Scalable.lib
+LIBRARY AknLayout2.lib AknLayout2Scalable.lib
 LIBRARY estor.lib 
 
 LIBRARY ws32.lib

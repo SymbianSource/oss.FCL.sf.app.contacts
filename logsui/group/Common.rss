@@ -32,8 +32,8 @@ RESOURCE MENU_PANE r_common_callui_submenu
             {
             command = KAiwCmdCall;              //Same ID as in interest.
             txt = "";                           //AIW plugin will override the text set here
-            cascade = AIW_INTELLIGENT_CASCADE_ID; //No submenu if only one item in it
-            flags = EEikMenuItemSpecific; // Click-To-Call EEikMenuItemSpecificListQuery;
+            cascade = AIW_CASCADE_ID;						//as a fix to ASAA-6VYJ2H always show a submenu
+            flags = EEikMenuItemSpecificListQuery;
             }
         };
     }

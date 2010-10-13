@@ -23,7 +23,7 @@
 #include <bldvariant.hrh>
 #include <CPbkContactEngine.h>
 #include <StringLoader.h>
-#include <pbkeng.rsg>
+#include <PbkEng.rsg>
 #include <barsread.h>    // TResourceReader
 #include <PbkGlobalSettingFactory.h>
 #include <MPbkGlobalSetting.h>

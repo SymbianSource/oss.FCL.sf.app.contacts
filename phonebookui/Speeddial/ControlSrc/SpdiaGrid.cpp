@@ -31,7 +31,7 @@
 #include <layoutmetadata.cdl.h>
 #include <akntitle.h>
 #include <StringLoader.h>
-#include <spdctrl.rsg>
+#include <SpdCtrl.rsg>
 const TInt KItemPrimary(3);
 const TInt KItemSecondary(3);
 

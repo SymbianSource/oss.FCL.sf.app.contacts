@@ -22,7 +22,7 @@
 #include <barsread.h>       // TResourceReader
 #include <gulicon.h>        // CGulIcon
 #include <coemain.h>        // CCoeEnv
-#include <pbkview.rsg>
+#include <PbkView.rsg>
 #include "PbkIconInfo.h"
 
 #include <CPbkExtGlobals.h>

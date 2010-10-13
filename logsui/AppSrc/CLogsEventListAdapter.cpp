@@ -25,7 +25,7 @@
 #include <AknUtils.h>   // akntextutils
 #include <eikclb.h>     // ceikcolumnlistbox
 
-#include <logs.rsg>
+#include <Logs.rsg>
 
 #include "CLogsEventListAdapter.h"
 #include "CLogsEventListControlContainer.h"

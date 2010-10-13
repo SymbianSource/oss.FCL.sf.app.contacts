@@ -28,7 +28,7 @@
 #include <MVPbkContactLink.h>
 #include <MPbk2ContactNameFormatter.h>
 #include <MVPbkViewContact.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <CPbk2IconArray.h>
 #include <MPbk2ContactUiControlExtension.h>
 #include <MPbk2ContactUiControlExtension2.h>

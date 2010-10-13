@@ -68,18 +68,6 @@ class MPbk2UiService
                 const TDesC8& aContactLinkBuffer ) = 0;
 
         /**
-         * Deny the delayed contacts as part of
-         * the contact set used in the service.
-         * 
-         * Purpose: Sometimes client maybe deny the selected contact, 
-         * the function is used to deliver the client's feedback to phonebook.
-         * 
-         * @param aContactLinkBuffer    Denied contacts.
-         */
-        virtual void DenyDelayedContactsL(
-                const TDesC8& aContactLinkBuffer) = 0;
-        
-        /**
          * Exits the service.
          *
          * @param aExitCommandId    The id of the exit command.

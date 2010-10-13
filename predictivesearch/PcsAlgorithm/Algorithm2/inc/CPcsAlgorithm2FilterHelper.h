@@ -91,7 +91,7 @@ class CPcsAlgorithm2FilterHelper : public CBase
 		/**
 		 * 2nd phase construtor
 		 */
-		void ConstructL(TSortType aSortType);
+		void ConstructL(TSortType aSortType);   
 		
 		/**
 		* Adds each result into respective pool based on match pattern
@@ -102,7 +102,7 @@ class CPcsAlgorithm2FilterHelper : public CBase
 		* Searches for for aSeq in iMatchPatternDetails and returns index 
         * where input sequence is found. Returns -1 if not found
 		*/
-		TInt FindSequence(const TDesC& aSeq);
+		TInt FindSequence(TDesC* aSeq);
 		
 		
 		/**
@@ -110,19 +110,19 @@ class CPcsAlgorithm2FilterHelper : public CBase
         * and returns index where input sequence is found. 
         * Returns -1 if not found
 		*/
-		TInt FindSubSequence(const TDesC& aSeq, TInt aPatternIndex);
+		TInt FindSubSequence(TDesC* aSeq,TInt aPatternIndex);
 		
 		/**
 		* Creates the Matchpattern aSeq in  iMatchPatternDetails.
         * Returns the index of the sequence in iMatchPatternDetails
         */
-		TInt CreateMatchPatternDetailsAndPoolsL(const TDesC& aSeq);
+		TInt CreateMatchPatternDetailsAndPoolsL(TDesC* aSeq);
 		
 		/**
 		* Searches for all the subsequences of aSeq and updates the 
 		* aFirstOccrVal in iMatchPatternDetails.
         */
-		void UpdateForSubSequencesL(const TDesC& aSeq, TInt aFirstOccrVal);
+		void UpdateForSubSequencesL(TDesC& aSeq,TInt aFirstOccrVal);
 
 	private:
 		

@@ -25,7 +25,7 @@
 #include "CPbk2FieldOrderingManager.h"
 #include <CPbk2ServiceManager.h>
 #include <RPbk2LocalizedResourceFile.h>
-#include <pbk2presentation.rsg>
+#include <Pbk2Presentation.rsg>
 #include <CPbk2FieldPropertyGroup.h>
 #include <Pbk2DataCaging.hrh>
 
@@ -33,7 +33,7 @@
 #include <MVPbkFieldType.h>
 #include <TVPbkFieldVersitProperty.h>
 #include <CVPbkFieldTypeSelector.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 // System includes
 #include <barsc.h>

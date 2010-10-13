@@ -22,8 +22,8 @@
 #define CVPBKCONTACTOPERATIONFACTORY_H
 
 #include <e32base.h>
-#include <MVPbkContactOperationFactory.h>
-#include <MVPbkContactOperationFactory2.h>
+#include <mvpbkcontactoperationfactory.h>
+#include <mvpbkcontactoperationfactory2.h>
 
 class MVPbkContactStoreList;
 

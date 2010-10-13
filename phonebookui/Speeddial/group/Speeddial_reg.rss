@@ -20,7 +20,7 @@
 
 
 #include <appinfo.rh>
-#include <speeddial.rsg>
+#include <SpeedDial.rsg>
 #include <data_caging_paths_strings.hrh>
 
 UID2 KUidAppRegistrationResourceFile

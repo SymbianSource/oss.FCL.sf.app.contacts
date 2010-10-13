@@ -56,7 +56,7 @@ SYSTEMINCLUDE   /epoc32/include/internal
 #endif
 
 LIBRARY         euser.lib VPbkContactTestUtils.lib
-LIBRARY         StifTestInterface.lib serviceprovidersettings.lib
+LIBRARY         stiftestinterface.lib serviceprovidersettings.lib
 LIBRARY         stiftestengine.lib VPbkEng.lib VPbkEngUtils.lib efsrv.lib bafl.lib
 
 LANG            SC

@@ -22,7 +22,7 @@
 // From Phonebook2
 #include "CPbk2CallCmd.h"
 #include "CPbk2AiwInterestArray.h"
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <CPbk2PrependDlg.h>
 #include <Pbk2Commands.hrh>
 #include <CPbk2ContactUiControlSubstitute.h>

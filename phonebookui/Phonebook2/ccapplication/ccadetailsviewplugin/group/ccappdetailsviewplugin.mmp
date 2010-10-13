@@ -58,7 +58,7 @@ LIBRARY         bafl.lib
 LIBRARY         ecom.lib
 LIBRARY         VPbkEng.lib
 LIBRARY         Pbk2Presentation.lib
-LIBRARY         pbk2uicontrols.lib
+LIBRARY         Pbk2UIControls.lib
 LIBRARY         Pbk2CommonUI.lib
 LIBRARY         Pbk2UIExt.lib
 LIBRARY         Pbk2Commands.lib
@@ -72,7 +72,7 @@ LIBRARY         efsrv.lib
 LIBRARY         aknskins.lib
 LIBRARY         eikcoctl.lib
 LIBRARY         servicehandler.lib // aiw
-LIBRARY         CommonEngine.lib
+LIBRARY         commonengine.lib
 LIBRARY         CdlEngine.lib
 LIBRARY         AknLayout2Scalable.lib
 LIBRARY         cone.lib
@@ -80,9 +80,8 @@ LIBRARY         eikcore.lib
 LIBRARY         eikctl.lib
 LIBRARY         ws32.lib
 LIBRARY         mnclientlib.lib
-LIBRARY         spdctrl.lib
+LIBRARY         SpdCtrl.lib
 DEBUGLIBRARY    flogger.lib
 LIBRARY         ccacontactorservice.lib
-LIBRARY         featmgr.lib          // To check Unsync icon feature
 
 // End of File

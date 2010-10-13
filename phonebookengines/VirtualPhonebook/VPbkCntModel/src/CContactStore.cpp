@@ -45,7 +45,7 @@
 #include "VoiceTagSupport.h"
 #include "CContactLink.h"
 #include "COwnContactLinkOperation.h"
-#include <vpbkcntmodelres.rsg>
+#include <VPbkCntModelRes.rsg>
 
 // Virtual Phonebook
 #include <VPbkError.h>

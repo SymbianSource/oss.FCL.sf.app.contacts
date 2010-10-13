@@ -25,7 +25,7 @@
 #include <CPbk2StoreProperty.h>
 #include <CPbk2StorePropertyArray.h>
 #include <CPbk2StoreViewDefinition.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 
 // Virtual Phonebook
 #include <CVPbkContactViewDefinition.h>

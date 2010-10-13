@@ -73,25 +73,26 @@ CPsData* CPcsPoolElement::GetPsData()
 }
 
 // ----------------------------------------------------------------------------
-// CPcsPoolElement::CompareByDataL
-// 
+// CPcsPoolElement::CompareByData
+// Calls CPsData::CompareByData to compare CPsData objects
 // 
 // ----------------------------------------------------------------------------
-TInt CPcsPoolElement::CompareByDataL ( const CPcsPoolElement& aObject1,  const CPcsPoolElement& aObject2 )
+TInt CPcsPoolElement::CompareByData ( const CPcsPoolElement& aObject1,  const CPcsPoolElement& aObject2 )
 {
-    CPsData *data1 = const_cast<CPcsPoolElement&> (aObject1).GetPsData();
-    CPsData *data2 = const_cast<CPcsPoolElement&> (aObject2).GetPsData();  
-    return (CPcsAlgorithm2Utils::CompareDataBySortOrderL(*(data1), *(data2)));
+  CPsData *data1 = const_cast<CPcsPoolElement&> (aObject1).GetPsData();
+  CPsData *data2 = const_cast<CPcsPoolElement&> (aObject2).GetPsData();  
+  return (CPcsAlgorithm2Utils::CompareDataBySortOrder(*(data1), *(data2)));
 }
 
 // CPcsPoolElement::IsDataMatch
 // 
 // ----------------------------------------------------------------------------		
-TBool CPcsPoolElement::IsDataMatch(TInt aIndex)
+TBool CPcsPoolElement::IsDataMatch (TInt aIndex)
 {
-    __ASSERT_DEBUG( aIndex < 8, User::Panic( _L("CPcsPoolElement"), KErrOverflow ) );
-    TUint8 val = 1 << aIndex;
-    return (iDataMatchAttribute & val);
+	TReal val;
+	Math::Pow(val, 2, aIndex);
+
+	return(iDataMatchAttribute & (TUint8)val);	
 }
 
 // ----------------------------------------------------------------------------
@@ -100,9 +101,10 @@ TBool CPcsPoolElement::IsDataMatch(TInt aIndex)
 // ----------------------------------------------------------------------------
 void CPcsPoolElement::SetDataMatch(TInt aIndex)
 {
-    __ASSERT_DEBUG( aIndex < 8, User::Panic( _L("CPcsPoolElement"), KErrOverflow ) );
-    TUint8 val = 1 << aIndex;
-    iDataMatchAttribute |= val;
+	TReal val;
+	Math::Pow(val, 2, aIndex);
+
+	iDataMatchAttribute |= (TUint8)val;	
 }
 
 // ----------------------------------------------------------------------------

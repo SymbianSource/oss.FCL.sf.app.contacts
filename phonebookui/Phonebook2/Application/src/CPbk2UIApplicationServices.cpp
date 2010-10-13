@@ -27,7 +27,7 @@
 #include <CPbk2CommandHandler.h>
 #include <MPbk2ViewExplorer.h>
 #include <Pbk2ContactNameFormatterFactory.h>
-#include <pbk2commonui.rsg>
+#include <Pbk2CommonUi.rsg>
 #include <CPbk2StorePropertyArray.h>
 #include <CPbk2FieldPropertyArray.h>
 #include <Pbk2MenuFilteringFlags.hrh>

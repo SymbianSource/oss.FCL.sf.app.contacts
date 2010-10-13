@@ -153,16 +153,6 @@ void CPbk2SelectCreateNewPropertyPhase::AcceptDelayedL
     }
 
 // --------------------------------------------------------------------------
-// CPbk2SelectCreateNewPropertyPhase::DenyDelayed
-// --------------------------------------------------------------------------
-//
-void CPbk2SelectCreateNewPropertyPhase::DenyDelayedL
-        ( const TDesC8& /*aContactLinkBuffer*/ )
-    {
-    // Nothing to do
-    }
-
-// --------------------------------------------------------------------------
 // CPbk2SelectCreateNewPropertyPhase::Results
 // --------------------------------------------------------------------------
 //

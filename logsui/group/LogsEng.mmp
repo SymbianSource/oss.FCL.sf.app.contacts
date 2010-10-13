@@ -73,17 +73,17 @@ LIBRARY euser.lib
 LIBRARY logcli.lib
 LIBRARY bafl.lib
 LIBRARY logwrap.lib
-LIBRARY CommonEngine.lib
+LIBRARY commonengine.lib
 LIBRARY efsrv.lib
 
 LIBRARY VPbkEng.lib
 LIBRARY Pbk2Presentation.lib
-LIBRARY sysutil.lib
+LIBRARY SysUtil.lib
 
-LIBRARY sssettings.lib
-LIBRARY featmgr.lib             // Feature Manager
+LIBRARY SSSettings.lib
+LIBRARY FeatMgr.lib             // Feature Manager 
 LIBRARY centralrepository.lib
-LIBRARY cenrepnotifhandler.lib
+LIBRARY CenRepNotifHandler.lib
 LIBRARY charconv.lib            //For conversion to Unicode
 LIBRARY etel.lib                // ETel functionalities
 LIBRARY etelmm.lib              // ETel functionalities

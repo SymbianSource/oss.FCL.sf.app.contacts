@@ -19,8 +19,8 @@
 
 // INCLUDE FILES
 #include "CPsu2NumberQueryDlg.h"
-#include <pbk2usimuires.rsg>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2USimUIRes.rsg>
+#include <Pbk2UIControls.rsg>
 
 // ============================ MEMBER FUNCTIONS ===============================
 

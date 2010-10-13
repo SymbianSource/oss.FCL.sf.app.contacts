@@ -25,7 +25,7 @@
 
 #include <CPbk2ImageManager.h>
 #include <TPbk2ImageManagerParams.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <MVPbkContactFieldBinaryData.h>
 #include <MVPbkContactFieldTextData.h>
 

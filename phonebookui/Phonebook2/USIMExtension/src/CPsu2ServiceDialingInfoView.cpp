@@ -23,8 +23,8 @@
 #include <MPbk2ViewActivationTransaction.h>
 #include <CPbk2AppUiBase.h>
 #include <MPbk2ViewExplorer.h>
-#include <pbk2usimuires.rsg>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2USimUIRes.rsg>
+#include <Pbk2UIControls.rsg>
 #include <MPbk2ContactUiControl.h>
 #include <TPbk2StoreContactAnalyzer.h>
 #include <Pbk2Commands.hrh>

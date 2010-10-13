@@ -25,7 +25,7 @@
 #include <avkon.rsg>
 #include <StringLoader.h>
 
-#include <pbkview.rsg>
+#include <PbkView.rsg>
 #include "CPbkGroupPopup.h"
 #include <CPbkContactEngine.h>
 #include <CPbkContactItem.h>

@@ -55,13 +55,6 @@ NONSHARABLE_CLASS(CPbk2SettingsListState) : public CBase
          * @return  Selection item list.
          */
         CSelectionItemList& SelectionItemList();
-        
-        /**
-         * Returns a copy of selection item list.
-         *
-         * @return old item list state.
-         */
-        CSelectionItemList& ItemListState();
 
         /**
          * Returns supported store configuration.

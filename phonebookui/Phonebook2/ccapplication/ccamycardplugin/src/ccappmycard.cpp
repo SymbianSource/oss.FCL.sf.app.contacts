@@ -39,7 +39,7 @@
 #include <MVPbkStoreContact2.h>
 #include <MVPbkStoreContact.h>
 #include <MVPbkContactLink.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <MVPbkFieldType.h>
 #include <MVPbkContactFieldTextData.h>
 #include <MVPbkContactFieldUriData.h>

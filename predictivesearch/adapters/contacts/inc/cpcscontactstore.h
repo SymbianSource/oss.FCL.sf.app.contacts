@@ -267,7 +267,7 @@ class CPcsContactStore: public CActive,
         /**
          * Issues request to active object to call RunL method
          */
-        void IssueRequest( TInt aTimeDelay );
+        void IssueRequest( TInt timeDelay );
 
         /**
          * Creates a sort order depending on the fields specified in the cenrep

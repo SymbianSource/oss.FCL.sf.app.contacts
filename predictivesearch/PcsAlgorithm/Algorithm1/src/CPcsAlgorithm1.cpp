@@ -978,11 +978,10 @@ void CPcsAlgorithm1::UpdateCachingStatus(TDesC& aDataStore, TInt aStatus)
     }
 
     // Calculate cumulative status according to single caches statuses
-    if ( countCompleted > 0 && ( countCompleted + countNotStarted ) == cacheCount )
+    if ( countCompleted == cacheCount )
     {
-        // If at least one caching is finished
-        // set status to ECachingComplete or ECachingCompleteWithErrors
-        // according to iCacheError
+        // If all caching are finished, set status to ECachingComplete or 
+        // ECachingCompleteWithErrors according to iCacheError
         status = ( iCacheError == KErrNone ) ? ECachingComplete : ECachingCompleteWithErrors;
     }
     else if ( countInProgress > 0 )
@@ -996,6 +995,13 @@ void CPcsAlgorithm1::UpdateCachingStatus(TDesC& aDataStore, TInt aStatus)
         // Else if at least one caching is completed with errors, 
         //set status to ECachingCompleteWithErrors
         status = ECachingCompleteWithErrors;
+    }
+    else if ( countCompleted > 0 && ( countCompleted + countNotStarted ) == cacheCount )
+    {
+        // Else if at least one caching is finished
+        // set status to ECachingComplete or ECachingCompleteWithErrors
+        // according to iCacheError
+        status = ( iCacheError == KErrNone ) ? ECachingComplete : ECachingCompleteWithErrors;
     }
     else
     {

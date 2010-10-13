@@ -46,7 +46,7 @@ APP_LAYER_SYSTEMINCLUDE
 LIBRARY                 bafl.lib
 LIBRARY                 euser.lib
 LIBRARY                 flogger.lib
-LIBRARY                 CommonEngine.lib//coneresourceloader
+LIBRARY                 commonengine.lib//coneresourceloader
 LIBRARY                 cmsclient.lib//cms wrapper
 LIBRARY                 ccaclient.lib//cms wrapper
 LIBRARY                 avkon.lib//avkon view/container
@@ -57,8 +57,8 @@ LIBRARY                 aknicon.lib // CAknIcon
 LIBRARY                 pbk2spbcontentprovider.lib // CSpbContentProvider
 LIBRARY                 Pbk2Presentation.lib // TPbk2IconId
 LIBRARY                 egul.lib // CGulIcon
-LIBRARY                 aknskins.lib
-LIBRARY                 CdlEngine.lib
+LIBRARY                 AknSkins.lib
+LIBRARY                 cdlengine.lib
 LIBRARY                 aknlayout2.lib 
 LIBRARY                 touchfeedback.lib
 LIBRARY                 ecom.lib

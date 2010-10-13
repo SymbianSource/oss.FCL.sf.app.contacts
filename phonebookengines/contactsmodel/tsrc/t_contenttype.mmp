@@ -13,21 +13,19 @@
 // Description:
 //
 
-TARGET          t_contenttype.exe
-TARGETTYPE      EXE
-
+target          t_contenttype.exe
+targettype      EXE
 CAPABILITY   ReadUserData WriteUserData
 UID		0x1000007a
 VENDORID 0x70000001
 
 SOURCEPATH	../tsrc
 
-SYSTEMINCLUDE /epoc32/include
-SYSTEMINCLUDE /epoc32/include/platform
-USERINCLUDE ../inc . 
+systeminclude /epoc32/include 
+userinclude ../inc . 
 
-SOURCE          t_contenttype.cpp
+source          t_contenttype.cpp
 
-LIBRARY         euser.lib efsrv.lib cntmodel.lib estor.lib
+library         euser.lib efsrv.lib cntmodel.lib estor.lib
 
 SMPSAFE

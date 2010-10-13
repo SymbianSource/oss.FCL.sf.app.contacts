@@ -61,7 +61,7 @@ LIBRARY               bafl.lib //Listboxmodel
 LIBRARY               euser.lib
 LIBRARY               efsrv.lib
 LIBRARY               aiwdialdata.lib //AIW
-LIBRARY               CommonEngine.lib
+LIBRARY               commonengine.lib
 LIBRARY               servicehandler.lib //AIW
 LIBRARY               sendui.lib
 LIBRARY               cmsclient.lib //CMS

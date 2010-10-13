@@ -508,18 +508,6 @@ RESOURCE ARRAY r_pbk2_icon_info_array
             maskId = qgn_prop_radiobutt_on_mask;
             skinIdMajor = EAknsMajorAvkon;
             skinIdMinor = EAknsMinorQgnPropRadiobuttOn;
-            },
-          PBK2_ICON_INFO
-            {
-            version = 0;
-            pbk2IconInfoId = PHONEBOOK2_ICON_ID
-                 {
-                 ownerUid = KPbk2UID3;
-                 id = EPbk2qgn_prop_phonebook2_unsync;
-                 };
-            mbmFileName = phonebook2_mbm_file_location;
-            iconId = qgn_prop_phonebook2_unsync;
-            maskId = qgn_prop_phonebook2_unsync_mask;
             }
         };
     }

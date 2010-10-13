@@ -65,10 +65,10 @@ APP_LAYER_SYSTEMINCLUDE
 LIBRARY euser.lib  ecom.lib eikcoctl.lib cone.lib
 
 // Dependencies to S60 platform components
-LIBRARY CommonEngine.lib avkon.lib
+LIBRARY commonengine.lib avkon.lib
 
 // Dependencies to Phonebook
-LIBRARY VPbkEng.lib vpbksimstoreservice.lib
+LIBRARY VPbkEng.lib VPbkSimStoreService.lib
 LIBRARY Pbk2Presentation.lib Pbk2CommonUI.lib Pbk2Commands.lib
 
 // End of File

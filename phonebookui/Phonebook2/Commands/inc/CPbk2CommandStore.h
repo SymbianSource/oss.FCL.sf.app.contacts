@@ -73,7 +73,7 @@ class CPbk2CommandStore : public CBase,
          * Destroys all the commands in the iCommandArray.
          * by calling CommandFinished() on each one.
          */
-        IMPORT_C void DestroyAllCommands();
+        void DestroyAllCommands();
 
     public: // From MPbk2CommandList
         IMPORT_C void AddAndExecuteCommandL(

@@ -27,7 +27,7 @@
 #include <MVPbkBaseContact.h>
 #include <MVPbkContactOperationBase.h>
 #include <CVPbkTopContactManager.h>
-#include <pbk2uicontrols.rsg> 
+#include <Pbk2UIControls.rsg> 
 
 // Debugging headers
 #include <Pbk2Debug.h>

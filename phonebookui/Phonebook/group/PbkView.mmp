@@ -167,7 +167,7 @@ APP_LAYER_SYSTEMINCLUDE // macro that defines the platform system includes
 LIBRARY euser.lib estor.lib efsrv.lib bafl.lib bitgdi.lib
 LIBRARY fbscli.lib cone.lib egul.lib eikcore.lib
 LIBRARY cntmodel.lib cntview.lib apgrfx.lib
-LIBRARY imageconversion.lib bitmaptransforms.lib
+LIBRARY ImageConversion.lib BitmapTransforms.lib
 
 // Dependencies to AVKON
 LIBRARY avkon.lib aknlayout.lib eikctl.lib eikcoctl.lib eikdlg.lib aknicon.lib
@@ -176,20 +176,20 @@ LIBRARY CdlEngine.lib
 LIBRARY AknLayout2Scalable.lib
 
 // Dependencies to Series60 platform components
-LIBRARY CommonEngine.lib sysutil.lib
-LIBRARY aknskins.lib aknjapanesereading.lib
-LIBRARY featmgr.lib FindUtil.lib numbergrouping.lib
+LIBRARY commonengine.lib sysutil.lib
+LIBRARY AknSkins.lib AknJapaneseReading.lib
+LIBRARY FeatMgr.lib FindUtil.lib numbergrouping.lib
 LIBRARY DrmHelper.lib apmime.lib centralrepository.lib
 LIBRARY diskspacereserver.lib
 LIBRARY hlplch.lib
 
 // Dependencies to other Phonebook components
-LIBRARY pbkeng.lib  // Phonebook Engine
+LIBRARY PbkEng.lib  // Phonebook Engine
 LIBRARY PbkExt.lib  // Phonebook Extension manager
 
 // Dependencies to other Series60 applications
-LIBRARY mgfetch.lib
-LIBRARY filelist.lib
+LIBRARY MGFetch.lib
+LIBRARY FileList.lib
 
 // DRM dependencies
 LIBRARY DrmParsers.lib DrmDcf.lib DrmRights.lib 

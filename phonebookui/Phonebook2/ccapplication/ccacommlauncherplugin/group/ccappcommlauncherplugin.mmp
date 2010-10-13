@@ -59,7 +59,6 @@ USERINCLUDE     ../../inc //ccapplication/inc
 USERINCLUDE     ../../ccapp/ccapputil/inc
 USERINCLUDE     ../../../../../ccservices/cmsservices/cmsengine/inc
 USERINCLUDE     . ../inc
-USERINCLUDE	../../../commands/inc
 
 LIBRARY         euser.lib 
 LIBRARY         ecom.lib
@@ -75,15 +74,15 @@ LIBRARY         eikcoctl.lib
 LIBRARY         servicehandler.lib // aiw
 LIBRARY         ccapputil.lib
 LIBRARY         bafl.lib
-LIBRARY         CommonEngine.lib//coneresourceloader
+LIBRARY         commonengine.lib//coneresourceloader
 LIBRARY         eikctl.lib
 LIBRARY	        aknicon.lib
 LIBRARY	        egul.lib 
 LIBRARY	        aknskinsrv.lib
 LIBRARY	        aknswallpaperutils.lib
-LIBRARY	        AknLayout2Scalable.lib
+LIBRARY	        aknlayout2scalable.lib
 LIBRARY	        aknlayout2.lib
-LIBRARY         CdlEngine.lib
+LIBRARY         cdlengine.lib
 LIBRARY         eikcore.lib
 LIBRARY         cone.lib
 LIBRARY         flogger.lib
@@ -101,7 +100,7 @@ LIBRARY					bitgdi.lib
 // Dependencies to AVKON
 LIBRARY 	CdlEngine.lib 
 LIBRARY 	touchfeedback.lib
-LIBRARY 	featmgr.lib
+LIBRARY 	FeatMgr.lib
 
 LIBRARY         akntransitionutils.lib
 LIBRARY         aknphysics.lib
@@ -114,7 +113,7 @@ LIBRARY 	gdi.lib
 LIBRARY         pbk2spbcontentprovider.lib
 LIBRARY			charconv.lib 
 
-LIBRARY         fontutils.lib
+LIBRARY         FontUtils.lib
 
 LIBRARY         apgrfx.lib
 LIBRARY         ws32.lib

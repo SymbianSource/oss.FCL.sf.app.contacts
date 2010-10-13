@@ -28,7 +28,7 @@
 #include "CPbk2KeyEventDealer.h"
 #include <TPbk2DestructionIndicator.h>
 #include <MPbk2ApplicationServices.h>
-#include <pbk2serverapp.rsg>
+#include <Pbk2ServerApp.rsg>
 
 // Virtual Phonebook
 #include <MVPbkContactLink.h>
@@ -185,16 +185,6 @@ void CPbk2PrepareSingleAssignPhase::RequestCancelL( TInt aExitCommandId )
 // --------------------------------------------------------------------------
 //
 void CPbk2PrepareSingleAssignPhase::AcceptDelayedL
-        ( const TDesC8& /*aContactLinkBuffer*/ )
-    {
-    // Nothing to do
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2PrepareSingleAssignPhase::DenyDelayed
-// --------------------------------------------------------------------------
-//
-void CPbk2PrepareSingleAssignPhase::DenyDelayedL
         ( const TDesC8& /*aContactLinkBuffer*/ )
     {
     // Nothing to do

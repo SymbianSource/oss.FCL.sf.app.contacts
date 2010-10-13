@@ -28,8 +28,8 @@
 #include <MPbk2ApplicationServices2.h>
 #include <CPbk2ServiceManager.h>
 #include <MPbk2AppUi.h>
-#include <pbk2uicontrols.rsg>
-#include <pbk2commands.rsg>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2Commands.rsg>
 #include <CPbk2ApplicationServices.h>
 #include <TPbk2StoreContactAnalyzer.h>
 

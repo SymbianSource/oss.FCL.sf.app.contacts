@@ -25,7 +25,7 @@
 #include <MPbk2ContactNameFormatter.h>
 #include <MPbk2ContactUiControl.h>
 #include <MPbk2CommandObserver.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <TPbk2AddressSelectParams.h>
 #include <CPbk2AddressSelect.h>
 #include <MPbk2AppUi.h>
@@ -380,14 +380,9 @@ void CPguSendMessageGroupCmd::DoSendMessageL()
             sp->ControlL( TUid::Uid( EEikStatusPaneUidTitle ) ) );
         title = titlePane->Text()->AllocLC();
 
-        TRAPD( error, Phonebook2::Pbk2AppUi()->ApplicationServices().SendUiL()->
-            CreateAndSendMessageL( iMtmUid, iMessageData ) );
+        Phonebook2::Pbk2AppUi()->ApplicationServices().SendUiL()->
+            CreateAndSendMessageL( iMtmUid, iMessageData );
 
-        if ( error )
-            {
-            //Show Appropriate Error Note
-        
-            }
         if( !Layout_Meta_Data::IsLandscapeOrientation() )
             {
             sp->SwitchLayoutL( R_AVKON_STATUS_PANE_LAYOUT_USUAL );

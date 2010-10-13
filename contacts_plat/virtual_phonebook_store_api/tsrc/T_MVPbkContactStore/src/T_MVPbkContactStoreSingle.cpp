@@ -58,7 +58,7 @@
 #include <MVPbkContactBookmark.h>
 #include <CVPbkFieldTypeRefsList.h>
 #include <TVPbkWordParserCallbackParam.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <VPbkContactViewFilterBuilder.h>
 #include <MVPbkContactViewFiltering.h>
 #include <MVPbkContactBookmarkCollection.h>

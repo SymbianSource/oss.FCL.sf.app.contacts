@@ -99,10 +99,6 @@ void CPbk2ContactEditorTextField::ConstructL()
     // T9 should be deactivated in all contact editors always
     DeactivateT9(iContactField.FieldProperty().EditMode());
 
-    // Enable partial screen input
-    TInt flags = iControl->AknEditorFlags();
-    iControl->SetAknEditorFlags(flags | EAknEditorFlagEnablePartialScreen);
-    
     if (iContactField.FieldProperty().EditMode() == 
         EPbk2FieldEditModeLatinOnly)
         {

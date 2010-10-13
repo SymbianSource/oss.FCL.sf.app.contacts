@@ -22,7 +22,7 @@
 
 // INCLUDES
 #include <e32base.h>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 
 //The types for voice calls

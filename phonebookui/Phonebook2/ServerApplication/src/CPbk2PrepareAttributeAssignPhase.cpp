@@ -24,7 +24,7 @@
 #include "CPbk2KeyEventDealer.h"
 #include <TPbk2StoreContactAnalyzer.h>
 #include <MPbk2ApplicationServices.h>
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 
 // Virtual Phonebook
 #include <MVPbkContactLink.h>
@@ -198,16 +198,6 @@ void CPbk2PrepareAttributeAssignPhase::RequestCancelL( TInt aExitCommandId )
 // --------------------------------------------------------------------------
 //
 void CPbk2PrepareAttributeAssignPhase::AcceptDelayedL
-        ( const TDesC8& /*aContactLinkBuffer*/ )
-    {
-    // Nothing to do
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2PrepareAttributeAssignPhase::DenyDelayed
-// --------------------------------------------------------------------------
-//
-void CPbk2PrepareAttributeAssignPhase::DenyDelayedL
         ( const TDesC8& /*aContactLinkBuffer*/ )
     {
     // Nothing to do

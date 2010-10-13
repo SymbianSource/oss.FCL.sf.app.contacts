@@ -20,7 +20,7 @@
 // INCLUDE FILES
 #include "CPbk2NameOrderSettingItem.h"   // This class
 
-#include <pbk2uicontrols.rsg>
+#include <Pbk2UIControls.rsg>
 #include <CPbk2SortOrderManager.h>
 #include <StringLoader.h>
 

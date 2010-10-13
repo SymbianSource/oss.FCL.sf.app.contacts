@@ -74,20 +74,19 @@ END
 
 // Include paths
 USERINCLUDE     ../GroupExtension/inc
-USERINCLUDE     ../commands/inc
 SYSTEMINCLUDE   ../inc
 APP_LAYER_SYSTEMINCLUDE
 
 // Dependencies to Symbian OS components
-LIBRARY euser.lib CommonEngine.lib
+LIBRARY euser.lib commonengine.lib
 LIBRARY cone.lib eikcoctl.lib bafl.lib eikctl.lib eikdlg.lib eikcore.lib
 LIBRARY efsrv.lib ecom.lib
 
 // Dependencies to S60 components
-LIBRARY avkon.lib featmgr.lib sendui.lib touchfeedback.lib
+LIBRARY Avkon.lib FeatMgr.lib sendui.lib touchfeedback.lib
 
 // Dependencies to Phonebook
-LIBRARY Pbk2CommonUI.lib pbk2uicontrols.lib Pbk2Commands.lib
+LIBRARY Pbk2CommonUi.lib Pbk2UiControls.lib Pbk2Commands.lib
 LIBRARY Pbk2Presentation.lib VPbkEng.lib
 LIBRARY CdlEngine.lib
 // End of File

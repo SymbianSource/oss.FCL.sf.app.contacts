@@ -208,11 +208,6 @@ RESOURCE PBK2_ICON_ARRAY r_pbk2_fieldtype_icons
             {
             ownerUid = KPbk2UID3;
             id = EPbk2qgn_prop_blid_waypoint;
-            },
-        PHONEBOOK2_ICON_ID
-            {
-            ownerUid = KPbk2UID3;
-            id = EPbk2qgn_prop_phonebook2_unsync;
             }
         };
     }

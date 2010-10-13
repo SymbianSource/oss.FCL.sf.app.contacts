@@ -38,7 +38,7 @@
 #include "CPbk2ContactEditorUIAddressOfficeField.h"
 #include <MPbk2ContactEditorExtensionExtension.h>
 #include "CPbk2IconInfoContainer.h"
-#include <pbk2commonui.rsg>
+#include <Pbk2CommonUi.rsg>
 
 #include <MPbk2ContactEditorExtension.h>
 #include <Pbk2FieldProperty.hrh>

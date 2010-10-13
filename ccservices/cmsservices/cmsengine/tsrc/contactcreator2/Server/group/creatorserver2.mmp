@@ -43,7 +43,7 @@ LIBRARY                         bafl.lib
 LIBRARY                         estor.lib
 LIBRARY                         efsrv.lib
 LIBRARY             	        euser.lib
-LIBRARY		                    VPbkEng.lib
+LIBRARY		                    vpbkeng.lib
 LIBRARY		                    flogger.lib
 LIBRARY                         CommonEngine.lib
 

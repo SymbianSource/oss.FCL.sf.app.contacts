@@ -30,8 +30,8 @@
 #include "CPbk2SelectCreateNewPropertyPhase.h"
 #include "CPbk2PrepareSingleAssignPhase.h"
 #include "MPbk2SelectFieldProperty.h"
-#include <pbk2uicontrols.rsg>
-#include <pbk2serverapp.rsg>
+#include <Pbk2UIControls.rsg>
+#include <Pbk2ServerApp.rsg>
 #include <CPbk2StoreManager.h>
 #include <CPbk2StoreConfiguration.h>
 #include <MPbk2ApplicationServices.h>
@@ -230,16 +230,6 @@ void CPbk2SingleContactDataAssigner::CancelService()
 // --------------------------------------------------------------------------
 //
 void CPbk2SingleContactDataAssigner::AcceptDelayedContactsL
-        ( const TDesC8& /*aContactLinkBuffer*/ )
-    {
-    // Do nothing
-    }
-
-// --------------------------------------------------------------------------
-// CPbk2SingleContactDataAssigner::DenyDelayedContactsL
-// --------------------------------------------------------------------------
-//
-void CPbk2SingleContactDataAssigner::DenyDelayedContactsL
         ( const TDesC8& /*aContactLinkBuffer*/ )
     {
     // Do nothing

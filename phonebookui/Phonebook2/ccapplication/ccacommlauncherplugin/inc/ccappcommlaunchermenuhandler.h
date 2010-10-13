@@ -166,7 +166,6 @@ private:
     void DoSetDefaultCmdL();
     void DoShowOnMapCmdL();
     void DoDeleteCmdL();
-    void DoSendBCardCmdL();
     
     /**
      * Handlers for Aiw-based commands

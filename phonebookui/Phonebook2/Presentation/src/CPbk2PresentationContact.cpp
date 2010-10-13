@@ -34,7 +34,7 @@
 #include <MVPbkStoreContact2.h>
 #include <TVPbkFieldVersitProperty.h>
 #include <VPbkVariant.hrh>
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 
 // System includes
 #include <centralrepository.h>

@@ -22,7 +22,7 @@
 
 // INCLUDES
 #include "cmscontact.h"
-#include <vpbkeng.rsg>
+#include <VPbkEng.rsg>
 #include <MVPbkSingleContactOperationObserver.h>
 #include "bpasobserver.h"
 #include "cmscontactinterface.h"

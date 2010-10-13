@@ -29,7 +29,7 @@
 #include <MenuFilteringFlags.h>
 #include <MPbkAiwCommandObserver.h>
 
-#include <phonebook.rsg>
+#include <Phonebook.rsg>
 
 #include <cntdef.h>
 #include <AiwServiceHandler.h>

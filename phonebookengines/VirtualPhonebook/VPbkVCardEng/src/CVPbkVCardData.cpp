@@ -24,7 +24,7 @@
 
 #include <CVPbkContactManager.h>
 #include <VPbkDataCaging.hrh>
-#include <vpbkvcardeng.rsg>
+#include <VPbkVCardEng.rsg>
 #include <RLocalizedResourceFile.h>
 #include <CVPbkContactCopyPolicyManager.h>
 #include <VPbkStoreUriLiterals.h>

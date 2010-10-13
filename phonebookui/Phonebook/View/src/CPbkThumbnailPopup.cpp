@@ -29,7 +29,7 @@
 #include    <CPbkContactEngine.h>
 #include    <CPbkContactItem.h>
 #include    <CPbkConstants.h>
-#include    <pbkview.rsg>
+#include    <PbkView.rsg>
 #include    <AknsUtils.h>
 #include <layoutmetadata.cdl.h>
 

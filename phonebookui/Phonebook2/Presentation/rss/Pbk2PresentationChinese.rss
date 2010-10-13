@@ -22,7 +22,7 @@
 
 /*============================================================================
 * NB. Pbk2Presentation resources MUST be defined in Pbk2PresentationCommon.rss
-* because only one pbk2presentation.rsg file used with different language 
+* because only one Pbk2Presentation.rsg file used with different language 
 * specific ".rsc" files. Otherwise BC is broken.
 ============================================================================*/
 

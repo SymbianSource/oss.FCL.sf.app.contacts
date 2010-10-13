@@ -20,7 +20,7 @@
 // INCLUDE FILES
 #include <eikenv.h>
 
-#include <logs.rsg>
+#include <Logs.rsg>
 #include <AknUtils.h>	// AknTextUtils
 
 #include "CLogsCtAdapter.h"

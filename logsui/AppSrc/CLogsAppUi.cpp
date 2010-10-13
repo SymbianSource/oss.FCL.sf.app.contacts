@@ -30,7 +30,7 @@
 #include <gsplugininterface.h>  
 #include <hlplch.h>
 #include <LogsUiCmdStarterConsts.h>
-#include <logs.rsg>
+#include <Logs.rsg>
 
 //+ __GFXTRANS__
 // Transition effects
@@ -1210,14 +1210,6 @@ TBool CLogsAppUi::StartApplicationL(
         
     return 0;
     }
-
-    // If Logs is background,returns is True,otherwise False.
-    TBool CLogsAppUi::IsBackground() const
-      {
-        CCoeEnv * env = CCoeEnv::Static();
-        TInt ordinal = env->RootWin().OrdinalPosition();
-        return ordinal != 0;
-      }
 
 
 //  End of File

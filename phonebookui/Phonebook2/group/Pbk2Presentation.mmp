@@ -126,14 +126,6 @@ TARGETPATH  RESOURCE_FILES_DIR
 LANGUAGE_IDS
 END
 
-// UnSync icon resource file
-START RESOURCE ../rss/Pbk2PresentationChineseUnSync.rss
-DEPENDS vpbkeng.rsg
-HEADER
-TARGET Pbk2PresentationChineseUnSync
-TARGETPATH RESOURCE_FILES_DIR
-LANGUAGE_IDS
-END
 
 // Include paths
 USERINCLUDE     ../Presentation/inc ../Presentation/rss
@@ -141,12 +133,12 @@ SYSTEMINCLUDE   ../inc
 APP_LAYER_SYSTEMINCLUDE
 
 // Dependencies to Symbian OS components
-LIBRARY euser.lib efsrv.lib bafl.lib centralrepository.lib
+LIBRARY euser.lib efsrv.lib bafl.lib CentralRepository.lib
 LIBRARY cone.lib fbscli.lib imageconversion.lib bitmaptransforms.lib
 
 // Dependencies to S60 components
-LIBRARY featmgr.lib
-LIBRARY avkon.lib eikcdlg.lib eikctl.lib CommonEngine.lib aknicon.lib
+LIBRARY FeatMgr.lib
+LIBRARY avkon.lib eikcdlg.lib eikctl.lib CommonEngine.lib AknIcon.lib
 
 // Dependencies to Phonebook
 LIBRARY VPbkEng.lib
