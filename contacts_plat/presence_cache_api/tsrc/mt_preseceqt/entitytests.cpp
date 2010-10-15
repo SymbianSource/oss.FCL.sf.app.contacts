@@ -614,10 +614,8 @@ void EntityTests::handlePresenceNotificationInClient(bool success, PrcPresenceBu
         QString testnewVal = aPresenceBuddyInfo->getAnyField( newKey );
         QVERIFY ( testnewVal== newValue );
         }
-    
-
-   
     }
+
 void EntityTests::handlePresenceReadInClient(bool success, QList<PrcPresenceBuddyInfoQt*> buddyInfoList)
 {
    int cnt = buddyInfoList.count(); 
@@ -636,12 +634,103 @@ void EntityTests::handlePresenceReadInClient(bool success, QList<PrcPresenceBudd
        }
     
 }
-void EntityTests::handlePresencewriteInclient(bool success)
-    
+void EntityTests::handlePresencewriteInclient(bool success)   
     {
     if(success == true)
         {
         iNotificationReceived = true;
         }
     
+    }
+
+/*!
+ * A helper function for the test threads used in EntityTests::test9
+ * Basically just creates a presence reader and records wether or not 
+ * succesfull
+ */   
+
+TInt EntityTests::startupTestThreadFunction(TAny* any)
+    {
+    // 1. Add cleanup stack support.    
+    CTrapCleanup* cleanupStack = CTrapCleanup::New();
+     
+    // 2. Add support for active objects        
+    CActiveScheduler* activeScheduler = new (ELeave) CActiveScheduler;          
+    CActiveScheduler::Install(activeScheduler);
+     
+    // 3. create reader, which will cause the server startup (provided it is not running)
+    PrcPresenceReader* reader = PrcPresenceReader::createReader(); 
+    
+    // 4. If reader created correctly, increase provided results counter
+    if (reader)
+        {
+        TInt* count = (TInt*) any;
+        (*count)++;
+        }
+    
+    delete reader;
+           
+    return(KErrNone);
+    }
+
+/*!
+ * Special server startup test.
+ * 
+ * 1. This test first waits that the presence server timeouts and shuts down.
+ * 2. Then two test threads are created which simultaneously try to create 
+ *    presence reader instances.
+ * 3. That causes two server instances trying to start at the same time and 
+ *    the latter fails with KErrAlreadyExists
+ * 4. We check that is handled correctly by checking that neither test thread 
+ *    panics and succesfully creates the reader
+ */
+void EntityTests::test9()
+    { 
+    // this will hold the count of succesfully created readers
+    TInt readerCount=0;
+    
+    // 1. Wait so the server time outs and shuts down.   
+    //    (we want to start fresh for this test)
+    User::After(3000000);   
+     
+    // 2. Create two test threads and start them
+    _LIT(KMyThread1, "PresenceTestThread1");
+    TBufC<48> threadName(KMyThread1); 
+    RThread thread1;
+    TRequestStatus thread1Status;
+
+    _LIT(KMyThread2, "PresenceTestThread2");
+    TBufC<48> threadName2(KMyThread2);
+    RThread thread2;
+    TRequestStatus thread2Status;
+    
+    TInt r=thread1.Create(KMyThread1, 
+            EntityTests::startupTestThreadFunction,
+            KDefaultStackSize, 
+            NULL, 
+            &readerCount);  
+    
+    TInt x=thread2.Create(KMyThread2, 
+            EntityTests::startupTestThreadFunction,
+            KDefaultStackSize,
+            NULL,
+            &readerCount);
+    
+    thread1.Logon(thread1Status); 
+    thread2.Logon(thread2Status);   
+    thread1.Resume();
+    thread2.Resume();  
+    
+    // 3. When threads are ready, verify results
+    User::WaitForRequest(thread1Status);
+    User::WaitForRequest(thread2Status);
+   
+    // verify that neither thread paniced
+    QVERIFY(thread1.ExitType() != EExitPanic);
+    QVERIFY(thread2.ExitType() != EExitPanic);
+    // verify that both succesfully created presence readers
+    QVERIFY(readerCount == 2);
+
+    thread1.Close();
+    thread2.Close();  
     }

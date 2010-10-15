@@ -43,15 +43,6 @@ const QString appearEffectName = "appear";
 
 const int commLauncherMargin = 120;  // heights of titlebar & comm.launcher 
 
-// TODO: THESE STRINGS ARE IN W32 SDK. THESE DEFINITIONS CAN BE REMOVED
-// WHEN EVERYBODY ARE USING IT OR LATER VERSION
-#ifndef XQOP_CONTACTS_VIEW_CONTACT_CARD
-#define XQOP_CONTACTS_VIEW_CONTACT_CARD QLatin1String("openContactCard(int)")
-#endif
-#ifndef XQI_CONTACTS_VIEW
-#define XQI_CONTACTS_VIEW QLatin1String("com.nokia.symbian.IContactsView")
-#endif
-
 
 /*!
   \class CommLauncherWidget
@@ -65,12 +56,12 @@ CommLauncherWidget::CommLauncherWidget(QGraphicsItem *parent) :
  mContact(0),
  mButtonCount(0),
  mRequest(NULL),
+ mCommLauncherAction(0),
  mCallButton(0),
  mSendMsgButton(0),
  mEmailButton(0),
  mPhonebookButton(0),
  mApplicationManager(0),
- mCommLauncherAction(0),
  mPendingRequest(false)
 {    
     
@@ -403,16 +394,31 @@ void CommLauncherWidget::sendMessage()
             //if preferred is not set select the first number
             messageNumber = mContact->detail<QContactPhoneNumber>();
         }
-        // invoke action
-        if(mCommLauncherAction)
-        	delete mCommLauncherAction;
-        mCommLauncherAction = QContactAction::action(messageActionDescriptors.at(0));
-        mCleanupHandler.add(mCommLauncherAction);
-        
-        if (!messageNumber.isEmpty()) {
-            mCommLauncherAction->invokeAction(*mContact, messageNumber);
-            
-            qDebug() << "send to number " << messageNumber.number();
+
+        if (messageNumber.isEmpty()) {
+        	qDebug() << "contact have not phone number, why am I here?";
+        } else {
+        	if (mRequest) {
+        		delete mRequest;
+        	}
+        	mRequest = mApplicationManager->create(XQI_MESSAGE_SEND,
+												   XQOP_MESSAGE_SEND_WITH_ID,
+												   false);
+        	if (mRequest) {
+        		QList<QVariant> anArguments;
+        		anArguments.append(QVariant::fromValue(messageNumber.number()));
+        		anArguments.append(QVariant(0)); // unused contactId
+        		anArguments.append(QVariant::fromValue(
+        				mContact->displayLabel()));
+        		mRequest->setArguments(anArguments);
+        		mRequest->setSynchronous(false);
+        		bool aResult = mRequest->send();
+        		if (!aResult) {
+        			qDebug() << "request for message was not successful";
+        		}
+        	} else {
+        		qDebug() << "request for message was not created.";
+        	}
         }
     } else {
         qDebug() << "contact has no Actions, can't send a message";
@@ -551,6 +557,7 @@ void CommLauncherWidget::openPhonebookCreateNew()
                                            "Launch", "launch()", false);
     mCleanupHandler.add(mRequest);
     if (mRequest) {
+    	mRequest->setSynchronous(false);
         QVariant retValue(-1);
 		bool result = mRequest->send(retValue);
 		if (!result) {

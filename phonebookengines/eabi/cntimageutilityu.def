@@ -19,4 +19,19 @@ EXPORTS
 	_ZNK15CntImageUtility10metaObjectEv @ 18 NONAME
 	_ZTI15CntImageUtility @ 19 NONAME
 	_ZTV15CntImageUtility @ 20 NONAME
+	_ZN20CntOrientationHelper11orientationEv @ 21 NONAME
+	_ZN20CntOrientationHelper11qt_metacallEN11QMetaObject4CallEiPPv @ 22 NONAME
+	_ZN20CntOrientationHelper11qt_metacastEPKc @ 23 NONAME
+	_ZN20CntOrientationHelper16staticMetaObjectE @ 24 NONAME DATA 16
+	_ZN20CntOrientationHelper18orientationChangedEN2Qt11OrientationE @ 25 NONAME
+	_ZN20CntOrientationHelper19getStaticMetaObjectEv @ 26 NONAME
+	_ZN20CntOrientationHelper22emitOrientationChangedERK13XQSettingsKeyRK8QVariant @ 27 NONAME
+	_ZN20CntOrientationHelperC1EP7QObject @ 28 NONAME
+	_ZN20CntOrientationHelperC2EP7QObject @ 29 NONAME
+	_ZN20CntOrientationHelperD0Ev @ 30 NONAME
+	_ZN20CntOrientationHelperD1Ev @ 31 NONAME
+	_ZN20CntOrientationHelperD2Ev @ 32 NONAME
+	_ZNK20CntOrientationHelper10metaObjectEv @ 33 NONAME
+	_ZTI20CntOrientationHelper @ 34 NONAME
+	_ZTV20CntOrientationHelper @ 35 NONAME
 

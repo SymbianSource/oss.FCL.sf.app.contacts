@@ -22,10 +22,12 @@
 #include <qsqldatabase.h>
 #include <qfile.h>
 
-
+#undef LOG_TO_FILE
 //QTEST_MAIN(TestOfTest);
 int main(int argc, char *argv[])
 {
+#ifdef LOG_TO_FILE
+    
     bool promptOnExit(0);
     for (int i=0; i<argc; i++) {
         if (QString(argv[i]) == "-noprompt")
@@ -45,6 +47,15 @@ int main(int argc, char *argv[])
     if (promptOnExit) {
         printf("Press any key...\n");
         getchar();
+     
     }
+#else
+    QApplication app(argc, argv);
+    EntityTests et;
+    QStringList args( "entitytests");
+    QTest::qExec(&et, args);
+
+
+#endif   
     return 0;
 }

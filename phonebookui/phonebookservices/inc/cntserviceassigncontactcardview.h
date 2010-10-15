@@ -26,6 +26,7 @@
 class CntServiceHandler;
 class CntAbstractViewManager;
 class CntAbstractServiceProvider;
+class HbPushButton;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -57,7 +58,8 @@ private:
     CntAbstractViewManager  *mViewManager;
     QContact                mContact;
     QContactDetail          mDetail;
-   
+    HbPushButton*           mAddButton;
+    HbPushButton*           mUpdateButton;
 };
 
 #endif // CNTSERVICEASSIGNCONTACTCARDVIEW_H

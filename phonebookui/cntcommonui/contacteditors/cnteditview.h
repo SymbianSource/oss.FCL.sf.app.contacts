@@ -47,6 +47,8 @@ public:
     int viewId() const;
 
     void setEngine( CntAbstractEngine& aEngine );
+    QString externalize(QDataStream &stream);
+    bool internalize(QDataStream &stream, CntViewParameters &viewParameters);
     
 private:
     CntEditViewPrivate* const d_ptr;

@@ -52,7 +52,7 @@ SOURCES += src/main.cpp
 SOURCES += src/cntappservicehandler.cpp
 
 # capability
-TARGET.CAPABILITY = CAP_APPLICATION NetworkControl
+TARGET.CAPABILITY = CAP_APPLICATION NetworkControl TrustedUI
 
 TRANSLATIONS = contacts.ts
     
@@ -60,7 +60,7 @@ symbian: {
         # Skip the UID2/3 thing
         TARGET.UID3 = 0x20022EF9
         TARGET.EPOCSTACKSIZE = 0x14000
-        TARGET.EPOCHEAPSIZE = 0x1000 0xA00000
+        TARGET.EPOCHEAPSIZE = 0x1000 0x1000000
         
         SKINICON = qtg_large_phonebook 
 

@@ -68,7 +68,8 @@ void CntEmailAction::performAction()
     m_request = m_AppManager.create(XQI_EMAIL_MESSAGE_SEND, "send(QVariant)", true);
     
     if (m_request) {
-        QMap<QString, QVariant> map;
+        QVariantMap dataMap;
+        QVariantMap emailMap;
         QStringList recipients;
         QList<QVariant> data;
 
@@ -76,16 +77,32 @@ void CntEmailAction::performAction()
         if (QContactType::TypeGroup == m_contact.type()) {
             QStringList emails;
             QVariant value = m_data.value("email");
-            if (value.canConvert<QStringList>()) {
-                emails = value.toStringList();
+            if (value.canConvert<QVariantMap>()) {
+                emailMap = value.toMap();
             }
             
-            if (!emails.isEmpty()) {
-                for (int i=0;i<emails.count();i++) {
-                    recipients.append(emails.at(i));
+            if (!emailMap.isEmpty()) {
+                QVariantMap::const_iterator i = emailMap.constBegin();
+                while (i != emailMap.constEnd()) {
+                    QString formatString;
+                    QString emailAddress;
+                    QString displayLabel;
+                    
+                    emailAddress = i.key();
+                    if (i.value().canConvert<QString>())
+                        displayLabel = i.value().toString();
+                    
+                    // Email addresses format string:
+                    // Firstname Lastname <email@address.com>
+                    if (!displayLabel.isEmpty())
+                        formatString += displayLabel + " ";
+                    formatString += "<" + emailAddress + ">";
+                    recipients.append(formatString);
+                 
+                    ++i;
                 }
-                map.insert(EMAIL_SEND_TO_KEY, recipients);
-                data.append(map);
+                dataMap.insert(EMAIL_SEND_TO_KEY, recipients);
+                data.append(dataMap);
 
                 m_request->setArguments(data);
                 m_request->send(retValue);
@@ -100,9 +117,17 @@ void CntEmailAction::performAction()
         else if (m_detail.definitionName() == QContactEmailAddress::DefinitionName) {
             const QContactEmailAddress &email = static_cast<const QContactEmailAddress &>(m_detail);
 
-            recipients.append(email.emailAddress());
-            map.insert(EMAIL_SEND_TO_KEY, recipients);
-            data.append(map);
+            // Email addresses format string:
+            // Firstname Lastname <email@address.com>
+            QString formatString;
+            QString displayLabel = m_contact.displayLabel();
+            if (!displayLabel.isEmpty())
+                formatString += displayLabel + " ";
+            formatString += "<" + email.emailAddress() + ">";
+            
+            recipients.append(formatString);
+            dataMap.insert(EMAIL_SEND_TO_KEY, recipients);
+            data.append(dataMap);
 
             m_request->setArguments(data);
             m_request->send(retValue);

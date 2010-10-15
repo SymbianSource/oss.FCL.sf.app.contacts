@@ -173,10 +173,10 @@ void CntGroupActionsView::activate( const CntViewParameters aArgs )
     mListView->setModel(mModel);
     mListView->setSelectionMode(HbAbstractItemView::NoSelection);
     
-    connect(mListView, SIGNAL(activated(const QModelIndex&)),
-                this, SLOT(listItemSelected(const QModelIndex&)));
+    connect( mListView, SIGNAL(activated(const QModelIndex&)), this, SLOT(listItemSelected(const QModelIndex&)));
     
-    connect( mListView, SIGNAL(longPressed(HbAbstractViewItem*,const QPointF&)), this, SLOT(onLongPressed(HbAbstractViewItem*,const QPointF&)) );
+    //This is to make long press act like short presswhen no tap menu  
+    mListView->setLongPressEnabled(false); 
     
     HbMainWindow* window = mView->mainWindow();
     if (window)
@@ -200,13 +200,6 @@ void CntGroupActionsView::populatelist(QString primaryText,HbIcon icon,QString s
     
     items << labelItem ;
     mModel->appendRow(items);
-}
-
-void CntGroupActionsView::onLongPressed(HbAbstractViewItem *item, const QPointF &coords)
-{
-    Q_UNUSED(coords);
-    QModelIndex index = item->modelIndex();
-    listItemSelected(index);
 }
 
 void CntGroupActionsView::listItemSelected(const QModelIndex &index)
@@ -245,7 +238,7 @@ void CntGroupActionsView::listItemSelected(const QModelIndex &index)
                     }
                     else {
                         QContactEmailAddress email = contact.detail<QContactEmailAddress>();
-                        mEmailActionParams.append(email.emailAddress());
+                        mEmailActionParams.insert(email.emailAddress(),QVariant(contact.displayLabel()));
                     }
                 }
                 else {
@@ -294,16 +287,9 @@ void CntGroupActionsView::executeAction(QContact& contact, QContactDetail detail
     else if (action.compare("email", Qt::CaseInsensitive) == 0)
     {
         QContactEmailAddress email = static_cast<QContactEmailAddress>(detail);
-        mEmailActionParams.append(email.emailAddress());
+        mEmailActionParams.insert(email.emailAddress(),QVariant(contact.displayLabel()));
     }
-    
-    if (contact.preferredDetail(action).isEmpty())
-    {
-        contact.setPreferredDetail(action, detail);
-       //return value will be ignored because we cannot do anything if it fails.
-       mEngine->contactManager(SYMBIAN_BACKEND).saveContact(&contact);
-    }
-    
+   
     //actionpopup executed, decrement counter
     mPopupCount--;
     if (mPopupCount==0)

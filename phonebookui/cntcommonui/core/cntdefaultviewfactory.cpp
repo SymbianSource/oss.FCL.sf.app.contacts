@@ -38,10 +38,47 @@
 #include "cntsettingsview.h"
 #include "cntextensionmanager.h"
 
+const char *styleFiles = \
+    ":/style/cntcollectionviewlistitem.css" \
+    ":/style/cntcommondetailviewitem.css" \
+    ":/style/cntcommondetailviewitem.widgetml" \
+    ":/style/cntcontactcarddetailitem.css" \
+    ":/style/cntcontactcarddetailitem.widgetml" \
+    ":/style/cntcontactcarddetailitem_color.css" \
+    ":/style/cntcontactcardheadingitem.css" \
+    ":/style/cntcontactcardheadingitem.widgetml" \
+    ":/style/cntcontactcardheadingitem_color.css" \
+    ":/style/cnteditviewheadingitem.css" \
+    ":/style/cnteditviewheadingitem.widgetml" \
+    ":/style/cnteditviewheadingitem_color.css" \
+    ":/style/cnteditviewlistitem.css" \
+    ":/style/cnteditviewlistitem.hblistviewitem.widgetml" \
+    ":/style/cntfetchmarkall.css" \
+    ":/style/cntfetchmarkall.widgetml" \
+    ":/style/cntfetchmarkall_color.css" \
+    ":/style/cntgroupmemberviewlistitem.css" \
+    ":/style/cnthistoryviewitemwidget.css" \
+    ":/style/cnthistoryviewitemwidget.widgetml" \
+    ":/style/cnthistoryviewitemwidget_color.css" \
+    ":/style/cntimagelabel.css" \
+    ":/style/cntimagelabel.widgetml" \
+    ":/style/cntlocationbutton.css" \
+    ":/style/cntlocationbutton.hbpushbutton.widgetml" \
+    ":/style/cntselectiondialogmarkwidget_color.css";
+
 CntDefaultViewFactory::CntDefaultViewFactory( CntExtensionManager& aExt ):
     mExtensionManager( aExt )
 {
-    HbStyleLoader::registerFilePath( ":/style" );
+    QString files(styleFiles);
+    int lastPos = 0;
+    while (lastPos < files.length()) {
+        int pos = files.indexOf(":/style/", lastPos + 1);
+        if (pos == -1) {
+            pos = files.length();
+        }
+        HbStyleLoader::registerFilePath(files.mid(lastPos, pos - lastPos));
+        lastPos = pos;
+    }
 }
 
 CntDefaultViewFactory::~CntDefaultViewFactory()

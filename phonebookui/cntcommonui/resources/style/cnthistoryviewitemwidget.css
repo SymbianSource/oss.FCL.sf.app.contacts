@@ -1,0 +1,52 @@
+CntHistoryViewItemWidget[incoming]{
+    layout:custom-history-incoming;
+}
+
+CntHistoryViewItemWidget[!incoming]{
+    layout:custom-history-outgoing;
+}
+
+CntHistoryViewItemWidget::text-1{
+    text-height: var(hb-param-text-height-primary);
+    font-variant: primary;
+    pref-width:-1;
+    text-align: left;
+    size-policy-horizontal: ignored;
+    text-line-count-min:1;
+    text-line-count-max:1;
+    text-wrap-mode:no-wrap;
+}
+
+CntHistoryViewItemWidget::text-2{
+    text-height: var(hb-param-text-height-secondary);
+    font-variant: secondary;
+    pref-width:-1;
+    text-align: left top;
+    size-policy-horizontal: ignored;
+    text-line-count-min:1;
+    text-line-count-max:3;
+}
+
+CntHistoryViewItemWidget::text-3{
+    text-height:var(hb-param-text-height-tiny);
+    font-variant:secondary;
+    text-align: left;
+}
+
+CntHistoryViewItemWidget::icon-1{
+    fixed-height: var(hb-param-graphic-size-primary-small);
+    fixed-width: var(hb-param-graphic-size-primary-small);
+}
+
+CntHistoryViewItemWidget::frame{
+	border-width: 0.0un;
+}
+
+CntHistoryViewItemWidget::focusframe{
+	border-width: 0.0un;
+}
+
+CntHistoryViewItemWidget::newitem{
+    top:-1.0un;
+    bottom:1.0un;
+}

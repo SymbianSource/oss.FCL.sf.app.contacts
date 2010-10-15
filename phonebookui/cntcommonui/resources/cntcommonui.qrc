@@ -31,8 +31,9 @@
         <file alias="cntcontactcardheadingitem.widgetml">style/cntcontactcardheadingitem.widgetml</file>
         <file alias="cntcontactcardheadingitem.css">style/cntcontactcardheadingitem.css</file>
         <file alias="cntcontactcardheadingitem_color.css">style/cntcontactcardheadingitem_color.css</file>
-        <file alias="cnthistoryviewitem.widgetml">style/cnthistoryviewitem.widgetml</file>
-        <file alias="cnthistoryviewitem.css">style/cnthistoryviewitem.css</file>
+        <file alias="cnthistoryviewitemwidget.widgetml">style/cnthistoryviewitemwidget.widgetml</file>
+        <file alias="cnthistoryviewitemwidget.css">style/cnthistoryviewitemwidget.css</file>
+        <file alias="cnthistoryviewitemwidget_color.css">style/cnthistoryviewitemwidget_color.css</file>
         <file alias="cntcommondetailviewitem.widgetml">style/cntcommondetailviewitem.widgetml</file>
         <file alias="cntcommondetailviewitem.css">style/cntcommondetailviewitem.css</file>
         <file alias="cntimagelabel.widgetml">style/cntimagelabel.widgetml</file>
@@ -44,5 +45,8 @@
         <file alias="cntselectiondialogmarkwidget_color.css">style/cntselectiondialogmarkwidget_color.css</file>
         <file alias="cntcollectionviewlistitem.css">style/cntcollectionviewlistitem.css</file>
         <file alias="cntgroupmemberviewlistitem.css">style/cntgroupmemberviewlistitem.css</file>
+    </qresource>
+    <qresource prefix="/effects">
+        <file alias="item_change_layout.fxml">effects/item_change_layout.fxml</file>
     </qresource>
 </RCC>

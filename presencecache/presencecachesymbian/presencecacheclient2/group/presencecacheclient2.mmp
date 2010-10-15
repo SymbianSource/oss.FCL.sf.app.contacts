@@ -53,5 +53,6 @@ DEFFILE ../eabi/
 deffile ../bwins/ 
 #endif
 
+SMPSAFE
 // End of file
 

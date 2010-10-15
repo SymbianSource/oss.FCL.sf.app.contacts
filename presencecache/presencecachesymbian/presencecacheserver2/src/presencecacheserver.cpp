@@ -52,7 +52,7 @@ CPresenceCacheServer* CPresenceCacheServer::NewLC()
 CPresenceCacheServer::~CPresenceCacheServer()
     {
     delete iExpiryCheck;
-    DoCancel();
+    Cancel();  
     TInt count = iPresenceCache.Count();
     for (TInt i=0;i<count;i++)
         {
@@ -140,6 +140,7 @@ CPresenceCacheServer::CPresenceCacheServer( TInt aPriority )
 //
 void CPresenceCacheServer::ConstructL()
     {
+    StartL( NName::KSymbianServer );
     iShutdown.ConstructL();
 	// ensure that the server still exits even if the 1st client fails to connect
 	iShutdown.Start();
@@ -186,7 +187,6 @@ void CPresenceCacheServer::ExecuteL()
 
     // create server
     CPresenceCacheServer* server = CPresenceCacheServer::NewLC();
-    server->StartL( NName::KSymbianServer );
 
     //Signal client that we are started
     RProcess().Rendezvous( KErrNone );

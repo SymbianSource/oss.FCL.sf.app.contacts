@@ -17,6 +17,10 @@
 
 #include "cnthistoryview.h"
 
+#include "cnthistoryviewitem.h"
+#include "cntglobal.h"
+#include "cntdebug.h"
+
 #include <hblistview.h>
 #include <hbgroupbox.h>
 #include <hbdocumentloader.h>
@@ -24,19 +28,14 @@
 #include <hbview.h>
 #include <hbmessagebox.h>
 #include <hbaction.h>
-#include <xqappmgr.h>
-#include <xqservicerequest.h>
-#include <cnthistorymodel.h>
 #include <hbparameterlengthlimiter.h>
 #include <hbmainwindow.h>
 #include <hbframebackground.h>
 #include <hbabstractviewitem.h>
+#include <xqappmgr.h>
+#include <xqservicerequest.h>
+#include <cnthistorymodel.h>
 #include <QTimer>
-#include <qtcontacts.h>
-
-#include "cnthistoryviewitem.h"
-#include "cntglobal.h"
-#include "cntdebug.h"
 
 const char *CNT_HISTORYVIEW_XML = ":/xml/contacts_history.docml";
 
@@ -81,31 +80,10 @@ CntHistoryView::~CntHistoryView()
 {
     mView->deleteLater();
     
-    if (mDocumentLoader) {
-        delete mDocumentLoader;
-        mDocumentLoader = NULL;
-    }
-    if (mHistoryModel) {
-        delete mHistoryModel;
-        mHistoryModel = NULL;
-    }
-    if (mContact) {
-        delete mContact;
-        mContact = NULL;
-    }
-    
+    delete mDocumentLoader;
+    delete mHistoryModel;
+    delete mContact;
     delete mRequest;
-    mRequest = NULL;
-}
-
-/*!
- * Deactivate the view
- */
-void CntHistoryView::deactivate()
-{
-    QContactManager* cm = &mEngine->contactManager(SYMBIAN_BACKEND);
-    disconnect(cm, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)),
-            this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
 }
 
 /**
@@ -126,24 +104,20 @@ void CntHistoryView::activate( const CntViewParameters aArgs )
     {
         name = hbTrId("txt_phob_list_unnamed");
     }
-    groupBox->setHeading(hbTrId("txt_phob_subtitle_history_with_1").arg(name));
+    groupBox->setHeading(HbParameterLengthLimiter("txt_phob_subtitle_history_with_1").arg(name));
     
     //construct listview
     mHistoryListView = static_cast<HbListView*>(docLoader()->findWidget(QString("listView")));
-    mHistoryListView->setLayoutName("history");
     CntHistoryViewItem *item = new CntHistoryViewItem;
-    item->setSecondaryTextRowCount(1, 3);
-    item->setGraphicsSize(HbListViewItem::SmallIcon);
     mHistoryListView->setItemPrototype(item); //ownership is taken
     
     // Connect listview items to respective slots
     connect(mHistoryListView, SIGNAL(activated(const QModelIndex &)),
                       this,  SLOT(itemActivated(const QModelIndex &)));
-    connect( mHistoryListView, SIGNAL(longPressed(HbAbstractViewItem*,const QPointF&)), 
-            this, SLOT(onLongPressed(HbAbstractViewItem*,const QPointF&)) );
-         
     
-    
+    // To make LongPress act like shortpress. After this only activated signal comes
+    mHistoryListView->setLongPressEnabled(false);
+
     mHistoryModel = new CntHistoryModel(mContact->localId(), cm);
     mHistoryListView->setModel(mHistoryModel); //ownership is not taken
     
@@ -174,6 +148,16 @@ void CntHistoryView::activate( const CntViewParameters aArgs )
 }
 
 /*!
+ * Deactivate the view
+ */
+void CntHistoryView::deactivate()
+{
+    QContactManager* cm = &mEngine->contactManager(SYMBIAN_BACKEND);
+    disconnect(cm, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)),
+            this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
+}
+
+/*!
 Called after new items are added to or removed from comm history view
 */
 void CntHistoryView::updateScrollingPosition()
@@ -197,7 +181,7 @@ void CntHistoryView::clearHistory()
         name = hbTrId("txt_phob_list_unnamed");
     }
     
-    HbMessageBox::question(HbParameterLengthLimiter(hbTrId("txt_phob_info_clear_communications_history_with_1")).arg(name), this, 
+    HbMessageBox::question(HbParameterLengthLimiter("txt_phob_info_clear_communications_history_with_1").arg(name), this, 
             SLOT(handleClearHistory(int)), HbMessageBox::Delete | HbMessageBox::Cancel);
 }
 
@@ -209,16 +193,6 @@ void CntHistoryView::handleClearHistory(int action)
     if (action == HbMessageBox::Delete)
     {
         mHistoryModel->clearHistory();
-    }
-}
-
-void CntHistoryView::onLongPressed(HbAbstractViewItem *item, const QPointF &coords)
-{
-    Q_UNUSED(coords);
-    QModelIndex index = item->modelIndex();
-    if (index.isValid())
-    {
-        itemActivated(index);
     }
 }
 
@@ -237,11 +211,13 @@ void CntHistoryView::itemActivated(const QModelIndex &index)
     QVariantList args;
     
     // If the list item is a call log a call is made to that item
-    if ( flags & CntCallLog ) {
+    if ( flags & CntCallLog )
+    {
         // Make a call
         QVariant number = index.data(CntPhoneNumberRole);
         
-        if ( number.isValid() ) {        
+        if ( number.isValid() )
+        {        
             interface = "com.nokia.symbian.ICallDial";
             operation = "dial(QString)";
             args << number;
@@ -257,11 +233,14 @@ void CntHistoryView::itemActivated(const QModelIndex &index)
             snd.send();
         }
         
-    } else if ( flags & CntMessage ) {
+    }
+    else if ( flags & CntMessage )
+    {
         // Open conversation view
         QVariant id = index.data(CntConverstaionIdRole);
         
-        if ( id.isValid() ) {
+        if ( id.isValid() )
+        {
             interface = "com.nokia.symbian.IMessageView";
             operation = "view(int)";
             args << id;
@@ -269,14 +248,16 @@ void CntHistoryView::itemActivated(const QModelIndex &index)
         }
     }
     
-    if ( createRequest ) {
+    if ( createRequest )
+    {
         XQApplicationManager appMng;
     
         delete mRequest;
         mRequest = NULL;
         mRequest = appMng.create(interface, operation, true); // embedded
         
-        if ( mRequest ) {
+        if ( mRequest )
+        {
             mRequest->setArguments(args); 
             mRequest->send();
         }
@@ -302,39 +283,48 @@ void CntHistoryView::showRootView()
     mViewMgr->back( mArgs, true );
 }
 
+/*!
+Show or hide the clear history menu
+*/
+void CntHistoryView::showClearHistoryMenu()
+{
+    if (mHistoryModel->rowCount() > 0)
+    {
+        mClearHistory->setEnabled(true);
+    }
+    else
+    {
+        mClearHistory->setEnabled(false);
+    }
+}
 
+/*!
+Handle the situation where this contact is deleted from another source
+*/
 void CntHistoryView::contactDeletedFromOtherSource(const QList<QContactLocalId>& contactIds)
 {
     CNT_ENTRY
+    
     if ( contactIds.contains(mContact->localId()) )
     {
         // Do not switch to the previous view immediately. List views are
         // not updated properly if this is not done in the event loop
         QTimer::singleShot(0, this, SLOT(showRootView()));
     }
+    
     CNT_EXIT
 }
 
 /*!
-Show or hide the clear history menu
+Document loader
 */
-void CntHistoryView::showClearHistoryMenu()
-{
-    if (mHistoryModel->rowCount() > 0) {
-        mClearHistory->setEnabled(true);
-    } else {
-        mClearHistory->setEnabled(false);
-    }
-}
-
-/*!
- * Document loader
- */
 HbDocumentLoader* CntHistoryView::docLoader()
 {
-    if (!mDocumentLoader) {
+    if (!mDocumentLoader)
+    {
         mDocumentLoader = new HbDocumentLoader();
     }
+    
     return mDocumentLoader;
 }
 

@@ -19,12 +19,14 @@
 #include "cntdefaultengine.h"
 #include "cntextensionmanager.h"
 #include "cntthumbnailmanager.h"
+#include "cntsavemanager.h"
 #include "cntdebug.h"
 
 CntDefaultEngine::CntDefaultEngine( CntAbstractViewManager& aManager ) :
 mViewManager( aManager ),
 mExtManager( NULL ),
-mThumbnail( NULL )
+mThumbnail( NULL ),
+mSaveManager( NULL )
 {
 }
 
@@ -80,6 +82,14 @@ CntThumbnailManager& CntDefaultEngine::thumbnailManager()
         mThumbnail = new CntThumbnailManager();
     
     return *mThumbnail;
+}
+
+CntSaveManager& CntDefaultEngine::saveManager()
+{
+    if ( !mSaveManager )
+        mSaveManager = new CntSaveManager( this );
+    
+    return *mSaveManager;
 }
 
 // End of File

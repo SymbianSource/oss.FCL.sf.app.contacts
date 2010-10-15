@@ -14,10 +14,8 @@
 ; Description: pkg file  of Contacts Application for IAD.
 ;
 
-
 ; Language
 &EN
-
 
 ; SIS header: name, uid, version
 #{"Contacts"},(0x20022EF9),1,1,0, TYPE=SA, RU
@@ -28,31 +26,35 @@
 ; Unique Vendor name
 :"Nokia"
 
+; Contacts app dlls
 "/epoc32/release/armv5/urel/cntlistmodel.dll"                                - "!:/sys/bin/cntlistmodel.dll"
-"/epoc32/release/armv5/urel/cnthistorymodel.dll"                                - "!:/sys/bin/cnthistorymodel.dll"
-"/epoc32/release/armv5/urel/cntactionsplugin.dll"                                - "!:/sys/bin/cntactionsplugin.dll"
-"/epoc32/release/armv5/urel/cntsimutility.dll"                                - "!:/sys/bin/cntsimutility.dll"
-"/epoc32/release/armv5/urel/cntimageutility.dll"                                - "!:/sys/bin/cntimageutility.dll"
+"/epoc32/release/armv5/urel/cnthistorymodel.dll"                             - "!:/sys/bin/cnthistorymodel.dll"
+"/epoc32/release/armv5/urel/cntsimutility.dll"                               - "!:/sys/bin/cntsimutility.dll"
+"/epoc32/release/armv5/urel/cntimageutility.dll"                             - "!:/sys/bin/cntimageutility.dll"
+"/epoc32/release/armv5/urel/cntcommonui.dll"                                 - "!:/sys/bin/cntcommonui.dll"
+"/epoc32/release/armv5/urel/phonebook.exe"                                   - "!:/sys/bin/phonebook.exe"
 
-"/epoc32/release/armv5/urel/cntcommonui.dll"                                - "!:/sys/bin/cntcommonui.dll"
-"/epoc32/release/armv5/urel/phonebook.exe"                                - "!:/sys/bin/phonebook.exe"
+; Qt plugins & dlls
+"/epoc32/data/z/resource/qt/plugins/contacts\cntactionsplugin.qtplugin"        - "!:/resource/qt/plugins/contacts\cntactionsplugin.qtplugin"
+"/epoc32/data/z/resource/qt/plugins/contacts\qtcontacts_symbian.qtplugin"      - "!:/resource/qt/plugins/contacts\qtcontacts_symbian.qtplugin"
+"/epoc32/data/z/resource/qt/plugins/contacts\qtcontacts_symbiansim.qtplugin"   - "!:/resource/qt/plugins/contacts\qtcontacts_symbiansim.qtplugin"
+"/epoc32/release/armv5/urel/cntactionsplugin.dll"                              - "!:/sys/bin/cntactionsplugin.dll"
+"/epoc32/release/armv5/urel/qtcontacts_symbian.dll"                            - "!:/sys/bin/qtcontacts_symbian.dll"
+"/epoc32/release/armv5/urel/qtcontacts_symbiansim.dll"                         - "!:/sys/bin/qtcontacts_symbiansim.dll"
 
-
-"/epoc32/data/z/resource/qt/plugins/contacts\cntactionsplugin.qtplugin"    -   "!:/resource/qt/plugins/contacts\cntactionsplugin.qtplugin"
-
+; Splash screen resource files
 "/epoc32/data/z/resource/hb/splashml/phonebook.splashml"  - "!:\resource\hb\splashml\phonebook.splashml"
 "/epoc32/data/z/resource/hb/splashml/phonebook.splashml"  - "!:\resource\hb\splashml\phonebook.splashml"
 
 ; Phonebook services
-"/epoc32/release/armv5/urel/phonebookservices.exe"                                - "!:/sys/bin/phonebookservices.exe"
-"/epoc32/data/z/resource/apps/phonebookservices.rsc"                         - "!:/resource/apps/phonebookservices.rsc"
-"/epoc32/data/Z/private/10003a3f/import/apps/phonebookservices_reg.rsc"		- "!:/private/10003a3f/import/apps/phonebookservices_reg.rsc"
+"/epoc32/release/armv5/urel/phonebookservices.exe"                            - "!:/sys/bin/phonebookservices.exe"
+"/epoc32/data/z/resource/apps/phonebookservices.rsc"                          - "!:/resource/apps/phonebookservices.rsc"
+"/epoc32/data/Z/private/10003a3f/import/apps/phonebookservices_reg.rsc"		  - "!:/private/10003a3f/import/apps/phonebookservices_reg.rsc"
 
-
-;Phonebook resources
-"/epoc32/data/z/resource/apps/phonebook.rsc"                         - "!:/resource/apps/phonebook.rsc"
+; Phonebook resources
+"/epoc32/data/z/resource/apps/phonebook.rsc"                        - "!:/resource/apps/phonebook.rsc"
 "/epoc32/data/z/resource/qt/translations/contacts_en.qm"            - "!:/resource/qt/translations/contacts_en.qm"
 
-;Cenrep settings
-"/epoc32/data/z/private/10202be9/2002FF54.txt" - "!:/system/data/10202BE9/2002FF54.txt"
-"/epoc32/data/z/private/10202be9/200315A8.txt" - "!:/system/data/10202BE9/200315A8.txt"
+; Cenrep files
+"/epoc32/data/z/private/10202be9/2002FF54.txt"  - "!:/system/data/10202BE9/2002FF54.txt"
+"/epoc32/data/z/private/10202be9/200315A8.txt"  - "!:/system/data/10202BE9/200315A8.txt"

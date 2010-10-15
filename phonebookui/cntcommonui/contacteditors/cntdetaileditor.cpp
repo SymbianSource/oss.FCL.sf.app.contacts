@@ -52,7 +52,6 @@ CntDetailEditor::CntDetailEditor( int aId ) :
     mViewManager(NULL),
     mEditorFactory(NULL),
     mCancel(NULL),
-    mSaveManager(NULL),
     mVirtualKeyboard(NULL)
 {
     bool ok;
@@ -88,8 +87,6 @@ CntDetailEditor::~CntDetailEditor()
     mLoader = NULL;
     delete mEditorFactory;
     mEditorFactory = NULL;
-    delete mSaveManager;
-    mSaveManager = NULL;
     delete mVirtualKeyboard;
     mVirtualKeyboard = NULL;
 }
@@ -121,15 +118,14 @@ void CntDetailEditor::activate( const CntViewParameters aArgs )
         mView->setNavigationAction(mSoftkey);
     }
     
-    QContact selectedContact;
     if ( mId == groupEditorView )
     {
-        selectedContact = aArgs.value(ESelectedGroupContact).value<QContact>();
+        mContact = aArgs.value(ESelectedGroupContact).value<QContact>();
         connect( mDataForm, SIGNAL(itemShown(const QModelIndex&)), this, SLOT(handleItemShown(const QModelIndex&)) );
     }
     else
     {
-        selectedContact = aArgs.value(ESelectedContact).value<QContact>();
+        mContact = aArgs.value(ESelectedContact).value<QContact>();
         connect( mDataForm, SIGNAL(itemShown(const QModelIndex&)), this, SLOT(handleItemShown(const QModelIndex&)) );
     }
     
@@ -137,26 +133,7 @@ void CntDetailEditor::activate( const CntViewParameters aArgs )
     connect(&cm, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)), 
         this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
     
-    mEditorFactory->setupEditorView(*this, selectedContact);
-    
-    QString myCard = mArgs.value( EMyCard ).toString();
-    QContactLocalId localId = selectedContact.localId();
-    QContactLocalId selfContactId = cm.selfContactId();
-    bool isMyCard = ( localId == selfContactId && localId != 0 ) || !myCard.isEmpty();
-    
-    if (isMyCard)
-    {
-        mSaveManager = new CntSaveManager(CntSaveManager::EMyCard);
-    }
-    else if ( mId == groupEditorView )
-    {
-        mSaveManager = new CntSaveManager(CntSaveManager::EGroup);
-    }
-    else
-    {
-        mSaveManager = new CntSaveManager();
-    }
-    
+    mEditorFactory->setupEditorView(*this, mContact);
     mDataForm->setItemRecycling(true);
 
     // add new field if required
@@ -173,20 +150,17 @@ void CntDetailEditor::activate( const CntViewParameters aArgs )
     mDataForm->verticalScrollBar()->setInteractive(true);
     
     mVirtualKeyboard = new HbShrinkingVkbHost(mView);
-        
-    connect(mVirtualKeyboard, SIGNAL(keypadOpened()), this, SLOT(handleKeypadOpen()));
-    connect(mVirtualKeyboard, SIGNAL(keypadClosed()), this, SLOT(handleKeypadClosed()));
 }
 
 void CntDetailEditor::deactivate()
 {
     QContactManager& mgr = mEngine->contactManager(SYMBIAN_BACKEND);
-    if( mId == groupEditorView) {
-        mgr.saveContact( mDataFormModel->contact() );
-    }
     
     disconnect(&mgr, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)),
             this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
+    
+    delete mVirtualKeyboard;
+    mVirtualKeyboard = NULL;
 }
     
 bool CntDetailEditor::isDefault() const
@@ -309,17 +283,31 @@ void CntDetailEditor::saveContact()
         name = hbTrId("txt_phob_list_unnamed");
     }
     
-    CntSaveManager::CntSaveResult result = mSaveManager->saveContact(mDataFormModel->contact(), &mgr);
-    
-    if (mId != groupEditorView)
-    {
+    QString myCard = mArgs.value( EMyCard ).toString();
+    QContactLocalId localId = mContact.localId();
+    QContactLocalId selfContactId = mgr.selfContactId();
+    bool isMyCard = ( localId == selfContactId && localId != 0 ) || !myCard.isEmpty();
+        
+    CntSaveManager::CntSaveResult result;
+    CntSaveManager& saveMgr = mEngine->saveManager();
+    if (isMyCard) {
+        result = saveMgr.saveMyCard( mDataFormModel->contact(), &mgr );
+    }
+    else if ( mId == groupEditorView ) {
+        result = saveMgr.saveGroup( mDataFormModel->contact(), &mgr );
+    }
+    else {
+        result = saveMgr.saveContact( mDataFormModel->contact(), &mgr );
+    }
+        
+    if (mId != groupEditorView) {
         switch (result)
         {
         case CntSaveManager::ESaved:
-            HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contact_1_saved")).arg(name));
+            HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter("txt_phob_dpophead_contact_1_saved").arg(name));
             break;
         case CntSaveManager::EUpdated:
-            HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contacts_1_updated")).arg(name));
+            HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter("txt_phob_dpophead_contacts_1_updated").arg(name));
             break;
         case CntSaveManager::EFailed:
             HbDeviceNotificationDialog::notification(QString(),hbTrId("SAVING FAILED!"));
@@ -387,24 +375,6 @@ void CntDetailEditor::contactDeletedFromOtherSource(const QList<QContactLocalId>
 void CntDetailEditor::enableDiscardChanges()
 {
     mCancel->setDisabled(false);
-}
-
-
-void CntDetailEditor::handleKeypadOpen()
-{
-    CNT_ENTRY
-    
-  // enable full screen
-    mView->setContentFullScreen(true);
-    CNT_EXIT
-}
-
-void CntDetailEditor::handleKeypadClosed()
-{
-    CNT_ENTRY
-    // disable full screen
-    mView->setContentFullScreen(false);
-    CNT_EXIT
 }
 
 // End of File

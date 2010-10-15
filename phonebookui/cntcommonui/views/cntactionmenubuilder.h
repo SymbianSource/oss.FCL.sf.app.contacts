@@ -15,8 +15,8 @@
 *
 */
 
-#ifndef CNTACTIONMENUBUILDER_H_
-#define CNTACTIONMENUBUILDER_H_
+#ifndef CNTACTIONMENUBUILDER_H
+#define CNTACTIONMENUBUILDER_H
 
 #include <QObject>
 #include <hbmenu.h>
@@ -24,6 +24,7 @@
 #include <qtcontacts.h>
 
 class CntStringMapper;
+
 QTM_BEGIN_NAMESPACE
 class QContact;
 class QContactDetail;
@@ -32,16 +33,16 @@ QTM_END_NAMESPACE
 QTM_USE_NAMESPACE
 
 class CntActionMenuBuilder : public QObject
-    {
+{
     Q_OBJECT
+    friend class TestCntActionMenuBuilder;
+    
 public:
     CntActionMenuBuilder( QContactLocalId aMyCardId );
     ~CntActionMenuBuilder();
     
 public:
     HbMenu* actionMenu( QContact& aContact, QContactLocalId myCardId );
-    
-public:
     HbMenu* buildActionMenu( QContact& aContact );
     
 signals:
@@ -57,22 +58,18 @@ private slots:
     void emitCallContact();
     void emitSmsContact();
     void emitMailContact();
-    void emitContactaction(QContact& aContact, QContactDetail contactDetail, QString aAction);
+    void emitContactAction(QContact& aContact, QContactDetail contactDetail, QString aAction);
     
-#ifdef PBK_UNIT_TEST
-public:
-#else
-private:
-#endif
-    
+private:    
     void createCallAction( HbMenu& aMenu, QContact& aContact );
     void createMessageAction( HbMenu& aMenu, QContact& aContact );
     void createEmailAction( HbMenu& aMenu, QContact& aContact );
     bool isSupportedDetails( const QString &actionName, const QContact &contact );
 
 private:
-    QContactLocalId iMyCardId;
-    QContact* mContact;
-    CntStringMapper* mMap;
-    };
-#endif /* CNTACTIONMENUBUILDER_H_ */
+    QContactLocalId  iMyCardId;
+    QContact        *mContact;
+    CntStringMapper *mMap;
+};
+
+#endif /* CNTACTIONMENUBUILDER_H */

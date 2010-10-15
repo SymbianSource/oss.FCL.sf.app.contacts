@@ -333,3 +333,5 @@ void TestCntHistoryModel::testMarkSeen()
     model->markAllAsSeen();
     model->clearHistory();
 }
+
+QTEST_MAIN(TestCntHistoryModel);

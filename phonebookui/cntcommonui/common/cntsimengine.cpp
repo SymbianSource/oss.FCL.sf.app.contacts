@@ -128,7 +128,7 @@ void CntSimEngine::init(CntAbstractEngine& aAbsEngine)
                      mAdnStorePresent = true;
                      mAdnEntriesPresent = true;
                      mWaitingForAdnCache = true;
-                     connect(mAdnSimUtility, SIGNAL(getSimInfoAndUpdateUI(CntSimUtility::CacheStatus&, int)), this, SLOT(getSimInfoAndUpdateUI(CntSimUtility::CacheStatus&, int)));
+                     connect(mAdnSimUtility, SIGNAL(adnCacheStatusReady(CntSimUtility::CacheStatus&, int)), this, SLOT(getSimInfoAndUpdateUI(CntSimUtility::CacheStatus&, int)));
                      if (!mAdnSimUtility->notifyAdnCacheStatus()) {
                          mAdnStorePresent = false;
                          mAdnEntriesPresent = false;
@@ -223,7 +223,7 @@ void CntSimEngine::checkEntries(QStringList& simList, QStandardItem& importSimIt
             QString dateStr = locale.format(date.date(), r_qtn_date_usual);
             QString dateStrLocaleDigits = HbStringUtil::convertDigits(dateStr); 
             QString dateStrFull = 
-                HbParameterLengthLimiter(hbTrId("txt_phob_dblist_import_from_1_val_updated_1")).arg(dateStrLocaleDigits);
+                HbParameterLengthLimiter("txt_phob_dblist_import_from_1_val_updated_1").arg(dateStrLocaleDigits);
             simList << dateStrFull;
         }
     }
@@ -324,12 +324,14 @@ void CntSimEngine::stopSimImport()
                 QString dateStr = locale.format(date.date(), r_qtn_date_usual);
                 QString dateStrLocaleDigits = HbStringUtil::convertDigits(dateStr);
                 QString dateStrFull = 
-                    HbParameterLengthLimiter(hbTrId("txt_phob_dblist_import_from_1_val_updated_1")).arg(dateStrLocaleDigits);
+                    HbParameterLengthLimiter("txt_phob_dblist_import_from_1_val_updated_1").arg(dateStrLocaleDigits);
                 //simList << dateStrFull;
                 
                 mImportViewCallback.setListBoxItemText(simImport, dateStrFull);
             }
         }
+        
+        emit showNamesView();
     }
     
     CNT_EXIT

@@ -15,8 +15,8 @@
 *
 */
 
-#ifndef CNTIMPORTVIEWCALLBACK_H_
-#define CNTIMPORTVIEWCALLBACK_H_
+#ifndef CNTIMPORTVIEWCALLBACK_H
+#define CNTIMPORTVIEWCALLBACK_H
 
 class QString;
 
@@ -33,4 +33,4 @@ public:
     virtual void setListBoxItemEnabled(bool aEnabled) = 0;
 };
 
-#endif /* CNTIMPORTVIEWCALLBACK_H_ */
+#endif /* CNTIMPORTVIEWCALLBACK_H */

@@ -81,7 +81,6 @@ private slots:
 
     void listItemSelected( QModelIndex index );
     void handleUserResponse(HbAction* action);
-    void onLongPressed (HbAbstractViewItem *item, const QPointF &coords);
     
 private:
 
@@ -110,6 +109,6 @@ private:
     QList<QStandardItem*>  mDataItemList;
     HbAction *mCancelAction;
     
-    friend class T_CntActionPopupTest;
+    friend class TestCntActionPopup;
     };
 #endif /* CNTACTIONPOPUP_P_H_ */

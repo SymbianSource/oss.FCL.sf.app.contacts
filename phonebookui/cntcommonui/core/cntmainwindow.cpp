@@ -20,20 +20,29 @@
 #include "cntviewnavigator.h"
 #include "cntabstractviewfactory.h"
 #include "cntkeygrabber.h"
+#include "cntapplication.h"
+#include "cntactivities.h"
 #include <cntdebug.h>
 #include <cntabstractengine.h>
 
 
 CntMainWindow::CntMainWindow(QWidget *parent, int defaultView)
     : HbMainWindow(parent),
-    mViewManager( NULL ),
-    mDefaultView( defaultView )
+    mViewManager(NULL),
+    mDefaultView(defaultView),
+    mActivities(NULL)
 {
     CNT_ENTRY
+    
     CntKeyGrabber *keyGrabber = new CntKeyGrabber(this, this);
     
     if (defaultView != noView)
     {
+        mViewManager = new CntDefaultViewManager( this );
+        mActivities = new CntActivities();
+        
+        connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(saveActivity()));
+         
         CntViewNavigator* navigator = new CntViewNavigator(this);
         navigator->addException( favoritesMemberView, collectionView );
         navigator->addEffect( groupMemberView, groupActionsView );
@@ -44,15 +53,27 @@ CntMainWindow::CntMainWindow(QWidget *parent, int defaultView)
         navigator->addRoot( collectionView );
         navigator->addRoot( groupMemberView );
         navigator->addRoot( favoritesMemberView );
-                
-        mViewManager = new CntDefaultViewManager( this );
+        
         mViewManager->setViewNavigator( navigator );
         mViewManager->setViewFactory( new CntDefaultViewFactory( mViewManager->engine().extensionManager()) );
+         
+        //load the activity
+        QByteArray serializedModel;
+        if (mActivities->loadActivity(serializedModel))
+        {
+            // restore state from activity data 
+            QDataStream stream(&serializedModel, QIODevice::ReadOnly);
+            if (mViewManager->internalize(stream))
+            {
+                // activity loaded.
+                return;
+            }
+        }
         
         //activate the view
         CntViewParameters viewParameters;
         viewParameters.insert(EViewId, defaultView);
-        mViewManager->changeView( viewParameters );
+        mViewManager->changeView( viewParameters );   
     }
 
     CNT_EXIT
@@ -61,9 +82,24 @@ CntMainWindow::CntMainWindow(QWidget *parent, int defaultView)
 CntMainWindow::~CntMainWindow()
 {
     CNT_ENTRY
-
+    
     delete mViewManager;
     mViewManager = NULL;
+    
+    delete mActivities;
+    mActivities = NULL;
+    
+    CNT_EXIT
+}
+
+void CntMainWindow::saveActivity()
+{
+    CNT_ENTRY
+        
+    QByteArray serializedActivity;
+    QDataStream stream(&serializedActivity, QIODevice::WriteOnly | QIODevice::Append);
+    QString name = mViewManager->externalize(stream);
+    mActivities->saveActivity(name, serializedActivity, QPixmap::grabWidget(this, rect()));
     
     CNT_EXIT
 }

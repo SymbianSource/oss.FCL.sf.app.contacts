@@ -52,3 +52,4 @@ PRJ_TESTMMPFILES
 ../Test/TE_Sync/TE_Sync.mmp
 ../Test/TE_PhBkSync/TE_PhBkSync.mmp
 ../Test/TE_cntsync/te_cntsync.mmp
+

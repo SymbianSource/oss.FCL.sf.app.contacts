@@ -25,6 +25,7 @@
 
 class CntDefaultViewManager;
 class XqKeyCapture;
+class CntActivities;
 
 class QTPBK_EXPORT CntMainWindow : public HbMainWindow
 {
@@ -35,10 +36,13 @@ public:
     CntMainWindow(QWidget *parent=0, int defaultView = namesView);
     virtual ~CntMainWindow();
 
+private slots:
+    void saveActivity();
+    
 private:
     CntDefaultViewManager        *mViewManager;
     int                           mDefaultView;
-
+    CntActivities                *mActivities;
 };
 
 #endif // CNTMAINWINDOW_H

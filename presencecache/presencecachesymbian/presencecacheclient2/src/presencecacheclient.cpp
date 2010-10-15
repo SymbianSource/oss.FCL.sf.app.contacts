@@ -103,54 +103,65 @@ void CPresenceCacheClient::ConstructL()
     
 // -----------------------------------------------------------------------------
 // CPresenceCacheClient::Connect()
-// Connects to the server and create a session.
+// Connect to the server, attempting to start it if necessary
 // -----------------------------------------------------------------------------
 //
 TInt CPresenceCacheClient::Connect()
     {
-    TInt error = StartServer();
-
-    if ( KErrNone == error )
+    TInt retry=2;
+    for (;;)
         {
-        error = CreateSession( NName::KSymbianServer,
-                               Version(),
-                               NRequest::KMsgSlotCount );
-        }
-    return error;
+        TInt r = CreateSession( NName::KSymbianServer,
+                                Version(),
+                                NRequest::KMsgSlotCount );      
+        // Continue if there was error but caused from server not being 
+        // started yet, in which case server start will be tried later in the loop.
+        // Otherwise return KErrNone or one of the system wide error codes.
+        if (r!=KErrNotFound && r!=KErrServerTerminated)    
+            return r;
+        //
+        // Decreace retry counter and abort if too many retries already
+        if (--retry==0)    
+            return r;
+        //
+        // Try to start server. If no error or the error was caused  
+        // from server already started, continue to next iteration when 
+        // the session creation will be tried again.
+        r=StartServer();
+        if (r!=KErrNone && r!=KErrAlreadyExists)      
+            return r;
+            
+        }  
     }
           
 // ----------------------------------------------------
 // CPresenceCacheClient::StartServer
-//
 // ----------------------------------------------------
 //
 TInt CPresenceCacheClient::StartServer()
-    {
-    TInt result;
-    TRequestStatus status = KRequestPending; 
-
-    TFindServer findCacheServer( NName::KSymbianServer );
-    TFullName name;
-
-    result = findCacheServer.Next( name );
-    if ( result == KErrNone )
-        {
-        // Server already running
-        return KErrNone;
-        }
-
+    {  
+    // Start the server process. Simultaneous launching
+    // of two such processes should be detected when the second one attempts to
+    // create the server object, failing with KErrAlreadyExists.
+    //
     RProcess server;
-    result = server.Create( NName::KExecutable, KNullDesC );       
-    if( result != KErrNone )
-        return result;     
-    server.Rendezvous( status );    	
-    status != KRequestPending ? server.Kill( 0 ) : server.Resume();
-    //Wait for start or death 
-    User::WaitForRequest( status );	
-    result = server.ExitType() == EExitPanic ? KErrGeneral : status.Int();
-    server.Close();
-    
-    return result;	    
+    TInt r=server.Create( NName::KExecutable, KNullDesC );  
+    if (r!=KErrNone) 
+        return r;
+    TRequestStatus stat;
+    server.Rendezvous(stat);
+    if (stat!=KRequestPending) 
+        server.Kill(0);     // abort startup  
+    else 
+        server.Resume();    // logon OK - start the server
+    User::WaitForRequest(stat);     // wait for start or death
+    // we can't use the 'exit reason' if the server panicked as this
+    // is the panic 'reason' and may be '0' which cannot be distinguished
+    // from KErrNone
+    r=(server.ExitType()==EExitPanic) ? KErrGeneral : stat.Int();
+    // here it may return KErrAlreadyExists or KErrNone
+    server.Close();    
+    return r;
     }
     
 // -----------------------------------------------------------------------------

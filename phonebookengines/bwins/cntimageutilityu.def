@@ -19,4 +19,19 @@ EXPORTS
 	?isImageRemovable@CntImageUtility@@QAE_NABVQString@@@Z @ 18 NONAME ; bool CntImageUtility::isImageRemovable(class QString const &)
 	??0CntImageUtility@@QAE@PAVQObject@@@Z @ 19 NONAME ; CntImageUtility::CntImageUtility(class QObject *)
 	?removeImage@CntImageUtility@@QAE_NABVQString@@@Z @ 20 NONAME ; bool CntImageUtility::removeImage(class QString const &)
+	?orientation@CntOrientationHelper@@QAEAAW4Orientation@Qt@@XZ @ 21 NONAME ; enum Qt::Orientation & CntOrientationHelper::orientation(void)
+	?metaObject@CntOrientationHelper@@UBEPBUQMetaObject@@XZ @ 22 NONAME ; struct QMetaObject const * CntOrientationHelper::metaObject(void) const
+	?orientationChanged@CntOrientationHelper@@IAEXW4Orientation@Qt@@@Z @ 23 NONAME ; void CntOrientationHelper::orientationChanged(enum Qt::Orientation)
+	?trUtf8@CntOrientationHelper@@SA?AVQString@@PBD0@Z @ 24 NONAME ; class QString CntOrientationHelper::trUtf8(char const *, char const *)
+	?tr@CntOrientationHelper@@SA?AVQString@@PBD0@Z @ 25 NONAME ; class QString CntOrientationHelper::tr(char const *, char const *)
+	?getStaticMetaObject@CntOrientationHelper@@SAABUQMetaObject@@XZ @ 26 NONAME ; struct QMetaObject const & CntOrientationHelper::getStaticMetaObject(void)
+	?emitOrientationChanged@CntOrientationHelper@@AAEXABVXQSettingsKey@@ABVQVariant@@@Z @ 27 NONAME ; void CntOrientationHelper::emitOrientationChanged(class XQSettingsKey const &, class QVariant const &)
+	??1CntOrientationHelper@@UAE@XZ @ 28 NONAME ; CntOrientationHelper::~CntOrientationHelper(void)
+	?tr@CntOrientationHelper@@SA?AVQString@@PBD0H@Z @ 29 NONAME ; class QString CntOrientationHelper::tr(char const *, char const *, int)
+	??_ECntOrientationHelper@@UAE@I@Z @ 30 NONAME ; CntOrientationHelper::~CntOrientationHelper(unsigned int)
+	?qt_metacall@CntOrientationHelper@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 31 NONAME ; int CntOrientationHelper::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?trUtf8@CntOrientationHelper@@SA?AVQString@@PBD0H@Z @ 32 NONAME ; class QString CntOrientationHelper::trUtf8(char const *, char const *, int)
+	?qt_metacast@CntOrientationHelper@@UAEPAXPBD@Z @ 33 NONAME ; void * CntOrientationHelper::qt_metacast(char const *)
+	?staticMetaObject@CntOrientationHelper@@2UQMetaObject@@B @ 34 NONAME ; struct QMetaObject const CntOrientationHelper::staticMetaObject
+	??0CntOrientationHelper@@QAE@PAVQObject@@@Z @ 35 NONAME ; CntOrientationHelper::CntOrientationHelper(class QObject *)
 

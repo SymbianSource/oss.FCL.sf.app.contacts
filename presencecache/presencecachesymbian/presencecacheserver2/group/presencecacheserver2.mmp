@@ -52,6 +52,6 @@ LIBRARY                 estor.lib   // streams
 LIBRARY                 ecom.lib
 
 LIBRARY                 presencecacheutils.lib
-
+SMPSAFE
 // End of file
 

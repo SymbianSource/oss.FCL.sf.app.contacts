@@ -37,14 +37,19 @@ TestRunner::TestRunner(const QString& name)
   mCurrentTestFailed(false),
   mCurrentTestFailureLine(0)
 {
+ #ifdef __WINS__ 
     mTestRunParams.append(name);
+  
     mTestRunParams.append("-xml");
+    
     mTestRunParams.append("-o");
     mHomeDir = QDir::homePath();
+    	
     mTestRunParams.append(QString()); // Initial result file name
 
     if (!mHomeDir.endsWith(QString::fromAscii("/")))
         mHomeDir += QString::fromAscii("/");
+#endif 
 }
 
 TestRunner::~TestRunner()
@@ -55,13 +60,18 @@ int TestRunner::runTests(QObject& testObject)
 {
     QString className(testObject.metaObject()->className());
     printf("Running tests for %s ... ", className.toUtf8().data());
+#ifdef __WINS__    
     QString resultFileName = mHomeDir + className + ".xml";
     mTestRunParams.replace(mTestRunParams.count()-1,resultFileName);
     int errorsBefore = mErrors.count();
     int error = QTest::qExec(&testObject, mTestRunParams);
     parse(resultFileName);
     printf("Failures: %d\n",mErrors.count()-errorsBefore);
-    fflush(stdout);
+   	fflush(stdout);  	
+#else
+    int error = QTest::qExec(&testObject);
+#endif
+    
     return error;
 }
 
@@ -78,7 +88,7 @@ void TestRunner::printResults()
         printf("All passed.\n\n");
     }
     fflush(stdout);
-    
+#ifdef __WINS__       
     //To write in file
     QFile file("C:\\TestResult.txt");
     if(file.open(QIODevice::WriteOnly)) 
@@ -101,7 +111,8 @@ void TestRunner::printResults()
         
         ts << endl;
         file.close();
-    } 
+    }
+#endif      
 }
 
 void TestRunner::parse(const QString& fileName)

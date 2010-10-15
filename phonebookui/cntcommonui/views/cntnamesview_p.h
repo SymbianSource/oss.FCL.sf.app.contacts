@@ -15,8 +15,10 @@
 *
 */
 
-#ifndef CNTABSTRACTLISTVIEW_H_
-#define CNTABSTRACTLISTVIEW_H_
+#ifndef CNTNAMESVIEWPRIVATE_H
+#define CNTNAMESVIEWPRIVATE_H
+
+#include <QObject>
 
 #include "cntnamesview.h"
 #include "cntactionlauncher.h"
@@ -24,74 +26,86 @@
 
 #include <hbaction.h>
 #include <hbabstractviewitem.h>
-#include <QObject>
-
-#include <qcontact.h>
+#include <qtcontacts.h>
 #include <cntlistmodel.h>
 
 class HbView;
 class HbListView;
-class HbLabel;
 class HbDocumentLoader;
 class HbSearchPanel;
 class HbShrinkingVkbHost;
+class HbMenu;
 class CntExtensionManager;
 class CntFetchContacts;
-class HbMenu;
+
+QTM_USE_NAMESPACE
 
 class CntNamesViewPrivate : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PUBLIC(CntNamesView)
+    friend class TestCntNamesView;
     
 public:
     CntNamesViewPrivate();
     virtual ~CntNamesViewPrivate();
+    
+public:
+    void activate( const CntViewParameters aArgs );
+    void deactivate();
+    void setEngine( CntAbstractEngine& aEngine ){ mEngine = &aEngine; }
+    QString externalize(QDataStream &stream);
+    bool internalize(QDataStream &stream, CntViewParameters &viewParameters);
 
-public slots:    
+public slots:
+    // Search functions
     void showFinder();
     void hideFinder();
     void setFilter(const QString &filterString);
     
+    // Extension action (activity stream toolbar button)
     void handleExtensionAction();
     
+    // New contact creation
     void createNewContact();
-    void deleteContact( QContact& aContact );
-    void deleteMultipleContacts();
     
+    // Single and multiple contact deletion
+    void deleteContact( QContact& aContact );
+    void handleDeleteContact( int aAction );
+    void deleteMultipleContacts();
     void handleDeleteMultipleContacts( QSet<QContactLocalId> aIds );
 
+    // View switches
     void showPreviousView();
     void showCollectionView();
+    void showContactView( const QModelIndex& aIndex );
     void showContactView( QContact& aContact );
-    void showContactView( const QModelIndex& );
     void showContactEditorView( QContact& aContact );
-    void showContextMenu(HbAbstractViewItem* aItem, QPointF aPoint);
-    void showSettings();
+    void showSettingsView();
+    void showImportsView();
     
+    // FTU import dialog
+    void handleImportContacts( HbAction *aAction );
+    
+    // Context menu actions
+    void setShowContextMenu( const QModelIndex& aIndex );
+    void showContextMenu(HbAbstractViewItem* aItem, QPointF aPoint); 
     void executeAction( QContact& aContact, QContactDetail aDetail, QString aAction );
     void actionExecuted( CntActionLauncher* aAction );
-    void handleDeleteContact( int aAction );
-    void importSim();
     
+    // Contact database notifications
     void handleContactAddition(const QList<QContactLocalId> & aAddedList);
     void handleContactRemoval(const QList<QContactLocalId> & aRemovedList);
     void handleSelfContactIdChange(const QContactLocalId & aOldId, const QContactLocalId & aNewId);
     
-private slots:
-    void switchOrientation();
-    void handleImportContacts( HbAction *aAction );
-    
 public:
     bool isFinderVisible();
-    void activate( const CntViewParameters aArgs );
-    void deactivate();
-    void setEngine( CntAbstractEngine& aEngine ){ mEngine = &aEngine; }
+
 private:
     void changeDeleteActionStatus();
     void focusLineEdit();
     void setScrollPosition(int focusedContact);
-    
+
 public:
     CntNamesView *q_ptr;
     
@@ -99,27 +113,28 @@ public:  // lazy initializations
     HbListView *list();
     HbDocumentLoader *document();
     
+   
 private:
-    CntAbstractViewManager*     mViewManager;
-    CntListModel*               mListModel;
-    HbView*                     mView;
-    HbListView*                 mListView;
-    HbLabel*                    mEmptyList;
-    HbSearchPanel*              mSearchPanel;
-    HbDocumentLoader*           mLoader;
-    HbShrinkingVkbHost*         mVirtualKeyboard;
-    HbAction*                   mSoftkey;
-    HbAction*                   mNamesAction;
-    CntActionMenuBuilder*       mMenuBuilder;
-    HbAction*                   mImportSim;
-    HbAction*                   mNewContact;
-    QContactLocalId             mHandledContactId;
-    HbAction*                   mMultipleDeleter;
-    QActionGroup*               mActionGroup;
-	HbMenu*                     mMenu;
-	bool                        mFilterChanged;
-	CntAbstractEngine*          mEngine;
-	static bool                 mIsFirstTimeUse; // FTU flag
+    friend class T_NameListTest;
+    CntAbstractViewManager  *mViewManager;
+    CntListModel            *mListModel;
+    HbView                  *mView;
+    HbListView              *mListView;
+    HbSearchPanel           *mSearchPanel;
+    HbDocumentLoader        *mLoader;
+    HbShrinkingVkbHost      *mVirtualKeyboard;
+    HbAction                *mSoftkey;
+    HbAction                *mNamesAction;
+    HbAction                *mMultipleDeleter;
+    CntActionMenuBuilder    *mMenuBuilder;
+    QActionGroup            *mActionGroup;
+    HbMenu                  *mMenu;
+    HbMenu                  *mViewMenu;
+    CntAbstractEngine       *mEngine;
+    QContactLocalId          mHandledContactId;
+    bool                     mFilterChanged;
+
+    static bool              mIsFirstTimeUse; // FTU flag
 };
 
-#endif /* CNTABSTRACTLISTVIEW_H_ */
+#endif /* CNTNAMESVIEWPRIVATE_H */

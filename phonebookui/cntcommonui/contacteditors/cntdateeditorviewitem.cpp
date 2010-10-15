@@ -30,7 +30,6 @@
 #include <hbpushbutton.h>
 #include <hbdialog.h>
 #include <hbdatetimepicker.h>
-#include <hblabel.h>
 #include <hbaction.h>
 
 CntDateEditorViewItem::CntDateEditorViewItem( QGraphicsItem* aParent ) : 
@@ -131,10 +130,7 @@ void CntDateEditorViewItem::editDate( QDate aCurrent, QString aTitle )
     picker->setDateRange(CNT_DATEPICKER_FROM, CNT_DATEPICKER_TO );
     picker->setDate( aCurrent );
 
-    HbLabel *headingText = new HbLabel( popup );
-    headingText->setPlainText( aTitle );
-
-    popup->setHeadingWidget(headingText);
+    popup->setHeadingText(aTitle);
     popup->setContentWidget(picker);
     popup->addAction(new HbAction(hbTrId("txt_common_button_ok"), popup));
     popup->addAction(new HbAction(hbTrId("txt_common_button_cancel"), popup));

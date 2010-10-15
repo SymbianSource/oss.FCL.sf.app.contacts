@@ -31,7 +31,6 @@ class HbMenu;
 class HbView;
 class HbAction;
 class CntEditorFactory;
-class CntSaveManager;
 class HbShrinkingVkbHost;
 
 class CntDetailEditor : public QObject,
@@ -52,8 +51,6 @@ private slots:
     void saveContact();
     void contactDeletedFromOtherSource(const QList<QContactLocalId>& contactIds);
     void showRootView();
-    void handleKeypadOpen();
-    void handleKeypadClosed();
     
 public slots:
     void enableDiscardChanges();
@@ -91,9 +88,9 @@ private:
     HbAction                       *mSoftkey;
     HbAction                       *mCancel;
     CntViewParameters               mArgs;
-    CntSaveManager                 *mSaveManager; // own
     CntAbstractEngine*              mEngine; // not own
     HbShrinkingVkbHost*             mVirtualKeyboard;
+    QContact                        mContact;
     friend class TestCntDetailEditor;
     };
 #endif /* CNTDETAILEDITOR_H_ */

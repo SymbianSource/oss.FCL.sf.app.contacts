@@ -55,18 +55,6 @@ const QString widgetPrefContactId = "contactId";
 // Docml file
 const QString contactWidgetDocml = ":/commlauncherwidget.docml";
 
-
-// TODO: THESE STRINGS ARE IN W32 SDK. THESE DEFINITIONS CAN BE REMOVED
-// WHEN EVERYBODY ARE USING IT OR LATER VERSION
-#ifndef XQI_CONTACTS_FETCH
-#define XQI_CONTACTS_FETCH QLatin1String("com.nokia.symbian.IContactsFetch")
-#endif
-#ifndef XQOP_CONTACTS_FETCH_SINGLE
-#define XQOP_CONTACTS_FETCH_SINGLE QLatin1String("singleFetch(QString,QString)")
-#endif
-
-
-
 /*!
   \class ContactWidgetHs
 */
@@ -92,7 +80,8 @@ ContactWidgetHs::ContactWidgetHs(QGraphicsItem *parent, Qt::WindowFlags flags )
   mThumbnailPixmap(QPixmap()),
   mThumbnailInProgress(false),
   mTranslator(new HbTranslator(translationsPath, translationsFile)),
-  mPendingExit(false)
+  mPendingExit(false),
+  mNoneContactMessage(0)
 {
     // Localization file loading   		
 	mTranslator->loadCommon();    
@@ -134,9 +123,6 @@ ContactWidgetHs::ContactWidgetHs(QGraphicsItem *parent, Qt::WindowFlags flags )
     
     connect(mThumbnailManager.data(), SIGNAL(thumbnailReady(QPixmap, void*, int, int)),
         this, SLOT(thumbnailReady(QPixmap, void*, int, int)));
-    
-
-      
 }
 
 /*!
@@ -353,6 +339,15 @@ void ContactWidgetHs::setName(const QString &sName)
 {
     if (mContactNameLabel) {
         mContactNameLabel->setPlainText(sName);
+        HbFontSpec aFontSpec(HbFontSpec::Secondary);
+		QFontMetrics aMetrics(aFontSpec.font());
+		int aTextWidth = aMetrics.width(sName);
+	    qreal aWidgetWidth = 11 * HbDeviceProfile::current().unitValue();
+		if (aTextWidth > aWidgetWidth) {
+		    mContactNameLabel->setAlignment(Qt::AlignLeft);
+		} else {
+		    mContactNameLabel->setAlignment(Qt::AlignHCenter);
+		}
     }    
 
     update();
@@ -406,15 +401,15 @@ void ContactWidgetHs::createUI()
         fontSpec.setTextHeight(textHeight);
     }
 
+    mContactNameLabel = new HbLabel(this);
+    mContactNameLabel->setTextWrapping(Hb::TextNoWrap);
+    mContactNameLabel->setFontSpec(fontSpec);
     if (mContactLocalId == unUsedContactId) {
-        mContactNameLabel = new HbLabel("");
+        setName("");
     } else {
-		QString name = getContactDisplayName(mContact);
-        mContactNameLabel = new HbLabel(name);
+        setName(getContactDisplayName(mContact));
     }            
     
-    mContactNameLabel->setAlignment(Qt::AlignHCenter);
-    mContactNameLabel->setFontSpec(fontSpec);
     // color from theme
     QColor textColor = HbColorScheme::color(normalTextColor);
     if (textColor.isValid()) {
@@ -484,7 +479,6 @@ void ContactWidgetHs::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
 	qDebug() << "mouseReleaseEvent event->type() = " << (int)event->type();
 
-	//Q_UNUSED(event);
     if (event && event->type() == QEvent::GraphicsSceneMouseRelease) {
         // If the widget doesn't have contact yet and
         // there are contacts, select one.    
@@ -492,18 +486,8 @@ void ContactWidgetHs::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
             if (contactsExist()) {				    
                 launchSingleContactSelecting();                  
             } else {
-                // Otherwise ask if user wants to open phonebook
-                // tmp variable used for title, otherwise parent param is ignored in mb
-                QString title = hbTrId("txt_friend_widget_info_you_can_not_use_this_widge");
-                HbDeviceMessageBox mb( title, HbMessageBox::MessageTypeQuestion, this);
-                mb.setAction(new QAction(hbTrId("txt_common_button_open"),   &mb), 
-                    HbDeviceMessageBox::AcceptButtonRole);
-                mb.setAction(new QAction(hbTrId("txt_common_button_cancel"), &mb), 
-                    HbDeviceMessageBox::RejectButtonRole);
-                mb.setIconVisible(false);
-                if (mb.exec() == mb.action(HbDeviceMessageBox::AcceptButtonRole)) {				        
-                    mLauncher->openPhonebookCreateNew();
-                }
+            	// otherwise ask user if want create one
+            	showNoneContactMessage();
             }
         } else if (!mLauncher->isVisible()) {
             // Change the frame layout
@@ -679,25 +663,20 @@ bool ContactWidgetHs::contactsExist()
     if (!mContactManager) { 
         createContactManager();
     }
-    bool ret=false;
-    // 
+    bool aResult = false;
+
     if (mContactManager) {
         QList<QContactLocalId> contactIds = mContactManager->contactIds();
         qDebug() << "contact count " << contactIds.count();
-        if (contactIds.count() > 0) {
-        qDebug() << "first " << contactIds.first();
-        int i;
-        for(i=0; i<contactIds.count(); i++) {
-			qDebug() << "contactIds i " << i << " id " << contactIds.at(i);
-        }                        
-            if (contactIds.first() != mContactManager->selfContactId() ||
-                contactIds.count() > 1) {
-                ret=true;
-            }
+    	if (contactIds.count() > 1) {
+    		aResult = true;
+    	} else if (contactIds.count() == 1 &&
+    			   contactIds.first() != mContactManager->selfContactId()) {
+			aResult = true;
         }
     }
     
-    return ret;
+    return aResult;
 }
 
 /*!
@@ -717,20 +696,25 @@ bool ContactWidgetHs::launchSingleContactSelecting()
     mContactSelectRequest = mAppManager->create(XQI_CONTACTS_FETCH,
                                                 XQOP_CONTACTS_FETCH_SINGLE,
                                                 false);
-    mCleanupHandler.add(mContactSelectRequest);
-    connect(mContactSelectRequest, SIGNAL(requestOk(QVariant)),
-            this, SLOT(onContactSelectCompleted(QVariant)));  
-    QList<QVariant> args;
-    args << hbTrId("txt_friend_widget_title_select_contact");
-    args << KCntActionAll;
-    mContactSelectRequest->setArguments(args);
+    if (mContactSelectRequest) {
+    	mCleanupHandler.add(mContactSelectRequest);
+		connect(mContactSelectRequest, SIGNAL(requestOk(QVariant)),
+				this, SLOT(onContactSelectCompleted(QVariant)));  
+		QList<QVariant> args;
+		args << hbTrId("txt_friend_widget_title_select_contact");
+		args << KCntActionAll;
+		mContactSelectRequest->setArguments(args);
+		mContactSelectRequest->setSynchronous(false);
     
-    qDebug() << "---- setArgs done ---------------------"; //,,28.5.          
+		qDebug() << "---- setArgs done ---------------------"; //,,28.5.          
     
-    result = mContactSelectRequest->send();
-    if (!result) {
-        qDebug() << "Sending XQServiceRequest failed";
-    }  
+		result = mContactSelectRequest->send();
+		if (!result) {
+			qDebug() << "Sending XQServiceRequest failed";
+		}
+    } else {
+    	qDebug() << "mContactSelectRequest not created !!!";
+    }
     
     qDebug() << "- launchSingleContactSelecting() done"; //,,
    
@@ -882,7 +866,11 @@ void ContactWidgetHs::loadLayout(const QString frameName, const QString textColo
     update();
 }
 
-void ContactWidgetHs::onSelfContactIdChanged(const QContactLocalId &theOldId,
+/*!
+ * check if local contact was changed to self contact,
+ * if yes remove widget form homescreen 
+ */
+void ContactWidgetHs::onSelfContactIdChanged(const QContactLocalId & /*theOldId*/,
         const QContactLocalId &theNewId) {
     if (0 != theNewId && mContactLocalId == theNewId) {
         qDebug() << "-deleting widget after selfcontact change"
@@ -891,6 +879,9 @@ void ContactWidgetHs::onSelfContactIdChanged(const QContactLocalId &theOldId,
     }
 }
 
+/*!
+ * function to finish widget and remove widget from homescreen
+ */
 void ContactWidgetHs::finishWidget() {
     mAvatarIconItem->deleteLater();
     mContactNameLabel->deleteLater();
@@ -903,5 +894,42 @@ void ContactWidgetHs::finishWidget() {
     	mPendingExit = true;
     }
 }
+
+/*!
+ * Ask if user wants to open phonebook
+ */
+void ContactWidgetHs::showNoneContactMessage() {
+	if (0 == mNoneContactMessage) {
+	    QString aTitle = hbTrId("txt_friend_widget_info_you_can_not_use_this_widge");
+		mNoneContactMessage = new HbDeviceMessageBox(aTitle,
+				HbMessageBox::MessageTypeQuestion,
+				this);
+		mNoneContactMessage->setAction(
+				new QAction(hbTrId("txt_common_button_open"), mNoneContactMessage),
+		        HbDeviceMessageBox::AcceptButtonRole);
+		mNoneContactMessage->setAction(
+				new QAction(hbTrId("txt_common_button_cancel"), mNoneContactMessage),
+				HbDeviceMessageBox::RejectButtonRole);
+		mNoneContactMessage->setIconVisible(false);
+		connect(mNoneContactMessage, SIGNAL(aboutToClose()),
+				this, SLOT(onAboutCloseNoneContactMessage()));
+	}
+	mNoneContactMessage->show();
+}
+
+/*!
+ * if user select open in mNoneContactMessage,
+ * open a phonebook for creating new contact
+ */
+void ContactWidgetHs::onAboutCloseNoneContactMessage() {
+	if (mNoneContactMessage) {
+		const QAction * aResult = mNoneContactMessage->triggeredAction();
+		bool aCanOpenPhonebook = mNoneContactMessage->isAcceptAction(aResult);
+		if (aCanOpenPhonebook) {
+			mLauncher->openPhonebookCreateNew();
+		}
+	}
+}
+
 Q_IMPLEMENT_USER_METATYPE(CntServicesContact)
 Q_IMPLEMENT_USER_METATYPE_NO_OPERATORS(CntServicesContactList)

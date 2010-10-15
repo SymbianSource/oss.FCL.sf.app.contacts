@@ -34,7 +34,26 @@ public:
      * View is activated after its added to main window and is
      * ready to be drawn.
      */
-    virtual void activate( const CntViewParameters aArgs ) = 0;
+    virtual void activate(const CntViewParameters aArgs) = 0;
+    
+    /**
+     * View details are internalized from stream to view parameters.
+     */
+    virtual bool internalize(QDataStream &stream, CntViewParameters &viewParameters) 
+    { 
+        Q_UNUSED(stream); 
+        Q_UNUSED(viewParameters);
+        return false;  
+    }
+    
+    /**
+     * View is externalized parameters and return activity name.
+     */
+    virtual QString externalize(QDataStream &stream) 
+    { 
+        Q_UNUSED(stream); 
+        return QString(); 
+    }
     
     /**
      * View is deactivated just before its removed from

@@ -1,0 +1,31 @@
+CntHistoryViewItemWidget::text-1{
+    color: var(qtc_list_item_title_normal);
+}
+
+CntHistoryViewItemWidget::text-1[state="pressed"]{
+    color: var(qtc_list_item_pressed);
+}
+
+CntHistoryViewItemWidget::text-2{
+    color: var(qtc_list_item_content_normal);
+}
+
+CntHistoryViewItemWidget::text-2[state="pressed"]{
+    color: var(qtc_list_item_pressed);
+}
+
+CntHistoryViewItemWidget::text-3{
+    color: var(qtc_list_item_content_normal);
+}
+
+CntHistoryViewItemWidget::text-3[state="pressed"]{
+    color: var(qtc_list_item_pressed);
+}
+
+CntHistoryViewItemWidget::icon-1{
+    color: var(qtc_list_item_title_normal);
+}
+
+CntHistoryViewItemWidget::icon-1[state="pressed"]{
+    color: var(qtc_list_item_pressed);
+}

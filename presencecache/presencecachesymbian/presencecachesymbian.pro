@@ -21,9 +21,12 @@
 
 TEMPLATE = subdirs
 BLD_INF_RULES.prj_mmpfiles = "./presencecacheutils/group/presencecacheutils.mmp" \
-														 "./presencecacheclient2/group/presencecacheclient2.mmp" \
+							 "./presencecacheclient2/group/presencecacheclient2.mmp" \
                              "./presencecacheserver2/group/presencecacheserver2.mmp"  
  															
 BLD_INF_RULES.prj_exports += \
      "$${LITERAL_HASH}include <platform_paths.hrh>" \
      "./rom/presencecache.iby                CORE_APP_LAYER_IBY_EXPORT_PATH(presencecache.iby)" 
+
+symbian:MMP_RULES += SMPSAFE
+ 

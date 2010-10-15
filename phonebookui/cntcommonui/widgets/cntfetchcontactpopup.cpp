@@ -161,22 +161,32 @@ void CntFetchContactPopup::handleKeypadOpen()
     HbListViewItem* prototype = mListView->listItemPrototype();
     prototype->setTextFormat( Qt::RichText );
     
-    qreal margin;
+    qreal screenMargin, popupMargin;
     HbStyle style;
-    style.parameter("hb-param-margin-gene-popup", margin);
+    style.parameter("hb-param-margin-gene-screen", screenMargin);
+    style.parameter("hb-param-margin-gene-popup", popupMargin);
+    
+    // screenMargin is the margin between the popup's top edge and the screen's top edge
+    qreal height = mVirtualKeyboard->activeViewRect().height() - 
+            mSearch->size().height() -
+            screenMargin;
 
-    if (mPopup->mainWindow()->orientation() == Qt::Horizontal)
-        margin /= 2;
-    
-    qreal height = mPopup->size().height() - 
-            mVirtualKeyboard->keyboardArea().height() - 
-            mSearch->size().height() +
-            margin;
-    
     // in single selection we don't have the "mark all" option
     if ( mMarkAll->isVisible() )
     {
-        height = height - mMarkAll->size().height();
+        height -= mMarkAll->size().height();
+    }
+    
+    // in landscape the headingwidget is not visible
+    if ( mPopup->headingWidget() != NULL )
+    {
+        // 3 popup margin -> on top and below heading widget and between content and heading
+        height -= (mPopup->headingWidget()->size().height() + 3*popupMargin);
+    }
+    else
+    {
+        // 1 popup margin -> between content and "edge" of the popup
+        height -= popupMargin;
     }
 
     mEmptyView->setMaximumHeight( height );
@@ -412,6 +422,11 @@ void CntFetchContactPopup::loadLayout( Qt::Orientation aOrientation )
         {
             mPopup->setHeadingWidget( NULL );
             mDoc->load( CNT_FETCHLIST_XML, "find_list_landscape");
+            
+            //TODO: Remove when Wk40 is released
+            qreal popupWidth = mPopup->mainWindow()->layoutRect().width();
+            mPopup->setMinimumWidth(popupWidth);
+            
         }
         else
         {
@@ -434,6 +449,9 @@ void CntFetchContactPopup::loadLayout( Qt::Orientation aOrientation )
         {
             mPopup->setHeadingWidget( NULL );
             mDoc->load( CNT_FETCHLIST_XML, "find_empty_landscape" );
+            //TODO: Remove when Wk40 is released
+            qreal popupWidth = mPopup->mainWindow()->layoutRect().width();
+            mPopup->setMinimumWidth(popupWidth);
         }
         else
         {

@@ -100,6 +100,7 @@ void CPresenceCacheExpiry::DoExpiryCheckL()
             iServer.iPresenceCache;
     
     RPointerArray<CPresenceCacheBuddyStore> buddyStores;
+    CleanupClosePushL(buddyStores);
     
     const TInt serviceCount(presenceCache.Count());
     for( TInt i = 0 ; i < serviceCount ; ++i )
@@ -112,6 +113,11 @@ void CPresenceCacheExpiry::DoExpiryCheckL()
         {
         NotifySubscribersL( *( buddyStores[i] ) );
         }
+    
+    // Close the buddyStores array and free all memory allocated to it.
+    // Doesn't delete the contained CPresenceCacheBuddyStor objects.
+    // Ownership of those remain in CPresenceCacheServiceStore.
+    CleanupStack::PopAndDestroy();   // calls buddyStores.Close()
     }
 
 //  End of File

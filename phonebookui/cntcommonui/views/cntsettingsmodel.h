@@ -30,6 +30,7 @@ class XQSettingsKey;
 class CntSettingsModel : public HbDataFormModel
 {
     Q_OBJECT
+    friend class TestCntSettingsModel;
     
 public:
     CntSettingsModel();
@@ -43,9 +44,9 @@ private slots:
     void handleDataChanged(QModelIndex topLeft, QModelIndex bottomRight);
     
 private:
-    XQSettingsManager mSettings;
-    XQSettingsKey *mNameOrderkey;
-    XQSettingsKey *mNameListRowSettingkey;
+    XQSettingsManager  mSettings;
+    XQSettingsKey     *mNameOrderkey;
+    XQSettingsKey     *mNameListRowSettingkey;
 };
 
-#endif
+#endif /* CNTSETTINGSMODEL_H */

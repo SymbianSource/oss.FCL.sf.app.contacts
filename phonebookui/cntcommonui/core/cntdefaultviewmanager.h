@@ -53,7 +53,11 @@ public: // From CntAbstractViewManager
     void back( const CntViewParameters aArgs, bool toRoot = false );
     
 public:
-    int currentViewId();
+    bool internalize(QDataStream &stream);
+    QString externalize(QDataStream &stream) const;
+
+private:
+    void activateView(CntAbstractView* nextView, const CntViewParameters args, QFlags<Hb::ViewSwitchFlag> flags);
     
 private slots:
     void removeCurrentView();

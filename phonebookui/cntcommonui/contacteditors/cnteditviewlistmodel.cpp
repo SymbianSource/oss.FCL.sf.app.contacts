@@ -323,6 +323,7 @@ QModelIndex CntEditViewListModel::itemIndex( QContactDetail aDetail ) const
 
 void CntEditViewListModel::refresh()
 {
+    mItemList.clear();
     insertItem( EPhonenumber, mBuilder->phoneNumberItems(mContact) );
     insertItem( EEmailAddress, mBuilder->emailAddressItems(mContact) );
     insertItem( EAddressTemplate, mBuilder->addressItems(mContact) );

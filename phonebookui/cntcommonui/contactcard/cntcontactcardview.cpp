@@ -66,8 +66,20 @@ int CntContactCardView::viewId() const
 
 void CntContactCardView::setEngine( CntAbstractEngine& aEngine )
 {
-    Q_D( CntContactCardView );
+    Q_D(CntContactCardView);
     d->mEngine = &aEngine;
+}
+
+QString CntContactCardView::externalize(QDataStream &stream)
+{
+    Q_D(CntContactCardView);
+    return d->externalize(stream);
+}
+
+bool CntContactCardView::internalize(QDataStream &stream, CntViewParameters &viewParameters)
+{
+    Q_D(CntContactCardView);
+    return d->internalize(stream, viewParameters);
 }
 
 // end of file

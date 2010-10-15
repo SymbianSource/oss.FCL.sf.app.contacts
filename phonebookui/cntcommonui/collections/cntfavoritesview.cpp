@@ -71,9 +71,9 @@ void CntFavoritesView::activate( const CntViewParameters aArgs )
     mContact = new QContact(aArgs.value(ESelectedGroupContact).value<QContact>());
     mViewManager = &mEngine->viewManager();
 
-    HbPushButton *addButton = static_cast<HbPushButton*>(mDocumentLoader.findWidget(QString("cnt_button_add")));
-    connect(addButton, SIGNAL(clicked()), this, SLOT(openSelectionPopup()));
-    connect(addButton, SIGNAL(longPress(QPointF)), this, SLOT(openSelectionPopup()));
+    mAddButton = static_cast<HbPushButton*>(mDocumentLoader.findWidget(QString("cnt_button_add")));
+    connect(mAddButton, SIGNAL(released()), this, SLOT(openSelectionPopup()));
+    
     
     // If no contacts are present, then disable the button 
     QContactDetailFilter filter;
@@ -83,7 +83,7 @@ void CntFavoritesView::activate( const CntViewParameters aArgs )
     QList<QContactLocalId> contactIds = getContactManager()->contactIds(filter);   
     if (contactIds.isEmpty())
     {
-        addButton->setEnabled(false); 
+        mAddButton->setEnabled(false); 
     }
     
 }
@@ -94,15 +94,18 @@ void CntFavoritesView::deactivate()
 
 void CntFavoritesView::openSelectionPopup()
 {
-    CntFetchContactPopup* popup = CntFetchContactPopup::createMultiSelectionPopup(
-            hbTrId("txt_phob_title_favorite_contacts"), 
-            hbTrId("txt_common_button_save"),
-            *getContactManager());
-    connect(popup, SIGNAL(fetchReady(QSet<QContactLocalId>)), 
-            this, SLOT(handleMemberSelection(QSet<QContactLocalId>)));
-    QSet<QContactLocalId> ids;
-    popup->setSelectedContacts(ids);
-    popup->showPopup();
+    if(mAddButton->isUnderMouse())
+    {
+        CntFetchContactPopup* popup = CntFetchContactPopup::createMultiSelectionPopup(
+                hbTrId("txt_phob_title_favorite_contacts"), 
+                hbTrId("txt_common_button_save"),
+                *getContactManager());
+        connect(popup, SIGNAL(fetchReady(QSet<QContactLocalId>)), 
+                this, SLOT(handleMemberSelection(QSet<QContactLocalId>)));
+        QSet<QContactLocalId> ids;
+        popup->setSelectedContacts(ids);
+        popup->showPopup(); 
+    }
 }
 
 void CntFavoritesView::handleMemberSelection( QSet<QContactLocalId> aIds )

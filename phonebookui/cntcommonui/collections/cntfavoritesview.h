@@ -25,6 +25,7 @@
 
 class HbAction;
 class HbView;
+class HbPushButton;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -70,6 +71,7 @@ private:
     CntAbstractViewManager* mViewManager;
     HbDocumentLoader mDocumentLoader;
     CntAbstractEngine* mEngine;
+    HbPushButton *mAddButton;
 };
 
 #endif // CNTFAVORITESVIEW_H

@@ -23,8 +23,8 @@ TEMPLATE = lib
 TARGET = cnthistorymodel
 CONFIG += hb
 
-DEFINES += dll \
-    BUILD_CNTHISTORYMODEL
+DEFINES += dll
+DEFINES += BUILD_CNTHISTORYMODEL
     
 MOC_DIR = moc
 
@@ -34,17 +34,16 @@ TARGET.UID3 = 0x2002E6EC
 
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 INCLUDEPATH += ../../inc
-INCLUDEPATH += inc
 
 HEADERS += \
-    inc/cnthistorymodelglobal.h \
-    inc/cnthistorymodelconsts.h \
-    inc/cnthistorymodel.h \
-    inc/cnthistorymodel_p.h 
+    cnthistorymodelglobal.h \
+    cnthistorymodelconsts.h \
+    cnthistorymodel.h \
+    cnthistorymodel_p.h 
 
 SOURCES += \
-    src/cnthistorymodel_p.cpp \
-    src/cnthistorymodel.cpp
+    cnthistorymodel_p.cpp \
+    cnthistorymodel.cpp
     
 LIBS += -llogsengine \
         -lQtContacts \

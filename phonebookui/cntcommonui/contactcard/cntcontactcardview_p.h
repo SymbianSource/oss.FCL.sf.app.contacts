@@ -145,6 +145,8 @@ public:
     CntContactCardView* q_ptr;    
     void activate(const CntViewParameters aArgs);
     void deactivate();
+    QString externalize(QDataStream &stream);
+    bool internalize(QDataStream &stream, CntViewParameters &viewParameters);
     CntDocumentLoader* document();
     QContactManager* contactManager();
     
@@ -198,9 +200,12 @@ public:
     CntSaveManager* mSaveManager; // own
     CntAbstractEngine* mEngine;
     QTimer* mProgressTimer; // own
-    QList<CntContactCardDetailItem*>    mDetailPtrs;
     int                         mListPopulationProgress;
     bool                        mStopListPopulation;
+    bool                        mFetchAvatar;
+    HbLabel*                    mSeparatorlabel;
+    
+    friend class TestCntContactCardView;
 };
 
 #endif // CNTCOMMLAUNCHERVIEW_H

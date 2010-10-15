@@ -23,7 +23,7 @@ TARGET = mt_preseceqt
 QT += testlib network webkit xmlpatterns
 CONFIG += mobility
 DEFINES += CNT_SOC_ENG_UNIT_TEST
-
+CONFIG += symbian_test 
 TARGET.CAPABILITY = ALL -TCB
 
 DEPENDPATH += .
@@ -32,8 +32,8 @@ load(data_caging_paths)
 
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE 
 INCLUDEPATH += $$MW_LAYER_SYSTEMINCLUDE
-INCLUDEPATH +=   ..\..\..\\presence_cache_api\inc
-INCLUDEPATH +=   ..\..\inc
+INCLUDEPATH +=   ../../..//presence_cache_api/inc
+INCLUDEPATH +=   ../../inc
 
 HEADERS +=    entitytests.h
     

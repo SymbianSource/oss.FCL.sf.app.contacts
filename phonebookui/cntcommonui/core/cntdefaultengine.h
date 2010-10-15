@@ -29,17 +29,19 @@ public:
     CntDefaultEngine( CntAbstractViewManager& aManager );
     ~CntDefaultEngine();
     
-public:
-    QContactManager& contactManager( const QString& aType );
+public: // From CntAbstractEngine
+    QContactManager& contactManager( const QString& type );
     CntAbstractViewManager& viewManager();
     CntExtensionManager& extensionManager();
     CntThumbnailManager& thumbnailManager();
+    CntSaveManager& saveManager();
     
 private:
-    QList<QContactManager*> mBackends;
+    QList<QContactManager*> mBackends; // own list content
     CntAbstractViewManager& mViewManager;
-    CntExtensionManager* mExtManager;
-    CntThumbnailManager* mThumbnail;
+    CntExtensionManager* mExtManager; // own
+    CntThumbnailManager* mThumbnail; // own
+    CntSaveManager* mSaveManager; // own
 };
 
 #endif /* CNTDEFAULTENGINE_H_ */

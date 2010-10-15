@@ -70,12 +70,28 @@ public:
      * Set a view as a root view.
      */
     void addRoot( const int& aCurrent );
+        
+    /*!
+     * Internalize view data. Returns the previous view id.
+     */
+    int internalize(QDataStream &stream);
+    
+    /*!
+     * Externalize view data.
+     */
+    void externalize(QDataStream &stream);
+    
+    /*!
+     * Clear view stack.
+     */
+    void clearViewStack();
     
 private:
-    QStack<int> iViewStack;
-    QMap< int, int > iExceptions;
-    QMap< int, int > iEffects;
-    QList<int> iRoots;
-    int iTop;
+    QStack<int> mViewStack;
+    QMap< int, int > mExceptions;
+    QMap< int, int > mEffects;
+    QList<int> mRoots;
+    int mTop;
+    int mPreviousViewId;
 };
 #endif /* CNTVIEWNAVIGATOR_H_ */

@@ -123,7 +123,7 @@ void CntContactCardDetailItem::createPrimitives()
     mSecondLineText->setText(valueText);
 
 
-    if (!mFrameItem)
+    if (!mFrameItem && mIsFocusable)
     {
         mFrameItem = new HbFrameItem(this);
         mFrameItem->frameDrawer().setFrameGraphicsName("qtg_fr_list_normal");

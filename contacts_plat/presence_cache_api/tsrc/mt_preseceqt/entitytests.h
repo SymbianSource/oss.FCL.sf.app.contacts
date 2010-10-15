@@ -29,9 +29,7 @@ class EntityTests : public QObject
 {
 Q_OBJECT
 public:
-    explicit EntityTests(QObject *parent = 0);
-
-    
+    explicit EntityTests(QObject *parent = 0);    
 
 private slots:  // Init & cleanup
         void initTestCase();
@@ -44,8 +42,10 @@ private slots:  // Init & cleanup
         void test6();
         void test7();
         void test8();
+        void test9();
 
 private:
+        static TInt startupTestThreadFunction(TAny *any);
         void saveBuddy(QMap<QString,QString>& map);
         void fetchAndVerifyBuddy( QMap<QString,QString>& map );
         void  subscribeBuddy( QString &buddyId);

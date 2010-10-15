@@ -44,10 +44,15 @@ public:
 
     void populateListOfGroup();
     QList<QContactLocalId> deleteGroup() const;
+    
+public slots:
+
+    void checkPrimaryAction();
 
 private:
     QContactManager          *mContactManager;
     CntGroupDeletePopupModel *mModel;  
+    HbAction                 *mPrimaryAction;
 };
 
 #endif // CNTGROUPDELETEPOPUP_H

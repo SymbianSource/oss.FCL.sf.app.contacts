@@ -133,6 +133,7 @@ void CntDefaultViewManager::back(const CntViewParameters aArgs, bool toRoot)
     {
         mArgs.insert( k, aArgs.value(k) );
     }
+    
     mArgs.insert(EViewId, back );
 
     if (mArgs.value(EViewId).toInt() != noView)
@@ -140,9 +141,8 @@ void CntDefaultViewManager::back(const CntViewParameters aArgs, bool toRoot)
         switchView( mArgs, flags );
     }
     else 
-    {
+    {  
         // exiting application
-        cleanup();
         closeApp();
     }
     
@@ -164,34 +164,16 @@ void CntDefaultViewManager::changeView(const CntViewParameters aArgs)
     
     QFlags<Hb::ViewSwitchFlag> flags;
     mNavigator->next(aArgs.value(EViewId).toInt(), flags);
+    
+    foreach(int k, aArgs.keys())
+    {
+        mArgs.insert(k, aArgs.value(k));
+    }
+    
     switchView(aArgs, flags);
     
     CNT_EXIT
 }
-/*
-QContactManager* CntDefaultViewManager::contactManager( const QString& aType )
-{
-    CNT_ENTRY
-    
-    foreach ( QContactManager* mgr, mBackends ) 
-    {
-        QString uri = mgr->managerUri();
-        if ( aType.compare(uri, Qt::CaseInsensitive) == 0 )
-        {
-            return mgr;
-        }
-    }
-    QContactManager* manager = QContactManager::fromUri( aType );
-    
-    if ( manager )
-    {
-        mBackends.append( manager );
-    }
-    
-    CNT_EXIT
-    return manager;
-}
-*/
 
 void CntDefaultViewManager::removeCurrentView()
 {
@@ -234,11 +216,11 @@ void CntDefaultViewManager::deleteOldView()
     CNT_EXIT
 }
 
-void CntDefaultViewManager::switchView(const CntViewParameters aArgs, QFlags<Hb::ViewSwitchFlag> flags)
+void CntDefaultViewManager::switchView(const CntViewParameters args, QFlags<Hb::ViewSwitchFlag> flags)
 {
     CNT_ENTRY
 
-    int id = aArgs.value(EViewId).toInt();
+    int id = args.value(EViewId).toInt();
     if ( id != noView )
     {
         CntAbstractView* nextView(NULL);
@@ -258,20 +240,79 @@ void CntDefaultViewManager::switchView(const CntViewParameters aArgs, QFlags<Hb:
         }
         
         mOldView = mCurrent;
-        mCurrent = nextView;
-        mMainWindow->addView(mCurrent->view());
-        mMainWindow->setCurrentView(mCurrent->view(), true, flags);
-        mCurrent->activate(aArgs);
-        
+        activateView(nextView, args, flags);
         removeCurrentView();
     }
     
     CNT_EXIT
 }
 
-int CntDefaultViewManager::currentViewId()
+void CntDefaultViewManager::activateView(CntAbstractView* nextView, const CntViewParameters args, QFlags<Hb::ViewSwitchFlag> flags)
 {
-    return mCurrent->viewId();
+    CNT_ENTRY
+    
+    mCurrent = nextView;
+    mMainWindow->addView(mCurrent->view());
+    mMainWindow->setCurrentView(mCurrent->view(), true, flags);
+    mCurrent->activate(args);
+    
+    CNT_EXIT
+}
+
+bool CntDefaultViewManager::internalize(QDataStream &stream)
+{
+    CNT_ENTRY
+    
+    int id = mNavigator->internalize(stream);   
+    if (id == noView)
+    {
+        return false;
+    }
+    
+    CntAbstractView* nextView(NULL);
+    nextView = mFactory->createView(id);
+    nextView->setEngine(*mEngine);
+     
+    CntViewParameters viewParams;
+    
+    bool success = nextView->internalize(stream, viewParams);
+    
+    if (success)
+    {
+       if (nextView->isDefault())
+       {
+           mDefaults.insert(id, nextView);
+       }
+       QFlags<Hb::ViewSwitchFlag> flags;
+       mNavigator->next(id, flags);
+       
+       activateView(nextView, viewParams, flags);
+    }
+    else
+    {
+        mNavigator->clearViewStack();
+        delete nextView;
+    }
+      
+    CNT_EXIT  
+    return success;
+}
+
+QString CntDefaultViewManager::externalize(QDataStream& stream) const
+{
+    CNT_ENTRY
+    
+    mNavigator->externalize(stream);
+    
+    QString activity;
+    
+    if (mCurrent)
+    {
+        activity = mCurrent->externalize(stream); 
+    }
+       
+    CNT_EXIT
+    return activity;  
 }
 
 // End of File

@@ -14,8 +14,9 @@
 * Description:  
 *
 */
-#ifndef _CNTSETTINGSVIEW_H__
-#define _CNTSETTINGSVIEW_H__
+
+#ifndef CNTSETTINGSVIEW_H
+#define CNTSETTINGSVIEW_H
 
 #include <cntabstractview.h>
 #include <QObject>
@@ -32,6 +33,7 @@ class CntSettingsModel;
 class CntSettingsView : public QObject, public CntAbstractView
 {
     Q_OBJECT
+    friend class TestCntSettingsView;
     
 public:
     CntSettingsView();
@@ -40,29 +42,27 @@ public:
 protected: // From CntAbstractView
     void activate( const CntViewParameters aArgs );
     void deactivate();
-    bool isDefault() const;
-    HbView* view() const;
-    int viewId() const;
+    bool isDefault() const { return false; }
+    HbView* view() const { return mView; }
+    int viewId() const { return settingsView; }
     inline void setEngine( CntAbstractEngine& aEngine ){ mEngine = &aEngine; }
     
 private slots:
-    void back();
+    void showPreviousView();
     
 private:
     HbDocumentLoader* document();
     
 private:
-    HbView* mView;
-    HbDocumentLoader* mDoc;
-    HbDataForm* mForm;
-    HbAction* mBack;
-    
-    CntAbstractViewManager* mViewMgr;
-    CntViewParameters mArgs;
-    
-    CntSettingsModel* mModel;
-    CntAbstractEngine* mEngine;
-    friend class TestCntSettings;
-};
-#endif
+    HbView                  *mView;
+    HbDocumentLoader        *mDoc;
+    HbDataForm              *mForm;
+    HbAction                *mBack;
+    CntAbstractViewManager  *mViewMgr;
+    CntViewParameters        mArgs;
+    CntSettingsModel        *mModel;
+    CntAbstractEngine       *mEngine;
 
+};
+
+#endif /* CNTSETTINGSVIEW_H */

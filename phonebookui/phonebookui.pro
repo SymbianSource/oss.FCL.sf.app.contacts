@@ -19,7 +19,7 @@
 
 
 TEMPLATE = subdirs
-SUBDIRS = cnthistorymodel cntcommonui phonebookapp phonebookservices
+SUBDIRS = cntlistmodel cnthistorymodel cntcommonui phonebookapp phonebookservices
 CONFIG += ordered
 
 deploy.path = /epoc32/rom/include/core/app/

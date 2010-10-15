@@ -15,28 +15,34 @@
 *
 */
 
+#include "cntsettingsview.h"
+#include "cntsettingsmodel.h"
+#include "cntdebug.h"
+
 #include <hbdocumentloader.h>
 #include <hbview.h>
 #include <hbdataform.h>
 #include <hbaction.h>
-#include "cntdebug.h"
-#include "cntsettingsview.h"
-#include "cntsettingsmodel.h"
 
 const char *CNT_SETTINGS_XML = ":/xml/contacts_settings.docml";
 
-CntSettingsView::CntSettingsView() : QObject(),
-mView( NULL ),
-mDoc( NULL ),
-mForm( NULL ),
-mViewMgr( NULL ),
-mModel( NULL )
+/*!
+Constructor
+*/
+CntSettingsView::CntSettingsView() :
+    QObject(),
+    mView( NULL ),
+    mDoc( NULL ),
+    mForm( NULL ),
+    mViewMgr( NULL ),
+    mModel( NULL )
 {
     CNT_ENTRY
     
     bool ok;
     document()->load(CNT_SETTINGS_XML, &ok);
-    if (!ok) {
+    if (!ok)
+    {
         qFatal("Unable to read %S", CNT_SETTINGS_XML);
     }
     
@@ -48,11 +54,14 @@ mModel( NULL )
     mForm->setModel( mModel );
     
     mBack = new HbAction(Hb::BackNaviAction, mView);
-    connect( mBack, SIGNAL(triggered()), this, SLOT(back()) );
+    connect( mBack, SIGNAL(triggered()), this, SLOT(showPreviousView()) );
     
     CNT_EXIT
 }
 
+/*!
+Destructor
+*/
 CntSettingsView::~CntSettingsView()
 {
     CNT_ENTRY
@@ -65,6 +74,9 @@ CntSettingsView::~CntSettingsView()
     CNT_EXIT
 }
 
+/*!
+Called when view is activated
+*/
 void CntSettingsView::activate( const CntViewParameters aArgs )
 {
     CNT_ENTRY
@@ -72,7 +84,8 @@ void CntSettingsView::activate( const CntViewParameters aArgs )
     mArgs = aArgs;
     mViewMgr = &mEngine->viewManager();
         
-    if ( mView->navigationAction() != mBack) {
+    if ( mView->navigationAction() != mBack)
+    {
         mView->setNavigationAction(mBack);
     }
     
@@ -83,22 +96,10 @@ void CntSettingsView::deactivate()
 {
 }
 
-bool CntSettingsView::isDefault() const
-{
-    return false;
-}
-
-HbView* CntSettingsView::view() const
-{
-    return mView;
-}
-
-int CntSettingsView::viewId() const
-{
-    return settingsView;
-}
-
-void CntSettingsView::back()
+/*!
+Called when user presses back
+*/
+void CntSettingsView::showPreviousView()
 {
     CNT_ENTRY
     
@@ -106,6 +107,10 @@ void CntSettingsView::back()
     
     CNT_EXIT
 }
+
+/*!
+Returns the HbDocumentLoader pointer
+*/
 HbDocumentLoader* CntSettingsView::document() 
 {
     CNT_ENTRY

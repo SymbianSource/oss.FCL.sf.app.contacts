@@ -15,26 +15,25 @@
 *
 */
 
-#ifndef CNTIMPORTSVIEW_H_
-#define CNTIMPORTSVIEW_H_
+#ifndef CNTIMPORTSVIEW_H
+#define CNTIMPORTSVIEW_H
 
 #include <QObject>
-#include <hbpushbutton.h>
-#include <hblistview.h>
 
-#include "cntactionmenubuilder.h"
-#include <hbdocumentloader.h>
 #include "cntsimutility.h"
 #include "cntimportviewcallback.h"
 
+#include <hbdocumentloader.h>
 #include <cntabstractview.h>
 
+class HbProgressDialog;
+class HbListView;
 class HbView;
 class HbAction;
 class QStandardItemModel;
-class HbDialog;
-
 class CntSimEngine;
+class QModelIndex;
+
 QTM_BEGIN_NAMESPACE
 class QContact;
 QTM_END_NAMESPACE
@@ -43,13 +42,8 @@ QTM_USE_NAMESPACE
 
 class CntImportsView : public QObject, public CntAbstractView, public CntImportViewCallback
 {
-
-Q_OBJECT
-
-public slots:
-
-    void onListViewActivated(const QModelIndex &index);
-    void userCancelsImport();
+    Q_OBJECT
+    friend class TestCntImportsView;
      
 public:
     CntImportsView();
@@ -64,6 +58,12 @@ public: // From CntAbstractView
     inline void setEngine( CntAbstractEngine& aEngine ){ mEngine = &aEngine; }
     QContactManager *contactSymbianManager();
     
+private slots:
+    void showPreviousView();
+    void closeImportPopup();
+    void onListViewActivated(const QModelIndex &index);
+    void userCancelsImport();
+    
 private:
     void showWaitNote();
     void setPreferredDetails( QContact *aContact );
@@ -72,30 +72,16 @@ private: // from CntImportViewCallback
     void setListBoxItemText(QString& aPrimary, QString& aSecondary);
     void setListBoxItemEnabled(bool aEnabled);
         
-#ifdef PBK_UNIT_TEST
-public slots:
-#else
-private slots:
-#endif
-    void showPreviousView();
-    void closeImportPopup();
-        
-#ifdef PBK_UNIT_TEST
-public :
-#else
-private :
-#endif  
-   // QContact* mContact;
-    CntAbstractViewManager* mViewManager;
-    CntSimEngine        *mSimEngine;
+private:
+    CntAbstractViewManager  *mViewManager;
+    CntSimEngine            *mSimEngine;
     HbListView              *mListView;
-    HbDocumentLoader mDocumentLoader;
-    HbView* mView; // own
-    HbAction* mSoftkey;
-	QStandardItemModel* mModel;
-    HbDialog *mImportSimPopup;
-
-    CntAbstractEngine* mEngine;
+    HbDocumentLoader         mDocumentLoader;
+    HbView                  *mView;
+    HbAction                *mSoftkey;
+	QStandardItemModel      *mModel;
+	HbProgressDialog        *mImportSimPopup;
+    CntAbstractEngine       *mEngine;
 };
 
-#endif /* CNTIMPORTSVIEW_H_ */
+#endif /* CNTIMPORTSVIEW_H */

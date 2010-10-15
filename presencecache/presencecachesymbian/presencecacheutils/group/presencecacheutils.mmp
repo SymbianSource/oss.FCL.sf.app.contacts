@@ -52,3 +52,4 @@ LIBRARY                 charconv.lib
 // DEBUG
 LIBRARY         flogger.lib //todo: remove to DEBUGLIBRARY when ready.
 
+SMPSAFE

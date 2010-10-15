@@ -72,28 +72,23 @@ void CntServiceAssignContactCardView::addToContacts()
     HbWidget* buttonWidget = new HbWidget(popup);
     QGraphicsLinearLayout* layout = new QGraphicsLinearLayout(Qt::Vertical);
     
-    HbPushButton* addButton = new HbPushButton(buttonWidget);
-    addButton->setStretched(true);
-    addButton->setText(hbTrId("txt_phob_button_save_as_a_new_contact"));
+    mAddButton = new HbPushButton(buttonWidget);
+    mAddButton->setStretched(true);
+    mAddButton->setText(hbTrId("txt_phob_button_save_as_a_new_contact"));
     HbIcon plusIcon("qtg_mono_plus");
-    addButton->setIcon(plusIcon);
-    connect(addButton, SIGNAL(clicked()), popup, SLOT(close()));
-    connect(addButton, SIGNAL(clicked()), this, SLOT(saveNew()));
-    connect(addButton, SIGNAL(longPress(QPointF)), popup, SLOT(close()));
-    connect(addButton, SIGNAL(longPress(QPointF)), this, SLOT(saveNew()));
+    mAddButton->setIcon(plusIcon);
+    connect(mAddButton, SIGNAL(released()), popup, SLOT(close()));
+    connect(mAddButton, SIGNAL(released()), this, SLOT(saveNew()));
     
-    HbPushButton* updateButton = new HbPushButton(buttonWidget);
-    updateButton->setStretched(true);
-    updateButton->setText(hbTrId("txt_phob_button_update_existing_contact"));
-    updateButton->setIcon(plusIcon);
-    connect(updateButton, SIGNAL(clicked()), popup, SLOT(close()));
-    connect(updateButton, SIGNAL(clicked()), this, SLOT(updateExisting()));
-    connect(updateButton, SIGNAL(longPress(QPointF)), popup, SLOT(close()));
-    connect(updateButton, SIGNAL(longPress(QPointF)), this, SLOT(updateExisting()));
+    mUpdateButton = new HbPushButton(buttonWidget);
+    mUpdateButton->setStretched(true);
+    mUpdateButton->setText(hbTrId("txt_phob_button_update_existing_contact"));
+    mUpdateButton->setIcon(plusIcon);
+    connect(mUpdateButton, SIGNAL(released()), popup, SLOT(close()));
+    connect(mUpdateButton, SIGNAL(released()), this, SLOT(updateExisting()));    
     
-    
-    layout->addItem(addButton);
-    layout->addItem(updateButton);
+    layout->addItem(mAddButton);
+    layout->addItem(mUpdateButton);
     
     buttonWidget->setLayout(layout);
     popup->setContentWidget(buttonWidget);
@@ -109,14 +104,17 @@ Create a new contact with the detail
 void CntServiceAssignContactCardView::saveNew()
 {
     CNT_ENTRY
-    CntViewParameters viewParameters;
-    viewParameters.insert(EViewId, serviceEditView);
-    QContactName contactName = mContact.detail<QContactName>();
-    mContact.removeDetail(&contactName);
-    QVariant var;
-    var.setValue(mContact);
-    viewParameters.insert(ESelectedContact, var);
-    mViewManager->changeView(viewParameters);
+    if(mAddButton->isUnderMouse())
+    {
+        CntViewParameters viewParameters;
+        viewParameters.insert(EViewId, serviceEditView);
+        QContactName contactName = mContact.detail<QContactName>();
+        mContact.removeDetail(&contactName);
+        QVariant var;
+        var.setValue(mContact);
+        viewParameters.insert(ESelectedContact, var);
+        mViewManager->changeView(viewParameters);
+    }
     CNT_EXIT
 }
 
@@ -126,12 +124,15 @@ Update an existing contact with the detail
 void CntServiceAssignContactCardView::updateExisting()
 {
     CNT_ENTRY
-    CntViewParameters viewParameters;
-    viewParameters.insert(EViewId, serviceContactSelectionView);
-    QVariant var;
-    var.setValue(mDetail);
-    viewParameters.insert(ESelectedDetail, var);
-    mViewManager->changeView(viewParameters);
+    if(mUpdateButton->isUnderMouse())
+    {
+        CntViewParameters viewParameters;
+        viewParameters.insert(EViewId, serviceContactSelectionView);
+        QVariant var;
+        var.setValue(mDetail);
+        viewParameters.insert(ESelectedDetail, var);
+        mViewManager->changeView(viewParameters);
+    }
     CNT_EXIT
 }
 

@@ -60,7 +60,6 @@
             <ref object="cnt:settings" role="HbMenu:addAction"/>
         </widget>
         <string locid="txt_phob_title_contacts" name="title" value="Contacts"/>
-        <bool name="contentFullScreen" value="FALSE"/>
     </widget>
 
     <section name="no_find">
@@ -81,7 +80,6 @@
                 </layout>
             </widget>
             <string locid="txt_phob_title_contacts" name="title" value="Contacts"/>
-            <bool name="contentFullScreen" value="FALSE"/>
         </widget>
     </section>
 
@@ -104,7 +102,6 @@
                 </layout>
             </widget>
             <string locid="txt_phob_title_contacts" name="title" value="Contacts"/>
-            <bool name="contentFullScreen" value="TRUE"/>
         </widget>
     </section>
 
@@ -127,7 +124,6 @@
                 </layout>
             </widget>
             <string locid="txt_phob_title_contacts" name="title" value="Contacts"/>
-            <bool name="contentFullScreen" value="TRUE"/>
         </widget>
     </section>
 

@@ -31,13 +31,16 @@ TARGET.UID3 = 0x2002B3F5
 
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 INCLUDEPATH += inc
+INCLUDEPATH += ../../inc
 
 HEADERS += inc/cntimageutilityglobal.h \
-           inc/cntimageutility.h
+           inc/cntimageutility.h \
+           inc/cntorientationhelper.h
 
-SOURCES += src/cntimageutility.cpp
+SOURCES += src/cntimageutility.cpp \
+		   src/cntorientationhelper.cpp
 
-LIBS += -lplatformenv -lefsrv
+LIBS += -lplatformenv -lefsrv -lxqsettingsmanager
 defBlock = \      
 	"$${LITERAL_HASH}if defined(EABI)" \
 		"DEFFILE  ../eabi/cntimageutility.def" \

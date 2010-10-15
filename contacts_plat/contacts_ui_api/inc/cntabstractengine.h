@@ -23,6 +23,7 @@
 class CntAbstractViewManager;
 class CntThumbnailManager;
 class CntExtensionManager;
+class CntSaveManager;
 
 QTM_USE_NAMESPACE
 
@@ -39,6 +40,7 @@ public:
     virtual CntAbstractViewManager& viewManager() = 0;
     virtual CntExtensionManager& extensionManager() = 0;
     virtual CntThumbnailManager& thumbnailManager() = 0;
+	virtual CntSaveManager& saveManager() = 0;
 };
 
 #endif /* CNTABSTRACTENGINE_H_ */

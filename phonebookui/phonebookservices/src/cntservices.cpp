@@ -36,9 +36,6 @@
 #include <QPixmap>
 #include <QFile>
 #include <QUrl>
-#include <QTextCodec>
-
-const int Latin1CharSetMIB = 4;
 
 CntServices::CntServices() :
 mViewManager(NULL),
@@ -183,22 +180,6 @@ void CntServices::editCreateNewFromVCard(const QString &fileName,
     CntImageUtility imageUtility;
     QContact contact;
     QVersitReader reader;
-    QFile inputFile(fileName);
-    if (!inputFile.open(QIODevice::ReadOnly))
-        return;
-    
-    // Versit parser default codec is UTF-8
-    // Check if decoding text to unicode is possible, else use Latin-1 text codec
-    QByteArray ba = inputFile.readAll();
-    if(!ba.isEmpty())
-        {
-        QTextCodec *c = QTextCodec::codecForUtfText(ba);
-        // Text codec returned is Latin-1, set default to Latin-1
-        if(c->mibEnum()==Latin1CharSetMIB)
-            reader.setDefaultCodec(QTextCodec::codecForName("ISO 8859-1"));
-        }
-    inputFile.close();
-    
     QFile vCardFile(fileName);
     if (!vCardFile.open(QIODevice::ReadOnly))
         return;
@@ -216,9 +197,6 @@ void CntServices::editCreateNewFromVCard(const QString &fileName,
             contact = contacts.first();
         }
     vCardFile.close();
-    
-    // check if the contact is in db already.
-    updateLocalId( contact );
     
     // Save thumbnail images
     QList<QContactThumbnail> details = contact.details<QContactThumbnail>();
@@ -499,66 +477,39 @@ void CntServices::removeNotSupportedFields(QContact& contact)
 
 void CntServices::fillOnlineAccount( QContactOnlineAccount& account, const QString& value,
     const QString& subType, bool defaultForOnlineAccountIsImpp )
+{
+    // The value should normally consist of two parts:
+    //    <service provider>:<user ID>
+    // for eg. "serviceprovider:jack@serviceprovider.com"
+    QStringList accountDetails = value.split(":");
+    if (accountDetails.count() == 1)
     {
-        // The value should normally consist of two parts:
-        //    <service provider>:<user ID>
-        // for eg. "serviceprovider:jack@serviceprovider.com"
-        QStringList accountDetails = value.split(":");
-        if (accountDetails.count() == 1)
-        {
-            // For some reason it only had one part, so we're assuming it's the user ID.
-            account.setAccountUri(accountDetails.at(0));
-        }
-        else if (accountDetails.count() >= 2)
-        {
-            account.setServiceProvider(accountDetails.at(0));        
-            account.setAccountUri(accountDetails.at(1)); // the user ID
-        }
+        // For some reason it only had one part, so we're assuming it's the user ID.
+        account.setAccountUri(accountDetails.at(0));
+    }
+    else if (accountDetails.count() >= 2)
+    {
+        account.setServiceProvider(accountDetails.at(0));        
+        account.setAccountUri(accountDetails.at(1)); // the user ID
+    }
 
-        if (!subType.isEmpty())
-        {        
-            account.setSubTypes(subType);
+    if (!subType.isEmpty())
+    {        
+        account.setSubTypes(subType);
+    }
+    else
+    {
+        if (defaultForOnlineAccountIsImpp)
+        {
+            account.setSubTypes( QContactOnlineAccount::SubTypeImpp );
         }
         else
         {
-            if (defaultForOnlineAccountIsImpp)
-            {
-                account.setSubTypes( QContactOnlineAccount::SubTypeImpp );
-            }
-            else
-            {
-                account.setSubTypes( QContactOnlineAccount::SubTypeSipVoip );
-            }
+            account.setSubTypes( QContactOnlineAccount::SubTypeSipVoip );
         }
     }
-
-void CntServices::updateLocalId( QContact& aContact )
-{
-    CNT_ENTRY
-    if ( aContact.localId() == 0 )
-        {
-        QContactGuid guid = aContact.detail<QContactGuid>();
-        QString guidString = guid.guid();
-            
-        QContactDetailFilter filter;
-        filter.setDetailDefinitionName( QContactGuid::DefinitionName, QContactGuid::FieldGuid );
-        filter.setValue( guid.guid() );
-            
-        QContactManager& cm = mEngine->contactManager( SYMBIAN_BACKEND );
-        QList<QContactLocalId> idList = cm.contactIds( filter, QList<QContactSortOrder>() );
-        int count = idList.count();
-        
-        if ( !idList.isEmpty() )
-            {
-            QContactId id;
-            id.setLocalId( idList.first() );
-            id.setManagerUri( cm.managerUri() );
-            
-            aContact.setId( id );
-            }
-        }
-    CNT_EXIT
 }
+
 // This method is inherited from CntAbstractServiceProvider
 void CntServices::CompleteServiceAndCloseApp(const QVariant& retValue)
 {

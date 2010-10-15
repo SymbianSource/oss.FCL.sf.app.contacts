@@ -18,7 +18,6 @@
 #include "cntgroupdeletepopup.h"
 #include <cntabstractengine.h>
 #include "cntglobal.h"
-#include <hblabel.h>
 #include <hbaction.h>
 #include <hblistview.h>
 #include <hblistviewitem.h>
@@ -28,7 +27,8 @@
 CntGroupDeletePopup::CntGroupDeletePopup(CntAbstractEngine *aEngine, QGraphicsItem *parent):
     HbSelectionDialog(parent),
     mContactManager( &aEngine->contactManager(SYMBIAN_BACKEND) ),
-    mModel(0)
+    mModel(NULL),
+    mPrimaryAction(NULL)
 {
     mModel = new CntGroupDeletePopupModel(aEngine, this);
 }
@@ -41,20 +41,21 @@ CntGroupDeletePopup::~CntGroupDeletePopup()
 
 void CntGroupDeletePopup::populateListOfGroup()
 {
-    HbLabel *headingLabel = new HbLabel(this);   
-    headingLabel->setPlainText(hbTrId("txt_phob_opt_delete_groups"));
-    
-    setHeadingWidget(headingLabel);
+    setHeadingText(hbTrId("txt_phob_opt_delete_groups"));
 
     setSelectionMode( HbAbstractItemView::MultiSelection );
     mModel->initializeGroupsList();
     setModel(mModel);
     clearActions(); 
-    HbAction *mPrimaryAction = new HbAction(hbTrId("txt_phob_button_delete_selected"), this);
+    mPrimaryAction = new HbAction(hbTrId("txt_phob_button_delete_selected"), this);
     addAction(mPrimaryAction);
+    mPrimaryAction->setEnabled(false);
     
-    HbAction *mSecondaryAction = new HbAction(hbTrId("txt_common_button_cancel"), this);
-    addAction(mSecondaryAction);
+    connect(this , SIGNAL(selectionChanged()), this, SLOT(checkPrimaryAction()));    
+    QModelIndexList indexes = selectedModelIndexes();
+        
+    HbAction *secondaryAction = new HbAction(hbTrId("txt_common_button_cancel"), this);
+    addAction(secondaryAction);
     
     setTimeout(HbDialog::NoTimeout);
     setDismissPolicy(HbDialog::NoDismiss);
@@ -81,4 +82,18 @@ QList<QContactLocalId> CntGroupDeletePopup::deleteGroup() const
     mContactManager->removeContacts(selectionList, &errors);
     
     return selectionList;
+}
+
+void CntGroupDeletePopup::checkPrimaryAction()
+{
+    QModelIndexList indexes = selectedModelIndexes();
+    if (indexes.count())
+    {
+        mPrimaryAction->setEnabled(true);
+    }
+    else 
+    {
+        mPrimaryAction->setEnabled(false);
+    }
+
 }

@@ -53,6 +53,7 @@ symbian {
     TARGET.UID3 = 0x2002C355
     TARGET.CAPABILITY = CAP_APPLICATION AllFiles
     TARGET.EPOCHEAPSIZE = 10000 54000000
+    MMP_RULES += SMPSAFE
 
     BLD_INF_RULES.prj_exports += \
         "./resource/test1_avatar.jpg     $$PLUGIN_SUBDIR/test1_avatar.jpg"   \

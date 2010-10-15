@@ -24,9 +24,8 @@
     For example "forcing" phonebook to shut down (end key, from task swapper etc..)
     in detail editors.
 */
-CntSaveManager::CntSaveManager(CntContactType type, QObject* parent) :
-    QObject(parent),
-    mContactType(type)
+CntSaveManager::CntSaveManager(QObject* parent) :
+    QObject(parent)
 {
     CNT_ENTRY
     
@@ -43,6 +42,21 @@ CntSaveManager::~CntSaveManager()
     CNT_EXIT
 }
 
+CntSaveManager::CntSaveResult CntSaveManager::saveContact( QContact* contact, QContactManager* manager )
+{
+    return saveContact( EContact, contact, manager );
+}
+
+CntSaveManager::CntSaveResult CntSaveManager::saveMyCard( QContact* myCard, QContactManager* manager )
+{
+    return saveContact( EMyCard, myCard, manager );
+}
+
+CntSaveManager::CntSaveResult CntSaveManager::saveGroup( QContact* group, QContactManager* manager )
+{
+    return saveContact( EGroup, group, manager );
+}
+    
 /*!
     Saves the given QContact to the given QContactManager. Also takes care of checking
     if the contact is MyCard or a group and behaves different accordingly.
@@ -51,7 +65,7 @@ CntSaveManager::~CntSaveManager()
     \param aManager the QContactManager which should be used for saving the contact, ownership not taken
     \return CntSaveResult enum to describe what was done to the contact (saved, updated etc...)
 */
-CntSaveManager::CntSaveResult CntSaveManager::saveContact(QContact* aContact, QContactManager* aManager)
+CntSaveManager::CntSaveResult CntSaveManager::saveContact(CntContactType type, QContact* aContact, QContactManager* aManager)
 {
     CNT_ENTRY
     
@@ -64,7 +78,7 @@ CntSaveManager::CntSaveResult CntSaveManager::saveContact(QContact* aContact, QC
         int detailCount = aContact->details().count();
         
         // Don't set preferred details for a group
-        if (mContactType != EGroup)
+        if (type != EGroup)
         {
             setPreferredDetails( aContact );
         }
@@ -76,7 +90,7 @@ CntSaveManager::CntSaveResult CntSaveManager::saveContact(QContact* aContact, QC
             if ( detailCount > 2 )
             {
                 bool success = aManager->saveContact( aContact );
-                if ( success && mContactType == EMyCard )
+                if ( success && type == EMyCard )
                 {
                     aManager->setSelfContactId( aContact->localId() );
                 }
@@ -104,6 +118,7 @@ CntSaveManager::CntSaveResult CntSaveManager::saveContact(QContact* aContact, QC
     }
     
     CNT_EXIT_ARGS(result)
+    emit saveCompleted( result );
     
     return result;
 }

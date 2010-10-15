@@ -19,11 +19,11 @@ TEMPLATE = app
 MOC_DIR = moc
 
 QT += testlib xml core
-CONFIG  += qtestlib hb
+CONFIG  += hb symbian_test
 DEFINES += QT_NO_DEBUG_OUTPUT
 DEFINES += QT_NO_WARNING_OUTPUT
-DEFINES += PBK_UNIT_TEST
-DEFINES += CNTHISTORYMODEL_NO_EXPORT
+DEFINES += PBK_UNIT_TEST \
+           CNTHISTORYMODEL_NO_EXPORT
 
 DEPENDPATH += .
 INCLUDEPATH += .
@@ -32,16 +32,13 @@ INCLUDEPATH += ../../../../inc
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE 
 	
 # Input
-HEADERS += ../../inc/*.h
+HEADERS += ../../*.h
 HEADERS += mt_cnthistorymodel.h
 HEADERS += stub_classes.h
-HEADERS += testrunner.h
            
-SOURCES += ../../src/*.cpp
-SOURCES += main.cpp
+SOURCES += ../../*.cpp
 SOURCES += stub_classes.cpp
 SOURCES += mt_cnthistorymodel.cpp
-SOURCES += testrunner.cpp
            
 LIBS += -lQtContacts \
         -lmsghistory

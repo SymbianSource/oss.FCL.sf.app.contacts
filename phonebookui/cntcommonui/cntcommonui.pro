@@ -27,11 +27,11 @@ QT += sql
 DEPENDPATH += .
 INCLUDEPATH += .
 INCLUDEPATH += ../../inc
-INCLUDEPATH += ../../phonebookengines/cntlistmodel/inc
 INCLUDEPATH += ../../phonebookengines/cntimageutility/inc
 INCLUDEPATH += ../../phonebookengines/cntsimutility/inc
 INCLUDEPATH += ../phonebookapp/inc
-INCLUDEPATH += ../cnthistorymodel/inc
+INCLUDEPATH += ../cntlistmodel
+INCLUDEPATH += ../cnthistorymodel
 
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 
@@ -68,6 +68,7 @@ symbian: {
 
 # Input
 HEADERS += ../../inc/cntdebug.h \
+    core/cntactivities.h \
     core/cntabstractviewfactory.h \
     core/cntdefaultengine.h \
     core/cntdefaultviewmanager.h \ 
@@ -135,6 +136,7 @@ HEADERS += ../../inc/cntdebug.h \
     views/cntbaseselectionview.h \
     views/cnthistoryview.h \
     views/cnthistoryviewitem.h \
+    views/cnthistoryviewitemwidget.h \
     views/cntimageeditorview.h \
     views/cntimportsview.h \
     views/cntimportviewcallback.h \ 
@@ -143,13 +145,16 @@ HEADERS += ../../inc/cntdebug.h \
     views/cntnamesview_p.h \
     views/cntsettingsmodel.h \
     views/cntsettingsview.h \
+    views/cntpinchgrabber.h \
+    views/cntnamesviewitem.h \
     widgets/cntactionpopup.h \
     widgets/cntactionpopup_p.h \   
     widgets/cntfetchcontactpopup.h \
     widgets/cntfetchmarkall.h \
     widgets/cntimagelabel.h      
 
-SOURCES += core/cntdefaultengine.cpp \
+SOURCES += core/cntactivities.cpp \
+    core/cntdefaultengine.cpp \
     core/cntdefaultviewfactory.cpp \
     core/cntdefaultviewmanager.cpp \ 
     core/cntextensionmanager.cpp \
@@ -214,6 +219,7 @@ SOURCES += core/cntdefaultengine.cpp \
     views/cntbaseselectionview.cpp \
     views/cnthistoryview.cpp \
     views/cnthistoryviewitem.cpp \
+    views/cnthistoryviewitemwidget.cpp \
     views/cntimageeditorview.cpp \
     views/cntimportsview.cpp \
     views/cntmycardview.cpp \
@@ -221,6 +227,8 @@ SOURCES += core/cntdefaultengine.cpp \
     views/cntnamesview_p.cpp \
     views/cntsettingsmodel.cpp \
     views/cntsettingsview.cpp \   
+    views/cntpinchgrabber.cpp \
+    views/cntnamesviewitem.cpp \
     widgets/cntactionpopup_p.cpp \
     widgets/cntactionpopup.cpp \
     widgets/cntfetchcontactpopup.cpp \
@@ -271,3 +279,4 @@ defBlock = "$${LITERAL_HASH}if defined(EABI)" \
     "DEFFILE ../bwins/cntcommonui.def" \
     "$${LITERAL_HASH}endif"
 MMP_RULES += defBlock
+symbian:MMP_RULES += SMPSAFE

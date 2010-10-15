@@ -76,4 +76,16 @@ void CntEditView::setEngine( CntAbstractEngine& aEngine )
     Q_D( CntEditView );
     d->mEngine = &aEngine;
 }
+
+QString CntEditView::externalize(QDataStream &stream)
+{
+    Q_D(CntEditView);
+    return d->externalize(stream);
+}
+
+bool CntEditView::internalize(QDataStream &stream, CntViewParameters &viewParameters)
+{
+    Q_D(CntEditView);
+    return d->internalize(stream, viewParameters);
+}
 // EOF

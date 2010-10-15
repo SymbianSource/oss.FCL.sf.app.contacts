@@ -70,7 +70,6 @@ private slots:
     void actionExecuted(CntActionLauncher* aAction);
     void actionCancelled();
     void executeConferenceCallAction(QContact& aContact, const QContactDetail& aDetail, const QString& aAction);
-    void onLongPressed (HbAbstractViewItem *item, const QPointF &coords);
 
 #ifdef PBK_UNIT_TEST
 public:
@@ -96,7 +95,7 @@ private:
     HbAction*                   mSoftkey; // owned by view
     HbListView*                 mListView; // owned by layout
     int                         mPopupCount;
-    QStringList                 mEmailActionParams;
+    QVariantMap                 mEmailActionParams;
     QVariantMap                 mMessageActionParams;
     bool                        mIsExecutingAction;
     

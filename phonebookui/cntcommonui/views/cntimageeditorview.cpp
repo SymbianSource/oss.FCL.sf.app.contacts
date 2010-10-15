@@ -21,10 +21,6 @@
 #include "cntsavemanager.h"
 #include "cntimagelabel.h"
 
-#include <hblabel.h>
-#include <xqaiwrequest.h>
-#include <xqaiwdecl.h>
-
 #include "cntdebug.h"
 #include "cntglobal.h"
 
@@ -36,6 +32,9 @@
 #include <hbframebackground.h>
 #include <hbdevicenotificationdialog.h>
 #include <hbparameterlengthlimiter.h>
+
+#include <xqaiwrequest.h>
+#include <xqaiwdecl.h>
 
 #include <QStandardItemModel>
 #include <QApplication>
@@ -52,8 +51,7 @@ CntImageEditorView::CntImageEditorView() :
     mRequest(NULL),
     mViewManager(NULL),
     mListView(NULL),
-    mModel(NULL),
-    mSaveManager(NULL)
+    mModel(NULL)
 {
     bool ok = false;
     mDocumentLoader.load(CNT_IMAGE_XML, &ok);
@@ -89,17 +87,10 @@ CntImageEditorView::~CntImageEditorView()
     mView->deleteLater();
 
     delete mAvatar;
-    mAvatar = NULL;
     delete mContact;
-    mContact = NULL;
     delete mRequest;
-    mRequest = NULL;
     delete mRemoveImage;
-    mRemoveImage = NULL;
     delete mModel;
-    mModel = NULL;
-    delete mSaveManager;
-    mSaveManager = NULL;
     
     CNT_EXIT
 }
@@ -136,49 +127,31 @@ void CntImageEditorView::activate( const CntViewParameters aArgs )
         mContact = new QContact(mArgs.value(ESelectedGroupContact).value<QContact>());
     }
     
-    QString myCard = mArgs.value( EMyCard ).toString();
-    QContactLocalId localId = mContact->localId();
-    QContactLocalId selfContactId = mEngine->contactManager(SYMBIAN_BACKEND).selfContactId();
-    bool isMyCard = ( localId == selfContactId && localId != 0 ) || !myCard.isEmpty();
-    
-    if (isMyCard)
-    {
-        mSaveManager = new CntSaveManager(CntSaveManager::EMyCard);
-    }
-    else if (mContact->type() == QContactType::TypeGroup)
-    {
-        mSaveManager = new CntSaveManager(CntSaveManager::EGroup);
-    }
-    else
-    {
-        mSaveManager = new CntSaveManager();
-    }
-    
     // set the correct image if the contact already has an image set
     mImageLabel = static_cast<CntImageLabel*>(mDocumentLoader.findWidget(QString("cnt_image_label")));
     mImageLabel->ungrabGesture(Qt::TapGesture);
     QList<QContactAvatar> details = mContact->details<QContactAvatar>();
     if (details.count() > 0)
-        {
+    {
         for (int i = 0;i < details.count();i++)
+        {
+            if (details.at(i).imageUrl().isValid())
             {
-                if (details.at(i).imageUrl().isValid())
-                    {
-                    mAvatar = new QContactAvatar(details.at(i));
-                    mThumbnailManager->getThumbnail(ThumbnailManager::ThumbnailLarge, mAvatar->imageUrl().toString());
-                    break;
-                    }
+                mAvatar = new QContactAvatar(details.at(i));
+                mThumbnailManager->getThumbnail(ThumbnailManager::ThumbnailLarge, mAvatar->imageUrl().toString());
+                break;
             }
         }
+    }
     else
-        {
+    {
         mAvatar = new QContactAvatar();
         mRemoveImage->setEnabled(false);
         if (mContact->type() == QContactType::TypeGroup)
-            {
+        {
             mImageLabel->setAvatarIcon(HbIcon("qtg_large_add_group_picture"));
-            }
         }
+    }
     
     // set up the list
     mListView = static_cast<HbListView*>(mDocumentLoader.findWidget(QString("cnt_listview")));
@@ -204,6 +177,9 @@ void CntImageEditorView::deactivate()
 
 }
 
+/*!
+Populate the list model
+*/
 void CntImageEditorView::populateModel(QStandardItemModel *model)
 {
     QStandardItem *newPhoto = new QStandardItem();
@@ -229,8 +205,9 @@ void CntImageEditorView::openCamera()
         delete mRequest;
         mRequest = 0;
     }
-    
+  
     mRequest = mAppManager.create(XQI_CAMERA_CAPTURE, XQOP_CAMERA_CAPTURE, false);
+
     if ( mRequest ) 
     {
         int mode = 0; //image mode
@@ -247,10 +224,10 @@ void CntImageEditorView::openCamera()
         args << mode;
         args << map;
         mRequest->setArguments(args);
+        mRequest->setSynchronous(false);    // this must be an Asynchronus request, If symchronous it crashes
         
         connect(mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(handleImageChange(const QVariant&)));
-        connect(mRequest, SIGNAL(requestError(int,const QString&)), this, SLOT(handleError(int,const QString&)));
-
+        
         mRequest->send();
     }
     
@@ -271,6 +248,7 @@ void CntImageEditorView::openGallery()
     mRequest = mAppManager.create(XQI_IMAGE_FETCH, XQOP_IMAGE_FETCH, true);
     if ( mRequest ) 
     {
+        mRequest->setSynchronous(false);
         connect(mRequest, SIGNAL(requestOk(const QVariant&)), this, SLOT(handleImageChange(const QVariant&)));
         mRequest->send();
     }
@@ -307,9 +285,12 @@ void CntImageEditorView::showPreviousView()
     mViewManager->back( mArgs );
 }
 
+/*!
+Called when user selects to remove the image
+*/
 void CntImageEditorView::removeImage()
 {
-    QString filePath=mAvatar->imageUrl().toString();
+    QString filePath = mAvatar->imageUrl().toString();
     if(!filePath.isEmpty())
     {
         // Check if image removable.
@@ -374,6 +355,9 @@ void CntImageEditorView::handleImageChange(const QVariant &value)
     CNT_EXIT
 }
 
+/*!
+Called when thumbnailmanager is ready with the icon handling
+*/
 void CntImageEditorView::thumbnailReady(const QPixmap& pixmap, void *data, int id, int error)
 {
     CNT_ENTRY_ARGS("error code = " << error)
@@ -389,6 +373,9 @@ void CntImageEditorView::thumbnailReady(const QPixmap& pixmap, void *data, int i
     CNT_EXIT
 }
 
+/*!
+Load the layout according to orientation
+*/
 void CntImageEditorView::setOrientation(Qt::Orientation orientation)
 {
     if (orientation == Qt::Vertical) 
@@ -425,13 +412,9 @@ void CntImageEditorView::listViewActivated(const QModelIndex &index)
     }
 }
 
-void CntImageEditorView::handleError(int errorCode, const QString& errorMessage)
-{
-    Q_UNUSED(errorCode);
-    Q_UNUSED(errorMessage);
-    CNT_LOG_ARGS("error code = " << errorCode << "errorMessage=" << errorMessage)
-}
-
+/*!
+Saves the whole contact, called when user exits phonebook (via task switcher or end key)
+*/
 void CntImageEditorView::saveContact()
 {
     mContact->saveDetail(mAvatar);
@@ -441,24 +424,44 @@ void CntImageEditorView::saveContact()
         mContact->removeDetail(mAvatar);
     }
     
-    QString name = mEngine->contactManager(SYMBIAN_BACKEND).synthesizedContactDisplayLabel(*mContact);
+    QContactManager& mgr = mEngine->contactManager( SYMBIAN_BACKEND );
+    QString name = mgr.synthesizedContactDisplayLabel(*mContact);
     
     if (name.isEmpty())
     {
         name = hbTrId("txt_phob_list_unnamed");
     }
     
-    CntSaveManager::CntSaveResult result = mSaveManager->saveContact(mContact, &mEngine->contactManager(SYMBIAN_BACKEND));
+    QString myCard = mArgs.value( EMyCard ).toString();
+    QContactLocalId localId = mContact->localId();
+    QContactLocalId selfContactId = mgr.selfContactId();
+    bool isMyCard = ( localId == selfContactId && localId != 0 ) || !myCard.isEmpty();
     
+    CntSaveManager::CntSaveResult result;
+    CntSaveManager& save = mEngine->saveManager();
+    
+    if (isMyCard)
+    {
+        result = save.saveMyCard( mContact, &mgr );
+    }
+    else if (mContact->type() == QContactType::TypeGroup)
+    {
+        result = save.saveGroup( mContact, &mgr );
+    }
+    else
+    {
+        result = save.saveContact( mContact, &mgr );
+    }
+       
     if (mContact->type() != QContactType::TypeGroup)
     {
         switch (result)
         {
         case CntSaveManager::ESaved:
-            HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contact_1_saved")).arg(name));
+            HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter("txt_phob_dpophead_contact_1_saved").arg(name));
             break;
         case CntSaveManager::EUpdated:
-            HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contacts_1_updated")).arg(name));
+            HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter("txt_phob_dpophead_contacts_1_updated").arg(name));
             break;
         case CntSaveManager::EFailed:
             HbDeviceNotificationDialog::notification(QString(),hbTrId("SAVING FAILED!"));

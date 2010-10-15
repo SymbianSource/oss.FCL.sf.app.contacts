@@ -16,15 +16,21 @@
 */
 
 #include "cntsettingsmodel.h"
-#include <cntuids.h>
-#include <qstringlist.h>
-#include <xqsettingskey.h>
+
 #include "cntdebug.h"
 
+#include <cntuids.h>
+#include <xqsettingskey.h>
+
+#include <QStringList>
+
+/*!
+Constructor
+*/
 CntSettingsModel::CntSettingsModel() :
-HbDataFormModel(),
-mNameOrderkey(NULL),
-mNameListRowSettingkey(NULL)
+    HbDataFormModel(),
+    mNameOrderkey(NULL),
+    mNameListRowSettingkey(NULL)
 {
     // Create name ordering setting item
     createNameOrderSettingsItem();
@@ -35,6 +41,18 @@ mNameListRowSettingkey(NULL)
     connect(this, SIGNAL(dataChanged(QModelIndex , QModelIndex)), this, SLOT(handleDataChanged(QModelIndex , QModelIndex)));
 }
 
+/*!
+Destructor
+*/
+CntSettingsModel::~CntSettingsModel()
+{
+    delete mNameOrderkey;
+    delete mNameListRowSettingkey;
+}
+
+/*!
+Creates the name order settings item
+*/
 void CntSettingsModel::createNameOrderSettingsItem()
 {
     HbDataFormModelItem* ord = new HbDataFormModelItem(HbDataFormModelItem::ComboBoxItem, hbTrId(
@@ -62,6 +80,9 @@ void CntSettingsModel::createNameOrderSettingsItem()
     }
 }
 
+/*!
+Creates the names list row settings item
+*/
 void CntSettingsModel::createNamesListRowSettingItem()
 {
     HbDataFormModelItem* rowSetting = new HbDataFormModelItem(HbDataFormModelItem::ComboBoxItem, hbTrId(
@@ -86,12 +107,9 @@ void CntSettingsModel::createNamesListRowSettingItem()
     }
 }
 
-CntSettingsModel::~CntSettingsModel()
-{
-    delete mNameOrderkey;
-    delete mNameListRowSettingkey;
-}
-
+/*!
+Handles data changes from settings items
+*/
 void CntSettingsModel::handleDataChanged(QModelIndex topLeft, QModelIndex bottomRight)
 {
     Q_UNUSED(bottomRight)
@@ -105,9 +123,8 @@ void CntSettingsModel::handleDataChanged(QModelIndex topLeft, QModelIndex bottom
             written = mSettings.writeItemValue(*mNameOrderkey, QVariant(CntOrderLastCommaFirst));
         } else if (selected == 2) {
             written = mSettings.writeItemValue(*mNameOrderkey, QVariant(CntOrderFirstLast));
-        }
-        if (!written) {
-            CNT_LOG_ARGS(QString("failed writting cenrep key"))
+        } else {
+            written = false;
         }
     }
     else if (topLeft.row() == 1) {
@@ -116,9 +133,12 @@ void CntSettingsModel::handleDataChanged(QModelIndex topLeft, QModelIndex bottom
             written = mSettings.writeItemValue(*mNameListRowSettingkey, QVariant(CntOneRowNameOnly));
         } else if (selected == 1) {
             written = mSettings.writeItemValue(*mNameListRowSettingkey, QVariant(CntTwoRowsNameAndPhoneNumber));
+        } else {
+            written = false;
         }
-        if (!written) {
-            CNT_LOG_ARGS(QString("failed writting cenrep key"))
-        }
+    }
+    
+    if (!written) {
+        CNT_LOG_ARGS(QString("failed writting cenrep key"))
     }
 }

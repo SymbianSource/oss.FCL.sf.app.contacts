@@ -21,12 +21,12 @@
 #include "cntdetailviewitem.h"
 #include <hbabstractviewitem.h>
 #include <qgraphicslinearlayout.h>
-#include <hbwidget.h>
-#include <hbtextitem.h>
-#include <hblineedit.h>
+
+class HbWidget;
+class HbLineEdit;
 
 class CntNoteEditorViewItem : public CntDetailViewItem
-    {
+{
     Q_OBJECT
     
 public:
@@ -45,6 +45,6 @@ private:
     QGraphicsLinearLayout* mLayout;
     
     friend class T_NoteEditorTest;
-    };
+};
 
 #endif /* CNTNOTEEDITORVIEWITEM_H_ */

@@ -56,6 +56,8 @@ private:
     CntActionPopupPrivate* const d_ptr;
     Q_DECLARE_PRIVATE_D(d_ptr, CntActionPopup)
     Q_DISABLE_COPY(CntActionPopup)    
+    
+    friend class TestCntActionPopup;
 };
 
 #endif // CNTACTIONPOPUP_H

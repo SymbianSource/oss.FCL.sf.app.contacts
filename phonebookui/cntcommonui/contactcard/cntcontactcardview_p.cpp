@@ -84,6 +84,7 @@ static const QEvent::Type ProcessPopulateListEvent = QEvent::User;
 static const int CntInitialPopulation = 8;
 
 const char *CNT_CONTACTCARDVIEW_XML = ":/xml/contacts_contactcard.docml";
+const QString CNT_ACTIVITY_CONTACTCARD  = "ContactsCardView";
 const char *CNT_MAPTILE_INPROGRESS_ICON = "qtg_anim_small_loading_1";
 const char *CNT_MAPTILE_SEARCH_STOP_ICON = "qtg_mono_search_stop";
 /*!
@@ -107,7 +108,9 @@ CntContactCardViewPrivate::CntContactCardViewPrivate(bool isTemporary) :
     mMyCardId(0),
     mSaveManager(NULL),
     mListPopulationProgress(CntListPopulationNotInProgress),
-    mStopListPopulation(false)
+    mStopListPopulation(false),
+    mFetchAvatar(false),
+    mSeparatorlabel(NULL)
 {
     bool ok;
     document()->load(CNT_CONTACTCARDVIEW_XML, &ok);
@@ -160,20 +163,12 @@ CntContactCardViewPrivate::~CntContactCardViewPrivate()
         mProgressTimer->stop();
     }
     
-    // Clear the container to avoid double deletion
-    if (mContainerLayout != NULL)
+    if (mContainerLayout)
     {
-        int count = mContainerLayout->count();
-        for (int i=0; i<count; i++) 
-        {
-            // do not delete items. They will be deleted automatically
-            mContainerLayout->removeAt(i);
-        }
+        // Remove the separator obj from layout
+        mContainerLayout->removeItem(mSeparatorlabel);
     }
-    
-    // Delete all the detail pointers if any
-    qDeleteAll(mDetailPtrs);
-    mDetailPtrs.clear();
+    delete mSeparatorlabel;
     
     mView->deleteLater();
     
@@ -297,6 +292,7 @@ Activates a default view and setup name label texts
 void CntContactCardViewPrivate::activate(const CntViewParameters aArgs)
 {   
     CNT_ENTRY
+
     mArgs = aArgs;
 
     mViewManager = &mEngine->viewManager();
@@ -388,6 +384,76 @@ void CntContactCardViewPrivate::activate(const CntViewParameters aArgs)
     CNT_EXIT
 }
 
+QString CntContactCardViewPrivate::externalize(QDataStream &stream)
+{   
+    // set activity parameters 
+    CntViewParameters viewParameters;
+    viewParameters.insert(EViewId, mArgs.value(EViewId).toInt());
+ 
+    if (mArgs.value(ESelectedContact).isValid())
+    {
+        QContact contact = mArgs.value(ESelectedContact).value<QContact>();
+        viewParameters.insert(ESelectedContactId, contact.localId()); 
+    }
+    if (mArgs.value(ESelectedGroupContact).isValid())
+    {
+        QContact contact = mArgs.value(ESelectedGroupContact).value<QContact>();
+        viewParameters.insert(ESelectedGroupContactId, QVariant(contact.localId()));
+    }
+    if (mArgs.value(EMyCard).isValid())
+    {
+        viewParameters.insert(EMyCard, mArgs.value(EMyCard));
+    }
+    if (mArgs.value(EExtraAction).isValid())
+    {
+        viewParameters.insert(EExtraAction, mArgs.value(EExtraAction));
+    }
+    
+    stream << viewParameters;
+    
+    return CNT_ACTIVITY_CONTACTCARD;
+}
+
+bool CntContactCardViewPrivate::internalize(QDataStream &stream, CntViewParameters &viewParameters)
+{
+    CntViewParameters tempViewParameters;
+    stream >> tempViewParameters;
+        
+    viewParameters.insert(EViewId, tempViewParameters.value(EViewId));
+    
+    if (tempViewParameters.value(ESelectedContactId).isValid())
+    {
+        QContact contact = contactManager()->contact(tempViewParameters.value(ESelectedContactId).toInt());
+        if (contact.isEmpty())
+        {
+            // a contact has been deleted.
+            return false;
+        }
+        else
+        {
+            QVariant var;
+            var.setValue(contact);      
+            viewParameters.insert(ESelectedContact, var);
+        }
+    }
+    if (tempViewParameters.value(ESelectedGroupContactId).isValid())
+    {
+        QVariant var;
+        var.setValue(contactManager()->contact(tempViewParameters.value(ESelectedGroupContactId).toInt()));      
+        viewParameters.insert(ESelectedGroupContact, var);
+    }
+    if (tempViewParameters.value(EMyCard).isValid())
+    {
+        viewParameters.insert(EMyCard, tempViewParameters.value(EMyCard));
+    }
+    if (tempViewParameters.value(EMyCard).isValid())
+    {
+        viewParameters.insert(EExtraAction, tempViewParameters.value(EExtraAction));
+    }
+     
+    return true;
+}
+
 void CntContactCardViewPrivate::populateHeadingItem()
 {
     CNT_ENTRY
@@ -410,12 +476,13 @@ void CntContactCardViewPrivate::populateHeadingItem()
         mHeadingItem->ungrabGesture(Qt::TapGesture);
         mImageLabel->ungrabGesture(Qt::TapGesture);
     }
-    
+
     bool online;
     mInitiialPrecenceData = mPresenceListener->initialPresences(*mContact, online);
     mHeadingItem->setOnlineStatus(online);
 
-    if (!myCard) {
+    if (!myCard)
+    {
         bool setAsFavorite = CntFavourite::isMemberOfFavouriteGroup(contactManager(), mContact);
         mHeadingItem->setFavoriteStatus(setAsFavorite); // if contact is part of favourites group
         static_cast<HbAction *>(document()->findObject("cnt:setasfavorite"))->setVisible( !setAsFavorite );
@@ -428,16 +495,11 @@ void CntContactCardViewPrivate::populateHeadingItem()
     {
         if (details.at(i).imageUrl().isValid())
         {
-            if (!mAvatar)
-            {
-                mAvatar = new QContactAvatar(details.at(i));
-                mThumbnailManager->getThumbnail(ThumbnailManager::ThumbnailLarge, mAvatar->imageUrl().toString());
-            }
-            else if (*mAvatar != details.at(i))
+            if (!mAvatar || *mAvatar != details.at(i))
             {
                 delete mAvatar;
                 mAvatar = new QContactAvatar(details.at(i));
-                mThumbnailManager->getThumbnail(ThumbnailManager::ThumbnailLarge, mAvatar->imageUrl().toString());
+                mFetchAvatar = true;
             }
             break;
         }
@@ -452,10 +514,12 @@ void CntContactCardViewPrivate::populateListItems()
 
     Q_ASSERT(mContact != NULL && mScrollArea != NULL);
 
-    if (mListPopulationProgress == CntListPopulationNotInProgress) {
+    if (mListPopulationProgress == CntListPopulationNotInProgress)
+    {
         mListPopulationProgress = 0;
 
-        if (!mDataContainer) {
+        if (!mDataContainer)
+        {
             mDataContainer = new CntContactCardDataContainer(
                 mMaptile,
                 mEngine->extensionManager(),
@@ -465,45 +529,41 @@ void CntContactCardViewPrivate::populateListItems()
         // fill the data container with contact details
         mDataContainer->setContactData(mContact);
         
-        // scroll area + container widget
-        mContainerWidget = mScrollArea->contentWidget();
-        if (!mContainerWidget) {
-            // initialize
-            mScrollArea->setScrollDirections(Qt::Vertical);
-            
-            mContainerWidget = new QGraphicsWidget();
-            mScrollArea->setContentWidget(mContainerWidget); // takes ownership. Old widget is deleted
-                
-            mContainerLayout = new QGraphicsLinearLayout(Qt::Vertical);
-            mContainerLayout->setContentsMargins(0, 0, 0, 0);
-            mContainerLayout->setSpacing(0);
-            mContainerLayout->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-            
-            mContainerWidget->setLayout(mContainerLayout);   // takes ownership. Old layout is deleted
-        } else {
-            // Already initialized
-            Q_ASSERT(mContainerLayout != NULL);
-            
-            // Clear the container
-            int count = mContainerLayout->count();
-            for (int i = 0; i < count; i++) {
-                // do not delete items. They will be deleted automatically
-                mContainerLayout->removeAt(i);
-            }
+        if (mContainerLayout)
+        {
+            // Remove the separator obj from previous layout
+            // It needs to be reused
+            mContainerLayout->removeItem(mSeparatorlabel);
         }
-    
-        // Delete all the detail pointers if any
-        qDeleteAll(mDetailPtrs);
-        mDetailPtrs.clear();
+        // initialize
+        mScrollArea->setScrollDirections(Qt::Vertical);
+        
+        mContainerWidget = new QGraphicsWidget();
+        mScrollArea->setContentWidget(mContainerWidget); // takes ownership.
+        
+        mContainerLayout = new QGraphicsLinearLayout(Qt::Vertical);
+        mContainerLayout->setContentsMargins(0, 0, 0, 0);
+        mContainerLayout->setSpacing(0);
+        mContainerLayout->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+        
+        mContainerWidget->setLayout(mContainerLayout);   // takes ownership.
     }
 
 
     do {
-        if (mListPopulationProgress == mDataContainer->itemCount() || mStopListPopulation) {
+        if (mListPopulationProgress == mDataContainer->itemCount() || mStopListPopulation)
+        {
+            if (!mStopListPopulation && mFetchAvatar)
+            {
+                // fetch the avatar if it has not yet been fetched
+                mFetchAvatar = false;
+                mThumbnailManager->getThumbnail(ThumbnailManager::ThumbnailLarge, mAvatar->imageUrl().toString());
+            }
             // population of the list has completed
             mListPopulationProgress = CntListPopulationNotInProgress;
             mStopListPopulation = false;
             disconnect(mView->mainWindow(), SIGNAL(viewReady()), this, SLOT(populateListItems()));
+            CNT_EXIT_ARGS("population completed")
             return;
         }
 
@@ -514,7 +574,6 @@ void CntContactCardViewPrivate::populateListItems()
         if (pos < CntContactCardDataItem::ESeparator && dataItem->isFocusable())
         { 
             CntContactCardDetailItem* item = new CntContactCardDetailItem(mListPopulationProgress, mContainerWidget);
-            mDetailPtrs.append(item);
 
             connect(item, SIGNAL(clicked()), this, SLOT(onItemActivated()));
             
@@ -554,12 +613,16 @@ void CntContactCardViewPrivate::populateListItems()
 
         // separator
         else if (pos == CntContactCardDataItem::ESeparator)
-        {      
-            HbFrameItem* frameItem = new HbFrameItem(QString("qtg_fr_list_separator"), HbFrameDrawer::NinePieces);
-            HbLabel* label = static_cast<HbLabel*>(document()->findWidget(QString("separator")));
-            label->setPlainText(dataItem->titleText());
-            label->setBackgroundItem(frameItem); // takes ownership
-            mContainerLayout->addItem(label);
+        {
+            if (!mSeparatorlabel)
+            {
+                HbFrameItem* frameItem = new HbFrameItem(QString("qtg_fr_list_separator"), HbFrameDrawer::NinePieces);
+                mSeparatorlabel = static_cast<HbLabel*>(document()->findWidget(QString("separator")));
+                mSeparatorlabel->setPlainText(dataItem->titleText());
+                mSeparatorlabel->setBackgroundItem(frameItem); // takes ownership
+                mSeparatorlabel->setParent(this);
+            }
+            mContainerLayout->addItem(mSeparatorlabel);
         }
 
         // details
@@ -588,7 +651,6 @@ void CntContactCardViewPrivate::populateListItems()
             else
             {
                 CntContactCardDetailItem* item = new CntContactCardDetailItem(mListPopulationProgress, mContainerWidget, false);
-                mDetailPtrs.append(item);
                 
                 //To check whether maptile status  icon is set with the address 
                 if( ( dataItem->titleText() == hbTrId("txt_phob_formlabel_address") ||
@@ -632,11 +694,21 @@ void CntContactCardViewPrivate::populateListItems()
         ++mListPopulationProgress;
     } while (mListPopulationProgress < CntInitialPopulation);
 
-    if (mListPopulationProgress <= CntInitialPopulation) {
+    if (mListPopulationProgress <= CntInitialPopulation)
+    {
         connect(mView->mainWindow(), SIGNAL(viewReady()), this, SLOT(populateListItems()));
-    } else {
+    }
+    else
+    {
         disconnect(mView->mainWindow(), SIGNAL(viewReady()), this, SLOT(populateListItems()));
         HbApplication::instance()->postEvent(this, new QEvent(ProcessPopulateListEvent));
+
+        if (mFetchAvatar)
+        {
+            // initial view has been shown, so starting fetching the avatar
+            mFetchAvatar = false;
+            mThumbnailManager->getThumbnail(ThumbnailManager::ThumbnailLarge, mAvatar->imageUrl().toString());
+        }
     }
 
     CNT_EXIT
@@ -648,9 +720,11 @@ void CntContactCardViewPrivate::populateListItems()
 void CntContactCardViewPrivate::connectAction(QString actionName, const char* slot)
 {
     HbAction *action = qobject_cast<HbAction *>(document()->findObject(actionName));
-    if (action) {
+    if (action)
+    {
         action->setParent(mView);
-        if (slot != NULL) {
+        if (slot != NULL)
+        {
             connect(action, SIGNAL(triggered()), this, slot);
         }
     }
@@ -661,82 +735,82 @@ void CntContactCardViewPrivate::connectAction(QString actionName, const char* sl
  */
 void CntContactCardViewPrivate::updateSpinningIndicator()
 {
-    //Check all address details( Preferred, Home, Work )
-    for( int index = 0 ; index < mAddressList.count(); )
+    CNT_ENTRY
+    
+    // Check all address details( Preferred, Home, Work )
+    for (int index = 0 ; index < mAddressList.count();)
     {
-        //Maptile status not received update the rotating icon
-        if( mAddressList[index]->maptileStatus == CNT_UNKNOWN_MAPTILE_STATUS )
+        // Maptile status not received update the rotating icon
+        if (mAddressList[index]->maptileStatus == CNT_UNKNOWN_MAPTILE_STATUS)
         {
-             QString iconName("qtg_anim_small_loading_");
-             mAddressList[index]->mProgressCount = mAddressList[index]->mProgressCount % 10 + 1;
-             iconName.append(QVariant(mAddressList[index]->mProgressCount).toString());
+            QString iconName("qtg_anim_small_loading_");
+            mAddressList[index]->mProgressCount = mAddressList[index]->mProgressCount % 10 + 1;
+            iconName.append(QVariant(mAddressList[index]->mProgressCount).toString());
              
-             HbIcon icon(iconName);
-             mAddressList[index]->mDetailItem->setSecondaryIconItem( icon );
-             mAddressList[index]->mDetailItem->update();   
-             mProgressTimer->start(CNT_MAPTILE_PROGRESS_TIMER);
-             index++;
+            HbIcon icon(iconName);
+            mAddressList[index]->mDetailItem->setSecondaryIconItem(icon);
+            mAddressList[index]->mDetailItem->update();   
+            mProgressTimer->start(CNT_MAPTILE_PROGRESS_TIMER);
+            index++;
         }
         else
         {
-            //Maptile status received. Show the maptile image if available
+            // Maptile status received. Show the maptile image if available
             MapTileService::AddressType sourceAddressType =
-                    static_cast <MapTileService::AddressType>( mAddressList[index]->mAddressType );
+                    static_cast <MapTileService::AddressType>(mAddressList[index]->mAddressType);
              
             QContactLocalId contactId = mContact->localId();
              
-            if( mAddressList[index] != NULL )
+            if (mAddressList[index] != NULL)
             {
-                 if( mAddressList[index]->maptileStatus == MapTileService::MapTileFetchingCompleted )
-                 {
- 
-                     //Read the maptile path and update the image
-                     QString imagePath;
-                     mMaptile->getMapTileImage( 
-                                contactId, sourceAddressType, imagePath, mView->mainWindow()->orientation() );
+                if (mAddressList[index]->maptileStatus == MapTileService::MapTileFetchingCompleted)
+                {
+                    // Read the maptile path and update the image
+                    QString imagePath;
+                    mMaptile->getMapTileImage( 
+                               contactId, sourceAddressType, imagePath, mView->mainWindow()->orientation());
 					 
-                     if( !imagePath.isEmpty() )
-                     {
-                         //Empty icon. Clear the inprogress  icon
-                         HbIcon emptyIcon;
-                         mAddressList[index]->mDetailItem->setSecondaryIconItem( emptyIcon );
+                    if (!imagePath.isEmpty())
+                    {
+                        //Empty icon. Clear the inprogress  icon
+                        HbIcon emptyIcon;
+                        mAddressList[index]->mDetailItem->setSecondaryIconItem(emptyIcon);
                          
-                         HbIcon icon( imagePath );
+                        HbIcon icon(imagePath);
                          
-                         HbLabel* maptileLabel = loadMaptileLabel( sourceAddressType );
-                         setMaptileLabel( maptileLabel, icon );
-                         mMaptileLabelList.insert( sourceAddressType, maptileLabel );
-                        
-                         //find the index of the item and insert maptile in the next index 
-                         for( int itemIndex = 0 ; itemIndex < mContainerLayout->count(); itemIndex++ )
-                         {
-                             if( mContainerLayout->itemAt(itemIndex) == mAddressList[index]->mDetailItem )
-                             {
-                                 mContainerLayout->insertItem( itemIndex+1, maptileLabel );
-                                 break;
-                             }
-                         }
-                         
-                     }
-                     else
-                     {
-                         //Maptile image not available. Show the search stop icon
-                         setMaptileSearchStopIcon( index );
-                     }
-                 }
-                 else
-                 {
-                     //Maptile fetching failed. Show the search stop icon
-                     setMaptileSearchStopIcon( index );
-                 }
+                        HbLabel* maptileLabel = loadMaptileLabel(sourceAddressType);
+                        setMaptileLabel(maptileLabel, icon);
+                        mMaptileLabelList.insert(sourceAddressType, maptileLabel);
+
+                        //find the index of the item and insert maptile in the next index 
+                        for (int itemIndex = 0 ; itemIndex < mContainerLayout->count(); itemIndex++)
+                        {
+                            if (mContainerLayout->itemAt(itemIndex) == mAddressList[index]->mDetailItem)
+                            {
+                                mContainerLayout->insertItem(itemIndex + 1, maptileLabel);
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //Maptile image not available. Show the search stop icon
+                        setMaptileSearchStopIcon(index);
+                    }
+                }
+                else
+                {
+                    //Maptile fetching failed. Show the search stop icon
+                    setMaptileSearchStopIcon(index);
+                }
                  
-                 delete mAddressList[index];
-                 mAddressList.removeAt(index);
+                delete mAddressList[index];
+                mAddressList.removeAt(index);
             }
             else
             {
-                 //increment the index now
-                 index++;
+                //increment the index now
+                index++;
             }
         }
     }
@@ -745,42 +819,42 @@ void CntContactCardViewPrivate::updateSpinningIndicator()
 /*
 * Sets the search stop icon to secondary icon item
 */
-void CntContactCardViewPrivate::setMaptileSearchStopIcon( int index )
+void CntContactCardViewPrivate::setMaptileSearchStopIcon(int index)
 {
-    if( index < mAddressList.count() )
+    if (index < mAddressList.count())
     {
         QString iconName(CNT_MAPTILE_SEARCH_STOP_ICON);
         HbIcon icon(iconName);
-        mAddressList[index]->mDetailItem->setSecondaryIconItem( icon );
+        mAddressList[index]->mDetailItem->setSecondaryIconItem(icon);
         mAddressList[index]->mDetailItem->update();  
     }
 }
 
-/*
-* Slot to receive the maptile status information
-*/
-void CntContactCardViewPrivate::mapTileStatusReceived( int contactid, int addressType, int status)
+/*!
+    Slot to receive the maptile status information.
+ */
+void CntContactCardViewPrivate::mapTileStatusReceived(int contactid, int addressType, int status)
 {
-    //Update the maptile status information for all 3( Preferred, Work, Home ) address
-    for( int index = 0 ; index < mAddressList.count(); index++  )
+    // Update the maptile status information for all 3( Preferred, Work, Home ) address
+    for (int index = 0; index < mAddressList.count(); index++)
     {
-        if( mAddressList[index]->mContactId == contactid &&  
-                 mAddressList[index]->mAddressType == addressType )
+        if (mAddressList[index]->mContactId == contactid &&  
+                mAddressList[index]->mAddressType == addressType)
         {
             mAddressList[index]->maptileStatus = status;
         }
     }
-    
+
     updateSpinningIndicator();
 }
 
-/*
-* Updates correct maptile image when screen orientation changes.
-*/
+/*!
+    Updates correct maptile image when screen orientation changes.
+ */
 void CntContactCardViewPrivate::updateMaptileImage()
 {
-    //If there is no maptile displayed, return immediately
-    if( mMaptileLabelList.count() > 0 )
+    // If there is no maptile displayed, return immediately
+    if (mMaptileLabelList.count() > 0)
     {
         QContactLocalId contactId = mContact->localId();
         
@@ -790,35 +864,35 @@ void CntContactCardViewPrivate::updateMaptileImage()
         QString contextHome(QContactAddress::ContextHome.operator QString());
         QString contextWork(QContactAddress::ContextWork.operator QString());
         MapTileService::AddressType sourceAddressType 
-                                             = MapTileService::AddressPreference;
+            = MapTileService::AddressPreference;
         
         QString imagePath;
         
-        for ( int i = 0; i < addressDetails.count(); i++ )
+        for (int i = 0; i < addressDetails.count(); i++)
         {
-            if ( !addressDetails[i].contexts().isEmpty() && 
-                   addressDetails[i].contexts().at(0) == contextHome )
+            if (!addressDetails[i].contexts().isEmpty() &&
+                   addressDetails[i].contexts().at(0) == contextHome)
             {
                 sourceAddressType = MapTileService::AddressHome;
             }
-            else if ( !addressDetails[i].contexts().isEmpty() && 
-                         addressDetails[i].contexts().at(0) == contextWork )
+            else if (!addressDetails[i].contexts().isEmpty() && 
+                        addressDetails[i].contexts().at(0) == contextWork)
             {
                 sourceAddressType = MapTileService::AddressWork;
             }
-            
+
             int status = mMaptile->getMapTileImage( 
                                              contactId, 
                                              sourceAddressType, 
                                              imagePath, 
-                                             mView->mainWindow()->orientation() );
-            if( !imagePath.isEmpty() )
+                                             mView->mainWindow()->orientation());
+            if (!imagePath.isEmpty())
             {
-                HbIcon icon( imagePath );
-                HbLabel* label = mMaptileLabelList.value( sourceAddressType );
-                if( label )
+                HbIcon icon(imagePath);
+                HbLabel* label = mMaptileLabelList.value(sourceAddressType);
+                if (label)
                 {
-                    setMaptileLabel( label, icon );
+                    setMaptileLabel(label, icon);
                 }
             }
         }
@@ -826,39 +900,37 @@ void CntContactCardViewPrivate::updateMaptileImage()
 }
 
 
-/*
-* Asscoiate the maptile label widget with maptile image
-*/
-void CntContactCardViewPrivate::setMaptileLabel( HbLabel*& mapLabel, const HbIcon& icon )
+/*!
+    Asscoiate the maptile label widget with maptile image.
+ */
+void CntContactCardViewPrivate::setMaptileLabel(HbLabel*& mapLabel, const HbIcon& icon)
 {
     mapLabel->clear();
-    mapLabel->setIcon( icon );
-    
-	qreal leftMarginSize;
-	mapLabel->getContentsMargins( &leftMarginSize, 0 , 0 , 0 );
-    mapLabel->setPreferredSize( 
-          QSizeF(icon.width() + leftMarginSize, icon.height()));
-   
+    mapLabel->setIcon(icon);
+
+    qreal leftMarginSize;
+    mapLabel->getContentsMargins(&leftMarginSize, 0, 0, 0);
+    mapLabel->setPreferredSize(QSizeF(icon.width() + leftMarginSize, icon.height()));
 }
 
-/*
-* Load the maptile label based on the address type
-*/
-HbLabel* CntContactCardViewPrivate::loadMaptileLabel( int addressType )
+/*!
+    Load the maptile label based on the address type.
+ */
+HbLabel* CntContactCardViewPrivate::loadMaptileLabel(int addressType)
 {
     HbLabel* maptileLabel = NULL;
     
-    if( addressType == MapTileService::AddressPreference )
+    if (addressType == MapTileService::AddressPreference)
     {
         maptileLabel = static_cast<HbLabel*>(document()->findWidget(QString("maptilePreferenceWidget")));
     }
-    else if( addressType == MapTileService::AddressHome  )
+    else if (addressType == MapTileService::AddressHome)
     {
-        maptileLabel  = static_cast<HbLabel*>(document()->findWidget(QString("maptileHomeWidget")));
+        maptileLabel = static_cast<HbLabel*>(document()->findWidget(QString("maptileHomeWidget")));
     }
-    else if( addressType == MapTileService::AddressWork )
+    else if (addressType == MapTileService::AddressWork)
     {
-        maptileLabel  = static_cast<HbLabel*>(document()->findWidget(QString("maptileWorkWidget")));
+        maptileLabel = static_cast<HbLabel*>(document()->findWidget(QString("maptileWorkWidget")));
     }
                             
     return maptileLabel;
@@ -1003,7 +1075,7 @@ void CntContactCardViewPrivate::deleteContact()
         name = hbTrId("txt_phob_list_unnamed");
     }
     
-    HbMessageBox::question(HbParameterLengthLimiter(hbTrId("txt_phob_info_delete_1")).arg(name), this, SLOT(handleDeleteContact(int)),
+    HbMessageBox::question(HbParameterLengthLimiter("txt_phob_info_delete_1").arg(name), this, SLOT(handleDeleteContact(int)),
             HbMessageBox::Delete | HbMessageBox::Cancel);
 }
 
@@ -1639,6 +1711,8 @@ bool CntContactCardViewPrivate::eventFilter(QObject *obj, QEvent *event)
         if (contactManager()->error() == QContactManager::NoError 
             && latestTimeStamp.lastModified() > localTimeStamp.lastModified())
         {
+            mListPopulationProgress = CntListPopulationNotInProgress;
+            
             if (mContact)
                 delete mContact;
             mContact = new QContact(c);
@@ -1733,6 +1807,8 @@ void CntContactCardViewPrivate::contactUpdatedFromOtherSource(const QList<QConta
         QContact c = contactManager()->contact(mContact->localId());
         if (contactManager()->error() == QContactManager::NoError)
         {
+            mListPopulationProgress = CntListPopulationNotInProgress;
+            
             if (mContact)
                 delete mContact;
             mContact = new QContact(c);

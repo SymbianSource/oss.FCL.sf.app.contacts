@@ -17,6 +17,7 @@
 
 #include <hbapplication.h>
 #include <hbmainwindow.h>
+#include <xqserviceutil.h>
 #include <QTranslator>
 #include <QLocale>
 #include <QScopedPointer>
@@ -38,18 +39,26 @@ int main(int argc, char **argv)
 #if defined (TRACES) || defined (TRACE2FILE)
     qInstallMsgHandler(MSG_HANDLER);
 #endif
+    qDebug() << "Enter";
+    bool embedded = XQServiceUtil::isEmbedded( argc, argv );
+    qDebug() << "Embedded: " << embedded;
     
-    HbApplication a( argc, argv );
-
+    HbApplication a( argc, argv, embedded ? Hb::NoSplash : Hb::DefaultApplicationFlags );
+    qDebug() << "HbApplication ready";
+    
     QTranslator translator;
     QString lang = QLocale::system().name();
     QString path = "z:/resource/qt/translations/";
     translator.load(path + "contacts_" + lang);
     a.installTranslator(&translator);
-
+    qDebug() << "Translator installed";
+    
     HbMainWindow mainWindow;
+    qDebug() << "MainWindow ready";
+    
     CntKeyGrabber *keyGrabber = new CntKeyGrabber(&mainWindow, &mainWindow);
-
+    qDebug() << "KeyGrabber ready";
+    
     CntViewNavigator* navigator = new CntViewNavigator( &mainWindow );
     navigator->addException( serviceEditView, noView );
     navigator->addEffect( serviceContactCardView, historyView );
@@ -57,16 +66,20 @@ int main(int argc, char **argv)
     navigator->addEffect( serviceGroupMemberView, groupActionsView );
     navigator->addEffect( groupActionsView, serviceGroupMemberView );
     navigator->addRoot( serviceGroupMemberView );
-
+    qDebug() << "Navigator ready";
+    
     // This object actually executes the services
     CntServices* services = new CntServices();
     services->setParent( &mainWindow ); // for ownership
-
+    qDebug() << "CntServices ready";
+    
     QScopedPointer<CntServiceViewManager> viewManager(new CntServiceViewManager(
         &mainWindow,
         *services )); // as CntAbstractServiceProvider
+    qDebug() << "Service ViewManager ready";
+    
     viewManager->setViewNavigator( navigator );
-
+    
     services->setEngine( viewManager->engine() );
 
     // These objects talk with QT Highway (send/receive)
@@ -75,9 +88,11 @@ int main(int argc, char **argv)
     CntServiceProviderFetch* serviceProviderFetch = new CntServiceProviderFetch( *services, &mainWindow ); // phonebookservices.com.nokia.symbian.IContactFetch
     CntServiceProviderViewing* serviceProviderViewing = new CntServiceProviderViewing( *services, &mainWindow ); // phonebookservices.com.nokia.symbian.IContactView
     CntServiceProviderEdit* serviceProviderEdit = new CntServiceProviderEdit( *services, &mainWindow ); // phonebookservices.com.nokia.symbian.IContactEdit
-
+    
+    qDebug() << "Service MainWindow about to show";
     mainWindow.show();
-
+    qDebug() << "Service MainWindow show ready";
+    
     return a.exec();
 }
 

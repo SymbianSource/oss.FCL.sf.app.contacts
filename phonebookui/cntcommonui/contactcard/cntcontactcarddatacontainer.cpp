@@ -79,7 +79,7 @@ CntContactCardDataContainer::CntContactCardDataContainer(
 void CntContactCardDataContainer::setContactData(QContact* contact, bool aMyCard)
 {
     clearContactData();
-    mContact = contact;
+    mContact = new QContact(*contact);
     mSeparatorIndex = -1;
     if (contact->type() == QContactType::TypeGroup)
     {
@@ -104,6 +104,7 @@ CntContactCardDataContainer::~CntContactCardDataContainer()
     mCallAction = NULL;
     delete mMessageAction;
     mMessageAction = NULL;
+    delete mContact;
 }
 
 void CntContactCardDataContainer::clearContactData()

@@ -43,7 +43,6 @@ class HbAction;
 class QAction;
 class HbMenu;
 class XQAiwRequest;
-class CntSaveManager;
 class CntAbstractEngine;
 
 QTM_BEGIN_NAMESPACE
@@ -63,6 +62,8 @@ public:
     
     void activate( const CntViewParameters aArgs );
     void deactivate();
+    QString externalize(QDataStream &stream);
+    bool internalize(QDataStream &stream, CntViewParameters &viewParameters);
     
 public: // From CntEditViewItemCallback
     void openView(CntViewParameters& viewParams);
@@ -93,6 +94,7 @@ private slots:
     void ringToneFetchHandleError(int errorCode, const QString& errorMessage);
     void ringToneFetchHandleOk(const QVariant &result);
     void contactDeletedFromOtherSource(const QList<QContactLocalId>& contactIds);
+    void setObjectNames();
 
 private:
     void loadAvatar();
@@ -132,7 +134,6 @@ private:
     XQAiwRequest* mReq;
     XQApplicationManager mAppMgr;
     HbMenu *mMenu;
-    CntSaveManager* mSaveManager; // own
 
 };
 #endif /* CNTEDITVIEW_P_H_ */

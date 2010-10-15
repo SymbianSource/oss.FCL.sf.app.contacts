@@ -21,7 +21,7 @@
 #include <Qt>
 #include <QDate>
 #include <QString>
-const int CNT_NOTE_EDITOR_MIN_ROWCOUNT = 5;
+const int CNT_NOTE_EDITOR_MIN_ROWCOUNT = 3;
 const int CNT_PHONENUMBER_EDITOR_MAXLENGTH = 48;
 const int CNT_DTMF_EDITOR_MAXLENGTH = 60;
 const int CNT_URL_EDITOR_MAXLENGTH = 1000;

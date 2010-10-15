@@ -17,7 +17,6 @@
 ; Language
 &EN
 
-
 ; SIS header: name, uid, version
 #{"Contacts"},(0x20022EF9),1,0,0, TYPE=SA
 
@@ -27,33 +26,35 @@
 ; Unique Vendor name
 :"Nokia"
 
-
-; Phonebook.iby contents 
- 
+; Contacts app dlls 
 "" - "z:\sys\bin\cntlistmodel.dll"
 "" - "z:\sys\bin\cnthistorymodel.dll"
-"" - "z:\sys\bin\cntactionsplugin.dll"
 "" - "z:\sys\bin\cntsimutility.dll"
 "" - "z:\sys\bin\cntimageutility.dll"
 "" - "z:\sys\bin\cntcommonui.dll"
 "" - "z:\sys\bin\phonebook.exe"
 
+; Qt plugins & dlls
 "" - "z:\resource\qt\plugins\contacts\cntactionsplugin.qtplugin"
+"" - "z:\resource\qt\plugins\contacts\qtcontacts_symbian.qtplugin"
+"" - "z:\resource\qt\plugins\contacts\qtcontacts_symbiansim.qtplugin"
+"" - "z:\sys\bin\cntactionsplugin.dll"
+"" - "z:\sys\bin\qtcontacts_symbian.dll"
+"" - "z:\sys\bin\qtcontacts_symbiansim.dll"
 
+; Splash screen resource files
 "" - "z:\resource\hb\splashml\phonebook.splashml"
 "" - "z:\resource\hb\splashml\phonebook.docml"
 
-; Phonebookservices.iby contents 
+; Phonebook services
 "" - "z:\sys\bin\phonebookservices.exe"
 "" - "z:\resource\apps\phonebookservices.r*"
 "" - "z:\private\10003a3f\import\apps\phonebookservices_reg.rsc"
 
-
-
-;Phonebookresources.iby contents
+; Phonebook resources
 "" - "z:\resource\qt\translations\contacts*.qm"
 "" - "z:\resource\apps\phonebook.r*"
 
-;Cenrep settings
+; Cenrep files
 "" - "z:\system\data\10202BE9\2002FF54.txt"
 "" - "z:\system\data\10202BE9\200315A8.txt"

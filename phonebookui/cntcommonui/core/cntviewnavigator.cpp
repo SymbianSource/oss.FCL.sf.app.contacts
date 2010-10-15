@@ -19,8 +19,9 @@
 #include <QDebug>
 
 CntViewNavigator::CntViewNavigator( QObject* aParent ) : 
-    QObject( aParent ),
-    iTop( noView )
+    QObject(aParent),
+    mTop(noView),
+    mPreviousViewId(noView)
 {
     
 }
@@ -32,12 +33,12 @@ CntViewNavigator::~CntViewNavigator()
 
 void CntViewNavigator::next( const int& aId, QFlags<Hb::ViewSwitchFlag> &flags )
 {
-    if ( !iViewStack.isEmpty() )
+    if ( !mViewStack.isEmpty() )
     {
-        int top = iViewStack.top();
+        int top = mViewStack.top();
         
         // If any special effects are defined for the current (top) view and associated with the next view
-        if ( iEffects.contains( top ) && iEffects.value( top ) == aId ) 
+        if ( mEffects.contains( top ) && mEffects.value( top ) == aId ) 
         {
             flags = Hb::ViewSwitchUseNormalAnim | Hb::ViewSwitchUseAltEvent;
         }
@@ -46,61 +47,61 @@ void CntViewNavigator::next( const int& aId, QFlags<Hb::ViewSwitchFlag> &flags )
             flags = Hb::ViewSwitchUseNormalAnim;
         }
     }
-    iViewStack.push( aId );
+    mViewStack.push( aId );
 }
 
 const int& CntViewNavigator::back( QFlags<Hb::ViewSwitchFlag> &flags, bool toRoot )
 {
-    iTop = noView;
+    mTop = noView;
     // Check if exception is set for current view item. Exception
     // means that instead of one step back, we go back until that 
     // execption value is located. So all items that are jumped over,
     // their history will be eared.
-    if ( !iViewStack.isEmpty() ) 
+    if ( !mViewStack.isEmpty() ) 
     {
-        int top = iViewStack.top();
+        int top = mViewStack.top();
         
         // If we need to go to the latest root view
         if ( toRoot )
         {
-            while ( !iViewStack.isEmpty() ) 
+            while ( !mViewStack.isEmpty() ) 
             {
-                int current = iViewStack.top();
+                int current = mViewStack.top();
                 
-                if ( iRoots.contains( current ) )
+                if ( mRoots.contains( current ) )
                 {
-                    iTop = current;
+                    mTop = current;
                     break;
                 }
-                iViewStack.pop();
+                mPreviousViewId = mViewStack.pop();
             }
         }
         // If any exception defined for the current (top) view
-        else if ( iExceptions.contains( top ) ) 
+        else if ( mExceptions.contains( top ) ) 
         {
-            iTop = iExceptions.value( top );
+            mTop = mExceptions.value( top );
             // cleanup the history until the exception value is found
-            while ( !iViewStack.isEmpty() ) 
+            while ( !mViewStack.isEmpty() ) 
             {
-                if ( iTop == iViewStack.top() ) 
+                if ( mTop == mViewStack.top() ) 
                 {
                     break; // don't pop the exception it self.
                 }
-                iViewStack.pop();
+                mPreviousViewId = mViewStack.pop();
             }
         }
         // No exceptions defined, go one step back
         else 
         {
-            iViewStack.pop();
-            if ( !iViewStack.isEmpty() )
+            mPreviousViewId = mViewStack.pop();
+            if ( !mViewStack.isEmpty() )
             {
-                iTop = iViewStack.top();
+                mTop = mViewStack.top();
             }
         }
         
         // If any special effects are defined for the current (top) view and associated with the previous view
-        if ( iEffects.contains( top ) && iEffects.value( top ) == iTop ) 
+        if ( mEffects.contains( top ) && mEffects.value( top ) == mTop ) 
         {
             flags = Hb::ViewSwitchUseBackAnim | Hb::ViewSwitchUseAltEvent;
         }
@@ -110,38 +111,68 @@ const int& CntViewNavigator::back( QFlags<Hb::ViewSwitchFlag> &flags, bool toRoo
         }
     } 
 
-    return iTop;
+    return mTop;
 }
 
 void CntViewNavigator::addException( const int& aCurrent, const int& aBack )
 {
-    iExceptions.insert( aCurrent, aBack );
+    mExceptions.insert( aCurrent, aBack );
 }
 
 void CntViewNavigator::removeException( const int& aCurrent )
 {
-    if ( iExceptions.contains(aCurrent) )
+    if ( mExceptions.contains(aCurrent) )
     {
-        iExceptions.remove( aCurrent );
+        mExceptions.remove( aCurrent );
     }
 }
 
 void CntViewNavigator::addEffect( const int& aCurrent, const int& aBack )
 {
-    iEffects.insert( aCurrent, aBack );
+    mEffects.insert( aCurrent, aBack );
 }
 
 void CntViewNavigator::removeEffect( const int& aCurrent )
 {
-    if ( iEffects.contains(aCurrent) )
+    if ( mEffects.contains(aCurrent) )
     {
-        iEffects.remove( aCurrent );
+        mEffects.remove( aCurrent );
     }
 }
 
 void CntViewNavigator::addRoot( const int& aCurrent )
 {
-    iRoots.append( aCurrent );
+    mRoots.append( aCurrent );
+}
+ 
+int CntViewNavigator::internalize(QDataStream &stream)
+{
+    int viewId = noView;
+    //read the view id and a view stack from stream.
+    stream >> viewId >> mViewStack;
+    
+    return viewId;
 }
     
+void CntViewNavigator::externalize(QDataStream &stream)
+{
+    int viewId = noView;
+        
+    //remove top view id of stack.
+    if (!mViewStack.isEmpty()) {
+        viewId = mViewStack.pop();
+    }
+    
+    if (viewId == noView) {
+        viewId = mPreviousViewId;
+    }
+    //stream the view id and a view stack
+    stream << viewId << mViewStack;
+}
+
+void CntViewNavigator::clearViewStack()
+{
+    mViewStack.clear();
+}
+
 // End of File

@@ -50,6 +50,7 @@
 #include <QTimer>
 
 const char *CNT_EDIT_XML = ":/xml/contacts_ev.docml";
+const QString CNT_ACTIVITY_EDITOR = "ContactsCardEdit";
 
 CntEditViewPrivate::CntEditViewPrivate() :
     mModel( NULL ),
@@ -57,8 +58,7 @@ CntEditViewPrivate::CntEditViewPrivate() :
     mThumbnailManager( NULL ),
     mContact( NULL ),
     mReq(NULL),
-    mMenu(NULL),
-    mSaveManager(NULL)
+    mMenu(NULL)
 {
     mDocument = new CntDocumentLoader;
     
@@ -97,7 +97,7 @@ CntEditViewPrivate::CntEditViewPrivate() :
     connect( add, SIGNAL(triggered()), this, SLOT(addDetailItem()) );
     connect( mDelete, SIGNAL(triggered()), this, SLOT(deleteContact()) );
     connect( mDiscard, SIGNAL(triggered()), this, SLOT(discardChanges()) );
-    connect( mSave, SIGNAL(triggered()), this, SLOT(saveChanges()) );
+    connect( mSave, SIGNAL(triggered()), this, SLOT(showPreviousView()) );
         
     connect( mSoftkey, SIGNAL(triggered()), this, SLOT(showPreviousView()) );
     connect( mImageLabel, SIGNAL(iconClicked()), this, SLOT(openImageEditor()) );
@@ -105,9 +105,6 @@ CntEditViewPrivate::CntEditViewPrivate() :
     connect( mHeading, SIGNAL(iconClicked()), this, SLOT(openImageEditor()) );
     connect( mListView, SIGNAL(activated(const QModelIndex&)), this, SLOT(activated(const QModelIndex&)) );
     connect( mListView, SIGNAL(longPressed(HbAbstractViewItem*,const QPointF&)), this, SLOT(longPressed(HbAbstractViewItem*,const QPointF&)) );
-    
-    // closing the application from task swapper or end key will cause the contact to be saved
-    connect( qApp, SIGNAL(aboutToQuit()), this, SLOT(saveChanges()));
 }
 
 CntEditViewPrivate::~CntEditViewPrivate()
@@ -125,9 +122,6 @@ CntEditViewPrivate::~CntEditViewPrivate()
         delete mMenu;
         mMenu = NULL;
     }
-    
-    delete mSaveManager;
-    mSaveManager = NULL;
 }
 
 void CntEditViewPrivate::setOrientation(Qt::Orientation orientation)
@@ -159,6 +153,7 @@ void CntEditViewPrivate::activate( const CntViewParameters aArgs )
     if ( window )
     {
         connect(window, SIGNAL(viewReady()), this, SLOT(setScrollPosition()) );
+        connect(window, SIGNAL(viewReady()), this, SLOT(setObjectNames()) );
         connect(window, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(setOrientation(Qt::Orientation)));
         setOrientation(window->orientation());
     }
@@ -176,14 +171,6 @@ void CntEditViewPrivate::activate( const CntViewParameters aArgs )
     QContactLocalId selfContactId = cm.selfContactId();
     mIsMyCard = ( localId == selfContactId && localId != 0 ) || !myCard.isEmpty();
     
-    if (mIsMyCard)
-    {
-        mSaveManager = new CntSaveManager(CntSaveManager::EMyCard);
-    }
-    else
-    {
-        mSaveManager = new CntSaveManager();
-    }
     
     if ( mHeading )
         mHeading->setDetails( mContact, mIsMyCard );
@@ -226,6 +213,82 @@ void CntEditViewPrivate::activate( const CntViewParameters aArgs )
     loadAvatar();
     
     CNT_EXIT
+}
+
+QString CntEditViewPrivate::externalize(QDataStream &stream)
+{
+    // closing the application from task swapper or end key will cause the contact to be saved
+    saveChanges();
+    
+    CntViewParameters viewParameters;
+    viewParameters.insert(EViewId, mArgs.value(EViewId).toInt());
+ 
+    if (mArgs.value(ESelectedContact).isValid())
+    {
+        QContact contact = mArgs.value(ESelectedContact).value<QContact>();
+        viewParameters.insert(ESelectedContactId, contact.localId()); 
+    }
+    if (mArgs.value(ESelectedGroupContact).isValid())
+    {
+        QContact contact = mArgs.value(ESelectedGroupContact).value<QContact>();
+        viewParameters.insert(ESelectedGroupContactId, contact.localId());
+    }
+    if (mArgs.value(EMyCard).isValid())
+    {
+        viewParameters.insert(EMyCard, mArgs.value(EMyCard));
+    }
+    if (mArgs.value(EExtraAction).isValid())
+    {
+        viewParameters.insert(EExtraAction, mArgs.value(EExtraAction));
+    }
+   
+    stream << viewParameters;
+    
+    return CNT_ACTIVITY_EDITOR;
+}
+
+bool CntEditViewPrivate::internalize(QDataStream &stream, CntViewParameters &viewParameters)
+{
+    CntViewParameters tempViewParameters;
+    stream >> tempViewParameters;
+    
+    viewParameters.insert(EViewId, tempViewParameters.value(EViewId));
+    
+    if (tempViewParameters.value(ESelectedContactId).isValid())
+    {
+        QContactManager &mgr = mEngine->contactManager(SYMBIAN_BACKEND);
+        
+        QContactLocalId localId = tempViewParameters.value(ESelectedContactId).toInt();
+        
+        if (!mgr.contactIds().contains(localId) && localId != 0 && mgr.selfContactId() != localId)
+        {
+            // a contact has been deleted.
+            return false;
+        }
+        else
+        {
+            QVariant var;
+            var.setValue(mgr.contact(localId));      
+            viewParameters.insert(ESelectedContact, var);
+        }
+    }
+    if (tempViewParameters.value(ESelectedGroupContactId).isValid())
+    {
+        QContactManager &mgr = mEngine->contactManager(SYMBIAN_BACKEND);
+        QVariant var;
+        var.setValue(mgr.contact(tempViewParameters.value(ESelectedGroupContactId).toInt()));      
+        viewParameters.insert(ESelectedGroupContact, var);
+    }
+    if (tempViewParameters.value(EMyCard).isValid())
+    {
+        viewParameters.insert(EMyCard, tempViewParameters.value(EMyCard));
+    }
+    if (tempViewParameters.value(EExtraAction).isValid())
+    {
+        viewParameters.insert(EExtraAction, tempViewParameters.value(EExtraAction));
+    }
+     
+    return true;
 }
 
 void CntEditViewPrivate::deactivate()
@@ -418,6 +481,7 @@ void CntEditViewPrivate::fetchTone()
          }
          else
          {
+             mReq->setSynchronous(false);
              connect(mReq, SIGNAL( requestOk( const QVariant&)), SLOT( ringToneFetchHandleOk(const QVariant&)) );
              connect(mReq, SIGNAL( requestError( int,const QString&)), SLOT(ringToneFetchHandleError(int,const QString&)) );
          }
@@ -428,25 +492,19 @@ void CntEditViewPrivate::fetchTone()
 
 void CntEditViewPrivate::ringToneFetchHandleOk(const QVariant &result)
 {
-          
     QContactRingtone ringtone = mContact->detail<QContactRingtone>();
-    QUrl ringtoneUrl = ringtone.audioRingtoneUrl();
-    QFileInfo ringtoneFileInfo(ringtoneUrl.toString());
-    QString ringtoneFileName = ringtoneFileInfo.fileName();
-     // Contact can have only one ringtone at a time
-     // remove existing ringtone detail if any
+    // Contact can have only one ringtone at a time
+    // remove existing ringtone detail if any
+    if(!(ringtone.isEmpty()))
+     {
+        mContact->removeDetail(&ringtone);
+     }
      
-     if(!(ringtone.isEmpty()))
-         {
-         mContact->removeDetail(&ringtone);
-         }
-     
-     ringtone.setAudioRingtoneUrl(result.value<QString>());
+     ringtone.setAudioRingtoneUrl( QUrl::fromLocalFile( result.value<QString>() ) );
      mContact->saveDetail( &ringtone );
      mModel->updateRingtone();
      mSave->setEnabled( true );
      mDiscard->setEnabled( true );
-     
 }
  
 void CntEditViewPrivate::ringToneFetchHandleError(int errorCode, const QString& errorMessage)
@@ -476,7 +534,7 @@ void CntEditViewPrivate::deleteContact()
             name = hbTrId("txt_phob_list_unnamed");
         }
         
-        HbMessageBox::question(HbParameterLengthLimiter(hbTrId("txt_phob_info_delete_1")).arg(name), this, SLOT(handleDeleteContact(int)), 
+        HbMessageBox::question(HbParameterLengthLimiter("txt_phob_info_delete_1").arg(name), this, SLOT(handleDeleteContact(int)), 
                 HbMessageBox::Delete | HbMessageBox::Cancel);
     }
     
@@ -545,7 +603,13 @@ bool CntEditViewPrivate::saveChanges()
     
     disconnect(&mgr, SIGNAL(contactsRemoved(const QList<QContactLocalId>&)),
                             this, SLOT(contactDeletedFromOtherSource(const QList<QContactLocalId>&)));
-    CntSaveManager::CntSaveResult result = mSaveManager->saveContact(mContact, &mgr);
+    
+    CntSaveManager& save = mEngine->saveManager();
+    CntSaveManager::CntSaveResult result;
+    if ( mIsMyCard )
+        result = save.saveMyCard(mContact, &mgr);
+    else
+        result = save.saveContact( mContact, &mgr );
     
     QVariant var;
     bool backToRoot(false);
@@ -554,14 +618,14 @@ bool CntEditViewPrivate::saveChanges()
     {
     case CntSaveManager::ESaved:
         emit q->contactUpdated(KCntServicesReturnValueContactSaved);
-        HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contact_1_saved")).arg(name));
+        HbDeviceNotificationDialog::notification(QString(), HbParameterLengthLimiter("txt_phob_dpophead_contact_1_saved").arg(name));
         var.setValue(*mContact);
         mArgs.insert(ESelectedContact, var);
         mArgs.insert(ESelectedAction, CNT_CREATE_ACTION);
         break;
     case CntSaveManager::EUpdated:
         emit q->contactUpdated(KCntServicesReturnValueContactSaved);
-        HbDeviceNotificationDialog::notification(QString(),HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_contacts_1_updated")).arg(name));
+        HbDeviceNotificationDialog::notification(QString(), HbParameterLengthLimiter("txt_phob_dpophead_contacts_1_updated").arg(name));
         var.setValue(*mContact);
         mArgs.insert(ESelectedContact, var);
         mArgs.insert(ESelectedAction, CNT_EDIT_ACTION);
@@ -808,5 +872,19 @@ void CntEditViewPrivate::showRootView()
     CNT_EXIT
 }
 
+void CntEditViewPrivate::setObjectNames()
+{
+    int itemCount = mModel->rowCount();
+    
+    for (int itemRow = 0 ; itemRow < itemCount ; itemRow++)
+    {
+        QModelIndex modelIndex = mModel->index(itemRow);
+        HbListViewItem* item = static_cast<HbListViewItem*>(mListView->itemByIndex(modelIndex));
+        if (NULL != item)
+        {
+            item->setObjectName(QString("ListViewItem %1").arg(itemRow));
+        }
+    }   
+}
 // End of File
 

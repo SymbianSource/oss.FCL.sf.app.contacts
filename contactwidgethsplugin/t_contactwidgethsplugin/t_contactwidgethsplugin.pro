@@ -49,6 +49,7 @@ DEPENDPATH += ./inc \
 symbian {
     TARGET.UID3 = 0x2002C354
     TARGET.CAPABILITY = CAP_APPLICATION AllFiles
+    MMP_RULES += SMPSAFE
 }
 
 include(t_contactwidgethsplugin.pri)

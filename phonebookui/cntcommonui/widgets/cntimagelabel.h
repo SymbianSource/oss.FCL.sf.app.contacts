@@ -53,6 +53,9 @@ private:
     HbIconItem*  mDefaultAvatar;
     HbIcon       mIcon;
     QPixmap      mPixmap;
+#ifdef PBK_UNIT_TEST
+    friend class TestCntImageLabel;
+#endif
     
 };
 

@@ -37,6 +37,7 @@ class HbFrameDrawer;
 class HbMainWindow;
 class HbDocumentLoader;
 class HbTranslator;
+class HbDeviceMessageBox;
 
 
 QTM_USE_NAMESPACE
@@ -93,6 +94,7 @@ private slots:
     void onRequestComplete();
     void onSelfContactIdChanged(const QContactLocalId &theOldId,
             const QContactLocalId &theNewId);
+    void onAboutCloseNoneContactMessage();
     
 private:
     void createUI();
@@ -114,6 +116,7 @@ private:
     void createLauncherWithPosition();
     void loadLayout(const QString frameName, const QString textColor);
     void finishWidget();
+    void showNoneContactMessage();
 
 private:
     HbIconItem *mAvatarIconItem;
@@ -147,6 +150,8 @@ private:
     QObjectCleanupHandler mCleanupHandler;
     
     bool mPendingExit;
+    
+    HbDeviceMessageBox * mNoneContactMessage;
     
     CONTACTWIDGET_TEST_FRIEND_CLASS(TestContactWidget)
 

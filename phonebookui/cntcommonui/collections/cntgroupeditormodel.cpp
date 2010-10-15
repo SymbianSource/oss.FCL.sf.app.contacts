@@ -78,7 +78,7 @@ void CntGroupEditorModel::saveContactDetails()
         mContact->removeDetail( &iGroupName );
     }
 
-    if(iGroupConfCallNumber.number().isEmpty())
+    if (iGroupConfCallNumber.number().isEmpty())
     {
         mContact->removeDetail( &iGroupConfCallNumber );
     }

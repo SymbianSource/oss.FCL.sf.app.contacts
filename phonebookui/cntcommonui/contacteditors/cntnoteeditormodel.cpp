@@ -25,6 +25,7 @@ CntDetailEditorModel( aContact )
     foreach ( QContactNote note, mContact->details<QContactNote>() )
     {
         CntDetailModelItem* item = new CntDetailModelItem(note);
+        item->setLabel(hbTrId("txt_phob_formlabel_note"));
         appendDataFormItem( item, root );
         connect( item, SIGNAL(itemDataChanged(CntDetailModelItem*)), this, SLOT(emitDataChanged(CntDetailModelItem*)) );
     }
@@ -39,6 +40,7 @@ void CntNoteEditorModel::insertDetailField()
     QContactNote emptyNote;
     mNoteList.append( emptyNote );
     CntDetailModelItem* newNote = new CntDetailModelItem(emptyNote);
+    newNote->setLabel(hbTrId("txt_phob_formlabel_note"));
     appendDataFormItem( newNote, invisibleRootItem() );
     connect( newNote, SIGNAL(itemDataChanged(CntDetailModelItem*)), this, SLOT(emitDataChanged(CntDetailModelItem*)) );
     emitDataChanged(newNote);

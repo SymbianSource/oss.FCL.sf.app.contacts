@@ -14,51 +14,43 @@
 * Description:  
 *
 */
-
-#include <QString.h>
-
 #include "cntimportsview.h"
-#include "cntglobal.h"
-
 #include "cntsimengine.h"
 
-#include <hbpushbutton.h>
+#include "cntglobal.h"
+#include <cntdebug.h>
+
 #include <hbaction.h>
 #include <hbview.h>
-#include <hbmenu.h>
 #include <hbframebackground.h>
-#include <QStandardItemModel>
-#include <hbmainwindow.h>
-#include <hblabel.h>
 #include <hblistview.h>
-#include <QTimer>
-#include <hbnotificationdialog.h>
-#include <hbmessagebox.h>
-#include <hbprogressbar.h>
-#include <QGraphicsLinearLayout>
-#include <hbframebackground.h>
-#include <hbabstractviewitem.h>
 #include <hbextendedlocale.h>
 #include <hbparameterlengthlimiter.h>
 #include <hblistviewitem.h>
-#include <hbstringutil.h>
-#include <QCoreApplication>
 #include <hbdevicenotificationdialog.h>
-#include <cntdebug.h>
+#include <hbprogressdialog.h>
+
+#include <QTimer>
+#include <QStandardItemModel>
+#include <QCoreApplication>
 
 const char *CNT_IMPORT_UI_XML = ":/xml/contacts_sim.docml";
 
-CntImportsView::CntImportsView() : mViewManager(0),
-    mSimEngine(0),
-    mListView(0),
-    mView(0),
-    mSoftkey(0),
-    mModel(0),
-    mImportSimPopup(0),
-    mEngine(0)
+/*!
+Constructor
+*/
+CntImportsView::CntImportsView() :
+    mViewManager(NULL),
+    mSimEngine(NULL),
+    mListView(NULL),
+    mView(NULL),
+    mSoftkey(NULL),
+    mModel(NULL),
+    mImportSimPopup(NULL),
+    mEngine(NULL)
 {
     CNT_ENTRY
-    CNT_LOG_ARGS(QString("All bools reset"));
+
     bool ok = false;
     mDocumentLoader.load(CNT_IMPORT_UI_XML, &ok);
 
@@ -72,49 +64,27 @@ CntImportsView::CntImportsView() : mViewManager(0),
     }
     
     mSimEngine = new CntSimEngine(*this, *mView);
+    connect(mSimEngine, SIGNAL(showNamesView()), this, SLOT(showPreviousView()));
+    connect(mSimEngine, SIGNAL(closePopup()), this, SLOT(closeImportPopup()));
 
     //back button
     mSoftkey = new HbAction(Hb::BackNaviAction, mView);
     connect(mSoftkey, SIGNAL(triggered()), this, SLOT(showPreviousView()));
-    connect(mSimEngine, SIGNAL(showNamesView()), this, SLOT(showPreviousView()));
-    connect(mSimEngine, SIGNAL(closePopup()), this, SLOT(closeImportPopup()));
-    CNT_EXIT
-      
-}
 
-void CntImportsView::deactivate()
-{
-}
-
-   
-CntImportsView::~CntImportsView()
-{
-    CNT_ENTRY
-    mView->deleteLater();
-    delete mModel;
-    delete mSimEngine;
     CNT_EXIT
 }
 
 /*!
-Activates a previous view
+Destructor
 */
-void CntImportsView::showPreviousView()
+CntImportsView::~CntImportsView()
 {
     CNT_ENTRY
-    CntViewParameters args;
-    mViewManager->back(args);
-    CNT_EXIT
-}
-
-void CntImportsView::closeImportPopup()
-{
-    CNT_ENTRY
-    if (mImportSimPopup != NULL)
-    {
-        mImportSimPopup->close();
-        mImportSimPopup = NULL;     // Dilaog is deleted on close()
-    }
+    
+    mView->deleteLater();
+    delete mModel;
+    delete mSimEngine;
+    
     CNT_EXIT
 }
 
@@ -168,101 +138,140 @@ void CntImportsView::activate(const CntViewParameters aArgs)
     CNT_EXIT
 }
 
+void CntImportsView::deactivate()
+{
+    
+}
 
+/*!
+Returns the contact manager
+*/
+QContactManager *CntImportsView::contactSymbianManager()
+{
+    if (mSimEngine)
+    {
+        return mSimEngine->contactSymbianManager();
+    }
+    
+    return NULL;
+}
+
+/*!
+Activates a previous view
+*/
+void CntImportsView::showPreviousView()
+{
+    CNT_ENTRY
+    
+    CntViewParameters args;
+    mViewManager->back(args);
+    
+    CNT_EXIT
+}
+
+/*!
+Close the import popup
+*/
+void CntImportsView::closeImportPopup()
+{
+    CNT_ENTRY
+    
+    if (mImportSimPopup != NULL)
+    {
+        mImportSimPopup->close();
+        mImportSimPopup = NULL;
+    }
+    
+    CNT_EXIT
+}
+
+/*!
+Called when list item is activated
+*/
 void CntImportsView::onListViewActivated(const QModelIndex &index)
 {
     CNT_ENTRY
+    
     int row = index.row();
     if ( row == 0 ) // row 0 has "Imports from SIM" 
     {
-       if (!mSimEngine->startSimImport())
-       {
-           //show error note
-           mSimEngine->simInfoErrorMessage(KErrAccessDenied);
-       }
-       else
-       {
-           //start popup and progress
-           showWaitNote();
-       }
-    }        
-    CNT_EXIT
-    
- }
+        if (!mSimEngine->startSimImport())
+        {
+            //show error note
+            mSimEngine->simInfoErrorMessage(KErrAccessDenied);
+        }
+        else
+        {
+            //start popup and progress
+            showWaitNote();
+        }
+    }
 
-void CntImportsView::showWaitNote()
-{
-    CNT_ENTRY
-    mImportSimPopup = new HbDialog();    
-    mImportSimPopup->setDismissPolicy(HbPopup::NoDismiss);
-    mImportSimPopup->setTimeout(HbPopup::NoTimeout);
-    mImportSimPopup->setBackgroundFaded(true);
-    mImportSimPopup->setAttribute(Qt::WA_DeleteOnClose, true);
-    
-    HbLabel *headingLabel = new HbLabel(mImportSimPopup);
-    headingLabel->setPlainText(hbTrId("txt_phob_title_import_contacts")); 
-    mImportSimPopup->setHeadingWidget(headingLabel);
-    
-    QGraphicsLinearLayout *containerLayout = new QGraphicsLinearLayout(Qt::Vertical);
-    containerLayout->setContentsMargins(0, 0, 0, 0);
-    containerLayout->setSpacing(10);
-    
-    HbLabel *icon = new HbLabel(mImportSimPopup);
-    icon->setIcon(HbIcon("qtg_large_sim"));  
-    
-    HbLabel *simText= new HbLabel(mImportSimPopup);
-    simText->setPlainText(hbTrId("txt_phob_info_importing_contacts_from_sim")); 
-    simText->setTextWrapping(Hb::TextWordWrap);
-    simText->setElideMode(Qt::ElideNone);
-    
-    HbProgressBar *progressBar = new HbProgressBar(mImportSimPopup);
-    progressBar->setRange(0,0); 
-    
-    HbPushButton *stopButton = new HbPushButton(mImportSimPopup);
-    stopButton->setText(hbTrId("txt_phob_button_cancel"));
-    connect(stopButton, SIGNAL(clicked()), mSimEngine, SLOT(stopSimImport()));
-    
-    QGraphicsLinearLayout *containerLayout1 = new QGraphicsLinearLayout(Qt::Horizontal);
-    containerLayout1->addItem(icon);
-    containerLayout1->addItem(simText);
-    
-    QGraphicsWidget *containerWidget = new QGraphicsWidget;    
-    containerLayout->addItem(containerLayout1);
-    containerLayout->addItem(progressBar);
-    containerLayout->addItem(stopButton);  
-    containerWidget->setLayout(containerLayout);
-    mImportSimPopup->setContentWidget(containerWidget);
-    mImportSimPopup->open();
     CNT_EXIT
 }
 
-void CntImportsView::setPreferredDetails( QContact *aContact )
-{
-    CNT_ENTRY
-    mSimEngine->setPreferredDetails(*aContact);
-    CNT_EXIT
-}
-
-
+/*!
+Called when importing is cancelled
+*/
 void CntImportsView::userCancelsImport()
 {   
     CNT_ENTRY
+    
     QString results;
     
     if(mSimEngine->userCancelsImport(results))
     {
         HbDeviceNotificationDialog::notification(QString(),results);
     }
+    
     CNT_EXIT
 }
 
+/*!
+Display the wait note
+*/
+void CntImportsView::showWaitNote()
+{
+    CNT_ENTRY
+    
+    mImportSimPopup = new HbProgressDialog(HbProgressDialog::WaitDialog);    
+    mImportSimPopup->setDismissPolicy(HbPopup::NoDismiss);
+    mImportSimPopup->setTimeout(HbPopup::NoTimeout);
+    mImportSimPopup->setBackgroundFaded(true);
+    mImportSimPopup->setAttribute(Qt::WA_DeleteOnClose, true);
+    
+    mImportSimPopup->setHeadingText(hbTrId("txt_phob_title_import_contacts"));
+    mImportSimPopup->setIcon(HbIcon("qtg_large_sim"));
+    mImportSimPopup->setText(hbTrId("txt_phob_info_importing_contacts_from_sim"));
+    
+    connect(mImportSimPopup, SIGNAL(cancelled()), mSimEngine, SLOT(stopSimImport()));
+
+    mImportSimPopup->show();
+    
+    CNT_EXIT
+}
+
+/*!
+Set preferred details for the given contact
+*/
+void CntImportsView::setPreferredDetails( QContact *aContact )
+{
+    CNT_ENTRY
+    
+    mSimEngine->setPreferredDetails(*aContact);
+    
+    CNT_EXIT
+}
 
 void CntImportsView::setListBoxItemText(QString& aPrimary, QString& aSecondary)
 {
     CNT_ENTRY
+    
     QList<QStandardItem*> importItems = mModel->takeRow(0);
     QStandardItem* importItem = NULL;
-    if (importItems.count() > 0) {
+    
+    if (importItems.count() > 0)
+    {
         importItem = importItems.at(0);
     }
     
@@ -278,14 +287,17 @@ void CntImportsView::setListBoxItemText(QString& aPrimary, QString& aSecondary)
         mModel->insertRow(0, importItem);
         mListView->reset();
     }
+    
     CNT_EXIT
 }
 
 void CntImportsView::setListBoxItemEnabled(bool aEnabled)
 {
     CNT_ENTRY
+    
     QList<QStandardItem*> importItems = mModel->takeRow(0);
     QStandardItem* importItem = NULL;
+    
     if ( !importItems.isEmpty() )
     {
        importItem = importItems.first();
@@ -295,17 +307,8 @@ void CntImportsView::setListBoxItemEnabled(bool aEnabled)
     {
        importItem->setEnabled(aEnabled);
     }
-    CNT_EXIT
-}
-
-QContactManager *CntImportsView::contactSymbianManager()
-{
-    if (mSimEngine)
-    {
-        return mSimEngine->contactSymbianManager();
-    }
     
-    return NULL;
+    CNT_EXIT
 }
 
 // EOF

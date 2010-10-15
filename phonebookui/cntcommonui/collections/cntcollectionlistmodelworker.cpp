@@ -233,9 +233,8 @@ void CntCollectionListModelWorker::fetchInformation(int id)
         for(int i = 0;i < groupMemberIds.count();i++)
         {
             QContactFetchHint nameOnlyFetchHint;
-            /*QStringList details;
-            details << QContactDisplayLabel::DefinitionName;
-            nameOnlyFetchHint.setDetailDefinitionsHint(details);*/
+            QStringList details(QContactDisplayLabel::DefinitionName);
+            nameOnlyFetchHint.setDetailDefinitionsHint(details);
             nameOnlyFetchHint.setOptimizationHints(QContactFetchHint::NoRelationships);
 
             QContact contact = mManager->contact(groupMemberIds.at(i), nameOnlyFetchHint);

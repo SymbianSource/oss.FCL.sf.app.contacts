@@ -500,7 +500,7 @@ void CSyncEngineServer::CreateGroupIdL(TUid aPhonebookUid)
 			CContactGroup*  group = static_cast<CContactGroup*> (iDb->ReadContactLC((*idList)[index]));
 			CContactIdArray*  itemList = group->ItemsContainedLC();
 
-			if (itemList->Count() > 0)
+			if ( itemList && itemList->Count() > 0)
 				{
 				CContactItem*  groupItem = iDb->ReadContactLC((*itemList)[0]);
 				TContactItemId templateId = groupItem->TemplateRefId();

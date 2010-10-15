@@ -19,7 +19,8 @@
 #include "cntnamesview_p.h"
 #include <hbview.h>
 
-CntNamesView::CntNamesView() : d_ptr( new CntNamesViewPrivate() )
+CntNamesView::CntNamesView() : 
+    d_ptr( new CntNamesViewPrivate() )
 {
     Q_D(CntNamesView);
     d->q_ptr = this;
@@ -67,6 +68,18 @@ void CntNamesView::setEngine( CntAbstractEngine& aEngine )
 {
     Q_D(CntNamesView);
     d->setEngine( aEngine );
+}
+
+QString CntNamesView::externalize(QDataStream &stream)
+{
+    Q_D(CntNamesView);
+    return d->externalize(stream);
+}
+
+bool CntNamesView::internalize(QDataStream &stream, CntViewParameters &viewParameters)
+{
+    Q_D(CntNamesView);
+    return d->internalize(stream, viewParameters);
 }
    
 

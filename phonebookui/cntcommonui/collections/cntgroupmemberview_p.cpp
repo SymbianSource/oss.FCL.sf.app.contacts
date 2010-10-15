@@ -145,6 +145,7 @@ void CntGroupMemberViewPrivate::setOrientation(Qt::Orientation orientation)
 void CntGroupMemberViewPrivate::activate( const CntViewParameters aArgs )
 {
     mArgs = aArgs;
+    mArgs.remove( ESelectedContact );
     mViewManager = &mEngine->viewManager();
     mThumbnailManager = &mEngine->thumbnailManager();
 
@@ -214,7 +215,7 @@ void CntGroupMemberViewPrivate::activate( const CntViewParameters aArgs )
     if (mArgs.value(ESelectedAction).toString() == CNT_SAVE_ACTION)
     {
         QString name = getContactManager()->synthesizedContactDisplayLabel(*mGroupContact);
-        HbNotificationDialog::launchDialog(HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_new_group_1_created").arg(name)));
+        HbNotificationDialog::launchDialog(HbParameterLengthLimiter("txt_phob_dpophead_new_group_1_created").arg(name));
     }
     decideActionButtonContext();
 }
@@ -229,12 +230,10 @@ void CntGroupMemberViewPrivate::showPreviousView()
     
     emit q->backPressed();
     
-    //save the contact if avatar has been changed.
-    QContact contact = getContactManager()->contact(mGroupContact->localId());
-    if ( contact != *mGroupContact )
-    {
-        getContactManager()->saveContact(mGroupContact);
-    }
+    // SaveManager not used here.
+    // SaveManager checks for detail count and removes if contact empty.
+    getContactManager()->saveContact(mGroupContact);
+    
     mViewManager->back(mArgs);
 }
 
@@ -265,7 +264,7 @@ void CntGroupMemberViewPrivate::manageMembers()
     }
     
     CntFetchContactPopup* popup = CntFetchContactPopup::createMultiSelectionPopup(
-            HbParameterLengthLimiter(hbTrId("txt_phob_title_members_of_1_group")).arg(groupName),
+            HbParameterLengthLimiter("txt_phob_title_members_of_1_group").arg(groupName),
             hbTrId("txt_common_button_save"),
             mEngine->contactManager(SYMBIAN_BACKEND));
     connect( popup, SIGNAL(fetchReady(QSet<QContactLocalId>)),this, SLOT(handleManageMembers(QSet<QContactLocalId>)) );
@@ -327,7 +326,7 @@ void CntGroupMemberViewPrivate::deleteGroup()
     }
     
     HbLabel *headingLabel = new HbLabel();
-    headingLabel->setPlainText(HbParameterLengthLimiter(hbTrId("txt_phob_dialog_delete_1_group")).arg(groupName));
+    headingLabel->setPlainText(HbParameterLengthLimiter("txt_phob_dialog_delete_1_group").arg(groupName));
     
     HbMessageBox::question(hbTrId("txt_phob_dialog_only_group_will_be_removed_contac"), this, SLOT(handleDeleteGroup(int)),
             HbMessageBox::Delete | HbMessageBox::Cancel, headingLabel);

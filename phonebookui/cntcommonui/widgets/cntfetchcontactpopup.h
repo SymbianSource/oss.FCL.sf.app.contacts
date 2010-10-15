@@ -101,6 +101,8 @@ private:
     CntDocumentLoader* mDoc; // own
     QString mTitle;
     QList<QContactLocalId> mIds;
+    
+    friend class TestCntFetchUtility;
 };
 
 #endif /* CNTFETCHCONTACTPOPUP_H_ */

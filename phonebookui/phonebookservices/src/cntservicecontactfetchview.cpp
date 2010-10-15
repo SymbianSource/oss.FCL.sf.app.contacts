@@ -301,7 +301,7 @@ void CntServiceContactFetchView::popupContactAction(QContact& aContact,QContactD
            mIndex--;
        }
     
-    if (aContact.preferredDetail(aAction).isEmpty() && (aAction == "call" || aAction == "message" || aAction == "email"))
+    if (aContact.preferredDetail(aAction).isEmpty() && (aAction == "call"))
     {
         aContact.setPreferredDetail(aAction, contactDetail);
         //return value will be ignored because we cannot do anything if it fails.

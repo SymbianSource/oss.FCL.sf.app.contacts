@@ -48,6 +48,7 @@
 #include <QList>
 
 const char *CNT_COLLECTIONVIEW_XML = ":/xml/contacts_collections.docml";
+const QString CNT_ACTIVITY_MAINVIEW = "ContactsMainView";
 
 /*!
 
@@ -193,6 +194,22 @@ void CntCollectionView::activate( const CntViewParameters aArgs )
     CNT_EXIT
 }
 
+QString CntCollectionView::externalize(QDataStream &stream)
+{
+    CntViewParameters viewParameters;
+    viewParameters.insert(EViewId, viewId());
+  
+    stream << viewParameters;
+    
+    return CNT_ACTIVITY_MAINVIEW;
+}
+
+bool CntCollectionView::internalize(QDataStream &stream, CntViewParameters &viewParameters)
+{
+    stream >> viewParameters;
+    return true;
+}
+
 void CntCollectionView::deactivate()
 {
 
@@ -308,7 +325,7 @@ void CntCollectionView::showContextMenu(HbAbstractViewItem *item, const QPointF 
 
         if (id != favoriteGrpId)
         {
-            HbAction* deleteAction = menu->addAction(hbTrId("txt_phob_menu_delete_group"));
+            HbAction* deleteAction = menu->addAction(hbTrId("txt_common_menu_delete"));
             deleteAction->setData( data );
         }
         menu->open(this, SLOT(handleMenu(HbAction*)));
@@ -414,7 +431,7 @@ void CntCollectionView::handleNewGroup(HbAction* action)
        else
        {
             CntFetchContactPopup* popup = CntFetchContactPopup::createMultiSelectionPopup(
-                    HbParameterLengthLimiter(hbTrId("txt_phob_title_members_of_1_group")).arg(groupNameCreated),
+                    HbParameterLengthLimiter("txt_phob_title_members_of_1_group").arg(groupNameCreated),
                     hbTrId("txt_common_button_save"),
                     mEngine->contactManager(SYMBIAN_BACKEND));
             connect( popup, SIGNAL(fetchReady(QSet<QContactLocalId>)), this, SLOT(handleNewGroupMembers(QSet<QContactLocalId>)) );
@@ -464,7 +481,7 @@ void CntCollectionView::notifyNewGroup()
             groupNameCreated = hbTrId("txt_phob_list_unnamed");
         }
         HbDeviceNotificationDialog::notification(QString(), 
-                HbParameterLengthLimiter(hbTrId("txt_phob_dpophead_new_group_1_created")).arg(groupNameCreated));
+                HbParameterLengthLimiter("txt_phob_dpophead_new_group_1_created").arg(groupNameCreated));
 
         delete mHandledContact;
         mHandledContact = NULL;
@@ -493,7 +510,7 @@ void CntCollectionView::deleteGroup(QContact group)
     }
 
     HbLabel *headingLabel = new HbLabel();
-    headingLabel->setPlainText(HbParameterLengthLimiter(hbTrId("txt_phob_dialog_delete_1_group")).arg(name));
+    headingLabel->setPlainText(HbParameterLengthLimiter("txt_phob_dialog_delete_1_group").arg(name));
           
     HbMessageBox::question(hbTrId("txt_phob_dialog_only_group_will_be_removed_contac")
             , this, SLOT(handleDeleteGroup(int)), HbMessageBox::Delete | HbMessageBox::Cancel,
@@ -502,7 +519,7 @@ void CntCollectionView::deleteGroup(QContact group)
 
 void CntCollectionView::handleDeleteGroup(int action)
 {
-    if (action == HbMessageBox::Delete)
+    if (action == HbMessageBox::Delete && mHandledContact != NULL)
     {
         getContactManager()->removeContact(mHandledContact->localId());
     }

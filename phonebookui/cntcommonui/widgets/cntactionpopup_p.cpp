@@ -24,10 +24,6 @@
 #include <hblistview.h>
 #include <hblistviewitem.h>
 #include <QStandardItemModel>
-#include <hblabel.h>
-//#include <QtAlgorithms.h>
-
-
 
 CntActionPopupPrivate::CntActionPopupPrivate( QContact* aContact, QGraphicsItem *parent ) :
 HbSelectionDialog(parent),
@@ -194,16 +190,15 @@ void CntActionPopupPrivate::showPopup()
     mListView->setScrollingStyle(HbScrollArea::PanWithFollowOn);
     mListView->setFrictionEnabled(true);
     mListView->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Maximum );
+    mListView->setLongPressEnabled(false);//This is to make longpress act like shortpress when no tap menu
     
     QString contactName = mContact->displayLabel();
     if (contactName.isEmpty())
     {
         contactName = hbTrId("txt_phob_list_unnamed");
     }
-    HbLabel *label = new HbLabel();
-    label->setPlainText(contactName);
     
-    setHeadingWidget(label);
+    setHeadingText(contactName);
     setContentWidget(mListView);
     
     mCancelAction = new HbAction(hbTrId("txt_common_button_cancel"), this);
@@ -212,10 +207,8 @@ void CntActionPopupPrivate::showPopup()
     setDismissPolicy(HbDialog::NoDismiss);
     setModal(true);
     
-    connect(mListView, SIGNAL(activated(const QModelIndex&)), this, SLOT(listItemSelected(QModelIndex)));
-    connect(mListView, SIGNAL(longPressed(HbAbstractViewItem*,const QPointF&)), 
-            this, SLOT(onLongPressed(HbAbstractViewItem*,const QPointF&)) );
-      
+    connect(mListView, SIGNAL(activated (const QModelIndex &)), 
+            this, SLOT(listItemSelected(QModelIndex)) );
     
     //launch dialog asyncronously
     open(this, SLOT(handleUserResponse(HbAction*)));
@@ -230,13 +223,6 @@ void CntActionPopupPrivate::handleUserResponse(HbAction* action)
     }
     mCancelAction = 0;
     
-}
-
-void CntActionPopupPrivate::onLongPressed(HbAbstractViewItem *item, const QPointF &coords)
-{
-    Q_UNUSED(coords);
-    QModelIndex index = item->modelIndex();
-    listItemSelected(index);
 }
 
 void CntActionPopupPrivate::listItemSelected( QModelIndex index )

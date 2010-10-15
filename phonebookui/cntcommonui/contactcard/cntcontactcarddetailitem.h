@@ -85,6 +85,7 @@ private:
     HbIcon                  secondaryIcon;
     
 friend class TestCntContactCardDetailItem;
+friend class TestCntContactCardView;
 };
 
 #endif // CNTCOMMLAUNCHERDETAILITEM_H

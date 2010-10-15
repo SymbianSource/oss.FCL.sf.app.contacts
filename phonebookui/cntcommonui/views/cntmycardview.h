@@ -15,8 +15,8 @@
 *
 */
 
-#ifndef CNTMYCARDVIEW_H_
-#define CNTMYCARDVIEW_H_
+#ifndef CNTMYCARDVIEW_H
+#define CNTMYCARDVIEW_H
 
 #include <QObject>
 #include <QSet>
@@ -25,6 +25,7 @@
 
 class HbView;
 class HbAction;
+class HbPushButton;
 
 QTM_BEGIN_NAMESPACE
 class QContact;
@@ -34,9 +35,9 @@ QTM_USE_NAMESPACE
 
 class CntMyCardView : public QObject, public CntAbstractView
 {
-
-Q_OBJECT
-
+    Q_OBJECT
+    friend class TestCntMyCardView;
+    
 public:
     CntMyCardView();
     ~CntMyCardView();
@@ -52,23 +53,23 @@ public: // From CntAbstractView
     
 private slots:
     void showPreviousView();
-    void openNameEditor();
-    void openMyCardSelectionView(); 
-    void handleMultiCardSelection(QSet<QContactLocalId> aIds);
+    void openEditor();
+    void openMyCardSelectionDialog(); 
+    void handleMyCardSelection(QSet<QContactLocalId> aIds);
     void setOrientation(Qt::Orientation orientation);
 
 private: 
-    
     void removeFromGroup(const QContact* contact);
     
 private:  
-    QContact*                 mContact; // own
-    CntAbstractViewManager*   mViewManager;
-    HbDocumentLoader          mDocumentLoader;
-    HbView*                   mView; // own
-    HbAction*                 mSoftkey;
-    CntAbstractEngine*        mEngine; 
-    friend class TestCntMyCardView;
+    QContact                *mContact; // own
+    CntAbstractViewManager  *mViewManager;
+    HbDocumentLoader         mDocumentLoader;
+    HbView                  *mView; // own
+    HbAction                *mSoftkey;
+    CntAbstractEngine       *mEngine;
+    HbPushButton            *mNewButton;
+    HbPushButton            *mChooseButton;
 };
 
-#endif /* CNTMYCARDVIEW_H_ */
+#endif /* CNTMYCARDVIEW_H */

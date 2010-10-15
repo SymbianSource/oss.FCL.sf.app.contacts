@@ -51,6 +51,8 @@ public: // From CntAbstractView
     HbView* view() const { return mView; }
     int viewId() const { return collectionView; }
     inline void setEngine( CntAbstractEngine& aEngine ){mEngine = &aEngine;}
+    QString externalize(QDataStream &stream);
+    bool internalize(QDataStream &stream, CntViewParameters &viewParameters);
     
 public: // From CntExtensionGroupCallback
     void openView(CntViewParameters& viewParams);

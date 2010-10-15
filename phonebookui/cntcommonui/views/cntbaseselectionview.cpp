@@ -29,8 +29,8 @@
 const char *CNT_SELECTION_LISTVIEW_UI_XML = ":/xml/contacts_list.docml";
 
 CntBaseSelectionView::CntBaseSelectionView() : 
-QObject(),
-mDocument(NULL)
+    QObject(),
+    mDocument(NULL)
 {
     mDocument = new HbDocumentLoader();
     
@@ -80,7 +80,8 @@ void CntBaseSelectionView::activate( const CntViewParameters aArgs )
     
     mListView->setModel( mListModel );
     
-    if ( aArgs.contains(ESelectionMode) ) {
+    if ( aArgs.contains(ESelectionMode) )
+    {
         mListView->setSelectionMode( static_cast<HbAbstractItemView::SelectionMode>(aArgs.value(ESelectionMode).toInt()) );
     }
     
@@ -89,16 +90,8 @@ void CntBaseSelectionView::activate( const CntViewParameters aArgs )
 
 void CntBaseSelectionView::deactivate()
 {
+    
 }
 
-bool CntBaseSelectionView::isDefault() const
-{
-    return false;
-}
-
-HbView* CntBaseSelectionView::view() const
-{
-    return mView;
-}
 
 // EOF

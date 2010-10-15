@@ -22,9 +22,6 @@
 
 TEMPLATE = subdirs
 
-SUBDIRS += cntfindplugin 
-SUBDIRS += cntsortplugin
-SUBDIRS += cntlistmodel 
 SUBDIRS += cntactions 
 SUBDIRS += cntsimutility
 SUBDIRS += cntimageutility

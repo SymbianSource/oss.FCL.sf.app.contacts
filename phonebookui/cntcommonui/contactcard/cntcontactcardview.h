@@ -54,6 +54,10 @@ public: // From CntAbstractView
     int viewId() const;
      
     void setEngine( CntAbstractEngine& aEngine );
+    
+    QString externalize(QDataStream &stream);
+    bool internalize(QDataStream &stream, CntViewParameters &viewParameters);
+    
 private:
     CntContactCardViewPrivate* const d_ptr;
     Q_DECLARE_PRIVATE_D(d_ptr, CntContactCardView)

@@ -26,7 +26,7 @@ INCLUDEPATH +=  ../cntcommonui/core \
                 ../cntcommonui/widgets \
                 ../../inc
                 
-INCLUDEPATH += ../../phonebookengines/cntlistmodel/inc \
+INCLUDEPATH += ../cntlistmodel \
                ../../phonebookengines/cntimageutility/inc \
 
 INCLUDEPATH += . \
@@ -74,7 +74,7 @@ SOURCES += src/main.cpp \
            src/cntservicesubeditview.cpp
 
 # capability
-TARGET.CAPABILITY = CAP_APPLICATION NetworkControl
+TARGET.CAPABILITY = CAP_APPLICATION NetworkControl TrustedUI
 
 TRANSLATIONS = contacts.ts
 

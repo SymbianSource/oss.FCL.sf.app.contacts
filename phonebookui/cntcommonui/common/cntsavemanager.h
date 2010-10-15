@@ -57,16 +57,19 @@ public:
     };
     
 public:
-    CntSaveManager(CntContactType type = EContact, QObject* parent = NULL);
+    CntSaveManager(QObject* parent = NULL);
     ~CntSaveManager();
     
-    CntSaveResult saveContact(QContact* aContact, QContactManager* aManager);
+    CntSaveResult saveContact( QContact* aContact, QContactManager* aManager );
+    CntSaveResult saveMyCard( QContact* aMyCard, QContactManager* aManager );
+    CntSaveResult saveGroup( QContact* aGroup, QContactManager* aManager );
+    
+signals:
+    void saveCompleted( CntSaveManager::CntSaveResult result );
     
 private:
+    CntSaveResult saveContact( CntContactType type, QContact* contact, QContactManager* manager );
     void setPreferredDetails(QContact* aContact);
-    
-private:
-    CntContactType   mContactType;
     
 };
 

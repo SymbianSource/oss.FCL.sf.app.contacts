@@ -50,3 +50,4 @@ symbian:
 
 target.path += $$[QT_INSTALL_PLUGINS]/contacts/extensions
 INSTALLS += target
+symbian:MMP_RULES += SMPSAFE
