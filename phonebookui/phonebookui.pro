@@ -34,9 +34,6 @@ BLD_INF_RULES.prj_exports += \
 :BLD_INF_RULES.prj_exports += "conf/contacts.confml APP_LAYER_CONFML(contacts.confml)"
 :BLD_INF_RULES.prj_exports += "conf/contacts_2002FF54.crml APP_LAYER_CRML(contacts_2002FF54.crml)"
 :BLD_INF_RULES.prj_exports += "conf/contacts_200315A8.crml APP_LAYER_CRML(contacts_200315A8.crml)"
-exists(confml/phonebook.confml) :BLD_INF_RULES.prj_exports += "confml/phonebook.confml CONFML_EXPORT_PATH(phonebook.confml,uda_content)"
-exists(implml/phonebook.implml) :BLD_INF_RULES.prj_exports += "implml/phonebook.implml CRML_EXPORT_PATH(phonebook.implml,uda_content)"
-exists(content/SQLite__Contacts.zip) :BLD_INF_RULES.prj_exports += "content/SQLite__Contacts.zip CRML_EXPORT_PATH(../content/zip/,uda_content)"
 
 BLD_INF_RULES.prj_exports += "../sis/contacts_stub.sis  /epoc32/data/z/system/install/contacts_stub.sis"
 
