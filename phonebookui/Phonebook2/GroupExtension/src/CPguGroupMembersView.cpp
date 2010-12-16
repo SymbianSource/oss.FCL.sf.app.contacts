@@ -2209,6 +2209,9 @@ void CPguGroupMembersView::DoActivateL
 //
 void CPguGroupMembersView::DoDeactivate()
     {
+    // Close CCA
+    TRAP_IGNORE( HandleCommandL(EPbk2CmdCloseCca) );
+    
     // Trash the old states
     delete iControlState;
     iControlState = NULL;

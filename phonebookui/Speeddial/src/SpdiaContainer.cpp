@@ -1070,12 +1070,12 @@ void CSpdiaContainer::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     
     if ( ( aPointerEvent.iType == TPointerEvent::EButton1Down ) ||
              ( aPointerEvent.iType == TPointerEvent::EButton1Up ) )
-    	{
+        {
         if ( iLongTapDetector )
             {
             iLongTapDetector->PointerEventL( aPointerEvent );
             }
-    	}
+        }
     // Process only once when the grid control has been pressed
     if ( ( aPointerEvent.iType == TPointerEvent::EButton1Down ) ||
          ( aPointerEvent.iType == TPointerEvent::EDrag ) ||
@@ -1085,17 +1085,13 @@ void CSpdiaContainer::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         iGrid->HandlePointerEventL( aPointerEvent );
         
         if ( aPointerEvent.iType == TPointerEvent::EButton1Down )
-        	{
-        	iButton1DownIndex = iGrid->CurrentDataIndex();
-        	}
+            {
+            iButton1DownIndex = iGrid->CurrentDataIndex();
+            }
         // If already highlighted, activate the grid element
         if ( iGrid->CurrentDataIndex() == iButton1DownIndex ) 
             {
-            TInt pointedItemIndex;
-            if ( ( aPointerEvent.iType == TPointerEvent::EButton1Up ) &&
-                iGrid->View()->XYPosToItemIndex(
-                    aPointerEvent.iPosition, pointedItemIndex ) &&
-                ( pointedItemIndex == iButton1DownIndex ) )
+            if ( aPointerEvent.iType == TPointerEvent::EButton1Up )
                 {
                 if ( iLongTapUsed == EFalse )
                     {
@@ -1115,7 +1111,6 @@ void CSpdiaContainer::HandlePointerEventL(const TPointerEvent& aPointerEvent)
                         }
                     CEikMenuBar* menuBar = iView->MenuBar();
                     TInt barId(R_SPDIA_MENUBAR_VIEW_OK_ASSIGN);
-            
                     // If focus is on voicemailbox
                     if ( IsVoiceMailBox() || IsVdoMailBox() )
                         {
@@ -1164,19 +1159,12 @@ CAknLongTapDetector& CSpdiaContainer::LongTapDetectorL()
 // --------------------------------------------------------------------------
 //    
  void CSpdiaContainer::HandleLongTapEventL(
-        const TPoint& aPenEventLocation, 
+        const TPoint& /*aPenEventLocation*/, 
         const TPoint& /*aPenEventScreenLocation*/ )
     {
-    // Get the Current Data Index
-    TInt itemIndex( KErrNotFound );
-
-    // Get position when user press screen
-    iGrid->View()->XYPosToItemIndex( aPenEventLocation, itemIndex );
-
-    // Compare two index
-    if ( AknLayoutUtils::PenEnabled() && ( itemIndex == iGrid->CurrentDataIndex() ) )
+    if ( AknLayoutUtils::PenEnabled() )
         {
-        iLongTapUsed = ETrue;   	    
+        iLongTapUsed = ETrue;
         TInt index = iGrid->CurrentDataIndex();
         if ( IsVoiceMailBox() || IsVdoMailBox())
             {

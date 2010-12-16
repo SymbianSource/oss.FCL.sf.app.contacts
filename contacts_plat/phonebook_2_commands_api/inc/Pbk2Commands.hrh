@@ -46,6 +46,7 @@ enum TPbk2CommandId
     EPbk2CmdRemoveFromTopContacts,
     EPbk2CmdMoveInTopContactsList,
     EPbk2CmdWriteNoQuery,
+    EPbk2CmdCloseCca,
 
     /// Names list menu items
     EPbk2CmdOpenMeViews = 25500,

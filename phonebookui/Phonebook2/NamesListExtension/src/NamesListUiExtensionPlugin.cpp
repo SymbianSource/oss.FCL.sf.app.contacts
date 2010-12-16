@@ -23,6 +23,7 @@
 
 #include "CPbk2NameslistUiControlExtension.h"
 #include "CPbk2NlxOpenCcaCmd.h"
+#include "CPbk2NlxCloseCcaCmd.h"
 #include "CPbk2NlxAddToTopContactsCmd.h"
 #include "CPbk2NlxRemoveFromTopContactsCmd.h"
 #include "CPbk2NlxMoveTopContactsCmd.h"
@@ -587,6 +588,13 @@ MPbk2Command* CNamesListUIExtensionPlugin::CreatePbk2CommandForIdL
             break;            
             }
             
+        case EPbk2CmdCloseCca:	
+            {
+            result = CPbk2NlxCloseCcaCmd::NewL( 
+                aUiControl, 
+                const_cast<MCCAConnection*&>( iCCAConnection ) );
+            break;            
+            }
         case EPbk2CmdAddToTopContacts:
             {
             // Give the ETrue argument for aAddFavourites = EFalse.

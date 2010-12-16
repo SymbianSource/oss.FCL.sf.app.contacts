@@ -29,7 +29,7 @@ TARGET          Pbk2ExNamesListPlugin.dll
 TARGETTYPE      PLUGIN
 UID             0x10009D8D KPbk2NamesListExtPluginUID2
 CAPABILITY      CAP_ECOM_PLUGIN ReadUserData WriteUserData ReadDeviceData WriteDeviceData
-VENDORID				VID_DEFAULT
+VENDORID        VID_DEFAULT
 
 APP_LAYER_SYSTEMINCLUDE
 SYSTEMINCLUDE   /epoc32/include/ecom
@@ -41,21 +41,21 @@ SYSTEMINCLUDE   ../inc
 SYSTEMINCLUDE   ../ccapplication/inc
 
 SOURCEPATH      ../NamesListExtension/src
-SOURCE			DllMain.cpp
-SOURCE			NamesListUiExtensionPlugin.cpp
-SOURCE			NamesListExView.cpp
-SOURCE			CPbk2NameslistUiControlExtension.cpp
-SOURCE			CPbk2NlxPresenceSubscriptionInfo.cpp
-SOURCE			CPbk2NlxPresenceIconInfo.cpp
-SOURCE			CPbk2EcePresenceEngine.cpp
-SOURCE			CPbk2NlxOpenCcaCmd.cpp
-SOURCE			CPbk2NlxAddToTopContactsCmd.cpp
-SOURCE			CPbk2NlxRemoveFromTopContactsCmd.cpp
-SOURCE			CPbk2NlxMoveTopContactsCmd.cpp
-SOURCE			CPbk2NlxMoveTopContactsDlg.cpp
-SOURCE			CPbk2NlxReorderingModel.cpp
-SOURCE			Pbk2ContactUiControlProxy.cpp
-SOURCE			TPbk2ContactIterator.cpp
+SOURCE          DllMain.cpp
+SOURCE          NamesListUiExtensionPlugin.cpp
+SOURCE          NamesListExView.cpp
+SOURCE          CPbk2NameslistUiControlExtension.cpp
+SOURCE          CPbk2NlxPresenceSubscriptionInfo.cpp
+SOURCE          CPbk2NlxPresenceIconInfo.cpp
+SOURCE          CPbk2EcePresenceEngine.cpp
+SOURCE          CPbk2NlxOpenCcaCmd.cpp
+SOURCE          CPbk2NlxAddToTopContactsCmd.cpp
+SOURCE          CPbk2NlxRemoveFromTopContactsCmd.cpp
+SOURCE          CPbk2NlxMoveTopContactsCmd.cpp
+SOURCE          CPbk2NlxMoveTopContactsDlg.cpp
+SOURCE          CPbk2NlxReorderingModel.cpp
+SOURCE          Pbk2ContactUiControlProxy.cpp
+SOURCE          TPbk2ContactIterator.cpp
 SOURCE          CPbk2CmdItemAddTop.cpp
 SOURCE          CPbk2AddFavoritesVisibilityImpl.cpp
 SOURCE          CPbk2AddFavoritesVisibility.cpp
@@ -63,12 +63,13 @@ SOURCE          CPbk2CmdItemRemoteContactLookup.cpp
 SOURCE          CPbk2RemoteContactLookupVisibilityImpl.cpp
 SOURCE          CPbk2RemoteContactLookupVisibility.cpp
 SOURCE          Pbk2NlxMenuFiltering.cpp
-SOURCE			cpbk2cmditemmycard.cpp
-SOURCE			cpbk2mycard.cpp
-SOURCE 			cpbk2openmycardcmd.cpp
+SOURCE          cpbk2cmditemmycard.cpp
+SOURCE          cpbk2mycard.cpp
+SOURCE          cpbk2openmycardcmd.cpp
 SOURCE          cpbk2contextlaunch.cpp
 SOURCE          cpbk2deletemycardcmd.cpp 
-SOURCE			CPbk2DelayedWaitNote.cpp
+SOURCE          CPbk2DelayedWaitNote.cpp
+SOURCE          CPbk2NlxCloseCcaCmd.cpp
 
 // Resources
 START RESOURCE  ../rss/Pbk2ExNamesListRes.rss

@@ -414,40 +414,16 @@ void CPbk2AdaptiveSearchGridFiller::SetFocusToAdaptiveSearchGrid()
 
 void CPbk2AdaptiveSearchGridFiller::SetAdaptiveGridCharsL(
         const TInt aMaxSpacesNumber, const TInt aSearchStringSpacesNumber )
-	{
-	TPtr ptr = iKeyMap->Des();
-
-	// Do upper case for all characters
-	ptr.UpperCase();
-	CDesCArray* array = new (ELeave) CDesCArrayFlat( KAdaptiveSearchKeyMapGranularity );
-	CleanupStack::PushL( array );
-	TInt length = ptr.Length();
-
-	for( TInt ii = 0; ii < length; ii++ )
-	    {
-	    array->AppendL( ptr.Mid( ii, 1 ) );
-	    }
-
-	// Alphabetical sort
-	array->Sort( ECmpCollated );
-	ptr.Zero();
-
+    {
     // Add space character only if:
 	// - user typed already some characters in the find pane,
 	// - and more spaces can be found in contacts than in the current search string,
 	// - and space is not the last character in the search string.
-    if ( iSearchString->Length() > 0 
-         && aMaxSpacesNumber > aSearchStringSpacesNumber
-         && (*iSearchString)[iSearchString->Length() - 1] != TChar( ' ' ) )
-        {
-        ptr.Append( TChar( ' ' ) );
-        }
-     
-	for( TInt ii = 0; ii < length; ii++ )
-	    {
-	    ptr.Append(array->MdcaPoint( ii ));
-	    }
-	CleanupStack::PopAndDestroy();//array
+    TBool addSpace = ( iSearchString->Length() > 0 
+                       && aMaxSpacesNumber > aSearchStringSpacesNumber
+                       && (*iSearchString)[iSearchString->Length() - 1] != TChar( ' ' ) );
+
+    SortGridL( addSpace ); 
 
 	if( iCurrentGrid )
 		{
@@ -479,6 +455,36 @@ void CPbk2AdaptiveSearchGridFiller::SetAdaptiveGridCharsL(
 
 	}
 
+void CPbk2AdaptiveSearchGridFiller::SortGridL( TBool aAddSpace )
+    {
+    TPtr ptr = iKeyMap->Des();
+
+    // Do upper case for all characters
+    ptr.UpperCase();
+    CDesCArray* array = new (ELeave) CDesCArrayFlat( KAdaptiveSearchKeyMapGranularity );
+    CleanupStack::PushL( array );
+    TInt length = ptr.Length();
+
+    for( TInt ii = 0; ii < length; ii++ )
+        {
+        array->AppendL( ptr.Mid( ii, 1 ) );
+        }
+
+    // Alphabetical sort
+    array->Sort( ECmpCollated );
+    ptr.Zero();
+
+    if ( aAddSpace )
+        {
+        ptr.Append( TChar( ' ' ) );
+        }
+     
+    for( TInt ii = 0; ii < length; ii++ )
+        {
+        ptr.Append( array->MdcaPoint( ii ) );
+        }
+    CleanupStack::PopAndDestroy();//array
+    }
 
 CDesC16Array* CPbk2AdaptiveSearchGridFiller::SplitContactFieldTextIntoArrayLC(
         const TDesC& aText )
@@ -749,6 +755,8 @@ TBool CPbk2AdaptiveSearchGridFiller::GridFromPsEngineL( const MVPbkContactViewBa
             iKeyMap = iKeyMap->ReAllocL( gridChars.Length() );
             }
         iKeyMap->Des().Copy( gridChars );
+        // Sort the grid, space is not needed
+        SortGridL( EFalse );
         
         delete iCurrentGrid;
         iCurrentGrid = NULL;
